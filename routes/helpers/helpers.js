@@ -8,6 +8,7 @@ var queries = require('../queries');
 var util = require('util');
 var path  = require('path');
 var crypto = require('crypto');
+var mysql = require('mysql2');
 
 module.exports = {
   // route middleware to make sure a user is logged in
@@ -163,190 +164,6 @@ module.exports.send_mail = function(mail_info) {
 //
 //
 //
-
-// TODO: Column: 52 "This function's cyclomatic complexity is too high. (20)"
-module.exports.run_select_datasets_query = function(rows){
-    var pids         = {};
-    var titles       = {};
-    var datasetsByProject = {};
-    for (var i=0; i < rows.length; i++) {
-          var project = rows[i].project;
-          var did = rows[i].did;
-          var dataset = rows[i].dataset;
-          var dataset_description = rows[i].dataset_description;
-          var pid = rows[i].pid;
-          var public = rows[i].public;
-          var owner_id = rows[i].owner_user_id;
-
-          PROJECT_ID_BY_DID[did]=pid;
-
-          PROJECT_INFORMATION_BY_PID[pid] = {
-            "last" :            rows[i].last_name,
-            "first" :            rows[i].first_name,
-            "username" :        rows[i].username,
-            "oid" :             owner_id,
-            "email" :            rows[i].email,
-            "env_source_name" : rows[i].env_source_name,
-            "env_source_id" :   rows[i].env_sample_source_id,
-            "institution" :      rows[i].institution,
-            "project" :          project,
-            "pid" :              pid,
-            "title" :            rows[i].title,
-            "description" :      rows[i].project_description,
-            "public" :          rows[i].public,
-          };
-          if(public || rows[i].username === 'guest'){
-            PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
-          }else{
-            PROJECT_INFORMATION_BY_PID[pid].permissions = [owner_id]; // initially has only project owner_id
-          }
-          PROJECT_INFORMATION_BY_PNAME[project] =  PROJECT_INFORMATION_BY_PID[pid];
-
-          if(pid in DATASET_IDS_BY_PID){
-            DATASET_IDS_BY_PID[pid].push(did);
-          }else{
-            DATASET_IDS_BY_PID[pid]=[];
-            DATASET_IDS_BY_PID[pid].push(did);
-          }
-          pids[project] = pid;
-          titles[project] = rows[i].title;
-
-          DATASET_NAME_BY_DID[did] = dataset;
-
-
-          if (project === undefined){ continue; }
-          if (project in datasetsByProject){
-              datasetsByProject[project].push({ did:did, dname:dataset, ddesc: dataset_description});
-          } else {
-              datasetsByProject[project] =   [{ did:did, dname:dataset, ddesc: dataset_description }];
-          }
-
-    }
-
-    // todo: console.log(datasetsByProject.length); datasetsByProject - not an array
-    for (var p in datasetsByProject){
-      var tmp = {};
-      tmp.name = p;
-      tmp.pid = pids[p];
-      tmp.title = titles[p];
-      tmp.datasets = [];
-      for (var d in datasetsByProject[p]){
-        var ds = datasetsByProject[p][d].dname;
-        var dp_did = datasetsByProject[p][d].did;
-        var ddesc = datasetsByProject[p][d].ddesc;
-        tmp.datasets.push({ did:dp_did, dname:ds, ddesc:ddesc });
-      }
-      ALL_DATASETS.projects.push(tmp);
-    }
-   //console.log(JSON.stringify(ALL_DATASETS))
-    console.log('Getting md-names and those w/ lat/lon');
-    //var clean_metadata = {};
-    if(HDF5_MDATA === ''){
-        var clean_metadata = {};
-        // TODO: "Blocks are nested too deeply. (4)"
-        for(did in AllMetadata){
-          if(did in DATASET_NAME_BY_DID){
-              clean_metadata[did] = AllMetadata[did];
-              for(var mdname in AllMetadata[did] ){
-              //console.log(mdname)
-              if(AllMetadataNames.indexOf(mdname) == -1){
-                AllMetadataNames.push(mdname);
-              }
-              if(mdname == 'latitude' || mdname == 'longitude'){
-
-                if(did in DatasetsWithLatLong){
-                  if(mdname == 'latitude'){
-                    DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
-                  }else{
-                    DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
-                  }
-                }else{
-                  DatasetsWithLatLong[did]={};
-
-                  var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-                  DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
-                  DatasetsWithLatLong[did].pid = PROJECT_ID_BY_DID[did];
-                  if(mdname == 'latitude'){
-                    DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
-                  }else{
-                    DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
-                  }
-                }
-              }
-              }
-         }
-        }
-    }else{
-        for(did in DATASET_NAME_BY_DID){
-            //console.log(did)
-            //clean_metadata[did] = {}
-
-            var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-            mdgroup.refresh();
-            // TODO: "This function's cyclomatic complexity is too high. (8)"
-            // TODO: "Don't make functions within a loop."
-
-            Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-                if(mdname != 'id'){
-                  //console.log(mdname, group[mdname])
-                  //clean_metadata[did][mdname] = mdgroup[mdname]
-
-                  if(AllMetadataNames.indexOf(mdname) == -1){
-                    AllMetadataNames.push(mdname);
-                  }
-                  if(mdname == 'latitude' || mdname == 'longitude'){
-                    if(did in DatasetsWithLatLong){
-                      if(mdname == 'latitude'){
-                        // TODO: "Blocks are nested too deeply. (4)"
-                        DatasetsWithLatLong[did].latitude = mdgroup[mdname];
-                      }else{
-                        DatasetsWithLatLong[did].longitude = mdgroup[mdname];
-                      }
-                    }else{
-                      DatasetsWithLatLong[did]={};
-
-                      var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-                      DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
-                      DatasetsWithLatLong[did].pid = PROJECT_ID_BY_DID[did];
-                      if(mdname == 'latitude'){
-                        // TODO: Column: 47 "Blocks are nested too deeply. (4)"
-                        DatasetsWithLatLong[did].latitude = mdgroup[mdname];
-                      }else{
-                        DatasetsWithLatLong[did].longitude = mdgroup[mdname];
-                      }
-                    }
-                  }
-
-
-                }
-            });
-        }
-    }
-
-
-    AllMetadataNames.sort(function(a, b){
-          return module.exports.compareStrings_alpha(a, b);
-    });
-    //console.log(AllMetadataNames)
-    connection.query(queries.get_project_permissions(), function(err, rows, fields){
-      //console.log(qSequenceCounts)
-      if (err)  {
-        console.log('Query error: ' + err);
-        console.log(err.stack);
-        process.exit(1);
-      } else {
-        module.exports.run_permissions_query(rows);
-      }
-
-      console.log(' UPDATING PERMISSIONS: '+queries.get_project_permissions());
-    });
-
-
-};
-
-//
-//
-//
 module.exports.run_select_sequences_query = function(rows){
         for (var i=0; i < rows.length; i++) {
         //console.log(rows[i].project_id);
@@ -367,6 +184,7 @@ module.exports.run_select_sequences_query = function(rows){
           }
         }
 };
+
 module.exports.run_ranks_query = function(rank,rows){
         for (var i=0; i < rows.length; i++) {
           var id = rows[i][rank+'_id'];
@@ -374,6 +192,7 @@ module.exports.run_ranks_query = function(rank,rows){
           RANK_ID_BY_NAME[rank][name] = id;
         }
 };
+
 // TODO: "This function's cyclomatic complexity is too high. (6)"
 module.exports.run_permissions_query = function(rows){
         //console.log(PROJECT_INFORMATION_BY_PID)
@@ -443,144 +262,6 @@ module.exports.update_global_variables = function(pid,type){
   }else{
     // ERROR
   }
-};
-
-module.exports.get_status = function(user, project){
-  var statQuery = "SELECT status, message from user_project_status";
-  statQuery += " join user USING(user_id)";
-  statQuery += " join project USING(project_id)";
-  statQuery += " WHERE user = '" + user + "' and project ='" + project + "' ";
-  console.log('get_status query: ' + statQuery);
-  connection.query(statQuery, function(err, rows) {
-    if(err) {
-      console.log('ERROR-in status query: ' + err);
-    } else {
-      return rows;
-    }
-  });
-};
-
-MakeDeleteStatusQ = function(status_params) {
-  console.log('in delete_status');
-  if (status_params.type === 'delete') {
-    var statQuery = "DELETE user_project_status";
-        statQuery += " FROM user_project_status";
-        statQuery += " JOIN project USING(project_id)";
-        statQuery += " WHERE user_id ='" + status_params.user_id + "' ";
-        statQuery += " AND   project ='" + status_params.project + "' ";
-    console.log('DELETE query: ' + statQuery);
-    return statQuery;
-  }
-};
-
-MakeUpdateStatusQ = function(status_params)
-{
-  var statQuery2 = "UPDATE user_project_status";
-      statQuery2 += " JOIN project USING(project_id)";
-      statQuery2 += " SET status = '" + status_params.status + "'";
-      statQuery2 += ", message = '"  + status_params.msg + "'";
-      statQuery2 += ", updated_at = NOW()";
-      statQuery2 += " WHERE user_id = '" + status_params.user_id + "'";
-  if ('pid' in status_params && 'project' in status_params) {
-      statQuery2 += "' AND project = '"  + status_params.project;
-  }
-  else if ('pid' in status_params) {
-      statQuery2 += "' and project_id = '" + status_params.pid + "'";
-  }
-  else {
-  //ERROR
-  }
-  return statQuery2;
-};
-
-module.exports.MakeSelectUser_idByUserQ = function(username)
-{
-  var SelectUser_idByUserQ = "SELECT user_id FROM user WHERE username = " + username;
-      // InsertSelectOwnerQ += "OR (first_name = " + first_name + "AND last_name = " + first_name + "AND email = " + email + "AND institution = " +institution +")";
-      return SelectUser_idByUserQ;
-}
-
-module.exports.MakeSelectProjectId = function(project)
-{
-  return "SELECT project_id FROM project WHERE project = '" + project + "'";
-}
-
-
-module.exports.RunQuery = function(my_query)
-{
-  console.log('my_query from RunQuery: ' + my_query);
-  connection.query(my_query, function(err, rows) {
-    if(err) {
-      console.log('ERROR in query: ' + err);
-    } else {
-      console.log(util.inspect(rows, false, null));
-      return rows;
-    }
-  });
-}
-
-MakeInsertProjectQ = function(project, title, project_description, funding)
-{
-  var owner_user_id = MakeSelectOwnerQ()
-  var InsertProjectQ = "INSERT IGNORE into user_project_status (project, title, project_description, rev_project_name, funding, " + owner_user_id + ", public)";
-}
-
-MakeInsertStatusQ = function(status_params)
-{
-  var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)";
-  // "SELECT user_id, project_id, status, message, NOW() ";
-  statQuery1 += " SELECT "  + status_params.user_id;
-  statQuery1 += ", project_id";
-  statQuery1 += ", '"  + status_params.status + "'";
-  statQuery1 += ", '"  + status_params.msg + "'";
-  statQuery1 += ", NOW()";
-  statQuery1 += " FROM user_project_status RIGHT JOIN project using(project_id)";
-  statQuery1 += " WHERE project = " + "'" + status_params.project + "'";
-  return statQuery1;
-};
-
-module.exports.update_status = function(status_params) {
-  console.log('in update_status');
-  console.log(util.inspect(status_params, false, null));
-
-  if (status_params.type === 'delete') {
-    statQuery = MakeDeleteStatusQ(status_params);
-    console.log('in update_status, after delete_status');
-    connection.query(statQuery, function(err, rows) {
-      if(err) { console.log('ERROR1-in status update: ' + err);
-      }
-      else {
-        console.log('in statQuery');
-        console.log(util.inspect(rows, false, null));
-      }
-    });
-  } else if(status_params.type == 'update') {
-    statQuery2 = MakeUpdateStatusQ(status_params);
-    console.log('statQuery2: ' + statQuery2);
-    connection.query(statQuery2, function(err, rows) {
-      if(err) {
-        console.log('ERROR2-in status update: ' + err);
-      } else {
-        console.log('status update2');
-        console.log(util.inspect(rows, false, null));
-        //TODO: Why doesn't work?
-      }
-    });
-  } else {  // Type::New
-      // TODO? INSERT INTO table (id, name, age) VALUES(1, "A", 19) ON DUPLICATE KEY UPDATE
-      // name="A", age=19
-    statQuery1 = MakeInsertStatusQ(status_params);
-    console.log('statQuery1: ' + statQuery1);
-    connection.query(statQuery1 , function(err, rows) {
-      if(err) {
-        console.log('ERROR2-in status update: ' + err);
-      } else {
-        console.log('status update1');
-        console.log(util.inspect(rows, false, null));
-        //TODO: Why doesn't work?
-      }
-    });
-  } // Type::New
 };
 
 module.exports.assignment_finish_request = function(res, rows1, rows2, status_params) {
@@ -797,5 +478,350 @@ module.exports.make_color_seq = function(seq){
       }
 
       return return_string;
-};    //end of function
+};    //end of function make_color_seq
 
+// mysql queries
+
+// TODO: Column: 52 "This function's cyclomatic complexity is too high. (20)"
+module.exports.run_select_datasets_query = function(rows){
+    var pids         = {};
+    var titles       = {};
+    var datasetsByProject = {};
+    for (var i=0; i < rows.length; i++) {
+          var project = rows[i].project;
+          var did = rows[i].did;
+          var dataset = rows[i].dataset;
+          var dataset_description = rows[i].dataset_description;
+          var pid = rows[i].pid;
+          var public = rows[i].public;
+          var owner_id = rows[i].owner_user_id;
+
+          PROJECT_ID_BY_DID[did]=pid;
+
+          PROJECT_INFORMATION_BY_PID[pid] = {
+            "last" :            rows[i].last_name,
+            "first" :            rows[i].first_name,
+            "username" :        rows[i].username,
+            "oid" :             owner_id,
+            "email" :            rows[i].email,
+            "env_source_name" : rows[i].env_source_name,
+            "env_source_id" :   rows[i].env_sample_source_id,
+            "institution" :      rows[i].institution,
+            "project" :          project,
+            "pid" :              pid,
+            "title" :            rows[i].title,
+            "description" :      rows[i].project_description,
+            "public" :          rows[i].public,
+          };
+          if(public || rows[i].username === 'guest'){
+            PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
+          }else{
+            PROJECT_INFORMATION_BY_PID[pid].permissions = [owner_id]; // initially has only project owner_id
+          }
+          PROJECT_INFORMATION_BY_PNAME[project] =  PROJECT_INFORMATION_BY_PID[pid];
+
+          if(pid in DATASET_IDS_BY_PID){
+            DATASET_IDS_BY_PID[pid].push(did);
+          }else{
+            DATASET_IDS_BY_PID[pid]=[];
+            DATASET_IDS_BY_PID[pid].push(did);
+          }
+          pids[project] = pid;
+          titles[project] = rows[i].title;
+
+          DATASET_NAME_BY_DID[did] = dataset;
+
+
+          if (project === undefined){ continue; }
+          if (project in datasetsByProject){
+              datasetsByProject[project].push({ did:did, dname:dataset, ddesc: dataset_description});
+          } else {
+              datasetsByProject[project] =   [{ did:did, dname:dataset, ddesc: dataset_description }];
+          }
+
+    }
+
+    // todo: console.log(datasetsByProject.length); datasetsByProject - not an array
+    for (var p in datasetsByProject){
+      var tmp = {};
+      tmp.name = p;
+      tmp.pid = pids[p];
+      tmp.title = titles[p];
+      tmp.datasets = [];
+      for (var d in datasetsByProject[p]){
+        var ds = datasetsByProject[p][d].dname;
+        var dp_did = datasetsByProject[p][d].did;
+        var ddesc = datasetsByProject[p][d].ddesc;
+        tmp.datasets.push({ did:dp_did, dname:ds, ddesc:ddesc });
+      }
+      ALL_DATASETS.projects.push(tmp);
+    }
+   //console.log(JSON.stringify(ALL_DATASETS))
+    console.log('Getting md-names and those w/ lat/lon');
+    //var clean_metadata = {};
+    if(HDF5_MDATA === ''){
+        var clean_metadata = {};
+        // TODO: "Blocks are nested too deeply. (4)"
+        for(did in AllMetadata){
+          if(did in DATASET_NAME_BY_DID){
+              clean_metadata[did] = AllMetadata[did];
+              for(var mdname in AllMetadata[did] ){
+              //console.log(mdname)
+              if(AllMetadataNames.indexOf(mdname) == -1){
+                AllMetadataNames.push(mdname);
+              }
+              if(mdname == 'latitude' || mdname == 'longitude'){
+
+                if(did in DatasetsWithLatLong){
+                  if(mdname == 'latitude'){
+                    DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
+                  }else{
+                    DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
+                  }
+                }else{
+                  DatasetsWithLatLong[did]={};
+
+                  var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+                  DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
+                  DatasetsWithLatLong[did].pid = PROJECT_ID_BY_DID[did];
+                  if(mdname == 'latitude'){
+                    DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
+                  }else{
+                    DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
+                  }
+                }
+              }
+              }
+         }
+        }
+    }else{
+        for(did in DATASET_NAME_BY_DID){
+            //console.log(did)
+            //clean_metadata[did] = {}
+
+            var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+            mdgroup.refresh();
+            // TODO: "This function's cyclomatic complexity is too high. (8)"
+            // TODO: "Don't make functions within a loop."
+
+            Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
+                if(mdname != 'id'){
+                  //console.log(mdname, group[mdname])
+                  //clean_metadata[did][mdname] = mdgroup[mdname]
+
+                  if(AllMetadataNames.indexOf(mdname) == -1){
+                    AllMetadataNames.push(mdname);
+                  }
+                  if(mdname == 'latitude' || mdname == 'longitude'){
+                    if(did in DatasetsWithLatLong){
+                      if(mdname == 'latitude'){
+                        // TODO: "Blocks are nested too deeply. (4)"
+                        DatasetsWithLatLong[did].latitude = mdgroup[mdname];
+                      }else{
+                        DatasetsWithLatLong[did].longitude = mdgroup[mdname];
+                      }
+                    }else{
+                      DatasetsWithLatLong[did]={};
+
+                      var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+                      DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
+                      DatasetsWithLatLong[did].pid = PROJECT_ID_BY_DID[did];
+                      if(mdname == 'latitude'){
+                        // TODO: Column: 47 "Blocks are nested too deeply. (4)"
+                        DatasetsWithLatLong[did].latitude = mdgroup[mdname];
+                      }else{
+                        DatasetsWithLatLong[did].longitude = mdgroup[mdname];
+                      }
+                    }
+                  }
+
+
+                }
+            });
+        }
+    }
+
+
+    AllMetadataNames.sort(function(a, b){
+          return module.exports.compareStrings_alpha(a, b);
+    });
+    //console.log(AllMetadataNames)
+    connection.query(queries.get_project_permissions(), function(err, rows, fields){
+      //console.log(qSequenceCounts)
+      if (err)  {
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
+      } else {
+        module.exports.run_permissions_query(rows);
+      }
+
+      console.log(' UPDATING PERMISSIONS: '+queries.get_project_permissions());
+    });
+};
+
+
+module.exports.update_status = function(status_params) {
+  console.log('in update_status');
+  console.log(util.inspect(status_params, false, null));
+
+  if (status_params.type === 'delete') {
+    statQuery = MakeDeleteStatusQ(status_params);
+    console.log('in update_status, after delete_status');
+    connection.query(statQuery, function(err, rows) {
+      if(err) { console.log('ERROR1-in status update: ' + err);
+      }
+      else {
+        console.log('in statQuery');
+        console.log(util.inspect(rows, false, null));
+      }
+    });
+  } else if(status_params.type == 'update') {
+    statQuery2 = MakeUpdateStatusQ(status_params);
+    console.log('statQuery2: ' + statQuery2);
+    connection.query(statQuery2, function(err, rows) {
+      if(err) {
+        console.log('ERROR2-in status update: ' + err);
+      } else {
+        console.log('status update2');
+        console.log(util.inspect(rows, false, null));
+        //TODO: Why doesn't work?
+      }
+    });
+  } else {  // Type::New
+      // TODO? INSERT INTO table (id, name, age) VALUES(1, "A", 19) ON DUPLICATE KEY UPDATE
+      // name="A", age=19
+    statQuery1 = MakeInsertStatusQ(status_params);
+    console.log('statQuery1: ' + statQuery1);
+    connection.query(statQuery1 , function(err, rows) {
+      if(err) {
+        console.log('ERROR2-in status update: ' + err);
+      } else {
+        console.log('status update1');
+        console.log(util.inspect(rows, false, null));
+        //TODO: Why doesn't work?
+      }
+    });
+  } // Type::New
+};
+
+
+
+module.exports.get_status = function(user, project){
+  var statQuery = "SELECT status, message from user_project_status";
+  statQuery += " join user USING(user_id)";
+  statQuery += " join project USING(project_id)";
+  statQuery += " WHERE user = '" + user + "' and project ='" + project + "' ";
+  console.log('get_status query: ' + statQuery);
+  connection.query(statQuery, function(err, rows) {
+    if(err) {
+      console.log('ERROR-in status query: ' + err);
+    } else {
+      return rows;
+    }
+  });
+};
+
+MakeDeleteStatusQ = function(status_params) {
+  console.log('in delete_status');
+  if (status_params.type === 'delete') {
+    var statQuery = "DELETE user_project_status";
+        statQuery += " FROM user_project_status";
+        statQuery += " JOIN project USING(project_id)";
+        statQuery += " WHERE user_id ='" + status_params.user_id + "' ";
+        statQuery += " AND   project ='" + status_params.project + "' ";
+    console.log('DELETE query: ' + statQuery);
+    return statQuery;
+  }
+};
+
+MakeUpdateStatusQ = function(status_params)
+{
+  var statQuery2 = "UPDATE user_project_status";
+      statQuery2 += " JOIN project USING(project_id)";
+      statQuery2 += " SET status = '" + status_params.status + "'";
+      statQuery2 += ", message = '"  + status_params.msg + "'";
+      statQuery2 += ", updated_at = NOW()";
+      statQuery2 += " WHERE user_id = '" + status_params.user_id + "'";
+  if ('pid' in status_params && 'project' in status_params) {
+      statQuery2 += "' AND project = '"  + status_params.project;
+  }
+  else if ('pid' in status_params) {
+      statQuery2 += "' and project_id = '" + status_params.pid + "'";
+  }
+  else {
+  //ERROR
+  }
+  return statQuery2;
+};
+
+module.exports.MakeSelectUser_idByUserQ = function(username)
+{
+   return "SELECT user_id FROM user WHERE username = " + username;
+}
+
+module.exports.MakeSelectUser_idByUserInfoQ = function(first_name, last_name, email, institution)
+{
+  var SelectUser_idByUserInfoQ = 'SELECT user_id FROM user WHERE first_name = "' + first_name + '"'
+                               + ' AND last_name = "' + last_name  + '"'
+                               + ' AND email = "' + email  + '"'
+                               + ' AND institution = "' +institution +'"';
+ // console.log('RRR --- SelectUser_idByUserInfoQ from helpers');
+ // console.log(util.inspect(SelectUser_idByUserInfoQ, false, null));
+
+  return SelectUser_idByUserQ;
+}
+
+module.exports.MakeSelectProjectId = function(project)
+{
+  return "SELECT project_id FROM project WHERE project = " + connection.escape(project);
+}
+
+module.exports.prepareQuery = function(inserts)
+{
+  // inserts = ['users', 'id', userId];
+  var sql = "SELECT * FROM ?? WHERE ?? = ?";
+  return mysql.format(sql, inserts);  
+}
+
+module.exports.RunQuery = function(my_query)
+{
+  console.log('my_query from RunQuery: ' + my_query);
+  connection.query(my_query, function(err, rows) {
+    if(err) {
+      console.log('ERROR in query: ' + err);
+    } else {
+      console.log(util.inspect(rows, false, null));
+      return rows;
+    }
+  });
+}
+
+module.exports.MakeInsertProjectQ = function(req_form, owner_user_id, new_privacy)
+{
+  var project_columns = ['project', 'title', 'project_description', 'rev_project_name', 'funding', 'owner_user_id', 'public'];
+  var project_info = [req_form.new_project_name, req_form.new_project_title, req_form.new_project_description, "REVERSE(" + req_form.new_project_name + ")", req_form.new_funding, owner_user_id, new_privacy];
+  var inserts = [project_columns, project_info];
+  var insert_project_q = 'INSERT INTO project (??) VALUES (?);';
+  
+  var sql_a = mysql.format(insert_project_q, inserts);
+  return sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
+}
+
+// TODO: escape and bulk
+MakeInsertStatusQ = function(status_params)
+{
+  //TODO: finish
+  params = [status_params.user_id, status_params.status, status_params.msg, status_params.project];
+  
+  var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)";
+  // "SELECT user_id, project_id, status, message, NOW() ";
+  statQuery1 += " SELECT "  + connection.escape(status_params.user_id);
+  statQuery1 += ", project_id";
+  statQuery1 += ", "  + connection.escape(status_params.status);
+  statQuery1 += ", "  + connection.escape(status_params.msg);
+  statQuery1 += ", NOW()";
+  statQuery1 += " FROM user_project_status RIGHT JOIN project using(project_id)";
+  statQuery1 += " WHERE project = " + connection.escape(status_params.project);
+  return statQuery1;
+};

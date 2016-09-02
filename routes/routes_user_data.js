@@ -18,6 +18,7 @@ var multer = require('multer');
 var util = require('util');
 var escape = require('escape-html');
 var form = require("express-form");
+var mysql = require('mysql2');
 
 var pdf = require('html-pdf');
 //var progress = require('progress-stream');
@@ -263,6 +264,7 @@ router.post('/export_data', helpers.isLoggedIn, function (req, res) {
 /* GET Import Choices page. */
 router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
   console.log('import_choices');
+  
   if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
       res.render('user_data/your_data', {
         title: 'VAMPS:Data Administration',
@@ -1551,7 +1553,7 @@ function ProjectExistsInDB(project, req, res)
   console.log("q = " + q);
   result = helpers.RunQuery(q);
   console.log(util.inspect(result, false, null));
-  if (result === '' || result === undefined) 
+  if (result === '' || result === undefined)
   {
     req.flash('failMessage', 'There is no such project');
     res.redirect("/user_data/import_data");
@@ -1807,7 +1809,7 @@ function GetScriptVars(req, data_repository, cmd_list)
   }
   // console.log('111 scriptlog: ' + scriptlog);
   // console.log('222 script_text: ' + script_text);
-  // console.log('222 ====='); 
+  // console.log('222 =====');
   return [scriptlog, script_text];
 }
 
@@ -1856,7 +1858,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
           console.log(util.inspect(cmd_list, false, null));
 
           script_name = 'load_script.sh';
-          var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');          
+          var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
           var script_vars = GetScriptVars(req, data_repository, cmd_list);
           var scriptlog   = script_vars[0];
           var script_text = script_vars[1];
@@ -1957,114 +1959,130 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 
 router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
   console.log('in add_project');
-  console.log('UUU ---');
-  // console.log(util.inspect(req, false, null));
-  console.log('---');
-  // project_info = {};
 
-  // todo: redirect back after login
   res.render('user_data/add_project', {
     title: 'VAMPS: Add a new project',
-    user: req.user, hostname: req.CONFIG.hostname,
+    user: req.user,
+    hostname: req.CONFIG.hostname,
     message: req.flash('message'),
-    // project_info: JSON.stringify(project_info),
     env_sources: JSON.stringify(req.CONSTS.ENV_SOURCE),
   });
 });
 
-//  1) all fields should be not empty
-//  2) project name (length < 20, >3, no spaces, just letteres, numbers, undescores)
-//  3) project title and description length, no quotes, no html sings (", ', &, <, >.)
-//  4) funding - numbers
-//  Owner:
-//  5) email format
-
-router.post('/add_project', 
-            [helpers.isLoggedIn], 
-            form(
-              form.field("new_project_name", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
-              form.field("new_env_source_id", "ENV Source").trim().required().isInt(),
-              form.field("new_privacy", "Public").trim().required().is(/False|True/),
-              form.field("new_project_title", "Title").trim().required().entityEncode().maxLength(100),
-              form.field("new_project_description", "Description").trim().required().entityEncode().maxLength(255),
-              form.field("new_funding", "Funding").trim().required().is(/[0-9]/),
-                            // post.super.nested.property
-              form.field("first_name", "First Name").trim().required().entityEncode().isAlphanumeric(),
-              form.field("last_name", "Last Name").trim().required().entityEncode().isAlphanumeric(),
-              form.field("email", "email").trim().isEmail().required().entityEncode(),
-              form.field("new_institution", "Institution").trim().required().entityEncode()
-             ),
-            function (req, res) {
-  console.log('1-req add_project');
-  console.log(util.inspect(req.body, false, null));
-  console.log('2-req add_project');
-  console.log(util.inspect(req.form, false, null));
-  backURL=req.header('Referer') || '/';
+function fetchID(data, callback) {
+  user_info = [data.first_name, data.last_name, data.email, data.new_institution];
   
-  if (!req.form.isValid) {
-    console.log("req.form.errors");
-    console.log(req.form.errors);
-    console.log("get errors:")
-    // console.log(req.form.getErrors("new_project_name"));
-    console.log(req.form.getErrors());
-    res.redirect("/user_data/add_project");
-  }
-  else
-  {
-    console.log("req.header: aaa")
-    console.log(req.header('Referer'))
-    // http://localhost:3000/user_data/add_project
-    // backURL=req.header('Referer') || '/';
-    //   // do your thang
-    //   res.redirect(backURL);
-    // });
-    // You might also want to store backURL in req.session, if you need it to persist across multiple routes. Remember to test for the existence of that variable, something like: res.redirect(req.session.backURL || '/')
-    // res.redirect("/user_data/import_choices");    
-    res.redirect(backURL);
-    
-  }
   
-  return;
-});
+  connection.query('SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?;', user_info, function(err, rows) {
+    if (err) {
+        callback(err, null);
+    } else 
+    {
+      console.log('--- rows ---');
+      console.log(util.inspect(rows, false, null));
 
-
-  // if ((project === '' || req.body.project === undefined) && req.body.use_original_names != 'on') {
-  //   req.flash('failMessage', 'A project name is required.');
-  //   res.redirect("/user_data/import_data");
-  //   return;  
-  // }
-  
-// }
-
-// function FieldNotEmpty(val)
-// {
-//   console.log("running1 FieldNotEmpty, val");
-//   console.log(val)
-//   // console.log(val.length)
-//   if (val === '' || val === undefined) 
-//   {
-//     return false;
-//   }
-//   else
-//   {
-//     return true;
-//   }
-//   
-// }
-
-function ProjectNameField(req, res)
-{
-  if (result === '' || result === undefined) 
-  {
-    req.flash('failMessage', 'There is no such project');
-    res.redirect("/user_data/import_data");
-    return false;
-  }
-  else
-  {
-    return true;
-  }
+      callback(null, rows[0].user_id);
+    }
+  });
 }
+
+function get_privacy_code(privacy_bulean){
+  if (privacy_bulean === 'True')
+    { return 1 }
+  else
+    { return 0 }
+}
+
+function saveToDb(req, res){ 
+  var user_id;
+
+  fetchID(req.form, function(err, content) {
+      if (err) {
+          console.log(err);
+          // TODO: Do something with your error...
+      } else {
+          owner_user_id = content;
+          var new_privacy = 1
+          new_privacy = get_privacy_code(req.form.new_privacy);
+          //TODO wrire a test for connection insert 1 vs. 0 for privacy
+
+          // var project_columns = ['project', 'title', 'project_description', 'rev_project_name', 'funding', 'owner_user_id', 'public'];
+          // var project_info = [req.form.new_project_name, req.form.new_project_title, req.form.new_project_description, "REVERSE(" + req.form.new_project_name + ")", req.form.new_funding, owner_user_id, new_privacy];
+          // var inserts = [project_columns, project_info];
+          // var insert_project_q = 'INSERT INTO project (??) VALUES (?);'
+          //
+          //
+          // sql_a = mysql.format(insert_project_q, inserts);
+          // sql_a = sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
+          var sql_a = helpers.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
+          console.log("AAA sql_a = " + sql_a);
+          // connection.query('INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES (?, ?, ?, REVERSE(?), ?, ?, ?);',
+          
+          connection.query(sql_a, 
+          function (err, rows) {
+           if (err) {
+             console.log('ERROR-in project insert: ' + err);
+             return;
+     
+           } else {
+
+             req.body.project_pid = rows.insertId; 
+             return rows.insertId;
+           }
+        });
+      }
+  });
+}
+
+
+function editAddProject(req, res){
+  console.log('in editAddProject');
+
+  // TODO: keep choosen ENV_SOURCE
+
+  res.render('user_data/add_project', {
+    title: 'VAMPS: Add a new project',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    messages: req.messages,
+    add_project_info: req.add_project_info,
+    env_sources:  JSON.stringify(req.CONSTS.ENV_SOURCE),
+  });
+}
+
+// TODO: if user info didn't change use user_id from req.user
+router.post('/add_project',
+  [helpers.isLoggedIn],
+  form(
+    form.field("new_project_name", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
+    form.field("new_env_source_id", "ENV Source").trim().required().isInt(),
+    form.field("new_privacy", "Public").trim().required().is(/False|True/),
+    form.field("new_project_title", "Title").trim().required().entityEncode().maxLength(100),
+    form.field("new_project_description", "Description").trim().required().entityEncode().maxLength(255),
+    form.field("new_funding", "Funding").trim().required().is(/[0-9]/),
+    // post.super.nested.property
+    form.field("first_name", "First Name").trim().required().entityEncode().isAlphanumeric(),
+    form.field("last_name", "Last Name").trim().required().entityEncode().isAlphanumeric(),
+    form.field("email", "Email").trim().isEmail().required().entityEncode(),
+    form.field("new_institution", "Institution").trim().required().entityEncode()
+   ),
+  function (req, res) {
+
+    if (!req.form.isValid) {
+      req.add_project_info = req.form;
+      req.messages = req.form.errors;
+      editAddProject(req, res);
+    }
+    else
+    {
+      saveToDb(req, res);      
+      res.redirect("/user_data/import_choices");
+    }
+
+    return;
+  }
+);
+
 
 
 
@@ -2800,7 +2818,7 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
     var old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
-    helpers.mkdirSync(user_dir);  // create dir if not exists 
+    helpers.mkdirSync(user_dir);  // create dir if not exists
     var destination = path.join( user_dir, new_file_name );
     console.log(old_file_path, destination)
     fs.copy(old_file_path, destination, function (err) {
