@@ -1,22 +1,26 @@
 #!/usr/bin/env python
 
 """ 
-    distance.py
-
+    alpha_diversity.py
 
 """
 
 
 import sys,os
 import scipy
+
 #from scipy.cluster import hierarchy
 #from scipy.spatial.distance import pdist
 from scipy.spatial import distance
+
 import numpy as np
+
 import argparse
 import json
 import csv
-import skbio
+
+#import skbio
+
 import skbio.diversity.alpha as alpha
 #from ete2 import Tree
 #print >> sys.stderr, sys.argv[1:]
@@ -34,9 +38,7 @@ def alpha_diversity(args):
     """
 
     try:
-        json_data = open('./tmp/'+args.in_file)
-    except IOError:
-        json_data = open(args.in_file)
+        json_data = open(args.in_file, 'r')
     except:
         print "NO FILE FOUND ERROR"
         sys.exit()
@@ -85,6 +87,7 @@ def alpha_diversity(args):
         except:
             shannon = 'error'
         txt += ds+"\t"+str(osd[0])+"\t"+str(ace)+"\t"+str(chao1)+"\t"+str(shannon)+"\t"+str(simpson)+"\n"
+    
     print txt[:-1]  # remove the trailing LF
 
         #print 'michaelis_menten_fit',alpha.michaelis_menten_fit(row,2)
@@ -106,8 +109,6 @@ if __name__ == '__main__':
     #parser.add_argument('-meta','--metadata',  required=False, action="store",  dest='metadata',  help = 'json metadata') 
 
     args = parser.parse_args()
-    
-
     
     alpha_diversity(args)
     

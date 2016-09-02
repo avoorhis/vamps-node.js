@@ -538,3 +538,9 @@ i.icon-minus-sign {
 .dropdown_btn {
     color:black !important;
 }
+#projects_showing_div {
+    margin-right:10px;
+    padding:0 10px;
+    border:1px solid green;
+    
+}

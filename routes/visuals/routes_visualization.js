@@ -1345,7 +1345,7 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
-
+    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     
     var html = '';
     var title = 'VAMPS';
@@ -1359,26 +1359,27 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     };
 
    
-    var log = fs.openSync(path.join(process.env.PWD,'logs','visualization.log'), 'a');
+    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
     // script will remove data from mysql and datset taxfile
     console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
     var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
                 env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
                 detached: true, 
-                //stdio: [ 'ignore', null, log ]
+                //stdio:['pipe', 'pipe', log]
+                //stdio:  log 
                 stdio: 'pipe'  // stdin, stdout, stderr
             }); 
     
     stdout = '';
     alphadiv_process.stdout.on('data', function (data) {
-        
-        //console.log(data)
+        data = data.toString();
+        console.log(data)
         stdout += data;    
      
     });
     stderr = '';
     alphadiv_process.stderr.on('data', function (data) {
-        
+        data = data.toString();
         console.log(data)
         stderr += data;    
      
