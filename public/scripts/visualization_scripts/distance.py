@@ -193,10 +193,7 @@ def dendrogram_svg(args, dm):
     #print json.dumps(dm)
     mycluster = construct_cluster(args, dm)
     newick = mycluster.getNewick(with_distances=True) 
-    newick_file = os.path.join(args.outdir,args.prefix+'_newick.tre')
-    fp = open(newick_file,'w')
-    fp.write(newick)
-    fp.close()
+    
     return newick
 
 def cluster_datasets(args, dm):
@@ -205,24 +202,31 @@ def cluster_datasets(args, dm):
     new_did_order =[]
 
     mycluster = construct_cluster(args, dm)
+    
+
+    # newick = mycluster.getNewick(with_distances=True)
+    # print
+    # print newick
+    # print
     #t = Tree()
     #t.populate(15)
     
-    ascii = mycluster.asciiArt()
+    ascii_tree = mycluster.asciiArt()
     
     ascii_file = args.prefix+'_'+args.metric+'_tree.txt'
     ascii_file_path = os.path.join(args.outdir,ascii_file)
     fp = open(ascii_file_path,'w')
-    fp.write(ascii)
+    fp.write(ascii_tree)
     fp.close()
-    
-    for line in ascii.split():
+    nodenames =  mycluster.getNodeNames()
+    #print nodenames
+    for node in nodenames:
         #print line
-        if line == '|' or line[:5] == '\edge' or line[:5] == '/edge' or line[:5] == '-root':
+        if node == 'root' or node[:4] == 'edge':
             continue
-        ds = line[2:]
+        
         #did = did_hash[ds]
-        new_ds_order.append(ds)
+        new_ds_order.append(node)
     
     return new_ds_order
     
@@ -236,8 +240,17 @@ def write_csv_file(args):
 #
 def construct_cluster(args, dm):
         
-        from cogent.cluster.UPGMA import upgma
-        mycluster = upgma(dm)
+        
+        # neighbor joining:
+        from cogent.phylo import nj
+        #print 'here1'
+        mycluster = nj.nj(dm)
+        #print 'here2'
+        # UPGMA
+        #from cogent.cluster.UPGMA import upgma
+        #mycluster = upgma(dm)
+        
+        
         return mycluster
         
         
@@ -496,21 +509,17 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     
-
     ( dm1, dist, dm2, dm3, datasets ) = go_distance(args) 
     
     if args.function == 'cluster_datasets':
         #did_list = cluster_datasets(args, dm3, did_hash)
         new_ds_list = cluster_datasets(args, dm3)
         # IMPORTANT print the dataset list
-        print json.dumps(new_ds_list)
-        
 
+        print 'DS_LIST=',json.dumps(new_ds_list)
     if args.function == 'fheatmap':
         # IMPORTANT print for freq heatmap
         print dist.tolist()
-
-
     if args.function == 'dheatmap':
         # IMPORTANT print for dist heatmap
         print json.dumps(dm2)
@@ -518,13 +527,16 @@ if __name__ == '__main__':
     if args.function == 'dendrogram-svg':
         newick = dendrogram_svg(args, dm3)
 
+        newick_file = os.path.join(args.outdir,args.prefix+'_newick.tre')
+        fp = open(newick_file,'w')
+        fp.write(newick)
+        fp.close()
         # print newick
         # from ete2 import Tree
         # unrooted_tree = Tree( newick )
         # print unrooted_tree
         # IMPORTANT print for SVG
         print json.dumps(newick)
-
     if args.function == 'dendrogram-pdf':
         #print distances
         dendrogram_pdf(args, dm1, datasets)
@@ -546,5 +558,3 @@ if __name__ == '__main__':
         #print pcoa_data
 
         pass
-
-

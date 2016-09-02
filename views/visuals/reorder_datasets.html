@@ -76,14 +76,15 @@ Here are your <%= items.names.length %> selected datasets:<br>
 		  </tr>
           <tr>
 			<td class=''>
-				Select distance metric<br>to cluster by:<br>
+				--Neighbor Joining Tree (python cogent.phylo)<br>
+				--Select distance metric to cluster by:<br>
 
-                        <select id='selected_metric' name='selected_metric' class='small_font' onchange='cluster_order(this.value,"<%= ts %>")'>
-                        <option value='0'>Select</option>
-                        <% for(d in distrows ) { %>
-                          <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
-                        <% } %>
-                        </select>   
+              <select id='selected_metric' name='selected_metric' class='small_font' onchange='cluster_order(this.value,"<%= ts %>")'>
+              <option value='0'>Select</option>
+              <% for(d in distrows ) { %>
+                <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
+              <% } %>
+              </select>   
           			  	
 	  		 </td>
 		   </tr> 

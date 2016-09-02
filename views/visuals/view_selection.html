@@ -332,11 +332,15 @@
           <%                var rank_id = 'phyloseq_heatmap_rank'                                     %> 
           <%                var id1     = 'phyloseq_heatmap_md1'                                      %> 
           <%                var ordtype = 'phyloseq_heatmap_type'                                     %>
-                            <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
-                              <center>                        
-                                <% if(pi.tax_depth=='domain' || pi.tax_depth=='phylum'){ %>
+                                                  
+          <%                if(pi.tax_depth=='domain' || pi.tax_depth=='phylum'){ %>
+                                <td><center>  
                                     <%= name %><br><br><span>Required: Taxonomic depth<br>of 'Class' or deeper</span>
-                                <% }else{ %>
+                                  </center>              
+                                </td>  
+          <%                }else{ %>
+                                <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
+                                  <center>  
                                   <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
                                     <%= name %><br>              
                                      <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
@@ -379,9 +383,10 @@
                                       </td>
                                     </tr>
                                   </table>
-                                <% } %>
-                              </center>              
-                            </td>  
+                                  </center>              
+                                </td>  
+          <%                } %>
+                             
           <%            }else if(link_id == 'phyloseq03_link_id'){                                    %> 
                       
           <%                var id1 = 'phyloseq_network_md1'                                          %>

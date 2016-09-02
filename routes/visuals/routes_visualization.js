@@ -2400,18 +2400,29 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
       // //data = data.toString().replace(/^\s+|\s+$/g, '');
       // data = data.toString();
 
-       output += data.toString();
+       output = data.toString();
     });
        
     cluster_process.on('close', function (code) {
       console.log('ds cluster process exited with code ' + code);
+      var lines = output.split(/\n/)
       
+      for(i in lines){
+        
+        if(lines[i].substring(0,7) == 'DS_LIST'){
+          tmp = lines[i].split('=')
+          var ds_list = tmp[1]
+          continue
+        }
+      }
+      
+      console.log('dsl',ds_list)
       //var last_line = ary[ary.length - 1];
       if(code === 0){   // SUCCESS        
         try{
-            console.log(output);
-            dataset_list = JSON.parse(output);        
-            console.log(output);
+            
+            dataset_list = JSON.parse(ds_list);        
+            
             potential_chosen_id_name_hash  = COMMON.create_new_chosen_id_name_hash(dataset_list);  
             ascii_file = ts+'_'+metric+'_tree.txt';
             ascii_file_path = path.join(pwd,'tmp',ascii_file);
