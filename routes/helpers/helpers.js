@@ -738,23 +738,6 @@ MakeUpdateStatusQ = function(status_params)
   return statQuery2;
 };
 
-module.exports.MakeSelectUser_idByUserQ = function(username)
-{
-   return "SELECT user_id FROM user WHERE username = " + username;
-}
-
-module.exports.MakeSelectUser_idByUserInfoQ = function(first_name, last_name, email, institution)
-{
-  var SelectUser_idByUserInfoQ = 'SELECT user_id FROM user WHERE first_name = "' + first_name + '"'
-                               + ' AND last_name = "' + last_name  + '"'
-                               + ' AND email = "' + email  + '"'
-                               + ' AND institution = "' +institution +'"';
- // console.log('RRR --- SelectUser_idByUserInfoQ from helpers');
- // console.log(util.inspect(SelectUser_idByUserInfoQ, false, null));
-
-  return SelectUser_idByUserQ;
-}
-
 module.exports.MakeSelectProjectId = function(project)
 {
   return "SELECT project_id FROM project WHERE project = " + connection.escape(project);
@@ -795,12 +778,12 @@ MakeInsertStatusQ = function(status_params)
 {
   // "SELECT user_id, project_id, status, message, NOW() ";
   var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)"
-  + " SELECT "  + connection.escape(status_params.user_id)
-  + ", project_id"
-  + ", "  + connection.escape(status_params.status)
-  + ", "  + connection.escape(status_params.msg)
-  + ", NOW()"
-  + " FROM user_project_status RIGHT JOIN project using(project_id)"
-  + " WHERE project = " + connection.escape(status_params.project)
+                + " SELECT "  + connection.escape(status_params.user_id)
+                + ", project_id"
+                + ", "  + connection.escape(status_params.status)
+                + ", "  + connection.escape(status_params.msg)
+                + ", NOW()"
+                + " FROM user_project_status RIGHT JOIN project using(project_id)"
+                + " WHERE project = " + connection.escape(status_params.project)
   return statQuery1;
 };
