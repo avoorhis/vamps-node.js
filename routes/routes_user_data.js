@@ -2014,7 +2014,7 @@ function saveToDb(req, res){
           //
           // sql_a = mysql.format(insert_project_q, inserts);
           // sql_a = sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
-          var sql_a = helpers.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
+          var sql_a = queries.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
           console.log("AAA sql_a = " + sql_a);
           // connection.query('INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES (?, ?, ?, REVERSE(?), ?, ?, ?);',
           

@@ -2,6 +2,7 @@
 var express = require('express');
 var router = express.Router();
 var C = require('../public/constants');
+var mysql = require('mysql2');
 
 module.exports = {
 
@@ -304,6 +305,16 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
   //
   //
   
+  MakeInsertProjectQ: function(req_form, owner_user_id, new_privacy)
+  {
+    var project_columns = ['project', 'title', 'project_description', 'rev_project_name', 'funding', 'owner_user_id', 'public'];
+    var project_info = [req_form.new_project_name, req_form.new_project_title, req_form.new_project_description, "REVERSE(" + req_form.new_project_name + ")", req_form.new_funding, owner_user_id, new_privacy];
+    var inserts = [project_columns, project_info];
+    var insert_project_q = 'INSERT INTO project (??) VALUES (?);';
+  
+    var sql_a = mysql.format(insert_project_q, inserts);
+    return sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
+  },
 } // end of module.exports
 
 
