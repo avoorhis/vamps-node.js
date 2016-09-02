@@ -722,18 +722,19 @@ MakeUpdateStatusQ = function(status_params)
 {
   var statQuery2 = "UPDATE user_project_status"
       + " JOIN project USING(project_id)"
-      + " SET status = '" + status_params.status + "'"
-      + ", message = '"  + status_params.msg + "'"
+      + " SET status = " + connection.escape(status_params.status)
+      + ", message = "  + connection.escape(status_params.msg)
       + ", updated_at = NOW()"
-      + " WHERE user_id = '" + status_params.user_id + "'";
+      + " WHERE user_id = " + connection.escape(status_params.user_id);
   if ('pid' in status_params && 'project' in status_params) {
-      statQuery2 += "' AND project = '"  + status_params.project;
+      statQuery2 += " AND project = "  + connection.escape(status_params.project);
   }
   else if ('pid' in status_params) {
-      statQuery2 += "' and project_id = '" + status_params.pid + "'";
+      statQuery2 += " AND project_id = " + connection.escape(status_params.pid);
   }
   else {
   //ERROR
+    console.log("ERROR in statQuery2 for Update Status: project or project_id is needed. " + statQuery2);
   }
   return statQuery2;
 };
