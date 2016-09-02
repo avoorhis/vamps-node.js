@@ -720,12 +720,12 @@ MakeDeleteStatusQ = function(status_params) {
 
 MakeUpdateStatusQ = function(status_params)
 {
-  var statQuery2 = "UPDATE user_project_status";
-      statQuery2 += " JOIN project USING(project_id)";
-      statQuery2 += " SET status = '" + status_params.status + "'";
-      statQuery2 += ", message = '"  + status_params.msg + "'";
-      statQuery2 += ", updated_at = NOW()";
-      statQuery2 += " WHERE user_id = '" + status_params.user_id + "'";
+  var statQuery2 = "UPDATE user_project_status"
+      + " JOIN project USING(project_id)"
+      + " SET status = '" + status_params.status + "'"
+      + ", message = '"  + status_params.msg + "'"
+      + ", updated_at = NOW()"
+      + " WHERE user_id = '" + status_params.user_id + "'";
   if ('pid' in status_params && 'project' in status_params) {
       statQuery2 += "' AND project = '"  + status_params.project;
   }
