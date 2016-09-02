@@ -1501,7 +1501,7 @@ function ProjectNameExists(project, req, res)
   }
 }
 
-function FastaExists(req, res)
+function FastaProvided(req, res)
 {
   if (req.files[0].filename === undefined || req.files[0].size === 0) {
     req.flash('failMessage', 'A fasta file is required.');
@@ -1514,6 +1514,7 @@ function FastaExists(req, res)
   }
 }
 
+// ??? TODO: check?
 function ResFilePathExists(req, data_repository, res)
 {
   if (helpers.fileExists(data_repository)) {
@@ -1528,7 +1529,7 @@ function ResFilePathExists(req, data_repository, res)
     }
 }
 
-function MetadataFileExists(req, res)
+function MetadataFileProvided(req, res)
 {
   if (req.files[1].filename === undefined || req.files[1].size === 0) {
     req.flash('failMessage', 'A metadata csv file is required.');
@@ -1541,6 +1542,7 @@ function MetadataFileExists(req, res)
     }
 }
 
+// todo: change to callback
 function ProjectExistsInDB(project, req, res)
 {
   console.log("running ProjectExistsInDB");
@@ -1566,12 +1568,12 @@ function ProjectValidation(req, project, data_repository, res)
   project_exists_in_db = ProjectExistsInDB(project, req, res);
   console.log("project_exists_in_db = " + project_exists_in_db);
 
-  console.log("running FastaExists");
-  fasta_exists = FastaExists(req, res);
-  console.log("fasta_exists = " +fasta_exists);
+  console.log("running FastaProvided");
+  fasta_exists = FastaProvided(req, res);
+  console.log("fasta_exists = " + fasta_exists);
 
-  console.log("running MetadataFileExists");
-  metadata_file_exists = MetadataFileExists(req, res);
+  console.log("running MetadataFileProvided");
+  metadata_file_exists = MetadataFileProvided(req, res);
   console.log("metadata_file_exists = " + metadata_file_exists);
 }
 
