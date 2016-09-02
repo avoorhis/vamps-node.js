@@ -1,17 +1,13 @@
 <%  var colors = JSON.parse(constants).HEATMAP_COLORS %>
 <%  var id_order = JSON.parse(hash).ids %>
 <%  var name_order = JSON.parse(hash).names %>
-
 <center>
-	<small>
-      <span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span>
-    </small>
-</center>
+	<center>
+		<small>
+	      <span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span>
+	    </small>
+	</center>
 <br>
-
-
-
-
 <form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/view_selection'>
 <table border='1' id='drag_table' class='heatmap_table center_table' >
 	<tr class='nodrag nodrop' ><td></td>
@@ -19,41 +15,42 @@
 		  
 		  <div id='ds_save_order_div'>
 			  <button type='submit' id='ds_save_order_btn' class='btn btn-xs btn-default'>Save Order</button>
-              <span class='label blue'>Similar</span> <span class='label red'>Dissimilar</span>
+              <span class='label blue' bgcolor='blue'>Similar</span> <span class='label red' bgcolor='red'>Dissimilar</span>
 			  <imput type='hidden' id='' name='resorted' value='1' >
 		  </div>
 	   </td>
-		  <% for(i=1; i<=Object.keys(dm).length; i++) { %>		      
+		<% for(i=1; i<=Object.keys(dm).length; i++) { %>		      
 	          <td><div class='cell'></div></td>  
-		  <% } %>
-	 </tr>
-		 <% n=1 %>
+		<% } %>
+	</tr>
+		<% n=1 %>
 		<% for(var x in name_order) { %>
-			<% var x_dname = name_order[x] %>
+		<% 	var x_dname = name_order[x] %>
 	        <tr id='<%= x_dname %>'>
 	        <td  id='<%= x_dname %>' class='dragHandle ds_cell'><%= n.toString() %></td>
 	        <td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value="<%= id_order[x] %>" ><%= x_dname %></td>
-		    <%    for(var y in name_order) { %>
-		    <%        var y_dname = name_order[y] %>
-		    <%				var dist = dm[x_dname][y_dname].toFixed(5);  %>
-		    <%        if(x_dname === y_dname){ %>
-		        	    <td id='' class='heat_map_td' bgcolor='#000'></td>
-		    <%        }else{ %>
-		    <%      	var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dist; %>
-		    <%      	var svalue = Math.round( dm[x_dname][y_dname] * 15 ); %>
+		<%    for(var y in name_order) { %>
+		<%        var y_dname = name_order[y] %>
+		<%				var dist = dm[x_dname][y_dname].toFixed(5);  %>
+		<%        if(x_dname === y_dname){ %>
+		        	    	<td id='' class='heat_map_td' bgcolor='#000'></td>
+		<%        }else{ %>
+		<%      		var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dist; %>
+		<%      		var svalue = Math.round( dm[x_dname][y_dname] * 15 ); %>
 		     	
-	                    <td id='<%= id %>' class='heat_map_td tooltip_viz' bgcolor='#<%= colors[svalue] %>' 
+	                  <td id='<%= id %>' class='heat_map_td tooltip_viz' bgcolor='#<%= colors[svalue] %>' 
 	                    		onclick="window.open('bar_double?did1=<%= id_order[x] %>&did2=<%= id_order[y] %>&ts=<%= ts %>', '_blank')">
-
+													&nbsp;&nbsp;&nbsp;&nbsp;  <!-- needed for png image -->
 	                    		<!-- 	onclick="heatmap_click_fxn('<%= id_order[x] %>','<%= x_dname %>','<%= id_order[y] %>','<%= y_dname %>')"> -->
 
-	                    </td>
-		    <%        } %>		        
-		  <%      } %>
-		  <% n++ %>
+	                  </td>
+		<%        } %>		        
+		<%  	} %>
+		<%  	n++ %>
 	</tr>
 		 
-		  <%  } %>
+		<%  } %>
 </table>
 </form>
+</center>
 		    

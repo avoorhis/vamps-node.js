@@ -9,7 +9,7 @@ var constants = {};
 ///////////////////////////////////////////
 
 constants.blast_db      = 'ALL_SEQS';
-constants.download_file_formats = ['metadata','fasta','taxbytax','taxbyref','taxbyseq','biom','matrix','phyloseq','distance','emperor','pdf','tree'];
+constants.download_file_formats = ['metadata','fasta','taxbytax','taxbyref','taxbyseq','biom','matrix','phyloseq','distance','emperor','pdf','tree','heatmap'];
 constants.ENV_SOURCE = { 
         10: "air",
          20: "extreme habitat",

@@ -149,12 +149,14 @@
       		  	</form>
               
       		</td><td>
-      		    <form id='download_metadata_form_id' method='POST' action=''>
+      		    <button type="button" class="btn btn-xs btn-success" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">Create Metadata File</button>
+<!--
+              <form id='download_metadata_form_id' method='POST' action=''>
                     <button type='button' id='download_metadata_btn' class="btn btn-xs btn-success">Create Metadata File</button>
       		        <input type='hidden' name='download_type' value='partial_project' />
       			    <input type='hidden' name='referer' value='/visuals/view_selection' />
       		    </form>	
-              
+-->              
       		</td><td>
               
                   <form id='download_matrix_form_id'  method='POST' action=''>
@@ -535,13 +537,15 @@
 	  <span id='counts_table_title' class="navbar-brand table_title" >Frequency Table</span>  
 	</div>
 	<div class='button_div pull-right'>
-	  <button type='button' id='counts_table_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+	  <button type='button' id='counts_table_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='counts_table_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Downloads<span class="caret"></span></a>
+      <button disabled id='counts_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Downloads<span class="caret"></span>
+      </button>
         <ul class="dropdown-menu" role="menu">          
-          <li><button type="button" class="btn-link dropdown_btn" onclick="create_csv_table_file('frequency','<%= pi.ts %>')">as Table (csv)</button></li>
+          <li><button type="button" class="btn-link dropdown_btn" onclick="create_freq_table_file('matrix','<%= pi.ts %>')">as Table (csv)</button></li>
         </ul>
     </li>
   </div>
@@ -555,14 +559,17 @@
 	  <span id='metadata_title' class="navbar-brand table_title" >Metadata Table</span> 
 	</div>
   <div class='button_div pull-right'>
-    <button type='button' id='metadata_table_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='metadata_table_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='metadata_table_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Downloads<span class="caret"></span></a>
-        <ul class="dropdown-menu" role="menu">          
-          <li><button type="button" class="btn-link dropdown_btn" onclick="create_csv_table_file('metadata','<%= pi.ts %>')">as Table (csv)</button></li>
+      <button disabled id='metadata_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Downloads<span class="caret"></span>
+      </button>
+        <ul class="dropdown-menu" role="menu">  
+                
+          <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">as Table (csv)</button></li>
         </ul>
     </li>
   </div>
@@ -577,16 +584,19 @@
       <span id='dheatmap_title' class="navbar-brand table_title" >Distance Heatmap</span> 
     </div>
   <div class='button_div pull-right'>
-    <button type='button' id='dheatmap_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='dheatmap_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='dheatmap_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     
-    <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+    <button type="button"  class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Downloads<span class="caret"></span></a>
+      
+      <button disabled id='dheatmap_dnld_btn' class="btn btn-xs btn-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+        Downloads<span class="caret"></span>
+      </button>
         <ul class="dropdown-menu" role="menu">          
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-py','<%= pi.ts %>')">Distance File</button></li> 
           <li class="divider"></li>
-          <li><button type="button" class="btn-link dropdown_btn" onclick="create_pdf_file('dheatmap','<%= pi.ts %>')">Image as PDF</button></li>          
+          <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('dheatmap','<%= pi.ts %>')">Image as PDF</button></li>          
         </ul>
     </li>
   </div>
@@ -601,11 +611,13 @@
       <span id='fheatmap_title' class="navbar-brand table_title" >Frequency Heatmap</span> 
     </div> 
   <div class='button_div pull-right'>
-    <button type='button' id='fheatmap_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='fheatmap_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='fheatmap_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Downloads<span class="caret"></span></a>
+      <button disabled id='fheatmap_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Downloads<span class="caret"></span>
+      </button>
         <ul class="dropdown-menu" role="menu">          
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('pdf-fheatmap','<%= pi.ts %>')">PDF Image File</button></li> 
           <li class="divider"></li>
@@ -624,14 +636,16 @@
 	    <span id='barcharts_title' class="navbar-brand table_title" >Bar Charts</span> 
 	</div>
   <div class='button_div pull-right'>
-    <button type='button' id='barcharts_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='barcharts_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='barcharts_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Downloads<span class="caret"></span></a>
+      <button disabled id='barcharts_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Downloads<span class="caret"></span>
+      </button>
         <ul class="dropdown-menu" role="menu">          
           
-          <li><button type="button" class="btn-link dropdown_btn" onclick="create_pdf_file('barcharts','<%= pi.ts %>')">Image as PDF</button></li> 
+          <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('barcharts','<%= pi.ts %>')">Image as PDF</button></li> 
           
         </ul>
     </li>
@@ -647,14 +661,16 @@
 	  <span id='piecharts_title' class="navbar-brand table_title" >Pie Charts</span> 
 	</div> 
   <div class='button_div pull-right'>
-    <button type='button' id='piecharts_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='piecharts_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='piecharts_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Downloads<span class="caret"></span></a>
+      <button disabled id='piecharts_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Downloads<span class="caret"></span>
+      </button>
         <ul class="dropdown-menu" role="menu">          
           
-          <li><button type="button" class="btn-link dropdown_btn" onclick="create_pdf_file('piecharts','<%= pi.ts %>')">Image as PDF</button></li> 
+          <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('piecharts','<%= pi.ts %>')">Image as PDF</button></li> 
           
         </ul>
     </li>
@@ -669,11 +685,13 @@
 	  <span id='dendrogram1_title' class="navbar-brand table_title" >Dendrogram</span> 
 	</div> 
   <div class='button_div pull-right'>
-    <button type='button' id='dendrogram1_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='dendrogram1_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='dendrogram1_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Downloads<span class="caret"></span></a>
+      <button disabled id='dendrogram1_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Downloads<span class="caret"></span>
+      </button>
         <ul class="dropdown-menu" role="menu">          
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-py','<%= pi.ts %>')">Distance File</button></li>
           <li class="divider"></li>
@@ -692,11 +710,11 @@
 	  <span id='dendrogram2_title' class="navbar-brand table_title" >Dendrogram </span> 
 	</div>
   <div class='button_div pull-right'>
-    <button type='button' id='dendrogram2_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='dendrogram2_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='dendrogram2_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Downloads<span class="caret"></span></a>
+      <button class="btn btn-xs btn-link dropdown-toggle disabled"  data-toggle="dropdown" role="button" aria-expanded="false">Downloads<span class="caret"></span></button>
         <ul class="dropdown-menu" role="menu">          
           <li><button type="button" class="btn-link dropdown_btn" onclick="create_distance_file('Python','<%= pi.ts %>')">Distance File</button></li>
           <li class="divider"></li>
@@ -714,11 +732,13 @@
     <span id='dendrogram3_title' class="navbar-brand table_title" >Dendrogram</span> 
   </div>
   <div class='button_div pull-right'>
-    <button type='button' id='dendrogram3_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='dendrogram3_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='dendrogram3_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Downloads<span class="caret"></span></a>
+      <button disabled id='dendrogram3_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Downloads<span class="caret"></span>
+      </button>
         <ul class="dropdown-menu" role="menu">          
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-py','<%= pi.ts %>')">Distance File</button></li>
           <li class="divider"></li>
@@ -731,17 +751,20 @@
   <center><div id='dendrogram3_div'        class='display_none well '></div></center>
 
   <!-- Dendrogram pdf-->
+  <!--
   <br>
   <nav id='pre_dendrogram_pdf_div' class="navbar navbar-inverse viz_hidden_div display_none">
 	<div class="navbar-header">	      
 	  <span id='dendrogram_pdf_title' class="navbar-brand table_title" >Dendrogram</span> 
 	</div>
   <div class='button_div pull-right'>
-    <button type='button' id='dendrogram_pdf_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='dendrogram_pdf_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='dendrogram_pdf_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Downloads<span class="caret"></span></a>
+      <button disabled id='dendrogram_pdf_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Downloads<span class="caret"></span>
+      </button>
         <ul class="dropdown-menu" role="menu">          
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-py','<%= pi.ts %>')">Distance File</button></li>
           <li class="divider"></li>
@@ -751,7 +774,7 @@
   </div>
   </nav>
   <center><div id='dendrogram_pdf_div'        class='display_none well'></div></center>
-
+-->
   <!-- PCoA 2D Python [R-R-R]-->
   <br>
   <nav id='pre_pcoa_div' class="navbar navbar-inverse viz_hidden_div display_none">
@@ -759,11 +782,13 @@
 		  <span id='pcoa_title' class="navbar-brand table_title" >PCoA 2D</span> 
 	</div>
   <div class='button_div pull-right'>
-    <button type='button' id='pcoa_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='pcoa_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='pcoa_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Downloads<span class="caret"></span></a>
+      <button disabled id='pcoa_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Downloads<span class="caret"></span>
+      </button>
         <ul class="dropdown-menu" role="menu"> 
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('pdf-pcoa','<%= pi.ts %>')">PDF Image File</button></li> 
           <li class="divider"></li>        
@@ -783,10 +808,12 @@
 		  <span id='pcoa_3d_title' class="navbar-brand table_title" >PCoA 3D</span> 
 	</div>
   <div class='button_div pull-right'>
-    <button type='button' id='pcoa_3d_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='pcoa_3d_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Downloads<span class="caret"></span></a>
+      <button disabled id='pcoa_3d_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Downloads<span class="caret"></span>
+      </button>
         <ul class="dropdown-menu" role="menu">          
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-py','<%= pi.ts %>')">Distance File</button></li>
           <li class="divider"></li>
@@ -804,7 +831,7 @@
 		  <span id='geospatial_title' class="navbar-brand table_title" >GeoSpatial</span> 
 	</div>
   <div class='button_div pull-right'>
-    <button type='button' id='geospatial_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='geospatial_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='geospatial_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
@@ -820,7 +847,6 @@
 	</div>
 	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
 	<button type='button' id='dbrowser_hide_btn' class='close_open_btn btn pull-right btn-info' value='hide'>hide</button>
-	<button type='button' disabled='disabled' id='dbrowser_download_btn' class='visualization_download_btn btn pull-right btn-info'>download</button>
  </nav>
  <div id='dbrowser_div'      class='display_none well'></div>
 -->
@@ -831,11 +857,13 @@
       <span id='adiversity_title' class="navbar-brand table_title" >Alpha Diversity</span> 
   </div>
  <div class='button_div pull-right'>
-    <button type='button' id='adiversity_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='adiversity_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='adiversity_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Downloads<span class="caret"></span></a>
+      <button disabled id='adiversity_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Downloads<span class="caret"></span>
+      </button>
         <ul class="dropdown-menu" role="menu">          
           
           
@@ -854,17 +882,20 @@
   </div>
  <div class='button_div pull-right'>
     
-    <button type='button' id='phyloseq01_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='phyloseq01_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='phyloseq01_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Download Phyloseq Files<span class="caret"></span></a>
+     
+    <button disabled id='phyloseq01_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+      Download Phyloseq Files<span class="caret"></span>
+    </button>
         <ul class="dropdown-menu" role="menu">          
           <li><button type="button"  class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-biom','<%= pi.ts %>')">Biom Matrix File</button></li>
           <li class="divider"></li>
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>    
           <li class="divider"></li>        
-          <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-meta','<%= pi.ts %>')">Metadata File</button></li> 
+          <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">Metadata File</button></li> 
         </ul>
     </li>
  </div>
@@ -878,17 +909,19 @@
       <span id='phyloseq02_title' class="navbar-brand table_title" >Phyloseq-02</span> 
   </div>
  <div class='button_div pull-right'>
-    <button type='button' id='phyloseq02_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='phyloseq02_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='phyloseq02_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Download Phyloseq Files<span class="caret"></span></a>
+      <button disabled id='phyloseq02_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Download Phyloseq Files<span class="caret"></span>
+      </button>
         <ul class="dropdown-menu" role="menu">          
           <li><button type="button"  class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-biom','<%= pi.ts %>')">Biom Matrix File</button></li>
           <li class="divider"></li>
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>    
           <li class="divider"></li>        
-          <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-meta','<%= pi.ts %>')">Metadata File</button></li> 
+          <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">Metadata File</button></li> 
           <li class="divider"></li> 
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-R','<%= pi.ts %>')">Distance File</button></li>
         </ul>
@@ -904,17 +937,19 @@
       <span id='phyloseq03_title' class="navbar-brand table_title" >Phyloseq-03</span> 
   </div>
  <div class='button_div pull-right'>
-    <button type='button' id='phyloseq03_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='phyloseq03_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='phyloseq03_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Download Phyloseq Files<span class="caret"></span></a>
+      <button disabled id='phyloseq03_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Download Phyloseq Files<span class="caret"></span>
+      </button>
         <ul class="dropdown-menu" role="menu">          
           <li><button type="button"  class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-biom','<%= pi.ts %>')">Biom Matrix File</button></li>
           <li class="divider"></li>
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>    
           <li class="divider"></li>        
-          <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-meta','<%= pi.ts %>')">Metadata File</button></li>
+          <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">Metadata File</button></li>
           <li class="divider"></li> 
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-R','<%= pi.ts %>')">Distance File</button></li>
         </ul>
@@ -932,17 +967,19 @@
   <div class='button_div pull-right'>
     
     
-    <button type='button' id='phyloseq04_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='phyloseq04_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='phyloseq04_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Download Phyloseq Files<span class="caret"></span></a>
+      <button disabled id='phyloseq04_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Download Phyloseq Files<span class="caret"></span>
+      </button>
         <ul class="dropdown-menu" role="menu">          
           <li><button type="button"  class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-biom','<%= pi.ts %>')">Biom Matrix File</button></li>
           <li class="divider"></li>
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>    
           <li class="divider"></li>        
-          <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-meta','<%= pi.ts %>')">Metadata File</button></li>
+          <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">Metadata File</button></li>
           <li class="divider"></li> 
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-R','<%= pi.ts %>')">Distance File</button></li>
         </ul>
@@ -959,12 +996,14 @@
   </div>
   <div class='button_div pull-right'>
 
-    <button type='button' id='phyloseq05_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='phyloseq05_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='phyloseq05_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
     
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" style='color:white'>Download Phyloseq Files<span class="caret"></span></a>
+      <button disabled id='phyloseq05_dnld_btn' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+        Download Phyloseq Files<span class="caret"></span>
+      </button>
               
         <ul class="dropdown-menu" role="menu">          
                
@@ -972,7 +1011,7 @@
           <li class="divider"></li>
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>    
           <li class="divider"></li>        
-          <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-meta','<%= pi.ts %>')">Metadata File</button></li> 
+          <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">Metadata File</button></li> 
           <li class="divider"></li>          
           <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tree','<%= pi.ts %>')">Tree File</button></li>
           <li class="divider"></li> 
@@ -992,9 +1031,8 @@
       <span id='cytoscape_title' class="navbar-brand table_title" >Cytoscape</span> 
   </div>
   <div class='button_div pull-right'>
-    <button type='button' id='cytoscape_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Visual</button>
+    <button type='button' id='cytoscape_hide_btn' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
     <button type='button' id='cytoscape_open_btn' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
-    <button type='button' disabled='disabled' id='cytoscape_download_btn' class='visualization_download_btn btn btn-xs btn-info'>Download(disabled)</button>
     <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
  </nav>

@@ -219,13 +219,10 @@ if (download_matrix_btn !== null) {
 }
 
 
-function create_pdf_file(script, ts) {
-    // for 'on-the-fly' images: dheatmap, barcharts and piecharts 
-    alert('Not ready yet1')
-}
-function create_csv_table_file(script, ts) {
-    // for view_selection tables: frequency and metadata
-    download_data('csv', script, ts);
+
+function create_freq_table_file(script, ts) {
+    // for view_selection tables: frequency 
+    download_data(script, 'partial_project', ts);
 }
 function transfer_file_for_download(script, ts) {
     download_data(script, '', ts);
@@ -724,43 +721,43 @@ if (typeof dendrogram3_open_btn !== "undefined") {
 //
 // DENDROGRAM PDF
 //
-var dendrogram_pdf_link = document.getElementById('dendrogram_pdf_link_id') || null;
-var dendrogram_pdf_btn = document.getElementById('dendrogram_pdf_hide_btn');
-var dendrogram_pdf_div = document.getElementById('dendrogram_pdf_div');
-//var dendrogram_pdf_download_btn = document.getElementById('dendrogram_pdf_download_btn');
-var pre_dendrogram_pdf_div = document.getElementById('pre_dendrogram_pdf_div');
-if (dendrogram_pdf_link !== null) {
-  dendrogram_pdf_link.addEventListener('click', function () {
+// var dendrogram_pdf_link = document.getElementById('dendrogram_pdf_link_id') || null;
+// var dendrogram_pdf_btn = document.getElementById('dendrogram_pdf_hide_btn');
+// var dendrogram_pdf_div = document.getElementById('dendrogram_pdf_div');
+// //var dendrogram_pdf_download_btn = document.getElementById('dendrogram_pdf_download_btn');
+// var pre_dendrogram_pdf_div = document.getElementById('pre_dendrogram_pdf_div');
+// if (dendrogram_pdf_link !== null) {
+//   dendrogram_pdf_link.addEventListener('click', function () {
       
-    if(typeof dendrogram_pdf_created == "undefined"){
-        create_viz('dendrogram_pdf', pi_local.ts, false);
-    //dendrogram_pdf_download_btn.disabled = false;
-      }else{
-        if(dendrogram_pdf_btn.value == 'hide'){        
-          //toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
-        }else{
-          toggle_visual_element(dendrogram_pdf_div,'hide',dendrogram_pdf_btn);
-        }
-      }
-      $(pre_dendrogram_pdf_div).scrollView();
-  });
-}
-if (typeof dendrogram_pdf_btn !== "undefined") {
-  dendrogram_pdf_btn.addEventListener('click', function () {
-      //alert('here in tt')
-      if(dendrogram_pdf_btn.value == 'hide'){        
-        toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
-      }else{
-        toggle_visual_element(dendrogram_png_div,'hide',dendrogram_pdf_btn);
-      }      
-  });
-}
-var dendrogram_pdf_open_btn = document.getElementById('dendrogram_pdf_open_btn');
-if (typeof dendrogram_pdf_open_btn !== "undefined") {
-  dendrogram_pdf_open_btn.addEventListener('click', function () {
-      create_viz('dendrogram_pdf', pi_local.ts, true);      
-  });
-}
+//     if(typeof dendrogram_pdf_created == "undefined"){
+//         create_viz('dendrogram_pdf', pi_local.ts, false);
+//     //dendrogram_pdf_download_btn.disabled = false;
+//       }else{
+//         if(dendrogram_pdf_btn.value == 'hide'){        
+//           //toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
+//         }else{
+//           toggle_visual_element(dendrogram_pdf_div,'hide',dendrogram_pdf_btn);
+//         }
+//       }
+//       $(pre_dendrogram_pdf_div).scrollView();
+//   });
+// }
+// if (typeof dendrogram_pdf_btn !== "undefined") {
+//   dendrogram_pdf_btn.addEventListener('click', function () {
+//       //alert('here in tt')
+//       if(dendrogram_pdf_btn.value == 'hide'){        
+//         toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
+//       }else{
+//         toggle_visual_element(dendrogram_png_div,'hide',dendrogram_pdf_btn);
+//       }      
+//   });
+// }
+// var dendrogram_pdf_open_btn = document.getElementById('dendrogram_pdf_open_btn');
+// if (typeof dendrogram_pdf_open_btn !== "undefined") {
+//   dendrogram_pdf_open_btn.addEventListener('click', function () {
+//       create_viz('dendrogram_pdf', pi_local.ts, true);      
+//   });
+// }
 //
 // PCOA  2D
 //
@@ -1189,11 +1186,11 @@ function toggle_visual_element(table_div, tog, btn){
   if(tog == 'show') {
     table_div.style.display = 'none';
     btn.value = 'show';
-    btn.innerHTML = 'Show';
+    btn.innerHTML = 'Show Panel';
   }else{
     table_div.style.display = 'block';
     btn.value = 'hide';
-    btn.innerHTML = 'Hide';
+    btn.innerHTML = 'Hide Panel';
   }
 }
 
@@ -1433,6 +1430,7 @@ function create_counts_table(new_window) {
 
       //document.getElementById('counts_tooltip_div').innerHTML = tooltip_tbl;
       tax_counts_div.innerHTML = html; 
+      document.getElementById('counts_dnld_btn').disabled = false
       //$(".verticalTableHeader").each(function(){$(this).height($(this).width())  
       
 }
@@ -1580,6 +1578,7 @@ function create_metadata_table(new_window) {
 
       //alert(md_local[0].env_matter)
     metadata_div.innerHTML = html;
+    document.getElementById('metadata_dnld_btn').disabled = false
 }
 
 //
@@ -1671,11 +1670,12 @@ function create_dendrogram(ts, image_type, script, new_window) {
           if(image_type == 'pdf'){
               html = "<div id='' >"+htmlstring+"</div>";
               dend_div.innerHTML = html;
+              document.getElementById('dendrogram2_dnld_btn').disabled = false
           }else{
-
-
-              //var newick = Newick.parse("(((Crotalus_oreganus_oreganus_cytochrome_b:0.00800,Crotalus_horridus_cytochrome_b:0.05866):0.04732,(Thamnophis_elegans_terrestris_cytochrome_b:0.//00366,Thamnophis_atratus_cytochrome_b:0.00172):0.06255):0.00555,(Pituophis_catenifer_vertebralis_cytochrome_b:0.00552,Lampropeltis_getula_cytochrome_b:0.02035):0.05762,((//Diadophis_punctatus_cytochrome_b:0.06486,Contia_tenuis_cytochrome_b:0.05342):0.01037,Hypsiglena_torquata_cytochrome_b:0.05346):0.00779);")
+              //htmlstring ="('ICM_LCY_Bv6--LCY_0007_2003_05_04':0.090874090613,('ICM_LCY_Bv6--LCY_0001_2003_05_11':0.00863121477239,('ICM_LCY_Bv6--LCY_0005_2003_05_16':0.00382350678165,'ICM_LCY_Bv6--LCY_0003_2003_05_04':0.00382350678165)))"
               var newick = Newick.parse(htmlstring);
+             
+              alert(JSON.stringify(newick, null, 4))
               //var newick = JSON.parse(newick);
               var newickNodes = []
               function buildNewickNodes(node, callback) {
@@ -1687,17 +1687,19 @@ function create_dendrogram(ts, image_type, script, new_window) {
                 }
               }
               buildNewickNodes(newick)
-              var w = 800;
+              var w = 1100;
               var h = 900;
               if(ds_local.ids.length > 50){
                 h = 1200;
               }
               if(script == 'phylogram'){
                   document.getElementById('dendrogram1_div').innerHTML = '';
+                  document.getElementById('dendrogram1_dnld_btn').disabled = false
                   d3.phylogram.build('#dendrogram1_div', newick, {
                     width: w,
                     height: h
                   });
+                  
               // }else if(script == 'phylonator'){
               //     document.getElementById('dendrogram2_div').innerHTML = '';
               //     d3.phylonator.build('#dendrogram2_div', newick, {
@@ -1706,11 +1708,15 @@ function create_dendrogram(ts, image_type, script, new_window) {
               //       skipBranchLengthScaling: true
               //     });
               }else if(script == 'radial') {
+                  
                   document.getElementById('dendrogram3_div').innerHTML = '';
+                  document.getElementById('dendrogram3_dnld_btn').disabled = false
                   d3.phylogram.buildRadial('#dendrogram3_div', newick, {
                     width: w,
                     height: h
                   });
+                  
+                  
               }
 
           } // end else
@@ -1794,8 +1800,12 @@ function create_pcoa(ts,image_type, new_window) {
         if (xmlhttp.readyState == 4 ) {
             clearInterval(myWaitVar);
             var response = xmlhttp.responseText;            
-            pcoa_div.innerHTML = response;      
-           
+            pcoa_div.innerHTML = response; 
+            if(image_type === '2d'){
+              document.getElementById('pcoa_dnld_btn').disabled = false
+            }else{
+              document.getElementById('pcoa_3d_dnld_btn').disabled = false     
+            }
         }
       };
       xmlhttp.send(args);
@@ -1837,18 +1847,49 @@ function create_dbrowser(ts) {
 //
 //  CREATE DIST HEATMAP
 //
-
+function recreate_image_from_html(image, ts) {
+  var htmlstring
+  //var str = htmlstring.replace(/\r?\n|\r/g,'')
+  //alert(encodeURIComponent(str))
+  //var args = 'html='+encodeURIComponent(htmlstring)
+  var args = ''
+  args += 'ts='+ts
+  args += '&image='+image
+  if(image == 'barcharts'){
+    htmlstring = document.getElementById('barcharts_div').innerHTML;
+    args += '&html='+encodeURIComponent(htmlstring)
+  }else if(image == 'piecharts'){
+    htmlstring = document.getElementById('piecharts_div').innerHTML;
+    args += '&html='+encodeURIComponent(htmlstring)
+  }else{
+    htmlstring = document.getElementById('dheatmap_div').innerHTML;
+  }
+  //alert(args)
+  var xmlhttp = new XMLHttpRequest(); 
+  xmlhttp.open("POST", '/user_data/copy_html_to_image', true);
+  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xmlhttp.onreadystatechange = function() {        
+        if (xmlhttp.readyState == 4 ) {
+            html = 'Your file will be available from the "Your Data" page on the main menu (File Retrieval button)'
+            alert(html)            
+        }
+      };
+  xmlhttp.send(args);      
+}
+//
+//
+//
 function create_dheatmap(ts, new_window) {
       //alert('im HM')
       if(new_window){
         var htmlstring = document.getElementById('dheatmap_div').innerHTML;
         function openindex()
             {
-                  rando = Math.floor(Math.random() * 20);
-                  OpenWindow=window.open("", "heatmap"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
-                  OpenWindow.document.write(new_window_skeleton(htmlstring))
-                  OpenWindow.document.close()
-                  self.name="main"
+              rando = Math.floor(Math.random() * 20);
+              OpenWindow=window.open("", "heatmap"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+              OpenWindow.document.write(new_window_skeleton(htmlstring))
+              OpenWindow.document.close()
+              self.name="main"
             }
 
         openindex()
@@ -1857,7 +1898,6 @@ function create_dheatmap(ts, new_window) {
       }
       dheatmap_created = true;
       var dhm_div = document.getElementById('dheatmap_div');
-      
       dhm_div.innerHTML = '';
       dhm_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
@@ -1880,8 +1920,10 @@ function create_dheatmap(ts, new_window) {
             clearInterval(myWaitVar);
             var htmlstring = xmlhttp.responseText;           
             
-          
             dhm_div.innerHTML = htmlstring;
+            document.getElementById('dheatmap_dnld_btn').disabled = false
+            
+
         }
       };
       xmlhttp.send(args);      
@@ -1898,11 +1940,11 @@ function create_fheatmap(ts, new_window) {
         
           function openindex()
             {
-                  rando = Math.floor(Math.random() * 20);
-                  OpenWindow=window.open("", "fheatmap"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
-                  OpenWindow.document.write(new_window_skeleton(htmlstring))
-                  OpenWindow.document.close()
-                  self.name="main"
+              rando = Math.floor(Math.random() * 20);
+              OpenWindow=window.open("", "fheatmap"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+              OpenWindow.document.write(new_window_skeleton(htmlstring))
+              OpenWindow.document.close()
+              self.name="main"
             }
 
           openindex()
@@ -1935,6 +1977,7 @@ function create_fheatmap(ts, new_window) {
             clearInterval(myWaitVar);
             var htmlstring = xmlhttp.responseText;           
             fhm_div.innerHTML = htmlstring;
+            document.getElementById('fheatmap_dnld_btn').disabled = false
         }
       };
       xmlhttp.send(args);   
@@ -1952,11 +1995,11 @@ function create_geospatial(new_window) {
         
           function openindex()
             {
-                  rando = Math.floor(Math.random() * 20);
-                  OpenWindow=window.open("", "geospatial"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
-                  OpenWindow.document.write(new_window_skeleton(htmlstring))
-                  OpenWindow.document.close()
-                  self.name="main"
+              rando = Math.floor(Math.random() * 20);
+              OpenWindow=window.open("", "geospatial"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+              OpenWindow.document.write(new_window_skeleton(htmlstring))
+              OpenWindow.document.close()
+              self.name="main"
             }
 
           openindex()
@@ -2087,11 +2130,11 @@ function create_piecharts(ts, new_window) {
         
           function openindex()
             {
-                  rando = Math.floor(Math.random() * 20);
-                  OpenWindow=window.open("", "piecharts"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
-                  OpenWindow.document.write(new_window_skeleton(htmlstring))
-                  OpenWindow.document.close()
-                  self.name="main"
+              rando = Math.floor(Math.random() * 20);
+              OpenWindow=window.open("", "piecharts"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+              OpenWindow.document.write(new_window_skeleton(htmlstring))
+              OpenWindow.document.close()
+              self.name="main"
             }
 
           openindex()
@@ -2201,7 +2244,7 @@ function create_piecharts(ts, new_window) {
         .style("fill", function(d, i) {
             return string_to_color_code(unit_list[i]);;
         });
-
+  document.getElementById('piecharts_dnld_btn').disabled = false
 
    
 }
@@ -2259,38 +2302,33 @@ function heatmap_click_fxn(did1,ds1,did2,ds2){
 //  CREATE BARCHARTS
 //
 function create_barcharts_group(ts, new_window) {
-// 
-//         
+      
     if(new_window){
-        
           var htmlstring = document.getElementById('barcharts_div').innerHTML;
-        
           function openindex()
             {
-                  rando = Math.floor(Math.random() * 20);
-                  OpenWindow=window.open("", "barcharts"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
-                  OpenWindow.document.write(new_window_skeleton(htmlstring))
-                  OpenWindow.document.close()
-                  self.name="main"
+              rando = Math.floor(Math.random() * 20);
+              OpenWindow=window.open("", "barcharts"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+              OpenWindow.document.write(new_window_skeleton(htmlstring))
+              OpenWindow.document.close()
+              self.name="main"
             }
-
           openindex()
           return
-       
-
     }
-     barcharts_created = true;
-     var info_line = create_header('bars', pi_local);
-     document.getElementById('barcharts_title').innerHTML = info_line;
-     document.getElementById('barcharts_title').style.color = 'white';
-     document.getElementById('barcharts_title').style['font-size'] = 'small';
-     document.getElementById('barcharts_div').innerHTML = '';
+    barcharts_created = true;
+    var info_line = create_header('bars', pi_local);
+    document.getElementById('barcharts_title').innerHTML = info_line;
+    document.getElementById('barcharts_title').style.color = 'white';
+    document.getElementById('barcharts_title').style['font-size'] = 'small';
+    document.getElementById('barcharts_div').innerHTML = '';
 //    barcharts_div.style.display = 'block';
          
-         document.getElementById('pre_barcharts_table_div').style.display = 'block';
+    document.getElementById('pre_barcharts_table_div').style.display = 'block';
      
          // this fxn is in common_selection.js
-         create_barcharts('group', ts);
+    create_barcharts('group', ts);
+    document.getElementById('barcharts_dnld_btn').disabled = false
 
 }
 //
@@ -2304,11 +2342,11 @@ function create_adiversity(ts, new_window){
         
           function openindex()
             {
-                  rando = Math.floor(Math.random() * 20);
-                  OpenWindow=window.open("", "adiversity"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
-                  OpenWindow.document.write(new_window_skeleton(htmlstring))
-                  OpenWindow.document.close()
-                  self.name="main"
+              rando = Math.floor(Math.random() * 20);
+              OpenWindow=window.open("", "adiversity"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+              OpenWindow.document.write(new_window_skeleton(htmlstring))
+              OpenWindow.document.close()
+              self.name="main"
             }
 
           openindex()
@@ -2371,6 +2409,7 @@ function create_adiversity(ts, new_window){
            html += '</table>';
 
            adiversity_div.innerHTML = html;
+           document.getElementById('adiversity_dnld_btn').disabled = false
         }
       };
       xmlhttp.send(args);      
@@ -2511,6 +2550,17 @@ function create_phyloseq(ts,code, new_window) {
            clearInterval(myWaitVar);
            var response = xmlhttp.responseText;          
            phylo_div.innerHTML = response;
+           if(code == 'bar'){
+              document.getElementById('phyloseq01_dnld_btn').disabled = false
+            }else if(code == 'heatmap'){
+              document.getElementById('phyloseq02_dnld_btn').disabled = false
+            }else if(code == 'network'){
+              document.getElementById('phyloseq03_dnld_btn').disabled = false
+            }else if(code == 'ord'){
+              document.getElementById('phyloseq04_dnld_btn').disabled = false
+            }else if(code == 'tree'){
+              document.getElementById('phyloseq05_dnld_btn').disabled = false
+            }
         }
       };
       xmlhttp.send(args);   
@@ -2592,11 +2642,12 @@ function download_data(type, download_type, ts) {
     var args = 'ts='+ts;
     var xmlhttp = new XMLHttpRequest(); 
     
-    if(type == 'metadata'){
-      target = '/user_data/download_file'  
-      args += '&file_type='+type;  
-      args += "&download_type="+download_type; 
-    } else if(type == 'fasta'){
+    // if(type == 'metadata'){
+    //   target = '/user_data/download_file'  
+    //   args += '&file_type='+type;  
+    //   args += "&download_type="+download_type; 
+    // } else 
+    if(type == 'fasta'){
       target = '/user_data/download_file'
       args += '&file_type='+type;
       args += "&download_type="+download_type;
@@ -2604,10 +2655,14 @@ function download_data(type, download_type, ts) {
       target = '/user_data/download_file'
       args += '&file_type='+type;
       args += "&download_type="+download_type;
-    } else if(type == 'csv'){    
+    
+     // else if(type == 'csv'){    
+     //  target = '/user_data/download_file'
+     //  args += '&file_type='+type;
+     //  args += "&download_type="+download_type;
+    } else if(type == 'frequency'){    
       target = '/user_data/download_file'
       args += '&file_type='+type;
-      args += "&download_type="+download_type;
     }
     else{
       target = '/user_data/copy_file_for_download'

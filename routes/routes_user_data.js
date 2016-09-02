@@ -19,6 +19,7 @@ var util = require('util');
 var escape = require('escape-html');
 var form = require("express-form");
 
+var pdf = require('html-pdf');
 //var progress = require('progress-stream');
 var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
 
@@ -2657,6 +2658,91 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function (req, res)
 //
 //
 //
+router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
+    
+    req.on('readable', function(){
+      console.log(req.read());
+    });
+
+    console.log('in copy_html_to_image');
+    return
+    var ts = req.body.ts;
+    var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+    var html, outfile
+    if(req.body.image == 'barcharts'){
+      html = req.body.html
+      outfile = path.join( user_dir, 'barcharts-image-'+ts+'.png' );
+    }else if(req.body.image == 'piecharts'){
+      html = req.body.html
+      outfile = path.join( user_dir, 'piecharts-image-'+ts+'.png' );
+    }else if(req.body.image == 'dheatmap'){
+        outfile = path.join( user_dir, 'heatmap-image-'+ts+'.pdf' );
+        
+        html = "<center><table border='1'>  <tr><td></td><td>dataset <span class='blue'>Similar</span>&nbsp;<span class='red'>Dissimilar</span></td>"
+        for(i=1; i<=Object.keys(distance_matrix).length; i++) {         
+                html += "<td></td>"  
+        }
+        html += "</tr>"
+        var n = 1
+        console.log(distance_matrix)
+        id_order = chosen_id_name_hash.ids
+
+        name_order = chosen_id_name_hash.names
+        var w = id_order.length
+        console.log(w)
+        for(var x in name_order) { 
+            var x_dname = name_order[x] 
+            html += "<tr id='"+x_dname+"'>"
+            html += "<td  id='"+x_dname+"' class='dragHandle ds_cell'>"+n.toString()+"</td>"
+            html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+id_order[x]+"' >"+ x_dname +"</td>"
+            for(var y in name_order) {
+                var y_dname = name_order[y]
+                var dist = distance_matrix[x_dname][y_dname].toFixed(5);
+                if(x_dname === y_dname){
+                        html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
+                }else{
+                  var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dist;
+                  var svalue = Math.round( distance_matrix[x_dname][y_dname] * 15 );
+                  html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+req.CONSTS.HEATMAP_COLORS[svalue]+"'>"                   
+                  html += "&nbsp;&nbsp;&nbsp;"
+                  html += "</td>"
+                }          
+            }
+            html += "</tr>"
+            n++
+        }
+        html += "</table></center>"
+    
+        console.log(html)
+            
+        var options = { format: 'Letter' };
+        pdf.create(html, {}).toFile(outfile, function(err, res2) {
+          if (err) return console.log(err);
+          console.log(res2); // { filename: '/app/businesscard.pdf' } 
+          res.send('OK');
+        });
+    }
+    console.log(html)
+    var webshot = require('webshot');
+    var options = {
+      siteType: 'html',
+      //screenSize: { width: w*20, height: w*14 },   // size of window
+
+      customCSS: 'table {background:#F5F5DC;border-collapse: collapse;} .red {color:white;background:red;} .blue {color:white;background:blue;} td {padding:0 5px;}'
+    }
+    webshot(html, outfile, options, function(err) {
+      // screenshot now saved to <>.png
+      if(err){console.log(err)}
+      else {
+        res.send('OK');
+      }
+    });
+
+
+});
+//
+//
+//
 router.post('/download_file', helpers.isLoggedIn, function (req, res) {
     console.log('in download_file');
     // file_type - fasta, metadata, or matrix
@@ -2664,12 +2750,16 @@ router.post('/download_file', helpers.isLoggedIn, function (req, res) {
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     var timestamp = +new Date();  // millisecs since the epoch!
     var file_tag = ['-'+req.body.file_type+'_file'];
-
-    create_export_files(req, user_dir, timestamp, chosen_id_name_hash.ids, file_tag, visual_post_items.normalization, visual_post_items.tax_depth, visual_post_items.domains);
+    //if(req.body.file_type == 'frequency'){
+      //create_frequency_table_file(req, user_dir, timestamp)
+      // copy file to user directory?
+    //}else{
+      create_export_files(req, user_dir, timestamp, chosen_id_name_hash.ids, file_tag, visual_post_items.normalization, visual_post_items.tax_depth, visual_post_items.domains);
+    //}
     res.send(req.body.file_type);
 });
 //
-// DOWNLOAD PHYLOSEQ FILES
+// COPY FILES from tmp directory to user directory
 //
 router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
     console.log('phyloseq req.body-->>');
@@ -2679,41 +2769,35 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
     file_type = req.body.file_type;
     var timestamp = +new Date();
     var old_file_name
-    var new_file_name = file_type+'_'+timestamp+'.txt';
+    var new_file_name = file_type+'-'+timestamp+'.txt';
     if (file_type == 'phyloseq-biom') {
       old_file_name = old_ts+'_count_matrix.biom';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
-      new_file_name = file_type+'_'+timestamp+'.biom';
+      new_file_name = file_type+'-'+timestamp+'.biom';
     } else if (file_type == 'phyloseq-tax') {
       old_file_name = old_ts+'_taxonomy.txt';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
-    } else if (file_type == 'phyloseq-meta') {
-      old_file_name = old_ts+'_metadata.txt';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
     } else if (file_type == 'phyloseq-tree') {
       old_file_name = old_ts+'_outtree.tre';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
-      new_file_name = file_type+'_'+timestamp+'.tre';
+      new_file_name = file_type+'-'+timestamp+'.tre';
     }else if (file_type == 'distance-R') {
       old_file_name = old_ts+'_distance.R';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
     }else if (file_type == 'distance-py') {
       old_file_name = old_ts+'_distance.csv';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
-      new_file_name = file_type+'_'+timestamp+'.csv';
+      new_file_name = file_type+'-'+timestamp+'.csv';
     }else if (file_type == 'emperor-pc') {
       old_file_name = old_ts+'.pc';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
     }else if (file_type == 'pdf-fheatmap') {
       old_file_name = old_ts+'_fheatmap.pdf';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
-      new_file_name = file_type+'_'+timestamp+'.pdf';
+      new_file_name = file_type+'-'+timestamp+'.pdf';
     }else if (file_type == 'pdf-pcoa') {
       old_file_name = old_ts+'_pcoa.pdf';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
-      new_file_name = file_type+'_'+timestamp+'.pdf';
-
+      new_file_name = file_type+'-'+timestamp+'.pdf';
+    }else if (file_type == 'metadata') {
+      old_file_name = old_ts+'_metadata.txt';
+      new_file_name = file_type+'-'+timestamp+'.csv';
+    }else{
+      console.log("In routes_user_data/copy_file_for_download and couldn't find file_type: ",file_type)
     }
+    var old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
     helpers.mkdirSync(user_dir);  // create dir if not exists 
@@ -2819,7 +2903,12 @@ function update_dataset_names(config_info) {
 
     }
 }
-
+//
+//
+//
+function create_frequency_table_file(req, user_dir, timestamp){
+  console.log(BIOM_MATRIX)
+}
 /////////////////// EXPORTS ///////////////////////////////////////////////////////////////////////
 function create_export_files(req, user_dir, ts, dids, file_tags, normalization, rank, domains) {
       var db = req.db;
