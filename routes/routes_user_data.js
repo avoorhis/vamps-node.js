@@ -784,6 +784,11 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
     status_params.statusSUCCESS = 'GAST-SUCCESS';
     status_params.msgOK = 'Finished GAST';
     status_params.msgSUCCESS = 'GAST -Tax assignments';
+    
+    // TODO:
+    // test
+    // user_project_status_id  user_id  project_id  status  message  created_at  updated_at
+    // 34  4  4  GAST-SUCCESS  GAST -Tax assignments  2016-09-02 12:26:21  2016-09-02 12:31:12
     cmd_list = [
         //unique_cmd,
         project_init,

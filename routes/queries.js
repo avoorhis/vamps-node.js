@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router();
 var C = require('../public/constants');
 var mysql = require('mysql2');
+var util = require('util');
 
 module.exports = {
 
@@ -334,8 +335,33 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
   {
     return "SELECT project_id FROM project WHERE project = " + connection.escape(project);
   },
+  
+  MakeUpdateStatusQ: function(status_params)
+  {
+    var statQuery2 = "UPDATE user_project_status"
+        + " JOIN project USING(project_id)"
+        + " SET status = " + connection.escape(status_params.status)
+        + ", message = "  + connection.escape(status_params.msg)
+        + ", updated_at = NOW()"
+        + " WHERE user_id = " + connection.escape(status_params.user_id);
+        
+        console.log("UUU");
+        console.log(util.inspect(status_params, false, null));
+        
+    if ('project' in status_params) {
+        statQuery2 += " AND project = "  + connection.escape(status_params.project);
+        console.log("statQuery2 project: " + statQuery2);        
+    }
+    else if ('pid' in status_params) {
+        statQuery2 += " AND project_id = " + connection.escape(status_params.pid);
+        console.log("statQuery2 pid: " + statQuery2);
+    }
+    else {
+    //ERROR
+      console.log("ERROR in statQuery2 for Update Status: project or project_id is needed. " + statQuery2);
+    }
+    return statQuery2;
+  },
+  
 
 } // end of module.exports
-
-
-

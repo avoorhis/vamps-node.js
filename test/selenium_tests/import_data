@@ -59,7 +59,7 @@
 <tr>
 	<td>type</td>
 	<td>id=project</td>
-	<td>test_gast_project</td>
+	<td>test_gast_project1</td>
 </tr>
 <tr>
 	<td>type</td>
@@ -95,11 +95,6 @@
 	<td>verifyNotText</td>
 	<td>//div/div[2]</td>
 	<td>That project name is already taken.</td>
-</tr>
-<tr>
-	<td>selectWindow</td>
-	<td>null</td>
-	<td></td>
 </tr>
 <tr>
 	<td>verifyNotText</td>
