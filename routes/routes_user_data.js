@@ -1542,17 +1542,6 @@ function MetadataFileProvided(req, res)
     }
 }
 
-// todo: change to callback
-// fetchInfo
-// function fetchProject(project, callback) {
-//   connection.query('SELECT project_id FROM project WHERE project = ?', project, function(err, rows) {
-//       if (err) {
-//           callback(err, null);
-//       } else 
-//           callback(null, rows[0].project_id);
-//   });
-// }
-
 function ProjectExistsInDB(project, req, res)
 {
   console.log("running ProjectExistsInDB");
@@ -2043,33 +2032,52 @@ function get_privacy_code(privacy_bulean){
     { return 0 }
 }
 
-function fetchID(data, callback) {
-  user_info = [data.first_name, data.last_name, data.email, data.new_institution];
-  // console.log("DDD data.first_name, data.last_name, data.email, data.new_institution");
-  // console.log(data.first_name, data.last_name, data.email, data.new_institution);
-  connection.query('SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?;', user_info, function(err, rows) {
-    if (err) {
-      callback(err, null);
-    } else 
-    {
-      console.log('--- rows ---');
-      console.log(util.inspect(rows, false, null));
-
-      callback(null, rows[0].user_id);
-    }
-  });
-}
+// function fetchID(data, callback) {
+//   // console.log("DDD data.first_name, data.last_name, data.email, data.new_institution");
+//   // console.log(data.first_name, data.last_name, data.email, data.new_institution);
+//   connection.query('SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?;', user_info, function(err, rows) {
+//     if (err) {
+//       callback(err, null);
+//     } else 
+//     {
+//       console.log('--- rows ---');
+//       console.log(util.inspect(rows, false, null));
+// 
+//       callback(null, rows[0].user_id);
+//     }
+//   });
+// }
 
 function saveToDb(req, res){ 
   var user_id;
-
-  fetchID(req.form, function(err, content) {
+  var user_info = [req.form.first_name, req.form.last_name, req.form.email, req.form.new_institution];
+  var query_user_id = 'SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?;';
+  
+  
+  // ===
+  // helpers.fetchInfo('SELECT project_id FROM project WHERE project = ?', project, function(err, content) {
+  //     if (err) {
+  //         console.log(err);
+  //         req.flash('failMessage', 'There is no such project, please create one.');
+  //         res.redirect("/user_data/import_data");
+  //         return false;
+  //     } else {
+  //       console.log("content");
+  //       console.log(util.inspect(content, false, null));
+  //       project_id = content.project_id;
+  //       console.log(project_id);
+  //       return true;
+  //     }
+  // });
+  // ===
+  
+  helpers.fetchInfo(query_user_id, user_info, function(err, content) {
       if (err) {
         console.log("Err from saveToDb");
         console.log(err);
           // TODO: Do something with your error...
       } else {
-          owner_user_id = content;
+          owner_user_id = content.user_id;
           var new_privacy = 1
           new_privacy = get_privacy_code(req.form.new_privacy);
           //TODO wrire a test for connection insert 1 vs. 0 for privacy
