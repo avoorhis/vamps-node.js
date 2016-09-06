@@ -2049,16 +2049,19 @@ function saveToDb(req, res){
           //TODO wrire a test for connection insert 1 vs. 0 for privacy
 
           var sql_a = queries.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
-          console.log("QQQ sql_a = " + sql_a);          
+          // console.log("QQQ sql_a = " + sql_a);          
           connection.query(sql_a, 
           function (err, rows) {
            if (err) {
              console.log('ERROR-in project insert: ' + err);
-             return;
-     
+             // TODO: fix: req flash doesn't work from here!
+             req.flash('failMessage', err);
+             return false;     
            } else {
 
              req.body.project_pid = rows.insertId; 
+             // console.log('RRR: req.body.project_pid ' + req.body.project_pid);
+             
              return rows.insertId;
            }
         });
