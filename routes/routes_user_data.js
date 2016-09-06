@@ -1543,23 +1543,34 @@ function MetadataFileProvided(req, res)
 }
 
 // todo: change to callback
+// fetchInfo
+function fetchProject(project, callback) {
+  connection.query('SELECT project_id FROM project WHERE project = ?', project, function(err, rows) {
+      if (err) {
+          callback(err, null);
+      } else 
+          callback(null, rows[0].project_id);
+  });
+}
+
 function ProjectExistsInDB(project, req, res)
 {
   console.log("running ProjectExistsInDB");
-  q = queries.MakeSelectProjectId(project);
-  console.log("q = " + q);
-  result = helpers.RunQuery(q);
-  console.log(util.inspect(result, false, null));
-  if (result === '' || result === undefined)
-  {
-    req.flash('failMessage', 'There is no such project');
-    res.redirect("/user_data/import_data");
-    return false;
-  }
-  else
-  {
-    return true;
-  }
+  var project_id;
+
+  fetchProject(project, function(err, content) {
+      if (err) {
+          console.log(err);
+          req.flash('failMessage', 'There is no such project, please create one.');
+          res.redirect("/user_data/import_data");
+          return false;
+      } else {
+        console.log("content");
+        console.log(util.inspect(content, false, null));
+        project_id = content;
+        return true;
+      }
+  });
 }
 
 function ProjectValidation(req, project, data_repository, res)

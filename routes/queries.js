@@ -331,11 +331,6 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
     return statQuery1;
   },
 
-  MakeSelectProjectId: function(project)
-  {
-    return "SELECT project_id FROM project WHERE project = " + connection.escape(project);
-  },
-  
   MakeUpdateStatusQ: function(status_params)
   {
     var statQuery2 = "UPDATE user_project_status"

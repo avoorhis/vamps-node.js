@@ -723,3 +723,17 @@ module.exports.RunQuery = function(my_query)
     }
   });
 }
+
+module.exports.fetchInfo = function (query, values, callback) {
+  connection.query(query, values, function(err, rows) {
+    if (err) {
+      callback(err, null);
+    } else 
+    {
+      console.log('--- rows from fetchInfo ---');
+      console.log(util.inspect(rows, false, null));
+
+      callback(null, rows[0]);
+    }
+  });
+}
