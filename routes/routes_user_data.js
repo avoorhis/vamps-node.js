@@ -2073,7 +2073,7 @@ function saveToDb(req, res){
 function editAddProject(req, res){
   console.log('in editAddProject');
 
-  // TODO: keep choosen ENV_SOURCE
+  // TODO: keep chosen ENV_SOURCE
 
   res.render('user_data/add_project', {
     title: 'VAMPS: Add a new project',
@@ -2085,7 +2085,7 @@ function editAddProject(req, res){
   });
 }
 
-// TODO: if user info didn't change use user_id from req.user
+// TODO: if user info didn't change, use user_id from req.user
 router.post('/add_project',
   [helpers.isLoggedIn],
   form(

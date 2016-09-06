@@ -11,9 +11,12 @@ var helpers = require('../routes/helpers/helpers');
 describe('<<< Data Import Selection page functionality >>>', function(){
   before(function (done) {
     connection = require('../config/database-test');
-
+    console.log("DELETE");
+    
     connection.query("DELETE FROM user WHERE username = '"+app.testuser.user+"' AND first_name = '"+app.testuser.first+"' AND last_name = '"+app.testuser.last+"' AND email = '"+app.testuser.email+"' AND institution = '"+app.testuser.inst+"'", function(err, result) {
           if (err) {throw err;}
+          console.log("result: " + result);
+          console.log(util.inspect(result, false, null));
     });
 
     this.timeout(5000);

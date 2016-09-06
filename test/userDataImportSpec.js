@@ -355,7 +355,30 @@ describe('<<< Data Import Selection page functionality >>>', function(){
 //     done();
 //   });
 
-  it('should insert into db status = "OK", message = "Upload Started"');
+  // it('should insert into db status = "OK", message = "Upload Started"');
+  // ---
+  it('should insert into db status = "OK", message = "Upload Started"', function(done) {
+  
+    connection = require('../config/database-test');
+    var q = "SELECT dataset, dataset_id from dataset";
+    console.log("qqq");
+    console.log(q);
+
+    connection.query(q, function(err, result) {
+        if (err) {throw err;}
+        for(r in result){
+          console.log("result")
+          console.log(util.inspect(result, false, null));
+          test_name_hash.name.push(test_project+'--'+result[r].dataset)
+          test_name_hash.ids.push(result[r].dataset_id)
+        }
+    });
+    // this.timeout(10000);
+    done();
+  });
+  
+  // ---
+  
 //   it('should insert into db status = "OK", message = "Upload Started"', function(done) {
 //     // Data Import Selection
 //     // GET /user_data/import_data?import_type=simple_fasta 200
