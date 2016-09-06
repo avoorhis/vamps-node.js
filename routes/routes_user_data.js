@@ -1544,21 +1544,21 @@ function MetadataFileProvided(req, res)
 
 // todo: change to callback
 // fetchInfo
-function fetchProject(project, callback) {
-  connection.query('SELECT project_id FROM project WHERE project = ?', project, function(err, rows) {
-      if (err) {
-          callback(err, null);
-      } else 
-          callback(null, rows[0].project_id);
-  });
-}
+// function fetchProject(project, callback) {
+//   connection.query('SELECT project_id FROM project WHERE project = ?', project, function(err, rows) {
+//       if (err) {
+//           callback(err, null);
+//       } else 
+//           callback(null, rows[0].project_id);
+//   });
+// }
 
 function ProjectExistsInDB(project, req, res)
 {
   console.log("running ProjectExistsInDB");
   var project_id;
 
-  fetchProject(project, function(err, content) {
+  helpers.fetchInfo('SELECT project_id FROM project WHERE project = ?', project, function(err, content) {
       if (err) {
           console.log(err);
           req.flash('failMessage', 'There is no such project, please create one.');
@@ -1567,7 +1567,8 @@ function ProjectExistsInDB(project, req, res)
       } else {
         console.log("content");
         console.log(util.inspect(content, false, null));
-        project_id = content;
+        project_id = content.project_id;
+        console.log(project_id);
         return true;
       }
   });
