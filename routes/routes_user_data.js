@@ -2033,9 +2033,11 @@ function get_privacy_code(privacy_bulean){
 
 function fetchID(data, callback) {
   user_info = [data.first_name, data.last_name, data.email, data.new_institution];
+  // console.log("DDD data.first_name, data.last_name, data.email, data.new_institution");
+  // console.log(data.first_name, data.last_name, data.email, data.new_institution);
   connection.query('SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?;', user_info, function(err, rows) {
     if (err) {
-        callback(err, null);
+      callback(err, null);
     } else 
     {
       console.log('--- rows ---');
@@ -2051,7 +2053,8 @@ function saveToDb(req, res){
 
   fetchID(req.form, function(err, content) {
       if (err) {
-          console.log(err);
+        console.log("Err from saveToDb");
+        console.log(err);
           // TODO: Do something with your error...
       } else {
           owner_user_id = content;
@@ -2060,7 +2063,7 @@ function saveToDb(req, res){
           //TODO wrire a test for connection insert 1 vs. 0 for privacy
 
           var sql_a = queries.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
-          // console.log("AAA sql_a = " + sql_a);
+          console.log("LLL sql_a = " + sql_a);
           // connection.query('INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES (?, ?, ?, REVERSE(?), ?, ?, ?);',
           
           connection.query(sql_a, 
@@ -2109,7 +2112,7 @@ router.post('/add_project',
     form.field("first_name", "First Name").trim().required().entityEncode().isAlphanumeric(),
     form.field("last_name", "Last Name").trim().required().entityEncode().isAlphanumeric(),
     form.field("email", "Email").trim().isEmail().required().entityEncode(),
-    form.field("new_institution", "Institution").trim().required().entityEncode()
+    form.field("new_institution", "Institution").trim().required().entityEncode().isAlphanumeric()
    ),
   function (req, res) {
 
