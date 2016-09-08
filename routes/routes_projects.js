@@ -57,14 +57,24 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       for(n in dsinfo){
         var did = dsinfo[n].did;
         dscounts[did] = ALL_DCOUNTS_BY_DID[did];
-        var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-        mdgroup.refresh()
         mdata[dsinfo[n].dname] = {}
-        Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-            if(mdname != 'id'){
-              mdata[dsinfo[n].dname][mdname] = mdgroup[mdname] 
+        if(HDF5_MDATA == ''){
+            
+            for (var name in AllMetadata[did]){
+                val = AllMetadata[did][name];
+                //console.log(did,dsinfo[n].dname,name,val)
+                mdata[dsinfo[n].dname][name] = val
             }
-        });
+        }else{
+          var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+          mdgroup.refresh()
+          
+          Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
+              if(mdname != 'id'){
+                mdata[dsinfo[n].dname][mdname] = mdgroup[mdname] 
+              }
+          });
+        }
 
       }
       //console.log('MD: '+JSON.stringify(mdata));

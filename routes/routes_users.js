@@ -23,7 +23,11 @@ router.get('/users_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
   			 msg = 'ERROR Message '+err;
   			 helpers.render_error_page(req,res,msg);
 		   } else {
-		      res.render('user_admin/users_index', { 
+          rows.sort(function(a, b){
+            // sort by last name
+            return helpers.compareStrings_alpha(a.last_name, b.last_name);
+          });
+          res.render('user_admin/users_index', { 
                   title: 'VAMPS:users', 
                   rows : rows, 
                   user: req.user,hostname: req.CONFIG.hostname,  message:''  
@@ -102,6 +106,7 @@ router.post('/signup',
 // we will use route middleware to verify this (the isLoggedIn function)
 router.get('/profile', helpers.isLoggedIn, function(req, res) {
     var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username)
+    //console.log('ALL_USERS_BY_UID',ALL_USERS_BY_UID)
     fs.ensureDir(data_dir, function (err) {
         if(err) {console.log(err);} // => null
         else{

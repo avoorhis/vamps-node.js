@@ -40,64 +40,67 @@ GROUP BY dataset_id, domain_id, phylum_id
 
 
 parser = argparse.ArgumentParser(description="") 
-query_core = " FROM sequence_pdr_info" 
-query_core += " JOIN sequence_uniq_info USING(sequence_id)"
-query_core += " JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)"
-query_core += " JOIN silva_taxonomy USING(silva_taxonomy_id)" 
+query_coreA = " FROM sequence_pdr_info" 
+query_coreA += " JOIN sequence_uniq_info USING(sequence_id)"
 
-domain_query = "SELECT sum(seq_count), dataset_id, domain_id"
-domain_query += query_core
-domain_query += " WHERE dataset_id in ('%s')"
-domain_query += " GROUP BY dataset_id, domain_id"
+query_core_join_silva119 = " JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)"
+query_core_join_silva119 += " JOIN silva_taxonomy USING(silva_taxonomy_id)" 
+query_core_join_rdp = " JOIN rdp_taxonomy_info_per_seq USING(rdp_taxonomy_info_per_seq_id)"
+query_core_join_rdp += " JOIN rdp_taxonomy USING(rdp_taxonomy_id)" 
 
-phylum_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id" 
-phylum_query += query_core
-phylum_query += " WHERE dataset_id in ('%s')"
-phylum_query += " GROUP BY dataset_id, domain_id, phylum_id"
+domain_queryA = "SELECT sum(seq_count), dataset_id, domain_id"
+#domain_query += query_core
+domain_queryB = " WHERE dataset_id in ('%s')"
+domain_queryB += " GROUP BY dataset_id, domain_id"
 
-class_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id" 
-class_query += query_core
-class_query += " WHERE dataset_id in ('%s')"
-class_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id"
+phylum_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id" 
+#phylum_query += query_core
+phylum_queryB = " WHERE dataset_id in ('%s')"
+phylum_queryB += " GROUP BY dataset_id, domain_id, phylum_id"
 
-order_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id"
-order_query += query_core
-order_query += " WHERE dataset_id in ('%s')"
-order_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id"
+class_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id" 
+#class_query += query_core
+class_queryB = " WHERE dataset_id in ('%s')"
+class_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id"
 
-family_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id"
-family_query += query_core
-family_query += " WHERE dataset_id in ('%s')"
-family_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id"
+order_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id"
+#order_query += query_core
+order_queryB = " WHERE dataset_id in ('%s')"
+order_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id"
 
-genus_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id" 
-genus_query += query_core
-genus_query += " WHERE dataset_id in ('%s')"
-genus_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id"
+family_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id"
+#family_query += query_core
+family_queryB = " WHERE dataset_id in ('%s')"
+family_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id"
 
-species_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id" 
-species_query += query_core
-species_query += " WHERE dataset_id in ('%s')"
-species_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id"
+genus_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id" 
+#genus_query += query_core
+genus_queryB = " WHERE dataset_id in ('%s')"
+genus_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id"
 
-strain_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id" 
-strain_query += query_core
-strain_query += " WHERE dataset_id in ('%s')"
-strain_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
+species_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id" 
+#species_query += query_core
+species_queryB = " WHERE dataset_id in ('%s')"
+species_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id"
+
+strain_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id" 
+#strain_query += query_core
+strain_queryB = " WHERE dataset_id in ('%s')"
+strain_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
 
 required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"];
 req_query = "SELECT dataset_id, "+','.join(required_metadata_fields)+" from required_metadata_info WHERE dataset_id in ('%s')"
 cust_pquery = "SELECT project_id,field_name from custom_metadata_fields WHERE project_id = '%s'"
 
 #queries = [domain_query,phylum_query,class_query,order_query,family_query,genus_query,species_query,strain_query]
-queries = [{"rank":"domain","query":domain_query},
-           {"rank":"phylum","query":phylum_query},
-           {"rank":"klass","query":class_query},
-           {"rank":"order","query":order_query},
-           {"rank":"family","query":family_query},
-           {"rank":"genus","query":genus_query},
-           {"rank":"species","query":species_query},
-           {"rank":"strain","query":strain_query}
+queries = [{"rank":"domain",    "queryA":domain_queryA, "queryB":domain_queryB},
+           {"rank":"phylum",    "queryA":phylum_queryA, "queryB":phylum_queryB},
+           {"rank":"klass",     "queryA":class_queryA,  "queryB":class_queryB},
+           {"rank":"order",     "queryA":order_queryA,  "queryB":order_queryB},
+           {"rank":"family",    "queryA":family_queryA, "queryB":family_queryB},
+           {"rank":"genus",     "queryA":genus_queryA,  "queryB":genus_queryB},
+           {"rank":"species",   "queryA":species_queryA,"queryB":species_queryB},
+           {"rank":"strain",    "queryA":strain_queryA, "queryB":strain_queryB}
            ]
 def convert_keys_to_string(dictionary):
     """Recursively converts dictionary keys to strings."""
@@ -106,19 +109,27 @@ def convert_keys_to_string(dictionary):
     return dict((str(k), convert_keys_to_string(v)) 
         for k, v in dictionary.items())
 def go_list(args):
-    counts_lookup = convert_keys_to_string(read_original_taxcounts())
+    
+    #
+    file_dids = []
+    if args.units == 'silva119':
+        #dids from big file
+        counts_lookup = convert_keys_to_string(read_original_taxcounts())
+        file_dids = counts_lookup.keys()
+    elif args.units == 'rdp':
+        #dids from individual files
+        files_prefix = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets_rdp')
+        for file in os.listdir(files_prefix):
+            if file.endswith(".json"):
+                file_dids.append(os.path.splitext(file)[0])
     metadata_lookup = convert_keys_to_string(read_original_metadata())
     metadata_dids = metadata_lookup.keys()
-    file_dids = counts_lookup.keys()
+    #
     #print file_dids
     #print len(file_dids)           
     q =  "SELECT dataset_id,dataset.project_id,project from project"
     q += " JOIN dataset using(project_id) order by project"
-    #q += " WHERE dataset_id in('%s')"
     
-    #did_sql = "','".join(file_dids)
-    #q = q % (did_sql)
-    #print q
     num = 0
     cur.execute(q)
     #print 'List of projects in: '+in_file
@@ -134,22 +145,25 @@ def go_list(args):
             missing_metadata[project] = pid
         if did not in file_dids:
             missing[project] = pid
-        file_path = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets',did+'.json')
-        if not os.path.isfile(file_path):
-            missing[project] = pid
+        if args.units == 'silva119':
+            file_path = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets_silva119',did+'.json')
+            #file_path = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets',did+'.json')
+            if not os.path.isfile(file_path):
+                missing[project] = pid
         #print 'project:',row[0],' --project_id:',row[1]
     sort_p = sorted(projects.keys())
+    print 'UNITS:',args.units
     for project in sort_p:  
         if project not in missing:
             print 'ID:',projects[project],"-",project
         num += 1
     print
-    print 'MISSING from metadata file:'
+    print args.units,'MISSING from metadata file:'
     sort_md = sorted(missing_metadata.keys())
     for project in sort_md:
         print 'ID:',missing_metadata[project],"project:",project
     print
-    print 'MISSING from taxcount or json files:'
+    print args.units,'MISSING from taxcount(silva119 only) or json(silva119 or rdp) files:'
     sort_m = sorted(missing.keys())
     for project in sort_m:
         print 'ID:',missing[project],"project:",project
@@ -162,7 +176,11 @@ def go_list(args):
 def go_add(NODE_DATABASE, pid):
     from random import randrange
     counts_lookup = {}
-    prefix = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets')
+    if args.units == 'silva119':
+        prefix = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets_silva119')
+    elif args.units == 'rdp':
+        prefix = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets_rdp')
+    
     if not os.path.exists(prefix):
         os.makedirs(prefix)
     print prefix
@@ -177,8 +195,12 @@ def go_add(NODE_DATABASE, pid):
     did_sql = "','".join(dids)
     #print counts_lookup
     for q in queries:
-        query = q["query"] % (did_sql)
+        if args.units == 'rdp':
+            query = q["queryA"] + query_coreA + query_core_join_rdp + q["queryB"] % (did_sql)
+        elif args.units == 'silva119':
+            query = q["queryA"] + query_coreA + query_core_join_silva119 + q["queryB"] % (did_sql)
         print query
+
         dirs = []
         cur.execute(query)
         for row in cur.fetchall():
@@ -216,7 +238,10 @@ def go_add(NODE_DATABASE, pid):
     
     rando = randrange(10000,99999)
     write_all_metadata_file(metadata_lookup,rando)
-    write_all_taxcounts_file(counts_lookup,rando)
+    
+    # only write here for default taxonomy: silva119
+    if args.units == 'silva119':
+        write_all_taxcounts_file(counts_lookup,rando)
     # print 'DONE (must now move file into place)'
 
 def write_all_metadata_file(metadata_lookup,rando):
@@ -243,9 +268,10 @@ def write_all_metadata_file(metadata_lookup,rando):
     
 def write_all_taxcounts_file(counts_lookup,rando):
     original_counts_lookup = read_original_taxcounts()
-    tc_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts.json")
+    
+    tc_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts_silva119.json")
     if not args.no_backup:
-        bu_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts_"+today+'_'+str(rando)+".json")
+        bu_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts_silva119"+today+'_'+str(rando)+".json")
         print 'Backing up taxcount file to',bu_file
         shutil.copy(tc_file, bu_file)
     for did in counts_lookup:
@@ -374,13 +400,20 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
     return metadata_lookup
     
 def read_original_taxcounts():
-    file_path = os.path.join(args.json_file_path,NODE_DATABASE+'--taxcounts.json')
+    file_path1 = os.path.join(args.json_file_path,NODE_DATABASE+'--taxcounts_silva119.json')
     try:
-        with open(file_path) as data_file:    
+        with open(file_path1) as data_file:    
             data = json.load(data_file) 
     except:
-        print "could not read json file",file_path,'-Exiting'
-        sys.exit(1)
+        
+        file_path2 = os.path.join(args.json_file_path,NODE_DATABASE+'--taxcounts.json')
+        print "could not read json file",file_path1,'Now Trying',file_path2
+        try:    
+            with open(file_path2) as data_file:    
+                data = json.load(data_file) 
+        except:
+            print "could not read json file",file_path2,'--Exiting'
+            sys.exit(1)
     return data 
      
 def read_original_metadata():    
@@ -422,9 +455,10 @@ if __name__ == '__main__':
                 
         -l/  --list         List: list all projects in the DATABASE [default]
         
-        -json_file_path/--json_file_path   json files path Default: ../json
-        -host/--host        vamps, vampsdev    dbhost:  Default: localhost
-
+        -json_file_path/--json_file_path   json files path [Default: ../json]
+        -host/--host        vamps, vampsdev    dbhost:  [Default: localhost]
+        -units/--tax-units  silva119, or rdp   [Default:silva119]
+        
     count_lookup_per_dsid[dsid][rank][taxid] = count
 
     This script will add a project to ../json/<NODE-DATABASE>/<DATASET-NAME>.json JSON object
@@ -440,9 +474,7 @@ if __name__ == '__main__':
     parser.add_argument("-pid","--pid",                   
                 required=False,  action="store",   dest = "pid", default='',
                 help="""ProjectID""") 
-    
-    
-                
+        
     parser.add_argument("-add","--add",                   
                 required=False,  action="store_true",   dest = "add", default='',
                 help="""ProjectID""")
@@ -452,14 +484,17 @@ if __name__ == '__main__':
     parser.add_argument("-list","--list",                   
                 required=False,  action="store_true",   dest = "list", default='',
                 help="""ProjectID""")
-
+  
     parser.add_argument("-json_file_path", "--json_file_path",        
                 required=False,  action='store', dest = "json_file_path",  default='../../json', 
                 help="")
                 # for vampsdev"  /groups/vampsweb/vampsdev_node_data/json
     parser.add_argument("-host", "--host",    
                 required=False,  action='store', choices=['vampsdb','vampsdev','localhost'], dest = "dbhost",  default='localhost',
-                help="")            
+                help="") 
+    parser.add_argument("-units", "--tax_units",    
+                required=False,  action='store', choices=['silva119','rdp'], dest = "units",  default='silva119',
+                help="")                       
     args = parser.parse_args()
     
     print "ARGS: dbhost  =",args.dbhost
@@ -468,11 +503,16 @@ if __name__ == '__main__':
         
         args.dbhost = 'vampsdb'
         args.NODE_DATABASE = 'vamps2'
-        args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets") 
+         
     elif args.dbhost == 'vampsdev':
         args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
         args.NODE_DATABASE = 'vamps2'
-        args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets") 
+    if args.units == 'silva119':
+        args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_silva119")
+    elif args.units == 'rdp':
+         args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_rdp")
+    else:
+        sys.exit('UNITS ERROR: '+args.units)
     if os.path.exists(args.json_file_path):
         print 'Validated: json file path'
     else:

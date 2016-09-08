@@ -258,7 +258,15 @@ function signup_user(req, username, password, done, db){
                 console.log(insertQuery);
                 db.query(insertQuery,function(err,rows){
                     newUserMysql.user_id = rows.insertId;
+                    ALL_USERS_BY_UID[newUserMysql.user_id] = {
+                        email:      newUserMysql.email,
+                        username:   newUserMysql.username,
+                        last_name:  newUserMysql.lastname,
+                        first_name: newUserMysql.firstname,
+                        institution:newUserMysql.institution,
+                    }
                     return done(null, newUserMysql);
+                   
                 });
             }
     });

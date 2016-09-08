@@ -801,10 +801,11 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     
     var stdout = '';
     dendrogram_process.stdout.on('data', function (data) {
-        //console.log('stdout: ' + data);
+        //
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         data = data.toString();
         stdout += data;
+
     });
     var stderr = '';
     dendrogram_process.stderr.on('data', function (data) {
@@ -820,8 +821,19 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS       
           if(image_type == 'svg'){
+                    console.log('stdout: ' + stdout);
+                    lines = stdout.split('\n')
+                    for(n in lines){
+                      if(lines[n].substring(0,6) == 'NEWICK' ){
+                        tmp = lines[n].split('=')
+                        continue
+                      }
+                    }
+
+                    
                     try{
-                      newick = JSON.parse(stdout);
+                      newick = JSON.parse(tmp[1]);
+                      console.log(newick)
                     }
                     catch(err){
                       newick = {"ERROR":err};
@@ -921,7 +933,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 //
 //  EMPEROR....
 // POST is for PC file link
-router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
+router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
         
         var ts = visual_post_items.ts; 
         var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
@@ -948,7 +960,7 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
   var dist_file_name = ts+'_distance.csv';
   var dist_file = path.join(pwd,'tmp', dist_file_name);
 
-  var dir_name = ts+'_pcoa_3d';
+  var dir_name = ts+'_pcoa3d';
   var dir_path = path.join(pwd,'views/tmp', dir_name);        
   var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
   //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
@@ -1053,7 +1065,7 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
 
 });
 // GET is to create and open EMPEROR
-router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
+router.get('/pcoa3d', helpers.isLoggedIn, function(req, res) {
         
   console.log('in 3D');
   console.log(visual_post_items);
@@ -1071,7 +1083,7 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
   var pc_file_name = ts+'.pc';
   var pc_file = path.join(pwd,'tmp', pc_file_name);
   
-  var dir_name = ts+'_pcoa_3d';
+  var dir_name = ts+'_pcoa3d';
   var dir_path = path.join(pwd,'views/tmp', dir_name);        
   var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
   //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
@@ -1144,7 +1156,7 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                         //open('file://'+html_path);
                         //res.send("Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser."); 
                         //res.send("Done - <a href='/tmp/"+dir_name+"/index.html' target='_blank'>Emperor</a> will open a new window in your default browser."); 
-                        //html = "<a href='../tmp/andy_1450362333240_pcoa_3d/index' target='_blank'>Emperor1</a>"
+                        //html = "<a href='../tmp/andy_1450362333240_pcoa3d/index' target='_blank'>Emperor1</a>"
                         html = " <a href='/tmp/"+dir_name+"/index' target='_blank'>Emperor</a>"
                         //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
 
@@ -2872,12 +2884,8 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
             itemtext    += " <a href='/projects/"+pid_str+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
             if(node.public) {
               itemtext += "<small> <i>(public)</i></small>"  
-                            
             }else{
-              if(req.user.security_level == 1){
-                itemtext += "<small> <i>(PI: "+node.username +")</i></small>"
-              }  
-                           
+                itemtext += "<small> <i>(PI: "+node.username +")</i></small>"         
             }
             
             if(Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){

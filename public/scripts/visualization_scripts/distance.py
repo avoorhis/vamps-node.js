@@ -190,7 +190,9 @@ def dendrogram_pdf(args, dm, leafLabels):
 
 def dendrogram_svg(args, dm):
     #print json.dumps(dm)
+    
     mycluster = construct_cluster(args, dm)
+    
     newick = mycluster.getNewick(with_distances=True) 
     
     return newick
@@ -238,22 +240,17 @@ def write_csv_file(args):
 #
 #
 def construct_cluster(args, dm):
-        
-        
+        # UPGMA OR
         # neighbor joining:
         from cogent.phylo import nj
-        #print 'here1'
+        from cogent.cluster.UPGMA import upgma
         mycluster = nj.nj(dm)
-        #print 'here2'
-        # UPGMA
-        #from cogent.cluster.UPGMA import upgma
+        
         #mycluster = upgma(dm)
         
         
         return mycluster
         
-        
-
         # from scipy.cluster.hierarchy import linkage, to_tree
         # condensed_dm = distance.squareform( dm )
         # print condensed_dm
@@ -524,6 +521,7 @@ if __name__ == '__main__':
         print json.dumps(dm2)
 
     if args.function == 'dendrogram-svg':
+        
         newick = dendrogram_svg(args, dm3)
 
         newick_file = os.path.join(args.outdir,args.prefix+'_newick.tre')
@@ -535,7 +533,9 @@ if __name__ == '__main__':
         # unrooted_tree = Tree( newick )
         # print unrooted_tree
         # IMPORTANT print for SVG
-        print json.dumps(newick)
+        
+        print 'NEWICK='+json.dumps(newick)
+        
     if args.function == 'dendrogram-pdf':
         #print distances
         dendrogram_pdf(args, dm1, datasets)
