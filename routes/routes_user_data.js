@@ -264,7 +264,7 @@ router.post('/export_data', helpers.isLoggedIn, function (req, res) {
 /* GET Import Choices page. */
 router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
   console.log('import_choices');
-  
+
   if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
       res.render('user_data/your_data', {
         title: 'VAMPS:Data Administration',
@@ -785,7 +785,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
     status_params.statusSUCCESS = 'GAST-SUCCESS';
     status_params.msgOK = 'Finished GAST';
     status_params.msgSUCCESS = 'GAST -Tax assignments';
-    
+
     // TODO:
     // test
     // user_project_status_id  user_id  project_id  status  message  created_at  updated_at
@@ -1568,9 +1568,9 @@ function ProjectValidation(req, project, data_repository, res)
 {
   // console.log('MMM PROJECT_INFORMATION_BY_PNAME: ');
   // console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
-  
+
   // TODO: check if added but not in PROJECT_INFORMATION_BY_PNAME? or update PROJECT_INFORMATION_BY_PNAME after add_project?
-  // see 
+  // see
   // routes/helpers/helpers.js:251:    console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME');
   // routes/helpers/helpers.js:258:    delete PROJECT_INFORMATION_BY_PNAME[pname];
   // routes/helpers/helpers.js:274:        console.log(' UPDATING PROJECT_INFORMATION_BY_PNAME');
@@ -1585,7 +1585,7 @@ function ProjectValidation(req, project, data_repository, res)
     project_exists_in_db = ProjectExistsInDB(project, req, res);
     console.log("project_exists_in_db = " + project_exists_in_db);
   }
-  
+
   console.log("running FastaProvided");
   fasta_exists = FastaProvided(req, res);
   console.log("fasta_exists = " + fasta_exists);
@@ -1876,17 +1876,17 @@ function RunAndCheck(script_path, nodelog, req, project, res)
           LoadDataFinishRequest(req, res, project, "Import_Success");
           console.log('Finished loading ' + project);
           // ();
-     } 
+     }
      else
      {
       fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-'+project), function (err) {
           if (err) { console.log(err);  }
           else {
               req.flash('failMessage', 'Script Failure: '+last_line);
-              status_params = {'type': 'update', 
+              status_params = {'type': 'update',
                                'user_id': req.user.user_id,
-                                'project':project, 
-                                'status':'Script Failure', 
+                                'project':project,
+                                'status':'Script Failure',
                                 'msg':'Script Failure'
               };
                   //helpers.update_status(status_params);
@@ -1899,7 +1899,7 @@ function RunAndCheck(script_path, nodelog, req, project, res)
 }
 
 function uploadData(req, res)
-{   
+{
   var exec    = require('child_process').exec;
   var project = helpers.clean_string(req.body.project);
 
@@ -1986,12 +1986,12 @@ function uploadData(req, res)
     });         //   END ensuredir
 }
 
-router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], 
+router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)],
   form(
     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
     form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").maxLength(64).entityEncode()
   ),
-  function (req, res) 
+  function (req, res)
   {
     if (!req.form.isValid) {
       console.log('PPP upload_data !req.form.isValid: ');
@@ -2008,7 +2008,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
   }
 );
     // else {the rest}
-    
+
 //     //TODO:
 //     //check all
 //     // res.redirect("/user_data/import_data");
@@ -2198,12 +2198,12 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
 
 function get_privacy_code(privacy_bulean){
   if (privacy_bulean === 'True')
-    { return 1 }
+    { return 1; }
   else
-    { return 0 }
+    { return 0; }
 }
 
-function saveToDb(req, res){ 
+function saveToDb(req, res){
   var user_id;
   var user_info = [req.form.first_name, req.form.last_name, req.form.email, req.form.new_institution];
   var query_user_id = 'SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?;';
@@ -2215,24 +2215,24 @@ function saveToDb(req, res){
           // TODO: Do something with your error...
       } else {
           owner_user_id = content.user_id;
-          var new_privacy = 1
+          var new_privacy = 1;
           new_privacy = get_privacy_code(req.form.new_privacy);
           //TODO wrire a test for connection insert 1 vs. 0 for privacy
 
           var sql_a = queries.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
-          // console.log("QQQ sql_a = " + sql_a);          
-          connection.query(sql_a, 
+          // console.log("QQQ sql_a = " + sql_a);
+          connection.query(sql_a,
           function (err, rows) {
            if (err) {
              console.log('ERROR-in project insert: ' + err);
              // TODO: fix: req flash doesn't work from here!
              req.flash('failMessage', err);
-             return false;     
+             return false;
            } else {
 
-             req.body.project_pid = rows.insertId; 
+             req.body.project_pid = rows.insertId;
              // console.log('RRR: req.body.project_pid ' + req.body.project_pid);
-             
+
              return rows.insertId;
            }
         });
@@ -2281,7 +2281,7 @@ router.post('/add_project',
     }
     else
     {
-      saveToDb(req, res);      
+      saveToDb(req, res);
       res.redirect("/user_data/import_choices");
     }
 
@@ -2883,80 +2883,80 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function (req, res)
 //
 //
 router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
-    
+
     req.on('readable', function(){
       console.log(req.read());
     });
 
     console.log('in copy_html_to_image');
-    return
+    return;
     var ts = req.body.ts;
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-    var html, outfile
+    var html, outfile;
     if(req.body.image == 'barcharts'){
-      html = req.body.html
+      html = req.body.html;
       outfile = path.join( user_dir, 'barcharts-image-'+ts+'.png' );
     }else if(req.body.image == 'piecharts'){
-      html = req.body.html
+      html = req.body.html;
       outfile = path.join( user_dir, 'piecharts-image-'+ts+'.png' );
     }else if(req.body.image == 'dheatmap'){
         outfile = path.join( user_dir, 'heatmap-image-'+ts+'.pdf' );
-        
-        html = "<center><table border='1'>  <tr><td></td><td>dataset <span class='blue'>Similar</span>&nbsp;<span class='red'>Dissimilar</span></td>"
-        for(i=1; i<=Object.keys(distance_matrix).length; i++) {         
-                html += "<td></td>"  
-        }
-        html += "</tr>"
-        var n = 1
-        console.log(distance_matrix)
-        id_order = chosen_id_name_hash.ids
 
-        name_order = chosen_id_name_hash.names
-        var w = id_order.length
-        console.log(w)
-        for(var x in name_order) { 
-            var x_dname = name_order[x] 
-            html += "<tr id='"+x_dname+"'>"
-            html += "<td  id='"+x_dname+"' class='dragHandle ds_cell'>"+n.toString()+"</td>"
-            html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+id_order[x]+"' >"+ x_dname +"</td>"
-            for(var y in name_order) {
-                var y_dname = name_order[y]
-                var dist = distance_matrix[x_dname][y_dname].toFixed(5);
-                if(x_dname === y_dname){
-                        html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
-                }else{
-                  var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dist;
-                  var svalue = Math.round( distance_matrix[x_dname][y_dname] * 15 );
-                  html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+req.CONSTS.HEATMAP_COLORS[svalue]+"'>"                   
-                  html += "&nbsp;&nbsp;&nbsp;"
-                  html += "</td>"
-                }          
-            }
-            html += "</tr>"
-            n++
+        html = "<center><table border='1'>  <tr><td></td><td>dataset <span class='blue'>Similar</span>&nbsp;<span class='red'>Dissimilar</span></td>";
+        for(i=1; i<=Object.keys(distance_matrix).length; i++) {
+          html += "<td></td>";
         }
-        html += "</table></center>"
-    
-        console.log(html)
-            
+        html += "</tr>";
+        var n = 1;
+        console.log(distance_matrix);
+        id_order = chosen_id_name_hash.ids;
+
+        name_order = chosen_id_name_hash.names;
+        var w = id_order.length;
+        console.log(w);
+        for(var x in name_order) {
+          var x_dname = name_order[x];
+          html += "<tr id='"+x_dname+"'>";
+          html += "<td  id='"+x_dname+"' class='dragHandle ds_cell'>"+n.toString()+"</td>";
+          html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+id_order[x]+"' >"+ x_dname +"</td>";
+          for(var y in name_order) {
+            var y_dname = name_order[y];
+              var dist = distance_matrix[x_dname][y_dname].toFixed(5);
+              if(x_dname === y_dname){
+                html += "<td id='' class='heat_map_td' bgcolor='#000'></td>";
+              }else{
+                var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dist;
+                var svalue = Math.round( distance_matrix[x_dname][y_dname] * 15 );
+                html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+req.CONSTS.HEATMAP_COLORS[svalue]+"'>";
+                html += "&nbsp;&nbsp;&nbsp;";
+                html += "</td>";
+              }
+          }
+        html += "</tr>";
+        n++;
+        }
+        html += "</table></center>";
+
+        console.log(html);
+
         var options = { format: 'Letter' };
         pdf.create(html, {}).toFile(outfile, function(err, res2) {
           if (err) return console.log(err);
-          console.log(res2); // { filename: '/app/businesscard.pdf' } 
+          console.log(res2); // { filename: '/app/businesscard.pdf' }
           res.send('OK');
         });
     }
-    console.log(html)
+    console.log(html);
     var webshot = require('webshot');
     var options = {
       siteType: 'html',
       //screenSize: { width: w*20, height: w*14 },   // size of window
 
       customCSS: 'table {background:#F5F5DC;border-collapse: collapse;} .red {color:white;background:red;} .blue {color:white;background:blue;} td {padding:0 5px;}'
-    }
+    };
     webshot(html, outfile, options, function(err) {
       // screenshot now saved to <>.png
-      if(err){console.log(err)}
+      if(err){console.log(err);}
       else {
         res.send('OK');
       }
@@ -2992,7 +2992,7 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
     old_ts = req.body.ts;
     file_type = req.body.file_type;
     var timestamp = +new Date();
-    var old_file_name
+    var old_file_name;
     var new_file_name = file_type+'-'+timestamp+'.txt';
     if (file_type == 'phyloseq-biom') {
       old_file_name = old_ts+'_count_matrix.biom';
@@ -3019,14 +3019,14 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
       old_file_name = old_ts+'_metadata.txt';
       new_file_name = file_type+'-'+timestamp+'.csv';
     }else{
-      console.log("In routes_user_data/copy_file_for_download and couldn't find file_type: ",file_type)
+      console.log("In routes_user_data/copy_file_for_download and couldn't find file_type: ", file_type);
     }
     var old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
     helpers.mkdirSync(user_dir);  // create dir if not exists
     var destination = path.join( user_dir, new_file_name );
-    console.log(old_file_path, destination)
+    console.log(old_file_path, destination);
     fs.copy(old_file_path, destination, function (err) {
         if (err) return console.error(err);
         console.log("copy success!");
@@ -3131,7 +3131,7 @@ function update_dataset_names(config_info) {
 //
 //
 function create_frequency_table_file(req, user_dir, timestamp){
-  console.log(BIOM_MATRIX)
+  console.log(BIOM_MATRIX);
 }
 /////////////////// EXPORTS ///////////////////////////////////////////////////////////////////////
 function create_export_files(req, user_dir, ts, dids, file_tags, normalization, rank, domains) {
