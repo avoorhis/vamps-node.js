@@ -1908,82 +1908,43 @@ function uploadData(req, res)
   var options         = created_options[1];
   console.log('MMM options: ');
   console.log(util.inspect(options, false, null));
-  // TODO: test
-  // MMM options:
-  // { scriptPath: '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/',
-  //   args:
-  //    [ '-project_dir',
-  //      '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project',
-  //      '-owner',
-  //      'admin',
-  //      '-p',
-  //      'test_gast_project',
-  //      '-site',
-  //      'local',
-  //      '-infile',
-  //      '/Users/ashipunova/BPC/vamps-node.js/tmp/44d4ec767dca9ccecfe7870b98fb4600',
-  //      '-mdfile',
-  //      '/Users/ashipunova/BPC/vamps-node.js/tmp/7be23488983b4c30ba0e32c4c5692b88',
-  //      '-upload_type',
-  //      'single',
-  //      '-d',
-  //      'test_gast_dataset',
-  //      '-q' ] }
 
   fs.ensureDir(data_repository, function (err) {
-      if (err) {console.log('ensureDir err:', err);} // => null
-      else
-      {
-        fs.chmod(data_repository, 0775, function (err) {
-          if (err) {
-            console.log('chmod err:', err);
-            return;
-          }
-          var cmd_list = CreateCmdList(req, options, data_repository);
-          console.log("TTT cmd_list: ");
-          console.log(util.inspect(cmd_list, false, null));
+    if (err) {console.log('No such dir: ensureDir err:', err);} // => null
+    else
+    {
+      fs.chmod(data_repository, 0775, function (err) {
+        if (err) {
+          console.log('chmod err:', err);
+          return;
+        }
+        var cmd_list = CreateCmdList(req, options, data_repository);
+        console.log("TTT cmd_list: ");
+        console.log(util.inspect(cmd_list, false, null));
 
-          script_name = 'load_script.sh';
-          var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
-          var script_vars = GetScriptVars(req, data_repository, cmd_list);
-          var scriptlog   = script_vars[0];
-          var script_text = script_vars[1];
-          // TODO: test:
-// 111 scriptlog: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/script.log
-// 222 script_text: #!/bin/sh
-//
-// # CODE:  $code
-//
-// TSTAMP=`date "+%Y%m%d%H%M%S"`
-//
-// echo -n "Hostname: "
-// hostname
-// echo -n "Current working directory: "
-// pwd
-//
-// /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/0e1cb0aad4ce57b30c6a0002a1ac2527 -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/dce2a788f226eb033388f2844a89648e -upload_type single -d test_gast_dataset -q
-// /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_fnaunique.sh /opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/ashipunova/BPC/vamps-node.js/public/scripts/bin: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project
-//
-// 222 =====
-//
-          var script_path = path.join(data_repository, script_name);
+        script_name     = 'load_script.sh';
+        var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
+        var script_vars = GetScriptVars(req, data_repository, cmd_list);
+        var scriptlog   = script_vars[0];
+        var script_text = script_vars[1];
 
-          fs.writeFile(script_path, script_text, function (err) {
-              if (err) return console.log(err);
-              child = exec('chmod ug+rwx '+script_path, function (error, stdout, stderr) {
-                  if (error !== null) {
-                    console.log('1exec chmod error: ' + error);
-                  }
-                  else
-                  {
-                    RunAndCheck(script_path, nodelog, req, project, res);
-                  }
-              }); // end exec
-          });  // end writeFile
+        var script_path = path.join(data_repository, script_name);
 
-        });     //   END chmod
-      }         // end else
-    });         //   END ensuredir
+        fs.writeFile(script_path, script_text, function (err) {
+          if (err) return console.log(err);
+          child = exec('chmod ug+rwx '+script_path, function (error, stdout, stderr) {
+            if (error !== null) {
+              console.log('1exec chmod error: ' + error);
+            }
+            else
+            {
+              RunAndCheck(script_path, nodelog, req, project, res);
+            }
+          }); // end exec
+        });  // end writeFile
+      });     //   END chmod
+    }         // end else
+  });         //   END ensuredir
 }
 
 router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)],
@@ -2196,7 +2157,7 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
 });
 
 
-function get_privacy_code(privacy_bulean){
+function getPrivacyCode(privacy_bulean){
   if (privacy_bulean === 'True')
     { return 1; }
   else
@@ -2216,7 +2177,7 @@ function saveToDb(req, res){
       } else {
           owner_user_id = content.user_id;
           var new_privacy = 1;
-          new_privacy = get_privacy_code(req.form.new_privacy);
+          new_privacy = getPrivacyCode(req.form.new_privacy);
           //TODO wrire a test for connection insert 1 vs. 0 for privacy
 
           var sql_a = queries.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
