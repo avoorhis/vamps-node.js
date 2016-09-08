@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - routes/visuals/routes_common.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>routes/visuals/routes_common.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">56.65</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">537</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">70.13</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">5.47</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">// common.js
+var path = require(&#039;path&#039;);
+var fs = require(&#039;fs&#039;);
+var extend = require(&#039;util&#039;)._extend;
+//var COMMON  = require(&#039;./routes_common&#039;);
+var CONSTS = require(&#039;../../public/constants&#039;);
+//var HMAP    = require(&#039;./routes_distance_heatmap&#039;);
+//var DEND    = require(&#039;./routes_dendrogram&#039;);
+//var PCOA    = require(&#039;./routes_pcoa&#039;);
+
+module.exports = {
+
+  start_visuals_html: function(visual) {
+    var html = &#039;&lt;table border=&quot;1&quot; class=&quot;single_border center_table&quot;&gt;&lt;tr&gt;&lt;td&gt;&#039;;
+    html += this.get_selection_markup(visual, visual_post_items); // block for listing prior selections: domains,include_NAs ...
+    html += &#039;&lt;/td&gt;&lt;td&gt;&#039;;
+    html += this.get_choices_markup(visual, visual_post_items);      // block for controls to normalize, change tax percentages or distance
+    html += &#039;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#039;;
+    return html;
+  },
+
+  get_selection_markup: function( visual, obj ) {
+    
+    // obj is visual_post_items
+    var html = &quot;&lt;div id=&#039;&#039; class=&#039;selection_info&#039;&gt;&quot;;
+    if(visual === &#039;heatmap&#039; ||visual === &#039;dendrogram&#039; || visual === &#039;pcoa&#039; ) {
+      html += &#039;&lt;li&gt;Selected Distance Metric: &#039; + obj.selected_distance + &#039;&lt;/li&gt;&#039;;
+    }
+    html += &#039;&lt;li&gt;Maximum Dataset Count (raw): &#039; + obj.max_ds_count.toString() + &#039;&lt;/li&gt;&#039;;
+    if(obj.unit_choice.indexOf(&#039;tax&#039;) === 0 ) {
+      html += &#039;&lt;li&gt;Included Domains: &#039; + obj.domains     + &#039;&lt;/li&gt;&#039;;
+      html += &#039;&lt;li&gt;Include NAs?: &#039;     + obj.include_nas + &#039;&lt;/li&gt;&#039;;
+      html += &#039;&lt;li&gt;Taxonomic Depth: &#039;  + obj.tax_depth   + &#039;&lt;/li&gt;&#039;;
+    }
+    if(obj.normalization === &#039;none&#039;) {
+      html += &#039;&lt;li&gt;Normalization: &#039; + obj.normalization + &#039; (raw counts)&lt;/li&gt;&#039;;
+    }else{
+      html += &#039;&lt;li&gt;Normalization: &#039; + obj.normalization + &#039;&lt;/li&gt;&#039;;
+    }
+    html += &#039;&lt;/div&gt;&#039;;
+    return html;
+  },
+  //
+  //
+  //
+  get_choices_markup: function( visual, obj ) {
+    var html = &quot;&lt;div id=&#039;&#039; class=&#039;choices_info&#039;&gt;&quot;;
+    //title: req.params.title   || &#039;default_title&#039;,
+    //  timestamp: myurl.query.ts || &#039;default_timestamp&#039;,
+    //  html : html,
+    //  user: req.user
+    html += &quot;&lt;form name=&#039;&#039; method=&#039;GET&#039;&gt;&quot;;
+    if( visual === &#039;heatmap&#039; || visual === &#039;dendrogram&#039; || visual === &#039;pcoa&#039; ) {
+      //console.log(CONSTS.DISTANCECHOICES)
+      var viz_page = &#039;selected_distance&#039;;
+      var distrows = CONSTS.DISTANCECHOICES.choices;
+      html += &#039;&lt;li&gt;Change Distance Metric: &#039;;
+      html += &quot;&lt;select name=&#039;selected_distance&#039; class=&#039;small_font&#039;&gt;&quot;;
+      for (var d in distrows ) {
+        if (obj[viz_page] === distrows[d].id) {
+          html += &quot;&lt;option value=&#039;&quot;+distrows[d].id+&quot;&#039; selected=&#039;selected&#039; &gt;&quot;+distrows[d].show+&quot;&lt;/option&gt;&quot;;
+        }else{
+          html += &quot;&lt;option value=&#039;&quot;+distrows[d].id+&quot;&#039;&gt;&quot;+distrows[d].show+&quot;&lt;/option&gt;&quot;;
+        }
+      } 
+      html += &quot;&lt;/select&gt;&lt;/li&gt;&quot;;
+      html += &#039;&lt;hr&gt;&#039;;
+    }
+  // unit_choice: &#039;tax_silva108_simple&#039;,
+  // max_ds_count: 3609,
+  // no_of_datasets: 232,
+  // normalization: &#039;none&#039;,
+  // visuals: [ &#039;barcharts&#039; ],
+  // selected_heatmap_distance: &#039;morisita_horn&#039;,
+  // selected_dendrogram_distance: &#039;morisita_horn&#039;,
+  // tax_depth: &#039;phylum&#039;,
+  // domains: [ &#039;Archaea&#039;, &#039;Bacteria&#039;, &#039;Eukarya&#039;, &#039;Organelle&#039;, &#039;Unknown&#039; ],
+  // include_nas: &#039;yes&#039; }
+
+
+
+    html += &#039;&lt;li&gt;Normalization: &#039;;
+    if(obj.normalization === &#039;frequency&#039; || obj.normalization === &#039;freq&#039;) {
+      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;none&quot; &gt;None &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;max&quot;  &gt;To Maximum Count &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;freq&quot; checked=&quot;checked&quot;&gt;To Frequency&#039;;
+    } else if (obj.normalization === &#039;maximum&#039; || obj.normalization === &#039;max&#039;) {
+      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;none&quot; &gt;None &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;max&quot;  checked=&quot;checked&quot;&gt;To Maximum Count &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;freq&quot; &gt;To Frequency&#039;;
+    } else {
+      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;none&quot; checked=&quot;checked&quot; &gt;None &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;max&quot;  &gt;To Maximum Count &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;freq&quot; &gt;To Frequency&#039;;
+    }
+    html += &#039;&lt;/li&gt;&#039;;
+    html += &#039;&lt;hr&gt;&#039;;
+    html += &#039;&lt;li&gt;Limit view based on count percentage: &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+     
+     html += &quot;MIN &lt;select name=&#039;min_range&#039; class=&#039;small_font&#039;&gt;&quot;;
+     for( var n=0;n &lt; CONSTS.PCT_RANGE.length-1;n++ ) {
+       if(obj.min_range.toString() === CONSTS.PCT_RANGE[n].toString()) {
+         html += &quot;&lt;option value=&#039;&quot;+CONSTS.PCT_RANGE[n]+&quot;&#039; selected=&#039;selected&#039;&gt;&quot;+CONSTS.PCT_RANGE[n]+&quot; %&lt;/option&gt;&quot;;
+       }else{
+         html += &quot;&lt;option value=&#039;&quot;+CONSTS.PCT_RANGE[n]+&quot;&#039;&gt;&quot;+CONSTS.PCT_RANGE[n]+&quot; %&lt;/option&gt;&quot;;
+       }       
+     }
+    html += &quot;&lt;/select&gt;&quot;;
+    html += &quot;&amp;nbsp;&amp;nbsp;&amp;nbsp; MAX &lt;select name=&#039;max_range&#039; class=&#039;small_font&#039;&gt;&quot;;
+    // TODO: &quot;&#039;n&#039; is already defined.&quot;
+     for (var n1=1; n1 &lt; CONSTS.PCT_RANGE.length; n1++ ) {
+       
+       if(obj.max_range.toString() === CONSTS.PCT_RANGE[n1].toString()) {
+         html += &quot;&lt;option value=&#039;&quot;+CONSTS.PCT_RANGE[n1]+&quot;&#039; selected=&#039;selected&#039;&gt;&quot;+CONSTS.PCT_RANGE[n1]+&quot; %&lt;/option&gt;&quot;;
+       }else{
+         html += &quot;&lt;option value=&#039;&quot;+CONSTS.PCT_RANGE[n1]+&quot;&#039;&gt;&quot;+CONSTS.PCT_RANGE[n1]+&quot; %&lt;/option&gt;&quot;;
+       }
+     }
+    html += &quot;&lt;/select&gt;&lt;/li&gt;&quot;;
+    html += &#039;&lt;hr&gt;&#039;;
+    html += &quot;&lt;li&gt;Make your selections then press: &quot;;
+    html += &quot;&lt;input type=&#039;submit&#039; value=&#039;Change View&#039; &gt;&lt;/li&gt;&quot;;
+    html += &#039;&lt;input type=&quot;hidden&quot; name=&quot;ts&quot; value=&quot;&#039;+obj.ts+&#039;&quot;&gt;&#039;;
+    html += &#039;&lt;/form&gt;&#039;;
+    html += &#039;&lt;/div&gt;&#039;;
+    return html;
+  },
+
+  //
+  //
+  //
+  save_post_items: function(req) {
+    // GLOBAL Variable
+    var post_hash = {};
+    console.log(&#039;VS--DOMAINS&#039;,req.body.domains)
+    console.log(&#039;req.body.ds_order&#039;,req.body.ds_order)
+    if(req.body.ds_order === undefined) {
+          
+          post_hash.unit_choice                  = req.body.unit_choice;
+          //visual_post_items.max_ds_count                 = COMMON.get_max_dataset_count(selection_obj);
+          post_hash.no_of_datasets               = chosen_id_name_hash.ids.length;
+          post_hash.normalization                = req.body.normalization || &#039;none&#039;;
+          post_hash.visuals                      = req.body.visuals;
+          post_hash.selected_distance            = req.body.selected_distance || &#039;morisita_horn&#039;;
+          post_hash.tax_depth                    = req.body.tax_depth    || &#039;custom&#039;;
+          if(post_hash.unit_choice === &#039;tax_silva119_simple&#039;){
+            post_hash.domains                    = req.body.silva119_domains      || [&#039;NA&#039;];
+          }else if( post_hash.unit_choice === &#039;tax_rdp_simple&#039;){
+            post_hash.domains                    = req.body.rdp_domains      || [&#039;NA&#039;];  
+          }else{
+            post_hash.domains = [&#039;NA&#039;]
+          }
+          if(typeof post_hash.domains == &#039;string&#039;) {
+              post_hash.domains = post_hash.domains.split(&#039;,&#039;);
+          }
+          console.log(&#039;TYPEOF CUSTOM&#039;)
+          console.log(req.body.custom_taxa)
+          console.log(typeof req.body.custom_taxa)
+          post_hash.custom_taxa   = req.body.custom_taxa  || [&#039;NA&#039;];
+          // html: [ &#039;1&#039;, &#039;60&#039;, &#039;2120&#039;, &#039;2261&#039; ], object
+          // fancy &amp; dhtmlx:  1,60,2120,2260,2261,2266  string
+          if(typeof req.body.custom_taxa === &#039;string&#039;){
+            if(req.body.custom_taxa === &#039;&#039;){
+              post_hash.custom_taxa   = [&#039;NA&#039;];
+            }else{              
+              post_hash.custom_taxa   = req.body.custom_taxa.split(&#039;,&#039;);
+            }
+          }
+
+          // if(post_hash.unit_choice == &#039;tax_silva108_custom_dhtmlx&#039;){
+          //   post_hash.custom_taxa                  = req.body.custom_taxa_dhtmlx  || [&#039;NA&#039;];
+          // }else if(post_hash.unit_choice == &#039;tax_silva108_custom_dhtmlx&#039;){
+          //   post_hash.custom_taxa                  = req.body.custom_taxa_fancytree  || [&#039;NA&#039;];
+          // }else if(post_hash.unit_choice == &#039;tax_silva108_custom&#039;){
+          //   post_hash.custom_taxa                  = req.body.custom_taxa  || [&#039;NA&#039;];
+          // }
+          
+          // in the unusual event that a single custom checkbox is selected --&gt; must change from string to list:
+
+          if(typeof post_hash.custom_taxa !== &#039;object&#039;) {post_hash.custom_taxa = [post_hash.custom_taxa]; }
+          if(post_hash.unit_choice === &#039;tax_silva119_custom&#039; &amp;&amp; post_hash.custom_taxa != [&#039;NA&#039;]){
+            post_hash.custom_taxa = this.clean_custom_tax(post_hash.custom_taxa);
+          }
+
+
+          post_hash.include_nas                  = req.body.include_nas  || &#039;yes&#039;;
+          post_hash.min_range                    = req.body.min_range || 0;
+          post_hash.max_range                    = req.body.max_range || 100;
+          if(typeof req.body.selected_metadata == &#039;string&#039;){
+            post_hash.metadata                     = req.body.selected_metadata.split(&#039;,&#039;) || [];
+          }else{
+            post_hash.metadata                     = req.body.selected_metadata  || [];
+          }
+          
+          post_hash.update_data                  = req.body.update_data  || false;  // zer
+          
+
+    }else {
+        chosen_id_name_hash = this.create_chosen_id_name_hash(req.body.ds_order);   
+        post_hash = visual_post_items;       
+    }
+    return post_hash;
+  },
+
+  //
+  //
+  //
+  get_otus_query: function() {
+
+  },
+
+  //
+  //
+  //
+  get_med_query: function() {
+
+  },
+  //
+  // write file
+  //
+  write_file: function(filename, txt) {
+
+    fs.writeFile(path.resolve(__dirname, filename), txt, function(err) {
+      if(err) {
+        console.log(&#039;Could not write file: &#039;+filename+&#039; Here is the error: &#039;+err);
+      } else {
+        console.log(&quot;The file (&quot;+filename+&quot;) was saved!&quot;);
+      }
+    });
+
+  },
+  //
+  //  tax file for phyloseq
+  //
+  output_tax_file: function( tax_file, biom_matrix, rank_num) {
+    var tax;
+    txt = &#039;&#039;;
+    //console.log(&#039;rank &#039;+rank)
+    
+    var header = &quot;\tDomain&quot;
+    for(r = 1; r &lt;= rank_num; r++){  
+      rank = CONSTS.RANKS[r]
+      if(rank == &#039;klass&#039;){ rank = &#039;Class&#039;}
+      rank = rank[0].toUpperCase() + rank.slice(1)
+      header += &quot;\t&quot;+rank;
+    }
+    header += &quot;\n&quot;;
+    txt += header;
+    for(i in biom_matrix.rows){
+      tax = biom_matrix.rows[i].id;
+      console.log(tax)
+      items = tax.split(&#039;;&#039;);
+      txt += tax;
+      for(t in items){
+        //if(t==1){
+        //  txt += &quot;\t&quot;+items[0]+&#039;;&#039;+items[t];
+        //}else{
+          txt += &quot;\t&quot;+items[t];
+        //}
+        
+      }
+      txt += &quot;\n&quot;;
+    }
+
+    fs.writeFile(path.resolve(__dirname, tax_file), txt, function(err) {
+      if(err) {
+        console.log(&#039;Could not write tax file: &#039;+tax_file+&#039; Here is the error: &#039;+err);
+      } else {
+        console.log(&quot;The file (&quot;+tax_file+&quot;) was saved!&quot;);
+      }
+    });
+
+
+  },
+  //
+  // NORMALIZATION
+  //
+  normalize_counts: function(norm_type, selection_obj, max_count) {
+    
+    // get max dataset count
+    //var selection_obj = JSON.parse(obj);
+    //var max_count = post_items.max_ds_count;
+    //selection_obj.max_ds_count = max_count;
+    console.log(&#039;in normalization: &#039;+norm_type+&#039; max: &#039;+max_count.toString());
+
+    var new_counts_obj = [];
+    for (var n=0; n &lt; selection_obj.seq_freqs.length; n++) {
+      var sum=0;
+      for (var i = 0; i &lt; selection_obj.seq_freqs[n].length; i++ ) {
+        sum += selection_obj.seq_freqs[n][i];
+      }
+      var temp = [];
+      for (i=0; i &lt; selection_obj.seq_freqs[n].length; i++) {
+
+        if (norm_type === &#039;max&#039;) {
+          temp.push( parseInt( ( selection_obj.seq_freqs[n][i] * max_count ) / sum, 10) );
+        } else {  // freq
+          temp.push( parseFloat( ( selection_obj.seq_freqs[n][i]  / sum ).toFixed(8) ) );
+        }
+
+      }
+      new_counts_obj.push(temp);
+    }
+    
+    return new_counts_obj;
+  },
+
+  //
+  //  MAX DS COUNT
+  //
+  get_max_dataset_count: function(obj) {
+    // Gets the maximum dataset count from the &#039;seq_freqs&#039; in selection_obj
+    var max_count = 0;
+    for (var n=0; n &lt; obj.seq_freqs.length; n++) {
+      var sum=0;
+      for (var i = 0; i &lt; obj.seq_freqs[n].length; i++) {  
+        sum += parseInt(obj.seq_freqs[n][i]);
+        //console.log(obj.seq_freqs[n][i]);
+      }
+      
+      if (sum &gt; max_count) {
+        max_count = sum;
+      }
+    }
+    //console.log(max_count);
+    return max_count;
+  },
+
+  //
+  // STRING to COLOR CODE
+  //
+  string_to_color_code2: function(str) {
+    // str to hash
+    for (var i = 0, hash = 0; i &lt; str.length; hash = str.charCodeAt(i++) + ((hash &lt;&lt; 5) - hash));
+    // int/hash to hex
+    // TODO: &quot;&#039;i&#039; is already defined.&quot;
+    for (var i1 = 0, colour = &quot;#&quot;; i1 &lt; 3; colour += (&quot;00&quot; + ((hash &gt;&gt; i1++ * 8) &amp; 0xFF).toString(16)).slice(-2));
+    return colour;
+  },
+  string_to_color_code: function (str){
+    var hash = 0;
+    for(var i=0; i &lt; str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash &lt;&lt; 3) - hash);
+    }
+    var color = Math.abs(hash).toString(16).substring(0, 6);
+    return &quot;#&quot; + &#039;000000&#039;.substring(0, 6 - color.length) + color;
+  },
+  
+
+//
+//
+//
+run_script_cmd: function (req,res, ts, command, visual_name) {
+     var exec = require(&#039;child_process&#039;).exec;
+
+    console.log(command);
+    exec(command, {maxBuffer:16000*1024}, function (err, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+        if(err) {
+        	res.send(&#039;ERROR: &#039;+err);
+        }else{
+			if(visual_name == &#039;fheatmap&#039;){
+	            var image = &#039;/tmp_images/&#039;+ts+&#039;_heatmap.pdf&#039;;
+	            var html = &quot;&lt;div id=&#039;pdf&#039;&gt;&quot;;
+	            html += &quot;&lt;object data=&#039;&quot;+image+&quot;?zoom=100&amp;scrollbar=0&amp;toolbar=0&amp;navpanes=0&#039; type=&#039;application/pdf&#039; width=&#039;1000&#039; height=&#039;900&#039; /&gt;&quot;;
+	            html += &quot; &lt;p&gt;ERROR in loading pdf file&lt;/p&gt;&quot;;
+	            html += &quot;&lt;/object&gt;&lt;/div&gt;&quot;;
+	            //var html = &quot;&lt;img alt=&#039;alt_freq-heatmap-fig&#039; src=&#039;&quot;+image+&quot;&#039; /&gt;&quot;
+	            console.log(html);
+	            res.send(html);  
+	        }
+		}    
+
+    });
+ },
+
+
+//
+//
+//
+create_chosen_id_name_hash: function(dataset_ids) {
+  
+  console.log(chosen_id_name_hash );
+  var chosen_id_name_hash    = {};
+  chosen_id_name_hash.ids    = [];
+  chosen_id_name_hash.names  = [];
+  for (var i in dataset_ids){      
+      did   = dataset_ids[i];
+      dname = DATASET_NAME_BY_DID[did];
+      pid   = PROJECT_ID_BY_DID[did];
+      pname = PROJECT_INFORMATION_BY_PID[pid].project;
+      //dataset_ids.push(did+&#039;--&#039;+pname+&#039;--&#039;+dname);
+      chosen_id_name_hash.ids.push(did);
+      chosen_id_name_hash.names.push(pname+&#039;--&#039;+dname);
+  }
+  
+  return chosen_id_name_hash;
+},
+create_new_chosen_id_name_hash: function(dataset_list) {
+  
+  console.log(chosen_id_name_hash );
+  var potential_chosen_id_name_hash    = {};
+  potential_chosen_id_name_hash.ids    = [];
+  potential_chosen_id_name_hash.names  = [];
+  for (var i in dataset_list){
+      //items = dataset_list[i].split(&#039;--&#039;);
+      did= chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(dataset_list[i])]
+      //did   = dataset_list[i];
+      dname = DATASET_NAME_BY_DID[did];
+      pid   = PROJECT_ID_BY_DID[did];
+      pname = PROJECT_INFORMATION_BY_PID[pid].project;
+      //dataset_ids.push(did+&#039;--&#039;+pname+&#039;--&#039;+dname);
+      potential_chosen_id_name_hash.ids.push(did);
+      potential_chosen_id_name_hash.names.push(pname+&#039;--&#039;+dname);
+  }
+  
+  return potential_chosen_id_name_hash;
+},
+//
+//
+//
+
+get_metadata_selection: function(dataset_ids, metadata, type) {
+    req_metadata = CONSTS.REQ_METADATA_FIELDS;
+    //console.log(&#039;req_metadata &#039;+req_metadata)
+    fields_lookup = {};
+    for (var i in dataset_ids) {      
+      did = dataset_ids[i];
+      //console.log(&#039;id &#039;+ id)
+      if (did in metadata) {
+        for (var field in metadata[did]) {
+          
+          //console.log(&#039;field_name &#039;+field)
+			if(type == &#039;custom&#039;){
+	  		  if (req_metadata.indexOf(field) === -1 ) {
+	              //console.log(&#039;PUT IN CUSTOM &#039;+field)
+	              fields_lookup[field] = 1;
+	          }
+			
+			}else{
+  	  		  if (req_metadata.indexOf(field) &gt;= 0 ) {
+  	              //console.log(&#039;PUT IN CUSTOM &#039;+field)
+  	              fields_lookup[field] = 1;
+  	          }
+			}
+		  
+        }
+      }
+
+    }
+    return fields_lookup;
+},
+//
+//
+//
+check_initial_status: function(url) {
+
+  var values_updated;
+  var min,max,norm,dist;
+  // these only seen in url after page first rendered
+  if(url.query.min_range === undefined) {
+    min   = 0;
+    max   = 100;
+    norm  = &#039;none&#039;;
+    dist  = &#039;morisita_horn&#039;;  // default distance    
+    values_updated = false;
+  } else {
+    min   = url.query.min_range  || 0;
+    max   = url.query.max_range  || 100;
+    norm  = url.query.norm       ||  &#039;none&#039;;
+    dist  = url.query.selected_distance || &#039;morisita_horn&#039;;  // default distance    
+    values_updated = true;    
+  }
+
+  if(Number(max) &lt;= Number(min)) {min=0;max=100;} 
+  visual_post_items.min_range = Number(min);
+  visual_post_items.max_range = Number(max);
+  visual_post_items.normalization = norm;
+  visual_post_items.selected_distance = dist;
+  
+  //console.log(&#039;min &#039;+min.toString()+&#039; max &#039;+max.toString()+&#039; norm &#039;+norm)
+  if(Number(min)===0 &amp;&amp; Number(max)===100 &amp;&amp; norm===&#039;none&#039;) {
+    // 
+    values_updated = false;  // return to initial state
+  }
+  console.log(&#039;values_updated: &#039;+values_updated.toString());
+  return values_updated;
+},
+//
+//
+//
+clean_custom_tax: function(custom_tax_ids){
+    console.log(&#039;cleaning custom tax&#039;)
+    cleaned_id_list = []
+    nodes_to_delete = []
+    for(index in custom_tax_ids){
+      node_id = custom_tax_ids[index]
+      node = new_taxonomy.taxa_tree_dict_map_by_id[node_id]
+      //console.log(&#039;nodes &#039;,node)
+      parent_id = node.parent_id.toString()
+      //console.log(&#039;parent_id &#039;,parent_id)
+      //console.log(custom_tax_ids.indexOf(parent_id))
+      if(nodes_to_delete.indexOf(parent_id) == -1 &amp;&amp; custom_tax_ids.indexOf(parent_id) &gt; -1){
+        nodes_to_delete.push(parent_id)
+      }
+
+      
+    }
+    //console.log(&#039;nodes_to_delete &#039;,nodes_to_delete)
+    for(index in custom_tax_ids){
+      node_id = custom_tax_ids[index].toString()
+      //console.log(node_id,&#039; &#039;,cleaned_id_list.indexOf(node_id),&#039; &#039;,nodes_to_delete.indexOf(node_id))
+      if(cleaned_id_list.indexOf(node_id) == -1 &amp;&amp; nodes_to_delete.indexOf(node_id) == -1){
+        cleaned_id_list.push(node_id)
+      }
+    }
+    
+    console.log(&#039;cleaned_id_list &#039;,cleaned_id_list)
+    custom_tax_ids = cleaned_id_list
+    return custom_tax_ids
+
+    // no cleaning
+    // Bacteria;Acidobacteria
+    // Bacteria;Acidobacteria;Acidobacteria
+    // Bacteria;Acidobacteria;Acidobacteria;Acidobacteriales
+    // Bacteria;Acidobacteria;Acidobacteria;Acidobacteriales;Acidobacteriaceae
+    // Bacteria;Acidobacteria;Acidobacteria;Acidobacteriales;Acidobacteriaceae;Chloroacidobacterium
+    // Bacteria;Acidobacteria;Acidobacteria_gp22
+    // Bacteria;Acidobacteria;Acidobacteria_gp26
+    // Bacteria;Acidobacteria;Holophagae
+
+    // with cleaning
+    // Bacteria;Acidobacteria;Acidobacteria;Acidobacteriales;Acidobacteriaceae;Chloroacidobacterium
+    // Bacteria;Acidobacteria;Acidobacteria_gp22
+}
+//
+//
+//
+};   // end module.exports</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - routes/routes_admin.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>routes/routes_admin.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">58.31</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">637</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">68.63</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">7.11</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var express = require(&#039;express&#039;);
+var router = express.Router();
+var passport = require(&#039;passport&#039;);
+var helpers = require(&#039;./helpers/helpers&#039;);
+var queries = require(&#039;./queries&#039;);
+
+router.get(&#039;/admin_index&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+
+  console.log(&#039;in admin&#039;);
+   res.render(&#039;admin/admin_index&#039;, {
+              title     :&#039;VAMPS Site Administration&#039;,
+              message   : req.flash(&#039;message&#039;),
+              user: req.user,
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+            });
+
+});
+//
+//
+//
+router.get(&#039;/assign_permissions&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+
+  console.log(&#039;in assign_permissions&#039;);
+   res.render(&#039;admin/assign_permissions&#039;, {
+              title     :&#039;VAMPS Site Administration&#039;,
+              message   : req.flash(&#039;message&#039;),
+              user: req.user,
+              project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+              user_info: JSON.stringify(ALL_USERS_BY_UID),
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+            });
+
+});
+
+//
+//
+//
+router.get(&#039;/permissions&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+
+  console.log(&#039;in permissions&#039;);
+  //console.log(ALL_USERS_BY_UID);
+  //console.log(PROJECT_INFORMATION_BY_PID);
+   res.render(&#039;admin/permissions&#039;, {
+              title     :&#039;VAMPS Site Administration&#039;,
+              message   : req.flash(&#039;message&#039;),
+              user: req.user,
+              project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+              user_info: JSON.stringify(ALL_USERS_BY_UID),
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+            });
+
+});
+router.get(&#039;/public&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+
+  console.log(&#039;in public&#039;);
+  //console.log(ALL_USERS_BY_UID);
+  //console.log(PROJECT_INFORMATION_BY_PID);
+   res.render(&#039;admin/public&#039;, {
+              title     :&#039;VAMPS Site Administration&#039;,
+              message   : req.flash(&#039;message&#039;),
+              user: req.user,
+              project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+              user_info: JSON.stringify(ALL_USERS_BY_UID),
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+            });
+
+});
+router.post(&#039;/public_update&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+
+   console.log(&#039;in public_update&#039;);
+   //console.log(ALL_USERS_BY_UID);
+   //console.log(PROJECT_INFORMATION_BY_PID);
+   selected_pid = req.body.pid ;
+   new_public = parseInt(req.body.public);
+   //console.log(selected_pid,&#039; &#039;,new_public)
+   response = &#039;no&#039;
+   if(new_public !== PROJECT_INFORMATION_BY_PID[selected_pid].public){
+      q = &quot;UPDATE project set public=&#039;&quot;+new_public+&quot;&#039; WHERE project_id=&#039;&quot;+selected_pid+&quot;&#039;&quot;;
+
+      if(new_public === 1){
+            PROJECT_INFORMATION_BY_PID[selected_pid].public = 1;
+            PROJECT_INFORMATION_BY_PID[selected_pid].permissions = [];
+      }else{
+            // give owner sole permissions
+            PROJECT_INFORMATION_BY_PID[selected_pid].permissions = [PROJECT_INFORMATION_BY_PID[selected_pid].oid];
+            PROJECT_INFORMATION_BY_PID[selected_pid].public = 0;
+      }
+      connection.query(q, function(err, rows, fields){
+            //console.log(qSequenceCounts)
+                if (err)  {
+                  console.log(&#039;Query error: &#039; + err);
+                  response = &#039;Query error: &#039; + err;
+                }else{
+                  response = &#039;Successfully updated&#039;;
+                }
+                res.send(response);
+      });
+  }else{
+    res.send(&#039;no change to public status&#039;);
+  }
+});
+router.post(&#039;/show_user_info&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+
+  console.log(&#039;in show_user_info&#039;);
+  selected_uid = req.body.uid;
+      if(selected_uid in ALL_USERS_BY_UID){
+        info = ALL_USERS_BY_UID[selected_uid];
+      }else{
+
+      }
+      html = &#039;&lt;hr&gt;&#039;;
+      html += &#039;&lt;table&gt;&#039;;
+      html += &#039;&lt;tr&gt;&#039;;
+      html += &#039;&lt;td&gt;Last&lt;/td&gt;&lt;td&gt;&#039;+info.last_name+&#039;&lt;/td&gt;&#039;;
+      html += &#039;&lt;/tr&gt;&#039;;
+      html += &#039;&lt;tr&gt;&#039;;
+      html += &#039;&lt;td&gt;First&lt;/td&gt;&lt;td&gt;&#039;+info.first_name+&#039;&lt;/td&gt;&#039;;
+      html += &#039;&lt;/tr&gt;&#039;;
+      html += &#039;&lt;tr&gt;&#039;;
+      html += &#039;&lt;td&gt;UserName&lt;/td&gt;&lt;td&gt;&#039;+info.username+&#039;&lt;/td&gt;&#039;;
+      html += &#039;&lt;/tr&gt;&#039;;
+      html += &#039;&lt;table&gt;&#039;;
+
+
+      res.send(html);
+
+});
+//
+//
+//
+router.get(&#039;/alter_datasets&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+   
+    console.log(&#039;in alter_datasets&#039;)
+    var url = require(&#039;url&#039;);
+    var url_parts = url.parse(req.url, true);
+    var query = url_parts.query;
+
+    if(url_parts.query.pid === undefined){
+     //ERROR
+     return
+    }else{
+    var pid = url_parts.query.pid;
+    }
+
+    ALL_DATASETS.projects.forEach(function(prj) {
+      if(prj.pid == pid){
+        myjson = prj;        
+      }
+    });
+
+    console.log(myjson) 
+    res.render(&#039;admin/alter_datasets&#039;, {
+              title     :&#039;VAMPS Site Administration&#039;,
+              message   : req.flash(&#039;message&#039;), 
+              user: req.user, 
+              pid: pid,
+              //constants.ENV_SOURCE
+              project_info: JSON.stringify(myjson),
+              project: PROJECT_INFORMATION_BY_PID[pid].project,
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+            }); 
+
+});
+//
+//
+//
+router.get(&#039;/alter_project&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+
+  console.log(&#039;in alter_project&#039;);
+   var url = require(&#039;url&#039;);
+   var url_parts = url.parse(req.url, true);
+   var query = url_parts.query;
+   var pid;
+   
+   if(url_parts.query.pid === undefined){
+    pid = 0;
+   }else{
+    pid = url_parts.query.pid;
+   }
+   console.log(pid);
+   res.render(&#039;admin/alter_project&#039;, {
+              title     :&#039;VAMPS Site Administration&#039;,
+              message   : req.flash(&#039;message&#039;),
+              user: req.user,
+              pid_to_open:pid,
+              env: JSON.stringify(req.CONSTS.ENV_SOURCE),
+              project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+              user_info: JSON.stringify(ALL_USERS_BY_UID),
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+            });
+
+});
+//
+//
+//
+router.post(&#039;/show_project_info&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+
+  console.log(&#039;in show_user_info&#039;);
+  //console.log(PROJECT_INFORMATION_BY_PID);
+
+  selected_pid = req.body.pid;
+      if(selected_pid in PROJECT_INFORMATION_BY_PID){
+        info = PROJECT_INFORMATION_BY_PID[selected_pid];
+      }else{
+
+      }
+      html = &#039;&#039;;
+
+      html += &quot;&lt;table class=&#039;admin_table&#039; border=&#039;1&#039;&gt;&quot;;
+
+      html += &#039;&lt;tr&gt;&lt;th&gt;&lt;/th&gt;&lt;th&gt;Current Value&lt;/th&gt;&lt;th&gt;Enter or Select New Value&lt;/th&gt;&lt;th&gt;&lt;/th&gt;&lt;th&gt;Msg&lt;/th&gt;&lt;/tr&gt;&#039;;
+
+      html += &#039;&lt;tr&gt;&#039;;
+      html += &quot;&lt;form id=&#039;&#039; name=&#039;update_pname_form&#039; method=&#039;POST&#039; action=&#039;update_pname&#039;&gt;&quot;;
+      html += &#039; &lt;td&gt;Project Name (pid)&lt;/td&gt;&lt;td&gt;&#039;+info.project+&#039; &lt;small&gt;(&#039;+info.pid+&#039;)&lt;/small&gt;&lt;/td&gt;&#039;;
+      html += &quot; &lt;td&gt;&lt;input type=&#039;edit&#039; id=&#039;new_pname&#039; name=&#039;new_pname&#039; value=&#039;&quot;+info.project+&quot;&#039; width=&#039;200&#039; style=&#039;width: 200px&#039; /&gt;&lt;/td&gt;&quot;;
+      html += &quot; &lt;td&gt;&lt;input id=&#039;new_pname_btn&#039; type=&#039;button&#039; value=&#039;Update&#039; onclick=\&quot;update_project(&#039;pname&#039;, &#039;&quot;+selected_pid+&quot;&#039;)\&quot;&gt;&lt;/td&gt;&quot;;
+      html += &quot; &lt;td&gt;&lt;div id=&#039;new_pname_response_id&#039;&gt;&lt;/div&gt;&lt;/td&gt;&quot;;
+      html += &quot;&lt;/form&gt;&quot;;
+      html += &#039;&lt;/tr&gt;&#039;;
+
+      html += &#039;&lt;tr&gt;&#039;;
+      html += &quot;&lt;form id=&#039;&#039; name=&#039;update_powner_form&#039; method=&#039;POST&#039; action=&#039;update_powner&#039;&gt;&quot;;
+      html += &#039; &lt;td&gt;Owner (username-uid)&lt;/td&gt;&lt;td&gt;&#039;+info.last+&#039;, &#039;+info.first+&#039; &lt;small&gt;(&#039;+info.username+&quot;-&quot;+info.oid+&#039;)&lt;/small&gt;&lt;/td&gt;&#039;;
+      html += &#039; &lt;td&gt;&#039;;
+      html += &quot; &lt;select id=&#039;new_oid&#039; name=&#039;new_oid&#039; width=&#039;200&#039; style=&#039;width: 200px&#039;&gt;&quot;;
+      for(uid in ALL_USERS_BY_UID) {
+          if(ALL_USERS_BY_UID[uid].username !== &#039;guest&#039;){
+            if(ALL_USERS_BY_UID[uid].username === info.username){
+              html += &quot;    &lt;option selected value=&#039;&quot;+uid+&quot;&#039;&gt;&quot;+ALL_USERS_BY_UID[uid].last_name+&quot;,&quot;+ALL_USERS_BY_UID[uid].first_name;
+              html += &quot;     &lt;small&gt;(&quot;+ALL_USERS_BY_UID[uid].username+&quot;)&lt;/small&gt;&lt;/option&gt;&quot;;
+            }else{
+              html += &quot;    &lt;option value=&#039;&quot;+uid+&quot;&#039;&gt;&quot;+ALL_USERS_BY_UID[uid].last_name+&quot;,&quot;+ALL_USERS_BY_UID[uid].first_name;
+              html += &quot;     &lt;small&gt;(&quot;+ALL_USERS_BY_UID[uid].username+&quot;)&lt;/small&gt;&lt;/option&gt;&quot;;
+            }
+          }
+      }
+      html += &quot; &lt;/select&gt;&quot;;
+      html += &#039; &lt;/td&gt;&#039;;
+      html += &quot; &lt;td&gt;&lt;input id=&#039;new_powner_btn&#039; type=&#039;button&#039; value=&#039;Update&#039; onclick=\&quot;update_project(&#039;powner&#039;, &#039;&quot;+selected_pid+&quot;&#039;)\&quot;&gt;&lt;/td&gt;&quot;;
+      html += &quot; &lt;td&gt;&lt;div id=&#039;new_powner_response_id&#039;&gt;&lt;/div&gt;&lt;/td&gt;&quot;;
+      html += &quot;&lt;/form&gt;&quot;;
+      html += &#039;&lt;/tr&gt;&#039;;
+
+
+      html += &#039;&lt;tr&gt;&#039;;
+      html += &quot;&lt;form id=&#039;&#039; name=&#039;update_ptitle_form&#039; method=&#039;POST&#039; action=&#039;update_ptitle&#039;&gt;&quot;;
+      html += &#039; &lt;td&gt;Project Title&lt;/td&gt;&lt;td&gt;&lt;span&gt;&#039;+info.title+&#039;&lt;/span&gt;&lt;/td&gt;&#039;;
+      html += &quot; &lt;td&gt;&lt;input type=&#039;edit&#039; id=&#039;new_ptitle&#039; name=&#039;new_ptitle&#039; value=&#039;&quot;+info.title+&quot;&#039; width=&#039;200&#039; style=&#039;width: 200px&#039;/&gt;&lt;/td&gt;&quot;;
+      html += &quot; &lt;td&gt;&lt;input id=&#039;new_ptitle_btn&#039; type=&#039;button&#039; value=&#039;Update&#039; onclick=\&quot;update_project(&#039;ptitle&#039;, &#039;&quot;+selected_pid+&quot;&#039;)\&quot;&gt;&lt;/td&gt;&quot;;
+      html += &quot; &lt;td&gt;&lt;div id=&#039;new_ptitle_response_id&#039;&gt;&lt;/div&gt;&lt;/td&gt;&quot;;
+      html += &quot;&lt;/form&gt;&quot;;
+      html += &#039;&lt;/tr&gt;&#039;;
+
+      html += &#039;&lt;tr&gt;&#039;;
+      html += &quot;&lt;form id=&#039;&#039; name=&#039;update_pdesc_form&#039; method=&#039;POST&#039; action=&#039;update_pdesc&#039;&gt;&quot;;
+      html += &#039; &lt;td&gt;Project Description&lt;/td&gt;&lt;td&gt;&lt;span&gt;&#039;+info.description+&#039;&lt;/span&gt;&lt;/td&gt;&#039;;
+      html += &quot; &lt;td&gt;&lt;textarea id=&#039;new_pdesc&#039; name=&#039;new_pdesc&#039;  value=&#039;&quot;+info.description+&quot;&#039; rows=&#039;2&#039; cols=&#039;28&#039;&gt;&quot;+info.description+&quot;&lt;/textarea&gt;&lt;/td&gt;&quot;;
+      html += &quot; &lt;td&gt;&lt;input id=&#039;new_pdesc_btn&#039; type=&#039;button&#039; value=&#039;Update&#039; onclick=\&quot;update_project(&#039;pdesc&#039;, &#039;&quot;+selected_pid+&quot;&#039;)\&quot;&gt;&lt;/td&gt;&quot;;
+      html += &quot; &lt;td&gt;&lt;div id=&#039;new_pdesc_response_id&#039;&gt;&lt;/div&gt;&lt;/td&gt;&quot;;
+      html += &quot;&lt;/form&gt;&quot;;
+      html += &#039;&lt;/tr&gt;&#039;;
+
+      
+
+      html += &#039;&lt;tr&gt;&#039;;
+      html += &quot;&lt;form id=&#039;&#039; name=&#039;update_penv_form&#039; method=&#039;POST&#039; action=&#039;update_penv&#039;&gt;&quot;;
+      html += &quot;&lt;td&gt;Environmental Source&lt;/td&gt;&lt;td&gt;&quot;+ info.env_source_name+&quot;&lt;/td&gt;&quot;;
+      html += &quot;&lt;td&gt;&quot;;
+      html += &quot; &lt;select id=&#039;new_eid&#039; name=&#039;new_eid&#039; width=&#039;200&#039; style=&#039;width: 200px&#039;&gt; &quot;;   
+      for(eid in req.CONSTS.ENV_SOURCE) {                        
+          if(req.CONSTS.ENV_SOURCE[eid] === info.env_source_name){
+              html += &quot;&lt;option selected value=&#039;&quot;+ eid+&quot;&#039;&gt;&quot;+ req.CONSTS.ENV_SOURCE[eid];
+              html += &quot; &lt;small&gt;(&quot;+ eid +&quot;)&lt;/small&gt;&lt;/option&gt;&quot;;
+          }else{
+              html += &quot;&lt;option value=&#039;&quot;+ eid+&quot;&#039;&gt;&quot;+ req.CONSTS.ENV_SOURCE[eid];
+              html += &quot; &lt;small&gt;(&quot;+ eid +&quot;)&lt;/small&gt;&lt;/option&gt;&quot;;
+          }                           
+      }  
+      html += &#039;&lt;/select&gt;&#039;;
+      html += &#039;&lt;/td&gt;&#039;;
+      html += &quot;&lt;td&gt;&lt;input id=&#039;new_penv_btn&#039; type=&#039;button&#039; value=&#039;Update&#039; onclick=\&quot;update_project(&#039;penv&#039;, &#039;&quot;+selected_pid+&quot;&#039;)\&quot;&gt;&lt;/td&gt;&quot;;
+      html += &quot;&lt;td&gt;&lt;div id=&#039;new_penv_response_id&#039;&gt;&lt;/div&gt;&lt;/td&gt;&quot;;
+      html += &quot;&lt;/form&gt;&quot;;
+      html += &#039;&lt;/tr&gt;&#039;;
+
+
+      html += &#039;&lt;tr&gt;&#039;;
+      if(info.public === 1){
+        html += &#039;&lt;td&gt;Public&lt;/td&gt;&lt;td&gt;True&lt;/td&gt;&#039;;
+      }else{
+        html += &#039;&lt;td&gt;Public&lt;/td&gt;&lt;td&gt;False&lt;/td&gt;&#039;;
+      }
+
+
+      html += &#039;&lt;td&gt;&lt;a href=&quot;public&quot;&gt;View or Change&lt;/a&gt;&lt;/td&gt;&#039;;
+      html += &quot;&lt;td&gt;&lt;/td&gt;&quot;;
+      html += &quot;&lt;td&gt;&lt;/td&gt;&quot;;
+      html += &#039;&lt;/tr&gt;&#039;;
+
+      html += &#039;&lt;tr&gt;&#039;;
+      html += &#039;&lt;td&gt;Permissions&lt;/td&gt;&lt;td&gt;&#039;+info.permissions+&#039;&lt;/td&gt;&#039;;
+      html += &#039;&lt;td&gt;&lt;a href=&quot;permissions&quot;&gt;View or Change&lt;/a&gt;&lt;/td&gt;&#039;;
+      html += &quot;&lt;td&gt;&lt;/td&gt;&quot;;
+      html += &quot;&lt;td&gt;&lt;/td&gt;&quot;;
+      html += &#039;&lt;/tr&gt;&#039;;
+
+      html += &#039;&lt;tr&gt;&#039;;
+      html += &#039;&lt;td&gt;Datasets&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&#039;;
+      html += &quot;&lt;td&gt;&lt;a href=\&quot;alter_datasets?pid=&quot;+selected_pid+&quot;\&quot;&gt;View or Change&lt;/a&gt;&lt;/td&gt;&quot;;
+      html += &quot;&lt;td&gt;&lt;/td&gt;&quot;;
+      html += &quot;&lt;td&gt;&lt;/td&gt;&quot;;
+      html += &#039;&lt;/tr&gt;&#039;;
+
+      html += &#039;&lt;table&gt;&#039;;
+      //html += &quot;&lt;input type=&#039;submit&#039; value=&#039;Update&#039;&gt;&quot;;
+      //html += &quot;&lt;input type=&#039;hidden&#039; name=&#039;pid&#039; value=&#039;&quot;+selected_pid+&quot;&#039;&gt;&quot;;
+      //html += &#039;&lt;/form&gt;&#039;
+
+      res.send(html);
+
+});
+//
+//
+//
+router.post(&#039;/update_dataset_info&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+  //console.log(req.body)
+  console.log(&#039;in update_dataset_info&#039;);
+  var did = req.body.did;
+  var pid = req.body.pid;
+  var new_name = req.body.name;
+  var new_desc = req.body.desc;
+
+  DATASET_NAME_BY_DID[did] = name;
+  ALL_DATASETS.projects.forEach(function(prj) {
+    if(prj.pid == pid){
+      prj.datasets.forEach(function(ds) {
+        if(ds.did == did){
+          ds.dname = new_name;
+          ds.ddesc = new_desc;
+        }
+      });          
+    }
+  });
+
+  console.log(new_name+&#039; -- &#039;+new_desc)
+  res.send(&#039;Done!&#039;)
+
+});
+//
+//
+//
+router.post(&#039;/update_project_info&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+
+  console.log(req.body);
+
+  console.log(&#039;in update_project_info&#039;);
+  var item_to_update = req.body.item;
+  var value = req.body.value;
+  var pid = req.body.pid;
+  var q = &quot;UPDATE project set&quot;;
+
+  console.log(ALL_DATASETS);
+  console.log(typeof ALL_DATASETS);
+
+  switch(item_to_update){
+      case &#039;pname&#039;:
+          new_project_name = value;
+          var rev_pname = helpers.reverse(new_project_name);
+          var old_project_name = PROJECT_INFORMATION_BY_PID[pid].project;
+          PROJECT_INFORMATION_BY_PID[pid].project     = new_project_name;
+          delete PROJECT_INFORMATION_BY_PNAME[old_project_name];
+          PROJECT_INFORMATION_BY_PNAME[new_project_name] = PROJECT_INFORMATION_BY_PID[pid];
+          ALL_DATASETS.projects.forEach(function(prj) {
+              if(prj.pid == pid){
+                prj.name = new_project_name;
+              }
+          });
+
+
+
+          q += &quot; project=&#039;&quot;+new_project_name+&quot;&#039;, rev_project_name=&#039;&quot;+rev_pname+&quot;&#039; &quot;;
+          break;
+
+      case &#039;powner&#039;:
+          new_owner_id = value;
+          PROJECT_INFORMATION_BY_PID[pid].last        = ALL_USERS_BY_UID[new_owner_id].last_name;
+          PROJECT_INFORMATION_BY_PID[pid].first       = ALL_USERS_BY_UID[new_owner_id].first_name;
+          PROJECT_INFORMATION_BY_PID[pid].username    = ALL_USERS_BY_UID[new_owner_id].username;
+          PROJECT_INFORMATION_BY_PID[pid].email       = ALL_USERS_BY_UID[new_owner_id].email;
+          PROJECT_INFORMATION_BY_PID[pid].institution = ALL_USERS_BY_UID[new_owner_id].institution;
+          PROJECT_INFORMATION_BY_PID[pid].oid         = new_owner_id;
+          q += &quot; owner_user_id=&#039;&quot;+new_owner_id+&quot;&#039;&quot; ;
+          break;
+
+      case &#039;ptitle&#039;:
+          new_project_title = value;
+          PROJECT_INFORMATION_BY_PID[pid].title       = new_project_title;
+          ALL_DATASETS.projects.forEach(function(prj) {
+              if(prj.pid == pid){
+                prj.title = new_project_title;
+              }
+          });
+          q += &quot; title=&#039;&quot;+new_project_title+&quot;&#039;&quot;;
+          break;
+
+      case &#039;pdesc&#039;:
+          new_project_desc = value;
+          PROJECT_INFORMATION_BY_PID[pid].description = new_project_desc;
+          q += &quot; project_description=&#039;&quot;+new_project_desc+&quot;&#039;&quot;;
+          break;
+
+      case &#039;penv&#039;:
+          new_project_envid = value;
+          PROJECT_INFORMATION_BY_PID[pid].env_source_name = new_project_envid;
+          q += &quot; env_source_id=&#039;&quot;+new_project_env+&quot;&#039;&quot;;          
+          break;
+      default:
+          console.log(&#039;ERROR in update_project_info&#039;);
+
+    }
+    q += &quot; WHERE project_id=&#039;&quot;+pid+&quot;&#039;&quot;;
+
+    console.log(q);
+    connection.query(q, function(err, rows, fields){
+        //console.log(qSequenceCounts)
+            if (err)  {
+              console.log(&#039;Query error: &#039; + err);
+              response = &#039;Query error: &#039; + err;
+            }else{
+              response = &#039;Successfully updated&#039;;
+
+            }
+
+            res.send(response);
+
+    });
+
+
+});
+//
+//
+//
+router.post(&#039;/grant_access&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+
+      console.log(&#039;in grant_access&#039;);
+      selected_uid = req.body.uid;
+      selected_pid = req.body.pid;
+      var html = &#039;Successfully Updated&#039;;
+      // 1-add to PROJECT_INFORMATION_BY_PID[selected_pid]
+
+      if(selected_pid in PROJECT_INFORMATION_BY_PID){        
+        //console.log(PROJECT_INFORMATION_BY_PID[selected_pid].permissions)
+        //console.log(PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(parseInt(selected_uid)))
+        if(PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(parseInt(selected_uid)) === -1){
+            PROJECT_INFORMATION_BY_PID[selected_pid].permissions.push(parseInt(selected_uid))
+            //console.log(&#039;11111&#039;)
+
+        }else{
+          html = &#039;User already has access to this project.&#039;
+          res.send(html);
+
+          //html = &#039;Trying to push!&#039;
+
+          console.log(&#039;22222&#039;);
+          return;
+
+        }
+      }else{
+        html = &#039;Could not find project - This is a PROBLEM!&#039;;
+      }
+
+      // 2- add to table &#039;access&#039;
+      //q = &quot;INSERT ignore into `access` (user_id, project_id) VALUES(&#039;&quot;+selected_uid+&quot;&#039;,&#039;&quot;+selected_pid+&quot;&#039;)&quot;
+      connection.query(queries.insert_access_table(selected_uid,selected_pid), function(err, rows, fields){
+      //console.log(qSequenceCounts)
+          if (err)  {
+            console.log(&#039;Query error: &#039; + err);
+
+            html = &#039;Query error: &#039; + err;
+          } else {
+
+          }
+          res.send(html);
+
+      });
+
+});
+//
+//
+//
+router.get(&#039;/new_user&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+    console.log(&#039;in new_user GET ADMIN&#039;)
+
+    res.render(&#039;admin/new_user&#039;, {
+              title     :&#039;VAMPS Create new user&#039;,
+              message   : req.flash(&#039;message&#039;),
+              user      : req.user,
+              hostname  : req.CONFIG.hostname
+    });
+});
+//
+//
+//
+router.post(&#039;/new_user&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+    console.log(&#039;in new_user --POST&#039;)
+    var username = req.body.username;
+    var password = req.body.password;
+    var email = req.body.useremail;
+    var first = req.body.userfirstname;
+    var last = req.body.userlastname;
+    var inst = req.body.userinstitution;
+    var finish = function(){
+      res.render(&#039;admin/new_user&#039;, {
+                            title     :&#039;VAMPS Create new user&#039;,
+                            message   : req.flash(&#039;message&#039;),
+                            user: req.user,
+                            hostname: req.CONFIG.hostname
+                          });
+
+    };
+    if(password.length &lt; 3 || password.length &gt; 12){
+        req.flash(&#039;message&#039;, &#039;The password must be between 3 and 20 characters.&#039;);
+    }
+    if(helpers.checkUserName(username)){
+        req.flash(&#039;message&#039;, &quot;The username cannot have any special characters (including &lt;space&gt; and underscore &#039;_&#039;). Alphanumeric only.&quot;);
+    }
+    if(username.length &lt; 3 || username.length &gt; 15){
+        req.flash(&#039;message&#039;, &#039;The username must be between 3 and 15 characters. Alphanumeric only.&#039;);
+    }
+    if( email.indexOf(&quot;@&quot;) == -1 || email.length &lt; 3 || email.length &gt; 100 ){
+        req.flash(&#039;message&#039;, &#039;The email address is empty or the wrong format.&#039;);
+    }
+    if( first.length &lt; 1 || first.length &gt; 50 ||  last.length &lt; 1 || last.length &gt; 50 ){
+        req.flash(&#039;message&#039;, &#039;Both first and last names are required.&#039;);
+    }
+    if( inst.length &lt; 1 || inst.length &gt; 50){
+        req.flash(&#039;message&#039;, &#039;The Institution name is required.&#039;);
+    }else{
+
+
+
+        req.db.query(&quot;select * from user where username = &#039;&quot;+username+&quot;&#039;&quot;,function(err,rows){
+                if (err) {
+                  return done(null, false, { message: err });
+                }
+                if (rows.length) {
+                    //console.log(&#039;That username is already taken.&#039;);
+                    return done(null, false, req.flash(&#039;message&#039;, &#039;That username is already taken.&#039;));
+                } else {
+
+                    var insertQuery = &quot;INSERT INTO user (username, encrypted_password, first_name, last_name, email, institution, active, sign_in_count, current_sign_in_at, last_sign_in_at)&quot;;
+                    insertQuery +=    &quot; VALUES (&#039;&quot; + username +&quot;&#039;, &#039;&quot;+ 
+                                        helpers.generateHash(password) +&quot;&#039;, &#039;&quot;+ 
+                                        first +&quot;&#039;, &#039;&quot;+ 
+                                        last +&quot;&#039;, &#039;&quot;+ 
+                                        email +&quot;&#039;, &#039;&quot;+ 
+                                        inst +&quot;&#039;,&quot;+
+                                        &quot; 1,&quot;+
+                                        &quot; 1,&quot;+
+                                        &quot; CURRENT_TIMESTAMP(), &quot;+
+                                        &quot; CURRENT_TIMESTAMP() )&quot;;
+
+                    console.log(insertQuery);
+                    req.db.query(insertQuery, function(err,rows){
+                        user_id = rows.insertId;
+                        ALL_USERS_BY_UID[user_id] = {}
+                        ALL_USERS_BY_UID[user_id].email       = email;
+                        ALL_USERS_BY_UID[user_id].username    = username;
+                        ALL_USERS_BY_UID[user_id].last_name   = last;
+                        ALL_USERS_BY_UID[user_id].first_name  = first;
+                        ALL_USERS_BY_UID[user_id].institution = inst;
+                       
+                        req.flash(&#039;message&#039;, &#039;Success (user:&#039;+username+&#039;; uid:&#039;+user_id+&#039;)&#039;);
+                        finish();
+                        return;
+
+                    });
+                }
+        });
+        return;
+         
+    }    
+    finish();
+});
+//
+//
+//
+router.get(&#039;/reset_user_password&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+    console.log(&#039;in reset_user_password&#039;);
+    res.render(&#039;admin/new_password&#039;, {
+              title     :&#039;VAMPS Reset User Password&#039;,
+              message   : req.flash(&#039;message&#039;),
+              user: req.user,
+              user_info: JSON.stringify(ALL_USERS_BY_UID),
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+            });
+});
+router.post(&#039;/reset_user_password&#039;, [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+    console.log(&#039;in reset_user_password --POST&#039;);
+    console.log(req.body)
+    var uid = req.body.user_id;
+    var password = req.body.password;
+    var finish = function(){
+      res.render(&#039;admin/new_password&#039;, {
+              title     :&#039;VAMPS Reset User Password&#039;,
+              message   : req.flash(&#039;message&#039;),
+              user: req.user,
+              user_info: JSON.stringify(ALL_USERS_BY_UID),
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+            });
+
+    };
+    if(password.length &lt; 3 || password.length &gt; 12){
+        req.flash(&#039;message&#039;, &#039;FAILED: The password must be between 3 and 20 characters.&#039;);
+    }else if(uid == &#039;&#039;){
+        req.flash(&#039;message&#039;, &#039;FAILED: You must select a user.&#039;);
+    }else{
+        
+        var updateQuery = &quot;UPDATE user set encrypted_password=&#039;&quot;+helpers.generateHash(password)+&quot;&#039; where user_id=&#039;&quot;+uid+&quot;&#039;&quot;;
+        console.log(updateQuery);
+        req.db.query(updateQuery, function(err,rows){
+          if (err) {
+              req.flash(&#039;message&#039;, &#039;FAILED: sql error &#039;+err);
+          }else{
+              req.flash(&#039;message&#039;, &#039;Success ( uid: &#039;+uid+&#039; )&#039;);
+          }
+            finish();
+            
+        });
+        return;
+
+    }
+    finish();
+});
+
+module.exports = router;</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

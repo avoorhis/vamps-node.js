@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - public/javascripts/project_dataset_tree20160628.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>public/javascripts/project_dataset_tree20160628.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">69.95</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">443</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">51.80</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">2.96</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">// var is_visible = function(div_to_check) {
+//   if (div_to_check.css(&#039;display&#039;) === &#039;block&#039;)
+//   {  return true; }
+//   else
+//   { return false; }
+// };
+var ds_count = 0;
+var clear_filters_btn_id = document.getElementById(&#039;clear_filters_btn_id&#039;);
+if (typeof clear_filters_btn_id !== &#039;undefined&#039;) {
+  clear_filters_btn_id.addEventListener(&#039;click&#039;, function () {
+      clear_filters();
+  });
+}
+
+var env_source_select = document.getElementById(&#039;env_source_select&#039;);
+if (typeof env_source_select !== &#039;undefined&#039;) {
+  env_source_select.addEventListener(&#039;change&#039;, function () {
+      filter_by_env();
+  });
+}
+
+var target_select = document.getElementById(&#039;target_select&#039;);
+if (typeof target_select !== &#039;undefined&#039;) {
+  target_select.addEventListener(&#039;change&#039;, function () {
+      filter_by_target()
+  });
+}
+
+
+var toggle_checking_all = function(clicked) {
+  
+  $(clicked.parentNode.parentNode).find(&#039;input&#039;).prop(&#039;checked&#039;,
+     function(idx, oldProp) {
+
+	   return !oldProp;
+     });
+  return false;
+};
+
+var toggle_checking_datasets_by_pr = function(pr_checkbox, datasets_per_pr) {
+  if (pr_checkbox.prop(&#039;checked&#039;)) {
+   datasets_per_pr.find(&#039;input&#039;).prop(&#039;checked&#039;, true);
+  }
+  else {
+   datasets_per_pr.find(&#039;input&#039;).prop(&#039;checked&#039;, false);
+
+  }
+};
+
+var toggle_checking_datasets = function(pr_checkbox, datasets_per_pr) {
+   
+  if (datasets_per_pr.find(&#039;input&#039;).prop(&#039;checked&#039;)) {
+    datasets_per_pr.find(&#039;input&#039;).prop(&#039;checked&#039;, false);  
+  }
+  else {
+    datasets_per_pr.find(&#039;input&#039;).prop(&#039;checked&#039;, true);
+  }
+  count_checked_datasets();
+};
+
+
+
+var toggle_datasets = function(clicked) {
+  $(clicked.parentNode.parentNode).find(&#039;.datasets_per_pr&#039;).toggle();
+  //alert(&#039;h&#039;)
+  count_checked_datasets()
+  return false;
+};
+
+var minus_img = function(my_img) {
+  my_img.attr(&#039;src&#039;, &#039;/images/tree_minus.gif&#039;).attr(&#039;alt&#039;, &#039;minus&#039;);
+};
+
+var plus_img  = function(my_img) {
+  my_img.attr(&#039;src&#039;, &#039;/images/tree_plus.gif&#039;).attr(&#039;alt&#039;, &#039;plus&#039;);
+};
+
+var toggle_plus_img = function(clicked) {
+  var my_img = $(clicked).children();
+  // if (is_visible($(clicked.parentNode.parentNode).find(&#039;.datasets_per_pr&#039;))) {
+  //   minus_img(my_img);
+  // }
+  
+  if ($(clicked.parentNode.parentNode).find(&#039;.datasets_per_pr&#039;).is(&quot;:visible&quot;)) {
+    minus_img(my_img);
+
+  }  
+  else {
+    plus_img(my_img);
+    
+  }
+
+  return false;
+};
+
+var checkme = function(){
+//alert(&#039;o&#039;)
+  //var dataset_ids = document.getElementsByName(&#039;dataset_ids[]&#039;);
+  //alert(dataset_ids.length)
+   //ds_count += datasets_per_pr.find(&#039;input&#039;).prop(&#039;checked&#039;, true).length
+    //document.getElementById(&#039;selected_ds_count_id&#039;).innerHTML = ds_count
+  count_checked_datasets()
+};
+
+var uncheck_closed = function(parent_place) {
+  // if (!is_visible(parent_place.find(&#039;.datasets_per_pr&#039;))) {
+  //   parent_place.find(&#039;input&#039;).prop(&#039;checked&#039;, false);
+  // }
+  if (parent_place.find(&#039;.datasets_per_pr&#039;).is(&quot;:hidden&quot;)) {
+    parent_place.find(&#039;input&#039;).prop(&#039;checked&#039;, false);
+  }
+  count_checked_datasets()
+
+};
+var count_checked_datasets = function() {
+  var all_dataset_ids = document.getElementsByName(&#039;dataset_ids[]&#039;);
+  ds_count = 0
+  for(i in all_dataset_ids){
+    //alert(dataset_ids[i].checked)
+    if(all_dataset_ids[i].checked === true){
+      ds_count += 1
+    }
+
+  }
+  document.getElementById(&#039;selected_ds_count_id&#039;).innerHTML = ds_count
+
+};
+$(document).ready(function () {
+      
+      //onPageLoad({});
+      //dsets = &lt;%= datasets %&gt;
+      //clear_filters();
+      //var portal_local  = &quot;&lt;%= portal_to_show %&gt;&quot;;
+      //alert(portal_local)
+      if(portal_local){
+        var target = &quot;/visuals/load_portal/&quot;+portal_local;
+      }else{
+        var target = &quot;/visuals/clear_filters&quot;;
+      }
+      filtering = 0;  
+      document.getElementById(&#039;target_select&#039;).value=&#039;.....&#039;;
+      document.getElementById(&#039;env_source_select&#039;).value=&#039;.....&#039;;
+      document.getElementById(&#039;pname_search_id&#039;).value=&#039;&#039;;
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open(&quot;GET&quot;, target, true);
+      xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+      xmlhttp.onreadystatechange=function() {
+        if (xmlhttp.readyState==4 ) {
+          response  = JSON.parse(xmlhttp.responseText);
+          document.getElementById(&quot;projects_select_div&quot;).innerHTML = response.html;
+          document.getElementById(&quot;project_count_id&quot;).innerHTML = response.count;
+          document.getElementById(&#039;selected_ds_count_id&#039;).innerHTML = 0
+          onPageLoad();
+        }
+      }
+      xmlhttp.send();
+      
+});
+
+// $(document).ready(function () {
+      // experimenting with dhtmlx tree
+            
+//       document.getElementById(&#039;target_select&#039;).value=&#039;.....&#039;;
+//       document.getElementById(&#039;env_source_select&#039;).value=&#039;.....&#039;;
+//       document.getElementById(&#039;pname_search_id&#039;).value=&#039;&#039;;
+//       projectTree = new dhtmlxTreeObject(&quot;projects_select_div&quot;,&quot;100%&quot;,&quot;100%&quot;,0);
+//       projectTree.setImagesPath(&quot;/images/dhtmlx/imgs/&quot;);
+//       projectTree.enableCheckBoxes(true);
+//       projectTree.enableTreeLines(true); // true by default
+//       projectTree.enableTreeImages(false);
+      
+//       projectTree.attachEvent(&quot;onCheck&quot;,function(id){
+//           project_on_check(id)
+//       });
+//       projectTree.attachEvent(&quot;onDblClick&quot;, function(id){
+//           project_expand(id)
+//       });
+//       // customTree.attachEvent(&quot;onOpenStart&quot;, function(id, state){
+//       //     alert(&#039;open-start &#039;+id)
+//       // });
+//       // customTree.attachEvent(&quot;onOpenEnd&quot;, function(id, state){
+//       //     alert(&#039;open-end &#039;+id)
+//       // });
+      
+// });
+
+// function project_on_check(id){
+//   projectTree.openItem(id);
+//   if(projectTree.isItemChecked(id)){
+//           projectTree.setSubChecked(id,false);
+//           projectTree.setCheck(id,true);   
+//           //alert(id)
+//        }else{
+//              //turn off this level
+//           projectTree.setCheck(id,false);
+//           subTaxons = projectTree.getAllSubItems(id);
+//           subTaxonsArray = subTaxons.split(&#039;,&#039;);
+//           //alert(subTaxons)
+//           for(i=0;i&lt;subTaxonsArray.length;i++)
+//           {
+           
+//             sid = subTaxonsArray[i];
+//             //alert(sid)
+//             //open state only applies to folders/nodes not leaves
+//             openState = projectTree.getOpenState(sid);
+//             //alert(openState)
+//             //customTree.setCheck(sid,true);
+          
+//             if(openState &lt; 1){
+//               projectTree.setCheck(sid,true);  
+//             }else{
+//               projectTree.setCheck(sid,false); 
+//             }
+    
+//           } //end of loop
+          
+//        }
+// }
+
+// function project_expand(id){
+  
+// }
+
+function onPageLoad(){
+  // All commands here in separate file so I can run them after changing project list
+    // by default everything is visible, in case there is no js
+  $(&#039;.datasets_per_pr&#039;).addClass( &quot;display_none&quot; );
+  
+  // the minus sign should always close the tree AND uncheck all the ds cbs 
+  //           the plus sign should always open the tree but not check anything.
+  //  if the tree is closed the project cb should open AND check all the ds cbs
+  //  if the tree is open the project cb should toggle on/off the ds cbs
+  //  The project cb should never itself be checked — just open the tree and check ds (if tree is closed)
+  //      and check or uncheck all the ds (if tree is open)
+
+  // minus_plus_sign
+  $(&#039;a.project_toggle&#039;).click(function(){
+    toggle_datasets(this);
+    // toggle_checking_all(this); 
+    
+    var datasets_per_pr = $(this.parentNode.parentNode).find(&#039;.datasets_per_pr&#039;);    
+    toggle_checking_datasets(this, datasets_per_pr);
+    toggle_plus_img(this);
+    uncheck_closed($(this.parentNode.parentNode));
+    return false;
+    });
+  
+  // project checkbox
+  $(&#039;input.project_toggle&#039;).click(function() {
+     
+    var checkbox = $(this);
+    $(this).prop(&#039;checked&#039;, false)
+    var datasets_per_pr = $(this.parentNode.parentNode).find(&#039;.datasets_per_pr&#039;);
+    
+    if (datasets_per_pr.is(&quot;:hidden&quot;)) {
+      datasets_per_pr.show();
+      minus_img(checkbox.siblings(&#039;a&#039;).find(&#039;img&#039;));
+    }
+    toggle_checking_datasets(checkbox, datasets_per_pr);
+  });
+  
+  // now load and check any datasets from &#039;data_to_open&#039;
+  
+  if(datasets_local){
+      
+      $(&#039;input.project_toggle&#039;).each(function(){
+        //alert($(this).prop(&#039;value&#039;))
+        var checkbox = $(this);
+        var project = checkbox.prop(&#039;value&#039;)
+        //alert(project)
+        var datasets_per_pr = $(this.parentNode.parentNode).find(&#039;.datasets_per_pr&#039;);
+        if( datasets_local.hasOwnProperty(project) ){
+          //input.prop(&#039;checked&#039;, true)
+          if (datasets_per_pr.is(&quot;:hidden&quot;)) {
+            
+            datasets_per_pr.show();
+            minus_img(checkbox.siblings(&#039;a&#039;).find(&#039;img&#039;));
+          }
+          check_selected_datasets(checkbox, datasets_per_pr, project, datasets_local[project]);
+        }
+      });
+  }
+  
+  // if(portal_local){
+  //   alert(&#039;lo&#039;)
+  //   var xmlhttp = new XMLHttpRequest(); 
+  //   xmlhttp.open(&quot;GET&quot;, &quot;/visuals/livesearch_projects/&quot;+portal_local, true);
+  //   xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+  //   xmlhttp.onreadystatechange=function() {
+  //     if (xmlhttp.readyState==4 ) {
+  //       document.getElementById(&quot;projects_select_div&quot;).innerHTML = xmlhttp.responseText;
+  //       onPageLoad();      
+  //     }
+  //   }
+  //   xmlhttp.send();
+    
+  // }
+  
+}
+
+//
+//
+//
+
+//test_to_open_project = [];
+
+function clear_filters() {
+  filtering = 0; 
+  datasets_local = {}; 
+  if(portal_local){
+    var target = &quot;/visuals/load_portal/&quot;+portal_local;
+  }else{
+    var target = &quot;/visuals/clear_filters&quot;;
+  }
+  document.getElementById(&#039;target_select&#039;).value=&#039;.....&#039;;
+  document.getElementById(&#039;env_source_select&#039;).value=&#039;.....&#039;;
+  document.getElementById(&#039;pname_search_id&#039;).value=&#039;&#039;;
+  
+  var xmlhttp = new XMLHttpRequest();  
+  xmlhttp.open(&quot;GET&quot;, target, true);
+  xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 ) {
+      response  = JSON.parse(xmlhttp.responseText);
+      document.getElementById(&quot;projects_select_div&quot;).innerHTML = response.html;
+      document.getElementById(&quot;project_count_id&quot;).innerHTML = response.count;
+      document.getElementById(&#039;selected_ds_count_id&#039;).innerHTML = 0
+      onPageLoad();
+      
+
+    }
+  }
+  xmlhttp.send();
+}
+//
+//
+//
+function filter_by_env() {
+  filtering = 1;
+  datasets_local = {};
+  var env_source_id =  document.getElementById(&#039;env_source_select&#039;).value;
+  if(portal_local){
+    var target = &quot;/visuals/livesearch_env/&quot;+env_source_id+&#039;?portal=&#039;+portal_local;
+  }else{
+    var target = &quot;/visuals/livesearch_env/&quot;+env_source_id+&#039;?portal=&#039;;
+  }
+  var xmlhttp = new XMLHttpRequest();  
+  
+  
+  document.getElementById(&#039;target_select&#039;).value=&#039;.....&#039;;
+  document.getElementById(&#039;pname_search_id&#039;).value=&#039;&#039;;
+
+  xmlhttp.open(&quot;GET&quot;, target, true);
+  xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 ) {
+      response  = JSON.parse(xmlhttp.responseText);
+      document.getElementById(&quot;projects_select_div&quot;).innerHTML = response.html;
+      document.getElementById(&quot;project_count_id&quot;).innerHTML = response.count;
+      document.getElementById(&#039;selected_ds_count_id&#039;).innerHTML = 0
+      onPageLoad();      
+    }
+  }
+  xmlhttp.send();
+}
+//
+//
+//
+function filter_by_target() {
+  filtering = 1;
+  datasets_local = {};
+  var genetarget =   document.getElementById(&#039;target_select&#039;).value;
+  if(portal_local){
+    var target = &quot;/visuals/portal_livesearch_target/&quot;+genetarget+&#039;/&#039;+portal_local;
+  }else{
+    var target = &quot;/visuals/livesearch_target/&quot;+genetarget;
+  }
+  var xmlhttp = new XMLHttpRequest(); 
+  
+  document.getElementById(&#039;env_source_select&#039;).value=&#039;.....&#039;;
+  document.getElementById(&#039;pname_search_id&#039;).value=&#039;&#039;;
+  xmlhttp.open(&quot;GET&quot;, target, true);
+  xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 ) {
+      response  = JSON.parse(xmlhttp.responseText);
+      document.getElementById(&quot;projects_select_div&quot;).innerHTML = response.html;
+      document.getElementById(&quot;project_count_id&quot;).innerHTML = response.count;
+      document.getElementById(&#039;selected_ds_count_id&#039;).innerHTML = 0
+      onPageLoad();      
+    }
+  }
+  xmlhttp.send();
+}
+//
+//  SHOW  RESULTS for project Search
+//
+function showLiveProjectNames(str) {
+  filtering = 1;
+  datasets_local = {};
+  if (str.length==0) {
+    str = &#039;----&#039;;  // cannot be empty string : (hopefully no-one will search for this)
+  }
+  document.getElementById(&#039;env_source_select&#039;).value=&#039;.....&#039;;
+  document.getElementById(&#039;target_select&#039;).value=&#039;.....&#039;;
+  if(portal_local){
+    var target = &quot;/visuals/portal_livesearch_projects/&quot;+str+&#039;/&#039;+portal_local;
+  }else{
+    var target = &quot;/visuals/livesearch_projects/&quot;+str;
+  }
+  var xmlhttp = new XMLHttpRequest();  
+  xmlhttp.open(&quot;GET&quot;, target, true);
+  xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 ) {
+      response  = JSON.parse(xmlhttp.responseText);
+      document.getElementById(&quot;projects_select_div&quot;).innerHTML = response.html;
+      document.getElementById(&quot;project_count_id&quot;).innerHTML = response.count;
+      document.getElementById(&#039;selected_ds_count_id&#039;).innerHTML = 0
+      onPageLoad();      
+    }
+  }
+  xmlhttp.send();
+}
+//
+//
+//
+function check_selected_datasets(pr_checkbox, datasets_per_pr, project, dids) {
+   //alert(datasets_per_pr.find(&#039;input&#039;).length)
+  //alert(dids)
+  //1740,1739,1745,1744,1741,1742,1751,1750,1752,1753,1746,1738,1748,1749,1747,1743
+
+  datasets_per_pr.find(&#039;input&#039;).each( function(){
+    var checkbox = $(this);
+    var did = parseInt(checkbox.prop(&#039;value&#039;));
+    //alert(typeof did)
+    //alert(did)
+    //var pd= checkbox.prop(&#039;id&#039;)
+    //ds = pd.split(&#039;--&#039;)[1]
+    
+    if(dids.indexOf(did) &gt; -1){
+      //alert(did)
+      checkbox.prop(&#039;checked&#039;, true);
+    }
+    //alert(id)
+  })
+  
+  count_checked_datasets()
+};</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

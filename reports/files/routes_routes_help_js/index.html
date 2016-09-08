@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - routes/routes_help.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>routes/routes_help.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">68.73</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">118</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">17.25</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">0.73</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var express = require(&#039;express&#039;);
+var router = express.Router();
+//var nodemailer = require(&#039;nodemailer&#039;);
+var spawn = require(&#039;child_process&#039;).spawn;
+
+//var sweetcaptcha = new require(&#039;sweetcaptcha&#039;)(&#039;233846&#039;, &#039;f2a70ef1df3edfaa6cf45d7c338e40b8&#039;, &#039;720457356dc3156eb73fe316a293af2f&#039;);
+//var crypto = require(&#039;crypto&#039;);
+// These are all under /help
+
+/* GET Overview page. */
+  router.get(&#039;/overview&#039;, function(req, res) {
+      res.render(&#039;help/overview&#039;, { title: &#039;VAMPS:Overview&#039;, 
+      user: req.user,
+      hostname: req.CONFIG.hostname,
+      message:&#039;&#039;,
+   });
+  });
+
+/* GET FAQ page. */
+  router.get(&#039;/faq&#039;, function(req, res) {
+      res.render(&#039;help/faq&#039;, { title: &#039;VAMPS:FAQ&#039;,
+                message:&#039;&#039;,
+                user: req.user,
+                hostname: req.CONFIG.hostname
+                            });
+  });
+
+  /* GET Contact Us page. */
+  router.get(&#039;/contact&#039;, function(req, res) {
+
+      //get sweetcaptcha html for the contact area
+        //sweetcaptcha.api(&#039;get_html&#039;, function(err,html){
+            //Send the guts of the captcha to your template
+            res.render(&#039;help/contact&#039;, {
+              
+              title: &#039;VAMPS:Contact Us&#039;,
+              choices : req.CONSTS.CONTACT_US_SUBJECTS,
+              user: req.user,
+              message:&#039;&#039;,
+              hostname: req.CONFIG.hostname
+               });
+        //});
+  });
+
+  //
+  //
+  //
+  router.post(&#039;/contact&#039;, function (req, res) {
+    console.log(req.body)
+    var mailOptions = {
+        scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
+        args :       [ &#039;-to&#039;, req.CONFIG.CONTACT_EMAIL, &#039;-from&#039;, req.body.email, &#039;-name&#039;, &#039;&quot;&#039;+req.body.name+&#039;&quot;&#039;, &#039;-sub&#039;, &#039;&quot;&#039;+req.body.subject+&#039;&quot;&#039;, &#039;-msg&#039;, &#039;&quot;&#039;+req.body.message+&#039;&quot;&#039; ],
+    };
+    console.log(mailOptions.scriptPath+&#039;/send_email.py &#039;+mailOptions.args.join(&#039; &#039;))
+    var mail_process = spawn( mailOptions.scriptPath+&#039;/send_email.py&#039;, mailOptions.args, {
+                env:{&#039;PATH&#039;:req.CONFIG.PATH,&#039;LD_LIBRARY_PATH&#039;:req.CONFIG.LD_LIBRARY_PATH},
+                detached: true, 
+                //stdio: [ &#039;ignore&#039;, null, log ]
+                stdio: &#039;pipe&#039;  // stdin, stdout, stderr
+    }); 
+    
+    stdout = &#039;&#039;;
+    mail_process.stdout.on(&#039;data&#039;, function (data) {
+        
+        //console.log(data)
+        stdout += data;    
+     
+    });
+    stderr = &#039;&#039;;
+    mail_process.stderr.on(&#039;data&#039;, function (data) {
+        
+        console.log(data)
+        stderr += data;    
+     
+    });
+    mail_process.on(&#039;close&#039;, function (code) {
+        console.log(&#039;mail_process process exited with code &#039; + code);
+        if(code == 0){           
+            res.send(stdout);                                 
+        }else{
+          console.log(&#039;python script error: &#039;+stderr);
+          res.send(stderr); 
+        }      
+    });   
+
+
+      // var mailOpts, smtpTrans;
+      // //Setup Nodemailer transport, I chose gmail. Create an application-specific password to avoid problems.
+      // smtpTrans = nodemailer.createTransport(&#039;SMTP&#039;, {
+      //     service: &#039;mail.mbl.edu&#039;,
+      //     auth: {
+      //         user: &quot;avoorhis@mbl.edu&quot;,
+      //         pass: &quot;&quot; 
+      //     }
+      // });
+      // //Mail options
+      // mailOpts = {
+      //     from: req.body.name + &#039; &lt;&#039; + req.body.email + &#039;&gt;&#039;, //grab form data from the request body object
+      //     to: &#039;avoorhis@mbl.edu&#039;,
+      //     subject: &#039;Website contact form&#039;,
+      //     text: req.body.message
+      // };
+      // console.log(&#039;mailOpts&#039;)
+      // console.log(mailOpts);
+
+      // smtpTrans.sendMail(mailOpts, function (error, response) {
+      //     //Email not sent
+      //     if (error) {
+      //         res.render(&#039;help/contact&#039;, { title: &#039;Raging Flame Laboratory - Contact&#039;, message: &#039;Error occured, message not sent.&#039;, err: true, page: &#039;contact&#039;, user: req.user})
+      //     }
+      //     //Yay!! Email sent
+      //     else {
+      //         res.render(&#039;help/contact&#039;, { title: &#039;Raging Flame Laboratory - Contact&#039;, message: &#039;Message sent! Thank you.&#039;, err: false, page: &#039;contact&#039;, user: req.user })
+      //     }
+      // });
+    });
+
+module.exports = router;</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
