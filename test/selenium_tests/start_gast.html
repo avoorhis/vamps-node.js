@@ -67,9 +67,19 @@
 	<td></td>
 </tr>
 <tr>
-	<td>assertTable</td>
-	<td>//div[2]/table.0.0</td>
-	<td>Project name: test_gast_project1 ( 1 datasets )</td>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>css=td &gt; strong</td>
+	<td>test_gast_project</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>css=td</td>
+	<td>Project name: test_gast_project ( 1 datasets )</td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -87,13 +97,13 @@
 	<td>Raw Sequence Count: 10</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>xpath=(//button[@id='dropdownMenu1'])[5]</td>
-	<td></td>
+	<td>assertText</td>
+	<td>link=Assign Taxonomy</td>
+	<td>Assign Taxonomy</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>xpath=(//a[contains(text(),'Assign Taxonomy')])[4]</td>
+	<td>link=Assign Taxonomy</td>
 	<td></td>
 </tr>
 <tr>
