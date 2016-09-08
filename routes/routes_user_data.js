@@ -702,6 +702,7 @@ router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, function (req, res)
 // START_ASSIGNMENT
 //
 
+// TODO: split!!!
 
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
 router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, function (req, res) {
@@ -1478,7 +1479,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 //
 //  UPLOAD DATA
 //
-// ASh Aug 2016
+// AShipunova Aug 2016
 // TODO: Andy, how to make it fail? For testing?
 
 function ProjectNameExists(project, req, res)
@@ -1770,7 +1771,7 @@ function CheckIfPID(data)
   for (var n in lines) {
   // console.log('line: ' + lines[n]);
     if (lines[n].substring(0, 4) == 'PID=') {
-    console.log('pid line ' + lines[n]);
+    console.log('NNN pid line ' + lines[n]);
     }
   }
 }
@@ -1815,7 +1816,7 @@ function GetScriptVars(req, data_repository, cmd_list)
 }
 
 // TODO: remove repetitions, see title: 'VAMPS:Import Data'
-editUploadData= function(req, res)
+function editUploadData(req, res)
 {
   console.log("EEE editUploadData: req.form");
   console.log(util.inspect(req.form, false, null));
@@ -1828,6 +1829,72 @@ editUploadData= function(req, res)
     user: req.user,
     form_data: req.form,
     hostname: req.CONFIG.hostname
+  });
+}
+
+function RunAndCheck(script_path, nodelog, req, project, res)
+{
+  var run_process = spawn( script_path, [], {
+    // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
+    // 'PATH':req.CONFIG.PATH,
+    // 'PERL5LIB':req.CONFIG.PERL5LIB,
+    // 'SGE_ROOT':req.CONFIG.SGE_ROOT, 'SGE_CELL':req.CONFIG.SGE_CELL, 'SGE_ARCH':req.CONFIG.SGE_ARCH
+    // },
+    detached: true, stdio: [ 'ignore', null, nodelog ]
+  });  // stdin, s
+
+  var output = '';
+
+  run_process.stdout.on('data', function AddDataToOutput(data) {
+    data = data.toString().trim();
+    output += data;
+    CheckIfPID(data);
+    console.log('CCC data:');
+    console.log(util.inspect(data, false, null));
+    console.log('CCC1 output:');
+    console.log(util.inspect(output, false, null));
+
+  });
+
+  run_process.on('close', function (code) {
+     console.log('run_process process exited with code ' + code);
+     var ary = output.split("\n");
+     var last_line = ary[ary.length - 1];
+     console.log('last_line:', last_line);
+     if (code === 0) {
+        status_params = {'type':'update',
+                          'user_id':req.user.user_id,
+                          'project':project,
+                          'status':'LOADED',
+                          'msg':'Project is loaded --without tax assignments'
+            };
+          helpers.update_status(status_params);
+
+          console.log('LoadDataFinishRequest in upload_data, project:');
+          console.log(util.inspect(project, false, null));
+
+          LoadDataFinishRequest(req, res, project, "Import_Success");
+          console.log('Finished loading ' + project);
+          // ();
+     } 
+     else
+     {
+      fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-'+project), function (err) {
+          if (err) { console.log(err);  }
+          else {
+              req.flash('failMessage', 'Script Failure: '+last_line);
+              status_params = {'type': 'update', 
+                               'user_id': req.user.user_id,
+                                'project':project, 
+                                'status':'Script Failure', 
+                                'msg':'Script Failure'
+              };
+                  //helpers.update_status(status_params);
+              res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
+              return;
+          }
+      });
+     }
   });
 }
 
@@ -1906,7 +1973,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
             return;
           }
           var cmd_list = CreateCmdList(req, options, data_repository);
-          console.log("CCC2 cmd_list: ");
+          console.log("TTT cmd_list: ");
           console.log(util.inspect(cmd_list, false, null));
 
           script_name = 'load_script.sh';
@@ -1937,69 +2004,78 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 
           fs.writeFile(script_path, script_text, function (err) {
               if (err) return console.log(err);
-              child = exec( 'chmod ug+rwx '+script_path, function (error, stdout, stderr) {
+              child = exec('chmod ug+rwx '+script_path, function (error, stdout, stderr) {
                   if (error !== null) {
                     console.log('1exec chmod error: ' + error);
                   }
                   else
                   {
-                    var run_process = spawn( script_path, [], {
-                      // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
-                      // 'PATH':req.CONFIG.PATH,
-                      // 'PERL5LIB':req.CONFIG.PERL5LIB,
-                      // 'SGE_ROOT':req.CONFIG.SGE_ROOT, 'SGE_CELL':req.CONFIG.SGE_CELL, 'SGE_ARCH':req.CONFIG.SGE_ARCH
-                      // },
-                      detached: true, stdio: [ 'ignore', null, nodelog ]
-                    });  // stdin, s
-
-                    var output = '';
-
-                    run_process.stdout.on('data', function (data) {
-                      data = data.toString().trim();
-                      output += data;
-                      CheckIfPID(data);
-                    });
-
-                    run_process.on('close', function (code) {
-                       console.log('run_process process exited with code ' + code);
-                       var ary = output.split("\n");
-                       var last_line = ary[ary.length - 1];
-                       console.log('last_line:', last_line);
-                       if (code === 0) {
-                          status_params = {'type':'update',
-                                            'user_id':req.user.user_id,
-                                            'project':project,
-                                            'status':'LOADED',
-                                            'msg':'Project is loaded --without tax assignments'
-                              };
-                            helpers.update_status(status_params);
-
-                            console.log('LoadDataFinishRequest in upload_data, project:');
-                            console.log(util.inspect(project, false, null));
-
-                            LoadDataFinishRequest(req, res, project, "Import_Success");
-                            console.log('Finished loading ' + project);
-                            // ();
-                       } else
-                       {
-                        fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-'+project), function (err) {
-                            if (err) { console.log(err);  }
-                            else {
-                                req.flash('failMessage', 'Script Failure: '+last_line);
-                                status_params = {'type': 'update', 
-                                                 'user_id': req.user.user_id,
-                                                  'project':project, 
-                                                  'status':'Script Failure', 
-                                                  'msg':'Script Failure'
-                                };
-                                    //helpers.update_status(status_params);
-                                res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
-                                return;
-                            }
-                        });
-                       }
-                    });
-                  } // end if/else
+                    RunAndCheck(script_path, nodelog, req, project, res);
+                  }
+                  // {
+//                     var run_process = spawn( script_path, [], {
+//                       // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
+//                       // 'PATH':req.CONFIG.PATH,
+//                       // 'PERL5LIB':req.CONFIG.PERL5LIB,
+//                       // 'SGE_ROOT':req.CONFIG.SGE_ROOT, 'SGE_CELL':req.CONFIG.SGE_CELL, 'SGE_ARCH':req.CONFIG.SGE_ARCH
+//                       // },
+//                       detached: true, stdio: [ 'ignore', null, nodelog ]
+//                     });  // stdin, s
+//
+//                     var output = '';
+//
+//                     run_process.stdout.on('data', function AddDataToOutput(data) {
+//                       data = data.toString().trim();
+//                       output += data;
+//                       CheckIfPID(data);
+//                       console.log('CCC data:');
+//                       console.log(util.inspect(data, false, null));
+//                       console.log('CCC1 output:');
+//                       console.log(util.inspect(output, false, null));
+//
+//                     });
+//
+//                     run_process.on('close', function (code) {
+//                        console.log('run_process process exited with code ' + code);
+//                        var ary = output.split("\n");
+//                        var last_line = ary[ary.length - 1];
+//                        console.log('last_line:', last_line);
+//                        if (code === 0) {
+//                           status_params = {'type':'update',
+//                                             'user_id':req.user.user_id,
+//                                             'project':project,
+//                                             'status':'LOADED',
+//                                             'msg':'Project is loaded --without tax assignments'
+//                               };
+//                             helpers.update_status(status_params);
+//
+//                             console.log('LoadDataFinishRequest in upload_data, project:');
+//                             console.log(util.inspect(project, false, null));
+//
+//                             LoadDataFinishRequest(req, res, project, "Import_Success");
+//                             console.log('Finished loading ' + project);
+//                             // ();
+//                        }
+//                        else
+//                        {
+//                         fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-'+project), function (err) {
+//                             if (err) { console.log(err);  }
+//                             else {
+//                                 req.flash('failMessage', 'Script Failure: '+last_line);
+//                                 status_params = {'type': 'update',
+//                                                  'user_id': req.user.user_id,
+//                                                   'project':project,
+//                                                   'status':'Script Failure',
+//                                                   'msg':'Script Failure'
+//                                 };
+//                                     //helpers.update_status(status_params);
+//                                 res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
+//                                 return;
+//                             }
+//                         });
+//                        }
+//                     });
+//                   } // end if/else
               }); // end exec
           });  // end writeFile
 
