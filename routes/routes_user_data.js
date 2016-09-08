@@ -1856,43 +1856,44 @@ function RunAndCheck(script_path, nodelog, req, project, res)
 
   });
 
-  run_process.on('close', function (code) {
+  run_process.on('close', function checkExitCode(code) {
      console.log('run_process process exited with code ' + code);
      var ary = output.split("\n");
      var last_line = ary[ary.length - 1];
      console.log('last_line:', last_line);
      if (code === 0) {
         status_params = {'type':'update',
-                          'user_id':req.user.user_id,
-                          'project':project,
-                          'status':'LOADED',
-                          'msg':'Project is loaded --without tax assignments'
-            };
-          helpers.update_status(status_params);
+                        'user_id':req.user.user_id,
+                        'project':project,
+                        'status':'LOADED',
+                        'msg':'Project is loaded --without tax assignments'
+        };
+        helpers.update_status(status_params);
 
-          console.log('LoadDataFinishRequest in upload_data, project:');
-          console.log(util.inspect(project, false, null));
+        console.log('LoadDataFinishRequest in upload_data, project:');
+        console.log(util.inspect(project, false, null));
 
-          LoadDataFinishRequest(req, res, project, "Import_Success");
-          console.log('Finished loading ' + project);
-          // ();
+        LoadDataFinishRequest(req, res, project, "Import_Success");
+        console.log('Finished loading ' + project);
+        // ();
      }
-     else
+     else // code != 0
      {
-      fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-'+project), function (err) {
-          if (err) { console.log(err);  }
-          else {
-              req.flash('failMessage', 'Script Failure: '+last_line);
-              status_params = {'type': 'update',
-                               'user_id': req.user.user_id,
-                                'project':project,
-                                'status':'Script Failure',
-                                'msg':'Script Failure'
-              };
-                  //helpers.update_status(status_params);
-              res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
-              return;
-          }
+      fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-' + project), 
+       function failureHandle(err) {
+        if (err) { console.log(err);  }
+        else {
+            req.flash('failMessage', 'Script Failure: ' + last_line);
+            status_params = {'type':    'update',
+                             'user_id': req.user.user_id,
+                             'project': project,
+                             'status':  'Script Failure',
+                             'msg':     'Script Failure'
+            };
+                //helpers.update_status(status_params);
+            res.redirect("/user_data/import_data?import_type=" + req.body.type);  // for now we'll send errors to the browser
+            return;
+        }
       });
      }
   });
@@ -1903,16 +1904,18 @@ function uploadData(req, res)
   var exec    = require('child_process').exec;
   var project = helpers.clean_string(req.body.project);
 
+  // TODO: check if CreateUploadOptions does anything else and separate
   var created_options = CreateUploadOptions(req, res, project);
   var data_repository = created_options[0];
   var options         = created_options[1];
   console.log('MMM options: ');
   console.log(util.inspect(options, false, null));
 
-  fs.ensureDir(data_repository, function (err) {
+  fs.ensureDir(data_repository, function chDataRepMode(err) {
     if (err) {console.log('No such dir: ensureDir err:', err);} // => null
     else
     {
+      // TODO: name this function, what is it doing?:
       fs.chmod(data_repository, 0775, function (err) {
         if (err) {
           console.log('chmod err:', err);
@@ -1930,9 +1933,9 @@ function uploadData(req, res)
 
         var script_path = path.join(data_repository, script_name);
 
-        fs.writeFile(script_path, script_text, function (err) {
+        fs.writeFile(script_path, script_text, function chScriptMode(err) {
           if (err) return console.log(err);
-          child = exec('chmod ug+rwx '+script_path, function (error, stdout, stderr) {
+          child = exec('chmod ug+rwx ' + script_path, function (error, stdout, stderr) {
             if (error !== null) {
               console.log('1exec chmod error: ' + error);
             }
