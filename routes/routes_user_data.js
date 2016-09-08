@@ -1542,24 +1542,25 @@ function MetadataFileProvided(req, res)
     }
 }
 
-// todo: change to callback
 function ProjectExistsInDB(project, req, res)
 {
   console.log("running ProjectExistsInDB");
-  q = queries.MakeSelectProjectId(project);
-  console.log("q = " + q);
-  result = helpers.RunQuery(q);
-  console.log(util.inspect(result, false, null));
-  if (result === '' || result === undefined)
-  {
-    req.flash('failMessage', 'There is no such project');
-    res.redirect("/user_data/import_data");
-    return false;
-  }
-  else
-  {
-    return true;
-  }
+  var project_id;
+
+  helpers.fetchInfo('SELECT project_id FROM project WHERE project = ?', project, function(err, content) {
+      if (err) {
+          console.log(err);
+          req.flash('failMessage', 'There is no such project, please create one.');
+          res.redirect("/user_data/import_data");
+          return false;
+      } else {
+        console.log("content");
+        console.log(util.inspect(content, false, null));
+        project_id = content.project_id;
+        console.log(project_id);
+        return true;
+      }
+  });
 }
 
 function ProjectValidation(req, project, data_repository, res)
@@ -2031,47 +2032,36 @@ function get_privacy_code(privacy_bulean){
     { return 0 }
 }
 
-function fetchID(data, callback) {
-  user_info = [data.first_name, data.last_name, data.email, data.new_institution];
-  connection.query('SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?;', user_info, function(err, rows) {
-    if (err) {
-        callback(err, null);
-    } else 
-    {
-      console.log('--- rows ---');
-      console.log(util.inspect(rows, false, null));
-
-      callback(null, rows[0].user_id);
-    }
-  });
-}
-
 function saveToDb(req, res){ 
   var user_id;
+  var user_info = [req.form.first_name, req.form.last_name, req.form.email, req.form.new_institution];
+  var query_user_id = 'SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?;';
 
-  fetchID(req.form, function(err, content) {
+  helpers.fetchInfo(query_user_id, user_info, function(err, content) {
       if (err) {
-          console.log(err);
+        console.log("Err from saveToDb");
+        console.log(err);
           // TODO: Do something with your error...
       } else {
-          owner_user_id = content;
+          owner_user_id = content.user_id;
           var new_privacy = 1
           new_privacy = get_privacy_code(req.form.new_privacy);
           //TODO wrire a test for connection insert 1 vs. 0 for privacy
 
           var sql_a = queries.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
-          // console.log("AAA sql_a = " + sql_a);
-          // connection.query('INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES (?, ?, ?, REVERSE(?), ?, ?, ?);',
-          
+          // console.log("QQQ sql_a = " + sql_a);          
           connection.query(sql_a, 
           function (err, rows) {
            if (err) {
              console.log('ERROR-in project insert: ' + err);
-             return;
-     
+             // TODO: fix: req flash doesn't work from here!
+             req.flash('failMessage', err);
+             return false;     
            } else {
 
              req.body.project_pid = rows.insertId; 
+             // console.log('RRR: req.body.project_pid ' + req.body.project_pid);
+             
              return rows.insertId;
            }
         });
@@ -2083,7 +2073,7 @@ function saveToDb(req, res){
 function editAddProject(req, res){
   console.log('in editAddProject');
 
-  // TODO: keep choosen ENV_SOURCE
+  // TODO: keep chosen ENV_SOURCE
 
   res.render('user_data/add_project', {
     title: 'VAMPS: Add a new project',
@@ -2095,7 +2085,7 @@ function editAddProject(req, res){
   });
 }
 
-// TODO: if user info didn't change use user_id from req.user
+// TODO: if user info didn't change, use user_id from req.user
 router.post('/add_project',
   [helpers.isLoggedIn],
   form(
@@ -2109,7 +2099,7 @@ router.post('/add_project',
     form.field("first_name", "First Name").trim().required().entityEncode().isAlphanumeric(),
     form.field("last_name", "Last Name").trim().required().entityEncode().isAlphanumeric(),
     form.field("email", "Email").trim().isEmail().required().entityEncode(),
-    form.field("new_institution", "Institution").trim().required().entityEncode()
+    form.field("new_institution", "Institution").trim().required().entityEncode().isAlphanumeric()
    ),
   function (req, res) {
 

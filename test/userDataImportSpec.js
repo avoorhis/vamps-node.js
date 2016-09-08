@@ -304,8 +304,8 @@ describe('<<< Data Import Selection page functionality >>>', function(){
           if (err) {
               throw err;
           }
-          console.log("YYY res");
-          console.log(util.inspect(res, false, null));
+          // console.log("YYY res");
+          // console.log(util.inspect(res, false, null));
           res.status.should.eql(200);
           
           // assert.ok(res);
@@ -355,7 +355,53 @@ describe('<<< Data Import Selection page functionality >>>', function(){
 //     done();
 //   });
 
-  it('should insert into db status = "OK", message = "Upload Started"');
+  // it('should insert into db status = "OK", message = "Upload Started"');
+  // ---
+  it('should insert into db status = "OK", message = "Upload Started"', function(done) {
+    connection = require('../config/database-test');
+  
+    // var q1 = "INSERT INTO project (`project`, `title`, `project_description`, `rev_project_name`, `funding`, `owner_user_id`, `public`) VALUES ('test_gast_project', 'new Title', 'new description', REVERSE('test_gast_project'), '000', 4, 1);";
+    //   
+    // connection.query(q1, function(err, result) {
+    //      if (err) {throw err;}
+    //      console.log("result1")
+    //      console.log(util.inspect(result1, false, null));
+    //  });
+
+    var q1 = "INSERT INTO project (`project`, `title`, `project_description`, `rev_project_name`, `funding`, `owner_user_id`, `public`) VALUES ('test_gast_project', 'new Title', 'new description', REVERSE('test_gast_project'), '000', 1, 1);";
+    console.log("qqq");
+    console.log(q1);
+    
+    connection.query(q1, function(err, result) {
+        if (err) {throw err;}
+        console.log("result")
+        console.log(util.inspect(result, false, null));
+        var q = "SELECT * from project";
+        console.log("qqq");
+        console.log(q);
+        
+        connection.query(q, function(err, result) {
+            if (err) {throw err;}
+            console.log("result")
+            console.log(util.inspect(result, false, null));
+        });
+    });
+  
+    // var q = "SELECT * from project";
+    // console.log("qqq");
+    // console.log(q);
+    // 
+    // connection.query(q, function(err, result) {
+    //     if (err) {throw err;}
+    //     console.log("result")
+    //     console.log(util.inspect(result, false, null));
+    // });
+    this.timeout(10000);
+    done();
+  });
+  
+  // ---
+  
 //   it('should insert into db status = "OK", message = "Upload Started"', function(done) {
 //     // Data Import Selection
 //     // GET /user_data/import_data?import_type=simple_fasta 200

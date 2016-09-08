@@ -41,6 +41,7 @@
     "express-form": "",
     "express-session": "",
     "fs-extra": "",
+    "html-pdf": "",
     "ini": "",
     "iniparser": "",
     "istanbul": "",
