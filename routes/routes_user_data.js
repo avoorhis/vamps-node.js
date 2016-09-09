@@ -703,7 +703,7 @@ router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, function (req, res)
 //
 
 // TODO: split!!!
-
+// !!! NOW FROM HERE !!!
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
 router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, function (req, res) {
   var scriptlog = "";
@@ -752,56 +752,60 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
     upload_metadata_args : [ '-project_dir', data_dir, '-host', req.CONFIG.dbhost, '-db', NODE_DATABASE ],
     create_json_args : [ '-process_dir', process.env.PWD, '-host', req.CONFIG.dbhost, '-project_dir', data_dir, '-db', NODE_DATABASE ]
  };
-
+ 
   if (classifier.toUpperCase() == 'GAST')
   {
-    if (project_config['GENERAL'].fasta_type == 'multi')
-    {
-      //unique_cmd = options.scriptPath + '1-demultiplex_fna.sh ' + data_dir + ' infile.fna'
-    }
-    else
-    {
-      var single_dataset_name = Object.keys(project_config.DATASETS)[0];
-    //unique_cmd = options.scriptPath + '1-single_fna.sh ' + data_dir + ' infile.fna ' + single_dataset_name
-    }
-    // try: check project name and enter empty project (just to create pid)
-    project_init = options.scriptPath + 'project_initialization.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project + ' -uid ' + req.user.user_id;
-
-    // metadata must go in after the projects and datasets:
-    // Should go into db after we have project and datasets in the db
-    // Should go in as entire project (w all datasets) -- not dataset by dataset
-    // PROBLEM: Here we dont have datasets yet in db
-    metadata_cmd = options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project;
-
-    // Command is split to run once for each dataset on the cluster:
-    run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir + ' -s ' + project + ' -d gast -v -e fa.unique -r ' + classifier_id + ' -f -p both -w ' + req.CONFIG.site;
-    //run_cmd2 = "/bioware/seqinfo/bin/gast_ill -saveuc -nodup -full -ignoregaps -in " + data_dir + "/fasta.fa.unique -db /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".fa -rtax /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".tax -out " + data_dir + "/gast/fasta_out.gast -uc " + data_dir + "/gast/fasta_out.uc -threads 0 -strand both"
-
-    //run_cmd3 = options.scriptPath + '3-vamps_nodejs_database_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -ds ' + single_dataset_name
-
-    //run_cmd = options.scriptPath + 'vamps_script_gast_run.py ' + options.gast_run_args.join(' '),
-    script_name = 'gast_script.sh';
-    status_params.statusOK = 'OK-GAST';
-    status_params.statusSUCCESS = 'GAST-SUCCESS';
-    status_params.msgOK = 'Finished GAST';
-    status_params.msgSUCCESS = 'GAST -Tax assignments';
-
-    // TODO:
-    // test
-    // user_project_status_id  user_id  project_id  status  message  created_at  updated_at
-    // 34  4  4  GAST-SUCCESS  GAST -Tax assignments  2016-09-02 12:26:21  2016-09-02 12:31:12
-    cmd_list = [
-        //unique_cmd,
-        project_init,
-        metadata_cmd,
-        run_gast_cmd
-
-        //options.scriptPath + 'vamps_script_database_loader.py ' + options.database_loader_args.join(' '),
-        //  "pid=$(head -n 1 " + data_dir + "/pid.txt)", // pid is in a file pid.txt written by database loader
-        //options.scriptPath + 'vamps_script_load_metadata.py ' + options.upload_metadata_args.join(' '),
-        //options.scriptPath + 'vamps_script_create_json_dataset_files.py ' + options.create_json_args.join(' ')
-      ];
-    }
+    // todo: fewer args
+    gastTax(req, project_config, options, data_dir, project, classifier_id);
+  }
+  // {
+  //   if (project_config['GENERAL'].fasta_type == 'multi')
+  //   {
+  //     //unique_cmd = options.scriptPath + '1-demultiplex_fna.sh ' + data_dir + ' infile.fna'
+  //   }
+  //   else
+  //   {
+  //     var single_dataset_name = Object.keys(project_config.DATASETS)[0];
+  //   //unique_cmd = options.scriptPath + '1-single_fna.sh ' + data_dir + ' infile.fna ' + single_dataset_name
+  //   }
+  //   // try: check project name and enter empty project (just to create pid)
+  //   project_init = options.scriptPath + 'project_initialization.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project + ' -uid ' + req.user.user_id;
+  //
+  //   // metadata must go in after the projects and datasets:
+  //   // Should go into db after we have project and datasets in the db
+  //   // Should go in as entire project (w all datasets) -- not dataset by dataset
+  //   // PROBLEM: Here we dont have datasets yet in db
+  //   metadata_cmd = options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project;
+  //
+  //   // Command is split to run once for each dataset on the cluster:
+  //   run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir + ' -s ' + project + ' -d gast -v -e fa.unique -r ' + classifier_id + ' -f -p both -w ' + req.CONFIG.site;
+  //   //run_cmd2 = "/bioware/seqinfo/bin/gast_ill -saveuc -nodup -full -ignoregaps -in " + data_dir + "/fasta.fa.unique -db /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".fa -rtax /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".tax -out " + data_dir + "/gast/fasta_out.gast -uc " + data_dir + "/gast/fasta_out.uc -threads 0 -strand both"
+  //
+  //   //run_cmd3 = options.scriptPath + '3-vamps_nodejs_database_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -ds ' + single_dataset_name
+  //
+  //   //run_cmd = options.scriptPath + 'vamps_script_gast_run.py ' + options.gast_run_args.join(' '),
+  //   script_name = 'gast_script.sh';
+  //   status_params.statusOK = 'OK-GAST';
+  //   status_params.statusSUCCESS = 'GAST-SUCCESS';
+  //   status_params.msgOK = 'Finished GAST';
+  //   status_params.msgSUCCESS = 'GAST -Tax assignments';
+  //
+  //   // TODO:
+  //   // test
+  //   // user_project_status_id  user_id  project_id  status  message  created_at  updated_at
+  //   // 34  4  4  GAST-SUCCESS  GAST -Tax assignments  2016-09-02 12:26:21  2016-09-02 12:31:12
+  //   cmd_list = [
+  //       //unique_cmd,
+  //       project_init,
+  //       metadata_cmd,
+  //       run_gast_cmd
+  //
+  //       //options.scriptPath + 'vamps_script_database_loader.py ' + options.database_loader_args.join(' '),
+  //       //  "pid=$(head -n 1 " + data_dir + "/pid.txt)", // pid is in a file pid.txt written by database loader
+  //       //options.scriptPath + 'vamps_script_load_metadata.py ' + options.upload_metadata_args.join(' '),
+  //       //options.scriptPath + 'vamps_script_create_json_dataset_files.py ' + options.create_json_args.join(' ')
+  //     ];
+  //   }
     else if (classifier.toUpperCase() == 'RDP' )
     {
       // These are from the RDP README
@@ -838,6 +842,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   }
   var script_path = path.join(data_dir, script_name);
 
+  // TODO: compare with dataUpload
   fs.writeFile(script_path, script_text, function (err) {
     if (err) return console.log(err);
     // Make script executable
@@ -942,6 +947,59 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   res.redirect("/user_data/your_projects");
 
 });
+
+// Functions for tax_assignment
+function gastTax(req, project_config, options, data_dir, project, classifier_id)
+{ 
+  if (project_config['GENERAL'].fasta_type == 'multi')
+  {
+    //unique_cmd = options.scriptPath + '1-demultiplex_fna.sh ' + data_dir + ' infile.fna'
+  }
+  else
+  {
+    var single_dataset_name = Object.keys(project_config.DATASETS)[0];
+  //unique_cmd = options.scriptPath + '1-single_fna.sh ' + data_dir + ' infile.fna ' + single_dataset_name
+  }
+  // try: check project name and enter empty project (just to create pid)
+  project_init = options.scriptPath + 'project_initialization.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project + ' -uid ' + req.user.user_id;
+
+  // metadata must go in after the projects and datasets:
+  // Should go into db after we have project and datasets in the db
+  // Should go in as entire project (w all datasets) -- not dataset by dataset
+  // PROBLEM: Here we dont have datasets yet in db
+  metadata_cmd = options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project;
+
+  // Command is split to run once for each dataset on the cluster:
+  run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir + ' -s ' + project + ' -d gast -v -e fa.unique -r ' + classifier_id + ' -f -p both -w ' + req.CONFIG.site;
+  //run_cmd2 = "/bioware/seqinfo/bin/gast_ill -saveuc -nodup -full -ignoregaps -in " + data_dir + "/fasta.fa.unique -db /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".fa -rtax /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".tax -out " + data_dir + "/gast/fasta_out.gast -uc " + data_dir + "/gast/fasta_out.uc -threads 0 -strand both"
+
+  //run_cmd3 = options.scriptPath + '3-vamps_nodejs_database_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -ds ' + single_dataset_name
+
+  //run_cmd = options.scriptPath + 'vamps_script_gast_run.py ' + options.gast_run_args.join(' '),
+  script_name = 'gast_script.sh';
+  status_params.statusOK = 'OK-GAST';
+  status_params.statusSUCCESS = 'GAST-SUCCESS';
+  status_params.msgOK = 'Finished GAST';
+  status_params.msgSUCCESS = 'GAST -Tax assignments';
+
+  // TODO:
+  // test
+  // user_project_status_id  user_id  project_id  status  message  created_at  updated_at
+  // 34  4  4  GAST-SUCCESS  GAST -Tax assignments  2016-09-02 12:26:21  2016-09-02 12:31:12
+  cmd_list = [
+      //unique_cmd,
+      project_init,
+      metadata_cmd,
+      run_gast_cmd
+
+      //options.scriptPath + 'vamps_script_database_loader.py ' + options.database_loader_args.join(' '),
+      //  "pid=$(head -n 1 " + data_dir + "/pid.txt)", // pid is in a file pid.txt written by database loader
+      //options.scriptPath + 'vamps_script_load_metadata.py ' + options.upload_metadata_args.join(' '),
+      //options.scriptPath + 'vamps_script_create_json_dataset_files.py ' + options.create_json_args.join(' ')
+    ];
+  }
+
+
 //
 // YOUR PROJECTS
 //
