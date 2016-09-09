@@ -1861,7 +1861,8 @@ function RunAndCheck(script_path, nodelog, req, project, res)
      var ary = output.split("\n");
      var last_line = ary[ary.length - 1];
      console.log('last_line:', last_line);
-     if (code === 0) {
+     if (code === 0) 
+     {  
         status_params = {'type':'update',
                         'user_id':req.user.user_id,
                         'project':project,
