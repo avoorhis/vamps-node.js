@@ -1622,6 +1622,8 @@ var LoadDataFinishRequest = function (req, res, project, display) {
 
 function OriginalMetafileUpload(req, options)
 {
+  console.log("QQQ3 in OriginalMetafileUpload");
+  
   var original_metafile  = '';
   try {
     //original_metafile  = path.join(process.env.PWD, 'tmp', req.files[1].filename);
@@ -1636,11 +1638,13 @@ function OriginalMetafileUpload(req, options)
     original_metafile  = '';
   }
 
-  // return original_metafile;
+  return options;
 }
 
 function CheckFileTypeInfo(req, options)
 {
+  console.log("QQQ4 in CheckFileTypeInfo");
+  
   if (req.body.type == 'simple_fasta') {
       if (req.body.dataset === '' || req.body.dataset === undefined) {
         req.flash('failMessage', 'A dataset name is required.');
@@ -1655,10 +1659,13 @@ function CheckFileTypeInfo(req, options)
         res.redirect("/user_data/import_data");
         return;
     }
+    return options;
 }
 
 function CreateUploadOptions(req, res, project)
 {
+  console.log("QQQ3 in CreateUploadOptions");
+  
   var username = req.user.username;
   console.log('1-req.body upload_data');
   console.log(req.body);
@@ -1843,6 +1850,8 @@ function failedCode(req, res, data_repository, project)
 
 function RunAndCheck(script_path, nodelog, req, project, res)
 {
+  console.log("QQQ6 in RunAndCheck");
+  
   var run_process = spawn( script_path, [], {
     // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
     // 'PATH':req.CONFIG.PATH,
@@ -1879,6 +1888,8 @@ function RunAndCheck(script_path, nodelog, req, project, res)
 
 function writeAndRunScript(req, res, project, options, data_repository)
 {
+  console.log("QQQ5 in writeAndRunScript");
+  
   var exec = require('child_process').exec;
   
   fs.ensureDir(data_repository, function chDataRepMode(err) {
@@ -1891,16 +1902,15 @@ function writeAndRunScript(req, res, project, options, data_repository)
           console.log('chmod err:', err);
           return;
         }
-        // var cmd_list = CreateCmdList(req, options, data_repository);
-        // console.log("TTT cmd_list: ");
-        // console.log(util.inspect(cmd_list, false, null));
+        var cmd_list = CreateCmdList(req, options, data_repository);
+        console.log("TTT cmd_list: ");
+        console.log(util.inspect(cmd_list, false, null));
 
         script_name     = 'load_script.sh';
         var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
         var script_vars = GetScriptVars(req, data_repository, cmd_list);
         var scriptlog   = script_vars[0];
         var script_text = script_vars[1];
-
         var script_path = path.join(data_repository, script_name);
 
         fs.writeFile(script_path, script_text, function chScriptMode(err) {
@@ -1922,6 +1932,8 @@ function writeAndRunScript(req, res, project, options, data_repository)
 
 function uploadData(req, res)
 {
+  console.log("QQQ2 in uploadData");
+  
   var project = helpers.clean_string(req.body.project);
 
   // TODO: check if CreateUploadOptions does anything else and separate
@@ -1931,7 +1943,7 @@ function uploadData(req, res)
   console.log('MMM options: ');
   console.log(util.inspect(options, false, null));
 
-  OriginalMetafileUpload(req, options);
+  options = OriginalMetafileUpload(req, options);
   // console.log('MMM Metadata file. options: ');
   // console.log(util.inspect(options, false, null));
   //TODO:
@@ -1953,7 +1965,7 @@ function uploadData(req, res)
 //        '/Users/ashipunova/BPC/vamps-node.js/tmp/59b29388a55ab33935d054bd0b4e2613' ] }
 //
 
-  CheckFileTypeInfo(req, options);
+  options = CheckFileTypeInfo(req, options);
     // console.log('MMM CheckFileTypeInfo. options: ');
     // console.log(util.inspect(options, false, null));
     // TODO: test
@@ -1965,45 +1977,9 @@ function uploadData(req, res)
     //      'test_gast_dataset' ] }
 
   writeAndRunScript(req, res, project, options, data_repository);
-  // fs.ensureDir(data_repository, function chDataRepMode(err) {
-  //   if (err) {console.log('No such dir: ensureDir err:', err);} // => null
-  //   else
-  //   {
-  //     // TODO: name this function, what is it doing?:
-  //     fs.chmod(data_repository, 0775, function (err) {
-  //       if (err) {
-  //         console.log('chmod err:', err);
-  //         return;
-  //       }
-  //       var cmd_list = CreateCmdList(req, options, data_repository);
-  //       console.log("TTT cmd_list: ");
-  //       console.log(util.inspect(cmd_list, false, null));
-  //
-  //       script_name     = 'load_script.sh';
-  //       var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
-  //       var script_vars = GetScriptVars(req, data_repository, cmd_list);
-  //       var scriptlog   = script_vars[0];
-  //       var script_text = script_vars[1];
-  //
-  //       var script_path = path.join(data_repository, script_name);
-  //
-  //       fs.writeFile(script_path, script_text, function chScriptMode(err) {
-  //         if (err) return console.log(err);
-  //         child = exec('chmod ug+rwx ' + script_path, function (error, stdout, stderr) {
-  //           if (error !== null) {
-  //             console.log('1exec chmod error: ' + error);
-  //           }
-  //           else
-  //           {
-  //             RunAndCheck(script_path, nodelog, req, project, res);
-  //           }
-  //         }); // end exec
-  //       });  // end writeFile
-  //     });     //   END chmod
-  //   }         // end else
-  // });         //   END ensuredir
 }
 
+// !!! FROM HERE !!!
 router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)],
   form(
     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
@@ -2011,6 +1987,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
   ),
   function (req, res)
   {
+    console.log("QQQ1 in router.post('/upload_data'");
     if (!req.form.isValid) {
       console.log('PPP upload_data !req.form.isValid: ');
       console.log(util.inspect(req.form.errors, false, null));
@@ -2306,8 +2283,6 @@ router.post('/add_project',
     return;
   }
 );
-
-
 
 
 //
