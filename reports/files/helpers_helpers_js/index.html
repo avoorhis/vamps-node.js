@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">63.74</p>
+      <p class="stat">63.27</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">739</p>
+      <p class="stat">719</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">74.27</p>
+      <p class="stat">74.49</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">8.11</p>
+      <p class="stat">7.93</p>
     </div>
   </div>
 </div>
@@ -107,7 +107,7 @@ module.exports = {
       // if user is authenticated in the session, carry on
 
       if (req.isAuthenticated()) {
-        console.log(&quot;Hurray! isLoggedIn.req.isAuthenticated&quot;);
+        console.log(&quot;Hurray! isLoggedIn.req.isAuthenticated:&quot;,req.user.username);
         return next();
       }
       // if they aren&#039;t redirect them to the home page
@@ -123,11 +123,11 @@ module.exports = {
   isAdmin: function (req, res, next) {
 
       if (req.user.security_level === 1) {
-        console.log(&quot;Hurray! USER is an Admin&quot;);
+        console.log(&quot;Hurray! USER is an Admin:&quot;,req.user.username);
         return next();
       }
       // if they aren&#039;t redirect them to the home page
-      console.log(&quot;Whoa! NOT an Admin&quot;);
+      console.log(&quot;Whoa! NOT an Admin: &quot;,req.user.username);
       // save the url in the session
       req.session.returnTo = req.path;
       //console.log(&#039;URL Requested: &#039;+JSON.stringify(req));
@@ -694,7 +694,6 @@ module.exports.run_select_datasets_query = function(rows){
             mdgroup.refresh();
             // TODO: &quot;This function&#039;s cyclomatic complexity is too high. (8)&quot;
             // TODO: &quot;Don&#039;t make functions within a loop.&quot;
-
             Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
                 if(mdname != &#039;id&#039;){
                   //console.log(mdname, group[mdname])
@@ -757,7 +756,7 @@ module.exports.update_status = function(status_params) {
   console.log(util.inspect(status_params, false, null));
 
   if (status_params.type === &#039;delete&#039;) {
-    delete_status_params = [status_params.user_id, status_params.project]
+    delete_status_params = [status_params.user_id, status_params.project];
     statQuery = queries.MakeDeleteStatusQ();
     console.log(&#039;in update_status, after delete_status&#039;);
     connection.query(statQuery, delete_status_params, function(err, rows) {
@@ -795,31 +794,12 @@ module.exports.update_status = function(status_params) {
   } // Type::New
 };
 
-module.exports.prepareQuery = function(inserts)
-{
-  // inserts = [&#039;users&#039;, &#039;id&#039;, userId];
-  var sql = &quot;SELECT * FROM ?? WHERE ?? = ?&quot;;
-  return mysql.format(sql, inserts);  
-}
-
-module.exports.RunQuery = function(my_query)
-{
-  console.log(&#039;my_query from RunQuery: &#039; + my_query);
-  connection.query(my_query, function(err, rows) {
-    if(err) {
-      console.log(&#039;ERROR in query: &#039; + err);
-    } else {
-      console.log(util.inspect(rows, false, null));
-      return rows;
-    }
-  });
-}
-
 module.exports.fetchInfo = function (query, values, callback) {
   connection.query(query, values, function(err, rows) {
     if (err) {
       callback(err, null);
-    } else 
+    } 
+    else 
     {
       console.log(&#039;--- rows from fetchInfo ---&#039;);
       console.log(util.inspect(rows, false, null));
@@ -827,7 +807,7 @@ module.exports.fetchInfo = function (query, values, callback) {
       callback(null, rows[0]);
     }
   });
-}</textarea>
+};</textarea>
   </div>
 </div>
 
