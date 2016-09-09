@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - public/javascripts/d3.phylogram.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>public/javascripts/d3.phylogram.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">70.16</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">278</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">68.98</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">4.26</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/*
+  d3.phylogram.js
+  Wrapper around a d3-based phylogram (tree where branch lengths are scaled)
+  Also includes a radial dendrogram visualization (branch lengths not scaled)
+  along with some helper methods for building angled-branch trees.
+
+  Copyright (c) 2013, Ken-ichi Ueda
+
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
+
+  Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer. Redistributions in binary
+  form must reproduce the above copyright notice, this list of conditions and
+  the following disclaimer in the documentation and/or other materials
+  provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE.
+
+  DOCUEMENTATION
+
+  d3.phylogram.build(selector, nodes, options)
+    Creates a phylogram.
+    Arguments:
+      selector: selector of an element that will contain the SVG
+      nodes: JS object of nodes
+    Options:
+      width       
+        Width of the vis, will attempt to set a default based on the width of
+        the container.
+      height
+        Height of the vis, will attempt to set a default based on the height
+        of the container.
+      vis
+        Pre-constructed d3 vis.
+      tree
+        Pre-constructed d3 tree layout.
+      children
+        Function for retrieving an array of children given a node. Default is
+        to assume each node has an attribute called &quot;branchset&quot;
+      diagonal
+        Function that creates the d attribute for an svg:path. Defaults to a
+        right-angle diagonal.
+      skipTicks
+        Skip the tick rule.
+      skipBranchLengthScaling
+        Make a dendrogram instead of a phylogram.
+  
+  d3.phylogram.buildRadial(selector, nodes, options)
+    Creates a radial dendrogram.
+    Options: same as build, but without diagonal, skipTicks, and 
+      skipBranchLengthScaling
+  
+  d3.phylogram.rightAngleDiagonal()
+    Similar to d3.diagonal except it create an orthogonal crook instead of a
+    smooth Bezier curve.
+    
+  d3.phylogram.radialRightAngleDiagonal()
+    d3.phylogram.rightAngleDiagonal for radial layouts.
+*/
+var d3 = d3 || require(&quot;d3&quot;);
+if (!d3) { throw &quot;d3 wasn&#039;t included!&quot;};
+(function() {
+  d3.phylogram = {}
+  d3.phylogram.rightAngleDiagonal = function() {
+    var projection = function(d) { return [d.y, d.x]; }
+    
+    var path = function(pathData) {
+      return &quot;M&quot; + pathData[0] + &#039; &#039; + pathData[1] + &quot; &quot; + pathData[2];
+    }
+    
+    function diagonal(diagonalPath, i) {
+      var source = diagonalPath.source,
+          target = diagonalPath.target,
+          midpointX = (source.x + target.x) / 2,
+          midpointY = (source.y + target.y) / 2,
+          pathData = [source, {x: target.x, y: source.y}, target];
+      pathData = pathData.map(projection);
+      return path(pathData)
+    }
+    
+    diagonal.projection = function(x) {
+      if (!arguments.length) return projection;
+      projection = x;
+      return diagonal;
+    };
+    
+    diagonal.path = function(x) {
+      if (!arguments.length) return path;
+      path = x;
+      return diagonal;
+    };
+    
+    return diagonal;
+  }
+  
+  d3.phylogram.radialRightAngleDiagonal = function() {
+    return d3.phylogram.rightAngleDiagonal()
+      .path(function(pathData) {
+        var src = pathData[0],
+            mid = pathData[1],
+            dst = pathData[2],
+            radius = Math.sqrt(src[0]*src[0] + src[1]*src[1]),
+            srcAngle = d3.phylogram.coordinateToAngle(src, radius),
+            midAngle = d3.phylogram.coordinateToAngle(mid, radius),
+            clockwise = Math.abs(midAngle - srcAngle) &gt; Math.PI ? midAngle &lt;= srcAngle : midAngle &gt; srcAngle,
+            rotation = 0,
+            largeArc = 0,
+            sweep = clockwise ? 0 : 1;
+        return &#039;M&#039; + src + &#039; &#039; +
+          &quot;A&quot; + [radius,radius] + &#039; &#039; + rotation + &#039; &#039; + largeArc+&#039;,&#039;+sweep + &#039; &#039; + mid +
+          &#039;L&#039; + dst;
+      })
+      .projection(function(d) {
+        var r = d.y, a = (d.x - 90) / 180 * Math.PI;
+        return [r * Math.cos(a), r * Math.sin(a)];
+      })
+  }
+  
+  // Convert XY and radius to angle of a circle centered at 0,0
+  d3.phylogram.coordinateToAngle = function(coord, radius) {
+    var wholeAngle = 2 * Math.PI,
+        quarterAngle = wholeAngle / 4
+    
+    var coordQuad = coord[0] &gt;= 0 ? (coord[1] &gt;= 0 ? 1 : 2) : (coord[1] &gt;= 0 ? 4 : 3),
+        coordBaseAngle = Math.abs(Math.asin(coord[1] / radius))
+    
+    // Since this is just based on the angle of the right triangle formed
+    // by the coordinate and the origin, each quad will have different 
+    // offsets
+    switch (coordQuad) {
+      case 1:
+        coordAngle = quarterAngle - coordBaseAngle
+        break
+      case 2:
+        coordAngle = quarterAngle + coordBaseAngle
+        break
+      case 3:
+        coordAngle = 2*quarterAngle + quarterAngle - coordBaseAngle
+        break
+      case 4:
+        coordAngle = 3*quarterAngle + coordBaseAngle
+    }
+    return coordAngle
+  }
+  
+  d3.phylogram.styleTreeNodes = function(vis) {
+    vis.selectAll(&#039;g.leaf.node&#039;)
+      .append(&quot;svg:circle&quot;)
+        .attr(&quot;r&quot;, 4.5)
+        .attr(&#039;stroke&#039;,  &#039;yellowGreen&#039;)
+        .attr(&#039;fill&#039;, &#039;greenYellow&#039;)
+        .attr(&#039;stroke-width&#039;, &#039;2px&#039;);
+    
+    vis.selectAll(&#039;g.root.node&#039;)
+      .append(&#039;svg:circle&#039;)
+        .attr(&quot;r&quot;, 4.5)
+        .attr(&#039;fill&#039;, &#039;steelblue&#039;)
+        .attr(&#039;stroke&#039;, &#039;#369&#039;)
+        .attr(&#039;stroke-width&#039;, &#039;2px&#039;);
+  }
+  
+  function scaleBranchLengths(nodes, w) {
+    // Visit all nodes and adjust y pos width distance metric
+    var visitPreOrder = function(root, callback) {
+      callback(root)
+      if (root.children) {
+        for (var i = root.children.length - 1; i &gt;= 0; i--){
+          visitPreOrder(root.children[i], callback)
+        };
+      }
+    }
+    visitPreOrder(nodes[0], function(node) {
+      node.rootDist = (node.parent ? node.parent.rootDist : 0) + (node.length || 0)
+    })
+    var rootDists = nodes.map(function(n) { return n.rootDist; });
+    var yscale = d3.scale.linear()
+      .domain([0, d3.max(rootDists)])
+      .range([0, w]);
+    visitPreOrder(nodes[0], function(node) {
+      node.y = yscale(node.rootDist)
+    })
+    return yscale
+  }
+  
+  
+  d3.phylogram.build = function(selector, nodes, options) {
+    options = options || {}
+    var w = options.width || d3.select(selector).style(&#039;width&#039;) || d3.select(selector).attr(&#039;width&#039;),
+        h = options.height || d3.select(selector).style(&#039;height&#039;) || d3.select(selector).attr(&#039;height&#039;),
+        w = parseInt(w),
+        h = parseInt(h);
+    var tree = options.tree || d3.layout.cluster()
+      .size([h, w])
+      .sort(function(node) { return node.children ? node.children.length : -1; })
+      .children(options.children || function(node) {
+        return node.branchset
+      });
+    var diagonal = options.diagonal || d3.phylogram.rightAngleDiagonal();
+    var vis = options.vis || d3.select(selector).append(&quot;svg:svg&quot;)
+        .attr(&quot;width&quot;, w + 300)
+        .attr(&quot;height&quot;, h + 30)
+      .append(&quot;svg:g&quot;)
+        .attr(&quot;transform&quot;, &quot;translate(20, 20)&quot;);
+    var nodes = tree(nodes);
+    
+    if (options.skipBranchLengthScaling) {
+      var yscale = d3.scale.linear()
+        .domain([0, w])
+        .range([0, w]);
+    } else {
+      var yscale = scaleBranchLengths(nodes, w)
+    }
+    
+    if (!options.skipTicks) {
+      vis.selectAll(&#039;line&#039;)
+          .data(yscale.ticks(10))
+        .enter().append(&#039;svg:line&#039;)
+          .attr(&#039;y1&#039;, 0)
+          .attr(&#039;y2&#039;, h)
+          .attr(&#039;x1&#039;, yscale)
+          .attr(&#039;x2&#039;, yscale)
+          .attr(&quot;stroke&quot;, &quot;#ddd&quot;);
+
+      vis.selectAll(&quot;text.rule&quot;)
+          .data(yscale.ticks(10))
+        .enter().append(&quot;svg:text&quot;)
+          .attr(&quot;class&quot;, &quot;rule&quot;)
+          .attr(&quot;x&quot;, yscale)
+          .attr(&quot;y&quot;, 0)
+          .attr(&quot;dy&quot;, -3)
+          .attr(&quot;text-anchor&quot;, &quot;middle&quot;)
+          .attr(&#039;font-size&#039;, &#039;8px&#039;)
+          .attr(&#039;fill&#039;, &#039;#ccc&#039;)
+          .text(function(d) { return Math.round(d*100) / 100; });
+    }
+        
+    var link = vis.selectAll(&quot;path.link&quot;)
+        .data(tree.links(nodes))
+      .enter().append(&quot;svg:path&quot;)
+        .attr(&quot;class&quot;, &quot;link&quot;)
+        .attr(&quot;d&quot;, diagonal)
+        .attr(&quot;fill&quot;, &quot;none&quot;)
+        .attr(&quot;stroke&quot;, &quot;#aaa&quot;)
+        .attr(&quot;stroke-width&quot;, &quot;4px&quot;);
+        
+    var node = vis.selectAll(&quot;g.node&quot;)
+        .data(nodes)
+      .enter().append(&quot;svg:g&quot;)
+        .attr(&quot;class&quot;, function(n) {
+          if (n.children) {
+            if (n.depth == 0) {
+              return &quot;root node&quot;
+            } else {
+              return &quot;inner node&quot;
+            }
+          } else {
+            return &quot;leaf node&quot;
+          }
+        })
+        .attr(&quot;transform&quot;, function(d) { return &quot;translate(&quot; + d.y + &quot;,&quot; + d.x + &quot;)&quot;; })
+      
+    d3.phylogram.styleTreeNodes(vis)
+    
+    if (!options.skipLabels) {
+      vis.selectAll(&#039;g.inner.node&#039;)
+        .append(&quot;svg:text&quot;)
+          .attr(&quot;dx&quot;, -6)
+          .attr(&quot;dy&quot;, -6)
+          .attr(&quot;text-anchor&quot;, &#039;end&#039;)
+          .attr(&#039;font-size&#039;, &#039;8px&#039;)
+          .attr(&#039;fill&#039;, &#039;#ccc&#039;)
+          .text(function(d) { return d.length; });
+
+      vis.selectAll(&#039;g.leaf.node&#039;).append(&quot;svg:text&quot;)
+        .attr(&quot;dx&quot;, 8)
+        .attr(&quot;dy&quot;, 3)
+        .attr(&quot;text-anchor&quot;, &quot;start&quot;)
+        .attr(&#039;font-family&#039;, &#039;Helvetica Neue, Helvetica, sans-serif&#039;)
+        .attr(&#039;font-size&#039;, &#039;10px&#039;)
+        .attr(&#039;fill&#039;, &#039;black&#039;)
+        .text(function(d) { return d.name + &#039; (&#039;+d.length+&#039;)&#039;; });
+    }
+    
+    return {tree: tree, vis: vis}
+  }
+  
+  d3.phylogram.buildRadial = function(selector, nodes, options) {
+    options = options || {}
+    var w = options.width || d3.select(selector).style(&#039;width&#039;) || d3.select(selector).attr(&#039;width&#039;),
+        r = w / 2,
+        labelWidth = options.skipLabels ? 10 : options.labelWidth || 120;
+    
+    var vis = d3.select(selector).append(&quot;svg:svg&quot;)
+        .attr(&quot;width&quot;, r * 2)
+        .attr(&quot;height&quot;, r * 2)
+      .append(&quot;svg:g&quot;)
+        .attr(&quot;transform&quot;, &quot;translate(&quot; + r + &quot;,&quot; + r + &quot;)&quot;);
+        
+    var tree = d3.layout.tree()
+      .size([360, r - labelWidth])
+      .sort(function(node) { return node.children ? node.children.length : -1; })
+      .children(options.children || function(node) {
+        return node.branchset
+      })
+      .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+    
+    var phylogram = d3.phylogram.build(selector, nodes, {
+      vis: vis,
+      tree: tree,
+      skipBranchLengthScaling: true,
+      skipTicks: true,
+      skipLabels: options.skipLabels,
+      diagonal: d3.phylogram.radialRightAngleDiagonal()
+    })
+    vis.selectAll(&#039;g.node&#039;)
+      .attr(&quot;transform&quot;, function(d) { return &quot;rotate(&quot; + (d.x - 90) + &quot;)translate(&quot; + d.y + &quot;)&quot;; })
+    
+    if (!options.skipLabels) {
+      vis.selectAll(&#039;g.leaf.node text&#039;)
+        .attr(&quot;dx&quot;, function(d) { return d.x &lt; 180 ? 8 : -8; })
+        .attr(&quot;dy&quot;, &quot;.31em&quot;)
+        .attr(&quot;text-anchor&quot;, function(d) { return d.x &lt; 180 ? &quot;start&quot; : &quot;end&quot;; })
+        .attr(&quot;transform&quot;, function(d) { return d.x &lt; 180 ? null : &quot;rotate(180)&quot;; })
+        .attr(&#039;font-family&#039;, &#039;Helvetica Neue, Helvetica, sans-serif&#039;)
+        .attr(&#039;font-size&#039;, &#039;10px&#039;)
+        .attr(&#039;fill&#039;, &#039;black&#039;)
+        .text(function(d) { return d.data.name; });
+
+      vis.selectAll(&#039;g.inner.node text&#039;)
+        .attr(&quot;dx&quot;, function(d) { return d.x &lt; 180 ? -6 : 6; })
+        .attr(&quot;text-anchor&quot;, function(d) { return d.x &lt; 180 ? &quot;end&quot; : &quot;start&quot;; })
+        .attr(&quot;transform&quot;, function(d) { return d.x &lt; 180 ? null : &quot;rotate(180)&quot;; });
+    }
+    
+    return {tree: tree, vis: vis}
+  }
+}());</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

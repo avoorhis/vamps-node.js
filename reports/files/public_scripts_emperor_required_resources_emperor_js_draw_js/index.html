@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - public/scripts/emperor_required_resources/emperor/js/draw.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>public/scripts/emperor_required_resources/emperor/js/draw.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">69.02</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">65</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">18.08</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">0.44</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ *
+ * @author Yoshiki Vazquez Baeza
+ * @copyright Copyright 2013, The Emperor Project
+ * @credits Yoshiki Vazquez Baeza
+ * @license BSD
+ * @version 0.9.51
+ * @maintainer Yoshiki Vazquez Baeza
+ * @email yoshiki89@gmail.com
+ * @status Release
+ *
+ */
+
+/**
+ *
+ * @name THREE.EmperorTrajectory
+ *
+ * @class This class represents the internal logic for a linearly interpolated
+ * tube/trajectory in THREE.js the object itself is a subclass of the
+ * THREE.Curve.
+ *
+ * @credits: This answer in StackOverflow helped a lot:
+ * http://stackoverflow.com/a/18580832/379593
+ *
+ */
+THREE.EmperorTrajectory = THREE.Curve.create(
+  function ( points) {
+    this.points = (points == undefined) ? [] : points;
+  },
+
+  function ( t ) {    
+    var points = this.points;
+    var index = ( points.length - 1 ) * t;
+    var floorIndex = Math.floor(index);
+
+    if(floorIndex == points.length-1){
+      return points[floorIndex];
+    }
+
+    var floorPoint = points[floorIndex];
+    var ceilPoint = points[floorIndex+1];
+
+    return floorPoint.clone().lerp(ceilPoint, index - floorIndex);
+  }
+);
+
+THREE.EmperorTrajectory.prototype.getUtoTmapping = function(u) {
+    return u;
+};
+
+/**
+ *
+ * Format an SVG string with labels and colors.
+ *
+ * @param {labels} Array object with the name of the labels.
+ * @param {colors} Array object with the colors for each label.
+ *
+ * @return Returns an SVG string with the labels and colors values formated as
+ * a legend.
+ *
+ */
+function formatSVGLegend(labels, colors){
+  var labels_svg=&#039;&#039;, pos_y=1, increment=40, max_len=0, rect_width,
+      font_size=12;
+
+  for (var i=0; i&lt;labels.length; i++){
+    // add the rectangle with the corresponding color
+    labels_svg += &#039;&lt;rect height=&quot;27&quot; width=&quot;27&quot; y=&quot;&#039;+pos_y+
+        &#039;&quot; x=&quot;5&quot; style=&quot;stroke-width:1;stroke:rgb(0,0,0)&quot; fill=&quot;&#039;+
+        colors[i]+&#039;&quot;/&gt;&#039;;
+
+    // add the name of the category
+    labels_svg += &#039;&lt;text xml:space=&quot;preserve&quot; y=&quot;&#039;+(pos_y+20)+&#039;&quot; x=&quot;40&quot; &#039;+
+        &#039;font-size=&quot;&#039;+font_size+&#039;&quot; stroke-width=&quot;0&quot; stroke=&quot;#000000&quot; &#039;+
+        &#039;fill=&quot;#000000&quot;&gt;&#039;+labels[i]+&#039;&lt;/text&gt;&#039;;
+
+    pos_y += increment;
+  }
+
+  // get the name with the maximum number of characters and get the length
+  max_len = _.max(labels, function(a){return a.length}).length
+
+  // duplicate the size of the rectangle to make sure it fits the labels
+  rect_width = font_size*max_len*2;
+
+  labels_svg = &#039;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;&#039;+
+      rect_width+&#039;&quot; height=&quot;&#039;+(pos_y-10)+&#039;&quot;&gt;&lt;g&gt;&#039;+labels_svg+&#039;&lt;/g&gt;&lt;/svg&gt;&#039;;
+
+  return labels_svg;
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

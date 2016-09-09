@@ -603,7 +603,6 @@ module.exports.run_select_datasets_query = function(rows){
             mdgroup.refresh();
             // TODO: "This function's cyclomatic complexity is too high. (8)"
             // TODO: "Don't make functions within a loop."
-
             Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
                 if(mdname != 'id'){
                   //console.log(mdname, group[mdname])
@@ -666,7 +665,7 @@ module.exports.update_status = function(status_params) {
   console.log(util.inspect(status_params, false, null));
 
   if (status_params.type === 'delete') {
-    delete_status_params = [status_params.user_id, status_params.project]
+    delete_status_params = [status_params.user_id, status_params.project];
     statQuery = queries.MakeDeleteStatusQ();
     console.log('in update_status, after delete_status');
     connection.query(statQuery, delete_status_params, function(err, rows) {
@@ -709,7 +708,7 @@ module.exports.prepareQuery = function(inserts)
   // inserts = ['users', 'id', userId];
   var sql = "SELECT * FROM ?? WHERE ?? = ?";
   return mysql.format(sql, inserts);  
-}
+};
 
 module.exports.RunQuery = function(my_query)
 {
@@ -722,7 +721,7 @@ module.exports.RunQuery = function(my_query)
       return rows;
     }
   });
-}
+};
 
 module.exports.fetchInfo = function (query, values, callback) {
   connection.query(query, values, function(err, rows) {
@@ -736,4 +735,4 @@ module.exports.fetchInfo = function (query, values, callback) {
       callback(null, rows[0]);
     }
   });
-}
+};

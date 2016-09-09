@@ -264,7 +264,7 @@ router.post('/export_data', helpers.isLoggedIn, function (req, res) {
 /* GET Import Choices page. */
 router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
   console.log('import_choices');
-  
+
   if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
       res.render('user_data/your_data', {
         title: 'VAMPS:Data Administration',
@@ -702,6 +702,7 @@ router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, function (req, res)
 // START_ASSIGNMENT
 //
 
+// TODO: split!!!
 
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
 router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, function (req, res) {
@@ -764,27 +765,27 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
     //unique_cmd = options.scriptPath + '1-single_fna.sh ' + data_dir + ' infile.fna ' + single_dataset_name
     }
     // try: check project name and enter empty project (just to create pid)
-    project_init = options.scriptPath + '/project_initialization.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project + ' -uid ' + req.user.user_id;
+    project_init = options.scriptPath + 'project_initialization.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project + ' -uid ' + req.user.user_id;
 
     // metadata must go in after the projects and datasets:
     // Should go into db after we have project and datasets in the db
     // Should go in as entire project (w all datasets) -- not dataset by dataset
     // PROBLEM: Here we dont have datasets yet in db
-    metadata_cmd = options.scriptPath + '/metadata_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project;
+    metadata_cmd = options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project;
 
     // Command is split to run once for each dataset on the cluster:
-    run_gast_cmd = options.scriptPath + '/2-vamps_nodejs_gast.sh -x ' + data_dir + ' -s ' + project + ' -d gast -v -e fa.unique -r ' + classifier_id + ' -f -p both -w ' + req.CONFIG.site;
+    run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir + ' -s ' + project + ' -d gast -v -e fa.unique -r ' + classifier_id + ' -f -p both -w ' + req.CONFIG.site;
     //run_cmd2 = "/bioware/seqinfo/bin/gast_ill -saveuc -nodup -full -ignoregaps -in " + data_dir + "/fasta.fa.unique -db /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".fa -rtax /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".tax -out " + data_dir + "/gast/fasta_out.gast -uc " + data_dir + "/gast/fasta_out.uc -threads 0 -strand both"
 
     //run_cmd3 = options.scriptPath + '3-vamps_nodejs_database_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -ds ' + single_dataset_name
 
-    //run_cmd = options.scriptPath + '/vamps_script_gast_run.py ' + options.gast_run_args.join(' '),
+    //run_cmd = options.scriptPath + 'vamps_script_gast_run.py ' + options.gast_run_args.join(' '),
     script_name = 'gast_script.sh';
     status_params.statusOK = 'OK-GAST';
     status_params.statusSUCCESS = 'GAST-SUCCESS';
     status_params.msgOK = 'Finished GAST';
     status_params.msgSUCCESS = 'GAST -Tax assignments';
-    
+
     // TODO:
     // test
     // user_project_status_id  user_id  project_id  status  message  created_at  updated_at
@@ -795,10 +796,10 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
         metadata_cmd,
         run_gast_cmd
 
-        //options.scriptPath + '/vamps_script_database_loader.py ' + options.database_loader_args.join(' '),
+        //options.scriptPath + 'vamps_script_database_loader.py ' + options.database_loader_args.join(' '),
         //  "pid=$(head -n 1 " + data_dir + "/pid.txt)", // pid is in a file pid.txt written by database loader
-        //options.scriptPath + '/vamps_script_load_metadata.py ' + options.upload_metadata_args.join(' '),
-        //options.scriptPath + '/vamps_script_create_json_dataset_files.py ' + options.create_json_args.join(' ')
+        //options.scriptPath + 'vamps_script_load_metadata.py ' + options.upload_metadata_args.join(' '),
+        //options.scriptPath + 'vamps_script_create_json_dataset_files.py ' + options.create_json_args.join(' ')
       ];
     }
     else if (classifier.toUpperCase() == 'RDP' )
@@ -810,10 +811,10 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
         gene = 'fungalits_unite';
       }
       var path2classifier = req.CONFIG.PATH_TO_CLASSIFIER + '_' + ref_db_dir;
-      rdp_cmd1 = options.scriptPath + '/vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene;
-      rdp_cmd2 = options.scriptPath + '/vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP';
-      rdp_cmd3 = options.scriptPath + '/vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site;
-      rdp_cmd4 = options.scriptPath + '/vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE;
+      rdp_cmd1 = options.scriptPath + 'vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene;
+      rdp_cmd2 = options.scriptPath + 'vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP';
+      rdp_cmd3 = options.scriptPath + 'vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site;
+      rdp_cmd4 = options.scriptPath + 'vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE;
 
       script_name = 'rdp_script.sh';
       status_params.statusOK = 'OK-RDP';
@@ -1478,7 +1479,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 //
 //  UPLOAD DATA
 //
-// ASh Aug 2016
+// AShipunova Aug 2016
 // TODO: Andy, how to make it fail? For testing?
 
 function ProjectNameExists(project, req, res)
@@ -1567,9 +1568,9 @@ function ProjectValidation(req, project, data_repository, res)
 {
   // console.log('MMM PROJECT_INFORMATION_BY_PNAME: ');
   // console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
-  
+
   // TODO: check if added but not in PROJECT_INFORMATION_BY_PNAME? or update PROJECT_INFORMATION_BY_PNAME after add_project?
-  // see 
+  // see
   // routes/helpers/helpers.js:251:    console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME');
   // routes/helpers/helpers.js:258:    delete PROJECT_INFORMATION_BY_PNAME[pname];
   // routes/helpers/helpers.js:274:        console.log(' UPDATING PROJECT_INFORMATION_BY_PNAME');
@@ -1584,7 +1585,7 @@ function ProjectValidation(req, project, data_repository, res)
     project_exists_in_db = ProjectExistsInDB(project, req, res);
     console.log("project_exists_in_db = " + project_exists_in_db);
   }
-  
+
   console.log("running FastaProvided");
   fasta_exists = FastaProvided(req, res);
   console.log("fasta_exists = " + fasta_exists);
@@ -1730,8 +1731,8 @@ function CreateUploadOptions(req, res, project)
 
 function CreateCmdList(req, options, data_repository)
 {
-  console.log(options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' '));
-  var load_cmd = options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' ');
+  console.log(options.scriptPath + 'vamps_script_load_trimmed_data.py ' + options.args.join(' '));
+  var load_cmd = options.scriptPath + 'vamps_script_load_trimmed_data.py ' + options.args.join(' ');
   // console.log("LLL load_cmd: " + load_cmd);
   // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts//vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/b3a0c4ca3964f701e8ea6ef5d5fe2c56 -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/a9825a22a87f9b6600e7bf44dd13be48 -upload_type single -d test_gast_dataset -q
 
@@ -1739,11 +1740,11 @@ function CreateCmdList(req, options, data_repository)
 
   if (req.body.type == 'multi_fasta') {
       var new_fasta_file_name = 'infile.fna';
-      var demultiplex_cmd = options.scriptPath + '/vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
+      var demultiplex_cmd = options.scriptPath + 'vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
       cmd_list.push(demultiplex_cmd);
   }
 
-  var fnaunique_cmd = options.scriptPath + '/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
+  var fnaunique_cmd = options.scriptPath + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
   console.log("LLL1 options.scriptPath: " + options.scriptPath);
   console.log("LLL fnaunique_cmd: " + fnaunique_cmd);
   console.log("LLL2 data_repository: " + data_repository);
@@ -1770,7 +1771,7 @@ function CheckIfPID(data)
   for (var n in lines) {
   // console.log('line: ' + lines[n]);
     if (lines[n].substring(0, 4) == 'PID=') {
-    console.log('pid line ' + lines[n]);
+    console.log('NNN pid line ' + lines[n]);
     }
   }
 }
@@ -1815,7 +1816,7 @@ function GetScriptVars(req, data_repository, cmd_list)
 }
 
 // TODO: remove repetitions, see title: 'VAMPS:Import Data'
-editUploadData= function(req, res)
+function editUploadData(req, res)
 {
   console.log("EEE editUploadData: req.form");
   console.log(util.inspect(req.form, false, null));
@@ -1831,12 +1832,131 @@ editUploadData= function(req, res)
   });
 }
 
-router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], 
+function RunAndCheck(script_path, nodelog, req, project, res)
+{
+  var run_process = spawn( script_path, [], {
+    // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
+    // 'PATH':req.CONFIG.PATH,
+    // 'PERL5LIB':req.CONFIG.PERL5LIB,
+    // 'SGE_ROOT':req.CONFIG.SGE_ROOT, 'SGE_CELL':req.CONFIG.SGE_CELL, 'SGE_ARCH':req.CONFIG.SGE_ARCH
+    // },
+    detached: true, stdio: [ 'ignore', null, nodelog ]
+  });  // stdin, s
+
+  var output = '';
+
+  run_process.stdout.on('data', function AddDataToOutput(data) {
+    data = data.toString().trim();
+    output += data;
+    CheckIfPID(data);
+    console.log('CCC data:');
+    console.log(util.inspect(data, false, null));
+    console.log('CCC1 output:');
+    console.log(util.inspect(output, false, null));
+
+  });
+
+  run_process.on('close', function checkExitCode(code) {
+     console.log('run_process process exited with code ' + code);
+     var ary = output.split("\n");
+     var last_line = ary[ary.length - 1];
+     console.log('last_line:', last_line);
+     if (code === 0) {
+        status_params = {'type':'update',
+                        'user_id':req.user.user_id,
+                        'project':project,
+                        'status':'LOADED',
+                        'msg':'Project is loaded --without tax assignments'
+        };
+        helpers.update_status(status_params);
+
+        console.log('LoadDataFinishRequest in upload_data, project:');
+        console.log(util.inspect(project, false, null));
+
+        LoadDataFinishRequest(req, res, project, "Import_Success");
+        console.log('Finished loading ' + project);
+        // ();
+     }
+     else // code != 0
+     {
+      fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-' + project), 
+       function failureHandle(err) {
+        if (err) { console.log(err);  }
+        else {
+            req.flash('failMessage', 'Script Failure: ' + last_line);
+            status_params = {'type':    'update',
+                             'user_id': req.user.user_id,
+                             'project': project,
+                             'status':  'Script Failure',
+                             'msg':     'Script Failure'
+            };
+                //helpers.update_status(status_params);
+            res.redirect("/user_data/import_data?import_type=" + req.body.type);  // for now we'll send errors to the browser
+            return;
+        }
+      });
+     }
+  });
+}
+
+function uploadData(req, res)
+{
+  var exec    = require('child_process').exec;
+  var project = helpers.clean_string(req.body.project);
+
+  // TODO: check if CreateUploadOptions does anything else and separate
+  var created_options = CreateUploadOptions(req, res, project);
+  var data_repository = created_options[0];
+  var options         = created_options[1];
+  console.log('MMM options: ');
+  console.log(util.inspect(options, false, null));
+
+  fs.ensureDir(data_repository, function chDataRepMode(err) {
+    if (err) {console.log('No such dir: ensureDir err:', err);} // => null
+    else
+    {
+      // TODO: name this function, what is it doing?:
+      fs.chmod(data_repository, 0775, function (err) {
+        if (err) {
+          console.log('chmod err:', err);
+          return;
+        }
+        var cmd_list = CreateCmdList(req, options, data_repository);
+        console.log("TTT cmd_list: ");
+        console.log(util.inspect(cmd_list, false, null));
+
+        script_name     = 'load_script.sh';
+        var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
+        var script_vars = GetScriptVars(req, data_repository, cmd_list);
+        var scriptlog   = script_vars[0];
+        var script_text = script_vars[1];
+
+        var script_path = path.join(data_repository, script_name);
+
+        fs.writeFile(script_path, script_text, function chScriptMode(err) {
+          if (err) return console.log(err);
+          child = exec('chmod ug+rwx ' + script_path, function (error, stdout, stderr) {
+            if (error !== null) {
+              console.log('1exec chmod error: ' + error);
+            }
+            else
+            {
+              RunAndCheck(script_path, nodelog, req, project, res);
+            }
+          }); // end exec
+        });  // end writeFile
+      });     //   END chmod
+    }         // end else
+  });         //   END ensuredir
+}
+
+router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)],
   form(
     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
     form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").maxLength(64).entityEncode()
   ),
-  function (req, res) {
+  function (req, res)
+  {
     if (!req.form.isValid) {
       console.log('PPP upload_data !req.form.isValid: ');
       console.log(util.inspect(req.form.errors, false, null));
@@ -1845,171 +1965,186 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
       //TODO: check if the project name is in db, if not - redirect to add_project
       return;
     }
+    else
+    {
+      uploadData(req, res);
+    }
+  }
+);
     // else {the rest}
-    
-    //TODO:
-    //check all
-    // res.redirect("/user_data/import_data");
 
-  // ---
-    // if (!req.form.isValid) {
-    //   req.add_project_info = req.form;
-    //   req.messages = req.form.errors;
-    //   editAddProject(req, res);
-  // }
-    // else
-    // {
-    //   saveToDb(req, res);
-    //   res.redirect("/user_data/import_choices");
-    // }
-    //
-    // return;
-  // ---
-    
-  var exec    = require('child_process').exec;
-  var project = helpers.clean_string(req.body.project);
-
-  var created_options = CreateUploadOptions(req, res, project);
-  var data_repository = created_options[0];
-  var options         = created_options[1];
-  console.log('MMM options: ');
-  console.log(util.inspect(options, false, null));
-  // TODO: test
-  // MMM options:
-  // { scriptPath: '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/',
-  //   args:
-  //    [ '-project_dir',
-  //      '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project',
-  //      '-owner',
-  //      'admin',
-  //      '-p',
-  //      'test_gast_project',
-  //      '-site',
-  //      'local',
-  //      '-infile',
-  //      '/Users/ashipunova/BPC/vamps-node.js/tmp/44d4ec767dca9ccecfe7870b98fb4600',
-  //      '-mdfile',
-  //      '/Users/ashipunova/BPC/vamps-node.js/tmp/7be23488983b4c30ba0e32c4c5692b88',
-  //      '-upload_type',
-  //      'single',
-  //      '-d',
-  //      'test_gast_dataset',
-  //      '-q' ] }
-
-  fs.ensureDir(data_repository, function (err) {
-      if (err) {console.log('ensureDir err:', err);} // => null
-      else
-      {
-        fs.chmod(data_repository, 0775, function (err) {
-          if (err) {
-            console.log('chmod err:', err);
-            return;
-          }
-          var cmd_list = CreateCmdList(req, options, data_repository);
-          console.log("CCC2 cmd_list: ");
-          console.log(util.inspect(cmd_list, false, null));
-
-          script_name = 'load_script.sh';
-          var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
-          var script_vars = GetScriptVars(req, data_repository, cmd_list);
-          var scriptlog   = script_vars[0];
-          var script_text = script_vars[1];
-          // TODO: test:
-// 111 scriptlog: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/script.log
-// 222 script_text: #!/bin/sh
+//     //TODO:
+//     //check all
+//     // res.redirect("/user_data/import_data");
 //
-// # CODE:  $code
+//   // ---
+//     // if (!req.form.isValid) {
+//     //   req.add_project_info = req.form;
+//     //   req.messages = req.form.errors;
+//     //   editAddProject(req, res);
+//   // }
+//     // else
+//     // {
+//     //   saveToDb(req, res);
+//     //   res.redirect("/user_data/import_choices");
+//     // }
+//     //
+//     // return;
+//   // ---
 //
-// TSTAMP=`date "+%Y%m%d%H%M%S"`
+//   var exec    = require('child_process').exec;
+//   var project = helpers.clean_string(req.body.project);
 //
-// echo -n "Hostname: "
-// hostname
-// echo -n "Current working directory: "
-// pwd
+//   var created_options = CreateUploadOptions(req, res, project);
+//   var data_repository = created_options[0];
+//   var options         = created_options[1];
+//   console.log('MMM options: ');
+//   console.log(util.inspect(options, false, null));
+//   // TODO: test
+//   // MMM options:
+//   // { scriptPath: '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/',
+//   //   args:
+//   //    [ '-project_dir',
+//   //      '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project',
+//   //      '-owner',
+//   //      'admin',
+//   //      '-p',
+//   //      'test_gast_project',
+//   //      '-site',
+//   //      'local',
+//   //      '-infile',
+//   //      '/Users/ashipunova/BPC/vamps-node.js/tmp/44d4ec767dca9ccecfe7870b98fb4600',
+//   //      '-mdfile',
+//   //      '/Users/ashipunova/BPC/vamps-node.js/tmp/7be23488983b4c30ba0e32c4c5692b88',
+//   //      '-upload_type',
+//   //      'single',
+//   //      '-d',
+//   //      'test_gast_dataset',
+//   //      '-q' ] }
 //
-// /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/0e1cb0aad4ce57b30c6a0002a1ac2527 -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/dce2a788f226eb033388f2844a89648e -upload_type single -d test_gast_dataset -q
-// /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_fnaunique.sh /opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/ashipunova/BPC/vamps-node.js/public/scripts/bin: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project
+//   fs.ensureDir(data_repository, function (err) {
+//       if (err) {console.log('ensureDir err:', err);} // => null
+//       else
+//       {
+//         fs.chmod(data_repository, 0775, function (err) {
+//           if (err) {
+//             console.log('chmod err:', err);
+//             return;
+//           }
+//           var cmd_list = CreateCmdList(req, options, data_repository);
+//           console.log("TTT cmd_list: ");
+//           console.log(util.inspect(cmd_list, false, null));
 //
-// 222 =====
+//           script_name = 'load_script.sh';
+//           var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
+//           var script_vars = GetScriptVars(req, data_repository, cmd_list);
+//           var scriptlog   = script_vars[0];
+//           var script_text = script_vars[1];
+//           // TODO: test:
+// // 111 scriptlog: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/script.log
+// // 222 script_text: #!/bin/sh
+// //
+// // # CODE:  $code
+// //
+// // TSTAMP=`date "+%Y%m%d%H%M%S"`
+// //
+// // echo -n "Hostname: "
+// // hostname
+// // echo -n "Current working directory: "
+// // pwd
+// //
+// // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/0e1cb0aad4ce57b30c6a0002a1ac2527 -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/dce2a788f226eb033388f2844a89648e -upload_type single -d test_gast_dataset -q
+// // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_fnaunique.sh /opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/ashipunova/BPC/vamps-node.js/public/scripts/bin: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project
+// //
+// // 222 =====
+// //
+// // TODO: split the part below into smaller functions
+//           var script_path = path.join(data_repository, script_name);
 //
-// TODO: split the part below into smaller functions
-          var script_path = path.join(data_repository, script_name);
+//           fs.writeFile(script_path, script_text, function (err) {
+//               if (err) return console.log(err);
+//               child = exec('chmod ug+rwx '+script_path, function (error, stdout, stderr) {
+//                   if (error !== null) {
+//                     console.log('1exec chmod error: ' + error);
+//                   }
+//                   else
+//                   {
+//                     RunAndCheck(script_path, nodelog, req, project, res);
+//                   }
+//                   // {
+// //                     var run_process = spawn( script_path, [], {
+// //                       // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
+// //                       // 'PATH':req.CONFIG.PATH,
+// //                       // 'PERL5LIB':req.CONFIG.PERL5LIB,
+// //                       // 'SGE_ROOT':req.CONFIG.SGE_ROOT, 'SGE_CELL':req.CONFIG.SGE_CELL, 'SGE_ARCH':req.CONFIG.SGE_ARCH
+// //                       // },
+// //                       detached: true, stdio: [ 'ignore', null, nodelog ]
+// //                     });  // stdin, s
+// //
+// //                     var output = '';
+// //
+// //                     run_process.stdout.on('data', function AddDataToOutput(data) {
+// //                       data = data.toString().trim();
+// //                       output += data;
+// //                       CheckIfPID(data);
+// //                       console.log('CCC data:');
+// //                       console.log(util.inspect(data, false, null));
+// //                       console.log('CCC1 output:');
+// //                       console.log(util.inspect(output, false, null));
+// //
+// //                     });
+// //
+// //                     run_process.on('close', function (code) {
+// //                        console.log('run_process process exited with code ' + code);
+// //                        var ary = output.split("\n");
+// //                        var last_line = ary[ary.length - 1];
+// //                        console.log('last_line:', last_line);
+// //                        if (code === 0) {
+// //                           status_params = {'type':'update',
+// //                                             'user_id':req.user.user_id,
+// //                                             'project':project,
+// //                                             'status':'LOADED',
+// //                                             'msg':'Project is loaded --without tax assignments'
+// //                               };
+// //                             helpers.update_status(status_params);
+// //
+// //                             console.log('LoadDataFinishRequest in upload_data, project:');
+// //                             console.log(util.inspect(project, false, null));
+// //
+// //                             LoadDataFinishRequest(req, res, project, "Import_Success");
+// //                             console.log('Finished loading ' + project);
+// //                             // ();
+// //                        }
+// //                        else
+// //                        {
+// //                         fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-'+project), function (err) {
+// //                             if (err) { console.log(err);  }
+// //                             else {
+// //                                 req.flash('failMessage', 'Script Failure: '+last_line);
+// //                                 status_params = {'type': 'update',
+// //                                                  'user_id': req.user.user_id,
+// //                                                   'project':project,
+// //                                                   'status':'Script Failure',
+// //                                                   'msg':'Script Failure'
+// //                                 };
+// //                                     //helpers.update_status(status_params);
+// //                                 res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
+// //                                 return;
+// //                             }
+// //                         });
+// //                        }
+// //                     });
+// //                   } // end if/else
+//               }); // end exec
+//           });  // end writeFile
+//
+//         });     //   END chmod
+//       }         // end else
+//     });         //   END ensuredir
+// //      }); //       END move 2
+// //      });  //     END move 1
 
-          fs.writeFile(script_path, script_text, function (err) {
-              if (err) return console.log(err);
-              child = exec( 'chmod ug+rwx '+script_path, function (error, stdout, stderr) {
-                  if (error !== null) {
-                    console.log('1exec chmod error: ' + error);
-                  }
-                  else
-                  {
-                    var run_process = spawn( script_path, [], {
-                      // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
-                      // 'PATH':req.CONFIG.PATH,
-                      // 'PERL5LIB':req.CONFIG.PERL5LIB,
-                      // 'SGE_ROOT':req.CONFIG.SGE_ROOT, 'SGE_CELL':req.CONFIG.SGE_CELL, 'SGE_ARCH':req.CONFIG.SGE_ARCH
-                      // },
-                      detached: true, stdio: [ 'ignore', null, nodelog ]
-                    });  // stdin, s
-
-                    var output = '';
-
-                    run_process.stdout.on('data', function (data) {
-                      data = data.toString().trim();
-                      output += data;
-                      CheckIfPID(data);
-                    });
-
-                    run_process.on('close', function (code) {
-                       console.log('run_process process exited with code ' + code);
-                       var ary = output.split("\n");
-                       var last_line = ary[ary.length - 1];
-                       console.log('last_line:', last_line);
-                       if (code === 0) {
-                          status_params = {'type':'update',
-                                            'user_id':req.user.user_id,
-                                            'project':project,
-                                            'status':'LOADED',
-                                            'msg':'Project is loaded --without tax assignments'
-                              };
-                            helpers.update_status(status_params);
-
-                            console.log('LoadDataFinishRequest in upload_data, project:');
-                            console.log(util.inspect(project, false, null));
-
-                            LoadDataFinishRequest(req, res, project, "Import_Success");
-                            console.log('Finished loading ' + project);
-                            // ();
-                       } else
-                       {
-                        fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-'+project), function (err) {
-                            if (err) { console.log(err);  }
-                            else {
-                                req.flash('failMessage', 'Script Failure: '+last_line);
-                                status_params = {'type': 'update', 
-                                                 'user_id': req.user.user_id,
-                                                  'project':project, 
-                                                  'status':'Script Failure', 
-                                                  'msg':'Script Failure'
-                                };
-                                    //helpers.update_status(status_params);
-                                res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
-                                return;
-                            }
-                        });
-                       }
-                    });
-                  } // end if/else
-              }); // end exec
-          });  // end writeFile
-
-        });     //   END chmod
-      }         // end else
-    });         //   END ensuredir
-//      }); //       END move 2
-//      });  //     END move 1
-
-});
+// });
 
 
 router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
@@ -2025,14 +2160,14 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
 });
 
 
-function get_privacy_code(privacy_bulean){
+function getPrivacyCode(privacy_bulean){
   if (privacy_bulean === 'True')
-    { return 1 }
+    { return 1; }
   else
-    { return 0 }
+    { return 0; }
 }
 
-function saveToDb(req, res){ 
+function saveToDb(req, res){
   var user_id;
   var user_info = [req.form.first_name, req.form.last_name, req.form.email, req.form.new_institution];
   var query_user_id = 'SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?;';
@@ -2044,24 +2179,24 @@ function saveToDb(req, res){
           // TODO: Do something with your error...
       } else {
           owner_user_id = content.user_id;
-          var new_privacy = 1
-          new_privacy = get_privacy_code(req.form.new_privacy);
+          var new_privacy = 1;
+          new_privacy = getPrivacyCode(req.form.new_privacy);
           //TODO wrire a test for connection insert 1 vs. 0 for privacy
 
           var sql_a = queries.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
-          // console.log("QQQ sql_a = " + sql_a);          
-          connection.query(sql_a, 
+          // console.log("QQQ sql_a = " + sql_a);
+          connection.query(sql_a,
           function (err, rows) {
            if (err) {
              console.log('ERROR-in project insert: ' + err);
              // TODO: fix: req flash doesn't work from here!
              req.flash('failMessage', err);
-             return false;     
+             return false;
            } else {
 
-             req.body.project_pid = rows.insertId; 
+             req.body.project_pid = rows.insertId;
              // console.log('RRR: req.body.project_pid ' + req.body.project_pid);
-             
+
              return rows.insertId;
            }
         });
@@ -2110,7 +2245,7 @@ router.post('/add_project',
     }
     else
     {
-      saveToDb(req, res);      
+      saveToDb(req, res);
       res.redirect("/user_data/import_choices");
     }
 
@@ -2712,80 +2847,80 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function (req, res)
 //
 //
 router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
-    
+
     req.on('readable', function(){
       console.log(req.read());
     });
 
     console.log('in copy_html_to_image');
-    return
+    return;
     var ts = req.body.ts;
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-    var html, outfile
+    var html, outfile;
     if(req.body.image == 'barcharts'){
-      html = req.body.html
+      html = req.body.html;
       outfile = path.join( user_dir, 'barcharts-image-'+ts+'.png' );
     }else if(req.body.image == 'piecharts'){
-      html = req.body.html
+      html = req.body.html;
       outfile = path.join( user_dir, 'piecharts-image-'+ts+'.png' );
     }else if(req.body.image == 'dheatmap'){
         outfile = path.join( user_dir, 'heatmap-image-'+ts+'.pdf' );
-        
-        html = "<center><table border='1'>  <tr><td></td><td>dataset <span class='blue'>Similar</span>&nbsp;<span class='red'>Dissimilar</span></td>"
-        for(i=1; i<=Object.keys(distance_matrix).length; i++) {         
-                html += "<td></td>"  
-        }
-        html += "</tr>"
-        var n = 1
-        console.log(distance_matrix)
-        id_order = chosen_id_name_hash.ids
 
-        name_order = chosen_id_name_hash.names
-        var w = id_order.length
-        console.log(w)
-        for(var x in name_order) { 
-            var x_dname = name_order[x] 
-            html += "<tr id='"+x_dname+"'>"
-            html += "<td  id='"+x_dname+"' class='dragHandle ds_cell'>"+n.toString()+"</td>"
-            html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+id_order[x]+"' >"+ x_dname +"</td>"
-            for(var y in name_order) {
-                var y_dname = name_order[y]
-                var dist = distance_matrix[x_dname][y_dname].toFixed(5);
-                if(x_dname === y_dname){
-                        html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
-                }else{
-                  var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dist;
-                  var svalue = Math.round( distance_matrix[x_dname][y_dname] * 15 );
-                  html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+req.CONSTS.HEATMAP_COLORS[svalue]+"'>"                   
-                  html += "&nbsp;&nbsp;&nbsp;"
-                  html += "</td>"
-                }          
-            }
-            html += "</tr>"
-            n++
+        html = "<center><table border='1'>  <tr><td></td><td>dataset <span class='blue'>Similar</span>&nbsp;<span class='red'>Dissimilar</span></td>";
+        for(i=1; i<=Object.keys(distance_matrix).length; i++) {
+          html += "<td></td>";
         }
-        html += "</table></center>"
-    
-        console.log(html)
-            
+        html += "</tr>";
+        var n = 1;
+        console.log(distance_matrix);
+        id_order = chosen_id_name_hash.ids;
+
+        name_order = chosen_id_name_hash.names;
+        var w = id_order.length;
+        console.log(w);
+        for(var x in name_order) {
+          var x_dname = name_order[x];
+          html += "<tr id='"+x_dname+"'>";
+          html += "<td  id='"+x_dname+"' class='dragHandle ds_cell'>"+n.toString()+"</td>";
+          html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+id_order[x]+"' >"+ x_dname +"</td>";
+          for(var y in name_order) {
+            var y_dname = name_order[y];
+              var dist = distance_matrix[x_dname][y_dname].toFixed(5);
+              if(x_dname === y_dname){
+                html += "<td id='' class='heat_map_td' bgcolor='#000'></td>";
+              }else{
+                var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dist;
+                var svalue = Math.round( distance_matrix[x_dname][y_dname] * 15 );
+                html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+req.CONSTS.HEATMAP_COLORS[svalue]+"'>";
+                html += "&nbsp;&nbsp;&nbsp;";
+                html += "</td>";
+              }
+          }
+        html += "</tr>";
+        n++;
+        }
+        html += "</table></center>";
+
+        console.log(html);
+
         var options = { format: 'Letter' };
         pdf.create(html, {}).toFile(outfile, function(err, res2) {
           if (err) return console.log(err);
-          console.log(res2); // { filename: '/app/businesscard.pdf' } 
+          console.log(res2); // { filename: '/app/businesscard.pdf' }
           res.send('OK');
         });
     }
-    console.log(html)
+    console.log(html);
     var webshot = require('webshot');
     var options = {
       siteType: 'html',
       //screenSize: { width: w*20, height: w*14 },   // size of window
 
       customCSS: 'table {background:#F5F5DC;border-collapse: collapse;} .red {color:white;background:red;} .blue {color:white;background:blue;} td {padding:0 5px;}'
-    }
+    };
     webshot(html, outfile, options, function(err) {
       // screenshot now saved to <>.png
-      if(err){console.log(err)}
+      if(err){console.log(err);}
       else {
         res.send('OK');
       }
@@ -2821,7 +2956,7 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
     old_ts = req.body.ts;
     file_type = req.body.file_type;
     var timestamp = +new Date();
-    var old_file_name
+    var old_file_name;
     var new_file_name = file_type+'-'+timestamp+'.txt';
     if (file_type == 'phyloseq-biom') {
       old_file_name = old_ts+'_count_matrix.biom';
@@ -2848,14 +2983,14 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
       old_file_name = old_ts+'_metadata.txt';
       new_file_name = file_type+'-'+timestamp+'.csv';
     }else{
-      console.log("In routes_user_data/copy_file_for_download and couldn't find file_type: ",file_type)
+      console.log("In routes_user_data/copy_file_for_download and couldn't find file_type: ", file_type);
     }
     var old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
     helpers.mkdirSync(user_dir);  // create dir if not exists
     var destination = path.join( user_dir, new_file_name );
-    console.log(old_file_path, destination)
+    console.log(old_file_path, destination);
     fs.copy(old_file_path, destination, function (err) {
         if (err) return console.error(err);
         console.log("copy success!");
@@ -2960,7 +3095,7 @@ function update_dataset_names(config_info) {
 //
 //
 function create_frequency_table_file(req, user_dir, timestamp){
-  console.log(BIOM_MATRIX)
+  console.log(BIOM_MATRIX);
 }
 /////////////////// EXPORTS ///////////////////////////////////////////////////////////////////////
 function create_export_files(req, user_dir, ts, dids, file_tags, normalization, rank, domains) {
