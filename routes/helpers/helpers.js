@@ -16,7 +16,7 @@ module.exports = {
       // if user is authenticated in the session, carry on
 
       if (req.isAuthenticated()) {
-        console.log("Hurray! isLoggedIn.req.isAuthenticated");
+        console.log("Hurray! isLoggedIn.req.isAuthenticated:",req.user.username);
         return next();
       }
       // if they aren't redirect them to the home page
@@ -32,11 +32,11 @@ module.exports = {
   isAdmin: function (req, res, next) {
 
       if (req.user.security_level === 1) {
-        console.log("Hurray! USER is an Admin");
+        console.log("Hurray! USER is an Admin:",req.user.username);
         return next();
       }
       // if they aren't redirect them to the home page
-      console.log("Whoa! NOT an Admin");
+      console.log("Whoa! NOT an Admin: ",req.user.username);
       // save the url in the session
       req.session.returnTo = req.path;
       //console.log('URL Requested: '+JSON.stringify(req));
