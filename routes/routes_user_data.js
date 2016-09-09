@@ -1877,9 +1877,51 @@ function RunAndCheck(script_path, nodelog, req, project, res)
   });
 }
 
+function writeAndRunScript(req, res, project, options, data_repository)
+{
+  var exec = require('child_process').exec;
+  
+  fs.ensureDir(data_repository, function chDataRepMode(err) {
+    if (err) {console.log('No such dir: ensureDir err:', err);} // => null
+    else
+    {
+      // TODO: name this function, what is it doing?:
+      fs.chmod(data_repository, 0775, function (err) {
+        if (err) {
+          console.log('chmod err:', err);
+          return;
+        }
+        // var cmd_list = CreateCmdList(req, options, data_repository);
+        // console.log("TTT cmd_list: ");
+        // console.log(util.inspect(cmd_list, false, null));
+
+        script_name     = 'load_script.sh';
+        var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
+        var script_vars = GetScriptVars(req, data_repository, cmd_list);
+        var scriptlog   = script_vars[0];
+        var script_text = script_vars[1];
+
+        var script_path = path.join(data_repository, script_name);
+
+        fs.writeFile(script_path, script_text, function chScriptMode(err) {
+          if (err) return console.log(err);
+          child = exec('chmod ug+rwx ' + script_path, function (error, stdout, stderr) {
+            if (error !== null) {
+              console.log('1exec chmod error: ' + error);
+            }
+            else
+            {
+              RunAndCheck(script_path, nodelog, req, project, res);
+            }
+          }); // end exec
+        });  // end writeFile
+      });     //   END chmod
+    }         // end else
+  });         //   END ensuredir
+}
+
 function uploadData(req, res)
 {
-  var exec    = require('child_process').exec;
   var project = helpers.clean_string(req.body.project);
 
   // TODO: check if CreateUploadOptions does anything else and separate
@@ -1922,44 +1964,44 @@ function uploadData(req, res)
     //      '-d',
     //      'test_gast_dataset' ] }
 
-
-  fs.ensureDir(data_repository, function chDataRepMode(err) {
-    if (err) {console.log('No such dir: ensureDir err:', err);} // => null
-    else
-    {
-      // TODO: name this function, what is it doing?:
-      fs.chmod(data_repository, 0775, function (err) {
-        if (err) {
-          console.log('chmod err:', err);
-          return;
-        }
-        var cmd_list = CreateCmdList(req, options, data_repository);
-        console.log("TTT cmd_list: ");
-        console.log(util.inspect(cmd_list, false, null));
-
-        script_name     = 'load_script.sh';
-        var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
-        var script_vars = GetScriptVars(req, data_repository, cmd_list);
-        var scriptlog   = script_vars[0];
-        var script_text = script_vars[1];
-
-        var script_path = path.join(data_repository, script_name);
-
-        fs.writeFile(script_path, script_text, function chScriptMode(err) {
-          if (err) return console.log(err);
-          child = exec('chmod ug+rwx ' + script_path, function (error, stdout, stderr) {
-            if (error !== null) {
-              console.log('1exec chmod error: ' + error);
-            }
-            else
-            {
-              RunAndCheck(script_path, nodelog, req, project, res);
-            }
-          }); // end exec
-        });  // end writeFile
-      });     //   END chmod
-    }         // end else
-  });         //   END ensuredir
+  writeAndRunScript(req, res, project, options, data_repository);
+  // fs.ensureDir(data_repository, function chDataRepMode(err) {
+  //   if (err) {console.log('No such dir: ensureDir err:', err);} // => null
+  //   else
+  //   {
+  //     // TODO: name this function, what is it doing?:
+  //     fs.chmod(data_repository, 0775, function (err) {
+  //       if (err) {
+  //         console.log('chmod err:', err);
+  //         return;
+  //       }
+  //       var cmd_list = CreateCmdList(req, options, data_repository);
+  //       console.log("TTT cmd_list: ");
+  //       console.log(util.inspect(cmd_list, false, null));
+  //
+  //       script_name     = 'load_script.sh';
+  //       var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
+  //       var script_vars = GetScriptVars(req, data_repository, cmd_list);
+  //       var scriptlog   = script_vars[0];
+  //       var script_text = script_vars[1];
+  //
+  //       var script_path = path.join(data_repository, script_name);
+  //
+  //       fs.writeFile(script_path, script_text, function chScriptMode(err) {
+  //         if (err) return console.log(err);
+  //         child = exec('chmod ug+rwx ' + script_path, function (error, stdout, stderr) {
+  //           if (error !== null) {
+  //             console.log('1exec chmod error: ' + error);
+  //           }
+  //           else
+  //           {
+  //             RunAndCheck(script_path, nodelog, req, project, res);
+  //           }
+  //         }); // end exec
+  //       });  // end writeFile
+  //     });     //   END chmod
+  //   }         // end else
+  // });         //   END ensuredir
 }
 
 router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)],
