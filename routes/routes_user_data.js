@@ -1832,6 +1832,25 @@ function editUploadData(req, res)
   });
 }
 
+function successCode(req, res, project)
+{
+   status_params = {'type':'update',
+                   'user_id':req.user.user_id,
+                   'project':project,
+                   'status':'LOADED',
+                   'msg':'Project is loaded --without tax assignments'
+   };
+   helpers.update_status(status_params);
+
+   console.log('LoadDataFinishRequest in upload_data, project:');
+   console.log(util.inspect(project, false, null));
+
+   LoadDataFinishRequest(req, res, project, "Import_Success");
+   console.log('Finished loading ' + project);
+   // ();
+}
+
+
 function RunAndCheck(script_path, nodelog, req, project, res)
 {
   var run_process = spawn( script_path, [], {
@@ -1845,6 +1864,7 @@ function RunAndCheck(script_path, nodelog, req, project, res)
 
   var output = '';
 
+  // TODO: where "data" come from?
   run_process.stdout.on('data', function AddDataToOutput(data) {
     data = data.toString().trim();
     output += data;
@@ -1862,22 +1882,26 @@ function RunAndCheck(script_path, nodelog, req, project, res)
      var last_line = ary[ary.length - 1];
      console.log('last_line:', last_line);
      if (code === 0) 
-     {  
-        status_params = {'type':'update',
-                        'user_id':req.user.user_id,
-                        'project':project,
-                        'status':'LOADED',
-                        'msg':'Project is loaded --without tax assignments'
-        };
-        helpers.update_status(status_params);
-
-        console.log('LoadDataFinishRequest in upload_data, project:');
-        console.log(util.inspect(project, false, null));
-
-        LoadDataFinishRequest(req, res, project, "Import_Success");
-        console.log('Finished loading ' + project);
-        // ();
+     {
+       successCode(req, res, project);
      }
+     // {
+     //
+     //    status_params = {'type':'update',
+     //                    'user_id':req.user.user_id,
+     //                    'project':project,
+     //                    'status':'LOADED',
+     //                    'msg':'Project is loaded --without tax assignments'
+     //    };
+     //    helpers.update_status(status_params);
+     //
+     //    console.log('LoadDataFinishRequest in upload_data, project:');
+     //    console.log(util.inspect(project, false, null));
+     //
+     //    LoadDataFinishRequest(req, res, project, "Import_Success");
+     //    console.log('Finished loading ' + project);
+     //    // ();
+     // }
      else // code != 0
      {
       fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-' + project), 
