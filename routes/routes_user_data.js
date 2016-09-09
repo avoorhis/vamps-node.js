@@ -828,6 +828,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
       cmd_list = [ rdp_cmd1, rdp_cmd2, rdp_cmd3, rdp_cmd4 ];
   }
 
+  //TODO: separate below as write and run, see also dataUpload - DRY
   var script_text = "";
   if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
   {
