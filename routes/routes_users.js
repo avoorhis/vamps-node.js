@@ -158,7 +158,7 @@ router.post('/change_password',  passport.authenticate('local-reset', {
 //
 //
 //
-router.get('/:id', helpers.isAdmin, function(req, res) {
+router.get('/:id', helpers.isLoggedIn, function(req, res) {
    
    var uid = req.params.id
    console.log(ALL_USERS_BY_UID[uid]);

@@ -197,17 +197,27 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
         datasets.ids.push(did);
         datasets.names.push(pname+'--'+DATASET_NAME_BY_DID[did]);
       }
-      console.log(datasets);
-      var timestamp = +new Date();  // millisecs since the epoch!
-      var filename = 'datasets:'+timestamp+'.json';
-      var filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,filename);
-      helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);  // create dir if not present
-      helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE,req.user.username)); // create dir if not present
-      //console.log(filename);
-      helpers.write_to_file(filename_path,JSON.stringify(datasets));
-      msg = "<a href='/visuals/saved_datasets'>"+filename+"</a>";
-      req.flash('tax_message', 'Saved as: '+msg);
-      res.redirect('search_index#taxonomy');
+      // console.log(datasets);
+      // var timestamp = +new Date();  // millisecs since the epoch!
+      // var filename = 'datasets-'+timestamp+'.json';
+      // var filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,filename);
+      // helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);  // create dir if not present
+      // helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE,req.user.username)); // create dir if not present
+      // //console.log(filename);
+      // helpers.write_to_file(filename_path,JSON.stringify(datasets));
+      // msg = "<a href='/visuals/saved_datasets'>"+filename+"</a>";
+      // req.flash('tax_message', 'Saved as: '+msg);
+      //res.redirect('search_index#taxonomy');
+
+      res.render('search/search_result_taxonomy', {
+                    title    : 'VAMPS: Search Datasets',
+                    datasets : JSON.stringify(datasets),
+                    tax_string : tax_string,
+                    
+                    user     : req.user, hostname: req.CONFIG.hostname,
+          });
+
+
     }
   });
 	
@@ -452,8 +462,6 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
   if(q !== ''){
 
 
-
-    
     
     ALL_DATASETS.projects.forEach(function(prj) {
       
@@ -477,34 +485,33 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
       }
 
       datasets.forEach(function(dset) {
-        did = dset.did
-        dname = dset.dname;
-        ddesc = dset.ddesc;
-        
-        if(    dname.toLowerCase().indexOf(q) != -1 
-            || ddesc.toLowerCase().indexOf(q) != -1 
-          ){
-          console.log(dname)
-        dlist.push(dname)
-        d_obj[dname] = {}
-        d_obj[dname].did = did
-        d_obj[dname].desc = ddesc
-        d_obj[dname].project = pname
-        }
+          did = dset.did
+          dname = dset.dname;
+          ddesc = dset.ddesc;
+          
+          if(    dname.toLowerCase().indexOf(q) != -1 
+              || ddesc.toLowerCase().indexOf(q) != -1 
+            ){
+            console.log(dname)
+            dlist.push(dname)
+            d_obj[did] = {}
+            d_obj[did].dname = dname
+            d_obj[did].did = did
+            d_obj[did].desc = ddesc
+            d_obj[did].project = pname
+            d_obj[did].pid = pid
+          }
 
       })
 
 
     })
     console.log(plist)
-    console.log('a')
     dlist.sort()
     plist.sort()
-console.log('b',plist.length)
+    console.log('b',plist.length)
     for(i = 0; i < plist.length; i++){
         pname = plist[i]
-        //console.log(p_obj.pname.pid)
-        console.log(plist[i])
         hint += "<form method='GET' action='/projects/"+p_obj[pname].pid+"'>";
         hint += "<button type='submit' id='"+p_obj[pname].pid+"' class='btn btn-xs btn-link' >"+pname+"</button> (title: "+p_obj[pname].title+')'
         hint += "</form>";
@@ -512,26 +519,12 @@ console.log('b',plist.length)
     console.log('c',dlist.length)
 
     hint += 'Datasets:<br>';
-    for(i = 0; i < dlist.length; i++){
-        console.log('ca')
-        dname = dlist[i]
-        hint += "<form method='GET' action='/projects/"+d_obj[dname].did+"'>";
-        console.log('cb')
-        hint += "<button type='submit' id='"+d_obj[dname].did+"' class='btn btn-xs btn-link' >"+dname+"</button> (desc: "+d_obj[dname].desc+')'
-        console.log('cc')
+    for(did in d_obj){
+        hint += "<form method='GET' action='/projects/"+d_obj[did].pid+"'>";
+        hint += "<button type='submit' id='"+d_obj[did].did+"' class='btn btn-xs btn-link' >"+d_obj[did].dname+"</button> (desc: "+d_obj[did].desc+')'
         hint += "</form>";
     }
-     console.log('d')
-      //if(dname.toLowerCase().indexOf(q) != -1){
-
-      //}
-    //})
-// { name: 'CMP_JJ_ApD1',
-//   pid: 53,
-//   title: 'Title',
-//   datasets: [ { did: 86, dname: 'ApD1', ddesc: 'ApD1_description' } ] }
-
-
+     
   }
 
   console.log(q,'hint',hint)
@@ -539,7 +532,7 @@ console.log('b',plist.length)
   res.send(result);
 });
 //
-//
+// LIVESEARCH TAX
 //
 router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req, res) {
 	var selected_taxon = req.params.taxon;

@@ -1,0 +1,52 @@
+<% include ../add_ins/begin.ejs %>
+
+<% data = JSON.parse(datasets) %>
+
+<script>
+  
+</script>
+<div class='title'>Search Result</div>
+<div class='subtitle'>Taxonomy</div>
+<% var disabled = '' %>
+<% if(data.ids.length == 0){ %>
+<%	disabled = 'disabled'%>
+<% } %>
+<div class="">
+   <div class="panel panel-default">
+	   
+	   <div class="panel-heading">
+          	 <h3 class="panel-title">Datasets (Search String: <%= tax_string %>) 
+	      		
+	      <!-- <button id='dwnld_btn_id1' class='btn btn-xs btn-success float_right' name='' >Download Sequences</button> -->
+	      	<form id='' class='float_right' name='' method='POST' action='/visuals/unit_selection'>
+						<button <%= disabled %> type='submit' class='btn btn-xs btn-primary' name='' >use in visualizations</button>
+						<input type='hidden' name='retain_data' value='1' >
+						<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(data.ids) %>' >	
+					</form>	
+					&nbsp;
+					<form id='' class='float_right' name='' method='POST' action='../user_data/export_selection'>
+						<button <%= disabled %> type='submit' class='btn btn-xs btn-primary' name='' >use in exports</button>
+						<input type='hidden' name='retain_data' value='1' >
+						<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(data.ids) %>' >	
+					</form>			
+	     </h3>
+      </div>
+	 
+	   <div class="panel-body">
+			<table class='table table-condensed'>
+				<tr><td></td><td>ID</td><td>Name</td></tr>
+			<% for(i in data.ids) { %>
+				<tr>
+				
+					<td><%= parseInt(i)+1 %></td><td> <%= data.ids[i] %></td><td> <%= data.names[i] %></td>
+				</tr>
+			<% } %>
+			</table>
+	   </div>
+	</div>
+</div>
+				
+
+<% include ../add_ins/end.ejs %>
+ </body>
+ </html>
