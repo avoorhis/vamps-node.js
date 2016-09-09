@@ -1668,7 +1668,7 @@ function CreateUploadOptions(req, res, project)
 
   //console.log(PROJECT_INFORMATION_BY_PNAME);
   var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
-  console.log("data_repository DDD: " + data_repository);
+  // console.log("data_repository DDD: " + data_repository);
 
   var fs_old   = require('fs');
 
@@ -1692,38 +1692,7 @@ function CreateUploadOptions(req, res, project)
 
   // console.log('========');
 
-  OriginalMetafileUpload(req, options);
-  // console.log('MMM Metadata file. options: ');
-  // console.log(util.inspect(options, false, null));
-  //TODO:
-  // test, should be
-//   MMM Metadata file. options:
-//   { scriptPath: '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/',
-//     args:
-//      [ '-project_dir',
-//        '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project',
-//        '-owner',
-//        'admin',
-//        '-p',
-//        'test_gast_project',
-//        '-site',
-//        'local',
-//        '-infile',
-//        '/Users/ashipunova/BPC/vamps-node.js/tmp/6004582520e0cf5ee0cb8a2a97232bee',
-//        '-mdfile',
-//        '/Users/ashipunova/BPC/vamps-node.js/tmp/59b29388a55ab33935d054bd0b4e2613' ] }
-//
 
-  CheckFileTypeInfo(req, options);
-    // console.log('MMM CheckFileTypeInfo. options: ');
-    // console.log(util.inspect(options, false, null));
-    // TODO: test
-    // MMM CheckFileTypeInfo. options:
-    // ...
-    //      '-upload_type',
-    //      'single',
-    //      '-d',
-    //      'test_gast_dataset' ] }
 
     options.args = options.args.concat(['-q' ]);   // QUIET
     return [data_repository, options];
@@ -1890,11 +1859,6 @@ function RunAndCheck(script_path, nodelog, req, project, res)
     data = data.toString().trim();
     output += data;
     CheckIfPID(data);
-    console.log('CCC data:');
-    console.log(util.inspect(data, false, null));
-    console.log('CCC1 output:');
-    console.log(util.inspect(output, false, null));
-
   });
 
   run_process.on('close', function checkExitCode(code) {
@@ -1910,24 +1874,6 @@ function RunAndCheck(script_path, nodelog, req, project, res)
      {
        failedCode(req, res, data_repository, project);
      }
-     // {
-     //  fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-' + project),
-     //   function failureHandle(err) {
-     //    if (err) { console.log(err);  }
-     //    else {
-     //        req.flash('failMessage', 'Script Failure: ' + last_line);
-     //        status_params = {'type':    'update',
-     //                         'user_id': req.user.user_id,
-     //                         'project': project,
-     //                         'status':  'Script Failure',
-     //                         'msg':     'Script Failure'
-     //        };
-     //            //helpers.update_status(status_params);
-     //        res.redirect("/user_data/import_data?import_type=" + req.body.type);  // for now we'll send errors to the browser
-     //        return;
-     //    }
-     //  });
-     // }
   });
 }
 
@@ -1942,6 +1888,40 @@ function uploadData(req, res)
   var options         = created_options[1];
   console.log('MMM options: ');
   console.log(util.inspect(options, false, null));
+
+  OriginalMetafileUpload(req, options);
+  // console.log('MMM Metadata file. options: ');
+  // console.log(util.inspect(options, false, null));
+  //TODO:
+  // test, should be
+//   MMM Metadata file. options:
+//   { scriptPath: '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/',
+//     args:
+//      [ '-project_dir',
+//        '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project',
+//        '-owner',
+//        'admin',
+//        '-p',
+//        'test_gast_project',
+//        '-site',
+//        'local',
+//        '-infile',
+//        '/Users/ashipunova/BPC/vamps-node.js/tmp/6004582520e0cf5ee0cb8a2a97232bee',
+//        '-mdfile',
+//        '/Users/ashipunova/BPC/vamps-node.js/tmp/59b29388a55ab33935d054bd0b4e2613' ] }
+//
+
+  CheckFileTypeInfo(req, options);
+    // console.log('MMM CheckFileTypeInfo. options: ');
+    // console.log(util.inspect(options, false, null));
+    // TODO: test
+    // MMM CheckFileTypeInfo. options:
+    // ...
+    //      '-upload_type',
+    //      'single',
+    //      '-d',
+    //      'test_gast_dataset' ] }
+
 
   fs.ensureDir(data_repository, function chDataRepMode(err) {
     if (err) {console.log('No such dir: ensureDir err:', err);} // => null
