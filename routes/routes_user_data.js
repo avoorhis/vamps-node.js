@@ -1850,6 +1850,27 @@ function successCode(req, res, project)
    // ();
 }
 
+// TODO: how to test?
+function failedCode(req, res, data_repository, project)
+{
+ fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-' + project), 
+  function failureHandle(err) {
+   if (err) { console.log(err);  }
+   else {
+       req.flash('failMessage', 'Script Failure: ' + last_line);
+       status_params = {'type':    'update',
+                        'user_id': req.user.user_id,
+                        'project': project,
+                        'status':  'Script Failure',
+                        'msg':     'Script Failure'
+       };
+           //helpers.update_status(status_params);
+       res.redirect("/user_data/import_data?import_type=" + req.body.type);  // for now we'll send errors to the browser
+       return;
+   }
+ });
+}
+
 
 function RunAndCheck(script_path, nodelog, req, project, res)
 {
@@ -1885,42 +1906,28 @@ function RunAndCheck(script_path, nodelog, req, project, res)
      {
        successCode(req, res, project);
      }
-     // {
-     //
-     //    status_params = {'type':'update',
-     //                    'user_id':req.user.user_id,
-     //                    'project':project,
-     //                    'status':'LOADED',
-     //                    'msg':'Project is loaded --without tax assignments'
-     //    };
-     //    helpers.update_status(status_params);
-     //
-     //    console.log('LoadDataFinishRequest in upload_data, project:');
-     //    console.log(util.inspect(project, false, null));
-     //
-     //    LoadDataFinishRequest(req, res, project, "Import_Success");
-     //    console.log('Finished loading ' + project);
-     //    // ();
-     // }
      else // code != 0
      {
-      fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-' + project), 
-       function failureHandle(err) {
-        if (err) { console.log(err);  }
-        else {
-            req.flash('failMessage', 'Script Failure: ' + last_line);
-            status_params = {'type':    'update',
-                             'user_id': req.user.user_id,
-                             'project': project,
-                             'status':  'Script Failure',
-                             'msg':     'Script Failure'
-            };
-                //helpers.update_status(status_params);
-            res.redirect("/user_data/import_data?import_type=" + req.body.type);  // for now we'll send errors to the browser
-            return;
-        }
-      });
+       failedCode(req, res, data_repository, project);
      }
+     // {
+     //  fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-' + project),
+     //   function failureHandle(err) {
+     //    if (err) { console.log(err);  }
+     //    else {
+     //        req.flash('failMessage', 'Script Failure: ' + last_line);
+     //        status_params = {'type':    'update',
+     //                         'user_id': req.user.user_id,
+     //                         'project': project,
+     //                         'status':  'Script Failure',
+     //                         'msg':     'Script Failure'
+     //        };
+     //            //helpers.update_status(status_params);
+     //        res.redirect("/user_data/import_data?import_type=" + req.body.type);  // for now we'll send errors to the browser
+     //        return;
+     //    }
+     //  });
+     // }
   });
 }
 
