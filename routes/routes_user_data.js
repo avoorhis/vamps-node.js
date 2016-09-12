@@ -712,7 +712,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   console.log('in start_assignment--->');
   console.log(req.params);
   console.log('<--- in start_assignment');
-  var project = req.params.project;
+  // var project = req.params.project;
   var classifier_id = req.params.classifier_id;
   // /GAST/SILVA108_FULL_LENGTH">Assign Taxonomy - GAST (Silva108)</a></li>
   // /GAST/GG_MAY2013">Assign Taxonomy - GAST (GreenGenes May2013)</a></li>
@@ -723,9 +723,9 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   var classifier = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].method;
   //var ref_db_dir = req.params.ref_db;
   var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
-  console.log('start: ' + project + ' - ' + classifier + ' - ' + ref_db_dir);
-  status_params = {'type': 'update', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
-  var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
+  console.log('start: ' + req.params.project + ' - ' + classifier + ' - ' + ref_db_dir);
+  status_params = {'type': 'update', 'user_id': req.user.user_id, 'project': req.params.project, 'status': '', 'msg': '' };
+  var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + req.params.project);
   var qsub_script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
 
   var config_file = path.join(data_dir, 'config.ini');
@@ -756,7 +756,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   if (classifier.toUpperCase() == 'GAST')
   {
     // TODO: fewer args
-    gastTax(req, project_config, options, data_dir, project, classifier_id);
+    gastTax(req, project_config, options, data_dir, req.params.project, classifier_id);
   }
   else if (classifier.toUpperCase() == 'RDP' )
   {
@@ -767,10 +767,10 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
       gene = 'fungalits_unite';
     }
     var path2classifier = req.CONFIG.PATH_TO_CLASSIFIER + '_' + ref_db_dir;
-    rdp_cmd1 = options.scriptPath + 'vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene;
-    rdp_cmd2 = options.scriptPath + 'vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP';
-    rdp_cmd3 = options.scriptPath + 'vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site;
-    rdp_cmd4 = options.scriptPath + 'vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE;
+    rdp_cmd1 = options.scriptPath + 'vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + req.params.project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene;
+    rdp_cmd2 = options.scriptPath + 'vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + req.params.project + ' -site ' + req.CONFIG.site + ' --classifier RDP';
+    rdp_cmd3 = options.scriptPath + 'vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + req.params.project + ' -site ' + req.CONFIG.site;
+    rdp_cmd4 = options.scriptPath + 'vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + req.params.project + ' -site ' + req.CONFIG.site + ' --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE;
 
     script_name = 'rdp_script.sh';
     status_params.statusOK = 'OK-RDP';
@@ -804,7 +804,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
       {
         var nodelog = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
         var ok_code_options = [classifier, status_params, res];
-        RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
+        RunAndCheck(script_path, nodelog, req, req.params.project, res, checkPid, ok_code_options);
       }
       // {
 //         // run script
