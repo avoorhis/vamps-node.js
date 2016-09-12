@@ -706,7 +706,6 @@ router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, function (req, res)
 // !!! NOW FROM HERE !!!
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
 router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, function (req, res) {
-  var scriptlog = "";
   var cmd_list = [];
   var exec = require('child_process').exec;
   console.log('in start_assignment--->');
@@ -733,9 +732,9 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   {
     //var stat_config = fs.statSync(config_file);
     // console.log('1 ', config_file)
-    var project_config = iniparser.parseSync(config_file);
+    project_config = iniparser.parseSync(config_file);
     console.log('project_config', project_config);
-    console.log('project_config2', project_config['GENERAL'].fasta_type);
+    console.log('project_config2', project_config.GENERAL.fasta_type);
   }
   catch (err)
   {
@@ -783,7 +782,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   //TODO: separate below as write and run, see also uploadData - DRY
   // var script_text = "";
   
-  var script_vars = GetScriptVars(req, data_dir, cmd_list, classifier)
+  var script_vars = GetScriptVars(req, data_dir, cmd_list, classifier);
   var scriptlog   = script_vars[0];
   var script_text = script_vars[1];
   var script_path = path.join(data_dir, script_name);
@@ -806,50 +805,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
         var ok_code_options = [classifier, status_params, res];
         RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
       }
-      // {
-//         // run script
-//         var nodelog = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
-//         // RunAndCheck(script_path, nodelog, req, project, res);
-//         ok_code_options = [classifier, last_line, status_params, res];
-//         RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
-//
-//         console.log('RUNNING: ' + script_path);
-//         var run_process = spawn( script_path, [], {
-//           // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
-//           // 'PATH':req.CONFIG.PATH,
-//           // 'PERL5LIB':req.CONFIG.PERL5LIB,
-//           // 'SGE_ROOT':req.CONFIG.SGE_ROOT, 'SGE_CELL':req.CONFIG.SGE_CELL, 'SGE_ARCH':req.CONFIG.SGE_ARCH
-//           // },
-//           detached: true, stdio: [ 'ignore', null, nodelog ]
-//         }); // stdin, s
-//         var output = '';
-//         run_process.stdout.on('data', function (data) {
-//           //console.log('stdout: ' + data);
-//           // data = data.toString().replace(/^\s + |\s + $/g, '');
-//           data = data.toString().trim();
-//           output += data;
-//           CheckIfPID(data);
-//         });
-//         run_process.on('close', function (code) {
-//           console.log('run_process process exited with code ' + code);
-//           var ary = output.split("\n");
-//           var last_line = ary[ary.length - 1];
-//           console.log('last_line:', last_line);
-//           if (code === 0)
-//           {
-//             checkPid(ok_code_options);
-//           }
-//           else
-//           {
-//             // ERROR
-//             console.log('ERROR last line: ' + last_line);
-//             //req.flash('message', 'Script Error');
-//             //res.redirect("/user_data/your_projects");
-//           }
-//         }); // end gast_process ON Close
-//       } // else
     });
-
   });
 
   status_params.status = status_params.statusSUCCESS;
@@ -920,7 +876,7 @@ function checkPid(check_pid_options, last_line)
 
 function gastTax(req, project_config, options, data_dir, project, classifier_id)
 { 
-  if (project_config['GENERAL'].fasta_type == 'multi')
+  if (project_config.GENERAL.fasta_type == 'multi')
   {
     //unique_cmd = options.scriptPath + '1-demultiplex_fna.sh ' + data_dir + ' infile.fna'
   }
