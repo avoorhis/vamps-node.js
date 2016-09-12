@@ -802,10 +802,12 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/0e1cb0aad4ce57b30c6a0002a1ac2527 -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/dce2a788f226eb033388f2844a89648e -upload_type single -d test_gast_dataset -q
   // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_fnaunique.sh /opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/ashipunova/BPC/vamps-node.js/public/scripts/bin: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project
   // --- end test
-  var script_path = path.join(data_dir, script_name);
+  var script_path     = path.join(data_dir, script_name);
+  var nodelog         = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
+  var ok_code_options = [classifier, status_params, res];
 
   // TODO: compare with uploadData
-  fs.writeFile(script_path, script_text, chScriptMode1(script_path, req, project, res));
+  fs.writeFile(script_path, script_text, chScriptMode1(script_path, req, project, res, nodelog, ok_code_options));
 
   status_params.status = status_params.statusSUCCESS;
   status_params.msg = status_params.msgSUCCESS;
@@ -817,7 +819,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 
 // Functions for tax_assignment
 
-function chScriptMode1(script_path, req, project, res)
+function chScriptMode1(script_path, req, project, res, nodelog, ok_code_options)
 {
   // if (err) return console.log(err);
   var exec = require('child_process').exec;
@@ -832,8 +834,6 @@ function chScriptMode1(script_path, req, project, res)
     }
     else
     {
-      var nodelog = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
-      var ok_code_options = [classifier, status_params, res];
       RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
     }
   });
@@ -1908,9 +1908,7 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
 function writeAndRunScript(req, res, project, options, data_repository)
 {
   console.log("QQQ5 in writeAndRunScript");
-  
-  var exec = require('child_process').exec;
-  
+    
   fs.ensureDir(data_repository, function chDataRepMode(err) {
     if (err) {console.log('No such dir: ensureDir err:', err);} // => null
     else
@@ -1932,24 +1930,28 @@ function writeAndRunScript(req, res, project, options, data_repository)
         var script_text = script_vars[1];
         var script_path = path.join(data_repository, script_name);
 
-        fs.writeFile(script_path, script_text, function chScriptMode(err) {
-          if (err) return console.log(err);
-          child = exec('chmod ug+rwx ' + script_path, function (error, stdout, stderr) {
-            if (error !== null) {
-              console.log('1exec chmod error: ' + error);
-            }
-            else
-            {
-              callback_function_options = [req, res, project, ""];
-              RunAndCheck(script_path, nodelog, req, project, res, successCode, callback_function_options);
-            }
-          }); // end exec
-        });  // end writeFile
+        fs.writeFile(script_path, script_text, chScriptMode(script_path, nodelog, req, project, res));  // end writeFile
       });     //   END chmod
     }         // end else
   });         //   END ensuredir
 }
 
+function chScriptMode(script_path, nodelog, req, project, res) 
+{
+  var exec = require('child_process').exec;
+  
+  child = exec('chmod ug+rwx ' + script_path, function (error, stdout, stderr) {
+    if (error !== null) {
+      console.log('1exec chmod error: ' + error);
+    }
+    else
+    {
+      callback_function_options = [req, res, project, ""];
+      RunAndCheck(script_path, nodelog, req, project, res, successCode, callback_function_options);
+    }
+  }); // end exec
+}
+        
 function uploadData(req, res)
 {
   console.log("QQQ2 in uploadData");
