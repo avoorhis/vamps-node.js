@@ -830,53 +830,9 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
           console.log('last_line:', last_line);
           if (code === 0)
           {
-            checkPid();
+            ok_code_options = [classifier, last_line, status_params, res]
+            checkPid(ok_code_options);
           }
-          // {
-          //   console.log(classifier.toUpperCase() + ' Success');
-          //   //console.log('PID last line: ' + last_line)
-          //   var ll = last_line.split('=');
-          //   var pid = ll[1];
-          //   console.log('NEW PID=: ' + pid);
-          //   //console.log('ALL_DATASETS: ' + JSON.stringify(ALL_DATASETS));
-          //   if (helpers.isInt(pid))
-          //   {
-          //     connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows1, fields) {
-          //       if (err)
-          //       {
-          //         console.log('1-GAST/RDP-Query error: ' + err);
-          //       }
-          //       else
-          //       {
-          //         connection.query(queries.get_select_sequences_queryPID(pid), function (err, rows2, fields) {
-          //         if (err)
-          //         {
-          //           console.log('2-GAST/RDP-Query error: ' + err);
-          //         }
-          //         else
-          //         {
-          //           helpers.assignment_finish_request(res, rows1, rows2, status_params);
-          //           status_params.status = status_params.statusOK;
-          //           status_params.msg = status_params.msgOK;
-          //           helpers.update_status(status_params);
-          //
-          //           ALL_CLASSIFIERS_BY_PID[pid] = classifier + '_' + ref_db_dir;
-          //           console.log('FROM func. ALL_CLASSIFIERS_BY_PID: ' + ALL_CLASSIFIERS_BY_PID);
-          //           console.log('FROM func. ALL_CLASSIFIERS_BY_PID[pid]: ' + ALL_CLASSIFIERS_BY_PID[pid]);
-          //
-          //         }
-          //
-          //       });
-          //       } // end else
-          //
-          //     });
-          //
-          //   }
-          //   else
-          //   { // end if int
-          //     console.log('ERROR pid is not an integer: ', pid);
-          //   }
-          // }
           else
           {
             // ERROR
@@ -899,8 +855,18 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 });
 
 // Functions for tax_assignment
-function checkPid(classifier, last_line, status_params, res)
+function checkPid(check_pid_options)
 {
+  
+  classifier    = check_pid_options[0];
+  last_line     = check_pid_options[1];
+  status_params = check_pid_options[2];
+  res           = check_pid_options[3];
+  console.log(' classifier CLCLCL: ' + classifier);
+  console.log(' last_line CLCLCL: ' + last_line);
+  console.log(' classifier CLCLCL: ');
+  console.log(util.inspect(status_params, false, null));
+  
   console.log(classifier.toUpperCase() + ' Success');
   //console.log('PID last line: ' + last_line)
   var ll = last_line.split('=');
