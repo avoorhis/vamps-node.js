@@ -707,7 +707,7 @@ router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, function (req, res)
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
 router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, function (req, res) {
   var cmd_list = [];
-  var exec = require('child_process').exec;
+  // var exec = require('child_process').exec;
   console.log('in start_assignment--->');
   console.log(req.params);
   console.log('<--- in start_assignment');
@@ -759,6 +759,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   }
   else if (classifier.toUpperCase() == 'RDP' )
   {
+    // TODO: move to a separate function!
     // These are from the RDP README
     var gene = '16srrna'; // default
     if (classifier_id == 'refRDP_2.12-ITS')
@@ -804,25 +805,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   var script_path = path.join(data_dir, script_name);
 
   // TODO: compare with uploadData
-  fs.writeFile(script_path, script_text, function (err) {
-    if (err) return console.log(err);
-    // Make script executable
-    child = exec( 'chmod ug+rwx ' + script_path,
-    function (error, stdout, stderr) {
-      console.log('1stdout: ' + stdout);
-      console.log('1stderr: ' + stderr);
-      if (error !== null)
-      {
-        console.log('1exec error: ' + error);
-      }
-      else
-      {
-        var nodelog = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
-        var ok_code_options = [classifier, status_params, res];
-        RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
-      }
-    });
-  });
+  fs.writeFile(script_path, script_text, chScriptMode1(script_path, req, project, res));
 
   status_params.status = status_params.statusSUCCESS;
   status_params.msg = status_params.msgSUCCESS;
@@ -833,6 +816,29 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 });
 
 // Functions for tax_assignment
+
+function chScriptMode1(script_path, req, project, res)
+{
+  // if (err) return console.log(err);
+  var exec = require('child_process').exec;
+  // Make script executable
+  child = exec( 'chmod ug+rwx ' + script_path,
+  function (error, stdout, stderr) {
+    console.log('1stdout: ' + stdout);
+    console.log('1stderr: ' + stderr);
+    if (error !== null)
+    {
+      console.log('1exec error: ' + error);
+    }
+    else
+    {
+      var nodelog = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
+      var ok_code_options = [classifier, status_params, res];
+      RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
+    }
+  });
+}
+  
 function checkPid(check_pid_options, last_line)
 {
   
