@@ -724,7 +724,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
   console.log('start: ' + project + ' - ' + classifier + ' - ' + ref_db_dir);
   status_params = {'type': 'update', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
-  var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
+  var data_dir  = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
   var qsub_script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
 
   var config_file = path.join(data_dir, 'config.ini');
@@ -735,6 +735,11 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
     project_config = iniparser.parseSync(config_file);
     console.log('project_config', project_config);
     console.log('project_config2', project_config.GENERAL.fasta_type);
+    // TODO: project_config is wrong (not updated) in 
+      // project_title: '',
+      // project_description: '',
+      // sequence_counts: 'NOT_UNIQUED'
+    // ===
   }
   catch (err)
   {
@@ -755,7 +760,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   if (classifier.toUpperCase() == 'GAST')
   {
     // TODO: fewer args
-    gastTax(req, project_config, options, data_dir, project, classifier_id);
+    gastTax(req, project_config, options, data_dir, classifier_id);
   }
   else if (classifier.toUpperCase() == 'RDP' )
   {
@@ -895,8 +900,34 @@ function checkPid(check_pid_options, last_line)
   }
 }
 
-function gastTax(req, project_config, options, data_dir, project, classifier_id)
+function gastTax(req, project_config, options, data_dir, classifier_id)
 { 
+  console.log("project from project_config FFF:");
+  console.log(project_config);
+  // { GENERAL:
+ //     { project: 'test_gast_project',
+ //       project_title: '',
+ //       project_description: '',
+ //       baseoutputdir: '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project',
+ //       configPath: '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/config.ini',
+ //       fasta_file: '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/test_gast_dataset-original.fna',
+ //       platform: 'new_vamps',
+ //       owner: 'admin',
+ //       config_file_type: 'ini',
+ //       public: 'False',
+ //       fasta_type: 'single',
+ //       dna_region: 'v6',
+ //       project_sequence_count: '10',
+ //       sequence_counts: 'NOT_UNIQUED',
+ //       domain: 'bacteria',
+ //       number_of_datasets: '1',
+ //       env_source_id: '100',
+ //       has_tax: '0' },
+ //    DATASETS: { test_gast_dataset: '10' } }
+ //
+ //  ===
+  
+ project = project_config.GENERAL.project;
   if (project_config.GENERAL.fasta_type == 'multi')
   {
     //unique_cmd = options.scriptPath + '1-demultiplex_fna.sh ' + data_dir + ' infile.fna'
