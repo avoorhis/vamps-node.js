@@ -1884,7 +1884,7 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
   console.log("QQQRRR1 script_path: " + script_path);
   console.log("QQQRRR2 nodelog: " + nodelog);
   console.log("QQQRRR3 req");
-  console.log("QQQRRR4 project: " + project);
+  console.log("QQQRRR4 project: " + req.params.project);
   console.log("QQQRRR5 res");
 // QQQ6 in RunAndCheck
 // QQQRRR1 script_path: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/load_script.sh
@@ -1923,7 +1923,7 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
      }
      else // code != 0
      {
-       failedCode(req, res, data_repository, project);
+       failedCode(req, res, data_repository, req.params.project);
      }
   });
 }
