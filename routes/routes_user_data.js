@@ -1869,7 +1869,7 @@ function failedCode(req, res, data_repository, project)
 }
 
 // callback_function_options
-function RunAndCheck(script_path, nodelog, req, project, res, callback_function)
+function RunAndCheck(script_path, nodelog, req, project, res, callback_function, callback_function_options)
 {
   console.log("QQQ6 in RunAndCheck");
   console.log("QQQRRR1 script_path: " + script_path);
@@ -1910,11 +1910,10 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function)
      console.log('last_line:', last_line);
      if (code === 0) 
      {
-       callback_function_options = [req, res, project, ""]
-       a0 = callback_function_options[0]
-       a1 = callback_function_options[1]
-       a2 = callback_function_options[2]
-       a3 = callback_function_options[3]
+       a0 = callback_function_options[0];
+       a1 = callback_function_options[1];
+       a2 = callback_function_options[2];
+       a3 = callback_function_options[3];
        callback_function(a0, a1, a2, a3);
      }
      else // code != 0
@@ -1959,7 +1958,8 @@ function writeAndRunScript(req, res, project, options, data_repository)
             }
             else
             {
-              RunAndCheck(script_path, nodelog, req, project, res, successCode);
+              callback_function_options = [req, res, project, ""];
+              RunAndCheck(script_path, nodelog, req, project, res, successCode, callback_function_options);
             }
           }); // end exec
         });  // end writeFile
