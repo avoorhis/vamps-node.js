@@ -1763,7 +1763,7 @@ function CreateCmdList(req, options, data_repository)
 
 function CheckIfPID(data)
 {
-  // console.log("FFF In CheckIfPID");
+  // console.log("FFF Institution CheckIfPID");
   var lines = data.split('\n');
   for (var n in lines) {
   console.log('EEE line: ' + lines[n]);
@@ -1868,7 +1868,7 @@ function failedCode(req, res, data_repository, project)
  });
 }
 
-
+// callback_function_options
 function RunAndCheck(script_path, nodelog, req, project, res, callback_function)
 {
   console.log("QQQ6 in RunAndCheck");
@@ -1910,7 +1910,12 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function)
      console.log('last_line:', last_line);
      if (code === 0) 
      {
-       callback_function(req, res, project);
+       callback_function_options = [req, res, project, ""]
+       a0 = callback_function_options[0]
+       a1 = callback_function_options[1]
+       a2 = callback_function_options[2]
+       a3 = callback_function_options[3]
+       callback_function(a0, a1, a2, a3);
      }
      else // code != 0
      {
