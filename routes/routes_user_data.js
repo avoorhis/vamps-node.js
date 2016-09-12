@@ -755,80 +755,32 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
  
   if (classifier.toUpperCase() == 'GAST')
   {
-    // todo: fewer args
+    // TODO: fewer args
     gastTax(req, project_config, options, data_dir, project, classifier_id);
   }
-  // {
-  //   if (project_config['GENERAL'].fasta_type == 'multi')
-  //   {
-  //     //unique_cmd = options.scriptPath + '1-demultiplex_fna.sh ' + data_dir + ' infile.fna'
-  //   }
-  //   else
-  //   {
-  //     var single_dataset_name = Object.keys(project_config.DATASETS)[0];
-  //   //unique_cmd = options.scriptPath + '1-single_fna.sh ' + data_dir + ' infile.fna ' + single_dataset_name
-  //   }
-  //   // try: check project name and enter empty project (just to create pid)
-  //   project_init = options.scriptPath + 'project_initialization.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project + ' -uid ' + req.user.user_id;
-  //
-  //   // metadata must go in after the projects and datasets:
-  //   // Should go into db after we have project and datasets in the db
-  //   // Should go in as entire project (w all datasets) -- not dataset by dataset
-  //   // PROBLEM: Here we dont have datasets yet in db
-  //   metadata_cmd = options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project;
-  //
-  //   // Command is split to run once for each dataset on the cluster:
-  //   run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir + ' -s ' + project + ' -d gast -v -e fa.unique -r ' + classifier_id + ' -f -p both -w ' + req.CONFIG.site;
-  //   //run_cmd2 = "/bioware/seqinfo/bin/gast_ill -saveuc -nodup -full -ignoregaps -in " + data_dir + "/fasta.fa.unique -db /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".fa -rtax /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".tax -out " + data_dir + "/gast/fasta_out.gast -uc " + data_dir + "/gast/fasta_out.uc -threads 0 -strand both"
-  //
-  //   //run_cmd3 = options.scriptPath + '3-vamps_nodejs_database_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -ds ' + single_dataset_name
-  //
-  //   //run_cmd = options.scriptPath + 'vamps_script_gast_run.py ' + options.gast_run_args.join(' '),
-  //   script_name = 'gast_script.sh';
-  //   status_params.statusOK = 'OK-GAST';
-  //   status_params.statusSUCCESS = 'GAST-SUCCESS';
-  //   status_params.msgOK = 'Finished GAST';
-  //   status_params.msgSUCCESS = 'GAST -Tax assignments';
-  //
-  //   // TODO:
-  //   // test
-  //   // user_project_status_id  user_id  project_id  status  message  created_at  updated_at
-  //   // 34  4  4  GAST-SUCCESS  GAST -Tax assignments  2016-09-02 12:26:21  2016-09-02 12:31:12
-  //   cmd_list = [
-  //       //unique_cmd,
-  //       project_init,
-  //       metadata_cmd,
-  //       run_gast_cmd
-  //
-  //       //options.scriptPath + 'vamps_script_database_loader.py ' + options.database_loader_args.join(' '),
-  //       //  "pid=$(head -n 1 " + data_dir + "/pid.txt)", // pid is in a file pid.txt written by database loader
-  //       //options.scriptPath + 'vamps_script_load_metadata.py ' + options.upload_metadata_args.join(' '),
-  //       //options.scriptPath + 'vamps_script_create_json_dataset_files.py ' + options.create_json_args.join(' ')
-  //     ];
-  //   }
-    else if (classifier.toUpperCase() == 'RDP' )
+  else if (classifier.toUpperCase() == 'RDP' )
+  {
+    // These are from the RDP README
+    var gene = '16srrna'; // default
+    if (classifier_id == 'refRDP_2.12-ITS')
     {
-      // These are from the RDP README
-      var gene = '16srrna'; // default
-      if (classifier_id == 'refRDP_2.12-ITS')
-      {
-        gene = 'fungalits_unite';
-      }
-      var path2classifier = req.CONFIG.PATH_TO_CLASSIFIER + '_' + ref_db_dir;
-      rdp_cmd1 = options.scriptPath + 'vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene;
-      rdp_cmd2 = options.scriptPath + 'vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP';
-      rdp_cmd3 = options.scriptPath + 'vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site;
-      rdp_cmd4 = options.scriptPath + 'vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE;
+      gene = 'fungalits_unite';
+    }
+    var path2classifier = req.CONFIG.PATH_TO_CLASSIFIER + '_' + ref_db_dir;
+    rdp_cmd1 = options.scriptPath + 'vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene;
+    rdp_cmd2 = options.scriptPath + 'vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP';
+    rdp_cmd3 = options.scriptPath + 'vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site;
+    rdp_cmd4 = options.scriptPath + 'vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE;
 
-      script_name = 'rdp_script.sh';
-      status_params.statusOK = 'OK-RDP';
-      status_params.statusSUCCESS = 'RDP-SUCCESS';
-      status_params.msgOK = 'Finished RDP';
-      status_params.msgSUCCESS = 'RDP -Tax assignments';
-      cmd_list = [ rdp_cmd1, rdp_cmd2, rdp_cmd3, rdp_cmd4 ];
+    script_name = 'rdp_script.sh';
+    status_params.statusOK = 'OK-RDP';
+    status_params.statusSUCCESS = 'RDP-SUCCESS';
+    status_params.msgOK = 'Finished RDP';
+    status_params.msgSUCCESS = 'RDP -Tax assignments';
+    cmd_list = [ rdp_cmd1, rdp_cmd2, rdp_cmd3, rdp_cmd4 ];
   }
 
-  //TODO: separate below as write and run, see also dataUpload - DRY
+  //TODO: separate below as write and run, see also uploadData - DRY
   var script_text = "";
   if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
   {
@@ -843,7 +795,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   }
   var script_path = path.join(data_dir, script_name);
 
-  // TODO: compare with dataUpload
+  // TODO: compare with uploadData
   fs.writeFile(script_path, script_text, function (err) {
     if (err) return console.log(err);
     // Make script executable
@@ -1831,18 +1783,18 @@ function CheckIfPID(data)
 // lines: PPPATH\n,/Users/ashipunova/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/TeX/texbin:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/ashipunova/BPC/vamps-node.js/public/scripts/bin:\n,for file in /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/*.fa; do fastaunique ; done\n
 //
 
-function GetScriptVars(req, data_repository, cmd_list)
+function GetScriptVars(req, data_repository, cmd_list, cmd_name)
 {
   if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
   {
    scriptlog   = path.join(data_repository, 'cluster.log');
-   //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list)
-   script_text = get_qsub_script_text(scriptlog, data_repository, req.CONFIG.dbhost, 'vampsupld', cmd_list);
+   //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, 'vampsupld', cmd_list)
+   script_text = get_qsub_script_text(scriptlog, data_repository, req.CONFIG.dbhost, cmd_name, cmd_list);
   }
   else
   {
    scriptlog   = path.join(data_repository, 'script.log');
-   script_text = get_local_script_text(scriptlog, 'local', 'vampsupld', cmd_list);
+   script_text = get_local_script_text(scriptlog, 'local', cmd_name, cmd_list);
   }
   // console.log('111 scriptlog: ' + scriptlog);
   // console.log('222 script_text: ' + script_text);
@@ -1967,7 +1919,7 @@ function writeAndRunScript(req, res, project, options, data_repository)
 
         script_name     = 'load_script.sh';
         var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
-        var script_vars = GetScriptVars(req, data_repository, cmd_list);
+        var script_vars = GetScriptVars(req, data_repository, cmd_list, 'vampsupld');
         var scriptlog   = script_vars[0];
         var script_text = script_vars[1];
         var script_path = path.join(data_repository, script_name);
