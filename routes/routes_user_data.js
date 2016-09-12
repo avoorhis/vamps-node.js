@@ -807,7 +807,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   var ok_code_options = [classifier, status_params, res];
 
   // TODO: compare with uploadData
-  fs.writeFile(script_path, script_text, chScriptMode1(script_path, req, project, res, nodelog, checkPid, ok_code_options));
+  fs.writeFile(script_path, script_text, chScriptMode(script_path, req, project, res, nodelog, checkPid, ok_code_options));
 
   status_params.status = status_params.statusSUCCESS;
   status_params.msg = status_params.msgSUCCESS;
@@ -819,7 +819,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 
 // Functions for tax_assignment
 
-function chScriptMode1(script_path, req, project, res, nodelog, ok_code_functions, ok_code_options)
+function chScriptMode(script_path, req, project, res, nodelog, ok_code_functions, ok_code_options)
 {
   // if (err) return console.log(err);
   var exec = require('child_process').exec;
@@ -1929,28 +1929,29 @@ function writeAndRunScript(req, res, project, options, data_repository)
         var scriptlog   = script_vars[0];
         var script_text = script_vars[1];
         var script_path = path.join(data_repository, script_name);
+        var ok_code_options = [req, res, project];
 
-        fs.writeFile(script_path, script_text, chScriptMode(script_path, nodelog, req, project, res));  // end writeFile
-      });     //   END chmod
+        fs.writeFile(script_path, script_text, chScriptMode(script_path, req, project, res, nodelog, successCode, ok_code_options));  // end writeFile
+      });     //   END data_repository chmod
     }         // end else
   });         //   END ensuredir
 }
 
-function chScriptMode(script_path, nodelog, req, project, res) 
-{
-  var exec = require('child_process').exec;
-  
-  child = exec('chmod ug+rwx ' + script_path, function (error, stdout, stderr) {
-    if (error !== null) {
-      console.log('1exec chmod error: ' + error);
-    }
-    else
-    {
-      callback_function_options = [req, res, project, ""];
-      RunAndCheck(script_path, nodelog, req, project, res, successCode, callback_function_options);
-    }
-  }); // end exec
-}
+// function chScriptMode(script_path, nodelog, req, project, res)
+// {
+//   var exec = require('child_process').exec;
+//
+//   child = exec('chmod ug+rwx ' + script_path, function (error, stdout, stderr) {
+//     if (error !== null) {
+//       console.log('1exec chmod error: ' + error);
+//     }
+//     else
+//     {
+//       callback_function_options = [req, res, project, ""];
+//       RunAndCheck(script_path, nodelog, req, project, res, successCode, callback_function_options);
+//     }
+//   }); // end exec
+// }
         
 function uploadData(req, res)
 {
