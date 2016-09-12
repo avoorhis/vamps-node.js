@@ -807,7 +807,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   var ok_code_options = [classifier, status_params, res];
 
   // TODO: compare with uploadData
-  fs.writeFile(script_path, script_text, chScriptMode1(script_path, req, project, res, nodelog, ok_code_options));
+  fs.writeFile(script_path, script_text, chScriptMode1(script_path, req, project, res, nodelog, checkPid, ok_code_options));
 
   status_params.status = status_params.statusSUCCESS;
   status_params.msg = status_params.msgSUCCESS;
@@ -819,7 +819,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 
 // Functions for tax_assignment
 
-function chScriptMode1(script_path, req, project, res, nodelog, ok_code_options)
+function chScriptMode1(script_path, req, project, res, nodelog, ok_code_functions, ok_code_options)
 {
   // if (err) return console.log(err);
   var exec = require('child_process').exec;
@@ -834,7 +834,7 @@ function chScriptMode1(script_path, req, project, res, nodelog, ok_code_options)
     }
     else
     {
-      RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
+      RunAndCheck(script_path, nodelog, req, project, res, ok_code_functions, ok_code_options);
     }
   });
 }
