@@ -927,11 +927,60 @@ function gastTax(req, project_config, options, classifier_id)
   // Should go into db after we have project and datasets in the db
   // Should go in as entire project (w all datasets) -- not dataset by dataset
   // PROBLEM: Here we dont have datasets yet in db
+  // Andy, Where is metadata_loader.py???
   metadata_cmd = options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site + 
     ' -indir ' + data_dir + 
     ' -p '     + project;
 
-  // TODO: see the pipeline and create a gast script
+  // TODO: see /bioware/seqinfo/bin/run_gast_ill_nonchim_sge.sh
+    // and create a gast script from here
+    // === gastfile
+//     get options and write, then execute:
+// mkdir $gast_dir
+// ls $NAME_PAT >$gast_dir/filenames.list
+//
+// cd $gast_dir
+//
+// FILE_NUMBER=`wc -l < filenames.list`
+// echo "total files = $FILE_NUMBER"
+//
+// cat >clust_gast_ill_$RUN_LANE.sh <<InputComesFromHERE
+// #!/bin/bash
+// #$ -cwd
+// #$ -S /bin/bash
+// #$ -N clust_gast_ill_$RUN_LANE.sh
+// # Giving the name of the output log file
+// #$ -o clust_gast_ill_$RUN_LANE.sh.sge_script.sh.log
+// # Combining output/error messages into one file
+// #$ -j y
+// # Send mail to these users
+// #$ -M ashipunova@mbl.edu
+// # Send mail; -m as sends on abort, suspend.
+// #$ -m as
+// #$ -t 1-$FILE_NUMBER
+// # Now the script will iterate $FILE_NUMBER times.
+//
+//   . /xraid/bioware/Modules/etc/profile.modules
+//   module load bioware
+//
+//   LISTFILE=./filenames.list
+//   INFILE=\`sed -n "\${SGE_TASK_ID}p" \$LISTFILE\`
+//   echo "====="
+//   echo "file name is \$INFILE"
+//   echo
+//
+//   echo "/bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in $DIRECTORY_NAME/\$INFILE -db $gast_db_path/$REF_DB_NAME.fa -rtax $gast_db_path/$REF_DB_NAME.tax -out $DIRECTORY_NAME/$gast_dir/\$INFILE.gast -uc $DIRECTORY_NAME/$gast_dir/\$INFILE.uc -threads $threads"
+//
+//   /bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in $DIRECTORY_NAME/\$INFILE -db $gast_db_path/$REF_DB_NAME.fa -rtax $gast_db_path/$REF_DB_NAME.tax -out $DIRECTORY_NAME/$gast_dir/\$INFILE.gast -uc $DIRECTORY_NAME/$gast_dir/\$INFILE.uc -threads $threads
+//
+//   chmod 666 clust_gast_ill_$RUN_LANE.sh.sge_script.sh.log
+//
+// InputComesFromHERE
+//
+// echo "Running clust_gast_ill_$RUN_LANE.sh"
+// qsub clust_gast_ill_$RUN_LANE.sh
+    // === gastfile
+
   // Command is split to run once for each dataset on the cluster:
   // Andy, what 2-vamps_nodejs_gast.sh suppose to do? And where is it?
   run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir  + 
