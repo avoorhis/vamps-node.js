@@ -802,46 +802,52 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
       }
       else
       {
-        // run script
         var nodelog = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
-        // RunAndCheck(script_path, nodelog, req, project, res);
-
-        console.log('RUNNING: ' + script_path);
-        var run_process = spawn( script_path, [], {
-          // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
-          // 'PATH':req.CONFIG.PATH,
-          // 'PERL5LIB':req.CONFIG.PERL5LIB,
-          // 'SGE_ROOT':req.CONFIG.SGE_ROOT, 'SGE_CELL':req.CONFIG.SGE_CELL, 'SGE_ARCH':req.CONFIG.SGE_ARCH
-          // },
-          detached: true, stdio: [ 'ignore', null, nodelog ]
-        }); // stdin, s
-        var output = '';
-        run_process.stdout.on('data', function (data) {
-          //console.log('stdout: ' + data);
-          // data = data.toString().replace(/^\s + |\s + $/g, '');
-          data = data.toString().trim();
-          output += data;
-          CheckIfPID(data);
-        });
-        run_process.on('close', function (code) {
-          console.log('run_process process exited with code ' + code);
-          var ary = output.split("\n");
-          var last_line = ary[ary.length - 1];
-          console.log('last_line:', last_line);
-          if (code === 0)
-          {
-            ok_code_options = [classifier, last_line, status_params, res]
-            checkPid(ok_code_options);
-          }
-          else
-          {
-            // ERROR
-            console.log('ERROR last line: ' + last_line);
-            //req.flash('message', 'Script Error');
-            //res.redirect("/user_data/your_projects");
-          }
-        }); // end gast_process ON Close
+        var ok_code_options = [classifier, status_params, res];
+        RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
       }
+      // {
+//         // run script
+//         var nodelog = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
+//         // RunAndCheck(script_path, nodelog, req, project, res);
+//         ok_code_options = [classifier, last_line, status_params, res];
+//         RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
+//
+//         console.log('RUNNING: ' + script_path);
+//         var run_process = spawn( script_path, [], {
+//           // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
+//           // 'PATH':req.CONFIG.PATH,
+//           // 'PERL5LIB':req.CONFIG.PERL5LIB,
+//           // 'SGE_ROOT':req.CONFIG.SGE_ROOT, 'SGE_CELL':req.CONFIG.SGE_CELL, 'SGE_ARCH':req.CONFIG.SGE_ARCH
+//           // },
+//           detached: true, stdio: [ 'ignore', null, nodelog ]
+//         }); // stdin, s
+//         var output = '';
+//         run_process.stdout.on('data', function (data) {
+//           //console.log('stdout: ' + data);
+//           // data = data.toString().replace(/^\s + |\s + $/g, '');
+//           data = data.toString().trim();
+//           output += data;
+//           CheckIfPID(data);
+//         });
+//         run_process.on('close', function (code) {
+//           console.log('run_process process exited with code ' + code);
+//           var ary = output.split("\n");
+//           var last_line = ary[ary.length - 1];
+//           console.log('last_line:', last_line);
+//           if (code === 0)
+//           {
+//             checkPid(ok_code_options);
+//           }
+//           else
+//           {
+//             // ERROR
+//             console.log('ERROR last line: ' + last_line);
+//             //req.flash('message', 'Script Error');
+//             //res.redirect("/user_data/your_projects");
+//           }
+//         }); // end gast_process ON Close
+//       } // else
     });
 
   });
@@ -855,13 +861,13 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 });
 
 // Functions for tax_assignment
-function checkPid(check_pid_options)
+function checkPid(check_pid_options, last_line)
 {
   
   classifier    = check_pid_options[0];
-  last_line     = check_pid_options[1];
-  status_params = check_pid_options[2];
-  res           = check_pid_options[3];
+  // last_line     = check_pid_options[1];
+  status_params = check_pid_options[1];
+  res           = check_pid_options[2];
   console.log(' classifier CLCLCL: ' + classifier);
   console.log(' last_line CLCLCL: ' + last_line);
   console.log(' classifier CLCLCL: ');
@@ -1829,22 +1835,25 @@ function editUploadData(req, res)
   });
 }
 
-function successCode(req, res, project)
+function successCode(successCode_options, last_line)
 {
-   status_params = {'type':'update',
-                   'user_id':req.user.user_id,
-                   'project':project,
-                   'status':'LOADED',
-                   'msg':'Project is loaded --without tax assignments'
-   };
-   helpers.update_status(status_params);
+  req     = successCode_options[0];
+  res     = successCode_options[1];
+  project = successCode_options[2];
+  status_params = {'type':'update',
+                 'user_id':req.user.user_id,
+                 'project':project,
+                 'status':'LOADED',
+                 'msg':'Project is loaded --without tax assignments'
+  };
+  helpers.update_status(status_params);
 
-   console.log('LoadDataFinishRequest in upload_data, project:');
-   console.log(util.inspect(project, false, null));
+  console.log('LoadDataFinishRequest in upload_data, project:');
+  console.log(util.inspect(project, false, null));
 
-   LoadDataFinishRequest(req, res, project, "Import_Success");
-   console.log('Finished loading ' + project);
-   // ();
+  LoadDataFinishRequest(req, res, project, "Import_Success");
+  console.log('Finished loading ' + project);
+  // ();
 }
 
 // TODO: how to test?
@@ -1910,11 +1919,7 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
      console.log('last_line:', last_line);
      if (code === 0) 
      {
-       a0 = callback_function_options[0];
-       a1 = callback_function_options[1];
-       a2 = callback_function_options[2];
-       a3 = callback_function_options[3];
-       callback_function(a0, a1, a2, a3);
+       callback_function(callback_function_options, last_line);
      }
      else // code != 0
      {
