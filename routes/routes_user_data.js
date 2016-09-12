@@ -830,50 +830,53 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
           console.log('last_line:', last_line);
           if (code === 0)
           {
-            console.log(classifier.toUpperCase() + ' Success');
-            //console.log('PID last line: ' + last_line)
-            var ll = last_line.split('=');
-            var pid = ll[1];
-            console.log('NEW PID=: ' + pid);
-            //console.log('ALL_DATASETS: ' + JSON.stringify(ALL_DATASETS));
-            if (helpers.isInt(pid))
-            {
-              connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows1, fields) {
-                if (err)
-                {
-                  console.log('1-GAST/RDP-Query error: ' + err);
-                }
-                else
-                {
-                  connection.query(queries.get_select_sequences_queryPID(pid), function (err, rows2, fields) {
-                  if (err)
-                  {
-                    console.log('2-GAST/RDP-Query error: ' + err);
-                  }
-                  else
-                  {
-                    helpers.assignment_finish_request(res, rows1, rows2, status_params);
-                    status_params.status = status_params.statusOK;
-                    status_params.msg = status_params.msgOK;
-                    helpers.update_status(status_params);
-
-                    ALL_CLASSIFIERS_BY_PID[pid] = classifier + '_' + ref_db_dir;
-                    console.log('FROM func. ALL_CLASSIFIERS_BY_PID: ' + ALL_CLASSIFIERS_BY_PID);
-                    console.log('FROM func. ALL_CLASSIFIERS_BY_PID[pid]: ' + ALL_CLASSIFIERS_BY_PID[pid]);
-
-                  }
-
-                });
-                } // end else
-
-              });
-
-            }
-            else
-            { // end if int
-              console.log('ERROR pid is not an integer: ', pid);
-            }
+            checkPid();
           }
+          // {
+          //   console.log(classifier.toUpperCase() + ' Success');
+          //   //console.log('PID last line: ' + last_line)
+          //   var ll = last_line.split('=');
+          //   var pid = ll[1];
+          //   console.log('NEW PID=: ' + pid);
+          //   //console.log('ALL_DATASETS: ' + JSON.stringify(ALL_DATASETS));
+          //   if (helpers.isInt(pid))
+          //   {
+          //     connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows1, fields) {
+          //       if (err)
+          //       {
+          //         console.log('1-GAST/RDP-Query error: ' + err);
+          //       }
+          //       else
+          //       {
+          //         connection.query(queries.get_select_sequences_queryPID(pid), function (err, rows2, fields) {
+          //         if (err)
+          //         {
+          //           console.log('2-GAST/RDP-Query error: ' + err);
+          //         }
+          //         else
+          //         {
+          //           helpers.assignment_finish_request(res, rows1, rows2, status_params);
+          //           status_params.status = status_params.statusOK;
+          //           status_params.msg = status_params.msgOK;
+          //           helpers.update_status(status_params);
+          //
+          //           ALL_CLASSIFIERS_BY_PID[pid] = classifier + '_' + ref_db_dir;
+          //           console.log('FROM func. ALL_CLASSIFIERS_BY_PID: ' + ALL_CLASSIFIERS_BY_PID);
+          //           console.log('FROM func. ALL_CLASSIFIERS_BY_PID[pid]: ' + ALL_CLASSIFIERS_BY_PID[pid]);
+          //
+          //         }
+          //
+          //       });
+          //       } // end else
+          //
+          //     });
+          //
+          //   }
+          //   else
+          //   { // end if int
+          //     console.log('ERROR pid is not an integer: ', pid);
+          //   }
+          // }
           else
           {
             // ERROR
@@ -896,6 +899,53 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 });
 
 // Functions for tax_assignment
+function checkPid(classifier, last_line, status_params, res)
+{
+  console.log(classifier.toUpperCase() + ' Success');
+  //console.log('PID last line: ' + last_line)
+  var ll = last_line.split('=');
+  var pid = ll[1];
+  console.log('NEW PID=: ' + pid);
+  //console.log('ALL_DATASETS: ' + JSON.stringify(ALL_DATASETS));
+  if (helpers.isInt(pid))
+  {
+    connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows1, fields) {
+      if (err)
+      {
+        console.log('1-GAST/RDP-Query error: ' + err);
+      }
+      else
+      {
+        connection.query(queries.get_select_sequences_queryPID(pid), function (err, rows2, fields) {
+        if (err)
+        {
+          console.log('2-GAST/RDP-Query error: ' + err);
+        }
+        else
+        {
+          helpers.assignment_finish_request(res, rows1, rows2, status_params);
+          status_params.status = status_params.statusOK;
+          status_params.msg = status_params.msgOK;
+          helpers.update_status(status_params);
+
+          ALL_CLASSIFIERS_BY_PID[pid] = classifier + '_' + ref_db_dir;
+          console.log('FROM func. ALL_CLASSIFIERS_BY_PID: ' + ALL_CLASSIFIERS_BY_PID);
+          console.log('FROM func. ALL_CLASSIFIERS_BY_PID[pid]: ' + ALL_CLASSIFIERS_BY_PID[pid]);
+
+        }
+
+      });
+      } // end else
+
+    });
+
+  }
+  else
+  { // end if int
+    console.log('ERROR pid is not an integer: ', pid);
+  }
+}
+
 function gastTax(req, project_config, options, data_dir, project, classifier_id)
 { 
   if (project_config['GENERAL'].fasta_type == 'multi')
@@ -1750,7 +1800,7 @@ function CheckIfPID(data)
   // console.log("FFF In CheckIfPID");
   var lines = data.split('\n');
   for (var n in lines) {
-  // console.log('line: ' + lines[n]);
+  console.log('EEE line: ' + lines[n]);
     if (lines[n].substring(0, 4) == 'PID=') {
     console.log('NNN pid line ' + lines[n]);
     }
@@ -1894,7 +1944,6 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function)
      console.log('last_line:', last_line);
      if (code === 0) 
      {
-       // successCode(req, res, project);
        callback_function(req, res, project);
      }
      else // code != 0
@@ -1921,8 +1970,8 @@ function writeAndRunScript(req, res, project, options, data_repository)
           return;
         }
         var cmd_list = CreateCmdList(req, options, data_repository);
-        console.log("TTT cmd_list: ");
-        console.log(util.inspect(cmd_list, false, null));
+        // console.log("TTT cmd_list: ");
+        // console.log(util.inspect(cmd_list, false, null));
 
         script_name     = 'load_script.sh';
         var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
