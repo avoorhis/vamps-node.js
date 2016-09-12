@@ -916,23 +916,30 @@ function gastTax(req, project_config, options, classifier_id)
   //unique_cmd = options.scriptPath + '1-single_fna.sh ' + data_dir + ' infile.fna ' + single_dataset_name
   }
   // try: check project name and enter empty project (just to create pid)
-  project_init = options.scriptPath
-    + 'project_initialization.py -site ' + req.CONFIG.site
-    + ' -indir ' + data_dir
-    + ' -p '     + project
-    + ' -uid '   + req.user.user_id;
+  project_init = options.scriptPath + 
+    'project_initialization.py -site ' + req.CONFIG.site + 
+    ' -indir ' + data_dir + 
+    ' -p '     + project  + 
+    ' -uid '   + req.user.user_id;
 
   // TODO: separate metadata upload from gast!
   // metadata must go in after the projects and datasets:
   // Should go into db after we have project and datasets in the db
   // Should go in as entire project (w all datasets) -- not dataset by dataset
   // PROBLEM: Here we dont have datasets yet in db
-  metadata_cmd = options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site
-    + ' -indir ' + data_dir
-    + ' -p '     + project;
+  metadata_cmd = options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site + 
+    ' -indir ' + data_dir + 
+    ' -p '     + project;
 
+  // TODO: see the pipeline and create a gast script
   // Command is split to run once for each dataset on the cluster:
-  run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir + ' -s ' + project + ' -d gast -v -e fa.unique -r ' + classifier_id + ' -f -p both -w ' + req.CONFIG.site;
+  // Andy, what 2-vamps_nodejs_gast.sh suppose to do? And where is it?
+  run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir  + 
+    ' -s ' + project + 
+    ' -d gast -v -e fa.unique -r ' + classifier_id 
+  // TODO: "both" - a variable!
+    + ' -f -p both -w ' + req.CONFIG.site;
+    
   //run_cmd2 = "/bioware/seqinfo/bin/gast_ill -saveuc -nodup -full -ignoregaps -in " + data_dir + "/fasta.fa.unique -db /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".fa -rtax /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".tax -out " + data_dir + "/gast/fasta_out.gast -uc " + data_dir + "/gast/fasta_out.uc -threads 0 -strand both"
 
   //run_cmd3 = options.scriptPath + '3-vamps_nodejs_database_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -ds ' + single_dataset_name
@@ -945,7 +952,7 @@ function gastTax(req, project_config, options, classifier_id)
   status_params.msgSUCCESS    = 'GAST -Tax assignments';
 
   // TODO:
-  // test
+  // test db
   // user_project_status_id  user_id  project_id  status  message  created_at  updated_at
   // 34  4  4  GAST-SUCCESS  GAST -Tax assignments  2016-09-02 12:26:21  2016-09-02 12:31:12
   cmd_list = [
