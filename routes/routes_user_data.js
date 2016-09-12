@@ -760,7 +760,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   if (classifier.toUpperCase() == 'GAST')
   {
     // TODO: fewer args
-    gastTax(req, project_config, options, data_dir, classifier_id);
+    gastTax(req, project_config, options, classifier_id);
   }
   else if (classifier.toUpperCase() == 'RDP' )
   {
@@ -900,7 +900,7 @@ function checkPid(check_pid_options, last_line)
   }
 }
 
-function gastTax(req, project_config, options, data_dir, classifier_id)
+function gastTax(req, project_config, options, classifier_id)
 { 
   console.log("project from project_config FFF:");
   console.log(project_config);
@@ -927,7 +927,8 @@ function gastTax(req, project_config, options, data_dir, classifier_id)
  //
  //  ===
   
- project = project_config.GENERAL.project;
+ var project  = project_config.GENERAL.project;
+ var data_dir = project_config.GENERAL.baseoutputdir;
   if (project_config.GENERAL.fasta_type == 'multi')
   {
     //unique_cmd = options.scriptPath + '1-demultiplex_fna.sh ' + data_dir + ' infile.fna'
