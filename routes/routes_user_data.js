@@ -786,18 +786,6 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   var script_vars = GetScriptVars(req, data_dir, cmd_list, classifier)
   var scriptlog   = script_vars[0];
   var script_text = script_vars[1];
-  
-  // if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
-  // {
-  //  scriptlog = path.join(data_dir, 'cluster.log');
-  //  //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list)
-  //  script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list);
-  // }
-  // else
-  // {
-  //  scriptlog = path.join(data_dir, 'script.log');
-  //  script_text = get_local_script_text(scriptlog, 'local', classifier, cmd_list);
-  // }
   var script_path = path.join(data_dir, script_name);
 
   // TODO: compare with uploadData
@@ -816,6 +804,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
       {
         // run script
         var nodelog = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
+        // RunAndCheck(script_path, nodelog, req, project, res);
 
         console.log('RUNNING: ' + script_path);
         var run_process = spawn( script_path, [], {
@@ -1864,9 +1853,21 @@ function failedCode(req, res, data_repository, project)
 }
 
 
-function RunAndCheck(script_path, nodelog, req, project, res)
+function RunAndCheck(script_path, nodelog, req, project, res, callback_function)
 {
   console.log("QQQ6 in RunAndCheck");
+  console.log("QQQRRR1 script_path: " + script_path);
+  console.log("QQQRRR2 nodelog: " + nodelog);
+  console.log("QQQRRR3 req");
+  console.log("QQQRRR4 project: " + project);
+  console.log("QQQRRR5 res");
+// QQQ6 in RunAndCheck
+// QQQRRR1 script_path: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/load_script.sh
+// QQQRRR2 nodelog: 40
+// QQQRRR3 req
+// QQQRRR4 project: test_gast_project
+// QQQRRR5 res
+//
   
   var run_process = spawn( script_path, [], {
     // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
@@ -1893,7 +1894,8 @@ function RunAndCheck(script_path, nodelog, req, project, res)
      console.log('last_line:', last_line);
      if (code === 0) 
      {
-       successCode(req, res, project);
+       // successCode(req, res, project);
+       callback_function(req, res, project);
      }
      else // code != 0
      {
@@ -1937,7 +1939,7 @@ function writeAndRunScript(req, res, project, options, data_repository)
             }
             else
             {
-              RunAndCheck(script_path, nodelog, req, project, res);
+              RunAndCheck(script_path, nodelog, req, project, res, successCode);
             }
           }); // end exec
         });  // end writeFile
