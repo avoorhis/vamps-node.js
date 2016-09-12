@@ -781,18 +781,23 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   }
 
   //TODO: separate below as write and run, see also uploadData - DRY
-  var script_text = "";
-  if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
-  {
-   scriptlog = path.join(data_dir, 'cluster.log');
-   //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list)
-   script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list);
-  }
-  else
-  {
-   scriptlog = path.join(data_dir, 'script.log');
-   script_text = get_local_script_text(scriptlog, 'local', classifier, cmd_list);
-  }
+  // var script_text = "";
+  
+  var script_vars = GetScriptVars(req, data_dir, cmd_list, classifier)
+  var scriptlog   = script_vars[0];
+  var script_text = script_vars[1];
+  
+  // if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
+  // {
+  //  scriptlog = path.join(data_dir, 'cluster.log');
+  //  //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list)
+  //  script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list);
+  // }
+  // else
+  // {
+  //  scriptlog = path.join(data_dir, 'script.log');
+  //  script_text = get_local_script_text(scriptlog, 'local', classifier, cmd_list);
+  // }
   var script_path = path.join(data_dir, script_name);
 
   // TODO: compare with uploadData
