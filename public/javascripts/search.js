@@ -290,20 +290,30 @@ function showMetadataHint(str) {
 //
 function showTaxResult(str) {
   
+  var find_datasets_btn = document.getElementById("find_datasets_btn") || null;
+  var create_fasta_btn = document.getElementById("create_fasta_btn") || null;
   if (str.length==0) {
     document.getElementById("livesearch_taxonomy").innerHTML="";
     document.getElementById("livesearch_taxonomy").style.border="0px";
     document.getElementById("livesearch_taxonomy").style.height="0";
     document.getElementById("livesearch_result_div").value = ''
-    document.getElementById("find_datasets_btn").disabled=true;
-    document.getElementById("create_fasta_btn").disabled=true;
-    document.getElementById("create_fasta_hidden_id").value = ''
-    document.getElementById("find_datasets_hidden_id").value = ''
+    if(find_datasets_btn != null){
+      document.getElementById("find_datasets_btn").disabled=true;
+      document.getElementById("find_datasets_hidden_id").value = ''
+    }
+    if(create_fasta_btn != null){
+      document.getElementById("create_fasta_btn").disabled=true;
+      document.getElementById("create_fasta_hidden_id").value = ''
+    }
     document.getElementById("livesearch_tax_dropdown").style.visibility='hidden';
     return;
   }else{
-    document.getElementById("find_datasets_btn").disabled=false;
-    document.getElementById("create_fasta_btn").disabled=false;
+    if(find_datasets_btn != null){
+      document.getElementById("find_datasets_btn").disabled=false;
+    }
+    if(create_fasta_btn != null){
+      document.getElementById("create_fasta_btn").disabled=false;
+    }
     document.getElementById("livesearch_tax_dropdown").style.visibility='visible';
   }
   if (window.XMLHttpRequest) {
@@ -321,7 +331,7 @@ function showTaxResult(str) {
       document.getElementById("livesearch_taxonomy").style.overflow="auto";
     }
   }
-  xmlhttp.open("GET","livesearch_taxonomy/"+str,true);
+  xmlhttp.open("GET","/search/livesearch_taxonomy/"+str,true);
   xmlhttp.send();
 }
 //

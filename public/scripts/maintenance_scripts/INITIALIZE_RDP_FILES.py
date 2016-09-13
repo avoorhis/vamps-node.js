@@ -77,7 +77,7 @@ queries = [{"rank":"domain","query":domain_query},
            {"rank":"strain","query":strain_query}
            ]
 
-LOG_FILENAME = os.path.join('.','initialize_all_files.log')
+LOG_FILENAME = os.path.join('.','initialize_rdp_files.log')
 logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
                            format="%(asctime)-15s %(levelname)-8s %(message)s")
 
@@ -384,7 +384,7 @@ if __name__ == '__main__':
                 required=False,  action='store', dest = "NODE_DATABASE",  default='',
                 help="NODE_DATABASE")
     parser.add_argument("-units", "--units",    
-                required=False,  action='store', dest = "units",  default='rdp',
+                required=False,  action='store', dest = "units",  default='rdp2.6',
                 help="UNITS")
     parser.add_argument("-c", "--check_files",    
                 required=False,  action='store_true', dest = "check_files",  default=False,
@@ -462,9 +462,9 @@ if __name__ == '__main__':
         sys.exit(-1)
     
     #args.json_dir = os.path.join("../","json")
-    permissible_units = ['silva119','rdp']
+    permissible_units = ['silva119','rdp2.6']
     if args.units in permissible_units:
-        args.files_prefix   = os.path.join(args.json_file_path,NODE_DATABASE+"--datasets_rdp")
+        args.files_prefix   = os.path.join(args.json_file_path,NODE_DATABASE+"--datasets_rdp2.6")
         #args.taxcounts_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts_"+args.units+".json")
     else:
         print "units not in permissible units"

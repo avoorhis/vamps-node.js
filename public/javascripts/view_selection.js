@@ -409,7 +409,7 @@ function create_viz(visual, ts, new_window) {
     }else if(visual === 'geospatial'){
       create_geospatial(new_window);
     }else if(visual === 'dbrowser'){
-      create_dbrowser(ts);
+      //create_dbrowser(ts);
     }else if(visual === 'adiversity'){
       create_adiversity(ts, new_window);
     }else if(visual === 'phyloseq01'){
@@ -424,6 +424,8 @@ function create_viz(visual, ts, new_window) {
       create_phyloseq(ts,'tree', new_window);
     }else if(visual === 'cytoscape'){
       create_cytoscape(ts);
+    }else if(visual === 'oligotyping'){
+      create_oligotyping(ts);
     }else{
 
     }
@@ -978,31 +980,57 @@ function create_pcoa(ts,image_type, new_window) {
 //
 //  CREATE DBROWSER
 //
-function create_dbrowser(ts) {
+// function create_dbrowser(ts) {
      
-         dbrowser_created = true;
-         var info_line = create_header('dbrowser', pi_local);
-         var dbrowser_div = document.getElementById('dbrowser_div');
-         document.getElementById('dbrowser_title').innerHTML = info_line;
-         document.getElementById('dbrowser_title').style.color = 'white';
-        document.getElementById('dbrowser_title').style['font-size'] = 'small';
-         dbrowser_div.style.display = 'block';
+//          dbrowser_created = true;
+//          var info_line = create_header('dbrowser', pi_local);
+//          var dbrowser_div = document.getElementById('dbrowser_div');
+//          document.getElementById('dbrowser_title').innerHTML = info_line;
+//          document.getElementById('dbrowser_title').style.color = 'white';
+//         document.getElementById('dbrowser_title').style['font-size'] = 'small';
+//          dbrowser_div.style.display = 'block';
          
-         document.getElementById('pre_dbrowser_div').style.display = 'block';
-         var args =  "ts="+ts;
-         var xmlhttp = new XMLHttpRequest();  
-         xmlhttp.open("POST", '/visuals/dbrowser', true);
-         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-         showDots='';
-         var myWaitVar = setInterval(myWaitFunction,1000,dbrowser_div);
-         xmlhttp.onreadystatechange = function() {          
+//          document.getElementById('pre_dbrowser_div').style.display = 'block';
+//          var args =  "ts="+ts;
+//          var xmlhttp = new XMLHttpRequest();  
+//          xmlhttp.open("POST", '/visuals/dbrowser', true);
+//          xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+//          showDots='';
+//          var myWaitVar = setInterval(myWaitFunction,1000,dbrowser_div);
+//          xmlhttp.onreadystatechange = function() {          
+//            if (xmlhttp.readyState == 4 ) {
+//               clearInterval(myWaitVar);
+//               var response = xmlhttp.responseText;              
+//               dbrowser_div.innerHTML = response;            
+//            }
+//          };
+//          xmlhttp.send(args);
+// }
+function create_oligotyping(ts) {
+     
+        oligotyping_created = true;
+        var info_line = create_header('oligotyping', pi_local);
+        var oligotyping_div = document.getElementById('oligotyping_div');
+        document.getElementById('oligotyping_title').innerHTML = info_line;
+        document.getElementById('oligotyping_title').style.color = 'white';
+        document.getElementById('oligotyping_title').style['font-size'] = 'small';
+        oligotyping_div.style.display = 'block';
+         
+        document.getElementById('pre_oligotyping_div').style.display = 'block';
+        var args =  "ts="+ts;
+        var xmlhttp = new XMLHttpRequest();  
+        xmlhttp.open("POST", '/visuals/oligotyping', true);
+        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        showDots='';
+        var myWaitVar = setInterval(myWaitFunction,1000,oligotyping_div);
+        xmlhttp.onreadystatechange = function() {          
            if (xmlhttp.readyState == 4 ) {
               clearInterval(myWaitVar);
               var response = xmlhttp.responseText;              
-              dbrowser_div.innerHTML = response;            
+              oligotyping_div.innerHTML = response;            
            }
-         };
-         xmlhttp.send(args);
+        };
+        xmlhttp.send(args);
 }
 //
 //
@@ -1795,6 +1823,8 @@ function create_header(viz, pi) {
     }else if(viz == 'phyloseq_tree05'){
       txt = 'Phyloseq Tree --> ';
       txt += ' Metric: ' + pi.selected_distance+'; ';  
+    }else if(viz == 'oligotyping'){
+      txt = 'Oligotyping --> '; 
     }else{
       txt = 'ERROR in fxn create_headers '+viz;
     }
@@ -1941,6 +1971,5 @@ function new_window_skeleton(html){
   txt +="</script>"
   return txt
 }
-
 
 

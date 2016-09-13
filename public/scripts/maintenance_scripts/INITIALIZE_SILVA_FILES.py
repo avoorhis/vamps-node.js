@@ -77,7 +77,7 @@ queries = [{"rank":"domain","query":domain_query},
            {"rank":"strain","query":strain_query}
            ]
 
-LOG_FILENAME = os.path.join('.','initialize_all_files.log')
+LOG_FILENAME = os.path.join('.','initialize_silva_files.log')
 logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
                            format="%(asctime)-15s %(levelname)-8s %(message)s")
 
@@ -164,7 +164,7 @@ def go(args):
     
     try:
         shutil.rmtree(args.files_prefix)
-        shutil.move(args.taxcounts_file, os.path.join(args.json_file_path, NODE_DATABASE+'--taxcounts'+today+'.json'))
+        shutil.move(args.taxcounts_file, os.path.join(args.json_file_path, NODE_DATABASE+'--taxcounts_silva119'+today+'.json'))
         shutil.move(args.metadata_file,  os.path.join(args.json_file_path, NODE_DATABASE+'--metadata'+ today+'.json'))
         logging.debug('Backed up old taxcounts and metadata files')
     except:
@@ -464,8 +464,8 @@ if __name__ == '__main__':
     #args.json_dir = os.path.join("../","json")
     #permissible_units = ['silva119','rdp']
     
-    args.files_prefix   = os.path.join(args.json_file_path,NODE_DATABASE+"--datasets")
-    args.taxcounts_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts.json")
+    args.files_prefix   = os.path.join(args.json_file_path,NODE_DATABASE+"--datasets_silva119")
+    args.taxcounts_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts_silva119.json")
     args.metadata_file  = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata.json")
     #print args.files_prefix , args.taxcounts_file,args.metadata_file
     if args.check_files:

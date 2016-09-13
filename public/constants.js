@@ -426,6 +426,13 @@ constants.VISUAL_THUMBNAILS = {
             //id:'dendrogram0_link_id', 
             prefix:'dendrogram0',
             tip:'R (https://www.r-project.org/)-|-phyloseq & ape (R-packages);' 
+        },
+        {   name:'Oligotyping (TESTING)',  
+            thumb:'/images/visuals/oligotyping-logo.png',     
+            //link:'user_viz_data/dendrogramR',     
+            //id:'dendrogram0_link_id', 
+            prefix:'oligotyping',
+            tip:'Python2.7-' 
         }
    
 ]};

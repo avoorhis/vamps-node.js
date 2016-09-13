@@ -60,7 +60,7 @@ router.get('/view_selection/:filename', helpers.isLoggedIn, function(req, res) {
       try{
           if(HDF5_TAXDATA == ''){
             if(visual_post_items.unit_choice == 'tax_rdp_simple'){
-                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp");
+                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
             }else{
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
             }
@@ -164,7 +164,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
         
         if(HDF5_TAXDATA == ''){
             if(visual_post_items.unit_choice == 'tax_rdp_simple'){
-                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp");
+                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
             }else{
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
             }
@@ -202,7 +202,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
         
         if(HDF5_TAXDATA == ''){
             if(visual_post_items.unit_choice == 'tax_rdp_simple'){
-                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp");
+                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
             }else{
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
             }
@@ -556,7 +556,7 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
   var file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
   console.log(file_path);
   var dataset_ids = [];
-  fs.readFile(file_path, 'utf8',function(err,data) {
+  fs.readFile(file_path, 'utf8',function readFile(err,data) {
     if (err) {
       msg = 'ERROR Message '+err;
         helpers.render_error_page(req,res,msg);
@@ -574,7 +574,7 @@ router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
   var file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
   console.log(file_path);
   var dataset_ids = [];
-  fs.readFile(file_path, 'utf8',function(err,data) {
+  fs.readFile(file_path, 'utf8',function readFile(err,data) {
     if (err) {
       msg = 'ERROR Message '+err;
         helpers.render_error_page(req,res,msg);
@@ -622,21 +622,21 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     
     
     var stdout = '';
-    heatmap_process.stdout.on('data', function (data) {
+    heatmap_process.stdout.on('data', function heatmapProcessStdout(data) {
         //console.log('stdout: ' + data);
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         data = data.toString();
         stdout += data;
     });
     var stderr = '';
-    heatmap_process.stderr.on('data', function (data) {
+    heatmap_process.stderr.on('data', function heatmapProcessStderr(data) {
         console.log('stderr: ' + data);
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         data = data.toString();
         stderr += data;
     });
          
-    heatmap_process.on('close', function (code) {
+    heatmap_process.on('close', function heatmapProcessOnClose(code) {
         console.log('heatmap_process process exited with code ' + code);
                
         //var last_line = ary[ary.length - 1];
@@ -700,19 +700,19 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
           stdio: 'pipe'  // stdin, stdout, stderr
       }); 
   stdout = '';
-  fheatmap_process.stdout.on('data', function (data) {
+  fheatmap_process.stdout.on('data', function fheatmapProcessStdout(data) {
       
       stdout += data;    
    
   });
   stderr = '';
-  fheatmap_process.stderr.on('data', function (data) {
+  fheatmap_process.stderr.on('data', function fheatmapProcessStderr(data) {
       
       stderr += data;    
    
   }); 
   
-  fheatmap_process.on('close', function (code) {
+  fheatmap_process.on('close', function fheatmapProcessOnClose(code) {
         console.log('fheatmap_process process exited with code ' + code);
         //distance_matrix = JSON.parse(output);
         //var last_line = ary[ary.length - 1];
@@ -800,7 +800,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     });  
     
     var stdout = '';
-    dendrogram_process.stdout.on('data', function (data) {
+    dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
         //
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         data = data.toString();
@@ -808,14 +808,14 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 
     });
     var stderr = '';
-    dendrogram_process.stderr.on('data', function (data) {
+    dendrogram_process.stderr.on('data', function dendrogramProcessStderr(data) {
         console.log('stderr: ' + data);
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         data = data.toString();
         stderr += data;
     });
     
-    dendrogram_process.on('close', function (code) {
+    dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
         console.log('dendrogram_process process exited with code ' + code);
       
         //var last_line = ary[ary.length - 1];
@@ -903,7 +903,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
       });  
   
       
-      pcoa_process.on('close', function (code) {
+      pcoa_process.on('close', function pcoaProcessOnClose(code) {
           //console.log('pcoa_process process exited with code ' + code+' -- '+output);
           //distance_matrix = JSON.parse(output);
           //var last_line = ary[ary.length - 1];
@@ -984,15 +984,15 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       //stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr    
        
-        pcoa_process.stdout.on('data', function (data) { console.log('1stdout: ' + data);  });
+        pcoa_process.stdout.on('data', function pcoaProcessStdout(data) { console.log('1stdout: ' + data);  });
         stderr1='';
-        pcoa_process.stderr.on('data', function (data) {
+        pcoa_process.stderr.on('data', function pcoaProcessStderr(data) {
                 console.log('1stderr-POST: ' + data);
                 stderr1 += data; 
                 //res.send(stderr1); 
                 //return;              
         });
-        pcoa_process.on('close', function (code1) {
+        pcoa_process.on('close', function pcoaProcessOnClose(code1) {
                 console.log('pcoa_process1 process exited with code ' + code1);
                 
                 if(code1 === 0){    // SUCCESS       
@@ -1020,7 +1020,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
                     child = exec(cmdline, {
                               //cwd: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
                               env : env                            
-                            }, function (error, stdout, stderr) {
+                            }, function makeEmperorScriptExec(error, stdout, stderr) {
 
                       //console.log('stdout-POST: ' + stdout);
 
@@ -1106,13 +1106,13 @@ router.get('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       //stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr1    
        
-        pcoa_process.stdout.on('data', function (data) { console.log('1stdout: ' + data);  });
+        pcoa_process.stdout.on('data', function pcoaProcessStdout(data) { console.log('1stdout: ' + data);  });
         stderr1='';
-        pcoa_process.stderr1.on('data', function (data) {
+        pcoa_process.stderr1.on('data', function pcoaProcessStderr(data) {
                 console.log('1stderr-GET: ' + data);
                 stderr1 += data;               
         });
-        pcoa_process.on('close', function (code1) {
+        pcoa_process.on('close', function pcoaProcessOnClose(code1) {
                 console.log('pcoa_process1 process exited with code ' + code1);
                 
                 if(code1 === 0){    // SUCCESS       
@@ -1140,7 +1140,7 @@ router.get('/pcoa3d', helpers.isLoggedIn, function(req, res) {
                     child = exec(cmdline, {
                               //cwd: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
                               env : env                            
-                            }, function (error, stdout, stderr) {
+                            }, function makeEmperorScriptExec(error, stdout, stderr) {
 
                       //console.log('stdout-GET: ' + stdout);
 
@@ -1349,6 +1349,95 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
     
 });
 //
+// OLIGOTYPING
+//
+router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
+    var ts = visual_post_items.ts;
+    console.log('in POST oligotyping');
+    //console.log(JSON.stringify(BIOM_MATRIX,null,2));
+    var html='';
+    var max_total_count = Math.max.apply(null, BIOM_MATRIX.column_totals);
+    //console.log('column_totals '+BIOM_MATRIX.column_totals);
+    //console.log('max_total_count '+max_total_count.toString());
+
+    
+    // write html to a file and open it 
+    
+    console.log("render visuals/oligotyping")
+    //var file_name = ts+'_krona.html';
+    //var html_path = path.join(process.env.PWD,'tmp', file_name);
+
+    res.render('visuals/oligotyping', {        
+      title: 'VAMPS:Oligotyping',
+      message:             req.flash('message'),
+      html:                html,
+      max_total_count:     max_total_count,
+      matrix:              JSON.stringify(BIOM_MATRIX),
+      chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+      user :  req.user, hostname : req.CONFIG.hostname,          
+
+    });
+
+    
+});
+//
+// OLIGOTYPING
+//
+router.post('/oligotyping_fasta', helpers.isLoggedIn, function(req, res) {
+    console.log('in POST oligotyping_fasta');
+    console.log('req.body: oligotyping_fasta-->>');
+    console.log(req.body);
+    console.log('req.body: oligotyping_fasta');
+    //var rank;
+    var ts = visual_post_items.ts;
+    var tax_string = req.body.tax_string;
+    var tax_obj = JSON.parse(req.body.tax_obj);
+    var rank = tax_obj.rank
+
+   
+    console.log('rank',rank)
+    
+    var sql_dids = (chosen_id_name_hash.ids).join("','")
+    q = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count from sequence_pdr_info\n" 
+    q += " join sequence using (sequence_id)\n"
+    q += " join silva_taxonomy_info_per_seq using(sequence_id)\n"
+    q += " where silva_taxonomy_id='"+tax_obj.db_id+"'\n"
+    q += " and dataset_id in('"+sql_dids+"') \n"
+    console.log('q',q);
+   
+    var html='';
+        
+    
+    
+    console.log("check for string in datasets")
+    console.log("if yes create fasta")
+    console.log("if no: return to user ")
+    var collection = connection.query(q, function mysqlSelectSeqs(err, rows, fields) {
+      if (err) {
+          throw err;
+      } else {
+        console.log('rows',rows)
+        if(rows.length == 0){
+          res.send('ERROR')
+        }else{
+          // make fasta -- send filename
+          filename = 'myfilename'
+          res.json({msg:'OK We have data',filename:filename})
+        }
+      }
+    });
+    
+    // res.render('visuals/oligotyping_entropy', {        
+    //   title: 'VAMPS:Oligotyping',
+    //   message:             req.flash('message'),
+    //   html:                html,
+    //   user :  req.user, hostname : req.CONFIG.hostname,          
+
+    // });
+
+    
+});
+//
 //
 //
 router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
@@ -1383,20 +1472,20 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
             }); 
     
     stdout = '';
-    alphadiv_process.stdout.on('data', function (data) {
+    alphadiv_process.stdout.on('data', function adiversityProcessStdout(data) {
         data = data.toString();
         console.log(data)
         stdout += data;    
      
     });
     stderr = '';
-    alphadiv_process.stderr.on('data', function (data) {
+    alphadiv_process.stderr.on('data', function adiversityProcessStderr(data) {
         data = data.toString();
         console.log(data)
         stderr += data;    
      
     });
-    alphadiv_process.on('close', function (code) {
+    alphadiv_process.on('close', function adiversityProcessOnClose(code) {
         console.log('alphadiv_process process exited with code ' + code);
         if(code == 0){           
             res.send(stdout);                                 
@@ -1475,15 +1564,15 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     }); 
     stdout = '';
     lastline='';
-    phyloseq_process.stdout.on('data', function (data) {
+    phyloseq_process.stdout.on('data', function phyloseqProcessStdout(data) {
         lastline = data;
         stdout += data;      
     });
     stderr = '';
-    phyloseq_process.stderr.on('data', function (data) {
+    phyloseq_process.stderr.on('data', function phyloseqProcessStderr(data) {
         stderr += data;      
     }); 
-    phyloseq_process.on('close', function (code) {
+    phyloseq_process.on('close', function phyloseqProcessOnClose(code) {
           console.log('phyloseq_process process exited with code ' + code);
           //distance_matrix = JSON.parse(output);
           //var last_line = ary[ary.length - 1];
@@ -1741,7 +1830,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     //console.log(file_path)
     new_rows = {}
     new_rows[selected_did] = []
-    connection.query(QUERY.get_sequences_perDID([selected_did]), function(err, rows, fields){
+    connection.query(QUERY.get_sequences_perDID([selected_did]), function mysqlSelectSeqsPerDID(err, rows, fields){
         if (err)  {
           console.log('Query error: ' + err);
           console.log(err.stack);
@@ -1784,7 +1873,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
           }
           // order by seq_count DESC
-          new_rows[selected_did].sort(function(a, b) {
+          new_rows[selected_did].sort(function sortByCount(a, b) {
             return b.seq_count - a.seq_count;
           });
           //fs.writeFile(file_path, JSON.stringify(new_rows[selected_did]), function (err) {
@@ -1910,7 +1999,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     new_rows[did1] = []
     new_rows[did2] = []
     //console.log(new_rows)
-    connection.query(QUERY.get_sequences_perDID(did1+"','"+did2), function(err, rows, fields){
+    connection.query(QUERY.get_sequences_perDID(did1+"','"+did2), function mysqlSelectSeqsPerDID(err, rows, fields){
         if (err)  {
           console.log('Query error: ' + err);
           console.log(err.stack);
@@ -1941,19 +2030,19 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
           }
           // order by seq_count DESC
           //console.log(new_rows)
-          new_rows[did1].sort(function(a, b) {
-            return b.seq_count - a.seq_count;
+          new_rows[did1].sort(function sortByCount(a, b) {
+                  return b.seq_count - a.seq_count;
           });
-          new_rows[did2].sort(function(a, b) {
+          new_rows[did2].sort(function sortByCount(a, b) {
                   return b.seq_count - a.seq_count;
           });
 
-          fs.writeFile(file_path1, JSON.stringify(new_rows[did1]), function (err) {
+          fs.writeFile(file_path1, JSON.stringify(new_rows[did1]), function writeFile(err) {
             if (err) return console.log(err);
             console.log('wrote file > '+file_path1);
 
          
-            fs.writeFile(file_path2, JSON.stringify(new_rows[did2]), function (err) {
+            fs.writeFile(file_path2, JSON.stringify(new_rows[did2]), function writeFile(err) {
               if (err) return console.log(err);
               console.log('wrote file > '+file_path2);
               res.render('visuals/user_viz_data/bar_double', {
@@ -1999,7 +2088,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	if(seqs_filename){
     //console.log('found filename',seqs_filename)
     
-    fs.readFile(path.join('tmp',seqs_filename), 'utf8', function (err,data) {
+    fs.readFile(path.join('tmp',seqs_filename), 'utf8', function readFile(err,data) {
       if (err) {
         console.log(err);
         res.send('No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again")
@@ -2408,7 +2497,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     
     //var heatmap_process = spawn( 'which' , ['python'], {env:{'PATH':envpath}});
     var output = '';
-    cluster_process.stdout.on('data', function (data) {
+    cluster_process.stdout.on('data', function clusterProcessStdout(data) {
         //console.log('stdout: ' + data);
       // //data = data.toString().replace(/^\s+|\s+$/g, '');
       // data = data.toString();
@@ -2416,7 +2505,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
        output = data.toString();
     });
        
-    cluster_process.on('close', function (code) {
+    cluster_process.on('close', function clusterProcessOnClose(code) {
       console.log('ds cluster process exited with code ' + code);
       var lines = output.split(/\n/)
       
@@ -2439,7 +2528,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
             potential_chosen_id_name_hash  = COMMON.create_new_chosen_id_name_hash(dataset_list);  
             ascii_file = ts+'_'+metric+'_tree.txt';
             ascii_file_path = path.join(pwd,'tmp',ascii_file);
-            fs.readFile(ascii_file_path, 'utf8', function (err,ascii_tree_data) {
+            fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err,ascii_tree_data) {
               if (err) {
                 return console.log(err);
               }else{
@@ -2932,7 +3021,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
             }
         }
     }
-    json.item.sort(function(a, b){
+    json.item.sort(function sortByAlpha(a, b){
           return helpers.compareStrings_alpha(a.text, b.text);
     });
     //console.log(json.item)
@@ -2949,6 +3038,98 @@ module.exports = router;
 //
 //
 //
+router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
+  //console.log('params>>');
+  //console.log(req.params);
+  //console.log('<<params');
+  console.log('in livesearch taxonomy');
+  var q = req.params.q.toLowerCase();
+  var hint = '';
+  var obj = new_taxonomy.taxa_tree_dict_map_by_rank;
+  var taxon;
+  if(q !== ''){
+    for(var n in obj["domain"]){
+      taxon = obj["domain"][n].taxon;
+      if(taxon.toLowerCase() != 'domain_na' && taxon.toLowerCase().indexOf(q) != -1){
+        //hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
+      }
+    }
+    for(var n in obj["phylum"]){
+      taxon = obj["phylum"][n].taxon;
+      t_lower = taxon.toLowerCase();
+      if(t_lower != 'phylum_na' && t_lower.indexOf(q) != -1){
+        //hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','phylum');return false;\" >"+taxon + "</a> <small>(phylum)</small><br>";
+      }
+    }
+    for(var n in obj["klass"]){
+      taxon = obj["klass"][n].taxon;
+      t_lower = taxon.toLowerCase();
+      if(t_lower != 'klass_na' && t_lower.indexOf(q) != -1 ){
+        //hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','klass');return false;\" >"+taxon + "</a> <small>(class)</small><br>";
+      }
+    }
+    for(var n in obj["order"]){
+      taxon = obj["order"][n].taxon;
+      t_lower = taxon.toLowerCase();
+      if(t_lower != 'order_na' && t_lower.indexOf(q) != -1){
+        //hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','order');return false;\" >"+taxon + "</a> <small>(order)</small><br>";
+      }
+    }
+    for(var n in obj["family"]){
+      taxon = obj["family"][n].taxon;
+      t_lower = taxon.toLowerCase();
+      if(t_lower != 'family_na' && t_lower.indexOf(q) != -1){
+        hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','family');return false;\" >"+taxon + "</a> <small>(family)</small><br>";
+      }
+    }
+    for(var n in obj["genus"]){
+      taxon = obj["genus"][n].taxon;
+      t_lower = taxon.toLowerCase();
+      if(t_lower != 'genus_na' && t_lower.indexOf(q) != -1){
+        hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','genus');return false;\" >"+taxon + "</a> <small>(genus)</small><br>";
+      }
+    }
+    for(var n in obj["species"]){
+      taxon = obj["species"][n].taxon;
+      t_lower = taxon.toLowerCase();
+      if(t_lower != 'species_na' && t_lower.indexOf(q) != -1){
+        //hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','species');return false;\" >"+taxon + " </a> <small>(species)</small><br>";
+      }
+    }
+    
+  }
+  var result = (hint === "") ? ("No Suggestions") : (hint);
+  res.send(result);
+});
+//
+// LIVESEARCH TAX
+//
+router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req, res) {
+  console.log('oligo livesearch_taxonomy')
+  var selected_taxon = req.params.taxon;
+  var selected_rank = req.params.rank;
+  var rank_number = req.CONSTS.RANKS.indexOf(selected_rank);
+  console.log(req.params);
+  var this_item = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[selected_taxon+'_'+selected_rank];
+  var tax_str = selected_taxon;
 
+  var item = this_item;
+  
+  // goes up the tree to get taxon parents:
+  while(item.parent_id !== 0){
+    item  = new_taxonomy.taxa_tree_dict_map_by_id[item.parent_id];
+    tax_str = item.taxon +';'+tax_str;
+    //console.log(item);
+  }
+
+
+  //console.log(base_taxon);
+  
+  //res.send(tax_str);
+  this_item.full_string = tax_str;
+  console.log('sending tax_str',this_item);
+  res.json(this_item);
+  
+});
 
 

@@ -504,7 +504,6 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
 
       })
 
-
     })
     console.log(plist)
     dlist.sort()

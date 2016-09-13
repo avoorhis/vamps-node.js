@@ -879,3 +879,44 @@ if (typeof cytoscape_open_btn !== "undefined") {
       create_viz('cytoscape', pi_local.ts, true);      
   });
 }
+//
+// OLIGOTYPING
+//
+var oligotyping_link = document.getElementById('oligotyping_link_id') || null;
+var oligotyping_btn = document.getElementById('oligotyping_hide_btn');
+var oligotyping_div = document.getElementById('oligotyping_div');
+//var cytoscape_download_btn = document.getElementById('cytoscape_download_btn');
+var pre_oligotyping_div = document.getElementById('pre_oligotyping_div');
+if (oligotyping_link !== null) {
+  oligotyping_link.addEventListener('click', function () {
+      
+    if(typeof oligotyping_created == "undefined"){
+        
+        create_viz('oligotyping', pi_local.ts, false);
+        //cytoscape_download_btn.disabled = false;
+      }else{
+        if(oligotyping_btn.value == 'hide'){        
+         // toggle_visual_element(geospatial_div,'show',geospatial_btn);
+        }else{
+          toggle_visual_element(oligotyping_div,'hide',oligotyping_btn);
+        }
+      } 
+    $(pre_oligotyping_div).scrollView();     
+  });
+}
+if (typeof oligotyping_btn !== "undefined") {
+  oligotyping_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(oligotyping_btn.value == 'hide'){        
+        toggle_visual_element(oligotyping_div,'show',oligotyping_btn);
+      }else{
+        toggle_visual_element(oligotyping_div,'hide',oligotyping_btn);
+      }
+  });
+}
+var oligotyping_open_btn = document.getElementById('oligotyping_open_btn');
+if (typeof oligotyping_open_btn !== "undefined") {
+  oligotyping_open_btn.addEventListener('click', function () {
+      create_viz('oligotyping', pi_local.ts, true);      
+  });
+}

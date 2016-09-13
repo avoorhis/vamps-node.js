@@ -17,6 +17,16 @@ today     = str(datetime.date.today())
 
 
 """
+silva119 MISSING from taxcount(silva119 only) or json(silva119 or rdp2.6) files:
+ID: 416 project: DCO_ORC_Av6
+
+rdp
+ID: 284 project: KCK_NADW_Bv6
+ID: 185 project: LAZ_DET_Bv3v4
+ID: 385 project: LAZ_PPP_Bv3v5
+ID: 278 project: LAZ_SEA_Bv6v4
+ID: 213 project: LTR_PAL_Av6
+
 SELECT sum(seq_count), dataset_id, domain_id,domain
 FROM sequence_pdr_info
 JOIN sequence_uniq_info USING(sequence_id)
@@ -116,9 +126,9 @@ def go_list(args):
         #dids from big file
         counts_lookup = convert_keys_to_string(read_original_taxcounts())
         file_dids = counts_lookup.keys()
-    elif args.units == 'rdp':
+    elif args.units == 'rdp2.6':
         #dids from individual files
-        files_prefix = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets_rdp')
+        files_prefix = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets_rdp2.6')
         for file in os.listdir(files_prefix):
             if file.endswith(".json"):
                 file_dids.append(os.path.splitext(file)[0])
@@ -163,7 +173,7 @@ def go_list(args):
     for project in sort_md:
         print 'ID:',missing_metadata[project],"project:",project
     print
-    print args.units,'MISSING from taxcount(silva119 only) or json(silva119 or rdp) files:'
+    print args.units,'MISSING from taxcount(silva119 only) or json(silva119 or rdp2.6) files:'
     sort_m = sorted(missing.keys())
     for project in sort_m:
         print 'ID:',missing[project],"project:",project
@@ -178,8 +188,8 @@ def go_add(NODE_DATABASE, pid):
     counts_lookup = {}
     if args.units == 'silva119':
         prefix = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets_silva119')
-    elif args.units == 'rdp':
-        prefix = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets_rdp')
+    elif args.units == 'rdp2.6':
+        prefix = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets_rdp2.6')
     
     if not os.path.exists(prefix):
         os.makedirs(prefix)
@@ -195,7 +205,7 @@ def go_add(NODE_DATABASE, pid):
     did_sql = "','".join(dids)
     #print counts_lookup
     for q in queries:
-        if args.units == 'rdp':
+        if args.units == 'rdp2.6':
             query = q["queryA"] + query_coreA + query_core_join_rdp + q["queryB"] % (did_sql)
         elif args.units == 'silva119':
             query = q["queryA"] + query_coreA + query_core_join_silva119 + q["queryB"] % (did_sql)
@@ -457,7 +467,7 @@ if __name__ == '__main__':
         
         -json_file_path/--json_file_path   json files path [Default: ../json]
         -host/--host        vamps, vampsdev    dbhost:  [Default: localhost]
-        -units/--tax-units  silva119, or rdp   [Default:silva119]
+        -units/--tax-units  silva119, or rdp2.6   [Default:silva119]
         
     count_lookup_per_dsid[dsid][rank][taxid] = count
 
@@ -473,28 +483,28 @@ if __name__ == '__main__':
     """
     parser.add_argument("-pid","--pid",                   
                 required=False,  action="store",   dest = "pid", default='',
-                help="""ProjectID""") 
+                help="""ProjectID (used with -add) no response if -list also included""") 
         
     parser.add_argument("-add","--add",                   
                 required=False,  action="store_true",   dest = "add", default='',
-                help="""ProjectID""")
+                help="""Used to indicate adding a pid: must include -pid with ID to add""")
     parser.add_argument("-no_backup","--no_backup",                   
                 required=False,  action="store_true",   dest = "no_backup", default=False,
-                help="""no_backup""")            
+                help="""no_backup of group files: taxcounts and metadata""")            
     parser.add_argument("-list","--list",                   
                 required=False,  action="store_true",   dest = "list", default='',
-                help="""ProjectID""")
+                help="""list IDs, projects grouped for missing from taxcounts file, metadata file or individual json files""")
   
     parser.add_argument("-json_file_path", "--json_file_path",        
                 required=False,  action='store', dest = "json_file_path",  default='../../json', 
-                help="")
+                help="Not usually needed if -host is accurate")
                 # for vampsdev"  /groups/vampsweb/vampsdev_node_data/json
     parser.add_argument("-host", "--host",    
                 required=False,  action='store', choices=['vampsdb','vampsdev','localhost'], dest = "dbhost",  default='localhost',
-                help="") 
+                help="choices=['vampsdb','vampsdev','localhost']") 
     parser.add_argument("-units", "--tax_units",    
-                required=False,  action='store', choices=['silva119','rdp'], dest = "units",  default='silva119',
-                help="")                       
+                required=False,  action='store', choices=['silva119','rdp2.6'], dest = "units",  default='silva119',
+                help="Default: 'silva119'; only other choice available is 'rdp2.6'")                       
     args = parser.parse_args()
     
     print "ARGS: dbhost  =",args.dbhost
@@ -509,8 +519,8 @@ if __name__ == '__main__':
         args.NODE_DATABASE = 'vamps2'
     if args.units == 'silva119':
         args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_silva119")
-    elif args.units == 'rdp':
-         args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_rdp")
+    elif args.units == 'rdp2.6':
+         args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_rdp2.6")
     else:
         sys.exit('UNITS ERROR: '+args.units)
     if os.path.exists(args.json_file_path):
