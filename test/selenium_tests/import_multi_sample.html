@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:3000/" />
+<title>import_multi_sample</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">import_multi_sample</td></tr>
+</thead><tbody>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=username</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=password</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=input[type=&quot;submit&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Your Data</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Import Data</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//input[@type='radio'])[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=h4</td>
+	<td>Import Multi-Dataset Form: (All fields are required)</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=p.title</td>
+	<td>Import Data</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=project</td>
+	<td>chime_type_test_project</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=fasta</td>
+	<td>/Users/ashipunova/Downloads/fasta_copy.fa</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[2]/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=meta</td>
+	<td>/Users/ashipunova/Downloads/meta_copy.csv</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=button.btn.btn-default</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyNotText</td>
+	<td>//div[3]</td>
+	<td>Project Name is too long <br /> Dataset Name is required <br /> Only letters, numbers and underscores are valid in Dataset Name</td>
+</tr>
+<tr>
+	<td>verifyNotText</td>
+	<td>//div[3]</td>
+	<td>Project Name is too long <br /> Dataset Name is required <br /> Only letters, numbers and underscores are valid in Dataset Name</td>
+</tr>
+<tr>
+	<td>verifyNotText</td>
+	<td>//div[3]</td>
+	<td>Project Name is too long <br /> Dataset Name is required <br /> Only letters, numbers and underscores are valid in Dataset Name</td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
