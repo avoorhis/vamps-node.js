@@ -282,9 +282,11 @@ Applying new database schema from vamps2 (on vampsdev)
     CONSTRAINT `required_metadata_info_ibfk_1` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
   
-  Tue Aug  9 11:56:00 EDT 2016
-  alter table user_project_status
-  add unique key user_project (user_id, project_id);
+Tue Aug  9 11:56:00 EDT 2016
+alter table user_project_status
+add unique key user_project (user_id, project_id);
+  
+  
   
 --- Dir structure ---
 routes - server side logic

@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "chai": "",
-    "debug": "2.1.0",
+    "debug": "",
     "expect.js": "",
     "istanbul": "",
     "jshint": "^2.8.0",
