@@ -988,9 +988,9 @@ function gastTax(req, project_config, options, classifier_id)
   // Andy, what 2-vamps_nodejs_gast.sh suppose to do? And where is it?
   run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir  + 
     ' -s ' + project + 
-    ' -d gast -v -e fa.unique -r ' + classifier_id 
+    ' -d gast -v -e fa.unique -r ' + classifier_id + 
   // TODO: "both" - a variable!
-    + ' -f -p both -w ' + req.CONFIG.site;
+    ' -f -p both -w ' + req.CONFIG.site;
     
   //run_cmd2 = "/bioware/seqinfo/bin/gast_ill -saveuc -nodup -full -ignoregaps -in " + data_dir + "/fasta.fa.unique -db /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".fa -rtax /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".tax -out " + data_dir + "/gast/fasta_out.gast -uc " + data_dir + "/gast/fasta_out.uc -threads 0 -strand both"
 
@@ -2790,6 +2790,7 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
 
     console.log('in copy_html_to_image');
     return;
+    // Lint: "Unreachable 'var' after 'return'."
     var ts = req.body.ts;
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     var html, outfile;
