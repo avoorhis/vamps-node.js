@@ -703,31 +703,12 @@ module.exports.update_status = function(status_params) {
   } // Type::New
 };
 
-module.exports.prepareQuery = function(inserts)
-{
-  // inserts = ['users', 'id', userId];
-  var sql = "SELECT * FROM ?? WHERE ?? = ?";
-  return mysql.format(sql, inserts);  
-};
-
-module.exports.RunQuery = function(my_query)
-{
-  console.log('my_query from RunQuery: ' + my_query);
-  connection.query(my_query, function(err, rows) {
-    if(err) {
-      console.log('ERROR in query: ' + err);
-    } else {
-      console.log(util.inspect(rows, false, null));
-      return rows;
-    }
-  });
-};
-
 module.exports.fetchInfo = function (query, values, callback) {
   connection.query(query, values, function(err, rows) {
     if (err) {
       callback(err, null);
-    } else 
+    } 
+    else 
     {
       console.log('--- rows from fetchInfo ---');
       console.log(util.inspect(rows, false, null));
