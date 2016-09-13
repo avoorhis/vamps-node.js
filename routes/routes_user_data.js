@@ -285,6 +285,10 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
           });
   }
 });
+
+// router.post('/import_choices', [helpers.isLoggedIn],
+
+
 //
 // IMPORT DATA
 //
