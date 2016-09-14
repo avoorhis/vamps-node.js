@@ -288,7 +288,7 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
 
 // router.post('/import_choices/simple_fasta', [helpers.isLoggedIn],
 
-// AShipunova Aug
+// AShipunova Aug 2016
 
 router.get('/import_choices/simple_fasta', [helpers.isLoggedIn], function (req, res) {
   console.log('in import_choices/simple_fasta');
@@ -302,8 +302,6 @@ router.get('/import_choices/simple_fasta', [helpers.isLoggedIn], function (req, 
     import_type: 'simple_fasta',
   });
 });
-
-//  Message: Failed to lookup view "user_data/import_choices/simple_fasta" in views directory "/Users/ashipunova/BPC/vamps-node.js/views" 
 
 router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],
   form(
@@ -329,7 +327,7 @@ router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('u
 );
 
 
-// TODO: change, see improt choice
+// TODO: change, see improt choices
 //
 // IMPORT DATA
 //
