@@ -1941,7 +1941,8 @@ function editUploadData(req, res)
 {
   console.log("EEE editUploadData: req.form");
   console.log(util.inspect(req.form, false, null));
-  res.render('user_data/import_data', {
+  url = path.join('user_data', req.url);
+  res.render(url, {
     title:        'VAMPS:Import Data',
     message:      req.flash('successMessage'),
     failmessage:  req.flash('failMessage'),
