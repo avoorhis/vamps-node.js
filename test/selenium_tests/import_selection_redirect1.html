@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:3000/" />
+<title>import_selection_redirect1</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">import_selection_redirect1</td></tr>
+</thead><tbody>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=username</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=password</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=input[type=&quot;submit&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>user_data/add_project</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Your Data</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Import Data</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=p.title</td>
+	<td>Data Import Selection</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>link=Simple (single dataset) Fasta File</td>
+	<td>Simple (single dataset) Fasta File</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>link=Multi-Dataset Fasta File</td>
+	<td>Multi-Dataset Fasta File</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>link=VAMPS (legacy) TaxBySeq File</td>
+	<td>VAMPS (legacy) TaxBySeq File</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>link=Add Metadata to a Project -TODO</td>
+	<td>Add Metadata to a Project -TODO</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>link=Add Datasets to a Project -TODO</td>
+	<td>Add Datasets to a Project -TODO</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>link=Validate a Metadata File -TODO</td>
+	<td>Validate a Metadata File -TODO</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>link=Validate a Fasta File -TODO</td>
+	<td>Validate a Fasta File -TODO</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Simple (single dataset) Fasta File</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=project</td>
+	<td>test_gast_project</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=dset</td>
+	<td>test_gast_dataset</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=fasta</td>
+	<td>/Users/ashipunova/BPC/vamps-node.js/test/selenium_tests/fasta10.fa</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=meta</td>
+	<td>/Users/ashipunova/BPC/vamps-node.js/test/selenium_tests/ds1_meta.csv</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=button.btn.btn-default</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyNotText</td>
+	<td>//div/div[2]</td>
+	<td>exact:Script Failure: Deleting: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/test_gast_dataset-original.fnaSingle file to uniquefor file in *.fa; do fastaunique ; done</td>
+</tr>
+<tr>
+	<td>verifyNotText</td>
+	<td>//div/div[2]</td>
+	<td>exact:Script Failure: for file in *.fa; do undefined/fastaunique ; done</td>
+</tr>
+<tr>
+	<td>verifyNotText</td>
+	<td>//div/div[2]</td>
+	<td>That project name is already taken.</td>
+</tr>
+<tr>
+	<td>verifyNotText</td>
+	<td>//div/div[2]</td>
+	<td>A fasta file is required.</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=div.alert_flash_message</td>
+	<td>Upload in Progress: 'test_gast_project'</td>
+</tr>
+</tbody></table>
+</body>
+</html>

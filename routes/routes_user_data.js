@@ -286,9 +286,50 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
   }
 });
 
-// router.post('/import_choices', [helpers.isLoggedIn],
+// router.post('/import_choices/simple_fasta', [helpers.isLoggedIn],
+
+// AShipunova Aug
+
+router.get('/import_choices/simple_fasta', [helpers.isLoggedIn], function (req, res) {
+  console.log('in import_choices/simple_fasta');
+
+  res.render('user_data/import_choices/simple_fasta', {
+    title: 'Import Data',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    message: req.flash('message'),
+    failmessage: req.flash('failMessage'),
+    import_type: 'simple_fasta',
+  });
+});
+
+//  Message: Failed to lookup view "user_data/import_choices/simple_fasta" in views directory "/Users/ashipunova/BPC/vamps-node.js/views" 
+
+router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],
+  form(
+    form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
+    form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").maxLength(64).entityEncode()
+  ),
+  function (req, res)
+  {
+    console.log("QQQ1 in router.post('import_choices/simple_fasta'");
+    if (!req.form.isValid) {
+      console.log('PPP import_choices/simple_fasta !req.form.isValid: ');
+      console.log(util.inspect(req.form.errors, false, null));
+      req.flash('messages', req.form.errors);
+      editUploadData(req, res);
+      //TODO: check if the project name is in db, if not - redirect to add_project
+      return;
+    }
+    else
+    {
+      uploadData(req, res);
+    }
+  }
+);
 
 
+// TODO: change, see improt choice
 //
 // IMPORT DATA
 //
@@ -2063,30 +2104,6 @@ function uploadData(req, res)
 
   writeAndRunScript(req, res, project, options, data_repository);
 }
-
-// AShipunova Aug
-router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)],
-  form(
-    form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
-    form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").maxLength(64).entityEncode()
-  ),
-  function (req, res)
-  {
-    console.log("QQQ1 in router.post('/upload_data'");
-    if (!req.form.isValid) {
-      console.log('PPP upload_data !req.form.isValid: ');
-      console.log(util.inspect(req.form.errors, false, null));
-      req.flash('messages', req.form.errors);
-      editUploadData(req, res);
-      //TODO: check if the project name is in db, if not - redirect to add_project
-      return;
-    }
-    else
-    {
-      uploadData(req, res);
-    }
-  }
-);
 
 
 router.get('/add_project', [helpers.isLoggedIn], function (req, res) {

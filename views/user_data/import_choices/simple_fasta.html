@@ -1,0 +1,92 @@
+<% include ../../add_ins/begin.ejs %>
+
+<p class="title">Import Data</p>
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+<% if (failmessage) { %>
+	<div class="alert_flash_message"><%= failmessage %></div>
+<% } %>
+
+<% if (messages) { %>
+  <div class='alert_flash_message'>
+    <% for(var i=0; i < messages.length; i++) { %>
+      <%= messages[i] %>
+      <br>
+    <% } %>
+  </div>
+<% } %>
+<br>
+<% if (!form_data) {
+  var form_data = {}
+}%>
+
+	
+	
+<!-- ========== SIMPLE / SINGLE FASTA ============================================================================================== 
+    Todo later: raw data processing (illumina -hiseq -miseq -newseq; 454)
+    -->	
+ 
+ <a href="/user_data/import_choices" >&lt;&lt;--back</a>
+    
+  <form class="form-horizontal" role="form" method="POST" action="simple_fasta" enctype="multipart/form-data">
+    
+	<h4>Import Simple (single dataset) Form: <small>(All fields are required)</small></h4>
+  <!-- 
+<div class="form-group">
+        <label class="control-label col-sm-3" for="project">RECOMMENDED:</label>         
+        <div class="col-sm-2 btn">
+          <a href="validate_format?file_type=fasta" >Validate Fasta File</a> | <a href="validate_format?file_type=metadata" >Validate Metadata File</a>
+        </div> 
+  </div>
+ -->
+	<div class="form-group">
+      <label class="control-label col-sm-3" for="project">Project Name:</label>
+	  <div class="col-sm-3">
+        <input type="text" name="project" class="form-control" id="project" placeholder="Enter a New Project Name" value="<%=form_data.project%>">
+      </div>
+	  <a href="/help/faq#formats" target="_blank" title="formats"><span class="glyphicon glyphicon-question-sign"></span></a>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-3" for="meta">Dataset Name:</label>
+      <div class="col-sm-3">          
+        <input type="text" name="dataset" class="form-control" id="dset" placeholder="Enter a Dataset Name" value="<%=form_data.dataset%>">
+      </div>
+	  <a href="/help/faq#formats" target="_blank" title="formats"><span class="glyphicon glyphicon-question-sign"></span></a>
+    This will overwrite dataset name in metadata file
+    </div>
+	<div class="form-group">
+      <label class="control-label col-sm-3" for="fasta">Fasta File <small>(required)</small>:</label>
+      <div class="col-sm-3 btn">
+
+
+        <input type="file" name="upload_files" class="" id="fasta">
+
+
+      </div>Format: fasta (gzipped or uncompressed) 
+	       <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
+    </div>
+	<div class="form-group">
+      <label class="control-label col-sm-3" for="meta">Metadata File <small>(optional)</small>:</label>
+      <div class="col-sm-3 btn"> 
+
+
+        <input type="file" name="upload_files" class="" id="meta">
+
+
+      </div>Format: TAB-delimited csv (gzipped or uncompressed) <a href="/help/faq#formats" target="_blank" title="formats"><span class="glyphicon glyphicon-question-sign"></span></a>
+      <br><small>(<a href="/user_data/file_utils?fxn=download&template=1&filename=/public/scripts/metadata_template.csv">template of recommended metadata</a>)</small>
+    </div>
+    <div class="form-group">        
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-default">Submit</button>
+      </div>
+    </div>
+	<input type="hidden" name="type" value="<%= import_type %>">
+  </form>
+
+	
+<% include ../../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/import.js"></script>
+ </body>
+ </html>
