@@ -326,6 +326,41 @@ router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('u
   }
 );
 
+router.get('/import_choices/multi_fasta', [helpers.isLoggedIn], function (req, res) {
+  console.log('in import_choices/multi_fasta');
+
+  res.render('user_data/import_choices/multi_fasta', {
+    title: 'Import Data',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    message: req.flash('message'),
+    failmessage: req.flash('failMessage'),
+    import_type: 'multi_fasta',
+  });
+});
+
+router.post('/import_choices/multi_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],
+  form(
+    form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
+  ),
+  function (req, res)
+  {
+    console.log("QQQ12 in router.post('import_choices/multi_fasta'");
+    if (!req.form.isValid) {
+      console.log('PPP import_choices/multi_fasta !req.form.isValid: ');
+      console.log(util.inspect(req.form.errors, false, null));
+      req.flash('messages', req.form.errors);
+      editUploadData(req, res);
+      //TODO: check if the project name is in db, if not - redirect to add_project
+      return;
+    }
+    else
+    {
+      uploadData(req, res);
+    }
+  }
+);
+
 
 // TODO: change, see improt choices
 //
