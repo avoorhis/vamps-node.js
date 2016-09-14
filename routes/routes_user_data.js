@@ -290,18 +290,40 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
 
 // AShipunova Aug 2016
 
-router.get('/import_choices/simple_fasta', [helpers.isLoggedIn], function (req, res) {
-  console.log('in import_choices/simple_fasta');
+// router.get('/import_choices/simple_fasta', [helpers.isLoggedIn], function (req, res) {
+//   console.log('in import_choices/simple_fasta');
+//
+//   res.render('user_data/import_choices/simple_fasta', {
+//     title: 'Import Data',
+//     user: req.user,
+//     hostname: req.CONFIG.hostname,
+//     message: req.flash('message'),
+//     failmessage: req.flash('failMessage'),
+//     import_type: 'simple_fasta',
+//   });
+// });
 
-  res.render('user_data/import_choices/simple_fasta', {
+router.get('/import_choices/*_fasta', [helpers.isLoggedIn], function (req, res) {
+  console.log('in GET import_choices/*_fasta; req.url = ');
+  console.log(util.inspect(req.url, false, null));
+
+  // import_choices/multi_fasta
+  url         = path.join('user_data', req.url);
+  import_type = req.url.split("/").slice(-1)[0];
+  console.log('YYY import_type.slice(-1)[0] = ');
+  console.log(util.inspect(import_type, false, null));
+  
+  res.render(url, {
     title: 'Import Data',
     user: req.user,
     hostname: req.CONFIG.hostname,
     message: req.flash('message'),
     failmessage: req.flash('failMessage'),
-    import_type: 'simple_fasta',
+    import_type: import_type,
   });
 });
+
+
 
 router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],
   form(
@@ -326,19 +348,19 @@ router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('u
   }
 );
 
-router.get('/import_choices/multi_fasta', [helpers.isLoggedIn], function (req, res) {
-  console.log('in import_choices/multi_fasta');
-
-  res.render('user_data/import_choices/multi_fasta', {
-    title: 'Import Data',
-    user: req.user,
-    hostname: req.CONFIG.hostname,
-    message: req.flash('message'),
-    failmessage: req.flash('failMessage'),
-    import_type: 'multi_fasta',
-  });
-});
-
+// router.get('/import_choices/multi_fasta', [helpers.isLoggedIn], function (req, res) {
+//   console.log('in import_choices/multi_fasta');
+//
+//   res.render('user_data/import_choices/multi_fasta', {
+//     title: 'Import Data',
+//     user: req.user,
+//     hostname: req.CONFIG.hostname,
+//     message: req.flash('message'),
+//     failmessage: req.flash('failMessage'),
+//     import_type: 'multi_fasta',
+//   });
+// });
+//
 router.post('/import_choices/multi_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],
   form(
     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
