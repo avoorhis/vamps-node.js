@@ -1637,7 +1637,7 @@ function ProjectNameExists(project, req, res)
 
   if (project in PROJECT_INFORMATION_BY_PNAME) {
       req.flash('failMessage', 'That project name is already taken.');
-      res.redirect("/user_data/import_data?import_type=" + req.body.type);
+      res.redirect(path.join("/user_data", req.url));
       console.log('This project name is already taken');
       return true;
   }
@@ -1651,8 +1651,8 @@ function ProjectNameExists(project, req, res)
 function FastaProvided(req, res)
 {
   if (req.files[0].filename === undefined || req.files[0].size === 0) {
-    req.flash('failMessage', 'A fasta file is required.');
-    res.redirect("/user_data/import_data?import_type=" + req.body.type);
+    req.flash('failMessage', 'A fasta file is required. Check if it exists.');
+    res.redirect(path.join("/user_data", req.url));
     return false;
   }
   else
@@ -1671,22 +1671,27 @@ function ResFilePathExists(req, data_repository, res)
     {
       req.flash('failMessage', 'There is no such file: ' + data_repository);
       console.log("AAA data_repository: " + data_repository);
-      res.redirect("/user_data/import_data?import_type=" + req.body.type);
+      res.redirect(path.join("/user_data", req.url));
       return false;
     }
 }
 
 function MetadataFileProvided(req, res)
 {
+  console.log("DDD1 in MetadataFileProvided; req.url = ");
+  console.log(util.inspect(req.url, false, null));
+  
   if (req.files[1].filename === undefined || req.files[1].size === 0) {
-    req.flash('failMessage', 'A metadata csv file is required.');
-    res.redirect("/user_data/import_data");
-      return false;
-    }
-    else
-    {
-      return true;
-    }
+    console.log("DDD2 in MetadataFileProvided, filename === undefined");
+    req.flash('failMessage', 'A metadata csv file is required. Check if it exists.');
+    res.redirect(req.url);
+    return false;
+  }
+  else
+  {
+    // console.log("DDD3 in MetadataFileProvided ok, req.files[1] = " + req.files[1]);
+    return true;
+  }
 }
 
 function ProjectExistsInDB(project, req, res)
