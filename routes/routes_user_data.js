@@ -354,42 +354,42 @@ router.post('/import_choices/multi_fasta', [helpers.isLoggedIn, upload.array('up
 );
 
 // ---
-router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], function (req, res) {
-  url         = path.join('user_data', req.url);
-  import_type = req.url.split("/").slice(-1)[0];
-  //'/import_choices/multi_fasta', 'multi_fasta'
-  
-  res.render(url, {
-    title:       'Import Data',
-    user:        req.user,
-    hostname:    req.CONFIG.hostname,
-    message:     req.flash('message'),
-    failmessage: req.flash('failMessage'),
-    import_type: import_type,
-  });
-});
-
-router.post('/import_choices/tax_by_seq', [helpers.isLoggedIn, upload.array('upload_files', 12)],
-  form(
-    form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
-  ),
-  function (req, res)
-  {
-    console.log("QQQ12 in router.post('import_choices/tax_by_seq'");
-    if (!req.form.isValid) {
-      console.log('PPP import_choices/multi_fasta !req.form.isValid: ');
-      console.log(util.inspect(req.form.errors, false, null));
-      req.flash('messages', req.form.errors);
-      editUploadData(req, res);
-      //TODO: check if the project name is in db, if not - redirect to add_project
-      return;
-    }
-    else
-    {
-      uploadData(req, res);
-    }
-  }
-);
+// router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], function (req, res) {
+//   url         = path.join('user_data', req.url);
+//   import_type = req.url.split("/").slice(-1)[0];
+//   //'/import_choices/multi_fasta', 'multi_fasta'
+//
+//   res.render(url, {
+//     title:       'Import Data',
+//     user:        req.user,
+//     hostname:    req.CONFIG.hostname,
+//     message:     req.flash('message'),
+//     failmessage: req.flash('failMessage'),
+//     import_type: import_type,
+//   });
+// });
+//
+// router.post('/import_choices/tax_by_seq', [helpers.isLoggedIn, upload.array('upload_files', 12)],
+//   form(
+//     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
+//   ),
+//   function (req, res)
+//   {
+//     console.log("QQQ12 in router.post('import_choices/tax_by_seq'");
+//     if (!req.form.isValid) {
+//       console.log('PPP import_choices/multi_fasta !req.form.isValid: ');
+//       console.log(util.inspect(req.form.errors, false, null));
+//       req.flash('messages', req.form.errors);
+//       editUploadData(req, res);
+//       //TODO: check if the project name is in db, if not - redirect to add_project
+//       return;
+//     }
+//     else
+//     {
+//       uploadData(req, res);
+//     }
+//   }
+// );
 
 
 // TODO: change, see improt choices
@@ -1863,13 +1863,13 @@ function OriginalMetafileUpload(req, options)
 function CheckFileTypeInfo(req, options)
 {
   console.log("QQQ4 in CheckFileTypeInfo");
-  console.log("QQQ444 req.url: " + req.url);
+  // console.log("QQQ444 req.url: " + req.url);
 
-  
+  var redirect_url = path.join('/user_data', req.url);
   if (req.body.type == 'simple_fasta') {
       if (req.body.dataset === '' || req.body.dataset === undefined) {
         req.flash('failMessage', 'A dataset name is required.');
-        res.redirect("/user_data/import_data");
+        res.redirect(redirect_url);
         return;
       }
       options.args = options.args.concat(['-upload_type', 'single', '-d', req.body.dataset ]);
@@ -1877,7 +1877,7 @@ function CheckFileTypeInfo(req, options)
         options.args = options.args.concat(['-upload_type', 'multi' ]);
     } else {
         req.flash('failMessage', 'No file type info found');
-        res.redirect("/user_data/import_data");
+        res.redirect(redirect_url);
         return;
     }
     return options;
@@ -2324,13 +2324,30 @@ router.post('/add_project',
 //
 // UPLOAD DATA TAX-BY-SEQ
 //
-router.post('/upload_data_tax_by_seq', [helpers.isLoggedIn, upload.array('upload_files', 12)], function (req, res) {
+router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], function (req, res) {
+  url         = path.join('user_data', req.url);
+  import_type = req.url.split("/").slice(-1)[0];
+  //'/import_choices/multi_fasta', 'multi_fasta'
+
+  res.render(url, {
+    title:       'Import Data',
+    user:        req.user,
+    hostname:    req.CONFIG.hostname,
+    message:     req.flash('message'),
+    failmessage: req.flash('failMessage'),
+    import_type: import_type,
+  });
+});
+
+router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, upload.array('upload_files', 12)], function (req, res) {
 
   console.log('upload_data_tax_by_seq');
+  console.log("PLPLPLPL req.url = " + req.url);
   var project = req.body.project || '';
   var use_original_names = req.body.use_original_names || 'off';
   var username = req.user.username;
   var use_file_taxonomy = req.body.use_tax_from_file;
+  var redirect_url = path.join('/user_data', req.url);
 
   //var p = progress()
   //req.pipe(p)
@@ -2361,6 +2378,7 @@ router.post('/upload_data_tax_by_seq', [helpers.isLoggedIn, upload.array('upload
   //console.log(PROJECT_INFORMATION_BY_PNAME);
   if (req.files.length === 0 ) {
     req.flash('failMessage', 'Make sure you are choosing a file to upload and that it is smaller than '+ req.CONFIG.UPLOAD_FILE_SIZE+' bytes');
+    
     res.redirect("/user_data/import_data");
     return;
   }
