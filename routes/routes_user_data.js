@@ -428,8 +428,10 @@ router.get('/import_data', helpers.isLoggedIn, function (req, res) {
 
             }
           }
+          //'/import_choices/upload_data_tax_by_seq'
+          var render_url = path.join("user_data", req.url);
 
-          res.render('user_data/import_data', {
+          res.render(render_url, {
             title: 'VAMPS:Import Data',
             message: req.flash('successMessage'),
             failmessage: req.flash('failMessage'),
@@ -1736,12 +1738,13 @@ function ProjectExistsInDB(project, req, res)
 {
   console.log("running ProjectExistsInDB");
   var project_id;
+  var redirect_url = path.join('/user_data', req.url);
 
   helpers.fetchInfo('SELECT project_id FROM project WHERE project = ?', project, function(err, content) {
       if (err) {
           console.log(err);
           req.flash('failMessage', 'There is no such project, please create one.');
-          res.redirect("/user_data/import_data");
+          res.redirect(redirect_url);
           return false;
       } else {
         try 
@@ -1751,9 +1754,9 @@ function ProjectExistsInDB(project, req, res)
           return true;  
         }
         catch(err) {
-          console.log("UUU req:");
+          // console.log("UUU req:");
           // console.log(util.inspect(req, false, null));
-          console.log(util.inspect(req.files[1], false, null));
+          // console.log(util.inspect(req.files[1], false, null));
           // req.files[0].originalname : 'multi_fasta.fa_not_there',
           // req.files[1].originalname : 'multi_meta.csv_not_there',
           
@@ -2376,34 +2379,37 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
   console.log('2req.body upload_data_tax_by_seq');
   //console.log(project);
   //console.log(PROJECT_INFORMATION_BY_PNAME);
+  
+  var render_url = path.join("/user_data", req.url);
+  
   if (req.files.length === 0 ) {
     req.flash('failMessage', 'Make sure you are choosing a file to upload and that it is smaller than '+ req.CONFIG.UPLOAD_FILE_SIZE+' bytes');
-    
-    res.redirect("/user_data/import_data");
+
+    res.redirect(render_url);
     return;
   }
 
   if (req.files[0] && req.files[0].size > config.UPLOAD_FILE_SIZE.bytes) {  // 1155240026
     req.flash('failMessage', 'The file '+req.files[0].originalname+' exceeds the limit of '+config.UPLOAD_FILE_SIZE.MB);
-    res.redirect("/user_data/import_data");
+    res.redirect(render_url);
     return;
   }
   if (req.files[1] && req.files[1].size > config.UPLOAD_FILE_SIZE.bytes) {
     req.flash('failMessage', 'The file '+req.files[1].originalname+' exceeds the limit of '+config.UPLOAD_FILE_SIZE.MB);
-    res.redirect("/user_data/import_data");
+    res.redirect(render_url);
     return;
   }
   if ((project === '' || req.body.project === undefined) && req.body.use_original_names != 'on') {
     req.flash('failMessage', 'A project name is required.');
-    res.redirect("/user_data/import_data");
+    res.redirect(render_url);
     return;
   } else if (project in PROJECT_INFORMATION_BY_PNAME) {
     req.flash('failMessage', 'That project name is already taken.');
-    res.redirect("/user_data/import_data");
+    res.redirect(render_url);
     return;
   } else if (req.files[0].filename === undefined || req.files[0].size === 0) {
     req.flash('failMessage', 'A tax_by_seq file is required.');
-    res.redirect("/user_data/import_data");
+    res.redirect(render_url);
     return;
   } else {
 
@@ -2482,7 +2488,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
           options.args = options.args.concat(['-p', project]);
       } else {
           req.flash('failMessage', 'No file type info found:  ');
-          res.redirect("/user_data/import_data");
+          res.redirect(render_url);
           return;
       }
 
