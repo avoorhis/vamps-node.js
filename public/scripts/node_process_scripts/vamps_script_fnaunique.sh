@@ -15,6 +15,8 @@ echo "$PATH\n"
 echo "for file in $2/*.fa; do fastaunique $file; done\n"
 for file in $2/*.fa; do fastaunique $file; done
 
+echo "for file in $2/*.fna; do fastaunique $file; done\n"
+for file in $2/*.fna; do fastaunique $file; done
 
 #grendel
 #curr_path=`pwd`
