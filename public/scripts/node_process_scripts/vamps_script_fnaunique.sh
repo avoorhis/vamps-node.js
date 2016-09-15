@@ -12,11 +12,26 @@ echo "PPPATH\n"
 
 echo "$PATH\n"
 
-echo "for file in $2/*.fa; do fastaunique $file; done\n"
-for file in $2/*.fa; do fastaunique $file; done
+echo "cd $2"
+cd $2
 
-echo "for file in $2/*.fna; do fastaunique $file; done\n"
-for file in $2/*.fna; do fastaunique $file; done
+file_ext=".fa"
+if [ -f *".fa" ] 
+then 
+  echo "$file_ext found."
+  echo "for file in *.fa; do fastaunique $file; done\n"
+  for file in *.fa; do fastaunique $file; done
+else echo "$file_ext not found."
+fi
+
+file_ext=".fna"
+if [ -f *".fna" ] 
+then 
+  echo "$file_ext found."
+  echo "for file in *.fna; do fastaunique $file; done\n"
+  for file in *.fna; do fastaunique $file; done
+else echo "$file_ext not found."
+fi
 
 #grendel
 #curr_path=`pwd`
