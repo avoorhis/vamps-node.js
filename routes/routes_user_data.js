@@ -1,6 +1,8 @@
 /*jslint node: true */
 // "use strict" ;
 
+// Andy, when http://localhost:3000/user_data/your_projects is updated? Shows old projects.
+
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
@@ -26,6 +28,7 @@ var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_S
 
 var Readable = require('readable-stream').Readable;
 var COMMON = require('./visuals/routes_common');
+var infile_fa = "infile.fna";
 // router.use(multer({ dest: 'tmp',
 // rename: function (fieldname, filename) {
 // return filename+Date.now();
@@ -735,7 +738,7 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn, function (req, res
         config_info.project = project+'_dupe';
         config_info.baseoutputdir = new_data_dir;
         config_info.configPath = path.join(new_data_dir, 'config.ini');
-        config_info.fasta_file = path.join(new_data_dir, 'infile.fna');
+        config_info.fasta_file = path.join(new_data_dir, infile_fa);
         config_info.datasets = [];
         for (var ds in project_info.config.DATASETS) {
           config_info.datasets.push({ "dsname":ds, "count":project_info.config.DATASETS[ds], "oldname":ds });
@@ -1426,7 +1429,7 @@ router.post('/edit_project', helpers.isLoggedIn, function (req, res) {
     project_info.config.GENERAL.project=new_project_name;
     new_base_dir = path.join(user_projects_base_dir, 'project-'+new_project_name);
     new_config_file = path.join(new_base_dir, 'config.ini');
-    new_fasta_file = path.join(new_base_dir, 'infile.fna');
+    new_fasta_file = path.join(new_base_dir, infile_fa);
     config_info.baseoutputdir = new_base_dir;
     config_info.configPath = new_config_file;
     config_info.fasta_file = new_fasta_file;
@@ -1678,13 +1681,10 @@ function ResFilePathExists(req, data_repository, res)
 
 function MetadataFileProvided(req, res)
 {
-  console.log("DDD1 in MetadataFileProvided; req.url = ");
-  console.log(util.inspect(req.url, false, null));
-  
   if (req.files[1].filename === undefined || req.files[1].size === 0) {
     console.log("DDD2 in MetadataFileProvided, filename === undefined");
     req.flash('failMessage', 'A metadata csv file is required. Check if it exists.');
-    res.redirect(req.url);
+    res.redirect(path.join("/user_data", req.url));
     return false;
   }
   else
@@ -1706,11 +1706,41 @@ function ProjectExistsInDB(project, req, res)
           res.redirect("/user_data/import_data");
           return false;
       } else {
-        console.log("content");
-        console.log(util.inspect(content, false, null));
-        project_id = content.project_id;
-        console.log(project_id);
-        return true;
+        try 
+        {
+          project_id = content.project_id;
+          console.log(project_id);
+          return true;  
+        }
+        catch(err) {
+          console.log("UUU req:");
+          // console.log(util.inspect(req, false, null));
+          console.log(util.inspect(req.files[1], false, null));
+          // req.files[0].originalname : 'multi_fasta.fa_not_there',
+          // req.files[1].originalname : 'multi_meta.csv_not_there',
+          
+          
+          // form: { project: 'imp_pr_not_exists' } }
+          // sessions: { 'xsGCrMgBubq7CflN_t8Lnr9eSWXRg-ZH': '{"cookie":{"originalMaxAge":null,"expires":null,"httpOnly":true,"path":"/"},"flash":{"failMessage":["A fasta file is required. Check if it exists."]},"passport":{"user":4}}' },
+          //No such project: TypeError: Cannot read property 'project_id' of undefined; Please add a new project here: LINK to add_project
+          console.log("EEEUUU editUploadData: req.form");
+          console.log(util.inspect(req.form, false, null));
+          req.form.errors.pr_not_exists = 'No such project';
+          console.log("EEEUUU1 editUploadData: req.form.errors");
+          console.log(util.inspect(req.form.errors, false, null));
+          // [ pr_not_exists: 'No such project' ]
+           
+          console.log('No such project: ' + err + '; Please add a new project here: LINK to add_project');
+          req.flash('failMessage', 'There is no such project, please create one.');
+          // res.redirect("/user_data/your_data");
+          return false;
+        }
+        
+        // console.log("content");
+        // console.log(util.inspect(content, false, null));
+        // project_id = content.project_id;
+        // console.log(project_id);
+        // return true;
       }
   });
 }
@@ -1865,7 +1895,7 @@ function CreateCmdList(req, options, data_repository)
   var cmd_list = [load_cmd];
 
   if (req.body.type == 'multi_fasta') {
-      var new_fasta_file_name = 'infile.fna';
+      var new_fasta_file_name = infile_fa;
       var demultiplex_cmd = options.scriptPath + 'vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
       cmd_list.push(demultiplex_cmd);
   }
@@ -1947,6 +1977,7 @@ function editUploadData(req, res)
   console.log("EEE editUploadData: req.form");
   console.log(util.inspect(req.form, false, null));
   url = path.join('user_data', req.url);
+  
   res.render(url, {
     title:        'VAMPS:Import Data',
     message:      req.flash('successMessage'),
@@ -1980,8 +2011,16 @@ function successCode(successCode_options, last_line)
   // ();
 }
 
-// TODO: how to test?
-function failedCode(req, res, data_repository, project)
+// TODO: how to test:
+// use multi_fasta
+// EEE line: for file in /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-imp_pr_not_exists/*.fa; do fastaunique ; done\n
+// EEE line: Error: File does not exist, or you do not have the right permissions to read it: "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-imp_pr_not_exists/*.fa"
+// run_process process exited with code 255
+// last_line: for file in /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-imp_pr_not_exists/*.fa; do fastaunique ; done\nError: File does not exist, or you do not have the right permissions to read it: "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-imp_pr_not_exists/*.fa"
+// has .fna instead!
+// or call unexisting script
+
+function failedCode(req, res, data_repository, project, last_line)
 {
  fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-' + project),
   function failureHandle(err) {
@@ -1994,8 +2033,8 @@ function failedCode(req, res, data_repository, project)
                         'status':  'Script Failure',
                         'msg':     'Script Failure'
        };
-           //helpers.update_status(status_params);
-       res.redirect("/user_data/import_data?import_type=" + req.body.type);  // for now we'll send errors to the browser
+       var redirect_url = path.join('/user_data', req.url)
+       res.redirect(redirect_url);  // for now we'll send errors to the browser
        return;
    }
  });
@@ -2046,7 +2085,7 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
      }
      else // code != 0
      {
-       failedCode(req, res, data_repository, project);
+       failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
      }
   });
 }
@@ -2782,7 +2821,6 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function (req, res)
     //var timestamp = +new Date();  // millisecs since the epoch!
 
      var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-    //var user_dir = path.join('user_data', NODE_DATABASE, req.user.username);
     helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
     helpers.mkdirSync(user_dir);  // create dir if not exists
 

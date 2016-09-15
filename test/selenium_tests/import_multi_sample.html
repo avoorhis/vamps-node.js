@@ -109,7 +109,7 @@
 <tr>
 	<td>type</td>
 	<td>id=project</td>
-	<td>test_gast_project</td>
+	<td>test_gast_pr_multi</td>
 </tr>
 <tr>
 	<td>type</td>
@@ -154,12 +154,22 @@
 <tr>
 	<td>verifyText</td>
 	<td>css=div.alert_flash_message</td>
-	<td>Upload in Progress: 'test_gast_project'</td>
+	<td>Upload in Progress: 'test_gast_pr_multi'</td>
 </tr>
 <tr>
 	<td>verifyNotText</td>
 	<td>//div[3]</td>
 	<td>Project Name is too long</td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyNotText</td>
+	<td>//div/div[2]</td>
+	<td>exact:Script Failure: for file in /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_pr_multi/*.fa; do fastaunique ; done\nError: File does not exist, or you do not have the right permissions to read it: &quot;/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_pr_multi/*.fa&quot;</td>
 </tr>
 </tbody></table>
 </body>
