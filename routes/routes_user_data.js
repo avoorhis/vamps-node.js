@@ -353,6 +353,44 @@ router.post('/import_choices/multi_fasta', [helpers.isLoggedIn, upload.array('up
   }
 );
 
+// ---
+router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], function (req, res) {
+  url         = path.join('user_data', req.url);
+  import_type = req.url.split("/").slice(-1)[0];
+  //'/import_choices/multi_fasta', 'multi_fasta'
+  
+  res.render(url, {
+    title:       'Import Data',
+    user:        req.user,
+    hostname:    req.CONFIG.hostname,
+    message:     req.flash('message'),
+    failmessage: req.flash('failMessage'),
+    import_type: import_type,
+  });
+});
+
+router.post('/import_choices/tax_by_seq', [helpers.isLoggedIn, upload.array('upload_files', 12)],
+  form(
+    form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
+  ),
+  function (req, res)
+  {
+    console.log("QQQ12 in router.post('import_choices/tax_by_seq'");
+    if (!req.form.isValid) {
+      console.log('PPP import_choices/multi_fasta !req.form.isValid: ');
+      console.log(util.inspect(req.form.errors, false, null));
+      req.flash('messages', req.form.errors);
+      editUploadData(req, res);
+      //TODO: check if the project name is in db, if not - redirect to add_project
+      return;
+    }
+    else
+    {
+      uploadData(req, res);
+    }
+  }
+);
+
 
 // TODO: change, see improt choices
 //
@@ -1723,10 +1761,10 @@ function ProjectExistsInDB(project, req, res)
           // form: { project: 'imp_pr_not_exists' } }
           // sessions: { 'xsGCrMgBubq7CflN_t8Lnr9eSWXRg-ZH': '{"cookie":{"originalMaxAge":null,"expires":null,"httpOnly":true,"path":"/"},"flash":{"failMessage":["A fasta file is required. Check if it exists."]},"passport":{"user":4}}' },
           //No such project: TypeError: Cannot read property 'project_id' of undefined; Please add a new project here: LINK to add_project
-          console.log("EEEUUU editUploadData: req.form");
+          console.log("EEEUUU ProjectExistsInDB: req.form");
           console.log(util.inspect(req.form, false, null));
           req.form.errors.pr_not_exists = 'No such project';
-          console.log("EEEUUU1 editUploadData: req.form.errors");
+          console.log("EEEUUU1 ProjectExistsInDB: req.form.errors");
           console.log(util.inspect(req.form.errors, false, null));
           // [ pr_not_exists: 'No such project' ]
            
@@ -1825,7 +1863,9 @@ function OriginalMetafileUpload(req, options)
 function CheckFileTypeInfo(req, options)
 {
   console.log("QQQ4 in CheckFileTypeInfo");
+  console.log("QQQ444 req.url: " + req.url);
 
+  
   if (req.body.type == 'simple_fasta') {
       if (req.body.dataset === '' || req.body.dataset === undefined) {
         req.flash('failMessage', 'A dataset name is required.');
@@ -1900,6 +1940,7 @@ function CreateCmdList(req, options, data_repository)
       cmd_list.push(demultiplex_cmd);
   }
 
+  // todo: provied ".fa" fo single and ".fna" for multi
   var fnaunique_cmd = options.scriptPath + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
   console.log("LLL1 options.scriptPath: " + options.scriptPath);
   console.log("LLL fnaunique_cmd: " + fnaunique_cmd);
