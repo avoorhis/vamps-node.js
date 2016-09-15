@@ -328,8 +328,16 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
                   + ", NOW()"
                   + " FROM user_project_status RIGHT JOIN project using(project_id)"
                   + " WHERE project = " + connection.escape(status_params.project)
+                  + " ON DUPLICATE KEY UPDATE"
+                  + " status   = " + connection.escape(status_params.status)
+                  + ", message = "  + connection.escape(status_params.msg)
+                  + ", updated_at = NOW()"
+                  + ";"
     return statQuery1;
   },
+
+  // todo: combine update with insert
+  //statQuery1: INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at) SELECT 4, project_id, 'OK', 'Upload Started', NOW() FROM user_project_status RIGHT JOIN project using(project_id) WHERE project = 'test_gast_project' ON DUPLICATE KEY UPDATE status   = 'OK', message = 'Upload Started', updated_at = NOW();
 
   MakeUpdateStatusQ: function(status_params)
   {
