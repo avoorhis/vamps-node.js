@@ -2077,7 +2077,7 @@ function failedCode(req, res, data_repository, project, last_line)
                         'status':  'Script Failure',
                         'msg':     'Script Failure'
        };
-       var redirect_url = path.join('/user_data', req.url)
+       var redirect_url = path.join('/user_data', req.url);
        res.redirect(redirect_url);  // for now we'll send errors to the browser
        return;
    }
