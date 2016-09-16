@@ -1764,11 +1764,11 @@ function ProjectExistsInDB(project, req, res)
           // form: { project: 'imp_pr_not_exists' } }
           // sessions: { 'xsGCrMgBubq7CflN_t8Lnr9eSWXRg-ZH': '{"cookie":{"originalMaxAge":null,"expires":null,"httpOnly":true,"path":"/"},"flash":{"failMessage":["A fasta file is required. Check if it exists."]},"passport":{"user":4}}' },
           //No such project: TypeError: Cannot read property 'project_id' of undefined; Please add a new project here: LINK to add_project
-          console.log("EEEUUU ProjectExistsInDB: req.form");
-          console.log(util.inspect(req.form, false, null));
+          // console.log("EEEUUU ProjectExistsInDB: req.form");
+          // console.log(util.inspect(req.form, false, null));
           req.form.errors.pr_not_exists = 'No such project: ' + project;
-          console.log("EEEUUU1 ProjectExistsInDB: req.form.errors");
-          console.log(util.inspect(req.form.errors, false, null));
+          // console.log("EEEUUU1 ProjectExistsInDB: req.form.errors");
+          // console.log(util.inspect(req.form.errors, false, null));
           // [ pr_not_exists: 'No such project' ]
            
           console.log('Redirect err from ProjectExistsInDB. No such project: ' + project + ". " + err + '; Please add a new project at /user_data/add_project');
