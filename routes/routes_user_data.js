@@ -1023,18 +1023,19 @@ function gastTax(req, project_config, options, classifier_id)
   var project  = project_config.GENERAL.project;
   var data_dir = project_config.GENERAL.baseoutputdir;
 
-  project_init = options.scriptPath + 
-    'project_initialization.py -site ' + req.CONFIG.site + 
-    ' -indir ' + data_dir + 
-    ' -p '     + project  + 
-    ' -uid '   + req.user.user_id;
+  // project_init = options.scriptPath +
+  //   'project_initialization.py -site ' + req.CONFIG.site +
+  //   ' -indir ' + data_dir +
+  //   ' -p '     + project  +
+  //   ' -uid '   + req.user.user_id;
 
-  console.log('GGG1: gastTax: project_init ');
-  console.log(util.inspect(project_init, false, null));
-  
+  // console.log('GGG1: gastTax: project_init ');
+  // console.log(util.inspect(project_init, false, null));
+  //
   makeGastShellScript(data_dir);
 
-  run_gast_cmd = "echo 'Hurray! I've sent a message!'";
+  run_gast_cmd = "echo \"Hurray! I've sent a row to the shell script!\"";
+  run_gast_cmd += "\n";
   
   
   // run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir  +
@@ -1049,6 +1050,7 @@ function gastTax(req, project_config, options, classifier_id)
 
   //run_cmd = options.scriptPath + 'vamps_script_gast_run.py ' + options.gast_run_args.join(' '),
   script_name = 'gast_script.sh';
+  
   status_params.statusOK      = 'OK-GAST';
   status_params.statusSUCCESS = 'GAST-SUCCESS';
   status_params.msgOK         = 'Finished GAST';
@@ -1060,13 +1062,8 @@ function gastTax(req, project_config, options, classifier_id)
   // 34  4  4  GAST-SUCCESS  GAST -Tax assignments  2016-09-02 12:26:21  2016-09-02 12:31:12
   cmd_list = [
       //unique_cmd,
-      project_init,
+      // project_init,
       run_gast_cmd
-
-    //options.scriptPath + 'vamps_script_database_loader.py ' + options.database_loader_args.join(' '),
-    //  "pid=$(head -n 1 " + data_dir + "/pid.txt)", // pid is in a file pid.txt written by database loader
-    //options.scriptPath + 'vamps_script_load_metadata.py ' + options.upload_metadata_args.join(' '),
-    //options.scriptPath + 'vamps_script_create_json_dataset_files.py ' + options.create_json_args.join(' ')
   ];
   
   console.log('GGG2: gastTax: cmd_list ');
