@@ -677,7 +677,7 @@ module.exports.update_status = function(status_params) {
       }
     });
   } else if(status_params.type == 'update') {
-    statQuery2 = queries.MakeUpdateStatusQ(status_params);
+    statQuery2 = queries.MakeInsertStatusQ(status_params);
     console.log('statQuery2: ' + statQuery2);
     connection.query(statQuery2, function(err, rows) {
       if(err) {
