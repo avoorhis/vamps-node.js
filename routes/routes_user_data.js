@@ -869,7 +869,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 
   if (classifier.toUpperCase() == 'GAST')
   {
-    gastTax(req, project_config, options, classifier_id);
+    cmd_list = gastTax(req, project_config, options, classifier_id);
   }
   else if (classifier.toUpperCase() == 'RDP' )
   {
@@ -920,6 +920,9 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   var nodelog         = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
   var ok_code_options = [classifier, status_params, res];
 
+  console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options =  ');
+  // console.log(util.inspect(ok_code_options, false, null));
+  
   fs.writeFile(script_path, script_text, mkScriptExecutableAndRun(script_path, req, project, res, nodelog, checkPid, ok_code_options));
 
   status_params.status = status_params.statusSUCCESS;
@@ -934,6 +937,9 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 
 function mkScriptExecutableAndRun(script_path, req, project, res, nodelog, ok_code_functions, ok_code_options)
 {
+  console.log('XXX1 mkScriptExecutableAndRun, ok_code_options =  ');
+  // console.log(util.inspect(ok_code_options, false, null));
+  
   // if (err) return console.log(err);
   var exec = require('child_process').exec;
   // Make script executable
@@ -1014,21 +1020,9 @@ function checkPid(check_pid_options, last_line)
 
 function gastTax(req, project_config, options, classifier_id)
 {
-  // console.log("project from project_config FFF:");
-  // console.log(project_config);
-
   var project  = project_config.GENERAL.project;
   var data_dir = project_config.GENERAL.baseoutputdir;
-  // if (project_config.GENERAL.fasta_type == 'multi')
-  // {
-  //   //unique_cmd = options.scriptPath + '1-demultiplex_fna.sh ' + data_dir + ' infile.fna'
-  // }
-  // else
-  // {
-  //   var single_dataset_name = Object.keys(project_config.DATASETS)[0];
-  // //unique_cmd = options.scriptPath + '1-single_fna.sh ' + data_dir + ' infile.fna ' + single_dataset_name
-  // }
-  // try: check project name and enter empty project (just to create pid)
+
   project_init = options.scriptPath + 
     'project_initialization.py -site ' + req.CONFIG.site + 
     ' -indir ' + data_dir + 
@@ -1038,73 +1032,17 @@ function gastTax(req, project_config, options, classifier_id)
   console.log('GGG1: gastTax: project_init ');
   console.log(util.inspect(project_init, false, null));
   
-  // // TODO: separate metadata upload from gast!
-  // // metadata must go in after the projects and datasets:
-  // // Should go into db after we have project and datasets in the db
-  // // Should go in as entire project (w all datasets) -- not dataset by dataset
-  // // PROBLEM: Here we dont have datasets yet in db
-  // // Andy, Where is metadata_loader.py???
-  // metadata_cmd = options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site +
-  //   ' -indir ' + data_dir +
-  //   ' -p '     + project;
+  makeGastShellScript(data_dir);
 
-  // TODO: see /bioware/seqinfo/bin/run_gast_ill_nonchim_sge.sh
-    // and create a gast script from here
-// === gastfile
-//     get options and write, then execute:
-// mkdir $gast_dir
-// ls $NAME_PAT >$gast_dir/filenames.list
-//
-// cd $gast_dir
-//
-// FILE_NUMBER=`wc -l < filenames.list`
-// echo "total files = $FILE_NUMBER"
-//
-// cat >clust_gast_ill_$RUN_LANE.sh <<InputComesFromHERE
-// #!/bin/bash
-// #$ -cwd
-// #$ -S /bin/bash
-// #$ -N clust_gast_ill_$RUN_LANE.sh
-// # Giving the name of the output log file
-// #$ -o clust_gast_ill_$RUN_LANE.sh.sge_script.sh.log
-// # Combining output/error messages into one file
-// #$ -j y
-// # Send mail to these users
-// #$ -M ashipunova@mbl.edu
-// # Send mail; -m as sends on abort, suspend.
-// #$ -m as
-// #$ -t 1-$FILE_NUMBER
-// # Now the script will iterate $FILE_NUMBER times.
-//
-//   . /xraid/bioware/Modules/etc/profile.modules
-//   module load bioware
-//
-//   LISTFILE=./filenames.list
-//   INFILE=\`sed -n "\${SGE_TASK_ID}p" \$LISTFILE\`
-//   echo "====="
-//   echo "file name is \$INFILE"
-//   echo
-//
-//   echo "/bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in $DIRECTORY_NAME/\$INFILE -db $gast_db_path/$REF_DB_NAME.fa -rtax $gast_db_path/$REF_DB_NAME.tax -out $DIRECTORY_NAME/$gast_dir/\$INFILE.gast -uc $DIRECTORY_NAME/$gast_dir/\$INFILE.uc -threads $threads"
-//
-//   /bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in $DIRECTORY_NAME/\$INFILE -db $gast_db_path/$REF_DB_NAME.fa -rtax $gast_db_path/$REF_DB_NAME.tax -out $DIRECTORY_NAME/$gast_dir/\$INFILE.gast -uc $DIRECTORY_NAME/$gast_dir/\$INFILE.uc -threads $threads
-//
-//   chmod 666 clust_gast_ill_$RUN_LANE.sh.sge_script.sh.log
-//
-// InputComesFromHERE
-//
-// echo "Running clust_gast_ill_$RUN_LANE.sh"
-// qsub clust_gast_ill_$RUN_LANE.sh
-    // === gastfile
-
-  // Command is split to run once for each dataset on the cluster:
-  //vamps_script_gast_run.py
-  run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir  + 
-    ' -s ' + project + 
-    ' -d gast -v -e fa.unique -r ' + classifier_id + 
-  // TODO: "both" - a variable!
-    ' -f -p both -w ' + req.CONFIG.site;
-    
+  run_gast_cmd = "echo 'Hurray! I've sent a message!'";
+  
+  
+  // run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir  +
+  //   ' -s ' + project +
+  //   ' -d gast -v -e fa.unique -r ' + classifier_id +
+  // // TODO: "both" - a variable!
+  //   ' -f -p both -w ' + req.CONFIG.site;
+  //
   //run_cmd2 = "/bioware/seqinfo/bin/gast_ill -saveuc -nodup -full -ignoregaps -in " + data_dir + "/fasta.fa.unique -db /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".fa -rtax /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".tax -out " + data_dir + "/gast/fasta_out.gast -uc " + data_dir + "/gast/fasta_out.uc -threads 0 -strand both"
 
   //run_cmd3 = options.scriptPath + '3-vamps_nodejs_database_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -ds ' + single_dataset_name
@@ -1133,7 +1071,14 @@ function gastTax(req, project_config, options, classifier_id)
   
   console.log('GGG2: gastTax: cmd_list ');
   console.log(util.inspect(cmd_list, false, null));
-  
+  return cmd_list;
+}
+
+// todo
+function makeGastShellScript(data_dir)
+{
+  script_text = "";
+  return script_text
 }
 
 function metadata_upload(req, options, data_dir, project)
@@ -2083,7 +2028,7 @@ function failedCode(req, res, data_repository, project, last_line)
 function RunAndCheck(script_path, nodelog, req, project, res, callback_function, callback_function_options)
 {
   console.log("QQQ6 in RunAndCheck");
-  // console.log("QQQRRR1 script_path: " + script_path);
+  console.log("QQQRRR1 script_path: " + script_path);
   // console.log("QQQRRR2 nodelog: " + nodelog);
   // console.log("QQQRRR3 req");
   // console.log("QQQRRR4 project: " + project);
@@ -2173,8 +2118,8 @@ function uploadData(req, res)
   var created_options = CreateUploadOptions(req, res, project);
   var data_repository = created_options[0];
   var options         = created_options[1];
-  console.log('MMM options: ');
-  console.log(util.inspect(options, false, null));
+  // console.log('MMM options: ');
+  // console.log(util.inspect(options, false, null));
 
   options = OriginalMetafileUpload(req, options);
   // console.log('MMM Metadata file. options: ');
@@ -3475,12 +3420,17 @@ function get_local_script_text(log, site, code, cmd_list) {
     script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
 
     script_text += 'echo -n "Hostname: "'+"\n";
-    script_text += "hostname\n";
+    script_text += "echo `hostname`\n";
     script_text += 'echo -n "Current working directory: "'+"\n";
-    script_text += "pwd\n\n";
+    script_text += "echo `pwd`\n\n";
     for (var i in cmd_list) {
         script_text += cmd_list[i]+"\n";
     }
+    console.log('MMM get_local_script_text - cmd_list: ');
+    console.log(util.inspect(cmd_list, false, null));
+    console.log('MMM1 get_local_script_text - code: ');
+    console.log(util.inspect(code, false, null));
+    
     //script_text += "chmod 666 "+log+"\n";
 
     //##### END  create command
