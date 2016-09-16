@@ -678,7 +678,7 @@ module.exports.update_status = function(status_params) {
     });
   } else if(status_params.type == 'update') {
     statQuery2 = queries.MakeInsertStatusQ(status_params);
-    console.log('statQuery2: ' + statQuery2);
+    // console.log('statQuery2: ' + statQuery2);
     connection.query(statQuery2, function(err, rows) {
       if(err) {
         console.log('ERROR2-in status update: ' + err);
@@ -689,7 +689,7 @@ module.exports.update_status = function(status_params) {
     });
   } else {  // Type::New
     statQuery1 = queries.MakeInsertStatusQ(status_params);
-    console.log('statQuery1: ' + statQuery1);
+    // console.log('statQuery1: ' + statQuery1);
     connection.query(statQuery1 , function(err, rows) {
       if(err) {
         console.log('ERROR2-in status update: ' + err);

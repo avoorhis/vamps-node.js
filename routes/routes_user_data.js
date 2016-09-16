@@ -1766,14 +1766,16 @@ function ProjectExistsInDB(project, req, res)
           //No such project: TypeError: Cannot read property 'project_id' of undefined; Please add a new project here: LINK to add_project
           console.log("EEEUUU ProjectExistsInDB: req.form");
           console.log(util.inspect(req.form, false, null));
-          req.form.errors.pr_not_exists = 'No such project';
+          req.form.errors.pr_not_exists = 'No such project: ' + project;
           console.log("EEEUUU1 ProjectExistsInDB: req.form.errors");
           console.log(util.inspect(req.form.errors, false, null));
           // [ pr_not_exists: 'No such project' ]
            
-          console.log('No such project: ' + err + '; Please add a new project here: LINK to add_project');
-          req.flash('failMessage', 'There is no such project, please create one.');
+          console.log('Redirect err from ProjectExistsInDB. No such project: ' + project + ". " + err + '; Please add a new project at /user_data/add_project');
+          req.flash('failMessage', 'There is no such project, please create ' + project);
           // res.redirect("/user_data/your_data");
+          try        { res.redirect(redirect_url); }
+          catch(err) { console.log('Redirect err from ProjectExistsInDB to ' + redirect_url + ". " + err); }
           return false;
         }
         
