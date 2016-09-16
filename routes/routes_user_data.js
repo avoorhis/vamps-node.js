@@ -317,8 +317,8 @@ router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('u
   {
     console.log("QQQ1 in router.post('import_choices/simple_fasta'");
     if (!req.form.isValid) {
-      console.log('PPP import_choices/simple_fasta !req.form.isValid: ');
-      console.log(util.inspect(req.form.errors, false, null));
+      // console.log('PPP import_choices/simple_fasta !req.form.isValid: ');
+      // console.log(util.inspect(req.form.errors, false, null));
       req.flash('messages', req.form.errors);
       editUploadData(req, res);
       //TODO: check if the project name is in db, if not - redirect to add_project
@@ -339,8 +339,8 @@ router.post('/import_choices/multi_fasta', [helpers.isLoggedIn, upload.array('up
   {
     console.log("QQQ12 in router.post('import_choices/multi_fasta'");
     if (!req.form.isValid) {
-      console.log('PPP import_choices/multi_fasta !req.form.isValid: ');
-      console.log(util.inspect(req.form.errors, false, null));
+      // console.log('PPP import_choices/multi_fasta !req.form.isValid: ');
+      // console.log(util.inspect(req.form.errors, false, null));
       req.flash('messages', req.form.errors);
       editUploadData(req, res);
       //TODO: check if the project name is in db, if not - redirect to add_project
@@ -1019,15 +1019,15 @@ function gastTax(req, project_config, options, classifier_id)
 
   var project  = project_config.GENERAL.project;
   var data_dir = project_config.GENERAL.baseoutputdir;
-  if (project_config.GENERAL.fasta_type == 'multi')
-  {
-    //unique_cmd = options.scriptPath + '1-demultiplex_fna.sh ' + data_dir + ' infile.fna'
-  }
-  else
-  {
-    var single_dataset_name = Object.keys(project_config.DATASETS)[0];
-  //unique_cmd = options.scriptPath + '1-single_fna.sh ' + data_dir + ' infile.fna ' + single_dataset_name
-  }
+  // if (project_config.GENERAL.fasta_type == 'multi')
+  // {
+  //   //unique_cmd = options.scriptPath + '1-demultiplex_fna.sh ' + data_dir + ' infile.fna'
+  // }
+  // else
+  // {
+  //   var single_dataset_name = Object.keys(project_config.DATASETS)[0];
+  // //unique_cmd = options.scriptPath + '1-single_fna.sh ' + data_dir + ' infile.fna ' + single_dataset_name
+  // }
   // try: check project name and enter empty project (just to create pid)
   project_init = options.scriptPath + 
     'project_initialization.py -site ' + req.CONFIG.site + 
@@ -1035,19 +1035,22 @@ function gastTax(req, project_config, options, classifier_id)
     ' -p '     + project  + 
     ' -uid '   + req.user.user_id;
 
-  // TODO: separate metadata upload from gast!
-  // metadata must go in after the projects and datasets:
-  // Should go into db after we have project and datasets in the db
-  // Should go in as entire project (w all datasets) -- not dataset by dataset
-  // PROBLEM: Here we dont have datasets yet in db
-  // Andy, Where is metadata_loader.py???
-  metadata_cmd = options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site + 
-    ' -indir ' + data_dir + 
-    ' -p '     + project;
+  console.log('GGG1: gastTax: project_init ');
+  console.log(util.inspect(project_init, false, null));
+  
+  // // TODO: separate metadata upload from gast!
+  // // metadata must go in after the projects and datasets:
+  // // Should go into db after we have project and datasets in the db
+  // // Should go in as entire project (w all datasets) -- not dataset by dataset
+  // // PROBLEM: Here we dont have datasets yet in db
+  // // Andy, Where is metadata_loader.py???
+  // metadata_cmd = options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site +
+  //   ' -indir ' + data_dir +
+  //   ' -p '     + project;
 
   // TODO: see /bioware/seqinfo/bin/run_gast_ill_nonchim_sge.sh
     // and create a gast script from here
-    // === gastfile
+// === gastfile
 //     get options and write, then execute:
 // mkdir $gast_dir
 // ls $NAME_PAT >$gast_dir/filenames.list
@@ -1095,7 +1098,7 @@ function gastTax(req, project_config, options, classifier_id)
     // === gastfile
 
   // Command is split to run once for each dataset on the cluster:
-  // Andy, what 2-vamps_nodejs_gast.sh suppose to do? And where is it?
+  //vamps_script_gast_run.py
   run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir  + 
     ' -s ' + project + 
     ' -d gast -v -e fa.unique -r ' + classifier_id + 
@@ -1120,7 +1123,6 @@ function gastTax(req, project_config, options, classifier_id)
   cmd_list = [
       //unique_cmd,
       project_init,
-      metadata_cmd,
       run_gast_cmd
 
     //options.scriptPath + 'vamps_script_database_loader.py ' + options.database_loader_args.join(' '),
@@ -1128,8 +1130,24 @@ function gastTax(req, project_config, options, classifier_id)
     //options.scriptPath + 'vamps_script_load_metadata.py ' + options.upload_metadata_args.join(' '),
     //options.scriptPath + 'vamps_script_create_json_dataset_files.py ' + options.create_json_args.join(' ')
   ];
+  
+  console.log('GGG2: gastTax: cmd_list ');
+  console.log(util.inspect(cmd_list, false, null));
+  
 }
 
+function metadata_upload(req, options, data_dir, project)
+{
+  // TODO: separate metadata upload from gast!
+  // metadata must go in after the projects and datasets:
+  // Should go into db after we have project and datasets in the db
+  // Should go in as entire project (w all datasets) -- not dataset by dataset
+  // PROBLEM: Here we dont have datasets yet in db
+  // Andy, Where is metadata_loader.py??? ASh
+  return options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site + 
+    ' -indir ' + data_dir + 
+    ' -p '     + project;
+}
 
 //
 // YOUR PROJECTS
@@ -1722,14 +1740,13 @@ function ResFilePathExists(req, data_repository, res)
 function MetadataFileProvided(req, res)
 {
   if (req.files[1].filename === undefined || req.files[1].size === 0) {
-    console.log("DDD2 in MetadataFileProvided, filename === undefined");
+    // console.log("DDD2 in MetadataFileProvided, filename === undefined");
     req.flash('failMessage', 'A metadata csv file is required. Check if it exists.');
     res.redirect(path.join("/user_data", req.url));
     return false;
   }
   else
   {
-    // console.log("DDD3 in MetadataFileProvided ok, req.files[1] = " + req.files[1]);
     return true;
   }
 }
@@ -1754,36 +1771,13 @@ function ProjectExistsInDB(project, req, res)
           return true;  
         }
         catch(err) {
-          // console.log("UUU req:");
-          // console.log(util.inspect(req, false, null));
-          // console.log(util.inspect(req.files[1], false, null));
-          // req.files[0].originalname : 'multi_fasta.fa_not_there',
-          // req.files[1].originalname : 'multi_meta.csv_not_there',
-          
-          
-          // form: { project: 'imp_pr_not_exists' } }
-          // sessions: { 'xsGCrMgBubq7CflN_t8Lnr9eSWXRg-ZH': '{"cookie":{"originalMaxAge":null,"expires":null,"httpOnly":true,"path":"/"},"flash":{"failMessage":["A fasta file is required. Check if it exists."]},"passport":{"user":4}}' },
-          //No such project: TypeError: Cannot read property 'project_id' of undefined; Please add a new project here: LINK to add_project
-          // console.log("EEEUUU ProjectExistsInDB: req.form");
-          // console.log(util.inspect(req.form, false, null));
           req.form.errors.pr_not_exists = 'No such project: ' + project;
-          // console.log("EEEUUU1 ProjectExistsInDB: req.form.errors");
-          // console.log(util.inspect(req.form.errors, false, null));
-          // [ pr_not_exists: 'No such project' ]
-           
           console.log('Redirect err from ProjectExistsInDB. No such project: ' + project + ". " + err + '; Please add a new project at /user_data/add_project');
           req.flash('failMessage', 'There is no such project, please create ' + project);
-          // res.redirect("/user_data/your_data");
           try        { res.redirect(redirect_url); }
           catch(err) { console.log('Redirect err from ProjectExistsInDB to ' + redirect_url + ". " + err); }
           return false;
         }
-        
-        // console.log("content");
-        // console.log(util.inspect(content, false, null));
-        // project_id = content.project_id;
-        // console.log(project_id);
-        // return true;
       }
   });
 }
@@ -1947,15 +1941,15 @@ function CreateCmdList(req, options, data_repository)
 
   // todo: provied ".fa" fo single and ".fna" for multi
   var fnaunique_cmd = options.scriptPath + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
-  console.log("LLL1 options.scriptPath: " + options.scriptPath);
-  console.log("LLL fnaunique_cmd: " + fnaunique_cmd);
-  console.log("LLL2 data_repository: " + data_repository);
-  console.log("LLL3 req.CONFIG.PATH: " + req.CONFIG.PATH);
+  // console.log("LLL1 options.scriptPath: " + options.scriptPath);
+  // console.log("LLL fnaunique_cmd: " + fnaunique_cmd);
+  // console.log("LLL2 data_repository: " + data_repository);
+  // console.log("LLL3 req.CONFIG.PATH: " + req.CONFIG.PATH);
 
   cmd_list.push(fnaunique_cmd);
 
-  // console.log("CCC1 cmd_list: ");
-  // console.log(util.inspect(cmd_list, false, null));
+  console.log("CCC1 cmd_list: ");
+  console.log(util.inspect(cmd_list, false, null));
   return cmd_list;
 
   //TODO:
