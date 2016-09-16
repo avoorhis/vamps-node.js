@@ -688,8 +688,6 @@ module.exports.update_status = function(status_params) {
       }
     });
   } else {  // Type::New
-      // TODO? INSERT INTO table (id, name, age) VALUES(1, "A", 19) ON DUPLICATE KEY UPDATE
-      // name="A", age=19
     statQuery1 = queries.MakeInsertStatusQ(status_params);
     console.log('statQuery1: ' + statQuery1);
     connection.query(statQuery1 , function(err, rows) {

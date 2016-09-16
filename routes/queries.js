@@ -327,64 +327,24 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
                   + ", "  + connection.escape(status_params.msg)
                   + ", NOW()"
                   + " FROM user_project_status RIGHT JOIN project using(project_id)"
-                  + " WHERE ";
-                  // console.log("YYY111 statQuery1 status_params: ");
-                  // console.log(util.inspect(status_params, false, null));
-                // { type: 'new',
-                //   user_id: 4,
-                //   project: 'test_gast_project',
-                //   status: 'OK',
-                //   msg: 'Upload Started' }
-      
-                  // + " WHERE project = " + connection.escape(status_params.project)
-                  if ('user_id' in status_params) {
-                    statQuery1 += " owner_user_id = " + connection.escape(status_params.user_id);
-                    console.log("statQuery1 user_id: " + connection.escape(status_params.user_id));
-                  }
+                  + " WHERE owner_user_id = " + connection.escape(status_params.user_id);
                   if ('project' in status_params) {
                     statQuery1 += " AND project = "  + connection.escape(status_params.project);
-                    console.log("statQuery1 project: " + connection.escape(status_params.project));
+                    // console.log("statQuery1 project: " + connection.escape(status_params.project));
                   }
                   else if ('pid' in status_params) {
                     statQuery1 += " AND project_id = " + connection.escape(status_params.pid);
-                    console.log("statQuery1 pid: " + connection.escape(status_params.pid));
+                    // console.log("statQuery1 pid: " + connection.escape(status_params.pid));
                   }
                   statQuery1 += " ON DUPLICATE KEY UPDATE"
-                  + " status   = " + connection.escape(status_params.status)
-                  + ", message = "  + connection.escape(status_params.msg)
-                  + ", updated_at = NOW()"
+                  + " user_project_status.status   = " + connection.escape(status_params.status)
+                  + ", user_project_status.message = "  + connection.escape(status_params.msg)
+                  + ", user_project_status.updated_at = NOW()"
                   + ";"
                   console.log("statQuery1: " + statQuery1);
                   
     return statQuery1;
   },
-
-  // todo: combine update with insert?
-  //statQuery1: INSERT IGNORE INTO user_project_status (user_id, project_id, status, message, created_at) SELECT 4, project_id, 'OK', 'Upload Started', NOW() FROM user_project_status RIGHT JOIN project using(project_id) WHERE project = 'test_gast_project' ON DUPLICATE KEY UPDATE status   = 'OK', message = 'Upload Started', updated_at = NOW();
-
-  // MakeUpdateStatusQ: function(status_params)
-  // {
-  //   var statQuery2 = "UPDATE user_project_status"
-  //       + " JOIN project USING(project_id)"
-  //       + " SET status = " + connection.escape(status_params.status)
-  //       + ", message = "  + connection.escape(status_params.msg)
-  //       + ", updated_at = NOW()"
-  //       + " WHERE user_id = " + connection.escape(status_params.user_id);
-  //
-  //   if ('project' in status_params) {
-  //       statQuery2 += " AND project = "  + connection.escape(status_params.project);
-  //       console.log("statQuery2 project: " + statQuery2);
-  //   }
-  //   else if ('pid' in status_params) {
-  //       statQuery2 += " AND project_id = " + connection.escape(status_params.pid);
-  //       console.log("statQuery2 pid: " + statQuery2);
-  //   }
-  //   else {
-  //   //ERROR
-  //     console.log("ERROR in statQuery2 for Update Status: project or project_id is needed. " + statQuery2);
-  //   }
-  //   return statQuery2;
-  // },
   
   MakeDeleteStatusQ: function() {
     console.log('in delete_status');
