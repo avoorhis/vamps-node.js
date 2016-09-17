@@ -281,6 +281,7 @@ clusterize_cmd      = '/bioware/seqinfo/bin/clusterize'
 #fastaunique_cmd     = '/bioware/seqinfo/bin/fastaunique'
 fastaunique_cmd     = '/bioware/seqinfo/bin/fastaunique'
 #local commands
+vsearch_cmd_local      = cmd_path_local + 'vsearch'
 usearch6_cmd_local     = cmd_path_local + 'usearch'
 fastasampler_cmd_local = cmd_path_local + 'fastasampler'
 calcnodes_cmd_local    = cmd_path_local + 'calcnodes'

@@ -15,7 +15,7 @@ var queries = require('./queries');
 var iniparser = require('iniparser');
 //var PythonShell = require('python-shell');
 var zlib = require('zlib');
-var config = require('../config/config');
+var config = require(app_root + '/config/config');
 var multer = require('multer');
 var util = require('util');
 var escape = require('escape-html');
@@ -1032,8 +1032,11 @@ function gastTax(req, project_config, options, classifier_id)
   // console.log('GGG1: gastTax: project_init ');
   // console.log(util.inspect(project_init, false, null));
   //
-  makeGastShellScript(data_dir);
 
+  REF_DB_NAME = chooseRefFile(classifier_id);
+  // FULL_OPTION = $FULL_OPTION;
+  // NAME_PAT = $NAME_PAT;
+  //
   run_gast_cmd = "echo \"Hurray! I've sent a row to the shell script!\"";
   run_gast_cmd += "\n";
   
@@ -1072,9 +1075,36 @@ function gastTax(req, project_config, options, classifier_id)
 }
 
 // todo
-function makeGastShellScript(data_dir)
+function chooseRefFile(classifier_id)
 {
-  script_text = "";
+  if (classifier_id === "refssu")
+  {
+    script_text = "";
+    // routes/helpers/custom_taxa_class.js:7:var CONSTS = require(app_root + '/public/constants');
+    // public/scripts/gast/constants.py
+    //  defaults for GAST
+    // refdbs
+    // ref_database_dir    = '/groups/g454/blastdbs/gast_distributions/'
+    // max_accepts         = 10
+    // max_rejects         = 0
+    // pctid_threshold     = 0.70
+    // majority            = 66
+    // cluster_nodes       = 100
+    // use_full_length     = 0
+    // ignore_terminal_gaps= 0
+    // ignore_all_gaps     = 0
+    // max_gast_distance   = {'default': 0.30, 'v6': 0.30, 'v6a': 0.30, 'v6v4': 0.25, 'v3v5': 0.25}
+    // #cluster wait
+    // maxwaittime         = 50000  # 50,000 seconds == 833 minutes == 13.9 hours
+    // sleeptime           = 3      # seconds
+    // refdbs = {'unknown':'refssu_all',
+    //         'v1v3':'refv1v3',
+    //         'v1v3a':'refv1v3a',
+    
+// public/constants.js:77
+    //constants.UNIT_ASSIGNMENT_CHOICES = { 
+    // 'refv6':    { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Bv6 (Bacterial)',       availability:'available', refdb:'refv6' },
+  }
   return script_text
 }
 

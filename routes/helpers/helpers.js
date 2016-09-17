@@ -4,7 +4,7 @@ var router = express.Router();
 var fs = require('fs');
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport();
-var queries = require('../queries');
+var queries = require(app_root + '/routes/queries');
 var util = require('util');
 var path  = require('path');
 var crypto = require('crypto');
@@ -281,7 +281,7 @@ module.exports.assignment_finish_request = function(res, rows1, rows2, status_pa
         console.log(' UPDATING ALL_PCOUNTS_BY_PID ');
         console.log(' UPDATING ALL_CLASSIFIERS_BY_PID');
         // re-run re-create new_taxonomy (see app.js)
-        var silvaTaxonomy = require('../../models/silva_taxonomy');
+        var silvaTaxonomy = require(app_root + '/models/silva_taxonomy');
         var all_silva_taxonomy = new silvaTaxonomy();
         var CustomTaxa  = require('./custom_taxa_class');
         all_silva_taxonomy.get_all_taxa(function(err, results) {
