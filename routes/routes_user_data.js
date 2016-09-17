@@ -3,31 +3,33 @@
 
 // Andy, when http://localhost:3000/user_data/your_projects is updated? Shows old projects.
 
-var express = require('express');
-var router = express.Router();
-var passport = require('passport');
-var helpers = require('./helpers/helpers');
-var path = require('path');
-var fs = require('fs-extra');
-var url = require('url');
-var ini = require('ini');
-var queries = require('./queries');
-var iniparser = require('iniparser');
-//var PythonShell = require('python-shell');
-var zlib = require('zlib');
-var config = require(app_root + '/config/config');
-var multer = require('multer');
-var util = require('util');
-var escape = require('escape-html');
-var form = require("express-form");
-var mysql = require('mysql2');
+var express		= require('express');
+var router		= express.Router();
+var passport	= require('passport');
+var path			= require('path');
+var fs				= require('fs-extra');
+var url				= require('url');
+var ini				= require('ini');
+var iniparser	= require('iniparser');
+var zlib			= require('zlib');
+var multer		= require('multer');
+var util			= require('util');
+var escape		= require('escape-html');
+var form			= require("express-form");
+var mysql			= require('mysql2');
+var pdf				= require('html-pdf');
+var Readable	= require('readable-stream').Readable;
+var spawn			= require('child_process').spawn;
 
-var pdf = require('html-pdf');
+var helpers = require(app_root + '/routes/helpers/helpers');
+var queries	= require(app_root + '/routes/queries');
+var config  = require(app_root + '/config/config');
+var CONSTS  = require(app_root + '/public/constants');
+var COMMON  = require(app_root + '/routes/visuals/routes_common');
+
 //var progress = require('progress-stream');
 var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
 
-var Readable = require('readable-stream').Readable;
-var COMMON = require('./visuals/routes_common');
 var infile_fa = "infile.fna";
 // router.use(multer({ dest: 'tmp',
 // rename: function (fieldname, filename) {
@@ -41,7 +43,6 @@ var infile_fa = "infile.fna";
 // done=true;
 // }
 // }));
-var spawn = require('child_process').spawn;
 //
 // YOUR DATA
 //
@@ -890,7 +891,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   var nodelog         = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
   var ok_code_options = [classifier, status_params, res];
 
-  console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options =  ');
+  // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
   
   fs.writeFile(script_path, script_text, mkScriptExecutableAndRun(script_path, req, project, res, nodelog, checkPid, ok_code_options));
 
@@ -1028,6 +1029,14 @@ function gastTax(req, project_config, options, classifier_id)
   REF_DB_NAME = chooseRefFile(classifier_id);
   // FULL_OPTION = $FULL_OPTION;
   // NAME_PAT = $NAME_PAT;
+
+  // nonchimeric_suffix = "nonchimeric.fa"
+  // unique_suffix      = "unique"
+  // ref_suffix         = {"unique.nonchimeric.fa": ['v1v3', 'v1v3a', 'v3v5', 'v4v5', 'v4v6', 'v6v4', 'v4v6a', 'v6v4a', 'its1'], "unique": ['v3', 'v3a', 'v4', 'v5', 'v6', 'v6a', 'v9']}
+  // ref_full_option   = ["refits1", "refssu"]
+  //
+  console.log("PRPRP project_info = ");
+  console.log(util.inspect(Array.from(project_info.test_gast_project.validation), false, null));
 
   fasta_extension = getFastaExtensions(data_dir);
   // filenames_list = getFileNames(data_dir, fasta_extension);
