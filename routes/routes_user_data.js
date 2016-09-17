@@ -1022,6 +1022,10 @@ function gastTax(req, project_config, options, classifier_id)
 {
   var project  = project_config.GENERAL.project;
   // var data_dir = project_config.GENERAL.baseoutputdir;
+  // var script_name = 'gast_script.sh';
+  //TODO get real numbers
+  var file_number = 1;
+  script_name = 'gast_script.sh';
 
   // project_init = options.scriptPath +
   //   'project_initialization.py -site ' + req.CONFIG.site +
@@ -1059,7 +1063,22 @@ function gastTax(req, project_config, options, classifier_id)
   // NAME_PAT = $NAME_PAT;
   //
   run_gast_cmd = "echo \"Hurray! I've sent a row to the shell script!\"";
-  run_gast_cmd = "touch " + path.join(project_config.GENERAL.baseoutputdir, "TEMP.tmp");
+  run_gast_cmd = `#$ -cwd
+#$ -S /bin/bash
+#$ -N ${script_name}
+# Giving the name of the output log file
+#$ -o clust_gast_ill_${project}.sh.sge_script.sh.log
+# Combining output/error messages into one file
+#$ -j y
+# Send mail to these users
+#$ -M ${req.user.email}
+# Send mail; -m as sends on abort, suspend.
+#$ -m as
+#$ -t 1-${file_number}
+# Now the script will iterate ${file_number} times.`;
+
+  run_gast_cmd += "\n";
+  run_gast_cmd += "touch " + path.join(project_config.GENERAL.baseoutputdir, "TEMP.tmp");
   run_gast_cmd += "\n";
   
   
@@ -1074,7 +1093,7 @@ function gastTax(req, project_config, options, classifier_id)
   //run_cmd3 = options.scriptPath + '3-vamps_nodejs_database_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -ds ' + single_dataset_name
 
   //run_cmd = options.scriptPath + 'vamps_script_gast_run.py ' + options.gast_run_args.join(' '),
-  script_name = 'gast_script.sh';
+  // script_name = 'gast_script.sh';
   
   status_params.statusOK      = 'OK-GAST';
   status_params.statusSUCCESS = 'GAST-SUCCESS';
