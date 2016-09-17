@@ -1021,7 +1021,7 @@ function checkPid(check_pid_options, last_line)
 function gastTax(req, project_config, options, classifier_id)
 {
   var project  = project_config.GENERAL.project;
-  var data_dir = project_config.GENERAL.baseoutputdir;
+  // var data_dir = project_config.GENERAL.baseoutputdir;
 
   // project_init = options.scriptPath +
   //   'project_initialization.py -site ' + req.CONFIG.site +
@@ -1029,15 +1029,37 @@ function gastTax(req, project_config, options, classifier_id)
   //   ' -p '     + project  +
   //   ' -uid '   + req.user.user_id;
 
-  // console.log('GGG1: gastTax: project_init ');
-  // console.log(util.inspect(project_init, false, null));
-  //
+  // console.log('GGG1: gastTax: project_config ');
+  // console.log(util.inspect(project_config, false, null));
+  // //
+  // GGG1: gastTax: project_config
+  // { GENERAL:
+  //    { project: 'test_gast_project',
+  //      project_title: '',
+  //      project_description: '',
+  //      baseoutputdir: '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project',
+  //      configPath: '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/config.ini',
+  //      fasta_file: '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/test_gast_dataset-original.fna',
+  //      platform: 'new_vamps',
+  //      owner: 'admin',
+  //      config_file_type: 'ini',
+  //      public: 'False',
+  //      fasta_type: 'single',
+  //      dna_region: 'v6',
+  //      project_sequence_count: '10',
+  //      sequence_counts: 'NOT_UNIQUED',
+  //      domain: 'bacteria',
+  //      number_of_datasets: '1',
+  //      env_source_id: '100',
+  //      has_tax: '0' },
+  //   DATASETS: { test_gast_dataset: '10' } }
 
   REF_DB_NAME = chooseRefFile(classifier_id);
   // FULL_OPTION = $FULL_OPTION;
   // NAME_PAT = $NAME_PAT;
   //
   run_gast_cmd = "echo \"Hurray! I've sent a row to the shell script!\"";
+  run_gast_cmd = "touch " + path.join(project_config.GENERAL.baseoutputdir, "TEMP.tmp");
   run_gast_cmd += "\n";
   
   
@@ -2089,6 +2111,8 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
   run_process.on('close', function checkExitCode(code) {
      console.log('run_process process exited with code ' + code);
      var ary = output.split("\n");
+     console.log("TTT output.split: ");
+     console.log(util.inspect(ary, false, null));
      var last_line = ary[ary.length - 1];
      console.log('last_line:', last_line);
      if (code === 0)
