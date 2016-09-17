@@ -1032,11 +1032,24 @@ function gastTax(req, project_config, options, classifier_id)
 
   // nonchimeric_suffix = "nonchimeric.fa"
   // unique_suffix      = "unique"
-  // ref_suffix         = {"unique.nonchimeric.fa": ['v1v3', 'v1v3a', 'v3v5', 'v4v5', 'v4v6', 'v6v4', 'v4v6a', 'v6v4a', 'its1'], "unique": ['v3', 'v3a', 'v4', 'v5', 'v6', 'v6a', 'v9']}
+  // REF_SUFFIX         = {"unique.nonchimeric.fa": ['v1v3', 'v1v3a', 'v3v5', 'v4v5', 'v4v6', 'v6v4', 'v4v6a', 'v6v4a', 'its1'], "unique": ['v3', 'v3a', 'v4', 'v5', 'v6', 'v6a', 'v9']}
   // ref_full_option   = ["refits1", "refssu"]
   //
-  console.log("PRPRP project_info = ");
-  console.log(util.inspect(Array.from(project_info.test_gast_project.validation), false, null));
+  console.log("PRPRP CONSTS = ");
+  console.log(util.inspect(CONSTS.REF_SUFFIX, false, null));
+  console.log("SSS req.params.classifier_id = ");
+  console.log(util.inspect(req.params.classifier_id, false, null));
+  console.log("SSS1 project_config.GENERAL.dna_region = ");
+  console.log(util.inspect(project_config.GENERAL.dna_region, false, null));
+
+  
+  console.log('dna_region in CONSTS.REF_SUFFIX.unique'); 
+  
+  console.log(util.inspect(CONSTS.REF_SUFFIX.unique.indexOf('v3'), false, null));
+      
+  file_suffix = getSuffix(project_config.GENERAL.dna_region);
+  console.log("SSS2 file_suffix = ");
+  console.log(util.inspect(file_suffix, false, null));
 
   fasta_extension = getFastaExtensions(data_dir);
   // filenames_list = getFileNames(data_dir, fasta_extension);
@@ -1134,6 +1147,32 @@ function gastTax(req, project_config, options, classifier_id)
 //       console.log(util.inspect(filenames_list, false, null));
 //   });
 // }
+
+
+function getSuffix(dna_region)
+{
+  // console.log('DDD dna_region: ' + dna_region);
+  //
+  // console.log("CCC CONSTS.REF_SUFFIX.unique = ");
+  // console.log(util.inspect(CONSTS.REF_SUFFIX.unique, false, null));
+  //
+  //
+  if (CONSTS.REF_SUFFIX["unique.nonchimeric.fa"].indexOf(project_config.GENERAL.dna_region) >= 0) 
+  {
+    console.log('dna_region in CONSTS.REF_SUFFIX["unique.nonchimeric.fa"]');  
+    return ".unique.nonchimeric.fa";  
+  }
+  else if (CONSTS.REF_SUFFIX.unique.indexOf(project_config.GENERAL.dna_region) >= 0) 
+  {
+    console.log('dna_region in CONSTS.REF_SUFFIX.unique'); 
+    return ".unique";  
+  }
+  else 
+  {
+    console.log('ERR dna_region from getSuffix'); 
+  }
+}
+
 
 // todo
 function chooseRefFile(classifier_id)
