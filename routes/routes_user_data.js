@@ -1062,12 +1062,17 @@ function gastTax(req, project_config, options, classifier_id)
   // create clust_gast_ill_PROJECT_NAME.sh
   // run it
   
-  make_gast_script_txt = "echo \"Hurray! I've sent a row to the shell script!\"\n";
+  make_gast_script_txt = `echo \"Hurray! I've sent a row to the shell script!\"gast_db_path="${CONSTS.GAST_DB_PATH}"
   
-  make_gast_script_txt += `gast_db_path="${CONSTS.GAST_DB_PATH}"\n`
-  make_gast_script_txt += `ls ${data_dir}/*${file_suffix} >${data_dir}/filenames.list\n`
+ls ${data_dir}/*${file_suffix} >${data_dir}/filenames.list
+cd ${data_dir}
+
+FILE_NUMBER=\`wc -l < filenames.list\`
+echo "total files = $FILE_NUMBER"
   
-  make_gast_script_txt += `#$ -cwd
+cat >${data_dir}/clust_gast_ill_${project}.sh <<InputComesFromHERE
+#!/bin/bash
+#$ -cwd
 #$ -S /bin/bash
 #$ -N clust_gast_ill_${project}.sh
 # Giving the name of the output log file
@@ -1078,8 +1083,8 @@ function gastTax(req, project_config, options, classifier_id)
 #$ -M ${req.user.email}
 # Send mail; -m as sends on abort, suspend.
 #$ -m as
-#$ -t 1-${file_number}
-# Now the script will iterate ${file_number} times.
+#$ -t 1-$FILE_NUMBER
+# Now the script will iterate $FILE_NUMBER times.
 
  # TODO: remove comments
  # . /xraid/bioware/Modules/etc/profile.modules
@@ -1093,10 +1098,18 @@ function gastTax(req, project_config, options, classifier_id)
 
   echo "/bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in $DIRECTORY_NAME/\$INFILE -db $gast_db_path/$REF_DB_NAME.fa -rtax $gast_db_path/$REF_DB_NAME.tax -out $DIRECTORY_NAME/$gast_dir/\$INFILE.gast -uc $DIRECTORY_NAME/$gast_dir/\$INFILE.uc -threads $threads"
 
-  # TODO: remove comments
-  # /bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in $DIRECTORY_NAME/\$INFILE -db $gast_db_path/$REF_DB_NAME.fa -rtax $gast_db_path/$REF_DB_NAME.tax -out $DIRECTORY_NAME/$gast_dir/\$INFILE.gast -uc $DIRECTORY_NAME/$gast_dir/\$INFILE.uc -threads $threads
+ # /bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in $DIRECTORY_NAME/\$INFILE -db $gast_db_path/$REF_DB_NAME.fa -rtax $gast_db_path/$REF_DB_NAME.tax -out $DIRECTORY_NAME/$gast_dir/\$INFILE.gast -uc $DIRECTORY_NAME/$gast_dir/\$INFILE.uc -threads $threads
   
-  chmod 666 clust_gast_ill_$RUN_LANE.sh.sge_script.sh.log
+  chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  
+InputComesFromHERE
+
+echo "Running clust_gast_ill_${project}.sh"
+# TODO: remove comments
+# qsub ${data_dir}/clust_gast_ill_${project}.sh
+# TODO: remove
+${data_dir}/clust_gast_ill_${project}.sh
+
 `;
 
   make_gast_script_txt += "\n";
