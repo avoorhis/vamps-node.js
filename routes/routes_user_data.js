@@ -1057,7 +1057,11 @@ function gastTax(req, project_config, options, classifier_id)
   // console.log(util.inspect(filenames_list, false, null));
   
   // filenames.list
-
+// from inside of gast_script.sh 
+  // create filenames.list and get numbers
+  // create clust_gast_ill_PROJECT_NAME.sh
+  // run it
+  
   run_gast_cmd = "echo \"Hurray! I've sent a row to the shell script!\"";
   run_gast_cmd = `#$ -cwd
 #$ -S /bin/bash
@@ -1129,34 +1133,8 @@ function gastTax(req, project_config, options, classifier_id)
   return cmd_list;
 }
 
-// function getFileNames(data_dir, fileType)
-// {
-//   // console.log("FFF00 fileType = " + fileType);
-//   var files = [];
-//   fs.readdir(data_dir, function(err, list){
-//       if(err) throw err;
-//       for(var i=0; i<list.length; i++)
-//       {
-//           if(path.extname(list[i]) === fileType)
-//           {
-//               console.log(list[i]); //print the file
-//               files.push(list[i]); //store the file name into the array files
-//           }
-//       }
-//       console.log("FFF11 filenames_list = ");
-//       console.log(util.inspect(filenames_list, false, null));
-//   });
-// }
-
-
 function getSuffix(dna_region)
 {
-  // console.log('DDD dna_region: ' + dna_region);
-  //
-  // console.log("CCC CONSTS.REF_SUFFIX.unique = ");
-  // console.log(util.inspect(CONSTS.REF_SUFFIX.unique, false, null));
-  //
-  //
   if (CONSTS.REF_SUFFIX["unique.nonchimeric.fa"].indexOf(project_config.GENERAL.dna_region) >= 0) 
   {
     console.log('dna_region in CONSTS.REF_SUFFIX["unique.nonchimeric.fa"]');  
