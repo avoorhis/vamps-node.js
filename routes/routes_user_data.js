@@ -1062,10 +1062,14 @@ function gastTax(req, project_config, options, classifier_id)
   // create clust_gast_ill_PROJECT_NAME.sh
   // run it
   
-  run_gast_cmd = "echo \"Hurray! I've sent a row to the shell script!\"";
-  run_gast_cmd = `#$ -cwd
+  make_gast_script_txt = "echo \"Hurray! I've sent a row to the shell script!\"\n";
+  
+  make_gast_script_txt += `gast_db_path="${CONSTS.GAST_DB_PATH}"\n`
+  make_gast_script_txt += `ls ${data_dir}/*${file_suffix} >${data_dir}/filenames.list\n`
+  
+  make_gast_script_txt += `#$ -cwd
 #$ -S /bin/bash
-#$ -N ${script_name}
+#$ -N clust_gast_ill_${project}.sh
 # Giving the name of the output log file
 #$ -o clust_gast_ill_${project}.sh.sge_script.sh.log
 # Combining output/error messages into one file
@@ -1095,12 +1099,12 @@ function gastTax(req, project_config, options, classifier_id)
   chmod 666 clust_gast_ill_$RUN_LANE.sh.sge_script.sh.log
 `;
 
-  run_gast_cmd += "\n";
-  run_gast_cmd += "touch " + path.join(data_dir, "TEMP.tmp");
-  run_gast_cmd += "\n";
+  make_gast_script_txt += "\n";
+  make_gast_script_txt += "touch " + path.join(data_dir, "TEMP.tmp");
+  make_gast_script_txt += "\n";
   
   
-  // run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir  +
+  // make_gast_script_txt = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir  +
   //   ' -s ' + project +
   //   ' -d gast -v -e fa.unique -r ' + classifier_id +
   // // TODO: "both" - a variable!
@@ -1125,7 +1129,7 @@ function gastTax(req, project_config, options, classifier_id)
   cmd_list = [
       //unique_cmd,
       // project_init,
-      run_gast_cmd
+      make_gast_script_txt
   ];
   
   console.log('GGG2: gastTax: cmd_list ');
