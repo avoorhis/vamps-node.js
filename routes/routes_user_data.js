@@ -1026,7 +1026,6 @@ function gastTax(req, project_config, options, classifier_id)
   //      has_tax: '0' },
   //   DATASETS: { test_gast_dataset: '10' } }
 
-  REF_DB_NAME = chooseRefFile(classifier_id);
   // FULL_OPTION = $FULL_OPTION;
   // NAME_PAT = $NAME_PAT;
 
@@ -1052,9 +1051,9 @@ function gastTax(req, project_config, options, classifier_id)
   console.log(util.inspect(file_suffix, false, null));
 
   fasta_extension = getFastaExtensions(data_dir);
-  // filenames_list = getFileNames(data_dir, fasta_extension);
-  // console.log("FFF filenames_list = ");
-  // console.log(util.inspect(filenames_list, false, null));
+  ref_db_name     = chooseRefFile(classifier_id);
+  console.log("ref_db_name ref_db_name = " + ref_db_name);
+  
   
   // filenames.list
 // from inside of gast_script.sh 
@@ -1096,9 +1095,9 @@ cat >${data_dir}/clust_gast_ill_${project}.sh <<InputComesFromHERE
   echo "file name is \$INFILE"
   echo
 
-  echo "/bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in $DIRECTORY_NAME/\$INFILE -db $gast_db_path/$REF_DB_NAME.fa -rtax $gast_db_path/$REF_DB_NAME.tax -out $DIRECTORY_NAME/$gast_dir/\$INFILE.gast -uc $DIRECTORY_NAME/$gast_dir/\$INFILE.uc -threads $threads"
+  echo "/bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in ${data_dir}/\$INFILE -db $gast_db_path/$REF_DB_NAME.fa -rtax $gast_db_path/$REF_DB_NAME.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads $threads"
 
- # /bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in $DIRECTORY_NAME/\$INFILE -db $gast_db_path/$REF_DB_NAME.fa -rtax $gast_db_path/$REF_DB_NAME.tax -out $DIRECTORY_NAME/$gast_dir/\$INFILE.gast -uc $DIRECTORY_NAME/$gast_dir/\$INFILE.uc -threads $threads
+ # /bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in ${data_dir}/\$INFILE -db $gast_db_path/$REF_DB_NAME.fa -rtax $gast_db_path/$REF_DB_NAME.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads $threads
   
   chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   
@@ -1172,35 +1171,29 @@ function getSuffix(dna_region)
 // todo
 function chooseRefFile(classifier_id)
 {
-  if (classifier_id === "refssu")
-  {
-    script_text = "";
-    // routes/helpers/custom_taxa_class.js:7:var CONSTS = require(app_root + '/public/constants');
-    // public/scripts/gast/constants.py
-    //  defaults for GAST
-    // refdbs
-    // ref_database_dir    = '/groups/g454/blastdbs/gast_distributions/'
-    // max_accepts         = 10
-    // max_rejects         = 0
-    // pctid_threshold     = 0.70
-    // majority            = 66
-    // cluster_nodes       = 100
-    // use_full_length     = 0
-    // ignore_terminal_gaps= 0
-    // ignore_all_gaps     = 0
-    // max_gast_distance   = {'default': 0.30, 'v6': 0.30, 'v6a': 0.30, 'v6v4': 0.25, 'v3v5': 0.25}
-    // #cluster wait
-    // maxwaittime         = 50000  # 50,000 seconds == 833 minutes == 13.9 hours
-    // sleeptime           = 3      # seconds
-    // refdbs = {'unknown':'refssu_all',
-    //         'v1v3':'refv1v3',
-    //         'v1v3a':'refv1v3a',
-    
-// public/constants.js:77
-    //constants.UNIT_ASSIGNMENT_CHOICES = { 
-    // 'refv6':    { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Bv6 (Bacterial)',       availability:'available', refdb:'refv6' },
-  }
-  return script_text
+  // console.log("FFF CONSTS.UNIT_ASSIGNMENT_CHOICES = ");
+  // console.log(util.inspect(CONSTS.UNIT_ASSIGNMENT_CHOICES, false, null));
+  classifier_id = "refv6";
+  console.log("FFF CONSTS.UNIT_ASSIGNMENT_CHOICES[key] = ");
+  console.log(util.inspect(CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id]['refdb'], false, null));
+  console.log(util.inspect(CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb, false, null));
+  return CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id]['refdb'];
+  
+  // for (var key in CONSTS.UNIT_ASSIGNMENT_CHOICES)
+  // {
+  //   console.log("FFF1 CONSTS.UNIT_ASSIGNMENT_CHOICES key = ");
+  //   console.log(util.inspect(key, false, null));
+  //   if (key === classifier_id)
+  //     {
+  //       console.log("ref_db_name key = " + key);
+  //       // console.log("ref_db_name CONSTS.UNIT_ASSIGNMENT_CHOICES[key] = " + CONSTS.UNIT_ASSIGNMENT_CHOICES[key]);
+  //       console.log("FFF CONSTS.UNIT_ASSIGNMENT_CHOICES[key] = ");
+  //       console.log(util.inspect(CONSTS.UNIT_ASSIGNMENT_CHOICES[key]['refdb'], false, null));
+  //
+  //       return key
+  //     }
+  // }
+  //
 }
 
 
