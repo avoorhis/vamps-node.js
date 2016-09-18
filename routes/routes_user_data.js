@@ -992,7 +992,7 @@ function gastTax(req, project_config, options, classifier_id)
   var project  = project_config.GENERAL.project;
   var data_dir = project_config.GENERAL.baseoutputdir;
   //TODO get real numbers
-  var file_number = 1;
+  // var file_number = 1;
   script_name = 'gast_script.sh';
 
   // project_init = options.scriptPath +
@@ -1046,28 +1046,29 @@ function gastTax(req, project_config, options, classifier_id)
   
   console.log(util.inspect(CONSTS.REF_SUFFIX.unique.indexOf('v3'), false, null));
       
-  file_suffix = getSuffix(project_config.GENERAL.dna_region);
-  console.log("SSS2 file_suffix = ");
-  console.log(util.inspect(file_suffix, false, null));
-
+  file_suffix     = getSuffix(project_config.GENERAL.dna_region);
   fasta_extension = getFastaExtensions(data_dir);
   ref_db_name     = chooseRefFile(classifier_id);
-  console.log("ref_db_name ref_db_name = " + ref_db_name);
+  full_option     = getFullOption(classifier_id);
   
   
-  // filenames.list
-// from inside of gast_script.sh 
+//TODO: from inside of gast_script.sh 
   // create filenames.list and get numbers
   // create clust_gast_ill_PROJECT_NAME.sh
   // run it
   
-  make_gast_script_txt = `echo \"Hurray! I've sent a row to the shell script!\"gast_db_path="${CONSTS.GAST_DB_PATH}"
   
+  make_gast_script_txt = `  
 ls ${data_dir}/*${file_suffix} >${data_dir}/filenames.list
-cd ${data_dir}
 
-FILE_NUMBER=\`wc -l < filenames.list\`
-echo "total files = $FILE_NUMBER"
+cd ${data_dir}`
+
+  make_gast_script_txt += "\n";
+  make_gast_script_txt += "\n";
+  make_gast_script_txt += "FILE_NUMBER=\`wc -l < filenames.list\`";
+  make_gast_script_txt += "\n";
+  
+  make_gast_script_txt += `echo "total files = $FILE_NUMBER"
   
 cat >${data_dir}/clust_gast_ill_${project}.sh <<InputComesFromHERE
 #!/bin/bash
@@ -1082,38 +1083,42 @@ cat >${data_dir}/clust_gast_ill_${project}.sh <<InputComesFromHERE
 #$ -M ${req.user.email}
 # Send mail; -m as sends on abort, suspend.
 #$ -m as
-#$ -t 1-$FILE_NUMBER
+#$ -t 1-\${FILE_NUMBER##*( )}
 # Now the script will iterate $FILE_NUMBER times.
 
  # TODO: remove comments
  # . /xraid/bioware/Modules/etc/profile.modules
  # module load bioware
 
-  LISTFILE=./filenames.list
-  INFILE=\`sed -n "\${SGE_TASK_ID}p" \$LISTFILE\`
-  echo "====="
+  LISTFILE=./filenames.list`;
+
+  make_gast_script_txt += "\n";
+  make_gast_script_txt += '  INFILE=\`sed -n "\${SGE_TASK_ID}p" \$LISTFILE\`';
+  make_gast_script_txt += "\n";
+  
+  make_gast_script_txt += `  echo "====="
   echo "file name is \$INFILE"
   echo
 
-  echo "/bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in ${data_dir}/\$INFILE -db $gast_db_path/$REF_DB_NAME.fa -rtax $gast_db_path/$REF_DB_NAME.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads $threads"
+  echo "/bioware/seqinfo/bin/gast_ill -saveuc -nodup ${full_option} -in ${data_dir}/\$INFILE -db ${CONSTS.GAST_DB_PATH}/${ref_db_name}.fa -rtax ${CONSTS.GAST_DB_PATH}/${ref_db_name}.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads 0"
 
- # /bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in ${data_dir}/\$INFILE -db $gast_db_path/$REF_DB_NAME.fa -rtax $gast_db_path/$REF_DB_NAME.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads $threads
+ # /bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in ${data_dir}/\$INFILE -db ${CONSTS.GAST_DB_PATH}/${ref_db_name}.fa -rtax ${CONSTS.GAST_DB_PATH}/${ref_db_name}.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads 0
   
-  chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+# TODO: remove comments
+#  chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   
 InputComesFromHERE
 
 echo "Running clust_gast_ill_${project}.sh"
 # TODO: remove comments
 # qsub ${data_dir}/clust_gast_ill_${project}.sh
-# TODO: remove
-${data_dir}/clust_gast_ill_${project}.sh
-
+# TODO: make local version, iterate over (splited) files in LISTFILE instead of qsub
+bash ${data_dir}/clust_gast_ill_${project}.sh
 `;
 
   make_gast_script_txt += "\n";
-  make_gast_script_txt += "touch " + path.join(data_dir, "TEMP.tmp");
-  make_gast_script_txt += "\n";
+  // make_gast_script_txt += "touch " + path.join(data_dir, "TEMP.tmp");
+  // make_gast_script_txt += "\n";
   
   
   // make_gast_script_txt = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir  +
@@ -1167,35 +1172,15 @@ function getSuffix(dna_region)
   }
 }
 
-
-// todo
 function chooseRefFile(classifier_id)
 {
-  // console.log("FFF CONSTS.UNIT_ASSIGNMENT_CHOICES = ");
-  // console.log(util.inspect(CONSTS.UNIT_ASSIGNMENT_CHOICES, false, null));
-  classifier_id = "refv6";
-  console.log("FFF CONSTS.UNIT_ASSIGNMENT_CHOICES[key] = ");
-  console.log(util.inspect(CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id]['refdb'], false, null));
-  console.log(util.inspect(CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb, false, null));
-  return CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id]['refdb'];
-  
-  // for (var key in CONSTS.UNIT_ASSIGNMENT_CHOICES)
-  // {
-  //   console.log("FFF1 CONSTS.UNIT_ASSIGNMENT_CHOICES key = ");
-  //   console.log(util.inspect(key, false, null));
-  //   if (key === classifier_id)
-  //     {
-  //       console.log("ref_db_name key = " + key);
-  //       // console.log("ref_db_name CONSTS.UNIT_ASSIGNMENT_CHOICES[key] = " + CONSTS.UNIT_ASSIGNMENT_CHOICES[key]);
-  //       console.log("FFF CONSTS.UNIT_ASSIGNMENT_CHOICES[key] = ");
-  //       console.log(util.inspect(CONSTS.UNIT_ASSIGNMENT_CHOICES[key]['refdb'], false, null));
-  //
-  //       return key
-  //     }
-  // }
-  //
+  return CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb; 
 }
 
+function getFullOption(classifier_id)
+{
+  // TODO: get from consts
+}
 
 function getFastaExtensions(data_dir)
 {
