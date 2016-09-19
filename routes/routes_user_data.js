@@ -992,61 +992,8 @@ function gastTax(req, project_config, options, classifier_id)
 {
   var project  = project_config.GENERAL.project;
   var data_dir = project_config.GENERAL.baseoutputdir;
-  //TODO get real numbers
-  // var file_number = 1;
   script_name = 'gast_script.sh';
-
-  // project_init = options.scriptPath +
-  //   'project_initialization.py -site ' + req.CONFIG.site +
-  //   ' -indir ' + data_dir +
-  //   ' -p '     + project  +
-  //   ' -uid '   + req.user.user_id;
-
-  // console.log('GGG1: gastTax: project_config ');
-  // console.log(util.inspect(project_config, false, null));
-  // //
-  // GGG1: gastTax: project_config
-  // { GENERAL:
-  //    { project: 'test_gast_project',
-  //      project_title: '',
-  //      project_description: '',
-  //      baseoutputdir: '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project',
-  //      configPath: '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/config.ini',
-  //      fasta_file: '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/test_gast_dataset-original.fna',
-  //      platform: 'new_vamps',
-  //      owner: 'admin',
-  //      config_file_type: 'ini',
-  //      public: 'False',
-  //      fasta_type: 'single',
-  //      dna_region: 'v6',
-  //      project_sequence_count: '10',
-  //      sequence_counts: 'NOT_UNIQUED',
-  //      domain: 'bacteria',
-  //      number_of_datasets: '1',
-  //      env_source_id: '100',
-  //      has_tax: '0' },
-  //   DATASETS: { test_gast_dataset: '10' } }
-
-  // FULL_OPTION = $FULL_OPTION;
-  // NAME_PAT = $NAME_PAT;
-
-  // nonchimeric_suffix = "nonchimeric.fa"
-  // unique_suffix      = "unique"
-  // REF_SUFFIX         = {"unique.nonchimeric.fa": ['v1v3', 'v1v3a', 'v3v5', 'v4v5', 'v4v6', 'v6v4', 'v4v6a', 'v6v4a', 'its1'], "unique": ['v3', 'v3a', 'v4', 'v5', 'v6', 'v6a', 'v9']}
-  // ref_full_option   = ["refits1", "refssu"]
-  //
-  console.log("PRPRP CONSTS = ");
-  console.log(util.inspect(CONSTS.REF_SUFFIX, false, null));
-  console.log("SSS req.params.classifier_id = ");
-  console.log(util.inspect(req.params.classifier_id, false, null));
-  console.log("SSS1 project_config.GENERAL.dna_region = ");
-  console.log(util.inspect(project_config.GENERAL.dna_region, false, null));
-
-  
-  console.log('dna_region in CONSTS.REF_SUFFIX.unique'); 
-  
-  console.log(util.inspect(CONSTS.REF_SUFFIX.unique.indexOf('v3'), false, null));
-      
+        
   file_suffix      = getSuffix(project_config.GENERAL.dna_region);
   ref_db_name      = chooseRefFile(classifier_id);
   full_option      = getFullOption(classifier_id);
@@ -1056,18 +1003,23 @@ function gastTax(req, project_config, options, classifier_id)
   console.log('gast_script_path: ' + gast_script_path); 
 
   
-//TODO: from inside of gast_script.sh 
+//from inside of gast_script.sh 
   // create filenames.list and get numbers
   // create clust_gast_ill_PROJECT_NAME.sh
   // run it
   make_gast_script_txt = "";
   
-  if (helpers.isLocal(req))
+  //TODO: change
+  // is_local = helpers.isLocal(req);
+  is_local = false;
+  if (is_local)
   {
     make_gast_script_txt = `
-    export PERL5LIB=${app_root}/public/scripts/gast
-    PATH=$PATH:${app_root}/public/scripts/gast
-    touch ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log`;
+export PERL5LIB=${app_root}/public/scripts/gast
+PATH=$PATH:${app_root}/public/scripts/gast
+touch ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+    
+    `;
   }
   make_gast_script_txt += `  
 ls ${data_dir}/*${file_suffix} >${data_dir}/filenames.list
@@ -1083,9 +1035,8 @@ cd ${data_dir}`
   
 cat >${data_dir}/clust_gast_ill_${project}.sh <<InputComesFromHERE
 #!/bin/bash`
-make_gast_script_txt += "\n";
 
-if (helpers.isLocal(req))
+if (is_local)
 {
   make_gast_script_txt += `for INFILE in ${data_dir}/*${file_suffix}; do `;
   make_gast_script_txt += "\n";
@@ -1107,14 +1058,13 @@ else
 #$ -t 1-\${FILE_NUMBER##*( )}
 # Now the script will iterate $FILE_NUMBER times.
 
- # TODO: remove comments
- # . /xraid/bioware/Modules/etc/profile.modules
- # module load bioware
+ . /xraid/bioware/Modules/etc/profile.modules
+ module load bioware
 
   LISTFILE=./filenames.list`;
 
   make_gast_script_txt += "\n";
-  make_gast_script_txt += '  INFILE=\`sed -n "\${SGE_TASK_ID}p" \$LISTFILE\`';
+  make_gast_script_txt += '  INFILE=\\`sed -n "\\${SGE_TASK_ID}p" \\$LISTFILE\\`';
 }
 
   make_gast_script_txt += "\n";
@@ -1127,7 +1077,7 @@ else
   ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0`;
   make_gast_script_txt += "\n";
 
-  if (helpers.isLocal(req))
+  if (is_local)
   {
     make_gast_script_txt += "done";
   
@@ -1139,7 +1089,7 @@ InputComesFromHERE
   echo "Running clust_gast_ill_${project}.sh" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log`
   make_gast_script_txt += "\n";
 
-  if (helpers.isLocal(req))
+  if (is_local)
   {
     // # TODO: make local version, iterate over (splited) files in LISTFILE instead of qsub
     make_gast_script_txt += `bash ${data_dir}/clust_gast_ill_${project}.sh`
@@ -1150,8 +1100,8 @@ InputComesFromHERE
   }
 
   make_gast_script_txt += "\n";
-  make_gast_script_txt += "touch " + path.join(data_dir, "TEMP.tmp");
-  make_gast_script_txt += "\n";
+  // make_gast_script_txt += "touch " + path.join(data_dir, "TEMP.tmp");
+  // make_gast_script_txt += "\n";
     
   status_params.statusOK      = 'OK-GAST';
   status_params.statusSUCCESS = 'GAST-SUCCESS';
@@ -1213,14 +1163,16 @@ function getGastDbPath(req)
 {
   gast_db_path = "";
   helpers.isLocal(req) ? gast_db_path = path.join(app_root, CONSTS.GAST_DB_PATH_local) : gast_db_path = CONSTS.GAST_DB_PATH;
-  return gast_db_path;
+  // return gast_db_path;
+  return CONSTS.GAST_DB_PATH;
 }
 
 function getGastScriptPath(req)
 {
   gast_script_path = "";
   helpers.isLocal(req) ? gast_script_path = path.join(app_root, CONSTS.GAST_SCRIPT_PATH_local) : gast_script_path = CONSTS.GAST_SCRIPT_PATH;
-  return gast_script_path;
+  // return gast_script_path;
+  return CONSTS.GAST_SCRIPT_PATH;
 }
 
 function getFastaExtensions(data_dir)
