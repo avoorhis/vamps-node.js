@@ -1049,19 +1049,11 @@ function gastTax(req, project_config, options, classifier_id)
   file_suffix     = getSuffix(project_config.GENERAL.dna_region);
   fasta_extension = getFastaExtensions(data_dir);
   ref_db_name     = chooseRefFile(classifier_id);
-  full_option     = isFullOption(classifier_id);
+  full_option     = getFullOption(classifier_id);
   gast_db_path    = CONSTS.GAST_DB_PATH
   
-  console.log('OOO full_option'); 
-  console.log(full_option); 
-  if (full_option)
-  {
-    console.log('classifier_id in CONSTS.REF_FULL_OPTION'); 
-  }
-  else
-  {
-    console.log('NOT classifier_id in CONSTS.REF_FULL_OPTION'); 
-  }
+  console.log('full_option: ' + full_option); 
+
   
 //TODO: from inside of gast_script.sh 
   // create filenames.list and get numbers
@@ -1113,7 +1105,7 @@ cat >${data_dir}/clust_gast_ill_${project}.sh <<InputComesFromHERE
 
   echo "/bioware/seqinfo/bin/gast_ill -saveuc -nodup ${full_option} -in ${data_dir}/\$INFILE -db ${CONSTS.GAST_DB_PATH}/${ref_db_name}.fa -rtax ${CONSTS.GAST_DB_PATH}/${ref_db_name}.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads 0"
 
- # /bioware/seqinfo/bin/gast_ill -saveuc -nodup $FULL_OPTION -in ${data_dir}/\$INFILE -db ${CONSTS.GAST_DB_PATH}/${ref_db_name}.fa -rtax ${CONSTS.GAST_DB_PATH}/${ref_db_name}.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads 0
+ # /bioware/seqinfo/bin/gast_ill -saveuc -nodup ${full_option} -in ${data_dir}/\$INFILE -db ${CONSTS.GAST_DB_PATH}/${ref_db_name}.fa -rtax ${CONSTS.GAST_DB_PATH}/${ref_db_name}.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads 0
   
 # TODO: remove comments
 #  chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
@@ -1189,9 +1181,16 @@ function chooseRefFile(classifier_id)
   return CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb; 
 }
 
-function isFullOption(classifier_id)
+function getFullOption(classifier_id)
 {
-  return CONSTS.REF_FULL_OPTION.indexOf(classifier_id) >= 0
+  if (CONSTS.REF_FULL_OPTION.indexOf(classifier_id) >= 0)
+  {
+    return "-full";
+  }
+  else
+  {
+    return "";
+  }
 }
 
 function getFastaExtensions(data_dir)
