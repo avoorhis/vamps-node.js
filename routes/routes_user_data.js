@@ -2052,22 +2052,22 @@ function CheckIfPID(data)
 
 function GetScriptVars(req, data_repository, cmd_list, cmd_name)
 {
-  if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
+  if (helpers.isLocal(req))
   {
-   scriptlog   = path.join(data_repository, 'cluster.log');
-   //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, 'vampsupld', cmd_list)
-   script_text = get_qsub_script_text(scriptlog, data_repository, req.CONFIG.dbhost, cmd_name, cmd_list);
+    scriptlog   = path.join(data_repository, 'script.log');
+    script_text = get_local_script_text(scriptlog, 'local', cmd_name, cmd_list);
   }
   else
   {
-   scriptlog   = path.join(data_repository, 'script.log');
-   script_text = get_local_script_text(scriptlog, 'local', cmd_name, cmd_list);
+    scriptlog   = path.join(data_repository, 'cluster.log');
+    //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, 'vampsupld', cmd_list)
+    script_text = get_qsub_script_text(scriptlog, data_repository, req.CONFIG.dbhost, cmd_name, cmd_list);
   }
   
   // console.log('111 scriptlog: ' + scriptlog);
   // console.log('222 script_text: ' + script_text);
-  console.log('222 =====');
-  console.log(helpers.isLocal(req));
+  // console.log('222 =====');
+  // console.log(helpers.isLocal(req));
   return [scriptlog, script_text];
 }
 
