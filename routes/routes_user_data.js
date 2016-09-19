@@ -1024,7 +1024,7 @@ touch ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   make_gast_script_txt += `  
 ls ${data_dir}/*${file_suffix} >${data_dir}/filenames.list
 
-cd ${data_dir}`
+cd ${data_dir}`;
 
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
@@ -1034,12 +1034,14 @@ cd ${data_dir}`
   make_gast_script_txt += `echo "total files = $FILE_NUMBER" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   
 cat >${data_dir}/clust_gast_ill_${project}.sh <<InputComesFromHERE
-#!/bin/bash`
+#!/bin/bash`;
+
+  make_gast_script_txt += "\n";
 
 if (is_local)
 {
   make_gast_script_txt += `for FASTA in ${data_dir}/*${file_suffix}; do 
-  INFILE=$(basename \\$FASTA)
+  INFILE=\\$(basename \\$FASTA)
   echo "\\$INFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   `;
   make_gast_script_txt += "\n";
@@ -1086,6 +1088,7 @@ else
     make_gast_script_txt += "done";
   
   }
+  make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
   make_gast_script_txt += `chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
 InputComesFromHERE
