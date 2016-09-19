@@ -1064,7 +1064,10 @@ function gastTax(req, project_config, options, classifier_id)
   
   if (helpers.isLocal(req))
   {
-    make_gast_script_txt = `touch ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log`;
+    make_gast_script_txt = `
+    export PERL5LIB=${app_root}/public/scripts/gast
+    PATH=$PATH:${app_root}/public/scripts/gast
+    touch ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log`;
   }
   make_gast_script_txt += `  
 ls ${data_dir}/*${file_suffix} >${data_dir}/filenames.list
@@ -1116,12 +1119,12 @@ else
 
   make_gast_script_txt += "\n";
   make_gast_script_txt += `  echo "=====" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
-  echo "file name is \$INFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  echo "file name is \\$INFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   echo >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   
-  echo "${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in ${data_dir}/\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads 0" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  echo "${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
 
-   # ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in ${data_dir}/\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads 0`;
+  ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0`;
   make_gast_script_txt += "\n";
 
   if (helpers.isLocal(req))
@@ -1131,9 +1134,10 @@ else
   }
   make_gast_script_txt += "\n";
   make_gast_script_txt += `chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
-InputComesFromHERE`;
+InputComesFromHERE
+  
+  echo "Running clust_gast_ill_${project}.sh" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log`
   make_gast_script_txt += "\n";
-  make_gast_script_txt += `  echo "Running clust_gast_ill_${project}.sh" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log`
 
   if (helpers.isLocal(req))
   {
