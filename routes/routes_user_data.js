@@ -889,7 +889,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   // --- end test
   var script_path     = path.join(data_dir, script_name);
   var nodelog         = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
-  var ok_code_options = [classifier, status_params, res];
+  var ok_code_options = [classifier, status_params, res, ref_db_dir];
 
   // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
   
@@ -933,6 +933,7 @@ function checkPid(check_pid_options, last_line)
   // last_line     = check_pid_options[1];
   status_params = check_pid_options[1];
   res           = check_pid_options[2];
+  ref_db_dir    = check_pid_options[3];
   console.log(' classifier CLCLCL: ' + classifier);
   console.log(' last_line CLCLCL: ' + last_line);
   console.log(' classifier CLCLCL: ');
@@ -1046,22 +1047,26 @@ function gastTax(req, project_config, options, classifier_id)
   
   console.log(util.inspect(CONSTS.REF_SUFFIX.unique.indexOf('v3'), false, null));
       
-  file_suffix     = getSuffix(project_config.GENERAL.dna_region);
-  fasta_extension = getFastaExtensions(data_dir);
-  ref_db_name     = chooseRefFile(classifier_id);
-  full_option     = getFullOption(classifier_id);
-  gast_db_path    = CONSTS.GAST_DB_PATH
+  file_suffix      = getSuffix(project_config.GENERAL.dna_region);
+  ref_db_name      = chooseRefFile(classifier_id);
+  full_option      = getFullOption(classifier_id);
+  gast_db_path     = getGastDbPath(req);
+  gast_script_path = getGastScriptPath(req);
   
-  console.log('full_option: ' + full_option); 
+  console.log('gast_script_path: ' + gast_script_path); 
 
   
 //TODO: from inside of gast_script.sh 
   // create filenames.list and get numbers
   // create clust_gast_ill_PROJECT_NAME.sh
   // run it
+  make_gast_script_txt = "";
   
-  
-  make_gast_script_txt = `  
+  if (helpers.isLocal(req))
+  {
+    make_gast_script_txt = `touch ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log`;
+  }
+  make_gast_script_txt += `  
 ls ${data_dir}/*${file_suffix} >${data_dir}/filenames.list
 
 cd ${data_dir}`
@@ -1071,10 +1076,20 @@ cd ${data_dir}`
   make_gast_script_txt += "FILE_NUMBER=\`wc -l < filenames.list\`";
   make_gast_script_txt += "\n";
   
-  make_gast_script_txt += `echo "total files = $FILE_NUMBER"
+  make_gast_script_txt += `echo "total files = $FILE_NUMBER" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   
 cat >${data_dir}/clust_gast_ill_${project}.sh <<InputComesFromHERE
-#!/bin/bash
+#!/bin/bash`
+make_gast_script_txt += "\n";
+
+if (helpers.isLocal(req))
+{
+  make_gast_script_txt += `for INFILE in ${data_dir}/*${file_suffix}; do `;
+  make_gast_script_txt += "\n";
+}
+else
+{
+  make_gast_script_txt += `
 #$ -cwd
 #$ -S /bin/bash
 #$ -N clust_gast_ill_${project}.sh
@@ -1097,46 +1112,43 @@ cat >${data_dir}/clust_gast_ill_${project}.sh <<InputComesFromHERE
 
   make_gast_script_txt += "\n";
   make_gast_script_txt += '  INFILE=\`sed -n "\${SGE_TASK_ID}p" \$LISTFILE\`';
-  make_gast_script_txt += "\n";
-  
-  make_gast_script_txt += `  echo "====="
-  echo "file name is \$INFILE"
-  echo
-
-  echo "/bioware/seqinfo/bin/gast_ill -saveuc -nodup ${full_option} -in ${data_dir}/\$INFILE -db ${CONSTS.GAST_DB_PATH}/${ref_db_name}.fa -rtax ${CONSTS.GAST_DB_PATH}/${ref_db_name}.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads 0"
-
- # /bioware/seqinfo/bin/gast_ill -saveuc -nodup ${full_option} -in ${data_dir}/\$INFILE -db ${CONSTS.GAST_DB_PATH}/${ref_db_name}.fa -rtax ${CONSTS.GAST_DB_PATH}/${ref_db_name}.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads 0
-  
-# TODO: remove comments
-#  chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
-  
-InputComesFromHERE
-
-echo "Running clust_gast_ill_${project}.sh"
-# TODO: remove comments
-# qsub ${data_dir}/clust_gast_ill_${project}.sh
-# TODO: make local version, iterate over (splited) files in LISTFILE instead of qsub
-bash ${data_dir}/clust_gast_ill_${project}.sh
-`;
+}
 
   make_gast_script_txt += "\n";
-  // make_gast_script_txt += "touch " + path.join(data_dir, "TEMP.tmp");
-  // make_gast_script_txt += "\n";
+  make_gast_script_txt += `  echo "=====" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  echo "file name is \$INFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  echo >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   
-  
-  // make_gast_script_txt = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir  +
-  //   ' -s ' + project +
-  //   ' -d gast -v -e fa.unique -r ' + classifier_id +
-  // // TODO: "both" - a variable!
-  //   ' -f -p both -w ' + req.CONFIG.site;
-  //
-  //run_cmd2 = "/bioware/seqinfo/bin/gast_ill -saveuc -nodup -full -ignoregaps -in " + data_dir + "/fasta.fa.unique -db /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".fa -rtax /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".tax -out " + data_dir + "/gast/fasta_out.gast -uc " + data_dir + "/gast/fasta_out.uc -threads 0 -strand both"
+  echo "${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in ${data_dir}/\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads 0" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
 
-  //run_cmd3 = options.scriptPath + '3-vamps_nodejs_database_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -ds ' + single_dataset_name
+   # ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in ${data_dir}/\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out ${data_dir}/\$INFILE.gast -uc ${data_dir}/\$INFILE.uc -threads 0`;
+  make_gast_script_txt += "\n";
 
-  //run_cmd = options.scriptPath + 'vamps_script_gast_run.py ' + options.gast_run_args.join(' '),
-  // script_name = 'gast_script.sh';
+  if (helpers.isLocal(req))
+  {
+    make_gast_script_txt += "done";
   
+  }
+  make_gast_script_txt += "\n";
+  make_gast_script_txt += `chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+InputComesFromHERE`;
+  make_gast_script_txt += "\n";
+  make_gast_script_txt += `  echo "Running clust_gast_ill_${project}.sh" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log`
+
+  if (helpers.isLocal(req))
+  {
+    // # TODO: make local version, iterate over (splited) files in LISTFILE instead of qsub
+    make_gast_script_txt += `bash ${data_dir}/clust_gast_ill_${project}.sh`
+  }
+  else
+  {
+    make_gast_script_txt += `qsub ${data_dir}/clust_gast_ill_${project}.sh`;
+  }
+
+  make_gast_script_txt += "\n";
+  make_gast_script_txt += "touch " + path.join(data_dir, "TEMP.tmp");
+  make_gast_script_txt += "\n";
+    
   status_params.statusOK      = 'OK-GAST';
   status_params.statusSUCCESS = 'GAST-SUCCESS';
   status_params.msgOK         = 'Finished GAST';
@@ -1191,6 +1203,20 @@ function getFullOption(classifier_id)
   {
     return "";
   }
+}
+
+function getGastDbPath(req)
+{
+  gast_db_path = "";
+  helpers.isLocal(req) ? gast_db_path = path.join(app_root, CONSTS.GAST_DB_PATH_local) : gast_db_path = CONSTS.GAST_DB_PATH;
+  return gast_db_path;
+}
+
+function getGastScriptPath(req)
+{
+  gast_script_path = "";
+  helpers.isLocal(req) ? gast_script_path = path.join(app_root, CONSTS.GAST_SCRIPT_PATH_local) : gast_script_path = CONSTS.GAST_SCRIPT_PATH;
+  return gast_script_path;
 }
 
 function getFastaExtensions(data_dir)
