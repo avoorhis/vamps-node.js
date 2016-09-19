@@ -1093,13 +1093,13 @@ else
   make_gast_script_txt += `chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
 InputComesFromHERE
   
-  echo "Running clust_gast_ill_${project}.sh" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log`
+  echo "Running clust_gast_ill_${project}.sh" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log`;
   make_gast_script_txt += "\n";
 
   if (is_local)
   {
     // # TODO: make local version, iterate over (splited) files in LISTFILE instead of qsub
-    make_gast_script_txt += `bash ${data_dir}/clust_gast_ill_${project}.sh`
+    make_gast_script_txt += `bash ${data_dir}/clust_gast_ill_${project}.sh`;
   }
   else
   {
