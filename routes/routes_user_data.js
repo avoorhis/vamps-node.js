@@ -1049,8 +1049,19 @@ function gastTax(req, project_config, options, classifier_id)
   file_suffix     = getSuffix(project_config.GENERAL.dna_region);
   fasta_extension = getFastaExtensions(data_dir);
   ref_db_name     = chooseRefFile(classifier_id);
-  full_option     = getFullOption(classifier_id);
+  full_option     = isFullOption(classifier_id);
   gast_db_path    = CONSTS.GAST_DB_PATH
+  
+  console.log('OOO full_option'); 
+  console.log(full_option); 
+  if (full_option)
+  {
+    console.log('classifier_id in CONSTS.REF_FULL_OPTION'); 
+  }
+  else
+  {
+    console.log('NOT classifier_id in CONSTS.REF_FULL_OPTION'); 
+  }
   
 //TODO: from inside of gast_script.sh 
   // create filenames.list and get numbers
@@ -1154,6 +1165,7 @@ bash ${data_dir}/clust_gast_ill_${project}.sh
   return cmd_list;
 }
 
+
 function getSuffix(dna_region)
 {
   if (CONSTS.REF_SUFFIX["unique.nonchimeric.fa"].indexOf(project_config.GENERAL.dna_region) >= 0) 
@@ -1177,9 +1189,9 @@ function chooseRefFile(classifier_id)
   return CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb; 
 }
 
-function getFullOption(classifier_id)
+function isFullOption(classifier_id)
 {
-  // TODO: get from consts
+  return CONSTS.REF_FULL_OPTION.indexOf(classifier_id) >= 0
 }
 
 function getFastaExtensions(data_dir)
@@ -2060,7 +2072,6 @@ function GetScriptVars(req, data_repository, cmd_list, cmd_name)
   else
   {
     scriptlog   = path.join(data_repository, 'cluster.log');
-    //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, 'vampsupld', cmd_list)
     script_text = get_qsub_script_text(scriptlog, data_repository, req.CONFIG.dbhost, cmd_name, cmd_list);
   }
   
