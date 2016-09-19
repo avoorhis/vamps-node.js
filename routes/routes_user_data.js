@@ -1009,9 +1009,9 @@ function gastTax(req, project_config, options, classifier_id)
   // run it
   make_gast_script_txt = "";
   
-  //TODO: change
-  // is_local = helpers.isLocal(req);
-  is_local = false;
+  is_local = helpers.isLocal(req);
+  // for tests: is_local = false;
+  
   if (is_local)
   {
     make_gast_script_txt = `
@@ -1038,7 +1038,10 @@ cat >${data_dir}/clust_gast_ill_${project}.sh <<InputComesFromHERE
 
 if (is_local)
 {
-  make_gast_script_txt += `for INFILE in ${data_dir}/*${file_suffix}; do `;
+  make_gast_script_txt += `for FASTA in ${data_dir}/*${file_suffix}; do 
+  INFILE=$(basename \\$FASTA)
+  echo "\\$INFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  `;
   make_gast_script_txt += "\n";
 }
 else
@@ -1058,8 +1061,9 @@ else
 #$ -t 1-\${FILE_NUMBER##*( )}
 # Now the script will iterate $FILE_NUMBER times.
 
- . /xraid/bioware/Modules/etc/profile.modules
- module load bioware
+#TODO: remove comments
+# . /xraid/bioware/Modules/etc/profile.modules
+# module load bioware
 
   LISTFILE=./filenames.list`;
 
@@ -1072,9 +1076,9 @@ else
   echo "file name is \\$INFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   echo >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   
-  echo "${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  echo "${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in ${data_dir}/\\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out ${data_dir}/\\$INFILE.gast -uc ${data_dir}/\\$INFILE.uc -threads 0" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
 
-  ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0`;
+  ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in ${data_dir}/\\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out ${data_dir}/\\$INFILE.gast -uc ${data_dir}/\\$INFILE.uc -threads 0`;
   make_gast_script_txt += "\n";
 
   if (is_local)
@@ -1096,7 +1100,8 @@ InputComesFromHERE
   }
   else
   {
-    make_gast_script_txt += `qsub ${data_dir}/clust_gast_ill_${project}.sh`;
+    // TODO: remove comments
+    make_gast_script_txt += `#qsub ${data_dir}/clust_gast_ill_${project}.sh`;
   }
 
   make_gast_script_txt += "\n";
@@ -1163,16 +1168,14 @@ function getGastDbPath(req)
 {
   gast_db_path = "";
   helpers.isLocal(req) ? gast_db_path = path.join(app_root, CONSTS.GAST_DB_PATH_local) : gast_db_path = CONSTS.GAST_DB_PATH;
-  // return gast_db_path;
-  return CONSTS.GAST_DB_PATH;
+  return gast_db_path;
 }
 
 function getGastScriptPath(req)
 {
   gast_script_path = "";
   helpers.isLocal(req) ? gast_script_path = path.join(app_root, CONSTS.GAST_SCRIPT_PATH_local) : gast_script_path = CONSTS.GAST_SCRIPT_PATH;
-  // return gast_script_path;
-  return CONSTS.GAST_SCRIPT_PATH;
+  return gast_script_path;
 }
 
 function getFastaExtensions(data_dir)
