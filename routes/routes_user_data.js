@@ -1050,7 +1050,7 @@ function gastTax(req, project_config, options, classifier_id)
   fasta_extension = getFastaExtensions(data_dir);
   ref_db_name     = chooseRefFile(classifier_id);
   full_option     = getFullOption(classifier_id);
-  
+  gast_db_path    = CONSTS.GAST_DB_PATH
   
 //TODO: from inside of gast_script.sh 
   // create filenames.list and get numbers
@@ -2063,9 +2063,11 @@ function GetScriptVars(req, data_repository, cmd_list, cmd_name)
    scriptlog   = path.join(data_repository, 'script.log');
    script_text = get_local_script_text(scriptlog, 'local', cmd_name, cmd_list);
   }
+  
   // console.log('111 scriptlog: ' + scriptlog);
   // console.log('222 script_text: ' + script_text);
-  // console.log('222 =====');
+  console.log('222 =====');
+  console.log(helpers.isLocal(req));
   return [scriptlog, script_text];
 }
 

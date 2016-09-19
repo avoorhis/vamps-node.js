@@ -715,3 +715,10 @@ module.exports.fetchInfo = function (query, values, callback) {
     }
   });
 };
+
+module.exports.isLocal = function (req) {
+  if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
+    {return false;}
+  else
+    {return true;}
+};
