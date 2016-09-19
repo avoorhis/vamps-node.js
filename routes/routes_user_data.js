@@ -1063,9 +1063,8 @@ else
 #$ -t 1-\${FILE_NUMBER##*( )}
 # Now the script will iterate $FILE_NUMBER times.
 
-#TODO: remove comments
-# . /xraid/bioware/Modules/etc/profile.modules
-# module load bioware
+  . /xraid/bioware/Modules/etc/profile.modules
+  module load bioware
 
   LISTFILE=./filenames.list`;
 
@@ -1103,7 +1102,6 @@ InputComesFromHERE
   }
   else
   {
-    // TODO: remove comments
     make_gast_script_txt += `#qsub ${data_dir}/clust_gast_ill_${project}.sh`;
   }
 
