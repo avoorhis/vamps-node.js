@@ -2057,7 +2057,7 @@ function GetScriptVars(req, data_repository, cmd_list, cmd_name)
   else
   {
     scriptlog   = path.join(data_repository, 'cluster.log');
-    script_text = get_qsub_script_text(scriptlog, data_repository, req.CONFIG.dbhost, cmd_name, cmd_list);
+    script_text = helpers.get_qsub_script_text(scriptlog, data_repository, req.CONFIG.dbhost, cmd_name, cmd_list);
   }
   
   // console.log('111 scriptlog: ' + scriptlog);
@@ -3389,122 +3389,41 @@ function get_local_script_text(log, site, code, cmd_list) {
 //
 //
 //
-function get_qsub_script_text(log, pwd, site, name, cmd_list) {
-    /*
-    #!/bin/sh
-    # CODE:
-    # source environment:\n";
-    source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh
-    TSTAMP=`date "+%Y%m%d%H%M%S"`'
-    # . /usr/share/Modules/init/sh
-    # export MODULEPATH=/usr/local/www/vamps/software/modulefiles
-    # module load clusters/vamps
-    cd "+pwd+"
-    function status() {
-       qstat -f
-    }
-    function submit_job() {
-    cat<<END | qsub
-    #!/bin/bash
-    #$ -j y
-    #$ -o "+log+"
-    #$ -N "+name+"
-    #$ -cwd
-    #$ -V
-    echo -n "Hostname: "
-    hostname
-    echo -n "Current working directory: "
-    pwd
-    source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh
-    for (i in cmd_list) {
-        cmd_list[i]
-    }
-    END
-    }
-    status
-    submit_job
-    */
-    //### Create Cluster Script
-    script_text = "#!/bin/bash\n\n";
-    script_text += "# CODE:\t"+name+"\n\n";
-    script_text += "# source environment:\n";
-    script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";
-    script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
-    script_text += "# Loading Module didn't work when testing:\n";
-    //$script_text .= "LOGNAME=test-output-$TSTAMP.log\n";
-    script_text += ". /usr/share/Modules/init/sh\n";
-    script_text += "export MODULEPATH=/usr/local/www/vamps/software/modulefiles\n";
-    script_text += "module load clusters/vamps\n\n";
-     script_text += "cd /groups/vampsweb/tmp\n\n";
-    //script_text += "cd /groups/vampsweb/vampsdev_node_data/\n\n";
-    //script_text += "cd "+pwd+"\n\n";
-    //script_text += "mkdir "+pwd+"/gast\n\n";
-    //script_text += "mkdir gast\n\n";
- //    script_text += "function status() {\n";
-//     script_text += "   qstat -f\n";
-//     script_text += "}\n\n";
-     script_text += "function submit_job() {\n";
-     script_text += "cat<<END | qsub\n";
-     script_text += "#!/bin/bash\n";
-     script_text += "#$ -j y\n";
-     script_text += "#$ -o "+log+"\n";
-     script_text += "#$ -N "+name+"\n";
-     script_text += "#$ -cwd\n";
-     script_text += "#$ -V\n";
-     script_text += 'echo -n "Hostname: "'+"\n";
-     script_text += "hostname\n";
-     script_text += 'echo -n "qsub: Current working directory: "'+"\n";
-     script_text += "pwd\n\n";
+
+
+
+// function get_qsub_script_text2(log, pwd, site, name, cmd_list) {
+
+//     //### Create Cluster Script
+//     script_text = "#!/bin/sh\n\n";
+//     script_text += "# CODE:\t"+name+"\n\n";
+//     script_text += "# source environment:\n";
 //     script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";
-     for (var i in cmd_list) {
-         script_text += cmd_list[i]+"\n";
-     }
-//
+//     script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
+//     script_text += "# Loading Module didn't work when testing:\n";
+//     //$script_text .= "LOGNAME=test-output-$TSTAMP.log\n";
+//     script_text += "export MODULEPATH=/usr/local/www/vamps/software/modulefiles\n";
+//     script_text += ". /xraid/bioware/Modules/etc/profile.modules\n";
+//     script_text += "# . /usr/share/Modules/init/sh\n";
+//     script_text += "# export MODULEPATH=/usr/local/www/vamps/software/modulefiles\n";
+//     script_text += "module load clusters/vamps\n\n";
+//     script_text += "cd "+pwd+"\n\n";
+
+
+//     for (var i in cmd_list) {
+//         script_text += cmd_list[i]+"\n";
+//     }
 //     //script_text += "chmod 666 "+log+"\n";
 //     //$script_text .= "sleep 120\n";   # for testing
-     script_text += "END\n";
-     script_text += "}\n";
-//     script_text += "status\n";  //#  status will show up in export.out
-     script_text += "submit_job\n";
-    //##### END  create command
 
-    return script_text;
-
-}
+//     script_text += "\n";
 
 
-function get_qsub_script_text2(log, pwd, site, name, cmd_list) {
+//     //##### END  create command
 
-    //### Create Cluster Script
-    script_text = "#!/bin/sh\n\n";
-    script_text += "# CODE:\t"+name+"\n\n";
-    script_text += "# source environment:\n";
-    script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";
-    script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
-    script_text += "# Loading Module didn't work when testing:\n";
-    //$script_text .= "LOGNAME=test-output-$TSTAMP.log\n";
-    script_text += "export MODULEPATH=/usr/local/www/vamps/software/modulefiles\n";
-    script_text += ". /xraid/bioware/Modules/etc/profile.modules\n";
-    script_text += "# . /usr/share/Modules/init/sh\n";
-    script_text += "# export MODULEPATH=/usr/local/www/vamps/software/modulefiles\n";
-    script_text += "module load clusters/vamps\n\n";
-    script_text += "cd "+pwd+"\n\n";
+//     return script_text;
 
-
-    for (var i in cmd_list) {
-        script_text += cmd_list[i]+"\n";
-    }
-    //script_text += "chmod 666 "+log+"\n";
-    //$script_text .= "sleep 120\n";   # for testing
-
-    script_text += "\n";
-
-
-    //##### END  create command
-
-    return script_text;
-
-}
+// }
 //
 //
 //
