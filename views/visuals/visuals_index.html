@@ -14,8 +14,8 @@
 
 <link rel="stylesheet" href="/stylesheets/dhtmlx/dhtmlxtree.css" >
 <% if(portal_to_show == ''){ %>
-  <div class='title title_color_viz' id='comm_viz_title_div' >Community Visualization</div>
-  <div class='subtitle' style=''><%= subtitle %></div>
+  <div class='title title_color_viz' id='comm_viz_title_div' >Dataset Selection</div>
+  
 <% }else{ %>
   <div class='title title_color_portal' id='comm_viz_title_div' ><%= portals[portal_to_show].subtext %> Portal: Community Visualization</div>
   <div class='subtitle' style='padding:3px;background:#BDEDFF;'><%- portals[portal_to_show].subtitle %><br><%= subtitle %></div>
@@ -33,7 +33,7 @@
         </td>
         
         <td>
-          <a  href='/visuals/saved_elements'  type="button" value='' class="btn btn-xs btn-primary pull-right"  role='button' >View Saved Datasets</a>
+          <a  href='/visuals/saved_elements'  type="button" value='' class="btn btn-xs btn-primary pull-right"  role='button' >Go To Saved Datasets</a>
           <div id='projects_showing_div' class='pull-left' >
             <small>
               Showing <span id='project_count_id'>0</span> projects<br>
@@ -44,11 +44,13 @@
         </td>
         
         <td>            
-      			<button type="button" class="btn btn-sm btn-warning pull-right" name='Next' id="unit_selection_btn_visuals"> 
+      			<!--
+            <button type="button" class="btn btn-sm btn-warning pull-right" name='Next' id="unit_selection_btn_visuals"> 
       			  next: Unit Selection <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
       			</button>
+-->
             <h4>                
-                <span class="label label-default">To save your dataset selections go to the next page.</span>  
+                <span class="label label-default">Save your dataset selections on the next page.</span>  
             </h4>
         </td>
 
@@ -66,31 +68,61 @@
         </td>
       
 		    <td class='td_top' width="50%">
-                - The projects to the left include all the public projects plus any others
-            <br>&nbsp;&nbsp;&nbsp;that you have permissions to access. 
-            <br><br>- Selecting the <span class='glyphicon glyphicon-question-sign'></span> next to the project name will take you to that project's profile.
-            <br><br>- Use the 'View Saved Datasets' button to re-use previously saved datasets.
-            <br><br>- Filter the projects using the filters to the left.
-            <br><br>- In the project tree click on the checkbox or plus(+) box to view and select datasets.
-            <br><br>- Once you select your datasets move to the next page
-            
-            <br>&nbsp;&nbsp;&nbsp;by selecting the orange 'next: Unit Selection' button in the upper right.
-            <br><br>On the next page you can:
-            <br>&nbsp;&nbsp;&nbsp; - Save your list of selected datasets for re-use.
-            <br>&nbsp;&nbsp;&nbsp; - Select your units (taxonomy, OTUs or tree nodes) and metadata
-            for the visualizations.
+          <div class='clean_list'>
+            <li><button type="button" class="btn btn-sm btn-warning" name='Next' id="selection_btn_visuals"> 
+                &nbsp;&nbsp;&nbsp;Visualizations&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+                </button>
+                - Next: select taxonomy-database, domains and metadata. 
+            </li>
+            <br>
+            <li><button type="button" class="btn btn-sm btn-primary" name='Next' id="selection_btn_exports"> 
+                &nbsp;&nbsp;&nbsp;Export Data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+                </button>
+                - Export sequences, biom, metadata and taxonomy files.
+            </li>
+            <br>
+            <li><button type="button" class="btn btn-sm btn-info" name='Next' id="selection_btn_oligotyping"> 
+                &nbsp;&nbsp;&nbsp;Oligotyping&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+                </button>
+                - Find out more: <button class="btn btn-sm btn-link" href='http://merenlab.org/software/oligotyping/' target='_blank'>Merenlab</button>
+            </li>
+            <br>
+            <li><button type="button" disabled class="btn btn-sm btn-success" name='Next' id="selection_btn_otus"> 
+                &nbsp;&nbsp;&nbsp;OTU Creation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+                </button>
+                - Create OTUs from VAMPS data using one of four methods for visualization in VAMPS or download
+            </li>
+            <br>
+            <li>- The projects to the left include all the public projects plus any others that you have permissions to access.</li>
+            <li>- Selecting the <span class='glyphicon glyphicon-question-sign'></span> next to the project name will take you to that project's profile.</li>
+            <li>- Use the 'Go To Saved Datasets' button to re-use previously saved datasets.</li>
+            <li>- Filter the projects using the filters to the left.</li>
+            <li>- In the project tree click on the checkbox or plus(+) box to view and select datasets.</li>
+            <li>- Once you select your datasets move to the next page by selecting a button above.</li>
+          </div> 
 		    </td>
 
       </tr>
       </table>
 
 <!-- autocomplete="off" clears the checkboxes on page refresh -->
-<form id='project_dataset_select_form' class='' name='project_dataset_select_form' method='POST' action='/visuals/unit_selection' autocomplete="off">	  
-       <input type='hidden' name='Next2' value='Next: Unit Selection2' id="unit_selection2" >
+<!--
+<form id='project_dataset_select_form_viz' class='' name='project_dataset_select_form_viz' method='POST' action='/visuals/unit_selection' autocomplete="off">	  
+       <input type='hidden' name='not_used' value='unit_selection' id="unit_selection" >
+</form>
+
+<form id='project_dataset_select_form_exp' class='' name='project_dataset_select_form_exp' method='POST' action='/user_data/export_selection' autocomplete="off">    
+       <input type='hidden' name='not_used' value='export' id="export" >
 </form>
    
-
-
+<form id='project_dataset_select_form_oligo' class='' name='project_dataset_select_form_oligo' method='POST' action='/user_data/oligo_step1_get_genus' autocomplete="off">    
+       <input type='hidden' name='not_used' value='oligotyping-pt1' id="oligotyping1" >
+</form>  
+-->
 
 <% include ../add_ins/end.ejs %>
 

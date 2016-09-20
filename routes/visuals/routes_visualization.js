@@ -1380,63 +1380,7 @@ router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
 
     
 });
-//
-// OLIGOTYPING
-//
-router.post('/oligotyping_fasta', helpers.isLoggedIn, function(req, res) {
-    console.log('in POST oligotyping_fasta');
-    console.log('req.body: oligotyping_fasta-->>');
-    console.log(req.body);
-    console.log('req.body: oligotyping_fasta');
-    //var rank;
-    var ts = visual_post_items.ts;
-    var tax_string = req.body.tax_string;
-    var tax_obj = JSON.parse(req.body.tax_obj);
-    var rank = tax_obj.rank
 
-   
-    console.log('rank',rank)
-    
-    var sql_dids = (chosen_id_name_hash.ids).join("','")
-    q = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count from sequence_pdr_info\n" 
-    q += " join sequence using (sequence_id)\n"
-    q += " join silva_taxonomy_info_per_seq using(sequence_id)\n"
-    q += " where silva_taxonomy_id='"+tax_obj.db_id+"'\n"
-    q += " and dataset_id in('"+sql_dids+"') \n"
-    console.log('q',q);
-   
-    var html='';
-        
-    
-    
-    console.log("check for string in datasets")
-    console.log("if yes create fasta")
-    console.log("if no: return to user ")
-    var collection = connection.query(q, function mysqlSelectSeqs(err, rows, fields) {
-      if (err) {
-          throw err;
-      } else {
-        console.log('rows',rows)
-        if(rows.length == 0){
-          res.send('ERROR')
-        }else{
-          // make fasta -- send filename
-          filename = 'myfilename'
-          res.json({msg:'OK We have data',filename:filename})
-        }
-      }
-    });
-    
-    // res.render('visuals/oligotyping_entropy', {        
-    //   title: 'VAMPS:Oligotyping',
-    //   message:             req.flash('message'),
-    //   html:                html,
-    //   user :  req.user, hostname : req.CONFIG.hostname,          
-
-    // });
-
-    
-});
 //
 //
 //
@@ -3034,102 +2978,8 @@ module.exports = router;
 * F U N C T I O N S
 **/
 
-// Generally put fuction in global.js or helpers.js
+// Generally put fucntion in global.js or helpers.js
 //
-//
-//
-router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
-  //console.log('params>>');
-  //console.log(req.params);
-  //console.log('<<params');
-  console.log('in livesearch taxonomy');
-  var q = req.params.q.toLowerCase();
-  var hint = '';
-  var obj = new_taxonomy.taxa_tree_dict_map_by_rank;
-  var taxon;
-  if(q !== ''){
-    for(var n in obj["domain"]){
-      taxon = obj["domain"][n].taxon;
-      if(taxon.toLowerCase() != 'domain_na' && taxon.toLowerCase().indexOf(q) != -1){
-        //hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
-      }
-    }
-    for(var n in obj["phylum"]){
-      taxon = obj["phylum"][n].taxon;
-      t_lower = taxon.toLowerCase();
-      if(t_lower != 'phylum_na' && t_lower.indexOf(q) != -1){
-        //hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','phylum');return false;\" >"+taxon + "</a> <small>(phylum)</small><br>";
-      }
-    }
-    for(var n in obj["klass"]){
-      taxon = obj["klass"][n].taxon;
-      t_lower = taxon.toLowerCase();
-      if(t_lower != 'klass_na' && t_lower.indexOf(q) != -1 ){
-        //hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','klass');return false;\" >"+taxon + "</a> <small>(class)</small><br>";
-      }
-    }
-    for(var n in obj["order"]){
-      taxon = obj["order"][n].taxon;
-      t_lower = taxon.toLowerCase();
-      if(t_lower != 'order_na' && t_lower.indexOf(q) != -1){
-        //hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','order');return false;\" >"+taxon + "</a> <small>(order)</small><br>";
-      }
-    }
-    for(var n in obj["family"]){
-      taxon = obj["family"][n].taxon;
-      t_lower = taxon.toLowerCase();
-      if(t_lower != 'family_na' && t_lower.indexOf(q) != -1){
-        hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','family');return false;\" >"+taxon + "</a> <small>(family)</small><br>";
-      }
-    }
-    for(var n in obj["genus"]){
-      taxon = obj["genus"][n].taxon;
-      t_lower = taxon.toLowerCase();
-      if(t_lower != 'genus_na' && t_lower.indexOf(q) != -1){
-        hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','genus');return false;\" >"+taxon + "</a> <small>(genus)</small><br>";
-      }
-    }
-    for(var n in obj["species"]){
-      taxon = obj["species"][n].taxon;
-      t_lower = taxon.toLowerCase();
-      if(t_lower != 'species_na' && t_lower.indexOf(q) != -1){
-        //hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','species');return false;\" >"+taxon + " </a> <small>(species)</small><br>";
-      }
-    }
-    
-  }
-  var result = (hint === "") ? ("No Suggestions") : (hint);
-  res.send(result);
-});
-//
-// LIVESEARCH TAX
-//
-router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req, res) {
-  console.log('oligo livesearch_taxonomy')
-  var selected_taxon = req.params.taxon;
-  var selected_rank = req.params.rank;
-  var rank_number = req.CONSTS.RANKS.indexOf(selected_rank);
-  console.log(req.params);
-  var this_item = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[selected_taxon+'_'+selected_rank];
-  var tax_str = selected_taxon;
 
-  var item = this_item;
-  
-  // goes up the tree to get taxon parents:
-  while(item.parent_id !== 0){
-    item  = new_taxonomy.taxa_tree_dict_map_by_id[item.parent_id];
-    tax_str = item.taxon +';'+tax_str;
-    //console.log(item);
-  }
-
-
-  //console.log(base_taxon);
-  
-  //res.send(tax_str);
-  this_item.full_string = tax_str;
-  console.log('sending tax_str',this_item);
-  res.json(this_item);
-  
-});
 
 

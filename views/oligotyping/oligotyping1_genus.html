@@ -1,0 +1,97 @@
+<% include ../add_ins/begin.ejs %>
+
+<%  var items  = JSON.parse(chosen_id_name_hash); %>
+
+<script>
+  var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
+  var user_local  = '<%= user.username %>';
+</script>
+  <a href='http://merenlab.org' target='_blank'><img class='pull-right' src='/images/visuals/oligotyping-logo.png' height='60'></a>
+  <div class='title title_color_oligo' >Oligotyping (fasta creation)</div>
+<div class='pull-right'>
+					For more information: Visit the <a href='http://merenlab.org/software/oligotyping/' target='_blank'>Oligotyping Home Page</a>
+					(<a href='http://merenlab.org' target='_blank'>merenlab</a>)
+</div>	
+<a href='' onclick='javascript:window.history.back();return false;'>&lt;&lt;--back</a>
+
+<div class="row">
+    <div  id='show_selected_datasets_div'  class="col-md-6">
+    	<div class='well'>
+                  <% include ../visuals/partials/show_selected_datasets.html %> 
+      </div>  <!-- /well -->
+    </div> <!-- End  show_selected_datasets_div -->
+    <div  id='show_selected_datasets_div'  class="col-md-6">
+    	<div class='well'>
+             <strong>From the <a href='http://merenlab.org/software/oligotyping/' target='_blank'>Oligotyping home page</a>:</strong>
+						<br>
+						<strong>In a nutshell:</strong> 
+						Oligotyping is a computational method that helps microbial ecologists to investigate concealed diversity within their operational taxonomic units at an extremely precise level by utilizing very subtle variations among 16S Ribosomal RNA gene sequences. 
+						<br>
+						<strong>and from the <a href='http://merenlab.org/2013/11/04/oligotyping-best-practices/' target='_blank'>Best Practices page</a>:</strong>
+						Oligotyping is a supervised method, which makes it a method that welcomes its users with a learning curve. To make things a little clearer, in this article you will find the flowchart of a generic oligotyping analysis and a realistic analysis of a mock dataset.     
+    	</div>
+    </div> <!-- End  show_selected_datasets_div -->
+</div>
+
+
+
+
+
+
+
+<div class='well'>
+
+		
+		<div class="row">  
+				
+				<div class="col-md-4">
+					
+								Select a genus (or family) that you know are present in the selected datasets.
+								This uses silva119 taxonomy (the default) regardless of what was selected on the previous page.
+					
+					
+				</div>
+				<div class="col-md-2">
+						<div class="dropdown">
+
+								  Type: <input id="tax_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showOligotypingTaxResult(this.value)"/>
+								  <ul id='livesearch_tax_dropdown' class="dropdown-menu" aria-labelledby="dropdownMenu1" style='visibility:hidden;'>
+								    <div id="livesearch_taxonomy" class=""></div>
+								  </ul>
+								  
+						</div>
+				</div>		
+				<div class="col-md-6">
+						<form method='POST' name='export_data_form' action='/user_data/oligo_step2_create_fasta'>	
+								<input type='text' id='livesearch_result_div' value='' name='tax_string' maxlength='150' size='100'  />
+								<input type='hidden' id='hidden_item' value='ajax' name='tax_obj'  />
+								<input type='hidden' name='dids' value='<%- items.ids %>'>
+								<br>
+									<button id='fasta_start_btn' disabled class='btn btn-xs ' type='button' value='Go' onclick='get_oligotype_seqs()'>Go To Next Step</button>
+								<!-- <button id='fasta_start_btn' disabled class='btn btn-xs ' type='submit' value='Go' >Go To Next Step</button> -->
+						</form>			
+						<% if(messages){ %>
+  									<div id='oligo_genus_err_msg' class="" style='color:orange;padding:3px;'><%- message %> </div>
+						<% } %>		<br>
+				</div>
+
+
+
+
+	</div>
+			
+
+	
+
+
+
+
+</div>
+  
+ <% include ../add_ins/end.ejs %>
+  <script type="text/javascript" src="/javascripts/global.js"></script>
+  <script type="text/javascript" src="/javascripts/common_selection.js"></script>
+  <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>
+ 	<script type="text/javascript" src="/javascripts/oligotyping.js"></script>
+ </body>
+ </html>

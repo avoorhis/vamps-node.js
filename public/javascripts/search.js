@@ -249,13 +249,8 @@ function showMetadataHint(str) {
         document.getElementById("txtHint").innerHTML = "";
         return;
     } else {
-	    if (window.XMLHttpRequest) {
-	      // code for IE7+, Firefox, Chrome, Opera, Safari
-	      xmlhttp=new XMLHttpRequest();
-	    } else {  // code for IE6, IE5
-	      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-	    }
-        xmlhttp.onreadystatechange = function() {
+	    var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 //var response = xmlhttp.responseText;
                 
@@ -316,12 +311,7 @@ function showTaxResult(str) {
     }
     document.getElementById("livesearch_tax_dropdown").style.visibility='visible';
   }
-  if (window.XMLHttpRequest) {
-    // code for IE7+, Firefox, Chrome, Opera, Safari
-    xmlhttp=new XMLHttpRequest();
-  } else {  // code for IE6, IE5
-    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-  }
+  var xmlhttp = new XMLHttpRequest();
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 && xmlhttp.status==200) {
       document.getElementById("livesearch_taxonomy").innerHTML=xmlhttp.responseText;
@@ -354,12 +344,7 @@ function showUserResult(str) {
     //document.getElementById("create_fasta_btn").disabled=false;
     document.getElementById("livesearch_user_dropdown").style.visibility='visible';
   }
-  if (window.XMLHttpRequest) {
-    // code for IE7+, Firefox, Chrome, Opera, Safari
-    xmlhttp=new XMLHttpRequest();
-  } else {  // code for IE6, IE5
-    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-  }
+  var xmlhttp = new XMLHttpRequest();
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 && xmlhttp.status==200) {
       document.getElementById("livesearch_user").innerHTML=xmlhttp.responseText;
@@ -388,12 +373,7 @@ function showProjectResult(str) {
     //document.getElementById("create_fasta_btn").disabled=false;
     document.getElementById("livesearch_project_dropdown").style.visibility='visible';
   }
-  if (window.XMLHttpRequest) {
-    // code for IE7+, Firefox, Chrome, Opera, Safari
-    xmlhttp=new XMLHttpRequest();
-  } else {  // code for IE6, IE5
-    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-  }
+  var xmlhttp = new XMLHttpRequest();
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 && xmlhttp.status==200) {
       document.getElementById("livesearch_project").innerHTML=xmlhttp.responseText;
@@ -411,20 +391,16 @@ function showProjectResult(str) {
 //
 function get_tax_str(taxon,rank){
     
-	if (window.XMLHttpRequest) {
-      // code for IE7+, Firefox, Chrome, Opera, Safari
-      xmlhttp=new XMLHttpRequest();
-    } else {  // code for IE6, IE5
-      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    xmlhttp.onreadystatechange = function() {
+	var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
           document.getElementById("find_datasets_btn").disabled=false;
           document.getElementById("create_fasta_btn").disabled=false;
           var response = xmlhttp.responseText;
-          document.getElementById("livesearch_result_div").value = response;
-          document.getElementById("create_fasta_hidden_id").value = response;
-          document.getElementById("find_datasets_hidden_id").value = response;
+          var tmp = JSON.parse(response);
+          document.getElementById("livesearch_result_div").value = tmp.full_string;
+          document.getElementById("create_fasta_hidden_id").value = tmp.full_string;
+          document.getElementById("find_datasets_hidden_id").value = tmp.full_string;
         }
     }
     xmlhttp.open("GET", "livesearch_taxonomy/" + rank+'/'+taxon, true);

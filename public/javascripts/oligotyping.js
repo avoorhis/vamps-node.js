@@ -25,21 +25,23 @@ function showOligotypingTaxResult(str) {
       document.getElementById("livesearch_taxonomy").style.overflow="auto";
     }
   }
-  xmlhttp.open("GET","livesearch_taxonomy/"+str,true);
+  xmlhttp.open("GET","/oligotyping/livesearch_taxonomy/"+str, true);
   xmlhttp.send();
 }
 function get_tax_str(taxon,rank){
     
   var xmlhttp = new XMLHttpRequest();
-  xmlhttp.open("GET", "livesearch_taxonomy/" + rank+'/'+taxon, true);
+  xmlhttp.open("GET", "/oligotyping/livesearch_taxonomy/" + rank+'/'+taxon, true);
   xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
           var response = xmlhttp.responseText;
           var tmp = JSON.parse(response);
-          //alert(response)
-          document.getElementById("livesearch_result_div").value = tmp.full_string;
-          document.getElementById("hidden_item").value = response;
           
+          document.getElementById("livesearch_result_div").value = tmp.full_string;
+          document.getElementById("oligo_genus_err_msg").innerHTML = '';
+          document.getElementById("hidden_item").value = response;
+          document.getElementById("fasta_start_btn").disabled = false;
+          document.getElementById("fasta_start_btn").style.background = '#3CBC3C';
         }
   }
   xmlhttp.send();
@@ -50,27 +52,31 @@ function get_oligotype_seqs(){
 		var tax_string = document.getElementById("livesearch_result_div").value
     var tax_obj = document.getElementById("hidden_item").value;
     
-    var xmlhttp = new XMLHttpRequest();
-    var args = 'tax_string='+tax_string
-    args += '&tax_obj='+tax_obj
-  	xmlhttp.open("POST", "oligotyping_fasta", true);
-  	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-  	xmlhttp.onreadystatechange = function() {
+    //var xmlhttp = new XMLHttpRequest();
+    //var args = 'tax_string='+tax_string
+    //args += '&tax_obj='+tax_obj
+  	
+  	var f = document.createElement("form");
+    f.setAttribute('method',"post");
+    f.setAttribute('action',"/oligotyping/status");
 
-  			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-          var response = xmlhttp.responseText;
-          
-          if(response == 'ERROR'){
-          	alert('No Data Found')
-          }else{
-          	res = JSON.parse(response)
-          	alert(res.filename)
-          	window.open('','_blank',"width=400,height=300")
-          }
-          
-        }
-  	}
-  	xmlhttp.send(args);
+  	var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'tax_obj';
+    input.value = tax_obj;
+    f.appendChild(input);
+
+    
+    var submit = document.createElement('input');
+    submit.setAttribute('type', "submit");
+    f.appendChild(submit);
+    document.body.appendChild(f);
+
+    f.submit();
+    document.body.removeChild(f);
+
+
+  	
 
 
 }

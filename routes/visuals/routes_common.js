@@ -378,15 +378,21 @@ run_script_cmd: function (req,res, ts, command, visual_name) {
 //
 //
 create_chosen_id_name_hash: function(dataset_ids) {
-  
+  console.log('in common: chosen_id_name_hash' );
   console.log(chosen_id_name_hash );
   var chosen_id_name_hash    = {};
   chosen_id_name_hash.ids    = [];
   chosen_id_name_hash.names  = [];
-  for (var i in dataset_ids){      
+
+  console.log('TypeOf',typeof dataset_ids)
+  console.log(dataset_ids)
+  for (var i in dataset_ids){   
+
       did   = dataset_ids[i];
+      console.log('did',did)
       dname = DATASET_NAME_BY_DID[did];
       pid   = PROJECT_ID_BY_DID[did];
+      console.log('pid',pid)
       pname = PROJECT_INFORMATION_BY_PID[pid].project;
       //dataset_ids.push(did+'--'+pname+'--'+dname);
       chosen_id_name_hash.ids.push(did);

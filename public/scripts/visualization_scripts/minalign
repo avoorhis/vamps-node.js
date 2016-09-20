@@ -1,0 +1,153 @@
+#!/usr/bin/env perl
+
+##!/bioware/perl/bin/perl
+
+##!/usr/bin/env perl
+
+#########################################
+#
+# minalign: remove unnecessary gaps from an aligned fasta
+#
+# Author: Susan Huse, shuse@mbl.edu
+# Date: last update May 17, 2006
+#
+# Keywords: align trim edit gap
+#
+# Assumptions:
+#
+# Revisions:
+#
+# Programming Notes:
+#
+########################################
+
+use strict;
+use warnings;
+use Bio::Seq;
+use Bio::SeqIO;
+use IO::String;
+
+#######################################
+#
+# Set up usage statement
+#
+#######################################
+my $usage = " Usage:  minalign  input.fasta > output.fasta\n\n";
+my $scripthelp = "
+ minalign - takes a multiple alignment fasta file and removes all locations
+                for which all sequences are gapped removed
+                This is useful after selected sequences have been removed
+                from a larger alignment
+";
+
+#######################################
+#
+# Definition statements
+#
+#######################################
+#Commandline parsing
+my $argNum = 1;
+#my $minargNum = 2;
+#my $maxargNum = 3;
+my $verbose = 0;
+
+#Runtime variables
+my $inFilename;
+
+#/######################################
+#
+# Parse commandline arguments
+#
+#######################################
+
+if (! $ARGV[0] ) {
+       	warn $scripthelp;
+       	warn $usage;
+       	exit -1;
+}
+
+if ($ARGV[0] =~ /-h/) {
+       	warn $scripthelp;
+       	warn $usage;
+       	exit 0;
+}
+
+#######################################
+#
+# Test commandline arguments, ARGV
+#
+#######################################
+
+if (scalar @ARGV != $argNum) {
+#if ((scalar @ARGV < $minargNum) || (scalar @ARGV > $maxargNum)) {
+       	warn "\nIncorrect number of arguments.\n";
+       	warn "$usage\n";
+       	exit;
+}
+
+#Test validity of commandline arguments
+$inFilename = $ARGV[0];
+if (! -f $inFilename) {
+       	warn "\nUnable to locate input fasta file: $inFilename.\n";
+       	exit;
+}
+
+#if ($verbose) {print "Running minalign on $inFilename writing to $outFilename, using options: $arg1\n"};
+#######################################
+#
+# Open the files
+#
+#######################################
+
+my $in = Bio::SeqIO->new( '-file'=> "<$inFilename", '-format'=> "fasta") || die ("Could not read fasta file: $inFilename.  Exiting...\n");
+#open (IN, "<$inFilename") || die ("Unable to read input file: $inFilename.  Exiting.\n");
+
+my $out = Bio::SeqIO->new( -fh => \*STDOUT, '-format'=> "fasta") || die ("Unable to write to STDOUT. Exiting...\n");
+
+#######################################
+#
+# Read the fasta file, grab the section of sequence and write it out
+#
+#######################################
+
+my $alignLength = 0;
+my @seqObjects;
+my %gaps;
+
+#Store each sequence, and tally location of gaps
+while (my $seqobj = $in->next_seq)
+{
+       	#Select from $i to $j positions
+       	my $seq = $seqobj->seq;
+       	if (length($seq)  > $alignLength)
+       	{
+       		$alignLength = length($seq);
+       	}
+
+       	for (my $i=0; $i<length($seq); $i++)
+       	{
+       		#If it's not a gap, set hash element to 1
+       		if (substr($seq, $i, 1) !~ /[-\.]/)
+       		{
+       			$gaps{$i}++;
+       		}
+       	}
+       	#Store sequences for writing
+       	push @seqObjects, $seqobj;
+}
+
+# Step through each sequence and remove the gaps
+foreach my $s (@seqObjects)
+{
+       	#Change the string to an array to remove gaps
+       	my @bases = split(//, $s->seq);
+       	for (my $i=$alignLength - 1; $i>=0; $i--)
+       	{
+       		# if it has gaps, splice it out
+       		if (! $gaps{$i}) { splice(@bases,$i,1); }
+       	}
+
+       	#Write out sequence object to $outFilename
+       	$s->seq(join("",@bases));
+       	$out->write_seq($s);
+}

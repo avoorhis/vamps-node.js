@@ -91,9 +91,9 @@ constants.VISUALOUTPUTCHOICES = { choices: [
     ]};
 
 constants.NORMALIZATIONCHOICES = { choices: [
-        {id: 'none',            show: 'Not Normalized (default)'},
-        {id: 'maximum',         show: 'Normalized to the Maximum Sample'},
-        {id: 'frequency',       show: 'Normalized to Frequency'}
+        {id: 'none',            brief:'None (raw counts)',                      show: 'Not Normalized (default)'},
+        {id: 'maximum',         brief:'Maximum (range: 0.0 - maxSampleCount)',  show: 'Normalized to the Maximum Sample'},
+        {id: 'frequency',       brief:'Frequency (range: 0.0 - 1.0)',           show: 'Normalized to Frequency'}
     ]};
 
    
@@ -427,13 +427,13 @@ constants.VISUAL_THUMBNAILS = {
             prefix:'dendrogram0',
             tip:'R (https://www.r-project.org/)-|-phyloseq & ape (R-packages);' 
         },
-        {   name:'Oligotyping (TESTING)',  
-            thumb:'/images/visuals/oligotyping-logo.png',     
-            //link:'user_viz_data/dendrogramR',     
-            //id:'dendrogram0_link_id', 
-            prefix:'oligotyping',
-            tip:'Python2.7-' 
-        }
+        // {   name:'Oligotyping (TESTING)',  
+        //     thumb:'/images/visuals/oligotyping-logo.png',     
+        //     //link:'user_viz_data/dendrogramR',     
+        //     //id:'dendrogram0_link_id', 
+        //     prefix:'oligotyping',
+        //     tip:'Python2.7-' 
+        // }
    
 ]};
     

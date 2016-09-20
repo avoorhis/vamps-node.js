@@ -86,6 +86,7 @@ var datasets  = require('./routes/routes_datasets');
 var help      = require('./routes/routes_help');
 var resources = require('./routes/routes_resources');
 var admin     = require('./routes/routes_admin');
+var oligotyping = require('./routes/routes_oligotyping');
 
 var portals   = require('./routes/routes_portals');
 var metadata   = require('./routes/routes_metadata');
@@ -126,6 +127,9 @@ app.use(compression());
  */
 app.use(express.static( 'public', {maxAge: '24h' }));
 app.use(express.static('tmp'));
+// 2016-09-19 added Not sure if security risk:  AAV
+app.use(express.static('user_data'));  // 2016-09-19 added to allow users to view png in oligotyping run -also html
+
 // app.use(express.static(__dirname + '/public', {maxAge: 900000 }));
 // app.use(express.static(path.join(__dirname, '/public')));
 
@@ -187,6 +191,7 @@ app.use('/search', search);
 app.use('/user_data', user_data);
 app.use('/portals', portals);
 app.use('/metadata', metadata);
+app.use('/oligotyping', oligotyping);
 
 // for non-routing pages such as heatmap, counts and bar_charts
 app.get('/*', function(req, res, next){

@@ -2,19 +2,18 @@
 
 Selected Dataset Order (Count:<%= items.names.length %>)<br>
 <div id='dataset_names_div' class='small_font'>
-    <ul>
+<table>
     <% for (var i in items.names){ %>
-        <li><%= parseInt(i)+1 %> (id:<%= items.ids[i] %>)<br>&nbsp;&nbsp;&nbsp;<%= items.names[i] %></li>
+        <tr><td nowrap ><%= parseInt(i)+1 %> (id:<%= items.ids[i] %>)&nbsp;&nbsp;&nbsp;<%= items.names[i] %></td></tr>
     <% } %>
-    </ul>
+</table>
 </div>
 
 <table class='button_row'>
 <tr>
-    <% if(referer != 'export_data' && referer != 'unit_selection'){ %>
+    <% if(referer != 'export_data' && referer != 'unit_selection' && referer != 'oligotyping1'){ %>
         <td>
-        	<!-- <button type="button" class="btn btn-xs btn-primary" id='reorder_datasets_btn' >Reorder Datasets</button>
-        		-->
+        	
             <form action='/visuals/reorder_datasets' method='POST'>
         		<button type="submit" class="btn btn-xs btn-primary" id='reorder_datasets_btn' >Re-order Datasets</button>
         		<input type="hidden" class="" id='' name='referer' value='<%= referer %>'>
@@ -23,13 +22,8 @@ Selected Dataset Order (Count:<%= items.names.length %>)<br>
         </td>
     <% } %>
 
-<!--     <td>
-    	<a href='/visuals/visuals_index'  class="btn btn-xs btn-primary" id='change_datasets_btn' >Change Datasets</a>
-    </td>
-     -->
     <td>
     	<button type="button" class="btn btn-xs btn-primary" id='save_datasets_btn'    >Save These Datasets</button>
-    	
     </td>
 </tr>
 <tr><td colspan='3'><span id='save_ds_result'></span></td></tr>

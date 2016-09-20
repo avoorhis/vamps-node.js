@@ -9,6 +9,7 @@ var util = require('util');
 var path  = require('path');
 var crypto = require('crypto');
 var mysql = require('mysql2');
+var spawn = require('child_process').spawn;
 
 module.exports = {
   // route middleware to make sure a user is logged in
@@ -716,4 +717,143 @@ module.exports.fetchInfo = function (query, values, callback) {
       callback(null, rows[0]);
     }
   });
+};
+//
+//
+//
+/////////////////// EXPORTS ///////////////////////////////////////////////////////////////////////
+module.exports.create_export_files = function (req, user_dir, ts, dids, file_tags, normalization, rank, domains, compress) {
+      var db = req.db;
+    //file_name = 'fasta-'+ts+'_custom.fa.gz';
+    var log = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'export_log.txt');
+    //var log = path.join(user_dir, 'export_log.txt');
+    if (normalization == 'max' || normalization == 'maximum' || normalization == 'normalized_to_maximum') {
+        norm = 'normalized_to_maximum';
+    } else if (normalization == 'percent') {
+        norm = 'normailzed_by_percent';
+    } else {
+        norm = 'not_normalized';
+    }
+
+    var site = req.CONFIG.site;
+    var code = 'NVexport';
+    var pid_lookup = {};
+    console.log('dids', dids);
+    export_cmd = 'vamps_export_data.py';
+    for (n=0;n<dids.length;n++) {
+        console.log('did', dids[n]);
+        pid_lookup[PROJECT_ID_BY_DID[dids[n]]] = 1;
+    }
+
+    var dids_str = JSON.stringify(dids.join(', '));
+    var pids_str = JSON.stringify((Object.keys(pid_lookup)).join(', '));
+    
+    console.log('pids', pids_str);
+    //var file_tags = file_tags.join(' ')
+    
+    var export_cmd_options = {
+
+                         scriptPath : path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
+                         args :       ['-s', site,
+                                         '-u', req.user.username,
+                                         '-r', ts,
+                                         '-base', user_dir,
+                                         '-dids', dids_str,
+                                         '-pids', pids_str,                                         
+                                         '-norm', norm,
+                                         '-rank', rank,                                         
+                                         '-db', NODE_DATABASE
+                                         ] // '-compress'
+
+                     };
+    for (var t in file_tags) {
+        export_cmd_options.args.push(file_tags[t]);
+    }
+    if(compress){
+      export_cmd_options.args.push('-compress');
+    }
+    if(domains != ''){
+      export_cmd_options.args.push('-domains');
+      export_cmd_options.args.push(JSON.stringify(domains.join(', ')));
+    }
+    var cmd_list = [];
+    cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' '));
+
+    if (req.CONFIG.cluster_available === true) {
+            qsub_script_text = get_qsub_script_text(log, req.CONFIG.TMP, site, code, cmd_list);
+            qsub_file_name = req.user.username+'_qsub_export_'+ts+'.sh';
+            qsub_file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp', qsub_file_name);
+
+            fs.writeFile(qsub_file_path, qsub_script_text, function writeFile(err) {
+                if (err) {
+                    return console.log(err);
+                } else {
+                    console.log("The file was saved!");
+
+                    console.log(qsub_script_text);
+                    fs.chmod(qsub_file_path, '0775', function chmodFile(err) {
+                        if (err) {
+                            return console.log(err);
+                        } else {
+                            var dwnld_process = spawn( qsub_file_path, {}, {
+                              env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
+                              detached: true,
+                              stdio:['pipe', 'pipe', 'pipe']
+                                //stdio: [ 'ignore', null, log ]
+                            });  // stdin, stdout, stderr1
+
+
+                        }
+                    });
+                 }
+            });
+
+
+    } else {
+        console.log('No Cluster Available according to req.CONFIG.cluster_available');
+        var cmd = path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' ');
+        console.log('RUNNING:', cmd);
+        //var log = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp_log.log')
+        var dwnld_process = spawn( path.join(export_cmd_options.scriptPath, export_cmd), export_cmd_options.args, {
+                              env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
+                              detached: true,
+                              stdio: ['pipe', 'pipe', 'pipe']  // stdin, stdout, stderr
+        });
+        stdout = '';
+        dwnld_process.stdout.on('data', function dwnldProcessStdout(data) {
+            stdout += data;
+        });
+        stderr = '';
+        dwnld_process.stderr.on('data', function dwnldProcessOnData(data) {
+            stderr += data;
+        });
+        dwnld_process.on('close', function dwnldProcessOnClose(code) {
+            console.log('dwnld_process process exited with code ' + code);
+            //console.log('stdout', stdout);
+            //console.log('stderr', stderr);
+            if (code === 0) {   // SUCCESS
+
+            } else {
+              console.log('ERROR', stderr);
+              //res.send('Frequency Heatmap R Script Error:'+stderr);
+            }
+        });
+    }
+
+    return;
+
+};
+
+module.exports.get_local_script_text = function(log, site, code, cmd_list) {
+    script_text = "#!/bin/sh\n\n";
+    script_text += "# CODE:\t$code\n\n";
+    script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
+    script_text += 'echo -n "Hostname: "'+"\n";
+    script_text += "hostname\n";
+    script_text += 'echo -n "Current working directory: "'+"\n";
+    script_text += "pwd\n\n";
+    for (var i in cmd_list) {
+        script_text += cmd_list[i]+"\n\n";
+    }
+    return script_text;
 };

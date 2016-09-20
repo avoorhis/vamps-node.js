@@ -551,9 +551,9 @@ router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req
 	}
 
 
-  //console.log(base_taxon);
-	console.log('sending tax_str');
-	res.send(tax_str);
+  this_item.full_string = tax_str;
+  console.log('sending tax_str',this_item);
+  res.json(this_item);
 	
 });
 

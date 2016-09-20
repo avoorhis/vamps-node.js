@@ -77,12 +77,8 @@
     border:1px solid gray;
 
 }
-#show_select_items_div {
-   
-}
-#dataset_names_div ul li {
-    list-style-type: none;
-    margin-left: -20px;
+#dataset_names_div table tr td {
+    padding:0 2px;
 
 }
 .tax_list li {
@@ -542,4 +538,9 @@ i.icon-minus-sign {
     padding:0 10px;
     border:1px solid green;
 
+}
+.clean_list li {
+
+    list-style-type: none;
+    
 }

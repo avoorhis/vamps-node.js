@@ -7,22 +7,24 @@
 <% active_class_admin   = '' %>
 <% active_class_links   = '' %>
 
-<% if(menu_section=='HOME') { %>
+<% if(typeof menu_section != 'undefined'){  %>
+<%  if(menu_section=='HOME') { %>
 <%    active_class_home = 'active' %>
-<% }else if(menu_section=='OVERVIEW') { %>
+<%  }else if(menu_section=='OVERVIEW') { %>
 <%    active_class_oview = 'active' %>
-<% }else if(menu_section=='VISUALS') { %>
+<%  }else if(menu_section=='VISUALS') { %>
 <%    active_class_visuals = 'active' %>
-<% }else if(menu_section=='YOURDATA') { %>
+<%  }else if(menu_section=='YOURDATA') { %>
 <%    active_class_ydata = 'active' %>
-<% }else if(menu_section=='SEARCH') { %>
+<%  }else if(menu_section=='SEARCH') { %>
 <%    active_class_search = 'active' %>
-<% }else if(menu_section=='CONTACT') { %>
+<%  }else if(menu_section=='CONTACT') { %>
 <%    active_class_contact = 'active' %>
-<% }else if(menu_section=='ADMIN') { %>
+<%  }else if(menu_section=='ADMIN') { %>
 <%    active_class_admin = 'active' %>
-<% }else if(menu_section=='LINKS') { %>
+<%  }else if(menu_section=='LINKS') { %>
 <%    active_class_links = 'active' %>
+<%  } %>
 <% } %>
     <nav class="navbar navbar-custom navbar-fixed-top  ">
     <!-- <nav class="navbar navbar-inverse navbar-fixed-top  "> -->
@@ -67,7 +69,7 @@
               <!-- <a href="/visuals/visuals_index">Visualizations</a> -->
               
               <form action="/visuals/visuals_index" method="POST">
-                <button type="submit" class='btn btn-md btn-link' name="" value="" style='padding:14px;'>Visualizations</button>
+                <button type="submit" class='btn btn-md btn-link' name="" value="" style='padding:14px;'>Data Selection</button>
               </form>
                  
             </li>
@@ -103,7 +105,7 @@
                 <%// } %>
 				         
                 <li>
-                <form action="/user_data/export_data" method="POST">
+                <form action="/visuals/visuals_index" method="POST">
                   <button type="submit" class='btn btn-md btn-link' name="" value="" style='color:black;padding-left:20px;'>Export Data</button>
                 </form>
                 </li>
