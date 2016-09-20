@@ -1,7 +1,7 @@
 // TODO: get_taxonomy_query has depth 15! Can we simplify it, that it's no more then 3?
 var express = require('express');
 var router = express.Router();
-var C = require('../public/constants');
+var C = require(app_root + '/public/constants');
 var mysql = require('mysql2');
 var util = require('util');
 
@@ -320,39 +320,30 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
   MakeInsertStatusQ: function(status_params)
   {
     // "SELECT user_id, project_id, status, message, NOW() ";
-    var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)"
+    var statQuery1 = "INSERT IGNORE INTO user_project_status (user_id, project_id, status, message, created_at)"
                   + " SELECT "  + connection.escape(status_params.user_id)
                   + ", project_id"
                   + ", "  + connection.escape(status_params.status)
                   + ", "  + connection.escape(status_params.msg)
                   + ", NOW()"
                   + " FROM user_project_status RIGHT JOIN project using(project_id)"
-                  + " WHERE project = " + connection.escape(status_params.project)
+                  + " WHERE owner_user_id = " + connection.escape(status_params.user_id);
+                  if ('project' in status_params) {
+                    statQuery1 += " AND project = "  + connection.escape(status_params.project);
+                    // console.log("statQuery1 project: " + connection.escape(status_params.project));
+                  }
+                  else if ('pid' in status_params) {
+                    statQuery1 += " AND project_id = " + connection.escape(status_params.pid);
+                    // console.log("statQuery1 pid: " + connection.escape(status_params.pid));
+                  }
+                  statQuery1 += " ON DUPLICATE KEY UPDATE"
+                  + " user_project_status.status   = " + connection.escape(status_params.status)
+                  + ", user_project_status.message = "  + connection.escape(status_params.msg)
+                  + ", user_project_status.updated_at = NOW()"
+                  + ";"
+                  console.log("statQuery1: " + statQuery1);
+                  
     return statQuery1;
-  },
-
-  MakeUpdateStatusQ: function(status_params)
-  {
-    var statQuery2 = "UPDATE user_project_status"
-        + " JOIN project USING(project_id)"
-        + " SET status = " + connection.escape(status_params.status)
-        + ", message = "  + connection.escape(status_params.msg)
-        + ", updated_at = NOW()"
-        + " WHERE user_id = " + connection.escape(status_params.user_id);
-                
-    if ('project' in status_params) {
-        statQuery2 += " AND project = "  + connection.escape(status_params.project);
-        console.log("statQuery2 project: " + statQuery2);        
-    }
-    else if ('pid' in status_params) {
-        statQuery2 += " AND project_id = " + connection.escape(status_params.pid);
-        console.log("statQuery2 pid: " + statQuery2);
-    }
-    else {
-    //ERROR
-      console.log("ERROR in statQuery2 for Update Status: project or project_id is needed. " + statQuery2);
-    }
-    return statQuery2;
   },
   
   MakeDeleteStatusQ: function() {

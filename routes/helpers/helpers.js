@@ -4,7 +4,7 @@ var router = express.Router();
 var fs = require('fs');
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport();
-var queries = require('../queries');
+var queries = require(app_root + '/routes/queries');
 var util = require('util');
 var path  = require('path');
 var crypto = require('crypto');
@@ -282,7 +282,7 @@ module.exports.assignment_finish_request = function(res, rows1, rows2, status_pa
         console.log(' UPDATING ALL_PCOUNTS_BY_PID ');
         console.log(' UPDATING ALL_CLASSIFIERS_BY_PID');
         // re-run re-create new_taxonomy (see app.js)
-        var silvaTaxonomy = require('../../models/silva_taxonomy');
+        var silvaTaxonomy = require(app_root + '/models/silva_taxonomy');
         var all_silva_taxonomy = new silvaTaxonomy();
         var CustomTaxa  = require('./custom_taxa_class');
         all_silva_taxonomy.get_all_taxa(function(err, results) {
@@ -678,8 +678,8 @@ module.exports.update_status = function(status_params) {
       }
     });
   } else if(status_params.type == 'update') {
-    statQuery2 = queries.MakeUpdateStatusQ(status_params);
-    console.log('statQuery2: ' + statQuery2);
+    statQuery2 = queries.MakeInsertStatusQ(status_params);
+    // console.log('statQuery2: ' + statQuery2);
     connection.query(statQuery2, function(err, rows) {
       if(err) {
         console.log('ERROR2-in status update: ' + err);
@@ -689,10 +689,8 @@ module.exports.update_status = function(status_params) {
       }
     });
   } else {  // Type::New
-      // TODO? INSERT INTO table (id, name, age) VALUES(1, "A", 19) ON DUPLICATE KEY UPDATE
-      // name="A", age=19
     statQuery1 = queries.MakeInsertStatusQ(status_params);
-    console.log('statQuery1: ' + statQuery1);
+    // console.log('statQuery1: ' + statQuery1);
     connection.query(statQuery1 , function(err, rows) {
       if(err) {
         console.log('ERROR2-in status update: ' + err);
@@ -718,6 +716,7 @@ module.exports.fetchInfo = function (query, values, callback) {
     }
   });
 };
+
 //
 //
 //
@@ -857,3 +856,12 @@ module.exports.get_local_script_text = function(log, site, code, cmd_list) {
     }
     return script_text;
 };
+
+
+module.exports.isLocal = function (req) {
+  if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
+    {return false;}
+  else
+    {return true;}
+};
+

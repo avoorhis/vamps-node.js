@@ -1,0 +1,81 @@
+<% include ../../add_ins/begin.ejs %>
+
+<p class="title">Import Data</p>
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+<% if (failmessage) { %>
+	<div class="alert_flash_message"><%= failmessage %></div>
+<% } %>
+
+<% if (messages) { %>
+  <div class='alert_flash_message'>
+    <% for(var i=0; i < messages.length; i++) { %>
+      <%= messages[i] %>
+      <br>
+    <% } %>
+  </div>
+<% } %>
+<br>
+<% if (!form_data) {
+  var form_data = {}
+}%>
+
+
+<!-- =================== TAX - BY - SEQ ===================================================================================== -->   
+  <form class="form-horizontal" role="form" method="POST" action="upload_data_tax_by_seq" enctype="multipart/form-data">
+    <h4>Import TaxBySeq File Form: <small>(All fields are required)</small></h4>
+    <br>   
+    
+    <div class="form-group">
+        <label class="control-label col-sm-3" for="project">Project Name:</label>
+        <div class="col-sm-3">
+            <input type="text" name="project" class="form-control" id="project" placeholder="Enter New Project Name for Entire Set">
+        </div><a href="/help/faq#formats" target="_blank" title="formats"><span class="glyphicon glyphicon-question-sign"></span></a>
+    </div>
+    
+    <div class="form-group">  
+        <label class="control-label col-sm-3" for="">OR</label>     
+        <div class="col-sm-5">
+            <input type="checkbox" name="use_original_names" class="" id="use_original_names" placeholder="Use Original Names"> Use original VAMPS project and dataset names from the file
+        </div>
+    </div>
+    <hr>
+    <div class="form-group">  
+        <label class="control-label col-sm-3" for="">Use Taxonomy from TaxBySeq File:</label> 
+        <div class="col-sm-5">
+          <input type="radio" checked name="use_tax_from_file" value="1"> Yes &nbsp; &nbsp;&nbsp;&nbsp;    <input type="radio" name="use_tax_from_file" value="0"> No
+           -- You will need to assign taxonomy later.
+        </div>
+    </div>
+    <hr>
+    <div class="form-group">
+      <label class="control-label col-sm-3" for="fasta">TaxBySeq File (required):</label>
+      <div class="col-sm-3 btn">
+        <input type="file" name="upload_files" class="" id="tax_by_seq" >
+      </div>Format: Direct download from <a href="https://vamps.mbl.edu/exporter/export_data.php" target="_blank">VAMPS</a> (gzipped or uncompressed) 
+          <a href="/help/faq#formats" target="_blank" title="formats">
+          <span class="glyphicon glyphicon-question-sign"></span></a>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-3" for="fasta">Metadata File (optional):</label>
+      <div class="col-sm-3 btn">
+        <input type="file" name="upload_files" class="" id="metadata" >
+      </div>Format: Direct download from <a href="https://vamps.mbl.edu/exporter/export_data.php" target="_blank">VAMPS</a> (gzipped or uncompressed) 
+          <a href="/help/faq#formats" target="_blank" title="formats">
+          <span class="glyphicon glyphicon-question-sign"></span></a>
+    </div>
+    
+    
+    <div class="form-group">        
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-default">Submit</button>
+        </div>
+    </div>
+  </form>
+
+	
+<% include ../../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/import.js"></script>
+ </body>
+ </html>
