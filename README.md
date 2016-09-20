@@ -288,8 +288,8 @@ Applying new database schema from vamps2 (on vampsdev)
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
   
 Tue Aug  9 11:56:00 EDT 2016
-alter table user_project_status
-add unique key user_project (user_id, project_id);
+ALTER TABLE user_project_status
+ADD UNIQUE KEY user_project (user_id, project_id);
   
   
   
