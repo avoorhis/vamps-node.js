@@ -33,6 +33,11 @@ Which will create the directory 'vamps-node.js'.
  * run: (sudo) npm install
  * (optional) look in file 'package.json' to see required modules.
 
+**Local settings**
+If you going to assign taxonomy locally, run:
+  * export PERL5LIB={YOUR_PATH}/vamps-node.js/public/scripts/gast
+  * PATH=$PATH:{YOUR_PATH}/vamps-node.js/public/scripts/gast
+
 **Install MYSQL database schema**
  * There are two mysql database schemas included in the vamps-node.js installation.
 One has some data included that you can use in visualizations:
