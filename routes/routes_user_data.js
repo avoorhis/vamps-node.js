@@ -908,25 +908,15 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
       else
       {
         RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
+        status_params.status = status_params.statusSUCCESS;
+        status_params.msg = status_params.msgSUCCESS;
+        helpers.update_status(status_params);
+        req.flash('successMessage', classifier + " has been started for project: '" + project + "'");
+        res.redirect("/user_data/your_projects");
+        process.umask(oldmask);
+        console.log("The file was saved!");
       }
-      console.log("The file was saved!");
   }); 
-  // fs.writeFile(script_path,
-  //   script_text,
-  //   {
-  //     mode: mode
-  //   },
-  //   RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options)
-  //   // mkScriptExecutableAndRun(script_path, req, project, res, nodelog, checkPid, ok_code_options)
-  // );
-  process.umask(oldmask);
-
-  status_params.status = status_params.statusSUCCESS;
-  status_params.msg = status_params.msgSUCCESS;
-  helpers.update_status(status_params);
-  req.flash('successMessage', classifier + " has been started for project: '" + project + "'");
-  res.redirect("/user_data/your_projects");
-
 });
 
 // Functions for tax_assignment
@@ -2243,55 +2233,37 @@ function writeAndRunScript(req, res, project, options, data_repository)
         var script_path = path.join(data_repository, script_name);
         var ok_code_options = [req, res, project];
 
-        //
-        // parseInt('0444', 8)
-        // process.umask(oldmask);
-        console.log("1 process.umask() = " + process.umask());
-
-        // var mode = parseInt('0444', 8);
-        // console.log("1 0444 = " + mode);
-        //
-        // mode = 0444 & ~process.umask();
-        // console.log("just 0444 & ~process.umask() = " + mode);
-        //
-        // mode = '0444' & ~process.umask();
-        // console.log("just '0444' & ~process.umask() = " + mode);
-        //
-        // mode = parseInt('0444', 8) & ~process.umask();
-        // console.log("1 0444 & ~process.umask() = " + mode);
-        //
-        // mode = parseInt('0444', 8) & ~process.umask();
-        // console.log("2 0444 & ~process.umask() = " + mode);
-        //
-        // mode = parseInt('0444', 8) & ~process.umask(0);
-        // console.log("parseInt('0444', 8) & ~process.umask(0) = " + mode);
-        //
-        // mode = '766' & ~process.umask();
-        // console.log("'766' & ~process.umask(0) = " + mode);
-      
+        var mode = 0775;
         var oldmask = process.umask(0);
-        
-        // mode = '766';
-        // console.log("just '766' = " + mode);
-        
-        // mode = '766' & ~process.umask();
-        // console.log("2 '766' & ~process.umask() = " + mode);
-        var mode = '0775';
-        // parseInt('0444', 8);
-        console.log("1 0775 = " + mode);
-        
         console.log("script_path1 = " + script_path);
         fs.writeFile(script_path, 
-          script_text,
+          script_text, 
           {
-            // var oldmask = process.umask(0);
             mode: mode
-            // process.umask(oldmask);
-          },
-          RunAndCheck(script_path, nodelog, req, project, res, successCode, ok_code_options)  
-        );  // end writeFile
-        console.log("1 process.umask(oldmask) = " + process.umask(oldmask));
-        process.umask(oldmask);
+          }, 
+          function(err) {
+            if(err) {
+                return console.log(err);
+            }
+            else
+            {
+              RunAndCheck(script_path, nodelog, req, project, res, successCode, ok_code_options);
+              process.umask(oldmask);
+              console.log("The file was saved!");
+            }
+        }); // end writeFile
+        
+        // fs.writeFile(script_path,
+        //   script_text,
+        //   {
+        //     // var oldmask = process.umask(0);
+        //     mode: mode
+        //     // process.umask(oldmask);
+        //   },
+        //   RunAndCheck(script_path, nodelog, req, project, res, successCode, ok_code_options)
+        // );  // end writeFile
+        // console.log("1 process.umask(oldmask) = " + process.umask(oldmask));
+        // process.umask(oldmask);
         
           
       });     //   END data_repository chmod
