@@ -85,17 +85,36 @@ function initialize_dhtmlx_project_tree() {
 //
 //
 //
+// function set_dataset_count(id){
+//     
+//     var checked_nodes = projectTree.getAllChecked().split(',')
+//     var count = 0
+//     for(i in checked_nodes){
+//         // only count datasets
+//         if(projectTree.getLevel(checked_nodes[i]) === 2){
+//             count += 1
+//         }
+//     }
+//     document.getElementById('selected_ds_count_id').innerHTML = count
+// }
 function set_dataset_count(id){
-    
-    var checked_nodes = projectTree.getAllChecked().split(',')
-    var count = 0
-    for(i in checked_nodes){
-        // only count datasets
-        if(projectTree.getLevel(checked_nodes[i]) === 2){
-            count += 1
-        }
+    var len = 0
+    if(Object.keys(datasets_local).length > 0){
+      // DATA_TO_OPEN
+      for(p in datasets_local){
+        len += datasets_local[p].length
+      }
+      // re-set dataset_local
+      datasets_local = {}
+    }else{
+      var checked_nodes = projectTree.getAllChecked().split(',') 
+      if(checked_nodes.length == 1 && projectTree.getLevel(checked_nodes[0]) != 2){
+        len = 0
+      }else{
+        len = checked_nodes.length
+      }
     }
-    document.getElementById('selected_ds_count_id').innerHTML = count
+    document.getElementById('selected_ds_count_id').innerHTML = len
 }
 //
 //
