@@ -787,7 +787,6 @@ router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, function (req, res)
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
 router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, function (req, res) {
   var cmd_list = [];
-  // var exec = require('child_process').exec;
   console.log('in start_assignment--->');
   console.log("req.params: ");
   console.log(req.params);
@@ -920,40 +919,6 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 });
 
 // Functions for tax_assignment
-
-function mkScriptExecutableAndRun(script_path, req, project, res, nodelog, ok_code_functions, ok_code_options)
-{
-  console.log('XXX1 mkScriptExecutableAndRun  ');
-  // child = exec('ls', // command line argument directly in string
-  //   function (error, stdout, stderr) {      // one easy function to capture data/errors
-  //     console.log('stdout1: ' + stdout);
-  //     console.log('stderr1: ' + stderr);
-  //     if (error !== null) {
-  //       console.log('exec error: ' + error);
-  //     }
-  //     else
-  //     {
-  //       RunAndCheck(script_path, nodelog, req, project, res, ok_code_functions, ok_code_options);
-  //     }
-  // });
-  
-  var exec = require('child_process').exec;
-  // Make script executable
-  // child = exec( 'chmod ug+rwx ' + script_path,
-  child = exec( ' ls ',
-  function (error, stdout, stderr) {
-    console.log('1stdout: ' + stdout);
-    console.log('1stderr: ' + stderr);
-    if (error !== null)
-    {
-      console.log('1exec error: ' + error);
-    }
-    else
-    {
-      RunAndCheck(script_path, nodelog, req, project, res, ok_code_functions, ok_code_options);
-    }
-  });
-}
 
 function checkPid(check_pid_options, last_line)
 {
@@ -2252,20 +2217,6 @@ function writeAndRunScript(req, res, project, options, data_repository)
               console.log("The file was saved!");
             }
         }); // end writeFile
-        
-        // fs.writeFile(script_path,
-        //   script_text,
-        //   {
-        //     // var oldmask = process.umask(0);
-        //     mode: mode
-        //     // process.umask(oldmask);
-        //   },
-        //   RunAndCheck(script_path, nodelog, req, project, res, successCode, ok_code_options)
-        // );  // end writeFile
-        // console.log("1 process.umask(oldmask) = " + process.umask(oldmask));
-        // process.umask(oldmask);
-        
-          
       });     //   END data_repository chmod
     }         // end else
   });         //   END ensuredir  
@@ -2670,10 +2621,6 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
             //res.redirect("/user_data/your_projects");
            }
         });  // end tax_by_seq_process ON Close
-
-      // }); //   END chmod
-      // }); //       END move 2
-      // });  //     END move 1
 
   }
 
@@ -3430,7 +3377,6 @@ function get_local_script_text(log, site, code, cmd_list) {
     console.log('MMM1 get_local_script_text - code: ');
     console.log(util.inspect(code, false, null));
     
-    //script_text += "chmod 666 "+log+"\n";
 
     //##### END  create command
 
