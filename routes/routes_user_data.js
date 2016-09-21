@@ -1023,7 +1023,7 @@ cd ${data_dir}`;
 
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
-  make_gast_script_txt += "FILE_NUMBER=\`wc -l < ${data_dir}/filenames.list\`";
+  make_gast_script_txt += `FILE_NUMBER=\`wc -l < ${data_dir}/filenames.list\``;
   make_gast_script_txt += "\n";
   
   make_gast_script_txt += `echo "total files = $FILE_NUMBER" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
@@ -1061,7 +1061,7 @@ else
   . /xraid/bioware/Modules/etc/profile.modules
   module load bioware
 
-  LISTFILE=./filenames.list`;
+  LISTFILE=${data_dir}/filenames.list`;
 
   make_gast_script_txt += "\n";
   make_gast_script_txt += '  INFILE=\\`sed -n "\\${SGE_TASK_ID}p" \\$LISTFILE\\`';
