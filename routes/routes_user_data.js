@@ -2144,34 +2144,12 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
 {
   console.log("QQQ6 in RunAndCheck");
   console.log("QQQRRR1 script_path: " + script_path);
-  // console.log("QQQRRR2 nodelog: " + nodelog);
-  // console.log("QQQRRR3 req");
-  // console.log("QQQRRR4 project: " + project);
-  // console.log("QQQRRR5 res");
-// QQQ6 in RunAndCheck
-// QQQRRR1 script_path: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/load_script.sh
-// QQQRRR2 nodelog: 40
-// QQQRRR3 req
-// QQQRRR4 project: test_gast_project
-// QQQRRR5 res
-//
 
   var run_process = spawn( 'bash', [script_path], {
-    // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
-    // 'PATH':req.CONFIG.PATH,
-    // 'PERL5LIB':req.CONFIG.PERL5LIB,
-    // 'SGE_ROOT':req.CONFIG.SGE_ROOT, 'SGE_CELL':req.CONFIG.SGE_CELL, 'SGE_ARCH':req.CONFIG.SGE_ARCH
-    // },
     detached: true, stdio: [ 'ignore', null, nodelog ]
   });  // stdin, s
 
   var output = '';
-  // console.log("fs.statSync(script_path).mode.toString(8) = ");
-  // console.log(fs.statSync(script_path).mode.toString(8));
-  // console.log("process.umask(0)");
-  // console.log(process.umask(0));
-  // console.log("process.umask().toString(8)");
-  // console.log(process.umask().toString(8));
   
   // TODO: where "data" come from?
   run_process.stdout.on('data', function AddDataToOutput(data) {
@@ -2269,7 +2247,6 @@ function writeAndRunScript(req, res, project, options, data_repository)
             // parseInt('0444', 8)
           },
           RunAndCheck(script_path, nodelog, req, project, res, successCode, ok_code_options)  
-          // mkScriptExecutableAndRun(script_path, req, project, res, nodelog, successCode, ok_code_options)
         );  // end writeFile
         console.log("1 process.umask(oldmask) = " + process.umask(oldmask));
         process.umask(oldmask);
