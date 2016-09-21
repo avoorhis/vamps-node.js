@@ -59,21 +59,11 @@
 			   	</td>
 					<td>
 						<a href='/oligotyping/project/<%= code %>' class='btn btn-xs btn-primary'>Continue</a>
-<!--
-						<form id='' class='' method='post' action='/oligotyping/project/<%= code %>'>
-							
-							<button type='submit' class='btn btn-xs btn-primary' >Continue</button>
-							<input type='hidden' name='directory' value='<%= oligo_info[code].directory %>' />
-							<input type='hidden' name='code' value='<%= code %>' />
-							<input type='hidden' name='rank' value='<%= oligo_info[code].rank %>' />
-							<input type='hidden' name='family' value='<%= oligo_info[code].family %>' />
-							<input type='hidden' name='genus' value='<%= oligo_info[code].genus %>' />
-							<input type='hidden' name='cutoff' value='<%= oligo_info[code].cutoff %>' />
-						</form>
--->
+						<br><br>
+						<button class='btn btn-xs btn-warning' onclick="delete_project('<%= code %>')" width='30'>&nbsp;&nbsp;Delete&nbsp;&nbsp;&nbsp;</button>
+
 			   	</td>
 				</tr>
-
 	
 	</table>
 </div>

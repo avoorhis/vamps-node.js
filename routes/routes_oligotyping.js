@@ -84,11 +84,11 @@ router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req
 //  OLIGOTYPING-1 GET GENUS (FAMILY)
 //
 /* GET Import Choices page. */
-router.post('/selection', helpers.isLoggedIn, function (req, res) {
-  console.log('in routes_oligotyping.js /oligo_selection');
-  console.log('req.body: oligo_selection-->>');
+router.post('/taxa_selection', helpers.isLoggedIn, function (req, res) {
+  console.log('in routes_oligotyping.js /oligo_taxa_selection');
+  console.log('req.body: oligo_taxa_selection-->>');
   console.log(req.body);
-  console.log('req.body: <<--oligo_selection');
+  console.log('req.body: <<--oligo_taxa_selection');
 
 
   //if (req.body.retain_data === '1') {
@@ -110,7 +110,7 @@ router.post('/selection', helpers.isLoggedIn, function (req, res) {
       console.log(chosen_id_name_hash.ids.length);
       console.log('<--chosen_id_name_hash');
 
-      res.render('oligotyping/oligotyping_selection', {
+      res.render('oligotyping/oligotyping_taxa_selection', {
               title: 'VAMPS:Oligotyping',
               referer: 'oligotyping1',
               //constants: JSON.stringify(req.CONSTS),
@@ -123,7 +123,7 @@ router.post('/selection', helpers.isLoggedIn, function (req, res) {
       });
   }
 });
-router.post('/status', helpers.isLoggedIn, function (req, res) {
+router.post('/project_list', helpers.isLoggedIn, function (req, res) {
     console.log('in routes_oligotyping.js /status');
     console.log('req.body: oligo status-->>');
     console.log(req.body);
@@ -158,7 +158,7 @@ router.post('/status', helpers.isLoggedIn, function (req, res) {
           var msg = "NO Data Found"
           req.flash('Message', msg)
           //console.log(msg)
-          res.render('oligotyping/selection', {
+          res.render('oligotyping/oligotyping_taxa_selection', {
               title: 'VAMPS:Oligotyping',
               referer: 'oligotyping',
               chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
@@ -240,7 +240,7 @@ router.post('/status', helpers.isLoggedIn, function (req, res) {
               });
           })
           
-          res.redirect('your_projects')
+          res.redirect('project_list')
                       
         }
       }
@@ -253,7 +253,7 @@ router.post('/status', helpers.isLoggedIn, function (req, res) {
 //
 // YOUR PROJECTS
 //
-router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
+router.get('/project_list', helpers.isLoggedIn, function (req, res) {
     //console.log(PROJECT_INFORMATION_BY_PNAME);
     if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
       res.render('oligotyping/your_data', {
@@ -322,7 +322,7 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
             });
             //console.log(project_info)
             //console.log(file_info)
-            res.render('oligotyping/oligotyping_status',
+            res.render('oligotyping/oligotyping_project_list',
                 { title: 'User Projects',
                   pinfo: JSON.stringify(project_info),
                   finfo: JSON.stringify(file_info),
@@ -677,4 +677,19 @@ router.get('/rewind/:code/:level', helpers.isLoggedIn, function (req, res) {
   res.redirect('/oligotyping/project/'+oligo_code)
 
 })
+//
+//
+//
+router.get('/delete/:code', helpers.isLoggedIn, function (req, res) {
+  console.log('in oligotyping delete')
+  var oligo_code = req.params.code
+  var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'oligotyping-'+oligo_code);
+  console.log(data_repository)
+  helpers.deleteFolderRecursive(data_repository)
+  res.redirect('your_projects')
+  //res.send('done')
+});
+//
+//
+//
 module.exports = router;

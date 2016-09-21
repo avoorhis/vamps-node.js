@@ -2523,7 +2523,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 //
 //
 router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
-    console.log('in download_file')
+    console.log('in routes_visualization download_file')
     var html = '';
     var ts = req.body.ts;
     var file_type = req.body.file_type;

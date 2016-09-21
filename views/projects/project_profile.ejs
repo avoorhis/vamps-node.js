@@ -23,18 +23,10 @@
 		<ul class="dropdown-menu">
 	    <li>
 				<form id='viz_select_form_id' method='POST' action='/visuals/visuals_index'>
-		  	  <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Select in Visualizations</button>
+		  	  <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Open in Dataset Selection</button>
 		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
 		  	  <input type='hidden' name='project' value='<%= data.project %>' />	
-
 		    </form>		  
-	    </li>
-	    <li>
-	    	<form id='export_select_form_id' method='POST' action='/user_data/export_data'>
-		  	  <button id='export_select_form_btn' class='btn btn-sm btn-link' >Select in Exports</button>
-		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
-		  	  <input type='hidden' name='project' value='<%= data.project %>' />			  
-		    </form>
 	    </li>
 		  <li>
 		    <form id='download_project_fasta_form_id' method='POST' action=''>

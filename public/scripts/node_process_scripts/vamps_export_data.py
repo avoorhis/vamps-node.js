@@ -173,20 +173,21 @@ def run_matrix(args):
     
     collector = {}
     sample_order_dict = {}
+
     for row in rows:
         samp = row['project']+'--'+row['dataset']
-        sample_order_dict[samp]=1
+        sample_order_dict[samp] = 1
         knt = row['knt']
         
         
         if args.normalization == 'not_normalized':
             count = knt
         else:
-            if args.dataset_counts[pjds] <= 0:
+            if args.dataset_counts[samp] <= 0:
                 dataset_count = 1;
             else:
-                dataset_count = args.dataset_counts[pjds]
-            if args.normalization == 'normailzed_by_percent':
+                dataset_count = args.dataset_counts[samp]
+            if args.normalization == 'normalized_by_percent':
                 count = round((knt /  dataset_count )*100,8)
             elif args.normalization == 'normalized_to_maximum':
                 count = int(( knt /  dataset_count ) * args.max)
@@ -194,13 +195,12 @@ def run_matrix(args):
                 count = knt  # should never get here
         
         tax   = row['taxonomy']
-
-        if tax.split(';')[0] in args.domains:
+        dom = tax.split(';')[0]
+        if dom in args.domains:
             if tax not in collector:
                 collector[tax] = {}
             collector[tax][samp] = count
         
-    #print collector
     sample_order = sorted(sample_order_dict.keys())  
     tax_order    = sorted(collector.keys())
     file_txt = 'VAMPS Taxonomy Matrix\tRank:'+args.rank+'\tNormalization:'+args.normalization+'\n'
@@ -254,7 +254,7 @@ def run_biom(args):
                 dataset_count = 1;
             else:
                 dataset_count = args.dataset_counts[pjds]
-            if args.normalization == 'normailzed_by_percent':
+            if args.normalization == 'normalized_by_percent':
                 count = round((knt /  dataset_count )*100,8)
             elif args.normalization == 'normalized_to_maximum':
                 count = int(( knt /  dataset_count ) * args.max)
@@ -403,7 +403,7 @@ def run_taxbytax(args):
                 dataset_count = 1;
             else:
                 dataset_count = args.dataset_counts[pjds]
-            if args.normalization == 'normailzed_by_percent':
+            if args.normalization == 'normalized_by_percent':
                 count = round((knt /  dataset_count )*100,8)
             elif args.normalization == 'normalized_to_maximum':
                 count = int(( knt /  dataset_count ) * args.max)
@@ -480,7 +480,7 @@ def run_taxbyseq(args):
             else:
                 dataset_count = args.dataset_counts[pjds]
             
-            if args.normalization == 'normailzed_by_percent':
+            if args.normalization == 'normalized_by_percent':
                 count = round((seq_count /  dataset_count )*100,8)
             elif args.normalization == 'normalized_to_maximum':
                 count = int(( seq_count /  dataset_count ) * args.max)
@@ -589,7 +589,7 @@ if __name__ == '__main__':
             -u, --user       Needed access code creation
             
             --file_base         Where the files will go and where is the INFO file
-            --normalization     user choice: not_normalized, normalized_to_maximum or normailzed_by_percent
+            --normalization     user choice: not_normalized, normalized_to_maximum or normalized_by_percent
             --compress          Compress files in gzip format
 
             --rank              used only for taxbytax, biom and matrix  [ DEFAULT:phylum ]
@@ -643,7 +643,7 @@ if __name__ == '__main__':
 
                                                     help="This is for matrix file only")                                             
     parser.add_argument("-norm", "--normalization",  required=False,  action="store",   dest = "normalization", default='not_normalized',
-                                                    help="not_normalized, normalized_to_maximum or normailzed_by_percent")                                                 
+                                                    help="not_normalized, normalized_to_maximum or normalized_by_percent")                                                 
     parser.add_argument("-compress", "--compress",        required=False,  action="store_true",   dest = "compress", default=False,
                                                     help="")
     parser.add_argument("-db", "--db",    
@@ -683,6 +683,7 @@ if __name__ == '__main__':
     #sys.exit()
     print args.datasets
     print args.domains
+    args.domains = [x.strip() for x in args.domains]
     #args.compress = True
     
     

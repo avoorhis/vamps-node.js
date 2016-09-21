@@ -728,8 +728,8 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
     //var log = path.join(user_dir, 'export_log.txt');
     if (normalization == 'max' || normalization == 'maximum' || normalization == 'normalized_to_maximum') {
         norm = 'normalized_to_maximum';
-    } else if (normalization == 'percent') {
-        norm = 'normailzed_by_percent';
+    } else if (normalization == 'percent' || normalization == 'frequency') {
+        norm = 'normalized_by_percent';
     } else {
         norm = 'not_normalized';
     }
@@ -946,3 +946,16 @@ module.exports.isLocal = function (req) {
     {return true;}
 };
 
+module.exports.deleteFolderRecursive = function(path) {
+  if( fs.existsSync(path) ) {
+    fs.readdirSync(path).forEach(function(file,index){
+      var curPath = path + "/" + file;
+      if(fs.lstatSync(curPath).isDirectory()) { // recurse
+        deleteFolderRecursive(curPath);
+      } else { // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
+};

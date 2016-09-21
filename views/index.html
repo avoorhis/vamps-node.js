@@ -22,10 +22,23 @@
 
 	<li><strong>Data Ramp</strong> - Researchers who want to use the VAMPS tools with their own data can enter their sequence or taxonomy data to the VAMPS website and merge it with the existing shared datasets for individual or comparative analyses. Researchers will be given a user name and password, and their data will be visible only to registered users of their choice. 
 </ul>
-</p>   
-<p><a href="help/overview" class="btn btn-primary btn-large">Learn more &raquo;</a></p>	
-	
+</p>
+<div class="row">
+<div class="col-lg-4">
+<br>
+	<table class='table'>  
+	<% if (user === undefined) { %>
+   <tr><td>Register for an Account:</td><td><a href='/users/signup' class="navbar-link" >Register</a> 
+   			<small>(<a href='/users/login' class="navbar-link" >or login</a>)</small>
+   		</td></tr>
+  <% } %>
+	<tr><td>Learn more about VAMPS:</td><td><a href="help/overview" class="">Overview Page</a></td></tr>
+	<tr><td>Recommended Analysis Start:</td><td><a href="visuals/visuals_index" class="">Data Selection Page</a></td></tr>	
+	</table>
+</div>
+</div>
+<br>
 <% include add_ins/end.ejs %>
    
- </body>
- </html>
+</body>
+</html>

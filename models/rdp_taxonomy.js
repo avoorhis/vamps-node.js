@@ -16,7 +16,7 @@ var taxa_query_pt1 = "SELECT DISTINCT domain, phylum, klass, `order`, family, ge
  JOIN strain AS str USING(strain_id)";
  //console.log('running custom tax query short-2');
  
-console.log('running dataset_taxa_counts query');
+console.log('RDP: running dataset_taxa_counts query');
 
 module.exports = rdpTaxonomy;
 

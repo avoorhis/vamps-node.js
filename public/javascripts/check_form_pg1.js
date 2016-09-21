@@ -97,7 +97,7 @@ if (selection_btn_oligotyping !== null)
 
     var f = document.createElement("form");
     f.setAttribute('method',"post");
-    f.setAttribute('action',"/oligotyping/selection");
+    f.setAttribute('action',"/oligotyping/taxa_selection");
     //if(show_dataset_tree){
     dids = projectTree.getAllChecked();
     if(dids){

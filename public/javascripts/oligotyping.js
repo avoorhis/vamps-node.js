@@ -58,7 +58,7 @@ function get_oligotype_seqs(){
   	
   	var f = document.createElement("form");
     f.setAttribute('method',"post");
-    f.setAttribute('action',"/oligotyping/status");
+    f.setAttribute('action',"/oligotyping/project_list");
 
   	var input = document.createElement('input');
     input.type = 'hidden';
@@ -75,8 +75,36 @@ function get_oligotype_seqs(){
     f.submit();
     document.body.removeChild(f);
 
-
-  	
-
+}
+//
+function delete_project(code){
+	var resp = confirm('are you sure?')
+	if(resp){
+		//alert('good',resp)
+		var xmlhttp = new XMLHttpRequest();
+	  xmlhttp.open("GET", "/oligotyping/delete/" + code, true);
+	  xmlhttp.send();
+	}else{
+		return
+	}
 
 }
+function run_oligotyping(btn, code){
+	//alert('help')
+	
+	var form = document.getElementById("oligotyping_form_id")
+	if(btn =='rerun'){
+		var c_el = document.getElementById("largeC")
+		document.getElementById("html_link_btn").disabled = true
+	}else{
+		var c_el = document.getElementById("smallc")
+	}
+
+	if(c_el.value == ''){
+		alert('Fill in values for all the parameters.')
+		return
+	}
+	form.submit()
+}
+
+

@@ -3071,7 +3071,7 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
 //
 //
 router.post('/download_file', helpers.isLoggedIn, function (req, res) {
-    console.log('in download_file');
+    console.log('in routes_user_data download_file');
     // file_type - fasta, metadata, or matrix
     console.log(req.body);
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
@@ -3081,6 +3081,7 @@ router.post('/download_file', helpers.isLoggedIn, function (req, res) {
       //create_frequency_table_file(req, user_dir, timestamp)
       // copy file to user directory?
     //}else{
+      //console.log(visual_post_items)
       helpers.create_export_files(req, user_dir, timestamp, chosen_id_name_hash.ids, file_tag, visual_post_items.normalization, visual_post_items.tax_depth, visual_post_items.domains, true);
     //}
     res.send(req.body.file_type);
