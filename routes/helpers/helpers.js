@@ -941,7 +941,7 @@ module.exports.get_qsub_script_text = function(log, pwd, site, name, cmd_list) {
 
 module.exports.get_qsub_script_text_only = function(scriptlog, dir_path, site, cmd_name, cmd_list) {
     script_text = `#!/bin/bash
-# CODE:\t${name}
+# CODE:\t${cmd_name}
 # source environment:
 source /groups/vampsweb/${site}/seqinfobin/vamps_environment.sh
 
@@ -958,6 +958,8 @@ module load clusters/vamps
       script_text += cmd_list[i]+"\n";
   }
 
+  console.log("script_text from get_qsub_script_text_only: ")
+  console.log(util.inspect(script_text, false, null));
   return script_text;
 
 };
