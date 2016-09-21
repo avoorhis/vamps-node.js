@@ -85,6 +85,18 @@ function initialize_dhtmlx_project_tree() {
 //
 //
 //
+// function set_dataset_count(id){
+//     
+//     var checked_nodes = projectTree.getAllChecked().split(',')
+//     var count = 0
+//     for(i in checked_nodes){
+//         // only count datasets
+//         if(projectTree.getLevel(checked_nodes[i]) === 2){
+//             count += 1
+//         }
+//     }
+//     document.getElementById('selected_ds_count_id').innerHTML = count
+// }
 function set_dataset_count(id){
     var len = 0
     if(Object.keys(datasets_local).length > 0){
