@@ -887,7 +887,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_fnaunique.sh /opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/ashipunova/BPC/vamps-node.js/public/scripts/bin: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project
   // --- end test
   var script_path     = path.join(data_dir, script_name);
-  var nodelog         = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
+  var nodelog         = fs.openSync(path.join(data_dir, 'assignment.log'), 'a', 0664);
   var ok_code_options = [classifier, status_params, res, ref_db_dir];
 
   // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
@@ -2184,14 +2184,14 @@ function writeAndRunScript(req, res, project, options, data_repository)
     else
     {
       // TODO: name this function, what is it doing?:
-      fs.chmod(data_repository, 0775, function chmodDataRepo(err) {
+      fs.chmod(data_repository, 0777, function chmodDataRepo(err) {
         if (err) {
           console.log('chmod err:', err);
           return;
         }
         var cmd_list = CreateCmdList(req, options, data_repository);
         script_name     = 'load_script.sh';
-        var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
+        var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a', 0664);
         var script_vars = GetScriptVars(req, data_repository, cmd_list, 'vampsupld');
         var scriptlog   = script_vars[0];
         var script_text = script_vars[1];
