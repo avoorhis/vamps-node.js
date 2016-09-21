@@ -1017,12 +1017,13 @@ touch ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   }
   make_gast_script_txt += `  
 ls ${data_dir}/*${file_suffix} >${data_dir}/filenames.list
+chmod 666 ${data_dir}/filenames.list
 
 cd ${data_dir}`;
 
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
-  make_gast_script_txt += "FILE_NUMBER=\`wc -l < filenames.list\`";
+  make_gast_script_txt += "FILE_NUMBER=\`wc -l < ${data_dir}/filenames.list\`";
   make_gast_script_txt += "\n";
   
   make_gast_script_txt += `echo "total files = $FILE_NUMBER" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
@@ -2051,7 +2052,7 @@ function GetScriptVars(req, data_repository, cmd_list, cmd_name)
   else
   {
     scriptlog   = path.join(data_repository, 'cluster.log');
-    script_text = helpers.get_qsub_script_text(scriptlog, data_repository, req.CONFIG.dbhost, cmd_name, cmd_list);
+    script_text = helpers.get_qsub_script_text_only(scriptlog, data_repository, req.CONFIG.dbhost, cmd_name, cmd_list);
   }
   
   // console.log('111 scriptlog: ' + scriptlog);

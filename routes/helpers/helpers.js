@@ -706,8 +706,8 @@ module.exports.fetchInfo = function (query, values, callback) {
   connection.query(query, values, function(err, rows) {
     if (err) {
       callback(err, null);
-    } 
-    else 
+    }
+    else
     {
       console.log('--- rows from fetchInfo ---');
       console.log(util.inspect(rows, false, null));
@@ -746,10 +746,10 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
 
     var dids_str = JSON.stringify(dids.join(', '));
     var pids_str = JSON.stringify((Object.keys(pid_lookup)).join(', '));
-    
+
     console.log('pids', pids_str);
     //var file_tags = file_tags.join(' ')
-    
+
     var export_cmd_options = {
 
                          scriptPath : path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
@@ -758,9 +758,9 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
                                          '-r', ts,
                                          '-base', user_dir,
                                          '-dids', dids_str,
-                                         '-pids', pids_str,                                         
+                                         '-pids', pids_str,
                                          '-norm', norm,
-                                         '-rank', rank,                                         
+                                         '-rank', rank,
                                          '-db', NODE_DATABASE
                                          ] // '-compress'
 
@@ -936,6 +936,29 @@ module.exports.get_qsub_script_text = function(log, pwd, site, name, cmd_list) {
     //##### END  create command
 
     return script_text;
+
+};
+
+module.exports.get_qsub_script_text_only = function(scriptlog, dir_path, site, cmd_name, cmd_list) {
+    script_text = `#!/bin/bash
+# CODE:\t${name}
+# source environment:
+source /groups/vampsweb/${site}/seqinfobin/vamps_environment.sh
+
+TSTAMP=\`date +%Y%m%d%H%M%S\`
+
+# Loading Module didn't work when testing:
+. /usr/share/Modules/init/sh
+export MODULEPATH=/usr/local/www/vamps/software/modulefiles
+module load clusters/vamps
+
+`;
+
+  for (var i in cmd_list) {
+      script_text += cmd_list[i]+"\n";
+  }
+
+  return script_text;
 
 };
 
