@@ -787,7 +787,6 @@ router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, function (req, res)
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
 router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, function (req, res) {
   var cmd_list = [];
-  // var exec = require('child_process').exec;
   console.log('in start_assignment--->');
   console.log("req.params: ");
   console.log(req.params);
@@ -888,43 +887,38 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_fnaunique.sh /opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/ashipunova/BPC/vamps-node.js/public/scripts/bin: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project
   // --- end test
   var script_path     = path.join(data_dir, script_name);
-  var nodelog         = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
+  var nodelog         = fs.openSync(path.join(data_dir, 'assignment.log'), 'a', 0664);
   var ok_code_options = [classifier, status_params, res, ref_db_dir];
 
   // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
   
-  fs.writeFile(script_path, script_text, mkScriptExecutableAndRun(script_path, req, project, res, nodelog, checkPid, ok_code_options));
-
-  status_params.status = status_params.statusSUCCESS;
-  status_params.msg = status_params.msgSUCCESS;
-  helpers.update_status(status_params);
-  req.flash('successMessage', classifier + " has been started for project: '" + project + "'");
-  res.redirect("/user_data/your_projects");
-
+  var mode = 0775;
+  var oldmask = process.umask(0);
+  console.log("script_path2 = " + script_path);
+  fs.writeFile(script_path, 
+    script_text, 
+    {
+      mode: mode
+    }, 
+    function(err) {
+      if(err) {
+          return console.log(err);
+      }
+      else
+      {
+        RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
+        status_params.status = status_params.statusSUCCESS;
+        status_params.msg = status_params.msgSUCCESS;
+        helpers.update_status(status_params);
+        req.flash('successMessage', classifier + " has been started for project: '" + project + "'");
+        res.redirect("/user_data/your_projects");
+        process.umask(oldmask);
+        console.log("The file was saved!");
+      }
+  }); 
 });
 
 // Functions for tax_assignment
-
-function mkScriptExecutableAndRun(script_path, req, project, res, nodelog, ok_code_functions, ok_code_options)
-{
-  console.log('XXX1 mkScriptExecutableAndRun, ok_code_options =  ');
-  
-  var exec = require('child_process').exec;
-  // Make script executable
-  child = exec( 'chmod ug+rwx ' + script_path,
-  function (error, stdout, stderr) {
-    console.log('1stdout: ' + stdout);
-    console.log('1stderr: ' + stderr);
-    if (error !== null)
-    {
-      console.log('1exec error: ' + error);
-    }
-    else
-    {
-      RunAndCheck(script_path, nodelog, req, project, res, ok_code_functions, ok_code_options);
-    }
-  });
-}
 
 function checkPid(check_pid_options, last_line)
 {
@@ -2133,7 +2127,13 @@ function failedCode(req, res, data_repository, project, last_line)
                         'msg':     'Script Failure'
        };
        var redirect_url = path.join('/user_data', req.url);
-       res.redirect(redirect_url);  // for now we'll send errors to the browser
+       res.render(redirect_url, {
+         user: req.user,
+         hostname: req.CONFIG.hostname,
+         message: req.flash('message'),
+       });
+       
+       // res.redirect(redirect_url);  // for now we'll send errors to the browser
        return;
    }
  });
@@ -2143,29 +2143,13 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
 {
   console.log("QQQ6 in RunAndCheck");
   console.log("QQQRRR1 script_path: " + script_path);
-  // console.log("QQQRRR2 nodelog: " + nodelog);
-  // console.log("QQQRRR3 req");
-  // console.log("QQQRRR4 project: " + project);
-  // console.log("QQQRRR5 res");
-// QQQ6 in RunAndCheck
-// QQQRRR1 script_path: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/load_script.sh
-// QQQRRR2 nodelog: 40
-// QQQRRR3 req
-// QQQRRR4 project: test_gast_project
-// QQQRRR5 res
-//
 
-  var run_process = spawn( script_path, [], {
-    // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
-    // 'PATH':req.CONFIG.PATH,
-    // 'PERL5LIB':req.CONFIG.PERL5LIB,
-    // 'SGE_ROOT':req.CONFIG.SGE_ROOT, 'SGE_CELL':req.CONFIG.SGE_CELL, 'SGE_ARCH':req.CONFIG.SGE_ARCH
-    // },
+  var run_process = spawn( 'sh', [script_path], {
     detached: true, stdio: [ 'ignore', null, nodelog ]
   });  // stdin, s
 
   var output = '';
-
+  
   // TODO: where "data" come from?
   run_process.stdout.on('data', function AddDataToOutput(data) {
     data = data.toString().trim();
@@ -2200,25 +2184,42 @@ function writeAndRunScript(req, res, project, options, data_repository)
     else
     {
       // TODO: name this function, what is it doing?:
-      fs.chmod(data_repository, 0775, function chmodDataRepo(err) {
+      fs.chmod(data_repository, 0777, function chmodDataRepo(err) {
         if (err) {
           console.log('chmod err:', err);
           return;
         }
         var cmd_list = CreateCmdList(req, options, data_repository);
         script_name     = 'load_script.sh';
-        var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
+        var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a', 0664);
         var script_vars = GetScriptVars(req, data_repository, cmd_list, 'vampsupld');
         var scriptlog   = script_vars[0];
         var script_text = script_vars[1];
         var script_path = path.join(data_repository, script_name);
         var ok_code_options = [req, res, project];
 
-
-        fs.writeFile(script_path, script_text, mkScriptExecutableAndRun(script_path, req, project, res, nodelog, successCode, ok_code_options));  // end writeFile
+        var mode = 0775;
+        var oldmask = process.umask(0);
+        console.log("script_path1 = " + script_path);
+        fs.writeFile(script_path, 
+          script_text, 
+          {
+            mode: mode
+          }, 
+          function(err) {
+            if(err) {
+                return console.log(err);
+            }
+            else
+            {
+              RunAndCheck(script_path, nodelog, req, project, res, successCode, ok_code_options);
+              process.umask(oldmask);
+              console.log("The file was saved!");
+            }
+        }); // end writeFile
       });     //   END data_repository chmod
     }         // end else
-  });         //   END ensuredir
+  });         //   END ensuredir  
 }
 
 function uploadData(req, res)
@@ -2620,10 +2621,6 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
             //res.redirect("/user_data/your_projects");
            }
         });  // end tax_by_seq_process ON Close
-
-      // }); //   END chmod
-      // }); //       END move 2
-      // });  //     END move 1
 
   }
 
@@ -3380,7 +3377,6 @@ function get_local_script_text(log, site, code, cmd_list) {
     console.log('MMM1 get_local_script_text - code: ');
     console.log(util.inspect(code, false, null));
     
-    //script_text += "chmod 666 "+log+"\n";
 
     //##### END  create command
 
