@@ -893,6 +893,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 
   // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
   
+  console.log("script_path2 = " + script_path);
   fs.writeFile(script_path, script_text, mkScriptExecutableAndRun(script_path, req, project, res, nodelog, checkPid, ok_code_options));
 
   status_params.status = status_params.statusSUCCESS;
@@ -2165,7 +2166,13 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
   });  // stdin, s
 
   var output = '';
-
+  console.log("fs.statSync(script_path).mode.toString(8) = ");
+  console.log(fs.statSync(script_path).mode.toString(8));
+  console.log("process.umask(0)");
+  console.log(process.umask(0));
+  console.log("process.umask().toString(8)");
+  console.log(process.umask().toString(8));
+  
   // TODO: where "data" come from?
   run_process.stdout.on('data', function AddDataToOutput(data) {
     data = data.toString().trim();
@@ -2214,11 +2221,61 @@ function writeAndRunScript(req, res, project, options, data_repository)
         var script_path = path.join(data_repository, script_name);
         var ok_code_options = [req, res, project];
 
+        //
+        // parseInt('0444', 8)
+        // process.umask(oldmask);
+        console.log("1 process.umask() = " + process.umask());
 
-        fs.writeFile(script_path, script_text, mkScriptExecutableAndRun(script_path, req, project, res, nodelog, successCode, ok_code_options));  // end writeFile
+        // var mode = parseInt('0444', 8);
+        // console.log("1 0444 = " + mode);
+        //
+        // mode = 0444 & ~process.umask();
+        // console.log("just 0444 & ~process.umask() = " + mode);
+        //
+        // mode = '0444' & ~process.umask();
+        // console.log("just '0444' & ~process.umask() = " + mode);
+        //
+        // mode = parseInt('0444', 8) & ~process.umask();
+        // console.log("1 0444 & ~process.umask() = " + mode);
+        //
+        // mode = parseInt('0444', 8) & ~process.umask();
+        // console.log("2 0444 & ~process.umask() = " + mode);
+        //
+        // mode = parseInt('0444', 8) & ~process.umask(0);
+        // console.log("parseInt('0444', 8) & ~process.umask(0) = " + mode);
+        //
+        // mode = '766' & ~process.umask();
+        // console.log("'766' & ~process.umask(0) = " + mode);
+      
+        var oldmask = process.umask(0);
+        
+        // mode = '766';
+        // console.log("just '766' = " + mode);
+        
+        // mode = '766' & ~process.umask();
+        // console.log("2 '766' & ~process.umask() = " + mode);
+        var mode = '0775';
+        // parseInt('0444', 8);
+        console.log("1 0775 = " + mode);
+        
+        console.log("script_path1 = " + script_path);
+        fs.writeFile(script_path, 
+          script_text,
+          {
+            mode: mode
+            // parseInt('0711', 8)
+            // (0o444 & ~process.umask()).toString(8)
+            // 0o444
+            // parseInt('0444', 8)
+          },
+          mkScriptExecutableAndRun(script_path, req, project, res, nodelog, successCode, ok_code_options));  // end writeFile
+        console.log("1 process.umask(oldmask) = " + process.umask(oldmask));
+        process.umask(oldmask);
+        
+          
       });     //   END data_repository chmod
     }         // end else
-  });         //   END ensuredir
+  });         //   END ensuredir  
 }
 
 function uploadData(req, res)
