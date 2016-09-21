@@ -84,11 +84,11 @@ router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req
 //  OLIGOTYPING-1 GET GENUS (FAMILY)
 //
 /* GET Import Choices page. */
-router.post('/oligo_step1', helpers.isLoggedIn, function (req, res) {
-  console.log('in routes_oligotyping.js /oligo_step1_get_genus');
-  console.log('req.body: oligo_step1_get_genus-->>');
+router.post('/selection', helpers.isLoggedIn, function (req, res) {
+  console.log('in routes_oligotyping.js /oligo_selection');
+  console.log('req.body: oligo_selection-->>');
   console.log(req.body);
-  console.log('req.body: <<--oligo_step1_get_genus');
+  console.log('req.body: <<--oligo_selection');
 
 
   //if (req.body.retain_data === '1') {
@@ -110,7 +110,7 @@ router.post('/oligo_step1', helpers.isLoggedIn, function (req, res) {
       console.log(chosen_id_name_hash.ids.length);
       console.log('<--chosen_id_name_hash');
 
-      res.render('oligotyping/oligotyping1_genus', {
+      res.render('oligotyping/oligotyping_selection', {
               title: 'VAMPS:Oligotyping',
               referer: 'oligotyping1',
               //constants: JSON.stringify(req.CONSTS),
@@ -124,15 +124,16 @@ router.post('/oligo_step1', helpers.isLoggedIn, function (req, res) {
   }
 });
 router.post('/status', helpers.isLoggedIn, function (req, res) {
-    console.log('in routes_oligotyping.js /oligo_step2_create_fasta');
-    console.log('req.body: oligo_step2_create_fasta-->>');
+    console.log('in routes_oligotyping.js /status');
+    console.log('req.body: oligo status-->>');
     console.log(req.body);
-    console.log('req.body: <<--oligo_step2_create_fasta');
+    console.log('req.body: <<--oligo status');
     var tax_string = req.body.tax_string;
     var tax_obj = JSON.parse(req.body.tax_obj);
     var rank = tax_obj.rank
-    //console.log('rank',rank)
-    
+    console.log('tax_obj:')
+    console.log(JSON.stringify(tax_obj, null, 4));
+
     var sql_dids = (chosen_id_name_hash.ids).join("','")
     q = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n" 
     q += " join sequence using (sequence_id)\n"
@@ -141,7 +142,7 @@ router.post('/status', helpers.isLoggedIn, function (req, res) {
     q += " join project using (project_id)\n"
     q += " where silva_taxonomy_id='"+tax_obj.db_id+"'\n"
     q += " and dataset_id in('"+sql_dids+"') \n"
-    console.log('q',q);
+    console.log('query',q);
     var dataset_lookup = {}
     var html='';
     var timestamp = +new Date();  // millisecs since the epoch!
@@ -156,10 +157,10 @@ router.post('/status', helpers.isLoggedIn, function (req, res) {
           //res.json(tax_obj)
           var msg = "NO Data Found"
           req.flash('Message', msg)
-          console.log(msg)
-          res.render('oligotyping/oligotyping1_genus', {
+          //console.log(msg)
+          res.render('oligotyping/selection', {
               title: 'VAMPS:Oligotyping',
-              referer: 'oligotyping1',
+              referer: 'oligotyping',
               chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
               message: req.flash('Message'),
               user: req.user, hostname: req.CONFIG.hostname
@@ -319,7 +320,7 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
               //reverse sort: recent-->oldest
               return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
             });
-            console.log(project_info)
+            //console.log(project_info)
             //console.log(file_info)
             res.render('oligotyping/oligotyping_status',
                 { title: 'User Projects',

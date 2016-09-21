@@ -97,7 +97,7 @@ if (selection_btn_oligotyping !== null)
 
     var f = document.createElement("form");
     f.setAttribute('method',"post");
-    f.setAttribute('action',"/oligotyping/oligo_step1");
+    f.setAttribute('action',"/oligotyping/selection");
     //if(show_dataset_tree){
     dids = projectTree.getAllChecked();
     if(dids){

@@ -33,7 +33,7 @@
 	<tr>
 		<td>Entropy</td>
 		<td><%= entropy_status %></td>
-		<td>Pynast Cutoff: <%= cutoff %> (Fixed: 80% of average length)</td>
+		<td>Pynast Cutoff: <%= cutoff %> (Fixed: 80% of average sequence length)</td>
 		<% if(entropy_status == 'COMPLETED'){ %>
 			<td>
 					Entropy is complete
@@ -78,14 +78,27 @@
 		<td>
 				<table>
 <% 			if(oligo_status == 'COMPLETED'){ %>
-				<tr><td>-C</td><td><input type='text' name='SELECTED_COMPONENTS' value='' maxlength='30' size='10'></td><td> SELECTED_COMPONENTS</td><td>[ no default ]</td></tr>
+				<tr>
+					<td>-C</td><td><input type='text' name='SELECTED_COMPONENTS' value='' maxlength='30' size='10'></td>
+					<td>SELECTED_COMPONENTS</td><td>[ no default ]</td>
+				</tr>
 <% 			}else{ %>
-						<tr><td>-c</td><td><input type='text' name='NUMBER_OF_AUTO_COMPONENTS' value='2' maxlength='3' size='2'></td><td> NUMBER_OF_AUTO_COMPONENTS</td><td>[ Default:2 ]</td></tr>
+						<tr><td>-c</td><td><input type='text' name='NUMBER_OF_AUTO_COMPONENTS' value='2' maxlength='3' size='2'></td>
+							<td> NUMBER_OF_AUTO_COMPONENTS</td><td>[ Default:2 ]</td>
+						</tr>
 <% 			} %>
-				<tr><td>-a</td><td> <input type='text' name='MIN_PERCENT_ABUNDANCE' value='0.0' maxlength='3' size='2'></td><td> MIN_PERCENT_ABUNDANCE</td><td>[ Default:0.0 ]</td></tr>
-				<tr><td>-A</td><td> <input type='text' name='MIN_ACTUAL_ABUNDANCE' value='0' maxlength='3' size='2'></td><td> MIN_ACTUAL_ABUNDANCE</td><td>[ Default:0 ]</td></tr>
-				<tr><td>-M</td><td> <input type='text' name='MIN_SUBSTANTIVE_ABUNDANCE' value='0' maxlength='3' size='2'></td><td> MIN_SUBSTANTIVE_ABUNDANCE</td><td>[ Default:0 ]</td></tr>
-				<tr><td>-s</td><td> <input type='text' name='MIN_NUMBER_OF_SAMPLES' value='5' maxlength='3' size='2'></td><td> MIN_NUMBER_OF_SAMPLES</td><td>[ Default:5 ]</td></tr>
+				<tr><td>-a</td><td> <input type='text' name='MIN_PERCENT_ABUNDANCE' value='0.0' maxlength='3' size='2'></td>
+					<td> MIN_PERCENT_ABUNDANCE</td><td>[ Default:0.0 ]</td>
+				</tr>
+				<tr><td>-A</td><td> <input type='text' name='MIN_ACTUAL_ABUNDANCE' value='0' maxlength='3' size='2'></td>
+					<td> MIN_ACTUAL_ABUNDANCE</td><td>[ Default:0 ]</td>
+				</tr>
+				<tr><td>-M</td><td> <input type='text' name='MIN_SUBSTANTIVE_ABUNDANCE' value='0' maxlength='3' size='2'></td>
+					<td> MIN_SUBSTANTIVE_ABUNDANCE</td><td>[ Default:0 ]</td>
+				</tr>
+				<tr><td>-s</td><td> <input type='text' name='MIN_NUMBER_OF_SAMPLES' value='5' maxlength='3' size='2'></td>
+					<td> MIN_NUMBER_OF_SAMPLES</td><td>[ Default:5 ]</td>
+				</tr>
 		</table>
 
 		</td>
