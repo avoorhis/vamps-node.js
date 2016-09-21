@@ -2156,7 +2156,7 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
 // QQQRRR5 res
 //
 
-  var run_process = spawn( script_path, [], {
+  var run_process = spawn( 'bash', [script_path], {
     // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
     // 'PATH':req.CONFIG.PATH,
     // 'PERL5LIB':req.CONFIG.PERL5LIB,
@@ -2166,12 +2166,12 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
   });  // stdin, s
 
   var output = '';
-  console.log("fs.statSync(script_path).mode.toString(8) = ");
-  console.log(fs.statSync(script_path).mode.toString(8));
-  console.log("process.umask(0)");
-  console.log(process.umask(0));
-  console.log("process.umask().toString(8)");
-  console.log(process.umask().toString(8));
+  // console.log("fs.statSync(script_path).mode.toString(8) = ");
+  // console.log(fs.statSync(script_path).mode.toString(8));
+  // console.log("process.umask(0)");
+  // console.log(process.umask(0));
+  // console.log("process.umask().toString(8)");
+  // console.log(process.umask().toString(8));
   
   // TODO: where "data" come from?
   run_process.stdout.on('data', function AddDataToOutput(data) {
@@ -2268,7 +2268,9 @@ function writeAndRunScript(req, res, project, options, data_repository)
             // 0o444
             // parseInt('0444', 8)
           },
-          mkScriptExecutableAndRun(script_path, req, project, res, nodelog, successCode, ok_code_options));  // end writeFile
+          RunAndCheck(script_path, nodelog, req, project, res, successCode, ok_code_options)  
+          // mkScriptExecutableAndRun(script_path, req, project, res, nodelog, successCode, ok_code_options)
+        );  // end writeFile
         console.log("1 process.umask(oldmask) = " + process.umask(oldmask));
         process.umask(oldmask);
         
