@@ -893,8 +893,33 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 
   // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
   
+  var mode = 0775;
+  var oldmask = process.umask(0);
   console.log("script_path2 = " + script_path);
-  fs.writeFile(script_path, script_text, mkScriptExecutableAndRun(script_path, req, project, res, nodelog, checkPid, ok_code_options));
+  fs.writeFile(script_path, 
+    script_text, 
+    {
+      mode: mode
+    }, 
+    function(err) {
+      if(err) {
+          return console.log(err);
+      }
+      else
+      {
+        RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
+      }
+      console.log("The file was saved!");
+  }); 
+  // fs.writeFile(script_path,
+  //   script_text,
+  //   {
+  //     mode: mode
+  //   },
+  //   RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options)
+  //   // mkScriptExecutableAndRun(script_path, req, project, res, nodelog, checkPid, ok_code_options)
+  // );
+  process.umask(oldmask);
 
   status_params.status = status_params.statusSUCCESS;
   status_params.msg = status_params.msgSUCCESS;
@@ -908,11 +933,24 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 
 function mkScriptExecutableAndRun(script_path, req, project, res, nodelog, ok_code_functions, ok_code_options)
 {
-  console.log('XXX1 mkScriptExecutableAndRun, ok_code_options =  ');
+  console.log('XXX1 mkScriptExecutableAndRun  ');
+  // child = exec('ls', // command line argument directly in string
+  //   function (error, stdout, stderr) {      // one easy function to capture data/errors
+  //     console.log('stdout1: ' + stdout);
+  //     console.log('stderr1: ' + stderr);
+  //     if (error !== null) {
+  //       console.log('exec error: ' + error);
+  //     }
+  //     else
+  //     {
+  //       RunAndCheck(script_path, nodelog, req, project, res, ok_code_functions, ok_code_options);
+  //     }
+  // });
   
   var exec = require('child_process').exec;
   // Make script executable
-  child = exec( 'chmod ug+rwx ' + script_path,
+  // child = exec( 'chmod ug+rwx ' + script_path,
+  child = exec( ' ls ',
   function (error, stdout, stderr) {
     console.log('1stdout: ' + stdout);
     console.log('1stderr: ' + stderr);
@@ -2134,7 +2172,13 @@ function failedCode(req, res, data_repository, project, last_line)
                         'msg':     'Script Failure'
        };
        var redirect_url = path.join('/user_data', req.url);
-       res.redirect(redirect_url);  // for now we'll send errors to the browser
+       res.render(redirect_url, {
+         user: req.user,
+         hostname: req.CONFIG.hostname,
+         message: req.flash('message'),
+       });
+       
+       // res.redirect(redirect_url);  // for now we'll send errors to the browser
        return;
    }
  });
@@ -2145,7 +2189,7 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
   console.log("QQQ6 in RunAndCheck");
   console.log("QQQRRR1 script_path: " + script_path);
 
-  var run_process = spawn( 'bash', [script_path], {
+  var run_process = spawn( 'sh', [script_path], {
     detached: true, stdio: [ 'ignore', null, nodelog ]
   });  // stdin, s
 
@@ -2240,11 +2284,9 @@ function writeAndRunScript(req, res, project, options, data_repository)
         fs.writeFile(script_path, 
           script_text,
           {
+            // var oldmask = process.umask(0);
             mode: mode
-            // parseInt('0711', 8)
-            // (0o444 & ~process.umask()).toString(8)
-            // 0o444
-            // parseInt('0444', 8)
+            // process.umask(oldmask);
           },
           RunAndCheck(script_path, nodelog, req, project, res, successCode, ok_code_options)  
         );  // end writeFile
