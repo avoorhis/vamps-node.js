@@ -1991,12 +1991,12 @@ function CreateCmdList(req, options, data_repository)
   }
 
   // todo: provied ".fa" fo single and ".fna" for multi
-  var fnaunique_cmd = options.scriptPath + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
-  // console.log("LLL1 options.scriptPath: " + options.scriptPath);
-  // console.log("LLL fnaunique_cmd: " + fnaunique_cmd);
-  // console.log("LLL2 data_repository: " + data_repository);
-  // console.log("LLL3 req.CONFIG.PATH: " + req.CONFIG.PATH);
-
+  // var fnaunique_cmd = options.scriptPath + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
+  var fnaunique_cmd = path.join(app_root, '/public/scripts/node_process_scripts')  + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
+  
+  console.log("LLL1 options.scriptPath: " + options.scriptPath);
+  console.log("LLL2 fnaunique_cmd: " + fnaunique_cmd);
+  
   cmd_list.push(fnaunique_cmd);
 
   console.log("CCC1 cmd_list: ");
