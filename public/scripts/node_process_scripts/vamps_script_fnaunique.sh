@@ -8,19 +8,23 @@ echo "Fasta files '.fa' to unique"
 
 PATH="$PATH:$1"
 
-echo "PPPATH\n"
-
-echo "$PATH\n"
+echo "PATH: $PATH"
+echo 
 
 echo "cd $2"
+echo 
+
 cd $2
 
 file_ext=".fa"
-if [[ -f *{$file_ext} ]]
+files=( *.fa )
+echo "files = $files"
+echo 
+
+if (( ${#files[@]} ))
 then
   echo "$file_ext found."
-  echo "for file in *{$file_ext}; do fastaunique $file; done\n"
-  for file in *{$file_ext}; do fastaunique $file; done
+  for file in *$file_ext; do fastaunique $file; done
 else 
   echo "$file_ext not found"
 fi

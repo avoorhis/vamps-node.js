@@ -1094,6 +1094,7 @@ InputComesFromHERE
   
   echo "Running clust_gast_ill_${project}.sh" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log`;
   make_gast_script_txt += "\n";
+  make_gast_script_txt += "\n";
 
   if (is_local)
   {
@@ -1119,8 +1120,6 @@ InputComesFromHERE
   // user_project_status_id  user_id  project_id  status  message  created_at  updated_at
   // 34  4  4  GAST-SUCCESS  GAST -Tax assignments  2016-09-02 12:26:21  2016-09-02 12:31:12
   cmd_list = [
-      //unique_cmd,
-      // project_init,
       make_gast_script_txt
   ];
   
