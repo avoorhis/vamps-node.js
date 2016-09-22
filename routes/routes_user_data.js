@@ -1088,7 +1088,8 @@ else
   }
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
-  // make_gast_script_txt += `chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  make_gast_script_txt += `
+  # chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
 InputComesFromHERE
   
   echo "Running clust_gast_ill_${project}.sh" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log`;
