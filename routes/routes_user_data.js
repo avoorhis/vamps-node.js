@@ -1062,7 +1062,7 @@ else
   module load bioware
 
   LISTFILE=${data_dir}/filenames.list`;
-  echo "LISTFILE = $LISTFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  echo "LISTFILE = \$LISTFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
 
   make_gast_script_txt += "\n";
   make_gast_script_txt += '  INFILE=\\`sed -n "\\${SGE_TASK_ID}p" \\$LISTFILE\\`';
