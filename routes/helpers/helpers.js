@@ -843,7 +843,7 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
 
 };
 
-module.exports.get_local_script_text = function(log, site, code, cmd_list) {
+module.exports.get_local_script_text = function(code, cmd_list) {
     script_text = "#!/bin/sh\n\n";
     script_text += "# CODE:\t$code\n\n";
     script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
@@ -856,6 +856,7 @@ module.exports.get_local_script_text = function(log, site, code, cmd_list) {
     }
     return script_text;
 };
+
 module.exports.get_qsub_script_text = function(log, pwd, site, name, cmd_list) {
     /*
     #!/bin/sh
