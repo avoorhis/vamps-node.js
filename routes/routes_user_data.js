@@ -1990,13 +1990,15 @@ function CreateCmdList(req, options, data_repository)
 
   if (req.body.type == 'multi_fasta') {
       var new_fasta_file_name = infile_fa;
-      var demultiplex_cmd = options.scriptPath + 'vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
+      // var demultiplex_cmd = options.scriptPath + 'vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
+      var demultiplex_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, 'vamps_script_demultiplex.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository + ' ' + new_fasta_file_name;
+      console.log("req.CONFIG.PATH HHH = " + req.CONFIG.PATH);
       cmd_list.push(demultiplex_cmd);
   }
 
   // todo: provied ".fa" fo single and ".fna" for multi
   // var fnaunique_cmd = options.scriptPath + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
-  var fnaunique_cmd = path.join(app_root, '/public/scripts/node_process_scripts', 'vamps_script_fnaunique.sh')  + ' ' + req.CONFIG.PATH + ' ' + data_repository;
+  var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, 'vamps_script_fnaunique.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository;
   
   console.log("LLL1 options.scriptPath: " + options.scriptPath);
   console.log("LLL2 fnaunique_cmd: " + fnaunique_cmd);

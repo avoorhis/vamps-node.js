@@ -1,8 +1,15 @@
 #!/bin/bash
 
-cd $1
-echo "time demultiplex_qiita.py -i $2"
-time demultiplex_qiita.py -i $2
+echo "PATH: $PATH"
+echo 
+PATH="$PATH:$1"
+
+echo "cd $2"
+echo 
+cd $2
+
+echo "time demultiplex_qiita.py -i $3"
+time demultiplex_qiita.py -i $3
 
 
 
