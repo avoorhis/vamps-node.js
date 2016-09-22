@@ -1102,7 +1102,7 @@ InputComesFromHERE
   }
   else
   {
-    make_gast_script_txt += `#qsub ${data_dir}/clust_gast_ill_${project}.sh`;
+    make_gast_script_txt += `qsub ${data_dir}/clust_gast_ill_${project}.sh`;
   }
 
   make_gast_script_txt += "\n";
