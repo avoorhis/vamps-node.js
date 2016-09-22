@@ -1,15 +1,18 @@
 var CONSTS = require(app_root + '/public/constants');
+var queries = require(app_root + '/routes/queries');
+var config  = require(app_root + '/config/config');
+
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport();
-var queries = require(app_root + '/routes/queries');
 var util = require('util');
 var path  = require('path');
 var crypto = require('crypto');
 var mysql = require('mysql2');
 var spawn = require('child_process').spawn;
+
 
 module.exports = {
   // route middleware to make sure a user is logged in
