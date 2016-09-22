@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys, getopt
 import IlluminaUtils.lib.fastalib as fastalib
 

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://vampsdev.mbl.edu:8124/" />
+<title>import_multi_sample_wrong</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">import_multi_sample_wrong</td></tr>
+</thead><tbody>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=username</td>
+	<td>AnnaSh</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=password</td>
+	<td>mNpfv2</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=input[type=&quot;submit&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>user_data/add_project</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Your Data</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Import Data</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Multi-Dataset Fasta File</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=h4</td>
+	<td>Import Multi-Dataset Form: (All fields are required)</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=project</td>
+	<td>imp_pr_not_exists</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=fasta</td>
+	<td>/Users/ashipunova/BPC/vamps-node.js/test/selenium_tests/multi_fasta.fa_not_there</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=meta</td>
+	<td>/Users/ashipunova/BPC/vamps-node.js/test/selenium_tests/multi_meta.csv_not_there</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=button.btn.btn-default</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div/div[2]</td>
+	<td>A fasta file is required. Check if it exists.</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=project</td>
+	<td>imp_pr_not_exists</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=fasta</td>
+	<td>/Users/ashipunova/BPC/vamps-node.js/test/selenium_tests/multi_fasta.fa</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=meta</td>
+	<td>/Users/ashipunova/BPC/vamps-node.js/test/selenium_tests/multi_meta.csv</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=button.btn.btn-default</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyNotText</td>
+	<td>css=body</td>
+	<td>ERROR Message: Cannot read property 'filename' of undefined <br /> error: TypeError: Cannot read property 'filename' of undefined</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div/div[2]</td>
+	<td>There is no such project, please create imp_pr_not_exists</td>
+</tr>
+</tbody></table>
+</body>
+</html>

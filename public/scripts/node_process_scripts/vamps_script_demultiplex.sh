@@ -1,8 +1,8 @@
 #!/bin/bash
 
 cd $1
-echo "time python demultiplex_qiita.py -i $2"
-time python /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/demultiplex_qiita.py -i $2
+echo "time demultiplex_qiita.py -i $2"
+time demultiplex_qiita.py -i $2
 
 
 
