@@ -181,69 +181,72 @@ router.post('/project_list', helpers.isLoggedIn, function (req, res) {
           var FASTA_SUCCESS_FILE    = path.join(data_repository,'COMPLETED-FASTA')
           fs.ensureDir(data_repository, function (err) {
             if(err){ return console.log(err) } // => null
-            var wstream = fs.createWriteStream(fasta_file_path);
-            var rs = new Readable();
-            var seq_counter = 0
-            var sum_seq_length = 0
-            for (var i in rows) {
-              seq = rows[i].seq.toString();
-              seq_id = rows[i].sequence_id.toString();
-              seq_count = rows[i].seq_count
-              pjds = rows[i].project+'--'+rows[i].dataset;
-              dataset_lookup[pjds] = 1
-              for(i = 0; i<parseInt(seq_count); i++ ){
-                seq_counter += 1
-                var len = seq.length
-                //console.log('len',len)
-                sum_seq_length += len
-                var no = parseInt(i)+1
-                var sep = '__' // the oligotype script needs to know this
-                entry = '>'+pjds+sep+seq_id+'-'+no.toString()+"\n"+seq+"\n";
-                rs.push(entry);
-              }              
-            }
-            rs.push(null);
+            fs.chmod(data_repository, '0775', function chmodFile(err) {
+                if(err){ return console.log(err) } // => null
+                var wstream = fs.createWriteStream(fasta_file_path);
+                var rs = new Readable();
+                var seq_counter = 0
+                var sum_seq_length = 0
+                for (var i in rows) {
+                  seq = rows[i].seq.toString();
+                  seq_id = rows[i].sequence_id.toString();
+                  seq_count = rows[i].seq_count
+                  pjds = rows[i].project+'--'+rows[i].dataset;
+                  dataset_lookup[pjds] = 1
+                  for(i = 0; i<parseInt(seq_count); i++ ){
+                    seq_counter += 1
+                    var len = seq.length
+                    //console.log('len',len)
+                    sum_seq_length += len
+                    var no = parseInt(i)+1
+                    var sep = '__' // the oligotype script needs to know this
+                    entry = '>'+pjds+sep+seq_id+'-'+no.toString()+"\n"+seq+"\n";
+                    rs.push(entry);
+                  }              
+                }
 
-            rs
-              .pipe(wstream)
-              .on('finish', function readableStreamOnFinish() {  // finished fasta
-                console.log('done  writing fa-file now write config:');
-                var cutoff = ((sum_seq_length / seq_counter) * 0.8).toFixed(0)
-                
-                //console.log('sum_seq_length',sum_seq_length)
-                //console.log('seq_counter',seq_counter)
-                //console.log('cutoff',cutoff)
-                
-                var config_text = '\n[MAIN]\npath='+data_repository+"\n";
-                config_text += 'directory='+olig_dir+"\n";
-                config_text += 'taxonomy='+tax_obj.full_string+"\n";
-                config_text += 'pynast_cutoff_length='+cutoff.toString()+"\n";
-                config_text += 'pynast_cutoff_meaning=80 Percent of Average Sequence Length'+"\n";
-                if(rank == 'family'){
-                  config_text += 'rank=family'+"\n";
-                  config_text += 'family='+tax_obj.taxon+"\n";
-                }else if(rank == 'genus'){
-                  // need to find family
-                  items = tax_obj.full_string.split(';')
-                  family = items[4]
-                  config_text += 'rank=genus'+"\n";
-                  config_text += 'family='+family+"\n";
-                  config_text += 'genus='+tax_obj.taxon+"\n";
-                }else{
-                  config_text += 'rank=unknown'+"\n";
-                }
-                config_text += '\n[DATASETS]'+"\n";
-                for(pjds in dataset_lookup){
-                  config_text += pjds+"\n";
-                }
-                fs.closeSync(fs.openSync(FASTA_SUCCESS_FILE, 'w'));
-                fs.writeFile(config_file_path, config_text, function writeConfigFile(err) {  
-                    if(err) { return console.log(err); }
-                    console.log("The Config file was saved!");
-                })
-              });
+                rs.push(null);
+
+                rs
+                  .pipe(wstream)
+                  .on('finish', function readableStreamOnFinish() {  // finished fasta
+                    console.log('done  writing fa-file now write config:');
+                    var cutoff = ((sum_seq_length / seq_counter) * 0.8).toFixed(0)
+                    
+                    //console.log('sum_seq_length',sum_seq_length)
+                    //console.log('seq_counter',seq_counter)
+                    //console.log('cutoff',cutoff)
+                    
+                    var config_text = '\n[MAIN]\npath='+data_repository+"\n";
+                    config_text += 'directory='+olig_dir+"\n";
+                    config_text += 'taxonomy='+tax_obj.full_string+"\n";
+                    config_text += 'pynast_cutoff_length='+cutoff.toString()+"\n";
+                    config_text += 'pynast_cutoff_meaning=80 Percent of Average Sequence Length'+"\n";
+                    if(rank == 'family'){
+                      config_text += 'rank=family'+"\n";
+                      config_text += 'family='+tax_obj.taxon+"\n";
+                    }else if(rank == 'genus'){
+                      // need to find family
+                      items = tax_obj.full_string.split(';')
+                      family = items[4]
+                      config_text += 'rank=genus'+"\n";
+                      config_text += 'family='+family+"\n";
+                      config_text += 'genus='+tax_obj.taxon+"\n";
+                    }else{
+                      config_text += 'rank=unknown'+"\n";
+                    }
+                    config_text += '\n[DATASETS]'+"\n";
+                    for(pjds in dataset_lookup){
+                      config_text += pjds+"\n";
+                    }
+                    fs.closeSync(fs.openSync(FASTA_SUCCESS_FILE, 'w'));
+                    fs.writeFile(config_file_path, config_text, function writeConfigFile(err) {  
+                        if(err) { return console.log(err); }
+                        console.log("The Config file was saved!");
+                    })
+                  });
+              })
           })
-          
           res.redirect('project_list')
                       
         }
