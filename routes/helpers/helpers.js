@@ -13,7 +13,6 @@ var crypto = require('crypto');
 var mysql = require('mysql2');
 var spawn = require('child_process').spawn;
 
-
 module.exports = {
   // route middleware to make sure a user is logged in
   isLoggedIn: function (req, res, next) {

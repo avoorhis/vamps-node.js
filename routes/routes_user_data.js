@@ -446,10 +446,10 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
                   args : [ '-i', file_path, '-ft', file_type, '-s', file_style, '-process_dir', process.env.PWD, ]
               };
 
-    console.log(options.scriptPath+'/vamps_script_validate.py '+options.args.join(' '));
+    console.log(options.scriptPath + '/vamps_script_validate.py '+options.args.join(' '));
 
     var log = fs.openSync(path.join(process.env.PWD, 'logs', 'validate.log'), 'a');
-    var validate_process = spawn( options.scriptPath+'/vamps_script_validate.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+    var validate_process = spawn( options.scriptPath + '/vamps_script_validate.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
     var output = '';
     validate_process.stdout.on('data', function validateScriptStdout(data) {
       //console.log('stdout: ' + data);
@@ -648,8 +648,8 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
     var log = fs.openSync(path.join(process.env.PWD, 'logs', 'delete.log'), 'a');
       // script will remove data from mysql and datset taxfile
 
-    console.log(options.scriptPath+'/vamps_script_utils.py '+options.args.join(' '));
-      var delete_process = spawn( options.scriptPath+'/vamps_script_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+    console.log(options.scriptPath + '/vamps_script_utils.py '+options.args.join(' '));
+      var delete_process = spawn( options.scriptPath + '/vamps_script_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 
 
       var output = '';
@@ -851,10 +851,10 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
       gene = 'fungalits_unite';
     }
     var path2classifier = req.CONFIG.PATH_TO_CLASSIFIER + '_' + ref_db_dir;
-    rdp_cmd1 = options.scriptPath + 'vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene;
-    rdp_cmd2 = options.scriptPath + 'vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP';
-    rdp_cmd3 = options.scriptPath + 'vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site;
-    rdp_cmd4 = options.scriptPath + 'vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE;
+    rdp_cmd1 = options.scriptPath + '/vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene;
+    rdp_cmd2 = options.scriptPath + '/vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP';
+    rdp_cmd3 = options.scriptPath + '/vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site;
+    rdp_cmd4 = options.scriptPath + '/vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE;
 
     script_name = 'rdp_script.sh';
     status_params.statusOK = 'OK-RDP';
@@ -991,9 +991,10 @@ function gastTax(req, project_config, options, classifier_id)
   file_suffix      = getSuffix(project_config.GENERAL.dna_region);
   ref_db_name      = chooseRefFile(classifier_id);
   full_option      = getFullOption(classifier_id);
-  gast_db_path     = getGastDbPath(req);
-  gast_script_path = getGastScriptPath(req);
+  gast_db_path     = config.GAST_DB_PATH;
+  gast_script_path = config.GAST_SCRIPT_PATH;
   
+  console.log('gast_db_path: ' + gast_db_path); 
   console.log('gast_script_path: ' + gast_script_path); 
 
   
@@ -1037,6 +1038,7 @@ if (is_local)
 {
   make_gast_script_txt += `for FASTA in ${data_dir}/*${file_suffix}; do 
   # INFILE=\\$(basename \\$FASTA)
+  INFILE=\\$FASTA
   echo "\\$INFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   `;
   make_gast_script_txt += "\n";
@@ -1164,20 +1166,6 @@ function getFullOption(classifier_id)
   }
 }
 
-function getGastDbPath(req)
-{
-  gast_db_path = "";
-  helpers.isLocal(req) ? gast_db_path = path.join(app_root, CONSTS.GAST_DB_PATH_local) : gast_db_path = CONSTS.GAST_DB_PATH;
-  return gast_db_path;
-}
-
-function getGastScriptPath(req)
-{
-  gast_script_path = "";
-  helpers.isLocal(req) ? gast_script_path = path.join(app_root, CONSTS.GAST_SCRIPT_PATH_local) : gast_script_path = CONSTS.GAST_SCRIPT_PATH;
-  return gast_script_path;
-}
-
 function getFastaExtensions(data_dir)
 {
   var files = fs.readdirSync(data_dir);
@@ -1200,7 +1188,7 @@ function metadata_upload(req, options, data_dir, project)
   // Should go in as entire project (w all datasets) -- not dataset by dataset
   // PROBLEM: Here we dont have datasets yet in db
   // Andy, Where is metadata_loader.py??? ASh
-  return options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site + 
+  return options.scriptPath + '/metadata_loader.py -site ' + req.CONFIG.site + 
     ' -indir ' + data_dir + 
     ' -p '     + project;
 }
@@ -1981,8 +1969,8 @@ function CreateUploadOptions(req, res, project)
 
 function CreateCmdList(req, options, data_repository)
 {
-  console.log(options.scriptPath + 'vamps_script_load_trimmed_data.py ' + options.args.join(' '));
-  var load_cmd = options.scriptPath + 'vamps_script_load_trimmed_data.py ' + options.args.join(' ');
+  console.log(options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' '));
+  var load_cmd = options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' ');
   // console.log("LLL load_cmd: " + load_cmd);
   // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts//vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/b3a0c4ca3964f701e8ea6ef5d5fe2c56 -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/a9825a22a87f9b6600e7bf44dd13be48 -upload_type single -d test_gast_dataset -q
 
@@ -1990,15 +1978,15 @@ function CreateCmdList(req, options, data_repository)
 
   if (req.body.type == 'multi_fasta') {
       var new_fasta_file_name = infile_fa;
-      // var demultiplex_cmd = options.scriptPath + 'vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
-      var demultiplex_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, 'vamps_script_demultiplex.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository + ' ' + new_fasta_file_name;
+      // var demultiplex_cmd = options.scriptPath + '/vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
+      var demultiplex_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_demultiplex.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository + ' ' + new_fasta_file_name;
       console.log("req.CONFIG.PATH HHH = " + req.CONFIG.PATH);
       cmd_list.push(demultiplex_cmd);
   }
 
   // todo: provied ".fa" fo single and ".fna" for multi
-  // var fnaunique_cmd = options.scriptPath + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
-  var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, 'vamps_script_fnaunique.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository;
+  // var fnaunique_cmd = options.scriptPath + '/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
+  var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository;
   
   console.log("LLL1 options.scriptPath: " + options.scriptPath);
   console.log("LLL2 fnaunique_cmd: " + fnaunique_cmd);
@@ -2549,12 +2537,12 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
           return;
       }
 
-        console.log(options.scriptPath+'/vamps_load_tax_by_seq.py '+options.args.join(' '));
+        console.log(options.scriptPath + '/vamps_load_tax_by_seq.py '+options.args.join(' '));
 
         var log = fs.openSync(path.join(process.env.PWD, 'logs', 'upload_taxbyseq.log'), 'a');
 
 
-        var tax_by_seq_process = spawn( options.scriptPath+'/vamps_load_tax_by_seq.py', options.args, {
+        var tax_by_seq_process = spawn( options.scriptPath + '/vamps_load_tax_by_seq.py', options.args, {
                               env:{ 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH },
                               detached: true, stdio: [ 'ignore', null, log ]
                             });  // stdin, stdout, stderr

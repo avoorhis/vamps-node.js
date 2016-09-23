@@ -87,10 +87,6 @@ constants.REF_SUFFIX = { "unique.nonchimeric.fa": ['v1v3', 'v1v3a', 'v3v5', 'v4v
                          "unique": ['v3', 'v3a', 'v4', 'v5', 'v6', 'v6a', 'v9']
 };
 constants.REF_FULL_OPTION = ["refits1", "refssu"];
-constants.GAST_DB_PATH = "/xraid2-2/g454/blastdbs/gast_distributions";
-constants.GAST_DB_PATH_local = "public/scripts/gast/ref_files";
-constants.GAST_SCRIPT_PATH = "/bioware/seqinfo/bin"
-constants.GAST_SCRIPT_PATH_local = "public/scripts/gast";
     
 constants.VISUALOUTPUTCHOICES = { choices: [
         {id : 'counts_table',   show: 'Counts Table'},
