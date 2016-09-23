@@ -4,26 +4,21 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="http://vampsdev.mbl.edu:8124/" />
-<title>start_gast_BPC</title>
+<title>add_multi_pr_dev</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">start_gast_BPC</td></tr>
+<tr><td rowspan="1" colspan="3">add_multi_pr_dev</td></tr>
 </thead><tbody>
-<tr>
-	<td>open</td>
-	<td>/</td>
-	<td></td>
-</tr>
 <tr>
 	<td>clickAndWait</td>
 	<td>link=logout</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Your Data</td>
+	<td>open</td>
+	<td>/</td>
 	<td></td>
 </tr>
 <tr>
@@ -57,45 +52,36 @@
 	<td></td>
 </tr>
 <tr>
-	<td>assertText</td>
-	<td>css=td &gt; strong</td>
-	<td>test_gast_project</td>
-</tr>
-<tr>
-	<td>verifyText</td>
-	<td>css=span.label.label-warning &gt; strong</td>
-	<td>No Taxonomic Assignments Yet</td>
-</tr>
-<tr>
-	<td>verifyText</td>
-	<td>//td[4]/div[2]</td>
-	<td>exact:Validation:OK</td>
-</tr>
-<tr>
-	<td>verifyText</td>
-	<td>//tr[2]/td</td>
-	<td>Raw Sequence Count: 10</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>id=dropdownMenu1</td>
+	<td>clickAndWait</td>
+	<td>link=Add New Project</td>
 	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=new_project_name</td>
+	<td>test_gast_pr_multi</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=new_project_title</td>
+	<td>test_gast_pr_multi title</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=new_project_description</td>
+	<td>test_gast_pr_multi description</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=new_funding</td>
+	<td>100</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Assign Taxonomy</td>
+	<td>xpath=(//button[@type='submit'])[3]</td>
 	<td></td>
 </tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>xpath=(//a[contains(text(),'Start')])[3]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyText</td>
-	<td>//div[4]</td>
-	<td>GAST has been started for project: 'test_gast_project'</td>
-</tr>
+
 </tbody></table>
 </body>
 </html>

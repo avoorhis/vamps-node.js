@@ -4,34 +4,32 @@
 #  USAGE: $0 fastaunique_dir (or PATH) project_dir
 
 # cd $1
-echo "Single file to unique"
+echo "Fasta files '.fa' to unique"
 
 PATH="$PATH:$1"
 
-echo "PPPATH\n"
-
-echo "$PATH\n"
+echo "PATH: $PATH"
+echo 
 
 echo "cd $2"
+echo 
+
 cd $2
 
 file_ext=".fa"
-if [ -f *".fa" ] 
-then 
+files=( *.fa )
+echo "files = $files"
+echo 
+
+if (( ${#files[@]} ))
+then
   echo "$file_ext found."
-  echo "for file in *.fa; do fastaunique $file; done\n"
-  for file in *.fa; do fastaunique $file; done
-else echo "$file_ext not found."
+  for file in *$file_ext; do fastaunique $file; done
+else 
+  echo "$file_ext not found"
 fi
 
-file_ext=".fna"
-if [ -f *".fna" ] 
-then 
-  echo "$file_ext found."
-  echo "for file in *.fna; do fastaunique $file; done\n"
-  for file in *.fna; do fastaunique $file; done
-else echo "$file_ext not found."
-fi
+# file_ext=".fna"
 
 #grendel
 #curr_path=`pwd`

@@ -1,15 +1,18 @@
 var CONSTS = require(app_root + '/public/constants');
+var queries = require(app_root + '/routes/queries');
+var config  = require(app_root + '/config/config');
+
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport();
-var queries = require(app_root + '/routes/queries');
 var util = require('util');
 var path  = require('path');
 var crypto = require('crypto');
 var mysql = require('mysql2');
 var spawn = require('child_process').spawn;
+
 
 module.exports = {
   // route middleware to make sure a user is logged in
@@ -709,8 +712,8 @@ module.exports.fetchInfo = function (query, values, callback) {
   connection.query(query, values, function(err, rows) {
     if (err) {
       callback(err, null);
-    } 
-    else 
+    }
+    else
     {
       console.log('--- rows from fetchInfo ---');
       console.log(util.inspect(rows, false, null));
@@ -749,10 +752,10 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
 
     var dids_str = JSON.stringify(dids.join(', '));
     var pids_str = JSON.stringify((Object.keys(pid_lookup)).join(', '));
-    
+
     console.log('pids', pids_str);
     //var file_tags = file_tags.join(' ')
-    
+
     var export_cmd_options = {
 
                          scriptPath : path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
@@ -761,9 +764,9 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
                                          '-r', ts,
                                          '-base', user_dir,
                                          '-dids', dids_str,
-                                         '-pids', pids_str,                                         
+                                         '-pids', pids_str,
                                          '-norm', norm,
-                                         '-rank', rank,                                         
+                                         '-rank', rank,
                                          '-db', NODE_DATABASE
                                          ] // '-compress'
 
@@ -846,7 +849,7 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
 
 };
 
-module.exports.get_local_script_text = function(log, site, code, cmd_list) {
+module.exports.get_local_script_text = function(code, cmd_list) {
     script_text = "#!/bin/sh\n\n";
     script_text += "# CODE:\t$code\n\n";
     script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
@@ -859,6 +862,7 @@ module.exports.get_local_script_text = function(log, site, code, cmd_list) {
     }
     return script_text;
 };
+
 module.exports.get_qsub_script_text = function(log, pwd, site, name, cmd_list) {
     /*
     #!/bin/sh
@@ -939,6 +943,34 @@ module.exports.get_qsub_script_text = function(log, pwd, site, name, cmd_list) {
     //##### END  create command
 
     return script_text;
+
+};
+
+module.exports.get_qsub_script_text_only = function(scriptlog, dir_path, site, cmd_name, cmd_list) {
+    script_text = `#!/bin/bash
+# CODE:\t${cmd_name}
+# source environment:
+source /groups/vampsweb/${site}/seqinfobin/vamps_environment.sh
+
+TSTAMP=\`date +%Y%m%d%H%M%S\`
+
+# Loading Module didn't work when testing:
+. /usr/share/Modules/init/sh
+export MODULEPATH=/usr/local/www/vamps/software/modulefiles
+module load clusters/vamps
+
+PATH=$PATH:${config.PATH_TO_NODE_SCRIPTS}:/public/scripts
+echo "PATH is \$PATH"
+
+`;
+
+  for (var i in cmd_list) {
+      script_text += cmd_list[i]+"\n";
+  }
+
+  console.log("script_text from get_qsub_script_text_only: ")
+  console.log(util.inspect(script_text, false, null));
+  return script_text;
 
 };
 

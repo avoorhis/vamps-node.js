@@ -1017,12 +1017,13 @@ touch ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   }
   make_gast_script_txt += `  
 ls ${data_dir}/*${file_suffix} >${data_dir}/filenames.list
+chmod 666 ${data_dir}/filenames.list
 
 cd ${data_dir}`;
 
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
-  make_gast_script_txt += "FILE_NUMBER=\`wc -l < filenames.list\`";
+  make_gast_script_txt += `FILE_NUMBER=\`wc -l < ${data_dir}/filenames.list\``;
   make_gast_script_txt += "\n";
   
   make_gast_script_txt += `echo "total files = $FILE_NUMBER" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
@@ -1035,7 +1036,7 @@ cat >${data_dir}/clust_gast_ill_${project}.sh <<InputComesFromHERE
 if (is_local)
 {
   make_gast_script_txt += `for FASTA in ${data_dir}/*${file_suffix}; do 
-  INFILE=\\$(basename \\$FASTA)
+  # INFILE=\\$(basename \\$FASTA)
   echo "\\$INFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   `;
   make_gast_script_txt += "\n";
@@ -1060,7 +1061,9 @@ else
   . /xraid/bioware/Modules/etc/profile.modules
   module load bioware
 
-  LISTFILE=./filenames.list`;
+  LISTFILE=${data_dir}/filenames.list
+  echo "LISTFILE is \\$LISTFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  `;
 
   make_gast_script_txt += "\n";
   make_gast_script_txt += '  INFILE=\\`sed -n "\\${SGE_TASK_ID}p" \\$LISTFILE\\`';
@@ -1069,11 +1072,13 @@ else
   make_gast_script_txt += "\n";
   make_gast_script_txt += `  echo "=====" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   echo "file name is \\$INFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
-  echo >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  echo "" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  echo "SGE_TASK_ID = \\$SGE_TASK_ID" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  echo "" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   
-  echo "${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in ${data_dir}/\\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out ${data_dir}/\\$INFILE.gast -uc ${data_dir}/\\$INFILE.uc -threads 0" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  echo "${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
 
-  ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in ${data_dir}/\\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out ${data_dir}/\\$INFILE.gast -uc ${data_dir}/\\$INFILE.uc -threads 0`;
+  ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0`;
   make_gast_script_txt += "\n";
 
   if (is_local)
@@ -1083,10 +1088,12 @@ else
   }
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
-  make_gast_script_txt += `chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  make_gast_script_txt += `
+  # chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
 InputComesFromHERE
   
   echo "Running clust_gast_ill_${project}.sh" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log`;
+  make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
 
   if (is_local)
@@ -1096,7 +1103,7 @@ InputComesFromHERE
   }
   else
   {
-    make_gast_script_txt += `#qsub ${data_dir}/clust_gast_ill_${project}.sh`;
+    make_gast_script_txt += `qsub ${data_dir}/clust_gast_ill_${project}.sh`;
   }
 
   make_gast_script_txt += "\n";
@@ -1113,8 +1120,6 @@ InputComesFromHERE
   // user_project_status_id  user_id  project_id  status  message  created_at  updated_at
   // 34  4  4  GAST-SUCCESS  GAST -Tax assignments  2016-09-02 12:26:21  2016-09-02 12:31:12
   cmd_list = [
-      //unique_cmd,
-      // project_init,
       make_gast_script_txt
   ];
   
@@ -1985,17 +1990,19 @@ function CreateCmdList(req, options, data_repository)
 
   if (req.body.type == 'multi_fasta') {
       var new_fasta_file_name = infile_fa;
-      var demultiplex_cmd = options.scriptPath + 'vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
+      // var demultiplex_cmd = options.scriptPath + 'vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
+      var demultiplex_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, 'vamps_script_demultiplex.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository + ' ' + new_fasta_file_name;
+      console.log("req.CONFIG.PATH HHH = " + req.CONFIG.PATH);
       cmd_list.push(demultiplex_cmd);
   }
 
   // todo: provied ".fa" fo single and ".fna" for multi
-  var fnaunique_cmd = options.scriptPath + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
-  // console.log("LLL1 options.scriptPath: " + options.scriptPath);
-  // console.log("LLL fnaunique_cmd: " + fnaunique_cmd);
-  // console.log("LLL2 data_repository: " + data_repository);
-  // console.log("LLL3 req.CONFIG.PATH: " + req.CONFIG.PATH);
-
+  // var fnaunique_cmd = options.scriptPath + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
+  var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, 'vamps_script_fnaunique.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository;
+  
+  console.log("LLL1 options.scriptPath: " + options.scriptPath);
+  console.log("LLL2 fnaunique_cmd: " + fnaunique_cmd);
+  
   cmd_list.push(fnaunique_cmd);
 
   console.log("CCC1 cmd_list: ");
@@ -2051,7 +2058,7 @@ function GetScriptVars(req, data_repository, cmd_list, cmd_name)
   else
   {
     scriptlog   = path.join(data_repository, 'cluster.log');
-    script_text = helpers.get_qsub_script_text(scriptlog, data_repository, req.CONFIG.dbhost, cmd_name, cmd_list);
+    script_text = helpers.get_qsub_script_text_only(scriptlog, data_repository, req.CONFIG.dbhost, cmd_name, cmd_list);
   }
   
   // console.log('111 scriptlog: ' + scriptlog);
