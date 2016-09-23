@@ -93,18 +93,63 @@ function run_oligotyping(btn, code){
 	//alert('help')
 	
 	var form = document.getElementById("oligotyping_form_id")
+	document.getElementById("html_link_info").innerHTML = 'Status: Running'  
+	var html_dir = "/oligotyping/projects/"+form.elements['username'].value+'_'+'OLIGOTYPING_'+code
+	args = 'code='+code
+	args += '&family='+form.elements['family'].value
+	args += '&genus='+form.elements['genus'].value
+	args += '&directory='+form.elements['directory'].value
+	args += '&MIN_ACTUAL_ABUNDANCE='+form.elements['MIN_ACTUAL_ABUNDANCE'].value
+	args += '&MIN_SUBSTANTIVE_ABUNDANCE='+form.elements['MIN_SUBSTANTIVE_ABUNDANCE'].value
+	args += '&MIN_NUMBER_OF_SAMPLES='+form.elements['MIN_NUMBER_OF_SAMPLES'].value
+ 	args += '&MIN_PERCENT_ABUNDANCE='+form.elements['MIN_PERCENT_ABUNDANCE'].value
+
 	if(btn =='rerun'){
 		var c_el = document.getElementById("largeC")
-		document.getElementById("html_link_btn").disabled = true
+		//document.getElementById("html_link_btn").disabled = true
+		args += '&SELECTED_COMPONENTS='+form.elements['SELECTED_COMPONENTS'].value
+		var oligo_text = "To re-run:<br>Enter Selected Components \
+												<br>(a comma separated list of base locations). \
+												<br>For help choosing use either the<br>entropy graph or the Oligotyping HTML Page. \
+												<br><input type='button' id=''  class='btn btn-xs btn-primary' value='re-Run Oligo' onclick=\"run_oligotyping('rerun','"+code+"')\" /> \
+												( <a href='/oligotyping/rewind/"+ code + "/oligo' class='btn btn-xs btn-link' >Re-wind to here</a> )"
 	}else{
 		var c_el = document.getElementById("smallc")
+		args += '&NUMBER_OF_AUTO_COMPONENTS='+form.elements['NUMBER_OF_AUTO_COMPONENTS'].value
+		var oligo_text = "Enter values for the command line parameters shown to the left \
+												<br>or leave the defaults. The '-c' value should be<br>changed to be less than or equal to the number<br> of tall peaks from the entropy graph. \
+												<br><input type='button' id=''  class='btn btn-xs btn-primary' value='Run Oligo' onclick=\"run_oligotyping('run','"+code+"')\" />"
+
 	}
 
 	if(c_el.value == ''){
 		alert('Fill in values for all the parameters.')
 		return
 	}
+	//alert(args)
 	form.submit()
+ //window.open('file:///User/avoorhis/programming/vamps-node.js/views/tmp/projects/andy_OLIGOTYPING_1474547262567/HTML-OUTPUT/index.html')
+	// var xmlhttp = new XMLHttpRequest();  
+ //  xmlhttp.open("POST", '/oligotyping/oligo/'+code, true);
+ //  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+ //  xmlhttp.setRequestHeader("data-type","html");
+  
+ //  xmlhttp.onreadystatechange = function() {        
+ //    if (xmlhttp.readyState == 4 ) {
+        
+ //        //var response = xmlhttp.responseText; 
+ //        //alert(response) 
+ //        var rando = getRandomInt(10000,99999)
+ //        var link = html_dir+"/HTML-OUTPUT/index.html?rando="+rando.toString()
+ //        var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **" 
+ //        document.getElementById("html_link_div").innerHTML = html 
+ //        document.getElementById("html_link_info").innerHTML = 'READY'         
+ //        document.getElementById("oligo_text").innerHTML = oligo_text 
+ //    }
+ //  };
+ //  xmlhttp.send(args);
 }
 
-
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}

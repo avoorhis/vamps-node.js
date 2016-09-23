@@ -3137,7 +3137,7 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
 });
 
 //
-// <<<< FUNCTIONS >>>>
+//  FUNCTIONS 
 //
 function update_config(res, req, config_file, config_info, has_new_pname, msg) {
   console.log(config_info);

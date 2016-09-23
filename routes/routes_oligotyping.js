@@ -138,9 +138,13 @@ router.post('/project_list', helpers.isLoggedIn, function (req, res) {
     q = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n" 
     q += " join sequence using (sequence_id)\n"
     q += " join silva_taxonomy_info_per_seq using(sequence_id)\n"
+    q += " join silva_taxonomy using(silva_taxonomy_id)\n"
     q += " join dataset using (dataset_id)\n"
     q += " join project using (project_id)\n"
-    q += " where silva_taxonomy_id='"+tax_obj.db_id+"'\n"
+    // if(genus) // add genus code
+    q += " join family using(family_id)\n"
+    q += " where family_id='"+tax_obj.db_id+"'\n"
+    
     q += " and dataset_id in('"+sql_dids+"') \n"
     console.log('query',q);
     var dataset_lookup = {}
@@ -352,6 +356,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   oligo_status   = helpers.fileExists(path.join(data_repository, 'COMPLETED-OLIGO')) ? 'COMPLETED' : ''
 
   console.log(config)
+  console.log(fasta_status,' - ',entropy_status,' - ',oligo_status)
   res.render('oligotyping/oligotyping_project',
                 { title: 'Oligotype Project',
                   
@@ -410,7 +415,12 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
   var cmd_options1 = {
       exec : 'create_GG_alignment_template_from_taxon.py',
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-f', family, g, '/Users/avoorhis/programming/helper_scripts/otu_id_to_greengenes.txt', '/Users/avoorhis/programming/helper_scripts/gg_97_otus_6oct2010_aligned.fasta.txt', '-o', tmpl_file],
+      args :       [ '-f', family, 
+                      g, 
+                      '/Users/avoorhis/programming/helper_scripts/otu_id_to_greengenes.txt', 
+                      '/Users/avoorhis/programming/helper_scripts/gg_97_otus_6oct2010_aligned.fasta.txt', 
+                      '-o', tmpl_file
+                    ],
   };
 
   var cmd_options2 = {
@@ -487,14 +497,14 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
                     }else{
                       status = 'entropy_status=FAIL\n'
                     }
-                    fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
+                    //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
                     fs.closeSync(fs.openSync(ENTROPY_SUCCESS_FILE, 'w'));
                     res.redirect('/oligotyping/project/'+oligo_code)
                     return
                   })
                 }else{
                   status = 'entropy_status=FAIL\n'
-                  fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
+                  //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
                 }
               })
 
@@ -510,10 +520,20 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
 //
 // POST ENTROPY
 //
+// router.get('/oligo/:img', function(req, res){
+//     console.log('10-&&&& HERE in routes_oligotyping.js ' +req.params.img)
+//     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+//     //var file = '/Users/avoorhis/programming/vamps-node.js/views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
+//     //var root = 'views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
+//     //es.sendFile(file)
+// });
 router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
   console.log('in oligo - oligo-->>')
   console.log(req.body);
   console.log('<<--in oligo - oligo')
+  //res.sendFile('/public/oligotyping/andy_OLIGOTYPING_1474547262567/HTML-OUTPUT/index.html',{root:'/Users/avoorhis/programming/vamps-node.js/'})
+  //return
+  
   var oligo_code = req.params.code
   var family = req.body.family
   var genus = req.body.genus // may be 'none'
@@ -532,7 +552,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
     return
   }
   
-
+ 
   var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.directory);
   var config_file = path.join(data_repository, 'config.ini');
   var scriptlog = path.join(data_repository, 'oligotype_shell_script.log');
@@ -542,20 +562,22 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
   var min_align_fasta_file = path.join(data_repository, 'minaligned.fa');
   var entropy_file = path.join(data_repository, 'minaligned.fa-ENTROPY');
   //var entropy_log   = path.join(data_repository, 'entropy.log');
-  var out_dir  = path.join(data_repository, 'OLIGOTYPE');
+  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+  var out_dir  = req.user.username+'_OLIGOTYPING_'+oligo_code
+  var out_oligotype_path  = path.join(pwd,'public','oligotyping','projects', out_dir); 
   var page_title = '"('+family+')-'+req.body.directory+'"'
-  var cutoff = req.body.cutoff
+  //var cutoff = req.body.cutoff
   if(genus != 'none'){
     g = '-g '+ genus
   }else{
     g = ''
   }
   var cmd_options = {
-      exec : 'oligotype',
+      exec : path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'oligotype_start'),
       scriptPath : '',
       args :       [ min_align_fasta_file, entropy_file,
                     '--skip-check-input-file', 
-                    '-o', out_dir, 
+                    '-o', out_oligotype_path, 
                     '-A', MIN_ACTUAL_ABUNDANCE, 
                     '-M', MIN_SUBSTANTIVE_ABUNDANCE,  
                     '-a', MIN_PERCENT_ABUNDANCE, 
@@ -614,18 +636,27 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
               //var minaligned_file = path.join(data_repository,'minaligned.fa-ENTROPY')
               //var pdf_file        = path.join(data_repository,'minaligned.fa-ENTROPY.pdf')
               var OLIGO_SUCCESS_FILE    = path.join(data_repository,'COMPLETED-OLIGO')
-              fs.stat(out_dir, function checkDirPresence(err,stats){
+              fs.stat(out_oligotype_path, function checkDirPresence(err,stats){
                 if(err){return console.log(err) }
                 if (stats.isDirectory()) {
                     status = 'oligo_status=COMPLETE\n'
-                    fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
+                    //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
                     fs.closeSync(fs.openSync(OLIGO_SUCCESS_FILE, 'w'));
+                    
+                    console.log('redirecting back to project page')
                     res.redirect('/oligotyping/project/'+oligo_code)
-                    return
+                    // var rando = helpers.getRandomInt(10000,99999)
+                    // var link = "/oligotyping/projects/"+req.user.username+"_OLIGOTYPING_"+oligo_code+"/HTML-OUTPUT/index.html?rando="+rando.toString()
+                    // var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **"
+                    // console.log(html)           
+                    // res.send(html); 
                 }else{
                   status = 'oligo_status=FAIL\n'
-                  fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
+                  //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
+                  res.send('ERROR'); 
                 }
+                
+                
               })
 
             });
@@ -673,6 +704,9 @@ router.get('/rewind/:code/:level', helpers.isLoggedIn, function (req, res) {
         fs.unlinkSync(file3_path);
       }
       catch(e){console.log(e)}
+      var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+      var out_oligotype_path  = path.join(pwd,'public','oligotyping','projects', req.user.username+'_OLIGOTYPING_'+oligo_code); 
+      helpers.deleteFolderRecursive(out_oligotype_path)
   }
   res.redirect('/oligotyping/project/'+oligo_code)
 
@@ -683,12 +717,25 @@ router.get('/rewind/:code/:level', helpers.isLoggedIn, function (req, res) {
 router.get('/delete/:code', helpers.isLoggedIn, function (req, res) {
   console.log('in oligotyping delete')
   var oligo_code = req.params.code
+  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
   var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'oligotyping-'+oligo_code);
+  var out_oligotype_path  = path.join(pwd,'public','oligotyping','projects', req.user.username+'_OLIGOTYPING_'+oligo_code); 
   console.log(data_repository)
   helpers.deleteFolderRecursive(data_repository)
+  helpers.deleteFolderRecursive(out_oligotype_path)
   res.redirect('your_projects')
   //res.send('done')
 });
+// router.post('/go', helpers.isLoggedIn, function (req, res) {
+//   console.log('in go')
+//   var code = req.body.code
+//   var html = "** <a href='/tmp/projects/"+req.user.username+"_OLIGOTYPING_"+code+"/HTML-OUTPUT/index' target='_blank'>Open Emperor</a> **"
+//   console.log(html)           
+
+//   res.send(html); 
+//   return;
+// });
+
 //
 //
 //

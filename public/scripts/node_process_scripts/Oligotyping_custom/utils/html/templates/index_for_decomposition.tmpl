@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="style.css" />
+    <title>{{ project }}</title>
+
+</head>
+
+<body >
+<div id="wrapper">
+<div>
+
+<div class="head">MED Results for "{{ project }}"</div>
+<div class="title">A user-friendly interface to make sense of minimum entropy decomposition results.</div>
+<div class="links-bar"><a href="https://meren.github.io/projects/med/">MED Project Page</a></div>
+
+
+<div class="smallhead"><a name="General"></a>Overview</div>
+<p class="smallheadtitle">» A summary of what happened.
+<div class="info_table">
+<p style="width: 800px;text-align:justify;text-justify:inter-word;font-style:italic;">Minimum Entropy Decomposition analysis was performed on {{total_seq}} read{{ total_seq|pluralize }} from {{num_samples_in_fasta}} sample{{ num_samples_in_fasta|pluralize }} for "{{ project }}" with MED pipeline version {{version}} (available from https://meren.github.io/projects/med/).
+</div>
+
+
+<div class="smallhead"><a name="General"></a>General Information</div>
+<br />
+
+<p class="smallheadtitle">» Meta
+<div class="info_table">
+<table width=90%>
+    <tr><td id="l">{{pretty_names.version}}</td><td id="r"> {{version}}</td></tr>
+	<tr><td colspan=2>&nbsp;</td></tr>
+    <tr><td id="l">{{pretty_names.run_date}}</td><td id="r"> {{run_date}}</td></tr>
+    <tr><td id="l">{{pretty_names.end_of_run}}</td><td id="r"> {{end_of_run}}</td></tr>
+</table>
+</div>
+
+<p class="smallheadtitle">» Given Parameters
+<div class="info_table">
+<table width=90%>
+
+    <tr><td id="l">{{pretty_names.m}}</td><td id="r"> {{m}}</td></tr>
+    <tr><td id="l">{{pretty_names.normalize_m}}</td><td id="r"> {{normalize_m}}</td></tr>
+    <tr><td id="l">{{pretty_names.d}}</td><td id="r"> {{d}}</td></tr>
+    <tr><td id="l">{{pretty_names.A}}</td><td id="r"> {{A}}</td></tr>
+    <tr><td id="l">{{pretty_names.M}}</td><td id="r"> {{M}}</td></tr>
+    <tr><td id="l">{{pretty_names.maximum_variation_allowed}}</td><td id="r"> {{maximum_variation_allowed}} nt</td></tr>
+    <tr><td id="l">{{pretty_names.agglomerate_nodes}}</td><td id="r"> {{agglomerate_nodes}}</td></tr>
+    <tr><td id="l">{{pretty_names.merge_homopolymer_splits}}</td><td id="r"> {{merge_homopolymer_splits}}</td></tr>
+    <tr><td id="l">{{pretty_names.skip_removing_outliers}}</td><td id="r"> {{skip_removing_outliers}}</td></tr>
+    <tr><td id="l">{{pretty_names.relocate_outliers}}</td><td id="r"> {{relocate_outliers}}</td></tr>
+            
+</table>
+</div>
+
+<p class="smallheadtitle">» Input Data
+<div class="info_table">
+<table width=90%>
+    <tr><td id="l">{{pretty_names.total_seq}}</td><td id="r"> {{total_seq}}</td></tr>
+    <tr><td id="l">{{pretty_names.num_samples_in_fasta}}</td><td id="r"> {{num_samples_in_fasta}}</td></tr>
+    <tr><td id="l">{{pretty_names.alignment_length}}</td><td id="r"> {{alignment_length}}</td></tr>
+    <tr><td id="l">{{pretty_names.average_read_length}}</td><td id="r"> {{average_read_length}}</td></tr>    
+</table>
+</div>
+
+<p class="smallheadtitle">» Handling Outliers
+<div class="info_table">
+<table width=90%>
+    {% if quals_provided %}
+    <tr><td id="l">{{pretty_names.num_reads_eliminated_due_to_min_base_quality}} (Q{{q}})</td><td id="r"> {{num_reads_eliminated_due_to_min_base_quality}}</td></tr>
+    {% endif %}
+    {% if samples_removed_after_qc %} 
+    <tr><td id="l">{{pretty_names.samples_removed_after_qc}}</td><td id="r"> {{samples_removed_after_qc|length}} ({{samples_removed_after_qc|join:", "}})</td></tr>
+    {% endif %}
+    
+	<tr><td colspan=2>&nbsp;</td></tr>
+    <tr><td id="l">{{pretty_names.removed_min_substantive_abundance_reason}}</td><td id="r"> {{removed_min_substantive_abundance_reason}}</td></tr>
+    <tr><td id="l">{{pretty_names.removed_maximum_variation_allowed_reason}}</td><td id="r"> {{removed_maximum_variation_allowed_reason}}</td></tr>
+    <tr><td id="l">{{pretty_names.removed_outliers_total}}</td><td id="r"> {{removed_outliers_total}}</td></tr>
+	<tr><td colspan=2>&nbsp;</td></tr>
+    <tr><td id="l">{{pretty_names.relocated_min_substantive_abundance_reason}}</td><td id="r"> {{relocated_min_substantive_abundance_reason}}</td></tr>
+    <tr><td id="l">{{pretty_names.relocated_maximum_variation_allowed_reason}}</td><td id="r"> {{relocated_maximum_variation_allowed_reason}}</td></tr>
+    <tr><td id="l">{{pretty_names.relocated_outliers_total}}</td><td id="r"> {{relocated_outliers_total}}</td></tr>
+	<tr><td colspan=2>&nbsp;</td></tr>
+    <tr><td id="l">{{pretty_names.final_min_substantive_abundance_reason}}</td><td id="r"> {{final_min_substantive_abundance_reason}}</td></tr>
+    <tr><td id="l">{{pretty_names.final_maximum_variation_allowed_reason}}</td><td id="r"> {{final_maximum_variation_allowed_reason}}</td></tr>
+    <tr><td id="l">{{pretty_names.final_outliers_total}}</td><td id="r"> {{final_outliers_total}}</td></tr>
+</table>
+</div>
+    
+<p class="smallheadtitle">» Nodes
+<div class="info_table">
+<table width=90%>
+    <tr><td id="l">{{pretty_names.total_seq}}</td><td id="r"> {{total_seq}}</td></tr>
+    <tr><td id="l">{{pretty_names.num_sequences_after_qc}}</td><td id="r"> {{num_sequences_after_qc}}</td></tr>
+    <tr><td id="l">{{pretty_names.num_raw_nodes}}</td><td id="r"> {{num_raw_nodes}}</td></tr>
+    <tr><td id="l">{{pretty_names.num_final_nodes}}</td><td id="r"> {{num_final_nodes}}</td></tr>
+</table>
+</div>
+
+
+
+<div class="smallhead"><a name="Downloads"></a>Downloads</div>
+<p class="smallheadtitle">» Files to analyze results further via third partry applications
+<div class="info_table">
+<table>
+    {% if node_representatives_file_path %}
+    <tr><td id="l">{{pretty_names.node_representatives_file_path}}</td><td id="r"><a href="{{node_representatives_file_path}}">node-representatives.fa.txt</a></td></tr>
+    {% else %}
+    <tr><td id="l">{{pretty_names.node_representatives_file_path}}</td><td id="r"><i>(representative sequences were not computed)</i></td></tr>
+    {% endif %}
+    <tr><td id="l">{{pretty_names.read_distribution_table_path}}</td><td id="r"><a href="{{read_distribution_table_path}}">read_distribution.txt</a></td></tr>
+    <tr><td id="l">{{pretty_names.matrix_percent_file_path}}</td><td id="r"><a href="{{matrix_percent_file_path}}">matrix_percents.txt</a></td></tr>
+    <tr><td id="l">{{pretty_names.matrix_count_file_path}}</td><td id="r"><a href="{{matrix_count_file_path}}">matrix_counts.txt</a></td></tr>
+    <tr><td id="l">{{pretty_names.environment_file_path}}</td><td id="r"><a href="{{environment_file_path}}">environment.txt</a></td></tr>
+    {% if sample_mapping %}
+    	<tr><td id="l">{{pretty_names.sample_mapping}}</td><td id="r"><a href="{{sample_mapping}}">sample_mapping.txt</a></td></tr>
+    {% endif %}
+    {% if gexf_network_file_path %}
+    	<tr><td id="l">{{pretty_names.gexf_network_file_path}}</td><td id="r"><a href="{{gexf_network_file_path}}">network.gexf</a></td></tr>
+    {% endif %}
+    {% if topology_gexf %}
+    	<tr><td id="l">{{pretty_names.topology_gexf}}</td><td id="r"><a href="{{topology_gexf}}">topology.gexf</a></td></tr>
+    {% endif %}
+    {% if blast_ref_db and blast_ref_db_path %}
+    <tr><td id="l">{{pretty_names.blast_ref_db}}</td><td id="r"><a href="{{blast_ref_db_path}}">reference_db.fa</a></td></tr>
+    {% endif %}
+</table>
+</div>
+
+
+{% if figures_dict %}
+<div class="smallhead"><a name="ReadCounts"></a>Read Distribution per Sample</div>
+<p class="smallheadtitle">» Total number of reads for each sample that were analyzed.
+	<div class="content">
+    		{% if figures_dict.basic_reports|lookup:"lines"|lookup:"lines" %}
+    		<a href="{{figures_dict.basic_reports|lookup:"lines"|lookup:"lines"}}.pdf" target="_blank" />
+    			<img src="{{figures_dict.basic_reports|lookup:"lines"|lookup:"lines"}}.png" border="0" />
+    		</a>
+    		{% else %}
+    			<img src="missing.png" style="width: 100px; border: 5px solid #EEE;" />
+    		{% endif %}
+	</div>
+
+	<div class="content">
+    		{% if figures_dict.basic_reports|lookup:"bars"|lookup:"bars" %}
+    		<a href="{{figures_dict.basic_reports|lookup:"bars"|lookup:"bars"}}.pdf" target="_blank" />
+    			<img src="{{figures_dict.basic_reports|lookup:"bars"|lookup:"bars"}}.png" border="0" />
+    		</a>
+    		{% else %}
+    			<img src="missing.png" style="width: 100px; border: 5px solid #EEE;" />
+    		{% endif %}
+	</div>
+{% endif %}
+
+
+{% if figures_dict and not skip_basic_analyses %}
+	<div class="smallhead"><a name="BasicAnalyses"></a>Basic Analyses</div>
+	<p class="smallheadtitle">» Deafult
+	<div class="info_table">
+	{% for key, value in figures_dict.basic_analyses.items %}
+	<p style="font-weight:bold;">» {{ key }}
+    <table width=90%>
+	<tr>
+		{% for distance in figures_dict.basic_analyses|lookup:key %}
+    	<td style="padding: 10px; text-align: center; width: 100px; height: 100px;">
+    		{% if figures_dict.basic_analyses|lookup:key|lookup:distance %}
+    		<a href="{{figures_dict.basic_analyses|lookup:key|lookup:distance}}.pdf" target="_blank" />
+    			<img src="{{figures_dict.basic_analyses|lookup:key|lookup:distance}}.png" style="width: 100px; border: 5px solid #EEE;" />
+    		</a>
+    		{% else %}
+    			<img src="missing.png" style="width: 100px; border: 5px solid #EEE;" />
+    		{% endif %}
+    		<p align="center">{{distance}}
+    	</td>
+    	{% endfor %}
+	</tr>
+	</table>
+	{% endfor %}
+	</div>
+{% endif %}
+
+
+{% if exclusive_figures_dict %}
+	<div class="smallhead"><a name="ExclusiveAnalyses"></a>Exclusive Analyses</div>
+	{% for category in exclusive_figures_dict %}
+		<p class="smallheadtitle">» {{category}}
+		<div class="info_table">
+		{% for analysis in exclusive_figures_dict|lookup:category %}
+		<p style="font-weight:bold;">» {{ analysis }}
+	    <table width=90%>
+		<tr>
+			{% for distance in exclusive_figures_dict|lookup:category|lookup:analysis %}
+	    	<td style="padding: 10px; text-align: center; width: 100px; height: 100px;">
+	    		{% if exclusive_figures_dict|lookup:category|lookup:analysis|lookup:distance %}
+	    		<a href="{{exclusive_figures_dict|lookup:category|lookup:analysis|lookup:distance}}.pdf" target="_blank" />
+	    			<img src="{{exclusive_figures_dict|lookup:category|lookup:analysis|lookup:distance}}.png" style="width: 100px; border: 5px solid #EEE;" />
+	    		</a>
+	    		{% else %}
+	    			<img src="missing.png" style="width: 100px; border: 5px solid #EEE;" />
+	    		{% endif %}
+	    		<p align="center">{{distance}}
+	    	</td>
+	    	{% endfor %}
+		</tr>
+		</table>
+		{% endfor %}
+		</div>
+	{% endfor %}
+{% endif %}
+
+
+<div class="floatingbar"><a href="#General">General</a> | <a href="#Downloads">Downloads</a> | <a href="#ReadCounts">Counts</a> | {% if figures_dict %}<a href="#BasicAnalyses"><b>Basic Analyses</b></a> {% else %} Basic Analyses {% endif %}| {% if exclusive_figures_dict %}<a href="#ExclusiveAnalyses"><b>Exclusive Analyses</b></a>{% else %}Exclusive Analyses <a href="https://meren.github.io/2013/02/04/basic-sample-mapping-with-oligotyping/">?</a>{% endif %}</div>
+<div class="footer"><p>For questions and comments: meren / mbl.edu</div>
+</body>
+</html>
+
+

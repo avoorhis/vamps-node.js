@@ -105,6 +105,9 @@ module.exports.write_to_file = function(fileName, text)
     }
   });
 };
+module.exports.getRandomInt = function(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 module.exports.isInt = function(value)
 {
   return !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value));
@@ -951,7 +954,7 @@ module.exports.deleteFolderRecursive = function(path) {
     fs.readdirSync(path).forEach(function(file,index){
       var curPath = path + "/" + file;
       if(fs.lstatSync(curPath).isDirectory()) { // recurse
-        deleteFolderRecursive(curPath);
+        module.exports.deleteFolderRecursive(curPath);
       } else { // delete file
         fs.unlinkSync(curPath);
       }

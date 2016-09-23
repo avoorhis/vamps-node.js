@@ -22,12 +22,35 @@ var helpers = require('./helpers/helpers');
 // });
 
 
-// for Emperor or any other pre-made html file: ie oligotyping
+// EMPEROR
 router.get('/:dir_name/index', function(req, res){
-    console.log('6&&&& HERE ' +req.params.dir_name)
+    console.log('6&&&& HERE in routes_tmp.js ' +req.params.dir_name)
     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     var file = 'views/tmp/'+req.params.dir_name+'/index.html'
     res.sendFile(file, {root:pwd})
 });
-
+//
+//
+// OLIGOTYPING
+// router.get('/projects/:dir_name/HTML-OUTPUT/index', function(req, res){
+//     console.log('7&&&& HERE in routes_tmp.js ' +req.params.dir_name)
+//     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+//     var file = '/Users/avoorhis/programming/vamps-node.js/views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
+//     //var root = 'views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
+//     res.sendFile(file)
+// });
+// router.get('/:img', function(req, res){
+//     console.log('8&&&& HERE in routes_tmp.js ' +req.params.img)
+//     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+//     //var file = '/Users/avoorhis/programming/vamps-node.js/views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
+//     //var root = 'views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
+//     //es.sendFile(file)
+// });
+// router.get('/oligotyping/oligo/:img', function(req, res){
+//     console.log('9&&&& HERE in routes_tmp.js ' +req.params.img)
+//     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+//     //var file = '/Users/avoorhis/programming/vamps-node.js/views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
+//     //var root = 'views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
+//     r//es.sendFile(file)
+// });
 module.exports = router;
