@@ -1018,7 +1018,7 @@ touch ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   }
   make_gast_script_txt += `  
 ls ${data_dir}/*${file_suffix} >${data_dir}/filenames.list
-chmod 666 ${data_dir}/filenames.list
+# chmod 666 ${data_dir}/filenames.list
 
 cd ${data_dir}`;
 
@@ -1108,6 +1108,7 @@ InputComesFromHERE
     make_gast_script_txt += `
 qsub -sync y ${data_dir}/clust_gast_ill_${project}.sh`;
   }
+  // qsub -cwd -sync y ${data_dir}/clust_gast_ill_${project}.sh`;
 
   make_gast_script_txt += "\n";
   // make_gast_script_txt += "touch " + path.join(data_dir, "TEMP.tmp");
