@@ -1045,8 +1045,8 @@ if (is_local)
 }
 else
 {
+// #$ -cwd
   make_gast_script_txt += `
-#$ -cwd
 #$ -S /bin/bash
 #$ -N clust_gast_ill_${project}.sh
 # Giving the name of the output log file
