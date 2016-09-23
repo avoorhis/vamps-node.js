@@ -417,8 +417,8 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-f', family, 
                       g, 
-                      '/Users/avoorhis/programming/helper_scripts/otu_id_to_greengenes.txt', 
-                      '/Users/avoorhis/programming/helper_scripts/gg_97_otus_6oct2010_aligned.fasta.txt', 
+                      req.CONFIG.PATH_TO_OLIGOTYPING_BIN+'otu_id_to_greengenes.txt', 
+                      req.CONFIG.PATH_TO_OLIGOTYPING_BIN+'gg_97_otus_6oct2010_aligned.fasta.txt', 
                       '-o', tmpl_file
                     ],
   };
@@ -444,11 +444,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
     cmd_list.push(path.join(lst[n].scriptPath, lst[n].exec) + ' ' + lst[n].args.join(' '))
   }
   
-  // create_GG_alignment_template_from_taxon.py -f Aerococcaceae -g Abiotrophia /groups/vampsweb/vampsdev/oligotyping/vamps_scripts/otu_id_to_greengenes.txt /groups/vampsweb/vampsdev/oligotyping/vamps_scripts/gg_97_otus_6oct2010_aligned.fasta.txt -o /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/TEMPLATE.tmpl
-  // pynast -t /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/TEMPLATE.tmpl -i /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/data.fa -a /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/pynast_aligned.fa -l 48
-  // minalign /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/pynast_aligned.fa > /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/minalign_avoorhis_35452547.fa
-  // entropy-analysis /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/minalign_avoorhis_35452547.fa > /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/entropy.log
-
+  
   var script_text = helpers.get_local_script_text('entropy', cmd_list);
 
   var script_file = 'entropy_script.sh'
@@ -519,21 +515,10 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
-// POST ENTROPY
-//
-// router.get('/oligo/:img', function(req, res){
-//     console.log('10-&&&& HERE in routes_oligotyping.js ' +req.params.img)
-//     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-//     //var file = '/Users/avoorhis/programming/vamps-node.js/views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
-//     //var root = 'views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
-//     //es.sendFile(file)
-// });
 router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
   console.log('in oligo - oligo-->>')
   console.log(req.body);
   console.log('<<--in oligo - oligo')
-  //res.sendFile('/public/oligotyping/andy_OLIGOTYPING_1474547262567/HTML-OUTPUT/index.html',{root:'/Users/avoorhis/programming/vamps-node.js/'})
-  //return
   
   var oligo_code = req.params.code
   var family = req.body.family
@@ -594,11 +579,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
     cmd_list.push(path.join(lst[n].scriptPath, lst[n].exec) + ' ' + lst[n].args.join(' ') +' > '+scriptlog)
   }
   
-  // create_GG_alignment_template_from_taxon.py -f Aerococcaceae -g Abiotrophia /groups/vampsweb/vampsdev/oligotyping/vamps_scripts/otu_id_to_greengenes.txt /groups/vampsweb/vampsdev/oligotyping/vamps_scripts/gg_97_otus_6oct2010_aligned.fasta.txt -o /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/TEMPLATE.tmpl
-  // pynast -t /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/TEMPLATE.tmpl -i /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/data.fa -a /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/pynast_aligned.fa -l 48
-  // minalign /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/pynast_aligned.fa > /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/minalign_avoorhis_35452547.fa
-  // entropy-analysis /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/minalign_avoorhis_35452547.fa > /groups/vampsweb/vampsdev/oligotype_data/avoorhis_35452547/entropy.log
-
+  
   var script_text = helpers.get_local_script_text( 'oligo', cmd_list);
   var script_file = 'oligo_script.sh'
   var script_file_path = path.join(data_repository, script_file);
