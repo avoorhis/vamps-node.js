@@ -1010,14 +1010,16 @@ function gastTax(req, project_config, options, classifier_id)
   console.log('OOO1 uc_file_name_base: ' + uc_file_name_base); 
   var oldmask = process.umask(0);
   fs.closeSync(fs.openSync(uc_file_name_base + ".uc", 'w', 0666));
-  fs.closeSync(fs.openSync(uc_file_name_base + ".gast", 'w', 0666));
-  fs.closeSync(fs.openSync(uc_file_name_base + ".unique", 'w', 0666));
-  fs.closeSync(fs.openSync("gast.log", 'w', 0666));
-  
   console.log("file is open: " + uc_file_name_base + ".uc");
+  fs.closeSync(fs.openSync(uc_file_name_base + ".gast", 'w', 0666));
   console.log("file is open: " + uc_file_name_base + ".gast");
+  fs.closeSync(fs.openSync(uc_file_name_base + ".unique", 'w', 0666));
   console.log("file is open: " + uc_file_name_base + ".unique");
-  console.log("file is open: gast.log");
+  
+  var gast_log_file = `${data_dir}/gast.log`;
+  fs.closeSync(fs.openSync(gast_log_file, 'w', 0666));
+  console.log("file is open: " + gast_log_file);
+  
   process.umask(oldmask);
 
   console.log("XXX file_suffix = " + file_suffix);
@@ -1109,9 +1111,7 @@ else
   
   echo "${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
 
-  ${gast_script_path}/gast_ill -saveuc ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0
-
- # ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0
+ ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0
   `;
   make_gast_script_txt += "\n";
 
