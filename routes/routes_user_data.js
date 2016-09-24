@@ -1015,7 +1015,7 @@ function gastTax(req, project_config, options, classifier_id)
   {
     make_gast_script_txt = `
 export PERL5LIB=${app_root}/public/scripts/gast
-PATH=$PATH:${app_root}/public/scripts/gast:config.GAST_SCRIPT_PATH
+PATH=$PATH:${app_root}/public/scripts/gast:${config.GAST_SCRIPT_PATH}
 touch ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
     
     `;
