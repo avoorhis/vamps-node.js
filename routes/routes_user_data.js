@@ -2157,6 +2157,14 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
   });
   child.on('close', function(code) {
       console.log('RunAndCheck closing code: ' + code);
+      if (code === 0)
+      {
+        successCode(callback_function_options, last_line);
+      }
+      else // code != 0
+      {
+        failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
+      }
   });
   
   // var output = '';
