@@ -2148,38 +2148,49 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
 
   var exec = require('child_process').exec;
   var child = exec(script_path);
-  var output = '';
   
-  child.stdout.on('data', function AddDataToOutput(data) {
-        data = data.toString().trim();
-        output += data;
-        CheckIfPID(data);
+  child.stdout.on('data', function(data) {
+      console.log('RunAndCheck 1 stdout: ' + data);
   });
+  child.stderr.on('data', function(data) {
+      console.log('RunAndCheck 2 stdout: ' + data);
+  });
+  child.on('close', function(code) {
+      console.log('RunAndCheck closing code: ' + code);
+  });
+  
+  // var output = '';
+  
+  // child.stdout.on('data', function AddDataToOutput(data) {
+  //       data = data.toString().trim();
+  //       output += data;
+  //       CheckIfPID(data);
+  // });
   
   // {
 //       console.log('stdout: ' + data);
 //   });
   
-  child.stderr.on('data', function(data) {
-      console.log('stdout: ' + data);
-  });
-  
-  child.on('close', function checkExitCode(code) {
-     console.log('From RunAndCheck process exited with code ' + code);
-     var ary = output.split("\n");
-     console.log("TTT output.split (ary) ");
-     console.log(util.inspect(ary, false, null));
-     var last_line = ary[ary.length - 1];
-     console.log('last_line:', last_line);
-     if (code === 0)
-     {
-       callback_function(callback_function_options, last_line);
-     }
-     else // code != 0
-     {
-       failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
-     }
-  });
+  // child.stderr.on('data', function(data) {
+ //      console.log('stdout: ' + data);
+ //  });
+ //
+ //  child.on('close', function checkExitCode(code) {
+ //     console.log('From RunAndCheck process exited with code ' + code);
+ //     var ary = output.split("\n");
+ //     console.log("TTT output.split (ary) ");
+ //     console.log(util.inspect(ary, false, null));
+ //     var last_line = ary[ary.length - 1];
+ //     console.log('last_line:', last_line);
+ //     if (code === 0)
+ //     {
+ //       callback_function(callback_function_options, last_line);
+ //     }
+ //     else // code != 0
+ //     {
+ //       failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
+ //     }
+ //  });
 
   //
   // var run_process = spawn( 'bash', [script_path], {
