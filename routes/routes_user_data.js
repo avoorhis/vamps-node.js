@@ -1084,7 +1084,9 @@ else
   
   echo "${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
 
-  ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0`;
+vsearch --db ${gast_db_path}/${ref_db_name}.fa -notrunclabels -gapopen 6I/1E -usearch_global \\$INFILE -strand plus -uc_allhits -uc \\$INFILE.uc -maxaccepts 15 -maxrejects 0 -threads 0 -id 0.8
+
+ # ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0`;
   make_gast_script_txt += "\n";
 
   if (is_local)
@@ -2148,57 +2150,38 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
 
   var exec = require('child_process').exec;
   var child = exec(script_path);
+  var output = '';
   
-  child.stdout.on('data', function(data) {
-      console.log('RunAndCheck 1 stdout: ' + data);
+  child.stdout.on('data', function AddDataToOutput(data) {
+        data = data.toString().trim();
+        output += data;
+        CheckIfPID(data);
   });
-  child.stderr.on('data', function(data) {
-      console.log('RunAndCheck 2 stdout: ' + data);
-  });
-  child.on('close', function(code) {
-      console.log('RunAndCheck closing code: ' + code);
-      if (code === 0)
-      {
-        successCode(callback_function_options, 'last_line');
-      }
-      else // code != 0
-      {
-        failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
-      }
-  });
-  
-  // var output = '';
-  
-  // child.stdout.on('data', function AddDataToOutput(data) {
-  //       data = data.toString().trim();
-  //       output += data;
-  //       CheckIfPID(data);
-  // });
   
   // {
 //       console.log('stdout: ' + data);
 //   });
   
-  // child.stderr.on('data', function(data) {
- //      console.log('stdout: ' + data);
- //  });
- //
- //  child.on('close', function checkExitCode(code) {
- //     console.log('From RunAndCheck process exited with code ' + code);
- //     var ary = output.split("\n");
- //     console.log("TTT output.split (ary) ");
- //     console.log(util.inspect(ary, false, null));
- //     var last_line = ary[ary.length - 1];
- //     console.log('last_line:', last_line);
- //     if (code === 0)
- //     {
- //       callback_function(callback_function_options, last_line);
- //     }
- //     else // code != 0
- //     {
- //       failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
- //     }
- //  });
+  child.stderr.on('data', function(data) {
+      console.log('stdout: ' + data);
+  });
+  
+  child.on('close', function checkExitCode(code) {
+     console.log('From RunAndCheck process exited with code ' + code);
+     var ary = output.split("\n");
+     console.log("TTT output.split (ary) ");
+     console.log(util.inspect(ary, false, null));
+     var last_line = ary[ary.length - 1];
+     console.log('last_line:', last_line);
+     if (code === 0)
+     {
+       callback_function(callback_function_options, last_line);
+     }
+     else // code != 0
+     {
+       failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
+     }
+  });
 
   //
   // var run_process = spawn( 'bash', [script_path], {
