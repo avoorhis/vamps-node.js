@@ -1003,7 +1003,7 @@ function gastTax(req, project_config, options, classifier_id)
 
   // fs.closeSync(fs.openSync(`${data_dir}/clust_gast_ill_${project}.sh`, 'w', 0775));
   fs.closeSync(fs.openSync(`${data_dir}/${project}.fa.unique.uc`, 'w', 0666));
-  echo "file is open: " + path.join(data_dir, project, ".fa.unique.uc");
+  console.log("file is open: " + path.join(data_dir, project, ".fa.unique.uc"));
   // /groups/vampsweb/vampsdev_node_data/user_data/AnnaSh/project-test_gast_project/test_gast_dataset.fa.unique.uc
 //from inside of gast_script.sh 
   // create filenames.list and get numbers
