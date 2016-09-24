@@ -2159,7 +2159,7 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
       console.log('RunAndCheck closing code: ' + code);
       if (code === 0)
       {
-        successCode(callback_function_options, last_line);
+        successCode(callback_function_options, 'last_line');
       }
       else // code != 0
       {
