@@ -958,7 +958,7 @@ TSTAMP=\`date +%Y%m%d%H%M%S\`
 export MODULEPATH=/usr/local/www/vamps/software/modulefiles
 module load clusters/vamps
 
-PATH=$PATH:${config.PATH_TO_NODE_SCRIPTS}:${path.join(config.PROCESS_DIR, '/public/scripts')}
+PATH=$PATH:${config.PATH_TO_NODE_SCRIPTS}:${path.join(config.PROCESS_DIR, '/public/scripts')}:${config.GAST_SCRIPT_PATH}
 echo "PATH is \$PATH\n"
 
 `;

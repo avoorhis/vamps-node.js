@@ -1068,6 +1068,7 @@ else
   module load bioware
 
   PATH=$PATH:${app_root}/public/scripts/gast:${config.GAST_SCRIPT_PATH}
+  echo "===== $PATH ====" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
 
   LISTFILE=${data_dir}/filenames.list
   echo "LISTFILE is \\$LISTFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
