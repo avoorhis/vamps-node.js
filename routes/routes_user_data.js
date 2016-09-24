@@ -1016,9 +1016,14 @@ function gastTax(req, project_config, options, classifier_id)
   fs.closeSync(fs.openSync(uc_file_name_base + ".unique", 'w', 0666));
   console.log("file is open: " + uc_file_name_base + ".unique");
   
-  var gast_log_file = `${data_dir}/gast.log`;
+  var gast_log_file = join(data_dir, "gast.log");
   fs.closeSync(fs.openSync(gast_log_file, 'w', 0666));
   console.log("file is open: " + gast_log_file);
+
+  var names_file = join(data_dir, "test_gast_dataset.fa.names");
+  fs.closeSync(fs.openSync(names_file, 'w', 0666));
+  console.log("file is open: " + names_file);
+  
   
   process.umask(oldmask);
 
