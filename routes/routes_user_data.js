@@ -2156,7 +2156,7 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
 
   run_process.on('close', function checkExitCode(code) {
      console.log('run_process process exited with code ' + code);
-     var ary = output.split();
+     var ary = output.split("\n");
      console.log("TTT output.split (ary) ");
      console.log(util.inspect(ary, false, null));
      var last_line = ary[ary.length - 1];

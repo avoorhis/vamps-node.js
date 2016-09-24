@@ -959,7 +959,7 @@ export MODULEPATH=/usr/local/www/vamps/software/modulefiles
 module load clusters/vamps
 
 PATH=$PATH:${config.PATH_TO_NODE_SCRIPTS}:${path.join(config.PROCESS_DIR, '/public/scripts')}
-echo "PATH is \$PATH"
+echo "PATH is \$PATH\n"
 
 `;
 
