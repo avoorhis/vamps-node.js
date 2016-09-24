@@ -1011,6 +1011,7 @@ function gastTax(req, project_config, options, classifier_id)
   var oldmask = process.umask(0);
   fs.closeSync(fs.openSync(uc_file_name_base + ".uc", 'w', 0666));
   fs.closeSync(fs.openSync(uc_file_name_base + ".gast", 'w', 0666));
+  fs.closeSync(fs.openSync(uc_file_name_base + ".unique", 'w', 0666));
   console.log("file is open: " + uc_file_name_base + ".uc");
   console.log("file is open: " + uc_file_name_base + ".gast");
   console.log("file is open: " + uc_file_name_base + ".unique");
