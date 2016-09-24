@@ -993,7 +993,7 @@ function gastTax(req, project_config, options, classifier_id)
   // fs.closeSync(fs.openSync(`${data_dir}/clust_gast_ill_${project}.sh`, 'w', 0777));
   // process.umask(oldmask);
   
-  file_suffix      = getSuffix(project_config.GENERAL.dna_region);
+  file_suffix      = ".fa" + getSuffix(project_config.GENERAL.dna_region);
   ref_db_name      = chooseRefFile(classifier_id);
   full_option      = getFullOption(classifier_id);
   gast_db_path     = config.GAST_DB_PATH;
