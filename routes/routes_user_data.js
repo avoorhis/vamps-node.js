@@ -988,7 +988,9 @@ function gastTax(req, project_config, options, classifier_id)
   var data_dir = project_config.GENERAL.baseoutputdir;
   script_name = 'gast_script.sh';
 
+  var oldmask = process.umask(0);
   fs.closeSync(fs.openSync(`${data_dir}/clust_gast_ill_${project}.sh`, 'w', 0775));
+  process.umask(oldmask);
   
   file_suffix      = getSuffix(project_config.GENERAL.dna_region);
   ref_db_name      = chooseRefFile(classifier_id);
