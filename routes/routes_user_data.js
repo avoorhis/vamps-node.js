@@ -987,7 +987,9 @@ function gastTax(req, project_config, options, classifier_id)
   var project  = project_config.GENERAL.project;
   var data_dir = project_config.GENERAL.baseoutputdir;
   script_name = 'gast_script.sh';
-        
+
+  fs.closeSync(fs.openSync(`${data_dir}/clust_gast_ill_${project}.sh`, 'w', 0775));
+  
   file_suffix      = getSuffix(project_config.GENERAL.dna_region);
   ref_db_name      = chooseRefFile(classifier_id);
   full_option      = getFullOption(classifier_id);
@@ -2138,6 +2140,7 @@ function failedCode(req, res, data_repository, project, last_line)
 
 function RunAndCheck(script_path, nodelog, req, project, res, callback_function, callback_function_options)
 {
+  // http://krasimirtsonev.com/blog/article/Nodejs-managing-child-processes-starting-stopping-exec-spawn
   console.log("QQQ6 in RunAndCheck");
   console.log("QQQRRR1 script_path: " + script_path);
 
