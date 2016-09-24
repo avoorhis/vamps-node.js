@@ -2141,7 +2141,16 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
   console.log("QQQ6 in RunAndCheck");
   console.log("QQQRRR1 script_path: " + script_path);
 
-  var run_process = spawn( 'sh', [script_path], {
+  // var exec = require('child_process').exec;
+  // exec('node -v', function(error, stdout, stderr) {
+  //     console.log('stdout: ' + stdout);
+  //     console.log('stderr: ' + stderr);
+  //     if (error !== null) {
+  //         console.log('exec error: ' + error);
+  //     }
+  // });
+
+  var run_process = spawn( 'bash', [script_path], {
     detached: true, stdio: [ 'ignore', null, nodelog ]
   });  // stdin, s
 
