@@ -805,6 +805,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   console.log('start: ' + project + ' - ' + classifier + ' - ' + ref_db_dir);
   status_params = {'type': 'update', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
   var data_dir  = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
+  //TODO: check if needed:
   var qsub_script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
 
   var config_file = path.join(data_dir, 'config.ini');
@@ -1001,10 +1002,19 @@ function gastTax(req, project_config, options, classifier_id)
   console.log('gast_db_path: ' + gast_db_path); 
   console.log('gast_script_path: ' + gast_script_path); 
 
-  // fs.closeSync(fs.openSync(`${data_dir}/clust_gast_ill_${project}.sh`, 'w', 0775));
-  fs.closeSync(fs.openSync(`${data_dir}/${project}.fa.unique.uc`, 'w', 0666));
-  console.log("file is open: " + path.join(data_dir, project, ".fa.unique.uc"));
-  // /groups/vampsweb/vampsdev_node_data/user_data/AnnaSh/project-test_gast_project/test_gast_dataset.fa.unique.uc
+  var ookeys = Object.keys(project_info[project].validation);
+  console.log('OOO ookeys[1]: '); 
+  console.log(util.inspect(ookeys[1], false, null));
+
+  var uc_file_name = `${data_dir}/${ookeys[1]}.uc`;
+  console.log('OOO1 uc_file_name: ' + uc_file_name); 
+  var oldmask = process.umask(0);
+  fs.closeSync(fs.openSync(uc_file_name, 'w', 0666));
+  console.log("file is open: " + uc_file_name);
+  process.umask(oldmask);
+
+// /groups/vampsweb/vampsdev_node_data/user_data/AnnaSh/project-test_gast_project/test_gast_dataset.fa.unique.uc
+
 //from inside of gast_script.sh 
   // create filenames.list and get numbers
   // create clust_gast_ill_PROJECT_NAME.sh
@@ -1092,10 +1102,10 @@ else
 
 # vsearch --db ${gast_db_path}/${ref_db_name}.fa -notrunclabels -gapopen 6I/1E -usearch_global \\$INFILE -strand plus -uc_allhits -uc \\$INFILE.uc -maxaccepts 15 -maxrejects 0 -threads 0 -id 0.8
   
-  vsearch --db /xraid2-2/g454/blastdbs/gast_distributions/refv6.fa -notrunclabels -gapopen 6I/1E -usearch_global /groups/vampsweb/vampsdev_node_data/user_data/AnnaSh/project-test_gast_project/test_gast_dataset.fa.unique.unique -strand plus -uc_allhits -uc /groups/vampsweb/vampsdev_node_data/user_data/AnnaSh/project-test_gast_project/test_gast_dataset.fa.unique.uc -maxaccepts 15 -maxrejects 0 -threads 0 -id 0.8
+  // vsearch --db /xraid2-2/g454/blastdbs/gast_distributions/refv6.fa -notrunclabels -gapopen 6I/1E -usearch_global /groups/vampsweb/vampsdev_node_data/user_data/AnnaSh/project-test_gast_project/test_gast_dataset.fa.unique.unique -strand plus -uc_allhits -uc /groups/vampsweb/vampsdev_node_data/user_data/AnnaSh/project-test_gast_project/test_gast_dataset.fa.unique.uc -maxaccepts 15 -maxrejects 0 -threads 0 -id 0.8
   
 
-#  ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0`;
+  ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0`;
   make_gast_script_txt += "\n";
 
   if (is_local)
