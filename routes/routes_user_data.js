@@ -1006,11 +1006,13 @@ function gastTax(req, project_config, options, classifier_id)
   console.log('OOO ookeys: '); 
   console.log(util.inspect(ookeys, false, null));
 
-  var uc_file_name = `${data_dir}/${ookeys[1]}.uc`;
-  console.log('OOO1 uc_file_name: ' + uc_file_name); 
+  var uc_file_name_base = `${data_dir}/${ookeys[1]}`;
+  console.log('OOO1 uc_file_name_base: ' + uc_file_name_base); 
   var oldmask = process.umask(0);
-  fs.closeSync(fs.openSync(uc_file_name, 'w', 0666));
-  console.log("file is open: " + uc_file_name);
+  fs.closeSync(fs.openSync(uc_file_name_base + ".uc", 'w', 0666));
+  fs.closeSync(fs.openSync(uc_file_name_base + ".gast", 'w', 0666));
+  console.log("file is open: " + uc_file_name_base + ".uc");
+  console.log("file is open: " + uc_file_name_base + ".gast");
   process.umask(oldmask);
 
 // /groups/vampsweb/vampsdev_node_data/user_data/AnnaSh/project-test_gast_project/test_gast_dataset.fa.unique.uc
