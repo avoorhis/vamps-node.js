@@ -1088,8 +1088,11 @@ else
   echo "${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
 
 # vsearch --db ${gast_db_path}/${ref_db_name}.fa -notrunclabels -gapopen 6I/1E -usearch_global \\$INFILE -strand plus -uc_allhits -uc \\$INFILE.uc -maxaccepts 15 -maxrejects 0 -threads 0 -id 0.8
+  
+  vsearch --db /xraid2-2/g454/blastdbs/gast_distributions/refv6.fa -notrunclabels -gapopen 6I/1E -usearch_global /groups/vampsweb/vampsdev_node_data/user_data/AnnaSh/project-test_gast_project/test_gast_dataset.fa.unique.unique -strand plus -uc_allhits -uc /groups/vampsweb/vampsdev_node_data/user_data/AnnaSh/project-test_gast_project/test_gast_dataset.fa.unique.uc -maxaccepts 15 -maxrejects 0 -threads 0 -id 0.8
+  
 
-  ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0`;
+#  ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0`;
   make_gast_script_txt += "\n";
 
   if (is_local)
