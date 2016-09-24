@@ -2146,11 +2146,10 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
   var output = '';
   
   child.stdout.on('data', function AddDataToOutput(data) {
-    {
         data = data.toString().trim();
         output += data;
         CheckIfPID(data);
-  }
+  });
   
   // {
 //       console.log('stdout: ' + data);
