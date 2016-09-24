@@ -1011,11 +1011,13 @@ function gastTax(req, project_config, options, classifier_id)
   var oldmask = process.umask(0);
   fs.closeSync(fs.openSync(uc_file_name_base + ".uc", 'w', 0666));
   fs.closeSync(fs.openSync(uc_file_name_base + ".gast", 'w', 0666));
-  //Can't! Because it's starting gast on unique.unique
   fs.closeSync(fs.openSync(uc_file_name_base + ".unique", 'w', 0666));
+  fs.closeSync(fs.openSync("gast.log", 'w', 0666));
+  
   console.log("file is open: " + uc_file_name_base + ".uc");
   console.log("file is open: " + uc_file_name_base + ".gast");
   console.log("file is open: " + uc_file_name_base + ".unique");
+  console.log("file is open: gast.log");
   process.umask(oldmask);
 
   console.log("XXX file_suffix = " + file_suffix);
