@@ -1067,6 +1067,8 @@ else
   . /xraid/bioware/Modules/etc/profile.modules
   module load bioware
 
+  PATH=$PATH:${app_root}/public/scripts/gast:${config.GAST_SCRIPT_PATH}
+
   LISTFILE=${data_dir}/filenames.list
   echo "LISTFILE is \\$LISTFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
   `;
