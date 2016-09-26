@@ -420,8 +420,8 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-f', family, 
                       g, 
-                      req.CONFIG.PATH_TO_OLIGOTYPING_BIN+'otu_id_to_greengenes.txt', 
-                      req.CONFIG.PATH_TO_OLIGOTYPING_BIN+'gg_97_otus_6oct2010_aligned.fasta.txt', 
+                      req.CONFIG.PATH_TO_OLIGOTYPING_BIN+'/otu_id_to_greengenes.txt', 
+                      req.CONFIG.PATH_TO_OLIGOTYPING_BIN+'/gg_97_otus_6oct2010_aligned.fasta.txt', 
                       '-o', tmpl_file
                     ],
   };
