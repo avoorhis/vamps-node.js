@@ -417,9 +417,9 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
   }
   var set_env_cmd = ''
   if(req.CONFIG.site == 'vampsdev'){
-      set_env_cmd = 'source "/groups/vampsweb/vampsdev/seqinfobin/vamps_environment.sh'
+      set_env_cmd = 'source /groups/vampsweb/vampsdev/seqinfobin/vamps_environment.sh'
     }else if(req.CONFIG.site == 'vamps'){
-      set_env_cmd = 'source "/groups/vampsweb/vamps/seqinfobin/vamps_environment.sh'
+      set_env_cmd = 'source /groups/vampsweb/vamps/seqinfobin/vamps_environment.sh'
     }
   var cmd_options1 = {
       exec : 'create_GG_alignment_template_from_taxon.py',
