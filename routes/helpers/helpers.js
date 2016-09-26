@@ -958,11 +958,13 @@ TSTAMP=\`date +%Y%m%d%H%M%S\`
 
 echo "which qsub: "
 echo "which qsub: " > env_from_inside_gast_script.txt
+echo \`which qsub\`
 echo \`which qsub\` >> env_from_inside_gast_script.txt
 echo
 echo "env: "
 echo >> env_from_inside_gast_script.txt
 echo "env: " >> env_from_inside_gast_script.txt
+echo \`env\`
 echo \`env\` >> env_from_inside_gast_script.txt
 
 # Loading Module didn't work when testing:

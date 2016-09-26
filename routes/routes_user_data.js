@@ -1099,11 +1099,13 @@ else
   echo "which qsub: "
   echo "which qsub: " > env_from_inside_clust_gast_ill_test_gast_project.txt
   echo \`which qsub\` >> env_from_inside_clust_gast_ill_test_gast_project.txt
+  echo \`which qsub\`
   echo
   echo >> env_from_inside_clust_gast_ill_test_gast_project.txt
   echo "env: "
   echo "env: " >> env_from_inside_clust_gast_ill_test_gast_project.txt
   echo \`env\` >> env_from_inside_clust_gast_ill_test_gast_project.txt
+  echo \`env\`
   echo
 
   PATH=$PATH:${app_root}/public/scripts/gast:${config.GAST_SCRIPT_PATH}
