@@ -1002,30 +1002,30 @@ function gastTax(req, project_config, options, classifier_id)
   console.log('gast_db_path: ' + gast_db_path); 
   console.log('gast_script_path: ' + gast_script_path); 
 
-  var ookeys = Object.keys(project_info[project].validation);
-  console.log('OOO ookeys: '); 
-  console.log(util.inspect(ookeys, false, null));
+  // var ookeys = Object.keys(project_info[project].validation);
+  // console.log('OOO ookeys: '); 
+  // console.log(util.inspect(ookeys, false, null));
 
-  var uc_file_name_base = `${data_dir}/${ookeys[1]}`;
-  console.log('OOO1 uc_file_name_base: ' + uc_file_name_base); 
-  var oldmask = process.umask(0);
-  fs.closeSync(fs.openSync(uc_file_name_base + ".uc", 'w', 0666));
-  console.log("file is open: " + uc_file_name_base + ".uc");
-  fs.closeSync(fs.openSync(uc_file_name_base + ".gast", 'w', 0666));
-  console.log("file is open: " + uc_file_name_base + ".gast");
-  fs.closeSync(fs.openSync(uc_file_name_base + ".unique", 'w', 0666));
-  console.log("file is open: " + uc_file_name_base + ".unique");
-  
-  var gast_log_file = path.join(data_dir, "gast.log");
-  fs.closeSync(fs.openSync(gast_log_file, 'w', 0666));
-  console.log("file is open: " + gast_log_file);
-
-  var names_file = path.join(data_dir, "test_gast_dataset.fa.names");
-  fs.closeSync(fs.openSync(names_file, 'w', 0666));
-  console.log("file is open: " + names_file);
-  
-  
-  process.umask(oldmask);
+  // var uc_file_name_base = `${data_dir}/${ookeys[1]}`;
+  // console.log('OOO1 uc_file_name_base: ' + uc_file_name_base); 
+  // var oldmask = process.umask(0);
+  // fs.closeSync(fs.openSync(uc_file_name_base + ".uc", 'w', 0666));
+  // console.log("file is open: " + uc_file_name_base + ".uc");
+  // fs.closeSync(fs.openSync(uc_file_name_base + ".gast", 'w', 0666));
+  // console.log("file is open: " + uc_file_name_base + ".gast");
+  // fs.closeSync(fs.openSync(uc_file_name_base + ".unique", 'w', 0666));
+  // console.log("file is open: " + uc_file_name_base + ".unique");
+  // 
+  // var gast_log_file = path.join(data_dir, "gast.log");
+  // fs.closeSync(fs.openSync(gast_log_file, 'w', 0666));
+  // console.log("file is open: " + gast_log_file);
+  // 
+  // var names_file = path.join(data_dir, "test_gast_dataset.fa.names");
+  // fs.closeSync(fs.openSync(names_file, 'w', 0666));
+  // console.log("file is open: " + names_file);
+  // 
+  // 
+  // process.umask(oldmask);
 
   console.log("XXX file_suffix = " + file_suffix);
 
