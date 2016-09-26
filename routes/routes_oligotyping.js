@@ -403,12 +403,14 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
   // create shell script in dir:
   var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.directory);
   var config_file = path.join(data_repository, 'config.ini');
-  var scriptlog   = path.join(data_repository, 'entropy_shell_script.log');
+  var alignmentlog   = path.join(data_repository, 'alignment.log');
+  var pynastlog   = path.join(data_repository, 'pynast.log');
+  var entropy_log   = path.join(data_repository, 'entropy.log');
   var tmpl_file = path.join(data_repository, 'TEMPLATE.tmpl');
   var fasta_file = path.join(data_repository, 'fasta.fa');
   var aligned_file = path.join(data_repository, 'pynast_aligned.fa');
   var min_align_fasta_file = path.join(data_repository, 'minaligned.fa');
-  var entropy_log   = path.join(data_repository, 'entropy.log');
+  
   var cutoff = req.body.cutoff
   if(genus == '' || genus == 'none'){
     g = ''
@@ -424,14 +426,20 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
                       g, 
                       req.CONFIG.PATH_TO_OLIGOTYPING_BIN+'/otu_id_to_greengenes.txt', 
                       req.CONFIG.PATH_TO_OLIGOTYPING_BIN+'/gg_97_otus_6oct2010_aligned.fasta.txt', 
-                      '-o', tmpl_file
+                      '-o', tmpl_file,
+                      '>', alignmentlog
                     ],
   };
 
   var cmd_options2 = {
       exec: 'pynast',
       scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
-      args :       [ '-t', tmpl_file, '-i', fasta_file, '-a', aligned_file, '-l', cutoff],
+      args :       [ '-t', tmpl_file, 
+                      '-i', fasta_file, 
+                      '-a', aligned_file, 
+                      '-l', cutoff,
+                      '>', pynastlog
+                    ],
   };
   var cmd_options3 = {
       exec : 'minalign',
@@ -441,7 +449,10 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
   var cmd_options4 = {
       exec : 'entropy-analysis',
       scriptPath : '',
-      args :       [ min_align_fasta_file, '--no-display', '>', entropy_log],
+      args :       [ min_align_fasta_file, 
+                      '--no-display', 
+                      '>', entropy_log
+                    ],
   };
   var cmd_list = []
   lst = [cmd_options1, cmd_options2, cmd_options3, cmd_options4]
@@ -453,7 +464,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
   var script_text = helpers.get_local_script_text('entropy', cmd_list);
 
   var script_file = 'entropy_script.sh'
-  var script_file_path = path.join(data_repository, script_file) + ' > ' + scriptlog;
+  var script_file_path = path.join(data_repository, script_file);
   console.log(script_text)
   fs.writeFile(script_file_path, script_text, function writeEntropyScript(err){
       if(err){ return console.log(err) }
@@ -587,7 +598,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
   
   var script_text = helpers.get_local_script_text( 'oligo', cmd_list);
   var script_file = 'oligo_script.sh'
-  var script_file_path = path.join(data_repository, script_file) + '>' + scriptlog;
+  var script_file_path = path.join(data_repository, script_file);
   console.log(script_text)
   fs.writeFile(script_file_path, script_text, function writeOligoScript(err){
       if(err){ return console.log(err) }
