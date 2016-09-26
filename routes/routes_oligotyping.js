@@ -446,14 +446,14 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
   var cmd_list = []
   lst = [cmd_options1, cmd_options2, cmd_options3, cmd_options4]
   for(n in lst){
-    cmd_list.push(path.join(lst[n].scriptPath, lst[n].exec) + ' ' + lst[n].args.join(' ') +' > '+scriptlog)
+    cmd_list.push(path.join(lst[n].scriptPath, lst[n].exec) + ' ' + lst[n].args.join(' '))
   }
   
   
   var script_text = helpers.get_local_script_text('entropy', cmd_list);
 
   var script_file = 'entropy_script.sh'
-  var script_file_path = path.join(data_repository, script_file);
+  var script_file_path = path.join(data_repository, script_file) + '>' + scriptlog;
   console.log(script_text)
   fs.writeFile(script_file_path, script_text, function writeEntropyScript(err){
       if(err){ return console.log(err) }
@@ -581,13 +581,13 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
   var cmd_list = []
   lst = [cmd_options]
   for(n in lst){
-    cmd_list.push(path.join(lst[n].scriptPath, lst[n].exec) + ' ' + lst[n].args.join(' ') +' > '+scriptlog)
+    cmd_list.push(path.join(lst[n].scriptPath, lst[n].exec) + ' ' + lst[n].args.join(' '))
   }
   
   
   var script_text = helpers.get_local_script_text( 'oligo', cmd_list);
   var script_file = 'oligo_script.sh'
-  var script_file_path = path.join(data_repository, script_file);
+  var script_file_path = path.join(data_repository, script_file) + '>' + scriptlog;
   console.log(script_text)
   fs.writeFile(script_file_path, script_text, function writeOligoScript(err){
       if(err){ return console.log(err) }
