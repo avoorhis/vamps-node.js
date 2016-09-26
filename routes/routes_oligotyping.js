@@ -558,6 +558,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
   var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.directory);
   var config_file = path.join(data_repository, 'config.ini');
   var scriptlog = path.join(data_repository, 'oligotype_shell_script.log');
+  var oligolog = path.join(data_repository, 'oligo.log');
   //var tmpl_file = path.join(data_repository, 'TEMPLATE.tmpl');
   //var fasta_file = path.join(data_repository, 'fasta.fa');
   //var aligned_file = path.join(data_repository, 'pynast_aligned.fa');
@@ -585,7 +586,8 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
                     '-a', MIN_PERCENT_ABUNDANCE, 
                     '-s', MIN_NUMBER_OF_SAMPLES, 
                     '-t', '__', 
-                    '--project', page_title
+                    '--project', page_title,
+                    '>',oligolog
                     ]
   };
   cmd_options.args = cmd_options.args.concat(appendC)
@@ -621,7 +623,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
             //console.log('Processing data');
             // data = data.toString().replace(/^\s+|\s+$/g, '');
                   data = data.toString().trim();
-                  //console.log(data)
+                  console.log(data)
                   
             });
             oligo_process.on('close', function entropyProcessOnClose(close_code) {
