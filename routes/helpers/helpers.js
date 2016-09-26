@@ -957,10 +957,10 @@ module.exports.get_qsub_script_text_only = function(scriptlog, dir_path, site, c
 TSTAMP=\`date +%Y%m%d%H%M%S\`
 
 echo "which qsub: "
-echo `which qsub` > ~/env_from_inside_gast_script.txt
+echo \`which qsub\` > ~/env_from_inside_gast_script.txt
 echo
 echo "env: "
-echo `env` >> ~/env_from_inside_gast_script.txt
+echo \`env\` >> ~/env_from_inside_gast_script.txt
 
 # Loading Module didn't work when testing:
 . /usr/share/Modules/init/sh

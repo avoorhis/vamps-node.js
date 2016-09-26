@@ -1097,10 +1097,10 @@ else
   module load bioware
 
   echo "which qsub: "
-  echo `which qsub` > ~/env_from_inside_clust_gast_ill_test_gast_project.txt
+  echo \`which qsub\` > ~/env_from_inside_clust_gast_ill_test_gast_project.txt
   echo
   echo "env: "
-  echo `env` >> ~/env_from_inside_clust_gast_ill_test_gast_project.txt
+  echo \`env\` >> ~/env_from_inside_clust_gast_ill_test_gast_project.txt
 
   PATH=$PATH:${app_root}/public/scripts/gast:${config.GAST_SCRIPT_PATH}
   echo "===== $PATH ====" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
