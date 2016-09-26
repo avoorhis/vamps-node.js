@@ -415,6 +415,12 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
   }else{
     g = '-g '+ genus
   }
+  var set_env_cmd = ''
+  if(req.CONFIG.site == 'vampsdev'){
+      set_env_cmd = 'source "/groups/vampsweb/vampsdev/seqinfobin/vamps_environment.sh'
+    }else if(req.CONFIG.site == 'vamps'){
+      set_env_cmd = 'source "/groups/vampsweb/vamps/seqinfobin/vamps_environment.sh'
+    }
   var cmd_options1 = {
       exec : 'create_GG_alignment_template_from_taxon.py',
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
@@ -442,9 +448,9 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
       args :       [ min_align_fasta_file, '--no-display', '>', entropy_log],
   };
   var cmd_list = []
-  lst = [cmd_options1,cmd_options2,cmd_options3,cmd_options4]
+  lst = [set_env_cmd, cmd_options1, cmd_options2, cmd_options3, cmd_options4]
   for(n in lst){
-    cmd_list.push(path.join(lst[n].scriptPath, lst[n].exec) + ' ' + lst[n].args.join(' '))
+    cmd_list.push(path.join(lst[n].scriptPath, lst[n].exec) + ' ' + lst[n].args.join(' ') +' > '+scriptlog)
   }
   
   
@@ -474,7 +480,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
             //console.log('Processing data');
             // data = data.toString().replace(/^\s+|\s+$/g, '');
                   data = data.toString().trim();
-                  //console.log(data)
+                  console.log('STDERR:',data)
                   
             });
             entropy_process.on('close', function entropyProcessOnClose(close_code) {
