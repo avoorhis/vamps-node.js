@@ -441,7 +441,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
   var cmd_options4 = {
       exec : 'entropy-analysis',
       scriptPath : '',
-      args :       [ min_align_fasta_file, '--no-display', '>', entropy_log],
+      args :       [ min_align_fasta_file, '--no-display', ' > ', entropy_log],
   };
   var cmd_list = []
   lst = [cmd_options1, cmd_options2, cmd_options3, cmd_options4]
@@ -587,7 +587,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
   
   var script_text = helpers.get_local_script_text( 'oligo', cmd_list);
   var script_file = 'oligo_script.sh'
-  var script_file_path = path.join(data_repository, script_file) + '>' + scriptlog;
+  var script_file_path = path.join(data_repository, script_file) + ' > ' + scriptlog;
   console.log(script_text)
   fs.writeFile(script_file_path, script_text, function writeOligoScript(err){
       if(err){ return console.log(err) }
