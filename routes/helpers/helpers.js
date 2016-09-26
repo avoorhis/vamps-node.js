@@ -13,7 +13,6 @@ var crypto = require('crypto');
 var mysql = require('mysql2');
 var spawn = require('child_process').spawn;
 
-
 module.exports = {
   // route middleware to make sure a user is logged in
   isLoggedIn: function (req, res, next) {
@@ -959,8 +958,8 @@ TSTAMP=\`date +%Y%m%d%H%M%S\`
 export MODULEPATH=/usr/local/www/vamps/software/modulefiles
 module load clusters/vamps
 
-PATH=$PATH:${config.PATH_TO_NODE_SCRIPTS}:/public/scripts
-echo "PATH is \$PATH"
+PATH=$PATH:${config.PATH_TO_NODE_SCRIPTS}:${path.join(config.PROCESS_DIR, '/public/scripts')}:${config.GAST_SCRIPT_PATH}
+echo "PATH is \$PATH\n"
 
 `;
 
