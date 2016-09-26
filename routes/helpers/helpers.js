@@ -952,7 +952,7 @@ module.exports.get_qsub_script_text_only = function(scriptlog, dir_path, site, c
     script_text = `#!/bin/bash
 # CODE:\t${cmd_name}
 # source environment:
-# source /groups/vampsweb/${site}/seqinfobin/vamps_environment.sh
+source /groups/vampsweb/${site}/seqinfobin/vamps_environment.sh
 
 TSTAMP=\`date +%Y%m%d%H%M%S\`
 
