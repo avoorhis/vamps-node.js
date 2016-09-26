@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:3000/" />
+<title>add_multi_pr</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">add_multi_pr</td></tr>
+</thead><tbody>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=username</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=password</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=input[type=&quot;submit&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Your Data</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Your Projects</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Add New Project</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=new_project_name</td>
+	<td>test_gast_pr_multi</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=new_project_title</td>
+	<td>test_gast_pr_multi title</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=new_project_description</td>
+	<td>test_gast_pr_multi description</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=new_funding</td>
+	<td>100</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//button[@type='submit'])[3]</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

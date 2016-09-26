@@ -1,8 +1,8 @@
 #!/bin/bash
 
+PATH="$PATH:$1"
 echo "PATH: $PATH"
 echo 
-PATH="$PATH:$1"
 
 echo "cd $2"
 echo 
