@@ -701,7 +701,9 @@ router.get('/rewind/:code/:level', helpers.isLoggedIn, function (req, res) {
   console.log('in oligo - rewind')
   var oligo_code = req.params.code
   var level = req.params.level
-  var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'oligotyping-'+oligo_code);
+  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+  var user_dir = path.join(pwd,'public','oligotyping', 'projects');
+  var data_repository = path.join(user_dir, req.body.directory);
 
   console.log(oligo_code)
   console.log(level)
@@ -735,7 +737,7 @@ router.get('/rewind/:code/:level', helpers.isLoggedIn, function (req, res) {
         fs.unlinkSync(file3_path);
       }
       catch(e){console.log(e)}
-      var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+      
       var out_oligotype_path  = path.join(pwd,'public','oligotyping','projects', req.user.username+'_OLIGOTYPING_'+oligo_code); 
       helpers.deleteFolderRecursive(out_oligotype_path)
   }
