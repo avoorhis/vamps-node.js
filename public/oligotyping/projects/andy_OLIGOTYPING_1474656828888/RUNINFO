@@ -1,0 +1,43 @@
+Project ..........................................................: (Geodermatophilaceae)-oligotyping-1474656828888
+Run date .........................................................: 26 Sep 16 11:20:20
+Library version ..................................................: 2.1
+Multi-threaded ...................................................: True
+alignment ........................................................: /groups/vampsweb/vampsdev_node_data/user_data/andy/oligotyping-1474656828888/minaligned.fa
+Input entropy file ...............................................: /groups/vampsweb/vampsdev_node_data/user_data/andy/oligotyping-1474656828888/minaligned.fa-ENTROPY
+Mapping file .....................................................: None
+Output directory .................................................: /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888
+Temporary files directory ........................................: /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888/TMP
+Extraction info output file ......................................: /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888/RUNINFO
+Quality scores were provided .....................................: False
+Command line .....................................................: /groups/vampsweb/vampsdev_node_data/scripts/oligotype_start /groups/vampsweb/vampsdev_node_data/user_data/andy/oligotyping-1474656828888/minaligned.fa /groups/vampsweb/vampsdev_node_data/user_data/andy/oligotyping-1474656828888/minaligned.fa-ENTROPY --skip-check-input-file -o /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888 -A 0 -M 0 -a 0.0 -s 2 -t __ --project (Geodermatophilaceae)-oligotyping-1474656828888 -c 2
+Number of sequences analyzed .....................................: 98
+Number of characters in each alignment ...........................: 61
+Number of entropy components to be selected automatically ........: 2
+Number of entropy components chosen by the user ..................: 0
+Oligotype sets were requested to be generated ....................: False
+Skip performing basic analyses ...................................: False
+Min number of samples oligotype expected to appear ...............: 2
+Min % abundance of oligotype in at least one sample ..............: 0.0
+Min total abundance of oligotype in all samples ..................: 0
+Min substantive abundance of an oligotype (-M) ...................: 0
+Base locations of interest in the alignment ......................: 0, 13
+Number of samples found ..........................................: 10
+Number of unique oligotypes (raw) ................................: 4
+Oligotypes after "min number of samples" elimination .............: 4
+Oligotypes after "min % abundance in a sample" elimination .......: 4
+Oligotypes after "min total abundance (-A)" elimination ..........: 4
+Oligotypes after "min substantive abundance (-M)" elimination ....: 4
+Number of sequences represented after quality filtering ..........: 98
+Random colors for oligotypes .....................................: /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888/COLORS
+FASTA file for abundant oligotypes ...............................: /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888/OLIGOS.fasta
+NEXUS file for abundant oligotypes ...............................: /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888/OLIGOS.nexus
+Environment file .................................................: /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888/ENVIRONMENT.txt
+Sample/oligotype abundance data matrix (counts) ..................: /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888/MATRIX-COUNT.txt
+Sample/oligotype abundance data matrix (percents) ................: /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888/MATRIX-PERCENT.txt
+Read distribution among samples table ............................: /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888/READ-DISTRIBUTION.txt
+Representative sequences for oligotypes directory ................: /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888/OLIGO-REPRESENTATIVES
+Representative sequences per oligotype ...........................: /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888/OLIGO-REPRESENTATIVES.fasta
+figures_dict_file_path ...........................................: /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888/FIGURES.cPickle
+GEXF file for network analysis ...................................: /usr/local/www/vampsdev/projects/vamps-node.js/public/oligotyping/projects/andy_OLIGOTYPING_1474656828888/NETWORK.gexf
+Total Purity Score ...............................................: 0.00
+End of run .......................................................: 26 Sep 16 11:21:12
