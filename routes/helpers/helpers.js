@@ -856,9 +856,9 @@ module.exports.get_local_script_text = function(code, cmd_list) {
     script_text += "hostname\n";
     script_text += 'echo -n "Current working directory: "'+"\n";
     script_text += "pwd\n\n";
-    
-    script_text += 'source /groups/vampsweb/'+config.site+'/seqinfobin/vamps_environment.sh\n\n'
-    
+    if(config.site == 'vamps' || config.site == 'vampsdev'){
+        script_text += 'source /groups/vampsweb/'+config.site+'/seqinfobin/vamps_environment.sh\n\n'
+    }
     for (var i in cmd_list) {
         script_text += cmd_list[i]+"\n\n";
     }
@@ -949,30 +949,25 @@ module.exports.get_qsub_script_text = function(log, pwd, site, name, cmd_list) {
 };
 
 module.exports.get_qsub_script_text_only = function(scriptlog, dir_path, site, cmd_name, cmd_list) {
-    script_text = `#!/bin/bash
-# CODE:\t${cmd_name}
-# source environment:
-source /groups/vampsweb/${site}/seqinfobin/vamps_environment.sh
+    script_text = "#!/bin/bash\n"
+    script_text += "# CODE:\t${cmd_name}\n"
+    script_text += "# source environment:\n"
+    script_text += "source /groups/vampsweb/${site}/seqinfobin/vamps_environment.sh\n\n"
+    script_text += "TSTAMP=\`date +%Y%m%d%H%M%S\`\n\n"
+    script_text += "# Loading Module didn work when testing:\n"
+    script_text += ". /usr/share/Modules/init/sh\n"
+    script_text += "export MODULEPATH=/usr/local/www/vamps/software/modulefiles\n"
+    script_text += "module load clusters/vamps\n\n"
+    script_text += "PATH=$PATH:${config.PATH_TO_NODE_SCRIPTS}:${path.join(config.PROCESS_DIR, '/public/scripts')}:${config.GAST_SCRIPT_PATH}\n"
+    script_text += "echo \"PATH is \$PATH\"\n"
 
-TSTAMP=\`date +%Y%m%d%H%M%S\`
+    for (var i in cmd_list) {
+        script_text += cmd_list[i]+"\n";
+    }
 
-# Loading Module didn't work when testing:
-. /usr/share/Modules/init/sh
-export MODULEPATH=/usr/local/www/vamps/software/modulefiles
-module load clusters/vamps
-
-PATH=$PATH:${config.PATH_TO_NODE_SCRIPTS}:${path.join(config.PROCESS_DIR, '/public/scripts')}:${config.GAST_SCRIPT_PATH}
-echo "PATH is \$PATH\n"
-
-`;
-
-  for (var i in cmd_list) {
-      script_text += cmd_list[i]+"\n";
-  }
-
-  console.log("script_text from get_qsub_script_text_only: ")
-  console.log(util.inspect(script_text, false, null));
-  return script_text;
+    console.log("script_text from get_qsub_script_text_only: ")
+    console.log(util.inspect(script_text, false, null));
+    return script_text;
 
 };
 

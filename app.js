@@ -128,7 +128,7 @@ app.use(compression());
 app.use(express.static( 'public', {maxAge: '24h' }));
 app.use(express.static('tmp'));
 // 2016-09-19 added Not sure if security risk:  AAV
-app.use(express.static('user_data'));  // 2016-09-19 added to allow users to view png in oligotyping run -also html
+//app.use(express.static('user_data'));  // 2016-09-19 added to allow users to view png in oligotyping run -also html
 
 // app.use(express.static(__dirname + '/public', {maxAge: 900000 }));
 // app.use(express.static(path.join(__dirname, '/public')));

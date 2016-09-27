@@ -1,0 +1,7 @@
+begin data;
+            dimensions ntax=1 nchar=2;
+            format datatype=dna interleave=no gap=-;
+            matrix
+    AC AC
+    ;
+end;

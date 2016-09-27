@@ -1,0 +1,88 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2010 - 2012, A. Murat Eren
+#
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
+# Please read the COPYING file.
+
+import sys,os 
+
+
+
+from Oligotyping_custom.utils.utils import import_error
+
+try:
+    import matplotlib
+except ImportError, e:
+    import_error(e)
+    sys.exit()
+
+try:
+    import matplotlib.pyplot as plt
+except RuntimeError:
+    print '''
+    matplotlib is failing to connect to any X server for its GTK display. Please
+    add the following directive into the 'matplotlibrc' file (which should be
+    under '~/.matplotlib/' directory, if there is no such file, you should
+    create one):
+
+    backend: Agg
+
+    '''
+    sys.exit()
+
+#try:
+from Oligotyping_custom.utils import parsers
+from Oligotyping_custom.lib.entropy import entropy_analysis
+from Oligotyping_custom.lib.entropy import EntropyError
+from Oligotyping_custom.utils.utils import process_command_line_args_for_quality_files
+from Oligotyping_custom.visualization.entropy_distribution_bar import entropy_distribution_bar
+#except ImportError, e:
+#    import_error(e)
+ #   sys.exit()
+
+if __name__ == '__main__':
+    if '--version' in sys.argv:
+        print parsers.version
+        sys.exit()
+
+    parser = parsers.entropy()
+    args = parser.parse_args()
+
+    # process qual scores if provided
+    qual_stats_dict = process_command_line_args_for_quality_files(args, _return = 'qual_stats_dict')       
+
+    # the same file path is also used for the figure (e.g. output_file_path + '.png' or
+    # output_file_path + '.pdf')
+
+    output_file_path = args.alignment + '%s-ENTROPY' % ('-WEIGHTED' if args.weighted else '')
+
+    try:
+        entropy_values = entropy_analysis(args.alignment,
+                                         output_file = output_file_path,
+                                          uniqued = args.uniqued,
+                                          weighted = args.weighted,
+                                          qual_stats_dict = qual_stats_dict,
+                                          amino_acid_sequences = args.amino_acid_sequences)
+    except EntropyError, e:
+        print "Something went wrong. Here is what we know:\n\n\t%s\n\n" % e
+        sys.exit(-1)
+
+    prefix = os.path.join('/','User','avoorhis','programming','vamps-node.js','tmp'),
+    print "PREFIX1",prefix
+
+    entropy_distribution_bar(args.alignment,
+                             entropy_values,
+                             prefix,
+                             output_file = output_file_path,
+                             quick = args.quick,
+                             no_display = args.no_display,
+                             qual_stats_dict = qual_stats_dict,
+                             weighted = args.weighted,
+                             verbose = True)
+

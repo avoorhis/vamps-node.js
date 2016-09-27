@@ -294,24 +294,28 @@ var delete_previous_tmp_files = function(req, username){
     var temp_dir_path3 = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp');
     console.log(temp_dir_path3)
     fs.readdir(temp_dir_path1, function(err,files){
+        
         for (var i=0; i<files.length; i++) {
-            if(files[i].substring(0,username.length) === username){
+            file_pts = files[i].split('_')
+            if(file_pts[0] === username){
                 var curPath = temp_dir_path1 + "/" + files[i];
-                deleteFolderRecursive(curPath);
+                helpers.deleteFolderRecursive(curPath);
             }
         }
         fs.readdir(temp_dir_path2, function(err,files){
             for (var i=0; i<files.length; i++) {
-                if(files[i].substring(0,username.length) === username){
+                file_pts = files[i].split('_')
+                if(file_pts[0] === username){
                     var curPath = temp_dir_path2 + "/" + files[i];
-                    deleteFolderRecursive(curPath);
+                    helpers.deleteFolderRecursive(curPath);
                 }
             }
             fs.readdir(temp_dir_path3, function(err,files){
                 for (var i=0; i<files.length; i++) {
-                    if(files[i].substring(0,username.length) === username){
+                    file_pts = files[i].split('_')
+                    if(file_pts[0] === username){
                         var curPath = temp_dir_path3 + "/" + files[i];
-                        deleteFolderRecursive(curPath);
+                        helpers.deleteFolderRecursive(curPath);
             
                     }
                 }
@@ -321,30 +325,30 @@ var delete_previous_tmp_files = function(req, username){
         
     });
 };
-var deleteFolderRecursive = function(path) {
+// var deleteFolderRecursive = function(path) {
 
-    var fs   = require('fs-extra');
-    if( fs.existsSync(path) ) {
-        if(fs.lstatSync(path).isFile()) {
-            fs.unlinkSync(path);
-        }else{
-            fs.readdirSync(path).forEach(function(file,index){
+//     var fs   = require('fs-extra');
+//     if( fs.existsSync(path) ) {
+//         if(fs.lstatSync(path).isFile()) {
+//             fs.unlinkSync(path);
+//         }else{
+//             fs.readdirSync(path).forEach(function(file,index){
               
-              var curPath = path + "/" + file;
-              //console.log('curPath '+curPath)
-              if(fs.lstatSync(curPath).isDirectory()) { // recurse
-                deleteFolderRecursive(curPath);
-              } else { // delete file
-                //console.log('deleting '+curPath)
-                fs.unlinkSync(curPath);
-              }
+//               var curPath = path + "/" + file;
+//               //console.log('curPath '+curPath)
+//               if(fs.lstatSync(curPath).isDirectory()) { // recurse
+//                 deleteFolderRecursive(curPath);
+//               } else { // delete file
+//                 //console.log('deleting '+curPath)
+//                 fs.unlinkSync(curPath);
+//               }
               
-            });
-            fs.rmdirSync(path);
-        }
+//             });
+//             fs.rmdirSync(path);
+//         }
     
-    }
-};
+//     }
+// };
 var update_password = function(req, username, newpass, done, db) {
     db.query("UPDATE user set encrypted_password='"+helpers.generateHash(newpass)+"' WHERE username = '" + username + "'",function(err,rows){
         if (err){ 

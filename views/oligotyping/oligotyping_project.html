@@ -46,10 +46,17 @@
 					(<a href='/oligotyping/rewind/<%= code %>/entropy'  class='btn btn-xs btn-link' >Re-wind to here</a>)
 			</td>
 			<td>View Entropy Graph: 
-				<a href="/vamps_development/andy/<%= directory %>/minaligned.fa-ENTROPY.png" target='_blank'>
-					<img src="/vamps_development/andy/<%= directory %>/minaligned.fa-ENTROPY.pdf" alt="graph" />
+				<a href="/oligotyping/projects/<%= directory %>/minaligned.fa-ENTROPY.pdf" target='_blank'>
+					<img src="/oligotyping/projects/<%= directory %>/minaligned.fa-ENTROPY.pdf" alt="Image" />
 				</a>
 			</td>		
+			<!--
+			<td>View Entropy Graph: 
+				<a href="<%= path %>/minaligned.fa-ENTROPY.pdf" target='_blank'>
+					<img src="<%= path %>/minaligned.fa-ENTROPY.pdf" alt="graph" />
+				</a>
+			</td>	
+			-->	
 		<% }else{ %>
 			<td>
 					<% if(fasta_status == 'COMPLETED'){ %>
@@ -143,9 +150,8 @@
 		<td>
 			<div id='html_link_div'>
 			<% if(fasta_status == 'COMPLETED' && entropy_status == 'COMPLETED' && oligo_status == 'COMPLETED'){ %>
-				
-				<% link = "/oligotyping/projects/"+user.username+"_OLIGOTYPING_"+code+"/HTML-OUTPUT/index.html" %>
-				<a href='<%= link %>' onclick='window.open(this.href+"?rando="+rando,"_blank");return false;' target='_blank'>Open HTML</a>
+				<% link = "/oligotyping/projects/"+directory+"/OLIGOTYPE/HTML-OUTPUT/index.html" %>
+				<a id='html_link' href='<%= link %>' onclick='window.open(this.href+"?rando="+rando,"_blank");return false;' target='_blank'>Open HTML</a>
 			<% }else{ %>
 							View HTML
 			<% } %>

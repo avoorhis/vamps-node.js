@@ -94,6 +94,7 @@ function run_oligotyping(btn, code){
 	
 	var form = document.getElementById("oligotyping_form_id")
 	document.getElementById("html_link_info").innerHTML = 'Status: Running'  
+	//document.getElementById("html_link").disabled = true  
 	var html_dir = "/oligotyping/projects/"+form.elements['username'].value+'_'+'OLIGOTYPING_'+code
 	args = 'code='+code
 	args += '&family='+form.elements['family'].value

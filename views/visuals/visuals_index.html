@@ -83,19 +83,35 @@
                 - Export sequences, biom, metadata and taxonomy files.
             </li>
             <br>
-            <li><button type="button" class="btn btn-sm btn-info" name='Next' id="selection_btn_oligotyping"> 
+            <li>
+              <% if(hostname.substring(0,7) == 'bpcweb8'){ %>
+                <button type="button" disabled class="btn btn-sm btn-info" name='Next' id="selection_btn_oligotyping"> 
                 &nbsp;&nbsp;&nbsp;Oligotyping&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
                 </button>
+              <% }else{ %>
+                <button type="button" class="btn btn-sm btn-info" name='Next' id="selection_btn_oligotyping"> 
+                &nbsp;&nbsp;&nbsp;Oligotyping&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+                </button>
+              <% } %> 
                 - Find out more: <a class="btn btn-sm btn-link" href='http://merenlab.org/software/oligotyping/' target='_blank'>Merenlab</a>
                 <a class="btn btn-sm btn-link" href='/oligotyping/project_list'>your oligotype projects</a>
             </li>
             <br>
-            <li><button type="button" disabled class="btn btn-sm btn-success" name='Next' id="selection_btn_otus"> 
+            <li>
+              <% if(hostname.substring(0,6) == 'bpcweb'){ %>
+                <button type="button" disabled class="btn btn-sm btn-success" name='Next' id="selection_btn_otus"> 
                 &nbsp;&nbsp;&nbsp;OTU Creation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
                 </button>
-                - Create OTUs from VAMPS data using one of four methods for visualization in VAMPS or download
+              <% }else{ %>
+                <button type="button" class="btn btn-sm btn-success" name='Next' id="selection_btn_otus"> 
+                &nbsp;&nbsp;&nbsp;OTU Creation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+                </button>
+              <% } %>
+                - Create OTUs from VAMPS sequence data.
             </li>
             <br>
             <li>- The projects to the left include all the public projects plus any others that you have permissions to access.</li>
