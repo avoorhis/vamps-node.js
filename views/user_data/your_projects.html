@@ -4,6 +4,10 @@
 <% var project_info = JSON.parse(pinfo) %>
 <% var env = JSON.parse(env_sources) %>
 
+<div class='pull-right'>
+    <a href="/user_data/add_project" class='btn btn-sm btn-primary'>Add New Project</a>
+</div>
+
  <div class='title'>Projects (user: <%= user.username %>)</div>
  <div class='subtitle'></div>
 <% if (failmessage) { %>
@@ -154,10 +158,7 @@
 <% } %>
 </ol>
 
-<div class="row">
-  <div class="col-sm-2"><a href="/user_data/add_project">Add New Project</a>
-  </div>
-</div>
+
 
 </div>
 

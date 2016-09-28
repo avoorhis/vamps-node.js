@@ -1,8 +1,0 @@
->AT
-AT
->TC
-TC
->TT
-TT
->T-
-T-

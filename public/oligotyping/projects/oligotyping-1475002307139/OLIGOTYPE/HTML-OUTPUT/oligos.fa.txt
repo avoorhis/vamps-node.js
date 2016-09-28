@@ -1,6 +1,0 @@
->TG
-TG
->CT
-CT
->GA
-GA
