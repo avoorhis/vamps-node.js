@@ -40,6 +40,8 @@ views/tmp/*
 !views/tmp/.gitignore
 user_data/*
 !user_dir/.gitignore
+public/user_projects/*
+!public/user_projects/.gitignore
 !user_dir/read.me
 public/json/*
 !public/json/.gitignore
