@@ -26,11 +26,11 @@
                 paper.text(250, 20, "ICM_LCY_Bv6--LCY_0001_2003_05_11").attr({ font: "15px sans-serif", "font-weight": "bold" });
                 paper.text(250, 260, "12").attr({ font: "15px sans-serif" });
                 x_ICM_LCY_Bv6__LCY_0001_2003_05_11_pie = paper.piechart(250, 140, 100,
-                                    [12],
-                                    { legend: ["AC"],
-                                      colors: ["#a6cee3"],
+                                    [8, 4],
+                                    { legend: ["CT", "TG"],
+                                      colors: ["#a6cee3", "#52af43"],
                                       legendpos: "east", 
-                                      href: ["oligo_AC.html"]});
+                                      href: ["oligo_CT.html", "oligo_TG.html"]});
                 x_ICM_LCY_Bv6__LCY_0001_2003_05_11_pie.hover(function () {
                     this.sector.stop();
                     this.sector.scale(1.1, 1.1, this.cx, this.cy);
@@ -56,11 +56,11 @@
                 paper.text(675, 20, "ICM_LCY_Bv6--LCY_0003_2003_05_04").attr({ font: "15px sans-serif", "font-weight": "bold" });
                 paper.text(675, 260, "6").attr({ font: "15px sans-serif" });
                 x_ICM_LCY_Bv6__LCY_0003_2003_05_04_pie = paper.piechart(675, 140, 100,
-                                    [6],
-                                    { legend: ["AC"],
-                                      colors: ["#a6cee3"],
+                                    [3, 2, 1],
+                                    { legend: ["CT", "TG", "GA"],
+                                      colors: ["#a6cee3", "#52af43", "#f06c45"],
                                       legendpos: "east", 
-                                      href: ["oligo_AC.html"]});
+                                      href: ["oligo_CT.html", "oligo_TG.html", "oligo_GA.html"]});
                 x_ICM_LCY_Bv6__LCY_0003_2003_05_04_pie.hover(function () {
                     this.sector.stop();
                     this.sector.scale(1.1, 1.1, this.cx, this.cy);
@@ -86,11 +86,11 @@
                 paper.text(1100, 20, "ICM_LCY_Bv6--LCY_0005_2003_05_16").attr({ font: "15px sans-serif", "font-weight": "bold" });
                 paper.text(1100, 260, "18").attr({ font: "15px sans-serif" });
                 x_ICM_LCY_Bv6__LCY_0005_2003_05_16_pie = paper.piechart(1100, 140, 100,
-                                    [18],
-                                    { legend: ["AC"],
-                                      colors: ["#a6cee3"],
+                                    [13, 4, 1],
+                                    { legend: ["TG", "CT", "GA"],
+                                      colors: ["#52af43", "#a6cee3", "#f06c45"],
                                       legendpos: "east", 
-                                      href: ["oligo_AC.html"]});
+                                      href: ["oligo_TG.html", "oligo_CT.html", "oligo_GA.html"]});
                 x_ICM_LCY_Bv6__LCY_0005_2003_05_16_pie.hover(function () {
                     this.sector.stop();
                     this.sector.scale(1.1, 1.1, this.cx, this.cy);
@@ -118,11 +118,11 @@
                 paper.text(250, 20, "ICM_LCY_Bv6--LCY_0007_2003_05_04").attr({ font: "15px sans-serif", "font-weight": "bold" });
                 paper.text(250, 260, "22").attr({ font: "15px sans-serif" });
                 x_ICM_LCY_Bv6__LCY_0007_2003_05_04_pie = paper.piechart(250, 140, 100,
-                                    [22],
-                                    { legend: ["AC"],
-                                      colors: ["#a6cee3"],
+                                    [12, 7, 3],
+                                    { legend: ["TG", "CT", "GA"],
+                                      colors: ["#52af43", "#a6cee3", "#f06c45"],
                                       legendpos: "east", 
-                                      href: ["oligo_AC.html"]});
+                                      href: ["oligo_TG.html", "oligo_CT.html", "oligo_GA.html"]});
                 x_ICM_LCY_Bv6__LCY_0007_2003_05_04_pie.hover(function () {
                     this.sector.stop();
                     this.sector.scale(1.1, 1.1, this.cx, this.cy);
@@ -168,7 +168,8 @@
 		60 reads from 4 samples
 		for "(Comamonadaceae)-oligotyping-1475002307139" with oligotyping pipeline version 2.1 (available from https://meren.github.io/projects/oligotyping/) using
 			
-				2 components
+				2 components automatically
+				selected form the highest entropy values
 			
 		following the initial entropy analysis.
 		
@@ -181,7 +182,7 @@
 			and (4) have a most abundant unique sequence with a minimum abundance of 0.
 			Oligotypes that did not meet these criteria were removed from the analysis.
 		
-		The final number of quality controlled oligotypes revealed by the analysis was 1,
+		The final number of quality controlled oligotypes revealed by the analysis was 3,
 		and they represented 58 reads, which was equivalent to 96.67%
 		of all reads analyzed.
 		
@@ -190,7 +191,7 @@
 </div>
 <div class="info_two">
     <p style="text-justify:inter-word;"> 
-<div class="score" align="center" >Total Purity Score <br /> <p style="font-size:2.5em;"><span style="color:#feeda2;">0.50</span> <img src="colorbar.png" border="0" width="80%" height="80%"/></p></div>
+<div class="score" align="center" >Total Purity Score <br /> <p style="font-size:2.5em;"><span style="color:#8bcd67;">0.80</span> <img src="colorbar.png" border="0" width="80%" height="80%"/></p></div>
 </div>
 </div>
 
@@ -200,7 +201,7 @@
 <p class="smallheadtitle">» Meta
 <div class="info_table">
 <table width=90%>
-    <tr><td id="l">Run date</td><td id="r"> 27 Sep 16 14:55:00</td></tr>
+    <tr><td id="l">Run date</td><td id="r"> 27 Sep 16 15:59:22</td></tr>
     <tr><td id="l">Library version</td><td id="r"> 2.1</td></tr>
 </table>
 </div>
@@ -210,7 +211,7 @@
 <div class="info_table">
 <table width=90%>
     
-    <tr><td id="l">Number of entropy components chosen by the user</td><td id="r">2</td></tr>
+    <tr><td id="l">Number of entropy components to be selected automatically</td><td id="r">2</td></tr>
     
 
     <tr><td id="l">Min number of samples oligotype expected to appear</td><td id="r"> 2</td></tr>
@@ -231,7 +232,7 @@
 <p class="smallheadtitle">» Components used for Oligotyping
 <div class="info_table">
 <table width=90%>
-    <tr><td id="l">Base locations of interest in the alignment</td><td id="r"> 1, 2</td></tr>
+    <tr><td id="l">Base locations of interest in the alignment</td><td id="r"> 24, 36</td></tr>
 </table>
 </div>
 
@@ -241,9 +242,9 @@
     <tr><td id="l">Number of sequences analyzed</td><td id="r"> 60</td></tr>
     
     <tr><td colspan=2>&nbsp;</td></tr>
-    <tr><td id="l">Number of unique oligotypes (raw)</td><td id="r"> 2</td></tr>
-    <tr><td id="l">Oligotypes after &quot;min number of samples&quot; elimination</td><td id="r"> 1</td></tr>
-    <tr><td id="l">Oligotypes after &quot;min % abundance in a sample&quot; elimination</td><td id="r"> 1</td></tr>
+    <tr><td id="l">Number of unique oligotypes (raw)</td><td id="r"> 4</td></tr>
+    <tr><td id="l">Oligotypes after &quot;min number of samples&quot; elimination</td><td id="r"> 3</td></tr>
+    <tr><td id="l">Oligotypes after &quot;min % abundance in a sample&quot; elimination</td><td id="r"> 3</td></tr>
     
     
     
@@ -328,16 +329,34 @@
                         <span class="check">&nbsp;</span>
                         <span class="frequency">&nbsp;</span>
                         <span style="background-color:; border: 1px solid white;">&nbsp;&nbsp;</span>
-                        <span style="color: white;"> <strong>AC</strong> b <a onmouseover="popup('\#0', 50)" href="">|</a><a onmouseover="popup('\#1', 50)" href="">|</a><a onmouseover="popup('\#2', 50)" href="">|</a><a onmouseover="popup('\#3', 50)" href="">|</a><a onmouseover="popup('\#4', 50)" href="">|</a><a onmouseover="popup('\#5', 50)" href="">|</a><a onmouseover="popup('\#6', 50)" href="">|</a><a onmouseover="popup('\#7', 50)" href="">|</a><a onmouseover="popup('\#8', 50)" href="">|</a><a onmouseover="popup('\#9', 50)" href="">|</a><a onmouseover="popup('\#10', 50)" href="">|</a><a onmouseover="popup('\#11', 50)" href="">|</a><a onmouseover="popup('\#12', 50)" href="">|</a><a onmouseover="popup('\#13', 50)" href="">|</a><a onmouseover="popup('\#14', 50)" href="">|</a><a onmouseover="popup('\#15', 50)" href="">|</a><a onmouseover="popup('\#16', 50)" href="">|</a><a onmouseover="popup('\#17', 50)" href="">|</a><a onmouseover="popup('\#18', 50)" href="">|</a><a onmouseover="popup('\#19', 50)" href="">|</a><a onmouseover="popup('\#20', 50)" href="">|</a><a onmouseover="popup('\#21', 50)" href="">|</a><a onmouseover="popup('\#22', 50)" href="">|</a><a onmouseover="popup('\#23', 50)" href="">|</a><a onmouseover="popup('\#24', 50)" href="">|</a><a onmouseover="popup('\#25', 50)" href="">|</a><a onmouseover="popup('\#26', 50)" href="">|</a><a onmouseover="popup('\#27', 50)" href="">|</a><a onmouseover="popup('\#28', 50)" href="">|</a><a onmouseover="popup('\#29', 50)" href="">|</a><a onmouseover="popup('\#30', 50)" href="">|</a><a onmouseover="popup('\#31', 50)" href="">|</a><a onmouseover="popup('\#32', 50)" href="">|</a><a onmouseover="popup('\#33', 50)" href="">|</a><a onmouseover="popup('\#34', 50)" href="">|</a><a onmouseover="popup('\#35', 50)" href="">|</a><a onmouseover="popup('\#36', 50)" href="">|</a><a onmouseover="popup('\#37', 50)" href="">|</a><a onmouseover="popup('\#38', 50)" href="">|</a><a onmouseover="popup('\#39', 50)" href="">|</a><a onmouseover="popup('\#40', 50)" href="">|</a><a onmouseover="popup('\#41', 50)" href="">|</a><a onmouseover="popup('\#42', 50)" href="">|</a><a onmouseover="popup('\#43', 50)" href="">|</a><a onmouseover="popup('\#44', 50)" href="">|</a><a onmouseover="popup('\#45', 50)" href="">|</a><a onmouseover="popup('\#46', 50)" href="">|</a><a onmouseover="popup('\#47', 50)" href="">|</a><a onmouseover="popup('\#48', 50)" href="">|</a><a onmouseover="popup('\#49', 50)" href="">|</a><a onmouseover="popup('\#50', 50)" href="">|</a><a onmouseover="popup('\#51', 50)" href="">|</a><a onmouseover="popup('\#52', 50)" href="">|</a><a onmouseover="popup('\#53', 50)" href="">|</a><a onmouseover="popup('\#54', 50)" href="">|</a><a onmouseover="popup('\#55', 50)" href="">|</a><a onmouseover="popup('\#56', 50)" href="">|</a><a onmouseover="popup('\#57', 50)" href="">|</a><a onmouseover="popup('\#58', 50)" href="">|</a><a onmouseover="popup('\#59', 50)" href="">|</a><a onmouseover="popup('\#60', 50)" href="">|</a><a onmouseover="popup('\#61', 50)" href="">|</a><a onmouseover="popup('\#62', 50)" href="">|</a><a onmouseover="popup('\#63', 50)" href="">|</a></span>
+                        <span style="color: white;"> <strong>TG</strong> b <a onmouseover="popup('\#0', 50)" href="">|</a><a onmouseover="popup('\#1', 50)" href="">|</a><a onmouseover="popup('\#2', 50)" href="">|</a><a onmouseover="popup('\#3', 50)" href="">|</a><a onmouseover="popup('\#4', 50)" href="">|</a><a onmouseover="popup('\#5', 50)" href="">|</a><a onmouseover="popup('\#6', 50)" href="">|</a><a onmouseover="popup('\#7', 50)" href="">|</a><a onmouseover="popup('\#8', 50)" href="">|</a><a onmouseover="popup('\#9', 50)" href="">|</a><a onmouseover="popup('\#10', 50)" href="">|</a><a onmouseover="popup('\#11', 50)" href="">|</a><a onmouseover="popup('\#12', 50)" href="">|</a><a onmouseover="popup('\#13', 50)" href="">|</a><a onmouseover="popup('\#14', 50)" href="">|</a><a onmouseover="popup('\#15', 50)" href="">|</a><a onmouseover="popup('\#16', 50)" href="">|</a><a onmouseover="popup('\#17', 50)" href="">|</a><a onmouseover="popup('\#18', 50)" href="">|</a><a onmouseover="popup('\#19', 50)" href="">|</a><a onmouseover="popup('\#20', 50)" href="">|</a><a onmouseover="popup('\#21', 50)" href="">|</a><a onmouseover="popup('\#22', 50)" href="">|</a><a onmouseover="popup('\#23', 50)" href="">|</a><a onmouseover="popup('\#24', 50)" href="">|</a><a onmouseover="popup('\#25', 50)" href="">|</a><a onmouseover="popup('\#26', 50)" href="">|</a><a onmouseover="popup('\#27', 50)" href="">|</a><a onmouseover="popup('\#28', 50)" href="">|</a><a onmouseover="popup('\#29', 50)" href="">|</a><a onmouseover="popup('\#30', 50)" href="">|</a><a onmouseover="popup('\#31', 50)" href="">|</a><a onmouseover="popup('\#32', 50)" href="">|</a><a onmouseover="popup('\#33', 50)" href="">|</a><a onmouseover="popup('\#34', 50)" href="">|</a><a onmouseover="popup('\#35', 50)" href="">|</a><a onmouseover="popup('\#36', 50)" href="">|</a><a onmouseover="popup('\#37', 50)" href="">|</a><a onmouseover="popup('\#38', 50)" href="">|</a><a onmouseover="popup('\#39', 50)" href="">|</a><a onmouseover="popup('\#40', 50)" href="">|</a><a onmouseover="popup('\#41', 50)" href="">|</a><a onmouseover="popup('\#42', 50)" href="">|</a><a onmouseover="popup('\#43', 50)" href="">|</a><a onmouseover="popup('\#44', 50)" href="">|</a><a onmouseover="popup('\#45', 50)" href="">|</a><a onmouseover="popup('\#46', 50)" href="">|</a><a onmouseover="popup('\#47', 50)" href="">|</a><a onmouseover="popup('\#48', 50)" href="">|</a><a onmouseover="popup('\#49', 50)" href="">|</a><a onmouseover="popup('\#50', 50)" href="">|</a><a onmouseover="popup('\#51', 50)" href="">|</a><a onmouseover="popup('\#52', 50)" href="">|</a><a onmouseover="popup('\#53', 50)" href="">|</a><a onmouseover="popup('\#54', 50)" href="">|</a><a onmouseover="popup('\#55', 50)" href="">|</a><a onmouseover="popup('\#56', 50)" href="">|</a><a onmouseover="popup('\#57', 50)" href="">|</a><a onmouseover="popup('\#58', 50)" href="">|</a><a onmouseover="popup('\#59', 50)" href="">|</a><a onmouseover="popup('\#60', 50)" href="">|</a><a onmouseover="popup('\#61', 50)" href="">|</a><a onmouseover="popup('\#62', 50)" href="">|</a><a onmouseover="popup('\#63', 50)" href="">|</a></span>
                 
-                    <p><a onmouseover="popup('0.50',30)"><span style="background-color:#feeda2;border:0.1px solid white;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;">&nbsp;&nbsp;</span></a>
+                    <p><a onmouseover="popup('0.97',30)"><span style="background-color:#229c52;border:0.1px solid white;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;">&nbsp;&nbsp;</span></a>
                         
                             <span class="check">&nbsp;</span>
                         
                         </span>
-                        <span class="frequency">58</span>
+                        <span class="frequency">31</span>
+                        <span style="background-color:#52af43; border: 1px solid black;" class="score_oligo">&nbsp;&nbsp;</span>
+                        <span style="border-bottom:1px solid #52af43"> <strong><a onmouseover="popup('<img src=00000_TG_unique.png width=&quot;790&quot;>', 800)" href="oligo_TG.html">TG</a></strong> <em><a title="BLAST search this sequence in NCBI" href="http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&BLAST_PROGRAMS=megaBlast&PAGE_TYPE=BlastSearch&SHOW_DEFAULTS=on&LINK_LOC=blasthome&DATABASE=nr&QUERY=>TG%0dCACCTTTGACATGTACGGAATCCTTTAGAGATAGAGGAGTGCTCGAAAGAGAGCCGTAACAC">b</a></em> CACCTTTGACATGTACGGAATCCT<span class="c">T</span>TAGAGATAGAG<span class="c">G</span>AGTGCTCGAAA--GAGAGCCGTAACAC</span>
+                
+                    <p><a onmouseover="popup('0.80',30)"><span style="background-color:#8bcd67;border:0.1px solid white;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;">&nbsp;&nbsp;</span></a>
+                        
+                            <span class="check">&nbsp;</span>
+                        
+                        </span>
+                        <span class="frequency">22</span>
                         <span style="background-color:#a6cee3; border: 1px solid black;" class="score_oligo">&nbsp;&nbsp;</span>
-                        <span style="border-bottom:1px solid #a6cee3"> <strong><a onmouseover="popup('<img src=00000_AC_unique.png width=&quot;790&quot;>', 800)" href="oligo_AC.html">AC</a></strong> <em><a title="BLAST search this sequence in NCBI" href="http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&BLAST_PROGRAMS=megaBlast&PAGE_TYPE=BlastSearch&SHOW_DEFAULTS=on&LINK_LOC=blasthome&DATABASE=nr&QUERY=>AC%0dCACCTTTGACATGTACGGAATCCTTTAGAGATAGAGGAGTGCTCGAAAGAGAGCCGTAACAC">b</a></em> C<span class="c">A</span><span class="c">C</span>CTTTGACATGTACGGAATCCTTTAGAGATAGAGGAGTGCTCGAAA--GAGAGCCGTAACAC</span>
+                        <span style="border-bottom:1px solid #a6cee3"> <strong><a onmouseover="popup('<img src=00001_CT_unique.png width=&quot;790&quot;>', 800)" href="oligo_CT.html">CT</a></strong> <em><a title="BLAST search this sequence in NCBI" href="http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&BLAST_PROGRAMS=megaBlast&PAGE_TYPE=BlastSearch&SHOW_DEFAULTS=on&LINK_LOC=blasthome&DATABASE=nr&QUERY=>CT%0dCACCTTTGACATGGCAGGAAGTTTCCAGAGATGGATTCGTGCCCGAAAGGGAACCTGCACAC">b</a></em> CACCTTTGACATGGCAGGAAGTTT<span class="c">C</span>CAGAGATGGAT<span class="c">T</span>CGTG-CCCGAAAGGG-AACCTGCACAC</span>
+                
+                    <p><a onmouseover="popup('1.00',30)"><span style="background-color:#138b49;border:0.1px solid white;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;">&nbsp;&nbsp;</span></a>
+                        
+                            <span class="check">&nbsp;</span>
+                        
+                        </span>
+                        <span class="frequency">5</span>
+                        <span style="background-color:#f06c45; border: 1px solid black;" class="score_oligo">&nbsp;&nbsp;</span>
+                        <span style="border-bottom:1px solid #f06c45"> <strong><a onmouseover="popup('<img src=00002_GA_unique.png width=&quot;790&quot;>', 800)" href="oligo_GA.html">GA</a></strong> <em><a title="BLAST search this sequence in NCBI" href="http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&BLAST_PROGRAMS=megaBlast&PAGE_TYPE=BlastSearch&SHOW_DEFAULTS=on&LINK_LOC=blasthome&DATABASE=nr&QUERY=>GA%0dTACCCTTGACATGTCAGGAATTCTGCAGAGATGCGGAAGTGCTCGAAAGAGAACCTGAACAC">b</a></em> TACCCTTGACATGTCAGGAATTCT<span class="c">G</span>CAGAGATGCGG<span class="c">A</span>AGTGCTCGAAA--GAGAACCTGAACAC</span>
                 
             </div>
         </div>
@@ -371,6 +390,115 @@
 
 
 
+	<div class="smallhead"><a name="BasicAnalyses"></a>Basic Analyses</div>
+	<p class="smallheadtitle">» Default
+	<div class="info_table">
+	
+	<p style="font-weight:bold;">» cluster_analysis
+    <table width=90%>
+	<tr>
+		
+    	<td style="padding: 10px; text-align: center; width: 100px; height: 100px;">
+    		
+    		<a href="basic_analyses-cluster_analysis-jaccard.pdf" target="_blank" />
+    			<img src="basic_analyses-cluster_analysis-jaccard.png" style="width: 100px; border: 5px solid #EEE;" />
+    		</a>
+    		
+    		<p align="center">jaccard
+    	</td>
+    	
+    	<td style="padding: 10px; text-align: center; width: 100px; height: 100px;">
+    		
+    		<a href="basic_analyses-cluster_analysis-bray.pdf" target="_blank" />
+    			<img src="basic_analyses-cluster_analysis-bray.png" style="width: 100px; border: 5px solid #EEE;" />
+    		</a>
+    		
+    		<p align="center">bray
+    	</td>
+    	
+    	<td style="padding: 10px; text-align: center; width: 100px; height: 100px;">
+    		
+    		<a href="basic_analyses-cluster_analysis-kulczynski.pdf" target="_blank" />
+    			<img src="basic_analyses-cluster_analysis-kulczynski.png" style="width: 100px; border: 5px solid #EEE;" />
+    		</a>
+    		
+    		<p align="center">kulczynski
+    	</td>
+    	
+    	<td style="padding: 10px; text-align: center; width: 100px; height: 100px;">
+    		
+    		<a href="basic_analyses-cluster_analysis-canberra.pdf" target="_blank" />
+    			<img src="basic_analyses-cluster_analysis-canberra.png" style="width: 100px; border: 5px solid #EEE;" />
+    		</a>
+    		
+    		<p align="center">canberra
+    	</td>
+    	
+    	<td style="padding: 10px; text-align: center; width: 100px; height: 100px;">
+    		
+    		<a href="basic_analyses-cluster_analysis-horn.pdf" target="_blank" />
+    			<img src="basic_analyses-cluster_analysis-horn.png" style="width: 100px; border: 5px solid #EEE;" />
+    		</a>
+    		
+    		<p align="center">horn
+    	</td>
+    	
+	</tr>
+	</table>
+	
+	<p style="font-weight:bold;">» nmds_analysis
+    <table width=90%>
+	<tr>
+		
+    	<td style="padding: 10px; text-align: center; width: 100px; height: 100px;">
+    		
+    		<a href="basic_analyses-nmds_analysis-jaccard.pdf" target="_blank" />
+    			<img src="basic_analyses-nmds_analysis-jaccard.png" style="width: 100px; border: 5px solid #EEE;" />
+    		</a>
+    		
+    		<p align="center">jaccard
+    	</td>
+    	
+    	<td style="padding: 10px; text-align: center; width: 100px; height: 100px;">
+    		
+    		<a href="basic_analyses-nmds_analysis-bray.pdf" target="_blank" />
+    			<img src="basic_analyses-nmds_analysis-bray.png" style="width: 100px; border: 5px solid #EEE;" />
+    		</a>
+    		
+    		<p align="center">bray
+    	</td>
+    	
+    	<td style="padding: 10px; text-align: center; width: 100px; height: 100px;">
+    		
+    		<a href="basic_analyses-nmds_analysis-kulczynski.pdf" target="_blank" />
+    			<img src="basic_analyses-nmds_analysis-kulczynski.png" style="width: 100px; border: 5px solid #EEE;" />
+    		</a>
+    		
+    		<p align="center">kulczynski
+    	</td>
+    	
+    	<td style="padding: 10px; text-align: center; width: 100px; height: 100px;">
+    		
+    		<a href="basic_analyses-nmds_analysis-canberra.pdf" target="_blank" />
+    			<img src="basic_analyses-nmds_analysis-canberra.png" style="width: 100px; border: 5px solid #EEE;" />
+    		</a>
+    		
+    		<p align="center">canberra
+    	</td>
+    	
+    	<td style="padding: 10px; text-align: center; width: 100px; height: 100px;">
+    		
+    		<a href="basic_analyses-nmds_analysis-horn.pdf" target="_blank" />
+    			<img src="basic_analyses-nmds_analysis-horn.png" style="width: 100px; border: 5px solid #EEE;" />
+    		</a>
+    		
+    		<p align="center">horn
+    	</td>
+    	
+	</tr>
+	</table>
+	
+	</div>
 
 
 
@@ -378,7 +506,8 @@
 
 
 
-<div class="floatingbar"><a href="#General">General</a> | <a href="#Downloads">Downloads</a> | <a href="#Entropy">Entropy</a> | <a href="#Stackbar">Stackbar</a> | <a href="#ReadCounts">Counts</a> | <a href="#Oligotypes">Oligotypes</a> | <a href="#Samples">Samples</a> |  Basic Analyses | Exclusive Analyses <a href="https://meren.github.io/2013/02/04/basic-sample-mapping-with-oligotyping/">?</a></div>
+
+<div class="floatingbar"><a href="#General">General</a> | <a href="#Downloads">Downloads</a> | <a href="#Entropy">Entropy</a> | <a href="#Stackbar">Stackbar</a> | <a href="#ReadCounts">Counts</a> | <a href="#Oligotypes">Oligotypes</a> | <a href="#Samples">Samples</a> | <a href="#BasicAnalyses"><b>Basic Analyses</b></a> | Exclusive Analyses <a href="https://meren.github.io/2013/02/04/basic-sample-mapping-with-oligotyping/">?</a></div>
 <div class="footer"><p>For questions and comments: meren / mbl.edu</div>
 </body>
 </html>
