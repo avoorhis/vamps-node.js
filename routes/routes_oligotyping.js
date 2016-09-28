@@ -267,14 +267,7 @@ router.post('/project_list', helpers.isLoggedIn, function (req, res) {
 //
 router.get('/project_list', helpers.isLoggedIn, function (req, res) {
     //console.log(PROJECT_INFORMATION_BY_PNAME);
-    if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
-      res.render('oligotyping/your_data', {
-        title: 'VAMPS:Data Administration',
-        user: req.user, hostname: req.CONFIG.hostname,
-        message: req.flash('message','Not coded yet'),
-      });
-      return;
-    }
+    
     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     var user_dir_path = path.join(pwd,'public','user_projects');
 
