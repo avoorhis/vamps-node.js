@@ -681,9 +681,10 @@ if __name__ == '__main__':
     #print 'max',args.max
     #print 'max2',args.dataset_counts
     #sys.exit()
-    print args.datasets
-    print args.domains
+    
     args.domains = [x.strip() for x in args.domains]
+    args.dids = [x.strip() for x in args.dids]
+    args.pids = [x.strip() for x in args.pids]
     #args.compress = True
     
     

@@ -15,7 +15,7 @@
 		  
 		  <div id='ds_save_order_div'>
 			  <button type='submit' id='ds_save_order_btn' class='btn btn-xs btn-default'>Save Order</button>
-              <span class='label blue' bgcolor='blue'>Similar</span> <span class='label red' bgcolor='red'>Dissimilar</span>
+              <span class='label blue' bgcolor='blue'>Similar (0.0)</span> <span class='label red' bgcolor='red'>Dissimilar (1.0)</span>
 			  <imput type='hidden' id='' name='resorted' value='1' >
 		  </div>
 	   </td>
@@ -35,7 +35,7 @@
 		<%        if(x_dname === y_dname){ %>
 		        	    	<td id='' class='heat_map_td' bgcolor='#000'></td>
 		<%        }else{ %>
-		<%      		var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dist; %>
+		<%      		var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+ metric+' '+dist; %>
 		<%      		var svalue = Math.round( dm[x_dname][y_dname] * 15 ); %>
 		     	
 	                  <td id='<%= id %>' class='heat_map_td tooltip_viz' bgcolor='#<%= colors[svalue] %>' 

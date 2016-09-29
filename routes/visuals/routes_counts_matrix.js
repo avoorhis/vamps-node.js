@@ -109,7 +109,7 @@ module.exports = {
 									  }
 									  if(this_rank == 'domain'){
 											domain = tax_node.taxon;
-									    }
+									  }
 										
 										if(tax_node.taxon == undefined){
 											
@@ -131,23 +131,40 @@ module.exports = {
 									//console.log('domain '+domain)
 									//console.log(post_items.domains)
 									// SCREEN INCLUDE_NAS
+									// if selected domains excludes organelles then also exclude 'Bacteria;Cyanobacteria;Chloroplast'
 									if(post_items.include_nas == 'no' ){
-										
 										if(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length) != '_NA'){
 											//console.log('ADDING '+tax_long_name)
 											// SCREEN DOMAINS
-											if(post_items.domains.indexOf(domain) != -1){
-												unit_name_lookup[tax_long_name] = 1;
-												unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+											if( domain == 'Bacteria' 
+													&& (post_items.domains.indexOf('Organelle') == -1) // Organelle has been de-selected
+													&& tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast'  // tax name starts with string
+
+													){
+														console.log('Excluding',tax_long_name)
+											}else{
+													if(post_items.domains.indexOf(domain) != -1){														
+														unit_name_lookup[tax_long_name] = 1;
+														unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+													}
 											}
+
 										}
 										
 									}else{
 										// SCREEN DOMAINS
-										if(post_items.domains.indexOf(domain) != -1){
-												unit_name_lookup[tax_long_name] = 1;
-												unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-										}
+										if( domain == 'Bacteria' 
+													&& (post_items.domains.indexOf('Organelle') == -1) // Organelle has been de-selected
+													&& tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast'  // tax name starts with string
+
+													){
+														console.log('Excluding',tax_long_name)
+											}else{
+													if(post_items.domains.indexOf(domain) != -1){
+															unit_name_lookup[tax_long_name] = 1;
+															unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+													}
+											}
 									}
 
 

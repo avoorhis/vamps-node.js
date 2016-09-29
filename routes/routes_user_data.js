@@ -111,7 +111,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
         });
         return;
     }
-    var dids = req.body.dids.split(', ');
+    var dids = req.body.dids.split(',');
     var requested_files = [];
 
     if (req.body.fasta) {
