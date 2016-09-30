@@ -1881,6 +1881,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     var myurl = url.parse(req.url, true);
     var did1 = myurl.query.did1;
     var did2 = myurl.query.did2;
+    var dist = myurl.query.dist;
     var ts   = myurl.query.ts;
     var ds1  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did1)]
     var ds2  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did2)]
@@ -1995,7 +1996,8 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
                   ts: timestamp,
                   matrix    :           JSON.stringify(new_matrix),
                   post_items:           JSON.stringify(visual_post_items),
-                  bar_type  : 'double',        
+                  bar_type  : 'double', 
+                  dist     : dist,       
                   //html: html,
                   user: req.user, hostname: req.CONFIG.hostname,
               });

@@ -1,6 +1,7 @@
 <% include ../../add_ins/begin_nomenu.ejs %>
 <% var dataset1 = JSON.parse(matrix).datasets[0]; %>
 <% var dataset2 = JSON.parse(matrix).datasets[1]; %>
+<% pi = JSON.parse(post_items); %>
 <link rel="stylesheet" href="/stylesheets/bootstrap-sortable.css" >
 <script>
   var pi_local  = JSON.parse('<%- post_items %>');
@@ -16,10 +17,21 @@
 <div class="progress" style="display:none;margin-top:10px;"></div>
 <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100">0%</div>
 
-
-<div class='subtitle'>Dataset-1: <%= dataset1 %><br>Dataset-2: <%= dataset2 %></div>
+<div id='info_box' class='pull-right' style='padding:5px;background:lightgrey'>
+Distance Metric: <%= pi.selected_distance %>
 <br>
+Calculated Distance: <%= dist %>
+</div>
 
+<div class='subtitle'>
+  Dataset-1: <%= dataset1 %>
+  <br>
+  Dataset-2: <%= dataset2 %>
+  
+</div>
+
+
+<br>
 
 <div id='my_div' class='well' style="height: 130px;">
 <center>

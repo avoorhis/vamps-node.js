@@ -733,7 +733,7 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
     //var log = path.join(user_dir, 'export_log.txt');
     if (normalization == 'max' || normalization == 'maximum' || normalization == 'normalized_to_maximum') {
         norm = 'normalized_to_maximum';
-    } else if (normalization == 'percent' || normalization == 'frequency') {
+    } else if (normalization == 'percent' || normalization == 'frequency' || normalization == 'normalized_by_percent' ) {
         norm = 'normalized_by_percent';
     } else {
         norm = 'not_normalized';
