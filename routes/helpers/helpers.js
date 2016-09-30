@@ -744,7 +744,7 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
     var pid_lookup = {};
     console.log('dids', dids);
     export_cmd = 'vamps_export_data.py';
-    for (n=0;n<dids.length;n++) {
+    for (n=0; n<dids.length; n++) {
         console.log('did', dids[n]);
         pid_lookup[PROJECT_ID_BY_DID[dids[n]]] = 1;
     }

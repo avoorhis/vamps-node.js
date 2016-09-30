@@ -1,0 +1,189 @@
+<% include ../add_ins/begin.ejs %>
+
+
+<h2>Amplification Primers </h2>
+<p class="standard">
+Our primer sets have evolved since 2005, based on platform, read length, and increasing size of the reference databases. 
+For the most current information, go to the section titled <a href='#illumina'>"Illumina amplification"</a>. 
+</p>
+<p class="standard">
+<strong>I. 454 GS-FLX v6 and v9 amplification (2005-2010):</strong>
+<br>
+Fusion primers contained either the A or B 454 amplicon adapter followed by a 5 nt multiplex identifier (MID; barcode) on the forward primer and ending with the 16S specific sequence.  All MIDs differed by at least two bases and contained no homopolymers. The 5 barcode bases are the first to be sequenced and are used as a key to identify samples in a run containing multiple samples and for quality control. 454 sequencing does not support paired end reads, so we sequenced from only one end of the amplicon.  
+Originally, we sequenced bacterial or archaeal v6 and eukaryal v9 regions on the Roche GS20/GS-FLX, with read lengths from 100-230 nt. 
+</p>
+
+<p class="standard">
+    <ol>
+        <li class='standard'>Bacterial v6 (454)
+        <ul>
+            <li>Forward Primers (967F) CTAACCGANGAACCTYACC CNACGCGAAGAACCTTANC CAACGCGMARAACCTTACC ATACGCGARGAACCTTACC</li>
+            <li>Reverse Primers (1064R) CGACAGCCATGCANCACCT CGACAACCATGCANCACCT CGACGGCCATGCANCACCT CGACGACCATGCANCACCT</li>
+        </ul>
+        </li>
+        <li class='standard'>Archaeal v6 (454)
+        <ul>
+            <li>Forward Primer (958F) AATTGGANTCAACGCCGG</li>
+            <li>Reverse Primers (1048R major/minor) CGRCGGCCATGCACCWC CGRCRGCCATGYACCWC</li>
+            <li>Although 1048arcR-major is a subset of 1048arcR-minor, including both increased the proportion of the 1048arcR-major component during amplification.</li>
+        </ul>
+        </li>
+        <li class='standard'>Eukaryal v9 (454)   
+        <ul>
+            <li>Forward Primers (1380F and 1389F) CCCTGCCHTTTGTACACAC TTGTACACACCGCCC</li>
+            <li>Reverse Primer (1510R) CCTTCYGCAGGTTCACCTAC</li>
+        </ul>
+        </li>
+    </ol>
+    <ul>
+    <li class="standard">Methods described in: 
+    <ul>
+    <li>Sogin, M. L., H. G. Morrison, J. A. Huber, D. Mark Welch, S. M. Huse, P. R. Neal, J. M. Arrieta, and G. J. Herndl. 2006.  Microbial diversity in the deep sea and the       underexplored "rare biosphere". Proc Natl Acad Sci U S A 103:12115-20.</li>
+    <li>Huber, J. A., D. B. Mark Welch, H. G. Morrison, S. M. Huse, P. R. Neal, D. A. Butterfield, and M. L. Sogin. 2007. Microbial population structures in the deep marine        biosphere. Science 318:97-100.  </li>
+    <li>Huse, S. M., J. A. Huber, H. G. Morrison, M. L. Sogin, and D. Mark Welch. 2007. Accuracy and quality of massively parallel DNA pyrosequencing. Genome Biol 8:R143
+    </li>
+
+    <li>Amaral-Zettler L.A., McCliment E.A., Ducklow H.W., Huse S.M. (2009) A Method for Studying Protistan Diversity Using Massively Parallel Sequencing of V9 Hypervariable       Regions of Small-Subunit Ribosomal RNA Genes. PLoS ONE 4(7): e6372. doi:10.1371/journal.pone.0006372</li>
+
+    </ul>
+    </li>
+    </ul>   
+
+</p>
+<p class="standard">
+<strong>II. 454 GS-FLX Titanium v6v4 and v3v5 amplification (2010-2013):</strong>
+<br>
+We sequenced amplicons spanning multiple variable regions when 454 read lengths increased to 500+.
+The PCR reactions for V6-V4 employed a pair of degenerate fusion primers (1064R and 518F) while the V3-V5
+amplicon reactions employed a pool of two forward and three reverse fusion primers (341F and 926R).
+The bacterial primer sets perfectly matched 95% of the eubacterial entries in the SILVA database 106 release (Pruesse et al. 2007).
+However, for certain sparsely represented phyla - e.g. OP11 and SR1 - as many as 50% of its members show at
+least one mismatch to one or both of the primers.
+
+</p>
+
+<p class="standard">
+<ol>
+    <li class="standard">Bacterial v3v5 (454)
+        <ul>
+        <li>Forward Primers (341F) CCTACGGGNGGCWGCAG TCTACGGAAGGCTGCAG </li>
+        <li>Reverse Primers (926R) CCGTCAATTCNTTTRAGT CCGTCAATTTCTTTGAGT CCGTCTATTCCTTTGANT </li>
+        <li>Bioinformatic Trimming anchor site (785F-a) GGATTAGATACCC</li>
+        </ul>
+    </li><br>
+    <li class="standard">Bacterial v6v4 (454)
+        <ul>
+        <li>Forward Primer (518F) CCAGCAGCYGCGGTAAN </li>
+        <li>Reverse Primer (1064R) CGACRRCCATGCANCACCT</li>
+        <li>Bioinformatic Trimming anchor site (565F-a) TGGGCGTAAAG </li>
+        </ul>
+    </li><br>
+    <li class="standard">Archaeal v6v4 (454)
+        <ul>
+        <li>Forward Primers (517F) GCCTAAAGCATCCGTAGC GCCTAAARCGTYCGTAGC GTCTAAAGGGTCYGTAGC GCTTAAAGNGTYCGTAGC GTCTAAARCGYYCGTAGC</li>
+        <li>Reverse Primer (1048R) CGRCRGCCATGYACCWC</li>
+        <li>Bioinformatic Trimming anchor site (685F-a) GWAGRRGTRAAAT</li>
+        </ul>
+    </li>
+</ol>
+<ul>
+    
+    <li class="standard">Reaction conditions:</li>
+        <br>
+        Individual oligos were mixed in equal proportions to create F/R primer pools. 
+        The polymerase chain reaction mixture contained 1X Platinum HiFi Taq polymerase buffer, 1.6 units Platinum HiFi polymerase, 
+        3.7 mM MgSO4, 200 uM dNTPs (PurePeak polymerization mix, ThermoFisher), and 400 nM primers. 
+        5-25 ng of sample DNA was added to a master mix to a final volume of 100 ul and this was divided into three replicate 33 ul reactions. 
+        We included a no-template negative control for each MID. Cycling conditions included an initial denaturation at 94&deg;C for 3 minutes; 
+        30 cycles of 94&deg;C for 30 seconds, 57-60&deg;C for 45 seconds, and 72&deg;C for 1 minute; and a final extension at 72&deg;C for 2 minutes using an 
+        Applied Biosystems 2720 or 9700 cycler.  The three replicates were pooled and we checked 1 ul of the pool and the negative control on 
+        an Agilent Bioanalyzer(1ul) or LabChip GX(5ul).  We cleaned the reaction and removed products under 300 bp using Ampure beads at 0.75X volume 
+        (Beckman Coulter, Brea CA). The final products were resuspended in 100 ul of 10mM Tris-EDTA + 0.05% Tween-20, quantitated using PicoGreen Quant-IT assay 
+        (LifeTechnologies), and assayed on a Bionanalyzer DNA1000 chip (Agilent Technologies, Santa Clara, CA).
+        <br><br>
+        <li class="standard">GS-FLX Titanium methods described in:
+            <ul>
+            <li>Marteinsson V. T., Runarsson A., Stefansson A., Thorsteinsson T., Johannesson T., Magnusson S. H., Reynisson E., Einarsson B., Wade N., Morrison H. G., and Gaidos E. 2013. Microbial communities in the subglacial waters of the Vatnajokull ice cap, Iceland. ISME Journal 7(2), 427-37; 
+            <li>Newton R. J., Bootsma M. J. , Morrison H. G., Sogin M. L., and McLellan S. L. 2013. A microbial signature approach to identify fecal pollution in the waters off an urbanized coast of Lake Michigan. Microb. Ecol. 65(4):1011-23;
+            <li>Young V.B., L.H. Raffals, S.M. Huse, M. Vital, D. Dai, P.D. Schloss , J.M. Brulc, D.A. Antonopoulos, R.L Arrieta, J.H. Kwon, G. Reddy, N.A. Hubert, S.L. Grim, J.H. Vineis, S.M. Dalal, H.G. Morrison, A. M. Eren, F. Meyer, T.M. Schmidt, J.M. Tiedje, E.B. Chang and M.L. Sogin.  2013. Multiphasic analysis of the temporal development of the distal gut microbiota in patients following ileal pouch anastomosis.  Microbiome 1:9.
+            </ul>
+        </li>
+</ul>
+</p>
+<p class="standard"><a name="illumina">
+<strong>III. Illumina v6 and v4v5 amplification (2012-present):</strong></a>
+<br>
+Fusion primers contain Truseq adapter sequences (bridge adapter, sequencing primer binding sites).  The read 1 primer contains a 5-nt inline barcode on the forward primer followed by the 16S specific sequence.  The read 2 primer contains a 6-nt index upstream of the sequencing primer binding site which is read in a separate indexing read.  Read 2 starts with the 16S specific sequence.  We sequence 100 nt PE reads on the Hiseq and 250 nt PE reads on the MiSeq.  Reads are demultiplexed based on the combination of index (CASAVA 1.8) and barcode (custom python scripts).  
+<ol>
+    <li class="standard">Bacterial v6 (HiSeq)</li>
+    <ul>
+        <li>Forward Primers (967F) CTAACCGANGAACCTYACC CNACGCGAAGAACCTTANC CAACGCGMARAACCTTACC ATACGCGARGAACCTTACC</li>
+        <li>Reverse Primer (1064R) CGACRRCCATGCANCACCT</li> 
+    </ul>
+    <li class="standard">Archaeal v6 (HiSeq)</li>
+    <ul>
+        <li>Forward Primer (958F) AATTGGANTCAACGCCGG</li>
+        <li>Reverse Primer (1048R) CGRCRGCCATGYACCWC</li>
+    </ul>
+    <li class="standard">Bacterial v4v5 (MiSeq)</li>
+    <ul>
+        <li>Forward Primer (518F) CCAGCAGCYGCGGTAAN</li>
+        <li>Reverse Primers (926R) CCGTCAATTCNTTTRAGT CCGTCAATTTCTTTGAGT CCGTCTATTCCTTTGANT</li>
+    </ul>
+    <li class="standard">Archaeal v4v5 (MiSeq)</li>
+    <ul>
+        <li>Forward Primers (517F) GCCTAAAGCATCCGTAGC GCCTAAARCGTYCGTAGC GTCTAAAGGGTCYGTAGC GCTTAAAGNGTYCGTAGC GTCTAAARCGYYCGTAGC</li>
+        <li>Reverse Primer (958R) CCGGCGTTGANTCCAATT</li>
+    </ul>
+</ol>
+
+<ul>
+    
+    <li class="standard">Reaction conditions:
+        <br>
+        Individual oligos are mixed in equal proportions to create F/R primer pools at 10 uM working concentration,
+        except for the bacterial v4v5 reverse primers which are mixed at a ratio of 8:1:1 in respective order. 
+        The polymerase chain reaction mixture and cycling conditions vary for each type of amplicon (see table).
+    </li>
+    <br>
+    <center>
+    <table style='border-collapse:collapse;' border='1'>
+    <tr><th></th><th>bac v6</th><th>arc v6</th><th>bac v4v5</th><th>arc v4v5</th></tr>
+    <tr><td>HiFi Buffer</td><td>1X</td><td>1X</td><td>1X</td><td>1X</td></tr>
+    <tr><td>MgSO4</td><td>2 mM</td><td>2 mM</td><td>2 mM</td><td>2 mM</td></tr>
+    <tr><td>dNTPs</td><td>0.2 mM</td><td>0.2 mM</td><td>0.2 mM</td><td>0.2 mM</td></tr>
+    <tr><td>combined primers</td><td>0.2 uM</td><td>0.3 uM</td><td>0.3 uM</td><td>0.3 uM</td></tr>
+    <tr><td>Platinum HiFi</td><td>4 units</td><td>10 units</td><td>5-12.5 units</td><td>5-12.5 units</td></tr>
+    <tr><td>Template</td><td>5-20 ng</td><td>5-20 ng</td><td>5-20 ng</td><td>5-20 ng</td></tr>
+    <tr><td>Volume</td><td>100 ul</td><td>100 ul</td><td>100 ul</td><td>100 ul</td></tr>
+    <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>PCR</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>3 min</td><td>94&deg;</td><td>94&deg;</td><td>94&deg;</td><td>94&deg;</td></tr>
+    <tr><td>30 sec</td><td>94&deg;</td><td>94&deg;</td><td>94&deg;</td><td>94&deg;</td></tr>
+    <tr><td>45 sec</td><td>60&deg;</td><td>60&deg;</td><td>57&deg;</td><td>57&deg;</td></tr>
+    <tr><td>1 min</td><td>72&deg;</td><td>72&deg;</td><td>72&deg;</td><td>72&deg;</td></tr>
+    <tr><td>2 min</td><td>72&deg;</td><td>72&deg;</td><td>72&deg;</td><td>72&deg;</td></tr>
+    <tr><td>Cycles, step 1</td><td>25</td><td>30</td><td>30</td><td>30</td></tr>
+    <tr><td>Pooling, clean up</td><td>Qiagen<br>MinElute plate</td><td>Qiagen<br>MinElute plate</td><td>Ampure 0.75X</td><td>Ampure 0.75X</td></tr>
+    <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>Step 2</td><td>4 ul step 1<br>eluate</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>Cycles, step 2</td><td>5</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>Quantitation</td><td>Picogreen</td><td>Picogreen</td><td>Picogreen</td><td>Picogreen</td></tr>
+    <tr><td>Size selection</td><td>Pippin Prep</td><td>Pippin Prep</td><td>Ampure 1X</td><td>Ampure 1X</td></tr>
+    </table>
+    </center>
+    <br>
+    <li class="standard">
+        The reaction volume is divided into three replicate 33 ul reactions. We include a no-template negative control for each MID.
+        The three replicates are pooled and we check 1 ul of the pool and the negative control on a LabChip GX.
+        We clean the reactions and remove unwanted small products using Qiagen 96-well MinElute plates (v6) or Ampure beads (v4v5).
+        The multiplex pools are size selected by Pippin Prep (v6) or Ampure-cleaned (v4v5) and quantitated using KapaBiosystems qPCR
+        before clustering on the flowcell.
+    </li>
+
+</ul>
+
+<% include ../add_ins/end.ejs %>
+</body>
+</html>
+

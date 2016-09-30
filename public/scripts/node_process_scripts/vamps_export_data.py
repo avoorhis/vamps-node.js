@@ -322,42 +322,47 @@ def run_metadata(args):
     cursor.execute(sql)
     result_count = cursor.rowcount
     data= {}
-    dataset_name_collector = {}
+    #dataset_name_collector = {}
     headers_collector = {}
+    for project_dataset in args.dataset_name_collector.values():
+        data[project_dataset] = {}
+        
     if result_count:
         rows = cursor.fetchall()
         for row in rows:
             #print 'req',row
             project_dataset = row['project']+'--'+row['dataset']
-            data[project_dataset] = {}
+            
             for key in row:
                 data[project_dataset][key]= row[key]
                 headers_collector[key] = 1
-                dataset_name_collector[row['dataset_id']] = project_dataset        
-    
+                       
+    #print 'headers_collector',headers_collector
     # CUSTOM METADATA
     for pid in args.pids:
         custom_table = 'custom_metadata_'+pid
         
         sql3  = "SELECT * from "+custom_table+"\n "
-        #print sql3
+        #print 'args.dataset_name_collector'
+        #print args.dataset_name_collector
         cursor.execute(sql3)
         rows = cursor.fetchall()
         for row in rows:
             did = row['dataset_id'] 
-            if did in dataset_name_collector:
-                pjds = dataset_name_collector[did]
+            if did in args.dataset_name_collector:
+                pjds = args.dataset_name_collector[did]
             else:
                 pjds = 'unknown'
+            #print pjds
             if str(did) in args.dids:
                 for key in row:
                     if key != custom_table+'_id':
-                        #print 'pjds',pjds
-                        #print 'key',key
-                        if pjds in data:
-                            data[pjds][key]= row[key]
+                        
+                        #print 'row[key]',row[key]
+                        data[pjds][key]= row[key]
                         headers_collector[key] = 1
-    #print headers_collector
+    
+    
     # convert to a list and sort
     headers_collector_keys = sorted(headers_collector.keys())
     file_txt = ''
@@ -370,7 +375,11 @@ def run_metadata(args):
         file_txt += pjds
         for header in headers_collector_keys:
             #if header not in ['custom_metadata_273_id','custom_metadata_517_id']:
-                file_txt += ','+str(data[pjds][header])
+                
+                if header in data[pjds]:
+                    file_txt += ','+str(data[pjds][header])
+                else:
+                    file_txt += ','
         file_txt += '\n'
     file_txt += '\n'       
     write_file_txt(args, out_file, file_txt)
@@ -550,7 +559,7 @@ def get_dataset_counts(args):
     dids = "','".join(args.dids)
     #pd = "') OR\n(project='".join(["' and dataset='".join(p.split('--')) for p in args.datasets])
     #sql = "SELECT distinct project, dataset, dataset_count from "+pd_table+" WHERE\n(project='" + pd + "')\n"
-    sql = "SELECT project, dataset, sum(seq_count) as dataset_count" 
+    sql = "SELECT dataset_id, project, dataset, sum(seq_count) as dataset_count" 
     sql += " from sequence_pdr_info as i"
     sql += " join dataset as D using(dataset_id)"
     sql += " join project as P using(project_id)"
@@ -561,15 +570,17 @@ def get_dataset_counts(args):
     rows = cursor.fetchall()
     max=0;
     pd_counter = {}
-    
+    dataset_name_collector = {}
+
     for row in rows:
         pjds = row['project']+'--'+row['dataset']
         ds_count = row['dataset_count']
         pd_counter[pjds] = ds_count
+        dataset_name_collector[row['dataset_id']] = pjds
         if ds_count > max:
             max = ds_count
     
-    return (max, pd_counter)
+    return (max, pd_counter, dataset_name_collector)
     
     
 if __name__ == '__main__':
@@ -675,16 +686,17 @@ if __name__ == '__main__':
     args.dids = args.dids.strip('"').split(',')
     args.pids = args.pids.strip('"').split(',')
     args.domains = args.domains.strip('"').split(',')
+    args.domains = [x.strip() for x in args.domains]
+    args.dids = [x.strip() for x in args.dids]
+    args.pids = [x.strip() for x in args.pids]
 
-    (args.max, args.dataset_counts) = get_dataset_counts(args)
+    (args.max, args.dataset_counts, args.dataset_name_collector) = get_dataset_counts(args)
     args.datasets = args.dataset_counts.keys()
     #print 'max',args.max
     #print 'max2',args.dataset_counts
     #sys.exit()
     
-    args.domains = [x.strip() for x in args.domains]
-    args.dids = [x.strip() for x in args.dids]
-    args.pids = [x.strip() for x in args.pids]
+
     #args.compress = True
     
     

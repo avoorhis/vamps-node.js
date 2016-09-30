@@ -135,7 +135,7 @@ app.use(express.static('tmp'));
 
 app.use('public/javascripts', express.static(path.join(__dirname, 'public', 'javascripts')));
 app.use('public/stylesheets', express.static(path.join(__dirname, 'public', 'stylesheets')));
-
+app.use('/static', express.static(config.PATH_TO_STATIC_DOWNLOADS));   // path for static downloadable files
 // app.use('views/add_ins', express.static(path.join(__dirname, '/views/add_ins')));
 // required for passport
 // app.use(session({ secret: 'keyboard cat',  cookie: {maxAge: 900000}})); // session secret

@@ -3,12 +3,146 @@
 		<div id='' class='pull-right' style=''>
     		<a href='/help/faq' class='btn btn-primary' target='_blank'>FAQ Page</a>
     </div>
-    <p class='title'>Overview</p>
+    <p class='title'>Software</p>
 
-    <ul class='table'>
+    
 
-    <li>Software</li>
-	</ul>
+<table class='table' border='1'>
+<tr>
+<td><center><strong> GAST: </strong></center></td>
+<td>
+    <p>
+        <span style="font-size: 10pt;"> 
+        &nbsp;&nbsp;<u>G</u>lobal <u>A</u>lignment for <u>S</u>equence <u>T</u>axonomy
+        <br>&nbsp;&nbsp;- uses a reference database of SSU sequences to determine the taxonomy of hypervariable region tags. <strong>
+        <ul><a href="/static/gast_files.tgz">Download GAST Code (118 KB)</a></strong></ul> </span> 
+    </p>
+
+
+    <p>
+    
+    <span style="font-size: 10pt;">&nbsp;&nbsp;Available GAST-formatted SSU <a href='databases#GAST'>reference sets</a>.									
+        
+        <br><br>&nbsp;&nbsp;Citation:
+        <pre style='background:white;'>
+        <br>&nbsp;&nbsp;<a href='http://www.plosgenetics.org/article/info%3Adoi%2F10.1371%2Fjournal.pgen.1000255' target='_blank'>
+        Huse SM, Dethlefsen L, Huber JA, Mark Welch D, Relman DA, et al. (2008) 
+        <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Exploring Microbial Diversity and Taxonomy Using SSU rRNA Hypervariable Tag Sequencing.
+        <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PLoS Genetics 4: e1000255.</a>.
+        </pre>
+    </span>	
+    </p>
+</td>
+</tr>
+
+
+<tr>
+<td> <center><strong> SLP: </strong></center></td>
+<td>
+    <p>
+        <span style="font-size: 10pt;">
+        &nbsp;&nbsp;<u>S</u>ingle-<u>L</u>inkage <u>P</u>reclustering for improved OTU clustering
+        <br>&nbsp;&nbsp;- based on pairwise distances this is used as a preliminary 
+        <br>&nbsp;&nbsp;step before average linkage clustering of short (<250nt) sequences.  
+        <br><br>&nbsp;&nbsp;Citation:
+        <pre style='background:white;'>
+        <br><a  href='http://onlinelibrary.wiley.com/doi/10.1111/j.1462-2920.2010.02193.x/pdf' target='_blank' >
+        Huse, SM, Mark Welch, D, Morrison, HG, and Sogin, ML (2010) Ironing out the wrinkles in the rare 
+        <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; biosphere through improved OTU clustering. Environmental Microbiology (2010) 12(7), 1889-1898</a>.
+        </pre>
+        <ul><strong><a href="/static/slp">Download slp perl script(1.6 KB)</a></strong></ul></span> 
+    </p>
+</td>
+</tr>
+<tr>
+<td nowrap>
+
+<p>
+    <span style="font-size: 10pt;" nowrap> <strong> Anchor Trimming: </strong>
+</p>
+</td>
+<td>
+    
+    <span style="font-size: 10pt;">&nbsp;&nbsp;The latest version of Anchor Trimming software can be obtained from 
+    <a href='https://github.com/meren/454-anchor-trimming' target='_blank' >https://github.com/meren/454-anchor-trimming</a>.
+    
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<b>Other Useful Software</b>
+</td>
+<td>
+<p>
+    <span style="font-size: 10pt;"> <strong> <a href="http://www.arb-home.de/" target='_blank'>ARB:</a></strong> 
+    <br>&nbsp;&nbsp;A graphical program for 16S rRNA alignments, and, with SILVA, the source of our reference 
+    <br>&nbsp;&nbsp; set of aligned full-length rRNA sequences, RefSSU. 
+        <br />
+    </span> 
+</p>
+<p>
+    <span style="font-size: 10pt;"> <strong> <a href="https://www.acsu.buffalo.edu/~yijunsun/lab/ESPRIT.html" target='_blank'>ESPRIT:</a></strong> 
+    <br>&nbsp;&nbsp;An algorithm for estimating species richness using large collections of 16S rRNA pyrosequences. 
+        <br />
+    </span> 
+</p>
+
+<p>
+    <span style="font-size: 10pt;"> <strong> fasta2pfam.pl:</strong> Converts a fasta file to pfam format for use with quickdist 
+    (uses <a href='http://www.bioperl.org/wiki/Main_Page' target='_blank'>bioperl</a> libraries, and so can only be used if you have bioperl installed). <strong>
+    <ul><a href="/static/fasta2pfam.pl">Download (2.5KB)</a></strong>. 
+    </ul>
+</p>									
+<p>
+    <span style="font-size: 10pt;"> <strong> 
+    <a href="http://www.mothur.org/wiki" target='_blank'>MOTHUR:</a></strong>
+    <br>&nbsp;&nbsp;A bioinformatics package which includes functions from DOTUR, SONS, TreeClimber, 
+    <br>&nbsp;&nbsp; S-Libshuff and Unifrac. MOTHUR provides OTU clustering capabilities as well as diversity 
+    <br>&nbsp;&nbsp; and rarefaction calculations used by VAMPS.
+
+        <br />
+    </span> 
+</p>
+<p>
+    <span style="font-size: 10pt;"> <strong> <a href="http://www.drive5.com/muscle/" target='_blank'>MUSCLE:</a></strong>
+    <br>&nbsp;&nbsp;Multiple Sequence Comparison by Log-expectation
+    <br>&nbsp;&nbsp;&nbsp;&nbsp;- a multiple sequence aligner optimized for extremely large datasets. 
+        <br />
+    </span> 
+</p>
+<p>
+    <span style="font-size: 10pt;"> <strong> quickdist: </strong>Calculates a matrix of pairwise distances between sequences in a multiple sequence alignment. <strong>
+    <ul><a href="/static/quickdist_archive.tar.gz">Download (64 KB)</a></strong>. 
+    </ul>
+       
+    </span> 
+</p>
+<p>
+    <span style="font-size: 10pt;"> <strong> <a href="http://rdp.cme.msu.edu/" target='_blank'>RDP Classifier:</a></strong> 
+    <br>&nbsp;&nbsp;Ribosomal Database Project Classifier:
+    <br>&nbsp;&nbsp;&nbsp;&nbsp;- associates hierarchical taxonomy (Bergey's manual) to 16S rRNA sequences. 
+    </span> 
+</p>									
+<p>
+   <span style="font-size: 10pt;"><a href="http://drive5.com/usearch/" target='_blank'>Usearch:</a>
+   <br>&nbsp;&nbsp;Suite of high-throughput sequence analysis algorithms.
+    </span> 
+    <br />
+    <span style="font-size: 10pt;"> <strong> <a href="http://drive5.com/usearch/manual/uchime_algo.html" target='_blank'>Uchime:</a></strong>
+    <br>&nbsp;&nbsp;Identifying chimeras.
+    <br />
+    <span style="font-size: 10pt;"><a href="http://drive5.com/uparse/" target='_blank'>Uparse:</a>
+    <br>&nbsp;&nbsp;OTU clustering pipeline for next-gen reads	
+
+</p>
+								
+</td></tr>
+</table>
+
+
+
+
 <% include ../add_ins/end.ejs %>
 </body>
 </html>
