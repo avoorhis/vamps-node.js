@@ -627,7 +627,7 @@ if (phyloseq_bars01_link !== null) {
   phyloseq_bars01_link.addEventListener('click', function () {
       
     if(typeof phyloseq_bars01_created == "undefined"){
-        create_viz('phyloseq01', pi_local.ts, false);
+        create_viz('phyloseq_bars01', pi_local.ts, false);
         
       }else{
         if(phyloseq_bars01_btn.value == 'hide'){        
@@ -652,7 +652,7 @@ if (typeof phyloseq_bars01_btn !== "undefined") {
 var phyloseq_bars01_open_btn = document.getElementById('phyloseq_bars01_open_btn');
 if (typeof phyloseq_bars01_open_btn !== "undefined") {
   phyloseq_bars01_open_btn.addEventListener('click', function () {
-      create_viz('phyloseq01', pi_local.ts, true);      
+      create_viz('phyloseq_bars01', pi_local.ts, true);      
   });
 }
 //
@@ -668,7 +668,7 @@ if (phyloseq_hm02_link !== null) {
   phyloseq_hm02_link.addEventListener('click', function () {
       
     if(typeof phyloseq_hm02_created == "undefined"){
-        create_viz('phyloseq02', pi_local.ts, false);
+        create_viz('phyloseq_hm02', pi_local.ts, false);
         
       }else{
         if(phyloseq_hm02_btn.value == 'hide'){        
@@ -693,7 +693,7 @@ if (typeof phyloseq_hm02_btn !== "undefined") {
 var phyloseq_hm02_open_btn = document.getElementById('phyloseq_hm02_open_btn');
 if (typeof phyloseq_hm02_open_btn !== "undefined") {
   phyloseq_hm02_open_btn.addEventListener('click', function () {
-      create_viz('phyloseq02', pi_local.ts, true);      
+      create_viz('phyloseq_hm02', pi_local.ts, true);      
   });
 }
 //
@@ -708,7 +708,7 @@ if (phyloseq_nw03_link !== null) {
   phyloseq_nw03_link.addEventListener('click', function () {
       
     if(typeof phyloseq_nw03_created == "undefined"){
-        create_viz('phyloseq03', pi_local.ts, false);
+        create_viz('phyloseq_nw03', pi_local.ts, false);
         
       }else{
         if(phyloseq_nw03_btn.value == 'hide'){        
@@ -733,7 +733,7 @@ if (typeof phyloseq_nw03_btn !== "undefined") {
 var phyloseq_nw03_open_btn = document.getElementById('phyloseq_nw03_open_btn');
 if (typeof phyloseq_nw03_open_btn !== "undefined") {
   phyloseq_nw03_open_btn.addEventListener('click', function () {
-      create_viz('phyloseq03', pi_local.ts, true);      
+      create_viz('phyloseq_nw03', pi_local.ts, true);      
   });
 }
 //
@@ -749,7 +749,7 @@ if (phyloseq_ord04_link !== null) {
   phyloseq_ord04_link.addEventListener('click', function () {
       
     if(typeof phyloseq_ord04_created == "undefined"){
-        create_viz('phyloseq04', pi_local.ts, false);
+        create_viz('phyloseq_ord04', pi_local.ts, false);
         
       }else{
         if(phyloseq_ord04_btn.value == 'hide'){        
@@ -774,7 +774,7 @@ if (typeof phyloseq_ord04_btn !== "undefined") {
 var phyloseq_ord04_open_btn = document.getElementById('phyloseq_ord04_open_btn');
 if (typeof phyloseq_ord04_open_btn !== "undefined") {
   phyloseq_ord04_open_btn.addEventListener('click', function () {
-      create_viz('phyloseq04', pi_local.ts, true);      
+      create_viz('phyloseq_ord04', pi_local.ts, true);      
   });
 }
 //
@@ -790,7 +790,7 @@ if (phyloseq_tree05_link !== null) {
   phyloseq_tree05_link.addEventListener('click', function () {
       
     if(typeof phyloseq_tree05_created == "undefined"){
-        create_viz('phyloseq05', pi_local.ts, false);
+        create_viz('phyloseq_tree05', pi_local.ts, false);
         
       }else{
         if(phyloseq_tree05_btn.value == 'hide'){        
@@ -815,7 +815,7 @@ if (typeof phyloseq_tree05_btn !== "undefined") {
 var phyloseq_tree05_open_btn = document.getElementById('phyloseq_tree05_open_btn');
 if (typeof phyloseq_tree05_open_btn !== "undefined") {
   phyloseq_tree05_open_btn.addEventListener('click', function () {
-      create_viz('phyloseq05', pi_local.ts, true);      
+      create_viz('phyloseq_tree05', pi_local.ts, true);      
   });
 }
 

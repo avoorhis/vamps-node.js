@@ -360,15 +360,15 @@ function create_viz(visual, ts, new_window) {
       //create_dbrowser(ts);
     }else if(visual === 'adiversity'){
       create_adiversity(ts, new_window);
-    }else if(visual === 'phyloseq01'){
+    }else if(visual === 'phyloseq_bars01'){
       create_phyloseq(ts,'bar', new_window);
-    }else if(visual === 'phyloseq02'){
+    }else if(visual === 'phyloseq_hm02'){
       create_phyloseq(ts,'heatmap', new_window);
-    }else if(visual === 'phyloseq03'){
+    }else if(visual === 'phyloseq_nw03'){
       create_phyloseq(ts,'network', new_window);
-    }else if(visual === 'phyloseq04'){
+    }else if(visual === 'phyloseq_ord04'){
       create_phyloseq(ts,'ord', new_window);
-    }else if(visual === 'phyloseq05'){
+    }else if(visual === 'phyloseq_tree05'){
       create_phyloseq(ts,'tree', new_window);
     }else if(visual === 'cytoscape'){
       create_cytoscape(ts);
