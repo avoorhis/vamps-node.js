@@ -70,14 +70,14 @@
 		    <td class='td_top' width="50%">
           <div class='clean_list'>
             <li><button type="button" class="btn btn-sm btn-warning" name='Next' id="selection_btn_visuals"> 
-                &nbsp;&nbsp;&nbsp;Visualizations&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;Visualizations&nbsp;&nbsp;&nbsp;&nbsp;
                 <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
                 </button>
                 - Next: select taxonomy-database, domains and metadata. 
             </li>
             <br>
             <li><button type="button" class="btn btn-sm btn-primary" name='Next' id="selection_btn_exports"> 
-                &nbsp;&nbsp;&nbsp;Download Data&nbsp;
+                &nbsp;Download Data&nbsp;
                 <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
                 </button>
                 - Export sequences, biom, metadata and taxonomy files.
@@ -86,7 +86,7 @@
             <li>
               
                 <button type="button" class="btn btn-sm btn-info" name='Next' id="selection_btn_oligotyping"> 
-                &nbsp;&nbsp;&nbsp;Oligotyping&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;Oligotyping&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
                 </button>
               
@@ -97,17 +97,19 @@
             <li>
               <% if(hostname.substring(0,6) == 'bpcweb'){ %>
                 <button type="button" disabled class="btn btn-sm btn-success" name='Next' id="selection_btn_otus"> 
-                &nbsp;&nbsp;&nbsp;OTU Creation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;OTU Creation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
                 </button>
               <% }else{ %>
                 <button type="button" class="btn btn-sm btn-success" name='Next' id="selection_btn_otus"> 
-                &nbsp;&nbsp;&nbsp;OTU Creation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;OTU Creation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
                 </button>
               <% } %>
                 - Create OTUs from VAMPS sequence data.
             </li>
+            <br>
+            
             <br>
             <li>- The projects to the left include all the public projects plus any others that you have permissions to access.</li>
             <li>- Selecting the <span class='glyphicon glyphicon-question-sign'></span> next to the project name will take you to that project's profile.</li>

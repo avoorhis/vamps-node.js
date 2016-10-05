@@ -14,6 +14,13 @@ $(document).ready(function(){
      // page_click(e_page_click)
     //});
     //click_on_graph_icon = false;
+    //alert(pi_local.ts)
+    if(image_to_render){
+      //alert(image_to_render)
+      create_viz(image_to_render, pi_local.ts, false)
+      $(document.getElementById('pre_'+image_to_render+'_div')).scrollView();
+    }
+    //$(pre_dheatmap_div).scrollView();
 });
 
 $.fn.scrollView = function () {
@@ -306,65 +313,6 @@ if (typeof max_range_combo !=="undefined") {
       document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
 }
-////////////////////////////////////////////////////////////////////////////////
-// var visuals = ['counts_table','metadata_table','dheatmap','barcharts','piecharts','fheatmap',
-//                 'dendrogram01','dendrogram03','pcoa','pcoa3d','geodistribution','adiversity','phyloseq_bars01',
-//                 'phyloseq_hm02','phyloseq_nw03','phyloseq_ord04','phyloseq_tree05'] //    'dbrowser',
-// alert(document.getElementById('counts_table_link_id').innerHTML)
-// for(n in visuals){
-//       //alert(visuals[n])
-//       var prefix   = visuals[n] 
-         
-//       var p_prediv    = 'pre_'+prefix+'_div' 
-//       var p_link      = prefix+'_link_id'
-//       var p_div       = prefix+'_div'        
-//       var p_title     = prefix+'_title'     
-//       var p_hide_btn  = prefix+'_hide_btn'  
-//       var p_open_btn  = prefix+'_open_btn' 
-//       var p_created   = prefix+'_created'
-
-//       var link = document.getElementById(p_link) || null;
-      
-//       var hide_btn = document.getElementById(p_hide_btn);
-//       //alert(hide_btn)
-//       var div = document.getElementById(p_div);
-//       var prediv = document.getElementById(p_prediv);
-//       if (link !== null) {
-//           link.addEventListener('click', function () {
-          
-//         if(typeof p_created == "undefined"){
-//               create_viz(prefix, pi_local.ts, false);
-//           //counts_table_download_btn.disabled = false;
-//           }else{
-//               if(hide_btn.value == 'hide'){
-//                 //toggle_visual_element(tax_counts_div,'show',tax_counts_btn);
-//               }else{
-//                 toggle_visual_element(div,'hide',hide_btn);
-//               }
-//           }
-//         $(prediv).scrollView();
-//         });
-//       }
-//       if (typeof hide_btn !== "undefined") {
-//         hide_btn.addEventListener('click', function () {
-//             if(hide_btn.value == 'hide'){
-//               toggle_visual_element(div,'show',hide_btn);
-//             }else{
-//               toggle_visual_element(div,'hide',hide_btn);
-//             }
-//         });
-//       }
-      
-//       var open_btn = document.getElementById(p_open_btn) || null;
-//       if (open_btn !== null) {
-//         open_btn.addEventListener('click', function () {
-//             create_viz(prefix, pi_local.ts, true);      
-//         });
-//       }
-
-// }
-
-
 
 
 
@@ -383,8 +331,8 @@ function toggle_visual_element(table_div, tog, btn){
 
 function create_viz(visual, ts, new_window) {
    
-    if(visual === 'counts_table'){
-      create_counts_table(new_window);      
+    if(visual === 'counts_matrix'){
+      create_counts_matrix(new_window);      
     }else if(visual === 'metadata_table'){
       create_metadata_table(new_window);
     }else if(visual === 'piecharts'){
@@ -482,14 +430,14 @@ document.getElementById('pre_cytoscape_div').style.display = 'block';
 //
 // TAX TABLE
 //
-function create_counts_table(new_window) {
+function create_counts_matrix(new_window) {
       
       if(new_window == true){
-        var htmlstring = document.getElementById('counts_table_div').innerHTML;
+        var htmlstring = document.getElementById('counts_matrix_div').innerHTML;
         function openindex()
             {
                   rando = Math.floor(Math.random() * 20);
-                  OpenWindow=window.open("", "counts_table"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+                  OpenWindow=window.open("", "counts_matrix"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
                   OpenWindow.document.write(new_window_skeleton(htmlstring))
                   OpenWindow.document.close()
                   self.name="main"
@@ -501,13 +449,13 @@ function create_counts_table(new_window) {
       var info_line = create_header('ftable', pi_local);
       
 
-      document.getElementById('counts_table_title').innerHTML = info_line;
+      document.getElementById('counts_matrix_title').innerHTML = info_line;
       
-      document.getElementById('pre_counts_table_div').style.display = 'block';
-      document.getElementById('counts_table_title').style.color = 'white';
-      document.getElementById('counts_table_title').style['font-size'] = 'small';
+      document.getElementById('pre_counts_matrix_div').style.display = 'block';
+      document.getElementById('counts_matrix_title').style.color = 'white';
+      document.getElementById('counts_matrix_title').style['font-size'] = 'small';
       
-      var tax_counts_div = document.getElementById('counts_table_div');
+      var tax_counts_div = document.getElementById('counts_matrix_div');
       tax_counts_div.innerHTML = '';
       tax_counts_div.style.display = 'block';
       var html = '';
@@ -521,7 +469,7 @@ function create_counts_table(new_window) {
         }
       }
       html += "<div id='tax_counts_graph_div' style='background-color:white;width:600px;height:400px;display:none;'></div>";
-      html += "<br><br><br><br><br><table id='counts_table_id' border='0' class='' >";
+      html += "<br><br><br><br><br><table id='counts_matrix_id' border='0' class='' >";
       html += "<tr><td class='no_border'></td>"
       for (t = 0; t < maxrank; t++) {
         if(t==2){
@@ -620,7 +568,7 @@ function create_counts_table(new_window) {
       
       //document.getElementById('counts_tooltip_div').innerHTML = tooltip_tbl;
       tax_counts_div.innerHTML = html; 
-      document.getElementById('counts_table_dnld_btn').disabled = false
+      document.getElementById('counts_matrix_dnld_btn').disabled = false
       //$(".verticalTableHeader").each(function(){$(this).height($(this).width())  
       
 }
@@ -1268,6 +1216,7 @@ function create_geospatial(new_window) {
         });
 
         setMarkers(map, loc_data, infowindow);
+        document.getElementById('geospatial_dnld_btn').disabled = false
       }  
 }
 //
@@ -1971,5 +1920,33 @@ function new_window_skeleton(html){
   txt +="</script>"
   return txt
 }
+function save_image_as_json(name,ts){
+    args = 'name='+name
 
+    //var timestamp = +new Date();  // millisecs since the epoch!
+    var ts = pi_local.ts;
+    var filename = ts + '_' + name + '.json';
 
+    var json_obj = {};
+    json_obj.image = name;
+    json_obj.source = 'VAMPS';
+    json_obj.post_items = pi_local;
+    json_obj.id_name_hash = ds_local;
+
+    download(filename, JSON.stringify(json_obj));
+    return
+
+}
+// Download text as filename -- clent side only 
+function download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}

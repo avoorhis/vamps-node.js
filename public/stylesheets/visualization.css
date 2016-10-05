@@ -132,37 +132,37 @@
 }
 
 /*  COUNTS TABLE */
-#counts_table_div {
+#counts_matrix_div {
     
     margin-right:20px;
     padding-right:20px;
 }
-.counts_table {
+.counts_matrix {
     background: lightgray;
     font-size:small;
     border-collapse: collapse;
     margin-right:20px;
     padding-right:20px;
 }
-#counts_table_id td {
+#counts_matrix_id td {
     border: 1px solid #ccc;
     padding:0 3px;
 
 }
-#counts_table_id .no_border {
+#counts_matrix_id .no_border {
     border: 0px solid #ccc;
     
 }
-#counts_table_id .tax_result {
+#counts_matrix_id .tax_result {
     
     
 }
-#counts_table_id .tax_data {
+#counts_matrix_id .tax_data {
     
     background: lightblue;
     
 }
-/*counts_table_id .verticalTableHeader {
+/*counts_matrix_id .verticalTableHeader {
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);

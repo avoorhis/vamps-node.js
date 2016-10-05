@@ -9,21 +9,24 @@
 		<br>
 		<div class="well">
 			<li>
-				<a href='/user_data/export_data'>Export -TODO</a> metadata by project/dataset
+				<u><a href='/user_data/export_data'>Download</a></u> metadata by project/dataset -TODO
 			</li>
 			<li>
-				<a href='metadata_list'>View</a> list of all metadata
+				<u><a href='metadata_list'>View</a></u> list of all metadata
 			</li>
 			<li>
-				<a href='/search/search_index#metadata'>Search</a> for specific metadata
+				<u><a href='/search/search_index#metadata'>Search</a></u> for specific metadata
 			</li>
 			<% if(hostname.substring(0,6) != 'bpcweb'){ %>
 				<li>
-					<a href='/user_data/import_data?import_type=metadata'>Upload</a> metadata for your project
+					<u><a href='/user_data/import_data?import_type=metadata'>Upload</a></u> metadata for your project
+				</li>
+				<li>
+					Get <u><a href='/static/metadata_template.csv'>Metadata Template</a></u> for uploading metadata to VAMPS.
 				</li>
 			<% } %>
 			<li>
-				<a href='metadata_list'>MAP</a> Find datasets by location.
+				<u><a href='metadata_list'>MAP</a></u> Find datasets by location.
 			</li>
 		</div>
 	</div>

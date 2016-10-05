@@ -205,16 +205,6 @@ module.exports = {
   //
   //
   //
-  get_otus_query: function() {
-
-  },
-
-  //
-  //
-  //
-  get_med_query: function() {
-
-  },
   //
   // write file
   //
@@ -248,7 +238,7 @@ module.exports = {
     txt += header;
     for(i in biom_matrix.rows){
       tax = biom_matrix.rows[i].id;
-      console.log(tax)
+      //console.log(tax)
       items = tax.split(';');
       txt += tax;
       for(t in items){

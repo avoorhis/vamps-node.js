@@ -18,6 +18,7 @@
   var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
   var cts_local  = JSON.parse('<%- constants %>');
   var user_local  = '<%= user.username %>';
+  var image_to_render  = '<%= image_to_render %>';
 </script>
 
 
@@ -54,9 +55,7 @@
       </ul>
     </div>
 
-    <div id='viz_info'>
-    data
-    </div>
+    <div id='viz_info'></div>
   </small>
 </div>
 
@@ -566,81 +565,77 @@
             Downloads<span class="caret"></span>
           </button>
             <ul class="dropdown-menu" role="menu">          
-            <% if(prefix=='counts_table'){ %>
+            <% if(prefix=='counts_matrix'){ %>
               <li><button type="button" class="btn-link dropdown_btn" onclick="create_freq_table_file('matrix','<%= pi.ts %>')">as Table (csv)</button></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('counts_matrix','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'metadata_table') { %>
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">as Table (csv)</button></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('metadata_table','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'dheatmap') { %>
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-py','<%= pi.ts %>')">Distance File</button></li> 
-              <li class="divider"></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('dheatmap','<%= pi.ts %>')">JSON Image Config File</button></li> 
               <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('dheatmap','<%= pi.ts %>')">Image as PDF</button></li> 
             <% }else if(prefix == 'barcharts') { %>
               <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('barcharts','<%= pi.ts %>')">Image as PDF</button></li> 
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('barcharts','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'piecharts') { %>
               <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('piecharts','<%= pi.ts %>')">Image as PDF</button></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('piecharts','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'fheatmap') { %>
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('pdf-fheatmap','<%= pi.ts %>')">PDF Image File</button></li> 
-              <li class="divider"></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('fheatmap','<%= pi.ts %>')">JSON Image Config File</button></li>
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-R','<%= pi.ts %>')">Distance File</button></li>
             <% }else if(prefix == 'dbrowser') { %>
             <% }else if(prefix == 'dendrogram01') { %>
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-py','<%= pi.ts %>')">Distance File</button></li>
-              <li class="divider"></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('dendrogram01','<%= pi.ts %>')">JSON Image Config File</button></li>
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('tree-py','<%= pi.ts %>')">Tree File (newick)</button></li>
             <% }else if(prefix == 'dendrogram03') { %>
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-py','<%= pi.ts %>')">Distance File</button></li>
-              <li class="divider"></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('dendrogram03','<%= pi.ts %>')">JSON Image Config File</button></li>
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('tree-py','<%= pi.ts %>')">Tree File (newick)</button></li>
             <% }else if(prefix == 'pcoa') { %>
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('pdf-pcoa','<%= pi.ts %>')">PDF Image File</button></li> 
-              <li class="divider"></li>        
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('pcoa','<%= pi.ts %>')">JSON Image Config File</button></li>        
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-R','<%= pi.ts %>')">Distance File</button></li>
             <% }else if(prefix == 'pcoa3d') { %>
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-py','<%= pi.ts %>')">Distance File</button></li>
-              <li class="divider"></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('pcoa3d','<%= pi.ts %>')">JSON Image Config File</button></li>
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('emperor-pc','<%= pi.ts %>')">Principal Components File</button></li>
             <% }else if(prefix == 'geospatial') { %>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('geospatial','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'adiversity') { %>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('adiversity','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'phyloseq_bars01') { %>
               <li><button type="button"  class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-biom','<%= pi.ts %>')">Biom Matrix File</button></li>
-              <li class="divider"></li>
-              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>    
-              <li class="divider"></li>        
+              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>      
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">Metadata File</button></li> 
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('phyloseq_bars01','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'phyloseq_hm02') { %>
-              <li><button type="button"  class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-biom','<%= pi.ts %>')">Biom Matrix File</button></li>
-              <li class="divider"></li>
-              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>    
-              <li class="divider"></li>        
-              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">Metadata File</button></li> 
-              <li class="divider"></li> 
+              <li><button type="button"  class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-biom','<%= pi.ts %>')">Biom Matrix File</button></li>       
+              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>      
+              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">Metadata File</button></li>               
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-R','<%= pi.ts %>')">Distance File</button></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('phyloseq_hm02','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'phyloseq_nw03') { %>
               <li><button type="button"  class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-biom','<%= pi.ts %>')">Biom Matrix File</button></li>
-              <li class="divider"></li>
-              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>    
-              <li class="divider"></li>        
+              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>          
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">Metadata File</button></li>
-              <li class="divider"></li> 
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-R','<%= pi.ts %>')">Distance File</button></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('phyloseq_nw03','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'phyloseq_ord04') { %>
               <li><button type="button"  class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-biom','<%= pi.ts %>')">Biom Matrix File</button></li>
-              <li class="divider"></li>
-              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>    
-              <li class="divider"></li>        
-              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">Metadata File</button></li>
-              <li class="divider"></li> 
+              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>            
+              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">Metadata File</button></li> 
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-R','<%= pi.ts %>')">Distance File</button></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('phyloseq_ord04','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'phyloseq_tree05') { %>
               <li><button type="button"  class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-biom','<%= pi.ts %>')">Biom Matrix File</button></li>
-              <li class="divider"></li>
-              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>    
-              <li class="divider"></li>        
-              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">Metadata File</button></li> 
-              <li class="divider"></li>          
+              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tax','<%= pi.ts %>')">Taxonomy Names File</button></li>        
+              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('metadata','<%= pi.ts %>')">Metadata File</button></li>          
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('phyloseq-tree','<%= pi.ts %>')">Tree File</button></li>
-              <li class="divider"></li> 
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-R',<%= pi.ts %>')">Distance File</button></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('phyloseq_tree05','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'cytoscape') { %>
             <% }else if(prefix == 'dendrogram0') { %>
             <% } %>

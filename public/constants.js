@@ -272,7 +272,7 @@ constants.VISUAL_THUMBNAILS = {
             thumb:'/images/visuals/counts_table.png',   
             //link:'user_viz_data/counts_table',   
             //id:'counts_table_link_id', 
-            prefix:'counts_table',
+            prefix:'counts_matrix',
             tip:''  
         },
     

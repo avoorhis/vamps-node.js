@@ -7,16 +7,16 @@
 ////  VISUALIZATION BUTTONS  \\\\
 // COUNTS Table
 //
-var tax_counts_link = document.getElementById('counts_table_link_id') || null;
-var tax_counts_btn = document.getElementById('counts_table_hide_btn');
-var tax_counts_div = document.getElementById('counts_table_div');
+var tax_counts_link = document.getElementById('counts_matrix_link_id') || null;
+var tax_counts_btn = document.getElementById('counts_matrix_hide_btn');
+var tax_counts_div = document.getElementById('counts_matrix_div');
 
-var pre_counts_table_div = document.getElementById('pre_counts_table_div');
+var pre_counts_matrix_div = document.getElementById('pre_counts_matrix_div');
 if (tax_counts_link !== null) {
     tax_counts_link.addEventListener('click', function () {
     
   if(typeof tax_table_created == "undefined"){
-        create_viz('counts_table', pi_local.ts, false);
+        create_viz('counts_matrix', pi_local.ts, false);
     		
     }else{
         if(tax_counts_btn.value == 'hide'){
@@ -25,7 +25,7 @@ if (tax_counts_link !== null) {
           toggle_visual_element(tax_counts_div,'hide',tax_counts_btn);
         }
     }
-  $(pre_counts_table_div).scrollView();
+  $(pre_counts_matrix_div).scrollView();
   });
 }
 if (typeof tax_counts_btn !=="undefined") {
@@ -45,11 +45,11 @@ if (typeof tax_counts_btn !=="undefined") {
 
 //   });
 // }
-var counts_table_open_btn = document.getElementById('counts_table_open_btn') || null;
-if (counts_table_open_btn !== null) {
-  counts_table_open_btn.addEventListener('click', function () {
+var counts_matrix_open_btn = document.getElementById('counts_matrix_open_btn') || null;
+if (counts_matrix_open_btn !== null) {
+  counts_matrix_open_btn.addEventListener('click', function () {
       
-      create_viz('counts_table', pi_local.ts, true);      
+      create_viz('counts_matrix', pi_local.ts, true);      
   });
 }
 //

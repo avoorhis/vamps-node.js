@@ -421,7 +421,6 @@ function load_dhtmlx() {
         expand_tree_dhtmlx(id)
     });
     
-    
     customTree.setXMLAutoLoading("/visuals/tax_custom_dhtmlx");
 	  customTree.setDataMode("json");
 	  //load first level of tree

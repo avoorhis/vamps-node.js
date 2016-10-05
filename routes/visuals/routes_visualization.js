@@ -41,20 +41,30 @@ BIOM_MATRIX = {};
 // var CustomTaxa  = require('./custom_taxa_class');
 
 /*
- * GET visualization page.
+ * GET visualization page from uploaded image or configuration
  */
-router.get('/view_selection/:filename', helpers.isLoggedIn, function(req, res) {
-    console.log('req.body: view_selection::prefix-->>');
+router.get('/view_selection/:filename/:from_configuration_file', helpers.isLoggedIn, function(req, res) {
+    console.log('req.body: view_selectionGET::prefix-->>');
     console.log(req.body);
-    console.log('req.body: view_selection>>prefix');
-    var file_to_open = req.params.filename;
-    var file_path_to_open = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, file_to_open);
-    var file_data_to_open = JSON.parse(fs.readFileSync(file_path_to_open, 'utf8'))
-    console.log(file_data_to_open)
-    chosen_id_name_hash = file_data_to_open.id_name_hash
-    visual_post_items = file_data_to_open.post_items
-    dataset_ids = chosen_id_name_hash.ids;
+    console.log(req.params);
+    console.log('req.body: view_selectionGET>>prefix');
+    req.flash('message', 'Using data from configuration file.');
+    TAXCOUNTS = {};
+    METADATA  = {}; 
+    var image_to_open = ''
     
+    var config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.params.filename);
+    var config_file_data = JSON.parse(fs.readFileSync(config_file_path, 'utf8'))
+    if(config_file_data.hasOwnProperty('image')){
+      console.log('FILE is IMAGE')
+      image_to_open = config_file_data.image
+    }else{
+      console.log('FILE is CONFIG')
+    }
+    //console.log(file_data)
+    visual_post_items = config_file_data.post_items;
+    chosen_id_name_hash = config_file_data.id_name_hash;
+    dataset_ids = chosen_id_name_hash.ids;
     for(var i in dataset_ids){
       var did = dataset_ids[i]
       try{
@@ -83,22 +93,29 @@ router.get('/view_selection/:filename', helpers.isLoggedIn, function(req, res) {
       }
       
     }
+    console.log('TS')
+    console.log(visual_post_items)
+    //var timestamp = +new Date();  // millisecs since the epoch!
+    //timestamp = req.user.username + '_' + timestamp;
+    //visual_post_items.ts = timestamp;
+    distance_matrix = {};
     BIOM_MATRIX = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
     var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
     
     res.render('visuals/view_selection', {
-                                title     :           'VAMPS: Visuals Select',
-                                referer   :           'unit_selection',
+                                title           : 'VAMPS: Visuals Select',
+                                referer         : 'unit_selection',
                                 chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-                                matrix    :           JSON.stringify(BIOM_MATRIX),
-                                metadata  :           JSON.stringify(metadata),
-                                constants :           JSON.stringify(req.CONSTS),
-                                post_items:           JSON.stringify(visual_post_items),
-                                user      :           req.user,
-                                hostname  :           req.CONFIG.hostname,
-                                gekey     : req.CONFIG.GOOGLE_EARTH_KEY,
+                                matrix          : JSON.stringify(BIOM_MATRIX),
+                                metadata        : JSON.stringify(metadata),
+                                constants       : JSON.stringify(req.CONSTS),
+                                post_items      : JSON.stringify(visual_post_items),
+                                user            : req.user,
+                                hostname        : req.CONFIG.hostname,
+                                gekey           : req.CONFIG.GOOGLE_EARTH_KEY,
+                                image_to_render : image_to_open,
 	                          //locals: {flash: req.flash('infomessage')},
-                                message   :           req.flash('Message')
+                                message         : req.flash('Message')
     });
     
 });
@@ -140,12 +157,13 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 //   meta_ckbx_toggle: 'all',
 //   selected_metadata: [ 'sample_source', 'patient', 'gene_target' ] }
 // req.body: view_selection
-
-  if(req.body.resorted === '1'){
+  if(req.body.restore_image === '1'){
+    console.log('in view_selection RESTORE IMAGE')
+  }else if(req.body.resorted === '1'){
     req.flash('message','The dataset order has been updated.');
     dataset_ids = req.body.ds_order;
     chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);	
-  }else if(req.body.from_configuration_file === '1'){
+  }else if(req.body.from_configuration_file === '1' || req.query.from_configuration_file === '1'){
     req.flash('message', 'Using data from configuration file.');
     TAXCOUNTS = {};
     METADATA  = {}; 
@@ -161,7 +179,6 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
      
       try{
        
-        
         if(HDF5_TAXDATA == ''){
             if(visual_post_items.unit_choice == 'tax_rdp_simple'){
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
@@ -270,18 +287,19 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 
 
   res.render('visuals/view_selection', {
-                                title     :           'VAMPS: Visuals Select',
-                                referer   :           'unit_selection',
+                                title           : 'VAMPS: Visuals Select',
+                                referer         : 'unit_selection',
                                 chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-                                matrix    :           JSON.stringify(BIOM_MATRIX),
-                                metadata  :           JSON.stringify(metadata),
-                                constants :           JSON.stringify(req.CONSTS),
-                                post_items:           JSON.stringify(visual_post_items),
-                                user      :           req.user,
-                                hostname  :           req.CONFIG.hostname,
-                                gekey     : req.CONFIG.GOOGLE_EARTH_KEY,
+                                matrix          : JSON.stringify(BIOM_MATRIX),
+                                metadata        : JSON.stringify(metadata),
+                                constants       : JSON.stringify(req.CONSTS),
+                                post_items      : JSON.stringify(visual_post_items),
+                                user            : req.user,
+                                hostname        : req.CONFIG.hostname,
+                                gekey           : req.CONFIG.GOOGLE_EARTH_KEY,
+                                image_to_render : '',
 	                          //locals: {flash: req.flash('infomessage')},
-                                message   :           req.flash('Message')
+                                message         : req.flash('Message')
                  });
 
 });
@@ -588,9 +606,9 @@ router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
 //
 router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     //console.log('found routes_test_heatmap')
-    //console.log('req.body hm');
-    //console.log(req.body);
-    //console.log('req.body hm');
+    console.log('req.body hm');
+    console.log(req.body);
+    console.log('req.body hm');
     
     var ts = req.body.ts;
     var metric = req.body.metric;
@@ -2200,21 +2218,27 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
   // metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
   //console.log(METADATA)
   //console.log(chosen_id_name_hash)
-  var save_object = {}
-  save_object.post_items = visual_post_items
-  save_object.id_name_hash = chosen_id_name_hash
-  console.log(save_object)
+  var json_obj = {}
+  json_obj.source = 'VAMPS';
+  json_obj.post_items = visual_post_items
+  json_obj.id_name_hash = chosen_id_name_hash
+
+  console.log(json_obj)
 
   var filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,filename);
   helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE));  // create dir if not present
   helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE,req.user.username)); // create dir if not present
   //console.log(filename);
-  helpers.write_to_file(filename_path, JSON.stringify(save_object));
+  helpers.write_to_file(filename_path, JSON.stringify(json_obj));
     
   res.send("Saved as: <a href='saved_elements'>"+filename+"</a>");
   
   
 });
+//
+//
+//
+
 // router.get('/saved_states', helpers.isLoggedIn,  function(req, res) {
 //     console.log('in show_saved_configs');
 //     if(req.user.username == 'guest'){
@@ -2292,6 +2316,7 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
       //console.log('req.body: show_saved_datasets-->>');
       //console.log(req.body);
       //console.log('req.body: show_saved_datasets');
+      var acceptable_prefixes = ['datasets', 'configuration', 'image']
       var saved_elements_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
 
       var file_info = {};
@@ -2307,7 +2332,7 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
     		  }else{
       		  for (var f in files){
       	        var pts = files[f].split('-');
-      	        if(pts[0] === 'datasets' || pts[0] === 'configuration'){
+      	        if(acceptable_prefixes.indexOf(pts[0]) != -1 ){
       	          //file_info.files.push(files[f]);
       	          stat = fs.statSync(path.join(saved_elements_dir,files[f]));
       			       file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime.toString() }

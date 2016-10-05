@@ -52,7 +52,7 @@
 			<%= filename %>
 		</td>
 		<td>						
-			<% if(datatype == 'configuration'){ %>
+			<% if(datatype == 'configuration' || datatype == 'image'){ %>
 				<form id='' method='POST' action='view_selection'>
 					<input type='submit' class='btn btn-xs btn-link' value='Load' />
 					<input type='hidden'  name='from_configuration_file' value='1' />
@@ -72,7 +72,7 @@
 		
 		</td>
 		<td>
-		    <% if(datatype == 'configuration'){ %>
+		    <% if(datatype == 'configuration' || datatype == 'image'){ %>
                 <form id='download_biom_form_id'  method='POST' action='download_file'>
                     <button type='submit' id='download_configuration_btn' class='btn btn-xs btn-link'>Download</button>
                     <input type='hidden' name='file_type' value='configuration' /> 

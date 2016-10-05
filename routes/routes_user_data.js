@@ -26,7 +26,8 @@ var queries	= require(app_root + '/routes/queries');
 var config  = require(app_root + '/config/config');
 var CONSTS  = require(app_root + '/public/constants');
 var COMMON  = require(app_root + '/routes/visuals/routes_common');
-
+var META    = require('./visuals/routes_visuals_metadata');
+var MTX     = require('./visuals/routes_counts_matrix');
 //var progress = require('progress-stream');
 var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
 
@@ -77,7 +78,7 @@ router.get('/file_retrieval', helpers.isLoggedIn, function (req, res) {
           //reverse sort: recent-->oldest
           return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
       });
-      res.render('user_data/file_retrieval', { title: 'VAMPS:Export Data',
+      res.render('user_data/file_retrieval', { title: 'VAMPS:Retrieve Data',
               user: req.user, hostname: req.CONFIG.hostname,
               finfo: JSON.stringify(file_info),
               message : req.flash('message'),
@@ -346,63 +347,124 @@ router.post('/import_choices/multi_fasta', [helpers.isLoggedIn, upload.array('up
     }
   }
 );
-
+router.post('/import_choices/add_metadata_to_pr', [helpers.isLoggedIn, upload.array('upload_files', 12)],
+  form(
+    form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
+  ),
+  function (req, res)
+  {
+    console.log("QQQ12 in router.post('import_choices/multi_fasta'");
+    if (!req.form.isValid) {
+      req.flash('messages', req.form.errors);
+      editUploadData(req, res);
+      //TODO: check if the project name is in db, if not - redirect to add_project
+      return;
+    }
+    else
+    {
+      uploadData(req, res);
+    }
+  }
+);
+router.get('/import_choices/upload_image_file', [helpers.isLoggedIn], function (req, res) {
+  url         = path.join('user_data', req.url);
+  import_type = req.url.split("/").slice(-1)[0];
+  //'/import_choices/multi_fasta', 'multi_fasta'
+  
+  res.render(url, {
+    title:       'Import Data',
+    user:        req.user,
+    hostname:    req.CONFIG.hostname,
+    message:     req.flash('message'),
+    failmessage: req.flash('failMessage'),
+    import_type: import_type,
+  });
+});
+//
+//
+//
+router.post('/import_choices/re_create_from_file', [helpers.isLoggedIn, upload.single('upload_files', 12)], function (req, res) {
+    console.log('in re_create_image_from_file')
+    console.log(req.body)
+    console.log('file',req.file)
+    var upld_obj = JSON.parse(fs.readFileSync(req.file.path, 'utf8'));
+    console.log(upld_obj)
+    var timestamp = +new Date();
+    if(upld_obj.hasOwnProperty('image')){
+      console.log('1FILE is IMAGE')
+      image = upld_obj.image
+      new_filename = 'image-'+image+'-'+timestamp+'.json'
+    }else{
+      console.log('2FILE is CONFIG')
+      new_filename = 'configuration-'+timestamp+'.json'
+    }
+      
+    new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename)
+    console.log(new_filename_path)
+    fs.move(req.file.path, new_filename_path, function(err){
+      if (err) return console.error(err)
+      //var args = "?filename="+new_filename
+      //args += "&from_configuration_file=1"
+      //res.redirect('/visuals/view_selection'+args)
+      res.redirect('/visuals/view_selection/'+new_filename+'/1')
+    })
+});
 // TODO: change, see improt choices
 //
 // IMPORT DATA
 //
 /* GET Import Data page. */
-router.get('/import_data', helpers.isLoggedIn, function (req, res) {
-  console.log('import_data, req.ur = ');
-  console.log(req.url);
-  var myurl = url.parse(req.url, true);
+// router.get('/import_data', helpers.isLoggedIn, function (req, res) {
+//   console.log('import_data, req.url = ');
+//   console.log(req.url);
+//   var myurl = url.parse(req.url, true);
 
 
-  var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+//   var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
 
-  var my_projects = [];
-  var import_type    = myurl.query.import_type;
+//   var my_projects = [];
+//   var import_type    = myurl.query.import_type;
 
-    fs.readdir(user_projects_base_dir, function readProjectsDir(err, items) {
-        if (err) {
+//     fs.readdir(user_projects_base_dir, function readProjectsDir(err, items) {
+//         if (err) {
 
-          fs.ensureDir(user_projects_base_dir, function ensureProjectsDir(err) {
-            console.log("err 0: "); // => null
-            console.log(err); // => null
-            // dir has now been created, including the directory it is to be placed in
-          });
-
-
-        } else {
-          console.log("user_projects_base_dir: ");
-          console.log(user_projects_base_dir);
-          for (var d in items) {
-            var pts = items[d].split('-');
-            if (pts[0] === 'project') {
-
-              var project_name = pts[1];
-              my_projects.push(project_name);
-
-            }
-          }
-          //'/import_choices/upload_data_tax_by_seq'
-          var render_url = path.join("user_data", req.url);
-
-          res.render(render_url, {
-            title: 'VAMPS:Import Data',
-            message: req.flash('successMessage'),
-            failmessage: req.flash('failMessage'),
-            import_type: import_type,
-            my_projects: my_projects,
-            user: req.user,
-            hostname: req.CONFIG.hostname
-          });
-
-        } // end else
-      });
+//           fs.ensureDir(user_projects_base_dir, function ensureProjectsDir(err) {
+//             console.log("err 0: "); // => null
+//             console.log(err); // => null
+//             // dir has now been created, including the directory it is to be placed in
+//           });
 
 
-});
+//         } else {
+//           console.log("user_projects_base_dir: ");
+//           console.log(user_projects_base_dir);
+//           for (var d in items) {
+//             var pts = items[d].split('-');
+//             if (pts[0] === 'project') {
+
+//               var project_name = pts[1];
+//               my_projects.push(project_name);
+
+//             }
+//           }
+//           //'/import_choices/upload_data_tax_by_seq'
+//           var render_url = path.join("user_data", req.url);
+
+//           res.render(render_url, {
+//             title: 'VAMPS:Import Data',
+//             message: req.flash('successMessage'),
+//             failmessage: req.flash('failMessage'),
+//             import_type: import_type,
+//             my_projects: my_projects,
+//             user: req.user,
+//             hostname: req.CONFIG.hostname
+//           });
+
+//         } // end else
+//       });
+
+
+// });
 //
 // VALIDATE FORMAT
 //
@@ -3145,11 +3207,7 @@ router.post('/download_file', helpers.isLoggedIn, function (req, res) {
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     var timestamp = +new Date();  // millisecs since the epoch!
     var file_tag = ['-'+req.body.file_type+'_file'];
-    //if(req.body.file_type == 'frequency'){
-      //create_frequency_table_file(req, user_dir, timestamp)
-      // copy file to user directory?
-    //}else{
-      //console.log(visual_post_items)
+    
       helpers.create_export_files(req, user_dir, timestamp, chosen_id_name_hash.ids, file_tag, visual_post_items.normalization, visual_post_items.tax_depth, visual_post_items.domains, true);
     //}
     res.send(req.body.file_type);
@@ -3206,7 +3264,15 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
 
     res.send(new_file_name);
 });
-
+//
+//
+//
+router.get('/get_template', function (req, res) {
+    console.log('in get_template')
+    var template = ''
+    var template_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,template)
+    console.log(template_path)
+});
 //
 //  FUNCTIONS 
 //
@@ -3303,195 +3369,6 @@ function update_dataset_names(config_info) {
 }
 //
 //
-//
-function create_frequency_table_file(req, user_dir, timestamp){
-  console.log(BIOM_MATRIX);
-}
-/////////////////// EXPORTS ///////////////////////////////////////////////////////////////////////
-
-
-// function create_metadata_file(req, user_dir, ts, dids) {
-//
-//     var file_name, out_file_path;
-//     file_name = 'metadata-'+ts+'_custom.gz';
-//     out_file_path = path.join(user_dir, file_name);
-//     pids = []
-//
-//         if (req.CONFIG.cluster_available == true) {
-//             qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
-//
-//         } else {
-//
-//         }
-//     return file_name;
-// }
-// function create_taxbytax_file(req, user_dir, ts, dids) {
-//
-//     var file_name, out_file_path;
-//     file_name = 'taxbytax-'+ts+'_custom.gz';
-//     out_file_path = path.join(user_dir, file_name);
-//         if (req.CONFIG.cluster_available == true) {
-//             qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
-//
-//         } else {
-//
-//         }
-//     return file_name;
-// }
-// function create_taxbyref_file(req, user_dir, ts, dids) {
-//
-//     var file_name, out_file_path;
-//     file_name = 'taxbyref-'+ts+'_custom.gz';
-//     out_file_path = path.join(user_dir, file_name);
-//         if (req.CONFIG.cluster_available == true) {
-//             qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
-//
-//         } else {
-//
-//         }
-//     return file_name;
-// }
-// function create_taxbyseq_file(req, user_dir, ts, dids) {
-//
-//     var file_name, out_file_path;
-//     file_name = 'taxbyseq-'+ts+'_custom.gz';
-//     out_file_path = path.join(user_dir, file_name);
-//         if (req.CONFIG.cluster_available == true) {
-//             qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
-//
-//         } else {
-//
-//         }
-//     return file_name;
-// }
-
-
-
-
-    // // TODO: Unreachable 'var' after 'return'.
-    //  var qSelect = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n";
-    // //var qSelect = "select sequence_comp as seq, sequence_id, seq_count, dataset from sequence_pdr_info\n";
-    // qSelect += " JOIN sequence using (sequence_id)\n";
-    // qSelect += " JOIN dataset using (dataset_id)\n";
-    // qSelect += " JOIN project using (project_id)\n";
-    // var seq, seqid, seq_count, pjds;
-    // var file_name, out_file_path;
-
-    // //var pids = JSON.parse(req.body.datasets).ids;
-
-    // out_file_path = path.join(user_dir, file_name);
-    // qSelect += " where dataset_id in ("+pids+")";
-
-    // var gzip = zlib.createGzip();
-    // console.log(qSelect);
-
-    // var wstream = fs.createWriteStream(out_file_path);
-    // var rs = new Readable();
-    // var collection = db.query(qSelect, function mysqlSelectSeqs(err, rows, fields) {
-    //   if (err) {
-    //       throw err;
-    //   } else {
-    //     for (var i in rows) {
-    //       seq = rows[i].seq.toString();
-    //       //var buffer = new Buffer(rows[i].seq, 'base64');
-    //       //console.log(seq);
-    //       seq_id = rows[i].sequence_id.toString();
-    //       seq_count = rows[i].seq_count.toString();
-    //       //project = rows[i].project;
-    //       pjds = rows[i].project+'--'+rows[i].dataset;
-    //       entry = '>'+seq_id+'|'+pjds+'|'+seq_count+"\n"+seq+"\n";
-    //       //console.log(entry);
-    //       rs.push(entry);
-    //     }
-
-    //     rs.push(null);
-    //   }
-    //   rs
-    //     .pipe(gzip)
-    //     .pipe(wstream)
-    //     .on('finish', function readableStreamOnFinish() {  // finished
-    //       console.log('done compressing and writing file');
-    //       console.log(JSON.stringify(req.user));
-    //       var info = {
-    //             to : req.user.email,
-    //             from : "vamps@mbl.edu",
-    //             subject : "fasta file is ready",
-    //             text : "Your fasta file is ready here:https://vamps.mbl.edu:8124\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
-    //           };
-    //       helpers.send_mail(info);
-
-
-    //     });
-
-    // });
-
-    // return file_name;
-
-//}
-/////////////////////////////////////////////////////////////////////////////////////////////////
-function get_local_script_text(log, site, code, cmd_list) {
-      //### Create Cluster Script
-    script_text = "#!/bin/sh\n\n";
-    script_text += "# CODE:\t$code\n\n";
-    //script_text += "# source environment:\n";
-    //script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";
-    script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
-
-    script_text += 'echo -n "Hostname: "'+"\n";
-    script_text += "echo `hostname`\n";
-    script_text += 'echo -n "Current working directory: "'+"\n";
-    script_text += "echo `pwd`\n\n";
-    for (var i in cmd_list) {
-        script_text += cmd_list[i]+"\n";
-    }
-    console.log('MMM get_local_script_text - cmd_list: ');
-    console.log(util.inspect(cmd_list, false, null));
-    console.log('MMM1 get_local_script_text - code: ');
-    console.log(util.inspect(code, false, null));
-    
-
-    //##### END  create command
-
-    return script_text;
-}
-//
-//
-//
-
-
-
-// function get_qsub_script_text2(log, pwd, site, name, cmd_list) {
-
-//     //### Create Cluster Script
-//     script_text = "#!/bin/sh\n\n";
-//     script_text += "# CODE:\t"+name+"\n\n";
-//     script_text += "# source environment:\n";
-//     script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";
-//     script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
-//     script_text += "# Loading Module didn't work when testing:\n";
-//     //$script_text .= "LOGNAME=test-output-$TSTAMP.log\n";
-//     script_text += "export MODULEPATH=/usr/local/www/vamps/software/modulefiles\n";
-//     script_text += ". /xraid/bioware/Modules/etc/profile.modules\n";
-//     script_text += "# . /usr/share/Modules/init/sh\n";
-//     script_text += "# export MODULEPATH=/usr/local/www/vamps/software/modulefiles\n";
-//     script_text += "module load clusters/vamps\n\n";
-//     script_text += "cd "+pwd+"\n\n";
-
-
-//     for (var i in cmd_list) {
-//         script_text += cmd_list[i]+"\n";
-//     }
-//     //script_text += "chmod 666 "+log+"\n";
-//     //$script_text .= "sleep 120\n";   # for testing
-
-//     script_text += "\n";
-
-
-//     //##### END  create command
-
-//     return script_text;
-
-// }
 //
 //
 //

@@ -29,31 +29,21 @@ function view_datasets_ajax( filename, user, fxn ){
 					tree_data = get_data_for_tree(obj);
 					//alert(JSON.stringify(tree_data))
 					var html = "<div class='auto_height200 border1'><table><tr>";
-					html += "<td>Visuals:</td>";
+					html += "<td>Load data into page:</td>";
 					
 					html += "<td><form id='' name='' method='POST' action='visuals_index'>";
-					html += "<button type='submit' class='btn btn-xs btn-link'>TreeSelect</button>";					
+					html += "<button type='submit' class='btn btn-xs btn-link'>Tree Selection</button>";					
 					html += "<input type='hidden' name='data_to_open' value='"+ JSON.stringify(tree_data)+"' >";
 					html += "</form></td>";
 
 					html += "<td><form id='' name='' method='POST' action='unit_selection'>";
-					html += "<button type='submit' class='btn btn-xs btn-link'>UnitSelect</button>";					
+					html += "or <button type='submit' class='btn btn-xs btn-link'>Unit Selection</button>";					
 					html += "<input type='hidden' name='retain_data' value='1' >";
 					html += "<input type='hidden' name='dataset_ids' value='"+ JSON.stringify(dataset_ids)+"' >";
 					html += "</form></td>";
 
-					html += "<td>Exports:</td>";
-
-					html += "<td><form id='' name='' method='POST' action='../user_data/export_data'>";
-					html += "<button type='submit' class='btn btn-xs btn-link'>TreeSelect</button>";					
-					html += "<input type='hidden' name='data_to_open' value='"+ JSON.stringify(tree_data)+"' >";
-					html += "</form></td>"
-
-					html += "<td><form id='' name='' method='POST' action='../user_data/export_selection'>";			
-					html += "<button type='submit' class='btn btn-xs btn-link'>UnitSelect</button>";
-					html += "<input type='hidden' name='retain_data' value='1' >";
-					html += "<input type='hidden' name='dataset_ids' value='"+ JSON.stringify(dataset_ids)+"' >";
-					html += "</form></td></tr></table>"
+					
+					html += "</tr></table>"
 				
 					html += "<table class='small_font table table-condensed' >";
 				 	html += '<tr><td></td><th>SampleID</th><th>project--dataset</th></tr>';

@@ -1,0 +1,32 @@
+<% include ../../add_ins/begin.ejs %>
+
+<p class="title">Load Configuration (datasets, metadata ...)<br>or Re-Create Image from a File</p>
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+
+
+	<br>
+  
+   <form class="form-horizontal" role="form" method="POST" action="re_create_from_file" enctype="multipart/form-data">
+    <div class="form-group">
+      <label class="control-label col-sm-3" for="meta">Image or Configuration (JSON) File:</label>
+      <div class="col-sm-3 btn">          
+        <input type="file" name="upload_files" class="" id="image" >
+      </div>
+      
+    </div>
+    
+    <div class="form-group">        
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-default">Submit</button>
+      </div>
+    </div>
+    
+   <input type="hidden" name="type" value="<%= import_type %>">
+  </form>
+
+<% include ../../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/import.js"></script>
+ </body>
+ </html>
