@@ -41,7 +41,7 @@ BIOM_MATRIX = {};
 // var CustomTaxa  = require('./custom_taxa_class');
 
 /*
- * GET visualization page from uploaded image or configuration
+ * GET visualization page from uploaded IMAGE or CONFIGURATION FILE
  */
 router.get('/view_selection/:filename/:from_configuration_file', helpers.isLoggedIn, function(req, res) {
     console.log('req.body: view_selectionGET::prefix-->>');
@@ -51,15 +51,20 @@ router.get('/view_selection/:filename/:from_configuration_file', helpers.isLogge
     req.flash('message', 'Using data from configuration file.');
     TAXCOUNTS = {};
     METADATA  = {}; 
-    var image_to_open = ''
-    
+    var image_to_open = {}
     var config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.params.filename);
     var config_file_data = JSON.parse(fs.readFileSync(config_file_path, 'utf8'))
     if(config_file_data.hasOwnProperty('image')){
       console.log('FILE is IMAGE')
-      image_to_open = config_file_data.image
+      image_to_open['image'] = config_file_data.image
     }else{
       console.log('FILE is CONFIG')
+    }
+    if(config_file_data.hasOwnProperty('phylum')){
+      console.log('FILE is IMAGE (phyloseq bars or heatmap)')
+      image_to_open['phylum'] = config_file_data.phylum
+    }else{
+      console.log('FILE is CONFIG or IMAGE w/o phyloseq bars or heatmap')
     }
     //console.log(file_data)
     visual_post_items = config_file_data.post_items;
@@ -69,7 +74,7 @@ router.get('/view_selection/:filename/:from_configuration_file', helpers.isLogge
       var did = dataset_ids[i]
       try{
           if(HDF5_TAXDATA == ''){
-            if(visual_post_items.unit_choice == 'tax_rdp_simple'){
+            if(visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
             }else{
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
@@ -113,7 +118,7 @@ router.get('/view_selection/:filename/:from_configuration_file', helpers.isLogge
                                 user            : req.user,
                                 hostname        : req.CONFIG.hostname,
                                 gekey           : req.CONFIG.GOOGLE_EARTH_KEY,
-                                image_to_render : image_to_open,
+                                image_to_render : JSON.stringify(image_to_open),
 	                          //locals: {flash: req.flash('infomessage')},
                                 message         : req.flash('Message')
     });
@@ -142,8 +147,12 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   //    There should be one or more visual choices shown.
   //
   //var body = JSON.parse(req.body);
-  
-  console.log('req.body: view_selection-->>');
+  if(req.body.unit_choice == 'tax_rdp2.6_simple'){
+    delete req.body['silva119_domains']
+  }else if(req.body.unit_choice == 'tax_silva119_simple'){
+    delete req.body['rdp2.6_domains']
+  }
+  console.log('req.body: view_selection body-->>');
   console.log(req.body);
   console.log('<<--req.body: view_selection');
   
@@ -180,7 +189,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
       try{
        
         if(HDF5_TAXDATA == ''){
-            if(visual_post_items.unit_choice == 'tax_rdp_simple'){
+            if(visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
             }else{
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
@@ -218,7 +227,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
        
         
         if(HDF5_TAXDATA == ''){
-            if(visual_post_items.unit_choice == 'tax_rdp_simple'){
+            if(visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
             }else{
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
@@ -264,7 +273,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   
 
   console.log('VS--visual_post_items:>>');
-  //console.log(visual_post_items);
+  console.log(visual_post_items);
   console.log('<<VS--visual_post_items:');
  
 
@@ -297,7 +306,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                 user            : req.user,
                                 hostname        : req.CONFIG.hostname,
                                 gekey           : req.CONFIG.GOOGLE_EARTH_KEY,
-                                image_to_render : '',
+                                image_to_render : JSON.stringify({}),
 	                          //locals: {flash: req.flash('infomessage')},
                                 message         : req.flash('Message')
                  });
@@ -336,7 +345,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     dataset_ids = JSON.parse(req.body.dataset_ids);
   }
 
-
+  // for reload page
   // else if(req.body.retain_data === '1'){
   //   dataset_ids = JSON.parse(req.body.dataset_ids);	
   // }else{
@@ -2187,8 +2196,8 @@ router.get('/partials/load_metadata', helpers.isLoggedIn,  function(req, res) {
 router.get('/partials/tax_silva119_custom', helpers.isLoggedIn,  function(req, res) {
   res.render('visuals/partials/tax_silva119_custom',  { title   : 'Silva(v119) Custom Taxonomy Selection'});
 });
-router.get('/partials/tax_rdp_simple', helpers.isLoggedIn,  function(req, res) {
-    res.render('visuals/partials/tax_rdp_simple', {
+router.get('/partials/tax_rdp2.6_simple', helpers.isLoggedIn,  function(req, res) {
+    res.render("visuals/partials/tax_rdp26_simple", {
         doms: req.CONSTS.DOMAINS
     });
 });

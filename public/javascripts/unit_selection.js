@@ -48,9 +48,9 @@ if (get_graphics_btn !== null)
     //alert(selected_unit_choice+' '+custom_selection)
     if (selected_unit_choice === 'tax_silva119_simple')
     {
-      var taxa_checked = check_form(get_graphics_form, msg, "silva119_domains[]");
-    }else if (selected_unit_choice === 'tax_rdp_simple'){
-      var taxa_checked = check_form(get_graphics_form, msg, "rdp_domains[]");
+      var taxa_checked = check_form(get_graphics_form, msg, "domains[]");
+    }else if (selected_unit_choice === 'tax_rdp2.6_simple'){
+      var taxa_checked = check_form(get_graphics_form, msg, "domains[]");
     }else if (selected_unit_choice === 'tax_silva119_custom')
     {
       if(custom_selection == 'html'){
@@ -177,6 +177,7 @@ function toggle_custom_metadata()
 function load_initial_taxa_tree(unit_choice) {
   //get_requested_units_selection_box(unit_choice)
   // all created on INITIAL PAGE LOAD
+  //alert('here')
   document.getElementById('unit_choice_id').value = unit_choice
   var xmlhttp2 = new XMLHttpRequest();
   switch(unit_choice){
@@ -198,7 +199,7 @@ function load_initial_taxa_tree(unit_choice) {
       document.getElementById('rdp_treebox').style.display = 'none'
       
       break;
-    case 'tax_rdp_simple':
+    case 'tax_rdp2.6_simple':
         
       load_rdp_tax_simple()
       // globals
@@ -231,6 +232,7 @@ function load_simple_tax() {
                 //show_custom_taxa_tree();
                 
                 document.getElementById('simple_treebox').innerHTML = data;
+                disable_or_enable_chbxs(document.getElementsByClassName('simple_taxa_rdp_ckbx'), document.getElementsByClassName('simple_taxa_silva_ckbx')) // so won't be sent to server
                 toggle_taxa_btn = document.getElementById('toggle_taxa_silva_btn') || null;
                 if (toggle_taxa_btn !== null) {
                   toggle_taxa_btn.addEventListener('click', function () {
@@ -289,29 +291,47 @@ function load_custom_tax_tree() {
 function load_rdp_tax_simple() {
       
       var xmlhttp = new XMLHttpRequest();
-      xmlhttp.open("GET", '/visuals/partials/tax_rdp_simple');
+      xmlhttp.open("GET", '/visuals/partials/tax_rdp2.6_simple');
       xmlhttp.onreadystatechange = function() {
-
+              
              if (xmlhttp.readyState == 4 ) {
 
                 var data = xmlhttp.responseText;
                 
-                //alert(file_id)
-                document.getElementById('unit_choice_id').value = 'tax_rdp_simple'
+                
+                document.getElementById('unit_choice_id').value = 'tax_rdp2.6_simple'
                 //show_custom_taxa_tree();
                 
                 document.getElementById('rdp_treebox').innerHTML = data;
+                
+                disable_or_enable_chbxs(document.getElementsByClassName('simple_taxa_silva_ckbx'), document.getElementsByClassName('simple_taxa_rdp_ckbx')) // so won't be sent to server
                 toggle_taxa_btn = document.getElementById('toggle_taxa_rdp_btn') || null;
                 if (toggle_taxa_btn !== null) {
                   toggle_taxa_btn.addEventListener('click', function () {
                       
                       toggle_simple_taxa('simple_taxa_rdp_ckbx',toggle_taxa_btn);
+
                   });
                 } 
                 rdp_loaded = true
              }
       };
       xmlhttp.send();
+}
+function disable_or_enable_chbxs(bxs_to_disable, bxs_to_enable){
+  //alert(bxs_to_disable.length)
+  for(var i = 0;i < bxs_to_disable.length; i++) {
+    //if(bxs_to_disable[i].style.display == 'none') {
+        //alert(bxs_to_disable)
+        bxs_to_disable[i].disabled = true;
+    //}
+  }
+  for(var i = 0;i < bxs_to_enable.length; i++) {
+      //if(bxs_to_enable[i].style.display == 'none') {
+          //alert(bxs_to_enable)
+          bxs_to_enable[i].disabled = false;
+      //}
+  }
 }
 // function load_fancytree() {
     
@@ -591,7 +611,7 @@ function show_tax_selection_box() {
         document.getElementById('custom_tax_div').style.display = 'block'
         
         break;
-    case 'tax_rdp_simple':
+    case 'tax_rdp2.6_simple':
         if(!rdp_loaded){
           load_rdp_tax_simple()
         }

@@ -46,7 +46,7 @@ constants.TARGETS = ["Av3","Av6", "Av6v4","Av4v5", "Av3v5","Av5v6",
 constants.UNITSELECT = { units: [
         {id : 'tax_silva119_simple',file: 'unit_selectors/taxa_silva119_simple.html', name : "Taxonomy (Silva-119) -Simple", subtext: 'Silva119'},
         {id : 'tax_silva119_custom',file: 'unit_selectors/taxa_silva119_custom.html', name : "Taxonomy (Silva-119) -Custom", subtext: 'Silva119'},
-        {id : 'tax_rdp_simple',     file: 'unit_selectors/taxa_rdp.html',             name : "Taxonomy RDP",     subtext: 'Release 11'},
+        {id : 'tax_rdp2.6_simple',     file: 'unit_selectors/taxa_rdp2.6.html',             name : "Taxonomy RDP (v2.6)",     subtext: 'Release 2.6'},
 
      //   {id : 'tax_silva108_custom_fancytree',file: 'unit_selectors/taxa_silva108_custom_fancytree.json', name : "Taxonomy -Custom_fancytree", subtext: 'Silva108'},
      //   {id : 'tax_silva108_custom_dhtmlx',file: 'unit_selectors/taxa_silva108_custom_dhtmlx.json', name : "Taxonomy -Custom_dhtmlx", subtext: 'Silva108'},

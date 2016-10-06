@@ -68,7 +68,7 @@ module.exports = {
 			var unit_name_lookup_per_dataset = {};
 			var unit_name_counts = {};
 		
-			if(post_items.unit_choice === 'tax_rdp_simple') {
+			if(post_items.unit_choice === 'tax_rdp2.6_simple') {
 				taxonomy_object = new_rdp_taxonomy
 			}else if(post_items.unit_choice === 'tax_silva119_simple'){
 				taxonomy_object = new_taxonomy
@@ -87,7 +87,7 @@ module.exports = {
 				
 				  did = chosen_id_name_hash.ids[n];	
 
-				  if(post_items.unit_choice === 'tax_silva119_simple' || post_items.unit_choice === 'tax_rdp_simple') {
+				  if(post_items.unit_choice === 'tax_silva119_simple' || post_items.unit_choice === 'tax_rdp2.6_simple') {
 				  		rank = post_items.tax_depth;
 							rank_no = parseInt(C.RANKS.indexOf(rank))	+ 1;
 							for(var x in TAXCOUNTS[did]){

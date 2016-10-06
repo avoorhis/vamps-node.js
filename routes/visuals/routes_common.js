@@ -132,6 +132,7 @@ module.exports = {
   save_post_items: function(req) {
     // GLOBAL Variable
     var post_hash = {};
+    console.log('VS--BODY',req.body)
     console.log('VS--DOMAINS',req.body.domains)
     console.log('req.body.ds_order',req.body.ds_order)
     if(req.body.ds_order === undefined) {
@@ -143,13 +144,15 @@ module.exports = {
           post_hash.visuals                      = req.body.visuals;
           post_hash.selected_distance            = req.body.selected_distance || 'morisita_horn';
           post_hash.tax_depth                    = req.body.tax_depth    || 'custom';
+          
           if(post_hash.unit_choice === 'tax_silva119_simple'){
-            post_hash.domains                    = req.body.silva119_domains      || ['NA'];
-          }else if( post_hash.unit_choice === 'tax_rdp_simple'){
-            post_hash.domains                    = req.body.rdp_domains      || ['NA'];  
+            post_hash.domains                    = req.body.domains      || ['NA'];
+          }else if( post_hash.unit_choice === 'tax_rdp2.6_simple'){
+            post_hash.domains                    = req.body['domains']      || ['NA'];  
           }else{
             post_hash.domains = ['NA']
           }
+          
           if(typeof post_hash.domains == 'string') {
               post_hash.domains = post_hash.domains.split(',');
           }
@@ -199,6 +202,10 @@ module.exports = {
         chosen_id_name_hash = this.create_chosen_id_name_hash(req.body.ds_order);   
         post_hash = visual_post_items;       
     }
+    
+    console.log('AAAAAAA->')
+    console.log(post_hash)
+    console.log('<-BBBBBBBB')
     return post_hash;
   },
 

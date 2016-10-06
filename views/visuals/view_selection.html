@@ -6,6 +6,7 @@
 <%  var pi     = JSON.parse(post_items); %>
 <%  var md     = JSON.parse(metadata); %>
 <%  var items  = JSON.parse(chosen_id_name_hash); %>
+<%  var image_to_rdr  = JSON.parse(image_to_render); %>
 <%  var referer = 'view_selection'; %>
 <%  console.log('items') %>
 <%  console.log(items) %>
@@ -18,7 +19,8 @@
   var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
   var cts_local  = JSON.parse('<%- constants %>');
   var user_local  = '<%= user.username %>';
-  var image_to_render  = '<%= image_to_render %>';
+  var image_to_rdr_local  = JSON.parse('<%- image_to_render %>');
+  
 </script>
 
 
@@ -34,17 +36,24 @@
         </li>
         <li>
           <form class='' id='reload_form_id' name='reload_form' method='POST' action='view_selection'>
-            <!-- <button class='btn btn-link' type='submit'>Reload Page</button> -->
-            Reload Page
-            <input type='hidden' name='domains' value='<%= pi.domains %>'>
-            <input type='hidden' name='tax_depth' value='<%= pi.tax_depth %>'>
-            <input type='hidden' name='unit_choice' value='<%= pi.unit_choice %>'>
-            <input type='hidden' name='selected_metadata' value='<%= pi.metadata %>'>
-            <input type='hidden' name='include_nas' value='<%= pi.include_nas %>'>
+           
+            <input type='submit' value='Reload Page' />
             <input type='hidden' name='normalization' value='<%= pi.normalization %>'>
             <input type='hidden' name='selected_distance' value='<%= pi.selected_distance %>'>
             <input type='hidden' name='min_range' value='<%= pi.min_range %>'>
             <input type='hidden' name='max_range' value='<%= pi.max_range %>'>
+            <input type='hidden' name='include_nas' value='<%= pi.include_nas %>'>            
+            <% if(pi.unit_choice == 'tax_silva119_simple'){ %>
+              <input type='hidden' name='domains' value='<%= pi.domains %>'>
+            <% }else if(pi.unit_choice == 'tax_rdp2.6_simple'){ %>
+              <input type='hidden' name='domains' value='<%= pi.domains %>'>
+            <% } %>           
+            <input type='hidden' name='tax_depth' value='<%= pi.tax_depth %>'>
+            <input type='hidden' name='unit_choice' value='<%= pi.unit_choice %>'>
+            <input type='hidden' name='selected_metadata' value='<%= pi.metadata %>'>
+            
+            
+            
             <input type='hidden' name='retain_data' value='1' >
             <input type='hidden' name='dataset_ids' value='<%= JSON.stringify(items.ids) %>' >
           </form>
@@ -115,6 +124,7 @@
               <% include partials/show_visual_output_choices.html %>
         </div> <!-- End  show_select_items_div -->  
       </div>
+     
       <div  id='show_other_items_div' class="col-md-3">
         <div class='well'>
           <% include partials/show_parameters.html %>
@@ -307,12 +317,18 @@
                                 </a>
                               
                               <table><tr><td>Choose Phylum:&nbsp;</td>
-                                <td>
+                                <td> 
                                 <select id='<%= phy_id %>' name='<%= phy_id %>' style='width:100px'>
                                   <option value='0'>Choose Phylum</option>
-                                  <% for(var phy in phy_lookup){ %>
-                                    <option value='<%= phy_lookup[phy] %>'><%= phy %></option>
-                                  <% } %>
+                                 
+          <%                      for(var phy in phy_lookup){ %>
+
+          <%                          if(image_to_rdr.image == 'phyloseq_bars01' && image_to_rdr.phylum == phy_lookup[phy]){ %> 
+                                        <option selected value='<%= phy_lookup[phy] %>'><%= phy %></option>
+          <%                          }else{ %>
+                                        <option value='<%= phy_lookup[phy] %>'><%= phy %></option>
+          <%                          } %>                                
+          <%                      } %>
                                   
                                 </select>
                               </td>
@@ -344,9 +360,13 @@
                                       <td>
                                         <select id='<%= phy_id %>' name='<%= phy_id %>' style='width:120px'>
                                           <option value='0'>Choose Phylum</option>
-                                          <% for(var phy in phy_lookup){ %>
-                                            <option value='<%= phy_lookup[phy] %>'><%= phy %></option>
-                                          <% } %>
+          <%                              for(var phy in phy_lookup){ %>
+          <%                                  if(image_to_render.image == 'phyloseq_hm02' && image_to_render.phylum == phy_lookup[phy]){ %> 
+                                                <option selected value='<%= phy_lookup[phy] %>'><%= phy %></option>
+          <%                                  }else{ %>
+                                                <option value='<%= phy_lookup[phy] %>'><%= phy %></option>
+          <%                                  } %>
+          <%                              } %>
                                           
                                         </select>
                                       </td>

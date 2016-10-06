@@ -15,10 +15,10 @@ $(document).ready(function(){
     //});
     //click_on_graph_icon = false;
     //alert(pi_local.ts)
-    if(image_to_render){
+    if(image_to_rdr_local.hasOwnProperty('image')){
       //alert(image_to_render)
-      create_viz(image_to_render, pi_local.ts, false)
-      $(document.getElementById('pre_'+image_to_render+'_div')).scrollView();
+      create_viz(image_to_rdr_local.image, pi_local.ts, false)
+      $(document.getElementById('pre_'+image_to_rdr_local.image+'_div')).scrollView();
     }
     //$(pre_dheatmap_div).scrollView();
 });
@@ -1561,7 +1561,7 @@ function create_adiversity(ts, new_window){
 //
 //  CREATE PHYLOSEQ
 //
-function create_phyloseq(ts,code, new_window) {
+function create_phyloseq(ts, code, new_window) {
       //alert('im HM')
       //phyloseq_created = true;
       if(new_window){
@@ -1924,12 +1924,19 @@ function save_image_as_json(name,ts){
     args = 'name='+name
 
     //var timestamp = +new Date();  // millisecs since the epoch!
-    var ts = pi_local.ts;
-    var filename = ts + '_' + name + '.json';
+    //var ts = pi_local.ts;
+    var timestamp = +new Date();
+    var filename = 'vamps_'+timestamp+'_'+ name + '.json';
 
     var json_obj = {};
     json_obj.image = name;
     json_obj.source = 'VAMPS';
+    if(name == 'phyloseq_bars01'){
+      json_obj.phylum = document.getElementById('phyloseq_bar_phylum').value;
+    }
+    if(name == 'phyloseq_hm02'){
+      json_obj.phylum = document.getElementById('phyloseq_heatmap_phylum').value;
+    }
     json_obj.post_items = pi_local;
     json_obj.id_name_hash = ds_local;
 
