@@ -35,7 +35,7 @@
             </form>
         </li>
         <li>
-          <form class='' id='reload_form_id' name='reload_form' method='POST' action='view_selection'>
+          <form class='' id='reload_form_id' name='reload_form' method='POST' action='/visuals/view_selection'>
            
             <input type='submit' value='Reload Page' />
             <input type='hidden' name='normalization' value='<%= pi.normalization %>'>
@@ -43,17 +43,12 @@
             <input type='hidden' name='min_range' value='<%= pi.min_range %>'>
             <input type='hidden' name='max_range' value='<%= pi.max_range %>'>
             <input type='hidden' name='include_nas' value='<%= pi.include_nas %>'>            
-            <% if(pi.unit_choice == 'tax_silva119_simple'){ %>
-              <input type='hidden' name='domains' value='<%= pi.domains %>'>
-            <% }else if(pi.unit_choice == 'tax_rdp2.6_simple'){ %>
+            <% if(pi.unit_choice == 'tax_silva119_simple' || pi.unit_choice == 'tax_rdp2.6_simple'){ %>
               <input type='hidden' name='domains' value='<%= pi.domains %>'>
             <% } %>           
             <input type='hidden' name='tax_depth' value='<%= pi.tax_depth %>'>
             <input type='hidden' name='unit_choice' value='<%= pi.unit_choice %>'>
             <input type='hidden' name='selected_metadata' value='<%= pi.metadata %>'>
-            
-            
-            
             <input type='hidden' name='retain_data' value='1' >
             <input type='hidden' name='dataset_ids' value='<%= JSON.stringify(items.ids) %>' >
           </form>
@@ -99,9 +94,23 @@
 </form>
 </t></tr>
 </table>
- -->
-<% if(message){ %>
-  <div class="alert_flash_message" ><%= message %></div>
+ -->msg
+ <%= message %>
+
+<% if(message != ''){ %>
+  <% if(message[0].substring(0,5) == 'ERROR'){ %>
+    <div class="" style='position:absolute;z-index:1000;top:100px;padding:20px;background:red;color:white;' >
+      <%= message[0] %>
+      <br>We recommend reselecting data or selecting different data and trying again. 
+      If you are loading this page from a configuration file or image file it may be out of date.
+      Contact us at vamps.mbl.edu for help.
+    </div>
+    <script>image_to_rdr_local = {}</script>
+  <% }else{ %>
+    <div class="alert_flash_message" >
+      <%= message %>
+    </div>
+  <% } %>
 <% } %>
 
 
