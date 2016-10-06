@@ -481,7 +481,7 @@ function create_counts_matrix(new_window) {
       html += "<th class='right_justify' valign='bottom'><small>Graph</small></th>";
       for (var n in mtx_local.columns) {
         //html += "<th class='verticalTableHeader' >"+mtx_local.columns[n].id +"</th>";
-        html += "<th class='rotate'><div><span><a href='bar_single?id="+mtx_local.columns[n].id+"' target='_blank'>"+(parseInt(n)+1).toString()+') '
+        html += "<th class='rotate'><div><span><a href='/visuals/bar_single?id="+mtx_local.columns[n].id+"&ts="+pi_local.ts+"' target='_blank'>"+(parseInt(n)+1).toString()+') '
         html += mtx_local.columns[n].id+"</a></span></div></th>";
       
       }
@@ -1353,7 +1353,7 @@ function create_piecharts(ts, new_window) {
         
     .append("a")
         //.attr("xlink:xlink:href", function(d, i) { return 'bar_single?did='+myjson_obj.dids[i]+'&ts='+ts;} )
-        .attr("xlink:xlink:href", function(d, i) { return 'bar_single?id='+myjson_obj.names[i]+'&ts='+ts;} )
+        .attr("xlink:xlink:href", function(d, i) { return '/visuals/bar_single?id='+myjson_obj.names[i]+'&ts='+ts;} )
     .attr("target", '_blank' );
   pies.append("text")
         .attr("dx", -(r+m))
@@ -1409,7 +1409,7 @@ function heatmap_click_fxn(did1,ds1,did2,ds2){
           
            //clearInterval(myWaitVar);
             var retstring = xmlhttp.responseText;           
-        //alert(retstring)
+        alert(retstring)
         window.open(retstring,"_blank")
         //    var lines = retstring.split('\n');
         //    //alert(lines[0])

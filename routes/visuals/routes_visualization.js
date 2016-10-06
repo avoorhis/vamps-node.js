@@ -1762,6 +1762,7 @@ function get_sumator(req){
 // B A R - C H A R T  -- S I N G L E
 //
 router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
+    console.log('in bar_single')
     var myurl = url.parse(req.url, true);
     //console.log('in piechart_single'+myurl)
     var ts = myurl.query.ts;
@@ -1867,44 +1868,18 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
         }
     })
   	
-//console.log(new_matrix)
-    // res.render('visuals/user_viz_data/bar_single', {
-    //     title: 'Taxonomic Data',
-    //     ts: ts || 'default_timestamp',
-  		//   matrix    :           JSON.stringify(new_matrix),
-  		//   post_items:           JSON.stringify(visual_post_items),
-    //     seqs_file : filename,
-    //     bar_type  : 'single',
-    //     //html: html,
-    //     user: req.user, hostname: req.CONFIG.hostname,
-    // });
+
 
 });
 
-// router.post('visuals/fileUpload', function(req, res) {
-//     console.log('in fileUPLOAD')
-//     // http://www.iamrohit.in/file-upload-in-nodejs-with-progress-bar/
-//     var tempPath = req.files.uploadfile.path;
-//     var targetPath = config.UPLOADDIR+req.files.uploadfile.name;
-//     fs.rename(tempPath, targetPath, function(err) {
-//       if(err) {
-//         //res.send("Error found to upload file "+err);
-//         var msg = "Error found to upload file "+err;
-//         var type="error";
-//       } else {
-//         //res.send("<b>File uploaded to "+targetPath+" ("+req.files.uploadfile.size +" bytes)</b>");
-//         var fileSize = req.files.uploadfile.size/1024;
-//         var msg = "File uploaded to "+targetPath+" ("+(fileSize.toFixed(2)) +" kb)";
-//         var type="success";
-//         res.send(req.files.uploadfile.name);
-//       }
-//     });
-// });
+
 //
 // B A R - C H A R T  -- D O U B L E
 //
+
 router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
-    
+  
+    console.log('in bar_double-2')
     var myurl = url.parse(req.url, true);
     var did1 = myurl.query.did1;
     var did2 = myurl.query.did2;
@@ -2018,6 +1993,9 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
             fs.writeFile(file_path2, JSON.stringify(new_rows[did2]), function writeFile(err) {
               if (err) return console.log(err);
               console.log('wrote file > '+file_path2);
+              
+//open('/visuals/user_viz_data/bar_double?did1=<%= id_order[x] %>&did2=<%= id_order[y] %>&ts=<%= ts %>&dist=<%= dist %>', '_blank')"
+//open('/visuals/user_viz_data/bar_double?did1=', '_blank')
               res.render('visuals/user_viz_data/bar_double', {
                   title: 'Taxonomic Data',
                   ts: timestamp,

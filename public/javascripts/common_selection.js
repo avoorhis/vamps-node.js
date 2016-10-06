@@ -269,7 +269,7 @@ function create_svg_object(svg, props, data, ts) {
           .attr("class", "g")
           .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; }) 
           .append("a")
-          .attr("xlink:xlink:href",  function(d) { return 'bar_single?id='+d.datasetName+'&ts='+ts;} )
+          .attr("xlink:xlink:href",  function(d) { return '/visuals/bar_single?id='+d.datasetName+'&ts='+ts;} )
 
           .attr("target", '_blank' );
 
