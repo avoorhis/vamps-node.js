@@ -405,7 +405,7 @@ module.exports.sort_json_matrix = function(mtx, fxn) {
       mtx.rows = []
       mtx.data = []
       for(i in obj){
-        console.log(i,obj[i])
+        //console.log(i,obj[i])
         mtx.rows.push(obj[i].tax)
         mtx.data.push(obj[i].cnt)
       }

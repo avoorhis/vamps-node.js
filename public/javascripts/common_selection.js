@@ -256,7 +256,14 @@ function create_doublebar_svg_object(svg, props, data, ts) {
       .attr("y", props.bar_height*2)
       .text(function(d) { return d.datasetName; })
       
-      
+    var labels = datasetBar.append("text")
+      .style("text-anchor","start") 
+      .style({"font-size":  "13px","font-weight":  "normal" })
+      .attr("x", props.plot_width+10)
+      .attr("y", props.bar_height*2)
+      .text(function(d) { return 'SumCount: '+d.total; })
+
+
     var gnodes = datasetBar.selectAll("rect")
           .data(function(d) { return d.unitObj; })
         .enter()
@@ -300,6 +307,13 @@ function create_singlebar_svg_object(svg, props, data, filename) {
             .attr("class", "g")
             .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })
 
+
+      var labels = datasetBar.append("text")
+          .style("text-anchor","start") 
+          .style({"font-size":  "13px","font-weight":  "normal" })
+          .attr("x", props.plot_width+10)
+          .attr("y", props.bar_height*2)
+          .text(function(d) { return 'SumCount: '+d.total; })
 
          var gnodes = datasetBar.selectAll("rect")
              .data(function(d) { return d.unitObj; })
@@ -355,9 +369,16 @@ function create_svg_object(svg, props, data, ts) {
       .attr("x", "-2")
       .attr("y", props.bar_height*2)
       .text(function(d) { return d.datasetName; })
+  
+  var labels = datasetBar.append("text")
+      .style("text-anchor","start") 
+      .style({"font-size":  "13px","font-weight":  "normal" })
+      .attr("x", props.plot_width+10)
+      .attr("y", props.bar_height*2)
+      .text(function(d) { return 'SumCount: '+d.total; })
+
       
-      
-      var gnodes = datasetBar.selectAll("rect")
+  var gnodes = datasetBar.selectAll("rect")
           .data(function(d) { return d.unitObj; })
         .enter()
         
@@ -392,7 +413,7 @@ function get_image_properties(imagetype, ds_count) {
   var gap = 2;  // gap on each side of bar
   if(imagetype=='single'){
     props.bar_height = 20;
-    props.margin = {top: 20, right: 0, bottom: 20, left: 0};   
+    props.margin = {top: 20, right: 150, bottom: 20, left: 0};   
     props.plot_width = 900;
     props.width = props.plot_width + props.margin.left + props.margin.right;
     props.height = (ds_count * (props.bar_height + 2 * gap)) + 125;
@@ -412,7 +433,7 @@ function get_image_properties(imagetype, ds_count) {
   }else{
     props.bar_height = 15;
     //props.margin = {top: 20, right: 20, bottom: 300, left: 50};
-    props.margin = {top: 20, right: 100, bottom: 20, left: 300};
+    props.margin = {top: 20, right: 150, bottom: 20, left: 300};
     props.plot_width = 650;
     props.width = props.plot_width + props.margin.left + props.margin.right;
     props.height = (ds_count * (props.bar_height + 2 * gap)) + 125;
