@@ -39,7 +39,7 @@
 		<%      		var svalue = Math.round( dm[x_dname][y_dname] * 15 ); %>
 		     	
 	                  <td id='<%= id %>' class='heat_map_td tooltip_viz' bgcolor='#<%= colors[svalue] %>' 
-	                    		onclick="window.open('/visuals/bar_double?did1=<%= id_order[x] %>&did2=<%= id_order[y] %>&ts=<%= ts %>&dist=<%= dist %>', '_blank')"  >
+	                    		onclick="window.open('/visuals/bar_double?did1=<%= id_order[x] %>&did2=<%= id_order[y] %>&ts=<%= ts %>&dist=<%= dist %>&order=alphaDown', '_blank')"  >
 													&nbsp;&nbsp;&nbsp;&nbsp;  <!-- needed for png image -->
 	                  </td>
 		<%        } %>		        

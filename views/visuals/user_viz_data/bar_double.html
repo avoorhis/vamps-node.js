@@ -1,6 +1,9 @@
 <% include ../../add_ins/begin_nomenu.ejs %>
-<% var dataset1 = JSON.parse(matrix).datasets[0]; %>
-<% var dataset2 = JSON.parse(matrix).datasets[1]; %>
+<% var mtx = JSON.parse(matrix); %>
+<% var dataset1 = mtx.datasets[0]; %>
+<% var dataset2 = mtx.datasets[1]; %>
+<% var did1 = mtx.columns[0].did; %>
+<% var did2 = mtx.columns[1].did; %>
 <% pi = JSON.parse(post_items); %>
 <link rel="stylesheet" href="/stylesheets/bootstrap-sortable.css" >
 <script>
@@ -17,26 +20,36 @@
 <div class="progress" style="display:none;margin-top:10px;"></div>
 <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100">0%</div>
 
-<div id='info_box' class='pull-right' style='padding:5px;background:lightgrey'>
-Distance Metric: <%= pi.selected_distance %>
-<br>
-Calculated Distance: <%= dist %>
-</div>
 
 <div class='subtitle'>
   Dataset-1: <%= dataset1 %>
   <br>
   Dataset-2: <%= dataset2 %>
-  
 </div>
-
 
 <br>
 
-<div id='my_div' class='well' style="height: 130px;">
-<center>
-	<div id='barcharts_div' class=''></div>
-</center>
+<div id='my_div' class='well' style="height: 180px;">
+  <div id='info_box' class='pull-right' style='padding:5px;background:lightgrey'>
+    Distance Metric: <%= pi.selected_distance %>
+    <br>
+    Calculated Distance: <%= dist %>
+  </div>
+  <div class='pull-left' >
+    <a class='btn btn-xs btn-success' href='/visuals/bar_double?did1=<%= did1 %>&did2=<%= did2 %>&ts=<%= ts %>&dist=<%= dist %>&order=alphaDown'>
+      Taxa Names <span class="glyphicon glyphicon-chevron-down"></span></a>
+    <a class='btn btn-xs btn-success' href='/visuals/bar_double?did1=<%= did1 %>&did2=<%= did2 %>&ts=<%= ts %>&dist=<%= dist %>&order=alphaUp'>
+      Taxa Names <span class="glyphicon glyphicon-chevron-up"></a>
+    <a class='btn btn-xs btn-success' href='/visuals/bar_double?did1=<%= did1 %>&did2=<%= did2 %>&ts=<%= ts %>&dist=<%= dist %>&order=max'>
+      Count <span class="glyphicon glyphicon-chevron-down"></a>
+    <a class='btn btn-xs btn-success' href='/visuals/bar_double?did1=<%= did1 %>&did2=<%= did2 %>&ts=<%= ts %>&dist=<%= dist %>&order=min'>
+      Count <span class="glyphicon glyphicon-chevron-up"></a>
+     <-- ordering of first dataset values 
+  </div>
+  <br><br>
+  <center>
+  	<div id='barcharts_div' class=''></div>
+  </center>
 </div>
 
 
@@ -70,7 +83,7 @@ Calculated Distance: <%= dist %>
 $(document).ready(function() {  
 
   // function is where?  common_selection
-  create_barcharts(bar_type, 'name', <%= ts %>);
+  create_barcharts(bar_type, pi_local.ts, mtx_local);
   
   if(bar_type == 'single'){
     // function is where?  in this file (look below)

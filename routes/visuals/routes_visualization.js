@@ -1767,6 +1767,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     //console.log('in piechart_single'+myurl)
     var ts = myurl.query.ts;
     var pjds = myurl.query.id;
+    var order = myurl.query.order; // min, max alphaUp, alphaDown
     var ds_items = pjds.split('--');
 
     //var html  = COMMON.start_visuals_html('piechart');
@@ -1796,6 +1797,10 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
       new_matrix.data.push([BIOM_MATRIX.data[n][d]])
       new_matrix.total += BIOM_MATRIX.data[n][d]
     }
+    //console.log(JSON.stringify(new_matrix))
+    new_matrix = helpers.sort_json_matrix(new_matrix,order)
+    
+    
     //console.log(JSON.stringify(new_matrix))
     var timestamp = +new Date();  // millisecs since the epoch!  
     var filename = req.user.username+'_'+selected_did+'_'+timestamp+'_sequences.json'
@@ -1834,7 +1839,6 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
               }else{
                 g_id = ''
               }
-              
               
               if(rows[s].hasOwnProperty("species_id")){
                 var sp_id = rows[s].species_id
@@ -1880,11 +1884,14 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   
     console.log('in bar_double-2')
+
     var myurl = url.parse(req.url, true);
+    console.log(myurl.query)
     var did1 = myurl.query.did1;
     var did2 = myurl.query.did2;
     var dist = myurl.query.dist;
     var ts   = myurl.query.ts;
+    var order = myurl.query.order; // min, max alphaUp, alphaDown
     var ds1  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did1)]
     var ds2  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did2)]
     //var ds_items = pjds.split('--');
@@ -1930,10 +1937,19 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     for(n in BIOM_MATRIX.data){ // one item for each column
       
       new_matrix.column_totals[0] += BIOM_MATRIX.data[n][idx1]
-
       //new_matrix.data[1].push(BIOM_MATRIX.data[n][idx2])
       new_matrix.column_totals[1] += BIOM_MATRIX.data[n][idx2]
     }
+
+
+
+
+    //DOUBLE
+    //console.log(JSON.stringify(new_matrix))
+    new_matrix = helpers.sort_json_matrix(new_matrix,order)
+   
+    //console.log(JSON.stringify(new_matrix))
+
     //console.log(JSON.stringify(new_matrix))
     //console.log(chosen_id_name_hash)
     //open('views/visuals/user_viz_data/bar_double.html');

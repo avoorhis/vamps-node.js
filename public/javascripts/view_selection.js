@@ -481,7 +481,8 @@ function create_counts_matrix(new_window) {
       html += "<th class='right_justify' valign='bottom'><small>Graph</small></th>";
       for (var n in mtx_local.columns) {
         //html += "<th class='verticalTableHeader' >"+mtx_local.columns[n].id +"</th>";
-        html += "<th class='rotate'><div><span><a href='/visuals/bar_single?id="+mtx_local.columns[n].id+"&ts="+pi_local.ts+"' target='_blank'>"+(parseInt(n)+1).toString()+') '
+        html += "<th class='rotate'><div><span><a href='/visuals/bar_single?id="+mtx_local.columns[n].id+"&ts="+pi_local.ts+"&order=alphaDown' target='_blank' >"+(parseInt(n)+1).toString()+') '
+        
         html += mtx_local.columns[n].id+"</a></span></div></th>";
       
       }
@@ -1353,7 +1354,7 @@ function create_piecharts(ts, new_window) {
         
     .append("a")
         //.attr("xlink:xlink:href", function(d, i) { return 'bar_single?did='+myjson_obj.dids[i]+'&ts='+ts;} )
-        .attr("xlink:xlink:href", function(d, i) { return '/visuals/bar_single?id='+myjson_obj.names[i]+'&ts='+ts;} )
+        .attr("xlink:xlink:href", function(d, i) { return '/visuals/bar_single?id='+myjson_obj.names[i]+'&ts='+ts+'&order=alphaDown';} )
     .attr("target", '_blank' );
   pies.append("text")
         .attr("dx", -(r+m))
@@ -1468,7 +1469,7 @@ function create_barcharts_group(ts, new_window) {
     document.getElementById('pre_barcharts_div').style.display = 'block';
      
          // this fxn is in common_selection.js
-    create_barcharts('group', ts);
+    create_barcharts('group', ts, mtx_local);
     document.getElementById('barcharts_dnld_btn').disabled = false
 
 }

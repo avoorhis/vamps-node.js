@@ -64,37 +64,38 @@ var save_datasets_list = function(ds_local, user)
 //
 // PIES and BARS
 //
-function create_barcharts(imagetype, ts) {
+function create_barcharts(imagetype, ts, mtx) {
         //alert(imagetype)
         //var ts = pi_local.ts;
        
         var barcharts_div = document.getElementById('barcharts_div');
+        barcharts_div.innerHTML = ""
         barcharts_div.style.display = 'block';
         
         //document.getElementById('pre_barcharts_table_div').style.display = 'block';
         var unit_list = [];
-        for (var o in mtx_local.rows){
-            unit_list.push(mtx_local.rows[o].id);
+        for (var o in mtx.rows){
+            unit_list.push(mtx.rows[o].id);
         }
         var colors = get_colors(unit_list);
 
         data = [];
         //did_by_names ={}
-        for (var p in mtx_local.columns){  
+        for (var p in mtx.columns){  
           
           tmp={};
-          tmp.datasetName = mtx_local.columns[p].id;
-          tmp.did = mtx_local.columns[p].did;
+          tmp.datasetName = mtx.columns[p].id;
+          tmp.did = mtx.columns[p].did;
           //did_by_names[tmp.datasetName]=mtx_local.columns[p].did;
-          for (var t in mtx_local.rows){
-            tmp[mtx_local.rows[t].id] = mtx_local.data[t][p];
+          for (var t in mtx.rows){
+            tmp[mtx.rows[t].id] = mtx.data[t][p];
             //tmp[mtx_local.rows[t].id] = mtx_local.data[p][t];
           }
           data.push(tmp);
         }
         
 
-        var ds_count = mtx_local.shape[1];      
+        var ds_count = mtx.shape[1];      
         
         var props = get_image_properties(imagetype, ds_count); 
         //console.log(props)
@@ -126,26 +127,99 @@ function create_barcharts(imagetype, ts) {
           });
         });
       
+    if(imagetype == 'group'){
+        var buttonNames = [{name:"Taxa Names <span class=\"glyphicon glyphicon-chevron-down\"></span>",ref:"",order:"alphaDown"},
+                          {name: "Taxa Names <span class=\"glyphicon glyphicon-chevron-up\"></span>",ref:"lnk2",order:"alphaUp"},
+                          {name: "Count <span class=\"glyphicon glyphicon-chevron-down\"></span>",ref:"lnk3",order:"max"},
+                          {name: "Count <span class=\"glyphicon glyphicon-chevron-up\"></span>",ref:"4ref",order:"min"}]           
+        d3.select("#barcharts_div").append("div")
+              .attr("class","pull-left")
+              .append("text").html("Re-ordering is applied to all the samples.<br>But only the first sample's values are used.<br>")
+              .selectAll("input")
+              .data(buttonNames)
+              .enter()
+              .append("a")
+              .attr("class","btn btn-xs btn-success")
+              .attr("href", '#')
+              .html( function (d){return d.name;})   
+              .on("click", function (data,index){
+                change_matrix_order(data.order)
+              })
+    }     
     
     var svg = d3.select("#barcharts_div").append("svg")
             .attr("width",  props.width)
             .attr("height", props.height)
           .append("g")
             .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
-          // axis legends -- would like to rotate dataset names
-          props.y.domain(data.map(function(d) { return d.datasetName; }));
-          props.x.domain([0, 100]); 
+    // axis legends -- would like to rotate dataset names
+    props.y.domain(data.map(function(d) { return d.datasetName; }));
+    props.x.domain([0, 100]); 
       
-        if(imagetype=='single'){
-          //alert(filename)
-          create_singlebar_svg_object(svg, props, data, filename);
-        }else if(imagetype=='double'){
-          create_doublebar_svg_object(svg, props, data, ts);
-        }else{
-          //create_svg_object(svg,props, did_by_names, data, ts);
-          create_svg_object(svg, props, data, ts);
-        }
+    if(imagetype=='single'){
+      //alert(filename)
+      create_singlebar_svg_object(svg, props, data, filename);
+    }else if(imagetype=='double'){
+      create_doublebar_svg_object(svg, props, data, ts);
+    }else{  // group
+      //create_svg_object(svg,props, did_by_names, data, ts);
+      create_svg_object(svg, props, data, ts);
+    }
 }
+function change_matrix_order(order){
+  //alert('ord',order)
+  new_mtx = sort_json_matrix(mtx_local, order)
+  create_barcharts('group', pi_local.ts, new_mtx);
+  $(pre_barcharts_div).scrollView();
+}
+//
+//
+//
+function sort_json_matrix(mtx, fxn) {
+    // fxn must be one of min,max, alphaUp, alphaDown
+    // else original mtx returned
+    // sorts MATRIX by tax alpha or counts OF FIRST COLUMN only
+    // Does not (yet) sort datasets
+    obj = []
+    for(i in mtx.data){
+      obj.push({tax:mtx.rows[i],cnt:mtx.data[i]})
+    }
+    var reorder = false;
+    if(fxn == 'max'){
+        obj.sort(function sortByCount(a, b) {
+               return b.cnt[0] - a.cnt[0];
+        });
+        reorder = true;
+    }else if(fxn == 'min'){
+        obj.sort(function sortByCount(a, b) {
+               return a.cnt[0] - b.cnt[0];
+        });
+        reorder = true;
+    }else if(fxn == 'alphaUp'){
+      obj.sort(function sortByAlpha(a, b) {
+               return compareStrings_alpha(b.tax.id, a.tax.id)
+      });
+      reorder = true;
+    }else if(fxn == 'alphaDown'){
+      obj.sort(function sortByAlpha(a, b) {
+               return compareStrings_alpha(a.tax.id, b.tax.id)
+      });
+      reorder = true;
+    }else{
+      
+    }
+    if(reorder){
+      mtx.rows = []
+      mtx.data = []
+      for(i in obj){
+        console.log(i,obj[i])
+        mtx.rows.push(obj[i].tax)
+        mtx.data.push(obj[i].cnt)
+      }
+    }
+    return mtx
+
+};
 //
 //
 //
@@ -219,6 +293,7 @@ function create_doublebar_svg_object(svg, props, data, ts) {
 //
 function create_singlebar_svg_object(svg, props, data, filename) {
 
+         //alert(JSON.stringify(data))
          var datasetBar = svg.selectAll(".bar")
             .data(data)
           .enter() .append("g")
@@ -231,7 +306,7 @@ function create_singlebar_svg_object(svg, props, data, filename) {
              .enter()
                .append('a').attr("xlink:href",  function(d) {
              //return 'sequences?did='+mtx_local.did+'&taxa='+encodeURIComponent(d.id);
-             return 'sequences?id='+mtx_local.dataset+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
+             return 'sequences?id='+data[0].datasetName+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
           }).style("fill",   function(d) { return string_to_color_code(d.name); })
 
            .append("rect")
@@ -262,14 +337,13 @@ function create_svg_object(svg, props, data, ts) {
           .style("text-anchor", "end")
           .text("Percent");
      
-     
        var datasetBar = svg.selectAll(".bar")
           .data(data)
         .enter() .append("g")
           .attr("class", "g")
           .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; }) 
           .append("a")
-          .attr("xlink:xlink:href",  function(d) { return '/visuals/bar_single?id='+d.datasetName+'&ts='+ts;} )
+          .attr("xlink:xlink:href",  function(d) { return '/visuals/bar_single?id='+d.datasetName+'&ts='+ts+'&order=alphaDown';} )
 
           .attr("target", '_blank' );
 

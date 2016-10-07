@@ -4,6 +4,7 @@
 <%   var pct_range = JSON.parse(constants).PCT_RANGE  %>
 <%   var items     = JSON.parse(chosen_id_name_hash) %>
 Screening/Options:<br>
+<div id='screening_options_div' class='small_font' style='height:250px;'>
 <form id='' name='' method='POST' action='view_selection'>
 <table class='small_font table table-striped'>
     <tr>
@@ -25,7 +26,7 @@ Screening/Options:<br>
     <tr>
         <td>Distance Metric:  &nbsp;&nbsp;          
             
-            <select id='selected_distance' name='selected_distance' class='selectpicker'  data-style="btn btn-xs btn-info"  data-size="200" size='100'>
+            <select id='selected_distance' name='selected_distance' class='selectpicker'  data-style="btn btn-xs btn-info"  data-size="200" size='100' style='height:50px;'>
             <% for(d in distrows ) { %>
             <%    if (distrows[d].id === pi.selected_distance) { %>
                       <option value='<%= distrows[d].id %>' selected='selected' ><%= distrows[d].show %></option>
@@ -87,4 +88,4 @@ Screening/Options:<br>
 
 
 </form>
-
+</div>

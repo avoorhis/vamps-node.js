@@ -263,7 +263,6 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
     //TODO: proper escape!!! See https://github.com/mysqljs/mysql
       
       //var sql_dids = dids.join(',')
-      console.log(sql_dids)
       var seqQuery = "SELECT dataset_id, UNCOMPRESS(sequence_comp) as seq, seq_count, gast_distance, classifier\n"
       seqQuery += ",domain_id,phylum_id,klass_id,order_id,family_id,genus_id,species_id,strain_id FROM `sequence`\n"
       seqQuery += " JOIN sequence_pdr_info as t1 USING(sequence_id)\n"
