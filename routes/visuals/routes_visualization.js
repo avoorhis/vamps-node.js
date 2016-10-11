@@ -1765,7 +1765,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     console.log('in bar_single')
     var myurl = url.parse(req.url, true);
     //console.log('in piechart_single'+myurl)
-    var ts = myurl.query.ts;
+    //var ts = myurl.query.ts;
     var pjds = myurl.query.id;
     var order = myurl.query.order; // min, max alphaUp, alphaDown
     var ds_items = pjds.split('--');
@@ -1860,7 +1860,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
           fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]))
           res.render('visuals/user_viz_data/bar_single', {
               title: 'Taxonomic Data',
-              ts: ts || 'default_timestamp',
+              ts: timestamp,
               matrix    :           JSON.stringify(new_matrix),
               post_items:           JSON.stringify(visual_post_items),
               seqs_file : filename,
@@ -1890,7 +1890,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     var did1 = myurl.query.did1;
     var did2 = myurl.query.did2;
     var dist = myurl.query.dist;
-    var ts   = myurl.query.ts;
+    //var ts   = myurl.query.ts;
     var order = myurl.query.order; // min, max alphaUp, alphaDown
     var ds1  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did1)]
     var ds2  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did2)]
@@ -1954,6 +1954,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     //console.log(chosen_id_name_hash)
     //open('views/visuals/user_viz_data/bar_double.html');
     var timestamp = +new Date();  // millisecs since the epoch!  
+    console.log('TS HM File',timestamp)
     var filename1 = req.user.username+'_'+did1+'_'+timestamp+'_sequences.json'
     var file_path1 = path.join('tmp',filename1);
     var filename2 = req.user.username+'_'+did2+'_'+timestamp+'_sequences.json'

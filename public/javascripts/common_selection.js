@@ -66,7 +66,7 @@ var save_datasets_list = function(ds_local, user)
 //
 function create_barcharts(imagetype, ts, mtx) {
         //alert(imagetype)
-        //var ts = pi_local.ts;
+        //alert(ts)
        
         var barcharts_div = document.getElementById('barcharts_div');
         barcharts_div.innerHTML = ""
