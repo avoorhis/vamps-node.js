@@ -993,17 +993,17 @@ module.exports.get_qsub_script_text = function(log, pwd, site, name, cmd_list) {
 
 };
 
-module.exports.get_qsub_script_text_only = function(scriptlog, dir_path, site, cmd_name, cmd_list) {
+module.exports.get_qsub_script_text_only = function(req, scriptlog, dir_path, cmd_name, cmd_list) {
     script_text = "#!/bin/bash\n"
     script_text += "# CODE:\t${cmd_name}\n"
     script_text += "# source environment:\n"
-    script_text += "source /groups/vampsweb/${site}/seqinfobin/vamps_environment.sh\n\n"
+    script_text += "source /groups/vampsweb/"+req.CONFIG.site+"/seqinfobin/vamps_environment.sh\n\n"
     script_text += "TSTAMP=\`date +%Y%m%d%H%M%S\`\n\n"
     script_text += "# Loading Module didn work when testing:\n"
     script_text += ". /usr/share/Modules/init/sh\n"
     script_text += "export MODULEPATH=/usr/local/www/vamps/software/modulefiles\n"
     script_text += "module load clusters/vamps\n\n"
-    script_text += "PATH=$PATH:${config.PATH_TO_NODE_SCRIPTS}:${path.join(config.PROCESS_DIR, '/public/scripts')}:${config.GAST_SCRIPT_PATH}\n"
+    script_text += "PATH=$PATH:"+req.CONFIG.PATH_TO_NODE_SCRIPTS+":"+path.join(req.CONFIG.PROCESS_DIR, '/public/scripts')+":"+req.CONFIG.GAST_SCRIPT_PATH+"\n"
     script_text += "echo \"PATH is \$PATH\"\n"
 
     for (var i in cmd_list) {
@@ -1040,115 +1040,109 @@ module.exports.deleteFolderRecursive = function(path) {
     }
   }
 };
-module.exports.make_gast_script_txt = function() {
+//
+//
+//
+module.exports.make_gast_script_txt = function(req, data_dir, project) {
+  
+  
   make_gast_script_txt = "";
   if (module.exports.is_local)
   {
-    make_gast_script_txt = `
-export PERL5LIB=${app_root}/public/scripts/gast
-PATH=$PATH:${app_root}/public/scripts/gast:${config.GAST_SCRIPT_PATH}
-touch ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
-    
-    `;
+        make_gast_script_txt += "export PERL5LIB="+app_root+"/public/scripts/gast\n"
+        make_gast_script_txt += "PATH=$PATH:"+app_root+"/public/scripts/gast:"+req.CONFIG.GAST_SCRIPT_PATH+"\n"
+        make_gast_script_txt += "touch "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
   }
-  make_gast_script_txt += `  
-ls ${data_dir}/*${file_suffix} >${data_dir}/filenames.list
-# chmod 666 ${data_dir}/filenames.list
+    make_gast_script_txt += "ls "+data_dir+"/*"+file_suffix+" > "+data_dir+"/filenames.list\n"
+    make_gast_script_txt += "# chmod 666 "+data_dir+"/filenames.list\n"
+    make_gast_script_txt += "cd "+data_dir+"\n";
 
-cd ${data_dir}`;
+    make_gast_script_txt += "\n";
+    make_gast_script_txt += "\n";
+    make_gast_script_txt += `FILE_NUMBER=\`wc -l < ${data_dir}/filenames.list\``;
+    make_gast_script_txt += "\n";
 
-  make_gast_script_txt += "\n";
-  make_gast_script_txt += "\n";
-  make_gast_script_txt += `FILE_NUMBER=\`wc -l < ${data_dir}/filenames.list\``;
-  make_gast_script_txt += "\n";
-  
-  make_gast_script_txt += `echo "total files = $FILE_NUMBER" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
-  
-cat >${data_dir}/clust_gast_ill_${project}.sh <<InputComesFromHERE
-#!/bin/bash`;
+    make_gast_script_txt += "echo \"total files = $FILE_NUMBER\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"  
+    
+    make_gast_script_txt += "cat >"+data_dir+"/clust_gast_ill_"+project+".sh <<InputComesFromHERE\n"
+    make_gast_script_txt += "#!/bin/bash\n";
 
 
-if (is_local)
+if (module.exports.is_local)
 {
-  make_gast_script_txt += "\n";
-  make_gast_script_txt += `for FASTA in ${data_dir}/*${file_suffix}; do 
-  # INFILE=\\$(basename \\$FASTA)
-  INFILE=\\$FASTA
-  echo "\\$INFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
-  `;
-  make_gast_script_txt += "\n";
+        make_gast_script_txt += "\n";
+        make_gast_script_txt += "for FASTA in "+data_dir+"/*"+file_suffix+"; do \n"
+        make_gast_script_txt += "# INFILE=\\$(basename \\$FASTA)\n"
+        make_gast_script_txt += "INFILE=\\$FASTA\n"
+        make_gast_script_txt += "echo \"\\$INFILE\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
+        make_gast_script_txt += "\n";
 }
 else
 {
-// #$ -cwd
-  make_gast_script_txt += `
-#$ -S /bin/bash
-#$ -N clust_gast_ill_${project}.sh
-# Giving the name of the output log file
-#$ -o clust_gast_ill_${project}.sh.sge_script.sh.log
-# Combining output/error messages into one file
-#$ -j y
-# Send mail to these users
-#$ -M ${req.user.email}
-# Send mail; -m as sends on abort, suspend.
-#$ -m as
-#$ -t 1-\${FILE_NUMBER##*( )}
-# Now the script will iterate $FILE_NUMBER times.
 
-  . /xraid/bioware/Modules/etc/profile.modules
-  module load bioware
+        make_gast_script_txt += "#$ -S /bin/bash\n"
+        make_gast_script_txt += "#$ -N clust_gast_ill_"+project+".sh\n"
+        make_gast_script_txt += "# Giving the name of the output log file\n"
+        make_gast_script_txt += "#$ -o "+data_dir+"/cluster.log\n"
+        make_gast_script_txt += "#$ -j y\n"
+        make_gast_script_txt += "# Send mail to these users\n"
+        make_gast_script_txt += "#$ -M "+req.user.email+"\n"
+        make_gast_script_txt += "# Send mail; -m as sends on abort, suspend.\n"
+        make_gast_script_txt += "#$ -m as\n"
+        make_gast_script_txt += "#$ -t 1-\${FILE_NUMBER##*( )}\n"
+        make_gast_script_txt += "# Now the script will iterate $FILE_NUMBER times.\n"
 
-  PATH=$PATH:${app_root}/public/scripts/gast:${config.GAST_SCRIPT_PATH}
-  echo "===== $PATH ====" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+        //make_gast_script_txt += "  . /xraid/bioware/Modules/etc/profile.modules\n"
+        //make_gast_script_txt += "  module load bioware\n"
+        //make_gast_script_txt += "  PATH=$PATH:"+app_root+"/public/scripts/gast:"+req.CONFIG.GAST_SCRIPT_PATH+"\n"
+        make_gast_script_txt += "  source /groups//vampsweb/"+req.CONFIG.site+"/seqinfobin/vamps_environment.sh\n"
+        make_gast_script_txt += "  echo \"===== $PATH ====\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
 
-  LISTFILE=${data_dir}/filenames.list
-  echo "LISTFILE is \\$LISTFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
-  `;
+        make_gast_script_txt += "  LISTFILE="+data_dir+"/filenames.list\n"
+        make_gast_script_txt += "  echo \"LISTFILE is \\$LISTFILE\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n";
 
-  make_gast_script_txt += "\n";
-  make_gast_script_txt += '  INFILE=\\`sed -n "\\${SGE_TASK_ID}p" \\$LISTFILE\\`';
+        make_gast_script_txt += "\n";
+        make_gast_script_txt += '  INFILE=\\`sed -n "\\${SGE_TASK_ID}p" \\$LISTFILE\\`';
 }
 
   make_gast_script_txt += "\n";
-  make_gast_script_txt += `  echo "=====" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
-  echo "file name is \\$INFILE" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
-  echo "" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
-  echo "SGE_TASK_ID = \\$SGE_TASK_ID" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
-  echo "" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
-  
-  echo "${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
+  make_gast_script_txt += "  echo \"=====\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
+  make_gast_script_txt += "  echo \"file name is \\$INFILE\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
+  make_gast_script_txt += "  echo '' >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
+  make_gast_script_txt += "  echo \"SGE_TASK_ID = \\$SGE_TASK_ID\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
+  make_gast_script_txt += "  echo '' >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
+  make_gast_script_txt += "  echo \""+gast_script_path+"/gast_ill -saveuc -nodup "+full_option+" -in \\$INFILE -db "+gast_db_path+"/"+ref_db_name+".fa -rtax "+gast_db_path+"/"+ref_db_name+".tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
 
- ${gast_script_path}/gast_ill -saveuc -nodup ${full_option} -in \\$INFILE -db ${gast_db_path}/${ref_db_name}.fa -rtax ${gast_db_path}/${ref_db_name}.tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0
-  `;
+  make_gast_script_txt += "   "+gast_script_path+"/gast_ill -saveuc -nodup "+full_option+" -in \\$INFILE -db "+gast_db_path+"/"+ref_db_name+".fa -rtax "+gast_db_path+"/"+ref_db_name+".tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0\n";
   make_gast_script_txt += "\n";
 
   if (module.exports.is_local)
   {
-    make_gast_script_txt += "done";
-  
+    make_gast_script_txt += "done\n";
   }
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
-  make_gast_script_txt += `
-  # chmod 666 ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log
-InputComesFromHERE
+  //make_gast_script_txt +=  "  # chmod 666 "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
+  make_gast_script_txt +=  "InputComesFromHERE\n"
   
-  echo "Running clust_gast_ill_${project}.sh" >> ${data_dir}/clust_gast_ill_${project}.sh.sge_script.sh.log`;
+  make_gast_script_txt +=  "echo \"Running clust_gast_ill_"+project+".sh\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
+  
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
 
-  if (is_local)
+  if (module.exports.is_local)
   {
     // # TODO: make local version, iterate over (splited) files in LISTFILE instead of qsub
-    make_gast_script_txt += `bash ${data_dir}/clust_gast_ill_${project}.sh`;
+    make_gast_script_txt += "bash "+data_dir+"/clust_gast_ill_"+project+".sh\n";
   }
   else
   {
-    make_gast_script_txt += `qsub -sync y ${data_dir}/clust_gast_ill_${project}.sh`;
+    make_gast_script_txt += "qsub -sync y "+data_dir+"/clust_gast_ill_"+project+".sh\n";
   }
   // qsub -cwd -sync y ${data_dir}/clust_gast_ill_${project}.sh`;
 
   make_gast_script_txt += "\n";
   // make_gast_script_txt += "touch " + path.join(data_dir, "TEMP.tmp");
   // make_gast_script_txt += "\n";
+  return make_gast_script_txt
 }

@@ -3,26 +3,26 @@
 
 // Andy, when http://localhost:3000/user_data/your_projects is updated? Shows old projects.
 
-var express		= require('express');
-var router		= express.Router();
-var passport	= require('passport');
-var path			= require('path');
-var fs				= require('fs-extra');
-var url				= require('url');
-var ini				= require('ini');
-var iniparser	= require('iniparser');
-var zlib			= require('zlib');
-var multer		= require('multer');
-var util			= require('util');
-var escape		= require('escape-html');
-var form			= require("express-form");
-var mysql			= require('mysql2');
-var pdf				= require('html-pdf');
-var Readable	= require('readable-stream').Readable;
-var spawn			= require('child_process').spawn;
+var express   = require('express');
+var router    = express.Router();
+var passport  = require('passport');
+var path      = require('path');
+var fs        = require('fs-extra');
+var url       = require('url');
+var ini       = require('ini');
+var iniparser = require('iniparser');
+var zlib      = require('zlib');
+var multer    = require('multer');
+var util      = require('util');
+var escape    = require('escape-html');
+var form      = require("express-form");
+var mysql     = require('mysql2');
+var pdf       = require('html-pdf');
+var Readable  = require('readable-stream').Readable;
+var spawn     = require('child_process').spawn;
 
 var helpers = require(app_root + '/routes/helpers/helpers');
-var queries	= require(app_root + '/routes/queries');
+var queries = require(app_root + '/routes/queries');
 var config  = require(app_root + '/config/config');
 var CONSTS  = require(app_root + '/public/constants');
 var COMMON  = require(app_root + '/routes/visuals/routes_common');
@@ -902,6 +902,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 
   if (classifier.toUpperCase() == 'GAST')
   {
+    // calls helpers.make_gast_script_txt
     cmd_list = gastTax(req, project_config, options, classifier_id);
   }
   else if (classifier.toUpperCase() == 'RDP' )
@@ -1097,8 +1098,10 @@ function gastTax(req, project_config, options, classifier_id)
   // create filenames.list and get numbers
   // create clust_gast_ill_PROJECT_NAME.sh
   // run it
-  make_gast_script_txt = helpers.make_gast_script_txt();
+  make_gast_script_txt = helpers.make_gast_script_txt(req, data_dir, project);
+  scriptlog   = path.join(data_dir, 'cluster.log');
   
+  //make_gast_script_txt = helpers.get_qsub_script_text_only(scriptlog, data_dir, req.CONFIG.site, 'gastTax', cmd_list)
   //is_local = helpers.isLocal(req);
   // for tests: is_local = false;
   
@@ -1646,80 +1649,80 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
   var timestamp = +new Date();  // millisecs since the epoch!
   var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
 
-					var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-		        			args : [ '-i', original_metafile, '-t',file_format,'-o', username, '-p', project, '-db', NODE_DATABASE, '-add','-pdir',process.env.PWD,]
-		    			};
-					if(has_tax){
-						options.args = options.args.concat(['--has_tax']);
-					}
-					console.log(options.scriptPath+'/metadata_utils.py '+options.args.join(' '));
-					
-					var log = fs.openSync(path.join(process.env.PWD,'logs','upload.log'), 'a');
-					var upload_metadata_process = spawn( options.scriptPath+'/metadata_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-					var output = '';
-					console.log('py process pid='+upload_metadata_process.pid);
-					upload_metadata_process.stdout.on('data', function uploadMetadataScriptStdout(data) {
-					  console.log('stdout: ' + data);
-					  data = data.toString().replace(/^\s+|\s+$/g, '');
-					  output += data;
+          var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
+                  args : [ '-i', original_metafile, '-t',file_format,'-o', username, '-p', project, '-db', NODE_DATABASE, '-add','-pdir',process.env.PWD,]
+              };
+          if(has_tax){
+            options.args = options.args.concat(['--has_tax']);
+          }
+          console.log(options.scriptPath+'/metadata_utils.py '+options.args.join(' '));
+          
+          var log = fs.openSync(path.join(process.env.PWD,'logs','upload.log'), 'a');
+          var upload_metadata_process = spawn( options.scriptPath+'/metadata_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+          var output = '';
+          console.log('py process pid='+upload_metadata_process.pid);
+          upload_metadata_process.stdout.on('data', function uploadMetadataScriptStdout(data) {
+            console.log('stdout: ' + data);
+            data = data.toString().replace(/^\s+|\s+$/g, '');
+            output += data;
 
-					  // var lines = data.split('\n')
-					  // for(var n in lines){
-					  // 	//console.log('line: ' + lines[n]);
-							// if(lines[n].substring(0,4) == 'PID='){
-							// 	console.log('pid line ' + lines[n]);
-							// }
-					  // }
-					});
-					upload_metadata_process.on('close', function uploadMetadataScriptOnClose(code) {
-				   console.log('upload_metadata_process exited with code ' + code);
-				   var ary = output.split("\n");
-				   var last_line = ary[ary.length - 1];
-				   if(code === 0){
-					   		console.log('Upload METADATA Success');
-					   		//console.log('PID last line: '+last_line)
-					   		//var ll = last_line.split('=');
-					   		// possible multiple pids
-					    	if(has_tax){
-					   			console.log("PROJECT_INFORMATION_BY_PNAME[project]: ");
-					   			console.log(PROJECT_INFORMATION_BY_PNAME[project]);
-					   			pid = PROJECT_INFORMATION_BY_PNAME[project].pid;
-									connection.query(queries.get_select_datasets_queryPID(pid), function mysqlGetDatasetsByPID(err, rows1, fields){
-								    if (err)  {
-							 		  	console.log('1-Upload METADATA-Query error: ' + err);				 		  			
-							      } else {
-			        				   	connection.query(queries.get_select_sequences_queryPID(pid), function mysqlGetSeqsByPID(err, rows2, fields){
-			        				   		if (err)  {
-			        				 		  	console.log('2-Upload METADATA-Query error: ' + err);        				 		
-			        				    	} else {
+            // var lines = data.split('\n')
+            // for(var n in lines){
+            //  //console.log('line: ' + lines[n]);
+              // if(lines[n].substring(0,4) == 'PID='){
+              //  console.log('pid line ' + lines[n]);
+              // }
+            // }
+          });
+          upload_metadata_process.on('close', function uploadMetadataScriptOnClose(code) {
+           console.log('upload_metadata_process exited with code ' + code);
+           var ary = output.split("\n");
+           var last_line = ary[ary.length - 1];
+           if(code === 0){
+                console.log('Upload METADATA Success');
+                //console.log('PID last line: '+last_line)
+                //var ll = last_line.split('=');
+                // possible multiple pids
+                if(has_tax){
+                  console.log("PROJECT_INFORMATION_BY_PNAME[project]: ");
+                  console.log(PROJECT_INFORMATION_BY_PNAME[project]);
+                  pid = PROJECT_INFORMATION_BY_PNAME[project].pid;
+                  connection.query(queries.get_select_datasets_queryPID(pid), function mysqlGetDatasetsByPID(err, rows1, fields){
+                    if (err)  {
+                      console.log('1-Upload METADATA-Query error: ' + err);                   
+                    } else {
+                          connection.query(queries.get_select_sequences_queryPID(pid), function mysqlGetSeqsByPID(err, rows2, fields){
+                            if (err)  {
+                              console.log('2-Upload METADATA-Query error: ' + err);                   
+                            } else {
 
-			                      												
-															//helpers.update_metadata_from_file();  // need to update to hdf5 file??
+                                                    
+                              //helpers.update_metadata_from_file();  // need to update to hdf5 file??
 
-															req.flash('successMessage', 'Metadata Upload in Progress');
-			       									res.redirect("/user_data/import_choices");
-			        				    	}
+                              req.flash('successMessage', 'Metadata Upload in Progress');
+                              res.redirect("/user_data/import_choices");
+                            }
 
-			        				   	});
-								   	} // end else
+                          });
+                    } // end else
 
-							   	});
-								}else{  // end if(has_tax)
-									req.flash('successMessage', 'Metadata Upload in Progress');
-			       			res.redirect("/user_data/import_choices");
-								}
+                  });
+                }else{  // end if(has_tax)
+                  req.flash('successMessage', 'Metadata Upload in Progress');
+                  res.redirect("/user_data/import_choices");
+                }
 
-				   }else{
-				   		// ERROR
-					    console.log('ERROR last line: '+last_line);
+           }else{
+              // ERROR
+              console.log('ERROR last line: '+last_line);
 
-			   	  	// NO REDIRECT here
-			   	  	req.flash('failMessage', 'Script Error: '+last_line);
-			        res.redirect("/user_data/import_choices");
-				   }
-				});  // end upload_metadata_process ON Close
+              // NO REDIRECT here
+              req.flash('failMessage', 'Script Error: '+last_line);
+              res.redirect("/user_data/import_choices");
+           }
+        });  // end upload_metadata_process ON Close
 
-//	});
+//  });
 
 });
 
@@ -2042,7 +2045,7 @@ function GetScriptVars(req, data_repository, cmd_list, cmd_name)
   else
   {
     scriptlog   = path.join(data_repository, 'cluster.log');
-    script_text = helpers.get_qsub_script_text_only(scriptlog, data_repository, req.CONFIG.dbhost, cmd_name, cmd_list);
+    script_text = helpers.get_qsub_script_text_only(req, scriptlog, data_repository, cmd_name, cmd_list);
   }
   
   // console.log('111 scriptlog: ' + scriptlog);
@@ -2167,7 +2170,8 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
      }
      else // code != 0
      {
-       failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
+       console.log('FAILED',script_path)
+       //failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
      }
   });
 
