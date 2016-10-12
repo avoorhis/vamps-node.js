@@ -902,6 +902,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 
   if (classifier.toUpperCase() == 'GAST')
   {
+    // calls helpers.make_gast_script_txt
     cmd_list = gastTax(req, project_config, options, classifier_id);
   }
   else if (classifier.toUpperCase() == 'RDP' )
@@ -1097,8 +1098,10 @@ function gastTax(req, project_config, options, classifier_id)
   // create filenames.list and get numbers
   // create clust_gast_ill_PROJECT_NAME.sh
   // run it
-  make_gast_script_txt = helpers.make_gast_script_txt();
+  make_gast_script_txt = helpers.make_gast_script_txt(req, data_dir, project);
+  scriptlog   = path.join(data_dir, 'cluster.log');
   
+  //make_gast_script_txt = helpers.get_qsub_script_text_only(scriptlog, data_dir, req.CONFIG.site, 'gastTax', cmd_list)
   //is_local = helpers.isLocal(req);
   // for tests: is_local = false;
   
@@ -2042,7 +2045,7 @@ function GetScriptVars(req, data_repository, cmd_list, cmd_name)
   else
   {
     scriptlog   = path.join(data_repository, 'cluster.log');
-    script_text = helpers.get_qsub_script_text_only(scriptlog, data_repository, req.CONFIG.dbhost, cmd_name, cmd_list);
+    script_text = helpers.get_qsub_script_text_only(req, scriptlog, data_repository, cmd_name, cmd_list);
   }
   
   // console.log('111 scriptlog: ' + scriptlog);
@@ -2167,7 +2170,8 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
      }
      else // code != 0
      {
-       failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
+       console.log('FAILED',script_path)
+       //failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
      }
   });
 
