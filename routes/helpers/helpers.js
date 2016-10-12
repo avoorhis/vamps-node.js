@@ -531,7 +531,37 @@ module.exports.make_color_seq = function(seq){
       return return_string;
 };    //end of function make_color_seq
 
-// mysql queries
+module.exports.update_project_information_global_object = function(pid, form, user_obj){
+    console.log('Updating PROJECT_INFORMATION_BY_PID')
+    console.log(pid)
+    console.log(JSON.stringify(form))
+    console.log(JSON.stringify(user_obj))
+    if( PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid) == true){
+        console.log('pid already in PROJECT_INFORMATION_BY_PID -- how can that be?')
+        return
+    }
+    console.log('Creating new PROJECT_INFORMATION_BY_PID[pid]')
+    PROJECT_INFORMATION_BY_PID[pid] = {}
+    PROJECT_INFORMATION_BY_PID[pid] = {
+            "last" :             user_obj.last_name,
+            "first" :            user_obj.first_name,
+            "username" :         user_obj.username,
+            "oid" :              user_obj.user_id,
+            "email" :            user_obj.email,
+           // "env_source_name" : rows[i].env_source_name,
+            "env_source_id" :    form.new_env_source_id,
+            "institution" :      user_obj.institution,
+            "project" :          form.new_project_name,
+            "pid" :              pid,
+            "title" :            form.new_project_title,
+            "description" :      form.new_project_description,
+            "public" :           form.new_privacy,
+            "permissions" :     [user_obj.user_id]            
+          };
+    PROJECT_INFORMATION_BY_PNAME[form.new_project_name] =  PROJECT_INFORMATION_BY_PID[pid];
+    console.log('PROJECT_INFORMATION_BY_PID[pid]')
+    console.log(PROJECT_INFORMATION_BY_PID[pid])
+}
 
 // TODO: Column: 52 "This function's cyclomatic complexity is too high. (20)"
 module.exports.run_select_datasets_query = function(rows){
@@ -557,10 +587,10 @@ module.exports.run_select_datasets_query = function(rows){
             "email" :            rows[i].email,
             "env_source_name" : rows[i].env_source_name,
             "env_source_id" :   rows[i].env_sample_source_id,
-            "institution" :      rows[i].institution,
-            "project" :          project,
-            "pid" :              pid,
-            "title" :            rows[i].title,
+            "institution" :     rows[i].institution,
+            "project" :         project,
+            "pid" :             pid,
+            "title" :           rows[i].title,
             "description" :      rows[i].project_description,
             "public" :          rows[i].public,
           };
@@ -1121,8 +1151,8 @@ else
     make_gast_script_txt += "done\n";
   }
   make_gast_script_txt += "\n";
+  make_gast_script_txt +=  "  chmod 666 "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
   make_gast_script_txt += "\n";
-  //make_gast_script_txt +=  "  # chmod 666 "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
   make_gast_script_txt +=  "InputComesFromHERE\n"
   
   make_gast_script_txt +=  "echo \"Running clust_gast_ill_"+project+".sh\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
