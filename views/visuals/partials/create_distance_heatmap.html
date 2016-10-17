@@ -19,7 +19,7 @@
 			  <imput type='hidden' id='' name='resorted' value='1' >
 		  </div>
 	   </td>
-		<% for(i=1; i<=Object.keys(dm).length; i++) { %>		      
+		<% for(i=1; i<=name_order.length; i++) { %>		      
 	          <td><div class='cell'></div></td>  
 		<% } %>
 	</tr>
@@ -31,13 +31,17 @@
 	        <td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value="<%= id_order[x] %>" ><%= x_dname %></td>
 		<%    for(var y in name_order) { %>
 		<%        var y_dname = name_order[y] %>
-		<%				var dist = dm[x_dname][y_dname].toFixed(5);  %>
+		<% 				if(x_dname in dm && y_dname in dm[x_dname]){ %>
+		<%					var dist = dm[x_dname][y_dname].toFixed(5);  %>
+		<%      		var svalue = Math.round( dm[x_dname][y_dname] * 15 ); %>
+		<% 				} else{ %>
+		<%          var dist = 1 %>
+		<%          var svalue = 1 * 15 %> 
+		<% 				} %>
+		<%      	var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+ metric+' '+dist; %>
 		<%        if(x_dname === y_dname){ %>
 		        	    	<td id='' class='heat_map_td' bgcolor='#000'></td>
-		<%        }else{ %>
-		<%      		var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+ metric+' '+dist; %>
-		<%      		var svalue = Math.round( dm[x_dname][y_dname] * 15 ); %>
-		     	
+		<%        }else{ %>		     	
 	                  <td id='<%= id %>' class='heat_map_td tooltip_viz' bgcolor='#<%= colors[svalue] %>' 
 	                    		onclick="window.open('/visuals/bar_double?did1=<%= id_order[x] %>&did2=<%= id_order[y] %>&ts=<%= ts %>&dist=<%= dist %>&order=alphaDown', '_blank')"  >
 													&nbsp;&nbsp;&nbsp;&nbsp;  <!-- needed for png image -->
