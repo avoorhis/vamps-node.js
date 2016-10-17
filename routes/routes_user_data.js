@@ -47,14 +47,33 @@ var infile_fa = "infile.fna";
 //
 // YOUR DATA
 //
-router.get('/your_data', function (req, res) {
+router.get('/your_data', helpers.isLoggedIn, function (req, res) {
   console.log('in your data, req.user = ');
   console.log(req.user);
-  res.render('user_data/your_data', {
-    title: 'VAMPS:Data Administration',
-    user: req.user, hostname: req.CONFIG.hostname,
-    message: req.flash('message'),
+  // Should create empty directory for any user projects
+  // that are in database BUT NOT in PROJECT_INFORMATION_BY_PID
+  // this will allow adding to or deleteing theese empty projects.
+  
+  connection.query(queries.get_projects_queryUID(req.user.user_id), function (err, rows, fields) {
+  
+        for(n in rows){
+            //console.log(n, rows[n])
+            pid = rows[n].project_id
+            //if(PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid)){
+                console.log('got',rows[n].project)
+                var dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+rows[n].project);
+                if(! helpers.fileExists(dir)){
+                    helpers.mkdirSync(dir);
+                }
+            //}
+        }
   });
+  
+      res.render('user_data/your_data', {
+        title: 'VAMPS:Data Administration',
+        user: req.user, hostname: req.CONFIG.hostname,
+        message: req.flash('message'),
+      });
 });
 
 //
@@ -265,8 +284,8 @@ router.post('/export_selection', helpers.isLoggedIn, function (req, res) {
 //
 /* GET Import Choices page. */
 router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
-  console.log('import_choices');
-
+  console.log('in import_choices');
+  var project = req.query.project || '' // url should always be like: /user_data/import_choices?project=andy003 
   if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
       res.render('user_data/your_data', {
         title: 'VAMPS:Data Administration',
@@ -283,6 +302,7 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
           title: 'VAMPS:Import Choices',
           message: req.flash('successMessage'),
           failmessage: req.flash('failMessage'),
+          project: project,
           user: req.user, hostname: req.CONFIG.hostname
           });
   }
@@ -290,30 +310,50 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
 
 
 // AShipunova Aug 2016
-
+// AAV Oct 2016
 router.get('/import_choices/*_fasta', [helpers.isLoggedIn], function (req, res) {
-  url         = path.join('user_data', req.url);
-  import_type = req.url.split("/").slice(-1)[0];
-  console.log('in GET /import_choices/*_fasta')
+  var url_parts = url.parse(req.url);
+  var import_type = url_parts.pathname.split("/").slice(-1)[0];
+  
+  //console.log(url_parts);
+  //console.log('in GET /import_choices/*_fasta')
+  var project = req.query.project || ''
+  //console.log('proj',project)
+  //console.log('import_type',import_type)
   //'/import_choices/multi_fasta', 'multi_fasta'
   user_project_info = {}
   //console.log(PROJECT_INFORMATION_BY_PID)
  // PROJECT_INFORMATION_BY_PID.forEach(function(prj) {
-  for(pid in PROJECT_INFORMATION_BY_PID){
-    
-    if(PROJECT_INFORMATION_BY_PID[pid].username == req.user.username){
-          user_project_info[pid] = PROJECT_INFORMATION_BY_PID[pid] 
-          console.log('pid',pid)
-    }       
-  }
-  res.render(url, {
-    title:       'Import Data',
-    user:        req.user,
-    hostname:    req.CONFIG.hostname,
-    pinfo:       JSON.stringify(user_project_info),
-    message:     req.flash('message'),
-    failmessage: req.flash('failMessage'),
-    import_type: import_type,
+  // for(pid in PROJECT_INFORMATION_BY_PID){
+//     
+//     if(PROJECT_INFORMATION_BY_PID[pid].username == req.user.username){
+//           user_project_info[pid] = PROJECT_INFORMATION_BY_PID[pid] 
+//           console.log('pid',pid)
+//     }       
+//   }
+  connection.query(queries.get_projects_queryUID(req.user.user_id), function (err, rows, fields) {
+      if (err)
+      {
+        console.log(err);
+      }
+      else
+      {
+          for(n in rows){
+            pid = rows[n]['project_id']
+            p   = rows[n]['project']
+            user_project_info[pid] = {'project':p}            
+          }
+          res.render(path.join('user_data',url_parts.pathname), {
+            title:       'Import Data',
+            user:        req.user,
+            hostname:    req.CONFIG.hostname,
+            pinfo:       JSON.stringify(user_project_info),
+            project: project,
+            message:     req.flash('message'),
+            failmessage: req.flash('failMessage'),
+            import_type: import_type,
+          });
+     }
   });
 });
 
@@ -522,7 +562,10 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
     console.log(options.scriptPath + '/vamps_script_validate.py '+options.args.join(' '));
 
     var log = fs.openSync(path.join(process.env.PWD, 'logs', 'validate.log'), 'a');
-    var validate_process = spawn( options.scriptPath + '/vamps_script_validate.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+    var validate_process = spawn( options.scriptPath + '/vamps_script_validate.py', options.args, {
+                        env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                        detached: true, stdio: 'pipe'
+                    });  // stdin, stdout, stderr
     var output = '';
     validate_process.stdout.on('data', function validateScriptStdout(data) {
       //console.log('stdout: ' + data);
@@ -691,14 +734,14 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
     helpers.update_global_variables(pid, 'del');
   } else {
     // project not in db?
-    console.log('project was not found in db: PROJECT_INFORMATION_BY_PNAME');
+    console.log('project was not found in PROJECT_INFORMATION_BY_PNAME');
     var pid = 0;
   }
 
     console.log('in delete_project2: '+project+' - '+pid);
     var options = {
         scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-        args :       [ '-pid', pid, '-db', NODE_DATABASE, '--user', req.user.username, '--project', project, '-pdir', process.env.PWD ],
+        args :       [ '-pid', pid, '-site', req.CONFIG.site, '--user', req.user.username, '--project', project, '-pdir', process.env.PWD ],
         };
     if (delete_kind == 'all') {
       // must delete pid data from mysql ()
@@ -719,24 +762,29 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
     console.log(options.args.join(' '));
 
     var log = fs.openSync(path.join(process.env.PWD, 'logs', 'delete.log'), 'a');
-      // script will remove data from mysql and datset taxfile
 
     console.log(options.scriptPath + '/vamps_script_utils.py '+options.args.join(' '));
-      var delete_process = spawn( options.scriptPath + '/vamps_script_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-
+      var delete_process = spawn( options.scriptPath + '/vamps_script_utils.py', options.args,{
+                            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                            detached: true, stdio: 'pipe'
+                            });  // stdin, stdout, stderr
 
       var output = '';
       delete_process.stdout.on('data', function deleteScriptStdout(data) {
-        //console.log('stdout: ' + data);
+        console.log('stdout: ' + data);
         // data = data.toString().replace(/^\s+|\s+$/g, '');
         data = data.toString().trim();
         output += data;
         CheckIfPID(data);
       });
-
+      delete_process.stderr.on('data', function deleteScriptStderr(data) {
+        console.log('stderr: ' + data);       
+      });
       delete_process.on('close', function deleteScriptOnClose(code) {
           console.log('delete_process process exited with code ' + code);
+          console.log('output',output)
           var ary = output.split("\n");
+          
           var last_line = ary[ary.length - 1];
           if (code === 0) {
            //console.log('PID last line: '+last_line)
@@ -1115,7 +1163,10 @@ function gastTax(req, project_config, options, classifier_id)
   //make_gast_script_txt = helpers.get_qsub_script_text_only(scriptlog, data_dir, req.CONFIG.site, 'gastTax', cmd_list)
   //is_local = helpers.isLocal(req);
   // for tests: is_local = false;
-  
+  var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/3-vamps_nodejs_database_loader.py'
+  database_loader += " -site " + req.CONFIG.site
+  database_loader += " -ds ds1" 
+  database_loader += " -indir "+data_dir
  
    
 
@@ -1130,7 +1181,7 @@ function gastTax(req, project_config, options, classifier_id)
   // user_project_status_id  user_id  project_id  status  message  created_at  updated_at
   // 34  4  4  GAST-SUCCESS  GAST -Tax assignments  2016-09-02 12:26:21  2016-09-02 12:31:12
   cmd_list = [
-      make_gast_script_txt
+      make_gast_script_txt, database_loader
   ];
   
   console.log('GGG2: gastTax: cmd_list ');
@@ -1216,15 +1267,39 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
       return;
     }
     var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-    // if (req.CONFIG.hostname.substring(0, 7) == 'bpcweb7') {
-    //     var user_projects_base_dir = path.join('/groups/vampsweb/vampsdev_user_data/', req.user.username);
-    // } else if (req.CONFIG.hostname.substring(0, 7) == 'bpcweb8') {
-    //     var user_projects_base_dir = path.join('/groups/vampsweb/vamps_user_data/', req.user.username);
-    // } else {
-    //     var user_projects_base_dir = path.join(process.env.PWD, 'user_data', NODE_DATABASE, req.user.username);
-    // }
+   // AAV must find and list projects that 
+   //   1) have no directory (DB only)
+   //   2) have no presence in PROJECT_INFORMATION_BY_PID
+   //   3) have no datasets (also not in PROJECT_INFORMATION_BY_PID
+   //   4) directory only (not in DB) -- orphan directory
+   //   For this page 'your_projects' we'll look in PROJECT_INFORMATION_BY_PID
+   //  and the directory list 
+  //console.log(PROJECT_INFORMATION_BY_PID)
   project_info = {};
   pnames = [];
+  for(pid in PROJECT_INFORMATION_BY_PID){
+    if(PROJECT_INFORMATION_BY_PID[pid].oid == req.user.user_id){
+        // this data trumps directory_data.config
+        p = PROJECT_INFORMATION_BY_PID[pid].project
+        project_info[p] = {}; 
+        project_info[p].pid = pid; 
+        project_info[p].validation = {};
+        project_info[p].public = PROJECT_INFORMATION_BY_PID[pid].public;
+        project_info[p].classified_by = ALL_CLASSIFIERS_BY_PID[PROJECT_INFORMATION_BY_PNAME[p].pid];
+        project_info[p].env_source_id = PROJECT_INFORMATION_BY_PID[pid].env_source_id;
+        project_info[p].status = {
+                'in_global_obj':'true',
+                'empty_dir':'unknown',
+                'ds_count':DATASET_IDS_BY_PID[pid].length, 
+                'seq_count':ALL_PCOUNTS_BY_PID[pid],
+                'taxonomy':'Taxonomic Data Available'
+                
+                };
+        pnames.push(p);
+    }
+  }
+  
+  
     fs.readdir(user_projects_base_dir, function readProjectsDir(err, items) {
     if (err) {
 
@@ -1241,6 +1316,18 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
                 if (pts[0] === 'project') {
 
           var project_name = pts[1];
+          console.log('dir',items[d])
+          if( ! project_info.hasOwnProperty(project_name)){
+            // these projects are either empty (NoDataYet) or orphans (dir w/o DB presence)
+            console.log('project in file but not in DB', project_name)
+            project_info[project_name] = {};
+            project_info[project_name].pid = '0';
+            project_info[project_name].validation = {};
+            //project_info[project_name].empty_project = true;
+            project_info[project_name].status = {'in_global_obj':'false','empty_dir':'true','ds_count':'', 'seq_count':'','taxonomy':'No Datasets'};
+            pnames.push(project_name);
+          }
+          
           var stat_dir = fs.statSync(path.join(user_projects_base_dir, items[d]));
 
           if (stat_dir.isDirectory()) {
@@ -1250,50 +1337,59 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
             // check status?? dir strcture: analisis/gast/<ds>
             var config_file = path.join(user_projects_base_dir, items[d], 'config.ini');
 
-            try {
+            try {  // to read config file
               //var stat_config = fs.statSync(config_file);
-               // console.log('1 ', config_file)
+              // console.log('1 ', config_file)
               var config = iniparser.parseSync(config_file);
               var list_of_datasets = Object.keys(config.DATASETS);
-              project_info[project_name] = {};
-              project_info[project_name].validation = {};
-              pnames.push(project_name);
+              
+              
+              
 
               //new_status = helpers.get_status(req.user.username, project_name);
               //console.log(new_status); // Async only -- doesn't work
               //console.log(ALL_CLASSIFIERS_BY_PID);
               // console.log('2 ', config_file)
-              if (project_name in PROJECT_INFORMATION_BY_PNAME) {
-                      project_info[project_name].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
-                      project_info[project_name].tax_status = 'Taxonomic Data Available';
-                      project_info[project_name].classified_by = ALL_CLASSIFIERS_BY_PID[PROJECT_INFORMATION_BY_PNAME[project_name].pid];
-              } else {
+              
+              if ( project_info[project_name].status.in_global_obj == 'false') {
+                      
                   var metadata_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project_name, 'metadata_clean.csv');
                   var fasta_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project_name, 'metadata_clean.csv');
                   //console.log('config.DATASETS', config.DATASETS)
                   project_info[project_name].validation['metadata_clean.csv'] = helpers.fileExists(metadata_file);  // true or false
-
+                  project_info[project_name].status.ds_count = config.GENERAL.number_of_datasets;
+                  project_info[project_name].status.seq_count = config.GENERAL.project_sequence_count;
                   for (var i in list_of_datasets) {
                       var dsname = list_of_datasets[i];
                       var unique_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project_name, dsname+'.fa.unique');
                       project_info[project_name].validation[dsname+'.fa.unique'] = helpers.fileExists(unique_file);  // true or false
                   }
                   project_info[project_name].pid = 0;
-                  project_info[project_name].tax_status = 'No Taxonomic Assignments Yet';
+                  project_info[project_name].status.taxonomy = 'No Taxonomic Assignments Yet';
                   project_info[project_name].classified_by = 'none';
               }
+              project_info[project_name].status.empty_dir = 'false'
               //project_info[project_name].config = config;
               project_info[project_name].directory = items[d];
-              project_info[project_name].mtime = stat_dir.mtime;
-              project_info[project_name].project = project_name;
-              project_info[project_name].number_of_datasets = config.GENERAL.number_of_datasets;
-              project_info[project_name].project_sequence_count = config.GENERAL.project_sequence_count;
-              project_info[project_name].public = config.GENERAL.public;
-              project_info[project_name].env_source_id = config.GENERAL.env_source_id;
+              //project_info[project_name].mtime = stat_dir.mtime;
+              //project_info[project_name].project = project_name;
+              //project_info[project_name].number_of_datasets = config.GENERAL.number_of_datasets;
+              //project_info[project_name].project_sequence_count = config.GENERAL.project_sequence_count;
+              //project_info[project_name].public = config.GENERAL.public;
+              //project_info[project_name].env_source_id = config.GENERAL.env_source_id;
               project_info[project_name].DATASETS = config.DATASETS;
             }
             catch (err) {
-              //console.log('nofile ', err);
+              // these will be projects in the database; with or without datasets; with empty directories
+              
+              if(project_name in PROJECT_INFORMATION_BY_PNAME){
+                  //project_info[project_name].status.taxonomy = 'Unknown'
+                  //pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid
+                  //project_info[project_name].number_of_datasets = DATASET_IDS_BY_PID[pid].length
+                  //project_info[project_name].project_sequence_count = ALL_PCOUNTS_BY_PID[pid]
+              }else{
+                console.log('Lost Project',project_name)
+              }
             }
 
           }
@@ -1303,7 +1399,7 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
 
       pnames.sort();
       console.log("JSON.stringify(project_info)");
-      console.log(JSON.stringify(project_info));
+      console.log(JSON.stringify(project_info,null,2));
 
     }  // readdir/err
 
@@ -1669,7 +1765,10 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
           console.log(options.scriptPath+'/metadata_utils.py '+options.args.join(' '));
           
           var log = fs.openSync(path.join(process.env.PWD,'logs','upload.log'), 'a');
-          var upload_metadata_process = spawn( options.scriptPath+'/metadata_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+          var upload_metadata_process = spawn( options.scriptPath+'/metadata_utils.py', options.args, {
+                                        env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                                        detached: true, stdio: 'pipe'
+                                    });  // stdin, stdout, stderr
           var output = '';
           console.log('py process pid='+upload_metadata_process.pid);
           upload_metadata_process.stdout.on('data', function uploadMetadataScriptStdout(data) {
@@ -1810,12 +1909,12 @@ function ProjectExistsInDB(project, req, res)
   console.log("running ProjectExistsInDB");
   var project_id;
   var redirect_url = path.join('/user_data', req.url);
-
-  helpers.fetchInfo('SELECT project_id FROM project WHERE project = ?', project, function(err, content) {
+  console.log('PROJ',project)
+  helpers.fetchInfo("SELECT project_id FROM project WHERE project = ?", [project], function(err, content) {
       if (err) {
           console.log("err 5: ");
           console.log(err);
-          req.flash('failMessage', 'There is no such project, please create one.');
+          req.flash('failMessage', '1-There is no such project, please create one.');
           res.redirect(redirect_url);
           return false;
       } else {
@@ -1829,7 +1928,7 @@ function ProjectExistsInDB(project, req, res)
         catch(err) {
           req.form.errors.pr_not_exists = 'No such project: ' + project;
           console.log('Redirect err from ProjectExistsInDB. No such project: ' + project + ". " + err + '; Please add a new project at /user_data/add_project');
-          req.flash('failMessage', 'There is no such project, please create ' + project);
+          req.flash('failMessage', '2-There is no such project, please create ' + project);
           try        { res.redirect(redirect_url); }
           catch(err) { console.log('Redirect err from ProjectExistsInDB to ' + redirect_url + ". " + err); }
           return false;
@@ -2270,7 +2369,7 @@ function uploadData(req, res)
   console.log("QQQ2 in uploadData");
 
   var project = helpers.clean_string(req.body.project);
-
+  console.log('P',project)
   // TODO: check if CreateUploadOptions does anything else and separate
   var created_options = CreateUploadOptions(req, res, project);
   var data_repository = created_options[0];
@@ -2415,7 +2514,11 @@ router.post('/add_project',
     else
     {
       saveToDb(req, res);
-      res.redirect("/user_data/import_choices");
+      //console.log('FORM INFOx')
+      //console.log(req)
+      var project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+req.form.new_project_name)
+      helpers.mkdirSync(project_dir)
+      res.redirect("/user_data/import_choices?project="+req.form.new_project_name);
     }
 
     return;
@@ -2427,25 +2530,39 @@ router.post('/add_project',
 // UPLOAD DATA TAX-BY-SEQ
 //
 router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], function (req, res) {
-  url         = path.join('user_data', req.url);
-  import_type = req.url.split("/").slice(-1)[0];
+  var url_parts = url.parse(req.url);
+  var import_type = url_parts.pathname.split("/").slice(-1)[0];
+  console.log(url_parts);
+  var project = req.query.project || ''
+  console.log('proj',project)
+  console.log('import_type',import_type)
+  //url         = path.join('user_data', req.url);
+  //import_type = req.url.split("/").slice(-1)[0];
   //'/import_choices/multi_fasta', 'multi_fasta'
   user_project_info = {}
-  for(pid in PROJECT_INFORMATION_BY_PID){
-    
-    if(PROJECT_INFORMATION_BY_PID[pid].username == req.user.username){
-          user_project_info[pid] = PROJECT_INFORMATION_BY_PID[pid] 
-          console.log('pid',pid)
-    }       
-  }
-  res.render(url, {
-    title:       'Import Data',
-    user:        req.user,
-    hostname:    req.CONFIG.hostname,
-    pinfo:       JSON.stringify(user_project_info),
-    message:     req.flash('message'),
-    failmessage: req.flash('failMessage'),
-    import_type: import_type,
+  connection.query(queries.get_projects_queryUID(req.user.user_id), function (err, rows, fields) {
+      if (err)
+      {
+        console.log(err);
+      }
+      else
+      {
+          for(n in rows){
+            pid = rows[n]['project_id']
+            p   = rows[n]['project']
+            user_project_info[pid] = {'project':p}            
+          }
+          res.render(path.join('user_data',url_parts.pathname), {
+            title:       'Import Data',
+            user:        req.user,
+            hostname:    req.CONFIG.hostname,
+            pinfo:       JSON.stringify(user_project_info),
+            project: project,
+            message:     req.flash('message'),
+            failmessage: req.flash('failMessage'),
+            import_type: import_type,
+          });
+     }
   });
 });
 
@@ -2605,7 +2722,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
 
         var tax_by_seq_process = spawn( options.scriptPath + '/vamps_load_tax_by_seq.py', options.args, {
                               env:{ 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH },
-                              detached: true, stdio: [ 'ignore', null, log ]
+                              detached: true, stdio: 'pipe'
                             });  // stdin, stdout, stderr
         console.log('py process pid='+tax_by_seq_process.pid);
         var output = '';

@@ -58,6 +58,13 @@ insert_access_table: function(uid,pid){
     return qInsertAccess; 
      
 },
+//
+//
+//
+get_projects_queryUID: function( uid ) {
+    var q = "SELECT project, project_id from project where owner_user_id='"+uid+"'"
+    return q;
+},
 get_select_sequences_query: function(){
 		
 		var qSequenceCounts = "SELECT project_id, dataset_id, classifier_id, SUM(seq_count) as seq_count"; 

@@ -19,23 +19,31 @@
 <div class='left_justify'>
 <br><strong>Your Projects:</strong>
 <br>
-<ol>
+
 <% if(pnames.length === 0) { %>
 	<p>No Projects</p>
 <% } else { %>
 
+
+    <table class='table table-striped'>
+    		    <thead>
+    		    <tr><th>Name</th><th>Status</th><th>Dataset Count</th><th>Sequence Count</th><th>Options</th></tr>
+    		    </thead>
+    		    <tbody>
+    		    
+    		    
 	<% for(t in pnames){ %>
-		<% p =pnames[t] %>
+		<% var p = pnames[t] %>
 		<% var pass_fail = 'pass' %>
-		<% var project = project_info[p].project %>
+		<% var project = p %>
 		
-		<% var number_of_datasets = project_info[p].number_of_datasets %>
-		<% var total_number_of_sequences = project_info[p].project_sequence_count %>
+		<% var number_of_datasets = project_info[p].status.ds_count %>
+		<% var total_number_of_sequences = project_info[p].status.seq_count %>
 		<% var public = project_info[p].public %>
 		<% var env_source_id = project_info[p].env_source_id %>
 		<% var env_source = env[env_source_id] %>
 		<% var datasets = project_info[p].DATASETS %>
-		<% var tax_status = project_info[p].tax_status %>
+		<% var status = project_info[p].status.taxonomy %>
 		<% var classified_by = project_info[p].classified_by %>
 		<% var validation_codes = project_info[p].validation %>
 	    
@@ -46,119 +54,109 @@
 	    <%          missing_files.push(n)  %>
 	    <%      } %>
 	    <% } %>
-		<div class='well'>			
+				
 
 
-    		<table class='table table-condensed'>
-    			<tr>	
-    				<% if(project_info[p].pid == 0){ %> 
-                        <td>
-                            Project name: <strong><%= project %></strong>  <small>( <%= number_of_datasets %> datasets )</small> 
-                        </td>
-    				    <td></td>                        
-                        <td>
-                            Status: <span class="label label-warning"><strong><%= tax_status %></strong></span>
-                        </td>     
-                        
-					<% }else{ %>
-                        <td>
-                            Project name: <strong><%= project %></strong>  <small>( <%= number_of_datasets %> datasets )</small> 
-                            <br><small>(id: <%= project_info[pnames[t]].pid %>)</small>
-                        </td>
-                        <td></td>   
-						<td>
-                            Status: <span class="label label-success"><strong><%= tax_status %></strong></span>                            
-                            <br>Taxonomy Assigned By: <strong><%= classified_by %></strong>
-				        </td>   
-                        
-				   <% } %>
-                        
-                        <% if(pass_fail == 'fail') { %>
-                            <td>
-                                
-                                
-                                <div class="dropdown pull-right">
-                                <button class="btn btn-sm btn-default dropdown-toggle" type="button" style='color:red' id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                                    FAILED VALIDATION
-                                    <span class="caret"></span>
-                                </button>
-                                
-                                <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
-                                <li role="label" > Missing Files:</li>
-                                <% for(n in missing_files){ %>
-                                    <li role="presentation" role="menuitem"> <%= missing_files[n] %></li>
-                                <% } %>
-                                <li role="presentation" class="divider"></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete this Project from Server</a></li> 
-                                </ul>
-                                </div>
-                                
-                            </td>
-                        <% }else{ %>
-                        <td>
-                            
-                            
-                            <div class="dropdown pull-right">
-                              <button class="btn btn-sm btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                                Options
-                                <span class="caret"></span>
-                              </button>
-                              <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="edit_project/<%= project %>">View/Edit Project Information</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_info/<%= project %>">View Datasets and Counts</a></li> 
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_metadata/<%= project %>">View Metadata</a></li>
-                                <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_validation/<%= project %>">Validate Project</a></li> -->
-                                <li role="presentation" class="divider"></li>                               
-                                <% if(classified_by == 'none'){ %>
-                                    <li role="presentation">
-                                        <a role="menuitem" tabindex="-1" href="assign_taxonomy/<%= project %>">Assign Taxonomy</a></li>
-                                    <li role="presentation" class="divider"></li>
-                                <% }else{ %>
-                                    <li role="presentation">
-                                        <a role="menuitem" tabindex="-1" href="#">Cluster</a></li>
-                                    <li role="presentation">
-                                        <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>
-                                    <li role="presentation">
-                                        <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/meta">Delete Metadata Only</a></li>    
-                                <% } %>
-                                    <li role="presentation">
-                                        <a role="menuitem" tabindex="-1" href="duplicate_project/<%= project %> ">Duplicate this Project</a></li>   
-                                    <li role="presentation" class="divider"></li>
-                                    <li role="presentation">
-                                        <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete All Data from Project</a></li>
-                                    <li role="presentation">    
-                                        <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete Entire Project</a></li>                    
-                              </ul>
-                            </div>
-                            <div style='color:green;font-size:x-small;'>Validation:OK</div>
-                            
-                        </td>   
-                        <% } %>
-    			</tr><tr>
-    				<td>Raw Sequence Count: <strong><%= total_number_of_sequences %></strong></td>
-    				<td>Public: 
-    					<% if(public == 'False'  ){ %>
-    						<strong>NO</strong>
-    					<% }else{ %>
-    						<strong>YES</strong>
-    					<% } %>
-    				</td>
+    		
+    		    
+    <tr>
+        <td><%= p %></td>
+        <td><%= status %></td>
+        <td><%= number_of_datasets %></td>
+        <td><%= total_number_of_sequences %></td>
+        <% if(project_info[p].status.empty_dir == 'true') { %>
+            
+            <td>
+                <div class="dropdown">
+                      <button class="btn btn-sm btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                        Options
+                        <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
+                        <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="import_choices?project=<%= project %>">Add Data</a></li>
+                        <li role="presentation">    
+                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete Project</a></li>   
+                                      
+                      </ul>
+                </div>
+            </td>
+            
+        <% }else{ %>
+        
+            <% if(pass_fail == 'fail') { %>
                     <td>
-                        Environmental Source: <strong><%= env_source %></strong>
-                    </td>    				
-                    <td>                        
-                                              
+                        <div class="dropdown">
+                        <button class="btn btn-sm btn-default dropdown-toggle" type="button" style='color:red' id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                            FAILED VALIDATION
+                            <span class="caret"></span>
+                        </button>
+        
+                        <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
+                        <li role="label" > Missing Files:</li>
+                        <% for(n in missing_files){ %>
+                            <li role="presentation" role="menuitem"> <%= missing_files[n] %></li>
+                        <% } %>
+                        <li role="presentation" class="divider"></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete this Project from Server</a></li> 
+                        </ul>
+                        </div>
+        
                     </td>
-    			</tr>
-    		</table>			
-						
-    	
+            <% }else{ %>
+                <td>
+    
+                    <div style='color:green;font-size:x-small;'>Validation:OK</div>
+                    <div class="dropdown">
+                      <button class="btn btn-sm btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                        Options
+                        <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="edit_project/<%= project %>">View/Edit Project Information</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_info/<%= project %>">View Datasets and Counts</a></li> 
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_metadata/<%= project %>">View Metadata</a></li>
+                        <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_validation/<%= project %>">Validate Project</a></li> -->
+                        <li role="presentation" class="divider"></li>                               
+                        <% if(classified_by == 'none'){ %>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="assign_taxonomy/<%= project %>">Assign Taxonomy</a></li>
+                            <li role="presentation" class="divider"></li>
+                        <% }else{ %>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">Cluster</a></li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/meta">Delete Metadata Only</a></li> 
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/select">Delete Datasets from Project</a></li>   
+                        <% } %>
+                            <!-- 
+                                <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="duplicate_project/<%= project %> ">Duplicate this Project</a></li>   
+             
+                            <li role="presentation" class="divider"></li>
+                            -->
+                            <li role="presentation">    
+                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete Entire Project</a></li>                    
+                      </ul>
+                    </div>
+                </td>   
+                <% } %>
+            <% } %>
 
-		</div>  <!-- end well -->
+
+
+    </tr>
+    				
+						
 	
-	<% } %>  <!-- end for(t in creation_times) -->
-<% } %>
-</ol>
+	<% } %>  <!-- end for(t in names) -->
+	</tbody>
+    		</table>	
+<% } %>  <!-- end else-->
+
 
 
 

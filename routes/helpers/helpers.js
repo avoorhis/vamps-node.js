@@ -273,6 +273,7 @@ module.exports.update_global_variables = function(pid,type){
 module.exports.assignment_finish_request = function(res, rows1, rows2, status_params) {
         console.log('query ok1 '+JSON.stringify(rows1));   // queries.get_select_datasets_queryPID
         console.log('query ok2 '+JSON.stringify(rows2));  // queries.get_select_sequences_queryPID
+        
         this.run_select_datasets_query(rows1);
         console.log(' UPDATING ALL_DATASETS');
         console.log(' UPDATING PROJECT_ID_BY_DID');
@@ -282,6 +283,7 @@ module.exports.assignment_finish_request = function(res, rows1, rows2, status_pa
         console.log(' UPDATING DATASET_NAME_BY_DID');
         console.log(' UPDATING AllMetadataNames');
         console.log(' UPDATING DatasetsWithLatLong');
+        
         this.run_select_sequences_query(rows2);
         console.log(' UPDATING ALL_DCOUNTS_BY_DID');
         console.log(' UPDATING ALL_PCOUNTS_BY_PID ');

@@ -43,14 +43,19 @@
         </div> 
   </div>
  -->
+	
 	<div class="form-group">
       <label class="control-label col-sm-3" for="project">Project Name:</label>
 	  
 	  <select id='project' name='project' class='selectpicker'  data-style='btn btn-xs btn-info'  data-size='300' >
           <option value='0' >Choose....</option>
-          <% for(pid in info) { %>
-              <option value='<%= pid %>' ><%= info[pid].project %></option>
-          <% } %>
+        <% for(pid in info) { %>
+        <%      if(info[pid].project == project){ %>
+                    <option selected value='<%= info[pid].project %>' ><%= info[pid].project %></option>
+        <%      }else{ %>
+                    <option value='<%= info[pid].project %>' ><%= info[pid].project %></option>
+        <%      } %>
+        <% } %>
       </select>
 	  
 	  
