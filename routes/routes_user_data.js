@@ -294,12 +294,23 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
 router.get('/import_choices/*_fasta', [helpers.isLoggedIn], function (req, res) {
   url         = path.join('user_data', req.url);
   import_type = req.url.split("/").slice(-1)[0];
+  console.log('in GET /import_choices/*_fasta')
   //'/import_choices/multi_fasta', 'multi_fasta'
-  
+  user_project_info = {}
+  //console.log(PROJECT_INFORMATION_BY_PID)
+ // PROJECT_INFORMATION_BY_PID.forEach(function(prj) {
+  for(pid in PROJECT_INFORMATION_BY_PID){
+    
+    if(PROJECT_INFORMATION_BY_PID[pid].username == req.user.username){
+          user_project_info[pid] = PROJECT_INFORMATION_BY_PID[pid] 
+          console.log('pid',pid)
+    }       
+  }
   res.render(url, {
     title:       'Import Data',
     user:        req.user,
     hostname:    req.CONFIG.hostname,
+    pinfo:       JSON.stringify(user_project_info),
     message:     req.flash('message'),
     failmessage: req.flash('failMessage'),
     import_type: import_type,
@@ -2349,7 +2360,11 @@ function saveToDb(req, res){
 
              req.body.project_pid = rows.insertId;
              // console.log('RRR: req.body.project_pid ' + req.body.project_pid);
-
+             // AAV -- Do we want this new empty project in PROJECT_INFORMATION_BY_PNAME???
+             // Currently this new project doesn't have a directory in /groups/vampsweb/vampsdev_node_data/user_data/andy
+             // AND it is absent from the dropdown box when wanting to add datasets  
+             //helpers.update_project_information_global_object(req.body.project_pid, req.form, req.user)
+             
              return rows.insertId;
            }
         });
@@ -2395,6 +2410,7 @@ router.post('/add_project',
       req.add_project_info = req.form;
       req.messages = req.form.errors;
       editAddProject(req, res);
+      
     }
     else
     {
@@ -2414,11 +2430,19 @@ router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], function (req, re
   url         = path.join('user_data', req.url);
   import_type = req.url.split("/").slice(-1)[0];
   //'/import_choices/multi_fasta', 'multi_fasta'
-
+  user_project_info = {}
+  for(pid in PROJECT_INFORMATION_BY_PID){
+    
+    if(PROJECT_INFORMATION_BY_PID[pid].username == req.user.username){
+          user_project_info[pid] = PROJECT_INFORMATION_BY_PID[pid] 
+          console.log('pid',pid)
+    }       
+  }
   res.render(url, {
     title:       'Import Data',
     user:        req.user,
     hostname:    req.CONFIG.hostname,
+    pinfo:       JSON.stringify(user_project_info),
     message:     req.flash('message'),
     failmessage: req.flash('failMessage'),
     import_type: import_type,
