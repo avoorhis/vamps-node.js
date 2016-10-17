@@ -487,7 +487,8 @@ module.exports.get_PTREE_metadata = function(OBJ, q) {
     OBJ.forEach(function(prj) {
       dids = DATASET_IDS_BY_PID[prj.pid]
       for(n in dids){
-        if(AllMetadata[dids[n]].hasOwnProperty(q)){
+        
+        if(dids[n] in AllMetadata && AllMetadata[dids[n]].hasOwnProperty(q)){
           phash[prj.pid] = 1
         }
       }
