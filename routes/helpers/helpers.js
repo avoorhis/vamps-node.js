@@ -483,7 +483,6 @@ module.exports.get_attributes_from_hdf5_group =function(did, type) {
 module.exports.get_PTREE_metadata = function(OBJ, q) {
     projects = [];
     phash = {}
-    console.log(AllMetadata)
     OBJ.forEach(function(prj) {
       dids = DATASET_IDS_BY_PID[prj.pid]
       for(n in dids){
