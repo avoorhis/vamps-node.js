@@ -483,22 +483,23 @@ module.exports.get_attributes_from_hdf5_group =function(did, type) {
 };
 
 module.exports.get_PTREE_metadata = function(OBJ, q) {
-  project_list = [];
-
+    projects = [];
+    phash = {}
     OBJ.forEach(function(prj) {
-      dids = DATASET_IDS_BY_PID[prj.pid];
-      for (var i in dids){
-        var did = dids[i];
-        var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-        mdgroup.refresh();
-        //console.log(q, mdgroup[q])
-        if(mdgroup.hasOwnProperty(q) && project_list.indexOf(prj) < 0){
-          //console.log(prj);x
-          project_list.push(prj);
+      dids = DATASET_IDS_BY_PID[prj.pid]
+      for(n in dids){
+        
+        if(dids[n] in AllMetadata && AllMetadata[dids[n]].hasOwnProperty(q)){
+          phash[prj.pid] = 1
         }
       }
     });
-    return project_list;
+
+    for(pid in phash){
+        projects.push(PROJECT_INFORMATION_BY_PID[pid]);
+    }
+
+    return projects;
 };
 
 module.exports.make_color_seq = function(seq){

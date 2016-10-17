@@ -30,6 +30,8 @@ meta_table <- meta_table[,colSums(is.na(meta_table))<nrow(meta_table)]
 #print(class(meta_table))
 #print(meta_table)
 
+#  x remove empty columns (datasets with zero sums)
+abund_table<-abund_table[,colSums(abund_table) > 0]
  
 #abund_table<-read.csv("SPE_pitlatrine.csv",row.names=1,check.names=FALSE)
 #Transpose the data to have sample names on rows
@@ -111,7 +113,7 @@ xmax=par('usr')[2]
 max_md_items_for_legend = 25
 for(md_name in colnames(meta_table))
 {
-    print(md_name)
+    #print(md_name)
     if(md_name==md1 || md_name==md2){
 
 		    meta_col<-meta_table[,md_name]
