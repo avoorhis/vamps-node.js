@@ -199,7 +199,7 @@ constants.PORTALS = {
     'MBE': {name:'Microbiology of the Built Environment', 
             subtext:'MBE', 
             projects:[],
-            prefixes:['MBE'],
+            prefixes:['MBE','RARE','SLM'],
             suffixes:[],
             pagetitle: 'Microbiology Of the Built Environment Portal',
             maintitle: 'MoBEDAC Portal',

@@ -199,18 +199,9 @@ function clear_filters() {
   xmlhttp.setRequestHeader("Content-type","application/json");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-        pcount = xmlhttp.responseText;
-        //alert(pcount)
-        if( pcount === 0 ){
-            document.getElementById('nodata_span').innerHTML='No Projects Found';
-        }else{
-            document.getElementById('nodata_span').innerHTML='';
-        }
+        result = JSON.parse(xmlhttp.responseText);
         
-        document.getElementById("project_count_id").innerHTML = xmlhttp.responseText;
-        
-        document.getElementById('selected_ds_count_id').innerHTML = 0
-        
+        update_gui_elements(result)
         projectTree.deleteChildItems(0);
         //load initial
         
@@ -233,13 +224,14 @@ function afterCall(){
     }, delay);
 }
 //
-//
+//   substring for project name filter
+//  FILTER #1
 //
 function showLiveProjectNames(str) {
   var filtering = 1;
   var datasets_local = {};
   if (str.length==0) {
-    str = '----';  // cannot be empty string : (hopefully no-one will search for this)
+    str = '.....';  // cannot be empty string for url: (hopefully no-one will search for this)
   }
   document.getElementById('env_source_select').value='.....';
   document.getElementById('metadata_select').value='.....';
@@ -259,15 +251,9 @@ function showLiveProjectNames(str) {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-        pcount = xmlhttp.responseText;
-        if( pcount == 0 ){
-            document.getElementById('nodata_span').innerHTML='No Projects Found';
-        }else{
-            document.getElementById('nodata_span').innerHTML='';
-        }
-      document.getElementById("project_count_id").innerHTML = pcount;
-      document.getElementById('selected_ds_count_id').innerHTML = 0
-      projectTree.deleteChildItems(0);
+        result = JSON.parse(xmlhttp.responseText);
+        update_gui_elements(result)
+        projectTree.deleteChildItems(0);
       
       projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");     
     }
@@ -276,7 +262,7 @@ function showLiveProjectNames(str) {
 }
 //
 //  SHOW/FILTER  RESULTS for environmental source Search
-//
+//  FILTER #2
 function filter_by_env() {
   var filtering = 1;
   var datasets_local = {};
@@ -300,14 +286,8 @@ function filter_by_env() {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-      pcount = xmlhttp.responseText;
-        if( pcount == 0 ){
-            document.getElementById('nodata_span').innerHTML='No Projects Found';
-        }else{
-            document.getElementById('nodata_span').innerHTML='';
-        }  
-      document.getElementById("project_count_id").innerHTML = pcount;
-      document.getElementById('selected_ds_count_id').innerHTML = 0
+      result = JSON.parse(xmlhttp.responseText);
+      update_gui_elements(result)
       projectTree.deleteChildItems(0);
       projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json"); 
     }
@@ -316,6 +296,7 @@ function filter_by_env() {
 }
 //
 // SHOW/FILTER  RESULTS for gene target Search
+//  FILTER #3
 //
 function filter_by_target() {
   var filtering = 1;
@@ -339,14 +320,8 @@ function filter_by_target() {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-       pcount = xmlhttp.responseText;
-        if( pcount == 0 ){
-            document.getElementById('nodata_span').innerHTML='No Projects Found';
-        }else{
-            document.getElementById('nodata_span').innerHTML='';
-        }     
-      document.getElementById("project_count_id").innerHTML = pcount;
-      document.getElementById('selected_ds_count_id').innerHTML = 0
+       result = JSON.parse(xmlhttp.responseText);
+        update_gui_elements(result)
       projectTree.deleteChildItems(0);
       projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
     }
@@ -355,6 +330,7 @@ function filter_by_target() {
 }
 //
 // SHOW/FILTER  RESULTS for Portal
+//  FILTER #4
 //
 function filter_by_portal() {
   var filtering = 1;
@@ -377,14 +353,8 @@ function filter_by_portal() {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-       pcount = xmlhttp.responseText;
-        if( pcount == 0 ){
-            document.getElementById('nodata_span').innerHTML='No Projects Found';
-        }else{
-            document.getElementById('nodata_span').innerHTML='';
-        }     
-      document.getElementById("project_count_id").innerHTML = pcount;
-      document.getElementById('selected_ds_count_id').innerHTML = 0
+       result = JSON.parse(xmlhttp.responseText);
+        update_gui_elements(result)
       projectTree.deleteChildItems(0);
       projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
     }
@@ -392,7 +362,8 @@ function filter_by_portal() {
   xmlhttp.send();
 }
 //
-// SHOW/FILTER  RESULTS for gene target Search
+// SHOW/FILTER  RESULTS for public/private
+//  FILTER #5  
 //
 function filter_by_status(pub_status) {
   var filtering = 1;
@@ -414,14 +385,8 @@ function filter_by_status(pub_status) {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-       pcount = xmlhttp.responseText;
-        if( pcount == 0 ){
-            document.getElementById('nodata_span').innerHTML='No Projects Found';
-        }else{
-            document.getElementById('nodata_span').innerHTML='';
-        }     
-      document.getElementById("project_count_id").innerHTML = pcount;
-      document.getElementById('selected_ds_count_id').innerHTML = 0
+       result = JSON.parse(xmlhttp.responseText);
+        update_gui_elements(result)
       projectTree.deleteChildItems(0);
       projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
     }
@@ -431,6 +396,7 @@ function filter_by_status(pub_status) {
 
 //
 // SHOW/FILTER  RESULTS for Metadata Search
+//  FILTER #6
 //
 function filter_by_metadata() {
   var filtering = 1;
@@ -454,17 +420,88 @@ function filter_by_metadata() {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-       pcount = xmlhttp.responseText;
-        if( pcount == 0 ){
-            document.getElementById('nodata_span').innerHTML='No Projects Found';
-        }else{
-            document.getElementById('nodata_span').innerHTML='';
-        }     
-      document.getElementById("project_count_id").innerHTML = pcount;
-      document.getElementById('selected_ds_count_id').innerHTML = 0
+       result = JSON.parse(xmlhttp.responseText);
+        update_gui_elements(result)
       projectTree.deleteChildItems(0);
       projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
     }
   }
   xmlhttp.send();
+}
+function update_gui_elements(result){
+
+    if(result.substring == '' || result.substring == '.....'){
+      document.getElementById('pname_search_id').value = ''
+      //document.getElementById('pname_search_id').style.color = 'black'
+      document.getElementById('substring_on_id').innerHTML = ''
+    }else{
+      document.getElementById('pname_search_id').value = result.substring
+      //document.getElementById('pname_search_id').style.color = 'orange'
+      document.getElementById('substring_on_id').innerHTML = '*'
+    }
+        
+    if(result.env.length == 0 || result.env[0] == '.....'){
+      document.getElementById('env_source_select').value = '.....'
+      //document.getElementById('env_source_select').style.color = 'black'
+      document.getElementById('env_on_id').innerHTML = ''
+    }else{
+      document.getElementById('env_source_select').value = result.env[0]
+      //document.getElementById('env_source_select').style.color = 'orange'
+      document.getElementById('env_on_id').innerHTML = '*'
+    }
+    if(result.target == '' || result.target == '.....'){
+      document.getElementById('target_select').value = '.....'
+      //document.getElementById('target_select').style.color = 'black'
+      document.getElementById('target_on_id').innerHTML = ''
+    }else{
+      document.getElementById('target_select').value = result.target
+      //document.getElementById('target_select').style.color = 'orange'
+      document.getElementById('target_on_id').innerHTML = '*'
+    }
+
+    if(document.getElementById('portal_select') != null){
+      if(result.portal == '' || result.portal == '.....'){
+        document.getElementById('portal_select').value = '.....'
+        //document.getElementById('portal_select').style.color = 'black'
+        document.getElementById('portal_on_id').innerHTML = ''
+      }else{
+        document.getElementById('portal_select').value = result.portal
+        //document.getElementById('portal_select').style.color = 'orange'
+        document.getElementById('portal_on_id').innerHTML = '*'
+      }
+    }
+
+    if(result.public == '0'){
+      document.getElementById('status_pub').checked = false
+      document.getElementById('status_priv').checked = true
+      document.getElementById('public_on_id').innerHTML = '*'
+    }else if(result.public == '1'){
+      document.getElementById('status_pub').checked = true
+      document.getElementById('status_priv').checked = false
+      document.getElementById('public_on_id').innerHTML = '*'
+    }else{
+      document.getElementById('status_pub').checked = false
+      document.getElementById('status_priv').checked = false
+      document.getElementById('public_on_id').innerHTML = ''
+    }
+
+    if(result.metadata == '' || result.metadata == '.....'){
+      document.getElementById('metadata_select').value = '.....'
+      //document.getElementById('metadata_select').style.color = 'black'
+      document.getElementById('metadata_on_id').innerHTML = ''
+    }else{
+      document.getElementById('metadata_select').value = result.metadata
+      //document.getElementById('metadata_select').style.color = 'orange'
+      document.getElementById('metadata_on_id').innerHTML = '*'
+    }
+
+    if( result.pid_length == 0 ){
+        document.getElementById('nodata_span').innerHTML='No Projects Found';
+    }else{
+        document.getElementById('nodata_span').innerHTML='';
+    }
+    document.getElementById("project_count_id").innerHTML = result.pid_length;
+    document.getElementById('selected_ds_count_id').innerHTML = 0
+
+
 }

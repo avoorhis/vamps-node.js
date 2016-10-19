@@ -124,6 +124,7 @@ module.exports.IsJsonString = function(str) {
 };
 
 module.exports.onlyUnique = function(value, index, self) {
+    // usage: ukeys = ukeys.filter(helpers.onlyUnique);
     return self.indexOf(value) === index;
 };
 
@@ -1178,4 +1179,123 @@ else
   // make_gast_script_txt += "touch " + path.join(data_dir, "TEMP.tmp");
   // make_gast_script_txt += "\n";
   return make_gast_script_txt
+}
+
+module.exports.filter_projects = function(req, prj_obj, filter_obj) {
+  // 1 substring      name search
+  // 2 env            search PROJECT_INFORMATION_BY_PID
+  // 3 target         name search
+  // 4 portal         helpers.get_portal_projects()
+  // 5 public_private search PROJECT_INFORMATION_BY_PID
+  // 6 metadata       helpers.get_PTREE_metadata
+  //console.log(PROJECT_INFORMATION_BY_PID)
+  
+  //console.log(prj_obj,filter_obj)
+
+  // SUBSTRING
+  var NewPROJECT_TREE_OBJ1 = []
+  if(filter_obj.substring == '' || filter_obj.substring === '.....'){
+      NewPROJECT_TREE_OBJ1 = prj_obj
+  }else{
+      console.log('filtering substring',filter_obj.substring )
+      
+      prj_obj.forEach(function(prj) {
+        if(prj.hasOwnProperty('name')){
+          ucname = prj.name.toUpperCase();
+        }else{
+          ucname = prj.project.toUpperCase();
+        }
+        if(ucname.indexOf(filter_obj.substring) != -1){
+          NewPROJECT_TREE_OBJ1.push(prj);        
+        }
+      });
+      
+  }
+
+  // ENV
+  var NewPROJECT_TREE_OBJ2 = []
+  if(filter_obj.env.length == 0 || filter_obj.env[0] === '.....'){  // should ALWAYS BE A LIST
+    NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1
+  }else{
+      console.log('filtering env',filter_obj.env )
+      
+        NewPROJECT_TREE_OBJ1.forEach(function(prj) {
+          if(filter_obj.env.indexOf(parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_source_id)) != -1){
+            NewPROJECT_TREE_OBJ2.push(prj);        
+          }
+        });
+      
+  }
+
+  // TARGET
+  var NewPROJECT_TREE_OBJ3 = []
+  if(filter_obj.target == '' || filter_obj.target === '.....'){
+      NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2
+  }else{
+      console.log('filtering target',filter_obj.target )
+      
+      NewPROJECT_TREE_OBJ2.forEach(function(prj) {
+        if(prj.hasOwnProperty('name')){
+          pparts = prj.name.split('_');
+        }else{
+          pparts = prj.project.split('_');
+        }
+        last_el = pparts[pparts.length - 1]
+        if(last_el === filter_obj.target){
+          NewPROJECT_TREE_OBJ3.push(prj);        
+        }
+      });
+     
+  }
+  // PORTAL
+  var NewPROJECT_TREE_OBJ4 = []
+  if(filter_obj.portal == '' || filter_obj.portal === '.....'){
+      NewPROJECT_TREE_OBJ4 = NewPROJECT_TREE_OBJ3
+  }else{    
+        console.log('filtering portal',filter_obj.portal )
+        portal = req.CONSTS.PORTALS[filter_obj.portal]
+        NewPROJECT_TREE_OBJ3.forEach(function(prj) {
+          if(prj.hasOwnProperty('name')){
+            pname = prj.name
+          }else{
+            pname = prj.project
+          }
+          pparts = pname.split('_');
+          prefix = pparts[0]
+          if(portal.prefixes.indexOf(prefix) != -1 || portal.projects.indexOf(pname) != -1){
+            NewPROJECT_TREE_OBJ4.push(prj);        
+          }
+        });
+      
+  }
+
+  // public/private
+  var NewPROJECT_TREE_OBJ5 = []
+  if(filter_obj.public == '-1'){
+      NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4
+  }else{
+      console.log('filtering public',filter_obj.public )
+      NewPROJECT_TREE_OBJ4.forEach(function(prj) {
+           if(PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public)){
+             NewPROJECT_TREE_OBJ5.push(prj);        
+           }
+       });
+  }
+
+  // METADATA
+  var NewPROJECT_TREE_OBJ6 = []
+  if(filter_obj.metadata == '' || filter_obj.metadata === '.....'){
+      NewPROJECT_TREE_OBJ6 = NewPROJECT_TREE_OBJ5
+  }else{
+      
+      console.log('filtering metadata',filter_obj.metadata )
+      NewPROJECT_TREE_OBJ6 = module.exports.get_PTREE_metadata(NewPROJECT_TREE_OBJ5, filter_obj.metadata)
+      //NewPROJECT_TREE_OBJ6 = NewPROJECT_TREE_OBJ5
+      
+  }
+  var new_obj = NewPROJECT_TREE_OBJ6
+  //console.log('new_obj')
+  //console.log(new_obj)
+  return new_obj
+
 }

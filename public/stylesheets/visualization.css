@@ -541,6 +541,9 @@ i.icon-minus-sign {
 }
 .clean_list li {
 
-    list-style-type: none;
-    
+    list-style-type: none;   
+}
+.filter_note {
+    font-size:large;
+    color:red;
 }

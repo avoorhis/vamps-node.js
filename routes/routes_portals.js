@@ -24,16 +24,7 @@ router.get('/visuals_index/:portal', function(req, res) {
     
     var project_list = helpers.get_portal_projects(req, portal)
     
-    //var pi = req.CONSTS.PORTALS[portal]
-
-    //console.log('pi',pi)
-    //console.log('project_list',project_list)
-    // ALL_DATASETS.projects.forEach(function(prj) {
-      
-    //   if(prj.name.indexOf(portal) === 0){  // UC, ICM, HMP, MBE ....
-    //     some_datasets.projects.push(prj);        
-    //   }
-    // });
+    
     // GLOBAL
     SHOW_DATA = project_list;
     
