@@ -45,7 +45,7 @@ BIOM_MATRIX = {};
  */
 router.get('/view_selection/:filename/:from_configuration_file', helpers.isLoggedIn, function(req, res) {
     console.log('req.body: view_selectionGET::prefix-->>');
-    if(req.CONFIG.site == 'vamps'){
+    if(req.CONFIG.site.substring(0,5) == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print');
     }else{
       console.log(req.body);
@@ -102,7 +102,7 @@ router.get('/view_selection/:filename/:from_configuration_file', helpers.isLogge
       }
       
     }
-    if(req.CONFIG.site == 'vamps'){
+    if(req.CONFIG.site.substring(0,5) == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print');
     }else{
       console.log(visual_post_items)
@@ -160,7 +160,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     delete req.body['rdp2.6_domains']
   }
   console.log('req.body: view_selection body-->>');
-  if(req.CONFIG.site == 'vamps'){
+  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print');
   }else{
     console.log(req.body);
@@ -284,7 +284,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   
 
   console.log('VS--visual_post_items:>>');
-  if(req.CONFIG.site == 'vamps'){
+  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print');
   }else{
       console.log(visual_post_items);
@@ -347,7 +347,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   //        checked by default.
   
   console.log('req.body: unit_selection-->>');
-  if(req.CONFIG.site == 'vamps'){
+  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print');
   }else{
     console.log(req.body);
@@ -441,7 +441,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
 
 	  console.log('chosen_id_name_hash-->');
-	  if(req.CONFIG.site == 'vamps'){
+	  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print');
     }else{
       console.log(chosen_id_name_hash);
