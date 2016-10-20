@@ -133,7 +133,7 @@ module.exports = {
   save_post_items: function(req) {
     // GLOBAL Variable
     var post_hash = {};
-    if(config.site.substring(0,5) == 'vamps' ){
+    if(config.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
     }else{
       console.log('VS--BODY',req.body)
@@ -163,7 +163,7 @@ module.exports = {
               post_hash.domains = post_hash.domains.split(',');
           }
           console.log('TYPEOF CUSTOM')
-          if(config.site.substring(0,5) == 'vamps' ){
+          if(config.site == 'vamps' ){
             console.log('VAMPS PRODUCTION -- no print to log');
           }else{
             console.log(req.body.custom_taxa)
@@ -383,7 +383,7 @@ run_script_cmd: function (req,res, ts, command, visual_name) {
 //
 create_chosen_id_name_hash: function(dataset_ids) {
   console.log('in common: chosen_id_name_hash' );
-  if(config.site.substring(0,5) == 'vamps' ){
+  if(config.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
       console.log('cinh1')
@@ -411,7 +411,7 @@ create_chosen_id_name_hash: function(dataset_ids) {
 },
 create_new_chosen_id_name_hash: function(dataset_list) {
   
-  if(config.site.substring(0,5) == 'vamps' ){
+  if(config.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
       console.log('cinh2')

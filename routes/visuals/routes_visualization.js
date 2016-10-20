@@ -45,7 +45,7 @@ BIOM_MATRIX = {};
  */
 router.get('/view_selection/:filename/:from_configuration_file', helpers.isLoggedIn, function(req, res) {
     console.log('req.body: view_selectionGET::prefix-->>');
-    if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+    if(req.CONFIG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
     }else{
       console.log(req.body);
@@ -102,7 +102,7 @@ router.get('/view_selection/:filename/:from_configuration_file', helpers.isLogge
       }
       
     }
-    if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+    if(req.CONFIG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
     }else{
       console.log(visual_post_items)
@@ -160,7 +160,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     delete req.body['rdp2.6_domains']
   }
   console.log('req.body: view_selection body-->>');
-  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+  if(req.CONFIG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
     console.log(req.body);
@@ -283,7 +283,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   
 
   console.log('VS--visual_post_items:>>');
-  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+  if(req.CONFIG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
       console.log(visual_post_items);
@@ -349,7 +349,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   //        checked by default.
   
   console.log('req.body: unit_selection-->>');
-  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+  if(req.CONFIG.site == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
   }else{
     console.log(req.body);
@@ -372,7 +372,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   // }else{
   //   dataset_ids = req.body.dataset_ids;
   // }
-  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+  if(req.CONFIG.site == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
   }else{
     console.log('dataset_ids '+dataset_ids);
@@ -446,7 +446,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
 
 	  console.log('chosen_id_name_hash-->');
-	  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+	  if(req.CONFIG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
     }else{
       console.log(chosen_id_name_hash);
@@ -643,7 +643,7 @@ router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
 router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     //console.log('found routes_test_heatmap')
     console.log('req.body hm');
-    if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+    if(req.CONFIG.site == 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
     }else{
         console.log(req.body);
@@ -701,7 +701,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS     
           try{
-            if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+            if(req.CONFIG.site == 'vamps' ){
               console.log('VAMPS PRODUCTION -- no print to log');
             }else{
               console.log(stdout)
@@ -813,7 +813,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     ///// It passes the newick string back to view_selection.js
     ///// and tries to construct the svg there before showing it.
     console.log('req.body dnd');
-    if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+    if(req.CONFIG.site == 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
     }else{
       console.log(req.body);
@@ -873,7 +873,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS       
           if(image_type == 'svg'){
-                    if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+                    if(req.CONFIG.site == 'vamps' ){
                       console.log('VAMPS PRODUCTION -- no print to log');
                     }else{
                         console.log('stdout: ' + stdout);
@@ -889,7 +889,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                     
                     try{
                       newick = JSON.parse(tmp[1]);
-                      if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+                      if(req.CONFIG.site == 'vamps' ){
                         console.log('VAMPS PRODUCTION -- no print to log');
                       }else{
                         console.log(newick)
@@ -1001,7 +1001,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
         //var pc_file = path.join(pwd,'tmp', pc_file_name);
         ///////////////////////////////////////////////////
   console.log('in 3D');
-  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+  if(req.CONFIG.site == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
   }else{
     console.log(visual_post_items);
@@ -1132,7 +1132,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 router.get('/pcoa3d', helpers.isLoggedIn, function(req, res) {
         
   console.log('in 3D');
-  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+  if(req.CONFIG.site == 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
   }else{
     console.log(visual_post_items);
@@ -1175,7 +1175,7 @@ router.get('/pcoa3d', helpers.isLoggedIn, function(req, res) {
         });  // stdin, stdout, stderr1    
        
         pcoa_process.stdout.on('data', function pcoaProcessStdout(data) { 
-          if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+          if(req.CONFIG.site == 'vamps' ){
             console.log('VAMPS PRODUCTION -- no print to log');
           }else{
             console.log('1stdout: ' + data);  
@@ -1460,7 +1460,7 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     stdout = '';
     alphadiv_process.stdout.on('data', function adiversityProcessStdout(data) {
         data = data.toString();
-        if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+        if(req.CONFIG.site == 'vamps' ){
           console.log('VAMPS PRODUCTION -- no print to log');
         }else{
           console.log(data)
@@ -2220,7 +2220,7 @@ router.get('/partials/med_nodes', helpers.isLoggedIn,  function(req, res) {
 router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_config-->>');
-  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+  if(req.CONFIG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
       console.log(req.body);
@@ -2236,7 +2236,7 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
   json_obj.source = 'VAMPS';
   json_obj.post_items = visual_post_items
   json_obj.id_name_hash = chosen_id_name_hash
-  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+  if(req.CONFIG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
       console.log(json_obj)
@@ -2259,7 +2259,7 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
 router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_datasets-->>');
-  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+  if(req.CONFIG.site == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
   }else{
     console.log(req.body);
@@ -2461,7 +2461,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
           continue
         }
       }
-      if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+      if(req.CONFIG.site == 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
       }else{
         console.log('dsl',ds_list)
@@ -2911,7 +2911,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
         if(Object.keys(DATA_TO_OPEN).length > 0){
           
           console.log('dto');
-          if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+          if(req.CONFIG.site == 'vamps' ){
             console.log('VAMPS PRODUCTION -- no print to log');
           }else{
             console.log(DATA_TO_OPEN);
@@ -2921,7 +2921,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
           }
         }
         console.log('all_checked_dids:')
-        if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+        if(req.CONFIG.site == 'vamps' ){
           console.log('VAMPS PRODUCTION -- no print to log');
         }else{
           console.log(all_checked_dids)

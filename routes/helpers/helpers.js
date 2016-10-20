@@ -537,7 +537,7 @@ module.exports.make_color_seq = function(seq){
 
 module.exports.update_project_information_global_object = function(pid, form, user_obj){
     console.log('Updating PROJECT_INFORMATION_BY_PID')
-    if(config.site.substring(0,5) == 'vamps' ){
+    if(config.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
     }else{
       console.log(pid)
