@@ -288,6 +288,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
       console.log(visual_post_items);
+      console.log('visual_post_items');
   }  
   console.log('<<VS--visual_post_items');
  
@@ -295,7 +296,9 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   // GLOBAL
   //console.log('metadata>>');
   //metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
+  console.log('metadata-->');
   var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
+  console.log('<<metadata');
   //metadata = JSON.parse(metadata);
   //console.log(metadata);
   //console.log('<<metadata');

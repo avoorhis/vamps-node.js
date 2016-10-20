@@ -460,7 +460,7 @@ module.exports.get_public_projects = function(req) {
 
   });
 
-  console.log('INFO', projects);
+  //console.log('INFO', projects);
   return projects;
 
 };
@@ -537,9 +537,13 @@ module.exports.make_color_seq = function(seq){
 
 module.exports.update_project_information_global_object = function(pid, form, user_obj){
     console.log('Updating PROJECT_INFORMATION_BY_PID')
-    console.log(pid)
-    console.log(JSON.stringify(form))
-    console.log(JSON.stringify(user_obj))
+    if(config.site.substring(0,5) == 'vamps' ){
+      console.log('VAMPS PRODUCTION -- no print to log');
+    }else{
+      console.log(pid)
+      console.log(JSON.stringify(form))
+      console.log(JSON.stringify(user_obj))
+    }
     if( PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid) == true){
         console.log('pid already in PROJECT_INFORMATION_BY_PID -- how can that be?')
         return
