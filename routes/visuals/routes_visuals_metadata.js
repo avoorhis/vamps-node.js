@@ -48,7 +48,7 @@ module.exports = {
 					}
 				}
 				
-				console.log(txt2.length)
+				
 				if(txt2.length > pjds.length+2){  // the +2 is to account for tabs in the txt2
 					txt += txt2 + "\t"+pjds+"\n";
 				}
@@ -107,7 +107,6 @@ module.exports = {
 					}
 				}
 				
-				//console.log('txt2.length '+txt2.length.toString())
 				//if(txt2.length > pjds.length+2){  // the +2 is to account for tabs in the txt2
 					txt += txt2 + "\t"+tmp[0]+ "\t"+pjds+"\n";
 				//}

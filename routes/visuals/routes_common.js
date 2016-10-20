@@ -369,7 +369,7 @@ run_script_cmd: function (req,res, ts, command, visual_name) {
 	            html += " <p>ERROR in loading pdf file</p>";
 	            html += "</object></div>";
 	            //var html = "<img alt='alt_freq-heatmap-fig' src='"+image+"' />"
-	            console.log(html);
+	            //console.log(html);
 	            res.send(html);  
 	        }
 		}    

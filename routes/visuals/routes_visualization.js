@@ -289,7 +289,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   }else{
       console.log(visual_post_items);
   }  
-  console.log('<<VS--visual_post_items:');
+  console.log('<<VS--visual_post_items');
  
 
   // GLOBAL
@@ -370,8 +370,11 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   // }else{
   //   dataset_ids = req.body.dataset_ids;
   // }
-
-  console.log('dataset_ids '+dataset_ids);
+  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+    console.log('VAMPS PRODUCTION -- no print to log');
+  }else{
+    console.log('dataset_ids '+dataset_ids);
+  }
   if (dataset_ids === undefined || dataset_ids.length === 0){
       console.log('redirecting back -- no data selected');
    	  req.flash('nodataMessage', 'Select Some Datasets');
