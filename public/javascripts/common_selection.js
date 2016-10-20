@@ -212,7 +212,7 @@ function sort_json_matrix(mtx, fxn) {
       mtx.rows = []
       mtx.data = []
       for(i in obj){
-        console.log(i,obj[i])
+        //console.log(i,obj[i])
         mtx.rows.push(obj[i].tax)
         mtx.data.push(obj[i].cnt)
       }

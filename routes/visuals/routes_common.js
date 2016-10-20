@@ -132,7 +132,6 @@ module.exports = {
   //
   save_post_items: function(req) {
     // GLOBAL Variable
-    console.log('in COMMON.save_post_items()')
     var post_hash = {};
     if(config.site.substring(0,5) == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
@@ -387,6 +386,7 @@ create_chosen_id_name_hash: function(dataset_ids) {
   if(config.site.substring(0,5) == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
+      console.log('cinh1')
       console.log(chosen_id_name_hash );
       console.log(dataset_ids)
   }
@@ -414,6 +414,7 @@ create_new_chosen_id_name_hash: function(dataset_list) {
   if(config.site.substring(0,5) == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
+      console.log('cinh2')
       console.log(chosen_id_name_hash );
   }
   var potential_chosen_id_name_hash    = {};
