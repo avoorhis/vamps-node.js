@@ -46,7 +46,7 @@ BIOM_MATRIX = {};
 router.get('/view_selection/:filename/:from_configuration_file', helpers.isLoggedIn, function(req, res) {
     console.log('req.body: view_selectionGET::prefix-->>');
     if(req.CONFIG.site.substring(0,5) == 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print');
+      console.log('VAMPS PRODUCTION -- no print to log');
     }else{
       console.log(req.body);
       console.log(req.params);
@@ -103,7 +103,7 @@ router.get('/view_selection/:filename/:from_configuration_file', helpers.isLogge
       
     }
     if(req.CONFIG.site.substring(0,5) == 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print');
+      console.log('VAMPS PRODUCTION -- no print to log');
     }else{
       console.log(visual_post_items)
     }
@@ -161,7 +161,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   }
   console.log('req.body: view_selection body-->>');
   if(req.CONFIG.site.substring(0,5) == 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print');
+      console.log('VAMPS PRODUCTION -- no print to log');
   }else{
     console.log(req.body);
   }
@@ -285,7 +285,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 
   console.log('VS--visual_post_items:>>');
   if(req.CONFIG.site.substring(0,5) == 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print');
+      console.log('VAMPS PRODUCTION -- no print to log');
   }else{
       console.log(visual_post_items);
   }  
@@ -348,7 +348,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   
   console.log('req.body: unit_selection-->>');
   if(req.CONFIG.site.substring(0,5) == 'vamps' ){
-    console.log('VAMPS PRODUCTION -- no print');
+    console.log('VAMPS PRODUCTION -- no print to log');
   }else{
     console.log(req.body);
   }
@@ -442,7 +442,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
 	  console.log('chosen_id_name_hash-->');
 	  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print');
+      console.log('VAMPS PRODUCTION -- no print to log');
     }else{
       console.log(chosen_id_name_hash);
 	    console.log(chosen_id_name_hash.ids.length);
@@ -638,7 +638,11 @@ router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
 router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     //console.log('found routes_test_heatmap')
     console.log('req.body hm');
-    console.log(req.body);
+    if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+        console.log('VAMPS PRODUCTION -- no print to log');
+    }else{
+        console.log(req.body);
+    }
     console.log('req.body hm');
     
     var ts = req.body.ts;
@@ -679,6 +683,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     });
     var stderr = '';
     heatmap_process.stderr.on('data', function heatmapProcessStderr(data) {
+        
         console.log('stderr: ' + data);
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         data = data.toString();
@@ -691,7 +696,11 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS     
           try{
-            console.log(stdout)
+            if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+              console.log('VAMPS PRODUCTION -- no print to log');
+            }else{
+              console.log(stdout)
+            }
             distance_matrix = JSON.parse(stdout);
           }
           catch(err){
@@ -751,15 +760,11 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
       }); 
   stdout = '';
   fheatmap_process.stdout.on('data', function fheatmapProcessStdout(data) {
-      
       stdout += data;    
-   
   });
   stderr = '';
   fheatmap_process.stderr.on('data', function fheatmapProcessStderr(data) {
-      
       stderr += data;    
-   
   }); 
   
   fheatmap_process.on('close', function fheatmapProcessOnClose(code) {
@@ -782,19 +787,7 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
               res.send(html);
 
               return;
-              // fs.readFile(image_file, 'utf8', function (err,data) {
-              //   if (err) {
-              //      console.log(err);
-              //      res.send('FreqHeatmap File Error');
-              //    }
-              //    console.log('Reading: '+image)
-              //    //data_items = data.split('\n')
-                 
-              //    //X=data_items.slice(1,data_items.length)
-              //    //d = X.join('\n')
-              //    //console.log(d)
-              //    res.send(data);
-              // });
+              
                                         
         }else{
           console.log('ERROR');
@@ -815,7 +808,11 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     ///// It passes the newick string back to view_selection.js
     ///// and tries to construct the svg there before showing it.
     console.log('req.body dnd');
-    console.log(req.body);
+    if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+        console.log('VAMPS PRODUCTION -- no print to log');
+    }else{
+      console.log(req.body);
+    }
     console.log('req.body dnd');
     var ts = req.body.ts;
     var metric = req.body.metric;
@@ -871,7 +868,11 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS       
           if(image_type == 'svg'){
-                    console.log('stdout: ' + stdout);
+                    if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+                      console.log('VAMPS PRODUCTION -- no print to log');
+                    }else{
+                        console.log('stdout: ' + stdout);
+                    }
                     lines = stdout.split('\n')
                     for(n in lines){
                       if(lines[n].substring(0,6) == 'NEWICK' ){
@@ -883,7 +884,11 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                     
                     try{
                       newick = JSON.parse(tmp[1]);
-                      console.log(newick)
+                      if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+                        console.log('VAMPS PRODUCTION -- no print to log');
+                      }else{
+                        console.log(newick)
+                      }
                     }
                     catch(err){
                       newick = {"ERROR":err};
@@ -991,7 +996,11 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
         //var pc_file = path.join(pwd,'tmp', pc_file_name);
         ///////////////////////////////////////////////////
   console.log('in 3D');
-  console.log(visual_post_items);
+  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+    console.log('VAMPS PRODUCTION -- no print to log');
+  }else{
+    console.log(visual_post_items);
+  }
   var ts = visual_post_items.ts;    
   var metric = visual_post_items.selected_distance;
   
@@ -1051,7 +1060,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
                     //console.log(req.CONFIG.PATH)
                     //console.log(req.CONFIG.LD_LIBRARY_PATH)
                     //console.log(req.CONFIG.PYTHONPATH)
-                    console.log(path.join(pwd,'logs','visualization.log'))
+                    //console.log(path.join(pwd,'logs','visualization.log'))
                     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
                     //var emperor_process = spawn( options2.scriptPath+'/make_emperor.py', options2.args, {
                     var exec = require('child_process').exec;
@@ -1118,7 +1127,11 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 router.get('/pcoa3d', helpers.isLoggedIn, function(req, res) {
         
   console.log('in 3D');
-  console.log(visual_post_items);
+  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+        console.log('VAMPS PRODUCTION -- no print to log');
+  }else{
+    console.log(visual_post_items);
+  }
   var ts = visual_post_items.ts;    
   var metric = visual_post_items.selected_distance;
   
@@ -1156,7 +1169,13 @@ router.get('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       //stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr1    
        
-        pcoa_process.stdout.on('data', function pcoaProcessStdout(data) { console.log('1stdout: ' + data);  });
+        pcoa_process.stdout.on('data', function pcoaProcessStdout(data) { 
+          if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+            console.log('VAMPS PRODUCTION -- no print to log');
+          }else{
+            console.log('1stdout: ' + data);  
+          }
+        });
         stderr1='';
         pcoa_process.stderr1.on('data', function pcoaProcessStderr(data) {
                 console.log('1stderr-GET: ' + data);
@@ -1171,7 +1190,7 @@ router.get('/pcoa3d', helpers.isLoggedIn, function(req, res) {
                     //console.log(req.CONFIG.PATH)
                     //console.log(req.CONFIG.LD_LIBRARY_PATH)
                     //console.log(req.CONFIG.PYTHONPATH)
-                    console.log(path.join(pwd,'logs','visualization.log'))
+                    //console.log(path.join(pwd,'logs','visualization.log'))
                     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
                     //var emperor_process = spawn( options2.scriptPath+'/make_emperor.py', options2.args, {
                     var exec = require('child_process').exec;
@@ -1216,39 +1235,7 @@ router.get('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
                     });
 
-                    // var emperor_process = exec( 'make_emperor.py', options2.args, {
-                    //         env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PYTHONPATH':req.CONFIG.PYTHONPATH},
-                    //         //detached: true, 
-                    //         detached: false,
-                    //         stdio:'pipe' // stdin, stdout, stderr
-                    //         //stdio: [ 'ignore', log, log ]
-                    // });  
-                    
-                    // emperor_process.stdout.on('data', function (data) { 
-                    //   console.log('2stdout: ' + data);  
-                    // });
-                    // stderr2='';
-                    // emperor_process.stderr.on('data', function (data) {
-                    //         console.log('2stderr: ' + data);
-                    //         stderr2 += data;                       
-                    // });
-                    // emperor_process.on('close', function (code2) {
-                    //       console.log('emperor_process process exited with code ' + code2);
-                          
-                    //       if(code2 === 0){           
-                              
-                    //           console.log('opening file:///'+html_path);
-                    //           //res.send();
-                    //           res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd});
-
-                    //           //open('file://'+html_path);
-                    //           //res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser."); 
-                    //       }else{
-                    //         // python script error
-                    //         //console.log('make_emperor script error:' + errdata2);
-                    //         res.send('make_emperor2 SCRIPT error '+stderr2);
-                    //       }      
-                    // });                      
+                   
                 }else{
                     //console.log('ERROR');
                     res.send('Python Script Error: '+stderr1);
@@ -1444,7 +1431,7 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     
     var html = '';
     var title = 'VAMPS';
-    console.log(biom_file)
+
     //var distmtx_file_name = ts+'_distance.csv';
     //var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
    
@@ -1468,7 +1455,11 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     stdout = '';
     alphadiv_process.stdout.on('data', function adiversityProcessStdout(data) {
         data = data.toString();
-        console.log(data)
+        if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+          console.log('VAMPS PRODUCTION -- no print to log');
+        }else{
+          console.log(data)
+        }
         stdout += data;    
      
     });
@@ -1603,7 +1594,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
             console.log('ERROR-2');            
             html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's"
           } 
-          console.log(html);
+          //console.log(html);
           res.send(html);
 
     });   
@@ -1730,7 +1721,6 @@ function get_sumator(req){
                    }
                }
            }
-
            if(rank=='species'){
                s = tax_items[t]
                for(i in chosen_id_name_hash.ids){                   
@@ -1766,8 +1756,6 @@ function get_sumator(req){
                    }
                }
            }
-
-
         }
     }
     return sumator;
@@ -2051,16 +2039,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 
         }
     })
-    //console.log(new_matrix)
-    // res.render('visuals/user_viz_data/bar_double', {
-    //     title: 'Taxonomic Data',
-    //     ts: timestamp,
-    //     matrix    :           JSON.stringify(new_matrix),
-    //     post_items:           JSON.stringify(visual_post_items),
-    //     bar_type  : 'double',        
-    //     //html: html,
-    //     user: req.user, hostname: req.CONFIG.hostname,
-    // });
+    
 
 });
 //
@@ -2236,7 +2215,11 @@ router.get('/partials/med_nodes', helpers.isLoggedIn,  function(req, res) {
 router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_config-->>');
-  console.log(req.body);
+  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+      console.log('VAMPS PRODUCTION -- no print to log');
+  }else{
+      console.log(req.body);
+  }
   console.log('req.body: save_config');
   var timestamp = +new Date();  // millisecs since the epoch!  
   var filename = 'configuration-' + timestamp + '.json';
@@ -2248,9 +2231,11 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
   json_obj.source = 'VAMPS';
   json_obj.post_items = visual_post_items
   json_obj.id_name_hash = chosen_id_name_hash
-
-  console.log(json_obj)
-
+  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+      console.log('VAMPS PRODUCTION -- no print to log');
+  }else{
+      console.log(json_obj)
+  }
   var filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,filename);
   helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE));  // create dir if not present
   helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE,req.user.username)); // create dir if not present
@@ -2265,59 +2250,15 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
 //
 //
 
-// router.get('/saved_states', helpers.isLoggedIn,  function(req, res) {
-//     console.log('in show_saved_configs');
-//     if(req.user.username == 'guest'){
-//       req.flash('message', "The 'guest' user has no saved configs");
-//       res.redirect('/user_data/your_data');
-//     }else{
-//       //console.log('req.body: show_saved_datasets-->>');
-//       //console.log(req.body);
-//       //console.log('req.body: show_saved_datasets');
-//       var saved_configs_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
 
-//       file_info = {};
-//       modify_times = [];
-//       helpers.mkdirSync(saved_configs_dir);
-//       fs.readdir(saved_configs_dir, function(err, files){
-//           if(err){
-            
-//             msg = 'ERROR Message '+err;
-//             helpers.render_error_page(req,res,msg);
-          
-          
-//           }else{
-//             for (var f in files){
-//                 var pts = files[f].split('-');
-//                 if(pts[0] === 'configuration'){
-//                   //file_info.files.push(files[f]);
-//                   stat = fs.statSync(path.join(saved_configs_dir,files[f]));
-//                    file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime }
-//                    modify_times.push(stat.mtime.getTime());
-              
-//                 }
-//             }   
-//             modify_times.sort().reverse();
-//             //console.log(JSON.stringify(file_info));
-//           } 
-          
-//           res.render('visuals/saved_states',
-//               { title: 'saved_configs',
-               
-//                 finfo: JSON.stringify(file_info),
-//                 times: modify_times,
-//                 message: req.flash('message'),
-//                 user: req.user, hostname: req.CONFIG.hostname,
-//           });     
-  
-//       });
-//     }
-  
-// });
 router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_datasets-->>');
-  console.log(req.body);
+  if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+    console.log('VAMPS PRODUCTION -- no print to log');
+  }else{
+    console.log(req.body);
+  }
   console.log('req.body: save_datasets');
 	
 	var filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,req.body.filename);
@@ -2476,7 +2417,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(process.env.PWD,'tmp',biom_file_name);
     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-    console.log(req.body)
+    
     var options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-in', biom_file, '-metric', metric, '--function', 'cluster_datasets', '--outdir', path.join(pwd,'tmp'), '--prefix', ts],
@@ -2515,8 +2456,11 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
           continue
         }
       }
-      
-      console.log('dsl',ds_list)
+      if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+        console.log('VAMPS PRODUCTION -- no print to log');
+      }else{
+        console.log('dsl',ds_list)
+      }
       //var last_line = ary[ary.length - 1];
       if(code === 0){   // SUCCESS        
         try{
@@ -2671,7 +2615,7 @@ router.get('/livesearch_projects/:substring', function(req, res) {
   }
   
   PROJECT_FILTER.substring = substring
-  console.log('PORTAL',portal)
+  
   var projects_to_filter = []
   if(portal){
     projects_to_filter = helpers.get_portal_projects(req, portal)
@@ -2709,7 +2653,7 @@ router.get('/livesearch_env/:envid', function(req, res) {
   }
   
   PROJECT_FILTER.env = envid_lst
-  console.log('PORTAL',portal)
+  
   if(portal){
     var projects_to_filter = helpers.get_portal_projects(req, portal)
   }else{
@@ -2735,7 +2679,7 @@ router.get('/livesearch_target/:gene_target', function(req, res) {
   }
   
   PROJECT_FILTER.target = gene_target
-  console.log('PORTAL',portal)
+  
   if(portal){
     var projects_to_filter = helpers.get_portal_projects(req, portal)
   }else{
@@ -2764,7 +2708,7 @@ router.get('/livesearch_portal/:portal', function(req, res) {
   }
  
   PROJECT_FILTER.portal = select_box_portal
-  console.log('PORTAL',portal)
+  
   if(portal){
     var projects_to_filter = helpers.get_portal_projects(req, portal)
   }else{
@@ -2789,7 +2733,7 @@ router.get('/livesearch_status/:q', function(req, res) {
   var portal = myurl.query.portal;
   
   PROJECT_FILTER.public = q
-  console.log('PORTAL',portal)
+  
   if(portal){
     var projects_to_filter = helpers.get_portal_projects(req, portal)
   }else{
@@ -2817,7 +2761,7 @@ router.get('/livesearch_metadata/:q', function(req, res) {
   }
   
   PROJECT_FILTER.metadata = q
-  console.log('PORTAL',portal)
+  
   if(portal){
     var projects_to_filter = helpers.get_portal_projects(req, portal)
   }else{
@@ -2960,14 +2904,23 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
         })
         var all_checked_dids = []
         if(Object.keys(DATA_TO_OPEN).length > 0){
+          
           console.log('dto');
-          console.log(DATA_TO_OPEN);
+          if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+            console.log('VAMPS PRODUCTION -- no print to log');
+          }else{
+            console.log(DATA_TO_OPEN);
+          }
           for(openpid in DATA_TO_OPEN){
             Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid])
           }
         }
-        console.log('all_checked_dids')
-        console.log(all_checked_dids)
+        console.log('all_checked_dids:')
+        if(req.CONFIG.site.substring(0,5) == 'vamps' ){
+          console.log('VAMPS PRODUCTION -- no print to log');
+        }else{
+          console.log(all_checked_dids)
+        }
         var pname = this_project.name 
         for(n in this_project.datasets){
             var did   = this_project.datasets[n].did

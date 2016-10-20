@@ -4,6 +4,7 @@ var fs = require('fs');
 var extend = require('util')._extend;
 //var COMMON  = require('./routes_common');
 var CONSTS = require('../../public/constants');
+var config  = require(app_root + '/config/config');
 //var HMAP    = require('./routes_distance_heatmap');
 //var DEND    = require('./routes_dendrogram');
 //var PCOA    = require('./routes_pcoa');
@@ -132,9 +133,14 @@ module.exports = {
   save_post_items: function(req) {
     // GLOBAL Variable
     var post_hash = {};
-    console.log('VS--BODY',req.body)
-    console.log('VS--DOMAINS',req.body.domains)
-    console.log('req.body.ds_order',req.body.ds_order)
+    if(config.site.substring(0,5) == 'vamps' ){
+      console.log('VAMPS PRODUCTION -- no print to log');
+    }else{
+      console.log('VS--BODY',req.body)
+      console.log('VS--DOMAINS',req.body.domains)
+      console.log('req.body.ds_order',req.body.ds_order)
+    }
+    
     if(req.body.ds_order === undefined) {
           
           post_hash.unit_choice                  = req.body.unit_choice;
@@ -157,8 +163,12 @@ module.exports = {
               post_hash.domains = post_hash.domains.split(',');
           }
           console.log('TYPEOF CUSTOM')
-          console.log(req.body.custom_taxa)
-          console.log(typeof req.body.custom_taxa)
+          if(config.site.substring(0,5) == 'vamps' ){
+            console.log('VAMPS PRODUCTION -- no print to log');
+          }else{
+            console.log(req.body.custom_taxa)
+            console.log(typeof req.body.custom_taxa)
+          }
           post_hash.custom_taxa   = req.body.custom_taxa  || ['NA'];
           // html: [ '1', '60', '2120', '2261' ], object
           // fancy & dhtmlx:  1,60,2120,2260,2261,2266  string
@@ -203,9 +213,6 @@ module.exports = {
         post_hash = visual_post_items;       
     }
     
-    console.log('AAAAAAA->')
-    console.log(post_hash)
-    console.log('<-BBBBBBBB')
     return post_hash;
   },
 
@@ -376,20 +383,23 @@ run_script_cmd: function (req,res, ts, command, visual_name) {
 //
 create_chosen_id_name_hash: function(dataset_ids) {
   console.log('in common: chosen_id_name_hash' );
-  console.log(chosen_id_name_hash );
+  if(config.site.substring(0,5) == 'vamps' ){
+      console.log('VAMPS PRODUCTION -- no print to log');
+  }else{
+      console.log(chosen_id_name_hash );
+      console.log(dataset_ids)
+  }
   var chosen_id_name_hash    = {};
   chosen_id_name_hash.ids    = [];
   chosen_id_name_hash.names  = [];
 
   console.log('TypeOf',typeof dataset_ids)
-  console.log(dataset_ids)
+  
   for (var i in dataset_ids){   
 
       did   = dataset_ids[i];
-      console.log('did',did)
       dname = DATASET_NAME_BY_DID[did];
       pid   = PROJECT_ID_BY_DID[did];
-      console.log('pid',pid)
       pname = PROJECT_INFORMATION_BY_PID[pid].project;
       //dataset_ids.push(did+'--'+pname+'--'+dname);
       chosen_id_name_hash.ids.push(did);
@@ -400,7 +410,11 @@ create_chosen_id_name_hash: function(dataset_ids) {
 },
 create_new_chosen_id_name_hash: function(dataset_list) {
   
-  console.log(chosen_id_name_hash );
+  if(config.site.substring(0,5) == 'vamps' ){
+      console.log('VAMPS PRODUCTION -- no print to log');
+  }else{
+      console.log(chosen_id_name_hash );
+  }
   var potential_chosen_id_name_hash    = {};
   potential_chosen_id_name_hash.ids    = [];
   potential_chosen_id_name_hash.names  = [];

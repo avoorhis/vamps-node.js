@@ -448,7 +448,7 @@ module.exports.get_public_projects = function(req) {
   projects = [];
   //var basis = req.CONSTS.PORTALS[portal]
   //switch (portal) {
-  console.log('ALL_DATASETS--get_public_projects', ALL_DATASETS);
+  //console.log('ALL_DATASETS--get_public_projects', ALL_DATASETS);
   //console.log(JSON.stringify(basis))
   ALL_DATASETS.projects.forEach(function(prj) {
 
@@ -821,17 +821,17 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
     var site = req.CONFIG.site;
     var code = 'NVexport';
     var pid_lookup = {};
-    console.log('dids', dids);
+    //console.log('dids', dids);
     export_cmd = 'vamps_export_data.py';
     for (n=0; n<dids.length; n++) {
-        console.log('did', dids[n]);
+        //console.log('did', dids[n]);
         pid_lookup[PROJECT_ID_BY_DID[dids[n]]] = 1;
     }
 
     var dids_str = JSON.stringify(dids.join(', '));
     var pids_str = JSON.stringify((Object.keys(pid_lookup)).join(', '));
 
-    console.log('pids', pids_str);
+    //console.log('pids', pids_str);
     //var file_tags = file_tags.join(' ')
 
     var export_cmd_options = {
@@ -872,8 +872,7 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
                     return console.log(err);
                 } else {
                     console.log("The file was saved!");
-
-                    console.log(qsub_script_text);
+                    //console.log(qsub_script_text);
                     fs.chmod(qsub_file_path, '0775', function chmodFile(err) {
                         if (err) {
                             return console.log(err);
