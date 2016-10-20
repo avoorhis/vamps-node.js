@@ -227,8 +227,9 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     }
   }else{
     // GLOBAL Variable
+    console.log('COMMON.save_post_items-->');
     visual_post_items = COMMON.save_post_items(req);
-
+    console.log('<--COMMON.save_post_items');
     dataset_ids = chosen_id_name_hash.ids;
 
     for(var i in dataset_ids){
@@ -296,9 +297,9 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   // GLOBAL
   //console.log('metadata>>');
   //metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
-  console.log('metadata-->');
+  
   var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
-  console.log('<<metadata');
+  
   //metadata = JSON.parse(metadata);
   //console.log(metadata);
   //console.log('<<metadata');

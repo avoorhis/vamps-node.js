@@ -132,6 +132,7 @@ module.exports = {
   //
   save_post_items: function(req) {
     // GLOBAL Variable
+    console.log('in COMMON.save_post_items()')
     var post_hash = {};
     if(config.site.substring(0,5) == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
