@@ -45,8 +45,12 @@ BIOM_MATRIX = {};
  */
 router.get('/view_selection/:filename/:from_configuration_file', helpers.isLoggedIn, function(req, res) {
     console.log('req.body: view_selectionGET::prefix-->>');
-    console.log(req.body);
-    console.log(req.params);
+    if(req.CONFIG.site == 'vamps'){
+      console.log('VAMPS PRODUCTION -- no print');
+    }else{
+      console.log(req.body);
+      console.log(req.params);
+    }
     console.log('req.body: view_selectionGET>>prefix');
     req.flash('message', 'Using data from configuration file.');
     TAXCOUNTS = {};
@@ -98,8 +102,11 @@ router.get('/view_selection/:filename/:from_configuration_file', helpers.isLogge
       }
       
     }
-    console.log('TS')
-    console.log(visual_post_items)
+    if(req.CONFIG.site == 'vamps'){
+      console.log('VAMPS PRODUCTION -- no print');
+    }else{
+      console.log(visual_post_items)
+    }
     //var timestamp = +new Date();  // millisecs since the epoch!
     //timestamp = req.user.username + '_' + timestamp;
     //visual_post_items.ts = timestamp;
@@ -153,7 +160,11 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     delete req.body['rdp2.6_domains']
   }
   console.log('req.body: view_selection body-->>');
-  console.log(req.body);
+  if(req.CONFIG.site == 'vamps'){
+      console.log('VAMPS PRODUCTION -- no print');
+  }else{
+    console.log(req.body);
+  }
   console.log('<<--req.body: view_selection');
   
   helpers.start = process.hrtime();
@@ -273,7 +284,11 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   
 
   console.log('VS--visual_post_items:>>');
-  console.log(visual_post_items);
+  if(req.CONFIG.site == 'vamps'){
+      console.log('VAMPS PRODUCTION -- no print');
+  }else{
+      console.log(visual_post_items);
+  }  
   console.log('<<VS--visual_post_items:');
  
 
@@ -332,7 +347,11 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   //        checked by default.
   
   console.log('req.body: unit_selection-->>');
-  console.log(req.body);
+  if(req.CONFIG.site == 'vamps'){
+    console.log('VAMPS PRODUCTION -- no print');
+  }else{
+    console.log(req.body);
+  }
   console.log('req.body: unit_selection');
   if(typeof  unit_choice === 'undefined'){
     unit_choice = 'tax_silva119_simple';
@@ -355,7 +374,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   console.log('dataset_ids '+dataset_ids);
   if (dataset_ids === undefined || dataset_ids.length === 0){
       console.log('redirecting back -- no data selected');
-   	 req.flash('nodataMessage', 'Select Some Datasets');
+   	  req.flash('nodataMessage', 'Select Some Datasets');
    	 //res.redirect('visuals_index');
      return;
   }else{
@@ -422,10 +441,13 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
 
 	  console.log('chosen_id_name_hash-->');
-	  console.log(chosen_id_name_hash);
-	  console.log(chosen_id_name_hash.ids.length);
+	  if(req.CONFIG.site == 'vamps'){
+      console.log('VAMPS PRODUCTION -- no print');
+    }else{
+      console.log(chosen_id_name_hash);
+	    console.log(chosen_id_name_hash.ids.length);
+    }
 	  console.log('<--chosen_id_name_hash');
-    console.log('units: ',unit_choice)
 
 	  res.render('visuals/unit_selection', {
 	                    title: 'VAMPS: Units Selection',
