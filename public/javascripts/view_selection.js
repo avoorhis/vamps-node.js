@@ -13,6 +13,7 @@ $(document).ready(function(){
     //  e_page_click = window.event
      // page_click(e_page_click)
     //});
+   
     //click_on_graph_icon = false;
     //alert(pi_local.ts)
     if(image_to_rdr_local.hasOwnProperty('image')){
@@ -20,7 +21,7 @@ $(document).ready(function(){
       create_viz(image_to_rdr_local.image, pi_local.ts, false)
       $(document.getElementById('pre_'+image_to_rdr_local.image+'_div')).scrollView();
     }
-    //$(pre_dheatmap_div).scrollView();
+   
 });
 
 $.fn.scrollView = function () {
@@ -432,6 +433,7 @@ document.getElementById('pre_cytoscape_div').style.display = 'block';
 //
 function create_counts_matrix(new_window) {
       
+      
       if(new_window == true){
         var htmlstring = document.getElementById('counts_matrix_div').innerHTML;
         function openindex()
@@ -504,14 +506,15 @@ function create_counts_matrix(new_window) {
         
         for (t = 0; t < maxrank; t++) {
           if(taxitems.length > t){
-            html += "<td class='left_justify'>"+taxitems[t] +"</td>";
+            html += "<td class='left_justify' >"+taxitems[t] +"</td>";
           }else{
             html += "<td class='left_justify'>--</td>";
           }
         }
         counts_string=JSON.stringify(mtx_local.data[i])
-        html += "<td title='Graph' align='center' style='cursor:pointer;'>"
+        
         graph_link_id = 'flot_graph_link'+i.toString()
+        html += "<td title='Graph'  align='center' style='cursor:pointer;'>"
         html += "<img width='25' id='"+graph_link_id+"' src='/images/visuals/graph.png' onclick=\"graph_counts('"+i.toString()+"','"+mtx_local.rows[i].id+"','"+counts_string+"')\">"
         html += "</td>";
 
@@ -566,8 +569,11 @@ function create_counts_matrix(new_window) {
       }
       html += "</tr>";
       html += "</table>";
-      
-      //document.getElementById('counts_tooltip_div').innerHTML = tooltip_tbl;
+      html += "<script>";
+// html += "$(document).ready(function(){";
+// html += "    $('[data-toggle=\"tooltip\"]').tooltip();";
+// html += "});";
+// html += "</script>";
       tax_counts_div.innerHTML = html; 
       document.getElementById('counts_matrix_dnld_btn').disabled = false
       //$(".verticalTableHeader").each(function(){$(this).height($(this).width())  
@@ -576,8 +582,12 @@ function create_counts_matrix(new_window) {
 
 function graph_counts(new_id,taxonomy,counts){
   
-  var e = window.event;
   
+  var bodyRect = document.body.getBoundingClientRect()
+  var graphRect = document.getElementById('flot_graph_link'+new_id).getBoundingClientRect();
+  topOffset   = graphRect.top  - bodyRect.top;
+  leftOffset  = graphRect.left - bodyRect.left;
+   
   if(typeof id !== 'undefined' && id == new_id){
     // same: hide graph
     chart_data = []
@@ -586,8 +596,19 @@ function graph_counts(new_id,taxonomy,counts){
     }
   }else{
     // different: -- show graph
-    $('#tax_counts_graph_div').css({'top':e.pageY-200,'left':e.pageX, 'position':'absolute', 'border':'1px solid black', 'padding':'55px'});
-    document.getElementById('tax_counts_graph_div').style.display='block'
+    
+    $('#tax_counts_graph_div').css({
+                'top':topOffset-200,
+                'left':leftOffset, 
+                'z-index':1000, 
+                'width': '600px',
+                'height': '400px', 
+                "display":"block",   
+                'position': 'absolute', 
+                'border':'1px solid black', 
+                'padding':'55px'
+              });
+  
     id = new_id
   }
   counts = JSON.parse(counts)
@@ -819,7 +840,8 @@ function create_dendrogram(ts, image_type, script, new_window) {
               document.getElementById('dendrogram01_dnld_btn').disabled = false
               d3.phylogram.build('#dendrogram01_div', newick, {
                 width: w,
-                height: h
+                height: h,
+                skipBranchLengthScaling: true  //Make a dendrogram instead of a phylogram. (right justified tree)
               });
               
           }else if(script == 'radial') {

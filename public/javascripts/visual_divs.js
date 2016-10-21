@@ -7,6 +7,7 @@
 ////  VISUALIZATION BUTTONS  \\\\
 // COUNTS Table
 //
+
 var tax_counts_link = document.getElementById('counts_matrix_link_id') || null;
 var tax_counts_btn = document.getElementById('counts_matrix_hide_btn');
 var tax_counts_div = document.getElementById('counts_matrix_div');
