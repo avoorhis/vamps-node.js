@@ -443,7 +443,7 @@ constants.VISUAL_THUMBNAILS = {
    
 ]};
     
-constants.REQ_METADATA_FIELDS = ["altitude",  "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id", "fragment_name_id", "dna_region_id", "sequencing_platform_id", "domain_id"];
+constants.REQ_METADATA_FIELDS = ["altitude",  "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id", "fragment_name", "dna_region", "sequencing_platform", "domain"];
 constants.CONTACT_US_SUBJECTS = ["Account Request", "Report a Problem", "Announce a Publication", "Other"];
 
 module.exports = constants;
