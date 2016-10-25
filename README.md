@@ -293,7 +293,15 @@ Tue Aug  9 11:56:00 EDT 2016
 ALTER TABLE user_project_status
 ADD UNIQUE KEY user_project (user_id, project_id);
   
-Mon Oct 24 13:13:39 EDT 2016
+Tue Oct 25 13:33:01 EDT 2016
+(used on local)
+ALTER TABLE required_metadata_info
+ADD COLUMN `fragment_name_id` TINYINT(3) UNSIGNED NOT NULL,
+ADD COLUMN `dna_region_id` TINYINT(3) UNSIGNED NOT NULL,
+ADD COLUMN `sequencing_platform_id` SMALLINT(3) UNSIGNED NOT NULL,
+ADD COLUMN `domain_id` INT(3) UNSIGNED NOT NULL,
+ADD COLUMN `env_biome_id` MEDIUMINT(8) UNSIGNED NOT NULL AFTER env_biome
+
 CREATE TABLE `metadata_new_temp` (
   `dataset_id` int(11) unsigned NOT NULL,
   `dataset` varchar(64) NOT NULL,
@@ -358,7 +366,14 @@ update required_metadata_info as i
   , i.domain_id = t.domain_id
   , i.fragment_name_id = t.fragment_name_id
   , i.sequencing_platform_id = t.sequencing_platform_id
+  
 
+alter table required_metadata_info
+ADD FOREIGN KEY (`env_biome_id`) REFERENCES `env_biome` (`env_biome_id`) ON UPDATE CASCADE,
+ADD FOREIGN KEY (`fragment_name_id`) REFERENCES `fragment_name` (`fragment_name_id`) ON UPDATE CASCADE,
+ADD FOREIGN KEY (`sequencing_platform_id`) REFERENCES `sequencing_platform` (`sequencing_platform_id`) ON UPDATE CASCADE,
+ADD FOREIGN KEY (`dna_region_id`) REFERENCES `dna_region` (`dna_region_id`) ON UPDATE CASCADE,
+ADD FOREIGN KEY (`domain_id`) REFERENCES `domain` (`domain_id`) ON UPDATE CASCADE
 
   
 --- Dir structure ---
