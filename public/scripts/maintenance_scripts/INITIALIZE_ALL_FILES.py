@@ -180,8 +180,9 @@ def go(args):
         shutil.move(args.metadata_file,  os.path.join(args.json_file_path, NODE_DATABASE+'--metadata'+ today+'.json'))
         logging.debug('Backed up old taxcounts and metadata files')
     except:
-        print "Could not back up one of files directory, taxcounts or metadata files"
-        sys.exit()
+        print "Could not back up one of files directory, taxcounts or metadata files: "
+        raise
+        # sys.exit()
     os.mkdir(args.files_prefix)
     logging.debug('Created Dir: '+args.files_prefix)
     for q in queries:
