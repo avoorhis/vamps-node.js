@@ -70,7 +70,9 @@ Create a new database in your mysql installation and install one of the schemas 
 go into the public/scripts directory and run the INITIALIZE_ALL_FILES.py script. 
 
    ```
-   cd public/scripts/maintenance_scripts; python INITIALIZE_ALL_FILES.py
+   cd public/scripts/maintenance_scripts; 
+   python INITIALIZE_SILVA_FILES.py
+   python INITIALIZE_RDP_FILES.py
    ```
   
    This script requires that you have a .my.cnf file in your home directory
@@ -291,7 +293,88 @@ Tue Aug  9 11:56:00 EDT 2016
 ALTER TABLE user_project_status
 ADD UNIQUE KEY user_project (user_id, project_id);
   
+Tue Oct 25 13:33:01 EDT 2016
+(used on local)
+ALTER TABLE required_metadata_info
+ADD COLUMN `fragment_name_id` TINYINT(3) UNSIGNED NOT NULL,
+ADD COLUMN `dna_region_id` TINYINT(3) UNSIGNED NOT NULL,
+ADD COLUMN `sequencing_platform_id` SMALLINT(3) UNSIGNED NOT NULL,
+ADD COLUMN `domain_id` INT(3) UNSIGNED NOT NULL,
+ADD COLUMN `env_biome_id` MEDIUMINT(8) UNSIGNED NOT NULL AFTER env_biome
+
+CREATE TABLE `metadata_new_temp` (
+  `dataset_id` int(11) unsigned NOT NULL,
+  `dataset` varchar(64) NOT NULL,
+  `dna_region_id` tinyint(3) unsigned DEFAULT NULL,
+  `dna_region` varchar(32) NOT NULL DEFAULT '',
+  `fragment_name_id` tinyint(3) unsigned DEFAULT NULL,
+  `fragment_name` varchar(32) NOT NULL DEFAULT '16s',
+  `project_id` int(11) unsigned NOT NULL,
+  `project` varchar(32) NOT NULL DEFAULT '',
+  `sequencing_platform_id` smallint(3) unsigned DEFAULT NULL,
+  `sequencing_platform` varchar(32) NOT NULL DEFAULT 'unknown',
+  `domain_id` int(3) unsigned DEFAULT NULL,
+  `domain` varchar(32) NOT NULL DEFAULT '',
+  UNIQUE KEY `dataset_id` (`dataset_id`),
+  KEY `fragment_name_id` (`fragment_name_id`),
+  KEY `sequencing_platform_id` (`sequencing_platform_id`),
+  KEY `project_id` (`project_id`),
+  KEY `dna_region_id` (`dna_region_id`),
+  KEY `domain_id` (`domain_id`),
+  CONSTRAINT `metadata_new_temp_ibfk_6` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`domain_id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO metadata_new_temp (dataset_id, dataset, project_id, project) 
+SELECT dataset_id, dataset, project_id, project
+FROM required_metadata_info
+JOIN dataset USING(dataset_id)
+JOIN project USING(project_id)
+
+Manually
+INSERT correct: dna_region (from a project name), fragment_name (16s for A and B, 18s for E and ITS), sequencing_platform (from custom metadata, various fields), domain (from a project name)
+
+
+UPDATE metadata_new_temp
+JOIN dna_region USING(dna_region)
+SET metadata_new_temp.dna_region_id = dna_region.dna_region_id;
+
+UPDATE metadata_new_temp
+JOIN sequencing_platform USING(sequencing_platform)
+SET metadata_new_temp.sequencing_platform_id = sequencing_platform.sequencing_platform_id;
+
+UPDATE metadata_new_temp
+JOIN fragment_name USING(fragment_name)
+SET metadata_new_temp.fragment_name_id = fragment_name.fragment_name_id;
+
+UPDATE metadata_new_temp
+JOIN domain USING(domain)
+SET metadata_new_temp.domain_id = domain.domain_id;
+
+alter table metadata_new_temp
+ADD FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE,
+ADD FOREIGN KEY (`fragment_name_id`) REFERENCES `fragment_name` (`fragment_name_id`) ON UPDATE CASCADE,
+ADD FOREIGN KEY (`sequencing_platform_id`) REFERENCES `sequencing_platform` (`sequencing_platform_id`) ON UPDATE CASCADE,
+ADD FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE,
+ADD FOREIGN KEY (`dna_region_id`) REFERENCES `dna_region` (`dna_region_id`) ON UPDATE CASCADE,
+ADD FOREIGN KEY (`domain_id`) REFERENCES `domain` (`domain_id`) ON UPDATE CASCADE
+
+update required_metadata_info JOIN env_biome USING(env_biome) SET required_metadata_info.env_biome_id = env_biome.env_biome_id;
+
+update required_metadata_info as i
+  join metadata_new_temp as t using(dataset_id)
+  set i.dna_region_id = t.dna_region_id
+  , i.domain_id = t.domain_id
+  , i.fragment_name_id = t.fragment_name_id
+  , i.sequencing_platform_id = t.sequencing_platform_id
   
+
+alter table required_metadata_info
+ADD FOREIGN KEY (`env_biome_id`) REFERENCES `env_biome` (`env_biome_id`) ON UPDATE CASCADE,
+ADD FOREIGN KEY (`fragment_name_id`) REFERENCES `fragment_name` (`fragment_name_id`) ON UPDATE CASCADE,
+ADD FOREIGN KEY (`sequencing_platform_id`) REFERENCES `sequencing_platform` (`sequencing_platform_id`) ON UPDATE CASCADE,
+ADD FOREIGN KEY (`dna_region_id`) REFERENCES `dna_region` (`dna_region_id`) ON UPDATE CASCADE,
+ADD FOREIGN KEY (`domain_id`) REFERENCES `domain` (`domain_id`) ON UPDATE CASCADE
+
   
 --- Dir structure ---
 routes - server side logic
