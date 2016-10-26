@@ -197,9 +197,16 @@ def run_matrix(args):
         tax   = row['taxonomy']
         dom = tax.split(';')[0]
         if dom in args.domains:
-            if tax not in collector:
-                collector[tax] = {}
-            collector[tax][samp] = count
+            # exclude Chloroplasts if Organelle not in 
+            if dom == 'Bacteria' and 'Organelle' not in args.domains and 'Chloroplast' not in tax:
+                print('Chloroplast - Excluding',tax)
+            elif args.exclude_nas and '_NA' in tax:
+                print('_NA -- Excluding',tax)
+            else:
+                if tax not in collector:
+                    collector[tax] = {}
+                collector[tax][samp] = count
+            
         
     sample_order = sorted(sample_order_dict.keys())  
     tax_order    = sorted(collector.keys())
@@ -262,10 +269,17 @@ def run_biom(args):
                 count = knt  # should never get here
         
         tax = row['taxonomy']
-        if tax.split(';')[0] in args.domains:
-            if tax not in collector:
-                collector[tax] = {}
-            collector[tax][samp] = count
+        dom = tax.split(';')[0]
+        if dom in args.domains:
+            # exclude Chloroplasts if Organelle not in 
+            if dom == 'Bacteria' and 'Organelle' not in args.domains and 'Chloroplast' not in tax:
+                print('Chloroplast - Excluding',tax)
+            elif args.exclude_nas and '_NA' in tax:
+                print('_NA -- Excluding',tax)
+            else:
+                if tax not in collector:
+                    collector[tax] = {}
+                collector[tax][samp] = count
         
     #print collector
     sample_order = sorted(sample_order_dict.keys())  
@@ -421,16 +435,24 @@ def run_taxbytax(args):
         #print 'count',count
         #print knt,args.dataset_counts[pjds],args.max,count
         tax = row['taxonomy']
-        if tax.split(';')[0] in args.domains:
-            if tax in tax_array:
-                if pjds in tax_array[tax]:
-                    tax_array[tax][pjds] += count
-                else:
-                    tax_array[tax][pjds] = count
-        
+        dom = tax.split(';')[0]
+        if dom in args.domains:
+
+            # exclude Chloroplasts if Organelle not in 
+            if dom == 'Bacteria' and 'Organelle' not in args.domains and 'Chloroplast' not in tax:
+                print('Chloroplast - Excluding',tax)
+            elif args.exclude_nas and '_NA' in tax:
+                print('_NA -- Excluding',tax)
             else:
-                tax_array[tax] = {}
-                tax_array[tax][pjds] = count
+                if tax in tax_array:
+                    if pjds in tax_array[tax]:
+                        tax_array[tax][pjds] += count
+                    else:
+                        tax_array[tax][pjds] = count
+            
+                else:
+                    tax_array[tax] = {}
+                    tax_array[tax][pjds] = count
     sample_order = sorted(sample_order_dict.keys())  
     tax_order = sorted(tax_array.keys())   
     #write_taxbytax_file(args, tax_array, tax_order, sample_order)
@@ -651,8 +673,9 @@ if __name__ == '__main__':
     parser.add_argument("-rank", "--rank",      required=False,  action="store",   dest = "rank", default='genus',
                                                     help="This is for matrix file only")  
     parser.add_argument("-domains", "--domains",      required=False,  action="store",   dest = "domains", default="Archaea,Bacteria,Eukarya,Organelle,Unknown",
-
-                                                    help="This is for matrix file only")                                             
+                                                        help="This is for matrix file only") 
+    parser.add_argument("-exclude_nas", "--exclude_nas",    required=False,  action="store_true",   dest = "exclude_nas", default=False,
+                                                    help="")                                                            
     parser.add_argument("-norm", "--normalization",  required=False,  action="store",   dest = "normalization", default='not_normalized',
                                                     help="not_normalized, normalized_to_maximum or normalized_by_percent")                                                 
     parser.add_argument("-compress", "--compress",        required=False,  action="store_true",   dest = "compress", default=False,

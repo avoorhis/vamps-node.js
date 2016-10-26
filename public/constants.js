@@ -7,8 +7,8 @@ var constants = {};
 //// DO NOT CHANGE ANYTHING BELOW HERE ////
 ///////////////////////////////////////////
 ///////////////////////////////////////////
-
-constants.blast_db      = 'ALL_SEQS';
+constants.show_nas   = {"raw":false,"string":"--"};  // if raw==true will show class_NA, genus_NA etc; else show string (tax table only; not biom file)
+constants.blast_db   = 'ALL_SEQS';
 constants.download_file_formats = ['metadata','fasta','taxbytax','taxbyref','taxbyseq','biom','matrix','phyloseq','distance','emperor','pdf','tree','heatmap'];
 constants.ENV_SOURCE = { 
         10: "air",
@@ -443,7 +443,7 @@ constants.VISUAL_THUMBNAILS = {
    
 ]};
     
-constants.REQ_METADATA_FIELDS = ["altitude",  "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id"];
+constants.REQ_METADATA_FIELDS = ["altitude", "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id"];
 constants.CONTACT_US_SUBJECTS = ["Account Request", "Report a Problem", "Announce a Publication", "Other"];
 
 module.exports = constants;

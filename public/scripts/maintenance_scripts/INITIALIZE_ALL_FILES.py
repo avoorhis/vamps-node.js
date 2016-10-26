@@ -19,14 +19,15 @@ today     = str(datetime.date.today())
 
 parser = argparse.ArgumentParser(description="") 
 
-query_core = " FROM sequence_pdr_info" 
-query_core += " JOIN sequence_uniq_info USING(sequence_id)"
+query_from = " FROM sequence_pdr_info" 
+query_from += " JOIN sequence_uniq_info USING(sequence_id)"
 
-query_core_silva119 = query_core+" JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)"
+query_core_silva119 = query_from+" JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)"
 query_core_silva119 += " JOIN silva_taxonomy USING(silva_taxonomy_id)" 
 
-#query_core_rdp = query_core+" JOIN rdp_taxonomy_info_per_seq USING(rdp_taxonomy_info_per_seq_id)"
-#query_core_rdp += " JOIN rdp_taxonomy USING(rdp_taxonomy_id)" 
+query_core_rdp26 = query_from+" JOIN rdp_taxonomy_info_per_seq USING(rdp_taxonomy_info_per_seq_id)"
+query_core_rdp26 += " JOIN rdp_taxonomy USING(rdp_taxonomy_id)" 
+
 
 domain_query = "SELECT sum(seq_count), dataset_id, domain_id"
 #domain_query += query_core
@@ -105,7 +106,7 @@ def check_files(args):
             missing.append(did)
     
     if okay_count == did_count:
-        print 'OK1'
+        print 'OK1 -- No missing files'
     else:
         print 'Missing from',os.path.basename(args.files_prefix)
         print "('" + "','".join(missing) + "')"
@@ -113,31 +114,34 @@ def check_files(args):
     print 'DID presence is REQUIRED'
     
     ######### TAXCOUNTS ###########################
-    print "\nChecking:\n",args.taxcounts_file
-    with open(args.taxcounts_file) as tax_file:    
-        tdata = json.load(tax_file)
+    if args.units == 'silva119':
+        print "\nChecking Group File:\n",args.taxcounts_file
+        with open(args.taxcounts_file) as tax_file:    
+            tdata = json.load(tax_file)
     
-    okay_count = 0
-    missing = []
-    for did in db_dids:
-        if did in tdata:
-            #print 'found',did
-            okay_count += 1
+        okay_count = 0
+        missing = []
+        for did in db_dids:
+            if did in tdata:
+                #print 'found',did
+                okay_count += 1
+            else:
+                missing.append(did)
+        if okay_count == did_count:
+            print 'OK2 -- No missing dids in group taxcounts file'
         else:
-            missing.append(did)
-    if okay_count == did_count:
-        print 'OK2'
+            print 'Missing from',os.path.basename(args.taxcounts_file)
+            print "('" + "','".join(missing) + "')"
+            pass
+        print 'DID presence is REQUIRED'
     else:
-        print 'Missing from',os.path.basename(args.taxcounts_file)
-        print "('" + "','".join(missing) + "')"
-        pass
-    print 'DID presence is REQUIRED'
-    
+        print '\nNo group taxcounts file for',args.units
     ########## METADATA ##########################
-    print "\nChecking:\n",args.metadata_file
+    
+    print "\nChecking Metadata File:\n",args.metadata_file
     with open(args.metadata_file) as md_file:    
         mdata = json.load(md_file)
-    
+
     okay_count = 0
     missing = []
     for did in db_dids:
@@ -147,7 +151,7 @@ def check_files(args):
         else:
             missing.append(did)
     if okay_count == did_count:
-        print 'OK3'
+        print 'OK3 -- No missing metadata'
     else:
         print 'Missing from',os.path.basename(args.metadata_file)
         print "('" + "','".join(missing) + "')"
@@ -158,24 +162,29 @@ def go(args):
     """
         count_lookup_per_dsid[dsid][tax_id_str] = count     
         
-
     """
     counts_lookup = {}
     
     try:
-        shutil.rmtree(args.files_prefix)
-        shutil.move(args.taxcounts_file, os.path.join(args.json_file_path, NODE_DATABASE+'--taxcounts_silva119'+today+'.json'))
+        
+        #shutil.rmtree(args.files_prefix)
+        shutil.move(args.files_prefix, os.path.join(args.json_file_path, NODE_DATABASE+'--datasets_'+args.units+today))
+        if args.taxcounts_file:
+            shutil.move(args.taxcounts_file, os.path.join(args.json_file_path, NODE_DATABASE+'--taxcounts_silva119'+today+'.json'))
         shutil.move(args.metadata_file,  os.path.join(args.json_file_path, NODE_DATABASE+'--metadata'+ today+'.json'))
         logging.debug('Backed up old taxcounts and metadata files')
     except:
-        pass
+        print "Could not back up one of files directory, taxcounts or metadata files"
+        sys.exit()
     os.mkdir(args.files_prefix)
     logging.debug('Created Dir: '+args.files_prefix)
     for q in queries:
         #print q["query"]
         dirs = []
-        
-        query = q["query"] % query_core_silva119
+        if args.units == 'rdp2.6':
+            query = q["query"] % query_core_rdp26
+        else:
+            query = q["query"] % query_core_silva119
         try:
             print
             print "running mysql query for:",q['rank']
@@ -216,13 +225,15 @@ def go(args):
     logging.debug('writing to individual files') 
     write_data_to_files(args, metadata_lookup, counts_lookup)
     
-    print 'writing metadata file'
-    logging.debug('writing metadata file') 
-    write_all_metadata_file(args, metadata_lookup)
+    if args.units == 'silva119':
+        print 'writing metadata file'
+        logging.debug('writing metadata file') 
+        write_all_metadata_file(args, metadata_lookup)
     
-    print 'writing taxcount file'
-    logging.debug('writing taxcount file') 
-    write_all_taxcounts_file(args, counts_lookup)
+        print 'writing taxcount file'
+        logging.debug('writing taxcount file') 
+        write_all_taxcounts_file(args, counts_lookup)
+    
     for w in warnings:
         print w
         logging.debug(w)
@@ -383,9 +394,9 @@ if __name__ == '__main__':
     parser.add_argument("-db", "--db",    
                 required=False,  action='store', dest = "NODE_DATABASE",  default='',
                 help="NODE_DATABASE")
-    # parser.add_argument("-units", "--units",    
-    #             required=False,  action='store', dest = "units",  default='silva119',
-    #             help="UNITS")
+    parser.add_argument("-units", "--units",    
+                required=False,  action='store', choices=['silva119', 'rdp2.6'], dest = "units",  default='silva119',
+                help="UNITS")
     parser.add_argument("-c", "--check_files",    
                 required=False,  action='store_true', dest = "check_files",  default=False,
                 help="If set will look for continuity between database(dataset table) and JSON files")
@@ -449,7 +460,7 @@ if __name__ == '__main__':
     print
     cur.execute("USE "+NODE_DATABASE)
     
-    out_file = "tax_counts--"+NODE_DATABASE+".json"
+    #out_file = "tax_counts--"+NODE_DATABASE+".json"
     
     print 'DATABASE:',NODE_DATABASE 
     print 'JSON DIRECTORY:',args.json_file_path 
@@ -463,9 +474,12 @@ if __name__ == '__main__':
     
     #args.json_dir = os.path.join("../","json")
     #permissible_units = ['silva119','rdp']
-    
-    args.files_prefix   = os.path.join(args.json_file_path,NODE_DATABASE+"--datasets_silva119")
-    args.taxcounts_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts_silva119.json")
+    if args.units == 'rdp2.6':
+        args.files_prefix   = os.path.join(args.json_file_path,NODE_DATABASE+"--datasets_rdp2.6")
+        args.taxcounts_file = ''
+    else:
+        args.files_prefix   = os.path.join(args.json_file_path,NODE_DATABASE+"--datasets_silva119")
+        args.taxcounts_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts_silva119.json")
     args.metadata_file  = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata.json")
     #print args.files_prefix , args.taxcounts_file,args.metadata_file
     if args.check_files:

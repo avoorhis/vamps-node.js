@@ -425,8 +425,8 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  // GLOBAL Variable
 	  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
 
-	  var custom_metadata_headers   = COMMON.get_metadata_selection(chosen_id_name_hash.ids,METADATA,'custom');
-	  var required_metadata_headers = COMMON.get_metadata_selection(chosen_id_name_hash.ids,METADATA,'required');
+	  var custom_metadata_headers   = COMMON.get_metadata_selection(chosen_id_name_hash.ids, METADATA,'custom');
+	  var required_metadata_headers = COMMON.get_metadata_selection(chosen_id_name_hash.ids, METADATA,'required');
 	  console.log(required_metadata_headers)
 	  //console.log(chosen_id_name_hash)
 	  // // benchmarking

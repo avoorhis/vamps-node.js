@@ -167,7 +167,16 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
     if (requested_files.length >0) {
       if (req.body.tax_depth=='class') {var td='klass';}
       else {var td=req.body.tax_depth;}
-      helpers.create_export_files(req, user_dir, timestamp, dids, requested_files, req.body.normalization, td, req.body.domains, true );
+      helpers.create_export_files(req, 
+            user_dir, 
+            timestamp, 
+            dids, 
+            requested_files, 
+            req.body.normalization, 
+            td, 
+            req.body.domains, 
+            'yes',   // include_nas
+            true );
     }
 
     res.render('user_data/export_selection', {
@@ -3248,7 +3257,16 @@ router.post('/download_file', helpers.isLoggedIn, function (req, res) {
     var timestamp = +new Date();  // millisecs since the epoch!
     var file_tag = ['-'+req.body.file_type+'_file'];
     
-      helpers.create_export_files(req, user_dir, timestamp, chosen_id_name_hash.ids, file_tag, visual_post_items.normalization, visual_post_items.tax_depth, visual_post_items.domains, true);
+      helpers.create_export_files(req, 
+        user_dir, 
+        timestamp, 
+        chosen_id_name_hash.ids, 
+        file_tag, 
+        visual_post_items.normalization, 
+        visual_post_items.tax_depth, 
+        visual_post_items.domains, 
+        visual_post_items.include_nas,  // yes or no
+        true);
     //}
     res.send(req.body.file_type);
 });

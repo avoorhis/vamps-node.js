@@ -18,10 +18,11 @@ $(document).ready(function(){
     //alert(pi_local.ts)
     if(image_to_rdr_local.hasOwnProperty('image')){
       //alert(image_to_render)
-      create_viz(image_to_rdr_local.image, pi_local.ts, false)
+      create_viz(image_to_rdr_local.image, pi_local.ts, false, cts_local)
       $(document.getElementById('pre_'+image_to_rdr_local.image+'_div')).scrollView();
     }
-   
+
+
 });
 
 $.fn.scrollView = function () {
@@ -181,7 +182,57 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
       }
               
 });    
+// $("body").delegate(".tooltip_units", "mouseover mouseout mousemove", function (event) {
+//     var link = this,
+//     html = '';
+//     $link = $(this);
+//     if (event.type == 'mouseover') {
+//         tip.id = link.id;
+//         //alert(tip.title)
+//         link.id = '';
+//         if(tip.id==''){
+//           return;  // no need to show if nothing there
+//         }
+        
+//         var wikipedia_link  = 'https://en.wikipedia.org/wiki/'
+//         var eol_link        = "http://www.eol.org/search?q="
+//         var ncbi_link       = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name="
 
+//         html = "<table>";
+//         html += '<tr><td>"'+tip.id+'" Links</td></tr>';
+//         html += "<tr><td><a href='"+wikipedia_link+tip.id+"' target='_blank'>Wikipedia</a></td></tr>";
+//         html += "<tr><td><a href='"+eol_link+tip.id+"' target='_blank'>EOL</a></td></tr>";
+//         html += "<tr><td><a href='"+ncbi_link+tip.id+"' target='_blank'>NCBI</a></td></tr>";
+//         html += "<table>";
+
+        
+//         showTip = setTimeout(function() {
+     
+//           $link.data('tipActive', true);
+          
+//           tip.position(event);
+     
+//           $liveTip
+//           .html('<div>' + html  + '</div>')
+//           .fadeOut(0)
+//           .fadeIn(50);
+     
+//         }, tip.delay);
+//     }
+//       // if (event.type == 'mouseout') {
+//       //   link.id = tip.id || link.id;
+//       //   if ($link.data('tipActive')) {
+//       //     $link.removeData('tipActive');
+//       //     $liveTip.hide();
+//       //   } else {
+//       //     clearTimeout(showTip);
+//       //   }
+//       // }
+     
+//       // if (event.type == 'mousemove' && $link.data('tipActive')) {
+//       //   //tip.position(event);
+//       // }
+// });
 
 var showDots='';
 
@@ -330,10 +381,10 @@ function toggle_visual_element(table_div, tog, btn){
 }
 
 
-function create_viz(visual, ts, new_window) {
+function create_viz(visual, ts, new_window, cts_local) {
    
     if(visual === 'counts_matrix'){
-      create_counts_matrix(new_window);      
+      create_counts_matrix(new_window, cts_local.show_nas);      
     }else if(visual === 'metadata_table'){
       create_metadata_table(new_window);
     }else if(visual === 'piecharts'){
@@ -431,9 +482,8 @@ document.getElementById('pre_cytoscape_div').style.display = 'block';
 //
 // TAX TABLE
 //
-function create_counts_matrix(new_window) {
-      
-      
+function create_counts_matrix(new_window, show_nas) {
+            
       if(new_window == true){
         var htmlstring = document.getElementById('counts_matrix_div').innerHTML;
         function openindex()
@@ -489,7 +539,6 @@ function create_counts_matrix(new_window) {
       
       }
 
-      
       html += "<th class='right_justify' valign='bottom'><small>Total</small></th>";
       html += "<th class='right_justify' valign='bottom'><small>Average</small></th>";
       html += "<th class='right_justify' valign='bottom'><small>Min</small></th>";
@@ -497,7 +546,7 @@ function create_counts_matrix(new_window) {
       html += "<th class='right_justify' valign='bottom'><small>Std Dev</small></th>";
 
       html += "</tr>";
-      
+      // END OF TITLE ROW
       for (var i in mtx_local.rows){
         count = parseInt(i)+1;
         taxitems = mtx_local.rows[i].id.split(';');
@@ -505,16 +554,34 @@ function create_counts_matrix(new_window) {
         html += "<tr class='chart_row'><td>"+count.toString()+"</td>";
         
         for (t = 0; t < maxrank; t++) {
+          ttip = ''
+          ttip2 = ''
           if(taxitems.length > t){
-            html += "<td class='left_justify' >"+taxitems[t] +"</td>";
+            if(taxitems[t].substring(taxitems[t].length-2,taxitems[t].length) != 'NA' && taxitems[t] != 'Unknown' && taxitems[t] != 'Unassigned'){
+              ttip = '<span class="taxa"><a href="https://en.wikipedia.org/wiki/'+taxitems[t]+'">Wikipedia ('+taxitems[t] +')</a>'
+              ttip += '<br><a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name='+taxitems[t]+'">NCBI ('+taxitems[t] +')</a>'
+              ttip += '<br><a href="http://www.eol.org/search?q='+taxitems[t]+'">EOL ('+taxitems[t] +')</a>'
+              ttip += '</span>'
+              ttip2 = taxitems[t]
+            }
+            
+            if(taxitems[t].substring(taxitems[t].length-3, taxitems[t].length) == '_NA'){
+              if(show_nas.raw){
+                html += "<td id='' >"+taxitems[t] +"</td>";
+              }else{
+                html += "<td class='center' id='' >"+show_nas.string +"</td>";
+              }
+            }else{
+              html += "<td class='left_justify tooltip_units' id='"+ttip2+"' >"+taxitems[t] +"</td>";
+            }
           }else{
-            html += "<td class='left_justify'>--</td>";
+            html += "<td class='left_justify' id=''>--</td>";
           }
         }
         counts_string=JSON.stringify(mtx_local.data[i])
         
         graph_link_id = 'flot_graph_link'+i.toString()
-        html += "<td title='Graph'  align='center' style='cursor:pointer;'>"
+        html += "<td align='center' style='cursor:pointer;'>"
         html += "<img width='25' id='"+graph_link_id+"' src='/images/visuals/graph.png' onclick=\"graph_counts('"+i.toString()+"','"+mtx_local.rows[i].id+"','"+counts_string+"')\">"
         html += "</td>";
 
@@ -569,11 +636,7 @@ function create_counts_matrix(new_window) {
       }
       html += "</tr>";
       html += "</table>";
-      html += "<script>";
-// html += "$(document).ready(function(){";
-// html += "    $('[data-toggle=\"tooltip\"]').tooltip();";
-// html += "});";
-// html += "</script>";
+     
       tax_counts_div.innerHTML = html; 
       document.getElementById('counts_matrix_dnld_btn').disabled = false
       //$(".verticalTableHeader").each(function(){$(this).height($(this).width())  

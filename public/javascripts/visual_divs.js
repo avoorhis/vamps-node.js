@@ -17,7 +17,8 @@ if (tax_counts_link !== null) {
     tax_counts_link.addEventListener('click', function () {
     
   if(typeof tax_table_created == "undefined"){
-        create_viz('counts_matrix', pi_local.ts, false);
+        
+        create_viz('counts_matrix', pi_local.ts, false, cts_local);
     		
     }else{
         if(tax_counts_btn.value == 'hide'){
@@ -50,7 +51,7 @@ var counts_matrix_open_btn = document.getElementById('counts_matrix_open_btn') |
 if (counts_matrix_open_btn !== null) {
   counts_matrix_open_btn.addEventListener('click', function () {
       
-      create_viz('counts_matrix', pi_local.ts, true);      
+      create_viz('counts_matrix', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -68,7 +69,7 @@ if (metadata_link !== null) {
     //$(window).scrollTo(500);
     
     if(typeof metadata_table_created == "undefined"){
-        create_viz('metadata_table', pi_local.ts, false);
+        create_viz('metadata_table', pi_local.ts, false, cts_local);
     		
       }else{
         if(metadata_btn.value == 'hide'){
@@ -95,7 +96,7 @@ var metadata_open_btn = document.getElementById('metadata_table_open_btn') || nu
 if (metadata_open_btn !== null) {
   metadata_open_btn.addEventListener('click', function () {
       
-      create_viz('metadata_table', pi_local.ts, true);      
+      create_viz('metadata_table', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -110,7 +111,7 @@ if (piecharts_link !== null) {
   piecharts_link.addEventListener('click', function () {
       
     if(typeof piecharts_created == "undefined"){
-        create_viz('piecharts', pi_local.ts, false);
+        create_viz('piecharts', pi_local.ts, false, cts_local);
     		
       }else{
         if(piecharts_btn.value == 'hide'){
@@ -136,7 +137,7 @@ if (typeof piecharts_btn !=="undefined") {
 var piecharts_open_btn = document.getElementById('piecharts_open_btn');
 if (typeof piecharts_open_btn !== "undefined") {
   piecharts_open_btn.addEventListener('click', function () {
-      create_viz('piecharts', pi_local.ts, true);      
+      create_viz('piecharts', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -186,7 +187,7 @@ if (barchart_link !== null) {
   barchart_link.addEventListener('click', function () {
       
     if(typeof barcharts_created == "undefined"){
-        create_viz('barcharts', pi_local.ts, false);
+        create_viz('barcharts', pi_local.ts, false, cts_local);
         
       }else{
         if(barcharts_btn.value == 'hide', false){        
@@ -212,7 +213,7 @@ if (typeof barcharts_btn !=="undefined") {
 var barcharts_open_btn = document.getElementById('barcharts_open_btn');
 if (typeof barcharts_open_btn !== "undefined") {
   barcharts_open_btn.addEventListener('click', function () {
-      create_viz('barcharts', pi_local.ts, true);      
+      create_viz('barcharts', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -227,7 +228,7 @@ if (dheatmap_link !== null) {
   dheatmap_link.addEventListener('click', function () {
       
     if(typeof dheatmap_created == "undefined"){
-        create_viz('dheatmap', pi_local.ts, false);
+        create_viz('dheatmap', pi_local.ts, false, cts_local);
         
       }else{
         if(dheatmap_hide_btn.value == 'hide'){        
@@ -253,7 +254,7 @@ if (typeof dheatmap_hide_btn !== "undefined") {
 var dheatmap_open_btn = document.getElementById('dheatmap_open_btn');
 if (typeof dheatmap_open_btn !== "undefined") {
   dheatmap_open_btn.addEventListener('click', function () {
-      create_viz('dheatmap', pi_local.ts, true);      
+      create_viz('dheatmap', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -268,7 +269,7 @@ if (fheatmap_link !== null) {
   fheatmap_link.addEventListener('click', function () {
       
     if(typeof fheatmap_created == "undefined"){
-        create_viz('fheatmap', pi_local.ts, false);
+        create_viz('fheatmap', pi_local.ts, false, cts_local);
     		
       }else{
         if(fheatmap_btn.value == 'hide'){        
@@ -294,7 +295,7 @@ if (typeof fheatmap_btn !== "undefined") {
 var fheatmap_open_btn = document.getElementById('fheatmap_open_btn');
 if (typeof fheatmap_open_btn !== "undefined") {
   fheatmap_open_btn.addEventListener('click', function () {
-      create_viz('fheatmap', pi_local.ts, true);      
+      create_viz('fheatmap', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -309,7 +310,7 @@ if (dendrogram01_link !== null) {
   dendrogram01_link.addEventListener('click', function () {
       
     if(typeof dendrogram01_created == "undefined"){
-        create_viz('dendrogram01', pi_local.ts, false);
+        create_viz('dendrogram01', pi_local.ts, false, cts_local);
     		
       }else{
         if(dendrogram01_btn.value == 'hide'){        
@@ -334,7 +335,7 @@ if (typeof dendrogram01_btn !== "undefined") {
 var dendrogram01_open_btn = document.getElementById('dendrogram01_open_btn');
 if (typeof dendrogram01_open_btn !== "undefined") {
   dendrogram01_open_btn.addEventListener('click', function () {
-      create_viz('dendrogram01', pi_local.ts, true);      
+      create_viz('dendrogram01', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -389,7 +390,7 @@ if (dendrogram03_link !== null) {
   dendrogram03_link.addEventListener('click', function () {
       
     if(typeof dendrogram03_created == "undefined"){
-        create_viz('dendrogram03', pi_local.ts, false);
+        create_viz('dendrogram03', pi_local.ts, false, cts_local);
     		
       }else{
         if(dendrogram03_btn.value == 'hide'){        
@@ -414,7 +415,7 @@ if (typeof dendrogram03_btn !== "undefined") {
 var dendrogram03_open_btn = document.getElementById('dendrogram03_open_btn');
 if (typeof dendrogram03_open_btn !== "undefined") {
   dendrogram03_open_btn.addEventListener('click', function () {
-      create_viz('dendrogram03', pi_local.ts, true);      
+      create_viz('dendrogram03', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -469,7 +470,7 @@ if (pcoa_link !== null) {
   pcoa_link.addEventListener('click', function () {
       
     if(typeof pcoa_created == "undefined"){
-        create_viz('pcoa', pi_local.ts, false);
+        create_viz('pcoa', pi_local.ts, false, cts_local);
     
       }else{
         if(pcoa_btn.value == 'hide'){        
@@ -494,7 +495,7 @@ if (typeof pcoa_btn !== "undefined") {
 var pcoa_open_btn = document.getElementById('pcoa_open_btn');
 if (typeof pcoa_open_btn !== "undefined") {
   pcoa_open_btn.addEventListener('click', function () {
-      create_viz('pcoa', pi_local.ts, true);      
+      create_viz('pcoa', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -509,7 +510,7 @@ if (pcoa3d_link !== null) {
   pcoa3d_link.addEventListener('click', function () {
       
     if(typeof pcoa3d_created == "undefined"){
-        create_viz('pcoa3d', pi_local.ts, false);
+        create_viz('pcoa3d', pi_local.ts, false, cts_local);
     
       }else{
         if(pcoa3d_btn.value == 'hide'){        
@@ -546,7 +547,7 @@ if (geospatial_link !== null) {
   geospatial_link.addEventListener('click', function () {
       
     if(typeof geospatial_created == "undefined"){
-        create_viz('geospatial', pi_local.ts, false);
+        create_viz('geospatial', pi_local.ts, false, cts_local);
        
       }else{
         if(geospatial_btn.value == 'hide'){        
@@ -571,7 +572,7 @@ if (typeof geospatial_btn !== "undefined") {
 var geospatial_open_btn = document.getElementById('geospatial_open_btn');
 if (typeof geospatial_open_btn !== "undefined") {
   geospatial_open_btn.addEventListener('click', function () {
-      create_viz('geospatial', pi_local.ts, true);      
+      create_viz('geospatial', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -587,7 +588,7 @@ if (adiversity_link !== null) {
   adiversity_link.addEventListener('click', function () {
       
     if(typeof adiversity_created == "undefined"){
-        create_viz('adiversity', pi_local.ts, false);
+        create_viz('adiversity', pi_local.ts, false, cts_local);
         
       }else{
         if(adiversity_btn.value == 'hide'){        
@@ -612,7 +613,7 @@ if (typeof adiversity_btn !== "undefined") {
 var adiversity_open_btn = document.getElementById('adiversity_open_btn');
 if (typeof adiversity_open_btn !== "undefined") {
   adiversity_open_btn.addEventListener('click', function () {
-      create_viz('adiversity', pi_local.ts, true);      
+      create_viz('adiversity', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -628,7 +629,7 @@ if (phyloseq_bars01_link !== null) {
   phyloseq_bars01_link.addEventListener('click', function () {
       
     if(typeof phyloseq_bars01_created == "undefined"){
-        create_viz('phyloseq_bars01', pi_local.ts, false);
+        create_viz('phyloseq_bars01', pi_local.ts, false, cts_local);
         
       }else{
         if(phyloseq_bars01_btn.value == 'hide'){        
@@ -653,7 +654,7 @@ if (typeof phyloseq_bars01_btn !== "undefined") {
 var phyloseq_bars01_open_btn = document.getElementById('phyloseq_bars01_open_btn');
 if (typeof phyloseq_bars01_open_btn !== "undefined") {
   phyloseq_bars01_open_btn.addEventListener('click', function () {
-      create_viz('phyloseq_bars01', pi_local.ts, true);      
+      create_viz('phyloseq_bars01', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -669,7 +670,7 @@ if (phyloseq_hm02_link !== null) {
   phyloseq_hm02_link.addEventListener('click', function () {
       
     if(typeof phyloseq_hm02_created == "undefined"){
-        create_viz('phyloseq_hm02', pi_local.ts, false);
+        create_viz('phyloseq_hm02', pi_local.ts, false, cts_local);
         
       }else{
         if(phyloseq_hm02_btn.value == 'hide'){        
@@ -694,7 +695,7 @@ if (typeof phyloseq_hm02_btn !== "undefined") {
 var phyloseq_hm02_open_btn = document.getElementById('phyloseq_hm02_open_btn');
 if (typeof phyloseq_hm02_open_btn !== "undefined") {
   phyloseq_hm02_open_btn.addEventListener('click', function () {
-      create_viz('phyloseq_hm02', pi_local.ts, true);      
+      create_viz('phyloseq_hm02', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -709,7 +710,7 @@ if (phyloseq_nw03_link !== null) {
   phyloseq_nw03_link.addEventListener('click', function () {
       
     if(typeof phyloseq_nw03_created == "undefined"){
-        create_viz('phyloseq_nw03', pi_local.ts, false);
+        create_viz('phyloseq_nw03', pi_local.ts, false, cts_local);
         
       }else{
         if(phyloseq_nw03_btn.value == 'hide'){        
@@ -734,7 +735,7 @@ if (typeof phyloseq_nw03_btn !== "undefined") {
 var phyloseq_nw03_open_btn = document.getElementById('phyloseq_nw03_open_btn');
 if (typeof phyloseq_nw03_open_btn !== "undefined") {
   phyloseq_nw03_open_btn.addEventListener('click', function () {
-      create_viz('phyloseq_nw03', pi_local.ts, true);      
+      create_viz('phyloseq_nw03', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -750,7 +751,7 @@ if (phyloseq_ord04_link !== null) {
   phyloseq_ord04_link.addEventListener('click', function () {
       
     if(typeof phyloseq_ord04_created == "undefined"){
-        create_viz('phyloseq_ord04', pi_local.ts, false);
+        create_viz('phyloseq_ord04', pi_local.ts, false, cts_local);
         
       }else{
         if(phyloseq_ord04_btn.value == 'hide'){        
@@ -775,7 +776,7 @@ if (typeof phyloseq_ord04_btn !== "undefined") {
 var phyloseq_ord04_open_btn = document.getElementById('phyloseq_ord04_open_btn');
 if (typeof phyloseq_ord04_open_btn !== "undefined") {
   phyloseq_ord04_open_btn.addEventListener('click', function () {
-      create_viz('phyloseq_ord04', pi_local.ts, true);      
+      create_viz('phyloseq_ord04', pi_local.ts, true, cts_local);      
   });
 }
 //
@@ -791,7 +792,7 @@ if (phyloseq_tree05_link !== null) {
   phyloseq_tree05_link.addEventListener('click', function () {
       
     if(typeof phyloseq_tree05_created == "undefined"){
-        create_viz('phyloseq_tree05', pi_local.ts, false);
+        create_viz('phyloseq_tree05', pi_local.ts, false, cts_local);
         
       }else{
         if(phyloseq_tree05_btn.value == 'hide'){        
@@ -816,7 +817,7 @@ if (typeof phyloseq_tree05_btn !== "undefined") {
 var phyloseq_tree05_open_btn = document.getElementById('phyloseq_tree05_open_btn');
 if (typeof phyloseq_tree05_open_btn !== "undefined") {
   phyloseq_tree05_open_btn.addEventListener('click', function () {
-      create_viz('phyloseq_tree05', pi_local.ts, true);      
+      create_viz('phyloseq_tree05', pi_local.ts, true, cts_local);      
   });
 }
 
@@ -852,7 +853,7 @@ if (cytoscape_link !== null) {
       
     if(typeof cytoscape_created == "undefined"){
         
-        create_viz('cytoscape', pi_local.ts, false);
+        create_viz('cytoscape', pi_local.ts, false, cts_local);
         //cytoscape_download_btn.disabled = false;
       }else{
         if(cytoscape_btn.value == 'hide'){        
@@ -877,7 +878,7 @@ if (typeof cytoscape_btn !== "undefined") {
 var cytoscape_open_btn = document.getElementById('cytoscape_open_btn');
 if (typeof cytoscape_open_btn !== "undefined") {
   cytoscape_open_btn.addEventListener('click', function () {
-      create_viz('cytoscape', pi_local.ts, true);      
+      create_viz('cytoscape', pi_local.ts, true, cts_local);      
   });
 }
 //

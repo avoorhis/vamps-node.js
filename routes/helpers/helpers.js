@@ -809,7 +809,7 @@ module.exports.fetchInfo = function (query, values, callback) {
 //
 //
 /////////////////// EXPORTS ///////////////////////////////////////////////////////////////////////
-module.exports.create_export_files = function (req, user_dir, ts, dids, file_tags, normalization, rank, domains, compress) {
+module.exports.create_export_files = function (req, user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress) {
       var db = req.db;
     //file_name = 'fasta-'+ts+'_custom.fa.gz';
     var log = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'export_log.txt');
@@ -862,6 +862,10 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
     if(domains != ''){
       export_cmd_options.args.push('-domains');
       export_cmd_options.args.push(JSON.stringify(domains.join(', ')));
+    }
+    console.log('include NAs',include_nas)
+    if(include_nas == 'no'){
+      export_cmd_options.args.push('-exclude_nas');
     }
     var cmd_list = [];
     cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' '));
