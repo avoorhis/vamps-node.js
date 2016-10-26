@@ -874,7 +874,7 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
             qsub_script_text = this.get_qsub_script_text(log, req.CONFIG.TMP, site, code, cmd_list);
             qsub_file_name = req.user.username+'_qsub_export_'+ts+'.sh';
             qsub_file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp', qsub_file_name);
-
+            console.log('RUNNING(via qsub):', cmd_list[0]);
             fs.writeFile(qsub_file_path, qsub_script_text, function writeFile(err) {
                 if (err) {
                     return console.log(err);
