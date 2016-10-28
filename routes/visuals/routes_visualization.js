@@ -2993,9 +2993,6 @@ router.get('/taxa_piechart', function(req, res) {
     var timestamp = +new Date();  // millisecs since the epoch! 
     var data = []
     var new_matrix = {}
-
-    console.log('tax',tax)
-    console.log('mtx',BIOM_MATRIX)
     
     for(i in BIOM_MATRIX.rows){
       if(BIOM_MATRIX.rows[i].id == tax){
@@ -3012,22 +3009,22 @@ router.get('/taxa_piechart', function(req, res) {
       }
     }
     new_matrix.rows = BIOM_MATRIX.columns
-    console.log('new mtx',new_matrix)
+    if(req.CONFIG.site == 'vamps' ){
+      console.log('VAMPS PRODUCTION -- no print to log');
+    }else{
+      console.log('new mtx:',new_matrix)
+      console.log('counts:',data)
+    }
     var cols =  BIOM_MATRIX.columns
-    console.log('counts',data)
+    
     res.render('visuals/user_viz_data/pie_single_tax', {
-              title: 'Counts PieChart',
+              title: 'Datasets PieChart',
               matrix    :           JSON.stringify(new_matrix),
               post_items:           JSON.stringify(visual_post_items),
               tax : tax,
               datasets : JSON.stringify(cols),
               counts : data,
               ts : timestamp,
-
-              //seqs_file : filename,
-              //bar_type  : 'single',
-              //order: JSON.stringify(new_order),
-              //html: html,
               user: req.user, hostname: req.CONFIG.hostname,
     });
 
