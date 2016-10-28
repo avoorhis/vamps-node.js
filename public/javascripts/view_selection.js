@@ -199,7 +199,7 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
 //         var ncbi_link       = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name="
 
 //         html = "<table>";
-//         html += '<tr><td>"'+tip.id+'" Links</td></tr>';
+//         html += '<tr><td>External "'+tip.id+'" Links</td></tr>';
 //         html += "<tr><td><a href='"+wikipedia_link+tip.id+"' target='_blank'>Wikipedia</a></td></tr>";
 //         html += "<tr><td><a href='"+eol_link+tip.id+"' target='_blank'>EOL</a></td></tr>";
 //         html += "<tr><td><a href='"+ncbi_link+tip.id+"' target='_blank'>NCBI</a></td></tr>";
@@ -213,21 +213,21 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
 //           tip.position(event);
      
 //           $liveTip
-//           .html('<div>' + html  + '</div>')
-//           .fadeOut(0)
+//           .html( html)
+//           .fadeOut(200)
 //           .fadeIn(50);
      
 //         }, tip.delay);
 //     }
-//       // if (event.type == 'mouseout') {
-//       //   link.id = tip.id || link.id;
-//       //   if ($link.data('tipActive')) {
-//       //     $link.removeData('tipActive');
-//       //     $liveTip.hide();
-//       //   } else {
-//       //     clearTimeout(showTip);
-//       //   }
-//       // }
+//       if (event.type == 'mouseout') {
+//         link.id = tip.id || link.id;
+//         if ($link.data('tipActive')) {
+//           $link.removeData('tipActive');
+//           $liveTip.hide();
+//         } else {
+//           clearTimeout(showTip);
+//         }
+//       }
      
 //       // if (event.type == 'mousemove' && $link.data('tipActive')) {
 //       //   //tip.position(event);
@@ -388,7 +388,7 @@ function create_viz(visual, ts, new_window, cts_local) {
     }else if(visual === 'metadata_table'){
       create_metadata_table(new_window);
     }else if(visual === 'piecharts'){
-      create_piecharts(ts, new_window);
+      create_piecharts_group(ts, new_window);
     }else if(visual === 'barcharts'){
       create_barcharts_group(ts, new_window);
     }else if(visual === 'dheatmap'){
@@ -430,6 +430,9 @@ function create_viz(visual, ts, new_window, cts_local) {
 
     }
 }
+//
+//
+//
 function create_cytoscape(ts){
   //alert(ts)
   var cydiv = document.getElementById('cytoscape_div');
@@ -533,7 +536,7 @@ function create_counts_matrix(new_window, show_nas) {
       html += "<th class='right_justify' valign='bottom'><small>Graph</small></th>";
       for (var n in mtx_local.columns) {
         //html += "<th class='verticalTableHeader' >"+mtx_local.columns[n].id +"</th>";
-        html += "<th class='rotate'><div><span><a href='/visuals/bar_single?id="+mtx_local.columns[n].id+"&ts="+pi_local.ts+"&order=alphaDown' target='_blank' >"+(parseInt(n)+1).toString()+') '
+        html += "<th class='rotate'><div><span><a href='/visuals/bar_single?id="+mtx_local.columns[n].id+"&ts="+pi_local.ts+"&orderby=alpha&val=z' target='_blank' >"+(parseInt(n)+1).toString()+') '
         
         html += mtx_local.columns[n].id+"</a></span></div></th>";
       
@@ -551,28 +554,34 @@ function create_counts_matrix(new_window, show_nas) {
         count = parseInt(i)+1;
         taxitems = mtx_local.rows[i].id.split(';');
 
-        html += "<tr class='chart_row'><td>"+count.toString()+"</td>";
+        html += "<tr class='chart_row'><td><a href='taxa_piechart?tax="+mtx_local.rows[i].id+"' title='Link to Taxa PieChart' target='_blank'>"+count.toString()+"</a></td>";
         
         for (t = 0; t < maxrank; t++) {
           ttip = ''
           ttip2 = ''
           if(taxitems.length > t){
-            if(taxitems[t].substring(taxitems[t].length-2,taxitems[t].length) != 'NA' && taxitems[t] != 'Unknown' && taxitems[t] != 'Unassigned'){
-              ttip = '<span class="taxa"><a href="https://en.wikipedia.org/wiki/'+taxitems[t]+'">Wikipedia ('+taxitems[t] +')</a>'
-              ttip += '<br><a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name='+taxitems[t]+'">NCBI ('+taxitems[t] +')</a>'
-              ttip += '<br><a href="http://www.eol.org/search?q='+taxitems[t]+'">EOL ('+taxitems[t] +')</a>'
+            if(taxitems[t].substring(taxitems[t].length-2,taxitems[t].length) != 'NA' 
+                    && taxitems[t].substring(0,6) != 'Empty_' 
+                    && taxitems[t] != 'Unknown' 
+                    && taxitems[t] != 'Unassigned'){
+              ttip = '<span class="taxa">External "'+taxitems[t]+'" Links:'
+              ttip += '<br><a href="https://en.wikipedia.org/wiki/'+taxitems[t]+'" target="_blank">Wikipedia</a>'
+              ttip += '<br><a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name='+taxitems[t]+'" target="_blank">NCBI</a>'
+              ttip += '<br><a href="http://www.eol.org/search?q='+taxitems[t]+'" target="_blank">EOL</a>'
               ttip += '</span>'
               ttip2 = taxitems[t]
             }
             
             if(taxitems[t].substring(taxitems[t].length-3, taxitems[t].length) == '_NA'){
               if(show_nas.raw){
-                html += "<td id='' >"+taxitems[t] +"</td>";
+                html += "<td id='' >"+taxitems[t]+"</td>";
               }else{
                 html += "<td class='center' id='' >"+show_nas.string +"</td>";
               }
             }else{
-              html += "<td class='left_justify tooltip_units' id='"+ttip2+"' >"+taxitems[t] +"</td>";
+              html += "<td class='left_justify' id='"+ttip2+"' ><div class='taxa_name'>"+taxitems[t]
+              html += "<span class='taxa_tooltip' >"+ttip+"</span>";
+              html += "</div></td>";
             }
           }else{
             html += "<td class='left_justify' id=''>--</td>";
@@ -1349,7 +1358,7 @@ function setMarkers(map, loc_data, infowindow) {
 //
 //  CREATE PIECHARTS
 //
-function create_piecharts(ts, new_window) {
+function create_piecharts_group(ts, new_window) {
     if(new_window){
         
           var htmlstring = document.getElementById('piecharts_div').innerHTML;
@@ -1366,12 +1375,10 @@ function create_piecharts(ts, new_window) {
 
           openindex()
           return
-       
-
     }
     piecharts_created = true;
-    
     var info_line = create_header('pies', pi_local);
+    
     document.getElementById('piecharts_title').innerHTML = info_line;
     var piecharts_div = document.getElementById('piecharts_div');
     document.getElementById('piecharts_title').style.color = 'white';
@@ -1380,101 +1387,51 @@ function create_piecharts(ts, new_window) {
     piecharts_div.style.display = 'block';
     
     document.getElementById('pre_piecharts_div').style.display = 'block';
-    //d3.select('svg').remove();
-    var unit_list = [];
-    for (var o in mtx_local.rows){
-        unit_list.push(mtx_local.rows[o].id);
-    }
-    //var colors = get_colors(unit_list);
+     
+    // this fxn is in common_selection.js
+    create_piecharts('group', ts, mtx_local);
     
-  
-  var tmp={};
-  var tmp_names={};
-    for (var d in mtx_local.columns){
-      tmp[mtx_local.columns[d].id]=[]; // data
-      //tmp_names[mtx_local.columns[d].id]=mtx_local.columns[d].id; // datasets
-    }
-    for (var x in mtx_local.data){
-      for (var y in mtx_local.columns){
-        tmp[mtx_local.columns[y].id].push(mtx_local.data[x][y]);
-      }
-    }
-    var myjson_obj={};
-    myjson_obj.names=[];
-    myjson_obj.values=[];
-    //myjson_obj.dids=[];
-    for (var z in tmp) {
-        
-        myjson_obj.names.push(z);
-        myjson_obj.values.push(tmp[z]);
-        //myjson_obj.dids.push(z);
-    }
-  //alert(myjson_obj.names);
-    
-    var pies_per_row = 4;
-    var m = 20; // margin
-    var r = 320/pies_per_row; // five pies per row
-    var image_w = 2*(r+m)*pies_per_row;
-    var image_h = Math.ceil(myjson_obj.values.length / 4 ) * ( 2 * ( r + m ) )+ 30;
-    var arc = d3.svg.arc()
-        .innerRadius(0)
-        .outerRadius(r);
-    var pie = d3.layout.pie();
-  
-    var svgContainer = d3.select("#piecharts_div").append("svg")
-        .attr("width",image_w)
-        .attr("height",image_h);
-    
-    var pies = svgContainer.selectAll("svg")
-        .data(myjson_obj.values)
-        .enter().append("g")
-        .attr("transform", function(d, i){
+    document.getElementById('piecharts_dnld_btn').disabled = false
 
-            var modulo_i = i+1;
-            var diam = r+m;
-            var h_spacer = diam*2*(i % pies_per_row);
-            var v_spacer = diam*2*Math.floor(i / pies_per_row);
-            return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
-        })
-        
-    .append("a")
-        //.attr("xlink:xlink:href", function(d, i) { return 'bar_single?did='+myjson_obj.dids[i]+'&ts='+ts;} )
-        .attr("xlink:xlink:href", function(d, i) { return '/visuals/bar_single?id='+myjson_obj.names[i]+'&ts='+ts+'&order=alphaDown';} )
-    .attr("target", '_blank' );
-  pies.append("text")
-        .attr("dx", -(r+m))
-        .attr("dy", r+m)
-        .attr("text-anchor", "center")
-        .attr("font-size","9px")
-        .text(function(d, i) {
-      return mtx_local.columns[i].id;
-        });
-    pies.selectAll("path")
-        .data(pie.sort(null))
-        .enter().append("path")
-        .attr("d", arc)
-        .attr("id",function(d, i) {
-            var cnt = d.value;
-            var total = 0;
-            for (var k in this.parentNode.__data__){
-              total += this.parentNode.__data__[k];
-            }           
-            
-            var ds = ''; // PLACEHOLDER for TT
-            var pct = (cnt * 100 / total).toFixed(2);
-            var id = 'piecharts-|-'+unit_list[i]+'-|-'+cnt.toString()+'-|-'+pct;
-            //alert(unit_list[i]+'-|-'+cnt.toString()+'-|-'+total+'-|-'+pct)
-            return id; // ip of each rectangle should be datasetname-|-unitname-|-count
-           
-        })
-        .attr("class","tooltip_viz")
-        .style("fill", function(d, i) {
-            return string_to_color_code(unit_list[i]);;
-        });
-  document.getElementById('piecharts_dnld_btn').disabled = false
-
-   
 }
+
+
+//
+//  CREATE BARCHARTS
+//
+function create_barcharts_group(ts, new_window) {
+      
+    if(new_window){
+          var htmlstring = document.getElementById('barcharts_div').innerHTML;
+          function openindex()
+            {
+              rando = Math.floor(Math.random() * 20);
+              OpenWindow=window.open("", "barcharts"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+              OpenWindow.document.write(new_window_skeleton(htmlstring))
+              OpenWindow.document.close()
+              self.name="main"
+            }
+          openindex()
+          return
+    }
+    barcharts_created = true;
+    var info_line = create_header('bars', pi_local);
+    document.getElementById('barcharts_title').innerHTML = info_line;
+    document.getElementById('barcharts_title').style.color = 'white';
+    document.getElementById('barcharts_title').style['font-size'] = 'small';
+    document.getElementById('barcharts_div').innerHTML = '';
+//    barcharts_div.style.display = 'block';
+         
+    document.getElementById('pre_barcharts_div').style.display = 'block';
+     
+         // this fxn is in common_selection.js
+    create_barcharts('group', ts, mtx_local, {alpha_value:'z',count_value:"min"});
+    document.getElementById('barcharts_dnld_btn').disabled = false
+
+}
+//
+//
+//
 function heatmap_click_fxn(did1,ds1,did2,ds2){
       //alert(did1)
       var args =  "did1="+did1;
@@ -1525,39 +1482,7 @@ function heatmap_click_fxn(did1,ds1,did2,ds2){
       };
       xmlhttp.send(args);      
 }
-//
-//  CREATE BARCHARTS
-//
-function create_barcharts_group(ts, new_window) {
-      
-    if(new_window){
-          var htmlstring = document.getElementById('barcharts_div').innerHTML;
-          function openindex()
-            {
-              rando = Math.floor(Math.random() * 20);
-              OpenWindow=window.open("", "barcharts"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
-              OpenWindow.document.write(new_window_skeleton(htmlstring))
-              OpenWindow.document.close()
-              self.name="main"
-            }
-          openindex()
-          return
-    }
-    barcharts_created = true;
-    var info_line = create_header('bars', pi_local);
-    document.getElementById('barcharts_title').innerHTML = info_line;
-    document.getElementById('barcharts_title').style.color = 'white';
-    document.getElementById('barcharts_title').style['font-size'] = 'small';
-    document.getElementById('barcharts_div').innerHTML = '';
-//    barcharts_div.style.display = 'block';
-         
-    document.getElementById('pre_barcharts_div').style.display = 'block';
-     
-         // this fxn is in common_selection.js
-    create_barcharts('group', ts, mtx_local);
-    document.getElementById('barcharts_dnld_btn').disabled = false
 
-}
 //
 //
 //

@@ -1779,10 +1779,12 @@ function get_sumator(req){
 router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     console.log('in bar_single')
     var myurl = url.parse(req.url, true);
-    //console.log('in piechart_single'+myurl)
+    //console.log('in piechart_single',myurl.query)
     //var ts = myurl.query.ts;
     var pjds = myurl.query.id;
-    var order = myurl.query.order; // min, max alphaUp, alphaDown
+    var orderby = myurl.query.orderby || 'alpha'; // alpha, count
+    var value = myurl.query.val || 'z'; // a,z, min, max
+    var order = {orderby:orderby, value:value} // orderby: alpha: a,z or count: min,max
     var ds_items = pjds.split('--');
 
     //var html  = COMMON.start_visuals_html('piechart');
@@ -1813,7 +1815,24 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
       new_matrix.total += BIOM_MATRIX.data[n][d]
     }
     //console.log(JSON.stringify(new_matrix))
-    new_matrix = helpers.sort_json_matrix(new_matrix,order)
+    
+    new_matrix = helpers.sort_json_matrix(new_matrix, order)
+    var new_order = {}
+    if(order.orderby =='alpha' ){
+      if(order.value == 'a'){
+        new_order.alpha_value = 'z'
+      }else{
+        new_order.alpha_value = 'a'
+      }
+      new_order.count_value = 'min'
+    }else{
+      if(order.value == 'min'){
+        new_order.count_value = 'max'
+      }else{
+        new_order.count_value = 'min'
+      }
+      new_order.alpha_value = 'a'
+    }
     
     
     //console.log(JSON.stringify(new_matrix))
@@ -1880,6 +1899,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
               post_items:           JSON.stringify(visual_post_items),
               seqs_file : filename,
               bar_type  : 'single',
+              order: JSON.stringify(new_order),
               //html: html,
               user: req.user, hostname: req.CONFIG.hostname,
           });
@@ -1906,7 +1926,9 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     var did2 = myurl.query.did2;
     var dist = myurl.query.dist;
     //var ts   = myurl.query.ts;
-    var order = myurl.query.order; // min, max alphaUp, alphaDown
+    var orderby = myurl.query.orderby || 'alpha'; // alpha, count
+    var value = myurl.query.val || 'z'; // a,z, min, max
+    var order = {orderby:orderby, value:value} // orderby: alpha: a,z or count: min,max
     var ds1  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did1)]
     var ds2  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did2)]
     //var ds_items = pjds.split('--');
@@ -1962,7 +1984,22 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     //DOUBLE
     //console.log(JSON.stringify(new_matrix))
     new_matrix = helpers.sort_json_matrix(new_matrix,order)
-   
+    var new_order = {}
+    if(order.orderby =='alpha' ){
+      if(order.value == 'a'){
+        new_order.alpha_value = 'z'
+      }else{
+        new_order.alpha_value = 'a'
+      }
+      new_order.count_value = 'min'
+    }else{
+      if(order.value == 'min'){
+        new_order.count_value = 'max'
+      }else{
+        new_order.count_value = 'min'
+      }
+      new_order.alpha_value = 'a'
+    }
     //console.log(JSON.stringify(new_matrix))
 
     //console.log(JSON.stringify(new_matrix))
@@ -2026,14 +2063,13 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
               if (err) return console.log(err);
               console.log('wrote file > '+file_path2);
               
-//open('/visuals/user_viz_data/bar_double?did1=<%= id_order[x] %>&did2=<%= id_order[y] %>&ts=<%= ts %>&dist=<%= dist %>', '_blank')"
-//open('/visuals/user_viz_data/bar_double?did1=', '_blank')
               res.render('visuals/user_viz_data/bar_double', {
                   title: 'Taxonomic Data',
                   ts: timestamp,
                   matrix    :           JSON.stringify(new_matrix),
                   post_items:           JSON.stringify(visual_post_items),
                   bar_type  : 'double', 
+                  order: JSON.stringify(new_order),
                   dist     : dist,       
                   //html: html,
                   user: req.user, hostname: req.CONFIG.hostname,
@@ -2946,6 +2982,55 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     });
     //console.log(json.item)
     res.send(json)
+});
+//
+//
+//
+router.get('/taxa_piechart', function(req, res) {
+    console.log('IN taxa_piechart - routes_visualizations')
+    var myurl = url.parse(req.url, true);
+    var tax = myurl.query.tax
+    var timestamp = +new Date();  // millisecs since the epoch! 
+    var data = []
+    var new_matrix = {}
+
+    console.log('tax',tax)
+    console.log('mtx',BIOM_MATRIX)
+    
+    for(i in BIOM_MATRIX.rows){
+      if(BIOM_MATRIX.rows[i].id == tax){
+        
+        data = BIOM_MATRIX.data[i]
+        // data = [1,2,3,4]
+        // want [[1],[2],[3],[4]]
+
+        new_matrix.data = []
+        for(n in data){
+          new_matrix.data.push([data[n]])
+        }
+        new_matrix.columns = [BIOM_MATRIX.rows[i]]
+      }
+    }
+    new_matrix.rows = BIOM_MATRIX.columns
+    console.log('new mtx',new_matrix)
+    var cols =  BIOM_MATRIX.columns
+    console.log('counts',data)
+    res.render('visuals/user_viz_data/pie_single_tax', {
+              title: 'Counts PieChart',
+              matrix    :           JSON.stringify(new_matrix),
+              post_items:           JSON.stringify(visual_post_items),
+              tax : tax,
+              datasets : JSON.stringify(cols),
+              counts : data,
+              ts : timestamp,
+
+              //seqs_file : filename,
+              //bar_type  : 'single',
+              //order: JSON.stringify(new_order),
+              //html: html,
+              user: req.user, hostname: req.CONFIG.hostname,
+    });
+
 });
 
 module.exports = router;

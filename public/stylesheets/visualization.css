@@ -185,6 +185,7 @@ th.rotate > div {
     rotate(300deg);
   width: 30px;
 }
+
 th.rotate > div > span {
   border-bottom: 1px solid #ccc;
   padding: 5px 10px;
@@ -198,6 +199,7 @@ th.rotate > div > span  a:hover, a:active {
   color:orange;
   text-decoration:none;
 }
+
 #tax_counts_graph_div {
     z-index: 1;
 }
@@ -238,8 +240,7 @@ th.rotate > div > span  a:hover, a:active {
 }
 /* PIECHARTS */
 #piecharts_div {
-    margin-right:20px;
-    padding-right:20px;
+   
 }
 /* BARCHARTS */
 #barcharts_div {
@@ -546,4 +547,23 @@ i.icon-minus-sign {
 .filter_note {
     font-size:large;
     color:red;
+}
+.taxa_name:hover .taxa_tooltip {
+    display:block;
+}
+
+.taxa_tooltip {
+    display: none;  /* NEW */
+    border: 2px solid blue;
+    border-radius:4px;
+    color:black;
+    background-color: #87CEEB;
+    font-size:11px;
+    margin-left: 28px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1000;
+}
+.taxa_tooltip a:link,  a:visited, a:hover, a:active {    
+    color:black;    
 }

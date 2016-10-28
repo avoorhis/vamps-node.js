@@ -166,6 +166,60 @@ function get_double_bar_html(obj, ts){
 //
 //
 //
+function get_single_pie_html(obj){
+  
+  var total = 0;
+  var html ='';
+  var tax_col_count = 0;
+  var ordered_ds = [];
+  var taxa;
+  var ranks = ['Domain','Phylum','Class','Order','Family','Genus','Species','Strain']
+  for(n in obj.rows){
+    //if(obj.data[n] > 0){
+      total += parseInt(obj.data[n]);
+      ds = obj.rows[n].id
+
+      ordered_ds[n] = ds
+      
+    //}
+  }
+  //alert(ordered_taxa)
+  html += "<div class='overflow_500'>click headers to sort";
+  html += "<table id='single_piechart_table_id' class='table table-condensed overflow200 sortable'>";
+  html += '<thead>'
+  html += "<tr><th width='25' >color</th>";  //<th>Taxonomy <small>(click to sort)</small></th>
+  
+  html += '<th>Dataset</th>'
+  
+  html += "<th>Count</th></tr>";
+  
+  html += '</thead><tbody>'
+  
+  
+  // colorsX is created in common_selection::create_piecharts(imagetype, ts, mtx)
+  for(n in obj.rows){
+    //if(obj.data[n] > 0){
+      //color = string_to_color_code(obj.rows[n].id)
+      color = colorsX[obj.rows[n].id]
+      //link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
+      var pct = ((obj.data[n] / total)*100).toFixed(2);
+      var id = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n] + '-|-' + pct;
+      html += "<tr class='tooltip_viz' id='"+id+"' ><td style='background-color:"+color+"'></td>";
+      
+      //html += "<td><a href='"+link+"'>"+ordered_taxa[n][i]+'</a></td>'
+      html += "<td>"+ordered_ds[n]+'</td>'
+      
+      html += '<td>'+obj.data[n]+"</td></tr>";
+    //}
+  }
+  html += '</tbody>'
+  html += '</table></div>';
+  
+  return html;
+}
+//
+//
+//
 function download_data(type, download_type, ts) {
     var html = '';
     var args =  "download_type="+download_type;

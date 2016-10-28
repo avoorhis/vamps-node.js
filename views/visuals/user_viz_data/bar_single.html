@@ -1,5 +1,6 @@
 <% include ../../add_ins/begin_nomenu.ejs %>
 <% var dataset = JSON.parse(matrix).dataset; %>
+<% var order = JSON.parse(order); %>
 <link rel="stylesheet" href="/stylesheets/bootstrap-sortable.css" >
 <script>
   var pi_local  = JSON.parse('<%- post_items %>');
@@ -16,19 +17,21 @@
 <div id='my_div' class='well' style="height: 150px;">
  
   <div class='pull-left'>
-    
-    <a class='btn btn-xs btn-success' href='/visuals/bar_single?id=<%= dataset %>&ts=<%= ts %>&orderby=alpha'>
-      Taxa Names <span class="glyphicon glyphicon-chevron-down"></a>
-    
-    <a class='btn btn-xs btn-success' href='/visuals/bar_single?id=<%= dataset %>&ts=<%= ts %>&order=alphaUp'>
-      Taxa Names <span class="glyphicon glyphicon-chevron-up"></a>
-    
-    <a class='btn btn-xs btn-success' href='/visuals/bar_single?id=<%= dataset %>&ts=<%= ts %>&order=max'>
-      Count <span class="glyphicon glyphicon-chevron-down"></a>
-    
-    <a class='btn btn-xs btn-success' href='/visuals/bar_single?id=<%= dataset %>&ts=<%= ts %>&order=min'>
-      Count <span class="glyphicon glyphicon-chevron-up"></a>
-  
+    Ordering:
+    <a class='btn btn-xs btn-success' href='/visuals/bar_single?id=<%= dataset %>&ts=<%= ts %>&orderby=alpha&val=<%= order.alpha_value %>'>Taxa Names 
+    <% if(order.alpha_value == 'a'){ %>
+      <span class="glyphicon glyphicon-chevron-down"></span>
+    <% }else{ %>
+      <span class="glyphicon glyphicon-chevron-up"></span>
+    <% } %>
+      </a>
+    <a class='btn btn-xs btn-success' href='/visuals/bar_single?id=<%= dataset %>&ts=<%= ts %>&orderby=count&val=<%= order.count_value %>'>Count
+      <% if(order.count_value == 'min'){ %>
+      <span class="glyphicon glyphicon-chevron-down"></span>
+    <% }else{ %>
+      <span class="glyphicon glyphicon-chevron-up"></span>
+    <% } %>
+      </a>
   </div>
   
   <br><br>
@@ -68,7 +71,7 @@
 $(document).ready(function() {  
 
   // function is where?  common_selection
-  create_barcharts(bar_type, <%= ts %>, mtx_local);
+  create_barcharts(bar_type, <%= ts %>, mtx_local, {});
   
   if(bar_type == 'single'){
     // function is where?  in this file (look below)

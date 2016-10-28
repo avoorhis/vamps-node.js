@@ -64,7 +64,140 @@ var save_datasets_list = function(ds_local, user)
 //
 // PIES and BARS
 //
-function create_barcharts(imagetype, ts, mtx) {
+function create_piecharts(imagetype, ts, mtx) {
+    //alert(imagetype)  // group or single
+    //d3.select('svg').remove();
+  var unit_list = [];
+  for (var n in mtx.rows){
+      unit_list.push(mtx.rows[n].id);
+  }
+    
+  colorsX = {}
+  var total = 0
+  for(n in mtx.rows){
+    if(imagetype == 'single'){
+      colorsX[mtx.rows[n].id] = get_random_color()
+      total +=  parseInt(mtx.data[n])
+    }else{
+      colorsX[mtx.rows[n].id] = string_to_color_code(mtx.rows[n].id)
+    }
+  }
+  console.log(total)
+  var tmp={};
+  var tmp_names={};
+    for (var d in mtx.columns){
+      tmp[mtx.columns[d].id]=[]; // data
+      //tmp_names[mtx_local.columns[d].id]=mtx_local.columns[d].id; // datasets
+    }
+    for (var x in mtx.data){
+      for (var y in mtx.columns){
+        tmp[mtx.columns[y].id].push(mtx.data[x][y]);
+      }
+    }
+    var myjson_obj={};
+    myjson_obj.names=[];
+    myjson_obj.values=[];
+    //myjson_obj.dids=[];
+    for (var z in tmp) {
+        myjson_obj.names.push(z);
+        myjson_obj.values.push(tmp[z]);
+        //myjson_obj.dids.push(z);
+    }
+  //alert(myjson_obj.names);
+    if(imagetype == 'single'){
+      var pies_per_row = 1;
+      var m = 20; // margin
+      var r = 120; // five pies per row
+      
+    }else{
+      var pies_per_row = 4;
+      var m = 20; // margin
+      var r = 320/pies_per_row; // five pies per row
+      
+    }
+    
+    var image_w = 2*(r+m)*pies_per_row;
+    var image_h = Math.ceil(myjson_obj.values.length / 4 ) * ( 2 * ( r + m ) )+ 30;
+    var arc = d3.svg.arc()
+        .innerRadius(0)
+        .outerRadius(r);
+    var pie = d3.layout.pie();
+  
+    var svgContainer = d3.select("#piecharts_div").append("svg")
+        .attr("width",image_w)
+        .attr("height",image_h);
+    
+    var pies = svgContainer.selectAll("svg")
+        .data(myjson_obj.values)
+        .enter().append("g")
+        .attr("transform", function(d, i){
+
+            var modulo_i = i+1;
+            var diam = r+m;
+            var h_spacer = diam*2*(i % pies_per_row);
+            var v_spacer = diam*2*Math.floor(i / pies_per_row);
+            return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
+        })
+      
+      .append("a")
+          //.attr("xlink:xlink:href", function(d, i) { return 'bar_single?did='+myjson_obj.dids[i]+'&ts='+ts;} )
+          .attr("xlink:xlink:href", function(d, i) { 
+            if(imagetype == 'group'){
+              return '/visuals/bar_single?id='+myjson_obj.names[i]+'&ts='+ts+'&orderby=alpha&val=z';
+            }else{
+              return null
+            }
+          } )
+      .attr("target", '_blank' );
+    
+  pies.append("text")
+        .attr("dx", -(r+m))
+        .attr("dy", r+m)
+        .attr("text-anchor", "center")
+        .attr("font-size","9px")
+        .text(function(d, i) {
+            if(imagetype == 'single'){
+              return 'SumCount: '+total.toString()
+            }else{
+              return mtx.columns[i].id;
+            }
+        });
+    pies.selectAll("path")
+        .data(pie.sort(null))
+        .enter().append("path")
+        .attr("d", arc)
+        .attr("id",function(d, i) {
+            var cnt = d.value;
+            var total = 0;
+            for (var k in this.parentNode.__data__){
+              total += this.parentNode.__data__[k];
+            }           
+            
+            var ds = ''; // PLACEHOLDER for TT
+            var pct = (cnt * 100 / total).toFixed(2);
+            var id = 'piecharts-|-'+unit_list[i]+'-|-'+cnt.toString()+'-|-'+pct;
+            //alert(unit_list[i]+'-|-'+cnt.toString()+'-|-'+total+'-|-'+pct)
+            return id; // ip of each rectangle should be datasetname-|-unitname-|-count
+           
+        })
+        .attr("class","tooltip_viz")
+        .style("fill", function(d, i) {
+            
+            //if(=='single'){
+              return colorsX[unit_list[i]]
+            //}else{
+            //  return string_to_color_code(unit_list[i])
+            //}
+            
+        });
+  
+
+   
+}
+//
+//  BAR CHARTS
+//
+function create_barcharts(imagetype, ts, mtx, new_order) {
         //alert(imagetype)
         //alert(ts)
        
@@ -72,11 +205,11 @@ function create_barcharts(imagetype, ts, mtx) {
         barcharts_div.innerHTML = ""
         barcharts_div.style.display = 'block';
         
-        //document.getElementById('pre_barcharts_table_div').style.display = 'block';
         var unit_list = [];
-        for (var o in mtx.rows){
-            unit_list.push(mtx.rows[o].id);
+        for (var n in mtx.rows){
+            unit_list.push(mtx.rows[n].id);
         }
+        // function is in this file
         var colors = get_colors(unit_list);
 
         data = [];
@@ -128,10 +261,24 @@ function create_barcharts(imagetype, ts, mtx) {
         });
       
     if(imagetype == 'group'){
-        var buttonNames = [{name:"Taxa Names <span class=\"glyphicon glyphicon-chevron-down\"></span>",ref:"",order:"alphaDown"},
-                          {name: "Taxa Names <span class=\"glyphicon glyphicon-chevron-up\"></span>",ref:"lnk2",order:"alphaUp"},
-                          {name: "Count <span class=\"glyphicon glyphicon-chevron-down\"></span>",ref:"lnk3",order:"max"},
-                          {name: "Count <span class=\"glyphicon glyphicon-chevron-up\"></span>",ref:"4ref",order:"min"}]           
+        
+        if(new_order.orderby == 'alpha'){
+          if(new_order.alpha_value == 'a'){
+            alpha_name = "Taxa Names <span class=\"glyphicon glyphicon-chevron-up\"></span>"
+          }else{
+            alpha_name = "Taxa Names <span class=\"glyphicon glyphicon-chevron-down\"></span>"
+          }
+          count_name = "Count <span class=\"glyphicon glyphicon-chevron-down\"></span>"
+        }else{
+          if(new_order.count_value == 'max'){
+            count_name = "Count <span class=\"glyphicon glyphicon-chevron-up\"></span>"
+          }else{
+            count_name = "Count <span class=\"glyphicon glyphicon-chevron-down\"></span>"
+          }
+          alpha_name = "Taxa Names <span class=\"glyphicon glyphicon-chevron-down\"></span>"
+        }
+        var buttonNames = [{name:alpha_name,ref:"",orderby:"alpha",val:new_order.alpha_value},                          
+                            {name: count_name,ref:"lnk3",orderby:"count",val:new_order.count_value}]          
         d3.select("#barcharts_div").append("div")
               .attr("class","pull-left")
               .append("text").html("Re-ordering is applied to all the samples.<br>But only the first sample's values are used.<br>")
@@ -143,7 +290,7 @@ function create_barcharts(imagetype, ts, mtx) {
               .attr("href", '#')
               .html( function (d){return d.name;})   
               .on("click", function (data,index){
-                change_matrix_order(data.order)
+                change_matrix_order(data.orderby, data.val)
               })
     }     
     
@@ -166,16 +313,33 @@ function create_barcharts(imagetype, ts, mtx) {
       create_svg_object(svg, props, data, ts);
     }
 }
-function change_matrix_order(order){
-  //alert('ord',order)
+function change_matrix_order(orderby, value){
+  order = {orderby:orderby,value:value}
   new_mtx = sort_json_matrix(mtx_local, order)
-  create_barcharts('group', pi_local.ts, new_mtx);
+  new_order = {}
+  new_order.orderby = orderby
+  if(orderby == 'alpha' ){
+      if(value == 'a'){
+        new_order.alpha_value = 'z'
+      }else{
+        new_order.alpha_value = 'a'
+      }
+      new_order.count_value = 'min'
+    }else{
+      if(value == 'min'){
+        new_order.count_value = 'max'
+      }else{
+        new_order.count_value = 'min'
+      }
+      new_order.alpha_value = 'a'
+    }
+  create_barcharts('group', pi_local.ts, new_mtx, new_order);
   $(pre_barcharts_div).scrollView();
 }
 //
 //
 //
-function sort_json_matrix(mtx, fxn) {
+function sort_json_matrix(mtx, fxn_obj) {
     // fxn must be one of min,max, alphaUp, alphaDown
     // else original mtx returned
     // sorts MATRIX by tax alpha or counts OF FIRST COLUMN only
@@ -185,29 +349,35 @@ function sort_json_matrix(mtx, fxn) {
       obj.push({tax:mtx.rows[i],cnt:mtx.data[i]})
     }
     var reorder = false;
-    if(fxn == 'max'){
+
+    if(fxn_obj.orderby == 'alpha'){
+      if(fxn_obj.value == 'a'){
+        obj.sort(function sortByAlpha(a, b) {
+               return compareStrings_alpha(b.tax.id, a.tax.id)
+        });
+        reorder = true;
+      }else{
+        obj.sort(function sortByAlpha(a, b) {
+               return compareStrings_alpha(a.tax.id, b.tax.id)
+        });
+        reorder = true;
+      }
+    }else if(fxn_obj.orderby == 'count'){
+      if(fxn_obj.value == 'max'){
         obj.sort(function sortByCount(a, b) {
                return b.cnt[0] - a.cnt[0];
         });
         reorder = true;
-    }else if(fxn == 'min'){
+      }else{
         obj.sort(function sortByCount(a, b) {
                return a.cnt[0] - b.cnt[0];
         });
         reorder = true;
-    }else if(fxn == 'alphaUp'){
-      obj.sort(function sortByAlpha(a, b) {
-               return compareStrings_alpha(b.tax.id, a.tax.id)
-      });
-      reorder = true;
-    }else if(fxn == 'alphaDown'){
-      obj.sort(function sortByAlpha(a, b) {
-               return compareStrings_alpha(a.tax.id, b.tax.id)
-      });
-      reorder = true;
+      }
     }else{
-      
+
     }
+
     if(reorder){
       mtx.rows = []
       mtx.data = []
@@ -474,7 +644,45 @@ function string_to_color_code(str){
     var color = Math.abs(hash).toString(16).substring(0, 6);
     return "#" + '000000'.substring(0, 6 - color.length) + color;
 }
+function get_random_color(){
+  return '#'+(Math.random()*0xFFFFFF<<0).toString(16);
+}
+// function string_to_color_codeX(str){
+//     var hash = 0;
+//     //str = str.split('--')[1]
+//     //console.log(str.length)
+//     for(var i=0; i < str.length; i++) {
+//       if(str == 'ApD1'){
+//         //console.log(str)
+//         //console.log(i)
+//         //console.log(str.charCodeAt(i))
+//       }
+      
+//       hash = str.charCodeAt(i) + ((hash << 3) - hash);
+//     }
+    
+//     var color = Math.abs(hash).toString(16).substring(0, 6);
+//     color = "#" + '000000'.substring(0, 6 - color.length) + color;
+//     console.log('str '+str)
+//     console.log('color '+color)
 
+//     return color
+// }
+// function djb2(str){
+//   var hash = 5381;
+//   for (var i = 0; i < str.length; i++) {
+//     hash = ((hash << 5) + hash) + str.charCodeAt(i); /* hash * 33 + c */
+//   }
+//   return hash;
+// }
+
+// function string_to_color_code2(str) {
+//   var hash = djb2(str);
+//   var r = (hash & 0xFF0000) >> 16;
+//   var g = (hash & 0x00FF00) >> 8;
+//   var b = hash & 0x0000FF;
+//   return "#" + ("0" + r.toString(16)).substr(-2) + ("0" + g.toString(16)).substr(-2) + ("0" + b.toString(16)).substr(-2);
+// }
 //////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 $(function() {

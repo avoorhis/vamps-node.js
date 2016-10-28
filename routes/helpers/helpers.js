@@ -371,7 +371,7 @@ module.exports.compareStrings_int = function(a, b) {
   b = parseInt(b);
   return (a < b) ? -1 : (a > b) ? 1 : 0;
 };
-module.exports.sort_json_matrix = function(mtx, fxn) {
+module.exports.sort_json_matrix = function(mtx, fxn_obj) {
     // fxn must be one of min,max, alphaUp, alphaDown
     // else original mtx returned
     // sorts MATRIX by tax alpha or counts OF FIRST COLUMN only
@@ -381,29 +381,34 @@ module.exports.sort_json_matrix = function(mtx, fxn) {
       obj.push({tax:mtx.rows[i],cnt:mtx.data[i]})
     }
     var reorder = false;
-    if(fxn == 'max'){
+    if(fxn_obj.orderby == 'alpha'){
+      if(fxn_obj.value == 'a'){
+        obj.sort(function sortByAlpha(a, b) {
+               return module.exports.compareStrings_alpha(b.tax.id, a.tax.id)
+        });
+        reorder = true;
+      }else{
+        obj.sort(function sortByAlpha(a, b) {
+               return module.exports.compareStrings_alpha(a.tax.id, b.tax.id)
+        });
+        reorder = true;
+      }
+    }else if(fxn_obj.orderby == 'count'){
+      if(fxn_obj.value == 'max'){
         obj.sort(function sortByCount(a, b) {
                return b.cnt[0] - a.cnt[0];
         });
         reorder = true;
-    }else if(fxn == 'min'){
+      }else{
         obj.sort(function sortByCount(a, b) {
                return a.cnt[0] - b.cnt[0];
         });
         reorder = true;
-    }else if(fxn == 'alphaUp'){
-      obj.sort(function sortByAlpha(a, b) {
-               return module.exports.compareStrings_alpha(b.tax.id, a.tax.id)
-      });
-      reorder = true;
-    }else if(fxn == 'alphaDown'){
-      obj.sort(function sortByAlpha(a, b) {
-               return module.exports.compareStrings_alpha(a.tax.id, b.tax.id)
-      });
-      reorder = true;
+      }
     }else{
-      
+
     }
+
     if(reorder){
       mtx.rows = []
       mtx.data = []

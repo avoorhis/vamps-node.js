@@ -159,6 +159,8 @@ def run_fasta(args):
 
 def run_matrix(args):
     print '''running matrix --->>>'''
+    # file name could have date,include_nas,tax-depth,units,domains, normalization
+    # or this data could go inside file?
     out_file = os.path.join(args.base,'matrix-'+args.runcode+'.csv')
     cursor = args.obj.cursor()  
     dids = "','".join(args.dids)
@@ -195,19 +197,20 @@ def run_matrix(args):
                 count = knt  # should never get here
         
         tax   = row['taxonomy']
-        dom = tax.split(';')[0]
+        taxa = tax.split(';')
+        dom = taxa[0]
         if dom in args.domains:
             # exclude Chloroplasts if Organelle not in 
-            if dom == 'Bacteria' and 'Organelle' not in args.domains and 'Chloroplast' not in tax:
-                print('Chloroplast - Excluding',tax)
-            elif args.exclude_nas and '_NA' in tax:
-                print('_NA -- Excluding',tax)
+            if dom == 'Bacteria' and 'Organelle' not in args.domains and 'Chloroplast' in tax:
+                print('Chloroplast - Excluding',tax)                
             else:
-                if tax not in collector:
-                    collector[tax] = {}
-                collector[tax][samp] = count
+                if  args.exclude_nas and len(taxa) != allowed_ranks.index(args.rank)+1:
+                    print('_NA -- Excluding',tax)
+                else:
+                    if tax not in collector:
+                        collector[tax] = {}
+                    collector[tax][samp] = count
             
-        
     sample_order = sorted(sample_order_dict.keys())  
     tax_order    = sorted(collector.keys())
     file_txt = 'VAMPS Taxonomy Matrix\tRank:'+args.rank+'\tNormalization:'+args.normalization+'\n'
@@ -268,18 +271,20 @@ def run_biom(args):
             else:
                 count = knt  # should never get here
         
-        tax = row['taxonomy']
-        dom = tax.split(';')[0]
+        tax   = row['taxonomy']
+        taxa = tax.split(';')
+        dom = taxa[0]
         if dom in args.domains:
             # exclude Chloroplasts if Organelle not in 
-            if dom == 'Bacteria' and 'Organelle' not in args.domains and 'Chloroplast' not in tax:
-                print('Chloroplast - Excluding',tax)
-            elif args.exclude_nas and '_NA' in tax:
-                print('_NA -- Excluding',tax)
+            if dom == 'Bacteria' and 'Organelle' not in args.domains and 'Chloroplast' in tax:
+                print('Chloroplast - Excluding',tax)                
             else:
-                if tax not in collector:
-                    collector[tax] = {}
-                collector[tax][samp] = count
+                if  args.exclude_nas and len(taxa) != allowed_ranks.index(args.rank)+1:
+                    print('_NA -- Excluding',tax)
+                else:
+                    if tax not in collector:
+                        collector[tax] = {}
+                    collector[tax][samp] = count
         
     #print collector
     sample_order = sorted(sample_order_dict.keys())  
@@ -434,25 +439,26 @@ def run_taxbytax(args):
                 count = knt  # should never get here
         #print 'count',count
         #print knt,args.dataset_counts[pjds],args.max,count
-        tax = row['taxonomy']
-        dom = tax.split(';')[0]
+        tax   = row['taxonomy']
+        taxa = tax.split(';')
+        dom = taxa[0]
         if dom in args.domains:
-
             # exclude Chloroplasts if Organelle not in 
-            if dom == 'Bacteria' and 'Organelle' not in args.domains and 'Chloroplast' not in tax:
-                print('Chloroplast - Excluding',tax)
-            elif args.exclude_nas and '_NA' in tax:
-                print('_NA -- Excluding',tax)
+            if dom == 'Bacteria' and 'Organelle' not in args.domains and 'Chloroplast' in tax:
+                print('Chloroplast - Excluding',tax)                
             else:
-                if tax in tax_array:
-                    if pjds in tax_array[tax]:
-                        tax_array[tax][pjds] += count
-                    else:
-                        tax_array[tax][pjds] = count
-            
+                if  args.exclude_nas and len(taxa) != allowed_ranks.index(args.rank)+1:
+                    print('_NA -- Excluding',tax)
                 else:
-                    tax_array[tax] = {}
-                    tax_array[tax][pjds] = count
+                    if tax in tax_array:
+                        if pjds in tax_array[tax]:
+                            tax_array[tax][pjds] += count
+                        else:
+                            tax_array[tax][pjds] = count
+                
+                    else:
+                        tax_array[tax] = {}
+                        tax_array[tax][pjds] = count
     sample_order = sorted(sample_order_dict.keys())  
     tax_order = sorted(tax_array.keys())   
     #write_taxbytax_file(args, tax_array, tax_order, sample_order)

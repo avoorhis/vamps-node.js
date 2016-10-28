@@ -4,6 +4,7 @@
 <% var dataset2 = mtx.datasets[1]; %>
 <% var did1 = mtx.columns[0].did; %>
 <% var did2 = mtx.columns[1].did; %>
+<% var order = JSON.parse(order); %>
 <% pi = JSON.parse(post_items); %>
 <link rel="stylesheet" href="/stylesheets/bootstrap-sortable.css" >
 <script>
@@ -35,15 +36,30 @@
     <br>
     Calculated Distance: <%= dist %>
   </div>
+
   <div class='pull-left' >Order of first dataset's values:<br>
-    <a class='btn btn-xs btn-success' href='/visuals/bar_double?did1=<%= did1 %>&did2=<%= did2 %>&ts=<%= ts %>&dist=<%= dist %>&order=alphaDown'>
-      Taxa Names <span class="glyphicon glyphicon-chevron-down"></span></a>
-    <a class='btn btn-xs btn-success' href='/visuals/bar_double?did1=<%= did1 %>&did2=<%= did2 %>&ts=<%= ts %>&dist=<%= dist %>&order=alphaUp'>
-      Taxa Names <span class="glyphicon glyphicon-chevron-up"></a>
-    <a class='btn btn-xs btn-success' href='/visuals/bar_double?did1=<%= did1 %>&did2=<%= did2 %>&ts=<%= ts %>&dist=<%= dist %>&order=max'>
-      Count <span class="glyphicon glyphicon-chevron-down"></a>
-    <a class='btn btn-xs btn-success' href='/visuals/bar_double?did1=<%= did1 %>&did2=<%= did2 %>&ts=<%= ts %>&dist=<%= dist %>&order=min'>
-      Count <span class="glyphicon glyphicon-chevron-up"></a>
+
+  
+
+
+    <a class='btn btn-xs btn-success' href='/visuals/bar_double?did1=<%= did1 %>&did2=<%= did2 %>&ts=<%= ts %>&dist=<%= dist %>&orderby=alpha&val=<%= order.alpha_value %>'>
+      Taxa Names
+        <% if(order.alpha_value == 'a'){ %>
+          <span class="glyphicon glyphicon-chevron-down"></span>
+        <% }else{ %>
+          <span class="glyphicon glyphicon-chevron-up"></span>
+        <% } %>
+    </a>
+    
+    <a class='btn btn-xs btn-success' href='/visuals/bar_double?did1=<%= did1 %>&did2=<%= did2 %>&ts=<%= ts %>&dist=<%= dist %>&orderby=count&val=<%= order.count_value %>'>
+      Count
+         <% if(order.count_value == 'min'){ %>
+          <span class="glyphicon glyphicon-chevron-down"></span>
+        <% }else{ %>
+          <span class="glyphicon glyphicon-chevron-up"></span>
+        <% } %>
+    </a>
+    
 
   </div>
   <br><br>
@@ -83,7 +99,7 @@
 $(document).ready(function() {  
 
   // function is where?  common_selection
-  create_barcharts(bar_type, <%= ts %>, mtx_local);
+  create_barcharts(bar_type, <%= ts %>, mtx_local, {});
   
   if(bar_type == 'single'){
     // function is where?  in this file (look below)
