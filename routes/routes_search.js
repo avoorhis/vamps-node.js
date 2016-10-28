@@ -139,7 +139,7 @@ router.get('/metadata/:type', helpers.isLoggedIn, function(req, res) {
       //console.log(metadata_fields)
       metadata_fields_array.sort();
 
-      console.log(JSON.stringify(metadata_fields))
+      //console.log(JSON.stringify(metadata_fields))
       res.render('search/metadata', { title: 'VAMPS:Search',
         metadata_items:       JSON.stringify(metadata_fields),
         metadata_search_type: req.params.type,
