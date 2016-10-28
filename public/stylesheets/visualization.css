@@ -564,6 +564,11 @@ i.icon-minus-sign {
     position: absolute;
     z-index: 1000;
 }
+.taxa_tooltip li {    
+    list-style-type: none;
+    text-align:center;    
+}
 .taxa_tooltip a:link,  a:visited, a:hover, a:active {    
-    color:black;    
+    color:black;
+       
 }

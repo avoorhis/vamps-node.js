@@ -561,13 +561,13 @@ function create_counts_matrix(new_window, show_nas) {
           ttip2 = ''
           if(taxitems.length > t){
             if(taxitems[t].substring(taxitems[t].length-2,taxitems[t].length) != 'NA' 
-                    && taxitems[t].substring(0,6) != 'Empty_' 
+                    && taxitems[t].substring(1,6) != 'mpty_' 
                     && taxitems[t] != 'Unknown' 
                     && taxitems[t] != 'Unassigned'){
               ttip = '<span class="taxa">External "'+taxitems[t]+'" Links:'
-              ttip += '<br><a href="https://en.wikipedia.org/wiki/'+taxitems[t]+'" target="_blank">Wikipedia</a>'
-              ttip += '<br><a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name='+taxitems[t]+'" target="_blank">NCBI</a>'
-              ttip += '<br><a href="http://www.eol.org/search?q='+taxitems[t]+'" target="_blank">EOL</a>'
+              ttip += '<li><a href="https://en.wikipedia.org/wiki/'+taxitems[t]+'" target="_blank">Wikipedia</a></li>'
+              ttip += '<li><a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name='+taxitems[t]+'" target="_blank">NCBI</a></li>'
+              ttip += '<li><a href="http://www.eol.org/search?q='+taxitems[t]+'" target="_blank">EOL</a></li>'
               ttip += '</span>'
               ttip2 = taxitems[t]
             }
