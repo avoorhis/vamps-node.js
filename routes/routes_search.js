@@ -197,17 +197,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
         datasets.ids.push(did);
         datasets.names.push(pname+'--'+DATASET_NAME_BY_DID[did]);
       }
-      // console.log(datasets);
-      // var timestamp = +new Date();  // millisecs since the epoch!
-      // var filename = 'datasets-'+timestamp+'.json';
-      // var filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,filename);
-      // helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);  // create dir if not present
-      // helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE,req.user.username)); // create dir if not present
-      // //console.log(filename);
-      // helpers.write_to_file(filename_path,JSON.stringify(datasets));
-      // msg = "<a href='/visuals/saved_datasets'>"+filename+"</a>";
-      // req.flash('tax_message', 'Saved as: '+msg);
-      //res.redirect('search_index#taxonomy');
+      
 
       res.render('search/search_result_taxonomy', {
                     title    : 'VAMPS: Search Datasets',

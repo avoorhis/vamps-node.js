@@ -39,7 +39,7 @@ Screening/Options:<br>
         </td>
     </tr>
     <tr>
-        <td>Filter Matrix Rows by Frequency:<br>Will remove rows if min/max exceded for ALL the datasets.<br>
+        <td>Filter Matrix Rows by Frequency: Will remove rows if min/max exceded for ALL the datasets.<br>
 
 		  MIN: <select id='min_range' name='min_range' class='small_font'>
 		    <% for( var n=0; n < pct_range.length-1; n++ ) {  %>
@@ -66,7 +66,10 @@ Screening/Options:<br>
     </tr>
 
     <tr>
-        <td>Include NAs (taxonomy not available):<br>  
+        <td>Include NAs (taxonomy not available)<br>
+<%      if(cnsts.show_nas.raw != 'true' ) { %>
+            (represented in frequency table by '<%= cnsts.show_nas.string %>'):<br>  
+<%      } %>
         <%    if(pi.include_nas.toString() === 'yes') { %>
             <span title=''><input type='radio' checked='checked' id='' name='include_nas' value='yes'   \> Include NAs</span>&nbsp;&nbsp;         
             <span title=''><input type='radio'                   id='' name='include_nas' value='no'    \> Exclude NAs</span>
