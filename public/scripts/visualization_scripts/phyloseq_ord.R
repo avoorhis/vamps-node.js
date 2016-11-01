@@ -63,10 +63,10 @@ h = 8
 
 md1_unique_count <- length(levels(MAP[[md1]]))
 md2_unique_count <- length(levels(MAP[[md2]]))
-if(md1_unique_count + md2_unique_count > 60){
-	cat("ERROR - Too many unique metadata items\n")
-	q()
-}
+# if(md1_unique_count + md2_unique_count > 60){
+# 	cat("ERROR - Too many unique metadata items\n")
+# 	q()
+# }
 
 #theme_set(theme_bw())
 # pal = "Set1"
