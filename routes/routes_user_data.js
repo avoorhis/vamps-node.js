@@ -2097,7 +2097,8 @@ function CreateCmdList(req, options, data_repository)
   if (req.body.type == 'multi_fasta') {
       var new_fasta_file_name = infile_fa;
       // var demultiplex_cmd = options.scriptPath + '/vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
-      var demultiplex_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_demultiplex.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository + ' ' + new_fasta_file_name;
+      //var demultiplex_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_demultiplex.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository + ' ' + new_fasta_file_name;
+      var demultiplex_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/demultiplex_qiita.py') + ' -i ' + data_repository + '/' + new_fasta_file_name;
       console.log("req.CONFIG.PATH HHH = " + req.CONFIG.PATH);
       cmd_list.push(demultiplex_cmd);
   }
