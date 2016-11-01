@@ -2087,7 +2087,7 @@ function CreateUploadOptions(req, res, project)
 
 function CreateCmdList(req, options, data_repository)
 {
-  console.log(options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' '));
+  //console.log(options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' '));
   var load_cmd = options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' ');
   // console.log("LLL load_cmd: " + load_cmd);
   // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts//vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/b3a0c4ca3964f701e8ea6ef5d5fe2c56 -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/a9825a22a87f9b6600e7bf44dd13be48 -upload_type single -d test_gast_dataset -q
@@ -2105,15 +2105,16 @@ function CreateCmdList(req, options, data_repository)
 
   // todo: provied ".fa" fo single and ".fna" for multi
   // var fnaunique_cmd = options.scriptPath + '/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
-  var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository;
-  
-  console.log("LLL1 options.scriptPath: " + options.scriptPath);
-  console.log("LLL2 fnaunique_cmd: " + fnaunique_cmd);
+  //var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository;
+  //var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository;
+  var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh_old') + ' ' + data_repository;
+  //console.log("LLL1 options.scriptPath: " + options.scriptPath);
+  //console.log("LLL2 fnaunique_cmd: " + fnaunique_cmd);
   
   cmd_list.push(fnaunique_cmd);
 
-  console.log("CCC1 cmd_list: ");
-  console.log(util.inspect(cmd_list, false, null));
+  //console.log("CCC1 cmd_list: ");
+  //console.log(util.inspect(cmd_list, false, null));
   return cmd_list;
 
   //TODO:
