@@ -2,9 +2,7 @@
 <% info = JSON.parse(pinfo) %>
 
 
-<div class='pull-right'>
-    <a href="/user_data/add_project" class='btn btn-sm btn-primary'>Add New Project</a>
-</div>
+
 <p class="title">Import Data</p>
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
@@ -26,7 +24,6 @@
   var form_data = {}
 }%>
 
-
 <!-- =================== TAX - BY - SEQ ===================================================================================== -->   
   <form class="form-horizontal" role="form" method="POST" action="upload_data_tax_by_seq" enctype="multipart/form-data">
     <h4>Import TaxBySeq File Form: <small>(All fields are required unless indicated)</small></h4>
@@ -42,7 +39,7 @@
                     <option value='<%= info[pid].project %>' ><%= info[pid].project %></option>
         <%      } %>
           <% } %>
-        </select>
+        </select>&nbsp;&nbsp;&nbsp;&nbsp;<small>(Or  <a href="/user_data/add_project" class=''>Add New Project</a>)</small>
     </div>
     
     <div class="form-group">  

@@ -53,7 +53,7 @@ new_project_name: 'new Name',
         <label for='name'>Project Name (max length 20 chars):</label>
       </td>
       <td>
-        <input type='text' name='new_project_name' maxlength='50' size='50' value='<%= add_project_info.new_project_name%>'>
+        <input type='text' name='new_project_name'  maxlength='50' size='50' value='<%= add_project_info.new_project_name%>'>
       </td>
     </tr>
     <tr>
@@ -113,22 +113,23 @@ new_project_name: 'new Name',
 
       -->
       <!-- center -->
+      
       <tr><th colspan='2' class='hr_cell'>Owner (if different from the current user)</th></tr>
       <tr>
         <td><label for='first_name'>First Name:</label></td>
-        <td><input type='text' name='first_name' maxlength='100' size='50' value='<%= owner_hash.first_name %>'></td>
+        <td><input type='text' readonly name='first_name' maxlength='100' size='50' value='<%= owner_hash.first_name %>'></td>
       </tr>
       <tr>
         <td><label for='last_name'>Last Name:</label></td>
-        <td><input type='text' name='last_name' maxlength='100' size='50' value='<%= owner_hash.last_name %>'></td>
+        <td><input type='text' readonly name='last_name' maxlength='100' size='50' value='<%= owner_hash.last_name %>'></td>
       </tr>
       <tr>
         <td><label for='email'>Email:</label></td>
-        <td><input type='text' name='email' maxlength='100' size='50' value='<%= owner_hash.email %>'></td>
+        <td><input type='text' readonly name='email' maxlength='100' size='50' value='<%= owner_hash.email %>'></td>
       </tr>
       <tr>
-        <td><label for='institution'>Institution:</label></td><td> <!-- select institution -->
-        <input type='text' name='new_institution' maxlength='100' size='50' value='<%= owner_hash.institution %>'></td>
+        <td><label for='institution'>Institution:</label></td><td>
+        <input type='text' readonly name='new_institution' maxlength='100' size='50' value='<%= owner_hash.institution %>'></td>
       </tr>
     </fieldset>
 

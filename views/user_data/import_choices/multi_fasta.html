@@ -1,8 +1,6 @@
 <% include ../../add_ins/begin.ejs %>
 <% info = JSON.parse(pinfo) %>
-<div class='pull-right'>
-    <a href="/user_data/add_project" class='btn btn-sm btn-primary'>Add New Project</a>
-</div>
+
 <p class="title">Import Data</p>
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
@@ -51,7 +49,7 @@
                     <option value='<%= info[pid].project %>' ><%= info[pid].project %></option>
         <%      } %>
           <% } %>
-      </select>
+      </select>&nbsp;&nbsp;&nbsp;&nbsp;<small>(Or  <a href="/user_data/add_project" class=''>Add New Project</a>)</small>
     </div>
 	<div class="form-group">
       <label class="control-label col-sm-3" for="fasta">Fasta File <small>(required)</small>:</label>
