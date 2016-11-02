@@ -44,7 +44,7 @@ BIOM_MATRIX = {};
  * GET visualization page from uploaded IMAGE or CONFIGURATION FILE
  */
 router.get('/view_selection/:filename/:from_configuration_file', helpers.isLoggedIn, function(req, res) {
-    console.log('req.body: view_selectionGET::prefix-->>');
+    console.log(req.user.username+' req.body: view_selectionGET::prefix-->>');
     if(req.CONFIG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
     }else{
@@ -159,7 +159,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   }else if(req.body.unit_choice == 'tax_silva119_simple'){
     delete req.body['rdp2.6_domains']
   }
-  console.log('req.body: view_selection body-->>');
+  console.log(req.user.username+' req.body: view_selection body-->>');
   if(req.CONFIG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
@@ -348,7 +348,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   //    The 'Normailzation' section should list the items from public/constants.js with the NotNormalized option
   //        checked by default.
   
-  console.log('req.body: unit_selection-->>');
+  console.log(req.user.username+' req.body: unit_selection-->>');
   if(req.CONFIG.site == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
   }else{
@@ -487,7 +487,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
     //      Clicking the submit button when no datasets have been selected should result in an alert box and a
     //      return to the page.
     //console.log(PROJECT_INFORMATION_BY_PID);
-    console.log('req.body index')
+    console.log(req.user.username+' in GET req.body visuals_index')
     //console.log(req.body)
 
     //console.log(ALL_DATASETS);
@@ -541,7 +541,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
   //console.log(PROJECT_INFORMATION_BY_PID);
-  console.log('req.body index')
+  console.log(req.user.username+' POST req.body visuals_index')
   //console.log(req.body)
 
   //console.log(ALL_DATASETS);
@@ -2482,7 +2482,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
       // //data = data.toString().replace(/^\s+|\s+$/g, '');
       // data = data.toString();
 
-       output = data.toString();
+       output += data.toString();
     });
        
     cluster_process.on('close', function clusterProcessOnClose(code) {
