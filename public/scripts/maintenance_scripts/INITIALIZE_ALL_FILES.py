@@ -62,14 +62,18 @@ strain_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_i
 strain_query += "%s GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
 
 # these SHOULD be the same headers as in the NODE_DATABASE table: required_metadata_info (order doesn't matter)
-required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id", "description", "common_name", "fragment_name", "dna_region", "sequencing_platform", "domain"];
+required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "latitude", "longitude", "public", "taxon_id", "description", "common_name", "fragment_name", "dna_region", "sequencing_platform", "domain"];
 dataset_query = "SELECT dataset_id from dataset"
-req_pquery = "SELECT dataset_id, " + ','.join(required_metadata_fields) + """ from required_metadata_info
+req_pquery = "SELECT dataset_id, " + ', '.join(required_metadata_fields) + """ 
+, env_biome.term_name AS env_biome, env_feature.term_name AS env_feature, env_matter.term_name AS env_matter
+from required_metadata_info
                 JOIN fragment_name USING(fragment_name_id)
                 JOIN dna_region USING(dna_region_id)
                 JOIN sequencing_platform USING(sequencing_platform_id)
                 JOIN domain USING(domain_id)
-                JOIN env_biome USING(env_biome_id)
+                JOIN term AS env_biome ON(env_biome_id = env_biome.term_id)
+                JOIN term AS env_feature ON(env_feature_id = env_feature.term_id)
+                JOIN term AS env_matter ON(env_matter_id = env_matter.term_id)
 """
 cust_pquery = "SELECT project_id,field_name from custom_metadata_fields"
 
