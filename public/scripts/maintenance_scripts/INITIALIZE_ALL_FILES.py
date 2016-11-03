@@ -74,6 +74,8 @@ from required_metadata_info
                 JOIN term AS env_biome ON(env_biome_id = env_biome.term_id)
                 JOIN term AS env_feature ON(env_feature_id = env_feature.term_id)
                 JOIN term AS env_matter ON(env_matter_id = env_matter.term_id)
+                JOIN country USING(country_id)
+                
 """
 cust_pquery = "SELECT project_id,field_name from custom_metadata_fields"
 
@@ -505,6 +507,4 @@ if __name__ == '__main__':
     else:
         print "This may take awhile...." 
         go(args)
-
-
 
