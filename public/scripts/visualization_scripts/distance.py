@@ -511,8 +511,8 @@ if __name__ == '__main__':
         #did_list = cluster_datasets(args, dm3, did_hash)
         new_ds_list = cluster_datasets(args, dm3)
         # IMPORTANT print the dataset list
-
         print 'DS_LIST=',json.dumps(new_ds_list)
+        
     if args.function == 'fheatmap':
         # IMPORTANT print for freq heatmap
         print dist.tolist()
