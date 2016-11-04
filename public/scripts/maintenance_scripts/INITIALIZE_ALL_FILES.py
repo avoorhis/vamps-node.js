@@ -188,8 +188,9 @@ def go(args):
             shutil.move(args.taxcounts_file, os.path.join(args.json_file_path, NODE_DATABASE+'--taxcounts_silva119'+today+'.json'))
         shutil.move(args.metadata_file,  os.path.join(args.json_file_path, NODE_DATABASE+'--metadata'+ today+'.json'))
         logging.debug('Backed up old taxcounts and metadata files')
-    except:
+    except IOError:
         print "Could not back up one of files directory, taxcounts or metadata files: "
+    except:        
         raise
         # sys.exit()
     os.mkdir(args.files_prefix)
