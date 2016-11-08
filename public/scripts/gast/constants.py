@@ -25,7 +25,7 @@ csv_header_list = {
                             "primer_suite",   "pool",                            
                             
                             "first_name",       "last_name",    "email",        "institution",  "project_title",    "project_description",  
-                            "funding",          "env_sample_source_id","dataset_description" ],
+                            "funding",          "env_sample_source_id", "dataset_description" ],
 
 'ion_torrent' : [ "run",          "data_owner",       "run_key",      "lane",         "project",  "dataset",
                             "tubelabel",    "barcode",          "adaptor",      "dna_region",   "amp_operator",     "seq_operator",
