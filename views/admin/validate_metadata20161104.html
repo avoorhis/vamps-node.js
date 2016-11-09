@@ -1,0 +1,69 @@
+<% include ../add_ins/begin.ejs %>
+
+<% pinfo = JSON.parse(project_info) %>
+
+
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+	
+	
+	
+	<div class="hero-unit center">
+	    <h2>Website Administration</h2>
+			<h3>Validate (update) Project Required Metadata</h3>
+		             
+	</div>
+
+	<br>
+	Here you should be able to download a csv file of project metadata.
+	Edit it on your computer then re-upload
+	
+	
+<form  name="projectForm">
+	<center>
+				Select Project:<br>
+					<select name='pid' id='select_project_for_metadata' >
+						<option value='0'>.....</option>
+						<% for(pname in pinfo) { %>						
+										<option  value='<%= pinfo[pname].pid %>'><%= pinfo[pname].project %></option>
+						<% } %>
+					</select>
+	</center>
+
+</form>
+
+<br><br>
+<div class="col-sm-4"> 
+</div>
+<div class="col-sm-3"> 
+	<form method='POST' action='show_metadata'>
+		<input type='button' class='btn' value='Show Required Metadata' onclick="show_metadata(this.form)">
+	</form>
+</div>
+<div class="col-sm-3"> 
+	<!-- <form method='POST' action='download_selected_metadata'>
+		<input type='button' class='btn' value='Download All Metadata' onclick="download_metadata(this.form)">
+	</form> -->
+	<button class='btn' onclick="window.open('/user_data/download_selected_metadata?pid='+projectForm.pid[projectForm.pid.selectedIndex].value)">Download All Metadata</button>	
+
+</div>
+</form>
+<br><br><br><br>
+<form method='POST' name='export_data_form' action='/user_data/export_confirm'>
+	<center>
+
+	  Upload Metadata csv File<br>(for validation and replacement of current metadata):    
+			<input type="file" name="upload_metadata_file" class="btn" id="meta" />
+			<input type="button" name="upload_metadata_file"  id="meta_go" value='Go' />
+	</center>
+</form>
+
+<center><div id='md_result_div' >Read-Only Required Metadata</div></center>
+
+	
+<% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/admin.js"></script>   
+ </body>
+ </html>

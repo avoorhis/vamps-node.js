@@ -1,0 +1,74 @@
+<% include ../add_ins/begin.ejs %>
+
+<% pinfo = JSON.parse(project_info) %>
+
+
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+	
+	
+	
+	<div class="hero-unit center">
+	    <h2>Website Administration</h2>
+			<h3>Validate (update) Project Required Metadata</h3>
+			<h4>NOT for custom metadata or adding new datasets</h4>
+		             
+	</div>
+
+	<br><br><br><br>
+	
+<form method='POST' id='upload_metadata_form' name='upload_metadata_form' enctype="multipart/form-data" action='upload_metadata'>	
+<div class="col-lg-3"> 
+
+	
+				Select a Project:
+					<select name='pid'  id='select_project_for_metadata' >
+						<option value='0'>.....</option>
+						<% for(pname in pinfo) { %>						
+										<option  name='project_option' value='<%= pinfo[pname].pid %>'><%= pinfo[pname].project %></option>
+						<% } %>
+					</select>
+	
+
+</div>
+
+
+
+<div class="col-sm-3"> 
+	
+		<input type='button' class='btn' value='Show Current Required Metadata' onclick="show_metadata()">
+	
+</div>
+
+
+<div class="col-sm-3" > 
+	
+		<input type='button' class='btn' value='Download Project Metadata' onclick="download_metadata()">
+	<!-- 
+	<button class='btn' onclick="window.open('/user_data/download_selected_metadata?pid='+projectForm.pid[projectForm.pid.selectedIndex].value)">Download All Metadata</button>	
+ -->
+</div>
+
+
+
+<div class="col-sm-3"> 
+	
+		  Upload Metadata csv File<br>(for validation and replacement of current metadata)  
+				<input type="file" name="upload_metadata_file" class="btn" id="meta" />
+				<input type="submit" name="upload_metadata_file"  id="meta_go" value='Go'  />
+				<input type="hidden" name="hidden"  id="" value='secret'  />
+				<span  id = "status"></span>
+	
+</div>
+</form>
+<center><div id='md_result_div' ></div></center>
+
+	
+<% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/admin.js"></script>  
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
+
+ </body>
+ </html>

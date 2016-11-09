@@ -23,8 +23,29 @@ if (use_original_names !== null) {
 
 
 
-function create_viz(visual, ts) {
+// function import_submit(page) {
+//   var form = document.getElementById('import_form_id');
+//   fileNames = document.getElementsByName('upload_files');
+//   var metafile = fileNames[1];
+//   //alert(metafile[0].type)
+//   for(n in metafile){
+//     alert(n +' '+metafile[n])
+//   }
+//   args = 'id=3'
+//   var xmlhttp = new XMLHttpRequest();  
+//   xmlhttp.open("POST", '../validate_metadata2', true);
+//   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+//   xmlhttp.setRequestHeader("data-type","html");
+//   showDots='';
+  
+//   xmlhttp.onreadystatechange = function() {        
+//     if (xmlhttp.readyState == 4 ) {
+        
+//         var response = xmlhttp.responseText;            
+        
+//     }
+//   };
+//   xmlhttp.send(args);
    
-   
-}
+// }
 

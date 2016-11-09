@@ -3,6 +3,9 @@ var router = express.Router();
 var passport = require('passport');
 var helpers = require('./helpers/helpers');
 var queries = require('./queries');
+var config  = require(app_root + '/config/config');
+var fs      = require('fs-extra');
+
 
 router.get('/admin_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
 
@@ -634,4 +637,217 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], funct
     finish();
 });
 
+router.get('/validate_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+  console.log('in GET validate_metadata');
+  res.render('admin/validate_metadata', {
+              title     :'VAMPS Validate Metadata',
+              message   : req.flash('message'),
+              user: req.user,
+              project_info: JSON.stringify(PROJECT_INFORMATION_BY_PNAME),
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+  });
+});
+//
+//
+//
+router.post('/show_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+  console.log('In POST validate_metadata');
+  console.log(req.body)
+  pid = req.body.pid
+  console.log(pid)
+  console.log(PROJECT_INFORMATION_BY_PID[pid].project)
+  html_json = {};
+  req_metadata = req.CONSTS.REQ_METADATA_FIELDS
+  html_json.required_metadata_fields = req_metadata
+  mdata = {}
+  dids = DATASET_IDS_BY_PID[pid]
+  for(n in dids){
+    mdata[dids[n]] = AllMetadata[dids[n]]
+  }
+  console.log(mdata)
+  for(did in mdata){ // each item is a dataset_id
+    dname = DATASET_NAME_BY_DID[did]
+    html_json[dname] = []
+    for(m in req_metadata){
+      req_name = req_metadata[m]
+      if(mdata[did].hasOwnProperty(req_name)){
+        html_json[dname].push(mdata[did][req_name])
+      }else{
+        html_json[dname].push('')
+      }
+    }
+  }
+  console.log(html_json)
+  console.log(req_metadata)
+  res.json(html_json);
+});
+//
+//
+//
+var multer    = require('multer');
+var storage =   multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, './tmp');
+  },
+  filename: function (req, file, callback) {
+    callback(null, file.fieldname + '-' + Date.now());
+  }
+});
+var upload = multer({ storage : storage}).single('upload_metadata_file');
+//
+//
+//
+router.post('/test_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+  console.log('in test_metadata')
+  console.log(req.body)
+  var selected_pid = req.body.pid
+  var dataset_ids = DATASET_IDS_BY_PID[selected_pid]
+  for(name in req.body){
+    items = name.split('--')
+    dset = items[0]
+    mdname = items[1]
+    console.log(dset)
+  }
+  // To update metadata:
+  // update md into database
+  // update files
+  // update AllMetadata
+
+});
+router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+  var parse = require('csv-parse');
+  console.log('In POST admin upload_metadata');
+  upload(req,res,function(err) {
+        if(err) {  return res.end("Error uploading file.");  }
+        req_metadata = req.CONSTS.REQ_METADATA_FIELDS
+        var html_json = {};
+        if(! req.hasOwnProperty('file')){
+          res.end("Error uploading file: project selected? file to upload selected?")
+          return
+        }
+        console.log(req.body)
+        var selected_pid = req.body.pid
+        console.log(PROJECT_INFORMATION_BY_PID[selected_pid])
+        var dataset_ids = DATASET_IDS_BY_PID[selected_pid]
+        var project_name = PROJECT_INFORMATION_BY_PID[selected_pid].project
+        var metadata_file = req.file.path
+        console.log('metadata_file')
+        console.log(metadata_file)
+         var parser = parse({delimiter: '\t'}, function createParserPipe(err, mdata) {
+              if(err) {  return res.end("Error uploading file.");  }
+              
+              html_json.error = false
+              html_json.empty_values = false
+              console.log("mdata: ");
+              console.log(mdata);
+              
+
+              console.log('req_metadata')
+              console.log(req_metadata)
+              var dataset_field_names = ['sample_name','#SampleID','dataset','Dataset']
+              var title_row = mdata[0]
+              idx = dataset_field_names.indexOf(title_row[0])
+              if(idx != -1){
+                dataset_field = title_row[0]
+                console.log('found dataset_field '+dataset_field)
+              }else{
+                console.log('we have no dataset_field')
+                html_json.error = true
+                html_json.msg = "Did not find a dataset field in the csv file: (['sample_name','#SampleID','dataset','Dataset'])"
+              }
+              
+              html_json['required_metadata'] = req_metadata
+              html_json.data = {}
+              for(n=1;n<mdata.length;n++){ // each item is a dataset
+                dset = mdata[n][0]
+                for(i in dataset_ids){
+                  if(dset == DATASET_NAME_BY_DID[dataset_ids[i]]){
+                    html_json.data[dset] = []
+                    for(m in req_metadata){
+                      req_name = req_metadata[m]
+                      idx = title_row.indexOf(req_name)
+                      if(idx == -1){
+                        html_json.data[dset].push('')
+                        html_json.empty_values = true
+                        //html_json.error = true
+                      }else{
+                        html_json.data[dset].push(mdata[n][idx])
+                      }
+                      
+                    }
+                  }
+                }
+              }
+              if(Object.keys(html_json.data).length === 0 && html_json.data.constructor === Object){
+                html_json.error = true
+                html_json.msg = 'Dataset names in the file failed to match those in the database for this project: '+project_name
+              }
+              console.log('html_json')
+              console.log(html_json)
+              
+              if(html_json.error){
+                 console.log('ERROR MD UPLOAD')
+              }else{
+                  
+              }
+              res.json(html_json);
+              
+          });
+  
+  
+          try{
+            console.log('looking for meta');
+            stats = fs.lstatSync(metadata_file);
+            if (stats.isFile()) {
+              console.log('meta found');
+              fs.createReadStream(metadata_file).pipe(parser);
+              return html_json
+            }
+          }
+          catch(e) {
+            console.log('meta NOT found');
+            html_json.error = true
+            html_json.error_msg = 'Could not read csv file.'
+            return html_json
+            
+          }
+
+
+       
+
+        
+  });
+
+  // console.log(req.files)
+  // pid = req.body.pid
+  // console.log(pid)
+  // console.log(PROJECT_INFORMATION_BY_PID[pid].project)
+  // html_json = {};
+  // req_metadata = req.CONSTS.REQ_METADATA_FIELDS
+  // html_json.required_metadata_fields = req_metadata
+  // mdata = {}
+  // dids = DATASET_IDS_BY_PID[pid]
+  // for(n in dids){
+  //   mdata[dids[n]] = AllMetadata[dids[n]]
+  // }
+  // console.log(mdata)
+  // for(did in mdata){ // each item is a dataset_id
+  //   dname = DATASET_NAME_BY_DID[did]
+  //   html_json[dname] = []
+  //   for(m in req_metadata){
+  //     req_name = req_metadata[m]
+  //     if(mdata[did].hasOwnProperty(req_name)){
+  //       html_json[dname].push(mdata[did][req_name])
+  //     }else{
+  //       html_json[dname].push('')
+  //     }
+  //   }
+  // }
+  // console.log(html_json)
+  // console.log(req_metadata)
+  // res.json(html_json);
+});
+//
+//
+//
 module.exports = router;

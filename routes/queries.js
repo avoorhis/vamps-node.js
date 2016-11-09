@@ -13,26 +13,27 @@ get_project_permissions: function(){
 },
 get_select_datasets_query: function(){
 		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description,";
-    qSelectDatasets += " username, email, institution, first_name, last_name, env_source_name, env_sample_source_id, owner_user_id, public";
+    qSelectDatasets += " username, email, institution, first_name, last_name, env_package, env_sample_source_id, owner_user_id, public";
 		qSelectDatasets += " FROM dataset";
 		qSelectDatasets += " JOIN project USING(project_id)";
 		qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
-		qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
+		qSelectDatasets += " JOIN env_package USING(env_package_id)";
 		qSelectDatasets += " ORDER BY project, dataset";
+    console.log(qSelectDatasets);
 		return qSelectDatasets;
 	
 },
 
 get_select_datasets_queryPID: function(pid){
 		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution,";
-    qSelectDatasets += " first_name, last_name, env_source_name, env_sample_source_id, owner_user_id,public";
+    qSelectDatasets += " first_name, last_name, env_package, env_sample_source_id, owner_user_id,public";
 		qSelectDatasets += " FROM dataset";
 		qSelectDatasets += " JOIN project USING(project_id)";
 		qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
-		qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
+		qSelectDatasets += " JOIN env_package USING(env_package_id)";
 		qSelectDatasets += " WHERE project_id = " + connection.escape(pid);
 		qSelectDatasets += " ORDER BY project, dataset";
-		//console.log(qSelectDatasets);
+		console.log(qSelectDatasets);
     return qSelectDatasets;	
 },
 
