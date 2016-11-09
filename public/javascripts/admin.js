@@ -52,7 +52,7 @@ $(document).ready(function(){
                   }else{
                     html += "<form id='' name='' method='POST' action='test_metadata'>"
                     html += "<input type='hidden' name='pid' value='"+selected_pid+"'>"
-                    html += "Validates <input type='submit' class='btn btn-xs btn-success' value='Apply'> "
+                    html += "Validated! <input type='submit' class='btn btn-xs btn-success' value='Apply'> "
 
                   }
                   html += "(Required Metadata from Upload - read-only)<br><table class='table table-striped'><tr><td>Dataset</td>"

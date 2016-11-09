@@ -1,8 +1,6 @@
 /*jslint node: true */
 // "use strict" ;
 
-// Andy, when http://localhost:3000/user_data/your_projects is updated? Shows old projects.
-
 var express   = require('express');
 var router    = express.Router();
 var passport  = require('passport');
@@ -47,7 +45,7 @@ var infile_fa = "infile.fna";
 //
 // YOUR DATA
 //
-router.get('/your_data', helpers.isLoggedIn, function (req, res) {
+router.get('/your_data', helpers.isLoggedIn, function get_your_data(req, res) {
   console.log('in your data, req.user = ');
   console.log(req.user);
   // Should create empty directory for any user projects
@@ -80,7 +78,7 @@ router.get('/your_data', helpers.isLoggedIn, function (req, res) {
 // FILE RETRIEVAL
 //
 /* GET Export Data page. */
-router.get('/file_retrieval', helpers.isLoggedIn, function (req, res) {
+router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(req, res) {
 
     var export_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     var file_formats = req.CONSTS.download_file_formats;
@@ -1172,12 +1170,16 @@ function gastTax(req, project_config, options, classifier_id)
   //make_gast_script_txt = helpers.get_qsub_script_text_only(scriptlog, data_dir, req.CONFIG.site, 'gastTax', cmd_list)
   //is_local = helpers.isLocal(req);
   // for tests: is_local = false;
-  var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/3-vamps_nodejs_database_loader.py'
+  var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py'
   database_loader += " -site " + req.CONFIG.site
-  database_loader += " -ds ds1" 
-  database_loader += " -indir "+data_dir
- 
-   
+  database_loader += " -class GAST" 
+  database_loader += " -project_dir "+data_dir
+  //database_loader += " -ref_db_dir "+ref_db_name
+  metadata_file_exists = true  // testing
+  if(metadata_file_exists){
+  	metadata_loader   = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_upload_metadata.py'
+  }
+  create_json_files = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_create_json_dataset_files.py'
 
 
   status_params.statusOK      = 'OK-GAST';
@@ -1190,7 +1192,7 @@ function gastTax(req, project_config, options, classifier_id)
   // user_project_status_id  user_id  project_id  status  message  created_at  updated_at
   // 34  4  4  GAST-SUCCESS  GAST -Tax assignments  2016-09-02 12:26:21  2016-09-02 12:31:12
   cmd_list = [
-      make_gast_script_txt, database_loader
+      make_gast_script_txt, database_loader, metadata_loader, create_json_files
   ];
   
   console.log('GGG2: gastTax: cmd_list ');
@@ -2098,7 +2100,7 @@ function CreateCmdList(req, options, data_repository)
       var new_fasta_file_name = infile_fa;
       // var demultiplex_cmd = options.scriptPath + '/vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
       //var demultiplex_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_demultiplex.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository + ' ' + new_fasta_file_name;
-      var demultiplex_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/demultiplex_qiita.py') + ' -i ' + data_repository + '/' + new_fasta_file_name;
+      var demultiplex_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_demultiplex.sh') + ' ' + data_repository + ' ' + new_fasta_file_name;
       console.log("req.CONFIG.PATH HHH = " + req.CONFIG.PATH);
       cmd_list.push(demultiplex_cmd);
   }
@@ -2107,7 +2109,7 @@ function CreateCmdList(req, options, data_repository)
   // var fnaunique_cmd = options.scriptPath + '/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
   //var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository;
   //var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository;
-  var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh_old') + ' ' + data_repository;
+  var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + data_repository;
   //console.log("LLL1 options.scriptPath: " + options.scriptPath);
   //console.log("LLL2 fnaunique_cmd: " + fnaunique_cmd);
   
