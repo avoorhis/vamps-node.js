@@ -63,7 +63,7 @@ strain_query += "%s GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_i
 dataset_query = "SELECT dataset_id from dataset"
 
 # these SHOULD be the same headers as in the NODE_DATABASE table: required_metadata_info (order doesn't matter)
-required_metadata_fields = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country", "depth", "description", "dna_region", "domain", "elevation", "env_package", "fragment_name", "latitude", "longitude", "public", "sequencing_platform", "taxon_id"];
+required_metadata_fields = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country", "depth", "description", "dna_region", "domain", "elevation", "env_package", "fragment_name", "latitude", "longitude", "sequencing_platform", "taxon_id"];
 req_pquery = "SELECT dataset_id, " + ', '.join(required_metadata_fields) + """
 , env_biome.term_name AS env_biome, env_feature.term_name AS env_feature, env_matter.term_name AS env_matter
 from required_metadata_info
