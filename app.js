@@ -455,12 +455,12 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     //	console.log(JSON.stringify(new_taxonomy.taxa_tree_dict[n]))
     //}
     //console.log("\ntaxa_tree_dict_map_by_id = " + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id[2266]));
-//console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
-//console.log('taxa_tree_dict_map_by_db_id_n_rank["3_domain"] = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["3_domain"]));
+    //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
+    //console.log('taxa_tree_dict_map_by_db_id_n_rank["3_domain"] = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["3_domain"]));
 
 
     //console.log('1(silva)-taxa_tree_dict_map_by_db_id_n_rank["140108_domain"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["140108_domain"]));
-    console.log('1(silva)-taxa_tree_dict_map_by_db_id_n_rank["2357955_family"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["2357955_family"]));
+    //console.log('1(silva)-taxa_tree_dict_map_by_db_id_n_rank["2357955_family"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["2357955_family"]));
 
     //console.log('taxa_tree_dict_map_by_rank["phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank['phylum']));
     //console.log('taxa_tree_dict_map_by_name_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank));
@@ -469,7 +469,10 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     //console.log('taxa_tree_dict_map_by_db_id_n_rank["3927_domain"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["3927_domain"]));
 
     //console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
-    
+    //console.log(PROJECT_INFORMATION_BY_PID)
+    // env_package: 'human associated',
+    //console.log(MD_FRAGMENT_NAME)
+    //console.log(MD_SEQUENCING_PLATFORM)
   }
 });
 
@@ -481,8 +484,8 @@ all_rdp_taxonomy.get_all_taxa(function(err, results) {
     new_rdp_taxonomy = new CustomTaxa(results);
     try{
         console.log('SIZE (rdp-taxonomy object):',sizeof(new_rdp_taxonomy));
-    }catch(e){}
-    console.log('2(rdp)-taxa_tree_dict_map_by_db_id_n_rank["3446_domain"] = ' + JSON.stringify(new_rdp_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["140108_domain"]));
+    }catch(e){ console.log('Could not get sizeof(new_rdp_taxonomy) in app.js') }
+    //console.log('2(rdp)-taxa_tree_dict_map_by_db_id_n_rank["3446_domain"] = ' + JSON.stringify(new_rdp_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["140108_domain"]));
   }
 });
 

@@ -437,7 +437,13 @@ create_new_chosen_id_name_hash: function(dataset_list) {
 //
 //
 //
-
+// MD_ENV_TERM                 = {};
+//   MD_ENV_PACKAGE              = {};
+//   MD_DOMAIN                   = {};
+//   MD_DNA_REGION               = {};
+//   MD_FRAGMENT_NAME            = {};
+//   MD_SEQUENCING_PLATFORM      = {};
+//   MD_COUNTRY                  = {};
 get_metadata_selection: function(dataset_ids, metadata, type) {
     req_metadata = CONSTS.REQ_METADATA_FIELDS;
     //console.log('req_metadata '+req_metadata)
@@ -449,24 +455,48 @@ get_metadata_selection: function(dataset_ids, metadata, type) {
         for (var field in metadata[did]) {
           
           //console.log('field_name '+field)
-			if(type == 'custom'){
-	  		  if (req_metadata.indexOf(field) === -1 ) {
-	              //console.log('PUT IN CUSTOM '+field)
-	              fields_lookup[field] = 1;
-	          }
-			
-			}else{
-  	  		  if (req_metadata.indexOf(field) >= 0 ) {
-  	              //console.log('PUT IN CUSTOM '+field)
-  	              fields_lookup[field] = 1;
-  	          }
-			}
+          // keep *_id in metadata file(s) and show name on GUI
+          if(field == 'env_package_id'){
+            test = 'env_package'
+          }else if(field == 'dna_region_id'){
+            test = 'dna_region'
+          }else if(field == 'country_id'){
+            test = 'country'
+          }else if(field == 'domain_id'){
+            test = 'domain'
+          }else if(field == 'fragment_name_id'){
+            test = 'fragment_name'
+          }else if(field == 'sequencing_platform_id'){
+            test = 'sequencing_platform'
+          }else if(field == 'env_biome_id'){
+            test = 'env_biome'
+          }else if(field == 'env_matter_id'){
+            test = 'env_matter'
+          }else if(field == 'env_feature_id'){
+            test = 'env_feature'
+          }else{
+            test = field
+          }
+
+    			if(type == 'custom'){
+    	  		  if (req_metadata.indexOf(test) === -1 ) {
+    	              //console.log('PUT IN CUSTOM '+field)
+    	              fields_lookup[test] = 1;
+    	          }
+    			
+    			}else{  // REQUIRED
+
+      	  		  if (req_metadata.indexOf(test) >= 0 ) {
+      	              //console.log('PUT IN CUSTOM '+field)
+      	              fields_lookup[test] = 1;
+      	          }
+    			}
 		  
         }
       }
 
     }
-    return fields_lookup;
+    return Object.keys(fields_lookup).sort();
 },
 //
 //

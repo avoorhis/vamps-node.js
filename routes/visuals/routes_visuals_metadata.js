@@ -9,9 +9,9 @@ module.exports = {
 
 
 		write_metadata_file: function(chosen_id_name_hash, post_items) {
-			//console.log('in metadata')
+			console.log('in metadata')
 			var metadata_names = post_items.metadata;
-			
+			console.log(metadata_names)
 			var metadata = [];
 			var metadata2 = {};
 			var file_name = post_items.ts+'_metadata.txt';
@@ -32,16 +32,40 @@ module.exports = {
 				txt2 = pjds;
 				
 				for (var n in metadata_names) {				
-					var name = metadata_names[n];
+					var mdname = metadata_names[n];
+					if(mdname == 'env_package'){
+						value = MD_ENV_PACKAGE[METADATA[did]['env_package_id']]
+					}else if(mdname == 'env_biome'){
+						value = MD_ENV_TERM[METADATA[did]['env_biome_id']]
+					}else if(mdname == 'env_feature'){
+						value = MD_ENV_TERM[METADATA[did]['env_feature_id']]
+					}else if(mdname == 'env_matter'){
+						value = MD_ENV_TERM[METADATA[did]['env_matter_id']]
+					}else if(mdname == 'country'){
+						value = MD_COUNTRY[METADATA[did]['country_id']]
+					}else if(mdname == 'country'){
+						value = MD_SEQUENCING_PLATFORM[METADATA[did]['sequencing_platform_id']]
+					}else if(mdname == 'dna_region'){
+						value = MD_DNA_REGION[METADATA[did]['dna_region_id']]
+					}else if(mdname == 'fragment_name'){
+						value = MD_FRAGMENT_NAME[METADATA[did]['fragmant_name_id']]
+					}else if(mdname == 'domain'){
+						value = MD_DOMAIN[METADATA[did]['domain_id']]
+					}else{
+						value = METADATA[did][mdname];
+					}
+					//console.log('VALUE: '+value)
+
+			
 
 					if(did in METADATA) {
-						ds_row[name] = METADATA[did][name];
-						metadata2[pjds][name] = METADATA[did][name];
+						ds_row[mdname] = value
+						metadata2[pjds][mdname] = value
 						
-						if(metadata2[pjds][name] == '' || metadata2[pjds][name] == undefined){
+						if(value == '' || value == undefined){
 							txt2 += "\tundefined";
 						}else{
-							txt2 += "\t" + metadata2[pjds][name];
+							txt2 += "\t" + value
 						}
 					}else{
 						txt2 += "\tno_value";
@@ -76,7 +100,7 @@ module.exports = {
 			var metadata2 = {};
 			var file_name = post_items.ts+'_metadata.txt';
 			var metadata_filename = path.join(__dirname, '../../tmp/'+file_name);
-			var txt = "#SampleID\tBarcodeSequence\tLinkerPrimerSequence";
+			var txt = "#SampleID";
 			for (var n in metadata_names) {				
 					var name = metadata_names[n];
 					txt += 		"\t" + name;	
@@ -89,18 +113,47 @@ module.exports = {
 				metadata2[pjds] = {};
 				var tmp = pjds.split('--');
 				var did = chosen_id_name_hash.ids[i];
-				txt2 = pjds + "\t\t";
+				txt2 = pjds;
 				
 				for (var n in metadata_names) {				
-					var name = metadata_names[n];
-                    
+					var mdname = metadata_names[n];
+          if(mdname == 'env_package'){
+						value = MD_ENV_PACKAGE[METADATA[did]['env_package_id']]
+						console.log(mdname+' VALUE: '+JSON.stringify(METADATA[did]))
+						console.log(MD_ENV_PACKAGE)
+					}else if(mdname == 'env_biome'){
+						value = MD_ENV_TERM[METADATA[did]['env_biome_id']]
+					}else if(mdname == 'env_feature'){
+						value = MD_ENV_TERM[METADATA[did]['env_feature_id']]
+					}else if(mdname == 'env_matter'){
+						value = MD_ENV_TERM[METADATA[did]['env_matter_id']]
+					}else if(mdname == 'country'){
+						value = MD_COUNTRY[METADATA[did]['country_id']]
+					}else if(mdname == 'country'){
+						value = MD_SEQUENCING_PLATFORM[METADATA[did]['sequencing_platform_id']]
+					}else if(mdname == 'dna_region'){
+						value = MD_DNA_REGION[METADATA[did]['dna_region_id']]
+					}else if(mdname == 'fragment_name'){
+						value = MD_FRAGMENT_NAME[METADATA[did]['fragment_name_id']]
+					}else if(mdname == 'sequencing_platform'){
+						value = MD_SEQUENCING_PLATFORM[METADATA[did]['sequencing_platform_id']]
+					}else if(mdname == 'domain'){
+						value = MD_DOMAIN[METADATA[did]['domain_id']]
+					}else{
+						value = METADATA[did][mdname];
+					}
+					
+
+
+
+
 					if(did in METADATA) {
-						ds_row[name] = METADATA[did][name];
-						metadata2[pjds][name] = METADATA[did][name];
-						if(metadata2[pjds][name] == ''){
+						ds_row[mdname] = value;
+						metadata2[pjds][mdname] = value;
+						if(metadata2[pjds][mdname] == ''){
 							txt2 += "\tundefined";
 						}else{
-							txt2 += "\t" + metadata2[pjds][name];
+							txt2 += "\t" + value;
 						}
 					}else{
 						txt2 += "\tno_value";

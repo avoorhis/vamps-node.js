@@ -429,7 +429,8 @@ function filter_by_metadata() {
   xmlhttp.send();
 }
 function update_gui_elements(result){
-
+  //alert(JSON.stringify(result))
+  //alert(JSON.stringify(env_sources_local))
     if(result.substring == '' || result.substring == '.....'){
       document.getElementById('pname_search_id').value = ''
       //document.getElementById('pname_search_id').style.color = 'black'
@@ -445,7 +446,8 @@ function update_gui_elements(result){
       //document.getElementById('env_source_select').style.color = 'black'
       document.getElementById('env_on_id').innerHTML = ''
     }else{
-      document.getElementById('env_source_select').value = result.env[0]
+      // env has a unique value structure
+      document.getElementById('env_source_select').value = result.env[0]+'--'+env_sources_local[result.env[0]]
       //document.getElementById('env_source_select').style.color = 'orange'
       document.getElementById('env_on_id').innerHTML = '*'
     }

@@ -72,7 +72,7 @@ get_projects_queryUID: function( uid ) {
     var q = "SELECT project, project_id from project where owner_user_id='"+uid+"'"
     return q;
 },
-get_select_sequences_query: function(){
+get_select_seq_count_query: function(){
 		
 		var qSequenceCounts = "SELECT project_id, dataset_id, classifier_id, SUM(seq_count) as seq_count"; 
 		qSequenceCounts += " FROM sequence_pdr_info";
@@ -81,7 +81,7 @@ get_select_sequences_query: function(){
 		return qSequenceCounts;
 	
 },	
-get_select_sequences_queryPID: function(pid){
+get_select_seq_count_queryPID: function(pid){
 		
 		var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_count"; 
 		qSequenceCounts += " FROM sequence_pdr_info";
@@ -371,4 +371,48 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
       return statQuery;
     }
   },
+
+  get_select_env_term_query: function() {      
+      var q = "SELECT term_id, term_name\n"
+      q += " FROM `term`\n"
+      //console.log(q)
+      return q;
+  },
+  get_select_env_package_query: function() {      
+      var q = "SELECT env_package_id, env_package\n"
+      q += " FROM `env_package`\n"
+      //console.log(q)
+      return q;
+  },
+  get_select_domain_query: function() {      
+      var q = "SELECT domain_id, domain\n"
+      q += " FROM `domain`\n"
+      //console.log(q)
+      return q;
+  },
+  get_select_dna_region_query: function() {      
+      var q = "SELECT dna_region_id, dna_region\n"
+      q += " FROM `dna_region`\n"
+      //console.log(q)
+      return q;
+  },
+  get_select_fragment_name_query: function() {      
+      var q = "SELECT fragment_name_id, fragment_name\n"
+      q += " FROM `fragment_name`\n"
+      //console.log(q)
+      return q;
+  },
+  get_select_sequencing_platform_query: function() {      
+      var q = "SELECT sequencing_platform_id, sequencing_platform\n"
+      q += " FROM `sequencing_platform`\n"
+      //console.log(q)
+      return q;
+  },
+  get_select_country_query: function() {      
+      var q = "SELECT country_id, country\n"
+      q += " FROM `country`\n"
+      //console.log(q)
+      return q;
+  },
+ 
 } // end of module.exports

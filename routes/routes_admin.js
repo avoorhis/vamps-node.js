@@ -658,6 +658,7 @@ router.post('/show_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(re
   console.log(PROJECT_INFORMATION_BY_PID[pid].project)
   html_json = {};
   req_metadata = req.CONSTS.REQ_METADATA_FIELDS
+
   html_json.required_metadata_fields = req_metadata
   mdata = {}
   dids = DATASET_IDS_BY_PID[pid]
@@ -670,11 +671,46 @@ router.post('/show_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(re
     html_json[dname] = []
     for(m in req_metadata){
       req_name = req_metadata[m]
-      if(mdata[did].hasOwnProperty(req_name)){
-        html_json[dname].push(mdata[did][req_name])
+      
+      if(req_name == 'env_package'){
+        test = 'env_package_id'
+        value = MD_ENV_PACKAGE[mdata[did][test]]
+      }else if(req_name == 'fragment_name'){
+        test = 'fragment_name_id'
+        value = MD_FRAGMENT_NAME[mdata[did][test]]
+      }else if(req_name == 'domain'){
+        test = 'domain_id'
+        value = MD_DOMAIN[mdata[did][test]]
+      }else if(req_name == 'country'){
+        test = 'country_id'
+        value = MD_COUNTRY[mdata[did][test]]
+      }else if(req_name == 'sequencing_platform'){
+        test = 'sequencing_platform_id'
+        value = MD_SEQUENCING_PLATFORM[mdata[did][test]]
+      }else if(req_name == 'dna_region'){
+        test = 'dna_region_id'
+        value = MD_DNA_REGION[mdata[did][test]]
+      }else if(req_name == 'env_matter'){
+        test = 'env_matter_id'
+        value = MD_ENV_TERM[mdata[did][test]]
+      }else if(req_name == 'env_biome'){
+        test = 'env_biome_id'
+        value = MD_ENV_TERM[mdata[did][test]]
+      }else if(req_name == 'env_feature'){
+        test = 'env_feature_id'
+        value = MD_ENV_TERM[mdata[did][test]]
+      }else{
+        test = req_name
+        value = mdata[did][test]
+      }
+      if(mdata[did].hasOwnProperty(test)){
+        html_json[dname].push(value)
+        console.log('found '+test)
       }else{
         html_json[dname].push('')
+        console.log('miss '+test)
       }
+    
     }
   }
   console.log(html_json)

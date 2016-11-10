@@ -1081,7 +1081,7 @@ function checkPid(check_pid_options, last_line)
       else
       {
 
-        connection.query(queries.get_select_sequences_queryPID(pid), function (err, rows2, fields) {
+        connection.query(queries.get_select_seq_count_queryPID(pid), function (err, rows2, fields) {
         if (err)
         {
           console.log('2-GAST/RDP-Query error: ' + err);
@@ -1812,7 +1812,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
                     if (err)  {
                       console.log('1-Upload METADATA-Query error: ' + err);                   
                     } else {
-                          connection.query(queries.get_select_sequences_queryPID(pid), function mysqlGetSeqsByPID(err, rows2, fields){
+                          connection.query(queries.get_select_seq_count_queryPID(pid), function mysqlGetSeqsByPID(err, rows2, fields){
                             if (err)  {
                               console.log('2-Upload METADATA-Query error: ' + err);                   
                             } else {
@@ -2885,7 +2885,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
                         if (err)  {
                            console.log('1-TAXBYSEQ-Query error: ' + err);
                         } else {
-                               connection.query(queries.get_select_sequences_queryPID(pid), function mysqlSelectSeqssByPID(err, rows2, fields) {
+                               connection.query(queries.get_select_seq_count_queryPID(pid), function mysqlSelectSeqssByPID(err, rows2, fields) {
                                  if (err)  {
                                    console.log('2-TAXBYSEQ-Query error: ' + err);
                                 } else {
@@ -3156,14 +3156,46 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
         }
 
         if(HDF5_MDATA === ''){
-            for (var k in AllMetadata[did]){
-              nm = k;
-              val = AllMetadata[did][k];
-              if(nm in myrows){
-                myrows[nm].push(val);
+            for (var mdname in AllMetadata[did]){
+              console.log(mdname)
+              if(mdname == 'env_package_id'){
+                  test = 'env_package'
+                  value = MD_ENV_PACKAGE[AllMetadata[did][mdname]]
+                }else if(mdname == 'fragment_name_id'){
+                  test = 'fragment_name'
+                  value = MD_FRAGMENT_NAME[AllMetadata[did][mdname]]
+                }else if(mdname == 'domain_id'){
+                  test = 'domain'
+                  value = MD_DOMAIN[AllMetadata[did][mdname]]
+                }else if(mdname == 'country_id'){
+                  test = 'country'
+                  value = MD_COUNTRY[AllMetadata[did][mdname]]
+                }else if(mdname == 'sequencing_platform_id'){
+                  test = 'sequencing_platform'
+                  value = MD_SEQUENCING_PLATFORM[AllMetadata[did][mdname]]
+                }else if(mdname == 'dna_region_id'){
+                  test = 'dna_region'
+                  value = MD_DNA_REGION[AllMetadata[did][mdname]]
+                }else if(mdname == 'env_matter_id'){
+                  test = 'env_matter'
+                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
+                }else if(mdname == 'env_biome_id'){
+                  test = 'env_biome'
+                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
+                }else if(mdname == 'env_feature_id'){
+                  test = 'env_feature'
+                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
+                }else{
+                  test = mdname
+                  value = AllMetadata[did][mdname]
+              }
+              
+
+              if(test in myrows){
+                myrows[test].push(value);
               }else{
-                myrows[nm] = [];
-                myrows[nm].push(val);
+                myrows[test] = [];
+                myrows[test].push(value);
               }
             }
         }else{
@@ -3284,15 +3316,49 @@ router.get('/download_selected_metadata', helpers.isLoggedIn, function download_
         // }
 
         //if(HDF5_MDATA === ''){
-            for (var nm in AllMetadata[did]){
+            for (var mdname in AllMetadata[did]){
               
-              name_collector[nm] = 1
-              val = AllMetadata[did][nm];
-              if(nm in myrows){
-                myrows[did][nm].push(val);
+              //console.log(mdname)
+              if(mdname == 'env_package_id'){
+                  test = 'env_package'
+                  value = MD_ENV_PACKAGE[AllMetadata[did][mdname]]
+                }else if(mdname == 'fragment_name_id'){
+                  test = 'fragment_name'
+                  value = MD_FRAGMENT_NAME[AllMetadata[did][mdname]]
+                }else if(mdname == 'domain_id'){
+                  test = 'domain'
+                  value = MD_DOMAIN[AllMetadata[did][mdname]]
+                }else if(mdname == 'country_id'){
+                  test = 'country'
+                  value = MD_COUNTRY[AllMetadata[did][mdname]]
+                }else if(mdname == 'sequencing_platform_id'){
+                  test = 'sequencing_platform'
+                  value = MD_SEQUENCING_PLATFORM[AllMetadata[did][mdname]]
+                }else if(mdname == 'dna_region_id'){
+                  test = 'dna_region'
+                  value = MD_DNA_REGION[AllMetadata[did][mdname]]
+                }else if(mdname == 'env_matter_id'){
+                  test = 'env_matter'
+                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
+                }else if(mdname == 'env_biome_id'){
+                  test = 'env_biome'
+                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
+                }else if(mdname == 'env_feature_id'){
+                  test = 'env_feature'
+                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
+                }else{
+                  test = mdname
+                  value = AllMetadata[did][mdname]
+              }
+
+
+              name_collector[test] = 1
+              //val = AllMetadata[did][mdname];
+              if(test in myrows){
+                myrows[did][test].push(value);
               }else{
-                myrows[did][nm] = [];
-                myrows[did][nm].push(val);
+                myrows[did][test] = [];
+                myrows[did][test].push(value);
               }
             }
         // }else{
