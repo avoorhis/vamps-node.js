@@ -447,7 +447,9 @@ if __name__ == '__main__':
                 required=False,  action='store_true', dest = "check_files",  default=False,
                 help="If set will look for continuity between database(dataset table) and JSON files")
 
-
+    if len(sys.argv[1:])==0:
+        print myusage
+        sys.exit() 
     args = parser.parse_args()
 
     print
@@ -533,6 +535,6 @@ if __name__ == '__main__':
     if args.check_files:
         check_files(args)
     else:
-        print "This may take awhile...."
+        print "This may take awhile.... Best to be running in a 'screen' session."
         go(args)
 

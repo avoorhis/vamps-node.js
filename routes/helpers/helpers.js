@@ -628,6 +628,11 @@ module.exports.run_select_datasets_query = function(rows){
           PROJECT_ID_BY_DID[did]=pid;
 //console.log('AllMetadata')
 //console.log(AllMetadata)
+          if(AllMetadata.hasOwnProperty(did) && AllMetadata[did].hasOwnProperty('env_package_id')){
+            var envpkgid = AllMetadata[did].env_package_id
+          }else{
+            var envpkgid = '1'
+          }
           PROJECT_INFORMATION_BY_PID[pid] = {
             "last" :            rows[i].last_name,
             "first" :            rows[i].first_name,
@@ -637,7 +642,8 @@ module.exports.run_select_datasets_query = function(rows){
             //"env_source_name" : rows[i].env_source_name,
             //"env_source_id" :   rows[i].env_sample_source_id,
             //"env_package"  :  AllMetadata[did].env_package,
-            "env_package_id" :   AllMetadata[did].env_package_id,
+            
+            "env_package_id" :   envpkgid,
             "institution" :     rows[i].institution,
             "project" :         project,
             "pid" :             pid,
