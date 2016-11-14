@@ -7,7 +7,7 @@ var ds = require('./load_all_datasets');
 
 var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   
-  GLOBAL.ALL_DATASETS = ALL_DATASETS;
+  //GLOBAL.ALL_DATASETS = ALL_DATASETS;  // GLOBAL keyword is deprecated and not needed here
   
 
   /* GET home page. */

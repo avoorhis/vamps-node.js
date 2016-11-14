@@ -1,7 +1,7 @@
 <% menu_section='VISUALS' %>
 <% include ../add_ins/begin.ejs %>
 <% var info = JSON.parse(proj_info) %>
-<% var env_sources = JSON.parse(constants).ENV_SOURCE %>
+<% var env_sources = JSON.parse(md_env_package) %>
 <% var targets = JSON.parse(constants).TARGETS %>
 <% var portals = JSON.parse(constants).PORTALS %>
 <% if(filtering == undefined){ %>
@@ -10,6 +10,7 @@
 <script>
   var datasets_local  = JSON.parse('<%- data_to_open %>');
   var portal_local  = "<%= portal_to_show %>";
+  var env_sources_local  = JSON.parse('<%- md_env_package %>');
 </script>
 
 <link rel="stylesheet" href="/stylesheets/dhtmlx/dhtmlxtree.css" >

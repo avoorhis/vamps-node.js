@@ -22,9 +22,17 @@ module.exports.get_datasets = function(callback){
   AllMetadataNames            = [];
   ALL_DATASETS.projects       = [];
   ALL_USERS_BY_UID            = {};
-  ALL_DCOUNTS_BY_DID = {};    // GLOBAL  
-  ALL_PCOUNTS_BY_PID = {};    // GLOBAL 
-  ALL_CLASSIFIERS_BY_PID = {}; 
+  ALL_DCOUNTS_BY_DID          = {};    // GLOBAL  
+  ALL_PCOUNTS_BY_PID          = {};    // GLOBAL 
+  ALL_CLASSIFIERS_BY_PID      = {}; 
+  // Metadata ids and values lookups
+  MD_ENV_TERM                 = {};
+  MD_ENV_PACKAGE              = {};
+  MD_DOMAIN                   = {};
+  MD_DNA_REGION               = {};
+  MD_FRAGMENT_NAME            = {};
+  MD_SEQUENCING_PLATFORM      = {};
+  MD_COUNTRY                  = {};
 
   connection.query(queries.get_select_datasets_query(), function(err, rows, fields){
       if (err)  {
@@ -86,8 +94,83 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING ALL_CLASSIFIERS_BY_CID');      
   });
 
+  connection.query(queries.get_select_env_term_query(), function(err, rows, fields){    
+      if (err)  {
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
+      } else {
+        helpers.get_select_env_term_query(rows);          
+      }
+      console.log(' INITIALIZING MD_ENV_TERM');
+  });
+  connection.query(queries.get_select_country_query(), function(err, rows, fields){    
+      if (err)  {
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
+      } else {
+        helpers.get_select_country_query(rows);          
+      }
+      console.log(' INITIALIZING MD_COUNTRY');
+  });
+
   
-  connection.query(queries.get_select_sequences_query(), function(err, rows, fields){    
+  connection.query(queries.get_select_env_package_query(), function(err, rows, fields){    
+      if (err)  {
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
+      } else {
+        helpers.get_select_env_package_query(rows);          
+      }
+      console.log(' INITIALIZING MD_ENV_PACKAGE');
+  });
+  connection.query(queries.get_select_domain_query(), function(err, rows, fields){    
+      if (err)  {
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
+      } else {
+        helpers.get_select_domain_query(rows);          
+      }
+      console.log(' INITIALIZING MD_DOMAIN');
+  });
+  connection.query(queries.get_select_dna_region_query(), function(err, rows, fields){    
+      if (err)  {
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
+      } else {
+        helpers.get_select_dna_region_query(rows);          
+      }
+      console.log(' INITIALIZING MD_DNA_REGION');
+  });
+  connection.query(queries.get_select_fragment_name_query(), function(err, rows, fields){    
+      if (err)  {
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
+      } else {
+        helpers.get_select_fragment_name_query(rows);          
+      }
+      console.log(' INITIALIZING MD_FRAGMENT_NAME');
+  });
+  connection.query(queries.get_select_sequencing_platform_query(), function(err, rows, fields){    
+      if (err)  {
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
+      } else {
+        helpers.get_select_sequencing_platform_query(rows);          
+      }
+      console.log(' INITIALIZING MD_SEQUENCING_PLATFORM');
+  });
+
+
+
+  // slow query
+  connection.query(queries.get_select_seq_count_query(), function(err, rows, fields){    
       
       //console.log(qSequenceCounts)
       if (err)  {
@@ -95,7 +178,7 @@ module.exports.get_datasets = function(callback){
         console.log(err.stack);
         process.exit(1);
       } else {
-        helpers.run_select_sequences_query(rows);		
+        helpers.get_select_seq_counts_query(rows);		
         
       }
       

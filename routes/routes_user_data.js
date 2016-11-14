@@ -1,8 +1,6 @@
 /*jslint node: true */
 // "use strict" ;
 
-// Andy, when http://localhost:3000/user_data/your_projects is updated? Shows old projects.
-
 var express   = require('express');
 var router    = express.Router();
 var passport  = require('passport');
@@ -47,7 +45,7 @@ var infile_fa = "infile.fna";
 //
 // YOUR DATA
 //
-router.get('/your_data', helpers.isLoggedIn, function (req, res) {
+router.get('/your_data', helpers.isLoggedIn, function get_your_data(req, res) {
   console.log('in your data, req.user = ');
   console.log(req.user);
   // Should create empty directory for any user projects
@@ -80,7 +78,7 @@ router.get('/your_data', helpers.isLoggedIn, function (req, res) {
 // FILE RETRIEVAL
 //
 /* GET Export Data page. */
-router.get('/file_retrieval', helpers.isLoggedIn, function (req, res) {
+router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(req, res) {
 
     var export_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     var file_formats = req.CONSTS.download_file_formats;
@@ -370,7 +368,7 @@ router.get('/import_choices/*_fasta', [helpers.isLoggedIn], function (req, res) 
 router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],
   form(
     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
-    form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").maxLength(64).entityEncode()
+    form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s (no spaces)").maxLength(64).entityEncode()
   ),
   function (req, res)
   {
@@ -545,7 +543,7 @@ router.get('/validate_format', helpers.isLoggedIn, function (req, res) {
     result:'',
     original_fname:'',
     user: req.user, hostname: req.CONFIG.hostname
-                        });
+  });
 });
 //
 //  VALIDATE FILE
@@ -1083,7 +1081,7 @@ function checkPid(check_pid_options, last_line)
       else
       {
 
-        connection.query(queries.get_select_sequences_queryPID(pid), function (err, rows2, fields) {
+        connection.query(queries.get_select_seq_count_queryPID(pid), function (err, rows2, fields) {
         if (err)
         {
           console.log('2-GAST/RDP-Query error: ' + err);
@@ -1172,12 +1170,16 @@ function gastTax(req, project_config, options, classifier_id)
   //make_gast_script_txt = helpers.get_qsub_script_text_only(scriptlog, data_dir, req.CONFIG.site, 'gastTax', cmd_list)
   //is_local = helpers.isLocal(req);
   // for tests: is_local = false;
-  var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/3-vamps_nodejs_database_loader.py'
+  var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py'
   database_loader += " -site " + req.CONFIG.site
-  database_loader += " -ds ds1" 
-  database_loader += " -indir "+data_dir
- 
-   
+  database_loader += " -class GAST" 
+  database_loader += " -project_dir "+data_dir
+  //database_loader += " -ref_db_dir "+ref_db_name
+  metadata_file_exists = true  // testing
+  if(metadata_file_exists){
+  	metadata_loader   = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_upload_metadata.py'
+  }
+  create_json_files = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_create_json_dataset_files.py'
 
 
   status_params.statusOK      = 'OK-GAST';
@@ -1190,7 +1192,7 @@ function gastTax(req, project_config, options, classifier_id)
   // user_project_status_id  user_id  project_id  status  message  created_at  updated_at
   // 34  4  4  GAST-SUCCESS  GAST -Tax assignments  2016-09-02 12:26:21  2016-09-02 12:31:12
   cmd_list = [
-      make_gast_script_txt, database_loader
+      make_gast_script_txt, database_loader, metadata_loader, create_json_files
   ];
   
   console.log('GGG2: gastTax: cmd_list ');
@@ -1810,7 +1812,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
                     if (err)  {
                       console.log('1-Upload METADATA-Query error: ' + err);                   
                     } else {
-                          connection.query(queries.get_select_sequences_queryPID(pid), function mysqlGetSeqsByPID(err, rows2, fields){
+                          connection.query(queries.get_select_seq_count_queryPID(pid), function mysqlGetSeqsByPID(err, rows2, fields){
                             if (err)  {
                               console.log('2-Upload METADATA-Query error: ' + err);                   
                             } else {
@@ -2098,7 +2100,7 @@ function CreateCmdList(req, options, data_repository)
       var new_fasta_file_name = infile_fa;
       // var demultiplex_cmd = options.scriptPath + '/vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
       //var demultiplex_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_demultiplex.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository + ' ' + new_fasta_file_name;
-      var demultiplex_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/demultiplex_qiita.py') + ' -i ' + data_repository + '/' + new_fasta_file_name;
+      var demultiplex_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_demultiplex.sh') + ' ' + data_repository + ' ' + new_fasta_file_name;
       console.log("req.CONFIG.PATH HHH = " + req.CONFIG.PATH);
       cmd_list.push(demultiplex_cmd);
   }
@@ -2107,7 +2109,7 @@ function CreateCmdList(req, options, data_repository)
   // var fnaunique_cmd = options.scriptPath + '/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
   //var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository;
   //var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository;
-  var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh_old') + ' ' + data_repository;
+  var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + data_repository;
   //console.log("LLL1 options.scriptPath: " + options.scriptPath);
   //console.log("LLL2 fnaunique_cmd: " + fnaunique_cmd);
   
@@ -2374,12 +2376,120 @@ function writeAndRunScript(req, res, project, options, data_repository)
     }         // end else
   });         //   END ensuredir  
 }
+//
+//
+//
+// router.post('/validate_metadata2', [helpers.isLoggedIn, upload.array('upload_files', 12)], helpers.isLoggedIn, function (req, res) {
+//     console.log('in validate_metadata2')
+//     console.log('1req.body upload_data_tax_by_seq');
+//     console.log(req.body);
+//     console.log("req.files from validate_metadata2");
+//     console.log(req.files);  // array
+  
+// });
+//
+function validate_metadata(req, res, options)
+{
+  console.log('in validate_metadata')
+  console.log(req.files)
+  console.log(options)
+  var metadata_file = req.files[1].path
+  console.log('metadata_file')
+  console.log(metadata_file)
+  var parse = require('csv-parse');
+  var url_parts = url.parse(req.url);
+  var import_type = url_parts.pathname.split("/").slice(-1)[0];
+  var project = req.body.project
+  
+  //var metadata_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, 'metadata_clean.csv');
+  mdata = []
+  html_json = {} 
+  html_json.error = false
+  
 
-function uploadData(req, res)
+
+
+  var parser = parse({delimiter: '\t'}, function createParserPipe(err, mdata) {
+      
+      html_json = {};
+      console.log("mdata: ");
+      console.log(mdata);
+      req_metadata = req.CONSTS.REQ_METADATA_FIELDS
+      console.log('req_metadata')
+      console.log(req_metadata)
+      dataset_field_names = ['sample_name','#SampleID','dataset','Dataset']
+      title_row = mdata[0]
+      idx = dataset_field_names.indexOf(title_row[0])
+      if(idx != -1){
+        dataset_field = title_row[0]
+        console.log('found dataset_field '+dataset_field)
+      }else{
+        console.log('we have no dataset_field')
+        html_json.error = true
+
+      }
+      
+      html_json['required_metadata'] = req_metadata
+      for(n=1;n<mdata.length;n++){ // each item is a dataset
+        dset = mdata[n][0]
+        html_json[dset] = []
+        for(m in req_metadata){
+          req_name = req_metadata[m]
+          idx = title_row.indexOf(req_name)
+          if(idx == -1){
+            html_json[dset].push('')
+            html_json.error = true
+          }else{
+            html_json[dset].push(mdata[n][idx])
+          }
+          
+        }
+
+      }
+      console.log('html_json')
+      console.log(html_json)
+      html_json.error = true
+      if(html_json.error){
+          res.render(path.join('user_data',url_parts.pathname), {
+                  title:       'Import DataX',
+                  user:        req.user,
+                  hostname:    req.CONFIG.hostname,
+                  pinfo:       JSON.stringify({}),
+                  project:      '',
+                  html_json:    JSON.stringify(html_json),
+                  message:     req.flash('message'),
+                  failmessage: req.flash('failMessage'),
+                  import_type: import_type,
+          });
+        }
+      
+  });
+  
+  
+  try{
+    console.log('looking for meta');
+    stats = fs.lstatSync(metadata_file);
+    if (stats.isFile()) {
+      console.log('meta found');
+      fs.createReadStream(metadata_file).pipe(parser);
+      return html_json
+    }
+  }
+  catch(e) {
+    console.log('meta NOT found');
+    html_json.error = true
+    html_json.error_msg = 'Could not read csv file.'
+    return html_json
+    
+  }
+
+}
+function uploadData(req, res)  // from line 406
 {
   console.log("QQQ2 in uploadData");
-
-  var project = helpers.clean_string(req.body.project);
+  var url_parts = url.parse(req.url);
+  var import_type = url_parts.pathname.split("/").slice(-1)[0];
+  var project = helpers.clean_string(req.body.project);  // should turn space into underscore
   console.log('P',project)
   // TODO: check if CreateUploadOptions does anything else and separate
   var created_options = CreateUploadOptions(req, res, project);
@@ -2406,6 +2516,10 @@ function uploadData(req, res)
 //        '-mdfile',
 //        '/Users/ashipunova/BPC/vamps-node.js/tmp/59b29388a55ab33935d054bd0b4e2613' ] }
 //
+  result = validate_metadata(req, res, options)
+  
+
+
 
   options = CheckFileTypeInfo(req, options);
     // TODO: test
@@ -2771,7 +2885,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
                         if (err)  {
                            console.log('1-TAXBYSEQ-Query error: ' + err);
                         } else {
-                               connection.query(queries.get_select_sequences_queryPID(pid), function mysqlSelectSeqssByPID(err, rows2, fields) {
+                               connection.query(queries.get_select_seq_count_queryPID(pid), function mysqlSelectSeqssByPID(err, rows2, fields) {
                                  if (err)  {
                                    console.log('2-TAXBYSEQ-Query error: ' + err);
                                 } else {
@@ -2988,7 +3102,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
 //
 router.post('/download_selected_metadata', helpers.isLoggedIn, function download_metadata(req, res) {
   var db = req.db;
-  console.log('meta req.body-->>');
+  console.log('meta POST req.body-->>');
   console.log(req.body);
   var timestamp = +new Date();  // millisecs since the epoch!
 
@@ -3003,10 +3117,16 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
   if (req.body.download_type == 'whole_project') {
     var pid  = req.body.pid;
     dids = DATASET_IDS_BY_PID[pid];
-    project = req.body.project;
-    file_name = 'metadata-'+timestamp+'_'+project+'.csv.gz';
-    out_file_path = path.join(user_dir, file_name);
-    header = 'Project: '+project+"\n\t";
+    if(req.body.hasOwnProperty('project')){
+      project = req.body.project;
+    }else{
+      project = PROJECT_INFORMATION_BY_PID[pid].project
+    }
+    
+    //file_name = 'metadata-'+timestamp+'_'+project+'.csv.gz';
+    file_name = 'metadata-'+timestamp+'_'+project+'.csv';
+    out_file_path = path.join('tmp', file_name);
+    header = "";
   } else {   // partial projects
     dids = chosen_id_name_hash.ids;
     file_name = 'metadata-'+timestamp+'.csv.gz';
@@ -3036,14 +3156,46 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
         }
 
         if(HDF5_MDATA === ''){
-            for (var k in AllMetadata[did]){
-              nm = k;
-              val = AllMetadata[did][k];
-              if(nm in myrows){
-                myrows[nm].push(val);
+            for (var mdname in AllMetadata[did]){
+              console.log(mdname)
+              if(mdname == 'env_package_id'){
+                  test = 'env_package'
+                  value = MD_ENV_PACKAGE[AllMetadata[did][mdname]]
+                }else if(mdname == 'fragment_name_id'){
+                  test = 'fragment_name'
+                  value = MD_FRAGMENT_NAME[AllMetadata[did][mdname]]
+                }else if(mdname == 'domain_id'){
+                  test = 'domain'
+                  value = MD_DOMAIN[AllMetadata[did][mdname]]
+                }else if(mdname == 'country_id'){
+                  test = 'country'
+                  value = MD_COUNTRY[AllMetadata[did][mdname]]
+                }else if(mdname == 'sequencing_platform_id'){
+                  test = 'sequencing_platform'
+                  value = MD_SEQUENCING_PLATFORM[AllMetadata[did][mdname]]
+                }else if(mdname == 'dna_region_id'){
+                  test = 'dna_region'
+                  value = MD_DNA_REGION[AllMetadata[did][mdname]]
+                }else if(mdname == 'env_matter_id'){
+                  test = 'env_matter'
+                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
+                }else if(mdname == 'env_biome_id'){
+                  test = 'env_biome'
+                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
+                }else if(mdname == 'env_feature_id'){
+                  test = 'env_feature'
+                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
+                }else{
+                  test = mdname
+                  value = AllMetadata[did][mdname]
+              }
+              
+
+              if(test in myrows){
+                myrows[test].push(value);
               }else{
-                myrows[nm] = [];
-                myrows[nm].push(val);
+                myrows[test] = [];
+                myrows[test].push(value);
               }
             }
         }else{
@@ -3073,9 +3225,9 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
       rs.push("NO METADATA FOUND\n");
     } else {
       for (var mdname in myrows) {
-        filetxt = mdname+"\t";  // restart sting
+        filetxt = mdname;  // restart sting
         for (i in myrows[mdname]) {
-          filetxt += myrows[mdname][i]+"\t";
+          filetxt += "\t"+myrows[mdname][i];
         }
         filetxt += "\n";
         rs.push(filetxt);
@@ -3083,7 +3235,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
     }
     rs.push(null);
     rs
-      .pipe(gzip)
+      //.pipe(gzip)
       .pipe(wstream)
       .on('finish', function readableStreamOnFinish() {  // finished
         console.log('done compressing and writing file');
@@ -3100,10 +3252,184 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
 
 
       });
-
-    res.send(file_name);
+      console.log(path.join(__dirname +'/../' + out_file_path))
+      //res.download(path.join(__dirname  +'/../' +  out_file_path))
+    
+      res.send(file_name);
 });
+//
+//
+//
+router.get('/download_selected_metadata', helpers.isLoggedIn, function download_metadata(req, res) {
+  
+  var db = req.db;
+  console.log('meta GET req.body-->>');
+  
+  var timestamp = +new Date();  // millisecs since the epoch!
 
+  var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+  helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
+  helpers.mkdirSync(user_dir);  // create dir if not exists
+  var dids;
+  var header, project;
+  var file_name;
+  var out_file_path;
+
+  
+    var pid  = req.query.pid
+    console.log('pid '+pid)
+    if(pid == undefined || pid == '' || pid == 0 || ! pid ){
+      res.send('Choose a project');
+      return;
+    }
+    dids = DATASET_IDS_BY_PID[pid];
+    
+    project = PROJECT_INFORMATION_BY_PID[pid].project
+    
+    
+    //file_name = 'metadata-'+timestamp+'_'+project+'.csv.gz';
+    file_name = req.user.username+'-metadata'+timestamp+'_'+project+'.csv';
+    out_file_path = path.join('tmp', file_name);
+    
+  
+    console.log('dids');
+    console.log(dids);
+
+
+    var gzip = zlib.createGzip();
+    var myrows = {}; // myrows[mdname] == [] list of values
+
+    var wstream = fs.createWriteStream(out_file_path);
+    var rs = new Readable();
+    var filetxt;
+    var name_collector = {}
+      for (var i in dids) {
+        did = dids[i];
+        myrows[did]={}
+        dname = DATASET_NAME_BY_DID[did];
+        // if (req.body.download_type == 'whole_project') {
+        //   header += dname+"\t";
+
+        // } else {
+        //   pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+        //   header += pname+'--'+dname+"\t";
+        // }
+
+        //if(HDF5_MDATA === ''){
+            for (var mdname in AllMetadata[did]){
+              
+              //console.log(mdname)
+              if(mdname == 'env_package_id'){
+                  test = 'env_package'
+                  value = MD_ENV_PACKAGE[AllMetadata[did][mdname]]
+                }else if(mdname == 'fragment_name_id'){
+                  test = 'fragment_name'
+                  value = MD_FRAGMENT_NAME[AllMetadata[did][mdname]]
+                }else if(mdname == 'domain_id'){
+                  test = 'domain'
+                  value = MD_DOMAIN[AllMetadata[did][mdname]]
+                }else if(mdname == 'country_id'){
+                  test = 'country'
+                  value = MD_COUNTRY[AllMetadata[did][mdname]]
+                }else if(mdname == 'sequencing_platform_id'){
+                  test = 'sequencing_platform'
+                  value = MD_SEQUENCING_PLATFORM[AllMetadata[did][mdname]]
+                }else if(mdname == 'dna_region_id'){
+                  test = 'dna_region'
+                  value = MD_DNA_REGION[AllMetadata[did][mdname]]
+                }else if(mdname == 'env_matter_id'){
+                  test = 'env_matter'
+                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
+                }else if(mdname == 'env_biome_id'){
+                  test = 'env_biome'
+                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
+                }else if(mdname == 'env_feature_id'){
+                  test = 'env_feature'
+                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
+                }else{
+                  test = mdname
+                  value = AllMetadata[did][mdname]
+              }
+
+
+              name_collector[test] = 1
+              //val = AllMetadata[did][mdname];
+              if(test in myrows){
+                myrows[did][test].push(value);
+              }else{
+                myrows[did][test] = [];
+                myrows[did][test].push(value);
+              }
+            }
+        // }else{
+        //     var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+        //     mdgroup.refresh();
+        //     Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
+        //         if(mdname != 'id'){
+        //             val = mdgroup[mdname];
+        //             if(mdname in myrows){
+        //                 myrows[mdname].push(val);
+        //               }else{
+        //                 myrows[mdname] = [];
+        //                 myrows[mdname].push(val);
+        //               }
+        //         }
+        //     });
+        // }
+
+
+
+      }
+
+    header = "Dataset";
+    for (var mdname in name_collector) {
+      header += "\t"+mdname;
+    }
+    header += "\n";
+    rs.push(header);
+    filetxt = ''
+    if (Object.keys(myrows).length === 0) {
+      rs.push("NO METADATA FOUND\n");
+    } else {
+      for (did in myrows) {
+        ds = DATASET_NAME_BY_DID[did]
+        filetxt += ds
+        for (var mdname in name_collector) {
+          //filetxt = mdname+"\t";  // restart sting
+          if(myrows[did].hasOwnProperty(mdname)){
+            filetxt += "\t"+myrows[did][mdname];
+          }else{
+            filetxt += "\t";
+          }
+          // for (i in myrows[did]) {
+          //   filetxt += myrows[mdname][i]+"\t";
+          // }
+          
+        }
+        filetxt += "\n";
+        
+      }
+    }
+    rs.push(filetxt);
+    //console.log(JSON.stringify(filetxt))
+    rs.push(null);
+    rs
+      //.pipe(gzip)
+      .pipe(wstream)
+      .on('finish', function readableStreamOnFinish() {  // finished
+        console.log('done writing file');
+        //console.log(JSON.stringify(req.user))
+        
+        //req.flash('Done')
+        console.log(path.join(process.env.PWD,  out_file_path))
+        res.download(path.join(process.env.PWD,   out_file_path))
+
+
+      });
+      
+    
+      //res.send(file_name);
+});
 //
 // DOWNLOAD MATRIX
 //

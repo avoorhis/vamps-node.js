@@ -14,7 +14,10 @@ Filter Projects
                   <select id='env_source_select' >
                     <option>.....</option>
                     <% for(n in env_sources) { %>
-                      <option value='<%= n %>'>(<%= n %>) <%= env_sources[n] %></option>
+                      <% if(env_sources[n] != ''){ %>
+                        <% var val = n.toString() + '--' + env_sources[n] %>
+                        <option value='<%= val %>'><%= env_sources[n] %></option>
+                      <% } %>
                     <% } %>
                   </select>
                   <span id='env_on_id' class='pull-right filter_note'></span>

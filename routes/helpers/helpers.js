@@ -171,9 +171,9 @@ module.exports.send_mail = function(mail_info) {
 //
 //
 //
-module.exports.run_select_sequences_query = function(rows){
+module.exports.get_select_seq_counts_query = function(rows){
         for (var i=0; i < rows.length; i++) {
-        //console.log(rows[i].project_id);
+        //console.log('rows[i].project_id in run_select_sequences_query');
           var pid = rows[i].project_id;
           var did = rows[i].dataset_id;
           var count= rows[i].seq_count;
@@ -200,6 +200,41 @@ module.exports.run_ranks_query = function(rank,rows){
         }
 };
 
+module.exports.get_select_env_term_query = function(rows){
+    for (var i=0; i < rows.length; i++) {
+        MD_ENV_TERM[rows[i].term_id] = rows[i].term_name;
+    }
+};
+module.exports.get_select_env_package_query = function(rows){
+    for (var i=0; i < rows.length; i++) {
+        MD_ENV_PACKAGE[rows[i].env_package_id] = rows[i].env_package;
+    }
+};
+module.exports.get_select_domain_query = function(rows){
+    for (var i=0; i < rows.length; i++) {
+        MD_DOMAIN[rows[i].domain_id] = rows[i].domain;
+    }
+};
+module.exports.get_select_dna_region_query = function(rows){
+    for (var i=0; i < rows.length; i++) {
+        MD_DNA_REGION[rows[i].dna_region_id] = rows[i].dna_region;
+    }
+};
+module.exports.get_select_fragment_name_query = function(rows){
+    for (var i=0; i < rows.length; i++) {
+        MD_FRAGMENT_NAME[rows[i].fragment_name_id] = rows[i].fragment_name;
+    }
+};
+module.exports.get_select_sequencing_platform_query = function(rows){
+    for (var i=0; i < rows.length; i++) {
+        MD_SEQUENCING_PLATFORM[rows[i].sequencing_platform_id] = rows[i].sequencing_platform;
+    }
+};
+module.exports.get_select_country_query = function(rows){
+    for (var i=0; i < rows.length; i++) {
+        MD_COUNTRY[rows[i].country_id] = rows[i].country;
+    }
+};
 // TODO: "This function's cyclomatic complexity is too high. (6)"
 module.exports.run_permissions_query = function(rows){
         //console.log(PROJECT_INFORMATION_BY_PID)
@@ -272,8 +307,8 @@ module.exports.update_global_variables = function(pid,type){
 };
 
 module.exports.assignment_finish_request = function(res, rows1, rows2, status_params) {
-        console.log('query ok1 '+JSON.stringify(rows1));   // queries.get_select_datasets_queryPID
-        console.log('query ok2 '+JSON.stringify(rows2));  // queries.get_select_sequences_queryPID
+        console.log('query ok1 '+JSON.stringify(rows1));  
+        console.log('query ok2 '+JSON.stringify(rows2));  
         
         this.run_select_datasets_query(rows1);
         console.log(' UPDATING ALL_DATASETS');
@@ -591,15 +626,24 @@ module.exports.run_select_datasets_query = function(rows){
           var owner_id = rows[i].owner_user_id;
 
           PROJECT_ID_BY_DID[did]=pid;
-
+//console.log('AllMetadata')
+//console.log(AllMetadata)
+          if(AllMetadata.hasOwnProperty(did) && AllMetadata[did].hasOwnProperty('env_package_id')){
+            var envpkgid = AllMetadata[did].env_package_id
+          }else{
+            var envpkgid = '1'
+          }
           PROJECT_INFORMATION_BY_PID[pid] = {
             "last" :            rows[i].last_name,
             "first" :            rows[i].first_name,
             "username" :        rows[i].username,
             "oid" :             owner_id,
             "email" :            rows[i].email,
-            "env_source_name" : rows[i].env_source_name,
-            "env_source_id" :   rows[i].env_sample_source_id,
+            //"env_source_name" : rows[i].env_source_name,
+            //"env_source_id" :   rows[i].env_sample_source_id,
+            //"env_package"  :  AllMetadata[did].env_package,
+            
+            "env_package_id" :   envpkgid,
             "institution" :     rows[i].institution,
             "project" :         project,
             "pid" :             pid,
@@ -1232,7 +1276,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
       console.log('filtering env',filter_obj.env )
       
         NewPROJECT_TREE_OBJ1.forEach(function(prj) {
-          if(filter_obj.env.indexOf(parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_source_id)) != -1){
+          if(filter_obj.env.indexOf(parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id)) != -1){
             NewPROJECT_TREE_OBJ2.push(prj);        
           }
         });

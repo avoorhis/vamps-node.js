@@ -13,26 +13,33 @@ get_project_permissions: function(){
 },
 get_select_datasets_query: function(){
 		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description,";
-    qSelectDatasets += " username, email, institution, first_name, last_name, env_source_name, env_sample_source_id, owner_user_id, public";
+
+    // qSelectDatasets += " username, email, institution, first_name, last_name, env_source_name, env_sample_source_id, owner_user_id, public";
+    qSelectDatasets += " username, email, institution, first_name, last_name, owner_user_id, public";
 		qSelectDatasets += " FROM dataset";
 		qSelectDatasets += " JOIN project USING(project_id)";
 		qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
-		qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
+        // qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
+
 		qSelectDatasets += " ORDER BY project, dataset";
+    console.log(qSelectDatasets);
 		return qSelectDatasets;
 	
 },
 
 get_select_datasets_queryPID: function(pid){
 		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution,";
-    qSelectDatasets += " first_name, last_name, env_source_name, env_sample_source_id, owner_user_id,public";
+
+    // qSelectDatasets += " first_name, last_name, env_source_name, env_sample_source_id, owner_user_id,public";
+    qSelectDatasets += " first_name, last_name, owner_user_id,public";
 		qSelectDatasets += " FROM dataset";
 		qSelectDatasets += " JOIN project USING(project_id)";
 		qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
-		qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
+        // qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
+
 		qSelectDatasets += " WHERE project_id = " + connection.escape(pid);
 		qSelectDatasets += " ORDER BY project, dataset";
-		//console.log(qSelectDatasets);
+		console.log(qSelectDatasets);
     return qSelectDatasets;	
 },
 
@@ -65,7 +72,7 @@ get_projects_queryUID: function( uid ) {
     var q = "SELECT project, project_id from project where owner_user_id='"+uid+"'"
     return q;
 },
-get_select_sequences_query: function(){
+get_select_seq_count_query: function(){
 		
 		var qSequenceCounts = "SELECT project_id, dataset_id, classifier_id, SUM(seq_count) as seq_count"; 
 		qSequenceCounts += " FROM sequence_pdr_info";
@@ -74,7 +81,7 @@ get_select_sequences_query: function(){
 		return qSequenceCounts;
 	
 },	
-get_select_sequences_queryPID: function(pid){
+get_select_seq_count_queryPID: function(pid){
 		
 		var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_count"; 
 		qSequenceCounts += " FROM sequence_pdr_info";
@@ -364,4 +371,48 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
       return statQuery;
     }
   },
+
+  get_select_env_term_query: function() {      
+      var q = "SELECT term_id, term_name\n"
+      q += " FROM `term`\n"
+      //console.log(q)
+      return q;
+  },
+  get_select_env_package_query: function() {      
+      var q = "SELECT env_package_id, env_package\n"
+      q += " FROM `env_package`\n"
+      //console.log(q)
+      return q;
+  },
+  get_select_domain_query: function() {      
+      var q = "SELECT domain_id, domain\n"
+      q += " FROM `domain`\n"
+      //console.log(q)
+      return q;
+  },
+  get_select_dna_region_query: function() {      
+      var q = "SELECT dna_region_id, dna_region\n"
+      q += " FROM `dna_region`\n"
+      //console.log(q)
+      return q;
+  },
+  get_select_fragment_name_query: function() {      
+      var q = "SELECT fragment_name_id, fragment_name\n"
+      q += " FROM `fragment_name`\n"
+      //console.log(q)
+      return q;
+  },
+  get_select_sequencing_platform_query: function() {      
+      var q = "SELECT sequencing_platform_id, sequencing_platform\n"
+      q += " FROM `sequencing_platform`\n"
+      //console.log(q)
+      return q;
+  },
+  get_select_country_query: function() {      
+      var q = "SELECT country_id, country\n"
+      q += " FROM `country`\n"
+      //console.log(q)
+      return q;
+  },
+ 
 } // end of module.exports

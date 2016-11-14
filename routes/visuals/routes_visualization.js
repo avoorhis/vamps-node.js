@@ -414,7 +414,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
      
 		  
 	  }
-	  //console.log(JSON.stringify(METADATA))
+	  console.log(JSON.stringify(METADATA))
 	  //console.log('49x',JSON.stringify(TAXCOUNTS['49']))
     //console.log(JSON.stringify(TAXCOUNTS2[49]))
 	  console.log('Pulling xTAXCOUNTS and METADATA -- ONLY for datasets selected (from files)');
@@ -427,7 +427,8 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
 	  var custom_metadata_headers   = COMMON.get_metadata_selection(chosen_id_name_hash.ids, METADATA,'custom');
 	  var required_metadata_headers = COMMON.get_metadata_selection(chosen_id_name_hash.ids, METADATA,'required');
-	  console.log(required_metadata_headers)
+	  console.log('required_metadata_headers')
+    console.log(required_metadata_headers)
 	  //console.log(chosen_id_name_hash)
 	  // // benchmarking
 	  // var start = process.hrtime();
@@ -519,6 +520,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
                                   subtitle    : 'Dataset Selection Page',
                                   proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
                                   constants   : JSON.stringify(req.CONSTS),
+                                  md_env_package : JSON.stringify(MD_ENV_PACKAGE),
                                   md_names    : AllMetadataNames,
                                   filtering   : 0,
                                   portal_to_show : '',
@@ -573,6 +575,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
                                 subtitle    : 'Dataset Selection Page',
                                 proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
                                 constants   : JSON.stringify(req.CONSTS),
+                                md_env_package : JSON.stringify(MD_ENV_PACKAGE),
                                 md_names    : AllMetadataNames,
                                 filtering   : 0,
                                 portal_to_show : '',
@@ -1449,25 +1452,18 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
     // script will remove data from mysql and datset taxfile
     console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
-    var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
-                env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-                detached: true, 
-                //stdio:['pipe', 'pipe', log]
-                //stdio:  log 
-                stdio: 'pipe'  // stdin, stdout, stderr
-            }); 
-    
-    stdout = '';
+    var script_path = options.scriptPath+'alpha_diversity.py '+options.args.join(' ')
+    var exec = require('child_process').exec;
+    var alphadiv_process = exec(script_path);
+    var output = '';
+  
     alphadiv_process.stdout.on('data', function adiversityProcessStdout(data) {
-        data = data.toString();
-        if(req.CONFIG.site == 'vamps' ){
-          console.log('VAMPS PRODUCTION -- no print to log');
-        }else{
+          data = data.toString().trim();
           console.log(data)
-        }
-        stdout += data;    
-     
+          output += data;
+          
     });
+
     stderr = '';
     alphadiv_process.stderr.on('data', function adiversityProcessStderr(data) {
         data = data.toString();
@@ -1478,7 +1474,7 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     alphadiv_process.on('close', function adiversityProcessOnClose(code) {
         console.log('alphadiv_process process exited with code ' + code);
         if(code == 0){           
-            res.send(stdout);                                 
+            res.send(output);                                 
         }else{
           console.log('python script error: '+stderr);
           res.send(stderr); 
@@ -2641,8 +2637,8 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
 });
 //
 //
-//  FILTERS FILTERS  FILTERS FILTERS FILTERS FILTERS FILTERS FILTERS
-//  FILTERS FILTERS  FILTERS FILTERS FILTERS FILTERS FILTERS FILTERS
+//  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS
+//  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS
 //
 //  FILTER #1 LIVESEARCH PROJECTS (substring) FILTER
 //
@@ -2678,15 +2674,21 @@ router.get('/livesearch_projects/:substring', function(req, res) {
 //
 router.get('/livesearch_env/:envid', function(req, res) {
   var envid = req.params.envid;
+  var items = envid.split('--')
+  var envid = items[0]
+  var env_name = items[1]
   var myurl = url.parse(req.url, true);  
   var portal = myurl.query.portal;
   var info = PROJECT_INFORMATION_BY_PID;
-  //console.log(portal)
-  //console.log(envid)
+  
   var envid_lst = []
-  // if q == 40 (human) then pull all from 40-49:: are there others like this??
-  if(envid === '40'){
-    envid_lst = [40,41,42,43,44,45,46,47,48,49];
+  if(env_name === 'human associated'){  // get id for 'human associated'
+    envid_lst = []
+    for(var key in MD_ENV_PACKAGE){
+      if(MD_ENV_PACKAGE[key].substring(0,5) == 'human'){
+        envid_lst.push(parseInt(key))
+      }
+    }
   }else if(envid === '.....'){
     envid_lst = []
   }else{

@@ -10,29 +10,30 @@ var constants = {};
 constants.show_nas   = {"raw":false,"string":"--"};  // if raw==true will show class_NA, genus_NA etc; else show string (tax table only; not biom file)
 constants.blast_db   = 'ALL_SEQS';
 constants.download_file_formats = ['metadata','fasta','taxbytax','taxbyref','taxbyseq','biom','matrix','phyloseq','distance','emperor','pdf','tree','heatmap'];
-constants.ENV_SOURCE = { 
-        10: "air",
-         20: "extreme habitat",
-        30: "host associated",
-         40: "human associated",
-		 41: "human-skin",
-		 42: "human-oral",
-		 43: "human-gut",
-         44: "human-vaginal",
-		 45: "human-amniotic-fluid",
-		 46: "human-urine",
-		 47: "human-blood",	
-	     50: "microbial mat/biofilm",
-		 60: "miscellaneous_natural_or_artificial_environment",
-		 70: "plant associated",
-		 80: "sediment",
-		 90: "soil/sand",
-		 100: "unknown",
-		 110: "wastewater/sludge",
-		 120: "water-freshwater",
-		 130: "water-marine",
-		 140: "indoor"
-    };
+// constants.ENV_SOURCE = { 
+//         10: "air",
+//          20: "extreme habitat",
+//         30: "host associated",
+//          40: "human associated",
+// 		 41: "human-skin",
+// 		 42: "human-oral",
+// 		 43: "human-gut",
+//          44: "human-vaginal",
+// 		 45: "human-amniotic-fluid",
+// 		 46: "human-urine",
+// 		 47: "human-blood",	
+// 	     50: "microbial mat/biofilm",
+// 		 60: "miscellaneous_natural_or_artificial_environment",
+// 		 70: "plant associated",
+// 		 80: "sediment",
+// 		 90: "soil/sand",
+// 		 100: "unknown",
+// 		 110: "wastewater/sludge",
+// 		 120: "water-freshwater",
+// 		 130: "water-marine",
+// 		 140: "indoor"
+//     };
+// This is required for the simple taxonomy selection box
 constants.DOMAINS = { domains: [
         {id: 1, name: "Archaea"},
         {id: 2, name: "Bacteria"},
@@ -41,8 +42,8 @@ constants.DOMAINS = { domains: [
         {id: 5, name: "Unknown"}
     ]};
 constants.TARGETS = ["Av3", "Av3v5","Av4v5","Av5v6", "Av6", "Av6v4",
-                     "Bv1v2","Bv1v3","Bv1v4","Bv2","Bv3","Bv3v4","Bv3v5","Bv4","Bv4v5","Bv5","Bv5v6","Bv6", "Bv6v4", 
-                    "Ev9" ];
+                      "Bv1v2","Bv1v3","Bv1v4","Bv2","Bv3","Bv3v4","Bv3v5","Bv4","Bv4v5","Bv5","Bv5v6","Bv6", "Bv6v4", 
+                     "Ev9" ];
 constants.UNITSELECT = { units: [
         {id : 'tax_silva119_simple',file: 'unit_selectors/taxa_silva119_simple.html', name : "Taxonomy (Silva-119) -Simple", subtext: 'Silva119'},
         {id : 'tax_silva119_custom',file: 'unit_selectors/taxa_silva119_custom.html', name : "Taxonomy (Silva-119) -Custom", subtext: 'Silva119'},
@@ -443,7 +444,18 @@ constants.VISUAL_THUMBNAILS = {
    
 ]};
     
-constants.REQ_METADATA_FIELDS = ["altitude",  "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id", "fragment_name", "dna_region", "sequencing_platform", "domain"];
+// constants.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date", 
+//                                 "common_name", "country", "depth", "description", 
+//                                 "dna_region", "domain", "elevation", "env_biome", 
+//                                 "env_feature", "env_matter", "env_package", 
+//                                 "fragment_name", "latitude", "longitude", 
+//                                 "public", "sequencing_platform", "taxon_id"];
+constants.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date", 
+                                "common_name", "country", "depth", "description", 
+                                "dna_region", "domain", "elevation", "env_biome", 
+                                "env_feature", "env_matter", "env_package", 
+                                "fragment_name", "latitude", "longitude", 
+                                "sequencing_platform", "taxon_id"];
 constants.CONTACT_US_SUBJECTS = ["Account Request", "Report a Problem", "Announce a Publication", "Other"];
 
 module.exports = constants;

@@ -22,15 +22,76 @@ $(document).ready(function(){
       });
     }
 
-    // grant_access_btn = document.getElementById('grant_access_btn') || null;
-    // if (grant_access_btn !== null) {
-    //   grant_access_btn.addEventListener('click', function () {
-    //       grant_access();
-    //   });
-    // }
+    $('#upload_metadata_form').submit(function() {
+        var selected_pid = document.getElementById('select_project_for_metadata').value;
+        if(selected_pid == 0){
+          alert('Select a project')
+          return false
+        }
+        var selected_file = document.getElementById('meta').value;
+        if(selected_file.length == 0){
+          alert('Select a file')
+          return false
+        }
+        $("#status").empty().text("File is uploading...");
+        
+        $(this).ajaxSubmit({
+            
+            error: function(xhr) {
+                status('Error: ' + xhr.status);
+            },
+
+            success: function(response) {
+                console.log('submit sucess')
+                var html = ''
+                if(response.error){
+                  html = response.msg
+                }else{
+                  if(response.empty_values){
+                    html += 'Empty Values present: correct them and re-upload:::'
+                  }else{
+                    html += "<form id='' name='' method='POST' action='test_metadata'>"
+                    html += "<input type='hidden' name='pid' value='"+selected_pid+"'>"
+                    html += "Validated! <input type='submit' class='btn btn-xs btn-success' value='Apply'> "
+
+                  }
+                  html += "(Required Metadata from Upload - read-only)<br><table class='table table-striped'><tr><td>Dataset</td>"
+                  var header_names = response.required_metadata
+                  for(n in header_names){
+                    html += "<td>"+header_names[n]+"</td>"
+                  }
+                  html += "</tr>"
+                  html += "<tr>"
+                  for(ds in response.data){
+                    //if( ds != 'required_metadata' && ds != 'error'){
+                      html += "<tr>"
+                      html += "<td>"+ds+"</td>"
+                      for(i in response.data[ds]){
+                          html += "<td>"+response.data[ds][i]
+                          name = ds+'--'+header_names[i]// concat ds and headername
+                          html += "<input type='hidden' name='"+name+"' value='"+response.data[ds][i]+"'>"
+                          html += "</td>"
+                      }
+                      html += "</tr>"
+                    //}
+                  }
+                  html += "</table>"
+                  if( ! response.empty_values){
+                    html += "</form>"
+                  }
+                  //info_div.innerHTML = html;  
+                }
+                $("#md_result_div").empty().html(html);
+                $("#status").empty().text("");
+            }
+        });
+        //Very important line, it disable the page refresh.
+        return false;
+    });    
     
 
 });
+
 //
 //
 //
@@ -254,4 +315,131 @@ function show_current_project_info()
     };
     xmlhttp.send(args);
 
+}
+//
+//
+//
+function download_metadata(){
+    var info_div = document.getElementById('md_result_div');
+    var selected_pid = document.getElementById('select_project_for_metadata').value;
+    if(selected_pid == 0){
+      alert('Select a project')
+      info_div.innerHTML = "";
+      return
+    }
+    window.open('/user_data/download_selected_metadata?pid='+selected_pid);
+    
+}
+//
+//
+//
+function upload_metadata(){
+    var form = document.getElementById('upload_metadata_form');
+    var info_div = document.getElementById('md_result_div');
+    var selected_pid = document.getElementById('select_project_for_metadata').value;
+    if(selected_pid == 0){
+      alert('Select a project')
+      info_div.innerHTML = "";
+    }
+    var input = document.createElement("input");
+    input.setAttribute("type", "hidden");
+    input.setAttribute("name", "selected_pid");
+    input.setAttribute("value", selected_pid);
+    form.appendChild(input);
+    
+    $(form).submit();
+   
+    // var xmlhttp = new XMLHttpRequest();  
+    // xmlhttp.open("POST", '/admin/upload_metadata', true);
+    // xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    // xmlhttp.setRequestHeader("data-type","html");
+    // var args = 'pid='+selected_pid;
+    // //text_edits = ['altitude','collection_date','common_name','depth','description','elevation','latitude','longitude','public','taxon_id','fragment_name','dna_region','sequencing_platform','domain']
+    // xmlhttp.onreadystatechange = function() {        
+    //   if (xmlhttp.readyState == 4 ) {
+    //       info_div.style.width = '1200px' 
+    //       info_div.style.height = '300px' 
+    //       info_div.style.overflow = 'auto'; 
+    //       var response = JSON.parse(xmlhttp.responseText);  
+    //       //var response = xmlhttp.responseText;  
+          
+    //       var html = "Read Only Metadata<br><table class='table table-striped'><tr><td>Dataset</td>"
+    //       header_names = response.required_metadata_fields
+    //       for(n in header_names){
+    //         html += "<td>"+header_names[n]+"</td>"
+    //       }
+    //       html += "</tr>"
+    //       html += "<tr>"
+    //       for(ds in response){
+    //         if( ds != 'required_metadata_fields'){
+    //           html += "<tr>"
+    //           html += "<td>"+ds+"</td>"
+    //           for(i in response[ds]){
+                
+    //               html += "<td>"+response[ds][i]+"</td>"
+                
+    //           }
+    //           html += "</tr>"
+    //         }
+    //       }
+    //       html += "</table>"
+    //       info_div.innerHTML = html;  
+    //   }
+    // };
+    // xmlhttp.send(args);
+}
+//
+//
+//
+function show_metadata(){
+    
+    var info_div = document.getElementById('md_result_div');
+    var selected_pid = document.getElementById('select_project_for_metadata').value;
+    if(selected_pid == 0){
+      alert('Select a project')
+      info_div.innerHTML = "";
+      return
+    }
+    var xmlhttp = new XMLHttpRequest();  
+    xmlhttp.open("POST", '/admin/show_metadata', true);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.setRequestHeader("data-type","html");
+    var args = 'pid='+selected_pid;
+    //text_edits = ['altitude','collection_date','common_name','depth','description','elevation','latitude','longitude','public','taxon_id','fragment_name','dna_region','sequencing_platform','domain']
+    xmlhttp.onreadystatechange = function() {        
+      if (xmlhttp.readyState == 4 ) {
+          info_div.style.width = '1200px' 
+          info_div.style.height = '300px' 
+          info_div.style.overflow = 'auto'; 
+          var response = JSON.parse(xmlhttp.responseText);  
+          //var response = xmlhttp.responseText;  
+          
+          var html = "Required Metadata from Database (read-only)<br><table class='table table-striped'><tr><td>Dataset</td>"
+          header_names = response.required_metadata_fields
+          for(n in header_names){
+            html += "<td>"+header_names[n]+"</td>"
+          }
+          html += "</tr>"
+          html += "<tr>"
+          for(ds in response){
+            if( ds != 'required_metadata_fields'){
+              html += "<tr>"
+              html += "<td>"+ds+"</td>"
+              for(i in response[ds]){
+                
+                  html += "<td>"+response[ds][i]+"</td>"
+                
+                
+                
+              }
+              html += "</tr>"
+            }
+          }
+          html += "</table>"
+          info_div.innerHTML = html;  
+
+         
+      }
+    };
+    xmlhttp.send(args);
 }

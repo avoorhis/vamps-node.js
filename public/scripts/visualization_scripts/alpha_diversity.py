@@ -22,6 +22,7 @@ import csv
 #import skbio
 
 import skbio.diversity.alpha as alpha
+
 #from ete2 import Tree
 #print >> sys.stderr, sys.argv[1:]
 
@@ -60,37 +61,40 @@ def alpha_diversity(args):
     X = A.astype(int)   # insure int
     #print X
     Y = np.transpose(X)
-    txt = "Dataset\tobserved richness\tACE\tchao1\tShannon\tSimpson\n"
-    
+    txt = "Dataset\tobserved richness\tACE\tchao1\tShannon\tSimpson"
+    print txt
     for i,row in enumerate(Y):
         ds = data['columns'][i]['id']
-        #print ds+"\t"
-        #print ds,row
+        row = row.tolist()
+
         try:
             ace       = alpha.ace(row)
         except:
             ace = 'error'
+        
         try:
             chao1     = alpha.chao1(row)
         except:
             chao1 = 'error'
+        
         try:
             osd       = alpha.osd(row)
         except:
             osd = ['error']
+        
         try:
             simpson   = alpha.simpson(row)
         except:
             simpson = 'error'
+        
         try:
             shannon   = alpha.shannon(row)
         except:
             shannon = 'error'
-        txt += ds+"\t"+str(osd[0])+"\t"+str(ace)+"\t"+str(chao1)+"\t"+str(shannon)+"\t"+str(simpson)+"\n"
+        txt = ds+"\t"+str(osd[0])+"\t"+str(ace)+"\t"+str(chao1)+"\t"+str(shannon)+"\t"+str(simpson)
+        
+        print txt
     
-    print txt[:-1]  # remove the trailing LF
-
-        #print 'michaelis_menten_fit',alpha.michaelis_menten_fit(row,2)
 
 if __name__ == '__main__':
 
@@ -109,6 +113,5 @@ if __name__ == '__main__':
     #parser.add_argument('-meta','--metadata',  required=False, action="store",  dest='metadata',  help = 'json metadata') 
 
     args = parser.parse_args()
-    
     alpha_diversity(args)
     

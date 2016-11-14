@@ -10,7 +10,6 @@ var DATASET = {
   pname : "",
   dname : "",
   seq_count : "",
-  env_sample_source_id : "",
   seq_ids: [],
 };
 
