@@ -200,20 +200,24 @@ def go(args):
     """
     counts_lookup = {}
 
-    try:
+    # try:
 
-        #shutil.rmtree(args.files_prefix)
-        shutil.move(args.files_prefix, os.path.join(args.json_file_path, args.NODE_DATABASE+'--datasets_'+args.units+today))
-        if args.taxcounts_file:
-            shutil.move(args.taxcounts_file, os.path.join(args.json_file_path, args.NODE_DATABASE+'--taxcounts_silva119'+today+'.json'))
-        shutil.move(args.metadata_file,  os.path.join(args.json_file_path, args.NODE_DATABASE+'--metadata'+ today+'.json'))
-        logging.debug('Backed up old taxcounts and metadata files')
-    except IOError:
-        print "Could not back up one of files directory, taxcounts or metadata files: "
-    except:        
-        raise
-        # sys.exit()
-    os.mkdir(args.files_prefix)
+    #     #shutil.rmtree(args.files_prefix)
+    #     shutil.move(args.files_prefix, os.path.join(args.json_file_path, args.NODE_DATABASE+'--datasets_'+args.units+today))
+    #     if args.taxcounts_file:
+    #         shutil.move(args.taxcounts_file, os.path.join(args.json_file_path, args.NODE_DATABASE+'--taxcounts_silva119'+today+'.json'))
+    #     shutil.move(args.metadata_file,  os.path.join(args.json_file_path, args.NODE_DATABASE+'--metadata'+ today+'.json'))
+    #     logging.debug('Backed up old taxcounts and metadata files')
+    
+    # except IOError:
+    #     print "Could not back up one of files directory, taxcounts or metadata files: "
+    # except:        
+    #     raise
+    #     # sys.exit()
+    if os.path.exists(args.files_prefix):
+        shutil.rmtree(args.files_prefix)
+    os.makedirs(args.files_prefix)    
+    #os.mkdir(args.files_prefix)
     logging.debug('Created Dir: '+args.files_prefix)
     for q in queries:
         #print q["query"]
@@ -300,7 +304,7 @@ def write_all_metadata_file(args, metadata_lookup):
     #print md_file
     json_str = json.dumps(metadata_lookup, encoding='latin1')
     #print(json_str)
-    f = open(args.metadata_file,'w')
+    f = open(args.metadata_file,'w')   # overwrite
     f.write(json_str+"\n")
     f.close()
 
@@ -309,7 +313,7 @@ def write_all_taxcounts_file(args, counts_lookup):
     #print tc_file
     json_str = json.dumps(counts_lookup)
     #print(json_str)
-    f = open(args.taxcounts_file,'w')
+    f = open(args.taxcounts_file,'w')  # overwrite
     f.write(json_str+"\n")
     f.close()
 
@@ -408,26 +412,28 @@ if __name__ == '__main__':
         ./INITIALIZE_ALL_FILES.py  (
 
 
-
-
         Will ask you to input which database.
         Output will be files ../json/NODE_DATABASE/<dataset>.json
         each containing taxcounts and metadata from the database
 
-        **THIS SCRIPT WILL DELETE AND RE-CREATE ALL THE FILES** for the chosen database.
+        **THIS SCRIPT WILL RE-CREATE ALL THE FILES UNDER A NEW FILENAME** for the chosen database.
+        **THEN YOU MUST MANUALLY MOVE THEM TO THE CORRECT LOCATION**
+        The above is true unless you use the -o/--overwrite flag
         It will create a /public/json/<NODE_DATABASE>--datasets/<datasetid>.json file for each dataset.
           These files have taxonomic counts and metadata for that dataset for
           use when selecting datsets for visualization.
         Also the script will create 2 other files:
-          /public/json/<NODE_DATABASE>--taxcounts.json
+          /public/json/<NODE_DATABASE>--taxcounts_silva119.json
+          or /public/json/<NODE_DATABASE>--taxcounts_rdp26.json
           /public/json/<NODE_DATABASE>--metadata.json
           These files contain ALL the taxcounts and metadata for use
           in searches
 
-        -json_file_path/--json_file_path   json files path Default: ../json
-        -host/--host            dbhost:  Default: localhost
-
-        -c/--check_files  Will look for continuity between database(dataset table) and JSON files (no initialization)
+        -json_file_path/--json_file_path   json files path Default: ../json [usually calculated from -host]
+        -host/--host        vampsdb, vampsdev or localhost     Default: localhost
+        -o/--overwrite      [default: false]  If set will delete first then overwrite current files (not good on a live server)
+        -units/--units      [silva119, rdp2.6]  default: silva119
+        -c/--check_files    [default: false] Will look for continuity between database(dataset table) and JSON files (no initialization)
 
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)
@@ -443,6 +449,9 @@ if __name__ == '__main__':
     parser.add_argument("-units", "--units",
                 required=False,  action='store', choices=['silva119', 'rdp2.6'], dest = "units",  default='silva119',
                 help="UNITS")
+    parser.add_argument("-o", "--overwrite",
+                required=False,  action='store_true',  dest = "overwrite",  default=False,
+                help="If set will delete and overwrite current files (not good on a live server)")
     parser.add_argument("-c", "--check_files",
                 required=False,  action='store_true', dest = "check_files",  default=False,
                 help="If set will look for continuity between database(dataset table) and JSON files")
@@ -523,14 +532,22 @@ if __name__ == '__main__':
     #args.json_dir = os.path.join("../","json")
     #permissible_units = ['silva119','rdp']
     args.req_metadata_fields = get_required_metadata_fields(args)
-    
-    if args.units == 'rdp2.6':
-        args.files_prefix   = os.path.join(args.json_file_path,args.NODE_DATABASE+"--datasets_rdp2.6")
-        args.taxcounts_file = ''
+    if args.overwrite or args.check_files:
+        if args.units == 'rdp2.6':
+            args.files_prefix   = os.path.join(args.json_file_path,args.NODE_DATABASE+"--datasets_rdp2.6")
+            args.taxcounts_file = ''
+        else:
+            args.files_prefix   = os.path.join(args.json_file_path,args.NODE_DATABASE+"--datasets_silva119")
+            args.taxcounts_file = os.path.join(args.json_file_path,args.NODE_DATABASE+"--taxcounts_silva119.json")
+        args.metadata_file  = os.path.join(args.json_file_path,args.NODE_DATABASE+"--metadata.json")
     else:
-        args.files_prefix   = os.path.join(args.json_file_path,args.NODE_DATABASE+"--datasets_silva119")
-        args.taxcounts_file = os.path.join(args.json_file_path,args.NODE_DATABASE+"--taxcounts_silva119.json")
-    args.metadata_file  = os.path.join(args.json_file_path,args.NODE_DATABASE+"--metadata.json")
+        if args.units == 'rdp2.6':
+            args.files_prefix   = os.path.join(args.json_file_path,args.NODE_DATABASE+"--datasets_rdp2.6NEW")
+            args.taxcounts_file = ''
+        else:
+            args.files_prefix   = os.path.join(args.json_file_path,args.NODE_DATABASE+"--datasets_silva119NEW")
+            args.taxcounts_file = os.path.join(args.json_file_path,args.NODE_DATABASE+"--taxcounts_silva119NEW.json")
+        args.metadata_file  = os.path.join(args.json_file_path,args.NODE_DATABASE+"--metadataNEW.json")
     #print args.files_prefix , args.taxcounts_file,args.metadata_file
     if args.check_files:
         check_files(args)

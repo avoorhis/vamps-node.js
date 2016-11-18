@@ -17,53 +17,56 @@
 		             
 	</div>
 
-	<br><br><br><br>
+	<br><br><br>
 	
 <form method='POST' id='upload_metadata_form' name='upload_metadata_form' enctype="multipart/form-data" action='upload_metadata'>	
-<div class="col-lg-3"> 
 
-	
-				Select a Project:
-					<select name='pid'  id='select_project_for_metadata' >
-						<option value='0'>.....</option>
-						<% for(pname in pinfo) { %>						
-										<option  name='project_option' value='<%= pinfo[pname].pid %>'><%= pinfo[pname].project %></option>
-						<% } %>
-					</select>
-	
-
+<div class="row"> 
+	<div class="col-lg-5"> 	</div>
+	<div class="col-lg-6"> 
+					First: Select a Project:&nbsp;
+						<select name='pid' class='btn btn-lg btn-primary' id='select_project_for_metadata' >
+							<option value='0'>.....</option>
+							<% for(pname in pinfo) { %>						
+											<option  name='project_option' value='<%= pinfo[pname].pid %>'><%= pinfo[pname].project %></option>
+							<% } %>
+						</select>
+	</div>
+	<div class="pull-right"><a href='/user_data/required_metadata_options' target='_blank'>View Required Metadata Options</a></div>
 </div>
+<hr>
+
+<div class="row"> 
+
+	<div class="col-sm-4"> 
+			<input type='button' class='btn' value='Show Current Required Metadata' onclick="show_metadata()">
+	</div>
+
+
+	<div class="col-sm-4" > 
+			<input type='button' class='btn' value='Download Project Metadata' onclick="download_metadata()">
+		<!-- 
+		<button class='btn' onclick="window.open('/user_data/download_selected_metadata?pid='+projectForm.pid[projectForm.pid.selectedIndex].value)">Download All Metadata</button>	
+	 -->
+	</div>
 
 
 
-<div class="col-sm-3"> 
-	
-		<input type='button' class='btn' value='Show Current Required Metadata' onclick="show_metadata()">
-	
-</div>
+	<div class="col-sm-4"> 
+			  Upload Metadata csv File<br>(for validation and replacement of current metadata)  
+					<input type="file" name="upload_metadata_file" class="btn" id="meta" />
+					<input type="submit" name="upload_metadata_file"  id="meta_go" value='Go'  />
+					<input type="hidden" name="hidden"  id="" value='secret'  />
+					<span  id = "status"></span>
+	</div>
 
-
-<div class="col-sm-3" > 
-	
-		<input type='button' class='btn' value='Download Project Metadata' onclick="download_metadata()">
-	<!-- 
-	<button class='btn' onclick="window.open('/user_data/download_selected_metadata?pid='+projectForm.pid[projectForm.pid.selectedIndex].value)">Download All Metadata</button>	
- -->
-</div>
-
-
-
-<div class="col-sm-3"> 
-	
-		  Upload Metadata csv File<br>(for validation and replacement of current metadata)  
-				<input type="file" name="upload_metadata_file" class="btn" id="meta" />
-				<input type="submit" name="upload_metadata_file"  id="meta_go" value='Go'  />
-				<input type="hidden" name="hidden"  id="" value='secret'  />
-				<span  id = "status"></span>
-	
-</div>
+</div> <!-- end row -->
 </form>
-<center><div id='md_result_div' ></div></center>
+<br>
+<center>
+
+	<div id='md_result_div' ></div>
+</center>
 
 	
 <% include ../add_ins/end.ejs %>

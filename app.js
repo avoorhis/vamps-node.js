@@ -470,9 +470,9 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
 
     //console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
     //console.log(PROJECT_INFORMATION_BY_PID)
-    // env_package: 'human associated',
     //console.log(MD_FRAGMENT_NAME)
     //console.log(MD_SEQUENCING_PLATFORM)
+    //console.log(AllMetadata[88])
   }
 });
 

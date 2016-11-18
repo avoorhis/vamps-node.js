@@ -106,6 +106,7 @@ a {
 .color_red{
   color:red;
 }
+
 .right_justify {
   text-align:right;
 }
@@ -189,6 +190,7 @@ td.left_justify {
   /* top:65px; */
   top: 2.5em;
 }
+
 
 #project_profile_div ul{
   list-style-type: none;
@@ -315,4 +317,10 @@ td.left_justify {
 .btn-primary {
   color:white !important;
 }
-
+.mdata_box {
+    height:300px;
+    width:200px;
+    overflow:auto;
+    padding:2px;
+    border:1px solid black;
+}

@@ -3096,7 +3096,25 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
 
 
 });
-
+//
+//
+//
+router.get('/required_metadata_options', function(req, res) {
+    console.log('in required_metadata_options')
+    res.render('user_data/required_metadata_options', {
+              title     :'VAMPS Validate Metadata',
+              message   : req.flash('message'),
+              user: req.user,
+              md_env_pkg:           JSON.stringify(MD_ENV_PACKAGE),
+            md_country:             JSON.stringify(MD_COUNTRY),
+            md_env_term:            JSON.stringify(MD_ENV_TERM),        
+            md_sequencing_platform: JSON.stringify(MD_SEQUENCING_PLATFORM),
+            md_fragment_name:       JSON.stringify(MD_FRAGMENT_NAME),
+            md_domain:              JSON.stringify(MD_DOMAIN),
+            md_dna_region:          JSON.stringify(MD_DNA_REGION),
+            hostname: req.CONFIG.hostname,
+    });
+});
 //
 // DOWNLOAD METADATA
 //
@@ -3305,7 +3323,7 @@ router.get('/download_selected_metadata', helpers.isLoggedIn, function download_
     var name_collector = {}
       for (var i in dids) {
         did = dids[i];
-        myrows[did]={}
+        myrows[did] = {}
         dname = DATASET_NAME_BY_DID[did];
         // if (req.body.download_type == 'whole_project') {
         //   header += dname+"\t";
@@ -3316,74 +3334,51 @@ router.get('/download_selected_metadata', helpers.isLoggedIn, function download_
         // }
 
         //if(HDF5_MDATA === ''){
-            for (var mdname in AllMetadata[did]){
-              
-              //console.log(mdname)
-              if(mdname == 'env_package_id'){
-                  test = 'env_package'
-                  value = MD_ENV_PACKAGE[AllMetadata[did][mdname]]
-                }else if(mdname == 'fragment_name_id'){
-                  test = 'fragment_name'
-                  value = MD_FRAGMENT_NAME[AllMetadata[did][mdname]]
-                }else if(mdname == 'domain_id'){
-                  test = 'domain'
-                  value = MD_DOMAIN[AllMetadata[did][mdname]]
-                }else if(mdname == 'country_id'){
-                  test = 'country'
-                  value = MD_COUNTRY[AllMetadata[did][mdname]]
-                }else if(mdname == 'sequencing_platform_id'){
-                  test = 'sequencing_platform'
-                  value = MD_SEQUENCING_PLATFORM[AllMetadata[did][mdname]]
-                }else if(mdname == 'dna_region_id'){
-                  test = 'dna_region'
-                  value = MD_DNA_REGION[AllMetadata[did][mdname]]
-                }else if(mdname == 'env_matter_id'){
-                  test = 'env_matter'
-                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
-                }else if(mdname == 'env_biome_id'){
-                  test = 'env_biome'
-                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
-                }else if(mdname == 'env_feature_id'){
-                  test = 'env_feature'
-                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
-                }else{
-                  test = mdname
-                  value = AllMetadata[did][mdname]
-              }
-
-
-              name_collector[test] = 1
-              //val = AllMetadata[did][mdname];
-              if(test in myrows){
-                myrows[did][test].push(value);
-              }else{
-                myrows[did][test] = [];
-                myrows[did][test].push(value);
-              }
+        for (var mdname in AllMetadata[did]){
+          
+          //console.log(mdname)
+            if(mdname == 'env_package_id'){
+              test = 'env_package'
+              value = MD_ENV_PACKAGE[AllMetadata[did][mdname]]
+            }else if(mdname == 'fragment_name_id'){
+              test = 'fragment_name'
+              value = MD_FRAGMENT_NAME[AllMetadata[did][mdname]]
+            }else if(mdname == 'domain_id'){
+              test = 'domain'
+              value = MD_DOMAIN[AllMetadata[did][mdname]]
+            }else if(mdname == 'country_id'){
+              test = 'country'
+              value = MD_COUNTRY[AllMetadata[did][mdname]]
+            }else if(mdname == 'sequencing_platform_id'){
+              test = 'sequencing_platform'
+              value = MD_SEQUENCING_PLATFORM[AllMetadata[did][mdname]]
+            }else if(mdname == 'dna_region_id'){
+              test = 'dna_region'
+              value = MD_DNA_REGION[AllMetadata[did][mdname]]
+            }else if(mdname == 'env_matter_id'){
+              test = 'env_matter'
+              value = MD_ENV_TERM[AllMetadata[did][mdname]]
+            }else if(mdname == 'env_biome_id'){
+              test = 'env_biome'
+              value = MD_ENV_TERM[AllMetadata[did][mdname]]
+            }else if(mdname == 'env_feature_id'){
+              test = 'env_feature'
+              value = MD_ENV_TERM[AllMetadata[did][mdname]]
+            }else{
+              test = mdname
+              value = AllMetadata[did][mdname]
             }
-        // }else{
-        //     var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-        //     mdgroup.refresh();
-        //     Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-        //         if(mdname != 'id'){
-        //             val = mdgroup[mdname];
-        //             if(mdname in myrows){
-        //                 myrows[mdname].push(val);
-        //               }else{
-        //                 myrows[mdname] = [];
-        //                 myrows[mdname].push(val);
-        //               }
-        //         }
-        //     });
-        // }
 
-
-
+            name_collector[test] = 1
+            myrows[did][test] = value;
+        }
+        
       }
-
+    
     header = "Dataset";
-    for (var mdname in name_collector) {
-      header += "\t"+mdname;
+    mdkeys = Object.keys(name_collector)  // convert to a list
+    for (var i in mdkeys) {
+      header += "\t"+mdkeys[i];
     }
     header += "\n";
     rs.push(header);
@@ -3394,7 +3389,8 @@ router.get('/download_selected_metadata', helpers.isLoggedIn, function download_
       for (did in myrows) {
         ds = DATASET_NAME_BY_DID[did]
         filetxt += ds
-        for (var mdname in name_collector) {
+        for (var i in mdkeys) {
+          mdname = mdkeys[i]
           //filetxt = mdname+"\t";  // restart sting
           if(myrows[did].hasOwnProperty(mdname)){
             filetxt += "\t"+myrows[did][mdname];

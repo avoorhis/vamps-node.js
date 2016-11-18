@@ -13,7 +13,7 @@
 
 <div  class="row row-offcanvas row-offcanvas-right" >
 
-		 <div  class="col-xs-6 col-sm-3 sidebar-offcanvas pull-right" id="sidebar" style='position:fixed;right: 10px;top:180px'>
+		 <div  class="col-xs-6 col-sm-3 sidebar-offcanvas pull-right" id="sidebar" style='position:fixed;right: 10px;top:80px'>
 		  <div class="list-group">
 		  	<a href="#clustering" 			class="list-group-item list-group-item-warning">Clustering and Diversity</a>
 		  	<a href="#processing" 			class="list-group-item list-group-item-warning">Sequence Processing</a>
@@ -24,6 +24,7 @@
 		    <a href="#databases" 				class="list-group-item list-group-item-warning">Reference Databases</a>
 		    <a href="#submissions" 			class="list-group-item list-group-item-warning">Sample Submission Process</a>
 		    <a href="#tag_generation" 	class="list-group-item list-group-item-warning">Tag Generation</a>
+		    <a href="#metadata" 				class="list-group-item list-group-item-warning">Metadata</a>
 		    <a href="#formats" 			    class="list-group-item list-group-item-warning">Format Definitions</a>
 		    <a href="#definitions" 			class="list-group-item list-group-item-warning">Definitions</a>
 		    <a href="#" class="list-group-item list-group-item-warning">Link</a>
@@ -319,6 +320,37 @@ or
 				    </p>
      
         
+        </div>        
+      </div>
+<!-- METADATA -->        <a name='metadata'></a>
+      <hr>
+      <div class="row">
+        <div class="col-md-12">      	
+          <h4><center>Metadata</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <p>Required metadata fields:
+          	<div>
+          	<table class='table'>
+          		<tr><td>Altitude</td><td>The distance between surface and point being sampled in meters<br>(for soil this is usually 0 different from elevation)</td></tr>
+          		<tr><td>Assigned_from_geo</td><td>Enter “y” or “n.”  Usually y (yes), (data assigned from a geographic source)</td></tr>
+          		<tr><td>Collection_date</td><td>Example: 2003-03-25</td></tr>
+          		<tr><td>Common_name</td><td></td></tr>
+          		<tr><td>Country</td><td>Choose from GAZ Ontology.<a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
+          		<tr><td>Depth</td><td>Distance from the surface in meters</td></tr>
+          		<tr><td>Description</td><td>Description of the sample—what is it?</td></tr>
+          		<tr><td>DNA_Region</td><td><a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
+          		<tr><td>Domain</td><td><a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
+          		<tr><td>Elevation</td><td></td></tr>
+          		<tr><td>Env_Biome; Env_Feature; Env_Matter</td><td><a href='http://www.ebi.ac.uk/ols/ontologies/envo' target='_blank'>Envo Ontology Browser</a> Biome: Description of the site;
+          			<br>Feature: Description of feature in the biome where sample was obtained;<a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a>
+          			<br>Matter: Description of material</td></tr>
+          		<tr><td>Env_Package</td><td><a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
+          		<tr><td>Fragment_name</td><td>Enter '16s' or '18s' for the section of the Small Subunit rRNA<a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
+          		<tr><td>Latitude</td><td>Geographical origin of sample in decimal degrees (WGS84  system), not DMS</td></tr>
+          		<tr><td>Longitude</td><td>Geographical origin of sample in decimal degrees (WGS84  system), not DMS</td></tr>
+          		<tr><td>Sequencing_platform</td><td>'454', 'illumina', 'ion-torrent', 'sanger' or 'unknown'<a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
+          		<tr><td>Taxon_ID</td><td><a href='https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Tree&id=12908&lvl=3&srchmode=1&keep=1&unlock' target='_blank'>NCBI Taxonomy Browser</a> Example: 410658 (Soil Metagenome)</td></tr>
+          	</table>
+          </p>          
         </div>        
       </div>
 <!-- FORMAT DEFINITIONS -->        <a name='formats'></a>

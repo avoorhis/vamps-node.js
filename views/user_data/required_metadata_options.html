@@ -1,0 +1,102 @@
+<% include ../add_ins/begin_nomenu.ejs %>
+<% md_env_pkg = JSON.parse(md_env_pkg) %>
+<% md_country = JSON.parse(md_country) %>
+<% md_env_term = JSON.parse(md_env_term) %>
+<% md_sequencing_platform = JSON.parse(md_sequencing_platform) %>
+<% md_fragment_name = JSON.parse(md_fragment_name) %>
+<% md_domain = JSON.parse(md_domain) %>
+<% md_dna_region = JSON.parse(md_dna_region) %>
+
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+	
+	
+	
+
+	<div class="hero-unit">
+	       <h2>Required Metadata Terms</h2>         
+	</div>
+
+<div class="row">  
+<div class="col-lg-1" ></div>
+      <div class="col-lg-2" >
+        <br>Taxon_id<br>
+        Description<br>
+        Common_name<br>
+        Altitude<br>
+        Assigned_from_geo<br>
+        Collection_date<br>
+        depth<br>
+        elevation<br>
+        latitude<br>
+        longitude<br>
+      </div>
+      
+      <div class="col-lg-2" >
+        ENV PACKAGE:<br>
+	    <div class='mdata_box'>		
+			<% for(i in md_env_pkg){ %>
+				  <%= i %>-<%= md_env_pkg[i] %><br>
+			<% } %>
+	    </div></div>
+    <div class="col-lg-2">
+        COUNTRY:<br>
+        <div class='mdata_box'>
+            <% for(i in md_country){ %>
+				  <%= i %>-<%= md_country[i] %><br>
+			<% } %>
+        </div></div>
+    <div class="col-lg-2">
+            ENV TERMS:<br>
+            <div class='mdata_box'>
+            <% for(i in md_env_term){ %>
+				  <%= i %>-<%= md_env_term[i] %><br>
+			<% } %>
+        </div></div>
+   
+        
+        
+</div>
+<br>
+<div class="row">  
+<div class="col-lg-1" ></div>
+ <div class="col-lg-2">
+            SEQUENCING PLATFORM:<br>
+            <div class='mdata_box'>
+            <% for(i in md_sequencing_platform){ %>
+				  <%= i %>-<%= md_sequencing_platform[i] %><br>
+			<% } %>
+        </div></div>
+
+    <div class="col-lg-2">
+            FRAGMENT NAME:<br>
+            <div class='mdata_box'>
+            <% for(i in md_fragment_name){ %>
+				  <%= i %>-<%= md_fragment_name[i] %><br>
+			<% } %>
+        </div></div>
+    <div class="col-lg-2">
+            DOMAIN:<br>
+            <div class='mdata_box' >
+            <% for(i in md_domain){ %>
+				  <%= i %>-<%= md_domain[i] %><br>
+			<% } %>
+        </div></div>
+   <div class="col-lg-2">
+            DNA REGION:<br>
+            <div class='mdata_box' >
+            <% for(i in md_dna_region){ %>
+				  <%= i %>-<%= md_dna_region[i] %><br>
+			<% } %>
+        </div></div>
+	</div>
+
+</div>
+
+	
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>

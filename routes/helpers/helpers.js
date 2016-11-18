@@ -624,31 +624,25 @@ module.exports.run_select_datasets_query = function(rows){
           var pid = rows[i].pid;
           var public = rows[i].public;
           var owner_id = rows[i].owner_user_id;
-
-          PROJECT_ID_BY_DID[did]=pid;
-//console.log('AllMetadata')
-//console.log(AllMetadata)
+          PROJECT_ID_BY_DID[did] = pid;
           if(AllMetadata.hasOwnProperty(did) && AllMetadata[did].hasOwnProperty('env_package_id')){
             var envpkgid = AllMetadata[did].env_package_id
           }else{
             var envpkgid = '1'
           }
+          
           PROJECT_INFORMATION_BY_PID[pid] = {
             "last" :            rows[i].last_name,
-            "first" :            rows[i].first_name,
+            "first" :           rows[i].first_name,
             "username" :        rows[i].username,
             "oid" :             owner_id,
-            "email" :            rows[i].email,
-            //"env_source_name" : rows[i].env_source_name,
-            //"env_source_id" :   rows[i].env_sample_source_id,
-            //"env_package"  :  AllMetadata[did].env_package,
-            
-            "env_package_id" :   envpkgid,
+            "email" :           rows[i].email,            
+            "env_package_id" :  envpkgid,  // mostly used here for the filter function on dataset selection page
             "institution" :     rows[i].institution,
             "project" :         project,
             "pid" :             pid,
             "title" :           rows[i].title,
-            "description" :      rows[i].project_description,
+            "description" :     rows[i].project_description,
             "public" :          rows[i].public,
           };
           if(public || rows[i].username === 'guest'){
@@ -1355,3 +1349,29 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   return new_obj
 
 }
+// Validates that the input string is a valid date formatted as "mm/dd/yyyy"
+module.exports.isValidMySQLDate = function(dateString){
+    // First check for the pattern
+    //if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateString))
+    //    return false;
+    if(!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(dateString))
+        return false;
+    // Parse the date parts to integers
+    var parts = dateString.split("-");
+    var year = parseInt(parts[0], 10);
+    var month = parseInt(parts[1], 10);
+    var day = parseInt(parts[2], 10);
+
+    // Check the ranges of month and year
+    if(year < 1000 || year > 3000 || month == 0 || month > 12)
+        return false;
+
+    var monthLength = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+
+    // Adjust for leap years
+    if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+        monthLength[1] = 29;
+
+    // Check the range of the day
+    return day > 0 && day <= monthLength[month - 1];
+};
