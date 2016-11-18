@@ -112,8 +112,9 @@ app.use(logger('dev'));
 //app.use(bodyParser({limit: 1024000000 })); // 1024MB
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
-	extended: true,   // allows for richer json like experience https://www.npmjs.com/package/qs#readme
-    limit: '50mb'
+	extended: true,         // allows for richer json like experience https://www.npmjs.com/package/qs#readme
+    limit: '50mb',          // size of body
+    parameterLimit: 1000000 // number of parameters
 }));
 
 
