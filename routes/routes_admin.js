@@ -827,30 +827,27 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
   });
   update_metadata_process.stderr.on('data', function(data) {
       console.log('stderr: ' + data);
+      req.flash('message', 'Metadata Update Failed');
   });
   update_metadata_process.on('close', function checkExitCode(code) {
      console.log('From apply_metadata process exited with code ' + code);
      if(req.CONFIG.site == 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
-    }else{
+     }else{
         console.log('OUTPUT:\n'+output )
-    }
+     }
+     req.flash('message', 'Success in updating metadata');
+     res.render('admin/validate_metadata', {
+              title     :'VAMPS Validate Metadata',
+              message   : req.flash('message'),
+              user: req.user,
+              project_info: JSON.stringify(PROJECT_INFORMATION_BY_PNAME),
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+    });
   });
   
   
-  // FILES
-  
-  // Should this metadata replace -- yes
-  // To update metadata:
-  // update md into database (overwrite)
-  // update files  (both individual json files and group metadata file)
-  // update AllMetadata (per did)
-// constants.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date", 
-//                                 "common_name", "country", "depth", "description", 
-//                                 "dna_region", "domain", "elevation", "env_biome", 
-//                                 "env_feature", "env_matter", "env_package", 
-//                                 "fragment_name", "latitude", "longitude", 
-//                                 "sequencing_platform", "taxon_id"];
+ 
 
 });
 //
