@@ -822,10 +822,11 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
   
   update_metadata_process.stdout.on('data', function UpdateMetadata(data) {
         data = data.toString().trim();
+        console.log('stdout: ' + data);
         output += data;
   });
   update_metadata_process.stderr.on('data', function(data) {
-      console.log('stdout: ' + data);
+      console.log('stderr: ' + data);
   });
   update_metadata_process.on('close', function checkExitCode(code) {
      console.log('From apply_metadata process exited with code ' + code);
