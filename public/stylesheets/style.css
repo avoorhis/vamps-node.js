@@ -319,7 +319,7 @@ td.left_justify {
 }
 .mdata_box {
     height:300px;
-    width:200px;
+    width:300px;
     overflow:auto;
     padding:2px;
     border:1px solid black;

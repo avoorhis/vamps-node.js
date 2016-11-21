@@ -790,7 +790,12 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
         }else{
             new_required_metadata[did][mdname]  = val            
         }
-        AllMetadata[did][mdname]            = val
+        if(AllMetadata.hasOwnProperty(did)){
+            AllMetadata[did][mdname]            = val
+        }else{
+            AllMetadata[did] = {}
+            AllMetadata[did][mdname]            = val
+        }
         
     }
   }
@@ -802,6 +807,9 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
   var script_name = 'vamps_script_update_metadata.py'
   var script_path = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,script_name)
   var full_script_path = script_path + ' ' + options.args.join(' ')
+  
+  ////No module named argparse  need path
+  
   var exec = require('child_process').exec;
   console.log(full_script_path)
   var child = exec(full_script_path);
