@@ -6,6 +6,7 @@ var queries = require('./queries');
 var config  = require(app_root + '/config/config');
 var fs      = require('fs-extra');
 var path      = require('path');
+var spawn     = require('child_process').spawn;
 var multer    = require('multer');
 var storage =   multer.diskStorage({
   destination: function (req, file, callback) {
@@ -809,20 +810,24 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
   var full_script_path = script_path + ' ' + options.args.join(' ')
   
   ////No module named argparse  need path
+  var update_metadata_process = spawn( options.scriptPath + '/vamps_script_update_metadata.py', options.args, {
+                        env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                        detached: true, stdio: 'pipe'
+                    });  // stdin, stdout, stderr
+  //var exec = require('child_process').exec;
   
-  var exec = require('child_process').exec;
   console.log(full_script_path)
-  var child = exec(full_script_path);
+  //var child = exec(full_script_path);
   var output = '';
   
-  child.stdout.on('data', function UpdateMetadata(data) {
+  update_metadata_process.stdout.on('data', function UpdateMetadata(data) {
         data = data.toString().trim();
         output += data;
   });
-  child.stderr.on('data', function(data) {
+  update_metadata_process.stderr.on('data', function(data) {
       console.log('stdout: ' + data);
   });
-  child.on('close', function checkExitCode(code) {
+  update_metadata_process.on('close', function checkExitCode(code) {
      console.log('From apply_metadata process exited with code ' + code);
      if(req.CONFIG.site == 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
