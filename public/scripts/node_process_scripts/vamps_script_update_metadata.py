@@ -277,9 +277,7 @@ if __name__ == '__main__':
             print 'json_file_path DID NOT VALIDATE:',args.json_file_path
             sys.exit('Exiting')
 
-
-    db = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
-                             read_default_file="~/.my.cnf_node"  )
+    db = MySQLdb.connect(db = args.NODE_DATABASE, host=args.dbhost, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     cur = db.cursor()
     cur.execute("SHOW databases")
     dbs = []
