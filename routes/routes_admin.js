@@ -679,7 +679,7 @@ router.post('/show_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(re
   //console.log(mdata)  // has ids need to convert
   mdata = convert_ids_to_names_for_display(mdata)
   //console.log(mdata)
-  html_json.validation = validate_metadata(mdata)
+  html_json.validation = validate_metadata(req, mdata)
   //console.log('validation result')
   //console.log(html_json.result)
   // for display we need the same order of fields
@@ -924,7 +924,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
             }
             //console.log('newmd')       
             //console.log(newmd)      
-            html_json.validation = validate_metadata(newmd) 
+            html_json.validation = validate_metadata(req, newmd) 
             
             html_json.sorted_req_header_names = req_metadata.sort()
             headers_cust = {}
@@ -1077,7 +1077,7 @@ function get_env_term_index(val){
   }
   return idx
 }
-function validate_metadata(obj){
+function validate_metadata(req, obj){
     console.log('in fxn validate_metadata')
     console.log('must be done with names NOT IDs')
     
@@ -1087,116 +1087,133 @@ function validate_metadata(obj){
     validation.error = false
     validation.empty_values = false
     validation.msg = []
-    
+    field_collector = {}
     for(did in obj){
-            for(mdname in obj[did]){
-                             
-                          ds = DATASET_NAME_BY_DID[did] 
-                          var val = obj[did][mdname]
-                          if(val == undefined){   // and mdname in required_metadata_fields
-                            validation.empty_values = true
-                            validation.error = true
-                            validation.msg.push("Missing required field: "+mdname)
-                          }else{
-                              if(mdname == 'env_package'){                                       
-                
-                                if(get_env_package_index(val) == -1){
-                                  validation.error = true
-                                  validation.msg.push(ds+": The 'env_package' value ('"+val+"') is not in the allowed list.")
-                                }
-                              }else if(mdname == 'fragment_name'){                                  
-                
-                                if(get_fragment_name_index(val) == -1){
-                                  validation.error = true
-                                  validation.msg.push(ds+": The 'fragment_name' value ('"+val+"') is not in the allowed list.")
-                                }
-                              }else if(mdname == 'domain'){                                           
-                
-                                if(get_domain_index(val) == -1){
-                                  validation.error = true
-                                  validation.msg.push(ds+": The 'domain' value ('"+val+"') is not in the allowed list.")
-                                }
-                              }else if(mdname == 'country'){                                            
-                
-                                if(get_country_index(val) == -1){
-                                  validation.error = true
-                                  validation.msg.push(ds+": The 'country' value ('"+val+"') is not in the allowed list.")
-                                }
-                              }else if(mdname == 'sequencing_platform'){                                           
-                
-                                if(get_sequencing_platform_index(val) == -1){
-                                  validation.error = true
-                                  validation.msg.push(ds+": The 'sequencing_platform' value ('"+val+"') is not in the allowed list.")
-                                }
-                              }else if(mdname == 'dna_region'){                                         
-                
-                                if(get_dna_region_index(val) == -1){
-                                  validation.error = true
-                                  validation.msg.push(ds+": The 'dna_region' value ('"+val+"') is not in the allowed list.")
-                                }
-                              }else if(mdname == 'env_matter'){                                           
-                
-                                if(get_env_term_index(val) == -1){
-                                  validation.error = true
-                                  validation.msg.push(ds+": The 'env_matter' value ('"+val+"') is not in the allowed list.")
-                                }
-                              }else if(mdname == 'env_biome'){                                              
-                
-                                if(get_env_term_index(val) == -1){
-                                  validation.error = true
-                                  validation.msg.push(ds+": The 'env_biome' value ('"+val+"') is not in the allowed list.")
-                                }
-                              }else if(mdname == 'env_feature'){                                           
-                
-                                if(get_env_term_index(val) == -1){
-                                  validation.error = true
-                                  validation.msg.push(ds+": The 'env_feature' value ('"+val+"') is not in the allowed list.")
-                                }
-                              }else if(mdname == 'assigned_from_geo'){                                           
-                
-                                //val = val.toLowerCase()
-                                if(val == 'y' || val == 'n'){
-                                  //console.log('FOUND '+val)                          
-                                }else{                          
-                                  validation.error = true
-                                  validation.msg.push(ds+": The 'assigned_from_geo' value ('"+val+"') must be either 'y' or 'n'.")
-                                }
-                              }else if(mdname == 'collection_date'){                                           
-                
-                                valid = helpers.isValidMySQLDate(val)
-                                if(valid){
-                                  //console.log('FOUND '+val)                          
-                                }else{                          
-                                  validation.error = true
-                                  validation.msg.push(ds+": The 'collection_date' value ('"+val+"') is not a valid date.")
-                                }
-                              }else if(mdname == 'altitude' || mdname == 'elevation' || mdname == 'depth'){                            
-                                if(isNaN(val)){                                  
-                                  validation.error = true
-                                  validation.msg.push(ds+": The '"+mdname+"' value ('"+val+"') must be a number.")                         
-                                }
-                              }else if(mdname == 'latitude' || mdname == 'longitude'){                            
-                                if(isNaN(val)){                                  
-                                  validation.error = true
-                                  validation.msg.push(ds+": Latitude and Longitude must be in decimal degrees.")                         
-                                }
-                              }else if(mdname == 'description' || mdname == 'common_name'){                            
-                                  if(val == ''){
-                                    validation.error = true
-                                    validation.msg.push(ds+": The value for '"+mdname+"' is not allowed to be empty.")
-                                  }
-                              }else if(mdname == 'taxon_id'){                            
-                                  
-                                  if(isNaN(val)){
-                                    validation.error = true
-                                    validation.msg.push(ds+": The value for '"+mdname+"' must be a integer from the NCBI database.")
-                                  }
+        for(mdname in obj[did]){
+            field_collector[mdname]=1
+        }
+    }
+    //unique_field_list = Object.keys(field_collector)        
+                          
+    for(i in req.CONSTS.REQ_METADATA_FIELDS){
+        req_name = req.CONSTS.REQ_METADATA_FIELDS[i]
+        if(field_collector.hasOwnProperty(req_name)){
+            console.log('got '+req_name)
+        }else{
+            console.log('missing')
+            validation.error = true
+            validation.msg.push("Missing required field in csv file: "+req_name)
+        }
+    }
+                          
+    for(did in obj){
+        for(mdname in obj[did]){                             
+                  ds = DATASET_NAME_BY_DID[did] 
+                  var val = obj[did][mdname]
+                  if((val == undefined || val == '') && req.CONSTS.REQ_METADATA_FIELDS.indexOf(mdname) != -1 ){   // and mdname in required_metadata_fields
+                    
+                    validation.empty_values = true
+                    validation.error = true
+                    validation.msg.push(ds+": Missing required value for: "+mdname)
+                  }else{
+                          if(mdname == 'env_package'){                                       
+            
+                            if(get_env_package_index(val) == -1){
+                              validation.error = true
+                              validation.msg.push(ds+": The 'env_package' value ('"+val+"') is not in the allowed list.")
+                            }
+                          }else if(mdname == 'fragment_name'){                                  
+            
+                            if(get_fragment_name_index(val) == -1){
+                              validation.error = true
+                              validation.msg.push(ds+": The 'fragment_name' value ('"+val+"') is not in the allowed list.")
+                            }
+                          }else if(mdname == 'domain'){                                           
+            
+                            if(get_domain_index(val) == -1){
+                              validation.error = true
+                              validation.msg.push(ds+": The 'domain' value ('"+val+"') is not in the allowed list.")
+                            }
+                          }else if(mdname == 'country'){                                            
+            
+                            if(get_country_index(val) == -1){
+                              validation.error = true
+                              validation.msg.push(ds+": The 'country' value ('"+val+"') is not in the allowed list.")
+                            }
+                          }else if(mdname == 'sequencing_platform'){                                           
+            
+                            if(get_sequencing_platform_index(val) == -1){
+                              validation.error = true
+                              validation.msg.push(ds+": The 'sequencing_platform' value ('"+val+"') is not in the allowed list.")
+                            }
+                          }else if(mdname == 'dna_region'){                                         
+            
+                            if(get_dna_region_index(val) == -1){
+                              validation.error = true
+                              validation.msg.push(ds+": The 'dna_region' value ('"+val+"') is not in the allowed list.")
+                            }
+                          }else if(mdname == 'env_matter'){                                           
+            
+                            if(get_env_term_index(val) == -1){
+                              validation.error = true
+                              validation.msg.push(ds+": The 'env_matter' value ('"+val+"') is not in the allowed list.")
+                            }
+                          }else if(mdname == 'env_biome'){                                              
+            
+                            if(get_env_term_index(val) == -1){
+                              validation.error = true
+                              validation.msg.push(ds+": The 'env_biome' value ('"+val+"') is not in the allowed list.")
+                            }
+                          }else if(mdname == 'env_feature'){                                           
+            
+                            if(get_env_term_index(val) == -1){
+                              validation.error = true
+                              validation.msg.push(ds+": The 'env_feature' value ('"+val+"') is not in the allowed list.")
+                            }
+                          }else if(mdname == 'assigned_from_geo'){                                           
+            
+                            //val = val.toLowerCase()
+                            if(val == 'y' || val == 'n'){
+                              //console.log('FOUND '+val)                          
+                            }else{                          
+                              validation.error = true
+                              validation.msg.push(ds+": The 'assigned_from_geo' value ('"+val+"') must be either 'y' or 'n'.")
+                            }
+                          }else if(mdname == 'collection_date'){                                           
+            
+                            valid = helpers.isValidMySQLDate(val)
+                            if(valid){
+                              //console.log('FOUND '+val)                          
+                            }else{                          
+                              validation.error = true
+                              validation.msg.push(ds+": The 'collection_date' value ('"+val+"') is not a valid date.")
+                            }
+                          }else if(mdname == 'altitude' || mdname == 'elevation' || mdname == 'depth'){                            
+                            if(isNaN(val)){                                  
+                              validation.error = true
+                              validation.msg.push(ds+": The '"+mdname+"' value ('"+val+"') must be a number.")                         
+                            }
+                          }else if(mdname == 'latitude' || mdname == 'longitude'){                            
+                            if(isNaN(val)){                                  
+                              validation.error = true
+                              validation.msg.push(ds+": Latitude and Longitude must be in decimal degrees.")                         
+                            }
+                          }else if(mdname == 'description' || mdname == 'common_name'){                            
+                              if(val == ''){
+                                validation.error = true
+                                validation.msg.push(ds+": The value for '"+mdname+"' is not allowed to be empty.")
                               }
+                          }else if(mdname == 'taxon_id'){                       
+                              if(isNaN(val)){
+                                validation.error = true
+                                validation.msg.push(ds+": The value for '"+mdname+"' must be a integer from the NCBI database.")
+                              }
+                          }
                                       
                           
                               //validation.data[dset]['req_data'].push(val)
-                          }
-                 }
+                  }
+        }
     }
     return validation
 

@@ -44,7 +44,7 @@ req_names_with_ids = ["altitude", "assigned_from_geo", "collection_date",
                                 "common_name", "country_id", "depth", "description", 
                                 "dna_region_id", "domain_id", "elevation", "env_biome_id", 
                                 "env_feature_id", "env_matter_id", "env_package_id", 
-                                "fragment_name", "latitude", "longitude", 
+                                "fragment_name_id", "latitude", "longitude", 
                                 "sequencing_platform_id", "taxon_id"]
 
 ###################################################
@@ -71,6 +71,14 @@ def split_cust_from_req(args, data):
             else:
                 cust_metadata[did][name] = data[did][name]
     
+    for did in req_metadata:
+        keys = req_metadata[did]
+        for name in req_names_with_ids:
+            if name in keys:
+                pass
+            else:
+                req_metadata[did][name] = '0'  # what are defaults?
+             
     return (req_metadata,cust_metadata)
     
 def backup_old_cust_table(args):
@@ -154,13 +162,31 @@ def enter_cust_new_fields(args, cust_metadata):
 
 def update_req_data(args, req_metadata):  
     print
-    print "Updating Required metadata"   
+    print "Updating Required metadata" 
+    
     for did in req_metadata:
-        q = "UPDATE required_metadata_info set "
-        for mdname in req_metadata[did]:
-            q += mdname + "='" + req_metadata[did][mdname] + "', "
-        q = q.strip().strip(',') # remove trailing comma
-        q += " WHERE dataset_id='"+did+"'"
+        q0 = "SELECT required_metadata_id from required_metadata_info where dataset_id='"+did+"'"
+        cur.execute(q0)
+        count = cur.rowcount
+        print 'count',count
+        if count == 0:
+            print 'no row found'
+            q = "INSERT into required_metadata_info (`dataset_id`,`"
+            sql_names = []
+            sql_values = []
+            for mdname in req_metadata[did]:
+                sql_names.append(mdname)
+                sql_values.append(req_metadata[did][mdname])                
+        
+            q += "`,`".join(sql_names)+ "`) VALUES('"+did+"','"
+            q += "','".join(sql_values) + "')"    
+        else:
+            q = "UPDATE required_metadata_info set "
+            for mdname in req_metadata[did]:
+                q += mdname + "='" + req_metadata[did][mdname] + "', "
+            q = q.strip().strip(',') # remove trailing comma
+            q += " WHERE dataset_id='"+str(did)+"'"
+        print q
         run_mysql_query(q)
         
 def update_json_files(args, json_metadata):
