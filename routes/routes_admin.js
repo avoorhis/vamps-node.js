@@ -968,11 +968,10 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
                }
               if(Object.keys(html_json.data).length === 0 ){
                     html_json.validation.error = true
-                    html_json.validation.msg.push('Dataset names in the file failed to match those in the database for this project: '+project_name)               
-              }  // end parser
-              
-              //console.log('html_json')
-              //console.log(JSON.stringify(html_json, null, 2))
+                    // remove all other messages:
+                    html_json.validation.msg = ['Dataset names in the first column failed to match those in the database for this project: '+project_name]  
+                    html_json.validation.msg.push("Is the first column 'Dataset', 'sample_name', '#SampleID' or 'dataset' ?")         
+              } 
               
               if(html_json.validation.error){
                 console.log('ERROR--MD UPLOAD--NO VALIDATION')
