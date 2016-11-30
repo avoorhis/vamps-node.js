@@ -307,9 +307,9 @@ module.exports.update_global_variables = function(pid,type){
 };
 
 module.exports.assignment_finish_request = function(res, rows1, rows2, status_params) {
-        console.log('query ok1 '+JSON.stringify(rows1));  
-        console.log('query ok2 '+JSON.stringify(rows2));  
-        
+        console.log('query ok1 '+JSON.stringify(rows1));
+        console.log('query ok2 '+JSON.stringify(rows2));
+
         this.run_select_datasets_query(rows1);
         console.log(' UPDATING ALL_DATASETS');
         console.log(' UPDATING PROJECT_ID_BY_DID');
@@ -319,7 +319,7 @@ module.exports.assignment_finish_request = function(res, rows1, rows2, status_pa
         console.log(' UPDATING DATASET_NAME_BY_DID');
         console.log(' UPDATING AllMetadataNames');
         console.log(' UPDATING DatasetsWithLatLong');
-        
+
         this.run_select_sequences_query(rows2);
         console.log(' UPDATING ALL_DCOUNTS_BY_DID');
         console.log(' UPDATING ALL_PCOUNTS_BY_PID ');
@@ -529,7 +529,7 @@ module.exports.get_PTREE_metadata = function(OBJ, q) {
     OBJ.forEach(function(prj) {
       dids = DATASET_IDS_BY_PID[prj.pid]
       for(n in dids){
-        
+
         if(dids[n] in AllMetadata && AllMetadata[dids[n]].hasOwnProperty(q)){
           phash[prj.pid] = 1
         }
@@ -604,7 +604,7 @@ module.exports.update_project_information_global_object = function(pid, form, us
             "title" :            form.new_project_title,
             "description" :      form.new_project_description,
             "public" :           form.new_privacy,
-            "permissions" :     [user_obj.user_id]            
+            "permissions" :     [user_obj.user_id]
           };
     PROJECT_INFORMATION_BY_PNAME[form.new_project_name] =  PROJECT_INFORMATION_BY_PID[pid];
     console.log('PROJECT_INFORMATION_BY_PID[pid]')
@@ -630,13 +630,13 @@ module.exports.run_select_datasets_query = function(rows){
           }else{
             var envpkgid = '1'
           }
-          
+
           PROJECT_INFORMATION_BY_PID[pid] = {
             "last" :            rows[i].last_name,
             "first" :           rows[i].first_name,
             "username" :        rows[i].username,
             "oid" :             owner_id,
-            "email" :           rows[i].email,            
+            "email" :           rows[i].email,
             "env_package_id" :  envpkgid,  // mostly used here for the filter function on dataset selection page
             "institution" :     rows[i].institution,
             "project" :         project,
@@ -706,9 +706,9 @@ module.exports.run_select_datasets_query = function(rows){
 
                 if(did in DatasetsWithLatLong){
                   if(mdname == 'latitude'){
-                    DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
+                    DatasetsWithLatLong[did].latitude = +AllMetadata[did].latitude;
                   }else{
-                    DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
+                    DatasetsWithLatLong[did].longitude = +AllMetadata[did].longitude;
                   }
                 }else{
                   DatasetsWithLatLong[did]={};
@@ -717,9 +717,9 @@ module.exports.run_select_datasets_query = function(rows){
                   DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
                   DatasetsWithLatLong[did].pid = PROJECT_ID_BY_DID[did];
                   if(mdname == 'latitude'){
-                    DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
+                    DatasetsWithLatLong[did].latitude = +AllMetadata[did].latitude;
                   }else{
-                    DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
+                    DatasetsWithLatLong[did].longitude = +AllMetadata[did].longitude;
                   }
                 }
               }
@@ -747,9 +747,9 @@ module.exports.run_select_datasets_query = function(rows){
                     if(did in DatasetsWithLatLong){
                       if(mdname == 'latitude'){
                         // TODO: "Blocks are nested too deeply. (4)"
-                        DatasetsWithLatLong[did].latitude = mdgroup[mdname];
+                        DatasetsWithLatLong[did].latitude = +mdgroup[mdname];
                       }else{
-                        DatasetsWithLatLong[did].longitude = mdgroup[mdname];
+                        DatasetsWithLatLong[did].longitude = +mdgroup[mdname];
                       }
                     }else{
                       DatasetsWithLatLong[did]={};
@@ -759,9 +759,9 @@ module.exports.run_select_datasets_query = function(rows){
                       DatasetsWithLatLong[did].pid = PROJECT_ID_BY_DID[did];
                       if(mdname == 'latitude'){
                         // TODO: Column: 47 "Blocks are nested too deeply. (4)"
-                        DatasetsWithLatLong[did].latitude = mdgroup[mdname];
+                        DatasetsWithLatLong[did].latitude = +mdgroup[mdname];
                       }else{
-                        DatasetsWithLatLong[did].longitude = mdgroup[mdname];
+                        DatasetsWithLatLong[did].longitude = +mdgroup[mdname];
                       }
                     }
                   }
@@ -1128,8 +1128,8 @@ module.exports.deleteFolderRecursive = function(path) {
 //
 //
 module.exports.make_gast_script_txt = function(req, data_dir, project) {
-  
-  
+
+
   make_gast_script_txt = "";
   if (module.exports.is_local)
   {
@@ -1146,8 +1146,8 @@ module.exports.make_gast_script_txt = function(req, data_dir, project) {
     make_gast_script_txt += `FILE_NUMBER=\`wc -l < ${data_dir}/filenames.list\``;
     make_gast_script_txt += "\n";
 
-    make_gast_script_txt += "echo \"total files = $FILE_NUMBER\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"  
-    
+    make_gast_script_txt += "echo \"total files = $FILE_NUMBER\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
+
     make_gast_script_txt += "cat >"+data_dir+"/clust_gast_ill_"+project+".sh <<InputComesFromHERE\n"
     make_gast_script_txt += "#!/bin/bash\n";
 
@@ -1208,9 +1208,9 @@ else
   make_gast_script_txt +=  "  chmod 666 "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
   make_gast_script_txt += "\n";
   make_gast_script_txt +=  "InputComesFromHERE\n"
-  
+
   make_gast_script_txt +=  "echo \"Running clust_gast_ill_"+project+".sh\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
-  
+
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
 
@@ -1239,7 +1239,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   // 5 public_private search PROJECT_INFORMATION_BY_PID
   // 6 metadata       helpers.get_PTREE_metadata
   //console.log(PROJECT_INFORMATION_BY_PID)
-  
+
   //console.log(prj_obj,filter_obj)
 
   // SUBSTRING
@@ -1248,7 +1248,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
       NewPROJECT_TREE_OBJ1 = prj_obj
   }else{
       console.log('filtering substring',filter_obj.substring )
-      
+
       prj_obj.forEach(function(prj) {
         if(prj.hasOwnProperty('name')){
           ucname = prj.name.toUpperCase();
@@ -1256,10 +1256,10 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
           ucname = prj.project.toUpperCase();
         }
         if(ucname.indexOf(filter_obj.substring) != -1){
-          NewPROJECT_TREE_OBJ1.push(prj);        
+          NewPROJECT_TREE_OBJ1.push(prj);
         }
       });
-      
+
   }
 
   // ENV
@@ -1268,13 +1268,13 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
     NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1
   }else{
       console.log('filtering env',filter_obj.env )
-      
+
         NewPROJECT_TREE_OBJ1.forEach(function(prj) {
           if(filter_obj.env.indexOf(parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id)) != -1){
-            NewPROJECT_TREE_OBJ2.push(prj);        
+            NewPROJECT_TREE_OBJ2.push(prj);
           }
         });
-      
+
   }
 
   // TARGET
@@ -1283,7 +1283,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
       NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2
   }else{
       console.log('filtering target',filter_obj.target )
-      
+
       NewPROJECT_TREE_OBJ2.forEach(function(prj) {
         if(prj.hasOwnProperty('name')){
           pparts = prj.name.split('_');
@@ -1292,16 +1292,16 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
         }
         last_el = pparts[pparts.length - 1]
         if(last_el === filter_obj.target){
-          NewPROJECT_TREE_OBJ3.push(prj);        
+          NewPROJECT_TREE_OBJ3.push(prj);
         }
       });
-     
+
   }
   // PORTAL
   var NewPROJECT_TREE_OBJ4 = []
   if(filter_obj.portal == '' || filter_obj.portal === '.....'){
       NewPROJECT_TREE_OBJ4 = NewPROJECT_TREE_OBJ3
-  }else{    
+  }else{
         console.log('filtering portal',filter_obj.portal )
         portal = req.CONSTS.PORTALS[filter_obj.portal]
         NewPROJECT_TREE_OBJ3.forEach(function(prj) {
@@ -1313,10 +1313,10 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
           pparts = pname.split('_');
           prefix = pparts[0]
           if(portal.prefixes.indexOf(prefix) != -1 || portal.projects.indexOf(pname) != -1){
-            NewPROJECT_TREE_OBJ4.push(prj);        
+            NewPROJECT_TREE_OBJ4.push(prj);
           }
         });
-      
+
   }
 
   // public/private
@@ -1327,7 +1327,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
       console.log('filtering public',filter_obj.public )
       NewPROJECT_TREE_OBJ4.forEach(function(prj) {
            if(PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public)){
-             NewPROJECT_TREE_OBJ5.push(prj);        
+             NewPROJECT_TREE_OBJ5.push(prj);
            }
        });
   }
@@ -1337,11 +1337,11 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   if(filter_obj.metadata == '' || filter_obj.metadata === '.....'){
       NewPROJECT_TREE_OBJ6 = NewPROJECT_TREE_OBJ5
   }else{
-      
+
       console.log('filtering metadata',filter_obj.metadata )
       NewPROJECT_TREE_OBJ6 = module.exports.get_PTREE_metadata(NewPROJECT_TREE_OBJ5, filter_obj.metadata)
       //NewPROJECT_TREE_OBJ6 = NewPROJECT_TREE_OBJ5
-      
+
   }
   var new_obj = NewPROJECT_TREE_OBJ6
   //console.log('new_obj')

@@ -3,11 +3,11 @@
 
 #input1_comparison{
   display: inline-block;
- 
+
 }
 #input2_comparison{
   display: inline-block;
-} 
+}
 #input3_comparison{
   display: inline-block;
 }
@@ -17,7 +17,7 @@
   border: 1px solid gray;
   background:#F0FFF0;
   height:100px;
-  
+
   overflow:auto;
   font: small;
 }
@@ -39,7 +39,7 @@
 
 #blast_search_area {
 	width:100%;
-	
+
 }
 #search_choices_div {
 
@@ -47,7 +47,7 @@
 
 #search_choices_div ul{
 	list-style-type:none;
-	
+
 }
 #search_choices_div ul li{
 	display: inline;
@@ -59,5 +59,13 @@
 }
 .hover_table td {
 	padding:5px;
-	
+
+}
+#geo_result {
+
+}
+#map {
+
+  height: 400px;
+  width: 100%;
 }

@@ -7,7 +7,7 @@ var path  = require('path');
 
 /* GET Search page. */
 router.get('/search_index', helpers.isLoggedIn, function(req, res) {
-    
+
     //console.log(metadata_fields)
     res.render('search/search_index', { title: 'VAMPS:Search',
         message:         req.flash('message'),
@@ -30,9 +30,9 @@ router.get('/users', helpers.isLoggedIn, function(req, res) {
 router.get('/names', helpers.isLoggedIn, function(req, res) {
 
     res.render('search/names', { title: 'VAMPS:Search',
-        
+
         message:              req.flash('message'),
-        
+
         user:                 req.user,hostname: req.CONFIG.hostname,
     });
 });
@@ -58,9 +58,67 @@ router.get('/blast', helpers.isLoggedIn, function(req, res) {
     res.render('search/blast', { title: 'VAMPS:Search',
         blast_db_path:blast_db_path,
         message:              req.flash('message'),
-        
+
         user:                 req.user,hostname: req.CONFIG.hostname,
     });
+});
+//
+//
+//
+router.get('/geo', helpers.isLoggedIn, function(req, res) {
+
+
+    res.render('search/geo_area', { title: 'VAMPS:Search',
+
+        message:  req.flash('message'),
+        gekey :   req.CONFIG.GOOGLE_EARTH_KEY,
+        user:     req.user,hostname: req.CONFIG.hostname,
+    });
+});
+router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
+    console.log('in geo_search result');
+    console.log('req.body-->>');
+    console.log(req.body);
+    console.log('<<--req.body');
+    console.log('DatasetsWithLatLong')
+    console.log(DatasetsWithLatLong)
+    dids_in_range = {}
+    dids_in_range.points = {}
+    dids_in_range.boundry = {}
+    dids_in_range.boundry.lat_min = req.body.lat_min
+    dids_in_range.boundry.lat_max = req.body.lat_max
+    dids_in_range.boundry.lon_min = req.body.lon_min
+    dids_in_range.boundry.lon_max = req.body.lon_max
+    // validate input numbers -- should be client side
+
+    for(did in DatasetsWithLatLong){
+      obj = DatasetsWithLatLong[did]
+      if(  +obj.latitude  >= +dids_in_range.boundry.lat_min
+        && +obj.latitude  <= +dids_in_range.boundry.lat_max
+        && +obj.longitude >= +dids_in_range.boundry.lon_min
+        && +obj.longitude <= +dids_in_range.boundry.lon_max)
+      {
+        dids_in_range.points[did] = obj
+        dids_in_range.points[did].project = PROJECT_INFORMATION_BY_PID[obj.pid].project
+        dids_in_range.points[did].dataset = DATASET_NAME_BY_DID[did]
+      }
+    }
+    //'88':    { proj_dset: 'UC_JJ_ApD1-b--ApD1',    latitude: '24.85',     longitude: '-76.5' } }
+    console.log('dids_in_range')
+    console.log(dids_in_range)
+    res.json(dids_in_range)
+    // res.render('search/geo_area', { title: 'VAMPS:Search',
+    //
+    //     message:              req.flash('message'),
+    //
+    //     user:                 req.user,hostname: req.CONFIG.hostname,
+    // });
+});
+router.post('/accept_latlon_datasets', helpers.isLoggedIn, function(req, res) {
+  console.log('in accept_latlon_datasets');
+  console.log('req.body-->>');
+  console.log(req.body);
+  console.log('<<--req.body');
 });
 //
 //
@@ -68,9 +126,9 @@ router.get('/blast', helpers.isLoggedIn, function(req, res) {
 router.get('/taxonomy', helpers.isLoggedIn, function(req, res) {
 
     res.render('search/taxonomy', { title: 'VAMPS:Search',
-        
+
         message:              req.flash('message'),
-        
+
         user:                 req.user,hostname: req.CONFIG.hostname,
     });
 });
@@ -78,13 +136,13 @@ router.get('/taxonomy', helpers.isLoggedIn, function(req, res) {
 //
 //
 router.get('/metadata/:type', helpers.isLoggedIn, function(req, res) {
-      
+
       console.log('in by '+req.params.type)
 
       var tmp_metadata_fields = {};
       var metadata_fields = {};
       var metadata_fields_array = [];
-      
+
       if(HDF5_MDATA == ''){
             for (var did in AllMetadata){
                 for (var name in AllMetadata[did]){
@@ -102,12 +160,12 @@ router.get('/metadata/:type', helpers.isLoggedIn, function(req, res) {
                 }
             }
       }else{
-      
+
           for(did in DATASET_NAME_BY_DID){
             var group = HDF5_MDATA.openGroup(did+"/metadata");
             group.refresh()
             Object.getOwnPropertyNames(group).forEach(function(mdname, idx, array) {
-              if(mdname != 'id'){         
+              if(mdname != 'id'){
                 if(mdname in tmp_metadata_fields){
                   tmp_metadata_fields[mdname].push(group[mdname]);
                 }else{
@@ -118,13 +176,13 @@ router.get('/metadata/:type', helpers.isLoggedIn, function(req, res) {
                   }
                   tmp_metadata_fields[mdname].push(group[mdname]);
                 }
-              }        
+              }
             });
           }
       }
 
-      
-    
+
+
       for (var tmp_name in tmp_metadata_fields){
         metadata_fields_array.push(tmp_name);
         if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
@@ -156,7 +214,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
     console.log('req.body-->>');
     console.log(req.body);
     console.log('<<--req.body');
-	
+
 
   if(! req.body.tax_string){
 		req.flash('tax_message', 'Error');
@@ -165,12 +223,12 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
 	}
 	var tax_string = req.body.tax_string;
 	tax_items = tax_string.split(';');
-	if(req.body.selection == 'custom_taxonomy'){		
+	if(req.body.selection == 'custom_taxonomy'){
 		qSelect = "SELECT distinct dataset_id as did from sequence_pdr_info\n";
 	}else{
 		// ERROR
 	}
-	
+
 	qSelect += " JOIN silva_taxonomy_info_per_seq using (sequence_id)\n";
 	qSelect += " JOIN silva_taxonomy using (silva_taxonomy_id)\n";
 	add_where = ' WHERE ';
@@ -197,22 +255,22 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
         datasets.ids.push(did);
         datasets.names.push(pname+'--'+DATASET_NAME_BY_DID[did]);
       }
-      
+
 
       res.render('search/search_result_taxonomy', {
                     title    : 'VAMPS: Search Datasets',
                     datasets : JSON.stringify(datasets),
                     tax_string : tax_string,
-                    
+
                     user     : req.user, hostname: req.CONFIG.hostname,
           });
 
 
     }
   });
-	
-	
-	
+
+
+
 });
 //
 //  METADATA SEARCH
@@ -247,26 +305,26 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
   searches.search1.dataset_count = searches.search1.datasets.length;
   searches.search1.ds_plus = get_dataset_search_info(result.datasets, searches.search1);
   console.log('result1',result)
-  
+
 
   if('search2' in searches){
-    
+
     result = get_search_datasets(req.user, searches.search2);
     ds2 = result.datasets;
     searches.search2.datasets = result.datasets;
     searches.search2.dataset_count = searches.search2.datasets.length;
-   
+
     searches.search2.ds_plus = get_dataset_search_info(result.datasets, searches.search2);
 
   }
 
   if('search3' in searches){
-   
+
     result = get_search_datasets(req.user, searches.search3);
     ds3 = result.datasets;
     searches.search3.datasets = result.datasets;
     searches.search3.dataset_count = searches.search3.datasets.length;
-    
+
     searches.search3.ds_plus = get_dataset_search_info(result.datasets, searches.search3);
   }
   //
@@ -292,7 +350,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
   filtered.ds_plus = get_dataset_search_info(filtered.datasets, {});
   //
   //
-  
+
   if(filtered.datasets.length === 0){
   	console.log('redirecting back -- no data found');
 	  req.flash('message', 'No Data Found');
@@ -322,7 +380,7 @@ router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
 	    len=q.length;
 		for(var n in AllMetadataNames){
 			var name = AllMetadataNames[n];
-			
+
 				if(name.substring(0,len) === q){
           console.log('name= '+name);
 				  if (hint === "") {
@@ -333,12 +391,12 @@ router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
 	        }
 	    }
 	}
-	
+
 	console.log('hint= '+hint);
 	var result = (hint === "") ? ("No Suggestions") : (hint);
 	console.log('result= '+result);
 	res.send(result);
-	
+
 });
 //
 //  LIVESEARCH TAX
@@ -401,7 +459,7 @@ router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
 				hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','species');return false;\" >"+taxon + " </a> <small>(species)</small><br>";
 			}
 		}
-		
+
 	}
 	var result = (hint === "") ? ("No Suggestions") : (hint);
 	res.send(result);
@@ -410,7 +468,7 @@ router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
 //  LIVESEARCH USER
 //
 router.get('/livesearch_user/:q', helpers.isLoggedIn, function(req, res) {
- 
+
   console.log('in livesearch user');
   var q = req.params.q.toLowerCase();
   var hint = '';
@@ -452,18 +510,18 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
   if(q !== ''){
 
 
-    
+
     ALL_DATASETS.projects.forEach(function(prj) {
-      
+
       pid = prj.pid
-      
+
       pname = prj.name;
       ptitle = PROJECT_INFORMATION_BY_PID[pid].title;
       pdesc  = PROJECT_INFORMATION_BY_PID[pid].description;
       datasets = prj.datasets;
-      
-      if(      pname.toLowerCase().indexOf(q) != -1 
-            || ptitle.toLowerCase().indexOf(q) != -1 
+
+      if(      pname.toLowerCase().indexOf(q) != -1
+            || ptitle.toLowerCase().indexOf(q) != -1
             || pdesc.toLowerCase().indexOf(q) != -1
         ){
         console.log(pid)
@@ -478,9 +536,9 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
           did = dset.did
           dname = dset.dname;
           ddesc = dset.ddesc;
-          
-          if(    dname.toLowerCase().indexOf(q) != -1 
-              || ddesc.toLowerCase().indexOf(q) != -1 
+
+          if(    dname.toLowerCase().indexOf(q) != -1
+              || ddesc.toLowerCase().indexOf(q) != -1
             ){
             console.log(dname)
             dlist.push(dname)
@@ -513,7 +571,7 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
         hint += "<button type='submit' id='"+d_obj[did].did+"' class='btn btn-xs btn-link' >"+d_obj[did].dname+"</button> (desc: "+d_obj[did].desc+')'
         hint += "</form>";
     }
-     
+
   }
 
   console.log(q,'hint',hint)
@@ -544,7 +602,7 @@ router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req
   this_item.full_string = tax_str;
   console.log('sending tax_str',this_item);
   res.json(this_item);
-	
+
 });
 
 
@@ -719,14 +777,14 @@ function get_search_datasets(user, search){
     var datasets = [];
     //var tmp_metadata = {};
     if(HDF5_MDATA == ''){
-        
+
         for (var did in AllMetadata){
           // search only if did allowed by permissions
           var pid = PROJECT_ID_BY_DID[did];
           //console.log('pid',pid,'did',did)
           //console.log('IN METADATA',user.security_level,PROJECT_INFORMATION_BY_PID[pid]);
           try{
-              
+
               if(user.security_level === 1 || PROJECT_INFORMATION_BY_PID[pid].permissions.length === 0 || PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(user.user_id) !=-1 ){
                 for (var mdname in AllMetadata[did]){
                   if(mdname === search['metadata-item']){
@@ -740,7 +798,7 @@ function get_search_datasets(user, search){
                 console.log('skipping pid,did',pid,did,e)
             }
         }
-      
+
     }else{
         for (var did in DATASET_NAME_BY_DID){
           //console.log('did',did)
@@ -751,7 +809,7 @@ function get_search_datasets(user, search){
                 var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
                 mdgroup.refresh()
                 var mdname = search['metadata-item']
-                if(mdgroup.hasOwnProperty(mdname)){             
+                if(mdgroup.hasOwnProperty(mdname)){
                       mdvalue = mdgroup[mdname];
                       datasets.append(get_search_datasets_did(datasets, search, did, mdname, mdvalue))
                 }
@@ -759,42 +817,42 @@ function get_search_datasets(user, search){
            }
            catch(e){
                 console.log('skipping pid,did',pid,did,e)
-           }  
+           }
         }
-                  
-    }
-    
 
-    //console.log('ds',datasets)      
-        
+    }
+
+
+    //console.log('ds',datasets)
+
     return {datasets:datasets}//, mdv:tmp_metadata};
 }
 function get_search_datasets_did(datasets, search, did, mdname, mdvalue){
-        
+
         if(search.hasOwnProperty('comparison') && search.comparison === 'equal_to'){
             search_value = Number(search['single-comparison-value']);
             if( Number(mdvalue) ===  search_value ){
               //console.log('equal-to: val '+mdname+' - '+mdvalue);
-              datasets.push(did);                  
+              datasets.push(did);
             }
           }else if(search.hasOwnProperty('comparison') && search.comparison === 'less_than'){
             search_value = Number(search['single-comparison-value']);
             if(Number(mdvalue) <= search_value){
               //console.log('less_than: val '+mdname+' - '+mdvalue);
-              datasets.push(did);                  
+              datasets.push(did);
             }
           }else if(search.hasOwnProperty('comparison') && search.comparison === 'greater_than'){
             console.log('in gt')
             search_value = Number(search['single-comparison-value']);
             if(Number(mdvalue) >= search_value){
               //console.log('greater_than: val '+mdname+' - '+mdvalue);
-              datasets.push(did);                  
+              datasets.push(did);
             }
           }else if(search.hasOwnProperty('comparison') && search.comparison === 'not_equal_to'){
             search_value = Number(search['single-comparison-value']);
             if(Number(mdvalue) !== search_value){
               //console.log('not_equal_to: val '+mdname+' - '+mdvalue);
-              datasets.push(did);                  
+              datasets.push(did);
             }
           }else if(search.hasOwnProperty('comparison') && search.comparison === 'between_range'){
             min_search_value = Number(search['min-comparison-value']);
@@ -802,11 +860,11 @@ function get_search_datasets_did(datasets, search, did, mdname, mdvalue){
             if(min_search_value > max_search_value){
               var tmp = max_search_value;
               max_search_value = min_search_value;
-              min_search_value = tmp;                  
+              min_search_value = tmp;
             }
             if(Number(mdvalue) > min_search_value && Number(mdvalue) < max_search_value){
               //console.log('outside_range - mdval: '+mdname+' -- '+mdvalue+' search: '+min_search_value + ' - '+max_search_value );
-              datasets.push(did);                  
+              datasets.push(did);
             }
           }else if(search.hasOwnProperty('comparison') && search['comparison'] === 'outside_range'){
             min_search_value = Number(search['min-comparison-value']);
@@ -814,7 +872,7 @@ function get_search_datasets_did(datasets, search, did, mdname, mdvalue){
             if(min_search_value > max_search_value){
               var tmp = max_search_value;
               max_search_value = min_search_value;
-              min_search_value = tmp;                  
+              min_search_value = tmp;
             }
             if(Number(mdvalue) < min_search_value || Number(mdvalue) > max_search_value){
               //console.log('outside_range - mdval: '+mdname+' -- '+mdvalue+' search: '+min_search_value + ' - '+max_search_value );
@@ -824,12 +882,12 @@ function get_search_datasets_did(datasets, search, did, mdname, mdvalue){
             list = search['data'];
             if(list.indexOf(mdvalue) != -1){
               //console.log('DATA: val '+did+' - '+mdname+' - '+mdvalue);
-              datasets.push(did);                  
+              datasets.push(did);
             }
           }else{
             console.log('Search ERROR')
-          }   
-        return datasets        
+          }
+        return datasets
 }
   //
   // GET DATASET SEARCH ORDER
@@ -852,7 +910,7 @@ function get_search_datasets_did(datasets, search, did, mdname, mdvalue){
             mdgroup.refresh()
             ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname, value:mdgroup[search["metadata-item"]] });
           }
-          
+
         }
       }
       return ds_plus;
@@ -864,7 +922,5 @@ function get_search_datasets_did(datasets, search, did, mdname, mdvalue){
   function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
   }
-  
+
   module.exports = router;
-
-

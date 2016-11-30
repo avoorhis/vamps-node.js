@@ -1,15 +1,20 @@
-// try{
-//     require('newrelic');
-//     console.log('Starting newrelic module: logging to ./newrelic_agent.log')
-// }
-// catch (e) {
-//   console.log(e);
-// }
+connection = require('./config/database').pool;
+var consts 		= require('./public/constants');
+var config = require('./config/config');
+if(config.hostname.substring(0,7) == 'bpcweb8'){
+	try{
+	    require('newrelic');
+	    console.log('Starting newrelic module: logging to ./newrelic_agent.log')
+	}
+	catch (e) {
+	  	console.log(e);
+	}
+}
 
 // anna's
 // try{
 //   require('nodetime').profile({
-//     accountKey: '13bf15a356e62b822df4395f183fe0a83af757f4', 
+//     accountKey: '13bf15a356e62b822df4395f183fe0a83af757f4',
 //     appName: 'Node.js VAMPS Application'
 //   });
 // }
@@ -45,7 +50,7 @@
 // module.exports.Access = {
 //   ACC_RDONLY : 0, /*absence of rdwr => rd-only */
 //   ACC_RDWR   : 1, /*open for read and write    */
-//   ACC_TRUNC  : 2, overwrite existing files   
+//   ACC_TRUNC  : 2, overwrite existing files
 //   ACC_EXCL   : 4, /*fail if file already exists*/
 //   ACC_DEBUG  : 8, /*print debug info      */
 //   ACC_CREAT  : 10 /*create non-existing files  */
@@ -72,7 +77,7 @@ var zlib = require('zlib');
 // without var declaration connection is global
 // needed for DATASETS initialization
 
-connection = require('./config/database').pool;
+
 
 
 
@@ -94,8 +99,8 @@ var metadata   = require('./routes/routes_metadata');
 //console.log('test')
 var visuals = require('./routes/visuals/routes_visualization');
 //console.log('test2')
-var consts = require('./public/constants');
-var config = require('./config/config');
+
+
 var app = express();
 app.set('appName', 'VAMPS');
 require('./config/passport')(passport, connection); // pass passport for configuration
@@ -142,7 +147,7 @@ app.use('/static', express.static(config.PATH_TO_STATIC_DOWNLOADS));   // path f
 // app.use('views/add_ins', express.static(path.join(__dirname, '/views/add_ins')));
 // required for passport
 // app.use(session({ secret: 'keyboard cat',  cookie: {maxAge: 900000}})); // session secret
-app.use(session({ 
+app.use(session({
 	secret: 'keyboard cat',
     resave: false,
     saveUninitialized: true
@@ -204,14 +209,14 @@ app.get('/*', function(req, res, next){
     var url = req.params[0];
     // I want to create a page like: counts_table_2014080_13452.html
     // for each link
-    if (url === 'visuals/user_viz_data/ctable.html') { // 
-        // Yay this is the File A... 
+    if (url === 'visuals/user_viz_data/ctable.html') { //
+        // Yay this is the File A...
         console.warn("The user file  has been requested");
         router.get('/visuals/user_viz_data/ctable.html',  function(req, res) {
             console.warn('trying to open ctable.html');
         });
     } else {
-        // we don't care about any other file, let it download too        
+        // we don't care about any other file, let it download too
         console.warn("No Route Found");
         next();
     }
@@ -260,11 +265,11 @@ fs.ensureDir(config.USER_FILES_BASE, function (err) {
     else{
         if(config.site != 'vamps' && config.site != 'vampsdev'){
             fs.chmod(config.USER_FILES_BASE, 0775, function (err) {
-                if(err) {console.log(err);} // ug+rwx       
+                if(err) {console.log(err);} // ug+rwx
             });
         }
         console.log('Ensured USER FILES dir is present: '+config.USER_FILES_BASE)
-        
+
     }        // dir has now been created, including the directory it is to be placed in
 
 });
@@ -345,7 +350,7 @@ try{
     //         if(mdname != 'id'){
     //           //console.log(mdname, group[mdname])
     //           //AllMetadata[did][mdname] = mdgroup[mdname]
-    //         }         
+    //         }
     //     });
     // }
     //console.log('aux_corrected_sample_depth',metadata['aux_corrected_sample_depth'])
@@ -403,15 +408,15 @@ try{
     //var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.json' );
     var meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
     AllTaxCounts = {}
-    
+
     try {
         AllTaxCounts   = require(taxcounts_file);
         console.log('Loading TAXCOUNTS as AllTaxCounts from: '+taxcounts_file);
     }
     catch (e) {
-      console.log(e);      
+      console.log(e);
     }
-    
+
     try {
         AllMetadata        = require(meta_file);
     }
@@ -448,9 +453,9 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     //console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
     //
     /// CREATE CUSTOM TAXONOMY TREE:  NOT NEEDED if using dhtmlx tree
-    //new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]); 
-    //new_taxonomy.make_fancytree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]); 
-    //new_taxonomy.make_dhtmlx_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);    
+    //new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);
+    //new_taxonomy.make_fancytree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);
+    //new_taxonomy.make_dhtmlx_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);
     //
     //console.log("\nnew_taxonomy.taxa_tree_dict = " + JSON.stringify(new_taxonomy.taxa_tree_dict));
     //for(n in new_taxonomy.taxa_tree_dict){
@@ -502,7 +507,3 @@ module.exports = app;
 //     console.log("Server listening on port " + app.get('port'));
 //   });
 // }
-
-
-
-

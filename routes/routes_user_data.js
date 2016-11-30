@@ -3083,7 +3083,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
               to : req.user.email,
               from : "vamps@mbl.edu",
               subject : "fasta file is ready",
-              text : "Your fasta file is ready here:https://vamps.mbl.edu:8124\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
+              text : "Your fasta file is ready here:https://vamps2.mbl.edu\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
             };
         helpers.send_mail(info);
 
@@ -3262,7 +3262,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
               to : req.user.email,
               from : "vamps@mbl.edu",
               subject : "metadata is ready",
-              text : "Your metadata file is ready here:\n\nhttps://vamps.mbl.edu:8124\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
+              text : "Your metadata file is ready here:\n\nhttps://vamps2.mbl.edu\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
         };
         helpers.send_mail(info);
         //req.flash('Done')
