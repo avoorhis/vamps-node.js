@@ -16,17 +16,20 @@
     <div class="col-lg-12">
       <form method='POST' action='geo_search'>
       <div id='geo_search_div' class='well'>
+        <h4>To find datasets within a geographic range enter the latitude and longitude values here:<br>
+        <small>Values must be in decimal degrees (not degree;minutes;seconds) -- like '-10.2' or '45.23459'. Use the map below for help.</small></h4>
         <li>Enter Latitude Range
-          &nbsp;&nbsp;&nbsp;Min: <input id='' name='lat_min' type='text'>&nbsp;&nbsp;&nbsp;Max: <input id='' name='lat_max' type='text'>
-          Must be in decimal degrees (not degree;minutes;seconds) -- like '-10.2' and '10.2'
+          &nbsp;&nbsp;&nbsp;Min: <input id='' name='lat_min' type='text' size='16' maxlength='10'>
+          &nbsp;&nbsp;&nbsp;Max: <input id='' name='lat_max' type='text' size='16' maxlength='10'>
         </li>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Latitude: negative numbers south of the equator and positive north of the equator.
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>Latitude: negative numbers south of the equator and positive north of the equator.</small>
         <br>
         <li>Enter Longitude Range
-          &nbsp;&nbsp;&nbsp;Min: <input id='' name='lon_min' type='text'>&nbsp;&nbsp;&nbsp;Max: <input id='' name='lon_max' type='text'>
+          &nbsp;&nbsp;&nbsp;Min: <input id='' name='lon_min' type='text' size='16' maxlength='10'>
+          &nbsp;&nbsp;&nbsp;Max: <input id='' name='lon_max' type='text' size='16' maxlength='10'>
           Decimal degrees
         </li>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Longitude: negative numbers west of the prime meridian and positive east of the prime meridian.
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>Longitude: negative numbers west of the prime meridian and positive east of the prime meridian.</small>
         <input class='pull-right' type='button' value='submit' onclick='validate_lat_lon(this.form)'>
       </div>
 
@@ -41,8 +44,8 @@
         <div id='geo_result'></div>
       </div>
       <div class="col-lg-6">
-      
-        <div id='coord'></div>
+
+        <div id='coord'>Hover over map to show latitudes and longitudes</div>
         <div id='map'></div>
       </div>
   </div>
@@ -54,7 +57,7 @@
 <script type="text/javascript" src="/javascripts/global.js"></script>
 <script type="text/javascript" src="/javascripts/search.js"></script>
 <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=<%= gekey %>">
+    src="https://maps.googleapis.com/maps/api/js?key=<%= gekey %>&callback=initMap">
 </script>
 </body>
 </html>

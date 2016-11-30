@@ -431,6 +431,22 @@ function validate_lat_lon(form){
   }else{
     lon_max = form.lon_max.value
   }
+
+  var msg = []
+  if(parseFloat(lat_min) > parseFloat(lat_max)){
+    // switch
+    tmp = lat_min
+    lat_min = lat_max
+    lat_max = tmp
+    msg.push('<p>I switched the Latitudes!</p>')
+  }
+//console.log('min '+lon_min+' max '+lon_max)
+  if(parseFloat(lon_min) > parseFloat(lon_max)){
+    tmp = lon_min
+    lon_min = lon_max
+    lon_max = tmp
+    msg.push('<p>I switched the Longitudes!</p>')
+  }
   // testing
   // lat_min = 20
   // lat_max = 30
@@ -450,9 +466,12 @@ function validate_lat_lon(form){
           data = JSON.parse(response)
           var html = ''
           if(Object.keys(data.points).length == 0){
-            html += '<p><b>No Data Found</b> within this area:</p>'
-            html += '<li>Latitude: Min: '+lat_min.toString()+';  Max: '+lat_max.toString()+'</li>'
-            html += '<li>Longitude: Min: '+lon_min.toString()+'; Max: '+lon_max.toString()+'</li>'
+            msg.push('<p><b>No Data Found</b> within this area:</p>')
+            msg.push('<li>Latitude: Min: '+lat_min.toString()+';  Max: '+lat_max.toString()+'</li>')
+            msg.push('<li>Longitude: Min: '+lon_min.toString()+'; Max: '+lon_max.toString()+'</li>')
+            for(i in msg){
+              html += msg[i]
+            }
           }else{
             html += "<form id='' method='POST' action='/visuals/unit_selection'>"
             html += "<div style='height'400px;overflow:auto'>"
@@ -475,7 +494,7 @@ function validate_lat_lon(form){
             html += "</form>"
           }
           document.getElementById("geo_result").innerHTML = html;
-          initMap(data);
+          initMap_with_points(data);
         }
   }
 
@@ -509,7 +528,17 @@ function check_selected(code){
     }
   }
 }
-function initMap(data) {
+function initMap() {
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 2,
+      center: {lat: 0, lng: 0}
+    });
+    google.maps.event.addListener(map, 'mousemove', function (event) {
+          displayCoordinates(event.latLng);
+    });
+
+}
+function initMap_with_points(data) {
 
         var minlat = +data.boundry.lat_min
         var maxlat = +data.boundry.lat_max
@@ -531,16 +560,13 @@ function initMap(data) {
         if(minlat==0 && maxlat==0 && minlon==0 && maxlon==0){
               map.setMapTypeId('roadmap');
               map.setZoom(2)
-              map.setCenter(center)
+              map.setCenter({lat: 0, lng: 0})
         }else{
           var southWest = new google.maps.LatLng(minlat, minlon);
           var northEast = new google.maps.LatLng(maxlat, maxlon);
           var bounds = new google.maps.LatLngBounds(southWest,northEast);
           map.fitBounds(bounds);
         }
-
-
-
 
         var marker1 = new google.maps.Marker({
           position: p1,
