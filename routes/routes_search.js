@@ -81,14 +81,28 @@ router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
     console.log(req.body);
     console.log('<<--req.body');
     console.log('DatasetsWithLatLong')
+    var latmin = +req.body.lat_min
+    var latmax = +req.body.lat_max
+    var lonmin = +req.body.lon_min
+    var lonmax = +req.body.lon_max
+    if(latmin > latmax){
+      tmp = latmin
+      latmin = latmax
+      latmax = tmp
+    }
+    if(lonmin > lonmax){
+      tmp = lonmin
+      lonmin = lonmax
+      lonmax = tmp
+    }
     console.log(DatasetsWithLatLong)
     dids_in_range = {}
     dids_in_range.points = {}
     dids_in_range.boundry = {}
-    dids_in_range.boundry.lat_min = req.body.lat_min
-    dids_in_range.boundry.lat_max = req.body.lat_max
-    dids_in_range.boundry.lon_min = req.body.lon_min
-    dids_in_range.boundry.lon_max = req.body.lon_max
+    dids_in_range.boundry.lat_min = latmin
+    dids_in_range.boundry.lat_max = latmax
+    dids_in_range.boundry.lon_min = lonmin
+    dids_in_range.boundry.lon_max = lonmax
     // validate input numbers -- should be client side
 
     for(did in DatasetsWithLatLong){

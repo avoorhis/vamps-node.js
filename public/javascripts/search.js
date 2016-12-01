@@ -445,15 +445,25 @@ function validate_lat_lon(form){
     lon_max = tmp
     msg.push('<p>I switched the Longitudes!</p>')
   }
+  bounds = {'lat_min':lat_min,'lat_max':lat_max,'lon_min':lon_min,'lon_max':lon_max}
+  //{lat: minlat, lng: minlon}
+
+  get_bounded_ajax(bounds, msg)
   // testing
   // lat_min = 20
   // lat_max = 30
   // lon_min = -80
   // lon_max= -70
-  args = 'lat_min='+lat_min.toString()
-  args += '&lat_max='+lat_max.toString()
-  args += '&lon_min='+lon_min.toString()
-  args += '&lon_max='+lon_max.toString()
+}
+//
+//
+//
+function get_bounded_ajax(bounds, msg){
+  console.log(JSON.stringify(bounds))
+  args = 'lat_min='+ bounds.lat_min.toString()
+  args += '&lat_max='+bounds.lat_max.toString()
+  args += '&lon_min='+bounds.lon_min.toString()
+  args += '&lon_max='+bounds.lon_max.toString()
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.open("POST", "geo_search", true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -542,10 +552,15 @@ function initMap_with_points(data) {
         var maxlat = +data.boundry.lat_max
         var minlon = +data.boundry.lon_min
         var maxlon = +data.boundry.lon_max
-        var p1 = {lat: minlat, lng: minlon}
-        var p2 = {lat: minlat, lng: maxlon}
-        var p3 = {lat: maxlat, lng: minlon}
-        var p4 = {lat: maxlat, lng: maxlon}
+
+        var SW = {lat: minlat, lng: minlon}
+        var SE = {lat: minlat, lng: maxlon}
+        var NW = {lat: maxlat, lng: minlon}
+        var NE = {lat: maxlat, lng: maxlon}
+        document.getElementById("SWbox").innerHTML = 'Lat: '+minlat+'; Lon: '+ minlon;
+        document.getElementById("SEbox").innerHTML = 'Lat: '+minlat +'; Lon: '+maxlon;
+        document.getElementById("NWbox").innerHTML = 'Lat: '+maxlat +'; Lon: '+minlon;
+        document.getElementById("NEbox").innerHTML = 'Lat: '+maxlat+'; Lon: '+ maxlon;
         var clat = minlat + ((maxlat - minlat)/2)
         var clon = minlon + ((maxlon - minlon)/2)
         var center = {lat:clat,lng:clon}
@@ -566,30 +581,37 @@ function initMap_with_points(data) {
           map.fitBounds(bounds);
         }
 
-        var marker1 = new google.maps.Marker({
-          position: p1,
+        var markerSW = new google.maps.Marker({
+          position: SW,
           map: map,
-          title:'p1',
+          title:'SW',
+          draggable: true,
           icon: '../images/blue_tilted_pin48x48.png'
         });
-        var marker2 = new google.maps.Marker({
-          position: p2,
+        var markerSE = new google.maps.Marker({
+          position: SE,
           map: map,
-          title:'p2',
+          title:'SE',
+          draggable: true,
           icon: '../images/blue_tilted_pin48x48.png'
         });
-        var marker3 = new google.maps.Marker({
-          position: p3,
+        var markerNW = new google.maps.Marker({
+          position: NW,
           map: map,
-          title:'p3',
+          title:'NW',
+          draggable: true,
           icon: '../images/blue_tilted_pin48x48.png'
         });
-        var marker4 = new google.maps.Marker({
-          position: p4,
+        var markerNE = new google.maps.Marker({
+          position: NE,
           map: map,
-          title:'p4',
+          title:'NE',
+          draggable: true,
           icon: '../images/blue_tilted_pin48x48.png'
         });
+
+
+
         if(Object.keys(data.points).length > 0){
           for(did in data.points){
             loc = {lat: +data.points[did].latitude, lng: +data.points[did].longitude}
@@ -600,9 +622,7 @@ function initMap_with_points(data) {
             });
           }
         }
-        var BoundCoordinates = [
-          p1,p3,p4,p2,p1
-        ];
+        var BoundCoordinates = [  SW,NW,NE,SE,SW   ];
         var linePath = new google.maps.Polyline({
           path: BoundCoordinates,
           geodesic: true,
@@ -614,9 +634,85 @@ function initMap_with_points(data) {
         linePath.setMap(map);
         google.maps.event.addListener(map, 'mousemove', function (event) {
               displayCoordinates(event.latLng);
-          });
-}
+        });
+        google.maps.event.addListener(markerSW, 'dragend', function (event) {
+            document.getElementById("SWbox").innerHTML = 'Lat: '+event.latLng.lat()+'; Lon: '+ event.latLng.lng();
+            SW = {lat: event.latLng.lat(), lng: event.latLng.lng()}
+            var BoundCoordinates = [   SW,NW,NE,SE,SW   ];
+            linePath.setPath(BoundCoordinates);
+            var new_bounds = get_new_bounds('SW',SW,NW,NE,SE)
+            get_bounded_ajax(new_bounds,[])
+            var southWest = new google.maps.LatLng(new_bounds.lat_min, new_bounds.lon_min);
+            var northEast = new google.maps.LatLng(new_bounds.lat_max, new_bounds.lon_max);
+            var bounds = new google.maps.LatLngBounds(southWest,northEast);
+            map.fitBounds(bounds);
 
+        });
+        google.maps.event.addListener(markerSE, 'dragend', function (event) {
+            document.getElementById("SEbox").innerHTML = 'Lat: '+event.latLng.lat()+'; Lon: '+ event.latLng.lng();
+            SE = {lat: event.latLng.lat(), lng: event.latLng.lng()}
+            var BoundCoordinates = [   SW,NW,NE,SE,SW   ];
+            linePath.setPath(BoundCoordinates);
+            var new_bounds = get_new_bounds('SE',SW,NW,NE,SE)
+            get_bounded_ajax(new_bounds,[])
+            var southWest = new google.maps.LatLng(new_bounds.lat_min, new_bounds.lon_min);
+            var northEast = new google.maps.LatLng(new_bounds.lat_max, new_bounds.lon_max);
+            var bounds = new google.maps.LatLngBounds(southWest,northEast);
+            map.fitBounds(bounds);
+        });
+        google.maps.event.addListener(markerNW, 'dragend', function (event) {
+            document.getElementById("NWbox").innerHTML = 'Lat: '+event.latLng.lat()+'; Lon: '+ event.latLng.lng();
+            NW = {lat: event.latLng.lat(), lng: event.latLng.lng()}
+            var BoundCoordinates = [   SW,NW,NE,SE,SW   ];
+            linePath.setPath(BoundCoordinates);
+            var new_bounds = get_new_bounds('NW',SW,NW,NE,SE)
+            get_bounded_ajax(new_bounds,[])
+            var southWest = new google.maps.LatLng(new_bounds.lat_min, new_bounds.lon_min);
+            var northEast = new google.maps.LatLng(new_bounds.lat_max, new_bounds.lon_max);
+            var bounds = new google.maps.LatLngBounds(southWest,northEast);
+            map.fitBounds(bounds);
+        });
+        google.maps.event.addListener(markerNE, 'dragend', function (event) {
+            document.getElementById("NEbox").innerHTML = 'Lat: '+event.latLng.lat() +'; Lon: '+ event.latLng.lng();
+            NE = {lat: event.latLng.lat(), lng: event.latLng.lng()}
+            var BoundCoordinates = [   SW,NW,NE,SE,SW   ];
+            linePath.setPath(BoundCoordinates);
+            var new_bounds = get_new_bounds('NE',SW,NW,NE,SE)
+            get_bounded_ajax(new_bounds,[])
+            var southWest = new google.maps.LatLng(new_bounds.lat_min, new_bounds.lon_min);
+            var northEast = new google.maps.LatLng(new_bounds.lat_max, new_bounds.lon_max);
+            var bounds = new google.maps.LatLngBounds(southWest,northEast);
+            map.fitBounds(bounds);
+            //alert(JSON.stringify(linePath.getPath()))
+        });
+}
+function get_new_bounds(pt,SW,NW,NE,SE){
+
+        var minlat = SW.lat
+        var maxlat = NW.lat
+        var minlon = SW.lng
+        var maxlon = SE.lng
+        if(pt == 'NE'){
+          // adjust maxlon and maxlat
+          maxlon = NE.lng
+          maxlat = NE.lat
+        }else if (pt == 'NW'){
+          // adjust minlon and maxlat
+          minlon = NW.lng
+          maxlat = NW.lat
+        }else if (pt == 'SE'){
+          // adjust maxlon and minlat
+          maxlon = SE.lng
+          minlat = SE.lat
+        }else if (pt == 'SW'){
+          // adjust minlon and minlat
+          minlon = SW.lng
+          minlat = SW.lat
+        }
+        bounds = {'lat_min':minlat,'lat_max':maxlat,'lon_min':minlon,'lon_max':maxlon}
+        console.log(JSON.stringify(bounds))
+        return bounds
+}
 function displayCoordinates(pnt) {
         var lat = pnt.lat();
         lat = lat.toFixed(4);
