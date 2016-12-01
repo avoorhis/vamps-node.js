@@ -119,13 +119,25 @@ def get_taxbyseq_sql(args, dids):
     sql += " ORDER BY taxonomy\n"
     return sql
     
-def get_metadata_sql(args, dids, req_headers):
-    sql  = "SELECT project, dataset, dataset_id, "+','.join(req_headers)
+def get_req_metadata_sql(args, dids, req_headersA, req_headersB):
+    
+    sql  = "SELECT project, dataset, dataset_id, "+','.join(req_headersA)
+    sql += ', t1.term_name as '+ req_headersB[0] + ', t2.term_name as '+ req_headersB[1] + ', t3.term_name as '+ req_headersB[2] +"\n"
     sql += " from required_metadata_info\n "
-    sql += " JOIN dataset using (dataset_id)\n";
-    sql += " JOIN project using (project_id)\n";
+    sql += " JOIN dataset using (dataset_id)\n"
+    sql += " JOIN project using (project_id)\n"
+    sql += " JOIN country using (country_id)\n"
+    sql += " JOIN dna_region using (dna_region_id)\n"
+    sql += " JOIN domain using (domain_id)\n"
+    sql += " JOIN env_package using (env_package_id)\n"
+    sql += " JOIN fragment_name using (fragment_name_id)\n"
+    sql += " JOIN sequencing_platform using (sequencing_platform_id)\n"
+    sql += " JOIN term as t1 on (env_biome_id=t1.term_id)\n"
+    sql += " JOIN term as t2 on (env_feature_id=t2.term_id)\n"
+    sql += " JOIN term as t3 on (env_matter_id=t3.term_id)\n"
     sql += " where dataset_id in ('" + dids + "')\n"
     return sql
+
     
 def write_file_txt(args, out_file, file_txt):
     if args.compress:
@@ -335,9 +347,15 @@ def run_metadata(args):
     pids = "','".join(args.pids)
     
     # REQUIRED METADATA
-    required_headers = ['taxon_id','description','common_name','altitude','assigned_from_geo','collection_date','depth','country','elevation','env_biome','env_feature','env_matter','latitude','longitude']   
-    sql = get_metadata_sql(args, dids, required_headers)      
-    
+ 
+    required_headersA = ["altitude", "assigned_from_geo", "collection_date", 
+                                "common_name", "country", "depth", "description", 
+                                "dna_region", "domain", "elevation", "env_package", 
+                                "fragment_name", "latitude", "longitude", 
+                                "sequencing_platform", "taxon_id"] 
+    required_headersB = [  "env_biome",  "env_feature", "env_matter" ]      # these have to be matched with term table                                              
+    sql = get_req_metadata_sql(args, dids, required_headersA, required_headersB)      
+    print sql
     cursor.execute(sql)
     result_count = cursor.rowcount
     data= {}
@@ -388,7 +406,7 @@ def run_metadata(args):
     file_txt += "VAMPS Metadata\n"
     file_txt += 'dataset'
     for header in headers_collector_keys:
-        file_txt += ','+header
+        file_txt += '\t'+header
     file_txt += '\n'
     for pjds in data:
         file_txt += pjds
@@ -396,9 +414,9 @@ def run_metadata(args):
             #if header not in ['custom_metadata_273_id','custom_metadata_517_id']:
                 
                 if header in data[pjds]:
-                    file_txt += ','+str(data[pjds][header])
+                    file_txt += '\t'+str(data[pjds][header])
                 else:
-                    file_txt += ','
+                    file_txt += '\t'
         file_txt += '\n'
     file_txt += '\n'       
     write_file_txt(args, out_file, file_txt)

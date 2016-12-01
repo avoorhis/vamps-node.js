@@ -27,22 +27,22 @@ if (search_metadata_btn !== null) {
 	  var form = document.getElementById('metadata_search_form');
 	  var search1_comparison = document.getElementById('search1_comparison');
 	  //alert(search1_comparison.value);
-	  
+
 	  form.submit();
-    
+
   });
 }
 
 if (search_metadata_activate_btn2 !== null) {
   search_metadata_activate_btn2.addEventListener('click', function () {
-    
+
 	if(metadata_search_field2.disabled === true){
-      
+
 	  metadata_search_field2.disabled = false;
     }else{
       metadata_search_field2.disabled = true;
     }
-    
+
   });
 }
 if (search_metadata_activate_btn3 !== null) {
@@ -81,16 +81,16 @@ if (metadata_search_field1 !== null) {
           if(range > 1){
             range = Math.ceil(max) - Math.floor(min);
           }
-          
+
           html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Values Min: "+min+" Max: "+max;
           //html += " -->> Select range to search: "+range
-          
+
           html += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->> Select Comparison:";
-          
+
           html += " <select id='search1_comparison' name='search1_comparison' onchange=\"change_comparison(this.value,'1')\" >";
           for (var y in selection_choices) {
 			       html += "      <option class='' value='"+selection_choices[y]+"'>"+selection_choices[y]+"</option>";
-          } 
+          }
           html += "</select> ";
           html += "<div id='input1_comparison'> ";
           html += " Enter: <input type='text' id='' name='search1_single-comparison-value' value='' maxlength='10' size='10' > (numeric only)";
@@ -130,16 +130,16 @@ if (metadata_search_field2 !== null) {
           if(range > 1){
             range = Math.ceil(max) - Math.floor(min);
           }
-          
+
           html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Values Min: "+min+" Max: "+max;
           //html += " -->> Select range to search: "+range
-          
+
           html += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->> Select Comparison:";
-          
+
           html += " <select id='search2_comparison' name='search2_comparison' onchange=\"change_comparison(this.value,'2')\" >";
           for(var x in selection_choices) {
             html += "      <option class='' value='"+selection_choices[x]+"'>"+selection_choices[x]+"</option>";
-          } 
+          }
           html += "</select> ";
           html += "<div id='input2_comparison'> ";
           html += " Enter: <input type='text' id='' name='search2_single-comparison-value' value='' maxlength='10' size='10' > (numeric only)";
@@ -178,16 +178,16 @@ if (metadata_search_field3 !== null) {
           if(range > 1){
             range = Math.ceil(max) - Math.floor(min);
           }
-          
+
           html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Values Min: "+min+" Max: "+max;
           //html += " -->> Select range to search: "+range
-          
+
           html += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->> Select Comparison:";
-          
+
           html += " <select id='search3_comparison' name='search3_comparison' onchange=\"change_comparison(this.value,'3')\" >";
           for (var z in selection_choices) {
             html += "      <option class='' value='"+selection_choices[z]+"'>"+selection_choices[z]+"</option>";
-          } 
+          }
           html += "</select> ";
           html += "<div id='input3_comparison'> ";
           html += " Enter: <input type='text' id='' name='search3_single-comparison-value' value='' maxlength='10' size='10' > (numeric only)";
@@ -207,11 +207,11 @@ if (metadata_search_field3 !== null) {
 //
 //
 function change_comparison(comparison, item){
-    var comparison_input;  
+    var comparison_input;
     var minval;
     var maxval;
     var oneval;
-    
+
   if(item==1){
     comparison_input = document.getElementById('input1_comparison');
     minval = 'search1_min-comparison-value';
@@ -228,7 +228,7 @@ function change_comparison(comparison, item){
     maxval = 'search3_max-comparison-value';
     oneval = 'search3_single-comparison-value';
   }
-  
+
   var html;
   if(comparison == selection_choices[4] || comparison == selection_choices[5]){  // inside or outside range
     html = " Enter Min: <input type='text' id='' name='"+minval+"' value='' maxlength='10' size='7' >";
@@ -238,7 +238,7 @@ function change_comparison(comparison, item){
     html = " Enter: <input type='text' id='' name='"+oneval+"' value='' maxlength='10' size='10' > (numeric only)";
     comparison_input.innerHTML = html;
   }
-  
+
 }
 //
 //
@@ -253,7 +253,7 @@ function showMetadataHint(str) {
       xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 //var response = xmlhttp.responseText;
-                
+
 				var response = xmlhttp.responseText;
 				if(response == 'No Suggestions'){
 					html = response;
@@ -261,9 +261,9 @@ function showMetadataHint(str) {
 				    var items = response.split('--');
 
        	            html += "<div class='my_custom_dropdown' >";
-                   
+
                     html += "<ul class='' >";
-                    for(i in items){					 
+                    for(i in items){
                  	   html += "<li ><a role=\"menuitem\" tabindex=\"-1\" href='metadata_name/"+items[i]+"' >"+items[i]+"</a></li>";
                     }
                     html += "</ul>";
@@ -273,7 +273,7 @@ function showMetadataHint(str) {
 				}
 				//alert('here '+html)
 				document.getElementById("txtHint").innerHTML = html;
-				
+
             }
         }
         xmlhttp.open("GET", "gethint/" + str, true);
@@ -284,7 +284,7 @@ function showMetadataHint(str) {
 //  SHOW  RESULTS for Taxonomy Search
 //
 function showTaxResult(str) {
-  
+
   var find_datasets_btn = document.getElementById("find_datasets_btn") || null;
   var create_fasta_btn = document.getElementById("create_fasta_btn") || null;
   if (str.length==0) {
@@ -390,7 +390,7 @@ function showProjectResult(str) {
 //
 //
 function get_tax_str(taxon,rank){
-    
+
 	var xmlhttp = new XMLHttpRequest();
   xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
@@ -405,4 +405,225 @@ function get_tax_str(taxon,rank){
     }
     xmlhttp.open("GET", "livesearch_taxonomy/" + rank+'/'+taxon, true);
     xmlhttp.send();
+}
+//
+//
+//
+function validate_lat_lon(form){
+
+  if(form.lat_min.value == '' || isNaN(form.lat_min.value)){
+    lat_min = 0
+  }else{
+    lat_min = form.lat_min.value
+  }
+  if(form.lat_max.value == '' || isNaN(form.lat_max.value)){
+    lat_max = 0
+  }else{
+    lat_max = form.lat_max.value
+  }
+  if(form.lon_min.value == '' || isNaN(form.lon_min.value)){
+    lon_min = 0
+  }else{
+    lon_min = form.lon_min.value
+  }
+  if(form.lon_max.value == '' || isNaN(form.lon_max.value)){
+    lon_max = 0
+  }else{
+    lon_max = form.lon_max.value
+  }
+
+  var msg = []
+  if(parseFloat(lat_min) > parseFloat(lat_max)){
+    // switch
+    tmp = lat_min
+    lat_min = lat_max
+    lat_max = tmp
+    msg.push('<p>I switched the Latitudes!</p>')
+  }
+//console.log('min '+lon_min+' max '+lon_max)
+  if(parseFloat(lon_min) > parseFloat(lon_max)){
+    tmp = lon_min
+    lon_min = lon_max
+    lon_max = tmp
+    msg.push('<p>I switched the Longitudes!</p>')
+  }
+  // testing
+  // lat_min = 20
+  // lat_max = 30
+  // lon_min = -80
+  // lon_max= -70
+  args = 'lat_min='+lat_min.toString()
+  args += '&lat_max='+lat_max.toString()
+  args += '&lon_min='+lon_min.toString()
+  args += '&lon_max='+lon_max.toString()
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.open("POST", "geo_search", true);
+  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+
+          var response = xmlhttp.responseText;
+          data = JSON.parse(response)
+          var html = ''
+          if(Object.keys(data.points).length == 0){
+            msg.push('<p><b>No Data Found</b> within this area:</p>')
+            msg.push('<li>Latitude: Min: '+lat_min.toString()+';  Max: '+lat_max.toString()+'</li>')
+            msg.push('<li>Longitude: Min: '+lon_min.toString()+'; Max: '+lon_max.toString()+'</li>')
+            for(i in msg){
+              html += msg[i]
+            }
+          }else{
+            html += "<form id='' method='POST' action='/visuals/unit_selection'>"
+            html += "<div style='height'400px;overflow:auto'>"
+            html += "Select <input type='radio' checked id='ds_select' name='ds_select' onclick=\"check_selected('all')\"> All&nbsp;&nbsp;&nbsp;"
+            html += "<input type='radio' id='ds_select' name='ds_select' onclick=\"check_selected('none')\"> None&nbsp;&nbsp;&nbsp;&nbsp;"
+            html += "<input type='button' value='Use Selected' onclick='validate_geo_selected(this.form)'>"
+            html +="<input type='hidden' name='from_geo_search' value='1'>"
+            html += "<table class='table'>"
+            for(did in data.points){
+              html += "<tr>"
+              html +="<td><input checked type='checkbox' name='dids' value='"+did+"'></td>"
+              html += "<td>"+data.points[did].project+"</td>"
+              html += "<td>"+data.points[did].dataset+"</td>"
+              html += "<td>Latitude: "+data.points[did].latitude+"</td>"
+              html += "<td>Longitude: "+data.points[did].longitude+"</td>"
+              html += "</tr>"
+            }
+            html += "</table>"
+            html += "</div>"
+            html += "</form>"
+          }
+          document.getElementById("geo_result").innerHTML = html;
+          initMap_with_points(data);
+        }
+  }
+
+  xmlhttp.send(args);
+
+}
+function validate_geo_selected(form){
+  var did_els = document.getElementsByName('dids')
+  var num_checked = 0
+  for(n=0;n<did_els.length;n++){
+    if(did_els[n].checked == true){
+      num_checked += 1
+    }
+  }
+  if(num_checked == 0){
+    alert('you must select some data')
+    return
+  }
+  form.submit()
+}
+function check_selected(code){
+
+  var did_els = document.getElementsByName('dids')
+  if(code == 'all'){
+    for(n=0;n<did_els.length;n++){
+      did_els[n].checked = true
+    }
+  }else{
+    for(n=0;n<did_els.length;n++){
+      did_els[n].checked = false
+    }
+  }
+}
+function initMap() {
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 2,
+      center: {lat: 0, lng: 0}
+    });
+    google.maps.event.addListener(map, 'mousemove', function (event) {
+          displayCoordinates(event.latLng);
+    });
+
+}
+function initMap_with_points(data) {
+
+        var minlat = +data.boundry.lat_min
+        var maxlat = +data.boundry.lat_max
+        var minlon = +data.boundry.lon_min
+        var maxlon = +data.boundry.lon_max
+        var p1 = {lat: minlat, lng: minlon}
+        var p2 = {lat: minlat, lng: maxlon}
+        var p3 = {lat: maxlat, lng: minlon}
+        var p4 = {lat: maxlat, lng: maxlon}
+        var clat = minlat + ((maxlat - minlat)/2)
+        var clon = minlon + ((maxlon - minlon)/2)
+        var center = {lat:clat,lng:clon}
+        var z  // start close??
+        var map = new google.maps.Map(document.getElementById('map'), {
+          //zoom: z,
+          //center: center,
+          mapTypeId: 'hybrid'
+        });
+        if(minlat==0 && maxlat==0 && minlon==0 && maxlon==0){
+              map.setMapTypeId('roadmap');
+              map.setZoom(2)
+              map.setCenter({lat: 0, lng: 0})
+        }else{
+          var southWest = new google.maps.LatLng(minlat, minlon);
+          var northEast = new google.maps.LatLng(maxlat, maxlon);
+          var bounds = new google.maps.LatLngBounds(southWest,northEast);
+          map.fitBounds(bounds);
+        }
+
+        var marker1 = new google.maps.Marker({
+          position: p1,
+          map: map,
+          title:'p1',
+          icon: '../images/blue_tilted_pin48x48.png'
+        });
+        var marker2 = new google.maps.Marker({
+          position: p2,
+          map: map,
+          title:'p2',
+          icon: '../images/blue_tilted_pin48x48.png'
+        });
+        var marker3 = new google.maps.Marker({
+          position: p3,
+          map: map,
+          title:'p3',
+          icon: '../images/blue_tilted_pin48x48.png'
+        });
+        var marker4 = new google.maps.Marker({
+          position: p4,
+          map: map,
+          title:'p4',
+          icon: '../images/blue_tilted_pin48x48.png'
+        });
+        if(Object.keys(data.points).length > 0){
+          for(did in data.points){
+            loc = {lat: +data.points[did].latitude, lng: +data.points[did].longitude}
+            var data_point = new google.maps.Marker({
+              position: loc,
+              map: map,
+              title: data.points[did].proj_dset
+            });
+          }
+        }
+        var BoundCoordinates = [
+          p1,p3,p4,p2,p1
+        ];
+        var linePath = new google.maps.Polyline({
+          path: BoundCoordinates,
+          geodesic: true,
+          strokeColor: '#FF0000',
+          strokeOpacity: 1.0,
+          strokeWeight: 1
+        });
+
+        linePath.setMap(map);
+        google.maps.event.addListener(map, 'mousemove', function (event) {
+              displayCoordinates(event.latLng);
+          });
+}
+
+function displayCoordinates(pnt) {
+        var lat = pnt.lat();
+        lat = lat.toFixed(4);
+        var lng = pnt.lng();
+        lng = lng.toFixed(4);
+        document.getElementById("coord").innerHTML = 'Cursor location --Latitude: '+lat+' --Longitude: '+lng;
+        //console.log("Latitude: " + lat + "  Longitude: " + lng);
 }

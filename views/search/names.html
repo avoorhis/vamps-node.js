@@ -20,27 +20,25 @@
 <div id='project_search_div' class='well'>
 	<strong>Names (key words):</strong>
 	
-	
-	</ul>		
 	<li>Project name, title, description
 	<li>Dataset name, dataset description
 		<br><br>
-	<div class="row">	
+	<div class="row">
 			<div class="dropdown col-md-1"></div>
 
 			<div class="dropdown col-md-3">
 			  Type Partial Name or Key Word: <input id="project_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showProjectResult(this.value)"/>
 			  <ul id='livesearch_project_dropdown' class="dropdown-menu" aria-labelledby="dropdownMenu1" style='visibility:hidden'>
 			    <div id="livesearch_project" class=""></div>
-			  </ul>		
+			  </ul>
 			</div>
 	</div>
-	  	
+
 </div>
 
-	
+
 <% include ../add_ins/end.ejs %>
 <script type="text/javascript" src="/javascripts/global.js"></script>
-<script type="text/javascript" src="/javascripts/search.js"></script>   
+<script type="text/javascript" src="/javascripts/search.js"></script>
  </body>
  </html>

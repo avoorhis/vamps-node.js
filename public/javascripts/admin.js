@@ -29,6 +29,7 @@ $(document).ready(function(){
           return false
         }
         var selected_file = document.getElementById('meta').value;
+        var info_div = document.getElementById('md_result_div');
         if(selected_file.length == 0){
           alert('Select a file')
           return false
@@ -42,47 +43,70 @@ $(document).ready(function(){
             },
 
             success: function(response) {
-                console.log('submit sucess')
+               // alert()
+                response = JSON.parse(response)
+                
+                console.log('submit sucess: ')
                 var html = ''
-                if(response.error){
-                  html = response.msg
+                if(response.validation.error){
+                  html += "<div style='width:50%;height:100px;overflow:auto;background:coral;padding:10px;'>"
+                  for(i in response.validation.msg){
+                    html += response.validation.msg[i]+"<br>"
+                  }
+                  html += "</div>"
+                }else if(response.validation.empty_values){
+                  html += 'Empty Values present: correct them and re-upload:::'
                 }else{
-                  if(response.empty_values){
-                    html += 'Empty Values present: correct them and re-upload:::'
-                  }else{
-                    html += "<form id='' name='' method='POST' action='test_metadata'>"
-                    html += "<input type='hidden' name='pid' value='"+selected_pid+"'>"
-                    html += "Validated! <input type='submit' class='btn btn-xs btn-success' value='Apply'> "
+                  // VALIDATES (Prepend form)
+                  html += "<form id='' name='' method='POST' action='apply_metadata'>"
+                  html += "<input type='hidden' name='pid' value='"+selected_pid+"'>"
+                  html += "<input type='hidden' name='filename' value='"+response.filename+"'>"
+                  html += "<span style='color:green'>Validated!</span> <input type='submit' class='btn btn-xs btn-success' value='Apply This Metadata'>"
 
-                  }
-                  html += "(Required Metadata from Upload - read-only)<br><table class='table table-striped'><tr><td>Dataset</td>"
-                  var header_names = response.required_metadata
-                  for(n in header_names){
-                    html += "<td>"+header_names[n]+"</td>"
-                  }
-                  html += "</tr>"
-                  html += "<tr>"
-                  for(ds in response.data){
-                    //if( ds != 'required_metadata' && ds != 'error'){
-                      html += "<tr>"
-                      html += "<td>"+ds+"</td>"
-                      for(i in response.data[ds]){
-                          html += "<td>"+response.data[ds][i]
-                          name = ds+'--'+header_names[i]// concat ds and headername
-                          html += "<input type='hidden' name='"+name+"' value='"+response.data[ds][i]+"'>"
-                          html += "</td>"
-                      }
-                      html += "</tr>"
-                    //}
-                  }
-                  html += "</table>"
-                  if( ! response.empty_values){
-                    html += "</form>"
-                  }
-                  //info_div.innerHTML = html;  
                 }
+                
+                html += "<br>(Required Metadata from Upload - read-only)<br>"
+                html += "<div style='width:100%;height:200px;overflow:auto'>"
+                html += "<table class='table table-striped'><tr><td>Dataset</td>"
+                var req_header_names = response.sorted_req_header_names
+                var cust_header_names = response.sorted_cust_header_names
+                for(n in req_header_names){
+                  html += "<td>"+req_header_names[n]+"</td>"
+                }
+                for(n in cust_header_names){
+                  html += "<td>"+cust_header_names[n]+"</td>"
+                }
+                html += "</tr>"
+                html += "<tr>"
+                for(ds in response.data){
+                  //if( ds != 'required_metadata' && ds != 'error'){
+                    html += "<tr>"
+                    html += "<td>"+ds+"</td>"
+                    for(i in response.data[ds]['req_data']){
+                        html += "<td bgcolor='#AFDDF9'>"+response.data[ds]['req_data'][i]
+                        name = ds+'--'+req_header_names[i]// concat ds and headername
+                        html += "<input type='hidden' name='"+name+"' value='"+response.data[ds]['req_data'][i]+"'>"
+                        html += "</td>"
+                    }
+                    for(i in response.data[ds]['cust_data']){
+                        html += "<td bgcolor='#F9AFB9'>"+response.data[ds]['cust_data'][i]
+                        name = ds+'--'+cust_header_names[i]// concat ds and headername
+                        html += "<input type='hidden' name='"+name+"' value='"+response.data[ds]['cust_data'][i]+"'>"
+                        html += "</td>"
+                    }
+                    html += "</tr>"
+                  //}
+                }
+                html += "</table>"
+                html += "</div>"
+                if( ! response.empty_values){
+                  html += "</form>"
+                }
+                //info_div.innerHTML = html;  
+                
                 $("#md_result_div").empty().html(html);
                 $("#status").empty().text("");
+                
             }
         });
         //Very important line, it disable the page refresh.
@@ -408,37 +432,61 @@ function show_metadata(){
     //text_edits = ['altitude','collection_date','common_name','depth','description','elevation','latitude','longitude','public','taxon_id','fragment_name','dna_region','sequencing_platform','domain']
     xmlhttp.onreadystatechange = function() {        
       if (xmlhttp.readyState == 4 ) {
-          info_div.style.width = '1200px' 
-          info_div.style.height = '300px' 
-          info_div.style.overflow = 'auto'; 
+          info_div.style.width = '100%' 
+          //info_div.style.height = '300px' 
+          //info_div.style.overflow = 'auto'; 
+          var html = ''
           var response = JSON.parse(xmlhttp.responseText);  
-          //var response = xmlhttp.responseText;  
+          if(response.validation.error){
+              html += "<div style='width:50%;height:100px;overflow:auto;background:coral;padding:10px;'>"
+              for(i in response.validation.msg){
+                html += response.validation.msg[i]+"<br>"
+              }
+              html += "</div>"
+            }else if(response.validation.empty_values){
+              html += 'Empty Values present'
+            }else{
+              // VALIDATES (Prepend form)
+              
+              html += "<div style='color:green'>Validated!</div>"
+
+          }
           
-          var html = "Required Metadata from Database (read-only)<br><table class='table table-striped'><tr><td>Dataset</td>"
-          header_names = response.required_metadata_fields
-          for(n in header_names){
-            html += "<td>"+header_names[n]+"</td>"
+          var req_header_names = response.sorted_req_header_names
+          var cust_header_names = response.sorted_cust_header_names  
+          
+          html += "Required Metadata from Database (read-only)<br>"
+          html += "<div style='width:100%;height:200px;overflow:auto'>"
+          html += "<table class='table table-striped'><tr><td>Dataset</td>"
+          
+          for(n in req_header_names){
+            html += "<td>"+req_header_names[n]+"</td>"
+          }
+          for(n in cust_header_names){
+            html += "<td>"+cust_header_names[n]+"</td>"
           }
           html += "</tr>"
           html += "<tr>"
-          for(ds in response){
-            if( ds != 'required_metadata_fields'){
-              html += "<tr>"
-              html += "<td>"+ds+"</td>"
-              for(i in response[ds]){
-                
-                  html += "<td>"+response[ds][i]+"</td>"
-                
-                
-                
-              }
-              html += "</tr>"
+          for(ds in response.data){
+            html += "<tr>"
+            html += "<td>"+ds+"</td>"
+            for(i in response.data[ds]['req_data']){
+                html += "<td bgcolor='#AFDDF9'>"+response.data[ds]['req_data'][i]
+                name = ds+'--'+req_header_names[i]// concat ds and headername
+                html += "<input type='hidden' name='"+name+"' value='"+response.data[ds]['req_data'][i]+"'>"
+                html += "</td>"
             }
+            for(i in response.data[ds]['cust_data']){
+                html += "<td bgcolor='#F9AFB9'>"+response.data[ds]['cust_data'][i]
+                name = ds+'--'+cust_header_names[i]// concat ds and headername
+                html += "<input type='hidden' name='"+name+"' value='"+response.data[ds]['cust_data'][i]+"'>"
+                html += "</td>"
+            }
+            html += "</tr>"
           }
-          html += "</table>"
+          html += "</table></div>"
           info_div.innerHTML = html;  
 
-         
       }
     };
     xmlhttp.send(args);
