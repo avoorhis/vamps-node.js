@@ -434,13 +434,11 @@ function validate_lat_lon(form){
 
   var msg = []
   if(parseFloat(lat_min) > parseFloat(lat_max)){
-    // switch
     tmp = lat_min
     lat_min = lat_max
     lat_max = tmp
     msg.push('<p>I switched the Latitudes!</p>')
   }
-//console.log('min '+lon_min+' max '+lon_max)
   if(parseFloat(lon_min) > parseFloat(lon_max)){
     tmp = lon_min
     lon_min = lon_max
@@ -474,11 +472,11 @@ function validate_lat_lon(form){
             }
           }else{
             html += "<form id='' method='POST' action='/visuals/unit_selection'>"
-            html += "<div style='height'400px;overflow:auto'>"
             html += "Select <input type='radio' checked id='ds_select' name='ds_select' onclick=\"check_selected('all')\"> All&nbsp;&nbsp;&nbsp;"
             html += "<input type='radio' id='ds_select' name='ds_select' onclick=\"check_selected('none')\"> None&nbsp;&nbsp;&nbsp;&nbsp;"
             html += "<input type='button' value='Use Selected' onclick='validate_geo_selected(this.form)'>"
-            html +="<input type='hidden' name='from_geo_search' value='1'>"
+            html += "<input type='hidden' name='from_geo_search' value='1'>"
+            html += "<div id='geo_result_div' >"
             html += "<table class='table'>"
             for(did in data.points){
               html += "<tr>"
