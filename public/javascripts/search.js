@@ -471,12 +471,13 @@ function get_bounded_ajax(bounds, msg){
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 
           var response = xmlhttp.responseText;
+          console.log(response)
           data = JSON.parse(response)
           var html = ''
           if(Object.keys(data.points).length == 0){
             msg.push('<p><b>No Data Found</b> within this area:</p>')
-            msg.push('<li>Latitude: Min: '+lat_min.toString()+';  Max: '+lat_max.toString()+'</li>')
-            msg.push('<li>Longitude: Min: '+lon_min.toString()+'; Max: '+lon_max.toString()+'</li>')
+            msg.push('<li>Latitude: Min: '+bounds.lat_min.toString()+';  Max: '+bounds.lat_max.toString()+'</li>')
+            msg.push('<li>Longitude: Min: '+bounds.lon_min.toString()+'; Max: '+bounds.lon_max.toString()+'</li>')
             for(i in msg){
               html += msg[i]
             }
@@ -502,7 +503,7 @@ function get_bounded_ajax(bounds, msg){
             html += "</form>"
           }
           document.getElementById("geo_result").innerHTML = html;
-          initMap_with_points(data);
+          initMap(data);
         }
   }
 
@@ -536,18 +537,66 @@ function check_selected(code){
     }
   }
 }
-function initMap() {
+function initMapxx() {
     var map = new google.maps.Map(document.getElementById('map'), {
       zoom: 2,
       center: {lat: 0, lng: 0}
     });
+    var SW = {lat: 0, lng: 0}
+    var SE = {lat: 0, lng: 0}
+    var NW = {lat: 0, lng: 0}
+    var NE = {lat: 0, lng: 0}
+    var markerSW = new google.maps.Marker({
+      position: SW,
+      map: map,
+      title:'SW',
+      draggable: true,
+      icon: '../images/blue_tilted_pin48x48.png'
+    });
+    var markerSE = new google.maps.Marker({
+      position: SE,
+      map: map,
+      title:'SE',
+      draggable: true,
+      icon: '../images/blue_tilted_pin48x48.png'
+    });
+    var markerNW = new google.maps.Marker({
+      position: NW,
+      map: map,
+      title:'NW',
+      draggable: true,
+      icon: '../images/blue_tilted_pin48x48.png'
+    });
+    var markerNE = new google.maps.Marker({
+      position: NE,
+      map: map,
+      title:'NE',
+      draggable: true,
+      icon: '../images/blue_tilted_pin48x48.png'
+    });
+    var BoundCoordinates = [  SW,NW,NE,SE,SW   ];
+    var linePath = new google.maps.Polyline({
+      path: BoundCoordinates,
+      geodesic: true,
+      strokeColor: '#FF0000',
+      strokeOpacity: 1.0,
+      strokeWeight: 1
+    });
+    linePath.setMap(map);
     google.maps.event.addListener(map, 'mousemove', function (event) {
           displayCoordinates(event.latLng);
     });
 
-}
-function initMap_with_points(data) {
 
+}
+function initMap(data) {
+        console.log('data')
+        console.log(data)
+        if(typeof data === 'undefined'){
+          data = {}
+          data.points = []
+          data.boundry = {lat_min:0,lat_max:0,lon_min:0,lon_max:0}
+        }
         var minlat = +data.boundry.lat_min
         var maxlat = +data.boundry.lat_max
         var minlon = +data.boundry.lon_min
