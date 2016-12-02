@@ -1160,8 +1160,8 @@ function validate_metadata(req, obj){
                               validation.error = true
                               validation.msg.push(ds+": The 'env_feature' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'assigned_from_geo'){                
-                            if(val.toLowerCase() != 'y' || val.toLowerCase() != 'n'){
+                          }else if(mdname == 'assigned_from_geo'){
+                            if(val.toLowerCase() != 'y' && val.toLowerCase() != 'n'){
                               validation.error = true
                               validation.msg.push(ds+": The 'assigned_from_geo' value ('"+val+"') must be either 'y' or 'n'.")
                             }
