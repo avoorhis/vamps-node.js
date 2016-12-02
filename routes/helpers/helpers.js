@@ -202,37 +202,37 @@ module.exports.run_ranks_query = function(rank,rows){
 
 module.exports.get_select_env_term_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_ENV_TERM[rows[i].term_id] = rows[i].term_name;
+        MD_ENV_TERM[rows[i].term_id] = rows[i].term_name.toLowerCase();
     }
 };
 module.exports.get_select_env_package_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_ENV_PACKAGE[rows[i].env_package_id] = rows[i].env_package;
+        MD_ENV_PACKAGE[rows[i].env_package_id] = rows[i].env_package.toLowerCase();
     }
 };
 module.exports.get_select_domain_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_DOMAIN[rows[i].domain_id] = rows[i].domain;
+        MD_DOMAIN[rows[i].domain_id] = rows[i].domain.toLowerCase();
     }
 };
 module.exports.get_select_dna_region_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_DNA_REGION[rows[i].dna_region_id] = rows[i].dna_region;
+        MD_DNA_REGION[rows[i].dna_region_id] = rows[i].dna_region.toLowerCase();
     }
 };
 module.exports.get_select_fragment_name_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_FRAGMENT_NAME[rows[i].fragment_name_id] = rows[i].fragment_name;
+        MD_FRAGMENT_NAME[rows[i].fragment_name_id] = rows[i].fragment_name.toLowerCase();
     }
 };
 module.exports.get_select_sequencing_platform_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_SEQUENCING_PLATFORM[rows[i].sequencing_platform_id] = rows[i].sequencing_platform;
+        MD_SEQUENCING_PLATFORM[rows[i].sequencing_platform_id] = rows[i].sequencing_platform.toLowerCase();
     }
 };
 module.exports.get_select_country_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_COUNTRY[rows[i].country_id] = rows[i].country;
+        MD_COUNTRY[rows[i].country_id] = rows[i].country.toLowerCase();
     }
 };
 // TODO: "This function's cyclomatic complexity is too high. (6)"
