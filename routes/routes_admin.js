@@ -143,7 +143,7 @@ router.post('/show_user_info', [helpers.isLoggedIn, helpers.isAdmin], function(r
 //
 //
 router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
-   
+
     console.log('in alter_datasets')
     var url = require('url');
     var url_parts = url.parse(req.url, true);
@@ -158,21 +158,21 @@ router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], function(re
 
     ALL_DATASETS.projects.forEach(function(prj) {
       if(prj.pid == pid){
-        myjson = prj;        
+        myjson = prj;
       }
     });
 
-    console.log(myjson) 
+    console.log(myjson)
     res.render('admin/alter_datasets', {
               title     :'VAMPS Site Administration',
-              message   : req.flash('message'), 
-              user: req.user, 
+              message   : req.flash('message'),
+              user: req.user,
               pid: pid,
               //constants.ENV_SOURCE
               project_info: JSON.stringify(myjson),
               project: PROJECT_INFORMATION_BY_PID[pid].project,
               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
-            }); 
+            });
 
 });
 //
@@ -185,7 +185,7 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req
    var url_parts = url.parse(req.url, true);
    var query = url_parts.query;
    var pid;
-   
+
    if(url_parts.query.pid === undefined){
     pid = 0;
    }else{
@@ -275,22 +275,22 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
       html += "</form>";
       html += '</tr>';
 
-      
+
 
       html += '<tr>';
       html += "<form id='' name='update_penv_form' method='POST' action='update_penv'>";
       html += "<td>Environmental Source</td><td>"+ info.env_source_name+"</td>";
       html += "<td>";
-      html += " <select id='new_eid' name='new_eid' width='200' style='width: 200px'> ";   
-      for(eid in req.CONSTS.ENV_SOURCE) {                        
+      html += " <select id='new_eid' name='new_eid' width='200' style='width: 200px'> ";
+      for(eid in req.CONSTS.ENV_SOURCE) {
           if(req.CONSTS.ENV_SOURCE[eid] === info.env_source_name){
               html += "<option selected value='"+ eid+"'>"+ req.CONSTS.ENV_SOURCE[eid];
               html += " <small>("+ eid +")</small></option>";
           }else{
               html += "<option value='"+ eid+"'>"+ req.CONSTS.ENV_SOURCE[eid];
               html += " <small>("+ eid +")</small></option>";
-          }                           
-      }  
+          }
+      }
       html += '</select>';
       html += '</td>';
       html += "<td><input id='new_penv_btn' type='button' value='Update' onclick=\"update_project('penv', '"+selected_pid+"')\"></td>";
@@ -353,7 +353,7 @@ router.post('/update_dataset_info', [helpers.isLoggedIn, helpers.isAdmin], funct
           ds.dname = new_name;
           ds.ddesc = new_desc;
         }
-      });          
+      });
     }
   });
 
@@ -427,7 +427,7 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], funct
       case 'penv':
           new_project_envid = value;
           PROJECT_INFORMATION_BY_PID[pid].env_source_name = new_project_envid;
-          q += " env_source_id='"+new_project_env+"'";          
+          q += " env_source_id='"+new_project_env+"'";
           break;
       default:
           console.log('ERROR in update_project_info');
@@ -463,7 +463,7 @@ router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], function(req
       var html = 'Successfully Updated';
       // 1-add to PROJECT_INFORMATION_BY_PID[selected_pid]
 
-      if(selected_pid in PROJECT_INFORMATION_BY_PID){        
+      if(selected_pid in PROJECT_INFORMATION_BY_PID){
         //console.log(PROJECT_INFORMATION_BY_PID[selected_pid].permissions)
         //console.log(PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(parseInt(selected_uid)))
         if(PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(parseInt(selected_uid)) === -1){
@@ -564,11 +564,11 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
                 } else {
 
                     var insertQuery = "INSERT INTO user (username, encrypted_password, first_name, last_name, email, institution, active, sign_in_count, current_sign_in_at, last_sign_in_at)";
-                    insertQuery +=    " VALUES ('" + username +"', '"+ 
-                                        helpers.generateHash(password) +"', '"+ 
-                                        first +"', '"+ 
-                                        last +"', '"+ 
-                                        email +"', '"+ 
+                    insertQuery +=    " VALUES ('" + username +"', '"+
+                                        helpers.generateHash(password) +"', '"+
+                                        first +"', '"+
+                                        last +"', '"+
+                                        email +"', '"+
                                         inst +"',"+
                                         " 1,"+
                                         " 1,"+
@@ -584,7 +584,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
                         ALL_USERS_BY_UID[user_id].last_name   = last;
                         ALL_USERS_BY_UID[user_id].first_name  = first;
                         ALL_USERS_BY_UID[user_id].institution = inst;
-                       
+
                         req.flash('message', 'Success (user:'+username+'; uid:'+user_id+')');
                         finish();
                         return;
@@ -593,8 +593,8 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
                 }
         });
         return;
-         
-    }    
+
+    }
     finish();
 });
 //
@@ -630,7 +630,7 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], funct
     }else if(uid == ''){
         req.flash('message', 'FAILED: You must select a user.');
     }else{
-        
+
         var updateQuery = "UPDATE user set encrypted_password='"+helpers.generateHash(password)+"' where user_id='"+uid+"'";
         console.log(updateQuery);
         req.db.query(updateQuery, function(err,rows){
@@ -640,7 +640,7 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], funct
               req.flash('message', 'Success ( uid: '+uid+' )');
           }
             finish();
-            
+
         });
         return;
 
@@ -697,11 +697,11 @@ router.post('/show_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(re
   //console.log('sorted_cust_header_names')
   //console.log(html_json.sorted_cust_header_names)
   for(did in mdata){ // each item is a dataset_id
-    ds = DATASET_NAME_BY_DID[did]    
+    ds = DATASET_NAME_BY_DID[did]
     html_json.data[ds] = {}
     html_json.data[ds].req_data = []
     html_json.data[ds].cust_data = []
-    
+
     for(i in html_json.sorted_cust_header_names){
       mdname = html_json.sorted_cust_header_names[i]
       if(mdata[did].hasOwnProperty(mdname)){
@@ -714,7 +714,7 @@ router.post('/show_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(re
       mdname = html_json.sorted_req_header_names[i]
       //console.log('mdname '+mdname)
       if(mdata[did].hasOwnProperty(mdname)){
-        html_json.data[ds].req_data.push(mdata[did][mdname])   
+        html_json.data[ds].req_data.push(mdata[did][mdname])
       }else{
         html_json.data[ds].req_data.push('')
       }
@@ -741,7 +741,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
   var timestamp = +new Date();
   var selected_pid = req.body.pid
   var filename = req.body.filename
-  var file_path = path.join(process.env.PWD,'tmp',filename) 
+  var file_path = path.join(process.env.PWD,'tmp',filename)
   var dids = DATASET_IDS_BY_PID[selected_pid]
   new_required_metadata = {}
   new_custom_metadata = {}
@@ -749,7 +749,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
   for(name in req.body){
     //console.log('name in req.body '+name)
     if(name != 'pid' && name != 'filename'){
-        
+
       items = name.split('--')
       dset = items[0]
       // get did
@@ -772,7 +772,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
         mdata[did] = {}
         mdata[did][mdname] = value
       }
-      
+
     }
   }
   //console.log('mdata1')
@@ -785,11 +785,11 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
     new_required_metadata[did] = {}
     new_custom_metadata[did] = {}
     for(mdname in mdata[did]){
-        var val = mdata[did][mdname]        
+        var val = mdata[did][mdname]
         if(req.CONSTS.REQ_METADATA_FIELDS.indexOf(mdname) == -1){
             new_custom_metadata[did][mdname]    = val
         }else{
-            new_required_metadata[did][mdname]  = val            
+            new_required_metadata[did][mdname]  = val
         }
         if(AllMetadata.hasOwnProperty(did)){
             AllMetadata[did][mdname]            = val
@@ -797,10 +797,10 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
             AllMetadata[did] = {}
             AllMetadata[did][mdname]            = val
         }
-        
+
     }
   }
-  
+
   // Run script to add custom and required metadata to mysql database
   var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
                   args : [ '-host', req.CONFIG.dbhost, '-f', file_path, '-pid', selected_pid, '-q' ]
@@ -808,18 +808,18 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
   var script_name = 'vamps_script_update_metadata.py'
   var script_path = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,script_name)
   var full_script_path = script_path + ' ' + options.args.join(' ')
-  
+
   ////No module named argparse  need path
   var update_metadata_process = spawn( options.scriptPath + '/vamps_script_update_metadata.py', options.args, {
                         env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
                         detached: true, stdio: 'pipe'
                     });  // stdin, stdout, stderr
   //var exec = require('child_process').exec;
-  
+
   console.log(full_script_path)
   //var child = exec(full_script_path);
   var output = '';
-  
+
   update_metadata_process.stdout.on('data', function UpdateMetadata(data) {
         data = data.toString().trim();
         console.log('stdout: ' + data);
@@ -845,9 +845,9 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
     });
   });
-  
-  
- 
+
+
+
 
 });
 //
@@ -871,17 +871,17 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
           res.end("Error uploading file: project selected? file to upload selected?")
           return
         }
-        
+
         var selected_pid = req.body.pid
         var dataset_ids = DATASET_IDS_BY_PID[selected_pid]
         var project_name = PROJECT_INFORMATION_BY_PID[selected_pid].project
         var metadata_file = req.file.path
-        
+
          var parser = parse({delimiter: '\t'}, function createParserPipe(err, mdata) {
-              if(err) {  
-                console.log('parsing error'); 
+              if(err) {
+                console.log('parsing error');
                 res.json(JSON.stringify({"error":true,"msg":["Error parsing file: "+err.toString()]}));
-                return 
+                return
               }
               html_json.validation = {}
               html_json.validation.error = false
@@ -889,7 +889,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
               html_json.validation.msg = []
               //console.log("mdata: ");
               //console.log(mdata);
-              
+
 
               //console.log('req_metadata')
               //console.log(req_metadata)
@@ -904,9 +904,9 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
                 html_json.validation.error = true
                 html_json.validation.msg.push("Did not find a dataset field in the csv file: (['sample_name','#SampleID','dataset','Dataset'])")
               }
-              
+
               html_json.data = {}
-              
+
               newmd ={}
               for(n=1;n<mdata.length;n++){ // each row is a dataset -- start at 0 -skip title row
                 dset = mdata[n][0]
@@ -917,15 +917,15 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
                     newmd[did]={}
                     for(idx in title_row){
                         var val = mdata[n][idx]
-                        newmd[did][title_row[idx]] = val                    
+                        newmd[did][title_row[idx]] = val
                     }
                   }
                 }
             }
-            //console.log('newmd')       
-            //console.log(newmd)      
-            html_json.validation = validate_metadata(req, newmd) 
-            
+            //console.log('newmd')
+            //console.log(newmd)
+            html_json.validation = validate_metadata(req, newmd)
+
             html_json.sorted_req_header_names = req_metadata.sort()
             headers_cust = {}
             for(did in newmd){
@@ -936,13 +936,13 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
                 }
             }
             html_json.sorted_cust_header_names = Object.keys(headers_cust).sort()
-  
-       
-               
+
+
+
                 for(did in newmd){
                     // only show datasets that are known:
-                    ds = DATASET_NAME_BY_DID[did] 
-                    
+                    ds = DATASET_NAME_BY_DID[did]
+
                     html_json.data[ds] = {}
                     html_json.data[ds]['req_data'] = []
                     html_json.data[ds]['cust_data'] = []
@@ -963,16 +963,16 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
                             html_json.data[ds]['req_data'].push('')
                         }
                     }
-                    
-                
+
+
                }
               if(Object.keys(html_json.data).length === 0 ){
                     html_json.validation.error = true
                     // remove all other messages:
-                    html_json.validation.msg = ['Dataset names in the first column failed to match those in the database for this project: '+project_name]  
-                    html_json.validation.msg.push("Is the first column 'Dataset', 'sample_name', '#SampleID' or 'dataset' ?")         
-              } 
-              
+                    html_json.validation.msg = ['Dataset names in the first column failed to match those in the database for this project: '+project_name]
+                    html_json.validation.msg.push("Is the first column 'Dataset', 'sample_name', '#SampleID' or 'dataset' ?")
+              }
+
               if(html_json.validation.error){
                 console.log('ERROR--MD UPLOAD--NO VALIDATION')
                 html_json.filename = ''
@@ -980,17 +980,17 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
                 console.log('OK--VALIDATES')
                 // write tmp json file
                 html_json.filename = username+'_'+project_name+'--'+timestamp+'.json'
-                file_path = path.join(process.env.PWD,'tmp',html_json.filename)  
-                mdata = convert_names_to_ids_for_storage(newmd)               
+                file_path = path.join(process.env.PWD,'tmp',html_json.filename)
+                mdata = convert_names_to_ids_for_storage(newmd)
                 helpers.write_to_file(file_path,JSON.stringify(mdata))
-                
+
               }
-              
+
               res.json(JSON.stringify(html_json));
-              
+
           });
-  
-  
+
+
           try{
             console.log('looking for meta');
             stats = fs.lstatSync(metadata_file);
@@ -1005,72 +1005,72 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
             html_json.validation.error = true
             html_json.validation.msg.push('Could not read csv file.')
             return html_json
-            
+
           }
-        
+
   });
 
- 
+
 });
 //
 function get_env_package_index(val){
   var idx = -1
   for(key in MD_ENV_PACKAGE){
-    if(val != '' && MD_ENV_PACKAGE[key] == val){
+    if(val != '' && MD_ENV_PACKAGE[key] == val.toLowerCase()){
         idx = key;
     }
   }
   return idx
-} 
-function get_fragment_name_index(val){  
+}
+function get_fragment_name_index(val){
   var idx = -1
   for(key in MD_FRAGMENT_NAME){
-    if(val != '' && MD_FRAGMENT_NAME[key] == val){
+    if(val != '' && MD_FRAGMENT_NAME[key] == val.toLowerCase()){
         idx = key;
     }
   }
   return idx
-} 
-function get_domain_index(val){              
+}
+function get_domain_index(val){
   var idx = -1
   for(key in MD_DOMAIN){
-    if(val != '' && MD_DOMAIN[key] == val){
+    if(val != '' && MD_DOMAIN[key] == val.toLowerCase()){
         idx = key;
     }
   }
   return idx
 }
-function get_country_index(val){       
+function get_country_index(val){
   var idx = -1
   for(key in MD_COUNTRY){
-    if(val != '' && MD_COUNTRY[key] == val){
+    if(val != '' && MD_COUNTRY[key] == val.toLowerCase()){
         idx = key;
     }
   }
   return idx
 }
-function get_sequencing_platform_index(val){       
+function get_sequencing_platform_index(val){
   var idx = -1
   for(key in MD_SEQUENCING_PLATFORM){
-    if(val != '' && MD_SEQUENCING_PLATFORM[key] == val){
+    if(val != '' && MD_SEQUENCING_PLATFORM[key] == val.toLowerCase()){
         idx = key;
     }
   }
   return idx
-} 
-function get_dna_region_index(val){   
+}
+function get_dna_region_index(val){
   var idx = -1
   for(key in MD_DNA_REGION){
-    if(val != '' && MD_DNA_REGION[key] == val){
+    if(val != '' && MD_DNA_REGION[key] == val.toLowerCase()){
         idx = key;
     }
   }
   return idx
-} 
-function get_env_term_index(val){     
+}
+function get_env_term_index(val){
   var idx = -1
   for(key in MD_ENV_TERM){
-    if(val != '' && MD_ENV_TERM[key] == val){
+    if(val != '' && MD_ENV_TERM[key] == val.toLowerCase()){
         idx = key;
     }
   }
@@ -1079,9 +1079,9 @@ function get_env_term_index(val){
 function validate_metadata(req, obj){
     console.log('in fxn validate_metadata')
     console.log('must be done with names NOT IDs')
-    
+
     //console.log(obj)
-    
+
     var validation = {}
     validation.error = false
     validation.empty_values = false
@@ -1092,8 +1092,8 @@ function validate_metadata(req, obj){
             field_collector[mdname]=1
         }
     }
-    //unique_field_list = Object.keys(field_collector)        
-                          
+    //unique_field_list = Object.keys(field_collector)
+
     for(i in req.CONSTS.REQ_METADATA_FIELDS){
         req_name = req.CONSTS.REQ_METADATA_FIELDS[i]
         if(field_collector.hasOwnProperty(req_name)){
@@ -1104,112 +1104,112 @@ function validate_metadata(req, obj){
             validation.msg.push("Missing required field in csv file: "+req_name)
         }
     }
-                          
+
     for(did in obj){
-        for(mdname in obj[did]){                             
-                  ds = DATASET_NAME_BY_DID[did] 
+        for(mdname in obj[did]){
+                  ds = DATASET_NAME_BY_DID[did]
                   var val = obj[did][mdname]
                   if((val == undefined || val == '') && req.CONSTS.REQ_METADATA_FIELDS.indexOf(mdname) != -1 ){   // and mdname in required_metadata_fields
-                    
+
                     validation.empty_values = true
                     validation.error = true
                     validation.msg.push(ds+": Missing required value for: "+mdname)
                   }else{
-                          if(mdname == 'env_package'){                                       
-            
+                          if(mdname == 'env_package'){
+
                             if(get_env_package_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'env_package' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'fragment_name'){                                  
-            
+                          }else if(mdname == 'fragment_name'){
+
                             if(get_fragment_name_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'fragment_name' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'domain'){                                           
-            
+                          }else if(mdname == 'domain'){
+
                             if(get_domain_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'domain' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'country'){                                            
-            
+                          }else if(mdname == 'country'){
+
                             if(get_country_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'country' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'sequencing_platform'){                                           
-            
+                          }else if(mdname == 'sequencing_platform'){
+
                             if(get_sequencing_platform_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'sequencing_platform' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'dna_region'){                                         
-            
+                          }else if(mdname == 'dna_region'){
+
                             if(get_dna_region_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'dna_region' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'env_matter'){                                           
-            
+                          }else if(mdname == 'env_matter'){
+
                             if(get_env_term_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'env_matter' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'env_biome'){                                              
-            
+                          }else if(mdname == 'env_biome'){
+
                             if(get_env_term_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'env_biome' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'env_feature'){                                           
-            
+                          }else if(mdname == 'env_feature'){
+
                             if(get_env_term_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'env_feature' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'assigned_from_geo'){                                           
-            
+                          }else if(mdname == 'assigned_from_geo'){
+
                             //val = val.toLowerCase()
                             if(val == 'y' || val == 'n'){
-                              //console.log('FOUND '+val)                          
-                            }else{                          
+                              //console.log('FOUND '+val)
+                            }else{
                               validation.error = true
                               validation.msg.push(ds+": The 'assigned_from_geo' value ('"+val+"') must be either 'y' or 'n'.")
                             }
-                          }else if(mdname == 'collection_date'){                                           
-            
+                          }else if(mdname == 'collection_date'){
+
                             valid = helpers.isValidMySQLDate(val)
                             if(valid){
-                              //console.log('FOUND '+val)                          
-                            }else{                          
+                              //console.log('FOUND '+val)
+                            }else{
                               validation.error = true
                               validation.msg.push(ds+": The 'collection_date' value ('"+val+"') is not a valid date.")
                             }
-                          }else if(mdname == 'altitude' || mdname == 'elevation' || mdname == 'depth'){                            
-                            if(isNaN(val)){                                  
+                          }else if(mdname == 'altitude' || mdname == 'elevation' || mdname == 'depth'){
+                            if(isNaN(val)){
                               validation.error = true
-                              validation.msg.push(ds+": The '"+mdname+"' value ('"+val+"') must be a number.")                         
+                              validation.msg.push(ds+": The '"+mdname+"' value ('"+val+"') must be a number.")
                             }
-                          }else if(mdname == 'latitude' || mdname == 'longitude'){                            
-                            if(isNaN(val)){                                  
+                          }else if(mdname == 'latitude' || mdname == 'longitude'){
+                            if(isNaN(val)){
                               validation.error = true
-                              validation.msg.push(ds+": Latitude and Longitude must be in decimal degrees.")                         
+                              validation.msg.push(ds+": Latitude and Longitude must be in decimal degrees.")
                             }
-                          }else if(mdname == 'description' || mdname == 'common_name'){                            
+                          }else if(mdname == 'description' || mdname == 'common_name'){
                               if(val == ''){
                                 validation.error = true
                                 validation.msg.push(ds+": The value for '"+mdname+"' is not allowed to be empty.")
                               }
-                          }else if(mdname == 'taxon_id'){                       
+                          }else if(mdname == 'taxon_id'){
                               if(isNaN(val)){
                                 validation.error = true
                                 validation.msg.push(ds+": The value for '"+mdname+"' must be a integer from the NCBI database.")
                               }
                           }
-                                      
-                          
+
+
                               //validation.data[dset]['req_data'].push(val)
                   }
         }
@@ -1223,26 +1223,26 @@ function convert_ids_to_names_for_display(obj){
     var new_obj = {}
     for(did in obj){
         new_obj[did] = {}
-        for(mdname in obj[did]){      
-            if(mdname == 'env_package_id'){              
+        for(mdname in obj[did]){
+            if(mdname == 'env_package_id'){
               new_obj[did]['env_package'] = MD_ENV_PACKAGE[obj[did][mdname]]
-            }else if(mdname == 'fragment_name_id'){              
+            }else if(mdname == 'fragment_name_id'){
               new_obj[did]['fragment_name'] = MD_FRAGMENT_NAME[obj[did][mdname]]
-            }else if(mdname == 'domain_id'){              
+            }else if(mdname == 'domain_id'){
               new_obj[did]['domain'] = MD_DOMAIN[obj[did][mdname]]
-            }else if(mdname == 'country_id'){              
+            }else if(mdname == 'country_id'){
               new_obj[did]['country'] = MD_COUNTRY[obj[did][mdname]]
-            }else if(mdname == 'sequencing_platform_id'){              
+            }else if(mdname == 'sequencing_platform_id'){
               new_obj[did]['sequencing_platform'] = MD_SEQUENCING_PLATFORM[obj[did][mdname]]
-            }else if(mdname == 'dna_region_id'){              
+            }else if(mdname == 'dna_region_id'){
               new_obj[did]['dna_region'] = MD_DNA_REGION[obj[did][mdname]]
-            }else if(mdname == 'env_matter_id'){              
+            }else if(mdname == 'env_matter_id'){
               new_obj[did]['env_matter'] = MD_ENV_TERM[obj[did][mdname]]
-            }else if(mdname == 'env_biome_id'){              
+            }else if(mdname == 'env_biome_id'){
               new_obj[did]['env_biome'] = MD_ENV_TERM[obj[did][mdname]]
-            }else if(mdname == 'env_feature_id'){              
+            }else if(mdname == 'env_feature_id'){
               new_obj[did]['env_feature'] = MD_ENV_TERM[obj[did][mdname]]
-            }else{              
+            }else{
               new_obj[did][mdname] = obj[did][mdname]
           }
         }
@@ -1274,8 +1274,8 @@ function convert_names_to_ids_for_storage(obj){
             new_obj[did]['env_package_id']     = get_env_package_index(val)
         }else if(mdname == 'sequencing_platform'){
             new_obj[did]['sequencing_platform_id']  = get_sequencing_platform_index(val)
-        }else{            
-            new_obj[did][mdname] =  val            
+        }else{
+            new_obj[did][mdname] =  val
         }
       }
     }

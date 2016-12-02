@@ -485,7 +485,7 @@ function get_bounded_ajax(bounds, msg){
             html += "<form id='' method='POST' action='/visuals/unit_selection'>"
             html += "Select <input type='radio' checked id='ds_select' name='ds_select' onclick=\"check_selected('all')\"> All&nbsp;&nbsp;&nbsp;"
             html += "<input type='radio' id='ds_select' name='ds_select' onclick=\"check_selected('none')\"> None&nbsp;&nbsp;&nbsp;&nbsp;"
-            html += "<input type='button' value='Use Selected' onclick='validate_geo_selected(this.form)'>"
+            html += "<input type='button' class='btn btn-xs btn-primary' value='Use Selected' onclick='validate_geo_selected(this.form)'>"
             html += "<input type='hidden' name='from_geo_search' value='1'>"
             html += "<div id='geo_result_div' >"
             html += "<table class='table'>"
@@ -554,10 +554,10 @@ function initMap(data) {
         var SE = {lat: minlat, lng: maxlon}
         var NW = {lat: maxlat, lng: minlon}
         var NE = {lat: maxlat, lng: maxlon}
-        document.getElementById("SWbox").innerHTML = 'Lat: '+minlat+'; Lon: '+ minlon;
-        document.getElementById("SEbox").innerHTML = 'Lat: '+minlat +'; Lon: '+maxlon;
-        document.getElementById("NWbox").innerHTML = 'Lat: '+maxlat +'; Lon: '+minlon;
-        document.getElementById("NEbox").innerHTML = 'Lat: '+maxlat+'; Lon: '+ maxlon;
+        document.getElementById("SWbox").innerHTML = 'Lat: '+minlat+'; Long: '+ minlon;
+        document.getElementById("SEbox").innerHTML = 'Lat: '+minlat +'; Long: '+maxlon;
+        document.getElementById("NWbox").innerHTML = 'Lat: '+maxlat +'; Long: '+minlon;
+        document.getElementById("NEbox").innerHTML = 'Lat: '+maxlat+'; Long: '+ maxlon;
         var clat = minlat + ((maxlat - minlat)/2)
         var clon = minlon + ((maxlon - minlon)/2)
         var center = {lat:clat,lng:clon}
@@ -631,23 +631,23 @@ function initMap(data) {
               displayCoordinates(event.latLng);
         });
         google.maps.event.addListener(markerSW, 'dragend', function (event) {
-            document.getElementById("SWbox").innerHTML = 'Lat: '+event.latLng.lat()+'; Lon: '+ event.latLng.lng();
+            document.getElementById("SWbox").innerHTML = 'Lat: '+event.latLng.lat()+'; Long: '+ event.latLng.lng();
             SW = {lat: event.latLng.lat(), lng: event.latLng.lng()}
             adjust_boundry(map,linePath,'SW',SW,NW,NE,SE)
 
         });
         google.maps.event.addListener(markerSE, 'dragend', function (event) {
-            document.getElementById("SEbox").innerHTML = 'Lat: '+event.latLng.lat()+'; Lon: '+ event.latLng.lng();
+            document.getElementById("SEbox").innerHTML = 'Lat: '+event.latLng.lat()+'; Long: '+ event.latLng.lng();
             SE = {lat: event.latLng.lat(), lng: event.latLng.lng()}
             adjust_boundry(map,linePath,'SE',SW,NW,NE,SE)
         });
         google.maps.event.addListener(markerNW, 'dragend', function (event) {
-            document.getElementById("NWbox").innerHTML = 'Lat: '+event.latLng.lat()+'; Lon: '+ event.latLng.lng();
+            document.getElementById("NWbox").innerHTML = 'Lat: '+event.latLng.lat()+'; Long: '+ event.latLng.lng();
             NW = {lat: event.latLng.lat(), lng: event.latLng.lng()}
             adjust_boundry(map,linePath,'NW',SW,NW,NE,SE)
         });
         google.maps.event.addListener(markerNE, 'dragend', function (event) {
-            document.getElementById("NEbox").innerHTML = 'Lat: '+event.latLng.lat() +'; Lon: '+ event.latLng.lng();
+            document.getElementById("NEbox").innerHTML = 'Lat: '+event.latLng.lat() +'; Long: '+ event.latLng.lng();
             NE = {lat: event.latLng.lat(), lng: event.latLng.lng()}
             adjust_boundry(map,linePath,'NE',SW,NW,NE,SE)
             //alert(JSON.stringify(linePath.getPath()))
