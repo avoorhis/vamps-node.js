@@ -1116,74 +1116,58 @@ function validate_metadata(req, obj){
                     validation.msg.push(ds+": Missing required value for: "+mdname)
                   }else{
                           if(mdname == 'env_package'){
-
                             if(get_env_package_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'env_package' value ('"+val+"') is not in the allowed list.")
                             }
                           }else if(mdname == 'fragment_name'){
-
                             if(get_fragment_name_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'fragment_name' value ('"+val+"') is not in the allowed list.")
                             }
                           }else if(mdname == 'domain'){
-
                             if(get_domain_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'domain' value ('"+val+"') is not in the allowed list.")
                             }
                           }else if(mdname == 'country'){
-
                             if(get_country_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'country' value ('"+val+"') is not in the allowed list.")
                             }
                           }else if(mdname == 'sequencing_platform'){
-
                             if(get_sequencing_platform_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'sequencing_platform' value ('"+val+"') is not in the allowed list.")
                             }
                           }else if(mdname == 'dna_region'){
-
                             if(get_dna_region_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'dna_region' value ('"+val+"') is not in the allowed list.")
                             }
                           }else if(mdname == 'env_matter'){
-
                             if(get_env_term_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'env_matter' value ('"+val+"') is not in the allowed list.")
                             }
                           }else if(mdname == 'env_biome'){
-
                             if(get_env_term_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'env_biome' value ('"+val+"') is not in the allowed list.")
                             }
                           }else if(mdname == 'env_feature'){
-
                             if(get_env_term_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'env_feature' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'assigned_from_geo'){
-
-                            //val = val.toLowerCase()
-                            if(val == 'y' || val == 'n'){
-                              //console.log('FOUND '+val)
-                            }else{
+                          }else if(mdname == 'assigned_from_geo'){                
+                            if(val.toLowerCase() != 'y' || val.toLowerCase() != 'n'){
                               validation.error = true
                               validation.msg.push(ds+": The 'assigned_from_geo' value ('"+val+"') must be either 'y' or 'n'.")
                             }
                           }else if(mdname == 'collection_date'){
-
                             valid = helpers.isValidMySQLDate(val)
-                            if(valid){
-                              //console.log('FOUND '+val)
-                            }else{
+                            if( ! valid){
                               validation.error = true
                               validation.msg.push(ds+": The 'collection_date' value ('"+val+"') is not a valid date.")
                             }
