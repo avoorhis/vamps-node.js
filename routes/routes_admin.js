@@ -897,8 +897,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
               var title_row = mdata[0]
               idx = dataset_field_names.indexOf(title_row[0])
               if(idx != -1){
-                dataset_field = title_row[0]
-                //console.log('found dataset_field '+dataset_field)
+                //console.log('found dataset_field '+title_row[0])
               }else{
                 //console.log('we have no dataset_field')
                 html_json.validation.error = true
@@ -917,7 +916,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
                     newmd[did]={}
                     for(idx in title_row){
                         var val = mdata[n][idx]
-                        newmd[did][title_row[idx]] = val
+                        newmd[did][title_row[idx].toLowerCase()] = val   //lowercase name for validation
                     }
                   }
                 }
@@ -1089,7 +1088,7 @@ function validate_metadata(req, obj){
     field_collector = {}
     for(did in obj){
         for(mdname in obj[did]){
-            field_collector[mdname]=1
+            field_collector[mdname.toLowerCase()]=1  //lowercase
         }
     }
     //unique_field_list = Object.keys(field_collector)
@@ -1101,7 +1100,7 @@ function validate_metadata(req, obj){
         }else{
             console.log('missing')
             validation.error = true
-            validation.msg.push("Missing required field in csv file: "+req_name)
+            validation.msg.push("Missing required field (entire column) in csv file: "+req_name)
         }
     }
 
@@ -1169,7 +1168,7 @@ function validate_metadata(req, obj){
                             valid = helpers.isValidMySQLDate(val)
                             if( ! valid){
                               validation.error = true
-                              validation.msg.push(ds+": The 'collection_date' value ('"+val+"') is not a valid date.")
+                              validation.msg.push(ds+": The 'collection_date' value ('"+val+"') is not a valid date (valid format: YYYY-MM-DD).")
                             }
                           }else if(mdname == 'altitude' || mdname == 'elevation' || mdname == 'depth'){
                             if(isNaN(val)){
@@ -1208,6 +1207,7 @@ function convert_ids_to_names_for_display(obj){
     for(did in obj){
         new_obj[did] = {}
         for(mdname in obj[did]){
+            mdname = mdname.toLowerCase()
             if(mdname == 'env_package_id'){
               new_obj[did]['env_package'] = MD_ENV_PACKAGE[obj[did][mdname]]
             }else if(mdname == 'fragment_name_id'){
