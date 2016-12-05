@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-   
+
     select_user = document.getElementById('select_user') || null;
     if (select_user !== null) {
       select_user.addEventListener('change', function () {
@@ -35,9 +35,9 @@ $(document).ready(function(){
           return false
         }
         $("#status").empty().text("File is uploading...");
-        
+
         $(this).ajaxSubmit({
-            
+
             error: function(xhr) {
                 status('Error: ' + xhr.status);
             },
@@ -45,7 +45,7 @@ $(document).ready(function(){
             success: function(response) {
                // alert()
                 response = JSON.parse(response)
-                
+
                 console.log('submit sucess: ')
                 var html = ''
                 if(response.validation.error){
@@ -64,8 +64,8 @@ $(document).ready(function(){
                   html += "<span style='color:green'>Validated!</span> <input type='submit' class='btn btn-xs btn-success' value='Apply This Metadata'>"
 
                 }
-                
-                html += "<br>(Required Metadata from Upload - read-only)<br>"
+
+                html += "<br>(Required Metadata from Upload (in blue) - read-only)<br>"
                 html += "<div style='width:100%;height:200px;overflow:auto'>"
                 html += "<table class='table table-striped'><tr><td>Dataset</td>"
                 var req_header_names = response.sorted_req_header_names
@@ -102,17 +102,17 @@ $(document).ready(function(){
                 if( ! response.empty_values){
                   html += "</form>"
                 }
-                //info_div.innerHTML = html;  
-                
+                //info_div.innerHTML = html;
+
                 $("#md_result_div").empty().html(html);
                 $("#status").empty().text("");
-                
+
             }
         });
         //Very important line, it disable the page refresh.
         return false;
-    });    
-    
+    });
+
 
 });
 
@@ -125,19 +125,19 @@ function update_dataset(did, pid)
       response_div = document.getElementById('msg_div_'+did);
       name = document.getElementById('new_dname_edit_'+did).value;
       desc = document.getElementById('new_ddesc_edit_'+did).value;
-      
-      var xmlhttp = new XMLHttpRequest();  
+
+      var xmlhttp = new XMLHttpRequest();
       xmlhttp.open("POST", '/admin/update_dataset_info', true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       xmlhttp.setRequestHeader("data-type","html");
       var args = 'pid='+pid+'&did='+did+'&name='+name+'&desc='+desc;
 
-      xmlhttp.onreadystatechange = function() {        
+      xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
-            
-            var response = xmlhttp.responseText;            
-            response_div.innerHTML = response;  
-            
+
+            var response = xmlhttp.responseText;
+            response_div.innerHTML = response;
+
         }
       };
       xmlhttp.send(args);
@@ -149,7 +149,7 @@ function update_dataset(did, pid)
 //
 function update_project(item_to_update, pid)
 {
-    
+
     switch(item_to_update){
       case 'pname':
           response_div = document.getElementById('new_pname_response_id');
@@ -175,17 +175,17 @@ function update_project(item_to_update, pid)
           response_div = document.getElementById('new_pname_response_id');
           new_value = document.getElementById('new_pname').value;
 
-      
+
     }
-    var xmlhttp = new XMLHttpRequest();  
+    var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", '/admin/update_project_info', true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.setRequestHeader("data-type","html");
     var args = 'item='+item_to_update+'&value='+new_value+'&pid='+pid;
-    xmlhttp.onreadystatechange = function() {        
-      if (xmlhttp.readyState == 4 ) {          
-          var response = xmlhttp.responseText;            
-          response_div.innerHTML = response;         
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+          var response = xmlhttp.responseText;
+          response_div.innerHTML = response;
       }
     };
     xmlhttp.send(args);
@@ -195,29 +195,29 @@ function update_project(item_to_update, pid)
 //
 function get_select_user_info()
 {
-  
+
     selected_uid = document.getElementById('select_user').value;
     user_info_div = document.getElementById('user_info_div');
     document.getElementById('select_projects_div').style.visibility = 'visible';
-    
 
 
 
-    var xmlhttp = new XMLHttpRequest();  
+
+    var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", '/admin/show_user_info', true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.setRequestHeader("data-type","html");
     var args = 'uid='+selected_uid;
-    xmlhttp.onreadystatechange = function() {        
+    xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 ) {
-          
-          var response = xmlhttp.responseText;            
-          user_info_div.innerHTML = response;      
-         
+
+          var response = xmlhttp.responseText;
+          user_info_div.innerHTML = response;
+
       }
     };
     xmlhttp.send(args);
-  
+
 }
 
 //
@@ -234,47 +234,47 @@ function show_access_button()
 }
 function grant_access(type, id)
 {
-  
+
     var info_div = document.getElementById('response_info');
-    
+
     //form = document.getElementById(type+'_'+id);
 
     //alert('1')
     var selected_pid, selected_uid;
     var select_name = type+'_'+id+'_select'
-    //alert(type+" "+id) 
+    //alert(type+" "+id)
     //alert(select_name)
-    if(type === 'by_user'){ 
+    if(type === 'by_user'){
       selected_pid = document.getElementById(select_name).value
       selected_uid = id
     }else if(type === 'by_project'){
       selected_uid = document.getElementById(select_name).value
       selected_pid = id
     }else{
-      
-      info_div.innerHTML = 'Error-1'; 
+
+      info_div.innerHTML = 'Error-1';
       return;
     }
-    
-    //alert(selected_pid+" "+selected_uid)  
+
+    //alert(selected_pid+" "+selected_uid)
 
     if(selected_uid === '0' || selected_pid === '0'){
-      info_div.innerHTML = 'Choose a name'; 
+      info_div.innerHTML = 'Choose a name';
       return;
     }
    //return
-    
-    var xmlhttp = new XMLHttpRequest();  
+
+    var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", '/admin/grant_access', true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.setRequestHeader("data-type","html");
     var args = 'uid='+selected_uid+'&pid='+selected_pid;
-    xmlhttp.onreadystatechange = function() {        
+    xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 ) {
-          
-          var response = xmlhttp.responseText;            
-          info_div.innerHTML = response;      
-         
+
+          var response = xmlhttp.responseText;
+          info_div.innerHTML = response;
+
       }
     };
     xmlhttp.send(args);
@@ -290,22 +290,22 @@ function change_public(pid)
 
    pub = form[radio_name][0]
    priv = form[radio_name][1]
-   
+
    if(pub.checked){
      public = '1'
    }else{
     public = '0'
    }
-   var xmlhttp = new XMLHttpRequest();  
+   var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", '/admin/public_update', true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.setRequestHeader("data-type","html");
     var args = 'public='+public+'&pid='+pid;
-    xmlhttp.onreadystatechange = function() {        
+    xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 ) {
-          var response = xmlhttp.responseText;           
-          info_div.innerHTML = response;      
-         
+          var response = xmlhttp.responseText;
+          info_div.innerHTML = response;
+
       }
     };
     xmlhttp.send(args);
@@ -317,24 +317,24 @@ function change_public(pid)
 function show_current_project_info()
 {
     //alert('in show_access_button');
-    
-    
+
+
     info_div = document.getElementById('current_info');
     selected_pid = document.getElementById('select_project_alter').value;
     document.getElementById('refresh_div').href = 'alter_project?pid='+selected_pid
     //"<a href='alter_project?pid="+selected_pid+"'></a>";
 
-    var xmlhttp = new XMLHttpRequest();  
+    var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", '/admin/show_project_info', true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.setRequestHeader("data-type","html");
     var args = 'pid='+selected_pid;
-    xmlhttp.onreadystatechange = function() {        
+    xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 ) {
-          
-          var response = xmlhttp.responseText;            
-          info_div.innerHTML = response;      
-         
+
+          var response = xmlhttp.responseText;
+          info_div.innerHTML = response;
+
       }
     };
     xmlhttp.send(args);
@@ -352,7 +352,7 @@ function download_metadata(){
       return
     }
     window.open('/user_data/download_selected_metadata?pid='+selected_pid);
-    
+
 }
 //
 //
@@ -370,23 +370,23 @@ function upload_metadata(){
     input.setAttribute("name", "selected_pid");
     input.setAttribute("value", selected_pid);
     form.appendChild(input);
-    
+
     $(form).submit();
-   
-    // var xmlhttp = new XMLHttpRequest();  
+
+    // var xmlhttp = new XMLHttpRequest();
     // xmlhttp.open("POST", '/admin/upload_metadata', true);
     // xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     // xmlhttp.setRequestHeader("data-type","html");
     // var args = 'pid='+selected_pid;
     // //text_edits = ['altitude','collection_date','common_name','depth','description','elevation','latitude','longitude','public','taxon_id','fragment_name','dna_region','sequencing_platform','domain']
-    // xmlhttp.onreadystatechange = function() {        
+    // xmlhttp.onreadystatechange = function() {
     //   if (xmlhttp.readyState == 4 ) {
-    //       info_div.style.width = '1200px' 
-    //       info_div.style.height = '300px' 
-    //       info_div.style.overflow = 'auto'; 
-    //       var response = JSON.parse(xmlhttp.responseText);  
-    //       //var response = xmlhttp.responseText;  
-          
+    //       info_div.style.width = '1200px'
+    //       info_div.style.height = '300px'
+    //       info_div.style.overflow = 'auto';
+    //       var response = JSON.parse(xmlhttp.responseText);
+    //       //var response = xmlhttp.responseText;
+
     //       var html = "Read Only Metadata<br><table class='table table-striped'><tr><td>Dataset</td>"
     //       header_names = response.required_metadata_fields
     //       for(n in header_names){
@@ -399,15 +399,15 @@ function upload_metadata(){
     //           html += "<tr>"
     //           html += "<td>"+ds+"</td>"
     //           for(i in response[ds]){
-                
+
     //               html += "<td>"+response[ds][i]+"</td>"
-                
+
     //           }
     //           html += "</tr>"
     //         }
     //       }
     //       html += "</table>"
-    //       info_div.innerHTML = html;  
+    //       info_div.innerHTML = html;
     //   }
     // };
     // xmlhttp.send(args);
@@ -416,7 +416,7 @@ function upload_metadata(){
 //
 //
 function show_metadata(){
-    
+
     var info_div = document.getElementById('md_result_div');
     var selected_pid = document.getElementById('select_project_for_metadata').value;
     if(selected_pid == 0){
@@ -424,19 +424,19 @@ function show_metadata(){
       info_div.innerHTML = "";
       return
     }
-    var xmlhttp = new XMLHttpRequest();  
+    var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", '/admin/show_metadata', true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.setRequestHeader("data-type","html");
     var args = 'pid='+selected_pid;
     //text_edits = ['altitude','collection_date','common_name','depth','description','elevation','latitude','longitude','public','taxon_id','fragment_name','dna_region','sequencing_platform','domain']
-    xmlhttp.onreadystatechange = function() {        
+    xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 ) {
-          info_div.style.width = '100%' 
-          //info_div.style.height = '300px' 
-          //info_div.style.overflow = 'auto'; 
+          info_div.style.width = '100%'
+          //info_div.style.height = '300px'
+          //info_div.style.overflow = 'auto';
           var html = ''
-          var response = JSON.parse(xmlhttp.responseText);  
+          var response = JSON.parse(xmlhttp.responseText);
           if(response.validation.error){
               html += "<div style='width:50%;height:100px;overflow:auto;background:coral;padding:10px;'>"
               for(i in response.validation.msg){
@@ -447,18 +447,18 @@ function show_metadata(){
               html += 'Empty Values present'
             }else{
               // VALIDATES (Prepend form)
-              
+
               html += "<div style='color:green'>Validated!</div>"
 
           }
-          
+
           var req_header_names = response.sorted_req_header_names
-          var cust_header_names = response.sorted_cust_header_names  
-          
-          html += "Required Metadata from Database (read-only)<br>"
+          var cust_header_names = response.sorted_cust_header_names
+
+          html += "Required Metadata from Database (in blue) - read-only)<br>"
           html += "<div style='width:100%;height:200px;overflow:auto'>"
           html += "<table class='table table-striped'><tr><td>Dataset</td>"
-          
+
           for(n in req_header_names){
             html += "<td>"+req_header_names[n]+"</td>"
           }
@@ -485,7 +485,7 @@ function show_metadata(){
             html += "</tr>"
           }
           html += "</table></div>"
-          info_div.innerHTML = html;  
+          info_div.innerHTML = html;
 
       }
     };
