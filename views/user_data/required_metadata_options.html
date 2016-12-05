@@ -11,15 +11,15 @@
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
-	
+
 
 	<div class="hero-unit">
-	       <h2>VAMPS Required Metadata Terms 
+	       <h2>VAMPS Required Metadata Terms
 	         <small>(<a href='http://www.earthmicrobiome.org/emp-standard-protocols/metadata-guide/'>follows the Earth Microbiome Project metadata guide</a>)</small>
-	       </h2>       
+	       </h2>
 	</div>
 
-<div class="row">  
+<div class="row">
 
       <div class="col-lg-3" >
       <br>
@@ -41,14 +41,14 @@
         <li>longitude (decimal degrees)<br>
         </ul>
       </div></div>
-      
+
       <div class="col-lg-3" >
         ENV PACKAGE:<br>
-	    <div class='mdata_box'>		
+	    <div class='mdata_box'>
 			<ul>
-			<% for(i in md_env_pkg){ %>
-				<% if(md_env_pkg[i]){ %>
-				  <li><%= md_env_pkg[i] %></li>
+			<% for(id in md_env_pkg){ %>
+				<% if(md_env_pkg[id]){ %>
+				  <li><%= id %> - <%= md_env_pkg[id] %></li>
 				<% } %>
 			<% } %>
 			</ul>
@@ -57,8 +57,8 @@
         COUNTRY: (<a href='http://ols.wordvis.com/ont=GAZ' target='_blank'>OLSVis lookup: GAZ</a>)<br>
         <div class='mdata_box'>
             <ul>
-            <% for(i in md_country){ %>
-				  <li><%= md_country[i] %></li>
+            <% for(id in md_country){ %>
+				  <li><%= id %> - <%= md_country[id] %></li>
 			<% } %>
 			</ul>
         </div></div>
@@ -66,24 +66,24 @@
         ENV TERMS: (<a href='http://ols.wordvis.com/ont=ENVO' target='_blank'>OLSVis lookup: ENVO</a>)<br>
         <div class='mdata_box'>
             <ul>
-            <% for(i in md_env_term){ %>
-				  <li><%= md_env_term[i] %></li>
+            <% for(id in md_env_term){ %>
+				  <li><%= id %> - <%= md_env_term[id] %></li>
 			<% } %>
 			</ul>
         </div></div>
-   
-        
-        
+
+
+
 </div>
 <br>
-<div class="row">  
+<div class="row">
 
  <div class="col-lg-3">
         SEQUENCING PLATFORM:<br>
         <div class='mdata_box'>
             <ul>
-            <% for(i in md_sequencing_platform){ %>
-				  <li><%= md_sequencing_platform[i] %></li>
+            <% for(id in md_sequencing_platform){ %>
+				  <li><%= id %> - <%= md_sequencing_platform[id] %></li>
 			<% } %>
 			</ul>
         </div></div>
@@ -92,37 +92,37 @@
         FRAGMENT NAME:<br>
         <div class='mdata_box'>
             <ul>
-            <% for(i in md_fragment_name){ %>
-				  <li><%= md_fragment_name[i] %></li>
-			<% } %>
-			</ul>
+			        <% for(id in md_fragment_name){ %>
+							  <li><%= id %> - <%= md_fragment_name[id] %></li>
+							<% } %>
+						</ul>
         </div></div>
     <div class="col-lg-3">
         DOMAIN:<br>
         <div class='mdata_box' >
             <ul>
-            <% for(i in md_domain){ %>
-				  <li><%= md_domain[i] %></li>
-			<% } %>
-			</ul>
+			        <% for(id in md_domain){ %>
+							  <li><%= id %> - <%= md_domain[id] %></li>
+						  <% } %>
+						</ul>
         </div></div>
    <div class="col-lg-3">
         DNA REGION:<br>
         <div class='mdata_box' >
             <ul>
-            <% for(i in md_dna_region){ %>
-				<% if(md_dna_region[i]){ %>
-				  <li><%= md_dna_region[i] %></li>
-				<% } %>
-			<% } %>
-			</ul>
+            <% for(id in md_dna_region){ %>
+							<% if(md_dna_region[id]){ %>
+							  <li><%= id %> - <%= md_dna_region[id] %></li>
+							<% } %>
+						<% } %>
+						</ul>
         </div></div>
 	</div>
 <br>
 </div>
 
-	
+
 <% include ../add_ins/end.ejs %>
-   
+
  </body>
  </html>

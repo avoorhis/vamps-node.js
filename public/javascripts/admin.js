@@ -49,6 +49,7 @@ $(document).ready(function(){
                 console.log('submit sucess: ')
                 var html = ''
                 if(response.validation.error){
+html += "Error count: "+response.validation.msg.length.toString()
                   html += "<div style='width:50%;height:100px;overflow:auto;background:coral;padding:10px;'>"
                   for(i in response.validation.msg){
                     html += response.validation.msg[i]+"<br>"
@@ -416,7 +417,7 @@ function upload_metadata(){
 //
 //
 function show_metadata(){
-
+  alert('in shw')
     var info_div = document.getElementById('md_result_div');
     var selected_pid = document.getElementById('select_project_for_metadata').value;
     if(selected_pid == 0){
@@ -438,6 +439,7 @@ function show_metadata(){
           var html = ''
           var response = JSON.parse(xmlhttp.responseText);
           if(response.validation.error){
+              html += "Error count: "+response.validation.msg.length.toString()
               html += "<div style='width:50%;height:100px;overflow:auto;background:coral;padding:10px;'>"
               for(i in response.validation.msg){
                 html += response.validation.msg[i]+"<br>"
