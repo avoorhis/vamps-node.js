@@ -492,7 +492,7 @@ function get_bounded_ajax(bounds, msg){
             for(did in data.points){
               html += "<tr>"
               html +="<td><input checked type='checkbox' name='dids' value='"+did+"'></td>"
-              html += "<td>"+data.points[did].project+"</td>"
+              html += "<td><a href='/projects/"+data.points[did].pid+"'>"+data.points[did].project+"</a></td>"
               html += "<td>"+data.points[did].dataset+"</td>"
               html += "<td>Latitude: "+data.points[did].latitude+"</td>"
               html += "<td>Longitude: "+data.points[did].longitude+"</td>"

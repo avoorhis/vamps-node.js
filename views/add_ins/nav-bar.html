@@ -28,21 +28,21 @@
 <% } %>
     <nav class="navbar navbar-custom navbar-fixed-top  ">
     <!-- <nav class="navbar navbar-inverse navbar-fixed-top  "> -->
-      <% if(hostname.substring(0,6) == 'bpcweb'){ %> 
+      <% if(hostname.substring(0,6) == 'bpcweb'){ %>
         <div class="navbar-text pull-left" style='padding:5px; background:orange;font-size:9px;border:1px solid red;-moz-border-radius:20px/10px;-webkit-border-radius:20px/10px;border-radius:20px/10px'>
           This is BETA Software
-        </div> 
-      <% }else{ %> 
+        </div>
+      <% }else{ %>
         <div class="navbar-text pull-left" style='padding:5px; background:green;color:white;font-size:9px;border:1px solid red;-moz-border-radius:20px/10px;-webkit-border-radius:20px/10px;border-radius:20px/10px'>
           local version
-        </div>   
+        </div>
       <% } %>
-       
+
       <div class="container">
-        
+
         <div id="navbar" class="navbar-collapse collapse">
 
-          
+
           <div class="navbar-text pull-right" >
             <small>
               <% if (user === undefined) { %>
@@ -54,10 +54,10 @@
                     (<span class='color_red '>admin</span>)
                   <% } %>
                   | <a href='/users/logout'> logout</a>
-              <% } %> 
-              </small>  
+              <% } %>
+              </small>
           </div>
-      
+
 
           <ul class="nav navbar-nav">
             <li class='<%= active_class_home %>'><a href="/">VAMPS Home</a></li>
@@ -67,22 +67,22 @@
 
 			      <li class='<%= active_class_visuals %>'>
               <!-- <a href="/visuals/visuals_index">Visualizations</a> -->
-              
+
               <form action="/visuals/visuals_index" method="POST">
                 <button type="submit" class='btn btn-md btn-link' name="" value="" style='padding:14px;'>Data Selection</button>
               </form>
-                 
+
             </li>
-			      
+
             <li class='<%= active_class_ydata %>'><a href="/user_data/your_data">Your Data</a></li>
             <li class='<%= active_class_search %>'><a href="/search/search_index">Search</a></li>
             <li class='<%= active_class_contact %>'><a href="/help/contact">Contact Us</a></li>
           <% if (user !== undefined && user.security_level === 1) { %>
               <li class='<%= active_class_admin %>'><a href="/admin/admin_index">Admin</a></li>
-          <% } %>  
+          <% } %>
             <li class="<%= active_class_links %> dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Links<span class="caret"></span></a>
-              
+
 
               <ul class="dropdown-menu" role="menu">
                 <% if (user === undefined) { %>
@@ -93,23 +93,23 @@
 
 
                 <li class="divider"></li>
-                                
-                <li><a href='/projects/projects_index'>Public Project List</a></li>
+
+                <li><a href='/projects/projects_index'>All Projects List</a></li>
                 <li><a href='/geodistribution'>Distribution Map</a></li>
                 <li><a href='/metadata/metadata'>Metadata</a></li>
-               <%// if(hostname.substring(0,6) === 'bpcweb'){ %> 
+               <%// if(hostname.substring(0,6) === 'bpcweb'){ %>
                     <li><a href='/portals/portals_index'>Portals</a></li>
-               
+
                 <%// }else{ %>
                     <li><a href='https://vamps2.mbl.edu'>VAMPS Home (internet)</a></li>
                 <%// } %>
-				         
+
                 <li>
                 <form action="/visuals/visuals_index" method="POST">
                   <button type="submit" class='btn btn-md btn-link' name="" value="" style='color:black;padding-left:20px;'>Downloads</button>
                 </form>
                 </li>
-                
+
                 <li class="divider"></li>
                 <li class="dropdown-header">Resources</li>
                 <li><a href='/resources/reference_data'>Reference Data</a></li>
@@ -117,13 +117,13 @@
                 <li><a href="/resources/methods_pubs">Methods Publications</a></li>
                 <li><a href='/resources/research_pubs' >Research Publications</a></li>
                 <li><a href='/resources/software'>Software and Links</a></li>
-                
+
                 <li class="divider"></li>
                 <li class="dropdown-header">Help</li>
                 <li><a href="/help/overview">Overview</a></li>
                 <li><a href='/help/faq' target='_blank'>FAQ</a></li>
                 <li><a href='/help/contact'>Contact Us</a></li>
-                
+
               </ul>
             </li>
           </ul>
