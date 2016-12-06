@@ -1,4 +1,4 @@
-<!-- 
+<!--
 For administrators should this table show ALL projects?
 If yes, then regular users maybe should see their own projects in addition to the public ones.
 Guests should just see public projects.
@@ -7,7 +7,7 @@ Or should this page JUST show public projects?
 
 <table class='table table-condensed table-striped sortable' >
 <thead>
-	<tr>		
+	<tr>
 		<th></th>
 		<th>ID</th>
 		<th>Name</th>
@@ -15,37 +15,33 @@ Or should this page JUST show public projects?
 		<th>P.I. (username)</th>
 		<th>Email Address</th>
 		<th>Institute</th>
+		<th>Status</th>
 	</tr>
 </thead>
 <tbody>
 <% cnt = 1 %>
-<% //for (pid in proj) { %>
 <% for (n in proj){ %>
 	<% var pname = proj[n].project; %>
 	<% var public = proj[n].public; %>
-	
-	<% if(public == 1) { %>
 	    <tr>
 	    <td><%= cnt %></td>
 	    <td><%= proj[n].pid %></td>
 	    <td><a data-toggle="tooltip" data-placement="right" data-html="true" title='<%= proj[n].description %>' href='/projects/<%= proj[n].pid %>'><%= proj[n].project %></a></td>
 	    <td><%= proj[n].title %></td>
-	    <% if(proj[n].username == 'guest') { %>
-	    	<td>public (guest)</td>
-	    	<td>vamps@mbl.edu</td>
-	    	<td>MBL</td>
-	    <% }else{ %>
+
 	    	<td><%= proj[n].last %>, <%= proj[n].first %> (<%= proj[n].username %>)</td>
 	    	<td><%= proj[n].email %></td>
 	    	<td><%= proj[n].institution %></td>
-	    <% } %>
+				<% if(public==1){ %>
+					<td></td>
+				<% }else{ %>
+					<td>private</td>
+				<% } %>
+
 	    </tr>
 	    <% cnt += 1 %>
-	<% } %>
-	
-    
+
+
 <% }%>
 </tbody>
 </table>
-
-

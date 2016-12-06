@@ -12,44 +12,55 @@ var path = require('path');
 /* GET New User page. */
 router.get('/projects_index', function(req, res) {
     var db = req.db;
-    
+
     //console.log(ALL_DATASETS);
 	//console.log(PROJECT_INFORMATION_BY_PNAME)
-  	
+
    // var info = PROJECT_INFORMATION_BY_PID
   // console.log(info);
     //var keys = Object.keys(PROJECT_INFORMATION_BY_PNAME);
     //keys.sort();
-    var project_list = helpers.get_public_projects(req)
+    //var project_list = helpers.get_public_projects(req)
+    project_list = [];
+    for( i in PROJECT_INFORMATION_BY_PID){
+      project_list.push(PROJECT_INFORMATION_BY_PID[i]);
+    }
+
+    // var pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
+    //       //var public = pinfo.public
+    //       //if(pinfo.public == 1){
+    //           projects.push(pinfo);
+    //       //}
+    //
+    // });
+
     project_list.sort(function(a, b){
           return helpers.compareStrings_alpha(a.project, b.project);
     });
     console.log(project_list)
-    res.render('projects/projects_index', { 
+    res.render('projects/projects_index', {
                         title          : 'VAMPS Projects',
-                        //projects    : JSON.stringify(PROJECT_INFORMATION_BY_PNAME),
                         projects  : JSON.stringify(project_list),
-                        //data: JSON.stringify(info),
-                        //sorted_keys : keys,
                         user: req.user,hostname: req.CONFIG.hostname,
                 });
-    
+
 
 });
 
 router.get('/:id', helpers.isLoggedIn, function(req, res) {
     var db = req.db;
-    var dsinfo = []; 
+    var dsinfo = [];
     var mdata = {}
-    var dscounts = {};  
+    var dscounts = {};
     console.log('in PJ:id');
+
 	  if(req.params.id in PROJECT_INFORMATION_BY_PID){
       var info = PROJECT_INFORMATION_BY_PID[req.params.id]
       var project_count = ALL_PCOUNTS_BY_PID[req.params.id]
-      
+
 
       dataset_counts = {};
-      for(n in ALL_DATASETS.projects){        
+      for(n in ALL_DATASETS.projects){
         if(ALL_DATASETS.projects[n].pid == req.params.id){
           dsinfo = ALL_DATASETS.projects[n].datasets;
         }
@@ -59,7 +70,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         dscounts[did] = ALL_DCOUNTS_BY_DID[did];
         mdata[dsinfo[n].dname] = {}
         if(HDF5_MDATA == ''){
-            
+
             for (var name in AllMetadata[did]){
                 val = AllMetadata[did][name];
                 //console.log(did,dsinfo[n].dname,name,val)
@@ -68,10 +79,10 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         }else{
           var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
           mdgroup.refresh()
-          
+
           Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
               if(mdname != 'id'){
-                mdata[dsinfo[n].dname][mdname] = mdgroup[mdname] 
+                mdata[dsinfo[n].dname][mdname] = mdgroup[mdname]
               }
           });
         }
@@ -80,10 +91,10 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       //console.log('MD: '+JSON.stringify(mdata));
       var abstract_file = info.project+'.json';
       var abstract_file_path = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--abstracts',abstract_file)
-      
-      
+
+
       fs.readFile(abstract_file_path, {encoding: 'utf-8'}, function(err,data){
-            if (err){            
+            if (err){
                 //console.log('ERR '+err)
                 abstract = '{"abstract":"Not Available"}';
             }else{
@@ -93,7 +104,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
               abstract = data;
             }
 
-            res.render('projects/profile', { 
+            res.render('projects/profile', {
                                           title  : 'VAMPS Project',
                                           info: JSON.stringify(info),
                                           dsinfo: dsinfo,
@@ -103,17 +114,18 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                                           pcount: project_count,
                                           message: '',
                                           abstract:abstract,
-                                          user   : req.user,hostname: req.CONFIG.hostname,
+                                          user   : req.user,
+                                          hostname: req.CONFIG.hostname,
                                         });
 
       });
-      
+
   }else{
       req.flash('message','not found')
       res.redirect(req.get('referer'));
       //return
   }
-    
+
 });
 
 // router.post('/download_project_metadata_all', function(req, res) {
@@ -127,14 +139,14 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
 //     // check if custom metadata table exists
 //     //var qSelect = "SHOW tables like 'custom_metadata_"+pid+"'";
-    
+
 //     // get the fields from required_metadata_info as they may vary
 //     //var qSelect = "SHOW columns from required_metadata_info";
 //     //console.log('in projects-->');
 //     //console.log(MetadataValues);
 //     //console.log('<--in projects');
 //     // we have all the metadata in MetadataValues by did
-//     var q = "select dataset_id as did from dataset where project_id='"+pid+"'" 
+//     var q = "select dataset_id as did from dataset where project_id='"+pid+"'"
 //     var gzip = zlib.createGzip();
 //     var myrows = {}; // myrows[mdname] == [] list of values
 //     var header = 'Project: '+project+"\n\t"
@@ -177,13 +189,13 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //           rs.push(filetxt)
 //         }
 //       }
-//       rs.push(null); 
+//       rs.push(null);
 //       rs
 //         .pipe(gzip)
 //         .pipe(wstream)
 //         .on('finish', function () {  // finished
 //           console.log('done compressing and writing file');
-//           var info = { 
+//           var info = {
 //                 "addr":'avoorhis@mbl.edu',
 //                 "from":"vamps@mbl.edu",
 //                 "subj":"metadata is ready",
@@ -213,7 +225,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //     var timestamp = +new Date();  // millisecs since the epoch!
 //     var user = req.user || 'no-user';
 //     timestamp = user + '_' + timestamp;
-    
+
 //     var qSelect = "select UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, dataset from sequence_pdr_info\n";
 //     //var qSelect = "select sequence_comp as seq, sequence_id, seq_count, dataset from sequence_pdr_info\n";
 //     qSelect += " join sequence using (sequence_id)\n";
@@ -233,17 +245,17 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //         for(i in rows){
 //           seq = rows[i].seq.toString();
 //           //var buffer = new Buffer(rows[i].seq, 'base64');
-          
+
 //           //console.log(seq);
 //           seq_id = rows[i].sequence_id.toString();
 //           seq_count = rows[i].seq_count.toString();
 //           pjds = project+'--'+rows[i].dataset;
 //           entry = '>'+seq_id+'|'+pjds+'|'+seq_count+"\n"+seq+"\n"
 //           //console.log(entry)
-//           rs.push(entry)         
+//           rs.push(entry)
 //         }
-       
-//         rs.push(null);        
+
+//         rs.push(null);
 //       }
 //       rs
 //         .pipe(gzip)

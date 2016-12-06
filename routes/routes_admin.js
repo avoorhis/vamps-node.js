@@ -974,16 +974,14 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
 
               if(html_json.validation.error){
                 console.log('ERROR--MD UPLOAD--NO VALIDATION')
-                html_json.filename = ''
               }else{
                 console.log('OK--VALIDATES')
-                // write tmp json file
-                html_json.filename = username+'_'+project_name+'--'+timestamp+'.json'
-                file_path = path.join(process.env.PWD,'tmp',html_json.filename)
-                mdata = convert_names_to_ids_for_storage(newmd)
-                helpers.write_to_file(file_path,JSON.stringify(mdata))
-
               }
+              html_json.filename = username+'_'+project_name+'--'+timestamp+'.json'
+              file_path = path.join(process.env.PWD,'tmp',html_json.filename)
+              mdata = convert_names_to_ids_for_storage(newmd)
+              helpers.write_to_file(file_path,JSON.stringify(mdata))
+
 
               res.json(JSON.stringify(html_json));
 

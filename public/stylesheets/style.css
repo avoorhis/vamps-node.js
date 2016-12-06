@@ -205,6 +205,8 @@ td.left_justify {
 }
 #project_list_div {
   width:100%;
+  height: 700px;
+  overflow:auto;
 }
 #profile_dataset_list {
   height: 150px;
@@ -326,4 +328,12 @@ td.left_justify {
 .mdata_box ul{
   padding-left:20px;
   list-style-type: none;
+}
+.error_div {
+  width:50%;
+  height:100px;
+  overflow:auto;
+  background:coral;
+  padding:10px;
+  border:1px solid black;
 }

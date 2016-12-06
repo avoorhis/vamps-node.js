@@ -80,7 +80,7 @@ router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
     console.log('req.body-->>');
     console.log(req.body);
     console.log('<<--req.body');
-    console.log('DatasetsWithLatLong')
+
     var latmin = +req.body.lat_min
     var latmax = +req.body.lat_max
     var lonmin = +req.body.lon_min
@@ -95,7 +95,7 @@ router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
       lonmin = lonmax
       lonmax = tmp
     }
-    console.log(DatasetsWithLatLong)
+
     dids_in_range = {}
     dids_in_range.points = {}
     dids_in_range.boundry = {}
@@ -117,16 +117,9 @@ router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
         dids_in_range.points[did].dataset = DATASET_NAME_BY_DID[did]
       }
     }
-    //'88':    { proj_dset: 'UC_JJ_ApD1-b--ApD1',    latitude: '24.85',     longitude: '-76.5' } }
-    console.log('dids_in_range')
-    console.log(dids_in_range)
+
     res.json(dids_in_range)
-    // res.render('search/geo_area', { title: 'VAMPS:Search',
-    //
-    //     message:              req.flash('message'),
-    //
-    //     user:                 req.user,hostname: req.CONFIG.hostname,
-    // });
+  
 });
 router.post('/accept_latlon_datasets', helpers.isLoggedIn, function(req, res) {
   console.log('in accept_latlon_datasets');

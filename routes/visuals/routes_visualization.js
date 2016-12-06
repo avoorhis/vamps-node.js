@@ -187,7 +187,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     req.flash('message', 'Using data from configuration file.');
     TAXCOUNTS = {};
     METADATA  = {};
-    //
+
     var config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
     var config_file_data = JSON.parse(fs.readFileSync(config_file_path, 'utf8'))
     //console.log(file_data)
@@ -226,7 +226,8 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 
     }
   }else{
-    // GLOBAL Variable
+    // Direct from unit_select
+    // GLOBAL Variable:
     visual_post_items = COMMON.save_post_items(req);
     dataset_ids = chosen_id_name_hash.ids;
 
@@ -265,15 +266,6 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 
   }
 
-
-  //console.log('chosen_id_name_hash:>>');
-  //console.log(chosen_id_name_hash);
-  //console.log('<<chosen_id_name_hash');
-
-  //console.log('TAXCOUNTS:>>');
-  //console.log(TAXCOUNTS);
-  //console.log('<<TAXCOUNTS');
-  // GLOBAL
   var timestamp = +new Date();  // millisecs since the epoch!
   timestamp = req.user.username + '_' + timestamp;
   visual_post_items.ts = timestamp;
@@ -361,7 +353,11 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }else{
     dataset_ids = JSON.parse(req.body.dataset_ids);
   }
-
+  // I call this here and NOT in view_selection
+  // A user can jump here directly from geo_search
+  // However a user can jump directly to view_select from
+  // saved datasets or configuration which they could conceivably manipulate
+  dataset_ids = screen_dids_for_permissions(req, dataset_ids)
 
   if(req.CONFIG.site == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
@@ -2610,7 +2606,27 @@ function filter_project_tree_for_permissions(req, obj){
   //console.log(obj)
   return new_project_tree_pids
 }
-
+//
+//
+//
+function screen_dids_for_permissions(req,dids){
+  // This is called from unit_select and view_select (others?)  to catch and remove dids that
+  // are found through searches such as geo_search and go to unit_select directly
+  // bypassing the usual tree filter 'filter_project_tree_for_permissions' (fxn above)
+  // permissions are in PROJECT_INFORMATION_BY_PID
+  var new_did_list = []
+  for(i in dids){
+    pinfo = PROJECT_INFORMATION_BY_PID[ PROJECT_ID_BY_DID[dids[i]] ]
+    if(pinfo.public == 1 || pinfo.public == '1'){
+      new_did_list.push(dids[i])
+    }else{
+      if(pinfo.permissions.indexOf(req.user.user_id) != -1){
+        new_did_list.push(dids[i])
+      }
+    }
+  }
+  return new_did_list
+}
 //
 //
 //
@@ -2656,6 +2672,7 @@ router.get('/livesearch_projects/:substring', function(req, res) {
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length
   console.log('PROJECT_FILTER')
   console.log(PROJECT_FILTER)
+
   res.json(PROJECT_FILTER);
 
 });

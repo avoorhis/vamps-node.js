@@ -494,9 +494,9 @@ module.exports.get_public_projects = function(req) {
 
   var pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
         //var public = pinfo.public
-        if(pinfo.public == 1){
+        //if(pinfo.public == 1){
             projects.push(pinfo);
-        }
+        //}
 
   });
 

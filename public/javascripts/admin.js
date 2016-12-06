@@ -48,22 +48,20 @@ $(document).ready(function(){
 
                 console.log('submit sucess: ')
                 var html = ''
+                html += "<form id='' name='' method='POST' action='apply_metadata'>"
+                html += "<input type='hidden' name='pid' value='"+selected_pid+"'>"
+                html += "<input type='hidden' name='filename' value='"+response.filename+"'>"
                 if(response.validation.error){
-html += "Error count: "+response.validation.msg.length.toString()
-                  html += "<div style='width:50%;height:100px;overflow:auto;background:coral;padding:10px;'>"
+                  html += "Error count: "+response.validation.msg.length.toString()
+                  html += "<div class='error_div'>"
                   for(i in response.validation.msg){
                     html += response.validation.msg[i]+"<br>"
                   }
                   html += "</div>"
-                }else if(response.validation.empty_values){
-                  html += 'Empty Values present: correct them and re-upload:::'
+                  html += "<div class='pull-right'><small><input type='submit' value='Bypass Validation' /></small>"
+                  html += "</div>"
                 }else{
-                  // VALIDATES (Prepend form)
-                  html += "<form id='' name='' method='POST' action='apply_metadata'>"
-                  html += "<input type='hidden' name='pid' value='"+selected_pid+"'>"
-                  html += "<input type='hidden' name='filename' value='"+response.filename+"'>"
                   html += "<span style='color:green'>Validated!</span> <input type='submit' class='btn btn-xs btn-success' value='Apply This Metadata'>"
-
                 }
 
                 html += "<br>(Required Metadata from Upload (in blue) - read-only)<br>"
@@ -440,7 +438,7 @@ function show_metadata(){
           var response = JSON.parse(xmlhttp.responseText);
           if(response.validation.error){
               html += "Error count: "+response.validation.msg.length.toString()
-              html += "<div style='width:50%;height:100px;overflow:auto;background:coral;padding:10px;'>"
+              html += "<div class='error_div' >"
               for(i in response.validation.msg){
                 html += response.validation.msg[i]+"<br>"
               }
