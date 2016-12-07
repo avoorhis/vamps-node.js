@@ -66,7 +66,9 @@
   overflow: auto;
 }
 #map {
-
   height: 400px;
   width: 100%;
+}
+#latlon_table td{
+  padding:0 2px;
 }

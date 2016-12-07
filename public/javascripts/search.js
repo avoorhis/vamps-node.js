@@ -554,10 +554,10 @@ function initMap(data) {
         var SE = {lat: minlat, lng: maxlon}
         var NW = {lat: maxlat, lng: minlon}
         var NE = {lat: maxlat, lng: maxlon}
-        document.getElementById("SWbox").innerHTML = 'Lat: '+minlat+'; Long: '+ minlon;
-        document.getElementById("SEbox").innerHTML = 'Lat: '+minlat +'; Long: '+maxlon;
-        document.getElementById("NWbox").innerHTML = 'Lat: '+maxlat +'; Long: '+minlon;
-        document.getElementById("NEbox").innerHTML = 'Lat: '+maxlat+'; Long: '+ maxlon;
+        document.getElementById("SWbox").innerHTML = 'Lat: '+minlat.toFixed(6)+'; Long: '+ minlon.toFixed(6);
+        document.getElementById("SEbox").innerHTML = 'Lat: '+minlat.toFixed(6) +'; Long: '+maxlon.toFixed(6);
+        document.getElementById("NWbox").innerHTML = 'Lat: '+maxlat.toFixed(6) +'; Long: '+minlon.toFixed(6);
+        document.getElementById("NEbox").innerHTML = 'Lat: '+maxlat.toFixed(6)+'; Long: '+ maxlon.toFixed(6);
         var clat = minlat + ((maxlat - minlat)/2)
         var clon = minlon + ((maxlon - minlon)/2)
         var center = {lat:clat,lng:clon}
@@ -567,6 +567,8 @@ function initMap(data) {
           //center: center,
           mapTypeId: 'hybrid'
         });
+        var oms = new OverlappingMarkerSpiderfier(map);
+
         if(minlat==0 && maxlat==0 && minlon==0 && maxlon==0){
               map.setMapTypeId('roadmap');
               map.setZoom(2)
@@ -606,15 +608,28 @@ function initMap(data) {
           draggable: true,
           icon: '../images/blue_tilted_pin48x48.png'
         });
-
+        var iw = new google.maps.InfoWindow();
+        oms.addListener('click', function(marker, event) {
+          iw.setContent(marker.link);
+          iw.open(map, marker);
+        });
+        oms.addListener('spiderfy', function(markers) {
+          iw.close();
+        });
         if(Object.keys(data.points).length > 0){
           for(did in data.points){
-            loc = {lat: +data.points[did].latitude, lng: +data.points[did].longitude}
+            //loc = {lat: +data.points[did].latitude, lng: +data.points[did].longitude}
+            loc = new google.maps.LatLng(+data.points[did].latitude, +data.points[did].longitude)
             var data_point = new google.maps.Marker({
               position: loc,
               map: map,
+              url: '/projects/'+data.points[did].pid,
               title: data.points[did].proj_dset
             });
+            data_point.link = "<a href='/projects/"+data.points[did].pid+"'>"+data.points[did].proj_dset+"</a>"
+            oms.addMarker(data_point);
+            //google.maps.event.addListener(data_point, 'click', function() {window.location.href = data_point.url;});
+
           }
         }
         var BoundCoordinates = [  SW,NW,NE,SE,SW   ];
@@ -630,24 +645,25 @@ function initMap(data) {
         google.maps.event.addListener(map, 'mousemove', function (event) {
               displayCoordinates(event.latLng);
         });
+
         google.maps.event.addListener(markerSW, 'dragend', function (event) {
-            document.getElementById("SWbox").innerHTML = 'Lat: '+event.latLng.lat()+'; Long: '+ event.latLng.lng();
+            document.getElementById("SWbox").innerHTML = 'Lat: '+event.latLng.lat().toFixed(6)+'; Long: '+ event.latLng.lng().toFixed(6);
             SW = {lat: event.latLng.lat(), lng: event.latLng.lng()}
             adjust_boundry(map,linePath,'SW',SW,NW,NE,SE)
 
         });
         google.maps.event.addListener(markerSE, 'dragend', function (event) {
-            document.getElementById("SEbox").innerHTML = 'Lat: '+event.latLng.lat()+'; Long: '+ event.latLng.lng();
+            document.getElementById("SEbox").innerHTML = 'Lat: '+event.latLng.lat().toFixed(6)+'; Long: '+ event.latLng.lng().toFixed(6);
             SE = {lat: event.latLng.lat(), lng: event.latLng.lng()}
             adjust_boundry(map,linePath,'SE',SW,NW,NE,SE)
         });
         google.maps.event.addListener(markerNW, 'dragend', function (event) {
-            document.getElementById("NWbox").innerHTML = 'Lat: '+event.latLng.lat()+'; Long: '+ event.latLng.lng();
+            document.getElementById("NWbox").innerHTML = 'Lat: '+event.latLng.lat().toFixed(6)+'; Long: '+ event.latLng.lng().toFixed(6);
             NW = {lat: event.latLng.lat(), lng: event.latLng.lng()}
             adjust_boundry(map,linePath,'NW',SW,NW,NE,SE)
         });
         google.maps.event.addListener(markerNE, 'dragend', function (event) {
-            document.getElementById("NEbox").innerHTML = 'Lat: '+event.latLng.lat() +'; Long: '+ event.latLng.lng();
+            document.getElementById("NEbox").innerHTML = 'Lat: '+event.latLng.lat().toFixed(6) +'; Long: '+ event.latLng.lng().toFixed(6);
             NE = {lat: event.latLng.lat(), lng: event.latLng.lng()}
             adjust_boundry(map,linePath,'NE',SW,NW,NE,SE)
             //alert(JSON.stringify(linePath.getPath()))
