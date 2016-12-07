@@ -483,6 +483,7 @@ function get_bounded_ajax(bounds, msg){
             }
           }else{
             html += "<form id='' method='POST' action='/visuals/unit_selection'>"
+            html += "<div class='pull-right'>Dataset Count: "+Object.keys(data.points).length+"</div>"
             html += "Select <input type='radio' checked id='ds_select' name='ds_select' onclick=\"check_selected('all')\"> All&nbsp;&nbsp;&nbsp;"
             html += "<input type='radio' id='ds_select' name='ds_select' onclick=\"check_selected('none')\"> None&nbsp;&nbsp;&nbsp;&nbsp;"
             html += "<input type='button' class='btn btn-xs btn-primary' value='Use Selected' onclick='validate_geo_selected(this.form)'>"
