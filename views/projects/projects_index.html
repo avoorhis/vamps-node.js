@@ -15,10 +15,80 @@
 <% include ../add_ins/end.ejs %>
 <script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
 <script>
-  $(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip();
 
-  });
+    // code for tooltips
+    var $liveTip_pjds = $('<div id="livetip_pjds"></div>').hide().appendTo('body'),
+        $win = $(window),
+        showTip;
+
+    var tip = {
+      title: '',
+      offset: 12,
+      //delay: 300,
+      position: function(event) {
+        var positions = {x: event.pageX, y: event.pageY};
+        var dimensions = {
+          x: [
+            $win.width(),
+            $liveTip_pjds.outerWidth()
+          ],
+          y: [
+            $win.scrollTop() + $win.height(),
+            $liveTip_pjds.outerHeight()
+          ]
+        };
+
+        for ( var axis in dimensions ) {
+          if (dimensions[axis][0] <dimensions[axis][1] + positions[axis] + this.offset) {
+            positions[axis] -= dimensions[axis][1] + this.offset;
+          } else {
+            positions[axis] += this.offset;
+          }
+        }
+
+        $liveTip_pjds.css({
+          top: positions.y,
+          left: positions.x
+        });
+
+      }
+    };
+
+    $("body").delegate(".tooltip_pname", "mouseover mouseout mousemove", function (event) {
+          var link = this, html = '';
+          $link = $(this);
+
+          if (event.type == 'mouseover') {
+            tip.id = link.id;
+            link.id = '';
+            id_items = tip.id;
+
+						html = "Description:<br>"+id_items;
+            showTip = setTimeout(function() {
+              $link.data('tipActive', true);
+              tip.position(event);
+              $liveTip_pjds
+              .html('<div>' + html  + '</div>')
+              .fadeOut(0)
+              .fadeIn(0);
+            }, tip.delay);
+          }
+
+          if (event.type == 'mouseout') {
+            link.id = tip.id || link.id;
+            if ($link.data('tipActive')) {
+              $link.removeData('tipActive');
+              $liveTip_pjds.hide();
+            } else {
+              clearTimeout(showTip);
+            }
+          }
+
+          if (event.type == 'mousemove' && $link.data('tipActive')) {
+            tip.position(event);
+          }
+
+     });
 </script>
 </body>
 </html>

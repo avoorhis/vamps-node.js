@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="/stylesheets/dhtmlx/dhtmlxtree.css" >
 <% if(portal_to_show == ''){ %>
   <div class='title title_color_viz' id='comm_viz_title_div' >Sample (Dataset) Selection</div>
-  
+
 <% }else{ %>
   <div class='title title_color_portal' id='comm_viz_title_div' ><%= portals[portal_to_show].subtext %> Portal: Community Visualization</div>
   <div class='subtitle' style='padding:3px;background:#BDEDFF;'><%- portals[portal_to_show].subtitle %><br><%= subtitle %></div>
@@ -25,14 +25,14 @@
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
-    
+
       <table class='table' border='1'>
       <tr>
-        
+
         <td>
-           <a  id='clear_filters_btn_id' type='button' value='' class='btn btn-xs btn-primary' >Clear Filters/Reset Projects</a> 
+           <a  id='clear_filters_btn_id' type='button' value='' class='btn btn-xs btn-primary' >Clear Filters/Reset Projects</a>
         </td>
-        
+
         <td>
           <a  href='/visuals/saved_elements'  type="button" value='' class="btn btn-xs btn-primary pull-right"  role='button' >Go To Saved Datasets</a>
           <div id='projects_showing_div' class='pull-left' >
@@ -43,21 +43,21 @@
           </div>
           <div class='pull-left'><br><strong>Select Datasets Below:</strong></div>
         </td>
-        
-        <td>            
+
+        <td>
 <!--
-            <button type="button" class="btn btn-sm btn-warning pull-right" name='Next' id="unit_selection_btn_visuals"> 
-      			  next: Unit Selection <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+            <button type="button" class="btn btn-sm btn-warning pull-right" name='Next' id="unit_selection_btn_visuals">
+      			  next: Unit Selection <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
       			</button>
 -->
-            <h4>                
-                <span class="label label-default">You can save your dataset selections on the next page.</span>  
+            <h4>
+                <span class="label label-default">You can save your dataset selections on the next page.</span>
             </h4>
         </td>
 
       </tr>
       <tr>
-        
+
         <td style='width:100px;'>
           <% include ../add_ins/filters.html %>
         </td>
@@ -67,50 +67,50 @@
               <span id='nodata_span' style='visiblity:hidden'></span>
             </div>
         </td>
-      
+
 		    <td class='td_top' width="50%">
           <div class='clean_list'>
-            <li><button type="button" class="btn btn-sm btn-warning" name='Next' id="selection_btn_visuals"> 
+            <li><button type="button" class="btn btn-sm btn-warning" name='Next' id="selection_btn_visuals">
                 &nbsp;Visualizations&nbsp;&nbsp;&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
                 </button>
-                - Next: select taxonomy-database, domains and metadata. 
+                - Next: select taxonomy-database, domains and metadata.
             </li>
             <br>
-            <li><button type="button" class="btn btn-sm btn-primary" name='Next' id="selection_btn_exports"> 
+            <li><button type="button" class="btn btn-sm btn-primary" name='Next' id="selection_btn_exports">
                 &nbsp;Download Data&nbsp;
-                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
                 </button>
                 - Download sequences, biom, metadata and taxonomy files.
             </li>
             <br>
             <li>
-              
-                <button type="button" class="btn btn-sm btn-info" name='Next' id="selection_btn_oligotyping"> 
+
+                <button type="button" class="btn btn-sm btn-info" name='Next' id="selection_btn_oligotyping">
                 &nbsp;Oligotyping&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
                 </button>
-              
+
                 - Find out more: <a class="btn btn-sm btn-link" href='http://merenlab.org/software/oligotyping/' target='_blank'>Merenlab</a>
                 <a class="btn btn-sm btn-link" href='/oligotyping/project_list'>your oligotype projects</a>
             </li>
             <br>
             <li>
               <% if(hostname.substring(0,6) == 'bpcweb'){ %>
-                <button type="button" disabled class="btn btn-sm btn-success" name='Next' id="selection_btn_otus"> 
+                <button type="button" disabled class="btn btn-sm btn-success" name='Next' id="selection_btn_otus">
                 &nbsp;OTU Creation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
                 </button>
               <% }else{ %>
-                <button type="button" class="btn btn-sm btn-success" name='Next' id="selection_btn_otus"> 
+                <button type="button" class="btn btn-sm btn-success" name='Next' id="selection_btn_otus">
                 &nbsp;OTU Creation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
                 </button>
               <% } %>
                 - Create OTUs from VAMPS sequence data.
             </li>
             <br>
-            
+
             <br>
             <li>- The projects to the left include all the public projects plus any others that you have permissions to access.</li>
             <li>- Selecting the <span class='glyphicon glyphicon-question-sign'></span> next to the project name will take you to that project's profile.</li>
@@ -118,7 +118,7 @@
             <li>- Filter the projects using the filters to the left.</li>
             <li>- In the project tree click on the checkbox or plus(+) box to view and select datasets.</li>
             <li>- Once you select your datasets move to the next page by selecting a button above.</li>
-          </div> 
+          </div>
 		    </td>
 
       </tr>
@@ -140,7 +140,7 @@
     var $liveTip_pjds = $('<div id="livetip_pjds"></div>').hide().appendTo('body'),
         $win = $(window),
         showTip;
-    
+
     var tip = {
       title: '',
       offset: 12,
@@ -151,39 +151,33 @@
           x: [
             $win.width(),
             $liveTip_pjds.outerWidth()
-            
           ],
           y: [
             $win.scrollTop() + $win.height(),
             $liveTip_pjds.outerHeight()
-            
           ]
         };
-     
+
         for ( var axis in dimensions ) {
-     
           if (dimensions[axis][0] <dimensions[axis][1] + positions[axis] + this.offset) {
             positions[axis] -= dimensions[axis][1] + this.offset;
           } else {
             positions[axis] += this.offset;
           }
-     
         }
-     
         $liveTip_pjds.css({
           top: positions.y,
           left: positions.x
         });
-        
+
       }
     };
 
 
     $("body").delegate(".tooltip_pjds_list", "mouseover mouseout mousemove", function (event) {
-          var link = this,
-          html = '';
+          var link = this, html = '';
           $link = $(this);
-         
+
           if (event.type == 'mouseover') {
             tip.id = link.id;
             link.id = '';
@@ -192,9 +186,9 @@
             if(id_items[0] == 'project') {
               html += "<td>Name:</td><td>"+id_items[1]+"</td>";
               html += "</tr><tr>";
-              html += "<td>Title:</td><td>"+id_items[2]+"</td>";  
+              html += "<td>Title:</td><td>"+id_items[2]+"</td>";
               html += "</tr><tr>";
-              html += "<td>Status:</td><td>"+id_items[3]+"</td>";             
+              html += "<td>Status:</td><td>"+id_items[3]+"</td>";
             }else if(id_items[0] == 'dataset'){
               html += "<td>Project:</td><td>"+id_items[1]+"</td>";
               html += "</tr><tr>";
@@ -205,9 +199,9 @@
             html += "</tr><table></div>";
 
             showTip = setTimeout(function() {
-         
+
               $link.data('tipActive', true);
-              
+
               tip.position(event);
          //alert(event.pageX)
               $liveTip_pjds
@@ -215,26 +209,26 @@
               .fadeOut(0)
               .fadeIn(0);
 
-         
+
             }, tip.delay);
           }
-         
+
           if (event.type == 'mouseout') {
             link.id = tip.id || link.id;
             if ($link.data('tipActive')) {
               $link.removeData('tipActive');
               $liveTip_pjds.hide();
-              
+
             } else {
               clearTimeout(showTip);
             }
           }
-         
+
           if (event.type == 'mousemove' && $link.data('tipActive')) {
             tip.position(event);
           }
-                  
-     });              
+
+     });
 </script>
 <script type="text/javascript" src="/javascripts/visuals_index.js"></script>
  </body>

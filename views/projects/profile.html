@@ -1,32 +1,22 @@
 <% include ../add_ins/begin.ejs %>
-<% data = JSON.parse(info)          %> 
+<% data = JSON.parse(info)          %>
 
   <% if (message) { %>
   	<div class="alert_flash_message"><%= message %></div>
   <% } %>
-  
+
   <div class='title fa fa-anchor'>Project Profile</div>
   <div class='subtitle'><%= data.project %></div>
   <!-- PROJECT INFORMATION -->
   <div id='project_info_div'>
     <% include project_profile %>
   </div>
-  
+
 
 <% include ../add_ins/end.ejs %>
 <script type="text/javascript" src="/javascripts/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
 <script type="text/javascript" src="/javascripts/project.js"></script>
-  <script>
-  $(function() {
-    $( document ).tooltip();
-  });
-  </script>
-  <style>
-  label {
-    display: inline-block;
-    width: 5em;
-  }
-  </style>
-  </body>
-  </html>
+
+</body>
+</html>
