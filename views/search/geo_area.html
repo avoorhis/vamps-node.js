@@ -16,19 +16,20 @@
     <div class="col-lg-12">
       <form method='POST' action='geo_search'>
       <div id='geo_search_div' class='well'>
-        <h4>To find datasets within a geographic range enter the latitude and longitude values here:<br>
-        <small>Values must be in decimal degrees (not degree;minutes;seconds) -- like '-10.2' or '45.23459'. Use the map below for help.</small></h4>
+				<h4>Drag the pin(s) in the map below to select a geographic range.</h4>
+        <h5>Or<br>Find datasets within a geographic range by entering latitude and longitude values here:<br>
+        <small>Values must be in decimal degrees (not degree;minutes;seconds) -- like '-10.2' or '45.23459'. Use the map below for help.</small></h5>
         <li>Enter Latitude Range
           &nbsp;&nbsp;&nbsp;Min: <input id='' name='lat_min' type='text' size='16' maxlength='10'>
           &nbsp;&nbsp;&nbsp;Max: <input id='' name='lat_max' type='text' size='16' maxlength='10'>
         </li>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>Latitude: negative numbers south of the equator and positive north of the equator.</small>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>Latitude: negative numbers south of the equator and positive numbers north of the equator.</small>
         <br>
         <li>Enter Longitude Range
           &nbsp;&nbsp;&nbsp;Min: <input id='' name='lon_min' type='text' size='16' maxlength='10'>
           &nbsp;&nbsp;&nbsp;Max: <input id='' name='lon_max' type='text' size='16' maxlength='10'>
         </li>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>Longitude: negative numbers west of the prime meridian and positive east of the prime meridian.</small>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>Longitude: negative numbers west of the prime meridian and positive numbers east of the prime meridian.</small>
         <input class='pull-right' type='button' value='Search' onclick='validate_lat_lon(this.form)'>
       </div>
 
@@ -38,11 +39,11 @@
 
   <div class='row'>
 
-      <div class="col-lg-6">Drag the pin(s) to encompass a search area.<br>
-        NW: <span id='NWbox'></span><br>
-        NE: <span id='NEbox'></span><br>
-        SW: <span id='SWbox'></span><br>
-        SE: <span id='SEbox'></span>
+      <div class="col-lg-6">
+				<table id='latlon_table' border='1' >
+					<tr><td nowrap>NW: <span id='NWbox'></span></td><td nowrap>NE: <span id='NEbox'></span></td></tr>
+        	<tr><td nowrap>SW: <span id='SWbox'></span></td><td nowrap>SE: <span id='SEbox'></span></td></tr>
+				</table>
         <div id='coord'>Hover over map to show latitudes and longitudes</div>
         <div id='map'></div>
       </div>
@@ -57,8 +58,14 @@
 
 <script type="text/javascript" src="/javascripts/global.js"></script>
 <script type="text/javascript" src="/javascripts/search.js"></script>
-<script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=<%= gekey %>&callback=initMap">
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=<%= gekey %>">
+</script>
+<script type="text/javascript" src="/javascripts/oms.min.js"></script>
+<script>
+		$(document).ready(function(){
+		     initMap()
+		});
 </script>
 </body>
 </html>

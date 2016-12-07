@@ -2591,6 +2591,7 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
 //
 //
 function filter_project_tree_for_permissions(req, obj){
+  console.log('Filtering tree projects for permissions')
   var new_project_tree_pids = []
   for( i in obj ){
       //node = PROJECT_INFORMATION_BY_PID[pid];
@@ -2614,6 +2615,7 @@ function screen_dids_for_permissions(req,dids){
   // are found through searches such as geo_search and go to unit_select directly
   // bypassing the usual tree filter 'filter_project_tree_for_permissions' (fxn above)
   // permissions are in PROJECT_INFORMATION_BY_PID
+  console.log('Filtering did list for permissions')
   var new_did_list = []
   for(i in dids){
     pinfo = PROJECT_INFORMATION_BY_PID[ PROJECT_ID_BY_DID[dids[i]] ]

@@ -77,8 +77,8 @@ dataset_query = "SELECT dataset_id from dataset"
 #                 JOIN env_package USING(env_package_id)
 
 # """
-# required_metadata_fields = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country_id", "depth", "description", "dna_region_id", 
-#                         "domain_id", "elevation", "env_sample_source_id", "fragment_name_id", "latitude", "longitude", "sequencing_platform_id", 
+# required_metadata_fields = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country_id", "depth", "description", "dna_region_id",
+#                         "domain_id", "elevation", "env_sample_source_id", "fragment_name_id", "latitude", "longitude", "sequencing_platform_id",
 #                         "taxon_id", "env_biome_id", "env_feature_id", "env_matter_id"];
 
 req_pquery = "SELECT dataset_id, %s from required_metadata_info JOIN env_package USING(env_package_id)"
@@ -110,11 +110,11 @@ def get_required_metadata_fields(args):
     cur.execute(q)
     rows = cur.fetchall()
     required_metadata_fields = []
-    
+
     for row in rows:
         if row[0] != 'required_metadata_id' and row[0] != 'dataset_id':
             required_metadata_fields.append(row[0])
-    
+
     return required_metadata_fields
 
 def check_files(args):
@@ -126,7 +126,7 @@ def check_files(args):
     did_count = len(db_dids)
 
     ###### INDIVIDUAL JSON FILES ##################
-    print "\nChecking for files in:\n", args.files_prefix
+    print("\nChecking for files in:\n", args.files_prefix)
     okay_count = 0
     file_dids = []
     missing = []
@@ -141,16 +141,16 @@ def check_files(args):
             missing.append(did)
 
     if okay_count == did_count:
-        print 'OK1 -- No missing files'
+        print('OK1 -- No missing files')
     else:
-        print 'Missing from',os.path.basename(args.files_prefix)
-        print "('" + "','".join(missing) + "')"
+        print('Missing from',os.path.basename(args.files_prefix))
+        print("('" + "','".join(missing) + "')")
         pass
-    print 'DID presence is REQUIRED'
+    print('DID presence is REQUIRED')
 
     ######### TAXCOUNTS ###########################
     if args.units == 'silva119':
-        print "\nChecking Group File:\n",args.taxcounts_file_original
+        print("\nChecking Group File:\n",args.taxcounts_file_original)
         with open(args.taxcounts_file_original) as tax_file:
             tdata = json.load(tax_file)
 
@@ -163,17 +163,17 @@ def check_files(args):
             else:
                 missing.append(did)
         if okay_count == did_count:
-            print 'OK2 -- No missing dids in group taxcounts file'
+            print('OK2 -- No missing dids in group taxcounts file')
         else:
-            print 'Missing from',os.path.basename(args.taxcounts_file_original)
-            print "('" + "','".join(missing) + "')"
+            print('Missing from',os.path.basename(args.taxcounts_file_original))
+            print("('" + "','".join(missing) + "')")
             pass
-        print 'DID presence is REQUIRED'
+        print('DID presence is REQUIRED')
     else:
-        print '\nNo group taxcounts file for',args.units
+        print('\nNo group taxcounts file for',args.units)
     ########## METADATA ##########################
 
-    print "\nChecking Metadata File:\n",args.metadata_file_original
+    print("\nChecking Metadata File:\n",args.metadata_file_original)
     with open(args.metadata_file_original) as md_file:
         mdata = json.load(md_file)
 
@@ -186,12 +186,12 @@ def check_files(args):
         else:
             missing.append(did)
     if okay_count == did_count:
-        print 'OK3 -- No missing metadata'
+        print('OK3 -- No missing metadata')
     else:
-        print 'Missing from',os.path.basename(args.metadata_file_original)
-        print "('" + "','".join(missing) + "')"
+        print('Missing from',os.path.basename(args.metadata_file_original))
+        print ("('" + "','".join(missing) + "')")
         pass
-    print 'DID presence is NOT Required'
+    print ('DID presence is NOT Required')
 
 def go(args):
     """
@@ -208,15 +208,15 @@ def go(args):
     #         shutil.move(args.taxcounts_file, os.path.join(args.json_file_path, args.NODE_DATABASE+'--taxcounts_silva119'+today+'.json'))
     #     shutil.move(args.metadata_file,  os.path.join(args.json_file_path, args.NODE_DATABASE+'--metadata'+ today+'.json'))
     #     logging.debug('Backed up old taxcounts and metadata files')
-    
+
     # except IOError:
     #     print "Could not back up one of files directory, taxcounts or metadata files: "
-    # except:        
+    # except:
     #     raise
     #     # sys.exit()
     if os.path.exists(args.files_prefix):
         shutil.rmtree(args.files_prefix)
-    os.makedirs(args.files_prefix)    
+    os.makedirs(args.files_prefix)
     #os.mkdir(args.files_prefix)
     logging.debug('Created Dir: '+args.files_prefix)
     for q in queries:
@@ -227,14 +227,14 @@ def go(args):
         else:
             query = q["query"] % query_core_silva119
         try:
-            print
-            print "running mysql query for:",q['rank']
+            print()
+            print ("running mysql query for:",q['rank'])
             logging.debug("running mysql query for: "+q['rank'])
 
-            print query
+            print(query)
             cur.execute(query)
         except:
-            print "Trying to query with:",query
+            print("Trying to query with:",query)
             logging.debug("Failing to query with: "+query)
             sys.exit("This Database Doesn't Look Right -- Exiting")
         for row in cur.fetchall():
@@ -258,28 +258,22 @@ def go(args):
                 counts_lookup[ds_id][tax_id_str] = count
 
 
-    print 'gathering metadata from tables'
+    print('gathering metadata from tables')
     logging.debug('gathering metadata from tables')
     metadata_lookup = go_metadata()
 
-    print 'writing to individual files'
+    print('writing to individual files')
     logging.debug('writing to individual files')
     write_data_to_files(args, metadata_lookup, counts_lookup)
 
     if args.units == 'silva119':
-        print 'writing metadata file'
+        print('writing metadata file')
         logging.debug('writing metadata file')
         write_all_metadata_file(args, metadata_lookup)
 
-        print 'writing taxcount file'
+        print('writing taxcount file')
         logging.debug('writing taxcount file')
         write_all_taxcounts_file(args, counts_lookup)
-
-    for w in warnings:
-        print w
-        logging.debug(w)
-    print "DONE"
-    logging.debug("DONE")
 
 
 def write_data_to_files(args, metadata_lookup, counts_lookup):
@@ -326,17 +320,17 @@ def go_metadata():
     metadata_lookup = {}
 
     logging.debug("running mysql for required metadata")
-    print "req_pquery"
-    
+    print("req_pquery")
+
     logging.debug("running mysql for required metadata")
     req_pquery_full = req_pquery % (','.join(args.req_metadata_fields))
-    print req_pquery_full
+    print(req_pquery_full)
     cur.execute(req_pquery_full)
     for row in cur.fetchall():
         did = row[0]
         for i,name in enumerate(args.req_metadata_fields):
-            print "enumerate(required_metadata_fields): SSS"
-            print i,did,name,row[i+1]
+            print("enumerate(required_metadata_fields): SSS")
+            print(i,did,name,row[i+1])
 
             logging.debug("enumerate(required_metadata_fields): SSS")
             logging.debug(i,did,name,row[i+1])
@@ -355,7 +349,7 @@ def go_metadata():
 
     pid_collection = {}
 
-    print 'running mysql for custom metadata',cust_pquery
+    print('running mysql for custom metadata',cust_pquery)
     logging.debug('running mysql for custom metadata: '+cust_pquery)
     cur.execute(cust_pquery)
     cust_metadata_lookup = {}
@@ -368,20 +362,20 @@ def go_metadata():
             pid_collection[pid].append(field)
         else:
             pid_collection[pid] = [field]
-    print
+    print()
     for pid in pid_collection:
         table = 'custom_metadata_'+ pid
         fields = ['dataset_id']+pid_collection[pid]
 
         cust_dquery = "SELECT `" + '`,`'.join(fields) + "` from " + table
-        print 'running other cust',cust_dquery
+        print('running other cust',cust_dquery)
         logging.debug('running other cust: ' +cust_dquery)
         #try:
         cur.execute(cust_dquery)
 
-        print
+        print()
         for row in cur.fetchall():
-            print row
+            print(row)
             did = row[0]
             n = 1
             for field in pid_collection[pid]:
@@ -457,11 +451,11 @@ if __name__ == '__main__':
                 help="If set will look for continuity between database(dataset table) and JSON files")
 
     if len(sys.argv[1:])==0:
-        print myusage
-        sys.exit() 
+        print(myusage)
+        sys.exit()
     args = parser.parse_args()
 
-    print
+    print()
     warnings = []
     if args.dbhost == 'vampsdev':
         args.json_file_path = os.path.join('/','groups','vampsweb','vampsdev_node_data','json')
@@ -474,11 +468,11 @@ if __name__ == '__main__':
         args.json_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'../','../','json')
 
     if not os.path.exists(args.json_file_path):
-        print "Could not find json directory: '",args.json_file_path,"'-Exiting"
+        print("Could not find json directory: '",args.json_file_path,"'-Exiting")
         sys.exit(-1)
     else:
-        print "ARGS: json_dir=",args.json_file_path,'[Validated]'
-        print "ARGS: dbhost  =",args.dbhost
+        print("ARGS: json_dir=",args.json_file_path,'[Validated]')
+        print("ARGS: dbhost  =",args.dbhost)
 
 
 
@@ -487,9 +481,9 @@ if __name__ == '__main__':
             read_default_file="~/.my.cnf_node" # you can use another ini file, for example .my.cnf_node
         )
     except:
-        print "ARGS: json_dir=",args.json_file_path,'[Validated]'
-        print "ARGS: dbhost  =",args.dbhost
-        print myusage
+        print("ARGS: json_dir=",args.json_file_path,'[Validated]')
+        print("ARGS: dbhost  =",args.dbhost)
+        print(myusage)
         sys.exit()
     cur = db.cursor()
 
@@ -500,7 +494,7 @@ if __name__ == '__main__':
         cur.execute("SHOW databases")
         dbs = []
         db_str = ''
-        print myusage
+        print(myusage)
         i = 0
         for row in cur.fetchall():
             if row[0] != 'mysql' and row[0] != 'information_schema':
@@ -514,14 +508,14 @@ if __name__ == '__main__':
         else:
             sys.exit("unrecognized number -- Exiting")
 
-    print
+    print()
     cur.execute("USE "+args.NODE_DATABASE)
 
     #out_file = "tax_counts--"+NODE_DATABASE+".json"
 
-    print 'DATABASE:',args.NODE_DATABASE
-    print 'JSON DIRECTORY:',args.json_file_path
-    print
+    print('DATABASE:',args.NODE_DATABASE)
+    print('JSON DIRECTORY:',args.json_file_path)
+    print()
 #    args.sql_db_table               = True
     #args.separate_taxcounts_files   = True
 
@@ -552,6 +546,11 @@ if __name__ == '__main__':
     if args.check_files:
         check_files(args)
     else:
-        print "This may take awhile.... Best to be running in a 'screen' session."
+        print("This may take awhile.... Best to be running in a 'screen' session.")
         go(args)
-
+        for w in warnings:
+            print(w)
+            logging.debug(w)
+        print("DONE ** Remember to copy over the transfer files in "+args.json_file_path+" **")
+        print()
+        logging.debug("DONE")
