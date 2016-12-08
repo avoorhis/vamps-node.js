@@ -2615,14 +2615,16 @@ function screen_dids_for_permissions(req,dids){
   // are found through searches such as geo_search and go to unit_select directly
   // bypassing the usual tree filter 'filter_project_tree_for_permissions' (fxn above)
   // permissions are in PROJECT_INFORMATION_BY_PID
-  console.log('Filtering did list for permissions')
   var new_did_list = []
   for(i in dids){
     pinfo = PROJECT_INFORMATION_BY_PID[ PROJECT_ID_BY_DID[dids[i]] ]
     if(pinfo.public == 1 || pinfo.public == '1'){
       new_did_list.push(dids[i])
     }else{
-      if(pinfo.permissions.indexOf(req.user.user_id) != -1){
+      // allow if user is owner (should have uid in permissions but check anyway)
+      // allow if user is admin
+      // allow if user is in pinfo.permission
+      if(req.user.user_id == pinfo.oid || req.user.security_level == 1 || pinfo.permissions.indexOf(req.user.user_id) != -1 ){
         new_did_list.push(dids[i])
       }
     }
