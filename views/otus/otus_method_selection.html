@@ -14,10 +14,10 @@
 <div class="row">
     <div  id='show_selected_datasets_div'  class="col-md-12">
     	<div class='well'>
-                  <% include ../visuals/partials/show_selected_datasets.html %> 
+                  <% include ../visuals/partials/show_selected_datasets.html %>
       </div>  <!-- /well -->
     </div> <!-- End  show_selected_datasets_div -->
-    
+
 </div>
 
 
@@ -25,21 +25,24 @@
 
 
 
-
+<form id='' class='' method='POST' action='create_otus_step1'>
 <div class='well'>
 
-	<div class="row">  
-				
+	<div class="row">
+
 				<div class="col-md-12">
-					
-								
+
+
 								<table class='table'>
-								<tr><th colspan='2'>OTU Creation Methods</th><th colspan='3'>OTU Size</th><th></th><th></th></tr>
+								<tr><th colspan='2'>OTU Creation Methods</th><th colspan='3'>OTU Size</th><th>
+                  <span class='pull-right'>Step-1: <input class='' type='submit' value='Create Fasta'></span>
+                </th></tr>
 								<tr>
 									<td><input type='radio' name='otu_method' value='closed_ref'>
 									</td><td><div class='' style='width:300px'>
-										Closed Reference OTUs using the <a href='http://greengenes.lbl.gov/cgi-bin/nph-index.cgi' target='_blank'>Greengenes database</a>
-										and <a href='http://www.drive5.com/usearch/' target='_blank'>USEARCH</a>
+										Closed Reference OTUs using the Greengenes database	and USEARCH
+                    <br><small>External Links: <ul><li><a href='http://www.drive5.com/usearch/' target='_blank'>USEARCH website</a></li>
+                    <li><a href='http://greengenes.lbl.gov/cgi-bin/nph-index.cgi' target='_blank'>Greengenes website</a></li></ul></small>
 									</div>
 									</td>
 									<td>3%<br><input type='radio' disabled name='ref_otu_size' value='3'></td>
@@ -54,8 +57,10 @@
 									<td>
 										<input type='radio' checked name='otu_method' value='uclust'>
 										</td><td>
-										<a href='http://drive5.com/usearch/manual/uclust_algo.html' target='_blank'>UCLUST</a>
-									</td>
+										UCLUST
+                    <br><small>External Link: <ul><li><a href='http://drive5.com/usearch/manual/uclust_algo.html' target='_blank'>UCLUST website</a></li>
+                    </ul></small>
+                  </td>
 									<td>3%<br><input type='radio' checked name='ucl_otu_size' value='3'></td>
 									<td>6%<br><input type='radio' name='ucl_otu_size' value='6'></td>
 									<td>9%<br><input type='radio' name='ucl_otu_size' value='9'></td>
@@ -80,7 +85,9 @@
 								<tr>
 									<td><input type='radio' name='otu_method' value='crop'>
 										</td><td>
-										<a href='https://github.com/tingchenlab/CROP' target='_blank'>CROP - Bayesian Clustering</a>
+										CROP - Bayesian Clustering
+                    <br><small>External Link: <ul><li><a href='https://github.com/tingchenlab/CROP' target='_blank'>CROP website</a></li>
+                    </ul></small>
 									</td>
 									<td>3%<br><input type='radio' disabled name='crp_otu_size' value='3'></td>
 									<td>5%<br><input type='radio' disabled name='crp_otu_size' value='6'></td>
@@ -92,11 +99,12 @@
 								</tr>
 							</table>
 				</div>
-							
+
 	</div>
-			
+
 </div>
-  
+
+</form>
  <% include ../add_ins/end.ejs %>
   <script type="text/javascript" src="/javascripts/global.js"></script>
   <script type="text/javascript" src="/javascripts/common_selection.js"></script>
