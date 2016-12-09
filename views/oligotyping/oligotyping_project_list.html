@@ -4,20 +4,21 @@
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
-	
-	
+
+
 <div class='pull-right'>
  		<a id='' href='/visuals/visuals_index' class='btn btn-sm btn-primary'>New Oligotyping Project</a>
 </div>
 
 
 <div class="hero-unit">
-	       <h2>Oligotyping Project Status</h2>     
+	       <h2>Oligotyping Project Status</h2>
 </div>
 	<% for(n in sort_info){ %>
-	<div class='well'>
+		<%	var code = sort_info[n].oligo_code  %>
+	  <div id='<%= code %>' class='well' style='display:block;'>
     	<table class=' table'>
-				<%	var code = sort_info[n].oligo_code  %>
+
 				<% var fasta_status = oligo_info[code].fasta_status %>
 				<% var entropy_status = oligo_info[code].entropy_status %>
 				<% var oligo_status = oligo_info[code].oligo_status %>
@@ -66,15 +67,15 @@
 
 			   	</td>
 				</tr>
-	
+
 	</table>
 </div>
 <% } %>
 
 
 <% include ../add_ins/end.ejs %>
-   
- 
+
+
   <script type="text/javascript" src="/javascripts/global.js"></script>
   <script type="text/javascript" src="/javascripts/common_selection.js"></script>
   <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>

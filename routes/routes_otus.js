@@ -131,25 +131,28 @@ router.post('/create_otus_step1', helpers.isLoggedIn, function (req, res) {
                   seq_count = rows[i].seq_count
                   pjds = rows[i].project+'--'+rows[i].dataset;
                   dataset_lookup[pjds] = 1
-                  for(i = 0; i<parseInt(seq_count); i++ ){
-                    seq_counter += 1
-                    var len = seq.length
+                  for(i = 1; i<=parseInt(seq_count); i++ ){
+                    //seq_counter += 1
+                    //var len = seq.length
                     //console.log('len',len)
-                    sum_seq_length += len
-                    var no = parseInt(i)+1
-                    var sep = '__' // the oligotype script needs to know this
-                    entry = '>'+pjds+sep+seq_id+'-'+no.toString()+"\n"+seq+"\n";
+                    //sum_seq_length += len
+                    //var no = parseInt(i)
+
+                    //entry = '>'+pjds+sep+seq_id+'-'+no.toString()+"\n"+seq+"\n";
+                    //DCO_BRA_Av6--IODP_331_Site_C14B_1_1--240591553_1
+
+                    entry = '>'+pjds+'--'+seq_id+'_'+i+"\n"+seq+"\n";
                     rs.push(entry);
-                  }
-                }
+                  } // end for i
+                } // end rows
 
                 rs.push(null);
 
                 rs
                   .pipe(wstream)
                   .on('finish', function readableStreamOnFinish() {  // finished fasta
-                    console.log('done  writing fa-file now write config:');
-                    var cutoff = ((sum_seq_length / seq_counter) * 0.8).toFixed(0)
+                    console.log('done  writing *.fa file; now writeing config:');
+                    //var cutoff = ((sum_seq_length / seq_counter) * 0.8).toFixed(0)
 
                     //console.log('sum_seq_length',sum_seq_length)
                     //console.log('seq_counter',seq_counter)
@@ -170,29 +173,122 @@ router.post('/create_otus_step1', helpers.isLoggedIn, function (req, res) {
                         if(err) { return console.log(err); }
                         console.log("The Config file was saved!");
                     })
+
                   });  // on
 
             });  // chmod
           })
-          // ref commands
-          //    /groups/vampsweb/vampsdev/apps/db2fasta_otus_vamps
-          //    /groups/vampsweb/vampsdev/seqinfobin/mothur "#unique.seqs(fasta=/groups/vampsweb/vampsdev/otus/avoorhis_23618455//usearch_ref.fa)"
-          //    /groups/vampsweb/vampsdev/apps/otu_usearch_ref.py
-          //
-          // uclust commands
-          //    /groups/vampsweb/vampsdev/apps/db2fasta_otus_vamps
-          //    /groups/vampsweb/vampsdev/apps/otus_uc2mtx_vamps
-          //    /groups/vampsweb/vampsdev/apps/otu2tax_vamps
-          // slp commands
-          //    /groups/vampsweb/vampsdev/apps/db2fasta_otus_vamps
-          //    /groups/vampsweb/vampsdev/apps/otus_slp2mtx_vamps
-          // crop commands
+res.redirect('project_list')  // may not see well yet as fasta needs to be completed 
       } // end else
     } // end else
   }); // end query
 
 });
+//
+//
+// YOUR PROJECTS
+//
+router.get('/project_list', helpers.isLoggedIn, function (req, res) {
+    //console.log(PROJECT_INFORMATION_BY_PNAME);
 
+    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    var user_dir_path = path.join(pwd,'public','user_projects');
+
+
+    var project_info = {};
+    var file_info = [];
+
+     fs.readdir(user_dir_path, function readProjectsDir(err, items) {
+            if (err) { return console.log(err); }
+            project_info = {}
+            for (var d in items) {
+                // andy-uclust-otus-1481290684543
+                var pts = items[d].split('-');
+                if (pts[0] === req.user.username && pts[2] === 'otus') {
+                  console.log('got dir', items[d])
+                    var otus_code = pts[3];  // ie 1481290684543
+                    project_info[otus_code] = {};
+                    var stat = fs.statSync(path.join(user_dir_path, items[d]));
+
+                    if (stat.isDirectory()) {
+                        // stat.mtime.getTime() is for sorting to list in oreder
+
+                        // need to read config file
+                        // check status?? dir strcture: analisis/gast/<ds>
+                        var data_repo_path = path.join(user_dir_path, items[d]);
+                        var config_file = path.join(data_repo_path, 'config.ini');
+
+                        project_info[otus_code].fasta_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-FASTA')) ? 'COMPLETED' : ''
+                        //project_info[oligo_code].entropy_status = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-ENTROPY')) ? 'COMPLETED' : ''
+                        //project_info[oligo_code].oligo_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-OLIGO')) ? 'COMPLETED' : ''
+
+                        try{
+                            var config = iniparser.parseSync(config_file);
+
+                            file_info.push({ 'otus_code':otus_code, 'time':stat.mtime});
+
+                            project_info[otus_code].method = config['MAIN']['otu_method'];
+                            project_info[otus_code].size = config['MAIN']['otu_size'];
+                            project_info[otus_code].start_date = stat.mtime.toISOString().substring(0,10);
+
+                        }
+                        catch(e){
+                          console.log('Config file ERROR',data_repo_path)
+                        }
+
+                    }
+
+                  }
+            }
+            file_info.sort(function sortByTime(a, b) {
+              //reverse sort: recent-->oldest
+              return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
+            });
+            //console.log(project_info)
+            //console.log(file_info)
+            res.render('otus/otus_project_list',
+                { title: 'OTU Projects',
+                  pinfo: JSON.stringify(project_info),
+                  finfo: JSON.stringify(file_info),
+                  //env_sources :   JSON.stringify(req.CONSTS.ENV_SOURCE),
+                  //failmessage : req.flash('failMessage'),
+                  message : req.flash('Message'),
+                  user: req.user, hostname: req.CONFIG.hostname
+            });
+
+    });  // readdir
+    // ref commands
+    //    /groups/vampsweb/vampsdev/apps/db2fasta_otus_vamps
+    //    /groups/vampsweb/vampsdev/seqinfobin/mothur "#unique.seqs(fasta=/groups/vampsweb/vampsdev/otus/avoorhis_23618455//usearch_ref.fa)"
+    //    /groups/vampsweb/vampsdev/apps/otu_usearch_ref.py
+    //
+    // uclust commands
+    //    /groups/vampsweb/vampsdev/apps/db2fasta_otus_vamps
+    //    /groups/vampsweb/vampsdev/apps/otus_uc2mtx_vamps
+    //    /groups/vampsweb/vampsdev/apps/otu2tax_vamps
+    // slp commands
+    //    /groups/vampsweb/vampsdev/apps/db2fasta_otus_vamps
+    //    /groups/vampsweb/vampsdev/apps/otus_slp2mtx_vamps
+    // crop commands
+});
+//
+//
+//
+//
+//
+//
+router.get('/delete/:method/:code', helpers.isLoggedIn, function (req, res) {
+  console.log('in otus delete')
+  var method = req.params.method
+  var otus_code = req.params.code
+  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+  var user_dir_path = path.join(pwd,'public','user_projects');
+  var otus_dir = req.user.username+'-'+method+'-otus-'+otus_code
+  var data_repo_path = path.join(user_dir_path, otus_dir);
+  console.log(data_repo_path)
+  helpers.deleteFolderRecursive(data_repo_path)
+  res.send('OK')
+});
 //
 //
 //
