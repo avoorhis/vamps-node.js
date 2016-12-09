@@ -249,8 +249,8 @@ router.post('/project_list', helpers.isLoggedIn, function (req, res) {
                         if(err) { return console.log(err); }
                         console.log("The Config file was saved!");
                     })
-                  });
-              })
+                  });  // on
+              }) // chmod
           })
           res.redirect('project_list')
 
@@ -757,7 +757,7 @@ router.get('/delete/:code', helpers.isLoggedIn, function (req, res) {
   console.log(data_repo_path)
   helpers.deleteFolderRecursive(data_repo_path)
   //helpers.deleteFolderRecursive(out_oligotype_path)
-  res.redirect('your_projects')
+  res.send('OK')
   //res.send('done')
 });
 // router.post('/go', helpers.isLoggedIn, function (req, res) {

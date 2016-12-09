@@ -3,8 +3,8 @@
 //  SHOW  RESULTS for Taxonomy Search
 //
 function showOligotypingTaxResult(str) {
-  
-  
+
+
   if (str.length==0) {
     document.getElementById("livesearch_taxonomy").innerHTML="";
     document.getElementById("livesearch_taxonomy").style.border="0px";
@@ -15,7 +15,7 @@ function showOligotypingTaxResult(str) {
   }else{
     document.getElementById("livesearch_tax_dropdown").style.visibility='visible';
   }
-  var xmlhttp = new XMLHttpRequest(); 
+  var xmlhttp = new XMLHttpRequest();
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 && xmlhttp.status==200) {
       document.getElementById("livesearch_taxonomy").innerHTML=xmlhttp.responseText;
@@ -29,14 +29,14 @@ function showOligotypingTaxResult(str) {
   xmlhttp.send();
 }
 function get_tax_str(taxon,rank){
-    
+
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.open("GET", "/oligotyping/livesearch_taxonomy/" + rank+'/'+taxon, true);
   xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
           var response = xmlhttp.responseText;
           var tmp = JSON.parse(response);
-          
+
           document.getElementById("livesearch_result_div").value = tmp.full_string;
           document.getElementById("oligo_genus_err_msg").innerHTML = '';
           document.getElementById("hidden_item").value = response;
@@ -48,14 +48,14 @@ function get_tax_str(taxon,rank){
 }
 
 function get_oligotype_seqs(){
-		
+
 		var tax_string = document.getElementById("livesearch_result_div").value
     var tax_obj = document.getElementById("hidden_item").value;
-    
+
     //var xmlhttp = new XMLHttpRequest();
     //var args = 'tax_string='+tax_string
     //args += '&tax_obj='+tax_obj
-  	
+
   	var f = document.createElement("form");
     f.setAttribute('method',"post");
     f.setAttribute('action',"/oligotyping/project_list");
@@ -66,7 +66,7 @@ function get_oligotype_seqs(){
     input.value = tax_obj;
     f.appendChild(input);
 
-    
+
     var submit = document.createElement('input');
     submit.setAttribute('type', "submit");
     f.appendChild(submit);
@@ -83,6 +83,11 @@ function delete_project(code){
 		//alert('good',resp)
 		var xmlhttp = new XMLHttpRequest();
 	  xmlhttp.open("GET", "/oligotyping/delete/" + code, true);
+    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+      var response = xmlhttp.responseText;
+      // if(response=='OK')
+      document.getElementById(code).style.display = 'none';
+    }
 	  xmlhttp.send();
 	}else{
 		return
@@ -91,10 +96,10 @@ function delete_project(code){
 }
 function run_oligotyping(btn, code){
 	//alert('help')
-	
+
 	var form = document.getElementById("oligotyping_form_id")
-	document.getElementById("html_link_info").innerHTML = 'Status: Running'  
-	//document.getElementById("html_link").disabled = true  
+	document.getElementById("html_link_info").innerHTML = 'Status: Running'
+	//document.getElementById("html_link").disabled = true
 	var html_dir = "/oligotyping/projects/"+form.elements['username'].value+'_'+'OLIGOTYPING_'+code
 	args = 'code='+code
 	args += '&family='+form.elements['family'].value
@@ -130,22 +135,22 @@ function run_oligotyping(btn, code){
 	//alert(args)
 	form.submit()
  //window.open('file:///User/avoorhis/programming/vamps-node.js/views/tmp/projects/andy_OLIGOTYPING_1474547262567/HTML-OUTPUT/index.html')
-	// var xmlhttp = new XMLHttpRequest();  
+	// var xmlhttp = new XMLHttpRequest();
  //  xmlhttp.open("POST", '/oligotyping/oligo/'+code, true);
  //  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
  //  xmlhttp.setRequestHeader("data-type","html");
-  
- //  xmlhttp.onreadystatechange = function() {        
+
+ //  xmlhttp.onreadystatechange = function() {
  //    if (xmlhttp.readyState == 4 ) {
-        
- //        //var response = xmlhttp.responseText; 
- //        //alert(response) 
+
+ //        //var response = xmlhttp.responseText;
+ //        //alert(response)
  //        var rando = getRandomInt(10000,99999)
  //        var link = html_dir+"/HTML-OUTPUT/index.html?rando="+rando.toString()
- //        var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **" 
- //        document.getElementById("html_link_div").innerHTML = html 
- //        document.getElementById("html_link_info").innerHTML = 'READY'         
- //        document.getElementById("oligo_text").innerHTML = oligo_text 
+ //        var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **"
+ //        document.getElementById("html_link_div").innerHTML = html
+ //        document.getElementById("html_link_info").innerHTML = 'READY'
+ //        document.getElementById("oligo_text").innerHTML = oligo_text
  //    }
  //  };
  //  xmlhttp.send(args);
