@@ -77,7 +77,7 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, function (req, res) {
     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     console.log(process.env.PWD)
     console.log(req.CONFIG.PROCESS_DIR)
-    var user_dir_path = path.join(pwd,'public','user_projects');
+    var user_dir_path = req.CONFIG.USER_FILES_BASE;  //path.join(pwd,'public','user_projects');
     var otu_dir = req.user.username+'-'+otu_method+'-otus-'+timestamp
     var data_repo_path = path.join(user_dir_path, otu_dir);
     var fasta_file = 'fasta.fa'
@@ -278,7 +278,7 @@ router.post('/create_otus_step2/:method/:code', helpers.isLoggedIn, function (re
   var method = req.params.method
   var otus_code = req.params.code
   var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-  var user_dir_path = path.join(pwd,'public','user_projects');
+  var user_dir_path = req.CONFIG.USER_FILES_BASE;  //path.join(pwd,'public','user_projects');
   var otus_dir = req.user.username+'-'+method+'-otus-'+otus_code
   var data_repo_path = path.join(user_dir_path, otus_dir);
   var config_file = path.join(data_repo_path, 'config.ini');
@@ -398,7 +398,7 @@ router.get('/project_list', helpers.isLoggedIn, function (req, res) {
     //console.log(PROJECT_INFORMATION_BY_PNAME);
 
     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-    var user_dir_path = path.join(pwd,'public','user_projects');
+    var user_dir_path = req.CONFIG.USER_FILES_BASE;  //path.join(pwd,'public','user_projects');
 
 
     var project_info = {};
@@ -488,7 +488,7 @@ router.get('/delete/:method/:code', helpers.isLoggedIn, function (req, res) {
   var method = req.params.method
   var otus_code = req.params.code
   var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-  var user_dir_path = path.join(pwd,'public','user_projects');
+  var user_dir_path = req.CONFIG.USER_FILES_BASE;  //path.join(pwd,'public','user_projects');
   var otus_dir = req.user.username+'-'+method+'-otus-'+otus_code
   var data_repo_path = path.join(user_dir_path, otus_dir);
   console.log(data_repo_path)
@@ -505,7 +505,7 @@ router.get('/project/:method/:code', helpers.isLoggedIn, function (req, res) {
   var otus_code = req.params.code
   console.log(otus_code)
   var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-  var user_dir_path = path.join(pwd,'public','user_projects');
+  var user_dir_path = req.CONFIG.USER_FILES_BASE;  //path.join(pwd,'public','user_projects');
   var otus_dir = req.user.username+'-'+method+'-otus-'+otus_code
   var data_repo_path = path.join(user_dir_path, otus_dir);
   var config_file = path.join(data_repo_path, 'config.ini');
