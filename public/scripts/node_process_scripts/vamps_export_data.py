@@ -729,7 +729,8 @@ if __name__ == '__main__':
     args.today = str(datetime.date.today())
 
     if args.site == 'vamps':
-        db_host = 'vampsdb'
+        #db_host = 'vampsdb'
+        db_host = 'bpcweb8'
         args.NODE_DATABASE = 'vamps2'
         db_home = '/groups/vampsweb/vamps/'
     elif args.site == 'vampsdev':

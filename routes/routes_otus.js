@@ -280,7 +280,7 @@ router.post('/create_otus_step2/:method/:code', helpers.isLoggedIn, function (re
   var otus_code = req.params.code
   var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
-  var otus_dir = 'otus-'+method+'-'+timestamp
+  var otus_dir = 'otus-'+method+'-'+otus_code
   var data_repo_path = path.join(user_dir_path, otus_dir);
   var config_file = path.join(data_repo_path, 'config.ini');
   var config = iniparser.parseSync(config_file);
@@ -491,7 +491,7 @@ router.get('/delete/:method/:code', helpers.isLoggedIn, function (req, res) {
   var otus_code = req.params.code
   var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
-  var otus_dir = 'otus-'+method+'-'+timestamp
+  var otus_dir = 'otus-'+method+'-'+otus_code
   var data_repo_path = path.join(user_dir_path, otus_dir);
   console.log(data_repo_path)
   helpers.deleteFolderRecursive(data_repo_path)
@@ -508,7 +508,7 @@ router.get('/project/:method/:code', helpers.isLoggedIn, function (req, res) {
   console.log(otus_code)
   var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
-  var otus_dir = 'otus-'+method+'-'+timestamp
+  var otus_dir = 'otus-'+method+'-'+otus_code
   var data_repo_path = path.join(user_dir_path, otus_dir);
   var config_file = path.join(data_repo_path, 'config.ini');
   var config = iniparser.parseSync(config_file);
