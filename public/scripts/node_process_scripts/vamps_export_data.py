@@ -733,7 +733,8 @@ if __name__ == '__main__':
         args.NODE_DATABASE = 'vamps2'
         db_home = '/groups/vampsweb/vamps/'
     elif args.site == 'vampsdev':
-        db_host = 'vampsdev'
+        #db_host = 'vampsdev'
+        db_host = 'bpcweb7'
         args.NODE_DATABASE = 'vamps2'
         db_home = '/groups/vampsweb/vampsdev/'
     else:
