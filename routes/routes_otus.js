@@ -411,9 +411,10 @@ router.get('/project_list', helpers.isLoggedIn, function (req, res) {
             for (var d in items) {
                 // andy-uclust-otus-1481290684543
                 var pts = items[d].split('-');
-                if (pts[0] === req.user.username && pts[2] === 'otus') {
+                if (pts[0] === 'otus') {
                   console.log('got dir', items[d])
-                    var otus_code = pts[3];  // ie 1481290684543
+                    var method = pts[1];  // ie uclust
+                    var otus_code = pts[2];  // ie 1481290684543
                     project_info[otus_code] = {};
                     var stat = fs.statSync(path.join(user_dir_path, items[d]));
 
