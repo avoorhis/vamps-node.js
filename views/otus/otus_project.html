@@ -1,0 +1,55 @@
+<% include ../add_ins/begin.ejs %>
+
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+
+<script>
+	var rando = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
+</script>
+
+	<div class="hero-unit">
+	       <h2>OTU Project: <%= code %></h2>
+	</div>
+	<a href='/otus/project_list/'><<--back</a>&nbsp;&nbsp;<a href='/otus/project/<%= method %>/<%= code %>' class='btn btn-xs btn-primary ' >Refresh Page</a>
+	<br><br>
+<table class='table'>
+	<tr><th>Process</th><th>Status</th><th>Variables</th><th>Controls</th><th></th></tr>
+	<tr>
+
+	</tr>
+	<tr>
+
+
+			<td>
+					<% if(fasta_status == 'COMPLETED'){ %>
+								<form id='' class='' method='POST' action='/otus/create_otus_step2/<%= method %>/<%= code %>'>
+									<input type='submit' id=''  class='btn btn-xs btn-primary' value='Start OTU Calculation' />
+									<input type='hidden' name='directory' value='<%= directory %>' />
+								</form>
+					<% }else{ %>
+								<a href='/oligotyping/rewind/<%= code %>/entropy' class='btn btn-xs btn-link' >Re-wind to here</a>
+								<input type='button' id=''  class='btn btn-xs btn-primary' value='Run Entropy' />
+
+					<% } %>
+
+
+
+
+		</td>
+		<td>View Entropy Graph</td>
+
+
+	</tr>
+	<!-- -------------------------------------------------------------------------------------------- -->
+
+
+
+</table>
+
+
+<% include ../add_ins/end.ejs %>
+ <script type="text/javascript" src="/javascripts/otus.js"></script>
+ </body>
+ </html>

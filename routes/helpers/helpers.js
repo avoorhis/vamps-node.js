@@ -1375,3 +1375,44 @@ module.exports.isValidMySQLDate = function(dateString){
     // Check the range of the day
     return day > 0 && day <= monthLength[month - 1];
 };
+//
+//
+//
+module.exports.run_external_command = function(script_path)
+{
+  console.log('in helpers.run_external_command()')
+  console.log(script_path)
+  var exec = require('child_process').exec;
+  var child = exec(script_path);
+  var output = '';
+
+  child.stdout.on('data', function AddDataToOutput(data) {
+        data = data.toString().trim();
+        output += data;
+        //CheckIfPID(data);
+  });
+
+
+  child.stderr.on('data', function(data) {
+      console.log('stdout: ' + data);
+  });
+
+  child.on('close', function checkExitCode(code) {
+     console.log('From run_external_command process exited with code ' + code);
+     var ary = output.split("\n");
+
+     var last_line = ary[ary.length - 1];
+     console.log('last_line:', last_line);
+     if (code === 0)
+     {
+       //callback_function(callback_function_options, last_line);
+     }
+     else // code != 0
+     {
+       console.log('FAILED',script_path)
+       //failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
+     }
+  });
+
+
+}
