@@ -53,9 +53,9 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, function (req, res) {
   var dataset_lookup = {}
   var html='';
   var timestamp = +new Date();  // millisecs since the epoch!
-  var otu_method = req.body.otu_method
+  var method = req.body.otu_method
   var otu_size;
-  switch(otu_method){
+  switch(method){
       case 'closed_ref':
             otu_size = req.body.ref_otu_size;
             break;
@@ -69,7 +69,7 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, function (req, res) {
             otu_size = req.body.crp_otu_size;
             break;
       default:
-            otu_method = 'uclust'
+            method = 'uclust'
             otu_size = '3'
   }
 
@@ -78,8 +78,9 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, function (req, res) {
     console.log(process.env.PWD)
     console.log(req.CONFIG.PROCESS_DIR)
     var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
-    var otu_dir = req.user.username+'-'+otu_method+'-otus-'+timestamp
-    var data_repo_path = path.join(user_dir_path, otu_dir);
+    //var otu_dir = req.user.username+'-'+otu_method+'-otus-'+timestamp;
+    var otus_dir = 'otus-'+method+'-'+timestamp
+    var data_repo_path = path.join(user_dir_path, otus_dir);
     var fasta_file = 'fasta.fa'
     var fasta_file_path = path.join(data_repo_path, fasta_file);
     var config_file = 'config.ini'
@@ -135,9 +136,9 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, function (req, res) {
               });
 
               var config_text = '\n[MAIN]\npath='+data_repo_path+"\n";
-              config_text += 'directory='+otu_dir+"\n";
+              config_text += 'directory='+otus_dir+"\n";
               //config_text += 'taxonomy='+tax_obj.full_string+"\n";
-              config_text += 'otu_method='+otu_method+"\n";
+              config_text += 'otu_method='+method+"\n";
               config_text += 'otu_size='+otu_size+"\n";
               config_text += '\n[DATASETS]'+"\n";
               for(i in chosen_id_name_hash.names){
@@ -279,7 +280,7 @@ router.post('/create_otus_step2/:method/:code', helpers.isLoggedIn, function (re
   var otus_code = req.params.code
   var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
-  var otus_dir = req.user.username+'-'+method+'-otus-'+otus_code
+  var otus_dir = 'otus-'+method+'-'+timestamp
   var data_repo_path = path.join(user_dir_path, otus_dir);
   var config_file = path.join(data_repo_path, 'config.ini');
   var config = iniparser.parseSync(config_file);
@@ -489,7 +490,7 @@ router.get('/delete/:method/:code', helpers.isLoggedIn, function (req, res) {
   var otus_code = req.params.code
   var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
-  var otus_dir = req.user.username+'-'+method+'-otus-'+otus_code
+  var otus_dir = 'otus-'+method+'-'+timestamp
   var data_repo_path = path.join(user_dir_path, otus_dir);
   console.log(data_repo_path)
   helpers.deleteFolderRecursive(data_repo_path)
@@ -506,7 +507,7 @@ router.get('/project/:method/:code', helpers.isLoggedIn, function (req, res) {
   console.log(otus_code)
   var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
-  var otus_dir = req.user.username+'-'+method+'-otus-'+otus_code
+  var otus_dir = 'otus-'+method+'-'+timestamp
   var data_repo_path = path.join(user_dir_path, otus_dir);
   var config_file = path.join(data_repo_path, 'config.ini');
   var config = iniparser.parseSync(config_file);

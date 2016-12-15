@@ -344,6 +344,7 @@ def start(args):
             read_id = ''
             otu_size = 0
             if line_data[0] == 'N':     # Unclustered
+                read_id = line_data[8]
                 otu = 'Unclustered'
             elif line_data[0] == 'H':           # hit   
                 read_id = line_data[8]
@@ -352,6 +353,12 @@ def start(args):
             elif  line_data[0] == 'C':   # new cluster
                 #print(line_data)
                 otu_size = line_data[2]
+                otu = line_data[8]
+                if otu in otu_collector:
+                    otu_collector[otu]['size'] = otu_size
+                else:
+                    otu_collector[otu] = {}
+                    otu_collector[otu]['size'] = otu_size
                 # otu is position 8 for new otus
                 
                 pass
