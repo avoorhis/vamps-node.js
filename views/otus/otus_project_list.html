@@ -27,13 +27,18 @@
 			  	<td>
 			  		Date Initiated:<br><%= start_date %>
 						<br><br>
-						<button class='btn btn-xs btn-warning' onclick="delete_project('<%= method %>','<%= code %>')" width='30'>&nbsp;&nbsp;Delete&nbsp;&nbsp;&nbsp;</button>
+						<button class='btn btn-xs btn-warning' onclick="delete_project('<%= code %>')" width='30'>&nbsp;&nbsp;Delete&nbsp;&nbsp;&nbsp;</button>
 			    </td>
 			    <td>
 						Internal Code:<br><%= code %>
 			    </td>
-					<td>
-						OTU Method (size):<br><%= method %> (<%= size %>%)
+				<td>
+				OTU Method (% similarity):<br>
+				<% if(method == 'NOT_DETERMINED_YET'){ %>
+						<a href='otus_method_selection?code=<%= code %>' class='btn btn-xs btn-danger'>Select</a>
+				<% }else{ %>
+				    <%= method %> (<%= size %>%)
+				<% } %>
 			    </td>
 			    <td>
 						Fasta File Completed:
@@ -45,8 +50,11 @@
 			    </td>
 
 					<td>
-						<a href='/otus/project/<%= method %>/<%= code %>' class='btn btn-xs btn-primary'>Continue</a>
-
+						<% if(fasta_status){ %>
+						    <a href='/otus/project/<%= code %>' class='btn btn-xs btn-primary'>Continue</a>
+                        <% }else{ %>
+				            <a href='/otus/project/<%= code %>' disabled class='btn btn-xs btn-primary'>Continue</a>
+				        <% } %>
 			   	</td>
 				</tr>
 
