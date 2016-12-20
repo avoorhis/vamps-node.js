@@ -1291,8 +1291,10 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
           pparts = prj.project.split('_');
         }
         last_el = pparts[pparts.length - 1]
-        if(last_el === filter_obj.target){
-          NewPROJECT_TREE_OBJ3.push(prj);
+        if(filter_obj.target === 'ITS' && last_el.substring(0,3) === 'ITS'){
+            NewPROJECT_TREE_OBJ3.push(prj);
+        }else if(last_el === filter_obj.target){
+            NewPROJECT_TREE_OBJ3.push(prj);
         }
       });
 

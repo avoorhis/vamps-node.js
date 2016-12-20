@@ -1,0 +1,34 @@
+<% include ../add_ins/begin.ejs %>
+
+<%  var items  = JSON.parse(chosen_id_name_hash); %>
+
+<script>
+  var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
+  var user_local  = '<%= user.username %>';
+</script>
+  
+  <div class='title' >OTU Method Selection</div>
+
+<a href='' onclick='javascript:window.history.back();return false;'>&lt;&lt;--back</a>
+
+<div class="row">
+    <div  id='show_selected_datasets_div'  class="col-md-12">
+    	<div class='well'>
+                  <% include ../partials/show_selected_datasets.html %>
+      </div>  <!-- /well -->
+    </div> <!-- End  show_selected_datasets_div -->
+
+</div>
+
+
+
+
+
+
+ <% include ../add_ins/end.ejs %>
+  <script type="text/javascript" src="/javascripts/global.js"></script>
+  <script type="text/javascript" src="/javascripts/common_selection.js"></script>
+  <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>
+ 	<script type="text/javascript" src="/javascripts/otus.js"></script>
+ </body>
+ </html>

@@ -1,5 +1,5 @@
 <% include ../add_ins/begin.ejs %>
-
+<% config = JSON.parse(config) %>
 
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
@@ -12,35 +12,35 @@
 	<div class="hero-unit">
 	       <h2>OTU Project: <%= code %></h2>
 	</div>
-	<a href='/otus/project_list/'><<--back</a>&nbsp;&nbsp;<a href='/otus/project/<%= method %>/<%= code %>' class='btn btn-xs btn-primary ' >Refresh Page</a>
+	<a href='/otus/project_list/'><<--back</a>&nbsp;&nbsp;<a href='/otus/project/<%= code %>' class='btn btn-xs btn-primary ' >Refresh Page</a>
 	<br><br>
-<table class='table'>
-	<tr><th>Process</th><th>Status</th><th>Variables</th><th>Controls</th><th></th></tr>
+	
+	<% //JSON.stringify(config) %>
+<table class='' border='1'>
+	
 	<tr>
-
+        <td style='padding:3px'>Unique ID:</td><td style='padding:3px'><%= config.MAIN.code %></td>
 	</tr>
 	<tr>
-
-
-			<td>
-					<% if(fasta_status == 'COMPLETED'){ %>
-								<form id='' class='' method='POST' action='/otus/create_otus_step2/<%= method %>/<%= code %>'>
-									<input type='submit' id=''  class='btn btn-xs btn-primary' value='Start OTU Calculation' />
-									<input type='hidden' name='directory' value='<%= directory %>' />
-								</form>
-					<% }else{ %>
-								<a href='/oligotyping/rewind/<%= code %>/entropy' class='btn btn-xs btn-link' >Re-wind to here</a>
-								<input type='button' id=''  class='btn btn-xs btn-primary' value='Run Entropy' />
-
-					<% } %>
-
-
-
-
+        <td style='padding:3px'>Method:</td><td style='padding:3px'><%= config.MAIN.otu_method %></td>
+	</tr>
+	<tr>
+        <td style='padding:3px'>Similarity:</td><td style='padding:3px'><%= config.MAIN.otu_size %> %</td>
+	</tr>
+	<tr>
+        <td style='padding:3px'>Status:</td><td style='padding:3px'></td>
+	</tr>
+	<tr>
+        <td colspan='2' style='padding:3px'>Download Fasta File</td>
+	</tr>
+	<tr>
+		<td colspan='2' style='padding:3px'>
+					
+                <form id='' class='' method='POST' action='/otus/create_otus_step2/<%= code %>'>
+                    <input type='submit' id=''  class='btn btn-xs btn-primary' value='Start OTU Calculation' />
+                    <input type='hidden' name='directory' value='<%= config.MAIN.directory %>' />
+                </form>
 		</td>
-		<td>View Entropy Graph</td>
-
-
 	</tr>
 	<!-- -------------------------------------------------------------------------------------------- -->
 

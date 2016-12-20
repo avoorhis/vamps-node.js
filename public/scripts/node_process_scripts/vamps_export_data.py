@@ -168,14 +168,14 @@ def run_fasta(args):
     for row in rows:
         seq = row['seq']
         seq_count = row['seq_count']
-        if args.function == 'otus':
-            # for otus id = ICM_LCY_Bv6--LCY_0007_2003_05_04--249319_1171  pjds _ seqid _ num
-            for n in range(1,seq_count+1):
-                id = row['project']+'--'+row['dataset']+'--'+str(row['sequence_id'])+'_'+str(n)+'_'+str(seq_count)
-                file_txt += '>'+str(id)+'\n'+str(seq)+'\n'
-        else:
-            id = str(row['sequence_id'])+'|'+row['project']+'--'+row['dataset']+'|'+str(seq_count)
-            file_txt += '>'+str(id)+'\n'+str(seq)+'\n'
+       #  if args.function == 'otus':
+#             # for otus id = ICM_LCY_Bv6--LCY_0007_2003_05_04--249319_1171  pjds _ seqid _ num
+#             for n in range(1,seq_count+1):
+#                 id = row['project']+'--'+row['dataset']+'--'+str(row['sequence_id'])+'_'+str(n)+'_'+str(seq_count)
+#                 file_txt += '>'+str(id)+'\n'+str(seq)+'\n'
+#         else:
+        id = str(row['sequence_id'])+'|'+row['project']+'--'+row['dataset']+'|'+str(seq_count)
+        file_txt += '>'+str(id)+'\n'+str(seq)+'\n'
 
 
     file_txt += "\n"
