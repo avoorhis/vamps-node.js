@@ -22,19 +22,18 @@
 				<% var method = otus_info[code].method %>
 				<% var size = otus_info[code].size %>
 				<% var fasta_status = otus_info[code].fasta_status %>
-				<%	var start_date = otus_info[code].start_date  %>
+				<% var start_date = otus_info[code].start_date  %>
 			  <tr>
 			  	<td>
 			  		Date Initiated:<br><%= start_date %>
+						<br><br>
+						<button class='btn btn-xs btn-warning' onclick="delete_project('<%= method %>','<%= code %>')" width='30'>&nbsp;&nbsp;Delete&nbsp;&nbsp;&nbsp;</button>
 			    </td>
 			    <td>
 						Internal Code:<br><%= code %>
 			    </td>
 					<td>
-						OTU Method:<br><%= method %>
-			    </td>
-					<td>
-						OTU Size:<br><%= size %>%
+						OTU Method (size):<br><%= method %> (<%= size %>%)
 			    </td>
 			    <td>
 						Fasta File Completed:
@@ -46,9 +45,7 @@
 			    </td>
 
 					<td>
-						<a href='/otus/project/<%= code %>' class='btn btn-xs btn-primary'>Continue</a>
-						<br><br>
-						<button class='btn btn-xs btn-warning' onclick="delete_project('<%= method %>','<%= code %>')" width='30'>&nbsp;&nbsp;Delete&nbsp;&nbsp;&nbsp;</button>
+						<a href='/otus/project/<%= method %>/<%= code %>' class='btn btn-xs btn-primary'>Continue</a>
 
 			   	</td>
 				</tr>

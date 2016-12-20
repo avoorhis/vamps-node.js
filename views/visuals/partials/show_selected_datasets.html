@@ -11,7 +11,7 @@ Selected Dataset Order (Count:<%= items.names.length %>)<br>
 
 <table class='button_row'>
 <tr>
-    <% if(referer != 'export_data' && referer != 'unit_selection' && referer != 'oligotyping1'){ %>
+    <% if(referer != 'export_data' && referer != 'unit_selection' && referer != 'oligotyping1' && referer != 'otus'){ %>
         <td>
         	
             <form action='/visuals/reorder_datasets' method='POST'>
