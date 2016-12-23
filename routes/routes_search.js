@@ -408,14 +408,12 @@ router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
 //  LIVESEARCH TAX
 //
 router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
-	//console.log('params>>');
-	//console.log(req.params);
-	//console.log('<<params');
 	console.log('search:in livesearch taxonomy1');
 	var q = req.params.q.toLowerCase();
 	var hint = '';
 	var obj = new_taxonomy.taxa_tree_dict_map_by_rank;
 	var taxon;
+	
 	if(q !== ''){
 		for(var n in obj["domain"]){
 			taxon = obj["domain"][n].taxon;
@@ -502,9 +500,6 @@ router.get('/livesearch_user/:q', helpers.isLoggedIn, function(req, res) {
 //  LIVESEARCH PROJECT
 //
 router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
-  //console.log('params>>');
-  //console.log(req.params);
-  //console.log('<<params');
   console.log('search:in livesearch project');
   var q = req.params.q.toLowerCase();
   var hint = 'Projects:<br>';
@@ -513,8 +508,6 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
   var dlist = []
   var d_obj = {}
   if(q !== ''){
-
-
 
     ALL_DATASETS.projects.forEach(function(prj) {
 
@@ -529,7 +522,6 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
             || ptitle.toLowerCase().indexOf(q) != -1
             || pdesc.toLowerCase().indexOf(q) != -1
         ){
-        console.log(pid)
         plist.push(pname)
         p_obj[pname] = {}
         p_obj[pname].pid   = pid
@@ -545,7 +537,6 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
           if(    dname.toLowerCase().indexOf(q) != -1
               || ddesc.toLowerCase().indexOf(q) != -1
             ){
-            console.log(dname)
             dlist.push(dname)
             d_obj[did] = {}
             d_obj[did].dname = dname
