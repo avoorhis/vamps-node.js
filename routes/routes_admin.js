@@ -34,8 +34,8 @@ router.get('/admin_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
 //
 router.get('/assign_permissions', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
 
-  console.log('in assign_permissions');
-   res.render('admin/assign_permissions', {
+    console.log('in assign_permissions');
+    res.render('admin/assign_permissions', {
               title     :'VAMPS Site Administration',
               message   : req.flash('message'),
               user: req.user,
@@ -51,14 +51,32 @@ router.get('/assign_permissions', [helpers.isLoggedIn, helpers.isAdmin], functio
 //
 router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
 
-  console.log('in permissions');
-  //console.log(ALL_USERS_BY_UID);
-  //console.log(PROJECT_INFORMATION_BY_PID);
-   res.render('admin/permissions', {
+    console.log('in permissions');
+    user_order = []
+    project_order = []
+    for(uid in  ALL_USERS_BY_UID){
+               obj = ALL_USERS_BY_UID[uid]
+               obj.uid = uid
+               user_order.push(obj)
+    }
+    user_order.sort(function sortByAlpha(a, b) {
+               return helpers.compareStrings_alpha(a.last_name, b.last_name)
+    });
+    
+    for(pid in  PROJECT_INFORMATION_BY_PID){
+               project_order.push(PROJECT_INFORMATION_BY_PID[pid])
+    }
+    project_order.sort(function sortByAlpha(a, b) {
+               return helpers.compareStrings_alpha(a.project, b.project)
+    });
+
+    res.render('admin/permissions', {
               title     :'VAMPS Site Administration',
               message   : req.flash('message'),
               user: req.user,
-              project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+              project_order: JSON.stringify(project_order),
+              user_order: JSON.stringify(user_order),
+              //project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
               user_info: JSON.stringify(ALL_USERS_BY_UID),
               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
             });
@@ -69,6 +87,7 @@ router.get('/public', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) 
   console.log('in public');
   //console.log(ALL_USERS_BY_UID);
   //console.log(PROJECT_INFORMATION_BY_PID);
+   
    res.render('admin/public', {
               title     :'VAMPS Site Administration',
               message   : req.flash('message'),
@@ -168,7 +187,6 @@ router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], function(re
               message   : req.flash('message'),
               user: req.user,
               pid: pid,
-              //constants.ENV_SOURCE
               project_info: JSON.stringify(myjson),
               project: PROJECT_INFORMATION_BY_PID[pid].project,
               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
@@ -191,13 +209,14 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req
    }else{
     pid = url_parts.query.pid;
    }
-   console.log(pid);
+   console.log(PROJECT_INFORMATION_BY_PID);
+   console.log(ALL_USERS_BY_UID);
+   
    res.render('admin/alter_project', {
               title     :'VAMPS Site Administration',
               message   : req.flash('message'),
               user: req.user,
               pid_to_open:pid,
-              env: JSON.stringify(req.CONSTS.ENV_SOURCE),
               project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
               user_info: JSON.stringify(ALL_USERS_BY_UID),
               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
@@ -274,30 +293,6 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
       html += " <td><div id='new_pdesc_response_id'></div></td>";
       html += "</form>";
       html += '</tr>';
-
-
-
-      html += '<tr>';
-      html += "<form id='' name='update_penv_form' method='POST' action='update_penv'>";
-      html += "<td>Environmental Source</td><td>"+ info.env_source_name+"</td>";
-      html += "<td>";
-      html += " <select id='new_eid' name='new_eid' width='200' style='width: 200px'> ";
-      for(eid in req.CONSTS.ENV_SOURCE) {
-          if(req.CONSTS.ENV_SOURCE[eid] === info.env_source_name){
-              html += "<option selected value='"+ eid+"'>"+ req.CONSTS.ENV_SOURCE[eid];
-              html += " <small>("+ eid +")</small></option>";
-          }else{
-              html += "<option value='"+ eid+"'>"+ req.CONSTS.ENV_SOURCE[eid];
-              html += " <small>("+ eid +")</small></option>";
-          }
-      }
-      html += '</select>';
-      html += '</td>';
-      html += "<td><input id='new_penv_btn' type='button' value='Update' onclick=\"update_project('penv', '"+selected_pid+"')\"></td>";
-      html += "<td><div id='new_penv_response_id'></div></td>";
-      html += "</form>";
-      html += '</tr>';
-
 
       html += '<tr>';
       if(info.public === 1){
@@ -424,11 +419,6 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], funct
           q += " project_description='"+new_project_desc+"'";
           break;
 
-      case 'penv':
-          new_project_envid = value;
-          PROJECT_INFORMATION_BY_PID[pid].env_source_name = new_project_envid;
-          q += " env_source_id='"+new_project_env+"'";
-          break;
       default:
           console.log('ERROR in update_project_info');
 
@@ -602,11 +592,20 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
 //
 router.get('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
     console.log('in reset_user_password');
+    user_order = []
+    for(uid in  ALL_USERS_BY_UID){
+               obj = ALL_USERS_BY_UID[uid]
+               obj.uid = uid
+               user_order.push(obj)
+    }
+    user_order.sort(function sortByAlpha(a, b) {
+               return helpers.compareStrings_alpha(a.last_name, b.last_name)
+    });
     res.render('admin/new_password', {
               title     :'VAMPS Reset User Password',
               message   : req.flash('message'),
               user: req.user,
-              user_info: JSON.stringify(ALL_USERS_BY_UID),
+              user_info: JSON.stringify(user_order),
               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
             });
 });
