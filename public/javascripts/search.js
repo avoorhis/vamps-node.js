@@ -361,8 +361,8 @@ function showUserResult(str) {
 //  SHOW  RESULTS for Project Search
 //
 function showProjectResult(str) {
-  //alert(str)
-  if (str.length==0) {
+  
+  if (str.length<=2) {
     document.getElementById("livesearch_project").innerHTML="";
     document.getElementById("livesearch_project").style.border="0px";
     document.getElementById("livesearch_project").style.height="0";
