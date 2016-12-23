@@ -326,6 +326,7 @@ try{
     //var groupTest = HDF5test_data.openGroup('test');
     //var group51 = HDF5_data.openGroup("86");
     var did_list = HDF5_MDATA.getMemberNamesByCreationOrder(); // retreives all the 'groups' ie dids
+    console.log('INITIALIZING HDF5')
     //console.log(mdgroup86['temp'])
     //console.log('group56',group56.id)
     // var groupTargets=THE_TEST_FILE.createGroup('test/sodium-icosanoate');
@@ -402,6 +403,7 @@ try{
 ////////////////////////////////////////////////////////////////////////////////////
 }catch(err){
     // If we're here we don't have HDF5
+    console.log('NOT Running HDF5')
     console.log(err)
     HDF5_MDATA  = ''
     HDF5_TAXDATA = ''
