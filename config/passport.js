@@ -221,11 +221,11 @@ function signup_user(req, username, password, done, db){
         return done(null, false, req.flash('message', 'The Institution name is required.'));
     }
 
-    db.query("select * from user where username = '"+username+"'",function(err,rows){
+    db.query("select * from user where username = '"+username+"'",function(err,select_rows){
             if (err) {
-              return done(null, false, { message: err });
+              return done(null, false, req.flash( 'message', err ));
             }
-            if (rows.length) {
+            if (select_rows.length) {
                 //console.log('That username is already taken.');
                 return done(null, false, req.flash('message', 'That username is already taken.'));
             } else {
@@ -253,19 +253,23 @@ function signup_user(req, username, password, done, db){
                                     " 1,"+
                                     " CURRENT_TIMESTAMP(), "+
                                     " CURRENT_TIMESTAMP() )";
-
-
-                console.log(insertQuery);
-                db.query(insertQuery,function(err,rows){
-                    newUserMysql.user_id = rows.insertId;
-                    ALL_USERS_BY_UID[newUserMysql.user_id] = {
-                        email:      newUserMysql.email,
-                        username:   newUserMysql.username,
-                        last_name:  newUserMysql.lastname,
-                        first_name: newUserMysql.firstname,
-                        institution:newUserMysql.institution,
+                
+                db.query(insertQuery,function(err,insert_rows){
+                    if(err){
+                        console.log(insertQuery);
+                        console.log(err);
+                        return done(null, false, req.flash( 'message', 'There was an error. Please contact us at vamps@mbl.edu to request an account' ));
+                    }else{
+                        newUserMysql.user_id = insert_rows.insertId;
+                        ALL_USERS_BY_UID[newUserMysql.user_id] = {
+                            email:      newUserMysql.email,
+                            username:   newUserMysql.username,
+                            last_name:  newUserMysql.lastname,
+                            first_name: newUserMysql.firstname,
+                            institution:newUserMysql.institution,
+                        }
+                        return done(null, newUserMysql);
                     }
-                    return done(null, newUserMysql);
                    
                 });
             }
