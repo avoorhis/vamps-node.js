@@ -287,7 +287,7 @@ function showTaxResult(str) {
 
   var find_datasets_btn = document.getElementById("find_datasets_btn") || null;
   var create_fasta_btn = document.getElementById("create_fasta_btn") || null;
-  if (str.length==0) {
+  if (str.length <= 2) {
     document.getElementById("livesearch_taxonomy").innerHTML="";
     document.getElementById("livesearch_taxonomy").style.border="0px";
     document.getElementById("livesearch_taxonomy").style.height="0";
@@ -361,8 +361,8 @@ function showUserResult(str) {
 //  SHOW  RESULTS for Project Search
 //
 function showProjectResult(str) {
-  //alert(str)
-  if (str.length==0) {
+  
+  if (str.length <= 2) {
     document.getElementById("livesearch_project").innerHTML="";
     document.getElementById("livesearch_project").style.border="0px";
     document.getElementById("livesearch_project").style.height="0";

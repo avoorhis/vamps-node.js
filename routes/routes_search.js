@@ -399,7 +399,6 @@ router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
 	    }
 	}
 
-	console.log('hint= '+hint);
 	var result = (hint === "") ? ("No Suggestions") : (hint);
 	console.log('result= '+result);
 	res.send(result);
@@ -409,14 +408,12 @@ router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
 //  LIVESEARCH TAX
 //
 router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
-	//console.log('params>>');
-	//console.log(req.params);
-	//console.log('<<params');
-	console.log('in livesearch taxonomy');
+	console.log('search:in livesearch taxonomy1');
 	var q = req.params.q.toLowerCase();
 	var hint = '';
 	var obj = new_taxonomy.taxa_tree_dict_map_by_rank;
 	var taxon;
+	
 	if(q !== ''){
 		for(var n in obj["domain"]){
 			taxon = obj["domain"][n].taxon;
@@ -476,7 +473,7 @@ router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
 //
 router.get('/livesearch_user/:q', helpers.isLoggedIn, function(req, res) {
 
-  console.log('in livesearch user');
+  console.log('search:in livesearch user');
   var q = req.params.q.toLowerCase();
   var hint = '';
   var obj = ALL_USERS_BY_UID;
@@ -503,20 +500,14 @@ router.get('/livesearch_user/:q', helpers.isLoggedIn, function(req, res) {
 //  LIVESEARCH PROJECT
 //
 router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
-  //console.log('params>>');
-  //console.log(req.params);
-  //console.log('<<params');
-  console.log('in livesearch project');
+  console.log('search:in livesearch project');
   var q = req.params.q.toLowerCase();
-  console.log('q',q);
   var hint = 'Projects:<br>';
   var plist = []
   var p_obj = {}
   var dlist = []
   var d_obj = {}
   if(q !== ''){
-
-
 
     ALL_DATASETS.projects.forEach(function(prj) {
 
@@ -531,7 +522,6 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
             || ptitle.toLowerCase().indexOf(q) != -1
             || pdesc.toLowerCase().indexOf(q) != -1
         ){
-        console.log(pid)
         plist.push(pname)
         p_obj[pname] = {}
         p_obj[pname].pid   = pid
@@ -547,7 +537,6 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
           if(    dname.toLowerCase().indexOf(q) != -1
               || ddesc.toLowerCase().indexOf(q) != -1
             ){
-            console.log(dname)
             dlist.push(dname)
             d_obj[did] = {}
             d_obj[did].dname = dname
@@ -560,17 +549,14 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
       })
 
     })
-    console.log(plist)
     dlist.sort()
     plist.sort()
-    console.log('b',plist.length)
     for(i = 0; i < plist.length; i++){
         pname = plist[i]
         hint += "<form method='GET' action='/projects/"+p_obj[pname].pid+"'>";
         hint += "<button type='submit' id='"+p_obj[pname].pid+"' class='btn btn-xs btn-link' >"+pname+"</button> (title: "+p_obj[pname].title+')'
         hint += "</form>";
     }
-    console.log('c',dlist.length)
 
     hint += 'Datasets:<br>';
     for(did in d_obj){
@@ -581,7 +567,6 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
 
   }
 
-  console.log(q,'hint',hint)
   var result = (hint == 'Projects:<br>Datasets:<br>') ? ("No Suggestions") : (hint);
   res.send(result);
 });
@@ -589,15 +574,14 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
 // LIVESEARCH TAX
 //
 router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req, res) {
+	console.log('search:in livesearch_taxonomy2');
 	var selected_taxon = req.params.taxon;
 	var selected_rank = req.params.rank;
-  var rank_number = req.CONSTS.RANKS.indexOf(selected_rank);
-	console.log(req.params);
+    var rank_number = req.CONSTS.RANKS.indexOf(selected_rank);
 	var this_item = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[selected_taxon+'_'+selected_rank];
 	var tax_str = selected_taxon;
-
 	var item = this_item;
-	console.log(item);
+	
   // goes up the tree to get taxon parents:
   while(item.parent_id !== 0){
 		item  = new_taxonomy.taxa_tree_dict_map_by_id[item.parent_id];
@@ -620,7 +604,7 @@ router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req
 //  BLAST
 //
 router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
-    console.log('in blast res');
+    console.log('search:in blast res');
     console.log(req.body);
     if(req.body.query === ''){
       //req.flash('message', 'No Query Sequence Found');

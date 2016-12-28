@@ -2654,7 +2654,7 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
 //  FILTER #1 LIVESEARCH PROJECTS (substring) FILTER
 //
 router.get('/livesearch_projects/:substring', function(req, res) {
-  console.log('in livesearch_projects/:substring')
+  console.log('viz:in livesearch_projects/:substring')
   var substring = req.params.substring.toUpperCase();
   var myurl = url.parse(req.url, true);
   var portal = myurl.query.portal;
@@ -2674,7 +2674,12 @@ router.get('/livesearch_projects/:substring', function(req, res) {
 
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length
-  console.log('PROJECT_FILTER')
+  if(req.CONFIG.site == 'vamps' ){
+      console.log('VAMPS PRODUCTION -- no print to log');
+  }else{
+    console.log('PROJECT_FILTER')
+  }
+  
   console.log(PROJECT_FILTER)
 
   res.json(PROJECT_FILTER);
@@ -2753,7 +2758,7 @@ router.get('/livesearch_target/:gene_target', function(req, res) {
 // FILTER #4
 //
 router.get('/livesearch_portal/:portal', function(req, res) {
-  console.log('in livesearch portal')
+  console.log('viz:in livesearch portal')
   var select_box_portal = req.params.portal;
   var myurl = url.parse(req.url, true);
   var portal = myurl.query.portal;  // we have this turned off: portal selection on portal page
@@ -2782,7 +2787,7 @@ router.get('/livesearch_portal/:portal', function(req, res) {
 //  FILTER # 5 LIVESEARCH PUBLIC/PRIVATE PROJECTS FILTER
 //
 router.get('/livesearch_status/:q', function(req, res) {
-  console.log('in livesearch status')
+  console.log('viz:in livesearch status')
   var q = req.params.q;
   var myurl = url.parse(req.url, true);
   var portal = myurl.query.portal;
@@ -2807,7 +2812,7 @@ router.get('/livesearch_status/:q', function(req, res) {
 //  FILTER #6  LIVESEARCH METADATA FILTER
 //
 router.get('/livesearch_metadata/:q', function(req, res) {
-  console.log('in livesearch metadata')
+  console.log('viz:in livesearch metadata')
   var q = req.params.q;
   var myurl = url.parse(req.url, true);
   var portal = myurl.query.portal;

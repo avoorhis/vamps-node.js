@@ -166,13 +166,8 @@ function update_project(item_to_update, pid)
           response_div = document.getElementById('new_pdesc_response_id');
           new_value = document.getElementById('new_pdesc').value;
           break;
-      case 'penv':
-          response_div = document.getElementById('new_penv_response_id');
-          new_value = document.getElementById('new_penv').value;
-          break;
       default:
-          response_div = document.getElementById('new_pname_response_id');
-          new_value = document.getElementById('new_pname').value;
+          return 'ERROR'
 
 
     }

@@ -1247,8 +1247,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   if(filter_obj.substring == '' || filter_obj.substring === '.....'){
       NewPROJECT_TREE_OBJ1 = prj_obj
   }else{
-      console.log('filtering substring',filter_obj.substring )
-
+      
       prj_obj.forEach(function(prj) {
         if(prj.hasOwnProperty('name')){
           ucname = prj.name.toUpperCase();
@@ -1267,7 +1266,6 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   if(filter_obj.env.length == 0 || filter_obj.env[0] === '.....'){  // should ALWAYS BE A LIST
     NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1
   }else{
-      console.log('filtering env',filter_obj.env )
 
         NewPROJECT_TREE_OBJ1.forEach(function(prj) {
           if(filter_obj.env.indexOf(parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id)) != -1){
@@ -1282,8 +1280,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   if(filter_obj.target == '' || filter_obj.target === '.....'){
       NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2
   }else{
-      console.log('filtering target',filter_obj.target )
-
+      
       NewPROJECT_TREE_OBJ2.forEach(function(prj) {
         if(prj.hasOwnProperty('name')){
           pparts = prj.name.split('_');
@@ -1304,7 +1301,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   if(filter_obj.portal == '' || filter_obj.portal === '.....'){
       NewPROJECT_TREE_OBJ4 = NewPROJECT_TREE_OBJ3
   }else{
-        console.log('filtering portal',filter_obj.portal )
+        
         portal = req.CONSTS.PORTALS[filter_obj.portal]
         NewPROJECT_TREE_OBJ3.forEach(function(prj) {
           if(prj.hasOwnProperty('name')){
@@ -1326,7 +1323,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   if(filter_obj.public == '-1'){
       NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4
   }else{
-      console.log('filtering public',filter_obj.public )
+      
       NewPROJECT_TREE_OBJ4.forEach(function(prj) {
            if(PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public)){
              NewPROJECT_TREE_OBJ5.push(prj);
@@ -1340,7 +1337,6 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
       NewPROJECT_TREE_OBJ6 = NewPROJECT_TREE_OBJ5
   }else{
 
-      console.log('filtering metadata',filter_obj.metadata )
       NewPROJECT_TREE_OBJ6 = module.exports.get_PTREE_metadata(NewPROJECT_TREE_OBJ5, filter_obj.metadata)
       //NewPROJECT_TREE_OBJ6 = NewPROJECT_TREE_OBJ5
 

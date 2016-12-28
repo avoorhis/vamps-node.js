@@ -15,10 +15,6 @@ var COMMON = require('./visuals/routes_common');
 var Readable = require('readable-stream').Readable;
 //var chokidar = require('chokidar');
 var spawn = require('child_process').spawn;
-//var USER_DATA  = require('./routes_user_data');
-//
-//
-//
 //
 //
 //
@@ -29,7 +25,7 @@ router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
   //console.log('params>>');
   //console.log(req.params);
   //console.log('<<params');
-  console.log('oligo in livesearch taxonomy');
+  console.log('oligo in livesearch taxonomy-1');
   var q = req.params.q.toLowerCase();
   var hint = '';
   var obj = new_taxonomy.taxa_tree_dict_map_by_rank;
@@ -57,7 +53,7 @@ router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
 // LIVESEARCH TAX
 //
 router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req, res) {
-  console.log('oligo livesearch_taxonomy')
+  console.log('oligo in livesearch_taxonomy-2')
   var selected_taxon = req.params.taxon;
   var selected_rank = req.params.rank;
   var rank_number = req.CONSTS.RANKS.indexOf(selected_rank);
@@ -90,12 +86,8 @@ router.post('/taxa_selection', helpers.isLoggedIn, function (req, res) {
   console.log(req.body);
   console.log('req.body: <<--oligo_taxa_selection');
 
+  dataset_ids = JSON.parse(req.body.dataset_ids);
 
-  //if (req.body.retain_data === '1') {
-    dataset_ids = JSON.parse(req.body.dataset_ids);
-  //} else {
-    //dataset_ids = req.body.dataset_ids;
-  //}
   console.log('dataset_ids '+dataset_ids);
   if (dataset_ids === undefined || dataset_ids.length === 0) {
       console.log('redirecting back -- no data selected');
@@ -144,10 +136,8 @@ router.post('/project_list', helpers.isLoggedIn, function (req, res) {
     q += " join silva_taxonomy using(silva_taxonomy_id)\n"
     q += " join dataset using (dataset_id)\n"
     q += " join project using (project_id)\n"
-    // if(genus) // add genus code
     q += " join family using(family_id)\n"
     q += " where family_id='"+tax_obj.db_id+"'\n"
-
     q += " and dataset_id in('"+sql_dids+"') \n"
     console.log('query',q);
     var dataset_lookup = {}

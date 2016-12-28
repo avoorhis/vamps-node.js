@@ -1,7 +1,9 @@
 <% include ../add_ins/begin.ejs %>
 
-<% pinfo = JSON.parse(project_info) %>
+<% //pinfo = JSON.parse(project_info) %>
 <% uinfo = JSON.parse(user_info) %>
+<% porder = JSON.parse(project_order) %>
+<% uorder = JSON.parse(user_order) %>
 
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
@@ -29,21 +31,21 @@
 			<table border='1'  class='admin_table table sortable' style=''>
 				<tr><thead><th>Project Name <small>(sortable)</small></th><th>Owner</th><th data-defaultsort='disabled'>Access</th><th data-defaultsort='disabled'>Add User?</th></thead></tr>
 				<tbody>
-				<% for(pid in pinfo) { %>
-				<% 		formname = 'by_project_'+pid; %>
+				<% for(p in porder) { %>
+				<% 		formname = 'by_project_'+porder[p].pid; %>
 							<form id='<%= formname %>' name='<%= formname %>' method='POST' action='/admin/grant_access'>
-				<% 		if(pinfo[pid].public !== 1) { %>			
+				<% 		if(porder[p].public !== 1) { %>			
 				
 					<tr>
-					<td><%= pinfo[pid].project %><br><small>(<%= pid %>)</small>
+					<td><%= porder[p].project %><br><small>(<%= porder[p].pid %>)</small>
 
 
 					</td>
-					<td><%= pinfo[pid].username %></td>
+					<td><%= porder[p].username %></td>
 					<td>
 						<div id='' style='height:50px;overflow:auto;padding-left:5px;'>
-				<% 			for(n in pinfo[pid].permissions) { %>
-				<% 				user_id = pinfo[pid].permissions[n] %>
+				<% 			for(n in porder[p].permissions) { %>
+				<% 				user_id = porder[p].permissions[n] %>
 				<% 				user    = uinfo[user_id].username %>
 									<%= user %><br>
 				<% 			} %>
@@ -53,16 +55,16 @@
 
 					<td>
 
-						<%  selectuname = 'by_project_'+pid+'_select' %>
+						<%  selectuname = 'by_project_'+porder[p].pid+'_select' %>
 							<select id='<%= selectuname %>' name='<%= selectuname %>'  >
 									<option value='0'>.....</option>
-				<% for(uid in uinfo) { %>
-				<% 		if(uinfo[uid].username !== 'guest') { %>
-									<option value='<%= uid %>'><%= uid %> <%= uinfo[uid].last_name %>, <%= uinfo[uid].first_name %> <small>(<%= uinfo[uid].username %>)</small></option>
+				<% for(u in uorder) { %>
+				<% 		if(uorder[u].username !== 'guest') { %>
+							<option value='<%= uorder[u].uid %>'><%= uorder[u].uid %> <%= uorder[u].last_name %>, <%= uorder[u].first_name %> <small>(<%= uorder[u].username %>)</small></option>
 				<% 		} %>		
 				<% 	} %>			
 							</select>
-							<input id='new_permission_btn' type='button' class='btn btn-link' value='add' onclick="grant_access('by_project','<%= pid %>')">
+							<input id='new_permission_btn' type='button' class='btn btn-link' value='add' onclick="grant_access('by_project','<%= porder[p].pid %>')">
 					</td>
 					</tr>
 				<% 		} %>
@@ -84,29 +86,28 @@
 		<table border='1' class='admin_table table sortable' style=''>
 		<tr><thead><th>User <small>(sortable)</small></th><th data-defaultsort='disabled'>Access</th><th data-defaultsort='disabled'>Add Project?</th></thead></tr>
 		<tbody>
-		<% for(uid in uinfo) { %>
-		<%    if(uinfo[uid].last_name != 'guest' && uinfo[uid].first_name != 'guest' ) { %>
+		<% for(u in uorder) { %>
+		<%    if(uorder[u].last_name != 'guest' && uorder[u].first_name != 'guest' ) { %>
 		<% 	var plist = [] %>
-		<%  formname = 'by_user_'+uid; %>
+		<%  formname = 'by_user_'+uorder[u].uid; %>
 		<form id='<%= formname %>' name='<%= formname %>' method='POST' action='/admin/grant_access'>			
 
 			<tr>
 			<td>
-				<%= uinfo[uid].last_name %>, <%= uinfo[uid].first_name %><br><small>(<%= uinfo[uid].username %>-<%= uid %>)</small>
+				<%= uorder[u].last_name %>, <%= uorder[u].first_name %><br><small>(<%= uorder[u].username %>-<%= uorder[u].uid %>)</small>
 			</td>
 
 			<td>
 
-		<% 			for(pid in pinfo) { %>
-		<%					if(pinfo[pid].permissions.length > 0 ){ %>
-		<%						if(pinfo[pid].permissions.indexOf(parseInt(uid)) !== -1) { %>
-		<%								plist.push(pinfo[pid].project); %>		
+		<% 			for(p in porder) { %>
+		<%					if(porder[p].permissions.length > 0 ){ %>
+		<%						if(porder[p].permissions.indexOf(parseInt(uorder[u].uid)) !== -1) { %>
+		<%								plist.push(porder[p].project); %>		
 		<%						} %>
 		<%					} %>
 		<% 			} %>	
 					<div id='' style='height:50px;overflow:auto;'>
-		<%			if(plist.length > 0 ){ %>
-							
+		<%			if(plist.length > 0 ){ %>							
 		<%				for(p in plist){ %>									
 									<%= plist[p] %><br>									
 		<%				} %>
@@ -115,20 +116,20 @@
 			</td>
 
 			<td>
-				<%  selectpname = 'by_user_'+uid+'_select' %>
+				<%  selectpname = 'by_user_'+uorder[u].uid+'_select' %>
 				<select id='<%= selectpname %>' name='<%= selectpname %>' >
 							<option value='0'>.....</option>
-		<% 				for(pid in pinfo) { %>		
-		<%					if(pinfo[pid].public == 0){ %>
-									<option value='<%= pid %>'><%= pinfo[pid].project %> <small>(<%= pid %>)</small></option>
+		<% 				for(p in porder) { %>		
+		<%					if(porder[p].public == 0){ %>
+									<option value='<%= porder[p].pid %>'><%= porder[p].project %> <small>(<%= porder[p].pid %>)</small></option>
 		<% 					} %>	
 		<% 				} %>			
 				</select>
-				<input id='new_permission_btn' type='button' class='btn btn-link' value='add' onclick="grant_access('by_user','<%= uid %>')" >
+				<input id='new_permission_btn' type='button' class='btn btn-link' value='add' onclick="grant_access('by_user','<%= uorder[u].uid %>')" >
 			</td>
 
 			</tr>
-			<input type='hidden' name='uid' value='<%= uid %>'>
+			<input type='hidden' name='uid' value='<%= uorder[u].uid %>'>
 		</form>
 		
 		<% } %>

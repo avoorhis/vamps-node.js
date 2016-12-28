@@ -2,7 +2,7 @@
 
 <% pinfo = JSON.parse(project_info) %>
 <% uinfo = JSON.parse(user_info) %>
-<% env_names   = JSON.parse(env) %>
+
 
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
@@ -46,124 +46,7 @@
 		<tr>
 			<td>
 			
-				<div id='current_info'>
-					
-					<% if(pid_to_open > 0){ %>
-
-						    	<table class='admin_table' border='1'>
-						      <tr><th></th><th>Current Value</th><th>Enter or Select New Value</th><th></th><th>msg</th></tr>
-						      
-						      <tr>
-						      <form id='' name='update_pname_form' method='POST' action='update_pname'>
-						      <td>Project Name (pid)</td><td><%= pinfo[pid_to_open].project %> <small>(<%= pinfo[pid_to_open].pid %>)</small></td>
-						      <td><input type='edit' id='new_pname' name='new_pname' value='<%= pinfo[pid_to_open].project %>' width='200' style='width: 200px' /></td>
-						      <td><input id='new_pname_btn' type='button' value='Update' onclick="update_project('pname', '<%= pid_to_open %>')"></td>
-						      <td><div id='new_pname_response_id'></div></td>
-						      </form>
-						      </tr>
-						      
-						      <tr>
-						      <form id='' name='update_powner_form' method='POST' action='update_powner'>
-						      <td>Owner (username-uid)</td><td><%= pinfo[pid_to_open].last %>, <%= pinfo[pid_to_open].first %> <small>(<%= pinfo[pid_to_open].username %>-<%= pinfo[pid_to_open].oid %>)</small></td>
-						      <td>
-						       <select id='new_oid' name='new_oid' width='200' style='width: 200px'>    
-						      <% for(uid in uinfo) { %>
-						      <%     if(uinfo[uid].username !== 'guest'){ %>
-						      <%       if(uinfo[uid].username === pinfo[pid_to_open].username){ %>
-						              		<option selected value='<%= uid %>'><%= uinfo[uid].last_name %>,<%= uinfo[uid].first_name %>
-						                   <small>(<%= uinfo[uid].username %>)</small></option>
-						      <%       }else{ %>
-						                  <option value='<%= uid %>'><%= uinfo[uid].last_name %>,<%= uinfo[uid].first_name %>
-						                   <small>(<%= uinfo[uid].username %>)</small></option>
-						      <%       }   %>
-						      <%     }    %>     
-						      <% }  %>
-						       </select>
-						       </td>
-						       <td><input id='new_powner_btn' type='button' value='Update' onclick="update_project('powner', '<%= pid_to_open %>')"></td>
-						       <td><div id='new_powner_response_id'></div></td>
-						      </form>
-						      </tr>
-						      
-						      
-						      <tr>
-						      <form id='' name='update_ptitle_form' method='POST' action='update_ptitle'>
-						       <td>Project Title</td><td><span><%= pinfo[pid_to_open].title %></span></td>
-						       <td><input type='edit' id='new_ptitle' name='new_ptitle' value='<%= pinfo[pid_to_open].title %>' width='200' style='width: 200px'/></td>
-						       <td><input id='new_ptitle_btn' type='button' value='Update' onclick="update_project('ptitle', '<%= pid_to_open %>')"></td>
-						       <td><div id='new_ptitle_response_id'></div></td>
-						      </form>
-						      </tr>
-						      
-						      <tr>
-						      <form id='' name='update_pdesc_form' method='POST' action='update_pdesc'>
-						       <td>Project Description</td><td><span><%= pinfo[pid_to_open].description %></span></td>
-						       <td><textarea id='new_pdesc' name='new_pdesc'  value='<%= pinfo[pid_to_open].description %>' rows='2' cols='28'><%= pinfo[pid_to_open].description %></textarea></td>
-						       <td><input id='new_pdesc_btn' type='button' value='Update' onclick="update_project('pdesc', '<%= pid_to_open %>')"></td>
-						       <td><div id='new_pdesc_response_id'></div></td>
-						      </form>
-						      </tr>
-						      
-						      <tr>
-						      <form id='' name='update_penv_form' method='POST' action='update_penv'>
-						       <td>Environmental Source</td><td><%= pinfo[pid_to_open].env_source_name %></td>
-						       <td>
-												<select id='new_eid' name='new_eid' width='200' style='width: 200px'>    
-									      <% for(eid in env_names) { %>
-									      
-									      <%       if(env_names[eid] === pinfo[pid_to_open].env_source_name){ %>
-									              		<option selected value='<%= eid %>'><%= env_names[eid] %>
-									                   <small>(<%= eid %>)</small></option>
-									      <%       }else{ %>
-									                  <option value='<%= eid %>'><%= env_names[eid] %>
-									                   <small>(<%= eid %>)</small></option>
-									      <%       }   %>
-									         
-									      <% }  %>
-									       </select>
-						       </td>
-						       <td><input id='new_penv_btn' type='button' value='Update' onclick="update_project('penv', '<%= pid_to_open %>')"></td>
-						       <td><div id='new_penv_response_id'></div></td>
-						      </form>
-						      </tr>
-
-						      <tr>
-						      <% if(pinfo[pid_to_open].public === 1){ %>
-						        <td>Public</td><td>True</td>
-						      <% }else{ %>
-						        <td>Public</td><td>False</td>
-						      <% } %>
-						      
-						      
-						      <td><a href="public">View or Change</a></td>
-						      <td></td>
-						      <td></td>
-						      </tr>
-						      
-						      <tr>
-						      <td>Permissions</td><td><%= pinfo[pid_to_open].permissions %></td>
-						      <td><a href="permissions">View or Change</a></td>
-						      <td></td>
-						      <td></td>
-						      </tr>
-						      
-						      <tr>
-						      <td>Datasets</td><td></td>
-						      <td><a href="alter_datasets?pid=<%= pid_to_open %>">View or Change</a></td>
-						      <td></td>
-						      <td></td>
-						      </tr>
-						      
-						      <table>
-
-
-
-
-
-
-
-					<% } %>
-				</div>
+				<div id='current_info'></div>
 		</td>
 
 	</tr>
