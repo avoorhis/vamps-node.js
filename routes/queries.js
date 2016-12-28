@@ -366,7 +366,7 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
           + " FROM user_project_status"
           + " JOIN project USING(project_id)"
           + " WHERE user_id = ?"
-          + " AND   project = ?";
+          + " AND   user_project_status.project = ?";
       console.log('DELETE query: ' + statQuery);
       return statQuery;
     }

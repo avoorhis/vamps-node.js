@@ -43,7 +43,7 @@ def get_data(args):
     
     print q
     cur.execute(q)
-    db.commit()
+    args.obj.commit()
     dids = []
     dsets = []
     proj = ''
@@ -142,7 +142,7 @@ def delete_tax_only(args,proj,dids,dsets):
     cur.execute(q)
     
         
-    db.commit()
+    args.obj.commit()
     for ds in dsets:
         gast_dir = os.path.join(args.process_dir,'user_data', args.NODE_DATABASE, args.user,'project:'+proj,'analysis',ds,'gast')
         try:
@@ -166,12 +166,11 @@ if __name__ == '__main__':
     
     myusage = """usage: 5-vamps-clean-db.py  [options]
          
-         
          where
             
            -pid/--project_id        clean this pid only
            -p/--project_name        clean this name only
-           
+           -site/--site             vamps, vampsdev or localhost
            -all/--all               Remove ALL Data for fresh install
                                     Be Careful -- will remove ALL data from db
             
@@ -184,10 +183,12 @@ if __name__ == '__main__':
                 required=True,  action="store",   dest = "pid",
                 help="""ProjectID""")  
     
-    parser.add_argument("-db", "--database",          
-                required=True,  action='store', dest = "NODE_DATABASE", default='NODATABASE',
+ #    parser.add_argument("-db", "--database",          
+#                 required=True,  action='store', dest = "NODE_DATABASE", default='NODATABASE',
+#                 help=" ") 
+    parser.add_argument("-site", "--site",          
+                required=True,  action='store', dest = "site", default='localhost',
                 help=" ") 
-    
     parser.add_argument("-action", "--action",          
                 required=True,  action='store', dest = "action", default='NOACTION',
                 help=" ")           
@@ -207,9 +208,26 @@ if __name__ == '__main__':
     print LOG_FILENAME
     
     logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)    
-    db = MySQLdb.connect(host="localhost", # your host, usually localhost
-                             read_default_file="~/.my.cnf"  ) 
-    cur = db.cursor()
+    if args.site == 'vamps':
+        #db_host = 'vampsdb'
+        db_host = 'bpcweb8'
+        args.NODE_DATABASE = 'vamps2'
+        db_home = '/groups/vampsweb/vamps/'
+    elif args.site == 'vampsdev':
+        #db_host = 'vampsdev'
+        db_host = 'bpcweb7'
+        args.NODE_DATABASE = 'vamps2'
+        db_home = '/groups/vampsweb/vampsdev/'
+    else:
+        db_host = 'localhost'
+        db_home = '~/'
+        args.NODE_DATABASE = 'vamps_development'
+    
+    args.obj = MySQLdb.connect( host=db_host, db=args.NODE_DATABASE, read_default_file=os.path.expanduser("~/.my.cnf_node")    )
+
+    #db = MySQLdb.connect(host="localhost", # your host, usually localhost
+    #                         read_default_file="~/.my.cnf"  ) 
+    cur = args.obj.cursor()
 
     
     

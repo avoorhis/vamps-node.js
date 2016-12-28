@@ -2,7 +2,7 @@
 
 <% var pnames = pnames %>
 <% var project_info = JSON.parse(pinfo) %>
-<% var env = JSON.parse(env_sources) %>
+
 
 <div class='pull-right'>
     <a href="/user_data/add_project" class='btn btn-sm btn-primary'>Add New Project</a>
@@ -41,7 +41,7 @@
 		<% var total_number_of_sequences = project_info[p].status.seq_count %>
 		<% var public = project_info[p].public %>
 		<% var env_source_id = project_info[p].env_source_id %>
-		<% var env_source = env[env_source_id] %>
+		
 		<% var datasets = project_info[p].DATASETS %>
 		<% var status = project_info[p].status.taxonomy %>
 		<% var classified_by = project_info[p].classified_by %>
