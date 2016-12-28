@@ -254,8 +254,8 @@ function signup_user(req, username, password, done, db){
                                     " CURRENT_TIMESTAMP(), "+
                                     " CURRENT_TIMESTAMP() )";
                 
-                db.query(insertQuery,function(err,insert_rows){
-                    if(err){
+                db.query(insertQuery,function(err,insert_rows){ 
+                    if(err){  // error usually if contact-email-inst index is not unique
                         console.log(insertQuery);
                         console.log(err);
                         return done(null, false, req.flash( 'message', 'There was an error. Please contact us at vamps@mbl.edu to request an account' ));
