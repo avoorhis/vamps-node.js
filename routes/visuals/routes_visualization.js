@@ -219,7 +219,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
       catch(err){
         console.log('2-no file '+err.toString()+' Exiting');
         req.flash('Message', "ERROR \
-          Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals may not function.");
+          Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
           //res.redirect('visuals_index');
           //return;
       }
@@ -257,7 +257,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
       catch(err){
         console.log('2-no file '+err.toString()+' Exiting');
         req.flash('Message', "ERROR \
-          Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals may not function.");
+          Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
           //res.redirect('visuals_index');
           //return;
       }

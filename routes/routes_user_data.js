@@ -2542,7 +2542,7 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
     user: req.user,
     hostname: req.CONFIG.hostname,
     message: req.flash('message'),
-    env_sources: JSON.stringify(req.CONSTS.ENV_SOURCE),
+    //env_sources: JSON.stringify({}),
   });
 });
 

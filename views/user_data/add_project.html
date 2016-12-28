@@ -15,8 +15,6 @@
 <br>
 
 
-<% var env_hash = JSON.parse(env_sources) %>
-
 <% if (add_project_info) {
   var owner_hash = add_project_info
 } else {
@@ -56,20 +54,7 @@ new_project_name: 'new Name',
         <input type='text' name='new_project_name'  maxlength='50' size='50' value='<%= add_project_info.new_project_name%>'>
       </td>
     </tr>
-    <tr>
-      <td>
-        <label for='env_source'>ENV Source:
-        </label>
-      </td>
-      <td>
-        <select id='env_source' name='new_env_source_id' class='selectpicker'  data-style='btn btn-xs btn-info'  data-size='100'>
-          <option value='100' >Choose....</option>
-          <% for(id in env_hash) { %>
-              <option value='<%= id %>' ><%= env_hash[id] %></option>
-          <% } %>
-        </select>
-      </td>
-    </tr>
+    
 
     <tr>
       <td><label for='public'>Public:</label>
