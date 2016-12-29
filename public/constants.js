@@ -245,7 +245,7 @@ constants.PORTALS = {
             subtext:'UniEuk',
             projects:[],
             prefixes:[],
-            suffixes:['Ev4','Ev9','Euk'],
+            suffixes:['Ev2','Ev4','Ev9','Euk'],
             pagetitle: 'UniEuk Portal',
             maintitle: 'UniEuk Portal',
             subtitle: 'A Gathering of all Eukaryal Projects.',

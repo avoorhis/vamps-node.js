@@ -21,19 +21,19 @@
 <center>
 
 
- All Users (sortable)
+ All Users
 <br>
 	
 <div style='width:70%;height:500px;overflow:auto'>
 <table border='1' class='admin_table table sortable'>
-		<tr><thead><th>Last, First (userID)</th><th>Username</th><th data-defaultsort='disabled'>User Status</th><th data-defaultsort='disabled'></th><th data-defaultsort='disabled'>Msg</th></thead></tr>
+		<tr><thead><th>Last, First (userID)<small>(sortable)</small></th><th>Username <small>(sortable)</small></th><th data-defaultsort='disabled'>User Status</th><th data-defaultsort='disabled'></th><th data-defaultsort='disabled'>Msg</th></thead></tr>
 		<tbody>
 		<% for(i in uinfo) { %>
 		
 					<form name='admin_form_<%= uinfo[i].uid %>' id='admin_form_<%= uinfo[i].uid %>' method='POST' action=''>
 						<tr>
-							<td><%= uinfo[i].last_name %>, <%= uinfo[i].first_name %><small> (<%= uinfo[i].uid %>)</small></td>
-							<td><%= uinfo[i].username %></td>
+							<td><%= uinfo[i].last_name %>, <%= uinfo[i].first_name %></td>
+							<td><%= uinfo[i].username %> (user_id=<%= uinfo[i].uid %>)</td>
 							<td style='white-space: nowrap;padding:8px 3px 0 3px;'>
 
 		<% 		if(uinfo[i].status === 1) { %>
