@@ -3,7 +3,7 @@
 
 
 function create_geospatial() {
-      zoom_level = 3
+     
      //  geospatial_created = true;
      //  var geo_div = document.getElementById('map-canvas');
       var mapCanvas = document.getElementById('map-canvas');

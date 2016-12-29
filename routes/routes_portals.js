@@ -97,29 +97,8 @@ router.get('/geomap/:portal', function(req, res) {
     console.log('in geomap')
     var portal = req.params.portal;
 
-// { 'ICM_CNE_Bv6--CNE_0001_2003_04_14': 
-//    { latitude: '0.0',
-//      longitude: '0.0',
-//      project: 'ICM_CNE_Bv6',
-//      dataset: 'CNE_0001_2003_04_14' },
-//   'ICM_CNE_Bv6--CNE_0002_2003_07_03': 
-//    { latitude: '0.0',
-//      longitude: '0.0',
-//      project: 'ICM_CNE_Bv6',
-//      dataset: 'CNE_0002_2003_07_03' },
-//   'ICM_CNE_Bv6--CNE_0003_2003_10_11': 
-//    { latitude: '0.0',
-//      longitude: '0.0',
-//      project: 'ICM_CNE_Bv6',
-//      dataset: 'CNE_0003_2003_10_11' },
-//   'ICM_CNE_Bv6--CNE_0004_2004_01_22': 
-//    { latitude: '0.0',
-//      longitude: '0.0',
-//      project: 'ICM_CNE_Bv6',
-//      dataset: 'CNE_0004_2004_01_22' } 
-//  }
-
     var portal_info = get_portal_metadata(req, portal)
+    portal_info[portal].zoom = req.CONSTS.PORTALS[portal].zoom
     //console.log('FOUND '+JSON.stringify(portal_info))
     res.render('portals/geomap', { 
             title       : 'VAMPS: Geomap',
@@ -166,7 +145,7 @@ function get_portal_metadata(req, portal){
             for(p in pi.prefixes){  // CMP
               //console.log('p',p,prefixes[p])
               if( pname.substring(0, pi.prefixes[p].length) === pi.prefixes[p] ){
-                  console.log('FOUND in prefixes '+pname)
+                  
                   pjds = pname+'--'+DATASET_NAME_BY_DID[did]
                   portal_info[portal].metadata[pjds] = {}
                   
@@ -176,11 +155,13 @@ function get_portal_metadata(req, portal){
               
                   //collected_metadata[pjds] = all_metadata[did]
                   if(HDF5_TAXDATA == ''){                      
+                        console.log('FOUND in prefixes1 '+did+' - '+pname)
                         if(dataset_metadata.hasOwnProperty('latitude')){
                             portal_info[portal].metadata[pjds].latitude = dataset_metadata.latitude
                         }else{
                             portal_info[portal].metadata[pjds].latitude = 'notFound'
-                        }                        
+                        } 
+                        console.log('FOUND in prefixes1 '+did+' - '+pname)                       
                         if(dataset_metadata.hasOwnProperty('longitude')){
                             portal_info[portal].metadata[pjds].longitude = dataset_metadata.longitude
                         }else{
