@@ -162,13 +162,13 @@ function get_portal_metadata(req, portal){
                         if(dataset_metadata.hasOwnProperty('latitude')){
                             portal_info[portal].metadata[pjds].latitude = dataset_metadata.latitude
                         }else{
-                            portal_info[portal].metadata[pjds].latitude = 'notFound'
+                            portal_info[portal].metadata[pjds].latitude = ''
                         } 
                         console.log('FOUND in prefixes2 '+did+' - '+pname)                       
                         if(dataset_metadata.hasOwnProperty('longitude')){
                             portal_info[portal].metadata[pjds].longitude = dataset_metadata.longitude
                         }else{
-                            portal_info[portal].metadata[pjds].longitude = 'notFound'
+                            portal_info[portal].metadata[pjds].longitude = ''
                         }
                         console.log('FOUND in prefixes3 '+did+' - '+pname)                     
                   }else{
@@ -202,12 +202,12 @@ function get_portal_metadata(req, portal){
                         if(dataset_metadata.hasOwnProperty('latitude')){
                             portal_info[portal].metadata[pjds].latitude = dataset_metadata.latitude
                         }else{
-                            portal_info[portal].metadata[pjds].latitude = 'notFound'
+                            portal_info[portal].metadata[pjds].latitude = ''
                         }                        
                         if(dataset_metadata.hasOwnProperty('longitude')){
                             portal_info[portal].metadata[pjds].longitude = dataset_metadata.longitude
                         }else{
-                            portal_info[portal].metadata[pjds].longitude = 'notFound'
+                            portal_info[portal].metadata[pjds].longitude = ''
                         }                                    
                   }else{
                       if(mdgroup.hasOwnProperty('lat')){
@@ -239,12 +239,12 @@ function get_portal_metadata(req, portal){
                         if(dataset_metadata.hasOwnProperty('latitude')){
                             portal_info[portal].metadata[pjds].latitude = dataset_metadata.latitude
                         }else{
-                            portal_info[portal].metadata[pjds].latitude = 'notFound'
+                            portal_info[portal].metadata[pjds].latitude = ''
                         }                        
                         if(dataset_metadata.hasOwnProperty('longitude')){
                             portal_info[portal].metadata[pjds].longitude = dataset_metadata.longitude
                         }else{
-                            portal_info[portal].metadata[pjds].longitude = 'notFound'
+                            portal_info[portal].metadata[pjds].longitude = ''
                         }                                      
                   }else{
                       if(mdgroup.hasOwnProperty('lat')){
