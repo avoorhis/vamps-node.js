@@ -16,7 +16,11 @@ Filter Projects
                     <% for(n in env_sources) { %>
                       <% if(env_sources[n] != ''){ %>
                         <% var val = n.toString() + '--' + env_sources[n] %>
-                        <option value='<%= val %>'><%= env_sources[n] %></option>
+                        <% if(env_sources[n] == 'human associated'){ %>
+                            <option value='<%= val %>'><%= env_sources[n] %> <small>(all human)</small></option>
+                        <% }else{ %>
+                            <option value='<%= val %>'><%= env_sources[n] %></option>
+                        <% } %>
                       <% } %>
                     <% } %>
                   </select>
