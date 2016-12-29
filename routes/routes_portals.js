@@ -166,7 +166,7 @@ function get_portal_metadata(req, portal){
             for(p in pi.prefixes){  // CMP
               //console.log('p',p,prefixes[p])
               if( pname.substring(0, pi.prefixes[p].length) === pi.prefixes[p] ){
-                  //console.log('FOUND prefixes '+pname)
+                  console.log('FOUND in prefixes '+pname)
                   pjds = pname+'--'+DATASET_NAME_BY_DID[did]
                   portal_info[portal].metadata[pjds] = {}
                   
@@ -207,7 +207,7 @@ function get_portal_metadata(req, portal){
             for(p in pi.projects){
               //console.log('p',p,prefixes[p])
               if( pname === pi.projects[p] ){
-                  //console.log('FOUND projects '+pname)
+                  console.log('FOUND in projects '+pname)
                   pjds = pname+'--'+DATASET_NAME_BY_DID[did]
                   portal_info[portal].metadata[pjds] = {}
                   portal_info[portal].metadata[pjds].pid = pid
@@ -244,7 +244,7 @@ function get_portal_metadata(req, portal){
             for(p in pi.suffixes){
               //console.log('p',p,prefixes[p])
               if( pname.substring(pname.length - pi.prefixes[p].length) === pi.prefixes[p] ){
-                  //console.log('FOUND suffixes '+pname)
+                  console.log('FOUND in suffixes '+pname)
                   pjds = pname+'--'+DATASET_NAME_BY_DID[did]
                   portal_info[portal].metadata[pjds] = {}
                   portal_info[portal].metadata[pjds].pid = pid
