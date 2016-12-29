@@ -136,7 +136,7 @@ function get_portal_metadata(req, portal){
         //console.log(PROJECT_INFORMATION_BY_PID[pid])
         pname = PROJECT_INFORMATION_BY_PID[pid].project
         if(HDF5_TAXDATA == ''){
-            dataset_metadata = AllMetadata[did]
+            dataset_metadata = AllMetadata[did] || {}
             console.log('dataset_metadata')
             console.log(did)
             console.log(dataset_metadata)
