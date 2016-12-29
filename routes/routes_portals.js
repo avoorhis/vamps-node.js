@@ -137,9 +137,9 @@ function get_portal_metadata(req, portal){
         pname = PROJECT_INFORMATION_BY_PID[pid].project
         if(HDF5_TAXDATA == ''){
             dataset_metadata = AllMetadata[did] || {}
-            console.log('dataset_metadata')
-            console.log(did)
-            console.log(dataset_metadata)
+            //console.log('dataset_metadata')
+            //console.log(did)
+            //console.log(dataset_metadata)
         }else{
             var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
             mdgroup.refresh()
@@ -158,19 +158,19 @@ function get_portal_metadata(req, portal){
               
                   //collected_metadata[pjds] = all_metadata[did]
                   if(HDF5_TAXDATA == ''){                      
-                        console.log('FOUND in prefixes1 '+did+' - '+pname)
+                        //console.log('FOUND in prefixes1 '+did+' - '+pname)
                         if(dataset_metadata.hasOwnProperty('latitude')){
                             portal_info[portal].metadata[pjds].latitude = dataset_metadata.latitude
                         }else{
                             portal_info[portal].metadata[pjds].latitude = ''
                         } 
-                        console.log('FOUND in prefixes2 '+did+' - '+pname)                       
+                        //console.log('FOUND in prefixes2 '+did+' - '+pname)                       
                         if(dataset_metadata.hasOwnProperty('longitude')){
                             portal_info[portal].metadata[pjds].longitude = dataset_metadata.longitude
                         }else{
                             portal_info[portal].metadata[pjds].longitude = ''
                         }
-                        console.log('FOUND in prefixes3 '+did+' - '+pname)                     
+                        //console.log('FOUND in prefixes3 '+did+' - '+pname)                     
                   }else{
                       if(mdgroup.hasOwnProperty('lat')){
                         portal_info[portal].metadata[pjds].latitude = mdgroup.lat
@@ -192,7 +192,7 @@ function get_portal_metadata(req, portal){
             for(p in pi.projects){
               //console.log('p',p,prefixes[p])
               if( pname === pi.projects[p] ){
-                  console.log('FOUND in projects '+pname)
+                  //console.log('FOUND in projects '+pname)
                   pjds = pname+'--'+DATASET_NAME_BY_DID[did]
                   portal_info[portal].metadata[pjds] = {}
                   portal_info[portal].metadata[pjds].pid = pid
@@ -229,7 +229,7 @@ function get_portal_metadata(req, portal){
             for(p in pi.suffixes){
               //console.log('p',p,prefixes[p])
               if( pname.substring(pname.length - pi.prefixes[p].length) === pi.prefixes[p] ){
-                  console.log('FOUND in suffixes '+pname)
+                  //console.log('FOUND in suffixes '+pname)
                   pjds = pname+'--'+DATASET_NAME_BY_DID[did]
                   portal_info[portal].metadata[pjds] = {}
                   portal_info[portal].metadata[pjds].pid = pid
@@ -266,8 +266,8 @@ function get_portal_metadata(req, portal){
         
         }
     }
-    console.log('JSON.stringify(portal_info)')
-    console.log(JSON.stringify(portal_info))
+    //console.log('JSON.stringify(portal_info)')
+    //console.log(JSON.stringify(portal_info))
     return portal_info;
 }
 //
