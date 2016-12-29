@@ -266,8 +266,8 @@ function get_portal_metadata(req, portal){
         
         }
     }
-    //console.log('JSON.stringify(portal_info)')
-    //console.log(JSON.stringify(portal_info))
+    console.log('JSON.stringify(portal_info)')
+    console.log(JSON.stringify(portal_info))
     return portal_info;
 }
 //
