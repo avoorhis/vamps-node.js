@@ -796,7 +796,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
           if (code === 0) {
            //console.log('PID last line: '+last_line)
               status_params = {'type': 'delete', 'user_id':req.user.user_id,
-                                'project':project, 'status':'delete', 'msg':'delete' };
+                                'pid':pid, 'status':'delete', 'msg':'delete' };
               helpers.update_status(status_params);
           } else {
              // python script error

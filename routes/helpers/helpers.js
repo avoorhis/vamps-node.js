@@ -797,7 +797,7 @@ module.exports.update_status = function(status_params) {
   console.log(util.inspect(status_params, false, null));
 
   if (status_params.type === 'delete') {
-    delete_status_params = [status_params.user_id, status_params.project];
+    delete_status_params = [status_params.user_id, status_params.pid];
     statQuery = queries.MakeDeleteStatusQ();
     console.log('in update_status, after delete_status');
     connection.query(statQuery, delete_status_params, function(err, rows) {

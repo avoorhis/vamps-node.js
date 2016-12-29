@@ -51,7 +51,7 @@ get_select_classifier_query: function(){
 	
 },
 get_all_user_query: function(){
-    var qSelectUser = "SELECT user_id as uid, username, email, institution, last_name, first_name";
+    var qSelectUser = "SELECT user_id as uid, username, email, institution, last_name, first_name, security_level";
     qSelectUser += " FROM user";
     //console.log(qSelectClassifiers);
     return qSelectUser;
@@ -362,11 +362,11 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
   MakeDeleteStatusQ: function() {
     console.log('in delete_status');
     if (status_params.type === 'delete') {
-      var statQuery = "DELETE user_project_status"
+      var statQuery = "DELETE"
           + " FROM user_project_status"
-          + " JOIN project USING(project_id)"
+         // + " JOIN project USING(project_id)"
           + " WHERE user_id = ?"
-          + " AND   user_project_status.project = ?";
+          + " AND   project_id = ?";
       console.log('DELETE query: ' + statQuery);
       return statQuery;
     }

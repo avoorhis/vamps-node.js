@@ -60,7 +60,7 @@
 									<option value='0'>.....</option>
 				<% for(u in uorder) { %>
 				<% 		if(uorder[u].username !== 'guest') { %>
-							<option value='<%= uorder[u].uid %>'><%= uorder[u].uid %> <%= uorder[u].last_name %>, <%= uorder[u].first_name %> <small>(<%= uorder[u].username %>)</small></option>
+							<option value='<%= uorder[u].uid %>'> <%= uorder[u].last_name %>, <%= uorder[u].first_name %> <small>(<%= uorder[u].username %>; uid=<%= uorder[u].uid %>)</small></option>
 				<% 		} %>		
 				<% 	} %>			
 							</select>

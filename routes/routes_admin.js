@@ -52,24 +52,11 @@ router.get('/assign_permissions', [helpers.isLoggedIn, helpers.isAdmin], functio
 router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
 
     console.log('in permissions');
-    user_order = []
-    project_order = []
-    for(uid in  ALL_USERS_BY_UID){
-               obj = ALL_USERS_BY_UID[uid]
-               obj.uid = uid
-               user_order.push(obj)
-    }
-    user_order.sort(function sortByAlpha(a, b) {
-               return helpers.compareStrings_alpha(a.last_name, b.last_name)
-    });
     
-    for(pid in  PROJECT_INFORMATION_BY_PID){
-               project_order.push(PROJECT_INFORMATION_BY_PID[pid])
-    }
-    project_order.sort(function sortByAlpha(a, b) {
-               return helpers.compareStrings_alpha(a.project, b.project)
-    });
-
+    project_order = []
+    user_order = get_name_ordered_users_list()
+    project_order = get_name_ordered_projects_list()
+    
     res.render('admin/permissions', {
               title     :'VAMPS Site Administration',
               message   : req.flash('message'),
@@ -82,13 +69,13 @@ router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
             });
 
 });
-router.get('/public', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+router.get('/public_status', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
 
-  console.log('in public');
+  console.log('in public_status');
   //console.log(ALL_USERS_BY_UID);
   //console.log(PROJECT_INFORMATION_BY_PID);
    
-   res.render('admin/public', {
+   res.render('admin/public_status', {
               title     :'VAMPS Site Administration',
               message   : req.flash('message'),
               user: req.user,
@@ -98,6 +85,7 @@ router.get('/public', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) 
             });
 
 });
+
 router.post('/public_update', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
 
    console.log('in public_update');
@@ -124,12 +112,63 @@ router.post('/public_update', [helpers.isLoggedIn, helpers.isAdmin], function(re
                   console.log('Query error: ' + err);
                   response = 'Query error: ' + err;
                 }else{
-                  response = 'Successfully updated';
+                  response = 'Successfully updated project';
                 }
                 res.send(response);
       });
   }else{
     res.send('no change to public status');
+  }
+});
+router.get('/admin_status', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+
+    console.log('in admin_status');
+  
+    user_order = get_name_ordered_users_list()
+    console.log(user_order)
+    res.render('admin/admin_status', {
+              title     :'VAMPS Site Administration',
+              message   : req.flash('message'),
+              user: req.user,
+              //project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+              user_info: JSON.stringify(user_order),
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+            });
+
+});
+router.post('/admin_update', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+
+   console.log('in admin_update');
+   //console.log(ALL_USERS_BY_UID);
+   //console.log(PROJECT_INFORMATION_BY_PID);
+   selected_uid = req.body.uid ;
+   new_status = parseInt(req.body.status);
+   //console.log(selected_pid,' ',new_public)
+   response = 'no'
+   if(new_status !== ALL_USERS_BY_UID[selected_uid].status){
+      q = "UPDATE user set security_level='"+new_status+"' WHERE user_id='"+selected_uid+"'";
+
+      if(new_status === 1){
+            ALL_USERS_BY_UID[selected_uid].status = 1;
+            //ALL_USERS_BY_UID[selected_uid].permissions = [];
+      }else{
+            // give owner sole permissions
+            ALL_USERS_BY_UID[selected_uid].status = 50;
+            //ALL_USERS_BY_UID[selected_uid].permissions = [ALL_USERS_BY_UID[selected_uid].oid];
+            
+      }
+      connection.query(q, function(err, rows, fields){
+            //console.log(qSequenceCounts)
+                if (err)  {
+                  console.log('Query error: ' + err);
+                  response = 'Query error: ' + err;
+                }else{
+                  response = 'Successfully updated user';
+                }
+                res.send(response);
+      });
+  }else{
+    res.send('no change to admin status');
   }
 });
 router.post('/show_user_info', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
@@ -205,21 +244,21 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req
    var pid;
 
    if(url_parts.query.pid === undefined){
-    pid = 0;
+    proj_to_open = 0;
    }else{
-    pid = url_parts.query.pid;
+    proj_to_open = PROJECT_INFORMATION_BY_PID[url_parts.query.pid];
    }
    console.log(PROJECT_INFORMATION_BY_PID);
    console.log(ALL_USERS_BY_UID);
-   
+   project_list = get_name_ordered_projects_list()
    res.render('admin/alter_project', {
-              title     :'VAMPS Site Administration',
-              message   : req.flash('message'),
-              user: req.user,
-              pid_to_open:pid,
-              project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
-              user_info: JSON.stringify(ALL_USERS_BY_UID),
-              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+              title       : 'VAMPS Site Administration',
+              message     : req.flash('message'),
+              user        : req.user,
+              proj_to_open: proj_to_open,
+              project_list: JSON.stringify(project_list),
+              user_info   : JSON.stringify(ALL_USERS_BY_UID),
+              hostname    : req.CONFIG.hostname, // get the user out of session and pass to template
             });
 
 });
@@ -228,10 +267,10 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req
 //
 router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
 
-  console.log('in show_user_info');
-  //console.log(PROJECT_INFORMATION_BY_PID);
+    console.log('in show_user_info');
+    //console.log(PROJECT_INFORMATION_BY_PID);
 
-  selected_pid = req.body.pid;
+    selected_pid = req.body.pid;
       if(selected_pid in PROJECT_INFORMATION_BY_PID){
         info = PROJECT_INFORMATION_BY_PID[selected_pid];
       }else{
@@ -592,15 +631,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
 //
 router.get('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
     console.log('in reset_user_password');
-    user_order = []
-    for(uid in  ALL_USERS_BY_UID){
-               obj = ALL_USERS_BY_UID[uid]
-               obj.uid = uid
-               user_order.push(obj)
-    }
-    user_order.sort(function sortByAlpha(a, b) {
-               return helpers.compareStrings_alpha(a.last_name, b.last_name)
-    });
+    user_order = get_name_ordered_users_list()
     res.render('admin/new_password', {
               title     :'VAMPS Reset User Password',
               message   : req.flash('message'),
@@ -1261,6 +1292,28 @@ function convert_names_to_ids_for_storage(obj){
       }
     }
     return new_obj
+}
+function get_name_ordered_users_list(){
+    user_order = []
+    for(uid in  ALL_USERS_BY_UID){
+               obj = ALL_USERS_BY_UID[uid]
+               obj.uid = uid
+               user_order.push(obj)
+    }
+    user_order.sort(function sortByAlpha(a, b) {
+               return helpers.compareStrings_alpha(a.last_name, b.last_name)
+    });
+    return user_order
+}
+function get_name_ordered_projects_list(){
+    project_order = []
+    for(pid in  PROJECT_INFORMATION_BY_PID){
+               project_order.push(PROJECT_INFORMATION_BY_PID[pid])
+    }
+    project_order.sort(function sortByAlpha(a, b) {
+               return helpers.compareStrings_alpha(a.project, b.project)
+    });
+    return project_order
 }
 //
 //
