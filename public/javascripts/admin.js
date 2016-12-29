@@ -316,7 +316,6 @@ function change_admin(uid)
   var form = document.getElementById('admin_form_'+uid);
   radio_name = 'admin_radio_'+uid
   admin_status    = form[radio_name][0]
-  //notadmin = form[radio_name][1]
 
    if(admin_status.checked){
         status = '1'
@@ -399,50 +398,12 @@ function upload_metadata(){
 
     $(form).submit();
 
-    // var xmlhttp = new XMLHttpRequest();
-    // xmlhttp.open("POST", '/admin/upload_metadata', true);
-    // xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    // xmlhttp.setRequestHeader("data-type","html");
-    // var args = 'pid='+selected_pid;
-    // //text_edits = ['altitude','collection_date','common_name','depth','description','elevation','latitude','longitude','public','taxon_id','fragment_name','dna_region','sequencing_platform','domain']
-    // xmlhttp.onreadystatechange = function() {
-    //   if (xmlhttp.readyState == 4 ) {
-    //       info_div.style.width = '1200px'
-    //       info_div.style.height = '300px'
-    //       info_div.style.overflow = 'auto';
-    //       var response = JSON.parse(xmlhttp.responseText);
-    //       //var response = xmlhttp.responseText;
-
-    //       var html = "Read Only Metadata<br><table class='table table-striped'><tr><td>Dataset</td>"
-    //       header_names = response.required_metadata_fields
-    //       for(n in header_names){
-    //         html += "<td>"+header_names[n]+"</td>"
-    //       }
-    //       html += "</tr>"
-    //       html += "<tr>"
-    //       for(ds in response){
-    //         if( ds != 'required_metadata_fields'){
-    //           html += "<tr>"
-    //           html += "<td>"+ds+"</td>"
-    //           for(i in response[ds]){
-
-    //               html += "<td>"+response[ds][i]+"</td>"
-
-    //           }
-    //           html += "</tr>"
-    //         }
-    //       }
-    //       html += "</table>"
-    //       info_div.innerHTML = html;
-    //   }
-    // };
-    // xmlhttp.send(args);
 }
 //
 //
 //
 function show_metadata(){
-  alert('in shw')
+  
     var info_div = document.getElementById('md_result_div');
     var selected_pid = document.getElementById('select_project_for_metadata').value;
     if(selected_pid == 0){

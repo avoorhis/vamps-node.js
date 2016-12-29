@@ -3,7 +3,7 @@
 
 
 function create_geospatial() {
-      //alert(zoom_level)
+     
      //  geospatial_created = true;
      //  var geo_div = document.getElementById('map-canvas');
       var mapCanvas = document.getElementById('map-canvas');
@@ -24,11 +24,11 @@ function create_geospatial() {
           var lon = '';
           for (var k in md_local[ds]) {
             md_item = k;
-            if(md_item == 'latitude') {
+            if(md_item == 'latitude' && md_local[ds][k] != 'None') {
               lat = Number(md_local[ds][k]);
-              //alert(lat)
+              //alert(md_local[ds][k]+' - '+lat)
             }
-            if(md_item == 'longitude'){              
+            if(md_item == 'longitude' && md_local[ds][k] != 'None'){              
               lon = Number(md_local[ds][k]);
             }    
           } 
