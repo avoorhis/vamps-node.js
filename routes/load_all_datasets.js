@@ -73,6 +73,7 @@ module.exports.get_datasets = function(callback){
           ALL_USERS_BY_UID[rows[i].uid].last_name   = rows[i].last_name;
           ALL_USERS_BY_UID[rows[i].uid].first_name  = rows[i].first_name;
           ALL_USERS_BY_UID[rows[i].uid].institution = rows[i].institution;
+          ALL_USERS_BY_UID[rows[i].uid].status      = rows[i].security_level;
         }
       }
       console.log(' INITIALIZING ALL_USERS_BY_UID');      

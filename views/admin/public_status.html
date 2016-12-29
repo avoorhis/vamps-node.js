@@ -17,18 +17,16 @@
 
 	<br>
 	<br>
-	<a href='admin_index'><--back</a> | <a href='public'>refresh</a>
+	<a href='admin_index'><--back</a> | <a href='public_status'>refresh</a>
 	<hr>
 <center>
-<table><tr>
 
-<td>
 
- 	All Projects (sortable)
-	<br>
+ All Projects (sortable)
+<br>
 	
-	<div style=''>
-	<table border='1' class='admin_table table sortable'>
+<div style='width:70%;height:500px;overflow:auto'>
+<table border='1' class='admin_table table sortable'>
 		<tr><thead><th>Project Name (pid)</th><th data-defaultsort='disabled'></th><th data-defaultsort='disabled'></th><th data-defaultsort='disabled'>Msg</th></thead></tr>
 		<tbody>
 		<% for(pid in pinfo) { %>
@@ -54,11 +52,9 @@
 					</tr>
 					</form>
 		<% } %>
-	</tbody>
-	</table>
-</td>
-</tr>
+</tbody>
 </table>
+
 </div>
 </center>
 

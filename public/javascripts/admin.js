@@ -274,6 +274,9 @@ function grant_access(type, id)
     xmlhttp.send(args);
 
 }
+//
+//
+//
 function change_public(pid)
 {
   var info_div = document.getElementById('msg_div_'+pid);
@@ -304,7 +307,36 @@ function change_public(pid)
     };
     xmlhttp.send(args);
 }
+//
+//
+//
+function change_admin(uid)
+{
+  var info_div = document.getElementById('msg_div_'+uid);
+  var form = document.getElementById('admin_form_'+uid);
+  radio_name = 'admin_radio_'+uid
+  admin_status    = form[radio_name][0]
+  //notadmin = form[radio_name][1]
 
+   if(admin_status.checked){
+        status = '1'
+   }else{
+        status = '50' 
+   }
+   var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", '/admin/admin_update', true);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.setRequestHeader("data-type","html");
+    var args = 'status='+status+'&uid='+uid;
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+          var response = xmlhttp.responseText;
+          info_div.innerHTML = response;
+
+      }
+    };
+    xmlhttp.send(args);
+}
 //
 //
 //

@@ -2,7 +2,7 @@
 
 
 <% var project_info = JSON.parse(pinfo) %>
-<% var env_hash = JSON.parse(env_sources) %>
+
 <br>
  <div class='title'>Edit Project: <%= project %></div>
  <div class='subtitle'></div>
@@ -30,18 +30,7 @@
 	<table class='table table-condensed'>
 		<tr><td></td><th>Values</th></tr>
 		<tr><td>Project Name (max length 50 chars):</td><td><input type='text' name='new_project_name' maxlength="50" size='50' value='<%= project %>'></td></tr>
-		<tr><td>ENV Source:</td>
-		<td>
-	        <select id='env_source' name='new_env_source_id' class='selectpicker'  data-style="btn btn-xs btn-info"  data-size="100">
-	        <% for(id in env_hash) { %>	        
-			<%    if (env_source_id === id) { %>
-	                  <option value='<%= id %>' selected='selected' ><%= env_hash[id] %></option>
-	        <%    } else { %>
-	                  <option value='<%= id %>' ><%= env_hash[id] %></option>
-	        <%    } %>
-	        <% } %>
-	        </select>
-		</td></tr>
+		
 		
 		<tr><td>Public:</td>
 			<td>

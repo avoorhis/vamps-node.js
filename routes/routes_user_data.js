@@ -796,7 +796,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
           if (code === 0) {
            //console.log('PID last line: '+last_line)
               status_params = {'type': 'delete', 'user_id':req.user.user_id,
-                                'project':project, 'status':'delete', 'msg':'delete' };
+                                'pid':pid, 'status':'delete', 'msg':'delete' };
               helpers.update_status(status_params);
           } else {
              // python script error
@@ -1156,7 +1156,6 @@ function gastTax(req, project_config, options, classifier_id)
   // 
   // process.umask(oldmask);
 
-  console.log("XXX file_suffix = " + file_suffix);
 
 // /groups/vampsweb/vampsdev_node_data/user_data/AnnaSh/project-test_gast_project/test_gast_dataset.fa.unique.uc
 
@@ -1418,7 +1417,7 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
           { title: 'User Projects',
             pinfo: JSON.stringify(project_info),
             pnames: pnames,
-            env_sources :   JSON.stringify(req.CONSTS.ENV_SOURCE),
+            //env_sources :   JSON.stringify(MD_ENV_PACKAGE),
             failmessage : req.flash('failMessage'),
             successmessage : req.flash('successMessage'),
             user: req.user, hostname: req.CONFIG.hostname
@@ -1432,6 +1431,7 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
 //
 router.get('/edit_project/:project', helpers.isLoggedIn, function (req, res) {
   console.log('in edit project:GET');
+  //console.log(PROJECT_INFORMATION_BY_PID)
   var project_name = req.params.project;
   var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
 
@@ -1495,7 +1495,7 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function (req, res) {
         title       : 'Edit Project',
         project     : project_name,
         pinfo       : JSON.stringify(project_info),
-        env_sources : JSON.stringify(req.CONSTS.ENV_SOURCE),
+        //env_sources : JSON.stringify(MD_ENV_PACKAGE),
         message     : req.flash('message'),
         user: req.user, hostname: req.CONFIG.hostname,
     });
@@ -1555,36 +1555,39 @@ router.post('/edit_project', helpers.isLoggedIn, function (req, res) {
     //console.log('PROJECT_INFORMATION_BY_PID')
     //console.log(req.body.project_pid);
 
-    PROJECT_INFORMATION_BY_PID[req.body.project_pid].project         = req.body.new_project_name;
-    PROJECT_INFORMATION_BY_PID[req.body.project_pid].env_source_name = req.CONSTS.ENV_SOURCE[req.body.new_env_source_id];
-    PROJECT_INFORMATION_BY_PID[req.body.project_pid].title           = req.body.new_project_title;
-    PROJECT_INFORMATION_BY_PID[req.body.project_pid].description     = req.body.new_project_description;
+    PROJECT_INFORMATION_BY_PID[req.body.project_pid].project        = req.body.new_project_name;
+    //PROJECT_INFORMATION_BY_PID[req.body.project_pid].env_package_id  = '';
+    PROJECT_INFORMATION_BY_PID[req.body.project_pid].title          = req.body.new_project_title;
+    PROJECT_INFORMATION_BY_PID[req.body.project_pid].description    = req.body.new_project_description;
     if (req.body.new_privacy == 'False') {
       PROJECT_INFORMATION_BY_PID[req.body.project_pid].public = 0;
     } else {
       PROJECT_INFORMATION_BY_PID[req.body.project_pid].public = 1;
     }
 
-    //TODO: proper escape and move to queries
+    //TODO: proper escape and move to queries 
+    //also not the place to add or delete datasets
     for (var d in req.body.new_dataset_names) {
-      var d_sql = "UPDATE dataset set dataset='"+req.body.new_dataset_names[d]+"', \n";
-      d_sql += " env_sample_source_id='"+req.body.new_env_source_id+"', \n";
-      d_sql += " dataset_description='"+helpers.mysql_real_escape_string(req.body.new_dataset_descriptions[d])+"'\n";
-      d_sql += " WHERE dataset_id='"+req.body.dataset_ids[d]+"' ";
-      d_sql += " AND project_id='"+req.body.project_pid+"' ";
-      // TODO: Don't make functions within a loop.
-      connection.query(d_sql, function mysqlUpdateDataset(err, rows, fields) {
-        if (err) {
-          console.log('ERROR - in dataset update: '+err);
-        } else {
-          console.log('OK - dataset info updated: '+req.body.dataset_ids[d]);
-        }
-      });
-      //3- DATASET_NAME_BY_DID
-      //console.log('DATASET_NAME_BY_DID')
-      //console.log(DATASET_NAME_BY_DID[req.body.dataset_ids[d]]);
-      DATASET_NAME_BY_DID[req.body.dataset_ids[d]] = req.body.new_dataset_names[d];
-      //console.log(DATASET_NAME_BY_DID[req.body.dataset_ids[d]]);
+      if(d != ''){
+          var d_sql = "UPDATE dataset set dataset='"+req.body.new_dataset_names[d]+"', \n";
+          //d_sql += " env_sample_source_id='"+req.body.new_env_source_id+"', \n";
+          d_sql += " dataset_description='"+helpers.mysql_real_escape_string(req.body.new_dataset_descriptions[d])+"'\n";
+          d_sql += " WHERE dataset_id='"+req.body.dataset_ids[d]+"' ";
+          d_sql += " AND project_id='"+req.body.project_pid+"' ";
+          // TODO: Don't make functions within a loop.
+          connection.query(d_sql, function mysqlUpdateDataset(err, rows, fields) {
+            if (err) {
+              console.log('ERROR - in dataset update: '+err);
+            } else {
+              console.log('OK - dataset info updated: '+req.body.dataset_ids[d]);
+            }
+          });
+          //3- DATASET_NAME_BY_DID
+          //console.log('DATASET_NAME_BY_DID')
+          //console.log(DATASET_NAME_BY_DID[req.body.dataset_ids[d]]);
+          DATASET_NAME_BY_DID[req.body.dataset_ids[d]] = req.body.new_dataset_names[d];
+          //console.log(DATASET_NAME_BY_DID[req.body.dataset_ids[d]]);
+      }
     }
 
 
@@ -2542,7 +2545,7 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
     user: req.user,
     hostname: req.CONFIG.hostname,
     message: req.flash('message'),
-    env_sources: JSON.stringify(req.CONSTS.ENV_SOURCE),
+    //env_sources: JSON.stringify(MD_ENV_PACKAGE),
   });
 });
 
@@ -2608,7 +2611,7 @@ function editAddProject(req, res){
     hostname: req.CONFIG.hostname,
     messages: req.messages,
     add_project_info: req.add_project_info,
-    env_sources:  JSON.stringify(req.CONSTS.ENV_SOURCE),
+    //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
   });
 }
 
