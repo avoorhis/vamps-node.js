@@ -137,6 +137,9 @@ function get_portal_metadata(req, portal){
         pname = PROJECT_INFORMATION_BY_PID[pid].project
         if(HDF5_TAXDATA == ''){
             dataset_metadata = AllMetadata[did]
+            console.log('dataset_metadata')
+            console.log(did)
+            console.log(dataset_metadata)
         }else{
             var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
             mdgroup.refresh()
