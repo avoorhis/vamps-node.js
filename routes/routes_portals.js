@@ -161,12 +161,13 @@ function get_portal_metadata(req, portal){
                         }else{
                             portal_info[portal].metadata[pjds].latitude = 'notFound'
                         } 
-                        console.log('FOUND in prefixes1 '+did+' - '+pname)                       
+                        console.log('FOUND in prefixes2 '+did+' - '+pname)                       
                         if(dataset_metadata.hasOwnProperty('longitude')){
                             portal_info[portal].metadata[pjds].longitude = dataset_metadata.longitude
                         }else{
                             portal_info[portal].metadata[pjds].longitude = 'notFound'
-                        }                     
+                        }
+                        console.log('FOUND in prefixes3 '+did+' - '+pname)                     
                   }else{
                       if(mdgroup.hasOwnProperty('lat')){
                         portal_info[portal].metadata[pjds].latitude = mdgroup.lat
