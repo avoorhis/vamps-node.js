@@ -696,10 +696,11 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
             }else{
               console.log(stdout)
             }
-            distance_matrix = JSON.parse(stdout);
+            //distance_matrix = JSON.parse(stdout);
+            distance_matrix = stdout;
           }
           catch(err){
-            distance_matrix = {'ERROR':err};
+            distance_matrix = JSON.stringify({'ERROR':err});
           }
             res.render('visuals/partials/create_distance_heatmap',{
                   dm        : distance_matrix,
