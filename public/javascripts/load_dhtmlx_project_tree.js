@@ -223,7 +223,7 @@ function afterCall(){
         var cnodes = projectTree.getAllChecked()
         if(cnodes.length > 0){
             var l = cnodes.split(',')
-            projectTree.focusItem(l[0]);
+            projectTree.focusItem(projectTree.getParentId(l[0]));
         }
     }, delay);
     
