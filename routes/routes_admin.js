@@ -574,10 +574,10 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
     if( email.indexOf("@") == -1 || email.length < 3 || email.length > 100 ){
         req.flash('message', 'The email address is empty or the wrong format.');
     }
-    if( first.length < 1 || first.length > 50 ||  last.length < 1 || last.length > 50 ){
-        req.flash('message', 'Both first and last names are required.');
+    if( first.length < 1 || first.length > 20 ||  last.length < 1 || last.length > 20 ){
+        req.flash('message', 'Both first and last names are required (limit 20 characters).');
     }
-    if( inst.length < 1 || inst.length > 50){
+    if( inst.length < 1 || inst.length > 128){
         req.flash('message', 'The Institution name is required.');
     }else{
 

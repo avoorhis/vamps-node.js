@@ -115,6 +115,8 @@ function set_dataset_count(id){
       }
     }
     document.getElementById('selected_ds_count_id').innerHTML = len
+    projectTree.focusItem(id);
+    
 }
 //
 //
@@ -204,8 +206,6 @@ function clear_filters() {
         update_gui_elements(result)
         projectTree.deleteChildItems(0);
         //load initial
-        
-        //projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json"); 
         projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json"); 
     
     }
@@ -216,12 +216,17 @@ function clear_filters() {
 //  SHOW/FILTER  RESULTS for project/substring Search
 //
 function afterCall(){
-  
-    var delay=100; //0.1 second
+    var delay=500; //0.5 second - need 1/2 second for LOTS of saved datasets to load ~1000 
     setTimeout(function() {
-        //your code to be executed after 0.1 second
-        set_dataset_count(0)
+        //your code to be executed after 0.5 second
+        set_dataset_count(0);
+        var cnodes = projectTree.getAllChecked()
+        if(cnodes.length > 0){
+            var l = cnodes.split(',')
+            projectTree.focusItem(l[0]);
+        }
     }, delay);
+    
 }
 //
 //   substring for project name filter
@@ -254,8 +259,7 @@ function showLiveProjectNames(str) {
         result = JSON.parse(xmlhttp.responseText);
         update_gui_elements(result)
         projectTree.deleteChildItems(0);
-      
-      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");     
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");     
     }
   }
   xmlhttp.send();
@@ -320,10 +324,10 @@ function filter_by_target() {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-       result = JSON.parse(xmlhttp.responseText);
+        result = JSON.parse(xmlhttp.responseText);
         update_gui_elements(result)
-      projectTree.deleteChildItems(0);
-      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
+        projectTree.deleteChildItems(0);
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
     }
   }
   xmlhttp.send();
@@ -353,10 +357,10 @@ function filter_by_portal() {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-       result = JSON.parse(xmlhttp.responseText);
+        result = JSON.parse(xmlhttp.responseText);
         update_gui_elements(result)
-      projectTree.deleteChildItems(0);
-      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
+        projectTree.deleteChildItems(0);
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
     }
   }
   xmlhttp.send();
@@ -385,10 +389,10 @@ function filter_by_status(pub_status) {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-       result = JSON.parse(xmlhttp.responseText);
+        result = JSON.parse(xmlhttp.responseText);
         update_gui_elements(result)
-      projectTree.deleteChildItems(0);
-      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
+        projectTree.deleteChildItems(0);
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
     }
   }
   xmlhttp.send();
@@ -420,10 +424,10 @@ function filter_by_metadata() {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-       result = JSON.parse(xmlhttp.responseText);
+        result = JSON.parse(xmlhttp.responseText);
         update_gui_elements(result)
-      projectTree.deleteChildItems(0);
-      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
+        projectTree.deleteChildItems(0);
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
     }
   }
   xmlhttp.send();

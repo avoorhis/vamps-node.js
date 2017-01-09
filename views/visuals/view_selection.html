@@ -202,11 +202,11 @@
           <%    var target='';                                                                        %>
           <%    var ttip = visuals[n].tip;                                    %>
           <%    var cols = 5                                                                          %>
-          <%    if(ds_count === 1  && (prefix === 'dheatmap' 
+          <%    if((ds_count === 1)  && (prefix === 'dheatmap' 
                                         || prefix.substring(0,10) === 'dendrogram' 
                                         || prefix === 'fheatmap'
                                         || prefix.substring(0,4)  === 'pcoa' ))           { %>
-                    <td class='td_top'><%= name %><br><br>Not Available<br>(single dataset)</td>
+                    <td class='td_top'><%= name %><br><br>Not Available<br>for single datasets</td>
           <%    } else if(ds_count > 1500  && (prefix.substring(0,8) === 'phyloseq' ))    { %>
 
                     <td class='td_top' id='<%= ttip %>'>                       

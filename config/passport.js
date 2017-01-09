@@ -214,10 +214,10 @@ function signup_user(req, username, password, done, db){
     if( email.indexOf("@") == -1 || email.length < 3 || email.length > 100 ){
         return done(null, false, req.flash('message', 'The email address is empty or the wrong format.'));
     }
-    if( first.length < 1 || first.length > 50 ||  last.length < 1 || last.length > 50 ){
+    if( first.length < 1 || first.length > 20 ||  last.length < 1 || last.length > 20 ){
         return done(null, false, req.flash('message', 'Both first and last names are required.'));
     }
-    if( inst.length < 1 || inst.length > 50){
+    if( inst.length < 1 || inst.length > 128){
         return done(null, false, req.flash('message', 'The Institution name is required.'));
     }
 
