@@ -10,20 +10,36 @@
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
 	
-	<table>
+	<ul>
 		
-		<tr><td><a href='/admin/public_status'>Grant/Revoke Public Status for Projects</a></td></tr>
-		<tr><td><a href='/admin/admin_status'>Grant/Revoke Admin Status for Users</a></td></tr>
-		<tr><td><a href='/admin/update_json_files'>Re-Install JSON Files</a> --TODO</td></tr>
-		<tr><td><a href='/admin/alter_project'>Change Project Information</a></td></tr>
-		<tr><td><a href='/admin/delete_project'>Delete Projects</a> -- TODO</td></tr>
-		<tr><td><a href='/admin/permissions'>User Permissions</a></td></tr>
-		<tr><td><a href='/users/users_index'>View User List</a></td></tr>
-		<tr><td><a href='/admin/new_user'>Create New User</a></td></tr>
-		<tr><td><a href='/admin/reset_user_password'>Reset Users Password</a></td></tr>
-		<tr><td><a href='/admin/update_metadata'>Update/Upload Metadata</a></td></tr>
 		
-	</table>
+		
+		
+		<li>Project Aministration:
+		<ul>
+            <li><a href='/admin/public_status'>Grant/Revoke Public Status for Projects</a></li>
+            <li><a href='/admin/alter_project'>Change Project Information</a></li>
+            <li><a href='/admin/delete_project'>Delete Projects</a> -- TODO</li>
+		</ul>
+		</li>
+		
+		<li>User Administartion:
+		<ul>
+            <li><a href='/admin/admin_status'>Grant/Revoke Admin Status for Users</a></li>
+            <li><a href='/admin/permissions'>User Permissions</a></li>
+            <li><a href='/users/users_index'>View User List</a></li>
+            <li><a href='/admin/new_user'>Create New User</a></li>
+            <li><a href='/admin/reset_user_password'>Reset Users Password</a></li>
+            <li><a href='/admin/inactivate_user'>Delete (inactivate) Users</a></li>            
+		</ul>
+		</li>
+		<li>Other:
+		<ul>
+		    <li><a href='/admin/update_json_files'>Re-Install JSON Files</a> --TODO</li>
+		    <li><a href='/admin/update_metadata'>Update/Upload Metadata</a></li>
+		</ul>
+		</li>
+	</ul>
 </div>
 </div>	
 </div>

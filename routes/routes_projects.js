@@ -22,8 +22,10 @@ router.get('/projects_index', function(req, res) {
     //keys.sort();
     //var project_list = helpers.get_public_projects(req)
     project_list = [];
-    for( i in PROJECT_INFORMATION_BY_PID){
-      project_list.push(PROJECT_INFORMATION_BY_PID[i]);
+    for( pid in PROJECT_INFORMATION_BY_PID){
+      if(DATASET_IDS_BY_PID[pid].length > 0){
+        project_list.push(PROJECT_INFORMATION_BY_PID[pid]);
+      }
     }
 
     // var pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];

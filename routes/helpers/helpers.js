@@ -617,59 +617,67 @@ module.exports.run_select_datasets_query = function(rows){
     var titles       = {};
     var datasetsByProject = {};
     for (var i=0; i < rows.length; i++) {
-          var project = rows[i].project;
-          var did = rows[i].did;
-          var dataset = rows[i].dataset;
-          var dataset_description = rows[i].dataset_description;
-          var pid = rows[i].pid;
-          var public = rows[i].public;
-          var owner_id = rows[i].owner_user_id;
-          PROJECT_ID_BY_DID[did] = pid;
-          if(AllMetadata.hasOwnProperty(did) && AllMetadata[did].hasOwnProperty('env_package_id')){
+        var project = rows[i].project;
+        if (project === undefined){ continue; }
+        var pid = rows[i].pid;
+        var did = rows[i].did;
+        if(! DATASET_IDS_BY_PID.hasOwnProperty(pid)){               
+                DATASET_IDS_BY_PID[pid]=[];               
+        }
+        if (did === undefined || did === 'null'|| did === null){ 
+            console.log('DATASET NULL'); 
+        }else{
+          
+            var dataset = rows[i].dataset;
+            var dataset_description = rows[i].dataset_description;
+            PROJECT_ID_BY_DID[did] = pid;
+            DATASET_NAME_BY_DID[did] = dataset;
+            if (datasetsByProject.hasOwnProperty(project)){
+                datasetsByProject[project].push({ did:did, dname:dataset, ddesc: dataset_description});
+            } else {
+                datasetsByProject[project] =   [{ did:did, dname:dataset, ddesc: dataset_description }];
+            }
+            
+                
+            DATASET_IDS_BY_PID[pid].push(did);
+           
+        }
+        
+        if(AllMetadata.hasOwnProperty(did) && AllMetadata[did].hasOwnProperty('env_package_id')){
             var envpkgid = AllMetadata[did].env_package_id
-          }else{
+        }else{
             var envpkgid = '1'
-          }
+        }
+          
+          
+          
+        if( ! PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid)){
+                var public = rows[i].public;
+                var owner_id = rows[i].owner_user_id;
+                PROJECT_INFORMATION_BY_PID[pid] = {
+                "last" :            rows[i].last_name,
+                "first" :           rows[i].first_name,
+                "username" :        rows[i].username,
+                "oid" :             owner_id,
+                "email" :           rows[i].email,
+                "env_package_id" :  envpkgid,  // mostly used here for the filter function on dataset selection page
+                "institution" :     rows[i].institution,
+                "project" :         project,
+                "pid" :             pid,
+                "title" :           rows[i].title,
+                "description" :     rows[i].project_description,
+                "public" :          rows[i].public,
+                };
+                if(public || rows[i].username === 'guest'){
+                PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
+                }else{
+                PROJECT_INFORMATION_BY_PID[pid].permissions = [owner_id]; // initially has only project owner_id
+                }
+                PROJECT_INFORMATION_BY_PNAME[project] =  PROJECT_INFORMATION_BY_PID[pid];
 
-          PROJECT_INFORMATION_BY_PID[pid] = {
-            "last" :            rows[i].last_name,
-            "first" :           rows[i].first_name,
-            "username" :        rows[i].username,
-            "oid" :             owner_id,
-            "email" :           rows[i].email,
-            "env_package_id" :  envpkgid,  // mostly used here for the filter function on dataset selection page
-            "institution" :     rows[i].institution,
-            "project" :         project,
-            "pid" :             pid,
-            "title" :           rows[i].title,
-            "description" :     rows[i].project_description,
-            "public" :          rows[i].public,
-          };
-          if(public || rows[i].username === 'guest'){
-            PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
-          }else{
-            PROJECT_INFORMATION_BY_PID[pid].permissions = [owner_id]; // initially has only project owner_id
-          }
-          PROJECT_INFORMATION_BY_PNAME[project] =  PROJECT_INFORMATION_BY_PID[pid];
-
-          if(pid in DATASET_IDS_BY_PID){
-            DATASET_IDS_BY_PID[pid].push(did);
-          }else{
-            DATASET_IDS_BY_PID[pid]=[];
-            DATASET_IDS_BY_PID[pid].push(did);
-          }
-          pids[project] = pid;
-          titles[project] = rows[i].title;
-
-          DATASET_NAME_BY_DID[did] = dataset;
-
-
-          if (project === undefined){ continue; }
-          if (project in datasetsByProject){
-              datasetsByProject[project].push({ did:did, dname:dataset, ddesc: dataset_description});
-          } else {
-              datasetsByProject[project] =   [{ did:did, dname:dataset, ddesc: dataset_description }];
-          }
+                pids[project] = pid;
+                titles[project] = rows[i].title;
+        }    
 
     }
 
@@ -1239,15 +1247,16 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   // 5 public_private search PROJECT_INFORMATION_BY_PID
   // 6 metadata       helpers.get_PTREE_metadata
   //console.log(PROJECT_INFORMATION_BY_PID)
-
-  //console.log(prj_obj,filter_obj)
+    //console.log('IN FilterProjects')
+    //console.log(prj_obj, filter_obj)
 
   // SUBSTRING
   var NewPROJECT_TREE_OBJ1 = []
+  
   if(filter_obj.substring == '' || filter_obj.substring === '.....'){
       NewPROJECT_TREE_OBJ1 = prj_obj
   }else{
-      
+      //console.log('Filtering for SUBSTRING')
       prj_obj.forEach(function(prj) {
         if(prj.hasOwnProperty('name')){
           ucname = prj.name.toUpperCase();
@@ -1266,7 +1275,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   if(filter_obj.env.length == 0 || filter_obj.env[0] === '.....'){  // should ALWAYS BE A LIST
     NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1
   }else{
-
+        //console.log('Filtering for ENV')
         NewPROJECT_TREE_OBJ1.forEach(function(prj) {
           if(filter_obj.env.indexOf(parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id)) != -1){
             NewPROJECT_TREE_OBJ2.push(prj);
@@ -1280,7 +1289,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   if(filter_obj.target == '' || filter_obj.target === '.....'){
       NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2
   }else{
-      
+      //console.log('Filtering for TARGET')
       NewPROJECT_TREE_OBJ2.forEach(function(prj) {
         if(prj.hasOwnProperty('name')){
           pparts = prj.name.split('_');
@@ -1301,7 +1310,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   if(filter_obj.portal == '' || filter_obj.portal === '.....'){
       NewPROJECT_TREE_OBJ4 = NewPROJECT_TREE_OBJ3
   }else{
-        
+        //console.log('Filtering for PORTAL')
         portal = req.CONSTS.PORTALS[filter_obj.portal]
         NewPROJECT_TREE_OBJ3.forEach(function(prj) {
           if(prj.hasOwnProperty('name')){
@@ -1311,9 +1320,11 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
           }
           pparts = pname.split('_');
           prefix = pparts[0]
-          if(portal.prefixes.indexOf(prefix) != -1 || portal.projects.indexOf(pname) != -1){
+          suffix = pparts[pparts.length - 1]
+          if(portal.prefixes.indexOf(prefix) != -1 || portal.projects.indexOf(pname) != -1 || portal.suffixes.indexOf(suffix) != -1){
             NewPROJECT_TREE_OBJ4.push(prj);
           }
+          
         });
 
   }
@@ -1323,7 +1334,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   if(filter_obj.public == '-1'){
       NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4
   }else{
-      
+      //console.log('Filtering for PRIVACY')
       NewPROJECT_TREE_OBJ4.forEach(function(prj) {
            if(PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public)){
              NewPROJECT_TREE_OBJ5.push(prj);
@@ -1336,7 +1347,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   if(filter_obj.metadata == '' || filter_obj.metadata === '.....'){
       NewPROJECT_TREE_OBJ6 = NewPROJECT_TREE_OBJ5
   }else{
-
+        //console.log('Filtering for METADATA')
       NewPROJECT_TREE_OBJ6 = module.exports.get_PTREE_metadata(NewPROJECT_TREE_OBJ5, filter_obj.metadata)
       //NewPROJECT_TREE_OBJ6 = NewPROJECT_TREE_OBJ5
 

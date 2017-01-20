@@ -46,32 +46,26 @@ var infile_fa = "infile.fna";
 // YOUR DATA
 //
 router.get('/your_data', helpers.isLoggedIn, function get_your_data(req, res) {
-  console.log('in your data, req.user = ');
-  console.log(req.user);
-  // Should create empty directory for any user projects
-  // that are in database BUT NOT in PROJECT_INFORMATION_BY_PID
-  // this will allow adding to or deleteing theese empty projects.
-  
-  connection.query(queries.get_projects_queryUID(req.user.user_id), function (err, rows, fields) {
-  
+    console.log('in your data, req.user = ');
+    console.log(req.user);
+    // Should create empty directory for any user projects
+    // that are in database BUT NOT in PROJECT_INFORMATION_BY_PID
+    // this will allow adding to or deleteing these empty projects.
+    console.log(PROJECT_INFORMATION_BY_PNAME['seek'])
+    connection.query(queries.get_projects_queryUID(req.user.user_id), function (err, rows, fields) {
         for(n in rows){
-            //console.log(n, rows[n])
             pid = rows[n].project_id
-            //if(PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid)){
-                console.log('got',rows[n].project)
-                var dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+rows[n].project);
-                if(! helpers.fileExists(dir)){
-                    helpers.mkdirSync(dir);
-                }
-            //}
+            var dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+rows[n].project);
+            if(! helpers.fileExists(dir)){
+                 helpers.mkdirSync(dir);
+            }
         }
-  });
-  
-      res.render('user_data/your_data', {
+    });
+    res.render('user_data/your_data', {
         title: 'VAMPS:Data Administration',
         user: req.user, hostname: req.CONFIG.hostname,
-        message: req.flash('message'),
-      });
+        message: req.flash('message')
+    });
 });
 
 //
@@ -765,8 +759,8 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
       res.redirect("/user_data/your_projects");
       return;
     }
-    console.log("options.args.join(' ')");
-    console.log(options.args.join(' '));
+    //console.log("options.args.join(' ')");
+    //console.log(options.args.join(' '));
 
     var log = fs.openSync(path.join(process.env.PWD, 'logs', 'delete.log'), 'a');
 
@@ -827,6 +821,8 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
               res.send(err);
             } else {
               console.log('moved project_dir to DELETED_project_dir');
+              console.log('From: '+data_dir);
+              console.log('To: '+deleted_data_dir);
               req.flash('successMessage', msg);
               res.redirect("/user_data/your_projects");
               return;
@@ -1300,11 +1296,15 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
         project_info[p].status = {
                 'in_global_obj':'true',
                 'empty_dir':'unknown',
-                'ds_count':DATASET_IDS_BY_PID[pid].length, 
-                'seq_count':ALL_PCOUNTS_BY_PID[pid],
-                'taxonomy':'Taxonomic Data Available'
-                
-                };
+                'ds_count':DATASET_IDS_BY_PID[pid].length               
+        };
+        if(DATASET_IDS_BY_PID[pid].length == 0){
+            project_info[p].status.taxonomy = 'No Datasets'
+            project_info[p].status.seq_count = 0
+        }else{
+            project_info[p].status.taxonomy = 'Taxonomic Data Available'
+            project_info[p].status.seq_count = ALL_PCOUNTS_BY_PID[pid]
+        }
         pnames.push(p);
     }
   }
@@ -2620,7 +2620,6 @@ router.post('/add_project',
   [helpers.isLoggedIn],
   form(
     form.field("new_project_name", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
-    form.field("new_env_source_id", "ENV Source").trim().required().isInt(),
     form.field("new_privacy", "Public").trim().required().is(/False|True/),
     form.field("new_project_title", "Title").trim().required().entityEncode().maxLength(100),
     form.field("new_project_description", "Description").trim().required().entityEncode().maxLength(255),

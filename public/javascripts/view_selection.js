@@ -84,7 +84,7 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
           html += "</tr><tr>";
           html += "<td>"+id_items[2]+"</td>";
           html += "</tr><tr>";
-          html += "<td>Distance: "+id_items[3]+"</td>";
+          html += "<td>Distance: "+id_items[3]+":"+id_items[4]+"</td>";
         }else if(id_items[0] == 'frequencies'){
           html += "<td>"+id_items[1]+"</td>";
           html += "</tr><tr>";
@@ -542,11 +542,11 @@ function create_counts_matrix(new_window, show_nas) {
       
       }
 
-      html += "<th class='right_justify' valign='bottom'><small>Total</small></th>";
-      html += "<th class='right_justify' valign='bottom'><small>Average</small></th>";
-      html += "<th class='right_justify' valign='bottom'><small>Min</small></th>";
-      html += "<th class='right_justify' valign='bottom'><small>Max</small></th>";
-      html += "<th class='right_justify' valign='bottom'><small>Std Dev</small></th>";
+      html += "<th class='center' valign='bottom'><small>Total</small></th>";
+      html += "<th class='center' valign='bottom'><small>Avg</small></th>";
+      html += "<th class='center' valign='bottom'><small>Min</small></th>";
+      html += "<th class='center' valign='bottom'><small>Max</small></th>";
+      html += "<th class='center' valign='bottom'><small>Std Dev</small></th>";
 
       html += "</tr>";
       // END OF TITLE ROW
@@ -617,15 +617,13 @@ function create_counts_matrix(new_window, show_nas) {
         }
         
         
-        
-        
         avg = (tot/(mtx_local.columns).length).toFixed(2)
         sd = standardDeviation(mtx_local.data[i]).toFixed(2)
         html += "<td title='Total' class='right_justify tax_result'><small>"+tot.toString()+'</small></td>';
         html += "<td title='Average' class='right_justify tax_result'><small>"+avg.toString()+"</small></td>";
-        html += "<td title='Min' class='right_justify tax_result'><small>"+min.toString()+"</small></td>";
-        html += "<td title='Max' class='right_justify tax_result'><small>"+max.toString()+"</small></td>";
-        html += "<td title='Std Deviation' class='right_justify tax_result'><small>"+sd.toString()+"</small></td>";
+        html += "<td title='Minimum' class='right_justify tax_result'><small>"+min.toString()+"</small></td>";
+        html += "<td title='Maximum' class='right_justify tax_result'><small>"+max.toString()+"</small></td>";
+        html += "<td title='Standard Deviation' class='right_justify tax_result'><small>"+sd.toString()+"</small></td>";
         html += "</tr>";
       }
       // TOTALS

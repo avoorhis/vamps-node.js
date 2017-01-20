@@ -696,10 +696,11 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
             }else{
               console.log(stdout)
             }
-            distance_matrix = JSON.parse(stdout);
+            //distance_matrix = JSON.parse(stdout);
+            distance_matrix = stdout;
           }
           catch(err){
-            distance_matrix = {'ERROR':err};
+            distance_matrix = JSON.stringify({'ERROR':err});
           }
             res.render('visuals/partials/create_distance_heatmap',{
                   dm        : distance_matrix,
@@ -2774,10 +2775,12 @@ router.get('/livesearch_portal/:portal', function(req, res) {
   }else{
     var projects_to_filter = SHOW_DATA.projects
   }
+  //console.log(PROJECT_FILTER)
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, SHOW_DATA.projects, PROJECT_FILTER)
+  //console.log(NewPROJECT_TREE_OBJ)
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length
-  console.log(PROJECT_FILTER)
+  //console.log(PROJECT_FILTER)
   res.json(PROJECT_FILTER);
 
 });
@@ -2921,8 +2924,8 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
 
     if(id==0){
-        //console.log(PROJECT_INFORMATION_BY_PID)
-
+        console.log(PROJECT_INFORMATION_BY_PID[56])
+        console.log(DATASET_IDS_BY_PID[56])
         for( i=0;i<PROJECT_TREE_PIDS.length;i++ ){
 
             var pid = PROJECT_TREE_PIDS[i];
@@ -2938,9 +2941,9 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
             var itemtext = "<span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>"+node.project+"</span>";
             itemtext    += " <a href='/projects/"+pid_str+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
             if(node.public) {
-              itemtext += "<small> <i>(public)</i></small>"
+                itemtext += "<small> <i>(public)</i></small>"
             }else{
-                itemtext += "<small> <i>(PI: "+node.username +")</i></small>"
+                itemtext += "<a href='/users/"+ node.oid+"'><small> <i>(PI: "+node.username +")</i></small></a>"
             }
 
             if(Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
