@@ -1,6 +1,7 @@
 // config/passport.js
 // load all the things we need
 var helpers = require('../routes/helpers/helpers');
+var queries = require('../routes/queries_admin');
 var LocalStrategy = require('passport-local').Strategy;
 //var bcrypt        = require('bcrypt-nodejs');
 
@@ -32,7 +33,7 @@ module.exports = function(passport, db) {
 
     // used to deserialize the user
     passport.deserializeUser(function(id, done) {
-        db.query("select * from user where user_id = "+id, function(err, rows){
+        db.query(queries.get_user_by_uid(id), function(err, rows){
           done(err, rows[0]);
         });
     });
@@ -115,8 +116,8 @@ function validatePassword(entered_pw, database_pw) {
     return false;
 }
 function reset_password_auth(req, username, password, newpass, done, db){
-    db.query("SELECT user_id, username, email, institution,  active, security_level, encrypted_password \
-             FROM user WHERE username = '" + username + "'",function(err,rows){
+    var qSelectUser = queries.get_user_by_name(username)
+    db.query(qSelectUser, function(err,rows){
         if (err)
             { return done(null, false, { message: err }); }
         if (!rows.length) {
@@ -148,9 +149,10 @@ function reset_password_auth(req, username, password, newpass, done, db){
 
 }
 function login_auth_user(req, username, password, done, db){
-    db.query("SELECT user_id, username, email, institution, first_name, last_name, active, security_level, \
-             encrypted_password, sign_in_count, DATE_FORMAT(current_sign_in_at,'%Y-%m-%d %T') as current_sign_in_at,last_sign_in_at \
-             FROM user WHERE username = '" + username + "'",function(err,rows){
+   
+    var qSelectUser = queries.get_user_by_name(username)
+  
+    db.query(qSelectUser, function(err,rows){
         if (err)
             //return done(err);
             { return done(null, false, { message: err }); }
@@ -167,9 +169,10 @@ function login_auth_user(req, username, password, done, db){
         if ( validatePassword(password, rows[0].encrypted_password) )
         { 
             var new_count = parseInt(rows[0].sign_in_count) + 1;            
-            var q = "update user set sign_in_count='"+new_count+"', current_sign_in_at=CURRENT_TIMESTAMP(), last_sign_in_at='"+rows[0].current_sign_in_at+"' where user_id='"+rows[0].user_id+"'"
+            var qResetUserSignin = queries.reset_user_signin(new_count, rows[0].current_sign_in_at, rows[0].user_id)
+            //var q = "update user set sign_in_count='"+new_count+"', current_sign_in_at=CURRENT_TIMESTAMP(), last_sign_in_at='"+rows[0].current_sign_in_at+"' where user_id='"+rows[0].user_id+"'"
             //console.log(q);
-            db.query(q,function(err,rows){
+            db.query(qResetUserSignin, function(err,rows){
                 if (err){ console.log(err); }
             });
 
@@ -221,7 +224,7 @@ function signup_user(req, username, password, done, db){
         return done(null, false, req.flash('message', 'The Institution name is required.'));
     }
 
-    db.query("select * from user where username = '"+username+"'",function(err,select_rows){
+    db.query(queries.get_user_by_name(username), function(err,select_rows){
             if (err) {
               return done(null, false, req.flash( 'message', err ));
             }
@@ -242,17 +245,8 @@ function signup_user(req, username, password, done, db){
                 newUserMysql.security_level = 50;  //reg user
                 
                 // todo: why this is in two places? See routes/routes_admin.js:552
-                var insertQuery = "INSERT INTO user (username, encrypted_password, first_name, last_name, email, institution, active, sign_in_count, current_sign_in_at,last_sign_in_at)";
-                insertQuery +=    " VALUES ('" + username +"', '"+ 
-                                    newUserMysql.password +"', '"+ 
-                                    newUserMysql.firstname +"', '"+ 
-                                    newUserMysql.lastname +"', '"+ 
-                                    newUserMysql.email +"', '"+ 
-                                    newUserMysql.institution +"',"+
-                                    " 1,"+
-                                    " 1,"+
-                                    " CURRENT_TIMESTAMP(), "+
-                                    " CURRENT_TIMESTAMP() )";
+                
+                var insertQuery = queries.insert_new_user(username, password, first, last, email, inst)
                 
                 db.query(insertQuery,function(err,insert_rows){ 
                     if(err){  // error usually if contact-email-inst index is not unique
@@ -354,7 +348,8 @@ var delete_previous_tmp_files = function(req, username){
 //     }
 // };
 var update_password = function(req, username, newpass, done, db) {
-    db.query("UPDATE user set encrypted_password='"+helpers.generateHash(newpass)+"' WHERE username = '" + username + "'",function(err,rows){
+    
+    db.query(queries.reset_user_password_by_uname(newpass,username), function(err,rows){
         if (err){ 
             return done(null, false, { message: err }); 
         }else{

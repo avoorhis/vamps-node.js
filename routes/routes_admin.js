@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var helpers = require('./helpers/helpers');
-var queries = require('./queries');
+//var queries = require('./queries');
+var queries = require('./queries_admin');
 var config  = require(app_root + '/config/config');
 var fs      = require('fs-extra');
 var path      = require('path');
@@ -96,8 +97,8 @@ router.post('/public_update', [helpers.isLoggedIn, helpers.isAdmin], function(re
    //console.log(selected_pid,' ',new_public)
    response = 'no'
    if(new_public !== PROJECT_INFORMATION_BY_PID[selected_pid].public){
-      q = "UPDATE project set public='"+new_public+"' WHERE project_id='"+selected_pid+"'";
-
+      //q = "UPDATE project set public='"+new_public+"' WHERE project_id='"+selected_pid+"'";
+      q = queries.alter_project_public(new_public, selected_pid)
       if(new_public === 1){
             PROJECT_INFORMATION_BY_PID[selected_pid].public = 1;
             PROJECT_INFORMATION_BY_PID[selected_pid].permissions = [];
@@ -146,7 +147,7 @@ router.post('/admin_update', [helpers.isLoggedIn, helpers.isAdmin], function(req
    //console.log(selected_pid,' ',new_public)
    response = 'no'
    if(new_status !== ALL_USERS_BY_UID[selected_uid].status){
-      q = "UPDATE user set security_level='"+new_status+"' WHERE user_id='"+selected_uid+"'";
+      q = queries.alter_security_level(new_status, selected_uid)  //"UPDATE user set security_level='"+new_status+"' WHERE user_id='"+selected_uid+"'";
 
       if(new_status === 1){
             ALL_USERS_BY_UID[selected_uid].status = 1;
@@ -406,79 +407,71 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], funct
   var item_to_update = req.body.item;
   var value = req.body.value;
   var pid = req.body.pid;
-  var q = "UPDATE project set";
+  var q;
 
-  console.log(ALL_DATASETS);
-  console.log(typeof ALL_DATASETS);
+  //console.log(ALL_DATASETS);
+  //console.log(typeof ALL_DATASETS);
 
   switch(item_to_update){
       case 'pname':
-          new_project_name = value;
-          var rev_pname = helpers.reverse(new_project_name);
-          var old_project_name = PROJECT_INFORMATION_BY_PID[pid].project;
-          PROJECT_INFORMATION_BY_PID[pid].project     = new_project_name;
-          delete PROJECT_INFORMATION_BY_PNAME[old_project_name];
-          PROJECT_INFORMATION_BY_PNAME[new_project_name] = PROJECT_INFORMATION_BY_PID[pid];
-          ALL_DATASETS.projects.forEach(function(prj) {
+            new_project_name = value;
+            var rev_pname = helpers.reverse(new_project_name);
+            var old_project_name = PROJECT_INFORMATION_BY_PID[pid].project;
+            PROJECT_INFORMATION_BY_PID[pid].project     = new_project_name;
+            delete PROJECT_INFORMATION_BY_PNAME[old_project_name];
+            PROJECT_INFORMATION_BY_PNAME[new_project_name] = PROJECT_INFORMATION_BY_PID[pid];
+            ALL_DATASETS.projects.forEach(function(prj) {
               if(prj.pid == pid){
                 prj.name = new_project_name;
               }
-          });
-
-
-
-          q += " project='"+new_project_name+"', rev_project_name='"+rev_pname+"' ";
-          break;
+            });
+            q = queries.update_project_info(item_to_update, new_project_name, pid)
+            break;
 
       case 'powner':
-          new_owner_id = value;
-          PROJECT_INFORMATION_BY_PID[pid].last        = ALL_USERS_BY_UID[new_owner_id].last_name;
-          PROJECT_INFORMATION_BY_PID[pid].first       = ALL_USERS_BY_UID[new_owner_id].first_name;
-          PROJECT_INFORMATION_BY_PID[pid].username    = ALL_USERS_BY_UID[new_owner_id].username;
-          PROJECT_INFORMATION_BY_PID[pid].email       = ALL_USERS_BY_UID[new_owner_id].email;
-          PROJECT_INFORMATION_BY_PID[pid].institution = ALL_USERS_BY_UID[new_owner_id].institution;
-          PROJECT_INFORMATION_BY_PID[pid].oid         = new_owner_id;
-          q += " owner_user_id='"+new_owner_id+"'" ;
-          break;
+            new_owner_id = value;
+            PROJECT_INFORMATION_BY_PID[pid].last        = ALL_USERS_BY_UID[new_owner_id].last_name;
+            PROJECT_INFORMATION_BY_PID[pid].first       = ALL_USERS_BY_UID[new_owner_id].first_name;
+            PROJECT_INFORMATION_BY_PID[pid].username    = ALL_USERS_BY_UID[new_owner_id].username;
+            PROJECT_INFORMATION_BY_PID[pid].email       = ALL_USERS_BY_UID[new_owner_id].email;
+            PROJECT_INFORMATION_BY_PID[pid].institution = ALL_USERS_BY_UID[new_owner_id].institution;
+            PROJECT_INFORMATION_BY_PID[pid].oid         = new_owner_id;
+            q = queries.update_project_info(item_to_update, new_owner_id, pid)
+            break;
 
       case 'ptitle':
-          new_project_title = value;
-          PROJECT_INFORMATION_BY_PID[pid].title       = new_project_title;
-          ALL_DATASETS.projects.forEach(function(prj) {
+            new_project_title = value;
+            PROJECT_INFORMATION_BY_PID[pid].title       = new_project_title;
+            ALL_DATASETS.projects.forEach(function(prj) {
               if(prj.pid == pid){
                 prj.title = new_project_title;
               }
-          });
-          q += " title='"+new_project_title+"'";
-          break;
+            });
+            q = queries.update_project_info(item_to_update, new_project_title, pid)
+            break;
 
       case 'pdesc':
-          new_project_desc = value;
-          PROJECT_INFORMATION_BY_PID[pid].description = new_project_desc;
-          q += " project_description='"+new_project_desc+"'";
+            new_project_desc = value;
+            PROJECT_INFORMATION_BY_PID[pid].description = new_project_desc;
+            q += " project_description='"+new_project_desc+"'";
+            q = queries.update_project_info(item_to_update, new_project_desc, pid)
           break;
 
       default:
           console.log('ERROR in update_project_info');
 
     }
-    q += " WHERE project_id='"+pid+"'";
 
     console.log(q);
     connection.query(q, function(err, rows, fields){
-        //console.log(qSequenceCounts)
             if (err)  {
               console.log('Query error: ' + err);
               response = 'Query error: ' + err;
             }else{
               response = 'Successfully updated';
-
             }
-
             res.send(response);
-
     });
-
 
 });
 //
@@ -493,8 +486,6 @@ router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], function(req
       // 1-add to PROJECT_INFORMATION_BY_PID[selected_pid]
 
       if(selected_pid in PROJECT_INFORMATION_BY_PID){
-        //console.log(PROJECT_INFORMATION_BY_PID[selected_pid].permissions)
-        //console.log(PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(parseInt(selected_uid)))
         if(PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(parseInt(selected_uid)) === -1){
             PROJECT_INFORMATION_BY_PID[selected_pid].permissions.push(parseInt(selected_uid))
             //console.log('11111')
@@ -532,6 +523,56 @@ router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], function(req
 //
 //
 //
+router.get('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+    console.log('in delete_user GET ADMIN')
+    //console.log(JSON.stringify(ALL_USERS_BY_UID))
+    // set active to 0 in user table
+    // results on login attempt:  That account is inactive -- send email to vamps.mbl.edu to request re-activation.
+    // also delete from ALL_USERS_BY_UID
+    user_order = get_name_ordered_users_list()
+    res.render('admin/inactivate_user', {
+              title     :'VAMPS Inactivate User',
+              message   : req.flash('message'),
+              user: req.user,
+              user_info: JSON.stringify(user_order),
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+            });
+});
+router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+    console.log('in delete_user POST ADMIN')
+    // set active to 0 in user table
+    // results on login attempt:  That account is inactive -- send email to vamps.mbl.edu to request re-activation.
+    // also delete from ALL_USERS_BY_UID
+    uid_to_delete = req.body.user_id;
+            
+    var finish = function(){
+      res.render('admin/inactivate_user', {
+              title     :'VAMPS Inactivate User',
+              message   : req.flash('message'),
+              user: req.user,
+              user_info: JSON.stringify(ALL_USERS_BY_UID),
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+            });
+
+    };
+    if(uid_to_delete == 0){
+        req.flash('message', 'FAILED: Got a UID of zero!');
+    }else if(uid_to_delete == req.user.user_id){ 
+        req.flash('message', 'FAILED: You cannot inactivate yourself!');
+    }else{       
+        delete ALL_USERS_BY_UID[uid_to_delete]
+        req.db.query(queries.inactivate_user(uid_to_delete), function(err, rows){
+          if (err) {
+              req.flash('message', 'FAILED: sql error '+err);
+          }else{
+              req.flash('message', 'Inactivate Success ( uid: '+uid+' )');
+          }
+            finish();
+        });
+        return;
+    }
+    finish();
+});
 router.get('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
     console.log('in new_user GET ADMIN')
 
@@ -583,7 +624,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
 
 
 
-        req.db.query("select * from user where username = '"+username+"'",function(err,rows){
+        req.db.query(queries.get_user_by_name(username), function(err,rows){
                 if (err) {
                   return done(null, false, { message: err });
                 }
@@ -591,18 +632,8 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
                     //console.log('That username is already taken.');
                     return done(null, false, req.flash('message', 'That username is already taken.'));
                 } else {
-
-                    var insertQuery = "INSERT INTO user (username, encrypted_password, first_name, last_name, email, institution, active, sign_in_count, current_sign_in_at, last_sign_in_at)";
-                    insertQuery +=    " VALUES ('" + username +"', '"+
-                                        helpers.generateHash(password) +"', '"+
-                                        first +"', '"+
-                                        last +"', '"+
-                                        email +"', '"+
-                                        inst +"',"+
-                                        " 1,"+
-                                        " 1,"+
-                                        " CURRENT_TIMESTAMP(), "+
-                                        " CURRENT_TIMESTAMP() )";
+                    var insertQuery = queries.insert_new_user(username, password, first, last, email, inst)
+                  
 
                     console.log(insertQuery);
                     req.db.query(insertQuery, function(err,rows){
@@ -661,7 +692,7 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], funct
         req.flash('message', 'FAILED: You must select a user.');
     }else{
 
-        var updateQuery = "UPDATE user set encrypted_password='"+helpers.generateHash(password)+"' where user_id='"+uid+"'";
+        var updateQuery = queries.reset_user_password_by_uid(password, uid)
         console.log(updateQuery);
         req.db.query(updateQuery, function(err,rows){
           if (err) {

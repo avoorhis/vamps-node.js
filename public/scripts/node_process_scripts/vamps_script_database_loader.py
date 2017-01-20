@@ -145,9 +145,9 @@ def start(args):
         print "recreating ranks"
         recreate_ranks()
     
-        logging.info("env sources")
-        print "env sources"
-        create_env_source()
+        #logging.info("env sources")
+        #print "env sources"
+        #create_env_source()
     
         logging.info("classifier")
         print "classifier"
@@ -216,11 +216,11 @@ def check_project():
         return ('ERROR','Duplicate project name1 '+q)
     return ('OK','')
            
-def create_env_source():
-    global mysql_conn, cur
-    q = "INSERT IGNORE INTO env_sample_source VALUES (0,''),(10,'air'),(20,'extreme habitat'),(30,'host associated'),(40,'human associated'),(45,'human-amniotic-fluid'),(47,'human-blood'),(43,'human-gut'),(42,'human-oral'),(41,'human-skin'),(46,'human-urine'),(44,'human-vaginal'),(140,'indoor'),(50,'microbial mat/biofilm'),(60,'miscellaneous_natural_or_artificial_environment'),(70,'plant associated'),(80,'sediment'),(90,'soil/sand'),(100,'unknown'),(110,'wastewater/sludge'),(120,'water-freshwater'),(130,'water-marine')"
-    cur.execute(q)
-    mysql_conn.commit()
+# def create_env_source():
+#     global mysql_conn, cur
+#     q = "INSERT IGNORE INTO env_sample_source VALUES (0,''),(10,'air'),(20,'extreme habitat'),(30,'host associated'),(40,'human associated'),(45,'human-amniotic-fluid'),(47,'human-blood'),(43,'human-gut'),(42,'human-oral'),(41,'human-skin'),(46,'human-urine'),(44,'human-vaginal'),(140,'indoor'),(50,'microbial mat/biofilm'),(60,'miscellaneous_natural_or_artificial_environment'),(70,'plant associated'),(80,'sediment'),(90,'soil/sand'),(100,'unknown'),(110,'wastewater/sludge'),(120,'water-freshwater'),(130,'water-marine')"
+#     cur.execute(q)
+#     mysql_conn.commit()
 
 def create_classifier():
     global mysql_conn, cur
@@ -288,14 +288,14 @@ def push_dataset():
     global CONFIG_ITEMS    
     global DATASET_ID_BY_NAME
     global mysql_conn, cur
-    fields = ['dataset','dataset_description','env_sample_source_id','project_id']
+    fields = ['dataset','dataset_description','project_id']
     q = "INSERT into dataset ("+(',').join(fields)+")"
-    q += " VALUES('%s','%s','%s','%s')"
+    q += " VALUES('%s','%s','%s')"
 
     for ds in CONFIG_ITEMS['datasets']:
         desc = ds+'_description'
-        #print ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id']
-        q4 = q % (ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id'])
+        
+        q4 = q % (ds, desc, CONFIG_ITEMS['project_id'])
         logging.info(q4)
         print q4
         #try:
@@ -391,13 +391,10 @@ def push_sequences(args):
             cur.execute(q)
             mysql_conn.commit()
             silva_tax_seq_id = cur.lastrowid
-            if seqid == 0:
+            if silva_tax_seq_id == 0:
                 q3 = "select silva_taxonomy_info_per_seq_id from silva_taxonomy_info_per_seq"
                 q3 += " where sequence_id = '"+seqid+"'"
-                q3 += " and silva_taxonomy_id = '"+silva_tax_id+"'"
-                if args.classifier == 'gast':
-                    q3 += " and gast_distance = '"+distance+"'"
-                q3 += " and rank_id = '"+rank_id+"'"
+                
                 #print 'DUP silva_tax_seq'
                 cur.execute(q3)
                 mysql_conn.commit() 

@@ -98,7 +98,10 @@ strain_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_
 strain_queryB = " WHERE dataset_id in ('%s')"
 strain_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
 
-required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"];
+#required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"];
+required_metadata_fields = [ "taxon_id", "description", "common_name", "altitude", "assigned_from_geo", "collection_date", "depth", "elevation", "env_biome_id", "latitude", "longitude", "fragment_name_id", "dna_region_id", "sequencing_platform_id", "domain_id", "country_id", "env_feature_id","env_matter_id","env_package_id"]
+
+
 req_query = "SELECT dataset_id, "+','.join(required_metadata_fields)+" from required_metadata_info WHERE dataset_id in ('%s')"
 cust_pquery = "SELECT project_id,field_name from custom_metadata_fields WHERE project_id = '%s'"
 
@@ -144,7 +147,9 @@ def go_list(args):
     cur.execute(q)
     #print 'List of projects in: '+in_file
     projects = {}
-    missing = {}
+    missing_bulk_silva119 = {}
+    missing_files = {}
+    
     missing_metadata = {}
     for row in cur.fetchall():
         did = str(row[0])
@@ -154,17 +159,17 @@ def go_list(args):
         if did not in metadata_dids:
             missing_metadata[project] = pid
         if did not in file_dids:
-            missing[project] = pid
+            missing_files[project] = pid
         if args.units == 'silva119':
             file_path = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets_silva119',did+'.json')
             #file_path = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets',did+'.json')
             if not os.path.isfile(file_path):
-                missing[project] = pid
+                missing_bulk_silva119[project] = pid
         #print 'project:',row[0],' --project_id:',row[1]
     sort_p = sorted(projects.keys())
     print 'UNITS:',args.units
     for project in sort_p:  
-        if project not in missing:
+        if project not in missing_files and project not in missing_bulk_silva119:
             print 'ID:',projects[project],"-",project
         num += 1
     print
@@ -173,17 +178,22 @@ def go_list(args):
     for project in sort_md:
         print 'ID:',missing_metadata[project],"project:",project
     print
-    print args.units,'MISSING from taxcount(silva119 only) or json(silva119 or rdp2.6) files:'
-    sort_m = sorted(missing.keys())
-    for project in sort_m:
-        print 'ID:',missing[project],"project:",project
-    print
     
+    print args.units,'MISSING from taxcount(silva119 only) bulk file:'
+    sort_m = sorted(missing_bulk_silva119.keys())
+    for project in sort_m:
+        print 'ID:',missing_bulk_silva119[project],"project:",project
+    print
+    print args.units,'MISSING '+args.units+' files:'
+    sort_m = sorted(missing_files.keys())
+    for project in sort_m:
+        print 'ID:',missing_files[project],"project:",project
+    print
     print 'Number of Projects:',num
     
 
     
-def go_add(NODE_DATABASE, pid):
+def go_add(NODE_DATABASE, pids_str):
     from random import randrange
     counts_lookup = {}
     if args.units == 'silva119':
@@ -194,65 +204,75 @@ def go_add(NODE_DATABASE, pid):
     if not os.path.exists(prefix):
         os.makedirs(prefix)
     print prefix
-    dids = get_dataset_ids(pid) 
-    # delete old did files if any
-    for did in dids:        
-        pth = os.path.join(prefix,did+'.json')
-        try:            
-            os.remove(pth)
-        except:
-            pass
-    did_sql = "','".join(dids)
-    #print counts_lookup
-    for q in queries:
-        if args.units == 'rdp2.6':
-            query = q["queryA"] + query_coreA + query_core_join_rdp + q["queryB"] % (did_sql)
-        elif args.units == 'silva119':
-            query = q["queryA"] + query_coreA + query_core_join_silva119 + q["queryB"] % (did_sql)
-        print query
+    all_dids = []
+    metadata_lookup = {}
+    pid_list = pids_str.split(',')
+    for pid in pid_list:
+        dids = get_dataset_ids(pid) 
+        all_dids += dids
+        # delete old did files if any
+        for did in dids:        
+            pth = os.path.join(prefix,did+'.json')
+            try:            
+                os.remove(pth)
+            except:
+                pass
+        did_sql = "','".join(dids)
+        #print counts_lookup
+        for q in queries:
+            if args.units == 'rdp2.6':
+                query = q["queryA"] + query_coreA + query_core_join_rdp + q["queryB"] % (did_sql)
+            elif args.units == 'silva119':
+                query = q["queryA"] + query_coreA + query_core_join_silva119 + q["queryB"] % (did_sql)
+            print 'PID =',pid
+            print query
 
-        dirs = []
-        cur.execute(query)
-        for row in cur.fetchall():
-            #print row
-            count = int(row[0])
-            did = str(row[1])
-            # if args.separate_taxcounts_files:
-           #      dir = prefix + str(ds_id)
-           #
-           #      if not os.path.isdir(dir):
-           #          os.mkdir(dir)
+            dirs = []
+            cur.execute(query)
+            for row in cur.fetchall():
+                #print row
+                count = int(row[0])
+                did = str(row[1])
+                # if args.separate_taxcounts_files:
+               #      dir = prefix + str(ds_id)
+               #
+               #      if not os.path.isdir(dir):
+               #          os.mkdir(dir)
                 
-            #tax_id = row[2]
-            #rank = q["rank"]
-            tax_id_str = ''
-            for k in range(2,len(row)):
-                tax_id_str += '_' + str(row[k])
-            #print 'tax_id_str',tax_id_str
-            if did in counts_lookup:
-                #sys.exit('We should not be here - Exiting')
-                if tax_id_str in counts_lookup[did]:
-                    sys.exit('We should not be here - Exiting')
-                else:
-                    counts_lookup[did][tax_id_str] = count
+                #tax_id = row[2]
+                #rank = q["rank"]
+                tax_id_str = ''
+                for k in range(2,len(row)):
+                    tax_id_str += '_' + str(row[k])
+                #print 'tax_id_str',tax_id_str
+                if did in counts_lookup:
+                    #sys.exit('We should not be here - Exiting')
+                    if tax_id_str in counts_lookup[did]:
+                        sys.exit('We should not be here - Exiting')
+                    else:
+                        counts_lookup[did][tax_id_str] = count
                     
-            else:
-                counts_lookup[did] = {}
-                counts_lookup[did][tax_id_str] = count
+                else:
+                    counts_lookup[did] = {}
+                    counts_lookup[did][tax_id_str] = count
     
-
-    metadata_lookup = go_required_metadata(did_sql)
-    metadata_lookup = go_custom_metadata(dids, pid, metadata_lookup)
+        metadata_lookup = go_custom_metadata(dids, pid, metadata_lookup)
     
-    write_json_files(prefix, metadata_lookup, counts_lookup)
+    print('all_dids')
+    print(all_dids)
+    all_did_sql = "','".join(all_dids)
+    metadata_lookup = go_required_metadata(all_did_sql,metadata_lookup)
+    
+    
+    write_json_files(prefix, all_dids, metadata_lookup, counts_lookup)
     
     rando = randrange(10000,99999)
-    write_all_metadata_file(metadata_lookup,rando)
+    write_all_metadata_file(metadata_lookup, rando)
     
     # only write here for default taxonomy: silva119
     if args.units == 'silva119':
-        write_all_taxcounts_file(counts_lookup,rando)
-    # print 'DONE (must now move file into place)'
+        write_all_taxcounts_file(counts_lookup, rando)
+    
 
 def write_all_metadata_file(metadata_lookup,rando):
     original_metadata_lookup = read_original_metadata()
@@ -293,7 +313,7 @@ def write_all_taxcounts_file(counts_lookup,rando):
     f.write(json_str+"\n")
     f.close()
       
-def write_json_files(prefix, metadata_lookup, counts_lookup):
+def write_json_files(prefix, dids, metadata_lookup, counts_lookup):
     #json_str = json.dumps(counts_lookup)    
     # print('Re-Writing JSON file (REMEMBER to move new file to ../json/)')
     # f = open(outfile,'w')
@@ -306,12 +326,16 @@ def write_json_files(prefix, metadata_lookup, counts_lookup):
 #         print mystr
 #         f.write('{"'+str(did)+'":'+mystr+"}\n")
 #         f.close()
-     for did in counts_lookup:
+     for did in dids:
          file_path = os.path.join(prefix,str(did)+'.json')
+         print 'writing',file_path
          f = open(file_path,'w') 
          #print
          #print did, counts_lookup[did]
-         my_counts_str = json.dumps(counts_lookup[did]) 
+         if did in counts_lookup:
+            my_counts_str = json.dumps(counts_lookup[did]) 
+         else:
+            my_counts_str = json.dumps({}) 
          if did in metadata_lookup:
              try:
                 my_metadata_str = json.dumps(metadata_lookup[did])
@@ -323,14 +347,15 @@ def write_json_files(prefix, metadata_lookup, counts_lookup):
          #f.write('{"'+str(did)+'":'+mystr+"}\n") 
          f.write('{"taxcounts":'+my_counts_str+',"metadata":'+my_metadata_str+'}'+"\n")
          f.close()   
-def go_required_metadata(did_sql):
+def go_required_metadata(did_sql, metadata_lookup):
     """
         metadata_lookup_per_dsid[dsid][metadataName] = value            
 
     """
     
-    req_metadata_lookup = {}
+    
     query = req_query % (did_sql)
+    print(query)
     cur.execute(query)
     for row in cur.fetchall():
         did = str(row[0])
@@ -338,18 +363,18 @@ def go_required_metadata(did_sql):
             #print i,did,name,row[i+1]
             value = row[i+1]
             
-            if did in req_metadata_lookup:              
-                    req_metadata_lookup[did][f] = str(value)
+            if did in metadata_lookup:              
+                    metadata_lookup[did][f] = str(value)
             else:
-                req_metadata_lookup[did] = {}
-                req_metadata_lookup[did][f] = str(value)
+                metadata_lookup[did] = {}
+                metadata_lookup[did][f] = str(value)
                 
     
-    return req_metadata_lookup
+    return metadata_lookup
 
     
     
-def go_custom_metadata(did_list,pid,metadata_lookup):
+def go_custom_metadata(did_list, pid, metadata_lookup):
     
     
     
@@ -456,7 +481,7 @@ def get_dataset_ids(pid):
 #
 if __name__ == '__main__':
 
-    usage = """
+    myusage = """
         -pid/--project_id  ID  Must be combined with --add 
         
         This script only add to taxcounts files NOT MySQL
@@ -466,7 +491,7 @@ if __name__ == '__main__':
         -l/  --list         List: list all projects in the DATABASE [default]
         
         -json_file_path/--json_file_path   json files path [Default: ../json]
-        -host/--host        vamps, vampsdev    dbhost:  [Default: localhost]
+        -host/--host        vampsdb, vampsdev    dbhost:  [Default: localhost]
         -units/--tax-units  silva119, or rdp2.6   [Default:silva119]
         
     count_lookup_per_dsid[dsid][rank][taxid] = count
@@ -481,8 +506,8 @@ if __name__ == '__main__':
          use py_mbl_sequencing_pipeline custom scripts
 
     """
-    parser.add_argument("-pid","--pid",                   
-                required=False,  action="store",   dest = "pid", default='',
+    parser.add_argument("-pids","--pids",                   
+                required=False,  action="store",   dest = "pids_str", default='',
                 help="""ProjectID (used with -add) no response if -list also included""") 
         
     parser.add_argument("-add","--add",                   
@@ -505,9 +530,12 @@ if __name__ == '__main__':
     parser.add_argument("-units", "--tax_units",    
                 required=False,  action='store', choices=['silva119','rdp2.6'], dest = "units",  default='silva119',
                 help="Default: 'silva119'; only other choice available is 'rdp2.6'")                       
+    if len(sys.argv[1:]) == 0:
+        print myusage
+        sys.exit() 
     args = parser.parse_args()
     
-    print "ARGS: dbhost  =",args.dbhost
+    print "\nARGS: dbhost  =",args.dbhost
     if args.dbhost == 'vamps' or args.dbhost == 'vampsdb':
         args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
         
@@ -517,6 +545,11 @@ if __name__ == '__main__':
     elif args.dbhost == 'vampsdev':
         args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
         args.NODE_DATABASE = 'vamps2'
+    else:
+        args.json_file_path = '../../json'  # run from the maintenance_scripts dir
+        args.NODE_DATABASE = 'vamps_development'
+        args.dbhost = 'localhost'
+        
     if args.units == 'silva119':
         args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_silva119")
     elif args.units == 'rdp2.6':
@@ -561,13 +594,13 @@ if __name__ == '__main__':
     print 'DATABASE:',NODE_DATABASE
     
     
-    if not args.list and not args.pid and  not args.add:
+    if not args.list and not args.pids_str and  not args.add:
         print usage        
         sys.exit('need command line parameter(s)')
         
     
            
-    if args.add and not args.pid:
+    if args.add and not args.pids_str:
         print usage        
         sys.exit('need pid to add')
     
@@ -575,8 +608,8 @@ if __name__ == '__main__':
          
     if args.list:
         go_list(args)
-    elif args.add and args.pid:
-        go_add(NODE_DATABASE, args.pid)
+    elif args.add and args.pids_str:
+        go_add(NODE_DATABASE, args.pids_str)
     else:
         print usage 
         print "Maybe you forgot to add '-add' to the command line?"

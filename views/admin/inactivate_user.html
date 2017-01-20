@@ -1,0 +1,46 @@
+<% include ../add_ins/begin.ejs %>
+<% info = JSON.parse(user_info) %>
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+	
+	
+<div class="hero-unit center">
+	    <h2>Website Administration</h2>
+	    <h3>Inactivate User</h3>    
+</div>
+	
+ <br><br>
+	<a href='admin_index'><--back</a> | <a href='reset_user_password'>refresh</a>
+ <hr>
+ <div class="row">
+	<div class="col-lg-3"></div>
+	<div class="col-lg-5">
+        <div id='new_user_div' class='table' >
+                <form id='' name='' method='POST' action='inactivate_user'>
+          
+                  <select name='user_id' id='user'>
+                    <option id='' value='' >...</option>
+                    <% for(u in info){ %>
+                    <option id='' value='<%= info[u].uid %>'><%= info[u].uid %> - <%= info[u].last_name %>, <%= info[u].first_name %> (<%= info[u].username %>)</option>
+                    <% } %>
+                  </select> Select User to Inactivate
+                 <br><br>
+                 FYI: User can only be re-activated by updating the user table directly
+                 <br>(and re-starting the Node.js server).
+                  <br><br><input id=''   type="submit"  \>
+                </form>
+        </div>
+</div>
+</div>
+
+
+
+
+
+	
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>

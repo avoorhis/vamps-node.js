@@ -85,18 +85,6 @@ function initialize_dhtmlx_project_tree() {
 //
 //
 //
-// function set_dataset_count(id){
-//     
-//     var checked_nodes = projectTree.getAllChecked().split(',')
-//     var count = 0
-//     for(i in checked_nodes){
-//         // only count datasets
-//         if(projectTree.getLevel(checked_nodes[i]) === 2){
-//             count += 1
-//         }
-//     }
-//     document.getElementById('selected_ds_count_id').innerHTML = count
-// }
 function set_dataset_count(id){
     var len = 0
     if(Object.keys(datasets_local).length > 0){
@@ -114,9 +102,7 @@ function set_dataset_count(id){
         len = checked_nodes.length
       }
     }
-    document.getElementById('selected_ds_count_id').innerHTML = len
-    projectTree.focusItem(id);
-    
+    document.getElementById('selected_ds_count_id').innerHTML = len    
 }
 //
 //
@@ -213,7 +199,7 @@ function clear_filters() {
   xmlhttp.send();
 }
 //
-//  SHOW/FILTER  RESULTS for project/substring Search
+//  After Loading Tree: get checked count and focus to top checked project (if any)
 //
 function afterCall(){
     var delay=500; //0.5 second - need 1/2 second for LOTS of saved datasets to load ~1000 
@@ -226,7 +212,6 @@ function afterCall(){
             projectTree.focusItem(projectTree.getParentId(l[0]));
         }
     }, delay);
-    
 }
 //
 //   substring for project name filter

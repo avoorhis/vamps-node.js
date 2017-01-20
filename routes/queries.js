@@ -4,6 +4,7 @@ var router = express.Router();
 var C = require(app_root + '/public/constants');
 var mysql = require('mysql2');
 var util = require('util');
+var helpers = require('./helpers/helpers');
 
 module.exports = {
 
@@ -12,34 +13,30 @@ get_project_permissions: function(){
     return qSelectAccess;
 },
 get_select_datasets_query: function(){
-		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description,";
-
-    // qSelectDatasets += " username, email, institution, first_name, last_name, env_source_name, env_sample_source_id, owner_user_id, public";
+    var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description,";
     qSelectDatasets += " username, email, institution, first_name, last_name, owner_user_id, public";
-		qSelectDatasets += " FROM dataset";
-		qSelectDatasets += " JOIN project USING(project_id)";
-		qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
-        // qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
-
-		qSelectDatasets += " ORDER BY project, dataset";
+    
+    //qSelectDatasets += " FROM dataset";
+    //qSelectDatasets += " JOIN project USING(project_id)";
+    qSelectDatasets += " FROM project";
+    qSelectDatasets += " LEFT JOIN dataset USING(project_id)";
+    
+    qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
+    qSelectDatasets += " ORDER BY project, dataset";
     console.log(qSelectDatasets);
-		return qSelectDatasets;
+    return qSelectDatasets;
 	
 },
 
 get_select_datasets_queryPID: function(pid){
-		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution,";
-
-    // qSelectDatasets += " first_name, last_name, env_source_name, env_sample_source_id, owner_user_id,public";
+    var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution,";
     qSelectDatasets += " first_name, last_name, owner_user_id,public";
-		qSelectDatasets += " FROM dataset";
-		qSelectDatasets += " JOIN project USING(project_id)";
-		qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
-        // qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
-
-		qSelectDatasets += " WHERE project_id = " + connection.escape(pid);
-		qSelectDatasets += " ORDER BY project, dataset";
-		console.log(qSelectDatasets);
+    qSelectDatasets += " FROM dataset";
+    qSelectDatasets += " JOIN project USING(project_id)";
+    qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
+    qSelectDatasets += " WHERE project_id = " + connection.escape(pid);
+    qSelectDatasets += " ORDER BY project, dataset";
+    console.log(qSelectDatasets);
     return qSelectDatasets;	
 },
 
@@ -52,22 +49,12 @@ get_select_classifier_query: function(){
 },
 get_all_user_query: function(){
     var qSelectUser = "SELECT user_id as uid, username, email, institution, last_name, first_name, security_level";
-    qSelectUser += " FROM user";
+    qSelectUser += " FROM user WHERE active='1'";
     //console.log(qSelectClassifiers);
     return qSelectUser;
   
 },
-insert_access_table: function(uid,pid){
-    
-    var qInsertAccess = "INSERT ignore into `access` (user_id, project_id)";
-    qInsertAccess += " VALUES(" + connection.escape(uid) + ", " + connection.escape(pid) + ")"; 
-    console.log(qInsertAccess);
-    return qInsertAccess; 
-     
-},
-//
-//
-//
+
 get_projects_queryUID: function( uid ) {
     var q = "SELECT project, project_id from project where owner_user_id='"+uid+"'"
     return q;
