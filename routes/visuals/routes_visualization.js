@@ -2462,11 +2462,8 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     //var heatmap_process = spawn( 'which' , ['python'], {env:{'PATH':envpath}});
     var output = '';
     cluster_process.stdout.on('data', function clusterProcessStdout(data) {
-        //console.log('stdout: ' + data);
-      // //data = data.toString().replace(/^\s+|\s+$/g, '');
-      // data = data.toString();
-
-       output += data.toString();
+        //console.log('stdout: ' + data);        
+        output += data.toString();        
     });
 
     cluster_process.on('close', function clusterProcessOnClose(code) {

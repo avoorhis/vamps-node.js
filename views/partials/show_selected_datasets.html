@@ -23,7 +23,11 @@ Selected Dataset Order (Count:<%= items.names.length %>)<br>
     <% } %>
 
     <td>
-    	<button type="button" class="btn btn-xs btn-primary" id='save_datasets_btn'    >Save These Datasets</button>
+    	<% if(user.username == 'guest'){ %>
+    	    <button disabled type="button" class="btn btn-xs btn-primary" id='save_datasets_btn' >Save These Datasets</button>
+    	<% }else{ %>
+    	    <button type="button" class="btn btn-xs btn-primary" id='save_datasets_btn' >Save These Datasets</button>
+    	<% } %>
     </td>
 </tr>
 <tr><td colspan='3'><span id='save_ds_result'></span></td></tr>
