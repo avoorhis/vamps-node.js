@@ -210,9 +210,8 @@ def cluster_datasets(args, dm):
 
     new_ds_order =[]
     new_did_order =[]
-
+    
     mycluster = construct_cluster(args, dm)
-
 
     # newick = mycluster.getNewick(with_distances=True)
     # print
@@ -222,7 +221,6 @@ def cluster_datasets(args, dm):
     #t.populate(15)
 
     ascii_tree = mycluster.asciiArt()
-
     ascii_file = args.prefix+'_'+args.metric+'_tree.txt'
     ascii_file_path = os.path.join(args.outdir,ascii_file)
     fp = open(ascii_file_path,'w')
@@ -237,7 +235,6 @@ def cluster_datasets(args, dm):
 
         #did = did_hash[ds]
         new_ds_order.append(node)
-
     return new_ds_order
 
 
@@ -250,10 +247,13 @@ def write_csv_file(args):
 def construct_cluster(args, dm):
         # UPGMA OR
         # neighbor joining:
+        
         from cogent.phylo import nj
+        
         from cogent.cluster.UPGMA import upgma
+        # the following prints to stdout -- controlled in routes_visualizations.js
         mycluster = nj.nj(dm)
-
+        
         #mycluster = upgma(dm)
 
 
@@ -525,7 +525,7 @@ if __name__ == '__main__':
         #did_list = cluster_datasets(args, dm3, did_hash)
         new_ds_list = cluster_datasets(args, dm3)
         # IMPORTANT print the dataset list
-        print('DS_LIST=',json.dumps(new_ds_list))
+        print('DS_LIST='+json.dumps(new_ds_list))
 
     if args.function == 'fheatmap':
         # IMPORTANT print for freq heatmap

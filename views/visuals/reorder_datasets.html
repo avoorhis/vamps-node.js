@@ -38,7 +38,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
 			                <%= parseInt(i)+1 %> (id:<%= items.ids[i] %>) - <%= items.names[i] %> 
 	              </td>
 	              <td>
-	              		<a href='#' onclick='move_to_the_top(<%= parseInt(i)+1 %>,"<%= items.ids[i]+'--'+items.names[i] %>")'>^</a>
+	              		<a href='#' title='move to top' onclick='move_to_the_top(<%= parseInt(i)+1 %>,"<%= items.ids[i]+'--'+items.names[i] %>")'>^</a>
 	              </td>
 	            </tr>
 	          <% } %> 
@@ -55,7 +55,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
 			  <div id='ds_save_order_div' class='small_font'>
 				  <button type='submit' id='save_order_btn' class='btn btn-xs btn-success'>Use this Order and Return</button>
 				  <input  type='hidden' id='' class='' name='resorted' value='1'>
-				  <button type='button' id='cancel_btn'  onclick='javscript:window.history.back();' aria-label="Close"  class='btn btn-xs btn-success'>Cancel</button>
+				  <button type='button' id='cancel_btn'  onclick='javscript:window.history.back();' aria-label="Close"  class='btn btn-xs btn-success'>Cancel and Return</button>
 				
 			  </div>
 			</td>
