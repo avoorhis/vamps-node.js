@@ -2921,8 +2921,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
 
     if(id==0){
-        console.log(PROJECT_INFORMATION_BY_PID[56])
-        console.log(DATASET_IDS_BY_PID[56])
+        
         for( i=0;i<PROJECT_TREE_PIDS.length;i++ ){
 
             var pid = PROJECT_TREE_PIDS[i];
