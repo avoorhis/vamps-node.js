@@ -8,7 +8,7 @@
     <div class="col-lg-3"></div>
       <div class="col-lg-6">
     <div class="well">
-<br>Guest Account (limited functionality): User: 'guest'; Password: 'guest'<br>
+<br>
   <br>
       <div id='login_div' class='table' >
       <form action="/users/login" method="POST">
@@ -24,15 +24,15 @@
               <input type="submit" value="Log In"/> <!-- <small><a href="forgot">Forgot Password?</a></small> -->
           </div>
           <input type='hidden' name='return_to_url' value='<%=return_to_url%>'/>          
+      
       </form>
       
-      <hr>
-      
+      <br>
+      <p>Guest Account (limited functionality): User: 'guest'; Password: 'guest'</p>
       <p>Need an account? <a href="/users/signup">Signup</a></p>
       <!-- <p>Forgot your password? <a href="/users/reset">Reset</a></p> -->
-      <p>Account help? <a href="mailto:vamps@mbl.edu">vamps@mbl.edu</a>
-        <br>Including forgotten passwords.</p>
-      <p>Or go to the <a href="/">home</a> page.</p>
+      <p>Account help? email: <a href="mailto:vamps@mbl.edu">vamps@mbl.edu</a> (Including forgotten passwords.)</p>
+      <p>Or <a href="/">just go to the home page.</a></p>
 
     </div>
 </div>
