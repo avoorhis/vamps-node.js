@@ -224,7 +224,7 @@ function signup_user(req, username, password, done, db){
         return done(null, false, req.flash('message', 'The Institution name is required.'));
     }
 
-    db.query(queries.get_user_by_name(username), function(err,select_rows){
+    db.query(queries.get_user_by_name(username), function(err, select_rows, done){
             if (err) {
               return done(null, false, req.flash( 'message', err ));
             }
@@ -248,7 +248,7 @@ function signup_user(req, username, password, done, db){
                 
                 var insertQuery = queries.insert_new_user(username, password, first, last, email, inst)
                 
-                db.query(insertQuery,function(err,insert_rows){ 
+                db.query(insertQuery,function(err,insert_rows, done){ 
                     if(err){  // error usually if contact-email-inst index is not unique
                         console.log(insertQuery);
                         console.log(err);
@@ -349,7 +349,7 @@ var delete_previous_tmp_files = function(req, username){
 // };
 var update_password = function(req, username, newpass, done, db) {
     
-    db.query(queries.reset_user_password_by_uname(newpass,username), function(err,rows){
+    db.query(queries.reset_user_password_by_uname(newpass,username), function(err, rows, done){
         if (err){ 
             return done(null, false, { message: err }); 
         }else{
