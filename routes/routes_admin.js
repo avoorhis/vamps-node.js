@@ -628,13 +628,13 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
                 if (err) {
                   //return done(null, false, { message: err });
                   req.flash('message', err);
-                  
+                  return;
                 }
                 if (rows.length) {
                     //console.log('That username is already taken.');
                     //return done(null, false, req.flash('message', 'That username is already taken.'));
                     req.flash('message', 'That username is already taken.');
-                    
+                    return;
                 } else {
                     var insertQuery = queries.insert_new_user(username, password, first, last, email, inst)
         
