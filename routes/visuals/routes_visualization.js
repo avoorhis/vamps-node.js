@@ -2581,7 +2581,7 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     //FILTER_ON = false
     PROJECT_TREE_OBJ = []
     PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, SHOW_DATA.projects);
-    PROJECT_FILTER = {"substring":"","env":[],"target":"","portal":"","public":"-1","metadata":"","pid_length":PROJECT_TREE_PIDS.length}
+    PROJECT_FILTER = {"substring":"","env":[],"target":"","portal":"","public":"-1","metadata1":"","metadata2":"","metadata3":"","pid_length":PROJECT_TREE_PIDS.length}
     res.json(PROJECT_FILTER);
 
 });
@@ -2641,7 +2641,7 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
 
     PROJECT_TREE_OBJ = helpers.get_portal_projects(req, portal)
     PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
-    PROJECT_FILTER = {"substring":"","env":[],"target":"","portal":"","public":"-1","metadata":"","pid_length":PROJECT_TREE_PIDS.length}
+    PROJECT_FILTER = {"substring":"","env":[],"target":"","portal":"","public":"-1","metadata1":"","metadata2":"","metadata3":"","pid_length":PROJECT_TREE_PIDS.length}
     res.json(PROJECT_FILTER);
 });
 //
@@ -2811,16 +2811,21 @@ router.get('/livesearch_status/:q', function(req, res) {
 //
 //  FILTER #6  LIVESEARCH METADATA FILTER
 //
-router.get('/livesearch_metadata/:q', function(req, res) {
+router.get('/livesearch_metadata/:num/:q', function(req, res) {
   console.log('viz:in livesearch metadata')
+  
+  var num = req.params.num;
   var q = req.params.q;
+  console.log('num '+num)
+  console.log('query '+q)
   var myurl = url.parse(req.url, true);
   var portal = myurl.query.portal;
   if(q === '.....'){
     q = ''
   }
 
-  PROJECT_FILTER.metadata = q
+  PROJECT_FILTER['metadata'+num] = q
+  //PROJECT_FILTER.metadata_num = num
 
   if(portal){
     var projects_to_filter = helpers.get_portal_projects(req, portal)

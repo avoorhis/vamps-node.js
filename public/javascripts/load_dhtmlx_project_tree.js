@@ -35,10 +35,22 @@ if (typeof pub_priv[0] !== 'undefined') {
       filter_by_status(0)
   });
 }
-var metadata_select = document.getElementById('metadata_select');
-if (typeof metadata_select !== 'undefined') {
-  metadata_select.addEventListener('change', function () {
-      filter_by_metadata()
+var metadata_select1 = document.getElementById('metadata_select1');
+var metadata_select2 = document.getElementById('metadata_select2');
+var metadata_select3 = document.getElementById('metadata_select3');
+if (typeof metadata_select1 !== 'undefined') {
+  metadata_select1.addEventListener('change', function () {
+      filter_by_metadata('1')
+  });
+}
+if (typeof metadata_select2 !== 'undefined') {
+  metadata_select2.addEventListener('change', function () {
+      filter_by_metadata('2')
+  });
+}
+if (typeof metadata_select3 !== 'undefined') {
+  metadata_select3.addEventListener('change', function () {
+      filter_by_metadata('3')
   });
 }
 function initialize_dhtmlx_project_tree() {
@@ -173,7 +185,9 @@ function clear_filters() {
     var target = "/visuals/clear_filters";
   }
   document.getElementById('target_select').value='.....';
-  document.getElementById('metadata_select').value='.....';
+  document.getElementById('metadata_select1').value='.....';
+  document.getElementById('metadata_select2').value='.....';
+  document.getElementById('metadata_select3').value='.....';
   document.getElementById('env_source_select').value='.....';
   document.getElementById('pname_search_id').value='';
   document.getElementById('status_pub').checked=0;
@@ -224,7 +238,9 @@ function showLiveProjectNames(str) {
     str = '.....';  // cannot be empty string for url: (hopefully no-one will search for this)
   }
   document.getElementById('env_source_select').value='.....';
-  document.getElementById('metadata_select').value='.....';
+  document.getElementById('metadata_select1').value='.....';
+  document.getElementById('metadata_select2').value='.....';
+  document.getElementById('metadata_select3').value='.....';
   document.getElementById('target_select').value='.....';
   document.getElementById('status_pub').checked=0;
   document.getElementById('status_priv').checked=0;
@@ -264,7 +280,9 @@ function filter_by_env() {
   
   
   document.getElementById('target_select').value='.....';
-  document.getElementById('metadata_select').value='.....';
+  document.getElementById('metadata_select1').value='.....';
+  document.getElementById('metadata_select2').value='.....';
+  document.getElementById('metadata_select3').value='.....';
   document.getElementById('pname_search_id').value='';
   document.getElementById('status_pub').checked=0;
   document.getElementById('status_priv').checked=0;
@@ -298,7 +316,9 @@ function filter_by_target() {
   var xmlhttp = new XMLHttpRequest(); 
   
   document.getElementById('env_source_select').value='.....';
-  document.getElementById('metadata_select').value='.....';
+  document.getElementById('metadata_select1').value='.....';
+  document.getElementById('metadata_select2').value='.....';
+  document.getElementById('metadata_select3').value='.....';
   document.getElementById('pname_search_id').value='';
   document.getElementById('status_pub').checked=0;
   document.getElementById('status_priv').checked=0;
@@ -364,7 +384,9 @@ function filter_by_status(pub_status) {
   var xmlhttp = new XMLHttpRequest(); 
   
   document.getElementById('env_source_select').value='.....';
-  document.getElementById('metadata_select').value='.....';
+  document.getElementById('metadata_select1').value='.....';
+  document.getElementById('metadata_select2').value='.....';
+  document.getElementById('metadata_select3').value='.....';
   document.getElementById('target_select').value='.....';
   document.getElementById('pname_search_id').value='';
   if(document.getElementById('portal_select')){
@@ -387,11 +409,11 @@ function filter_by_status(pub_status) {
 // SHOW/FILTER  RESULTS for Metadata Search
 //  FILTER #6
 //
-function filter_by_metadata() {
+function filter_by_metadata(num) {
   var filtering = 1;
   var datasets_local = {};
-  var metadata_item =   document.getElementById('metadata_select').value;
-  var target = '/visuals/livesearch_metadata/'+encodeURIComponent(metadata_item);
+  var metadata_item =   document.getElementById('metadata_select'+num).value;
+  var target = '/visuals/livesearch_metadata'+'/'+num+'/'+encodeURIComponent(metadata_item);
   if(portal_local){
     target += '?portal='+portal_local;
   }
@@ -476,16 +498,27 @@ function update_gui_elements(result){
       document.getElementById('public_on_id').innerHTML = ''
     }
 
-    if(result.metadata == '' || result.metadata == '.....'){
-      document.getElementById('metadata_select').value = '.....'
-      //document.getElementById('metadata_select').style.color = 'black'
-      document.getElementById('metadata_on_id').innerHTML = ''
+    if(result.metadata1 == '' || result.metadata1 == '.....'){
+        document.getElementById('metadata_select1').value='.....';
+        document.getElementById('metadata_on_id1').innerHTML = ''
     }else{
-      document.getElementById('metadata_select').value = result.metadata
-      //document.getElementById('metadata_select').style.color = 'orange'
-      document.getElementById('metadata_on_id').innerHTML = '*'
+      document.getElementById('metadata_select1' ).value = result.metadata1
+      document.getElementById('metadata_on_id1').innerHTML = '*'
     }
-
+    if(result.metadata2 == '' || result.metadata2 == '.....'){
+        document.getElementById('metadata_select2').value='.....';
+        document.getElementById('metadata_on_id2').innerHTML = ''
+    }else{
+      document.getElementById('metadata_select2' ).value = result.metadata2
+      document.getElementById('metadata_on_id2').innerHTML = '*'
+    }
+    if(result.metadata3 == '' || result.metadata3 == '.....'){
+        document.getElementById('metadata_select3').value='.....';
+        document.getElementById('metadata_on_id3').innerHTML = ''
+    }else{
+      document.getElementById('metadata_select3' ).value = result.metadata3
+      document.getElementById('metadata_on_id3').innerHTML = '*'
+    }
     if( result.pid_length == 0 ){
         document.getElementById('nodata_span').innerHTML='No Projects Found';
     }else{

@@ -580,7 +580,8 @@ router.get('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, res
               title     :'VAMPS Create new user',
               message   : req.flash('message'),
               user      : req.user,
-              hostname  : req.CONFIG.hostname
+              hostname  : req.CONFIG.hostname,
+              new_user  : {}
     });
 });
 //
@@ -588,74 +589,89 @@ router.get('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, res
 //
 router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
     console.log('in new_user --POST')
-    var username = req.body.username;
-    var password = req.body.password;
-    var email = req.body.useremail;
-    var first = req.body.userfirstname;
-    var last = req.body.userlastname;
-    var inst = req.body.userinstitution;
-    var finish = function(){
-      res.render('admin/new_user', {
+    
+    var new_user = {}
+    new_user.email = req.body.useremail;
+    new_user.firstname = req.body.userfirstname;
+    new_user.lastname = req.body.userlastname;
+    new_user.institution = req.body.userinstitution;
+    new_user.password = req.body.password;
+    new_user.username = req.body.username;
+    
+    var finish = function(nuser){
+        res.render('admin/new_user', {
                             title     :'VAMPS Create new user',
                             message   : req.flash('message'),
                             user: req.user,
-                            hostname: req.CONFIG.hostname
+                            hostname: req.CONFIG.hostname,
+                            new_user: nuser
                           });
 
     };
-    if(password.length < 3 || password.length > 12){
-        req.flash('message', 'The password must be between 3 and 20 characters.');
-    }
-    if(helpers.checkUserName(username)){
-        req.flash('message', "The username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only.");
-    }
-    if(username.length < 3 || username.length > 15){
-        req.flash('message', 'The username must be between 3 and 15 characters. Alphanumeric only.');
-    }
-    if( email.indexOf("@") == -1 || email.length < 3 || email.length > 100 ){
-        req.flash('message', 'The email address is empty or the wrong format.');
-    }
-    if( first.length < 1 || first.length > 20 ||  last.length < 1 || last.length > 20 ){
+    if(new_user.password.length < 3 || new_user.password.length > 12){
+        req.flash('message', 'Password must be between 3 and 20 characters.');
+        finish(new_user);
+    }else if(helpers.checkUserName(new_user.username)){
+        req.flash('message', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only.");
+        finish(new_user);
+    }else if(new_user.username.length < 3 || new_user.username.length > 15){
+        req.flash('message', 'Username must be between 3 and 15 characters. Alphanumeric only.');
+        new_user.username = ''
+        finish(new_user);
+    }else if( new_user.email.indexOf("@") == -1 || new_user.email.length < 3 || new_user.email.length > 100 ){
+        req.flash('message', 'Email address is empty or the wrong format.');
+        finish(new_user);
+    }else if( new_user.firstname.length < 1 || new_user.firstname.length > 20  ){
+        req.flash('message', 'Both first and last names are required (limit 20 characters).');      
+        finish(new_user);
+    }else if( new_user.lastname.length < 1 || new_user.lastname.length > 20 ){
         req.flash('message', 'Both first and last names are required (limit 20 characters).');
-    }
-    if( inst.length < 1 || inst.length > 128){
-        req.flash('message', 'The Institution name is required.');
+        finish(new_user);
+    }else if( new_user.institution.length < 1 || new_user.institution.length > 128){
+        req.flash('message', 'Institution name is required.');
+        finish(new_user);
     }else{
 
-
-
-        req.db.query(queries.get_user_by_name(username), function(err,rows){
+        req.db.query(queries.get_user_by_name(new_user.username), function(err,rows){
                 if (err) {
-                  return done(null, false, { message: err });
+                  console.log(err);
+                  req.flash('message', err);
+                  finish(new_user);
                 }
                 if (rows.length) {
-                    //console.log('That username is already taken.');
-                    return done(null, false, req.flash('message', 'That username is already taken.'));
+                    console.log('Username is already taken.');                    
+                    req.flash('message', 'Username "'+new_user.username+'" is already taken.');
+                    finish(new_user);
+                    
                 } else {
-                    var insertQuery = queries.insert_new_user(username, password, first, last, email, inst)
-                  
-
-                    console.log(insertQuery);
+                    var newUserMysql            = {};
+                    newUserMysql.username       = new_user.username;
+                    newUserMysql.password       = helpers.generateHash(new_user.password); // use the generateHash function in our user model
+                    newUserMysql.firstname      = new_user.firstname;
+                    newUserMysql.lastname       = new_user.lastname;
+                    newUserMysql.email          = new_user.email;
+                    newUserMysql.institution    = new_user.institution;
+                    newUserMysql.security_level = 50;  //reg user
+                    var insertQuery = queries.insert_new_user(newUserMysql)
+        
                     req.db.query(insertQuery, function(err,rows){
-                        user_id = rows.insertId;
-                        ALL_USERS_BY_UID[user_id] = {}
-                        ALL_USERS_BY_UID[user_id].email       = email;
-                        ALL_USERS_BY_UID[user_id].username    = username;
-                        ALL_USERS_BY_UID[user_id].last_name   = last;
-                        ALL_USERS_BY_UID[user_id].first_name  = first;
-                        ALL_USERS_BY_UID[user_id].institution = inst;
-
-                        req.flash('message', 'Success (user:'+username+'; uid:'+user_id+')');
-                        finish();
-                        return;
-
-                    });
+                        new_user.user_id = rows.insertId;
+                        ALL_USERS_BY_UID[new_user.user_id] = {
+                            email:      new_user.email,
+                            username:   new_user.username,
+                            last_name:  new_user.lastname,
+                            first_name: new_user.firstname,
+                            institution:new_user.institution,
+                        }
+                        req.flash('message', 'Success (username: '+new_user.username+'; user_id: '+new_user.user_id+')');
+                        finish(new_user);                        
+                    });   
                 }
         });
-        return;
-
     }
-    finish();
+    
+                   
+    
 });
 //
 //

@@ -1342,17 +1342,30 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
        });
   }
 
-  // METADATA
+  // METADATA1
   var NewPROJECT_TREE_OBJ6 = []
-  if(filter_obj.metadata == '' || filter_obj.metadata === '.....'){
+  if(filter_obj.metadata1 == '' || filter_obj.metadata1 === '.....'){
       NewPROJECT_TREE_OBJ6 = NewPROJECT_TREE_OBJ5
   }else{
-        //console.log('Filtering for METADATA')
-      NewPROJECT_TREE_OBJ6 = module.exports.get_PTREE_metadata(NewPROJECT_TREE_OBJ5, filter_obj.metadata)
-      //NewPROJECT_TREE_OBJ6 = NewPROJECT_TREE_OBJ5
-
+      NewPROJECT_TREE_OBJ6 = module.exports.get_PTREE_metadata(NewPROJECT_TREE_OBJ5, filter_obj.metadata1)
   }
-  var new_obj = NewPROJECT_TREE_OBJ6
+  // METADATA2
+  var NewPROJECT_TREE_OBJ7 = []
+  if(filter_obj.metadata2 == '' || filter_obj.metadata2 === '.....'){
+      NewPROJECT_TREE_OBJ7 = NewPROJECT_TREE_OBJ6
+  }else{
+      NewPROJECT_TREE_OBJ7 = module.exports.get_PTREE_metadata(NewPROJECT_TREE_OBJ6, filter_obj.metadata2)
+  }
+  // METADATA1
+  var NewPROJECT_TREE_OBJ8 = []
+  if(filter_obj.metadata3 == '' || filter_obj.metadata3 === '.....'){
+      NewPROJECT_TREE_OBJ8 = NewPROJECT_TREE_OBJ7
+  }else{
+      NewPROJECT_TREE_OBJ8 = module.exports.get_PTREE_metadata(NewPROJECT_TREE_OBJ7, filter_obj.metadata3)
+  }  
+  
+  
+  var new_obj = NewPROJECT_TREE_OBJ8
   //console.log('new_obj')
   //console.log(new_obj)
   return new_obj
