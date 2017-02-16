@@ -61,15 +61,42 @@ Filter Projects
                 </td>
               </tr>
               <tr>
+                <td>Metadata:</td>
+              </tr>
+              <tr>
                 <td>
-                  by Metadata:<br>
-                  <select  id='metadata_select'>
+                  &nbsp;&nbsp;&nbsp;&nbsp;item-1:<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;<select  id='metadata_select1' style='width:80%;'>
                     <option>.....</option>
                     <% for(n in md_names) { %>
                       <option value='<%= md_names[n] %>'><%= md_names[n] %></option>
                     <% } %>
                   </select>
-                  <span id='metadata_on_id' class='pull-right filter_note'></span>
+                  <span id='metadata_on_id1' class='pull-right filter_note'></span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  &nbsp;&nbsp;&nbsp;&nbsp;item-2:<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;<select  id='metadata_select2' style='width:80%;'>
+                    <option>.....</option>
+                    <% for(n in md_names) { %>
+                      <option value='<%= md_names[n] %>'><%= md_names[n] %></option>
+                    <% } %>
+                  </select>
+                  <span id='metadata_on_id2' class='pull-right filter_note'></span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  &nbsp;&nbsp;&nbsp;&nbsp;item-3:<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;<select  id='metadata_select3' style='width:80%;'>
+                    <option>.....</option>
+                    <% for(n in md_names) { %>
+                      <option value='<%= md_names[n] %>'><%= md_names[n] %></option>
+                    <% } %>
+                  </select>
+                  <span id='metadata_on_id3' class='pull-right filter_note'></span>
                 </td>
               </tr>
             </table>
