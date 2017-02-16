@@ -1,4 +1,12 @@
 <% include ../add_ins/begin.ejs %>
+<% if(new_user){ %>	
+    <%  fname = new_user.first_name %>
+    <%  lname = new_user.last_name %>
+    <%  uname = new_user.username %>
+    <%  pass = new_user.password %>
+    <%  email = new_user.email %>
+    <%  inst = new_user.institution %>
+<% } %>
 <br><br>
 
 <div class="title fa fa-anchor">Add User</div>
@@ -11,17 +19,19 @@
  
   <% if (message) { %>
       <div class="message alert_flash_message"><%= message %></div>
-  <% } %><br>
-  
+  <% } %>
+  <br>
   <div id='new_user_div' class='table' >All fields are required
     <form id='' name='newuser_form' method='POST' action='/users/signup' >
       <ul>
-      <li> <input id='username'       name='username'       type="text"     \> Username <span class='tiny_font'>(alphanumeric only. no spaces.)</span></li>
-      <li> <input id='password'       name='password'       type="password" \> Password <span class='tiny_font'>(between 3 and 20 characters.)</span></li>
-      <li> <input id='userfirstname'  name='userfirstname'  type="text"     \> First Name</li>
-      <li> <input id='userlastname'   name='userlastname'   type="text"     \> Last Name</li>
-      <li> <input id='useremail'      name='useremail'      type="text"     \> Email <span class='tiny_font'>(must be correct email format)</span></li>  
-      <li> <input id='userinstitution'name='userinstitution'type="text"     \> Institution</li>
+      <li> <input id='username'       name='username'       type="text"   value='<%= uname %>'  \> Username <span class='tiny_font'>(alphanumeric only. no spaces.)</span>
+        
+      </li>
+      <li> <input id='password'       name='password'       type="passwordX" value='<%= pass %>' \> Password <span class='tiny_font'>(between 3 and 20 characters.)</span></li>
+      <li> <input id='userfirstname'  name='userfirstname'  type="text"  value='<%= fname %>'   \> First Name</li>
+      <li> <input id='userlastname'   name='userlastname'   type="text"  value='<%= lname %>'   \> Last Name</li>
+      <li> <input id='useremail'      name='useremail'      type="text"  value='<%= email %>'   \> Email <span class='tiny_font'>(must be correct email format)</span></li>  
+      <li> <input id='userinstitution'name='userinstitution'type="text"  value='<%= inst %>'   \> Institution</li>
       <li> <input id=''   type="submit" value='Enter' \></li>
       </ul>
     </form>

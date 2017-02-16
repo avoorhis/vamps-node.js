@@ -10,7 +10,7 @@ var path = require('path');
 //var session   = require('express-session')
 //var flash    = require('connect-flash');
 //var LocalStrategy = require('passport-local').Strategy;
-
+new_user = {}
 /* GET User List (index) page. */
 router.get('/users_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
     
@@ -86,17 +86,22 @@ router.post('/login',  passport.authenticate('local-login', {
 router.get('/signup', function(req, res) {
 
         // render the page and pass in any flash data if it exists
+        console.log('new_user')
+        //console.log(new_user)
         res.render('user_admin/signup', { 
-                            title: 'VAMPS:signup',
-                            message: req.flash('message'), user: req.user,hostname: req.CONFIG.hostname 
+                            title   : 'VAMPS:signup',
+                            message : req.flash('message'), 
+                            user    : req.user,
+                            hostname: req.CONFIG.hostname,
+                            new_user: new_user
         });
 });
 
 // process the signup form
-router.post('/signup',
-    passport.authenticate('local-signup', { successRedirect : '/users/profile', // redirect to the secure profile section
-                                    failureRedirect : 'signup', // redirect back to the signup page if there is an error
-                                    failureFlash : true // allow flash messages
+router.post('/signup', passport.authenticate('local-signup', {
+                successRedirect : '/users/profile', // redirect to the secure profile section
+                failureRedirect : 'signup', // redirect back to the signup page if there is an error
+                failureFlash : true         // allow flash messages
 }));
 
 // =====================================
@@ -106,7 +111,7 @@ router.post('/signup',
 // we will use route middleware to verify this (the isLoggedIn function)
 router.get('/profile', helpers.isLoggedIn, function(req, res) {
     var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username)
-    //console.log('ALL_USERS_BY_UID',ALL_USERS_BY_UID)
+console.log('PROFILE')
     fs.ensureDir(data_dir, function (err) {
         if(err) {console.log(err);} // => null
         else{

@@ -49,18 +49,21 @@ inactivate_user: function( uid ){
 //
 //
 //
-insert_new_user: function(username, password, first, last, email, inst){
-    var qInsertUser = "INSERT INTO user (username, encrypted_password, first_name, last_name, email, institution, active, sign_in_count, current_sign_in_at, last_sign_in_at)";
-    qInsertUser +=    " VALUES ('" + username +"', '"+
-                                    helpers.generateHash(password) +"', '"+
-                                    first +"', '"+
-                                    last +"', '"+
-                                    email +"', '"+
-                                    inst +"',"+
+insert_new_user: function(mysql_new_user){
+    
+    var qInsertUser = "INSERT INTO user (username, encrypted_password, first_name, last_name, email, institution, active, sign_in_count, security_level, current_sign_in_at, last_sign_in_at)";
+    qInsertUser +=    " VALUES ('" + mysql_new_user.username +"', '"+
+                                    helpers.generateHash(mysql_new_user.password) +"', '"+
+                                    mysql_new_user.firstname +"', '"+
+                                    mysql_new_user.lastname +"', '"+
+                                    mysql_new_user.email +"', '"+
+                                    mysql_new_user.institution +"',"+                                    
                                     " 1,"+
-                                     " 1,"+
+                                     " 1, "+
+                                     mysql_new_user.security_level +","+
                                     " CURRENT_TIMESTAMP(), "+
                                      " CURRENT_TIMESTAMP() )";
+    //console.log(qInsertUser)
     return qInsertUser
 },
 get_user_by_name: function(uname){

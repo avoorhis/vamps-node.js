@@ -27,7 +27,7 @@ module.exports = function(passport, db) {
     
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
-            console.log('in serialize:'+user.user_id)
+        console.log('in serialize:'+user.user_id)
         done(null, user.user_id);
     });
 
@@ -51,7 +51,10 @@ module.exports = function(passport, db) {
         passReqToCallback   : true // allows us to pass back the entire request to the callback
     },
     function(req, username, password, done) {
-        //console.log(req.body.userfirstname);
+        console.log(req.body.userfirstname);
+        //xx = signup_user(req, username, password, done, db);
+        console.log('xx');
+        console.log(done);
         return signup_user(req, username, password, done, db);
     }));
 
@@ -201,84 +204,85 @@ function signup_user(req, username, password, done, db){
     // username -> no spaces or 'funny' chars
      // find a user whose email is the same as the forms email
     // we are checking to see if the user trying to login already exists
-    var email = req.body.useremail;
-    var first = req.body.userfirstname;
-    var last = req.body.userlastname;
-    var inst = req.body.userinstitution;
-    if(password.length < 3 || password.length > 12){
-        return done(null, false, req.flash('message', 'The password must be between 3 and 20 characters.'));
-    }
-    if(helpers.checkUserName(username)){
-        return done(null, false, req.flash('message', "The username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only."));
-    }
-    if(username.length < 3 || username.length > 15){
-        return done(null, false, req.flash('message', 'The username must be between 3 and 15 characters. Alphanumeric only.'));
-    }
-    if( email.indexOf("@") == -1 || email.length < 3 || email.length > 100 ){
-        return done(null, false, req.flash('message', 'The email address is empty or the wrong format.'));
-    }
-    if( first.length < 1 || first.length > 20 ||  last.length < 1 || last.length > 20 ){
-        return done(null, false, req.flash('message', 'Both first and last names are required.'));
-    }
-    if( inst.length < 1 || inst.length > 128){
-        return done(null, false, req.flash('message', 'The Institution name is required.'));
+    new_user = {}
+    new_user.email = req.body.useremail;
+    new_user.firstname = req.body.userfirstname;
+    new_user.lastname = req.body.userlastname;
+    new_user.institution = req.body.userinstitution;
+    new_user.password = password;
+    new_user.username = username;
+
+    if(new_user.password.length < 3 || new_user.password.length > 12){
+        return done(null, false, req.flash('message', 'Password must be between 3 and 20 characters.'));
     }
 
-    db.query(queries.get_user_by_name(username), function(err, select_rows, done){
+    if(helpers.checkUserName(new_user.username)){
+        return done(null, false, req.flash('message', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only."));
+    }
+
+    if(new_user.username.length < 3 || new_user.username.length > 15){
+        return done(null, false, req.flash('message', 'Username must be between 3 and 15 characters. Alphanumeric only.'));
+    }
+
+    if( new_user.email.indexOf("@") == -1 || new_user.email.length < 3 || new_user.email.length > 100 ){
+        return done(null, false, req.flash('message', 'Email address is empty or the wrong format.'));
+    }
+
+    if( new_user.firstname.length < 1 || new_user.firstname.length > 20 ||  new_user.lastname.length < 1 || new_user.lastname.length > 20 ){
+        return done(null, false, req.flash('message', 'Both first and last names are required.'));
+    }
+
+    if( new_user.institution.length < 1 || new_user.institution.length > 128){
+        return done(null, false, req.flash('message', 'Institution name is required.'));
+    }
+    db.query(queries.get_user_by_name(new_user.username), function(err, select_rows){
             if (err) {
+              console.log(err)
               return done(null, false, req.flash( 'message', err ));
             }
             if (select_rows.length) {
-                //console.log('That username is already taken.');
-                return done(null, false, req.flash('message', 'That username is already taken.'));
+                console.log('Username is already taken.');
+                return done(null, false, req.flash('message', 'Username is already taken.'));
             } else {
 
                 // if there is no user with that username
                 // create the user
                 var newUserMysql            = {};
-                newUserMysql.username       = username;
-                newUserMysql.password       = helpers.generateHash(password); // use the generateHash function in our user model
-                newUserMysql.firstname      = first;
-                newUserMysql.lastname       = last;
-                newUserMysql.email          = email;
-                newUserMysql.institution    = inst;
+                newUserMysql.username       = new_user.username;
+                newUserMysql.password       = helpers.generateHash(new_user.password); // use the generateHash function in our user model
+                newUserMysql.firstname     = new_user.firstname;
+                newUserMysql.lastname      = new_user.lastname;
+                newUserMysql.email          = new_user.email;
+                newUserMysql.institution    = new_user.institution;
                 newUserMysql.security_level = 50;  //reg user
                 
                 // todo: why this is in two places? See routes/routes_admin.js:552
                 
-                var insertQuery = queries.insert_new_user(username, password, first, last, email, inst)
+                //var insertQuery = queries.insert_new_user(username, password, first, last, email, inst)
+                var insertQuery = queries.insert_new_user(newUserMysql)
                 
-                db.query(insertQuery,function(err,insert_rows, done){ 
+                db.query(insertQuery, function(err, insert_rows){ 
                     if(err){  // error usually if contact-email-inst index is not unique
                         console.log(insertQuery);
                         console.log(err);
                         return done(null, false, req.flash( 'message', 'There was an error. Please contact us at vamps@mbl.edu to request an account' ));
                     }else{
-                        newUserMysql.user_id = insert_rows.insertId;
-                        ALL_USERS_BY_UID[newUserMysql.user_id] = {
-                            email:      newUserMysql.email,
-                            username:   newUserMysql.username,
-                            last_name:  newUserMysql.lastname,
-                            first_name: newUserMysql.firstname,
-                            institution:newUserMysql.institution,
+                        new_user.user_id = insert_rows.insertId;
+                        ALL_USERS_BY_UID[new_user.user_id] = {
+                            email:      new_user.email,
+                            username:   new_user.username,
+                            last_name:  new_user.lastname,
+                            first_name: new_user.firstname,
+                            institution:new_user.institution,
                         }
-                        return done(null, newUserMysql);
-                    }
-                   
+                        return done(null, new_user);
+                    }                   
                 });
             }
     });
 
 }
 //
-//
-//
-// var checkUserName = function(username){
-//     reg = /[^A-Za-z0-9]/;   // allow alphanumeric ONLY!
-//     a = (reg.test(username));  
-//     //console.log(a)  
-//     return a;
-// }
 //
 //
 //
