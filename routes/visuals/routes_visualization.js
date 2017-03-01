@@ -652,7 +652,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
 
     var distmtx_file_name = ts+'_distance.csv';
     var distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
-
+    var dist_json_file = path.join(pwd,'tmp', ts+'_distance.json')
     var options = {
      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
        args :       [ '-in', biom_file, '-metric', metric, '--function', 'dheatmap', '--outdir', path.join(pwd,'tmp'), '--prefix', ts],
@@ -691,6 +691,18 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS
           try{
+            console.log(dist_json_file)
+            fs.readFile(dist_json_file, 'utf8', function (err, distance_matrix) {
+                if (err) throw err;
+                //distance_matrix = JSON.parse(data);
+                res.render('visuals/partials/create_distance_heatmap',{
+                  dm        : distance_matrix,
+                  hash      : JSON.stringify(chosen_id_name_hash),
+                  constants : JSON.stringify(req.CONSTS),
+                  metric    : metric,
+                  ts        : ts
+                });
+            });
             if(req.CONFIG.site == 'vamps' ){
               console.log('VAMPS PRODUCTION -- no print to log');
             }else{
@@ -702,13 +714,13 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
           catch(err){
             distance_matrix = JSON.stringify({'ERROR':err});
           }
-            res.render('visuals/partials/create_distance_heatmap',{
-                  dm        : distance_matrix,
-                  hash      : JSON.stringify(chosen_id_name_hash),
-                  constants : JSON.stringify(req.CONSTS),
-                  metric    : metric,
-                  ts        : ts
-              });
+            // res.render('visuals/partials/create_distance_heatmap',{
+//                   dm        : distance_matrix,
+//                   hash      : JSON.stringify(chosen_id_name_hash),
+//                   constants : JSON.stringify(req.CONSTS),
+//                   metric    : metric,
+//                   ts        : ts
+//               });
 
         }else{
           console.log('output: '+stderr);

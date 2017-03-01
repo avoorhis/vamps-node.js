@@ -250,11 +250,8 @@ th.rotate > div > span  a:hover, a:active {
 	width: 100%;
 	   
 }
-/* Dist HEATMAP */
-#dheatmap_div {
-    margin-right:20px;
-    padding-right:20px;
-}
+
+
 /* Freq HEATMAP */
 #fheatmap_div {
     margin-right:20px;
@@ -288,7 +285,17 @@ th.rotate > div > span  a:hover, a:active {
         height: 100%;
 }
 /* Frequency Heatmap */
-
+#dheatmap_div {
+    margin-right:20px;
+    padding-right:20px;
+}
+.dhmcontainer {  display: table; }
+.dhmrow {display: table-row;line-height: 14px; width: 14px; background:#FFF8DC;}
+.dhmrow .num_cell {display: table-cell; line-height: 14px; width: 14px; border-bottom:1px solid black;border-right:1px solid black;}
+.dhmrow .num_cell p {display: table-cell; font-size:xx-small; width: 14px; line-height: 14px; padding:0 1px;}
+.dhmrow .name_cell {display: table-cell;line-height: 14px; width: 14px; text-align:right;border-bottom:1px solid black;}
+.dhmrow .name_cell p {display: table-cell; font-size:xx-small; width: 14px; line-height: 14px; white-space: nowrap; text-align:right;}
+.dhmrow .cell {display: table-cell; line-height: 14px; width: 14px; border-bottom:1px solid black;border-right:1px solid black;padding:0 7px;cursor:pointer;}
 
 .blue {
     background:blue;
@@ -309,7 +316,6 @@ th.rotate > div > span  a:hover, a:active {
 .heat_map_td{
   width: 15px ;
   height: 10px;
-
   cursor:pointer;
 }
 .cell {

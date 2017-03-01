@@ -1,59 +1,18 @@
 <%  var colors = JSON.parse(constants).HEATMAP_COLORS %>
 <%  var id_order = JSON.parse(hash).ids %>
-<%  var name_order = JSON.parse(hash).names %>
+<%  var no = JSON.parse(hash).names %>
 <%  var dm = JSON.parse(dm) %>
-<center>
-	<center>
-		<small>
-	      <span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span>
-	    </small>
-	</center>
-<br>
-<form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/view_selection'>
-<table border='1' id='drag_table' class='heatmap_table center_table' >
-	<tr class='nodrag nodrop' ><td></td>
-	   <td>
-		  
-		  <div id='ds_save_order_div'>
-			  <button type='submit' id='ds_save_order_btn' class='btn btn-xs btn-default'>Save Order</button>
-              <span class='label blue' bgcolor='blue'>Similar (0.0)</span> <span class='label red' bgcolor='red'>Dissimilar (1.0)</span>
-			  <imput type='hidden' id='' name='resorted' value='1' >
-		  </div>
-	   </td>
-		<% for(i=1; i<=name_order.length; i++) { %>		      
-	          <td><div class='cell'></div></td>  
-		<% } %>
-	</tr>
-		<% n=1 %>
-		<% for(var x in name_order) { %>
-		<% 	var x_dname = name_order[x] %>
-	        <tr id='<%= x_dname %>'>
-	        <td  id='<%= x_dname %>' class='dragHandle ds_cell'><%= n.toString() %></td>
-	        <td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value="<%= id_order[x] %>" ><%= x_dname %></td>
-		<%    for(var y in name_order) { %>
-		<%        var y_dname = name_order[y] %>
-		<% 				if(x_dname in dm && y_dname in dm[x_dname]){ %>
-		<%					var dist = dm[x_dname][y_dname].toFixed(5);  %>
-		<%      		var svalue = Math.round( dm[x_dname][y_dname] * 15 ); %>
-		<% 				} else{ %>
-		<%          var dist = 1 %>
-		<%          var svalue = 1 * 15 %> 
-		<% 				} %>
-		<%      	var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+ metric+'-|-'+dist; %>
-		<%        if(x_dname === y_dname){ %>
-		        	    	<td id='' class='heat_map_td' bgcolor='#000'></td>
-		<%        }else{ %>		     	
-	                  <td id='<%= id %>' class='heat_map_td tooltip_viz' bgcolor='#<%= colors[svalue] %>' 
-	                    		onclick="window.open('/visuals/bar_double?did1=<%= id_order[x] %>&did2=<%= id_order[y] %>&ts=<%= ts %>&dist=<%= dist %>&order=alphaDown', '_blank')"  >
-													&nbsp;&nbsp;&nbsp;&nbsp;  <!-- needed for png image -->
-	                  </td>
-		<%        } %>		        
-		<%  	} %>
-		<%  	n++ %>
-	</tr>
-		 
-		<%  } %>
-</table>
-</form>
-</center>
-		    
+
+<!-- 
+This version is css only (no tables) but also no row dragging :( 
+It was written because it allows heatmaps of more than 1000 datasets.
+But because it is not an html <table> structure rowdragging doesn't work
+-->
+<% var dataset_count_cutoff = 500 %>
+<% if( no.length > dataset_count_cutoff ){ %>
+    <p>You have chosen more than <%= dataset_count_cutoff %> datasets which means you will not have row-dragging capabilities.</p>
+    <% include create_distance_heatmapCSS.html %>
+<% }else{ %>
+    <% include create_distance_heatmapTable.html %>
+<% } %>
+
