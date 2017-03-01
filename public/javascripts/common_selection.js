@@ -175,10 +175,8 @@ function create_piecharts(imagetype, ts, mtx) {
             
             var ds = ''; // PLACEHOLDER for TT
             var pct = (cnt * 100 / total).toFixed(2);
-            var id = 'piecharts-|-'+unit_list[i]+'-|-'+cnt.toString()+'-|-'+pct;
-            //alert(unit_list[i]+'-|-'+cnt.toString()+'-|-'+total+'-|-'+pct)
-            return id; // ip of each rectangle should be datasetname-|-unitname-|-count
-           
+            var id = 'pc/'+unit_list[i]+'/'+cnt.toString()+'/'+pct;
+            return id;           
         })
         .attr("class","tooltip_viz")
         .style("fill", function(d, i) {
@@ -457,9 +455,8 @@ function create_doublebar_svg_object(svg, props, data, ts) {
             //console.log(this._parentNode.__data__['total']);
             var ds = ''; // PLACEHOLDER for TT
             var pct = (cnt * 100 / total).toFixed(2);
-            var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct; 
-            return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
-            //return this._parentNode.__data__.DatasetName + '-|-' + d.id + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+            var id = 'bc/' + d.name + '/'+ cnt.toString() + '/' + pct; 
+            return id;  
           }) 
 
           .attr("class","tooltip_viz")
@@ -503,8 +500,8 @@ function create_singlebar_svg_object(svg, props, data, filename) {
                   var cnt =  d.cnt; //mtx_local.data[i];
                   var total = d.total;  //mtx_local.total;
                   var pct = (cnt * 100 / total).toFixed(2);
-                  var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct;
-                  return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
+                  var id = 'bc/' + d.name + '/'+ cnt.toString() + '/' + pct;
+                  return id;   
                 })
           .attr("class","tooltip_viz");
 }
@@ -566,9 +563,8 @@ function create_svg_object(svg, props, data, ts) {
             //console.log(this._parentNode.__data__['total']);
             var ds = ''; // PLACEHOLDER for TT
             var pct = (cnt * 100 / total).toFixed(2);
-            var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct; 
-            return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
-            //return this._parentNode.__data__.DatasetName + '-|-' + d.id + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+            var id = 'bc/' + d.name + '/'+ cnt.toString() + '/' + pct; 
+            return id;   
           }) 
 
           .attr("class","tooltip_viz")

@@ -136,6 +136,7 @@ if(metric=='horn'){
 main_label=paste("VAMPS Frequency Heatmap\n--Taxonomic Level:",depth,"\n--Clustering: ",text)
 dtaxa<-vegdist(x, method=dist)  # drows
 d<-vegdist(t(x), method=dist, na.rm=TRUE)  # dcols
+#d<t(x)
 distance_file = paste(tmp_path,'/',prefix,'_distance.R',sep='')
 write.table(as.matrix(d),file=distance_file)
 
@@ -173,13 +174,11 @@ mypalette6<-colorRampPalette(brewer.pal(12,"Paired"))(256)
 
 x1<-scale(x, center=FALSE, scale=colSums(x))
 
-
 #print(x1)
 
-
 pheatmap(x1,  scale="none", color=mypalette6,
-			clustering_distance_rows=dtaxa,
-			clustering_distance_cols=d, margins=c(15,r_margin),
+			cluster_cols = FALSE, cluster_rows=TRUE, clustering_distance_rows=dtaxa,
+			 margins=c(15,r_margin),
 		   fontsize_row=fontsize_row, cellwidth=12, cellheight=6, main=main_label)
 
 
