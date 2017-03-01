@@ -51,7 +51,7 @@ router.get('/your_data', helpers.isLoggedIn, function get_your_data(req, res) {
     // Should create empty directory for any user projects
     // that are in database BUT NOT in PROJECT_INFORMATION_BY_PID
     // this will allow adding to or deleteing these empty projects.
-    console.log(PROJECT_INFORMATION_BY_PNAME['seek'])
+    //console.log(PROJECT_INFORMATION_BY_PNAME['seek'])
     connection.query(queries.get_projects_queryUID(req.user.user_id), function (err, rows, fields) {
         for(n in rows){
             pid = rows[n].project_id
@@ -314,13 +314,12 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
 // AAV Oct 2016
 router.get('/import_choices/*_fasta', [helpers.isLoggedIn], function (req, res) {
   var url_parts = url.parse(req.url);
+  var project = req.query.project || ''
   var import_type = url_parts.pathname.split("/").slice(-1)[0];
-  
+  console.log('in import_choices/*_fasta; project='+project)
   //console.log(url_parts);
   //console.log('in GET /import_choices/*_fasta')
-  var project = req.query.project || ''
-  //console.log('proj',project)
-  //console.log('import_type',import_type)
+  console.log('import_type',import_type)
   //'/import_choices/multi_fasta', 'multi_fasta'
   user_project_info = {}
   //console.log(PROJECT_INFORMATION_BY_PID)
@@ -332,6 +331,8 @@ router.get('/import_choices/*_fasta', [helpers.isLoggedIn], function (req, res) 
 //           console.log('pid',pid)
 //     }       
 //   }
+	var q = queries.get_projects_queryUID(req.user.user_id)
+	console.log(q)
   connection.query(queries.get_projects_queryUID(req.user.user_id), function (err, rows, fields) {
       if (err)
       {
@@ -980,7 +981,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
     rdp_cmd1 = options.scriptPath + '/vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene;
     rdp_cmd2 = options.scriptPath + '/vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP';
     rdp_cmd3 = options.scriptPath + '/vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site;
-    rdp_cmd4 = options.scriptPath + '/vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE;
+    rdp_cmd4 = options.scriptPath + '/vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE;
 
     script_name = 'rdp_script.sh';
     status_params.statusOK = 'OK-RDP';
@@ -1299,10 +1300,10 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
                 'ds_count':DATASET_IDS_BY_PID[pid].length               
         };
         if(DATASET_IDS_BY_PID[pid].length == 0){
-            project_info[p].status.taxonomy = 'No Datasets'
+            project_info[p].status.taxonomy = 'No Datasets (NOT on VAMPS)'
             project_info[p].status.seq_count = 0
         }else{
-            project_info[p].status.taxonomy = 'Taxonomic Data Available'
+            project_info[p].status.taxonomy = 'Taxonomic Data Available (project on VAMPS)'
             project_info[p].status.seq_count = ALL_PCOUNTS_BY_PID[pid]
         }
         pnames.push(p);
@@ -1375,7 +1376,7 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
                       project_info[project_name].validation[dsname+'.fa.unique'] = helpers.fileExists(unique_file);  // true or false
                   }
                   project_info[project_name].pid = 0;
-                  project_info[project_name].status.taxonomy = 'No Taxonomic Assignments Yet';
+                  project_info[project_name].status.taxonomy = 'No Taxonomic Assignments Yet (NOT on VAMPS)';
                   project_info[project_name].classified_by = 'none';
               }
               project_info[project_name].status.empty_dir = 'false'
@@ -2625,10 +2626,10 @@ router.post('/add_project',
     form.field("new_project_description", "Description").trim().required().entityEncode().maxLength(255),
     form.field("new_funding", "Funding").trim().required().is(/[0-9]/),
     // post.super.nested.property
-    form.field("first_name", "First Name").trim().required().entityEncode().isAlphanumeric(),
-    form.field("last_name", "Last Name").trim().required().entityEncode().isAlphanumeric(),
+    form.field("first_name", "First Name").trim().required().entityEncode().is(/^[a-zA-Z-]+$/),
+    form.field("last_name", "Last Name").trim().required().entityEncode().is(/^[a-zA-Z-]+$/),
     form.field("email", "Email").trim().isEmail().required().entityEncode(),
-    form.field("new_institution", "Institution").trim().required().entityEncode().isAlphanumeric()
+    form.field("new_institution", "Institution").trim().required().entityEncode()
    ),
   function (req, res) {
 

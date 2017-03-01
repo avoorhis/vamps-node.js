@@ -74,12 +74,14 @@ def go_distance(args):
     dm2 = {}
     dm3 = {}
 
-    out_file = os.path.join(args.outdir, args.prefix+'_distance.csv')
-    out_fp = open(out_file,'w')
+    #out_file = os.path.join(args.outdir, args.prefix+'_distance.csv')
+    out_file2 = os.path.join(args.outdir, args.prefix+'_distance.json')
+    #out_fp = open(out_file,'w')
+    out_fp2 = open(out_file2,'w')
 
-    file_header_line = ','.join([x['id'] for x in data['columns']]) + '\n'
+    #file_header_line = ','.join([x['id'] for x in data['columns']]) + '\n'
 
-    out_fp.write(file_header_line)
+    #out_fp.write(file_header_line)
 
 
     for row,name in enumerate(edited_dataset_list):
@@ -92,10 +94,12 @@ def go_distance(args):
                 dm2[name][data['columns'][col]['id'].encode("utf-8")]  = dm1[row][col]
                 dm3[(name.encode("utf-8"), (data['columns'][col]['id'].encode("utf-8")))]  = dm1[row][col]
             file_data_line = file_data_line[:-1]+'\n'
-            out_fp.write(file_data_line)
+            #out_fp.write(file_data_line)
 
 
-    out_fp.close()
+    #out_fp.close()
+    out_fp2.write(json.dumps(dm2))
+    out_fp2.close()
     #print(edited_dataset_list)
     #print(dm1)
     #print dm3
@@ -534,7 +538,8 @@ if __name__ == '__main__':
 
     if args.function == 'dheatmap':
         # IMPORTANT print for dist heatmap
-        print(json.dumps(dm2))
+        #print(json.dumps(dm2))
+        pass
 
     if args.function == 'dendrogram-svg':
         newick = dendrogram_svg(args, dm3)

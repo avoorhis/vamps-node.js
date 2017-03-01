@@ -1,0 +1,40 @@
+<!-- 
+This version is css only (no tables) but also no row dragging :( 
+It was written because it allows heatmaps of more than 1000 datasets.
+But because it is not an html <table> structure rowdragging doesn't work
+-->
+<div class="dhmcontainer">
+<% k=1 %>
+<% for(var n in no) { %>
+<%      var x = no[n] %>
+        <div class='dhmrow'>
+        <div class='num_cell' >
+             <p class=''><%= k %></p>
+        </div>
+        <div class='name_cell' >
+             <p class=''><%= x %></p>
+        </div>
+<%      for(var m in no) { %> 
+        
+<%          var y = no[m] %>
+<% 	        if(x in dm && y in dm[x]){ %>
+<%					var d = dm[x][y].toFixed(5);  %>
+<%      		    var val = Math.round( dm[x][y] * 15 ); %>
+<% 	        } else{ %>
+<%                  var d = 1 %>
+<%                  var val = 1 * 15 %> 
+<% 	        } %>
+<%      	var id = 'dheatmap-|-'+x+'-|-'+y+'-|-'+ metric+'-|-'+d; %>
+<%          if(x === y){ %>
+		        <div id='' class='cell' style="background-color:#000"
+<%          }else{ %>	
+                <div id='<%= id %>' class='cell tooltip_viz' style="background-color:#<%= colors[val] %>"
+<%          } %>            
+            onclick="window.open('/visuals/bar_double?did1=<%= id_order[n] %>&did2=<%= id_order[m] %>&ts=<%= ts %>&dist=<%= d %>&order=alphaDown', '_blank')"  >
+            </div>
+<%      } %>
+        </div>
+<%      k++ %>
+<% } %>
+
+<div>

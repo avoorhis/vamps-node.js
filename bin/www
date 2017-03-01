@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env /usr/local/www/vamps/software/node/bin/node
 
 // CL: nodemon bin/www testing
 

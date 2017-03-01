@@ -1,0 +1,66 @@
+
+<!--
+This version uses drag_rows.js to allow dragging (reordering) of rows.
+However the length of the entire page prevents heatmap resolution when more
+than about 700 datasets are selected (depends on length of dataset name).
+-->
+<center>
+	<center>
+		<small>
+	      <span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span>
+	    </small>
+	</center>
+<br>
+<form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/view_selection'>
+<table border='1' id='drag_table' class='heatmap_table center_table' >
+	<tr class='nodrag nodrop' ><td></td>
+	   <td>
+		  
+		  <div id='ds_save_order_div'>
+			  <button type='submit' id='ds_save_order_btn' class='btn btn-xs btn-default'>Save Order</button>
+              <span class='label blue' bgcolor='blue'>Similar (0.0)</span> <span class='label red' bgcolor='red'>Dissimilar (1.0)</span>
+			  <imput type='hidden' id='' name='resorted' value='1' >
+		  </div>
+	   </td>
+		<% for(i=1; i<=no.length; i++) { %>		      
+	          <td><div class='cell'></div></td>  
+		<% } %>
+	</tr>
+		<% k=1 %>
+		<% for(var n in no) { %>
+		<% 	var x = no[n] %>
+	        <tr id='<%= x %>'>
+	        <td  id='<%= x %>' class='dragHandle ds_cell'><%= k %></td>
+	        <td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value="<%= id_order[n] %>" ><%= x %></td>
+		<%    for(var m in no) { %>
+		
+		
+		<%        var y = no[m] %>
+		<% 			if(x in dm && y in dm[x]){ %>
+		<%					var d = dm[x][y].toFixed(5);  %>
+		<%      		    var sv = Math.round( dm[x][y] * 15 ); %>
+		<% 			} else{ %>
+		<%                  var d = 1 %>
+		<%                  var sv = 1 * 15 %> 
+		<% 			} %>
+		<%      	var id = 'dheatmap-|-'+x+'-|-'+y+'-|-'+ metric+'-|-'+d; %>
+		<%        if(x === y){ %>
+		        	    	<td id='' class='heat_map_td' bgcolor='#000'></td>
+		<%        }else{ %>		     	
+	                  
+	                  <td id='<%= id %>' class='heat_map_td tooltip_viz' bgcolor='#<%= colors[sv] %>' 
+	                    		onclick="window.open('/visuals/bar_double?did1=<%= id_order[n] %>&did2=<%= id_order[m] %>&ts=<%= ts %>&dist=<%= d %>&order=alphaDown', '_blank')"  >
+													&nbsp;&nbsp;&nbsp;&nbsp;  <!-- needed for png image -->
+	                  </td>
+		<%        } %>	
+		
+			        
+		<%  	} %>
+		<%  	k++ %>
+	</tr>
+		 
+		<%  } %>
+</table>
+</form>
+</center>
+		    
