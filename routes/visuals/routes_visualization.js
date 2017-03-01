@@ -639,7 +639,11 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
         console.log(req.body);
     }
     console.log('req.body hm');
-
+    
+    if(chosen_id_name_hash.ids.length > req.CONFIG.dataset_count_for_visuals_max){
+        res.send('Too many datasets selected; Maximum for the heat map is '+dataset_count_max);
+        return;
+    }
     var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
@@ -699,7 +703,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
                   dm        : distance_matrix,
                   hash      : JSON.stringify(chosen_id_name_hash),
                   constants : JSON.stringify(req.CONSTS),
-                  metric    : metric,
+                  mt        : metric,
                   ts        : ts
                 });
             });
@@ -718,7 +722,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
 //                   dm        : distance_matrix,
 //                   hash      : JSON.stringify(chosen_id_name_hash),
 //                   constants : JSON.stringify(req.CONSTS),
-//                   metric    : metric,
+//                   mt     : metric,
 //                   ts        : ts
 //               });
 
@@ -744,7 +748,10 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
   var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
   var html = '';
   var title = 'VAMPS';
-
+  if(chosen_id_name_hash.ids.length > req.CONFIG.dataset_count_for_visuals_max){
+        res.send('Too many datasets selected; Maximum for the heat map is '+dataset_count_max);
+        return;
+  }
   var distmtx_file_name = ts+'_distance.csv';
   var distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
   var metric = visual_post_items.selected_distance
