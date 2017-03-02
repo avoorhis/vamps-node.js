@@ -646,7 +646,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
                 } else {
                     var newUserMysql            = {};
                     newUserMysql.username       = new_user.username;
-                    newUserMysql.password       = helpers.generateHash(new_user.password); // use the generateHash function in our user model
+                    newUserMysql.password       = new_user.password;  /// Password is HASHed in queries_admin
                     newUserMysql.firstname      = new_user.firstname;
                     newUserMysql.lastname       = new_user.lastname;
                     newUserMysql.email          = new_user.email;
