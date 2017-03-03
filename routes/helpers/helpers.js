@@ -33,7 +33,6 @@ module.exports = {
 
   // route middleware to make sure a user is an aministrator
   isAdmin: function (req, res, next) {
-
       if (req.user.security_level === 1) {
         console.log("Hurray! USER is an Admin:",req.user.username);
         return next();
@@ -48,7 +47,7 @@ module.exports = {
       res.redirect('/');
       return;
   }
-
+  
 };
 
 /** Benchmarking

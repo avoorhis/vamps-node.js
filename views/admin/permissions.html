@@ -1,7 +1,7 @@
 <% include ../add_ins/begin.ejs %>
 
 <% //pinfo = JSON.parse(project_info) %>
-<% uinfo = JSON.parse(user_info) %>
+<% uinfo  = JSON.parse(user_info) %>
 <% porder = JSON.parse(project_order) %>
 <% uorder = JSON.parse(user_order) %>
 
@@ -46,8 +46,10 @@
 						<div id='' style='height:50px;overflow:auto;padding-left:5px;'>
 				<% 			for(n in porder[p].permissions) { %>
 				<% 				user_id = porder[p].permissions[n] %>
-				<% 				user    = uinfo[user_id].username %>
-									<%= user %><br>
+				<%              if( uinfo.hasOwnProperty(user_id)) { %>
+				<% 				    user    = uinfo[user_id]['username'] %>
+									<%= user %> id:<%= user_id %><br>
+				<%              } %>
 				<% 			} %>
 						</div>
 
