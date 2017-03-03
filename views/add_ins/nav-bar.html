@@ -51,7 +51,9 @@
               <% } else { %>
                   <a href="/users/profile" class="navbar-link"><%= user.username %></a>
                   <% if (user.security_level === 1) { %>
-                    (<span class='color_red '>admin</span>)
+                    (<span class='color_red '>Admin User</span>)
+                  <% }else if(user.security_level === 10){ %>
+                    (<span class='color_blue'>MBL Power User</span>)
                   <% } %>
                   | <a href='/users/logout'> logout</a>
               <% } %>

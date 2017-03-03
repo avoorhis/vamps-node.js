@@ -7,6 +7,12 @@ var constants = {};
 //// DO NOT CHANGE ANYTHING BELOW HERE ////
 ///////////////////////////////////////////
 ///////////////////////////////////////////
+// constants.security_levels = {
+//         'admin'     : 1,    // access to all the data and administrative pages 
+//         'mbluser'   : 10,   // access to all the projects
+//         'reguser'   : 50,   // public access plus other projects with permission
+//         'guest'     : 99    // public access
+//         }
 constants.dataset_count_for_visuals_max     = 1100
 constants.dataset_count_for_visuals_cutoff  = 500
 constants.show_nas   = {"raw":false,"string":"--"};  // if raw==true will show class_NA, genus_NA etc; else show string (tax table only; not biom file)

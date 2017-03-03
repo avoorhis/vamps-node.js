@@ -57,7 +57,7 @@ router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
     project_order = []
     user_order = get_name_ordered_users_list()
     project_order = get_name_ordered_projects_list()
-    
+    //console.log(JSON.stringify(ALL_USERS_BY_UID))
     res.render('admin/permissions', {
               title     :'VAMPS Site Administration',
               message   : req.flash('message'),
@@ -149,9 +149,10 @@ router.post('/admin_update', [helpers.isLoggedIn, helpers.isAdmin], function(req
    if(new_status !== ALL_USERS_BY_UID[selected_uid].status){
       q = queries.alter_security_level(new_status, selected_uid)  //"UPDATE user set security_level='"+new_status+"' WHERE user_id='"+selected_uid+"'";
 
-      if(new_status === 1){
+      if(new_status === 1){     // Admin user
             ALL_USERS_BY_UID[selected_uid].status = 1;
-            //ALL_USERS_BY_UID[selected_uid].permissions = [];
+      }else if(new_status === 10){
+            ALL_USERS_BY_UID[selected_uid].status = 10;  // MBL user
       }else{
             // give owner sole permissions
             ALL_USERS_BY_UID[selected_uid].status = 50;
