@@ -346,13 +346,16 @@ function filter_by_portal() {
   var datasets_local = {};
   var portal_id =   document.getElementById('portal_select').value;
   var target = "/visuals/livesearch_portal/"+portal_id;
+  
   if(portal_local){
     target += '?portal='+portal_local;
   }
   var xmlhttp = new XMLHttpRequest(); 
   
   document.getElementById('env_source_select').value='.....';
-  document.getElementById('metadata_select').value='.....';
+  document.getElementById('metadata_select1').value='.....';
+  document.getElementById('metadata_select2').value='.....';
+  document.getElementById('metadata_select3').value='.....';
   document.getElementById('pname_search_id').value='';
   document.getElementById('status_pub').checked=0;
   document.getElementById('status_priv').checked=0;
