@@ -1,7 +1,9 @@
 
 <% dscounts = JSON.parse(dscounts)  %>
 <% metadata  = JSON.parse(mdata)    %>
-<% abstracts  = JSON.parse(abstracts) %>
+<% //abstracts  = JSON.parse(abstracts) %>
+<% abstract_data  = JSON.parse(abstract_info) %>
+
 <% var reveal_all = false %>
 <% if(data.public || data.permissions.indexOf(user.user_id) != -1 || user.security_level == 1 || user.security_level == 10){ %>
 <%  reveal_all = true %>
@@ -77,6 +79,11 @@
 		  <table class="table table-striped">
 		  <tr><td>Project Name: </td><td><%= data.project %></td></tr>
 		  <tr><td>Project_id:</td><td> <%= pid %></td></tr>
+		  <% if(project_prefix.substring(0,3) == 'DCO' && abstract_data[project_prefix].id != ''){ %>
+		    <tr><td>DCO id</td>
+		        <td><a href='<%= abstract_data[project_prefix].url %>' target='_blank'> <%= abstract_data[project_prefix].id %></td>
+		    </tr>
+		  <% } %>
 		  <tr><td>Title:</td><td> <%= data.title %></td></tr>
 		  <tr><td>Description:</td><td> <%= data.description %></td></tr>
 
@@ -90,7 +97,7 @@
       <tr><td>Date (processed or uploaded):</td><td></td></tr>
       <% if(data.public || data.permissions.indexOf(user.user_id) != -1) { %>
           <tr><td>Project Sequence Count:</td><td> <%= pcount %></td></tr>
-          <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr>
+          <!-- <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr> -->
           <tr><td>Number of samples (datasets):</td><td> <%= dsinfo.length %></td></tr>
       <% } %>
 		  </table>
@@ -99,8 +106,10 @@
 		<!-- ABSTRACT -->
 		<div role="tabpanel" class="tab-pane" id="abstract">
 		    <% if(user.security_level == 1 || user.security_level == 10){ %>
-		  		<% for(n in abstracts){ %>
-		  		    <br><a href='/static/abstracts/<%= abstracts[n] %>' target='_blank'><%= abstracts[n] %></a><br>
+		  	  <% if(abstract_data.hasOwnProperty(project_prefix)){ %>
+		  		<% for(n in abstract_data[project_prefix].pdfs){ %>		  		
+		  		    <br><a href='/static/abstracts/<%= abstract_data[project_prefix].pdfs[n] %>' target='_blank'><%= abstract_data[project_prefix].pdfs[n] %></a><br>
+		  	  <% } %>
 		  		<% } %>
 		  	<% } %>
 		  	
