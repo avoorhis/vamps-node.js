@@ -104,15 +104,12 @@
   	</div> <!-- End project div -->
 <% if(reveal_all) { %>
 		<!-- ABSTRACT -->
-		<div role="tabpanel" class="tab-pane" id="abstract">
-		    <% if(user.security_level == 1 || user.security_level == 10){ %>
+		<div role="tabpanel" class="tab-pane" id="abstract">		    
 		  	  <% if(abstract_data.hasOwnProperty(project_prefix)){ %>
 		  		<% for(n in abstract_data[project_prefix].pdfs){ %>		  		
 		  		    <br><a href='/static/abstracts/<%= abstract_data[project_prefix].pdfs[n] %>' target='_blank'><%= abstract_data[project_prefix].pdfs[n] %></a><br>
 		  	  <% } %>
-		  		<% } %>
-		  	<% } %>
-		  	
+		  		<% } %>		  	
 		</div> <!-- End abstract div -->
 
 		<!-- DATASETS -->
