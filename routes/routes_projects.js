@@ -92,37 +92,56 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
       }
       
-        var abstracts = {}
-        var external_links = {}
-        var project_parts = info.project.split('_')
-        var project_prefix = project_parts[0]+'_'+project_parts[1]
-        abstracts[project_prefix] = []
         
-        fs.readdir(path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts'), (err, files) => {
-                if(err){console.log(err);next}
-                if(info.project.substring(0,3) == 'DCO'){
-                    files.forEach(file => {
-                        var file_parts = file.split('_')                 
-                        if(file_parts[0]+'_'+file_parts[1] == project_prefix){
-                            abstracts[project_prefix].push(file)
-                        }
-                    });
-                }
-                 res.render('projects/profile', {
-                                          title  : 'VAMPS Project',
-                                          info: JSON.stringify(info),
-                                          dsinfo: dsinfo,
-                                          dscounts: JSON.stringify(dscounts),
-                                          pid: req.params.id,
-                                          mdata: JSON.stringify(mdata),
-                                          pcount: project_count,
-                                          message: '',                                          
-                                          abstracts: JSON.stringify(abstracts[project_prefix]),
-                                          user   : req.user,
-                                          hostname: req.CONFIG.hostname,
-                                        });
+        
+        var project_parts = info.project.split('_')
+        var project_prefix = info.project
+        if(project_parts.length >= 2 ){
+            project_prefix = project_parts[0]+'_'+project_parts[1]
+        }
+        
+       
+        
+        // fs.readdir(path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts'), (err, files) => {
+//                 if(err){console.log(err);next}
+//                 if(info.project.substring(0,3) == 'DCO'){
+//                     files.forEach(file => {
+//                         var file_parts = file.split('_')                 
+//                         if(file_parts[0]+'_'+file_parts[1] == project_prefix){
+//                             abstracts[project_prefix].push(file)
+//                         }
+//                     });
+//                 }
+        var info_file = ''
+        var abstract_data = {}
+        if(info.project.substring(0,3) == 'DCO'){
+                info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','DCO_info.json')
+                //console.log(info_file)
+                //fs.readFileSync(info_file, 'utf8', function (err, data) {
+                    //if (err) {console.log(err);return};
+                abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+        }
+                    //console.log(obj_data)
+                    res.render('projects/profile', {
+                                                  title  : 'VAMPS Project',
+                                                  info: JSON.stringify(info),
+                                                  project_prefix : project_prefix,
+                                                  dsinfo: dsinfo,
+                                                  dscounts: JSON.stringify(dscounts),
+                                                  pid: req.params.id,
+                                                  mdata: JSON.stringify(mdata),
+                                                  pcount: project_count,
+                                                  message: '',                                          
+                                                  //abstracts: JSON.stringify(abstracts[project_prefix]),
+                                                  abstract_info : JSON.stringify(abstract_data),
+                                                  user   : req.user,
+                                                  hostname: req.CONFIG.hostname,
+                                                });
                 
-        })
+                   
+        
+        
+      
       
       
       }else{
