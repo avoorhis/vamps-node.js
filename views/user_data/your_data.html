@@ -140,6 +140,24 @@
 		              </div>
 		          </div>
 		  </div>
+		  <div class="<%= span %>">
+		          <div class="panel panel-default">
+		              <div class="panel-heading">
+		                <% if(user.username == 'guest'){ %>
+		                    <a disabled class="btn btn-sm btn-primary" href='/user_data/update_metadata'>Update Metadata</a>
+		                <% }else if(user && user.security_level == 1 || hostname.substring(0,7) !== 'bpcweb8'){ %>
+		                    <a class="btn btn-sm btn-primary" href='/user_data/update_metadata'>Update Metadata</a>
+		                <% }else{ %>
+		                    <a disabled class="btn btn-sm btn-primary" href='/user_data/update_metadata'>Update Metadata</a>
+		                <% } %>
+		                
+		                    
+		              </div>
+		              <div class="panel-body">
+		              	Upload or edit metadata for your projects.
+		              </div>
+		          </div>
+		  </div>
 		</div>
 	</div>
 

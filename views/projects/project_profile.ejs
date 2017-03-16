@@ -1,12 +1,15 @@
 
 <% dscounts = JSON.parse(dscounts)  %>
 <% metadata  = JSON.parse(mdata)    %>
-<% abstract  = JSON.parse(abstract) %>
+<% abstracts  = JSON.parse(abstracts) %>
 <% var reveal_all = false %>
-<% if(data.public || data.permissions.indexOf(user.user_id) != -1) { %>
+<% if(data.public || data.permissions.indexOf(user.user_id) != -1 || user.security_level == 1 || user.security_level == 10){ %>
 <%  reveal_all = true %>
 <% } %>
 <img src='/images/dna01.jpg' alt="Helix Cartoon"  height='80' >
+
+
+
 
 <div role="tabpanel" >
 
@@ -14,7 +17,7 @@
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#project" aria-controls="project" role="tab" data-toggle="tab">Project</a></li>
 <% if(reveal_all) { %>
-		<li role="presentation" >              <a href="#abstract" aria-controls="abstract" role="tab" data-toggle="tab">Abstract</a></li>
+		<li role="presentation" >              <a href="#abstract" aria-controls="abstract" role="tab" data-toggle="tab">Abstract/Proposal</a></li>
 
 		<li role="presentation" >              <a href="#datasets" aria-controls="datasets" role="tab" data-toggle="tab">Datasets</a></li>
 
@@ -95,9 +98,12 @@
 <% if(reveal_all) { %>
 		<!-- ABSTRACT -->
 		<div role="tabpanel" class="tab-pane" id="abstract">
-		    <table class="table">
-		  		<tr><td><%= abstract.abstract %></td></tr>
-		  	</table>
+		    <% if(user.security_level == 1 || user.security_level == 10){ %>
+		  		<% for(n in abstracts){ %>
+		  		    <br><a href='/static/abstracts/<%= abstracts[n] %>' target='_blank'><%= abstracts[n] %></a><br>
+		  		<% } %>
+		  	<% } %>
+		  	
 		</div> <!-- End abstract div -->
 
 		<!-- DATASETS -->
