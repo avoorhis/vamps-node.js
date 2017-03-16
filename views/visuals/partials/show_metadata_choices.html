@@ -3,14 +3,15 @@
 <%   var req_meta_found  = JSON.parse(md_req) %>
 
 <% no_of_cols = 7 %>
-<span class='normal_weight' >Here is the available metadata for your selected datasets:</span>
+<span class='normal_weight' >These are the available metadata for your selected datasets:</span>
 
 
-  <hr><strong>Common Fields:</strong>
+  <hr><strong>Common (Required) Fields:</strong>
 <% if(req_meta_found.length === 0 ){ %>
  <br>None Found
 <% }else{ %>
   [ <input type='checkbox' id='toggle_meta_r_btn' name='taxa_ckbx_toggle'  value='all' \><span class='tiny_font'> Toggle</span> ]
+  <small><i>All datasets should have these set.</i></small>
   <table class='small_font'>
     <tr>
       
@@ -39,6 +40,7 @@
  <br>None Found
 <% }else{ %>
 [ <input type='checkbox' id='toggle_meta_c_btn' name='meta_ckbx_toggle' value='all' \><span class='tiny_font'> Toggle</span> ]
+<small><i>These metadata parameters are optional for sample inclusion.</i></small>
 
 <table class='small_font'>
   <tr>

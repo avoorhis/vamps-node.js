@@ -452,12 +452,7 @@ constants.VISUAL_THUMBNAILS = {
 
 ]};
 
-// constants.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date",
-//                                 "common_name", "country", "depth", "description",
-//                                 "dna_region", "domain", "elevation", "env_biome",
-//                                 "env_feature", "env_matter", "env_package",
-//                                 "fragment_name", "latitude", "longitude",
-//                                 "public", "sequencing_platform", "taxon_id"];
+
 constants.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date",
                                 "common_name", "country", "depth", "description",
                                 "dna_region", "domain", "elevation", "env_biome",
