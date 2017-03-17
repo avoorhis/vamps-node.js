@@ -1,5 +1,6 @@
 <% include ../add_ins/begin.ejs %>
-<% data = JSON.parse(info)          %>
+<% data = JSON.parse(info)      %>
+<% portals = JSON.parse(portal)    %>
 
   <% if (message) { %>
   	<div class="alert_flash_message"><%= message %></div>
@@ -9,7 +10,20 @@
 <% } %>
   <div class='title fa fa-anchor'>Project Profile</div>
   
-  <div class='subtitle'><%= data.project %></div>
+  <div class='subtitle'><%= data.project %><br>
+  <% if(Object.getOwnPropertyNames(portals).length > 0){ %>
+    <small>Member of: 
+    <% x=0 %>
+    <% for(p in portals){ %>
+        <% if(x > 0){ %>
+            and
+        <% }%>
+        <a href='/portals/<%= portals[p].portal %>'><%= portals[p].title %></a>
+        <% x += 1%>
+    <% } %>
+    </small>
+  <% } %>  
+  </div>
   <!-- PROJECT INFORMATION -->
   <div id='project_info_div'>
     <% include project_profile %>
