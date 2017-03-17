@@ -99,19 +99,22 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         if(project_parts.length >= 2 ){
             project_prefix = project_parts[0]+'_'+project_parts[1]
         }
-        
+        var member_of_portal = {}
+        for(p in req.CONSTS.PORTALS){
+            //console.log(p +' -- '+project_parts[0])
+            if(req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) != -1 
+                    || req.CONSTS.PORTALS[p].projects.indexOf(info.project) != -1
+                    || req.CONSTS.PORTALS[p].suffixes.indexOf(project_parts[project_parts.length - 1]) != -1
+                ){
+                //console.log(req.CONSTS.PORTALS[p])
+                member_of_portal[p] = {}
+                member_of_portal[p].title = req.CONSTS.PORTALS[p].maintitle
+                member_of_portal[p].portal = p
+            }
+        }
        
         
-        // fs.readdir(path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts'), (err, files) => {
-//                 if(err){console.log(err);next}
-//                 if(info.project.substring(0,3) == 'DCO'){
-//                     files.forEach(file => {
-//                         var file_parts = file.split('_')                 
-//                         if(file_parts[0]+'_'+file_parts[1] == project_prefix){
-//                             abstracts[project_prefix].push(file)
-//                         }
-//                     });
-//                 }
+//console.log(member_of_portal)
         var info_file = ''
         var abstract_data = {}
         if(info.project.substring(0,3) == 'DCO'){
@@ -131,7 +134,8 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                                                   pid: req.params.id,
                                                   mdata: JSON.stringify(mdata),
                                                   pcount: project_count,
-                                                  message: '',                                          
+                                                  message: '',  
+                                                  portal :    JSON.stringify(member_of_portal),                                    
                                                   //abstracts: JSON.stringify(abstracts[project_prefix]),
                                                   abstract_info : JSON.stringify(abstract_data),
                                                   user   : req.user,

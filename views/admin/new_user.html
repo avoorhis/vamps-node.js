@@ -25,7 +25,7 @@
 <% if (message) { %>
       <div class="message alert_flash_message"><%= message %></div>
 <% } %><br>
-   <div id='new_user_div' class='table' >All fields are required
+   <div id='new_user_div' class='table' >All fields are required -- <a class='button' href='new_user'>Clear Form</a>
         <form id='' name='newuser_form' method='POST' action='new_user' >          
           <ul>
           <li> <input id='username'       name='username'       type="text"  value='<%= uname %>'     \> Username <span class='tiny_font'>(alphanumeric only. no spaces.)</span></li>
