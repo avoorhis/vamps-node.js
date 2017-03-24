@@ -1040,7 +1040,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
         req.flash('successMessage', classifier + " has been started for project: '" + project + "'");
         res.redirect("/user_data/your_projects");
         process.umask(oldmask);
-        console.log("The file was saved!");
+        console.log("1-The file was saved!");
       }
   }); 
 });
@@ -2373,7 +2373,7 @@ function writeAndRunScript(req, res, project, options, data_repository)
             {
               RunAndCheck(script_path, nodelog, req, project, res, successCode, ok_code_options);
               process.umask(oldmask);
-              console.log("The file was saved!");
+              console.log("2-The file was saved!");
             }
         }); // end writeFile
       });     //   END data_repository chmod
@@ -3080,7 +3080,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
       .pipe(gzip)
       .pipe(wstream)
       .on('finish', function readableStreamOnFinish() {  // finished
-        console.log('done compressing and writing file');
+        console.log('done compressing and writing file: fasta');
         console.log(JSON.stringify(req.user));
         var info = {
               to : req.user.email,
@@ -3144,19 +3144,21 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
       project = PROJECT_INFORMATION_BY_PID[pid].project
     }
     
-    //file_name = 'metadata-'+timestamp+'_'+project+'.csv.gz';
-    file_name = 'metadata-'+timestamp+'_'+project+'.csv';
-    out_file_path = path.join('tmp', file_name);
+    file_name = 'metadata-'+timestamp+'_'+project+'.csv.gz';
+    //file_name = 'metadata-'+timestamp+'_'+project+'.csv';
+    out_file_path = path.join(user_dir, file_name);
     header = "";
   } else {   // partial projects
     dids = chosen_id_name_hash.ids;
     file_name = 'metadata-'+timestamp+'.csv.gz';
-    out_file_path = path.join(user_dir, file_name);
+    //out_file_path = path.join(user_dir, file_name);
+    out_file_path = path.join('tmp', file_name);
     header = 'Project: various'+"\n\t";
   }
     console.log('dids');
     console.log(dids);
-
+console.log('user_dir')
+console.log(user_dir)
 
     var gzip = zlib.createGzip();
     var myrows = {}; // myrows[mdname] == [] list of values
@@ -3220,19 +3222,19 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
               }
             }
         }else{
-            var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-            mdgroup.refresh();
-            Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-                if(mdname != 'id'){
-                    val = mdgroup[mdname];
-                    if(mdname in myrows){
-                        myrows[mdname].push(val);
-                      }else{
-                        myrows[mdname] = [];
-                        myrows[mdname].push(val);
-                      }
-                }
-            });
+           //  var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+//             mdgroup.refresh();
+//             Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
+//                 if(mdname != 'id'){
+//                     val = mdgroup[mdname];
+//                     if(mdname in myrows){
+//                         myrows[mdname].push(val);
+//                       }else{
+//                         myrows[mdname] = [];
+//                         myrows[mdname].push(val);
+//                       }
+//                 }
+//             });
         }
 
 
@@ -3251,23 +3253,26 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
           filetxt += "\t"+myrows[mdname][i];
         }
         filetxt += "\n";
+        console.log('filetxt')
+		console.log(filetxt)
         rs.push(filetxt);
       }
     }
     rs.push(null);
     rs
-      //.pipe(gzip)
+      .pipe(gzip)
       .pipe(wstream)
       .on('finish', function readableStreamOnFinish() {  // finished
-        console.log('done compressing and writing file');
+        console.log('done compressing and writing file: metadata');
         //console.log(JSON.stringify(req.user))
-        var info = {
-              to : req.user.email,
-              from : "vamps@mbl.edu",
-              subject : "metadata is ready",
-              text : "Your metadata file is ready here:\n\nhttps://vamps2.mbl.edu\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
-        };
-        helpers.send_mail(info);
+        
+  //       var info = {
+//               to : req.user.email,
+//               from : "vamps@mbl.edu",
+//               subject : "metadata is ready",
+//               text : "Your metadata file is ready here:\n\nhttps://vamps2.mbl.edu\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
+//         };
+//         helpers.send_mail(info);
         //req.flash('Done')
 
 
