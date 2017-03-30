@@ -858,7 +858,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
   //mdata = convert_names_to_ids_for_storage(mdata)
   //console.log('mdata2')
   //console.log(mdata)
-  //id_list = ['fragment_name','country','dna_region','domain','env_biome','env_feature','env_matter','env_package','sequencing_platform']
+  
   for(did in mdata){
     new_required_metadata[did] = {}
     new_custom_metadata[did] = {}
@@ -1097,10 +1097,10 @@ function get_env_package_index(val){
   }
   return idx
 }
-function get_fragment_name_index(val){
+function get_target_gene_index(val){
   var idx = -1
-  for(key in MD_FRAGMENT_NAME){
-    if(val != '' && MD_FRAGMENT_NAME[key] == val.toLowerCase()){
+  for(key in MD_TARGET_GENE){
+    if(val != '' && MD_TARGET_GENE[key] == val.toLowerCase()){
         idx = key;
     }
   }
@@ -1115,10 +1115,10 @@ function get_domain_index(val){
   }
   return idx
 }
-function get_country_index(val){
+function get_geo_loc_name_index(val){
   var idx = -1
-  for(key in MD_COUNTRY){
-    if(val != '' && MD_COUNTRY[key] == val.toLowerCase()){
+  for(key in MD_ENV_TERM){
+    if(val != '' && MD_ENV_TERM[key] == val.toLowerCase()){
         idx = key;
     }
   }
@@ -1146,6 +1146,33 @@ function get_env_term_index(val){
   var idx = -1
   for(key in MD_ENV_TERM){
     if(val != '' && MD_ENV_TERM[key] == val.toLowerCase()){
+        idx = key;
+    }
+  }
+  return idx
+}
+function get_adapter_sequence_index(val){
+  var idx = -1
+  for(key in MD_ADAPTER_SEQUENCE){
+    if(val != '' && MD_ADAPTER_SEQUENCE[key] == val){
+        idx = key;
+    }
+  }
+  return idx
+}
+function get_index_sequence_index(val){
+  var idx = -1
+  for(key in MD_INDEX_SEQUENCE){
+    if(val != '' && MD_INDEX_SEQUENCE[key] == val){
+        idx = key;
+    }
+  }
+  return idx
+}
+function get_primer_suite_index(val){
+  var idx = -1
+  for(key in MD_PRIMER_SUITE){
+    if(val != '' && MD_PRIMER_SUITE[key] == val){
         idx = key;
     }
   }
@@ -1195,20 +1222,20 @@ function validate_metadata(req, obj){
                               validation.error = true
                               validation.msg.push(ds+": The 'env_package' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'fragment_name'){
-                            if(get_fragment_name_index(val) == -1){
+                          }else if(mdname == 'target_gene'){
+                            if(get_target_gene_index(val) == -1){
                               validation.error = true
-                              validation.msg.push(ds+": The 'fragment_name' value ('"+val+"') is not in the allowed list.")
+                              validation.msg.push(ds+": The 'target_gene' value ('"+val+"') is not in the allowed list.")
                             }
                           }else if(mdname == 'domain'){
                             if(get_domain_index(val) == -1){
                               validation.error = true
                               validation.msg.push(ds+": The 'domain' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'country'){
-                            if(get_country_index(val) == -1){
+                          }else if(mdname == 'geo_loc_name'){
+                            if(get_geo_loc_name_index(val) == -1){
                               validation.error = true
-                              validation.msg.push(ds+": The 'country' value ('"+val+"') is not in the allowed list.")
+                              validation.msg.push(ds+": The 'geo_loc_name' value ('"+val+"') is not in the allowed list.")
                             }
                           }else if(mdname == 'sequencing_platform'){
                             if(get_sequencing_platform_index(val) == -1){
@@ -1235,39 +1262,18 @@ function validate_metadata(req, obj){
                               validation.error = true
                               validation.msg.push(ds+": The 'env_feature' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'assigned_from_geo'){
-                            if(val.toLowerCase() != 'y' && val.toLowerCase() != 'n'){
-                              validation.error = true
-                              validation.msg.push(ds+": The 'assigned_from_geo' value ('"+val+"') must be either 'y' or 'n'.")
-                            }
                           }else if(mdname == 'collection_date'){
                             valid = helpers.isValidMySQLDate(val)
                             if( ! valid){
                               validation.error = true
                               validation.msg.push(ds+": The 'collection_date' value ('"+val+"') is not a valid date (valid format: YYYY-MM-DD).")
                             }
-                          }else if(mdname == 'altitude' || mdname == 'elevation' || mdname == 'depth'){
-                            if(isNaN(val)){
-                              validation.error = true
-                              validation.msg.push(ds+": The '"+mdname+"' value ('"+val+"') must be a number.")
-                            }
                           }else if(mdname == 'latitude' || mdname == 'longitude'){
                             if(isNaN(val)){
                               validation.error = true
                               validation.msg.push(ds+": Latitude and Longitude must be in decimal degrees.")
                             }
-                          }else if(mdname == 'description' || mdname == 'common_name'){
-                              if(val == ''){
-                                validation.error = true
-                                validation.msg.push(ds+": The value for '"+mdname+"' is not allowed to be empty.")
-                              }
-                          }else if(mdname == 'taxon_id'){
-                              if(isNaN(val)){
-                                validation.error = true
-                                validation.msg.push(ds+": The value for '"+mdname+"' must be a integer from the NCBI database.")
-                              }
                           }
-
 
                               //validation.data[dset]['req_data'].push(val)
                   }
@@ -1286,12 +1292,12 @@ function convert_ids_to_names_for_display(obj){
             mdname = mdname.toLowerCase()
             if(mdname == 'env_package_id'){
               new_obj[did]['env_package'] = MD_ENV_PACKAGE[obj[did][mdname]]
-            }else if(mdname == 'fragment_name_id'){
-              new_obj[did]['fragment_name'] = MD_FRAGMENT_NAME[obj[did][mdname]]
+            }else if(mdname == 'target_gene_id'){
+              new_obj[did]['target_gene'] = MD_TARGET_GENE[obj[did][mdname]]
             }else if(mdname == 'domain_id'){
               new_obj[did]['domain'] = MD_DOMAIN[obj[did][mdname]]
-            }else if(mdname == 'country_id'){
-              new_obj[did]['country'] = MD_COUNTRY[obj[did][mdname]]
+            }else if(mdname == 'geo_loc_name_id'){
+              new_obj[did]['geo_loc_name'] = MD_ENV_TERM[obj[did][mdname]]
             }else if(mdname == 'sequencing_platform_id'){
               new_obj[did]['sequencing_platform'] = MD_SEQUENCING_PLATFORM[obj[did][mdname]]
             }else if(mdname == 'dna_region_id'){
@@ -1302,6 +1308,12 @@ function convert_ids_to_names_for_display(obj){
               new_obj[did]['env_biome'] = MD_ENV_TERM[obj[did][mdname]]
             }else if(mdname == 'env_feature_id'){
               new_obj[did]['env_feature'] = MD_ENV_TERM[obj[did][mdname]]
+            }else if(mdname == 'adapter_sequence_id'){
+              new_obj[did]['adapter_sequence'] = MD_ADAPTER_SEQUENCE[obj[did][mdname]]
+            }else if(mdname == 'index_sequence_id'){
+              new_obj[did]['index_sequence'] = MD_INDEX_SEQUENCE[obj[did][mdname]]
+            }else if(mdname == 'primer_suite_id'){
+              new_obj[did]['primer_suite'] = MD_PRIMER_SUITE[obj[did][mdname]]
             }else{
               new_obj[did][mdname] = obj[did][mdname]
           }
@@ -1316,10 +1328,10 @@ function convert_names_to_ids_for_storage(obj){
         new_obj[did] = {}
       for(mdname in obj[did]){
         var val = obj[did][mdname]
-        if(mdname == 'fragment_name'){
-            new_obj[did]['fragment_name_id']   = get_fragment_name_index(val)
-        }else if(mdname == 'country'){
-            new_obj[did]['country_id']          = get_country_index(val)
+        if(mdname == 'target_gene'){
+            new_obj[did]['target_gene_id']   = get_target_gene_index(val)
+        }else if(mdname == 'geo_loc_name'){
+            new_obj[did]['geo_loc_name_id']          = get_geo_loc_name_index(val)
         }else if(mdname == 'dna_region'){
             new_obj[did]['dna_region_id']      = get_dna_region_index(val)
         }else if(mdname == 'domain'){
@@ -1334,6 +1346,12 @@ function convert_names_to_ids_for_storage(obj){
             new_obj[did]['env_package_id']     = get_env_package_index(val)
         }else if(mdname == 'sequencing_platform'){
             new_obj[did]['sequencing_platform_id']  = get_sequencing_platform_index(val)
+        }else if(mdname == 'adaptor_sequence'){
+            new_obj[did]['adaptor_sequence_id']  = get_adaptor_sequence_index(val)
+        }else if(mdname == 'index_sequence'){
+            new_obj[did]['index_sequence_id']  = get_index_sequence_index(val)
+        }else if(mdname == 'primer_suite'){
+            new_obj[did]['primer_suite_id']  = get_primer_suite_index(val)
         }else{
             new_obj[did][mdname] =  val
         }

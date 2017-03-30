@@ -30,10 +30,12 @@ module.exports.get_datasets = function(callback){
   MD_ENV_PACKAGE              = {};
   MD_DOMAIN                   = {};
   MD_DNA_REGION               = {};
-  MD_FRAGMENT_NAME            = {};
+  MD_TARGET_GENE              = {};
   MD_SEQUENCING_PLATFORM      = {};
-  MD_COUNTRY                  = {};
-
+  MD_ADAPTER_SEQUENCE         = {};
+  MD_INDEX_SEQUENCE           = {};
+  MD_PRIMER_SUITE             = {};
+  
   connection.query(queries.get_select_datasets_query(), function(err, rows, fields){
       if (err)  {
 		    console.log('Query error: ' + err);
@@ -105,17 +107,7 @@ module.exports.get_datasets = function(callback){
       }
       console.log(' INITIALIZING MD_ENV_TERM');
   });
-  connection.query(queries.get_select_country_query(), function(err, rows, fields){    
-      if (err)  {
-        console.log('Query error: ' + err);
-        console.log(err.stack);
-        process.exit(1);
-      } else {
-        helpers.get_select_country_query(rows);          
-      }
-      console.log(' INITIALIZING MD_COUNTRY');
-  });
-
+  
   
   connection.query(queries.get_select_env_package_query(), function(err, rows, fields){    
       if (err)  {
@@ -147,16 +139,18 @@ module.exports.get_datasets = function(callback){
       }
       console.log(' INITIALIZING MD_DNA_REGION');
   });
-  connection.query(queries.get_select_fragment_name_query(), function(err, rows, fields){    
+ 
+  connection.query(queries.get_select_target_gene_query(), function(err, rows, fields){    
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
         process.exit(1);
       } else {
-        helpers.get_select_fragment_name_query(rows);          
+        helpers.get_select_target_gene_query(rows);          
       }
-      console.log(' INITIALIZING MD_FRAGMENT_NAME');
+      console.log(' INITIALIZING MD_TARGET_GENE');
   });
+ 
   connection.query(queries.get_select_sequencing_platform_query(), function(err, rows, fields){    
       if (err)  {
         console.log('Query error: ' + err);
@@ -167,7 +161,36 @@ module.exports.get_datasets = function(callback){
       }
       console.log(' INITIALIZING MD_SEQUENCING_PLATFORM');
   });
-
+    connection.query(queries.get_select_adapter_sequence_query(), function(err, rows, fields){    
+      if (err)  {
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
+      } else {
+        helpers.get_select_adapter_sequence_query(rows);          
+      }
+      console.log(' INITIALIZING MD_ADAPTER_SEQUENCE');
+  });
+  connection.query(queries.get_select_index_sequence_query(), function(err, rows, fields){    
+      if (err)  {
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
+      } else {
+        helpers.get_select_index_sequence_query(rows);          
+      }
+      console.log(' INITIALIZING MD_INDEX_SEQUENCE');
+  });
+  connection.query(queries.get_select_primer_suite_query(), function(err, rows, fields){    
+      if (err)  {
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
+      } else {
+        helpers.get_select_primer_suite_query(rows);          
+      }
+      console.log(' INITIALIZING MD_PRIMER_SUITE');
+  });
 
 
   // slow query

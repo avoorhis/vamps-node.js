@@ -3109,12 +3109,15 @@ router.get('/required_metadata_options', function(req, res) {
               message   : req.flash('message'),
               user: req.user,
               md_env_pkg:           JSON.stringify(MD_ENV_PACKAGE),
-            md_country:             JSON.stringify(MD_COUNTRY),
             md_env_term:            JSON.stringify(MD_ENV_TERM),        
             md_sequencing_platform: JSON.stringify(MD_SEQUENCING_PLATFORM),
-            md_fragment_name:       JSON.stringify(MD_FRAGMENT_NAME),
+            md_target_gene:         JSON.stringify(MD_TARGET_GENE),
             md_domain:              JSON.stringify(MD_DOMAIN),
             md_dna_region:          JSON.stringify(MD_DNA_REGION),
+            md_adapter_sequence:    JSON.stringify(MD_ADAPTER_SEQUENCE),	
+            md_index_sequence:      JSON.stringify(MD_INDEX_SEQUENCE),
+            md_primer_suite:        JSON.stringify(MD_PRIMER_SUITE),
+            
             hostname: req.CONFIG.hostname,
     });
 });
@@ -3184,15 +3187,15 @@ console.log(user_dir)
               if(mdname == 'env_package_id'){
                   test = 'env_package'
                   value = MD_ENV_PACKAGE[AllMetadata[did][mdname]]
-                }else if(mdname == 'fragment_name_id'){
-                  test = 'fragment_name'
-                  value = MD_FRAGMENT_NAME[AllMetadata[did][mdname]]
+                }else if(mdname == 'target_gene_id'){
+                  test = 'target_gene'
+                  value = MD_TARGET_GENE[AllMetadata[did][mdname]]
                 }else if(mdname == 'domain_id'){
                   test = 'domain'
                   value = MD_DOMAIN[AllMetadata[did][mdname]]
-                }else if(mdname == 'country_id'){
-                  test = 'country'
-                  value = MD_COUNTRY[AllMetadata[did][mdname]]
+                }else if(mdname == 'geo_loc_name_id'){
+                  test = 'geo_loc_name'
+                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
                 }else if(mdname == 'sequencing_platform_id'){
                   test = 'sequencing_platform'
                   value = MD_SEQUENCING_PLATFORM[AllMetadata[did][mdname]]
@@ -3208,7 +3211,16 @@ console.log(user_dir)
                 }else if(mdname == 'env_feature_id'){
                   test = 'env_feature'
                   value = MD_ENV_TERM[AllMetadata[did][mdname]]
-                }else{
+                }else if(mdname == 'adapter_sequence_id'){
+				  test = 'adapter_sequence'
+				  value = MD_ADAPTER_SEQUENCE[AllMetadata[did][mdname]]
+				}else if(mdname == 'index_sequence_id'){
+				  test = 'index_sequence'
+				  value = MD_INDEX_SEQUENCE[AllMetadata[did][mdname]]
+				}else if(mdname == 'primer_suite_id'){
+				  test = 'primer_suite'
+				  value = MD_PRIMER_SUITE[AllMetadata[did][mdname]]
+				}else{
                   test = mdname
                   value = AllMetadata[did][mdname]
               }
@@ -3348,15 +3360,15 @@ router.get('/download_selected_metadata', helpers.isLoggedIn, function download_
             if(mdname == 'env_package_id'){
               test = 'env_package'
               value = MD_ENV_PACKAGE[AllMetadata[did][mdname]]
-            }else if(mdname == 'fragment_name_id'){
-              test = 'fragment_name'
-              value = MD_FRAGMENT_NAME[AllMetadata[did][mdname]]
+            }else if(mdname == 'target_gene_id'){
+              test = 'target_gene'
+              value = MD_TARGET_GENE[AllMetadata[did][mdname]]
             }else if(mdname == 'domain_id'){
               test = 'domain'
               value = MD_DOMAIN[AllMetadata[did][mdname]]
-            }else if(mdname == 'country_id'){
-              test = 'country'
-              value = MD_COUNTRY[AllMetadata[did][mdname]]
+            }else if(mdname == 'geo_loc_name_id'){
+              test = 'geo_loc_name'
+              value = MD_ENV_TERM[AllMetadata[did][mdname]]
             }else if(mdname == 'sequencing_platform_id'){
               test = 'sequencing_platform'
               value = MD_SEQUENCING_PLATFORM[AllMetadata[did][mdname]]
@@ -3372,6 +3384,15 @@ router.get('/download_selected_metadata', helpers.isLoggedIn, function download_
             }else if(mdname == 'env_feature_id'){
               test = 'env_feature'
               value = MD_ENV_TERM[AllMetadata[did][mdname]]
+            }else if(mdname == 'adapter_sequence_id'){
+              test = 'adapter_sequence'
+              value = MD_ADAPTER_SEQUENCE[AllMetadata[did][mdname]]
+            }else if(mdname == 'index_sequence_id'){
+              test = 'index_sequence'
+              value = MD_INDEX_SEQUENCE[AllMetadata[did][mdname]]
+            }else if(mdname == 'primer_suite_id'){
+              test = 'primer_suite'
+              value = MD_PRIMER_SUITE[AllMetadata[did][mdname]]
             }else{
               test = mdname
               value = AllMetadata[did][mdname]

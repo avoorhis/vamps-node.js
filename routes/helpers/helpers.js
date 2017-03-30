@@ -201,17 +201,17 @@ module.exports.run_ranks_query = function(rank,rows){
 
 module.exports.get_select_env_term_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_ENV_TERM[rows[i].term_id] = rows[i].term_name.toLowerCase();
+        MD_ENV_TERM[rows[i].term_id] = rows[i].term_name;
     }
 };
 module.exports.get_select_env_package_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_ENV_PACKAGE[rows[i].env_package_id] = rows[i].env_package.toLowerCase();
+        MD_ENV_PACKAGE[rows[i].env_package_id] = rows[i].env_package;
     }
 };
 module.exports.get_select_domain_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_DOMAIN[rows[i].domain_id] = rows[i].domain.toLowerCase();
+        MD_DOMAIN[rows[i].domain_id] = rows[i].domain;
     }
 };
 module.exports.get_select_dna_region_query = function(rows){
@@ -219,19 +219,29 @@ module.exports.get_select_dna_region_query = function(rows){
         MD_DNA_REGION[rows[i].dna_region_id] = rows[i].dna_region.toLowerCase();
     }
 };
-module.exports.get_select_fragment_name_query = function(rows){
+module.exports.get_select_target_gene_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_FRAGMENT_NAME[rows[i].fragment_name_id] = rows[i].fragment_name.toLowerCase();
+        MD_TARGET_GENE[rows[i].target_gene_id] = rows[i].target_gene.toLowerCase();
     }
 };
 module.exports.get_select_sequencing_platform_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_SEQUENCING_PLATFORM[rows[i].sequencing_platform_id] = rows[i].sequencing_platform.toLowerCase();
+        MD_SEQUENCING_PLATFORM[rows[i].sequencing_platform_id] = rows[i].sequencing_platform;
     }
 };
-module.exports.get_select_country_query = function(rows){
+module.exports.get_select_adapter_sequence_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_COUNTRY[rows[i].country_id] = rows[i].country.toLowerCase();
+        MD_ADAPTER_SEQUENCE[rows[i].run_key_id] = rows[i].run_key;
+    }
+};
+module.exports.get_select_index_sequence_query = function(rows){
+    for (var i=0; i < rows.length; i++) {
+        MD_INDEX_SEQUENCE[rows[i].illumina_index_id] = rows[i].illumina_index;
+    }
+};
+module.exports.get_select_primer_suite_query = function(rows){
+    for (var i=0; i < rows.length; i++) {
+        MD_PRIMER_SUITE[rows[i].primer_suite_id] = rows[i].primer_suite;
     }
 };
 // TODO: "This function's cyclomatic complexity is too high. (6)"
