@@ -383,9 +383,9 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
       //console.log(q)
       return q;
   },
-  get_select_fragment_name_query: function() {      
-      var q = "SELECT fragment_name_id, fragment_name\n"
-      q += " FROM `fragment_name`\n"
+  get_select_target_gene_query: function() {      
+      var q = "SELECT target_gene_id, target_gene\n"
+      q += " FROM `target_gene`\n"
       //console.log(q)
       return q;
   },
@@ -395,11 +395,24 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
       //console.log(q)
       return q;
   },
-  get_select_country_query: function() {      
-      var q = "SELECT country_id, country\n"
-      q += " FROM `country`\n"
+  get_select_adapter_sequence_query: function() {      
+      var q = "SELECT run_key_id, run_key\n"
+      q += " FROM `run_key`\n"
       //console.log(q)
       return q;
   },
+  get_select_index_sequence_query: function() {      
+      var q = "SELECT illumina_index_id, illumina_index\n"
+      q += " FROM `illumina_index`\n"
+      //console.log(q)
+      return q;
+  },
+  get_select_primer_suite_query: function() {      
+      var q = "SELECT primer_suite_id, primer_suite\n"
+      q += " FROM `primer_suite`\n"
+      //console.log(q)
+      return q;
+  }
+  
  
 } // end of module.exports

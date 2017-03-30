@@ -467,7 +467,6 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
     //console.log('taxa_tree_dict_map_by_db_id_n_rank["3_domain"] = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["3_domain"]));
 
-
     //console.log('1(silva)-taxa_tree_dict_map_by_db_id_n_rank["140108_domain"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["140108_domain"]));
     //console.log('1(silva)-taxa_tree_dict_map_by_db_id_n_rank["2357955_family"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["2357955_family"]));
 
@@ -479,7 +478,7 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
 
     //console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
     //console.log(PROJECT_INFORMATION_BY_PID)
-    //console.log(MD_FRAGMENT_NAME)
+    //console.log(MD_PRIMER_SUITE)
     //console.log(MD_SEQUENCING_PLATFORM)
     //console.log(AllMetadata[88])
   }

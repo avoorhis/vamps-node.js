@@ -437,13 +437,7 @@ create_new_chosen_id_name_hash: function(dataset_list) {
 //
 //
 //
-// MD_ENV_TERM                 = {};
-//   MD_ENV_PACKAGE              = {};
-//   MD_DOMAIN                   = {};
-//   MD_DNA_REGION               = {};
-//   MD_FRAGMENT_NAME            = {};
-//   MD_SEQUENCING_PLATFORM      = {};
-//   MD_COUNTRY                  = {};
+
 get_metadata_selection: function(dataset_ids, metadata, type) {
     req_metadata = CONSTS.REQ_METADATA_FIELDS;
     //console.log('req_metadata '+req_metadata)
@@ -460,12 +454,12 @@ get_metadata_selection: function(dataset_ids, metadata, type) {
             test = 'env_package'
           }else if(field == 'dna_region_id'){
             test = 'dna_region'
-          }else if(field == 'country_id'){
-            test = 'country'
+          }else if(field == 'geo_loc_name_id'){
+            test = 'geo_loc_name'
           }else if(field == 'domain_id'){
             test = 'domain'
-          }else if(field == 'fragment_name_id'){
-            test = 'fragment_name'
+          }else if(field == 'target_gene_id'){
+            test = 'target_gene'
           }else if(field == 'sequencing_platform_id'){
             test = 'sequencing_platform'
           }else if(field == 'env_biome_id'){
@@ -474,6 +468,12 @@ get_metadata_selection: function(dataset_ids, metadata, type) {
             test = 'env_matter'
           }else if(field == 'env_feature_id'){
             test = 'env_feature'
+          }else if(field == 'adapter_sequence_id'){
+            test = 'adapter_sequence'
+          }else if(field == 'index_sequence_id'){
+            test = 'index_sequence'
+          }else if(field == 'primer_suite_id'){
+            test = 'primer_suite'
           }else{
             test = field
           }

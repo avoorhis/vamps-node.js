@@ -150,12 +150,12 @@ constants.DISTANCECHOICES = { choices: [
     ]};
 
 constants.PORTALS = {
-    'CMP':{ name:'Coral Microbiome Project',
+    'CMP':{ name:'Coral Microbiome Portal',
             subtext:'CMP',
             projects:['LTR_MCR_Bv6','LTR_MCR_Av6','LTR_MCR_Ev9','ICM_CCB_Bv6','ICM_CCB_Av6'],
             prefixes:['CMP'],
             suffixes:[],
-            pagetitle:'Coral Microbe Project Portal',
+            pagetitle:'Coral Microbe Portal',
             maintitle:'Coral Microbiome Portal',
             subtitle: 'The Coral Microbiome Portal (CMP) database brings together next generation sequencing data of coral-associated microorganisms from studies conducted thoughout the world’s reefs.',
             thumb:'/images/portals/cmp_thumbnail.jpg',
@@ -453,26 +453,29 @@ constants.VISUAL_THUMBNAILS = {
 ]};
 
 
-constants.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date",
-                                "common_name", "country", "depth", "description",
-                                "dna_region", "domain", "elevation", "env_biome",
-                                "env_feature", "env_matter", "env_package",
-                                "fragment_name", "latitude", "longitude",
-                                "sequencing_platform", "taxon_id"];
+// constants.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date",
+//                                 "common_name", "country", "depth", "description",
+//                                 "dna_region", "domain", "elevation", "env_biome",
+//                                 "env_feature", "env_matter", "env_package",
+//                                 "fragment_name", "latitude", "longitude",
+//                                 "sequencing_platform", "taxon_id"];
 
-// constants.REQ_METADATA_FIELDS = [   "collection_date",  // format?? yyyy-mm-dd
-//                                     "geo_loc_name",     // name of country or longhurst zone
-//                                     "description",      // brief description of this sample
-//                                     "dna_region",       // v6, v4v5 v6v4 .... (from mysql table) 
-//                                     "domain",           // Bacteria, Archaea or Eukarya (from mysql table)
-//                                     "env_biome",
-//                                     "env_feature", 
-//                                     "env_matter", 
-//                                     "env_package",      // (from mysql table) 
-//                                     "target_gene",      // 16s or 18s (from mysql table)
-//                                     "latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-//                                     "longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-//                                     "sequencing_platform"];
+constants.REQ_METADATA_FIELDS = [   "collection_date",  // format?? yyyy-mm-dd
+                                    "geo_loc_name",     // name of country or longhurst zone
+                                    "dna_region",       // v6, v4v5 v6v4 .... (from mysql table) 
+                                    "domain",           // Bacteria, Archaea or Eukarya (from mysql table)
+                                    "env_biome",
+                                    "env_feature", 
+                                    "env_matter", 
+                                    "env_package",      // (from mysql table) 
+                                    "target_gene",      // 16s or 18s (from mysql table)
+                                    "latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+                                    "longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+                                    "sequencing_platform",
+                                    "adaptor_sequence",
+                                    "index_sequence",
+                                    "primer_suite"
+                                    ];
 constants.CONTACT_US_SUBJECTS = ["Account Request", "Report a Problem", "Announce a Publication", "Other"];
 
 module.exports = constants;

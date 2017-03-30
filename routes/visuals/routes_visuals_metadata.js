@@ -41,16 +41,22 @@ module.exports = {
 						value = MD_ENV_TERM[METADATA[did]['env_feature_id']]
 					}else if(mdname == 'env_matter'){
 						value = MD_ENV_TERM[METADATA[did]['env_matter_id']]
-					}else if(mdname == 'country'){
-						value = MD_COUNTRY[METADATA[did]['country_id']]
-					}else if(mdname == 'country'){
+					}else if(mdname == 'geo_loc_name'){
+						value = MD_ENV_TERM[METADATA[did]['geo_loc_name_id']]
+					}else if(mdname == 'sequencing_platform'){
 						value = MD_SEQUENCING_PLATFORM[METADATA[did]['sequencing_platform_id']]
 					}else if(mdname == 'dna_region'){
 						value = MD_DNA_REGION[METADATA[did]['dna_region_id']]
-					}else if(mdname == 'fragment_name'){
-						value = MD_FRAGMENT_NAME[METADATA[did]['fragmant_name_id']]
+					}else if(mdname == 'target_gene'){
+						value = MD_TARGET_GENE[METADATA[did]['target_gene_id']]
 					}else if(mdname == 'domain'){
 						value = MD_DOMAIN[METADATA[did]['domain_id']]
+					}else if(mdname == 'adapter_sequence'){
+						value = MD_ADAPTER_SEQUENCE[METADATA[did]['adapter_sequence_id']]
+					}else if(mdname == 'index_sequence'){
+						value = MD_INDEX_SEQUENCE[METADATA[did]['index_sequence_id']]
+					}else if(mdname == 'primer_suite'){
+						value = MD_PRIMER_SUITE[METADATA[did]['primer_suite_id']]
 					}else{
 						value = METADATA[did][mdname];
 					}
@@ -117,7 +123,7 @@ module.exports = {
 				
 				for (var n in metadata_names) {				
 					var mdname = metadata_names[n];
-          if(mdname == 'env_package'){
+                    if(mdname == 'env_package'){
 						value = MD_ENV_PACKAGE[METADATA[did]['env_package_id']]
 						console.log(mdname+' VALUE: '+JSON.stringify(METADATA[did]))
 						console.log(MD_ENV_PACKAGE)
@@ -127,18 +133,24 @@ module.exports = {
 						value = MD_ENV_TERM[METADATA[did]['env_feature_id']]
 					}else if(mdname == 'env_matter'){
 						value = MD_ENV_TERM[METADATA[did]['env_matter_id']]
-					}else if(mdname == 'country'){
-						value = MD_COUNTRY[METADATA[did]['country_id']]
-					}else if(mdname == 'country'){
+					}else if(mdname == 'geo_loc_name'){
+						value = MD_ENV_TERM[METADATA[did]['geo_loc_name_id']]
+					}else if(mdname == 'sequencing_platform'){
 						value = MD_SEQUENCING_PLATFORM[METADATA[did]['sequencing_platform_id']]
 					}else if(mdname == 'dna_region'){
 						value = MD_DNA_REGION[METADATA[did]['dna_region_id']]
-					}else if(mdname == 'fragment_name'){
-						value = MD_FRAGMENT_NAME[METADATA[did]['fragment_name_id']]
+					}else if(mdname == 'target_gene'){
+						value = MD_TARGET_GENE[METADATA[did]['target_gene_id']]
 					}else if(mdname == 'sequencing_platform'){
 						value = MD_SEQUENCING_PLATFORM[METADATA[did]['sequencing_platform_id']]
 					}else if(mdname == 'domain'){
 						value = MD_DOMAIN[METADATA[did]['domain_id']]
+					}else if(mdname == 'adapter_sequence'){
+						value = MD_ADAPTER_SEQUENCE[METADATA[did]['adapter_sequence_id']]
+					}else if(mdname == 'index_sequence'){
+						value = MD_INDEX_SEQUENCE[METADATA[did]['index_sequence_id']]
+					}else if(mdname == 'primer_suite'){
+						value = MD_PRIMER_SUITE[METADATA[did]['primer_suite_id']]
 					}else{
 						value = METADATA[did][mdname];
 					}
