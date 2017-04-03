@@ -108,7 +108,8 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
         && req.body.taxbyseq === undefined
         && req.body.taxbyref === undefined
         && req.body.matrix === undefined
-        && req.body.metadata === undefined
+        && req.body.metadata1 === undefined
+        && req.body.metadata2 === undefined
         && req.body.biom === undefined ) {
         req.flash('failMessage', 'Select one or more file formats');
         res.render('user_data/export_selection', {
@@ -147,8 +148,11 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
       if (key === 'taxbyseq') {
         requested_files.push('-taxbyseq_file');
       }
-      if (key === 'metadata') {
-        requested_files.push('-metadata_file');
+      if (key === 'metadata1') {
+        requested_files.push('-metadata_file1');
+      }
+      if (key === 'metadata2') {
+        requested_files.push('-metadata_file2');
       }
       if (key === 'biom') {
         requested_files.push('-biom_file');
@@ -2704,10 +2708,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
   var use_file_taxonomy = req.body.use_tax_from_file;
   var redirect_url = path.join('/user_data', req.url);
 
-  //var p = progress()
-  //req.pipe(p)
-  //p.headers = req.headers
-  //p.on('progress', function (progress) {
+  
 
     /*
     {
@@ -3126,15 +3127,17 @@ router.get('/required_metadata_options', function(req, res) {
 //
 router.post('/download_selected_metadata', helpers.isLoggedIn, function download_metadata(req, res) {
   var db = req.db;
-  console.log('meta POST req.body-->>');
+  console.log('metadata download POST req.body-->>');
+  // here from project info page
   console.log(req.body);
   var timestamp = +new Date();  // millisecs since the epoch!
 
   var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
   helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
   helpers.mkdirSync(user_dir);  // create dir if not exists
+  var orientation = req.body.orientation;
   var dids;
-  var header, project;
+  var project;
   var file_name;
   var out_file_path;
 
@@ -3146,22 +3149,29 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
     }else{
       project = PROJECT_INFORMATION_BY_PID[pid].project
     }
-    
-    file_name = 'metadata-'+timestamp+'_'+project+'.csv.gz';
+    if(orientation == 'cols'){
+    	file_name = 'metadata-samples_in_cols'+timestamp+'_'+project+'.csv.gz';
+    }else{
+    	file_name = 'metadata-samples_in_rows'+timestamp+'_'+project+'.csv.gz';
+    }
     //file_name = 'metadata-'+timestamp+'_'+project+'.csv';
     out_file_path = path.join(user_dir, file_name);
-    header = "";
+    header = "Project: "+project+"\n\t";
   } else {   // partial projects
     dids = chosen_id_name_hash.ids;
-    file_name = 'metadata-'+timestamp+'.csv.gz';
+    if(orientation == 'cols'){
+    	file_name = 'metadata-samples_in_cols'+timestamp+'.csv.gz';
+    }else{
+    	file_name = 'metadata-samples_in_rows'+timestamp+'.csv.gz';
+    }
     //out_file_path = path.join(user_dir, file_name);
     out_file_path = path.join('tmp', file_name);
     header = 'Project: various'+"\n\t";
   }
     console.log('dids');
     console.log(dids);
-console.log('user_dir')
-console.log(user_dir)
+	console.log('user_dir')
+	console.log(user_dir)
 
     var gzip = zlib.createGzip();
     var myrows = {}; // myrows[mdname] == [] list of values
@@ -3169,21 +3179,17 @@ console.log(user_dir)
     var wstream = fs.createWriteStream(out_file_path);
     var rs = new Readable();
     var filetxt;
-
-      for (var i in dids) {
+    var mditems_list = [];
+	var dataset_name_list = []
+    for (var i in dids) {
         did = dids[i];
-        dname = DATASET_NAME_BY_DID[did];
-        if (req.body.download_type == 'whole_project') {
-          header += dname+"\t";
-
-        } else {
-          pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-          header += pname+'--'+dname+"\t";
-        }
-
+        dname = DATASET_NAME_BY_DID[did];        
+        pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+        pjds = pname+'--'+dname
+        dataset_name_list.push(pjds)
         if(HDF5_MDATA === ''){
             for (var mdname in AllMetadata[did]){
-              console.log(mdname)
+              //console.log(mdname)
               if(mdname == 'env_package_id'){
                   test = 'env_package'
                   value = MD_ENV_PACKAGE[AllMetadata[did][mdname]]
@@ -3225,50 +3231,85 @@ console.log(user_dir)
                   value = AllMetadata[did][mdname]
               }
               
-
-              if(test in myrows){
-                myrows[test].push(value);
+              if( mditems_list.indexOf(test) == -1){
+              	mditems_list.push(test)
+              }
+              
+			  if(orientation == 'cols'){
+				  if(test in myrows){
+					//myrows[test].push(value);
+					myrows[test][pjds] = value;
+				  }else{
+					myrows[test] = {};
+					myrows[test][pjds] = value;
+				  }
+              
               }else{
-                myrows[test] = [];
-                myrows[test].push(value);
+              	  if(pjds in myrows){
+					myrows[pjds][test] = value;
+				  }else{
+					myrows[pjds] = [];
+					myrows[pjds][test] = value;
+				  }
+              
               }
             }
         }else{
-           //  var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-//             mdgroup.refresh();
-//             Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-//                 if(mdname != 'id'){
-//                     val = mdgroup[mdname];
-//                     if(mdname in myrows){
-//                         myrows[mdname].push(val);
-//                       }else{
-//                         myrows[mdname] = [];
-//                         myrows[mdname].push(val);
-//                       }
-//                 }
-//             });
+ 
         }
 
-
-
-      }
-
-    // print
+    }
+	var header = '\t';
+	if(orientation == 'cols'){
+       	header += dataset_name_list.sort().join('\t');
+    }else{
+    	header += mditems_list.sort().join('\t');
+    }
+    
+    //console.log(header)
     header += "\n";
     rs.push(header);
+    dnl = dataset_name_list.sort()
+    mdnl = mditems_list.sort()
+    //console.log(mdnl)
+    //console.log(dnl)
     if (Object.keys(myrows).length === 0) {
       rs.push("NO METADATA FOUND\n");
     } else {
-      for (var mdname in myrows) {
-        filetxt = mdname;  // restart sting
-        for (i in myrows[mdname]) {
-          filetxt += "\t"+myrows[mdname][i];
-        }
-        filetxt += "\n";
-        console.log('filetxt')
-		console.log(filetxt)
-        rs.push(filetxt);
+      //keys = Object.keys(myrows).sort();
+      if(orientation == 'cols'){
+      	for(i in mdnl){
+      		filetxt = mdnl[i]
+      		for (n in dnl) {
+          		filetxt += "\t"+myrows[mdnl[i]][dnl[n]];
+        	}
+        	filetxt += "\n";
+        	//console.log(filetxt)
+      		rs.push(filetxt);
+      	}
+      }else{
+      	for(n in dnl){
+      		filetxt = dnl[n]
+      		for (i in mdnl) {
+          		filetxt += "\t"+myrows[dnl[n]][mdnl[i]];
+        	}
+        	filetxt += "\n";
+      		rs.push(filetxt);
+      	}
+      	
       }
+      
+     //  Object.keys(myrows).sort().forEach(function(key) {
+//         filetxt = key;  // restart sting
+//         for (i in myrows[key]) {
+//           filetxt += "\t"+myrows[key][i];
+//         }
+//         filetxt += "\n";
+//         
+//         rs.push(filetxt);
+//       });
+      
+      
     }
     rs.push(null);
     rs
@@ -3276,19 +3317,6 @@ console.log(user_dir)
       .pipe(wstream)
       .on('finish', function readableStreamOnFinish() {  // finished
         console.log('done compressing and writing file: metadata');
-        //console.log(JSON.stringify(req.user))
-        
-  //       var info = {
-//               to : req.user.email,
-//               from : "vamps@mbl.edu",
-//               subject : "metadata is ready",
-//               text : "Your metadata file is ready here:\n\nhttps://vamps2.mbl.edu\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
-//         };
-//         helpers.send_mail(info);
-        //req.flash('Done')
-
-
-
       });
       console.log(path.join(__dirname +'/../' + out_file_path))
       //res.download(path.join(__dirname  +'/../' +  out_file_path))
@@ -3301,7 +3329,7 @@ console.log(user_dir)
 router.get('/download_selected_metadata', helpers.isLoggedIn, function download_metadata(req, res) {
   
   var db = req.db;
-  console.log('meta GET req.body-->>');
+  console.log('metadate download GET req.body-->>');
   
   var timestamp = +new Date();  // millisecs since the epoch!
 
@@ -3627,8 +3655,8 @@ router.post('/download_file', helpers.isLoggedIn, function (req, res) {
 // COPY FILES from tmp directory to user directory
 //
 router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
-    console.log('phyloseq req.body-->>');
-
+    console.log('copy_file_for_download req.body-->>');
+	// these files being copied are already created when the visualization page is reached
     console.log(req.body);
     old_ts = req.body.ts;
     file_type = req.body.file_type;
