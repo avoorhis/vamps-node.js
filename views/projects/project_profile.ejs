@@ -41,7 +41,7 @@
 		  	  			in a 'downloads' directory where it can be retrieved.
 		  	  			The user should get an email when its ready.
 		  	   -->
-		  	  <button type='button' class='btn btn-sm btn-link' id='download_project_fasta_form_id' >Download Fasta File</button>
+		  	  <button type='button' class='btn btn-sm btn-link' id='download_project_fasta_form_id' >Create Fasta File</button>
 		  	  <input type='hidden' name='download_type' value='whole_project' />
 		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
 		  	  <input type='hidden' name='project' value='<%= data.project %>' />
@@ -50,14 +50,23 @@
 		  </li>
 	    <% if(Object.getOwnPropertyNames(metadata).length > 0){ %>
 		  <li>
-		  	<form id='download_project_metadata_form_id' method='POST' action=''>
+		  	<form id='download_project_metadata_form1' method='POST' action=''>
 		  	  <!-- This form should run in the background and place the seqs file
 		  	  			in a 'downloads' directory where it can be retrieved.
 		  	  			The user should get an email when its ready.
 		  	   -->
-		  	  <button type='button' class='btn btn-sm btn-link' id='download_project_metadata_form_id' >Download Metadata File</button>
+		  	  <button type='button' class='btn btn-sm btn-link' id='download_project_metadata_form_btn1' >Create Metadata File (Samples as columns)</button>
 		  	  <input type='hidden' name='download_type' value='whole_project' />
 		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
+		  	  <input type='hidden' name='sample_orientation' value='cols' />
+		  	  <input type='hidden' name='project' value='<%= data.project %>' />
+			  	<input type='hidden' name='referer' value='/projects/project_profile' />
+		    </form>
+		    <form id='download_project_metadata_form2' method='POST' action=''>
+		  	  <button type='button' class='btn btn-sm btn-link' id='download_project_metadata_form_btn2' >Create Metadata File (Samples as rows)</button>
+		  	  <input type='hidden' name='download_type' value='whole_project' />
+		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
+		  	  <input type='hidden' name='sample_orientation' value='rows' />
 		  	  <input type='hidden' name='project' value='<%= data.project %>' />
 			  	<input type='hidden' name='referer' value='/projects/project_profile' />
 		    </form>

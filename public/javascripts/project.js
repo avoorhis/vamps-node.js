@@ -29,26 +29,37 @@ if (download_project_fasta_form_btn !== null) {
       pid = form.project_id.value;
       project = form.project.value;
       download_type = form.download_type.value;      
-      download_data('fasta', pid, project, download_type);
+      download_data('fasta', pid, project, download_type, '');
   });
 }
-download_project_metadata_form_btn = document.getElementById('download_project_metadata_form_id') || null;
-if (download_project_metadata_form_btn !== null) {
-  download_project_metadata_form_btn.addEventListener('click', function () {
-      form = document.getElementById('download_project_metadata_form_id');
+download_project_metadata_form_btn1 = document.getElementById('download_project_metadata_form_btn1') || null;
+if (download_project_metadata_form_btn1 !== null) {
+  download_project_metadata_form_btn1.addEventListener('click', function () {
+      form = document.getElementById('download_project_metadata_form1');
       pid = form.project_id.value;
+      orientation = form.sample_orientation.value;
+      project = form.project.value;
+      download_type = form.download_type.value;   
+      download_data('metadata', pid, project, download_type, orientation);
+  });
+}
+download_project_metadata_form_btn2 = document.getElementById('download_project_metadata_form_btn2') || null;
+if (download_project_metadata_form_btn2 !== null) {
+  download_project_metadata_form_btn2.addEventListener('click', function () {
+      form = document.getElementById('download_project_metadata_form2');
+      pid = form.project_id.value;
+      orientation = form.sample_orientation.value;
       project = form.project.value;
       download_type = form.download_type.value;    
-      download_data('metadata', pid, project, download_type);
+      download_data('metadata', pid, project, download_type, orientation);
   });
 }
-
 //
 // SAVE DATASET LIST
 //
 
 // TODO this is same code as in view_selection.js
-function download_data(type, pid, project, download_type) {
+function download_data(type, pid, project, download_type, orientation) {
     var html = '';
     var args =  "pid="+pid;
     args += "&project="+project;
@@ -56,6 +67,7 @@ function download_data(type, pid, project, download_type) {
     
     var xmlhttp = new XMLHttpRequest(); 
     if(type == 'metadata'){
+      args += "&orientation="+orientation
       target = '/user_data/download_selected_metadata';      
     } else{
       target = '/user_data/download_selected_seqs'
