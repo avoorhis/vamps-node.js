@@ -473,7 +473,7 @@ constants.REQ_METADATA_FIELDS = [   "collection_date",  // format?? yyyy-mm-dd
                                     "longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
                                     "sequencing_platform",
                                     "adapter_sequence",
-                                    "index_sequence",
+                                    "illumina_index",
                                     "primer_suite",
                                     "run"
                                     ];
