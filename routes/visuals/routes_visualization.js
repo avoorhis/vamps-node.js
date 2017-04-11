@@ -448,9 +448,10 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
 	                    constants    : JSON.stringify(req.CONSTS),
 	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
-		  				        md_req       : JSON.stringify(required_metadata_headers),
+		  				  md_req       : JSON.stringify(required_metadata_headers),   // 
+		  				  //md_req       : JSON.stringify(req.CONSTS.REQ_METADATA_FIELDS),
                       unit_choice : unit_choice,
-		  				        message      : req.flash('Message'),
+		  				  message      : req.flash('Message'),
 	                    user         : req.user,hostname: req.CONFIG.hostname,
 	  });  // end render
   }

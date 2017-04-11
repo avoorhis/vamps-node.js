@@ -33,8 +33,9 @@ module.exports.get_datasets = function(callback){
   MD_TARGET_GENE              = {};
   MD_SEQUENCING_PLATFORM      = {};
   MD_ADAPTER_SEQUENCE         = {};
-  MD_INDEX_SEQUENCE           = {};
+  MD_ILLUMINA_INDEX           = {};
   MD_PRIMER_SUITE             = {};
+  MD_RUN                      = {};
   
   connection.query(queries.get_select_datasets_query(), function(err, rows, fields){
       if (err)  {
@@ -171,15 +172,15 @@ module.exports.get_datasets = function(callback){
       }
       console.log(' INITIALIZING MD_ADAPTER_SEQUENCE');
   });
-  connection.query(queries.get_select_index_sequence_query(), function(err, rows, fields){    
+  connection.query(queries.get_select_illumina_index_query(), function(err, rows, fields){    
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
         process.exit(1);
       } else {
-        helpers.get_select_index_sequence_query(rows);          
+        helpers.get_select_illumina_index_query(rows);          
       }
-      console.log(' INITIALIZING MD_INDEX_SEQUENCE');
+      console.log(' INITIALIZING MD_ILLUMINA_INDEX');
   });
   connection.query(queries.get_select_primer_suite_query(), function(err, rows, fields){    
       if (err)  {
@@ -191,7 +192,16 @@ module.exports.get_datasets = function(callback){
       }
       console.log(' INITIALIZING MD_PRIMER_SUITE');
   });
-
+  connection.query(queries.get_select_run_query(), function(err, rows, fields){    
+      if (err)  {
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
+      } else {
+        helpers.get_select_run_query(rows);          
+      }
+      console.log(' INITIALIZING MD_RUN');
+  });
 
   // slow query
   connection.query(queries.get_select_seq_count_query(), function(err, rows, fields){    

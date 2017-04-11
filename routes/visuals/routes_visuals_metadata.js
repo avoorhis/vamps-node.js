@@ -53,8 +53,10 @@ module.exports = {
 						value = MD_DOMAIN[METADATA[did]['domain_id']]
 					}else if(mdname == 'adapter_sequence'){
 						value = MD_ADAPTER_SEQUENCE[METADATA[did]['adapter_sequence_id']]
-					}else if(mdname == 'index_sequence'){
-						value = MD_INDEX_SEQUENCE[METADATA[did]['index_sequence_id']]
+					}else if(mdname == 'illumina_index'){
+						value = MD_ILLUMINA_INDEX[METADATA[did]['illumina_index_id']]
+					}else if(mdname == 'run'){
+						value = MD_RUN[METADATA[did]['run_id']]
 					}else if(mdname == 'primer_suite'){
 						value = MD_PRIMER_SUITE[METADATA[did]['primer_suite_id']]
 					}else{
@@ -147,8 +149,10 @@ module.exports = {
 						value = MD_DOMAIN[METADATA[did]['domain_id']]
 					}else if(mdname == 'adapter_sequence'){
 						value = MD_ADAPTER_SEQUENCE[METADATA[did]['adapter_sequence_id']]
-					}else if(mdname == 'index_sequence'){
-						value = MD_INDEX_SEQUENCE[METADATA[did]['index_sequence_id']]
+					}else if(mdname == 'illumina_index'){
+						value = MD_ILLUMINA_INDEX[METADATA[did]['illumina_index_id']]
+					}else if(mdname == 'run'){
+						value = MD_RUN[METADATA[did]['run_id']]
 					}else if(mdname == 'primer_suite'){
 						value = MD_PRIMER_SUITE[METADATA[did]['primer_suite_id']]
 					}else{

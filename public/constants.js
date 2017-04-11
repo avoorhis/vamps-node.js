@@ -474,8 +474,25 @@ constants.REQ_METADATA_FIELDS = [   "collection_date",  // format?? yyyy-mm-dd
                                     "sequencing_platform",
                                     "adapter_sequence",
                                     "index_sequence",
-                                    "primer_suite"
+                                    "primer_suite",
+                                    "run"
                                     ];
+// constants.REQ_METADATA_FIELDS = [{  "name":"collection_date",       "units":"date","format":"YYYY-MM-DD"}, // format?? yyyy-mm-dd
+//                                   {  "name":"geo_loc_name",         "units":"alpha_numeric","format":""},   // name of country or longhurst zone
+//                                   {  "name":"dna_region",           "units":"alpha_numeric","format":""},   // v6, v4v5 v6v4 .... (from mysql table) 
+//                                   {  "name":"domain",               "units":"alpha_numeric","format":""},   // Bacteria, Archaea or Eukarya (from mysql table)
+//                                   {  "name":"env_biome",            "units":"alpha_numeric","format":""},
+//                                   {  "name":"env_feature",          "units":"alpha_numeric","format":""}, 
+//                                   {  "name":"env_matter",           "units":"alpha_numeric","format":""},
+//                                   {  "name":"env_package",          "units":"alpha_numeric","format":""},   // (from mysql table) 
+//                                   {  "name":"target_gene",          "units":"alpha_numeric","format":""},   // 16s or 18s (from mysql table)
+//                                   {  "name":"latitude",             "units":"decimal_degrees","format":""}, // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+//                                   {  "name":"longitude",            "units":"decimal_degrees","format":""}, // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+//                                   {  "name":"sequencing_platform",  "units":"alpha_numeric","format":""},
+//                                   {  "name":"adapter_sequence",     "units":"alpha_numeric","format":""},
+//                                   {  "name":"index_sequence",       "units":"alpha_numeric","format":""},
+//                                   {  "name":"primer_suite",         "units":"alpha_numeric","format":""}
+//                                 ];                                    
 constants.CONTACT_US_SUBJECTS = ["Account Request", "Report a Problem", "Announce a Publication", "Other"];
 
 module.exports = constants;

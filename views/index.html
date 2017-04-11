@@ -1,36 +1,13 @@
+<% menu_section = 'HOME'; %>
+<% include add_ins/begin-img.ejs %>
 
-<% //include ./add_ins/nav-bar.html %>
-<br><br>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title><%= title %></title>
-	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-	<link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">  
-	<link rel="stylesheet" href="/stylesheets/bootstrap.min.css" >
-	<link rel="stylesheet" href="/stylesheets/bootstrap-theme.min.css">
-	 
-	
-</head>
-<body>
-  	<!-- Fixed navbar at top -->
-		
-		<!-- Fixed navbar at top -->
-	
-	<div class="container-fluid">				<!-- ends in end.ejs -->
-	  <div class="row-fluid">  						<!-- ends in end.ejs -->
-	    <div  class='header' id='header'>
-	      
-	    </div>
-
-	   <div class="col-lg-12" id="">  			<!-- ends in end.ejs -->
-
-
-
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
 <br>
 
 <div class="hero-unit">
-            
+            <h2>VAMPS:</h2>
 			<h3><i><u>V</u>isualization and <u>A</u>nalysis of <u>M</u>icrobial <u>P</u>opulation <u>S</u>tructures</i></h3>
 	       An integrated collection of tools for researchers to visualize and analyze data for microbial population structures and distributions.
             
@@ -46,8 +23,22 @@
 	<li><strong>Data Ramp</strong> - Researchers who want to use the VAMPS tools with their own data can enter their sequence or taxonomy data to the VAMPS website and merge it with the existing shared datasets for individual or comparative analyses. Researchers will be given a user name and password, and their data will be visible only to registered users of their choice. 
 </ul>
 </p>
-
-<center><h2 class='red'> VAMPS will be down for maintenance until Monday 4-3-2017</h2></center>
+<div class="row">
+<div class="col-lg-4">
+<br>
+	<table class='table'>  
+	<% if (user === undefined) { %>
+   <tr><td>Register for an Account:</td><td><a href='/users/signup' class="navbar-link" >Register</a> 
+   			<small>(<a href='/users/login' class="navbar-link" >or login</a>)</small>
+   		</td></tr>
+  <% } %>
+	<tr><td>Learn more about VAMPS:</td><td><a href="help/overview" class="">Overview Page</a></td></tr>
+	<tr><td>Recommended Analysis Start:</td><td><a href="visuals/visuals_index" class="">Data Selection Page</a></td></tr>	
+	</table>
+</div>
+</div>
+<br>
+<% include add_ins/end.ejs %>
    
 </body>
 </html>

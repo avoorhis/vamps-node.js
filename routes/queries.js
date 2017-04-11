@@ -401,9 +401,15 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
       //console.log(q)
       return q;
   },
-  get_select_index_sequence_query: function() {      
+  get_select_illumina_index_query: function() {      
       var q = "SELECT illumina_index_id, illumina_index\n"
       q += " FROM `illumina_index`\n"
+      //console.log(q)
+      return q;
+  },
+  get_select_run_query: function() {      
+      var q = "SELECT run_id, run\n"
+      q += " FROM `run`\n"
       //console.log(q)
       return q;
   },

@@ -470,8 +470,10 @@ get_metadata_selection: function(dataset_ids, metadata, type) {
             test = 'env_feature'
           }else if(field == 'adapter_sequence_id'){
             test = 'adapter_sequence'
-          }else if(field == 'index_sequence_id'){
-            test = 'index_sequence'
+          }else if(field == 'illumina_index_id'){
+            test = 'illumina_index'
+          }else if(field == 'run_id'){
+            test = 'run'
           }else if(field == 'primer_suite_id'){
             test = 'primer_suite'
           }else{
