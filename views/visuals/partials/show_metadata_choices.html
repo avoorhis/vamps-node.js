@@ -16,10 +16,10 @@
     <tr>
       <% metadata_list = req_meta_found %>
       <% for (i in metadata_list) { %>       
-         <% if(req_meta_fields[i] == 'latitude' || req_meta_found[i] == 'longitude')  { %>
-          <td><input type='checkbox' checked class='required_meta_ckbx' name='selected_metadata[]' value='<%= metadata_list[i] %>'> <%= req_meta_found[i] %></td>
+         <% if(req_meta_found[i] == 'latitude' || req_meta_found[i] == 'longitude')  { %>
+          <td><input type='checkbox' checked class='required_meta_ckbx' name='selected_metadata[]' value='<%= req_meta_found[i] %>'> <%= req_meta_found[i] %></td>
          <% } else { %>
-            <td><input type='checkbox' class='required_meta_ckbx' name='selected_metadata[]' value='<%= metadata_list[i] %>'> <%= req_meta_found[i] %></td>
+            <td><input type='checkbox' class='required_meta_ckbx' name='selected_metadata[]' value='<%= req_meta_found[i] %>'> <%= req_meta_found[i] %></td>
          <% } %>
 
          <% if(i % no_of_cols === no_of_cols-1) { %>                
