@@ -1160,10 +1160,19 @@ function get_adapter_sequence_index(val){
   }
   return idx
 }
-function get_index_sequence_index(val){
+function get_illumina_index_index(val){
   var idx = -1
-  for(key in MD_INDEX_SEQUENCE){
-    if(val != '' && MD_INDEX_SEQUENCE[key] == val){
+  for(key in MD_ILLUMINA_INDEX){
+    if(val != '' && MD_ILLUMINA_INDEX[key] == val){
+        idx = key;
+    }
+  }
+  return idx
+}
+function get_run_index(val){
+  var idx = -1
+  for(key in MD_RUN){
+    if(val != '' && MD_RUN[key] == val){
         idx = key;
     }
   }
@@ -1310,8 +1319,10 @@ function convert_ids_to_names_for_display(obj){
               new_obj[did]['env_feature'] = MD_ENV_TERM[obj[did][mdname]]
             }else if(mdname == 'adapter_sequence_id'){
               new_obj[did]['adapter_sequence'] = MD_ADAPTER_SEQUENCE[obj[did][mdname]]
-            }else if(mdname == 'index_sequence_id'){
-              new_obj[did]['index_sequence'] = MD_INDEX_SEQUENCE[obj[did][mdname]]
+            }else if(mdname == 'illumina_index_id'){
+              new_obj[did]['illumina_index'] = MD_ILLUMINA_INDEX[obj[did][mdname]]
+            }else if(mdname == 'run_id'){
+              new_obj[did]['run'] = MD_RUN[obj[did][mdname]]
             }else if(mdname == 'primer_suite_id'){
               new_obj[did]['primer_suite'] = MD_PRIMER_SUITE[obj[did][mdname]]
             }else{
@@ -1348,8 +1359,10 @@ function convert_names_to_ids_for_storage(obj){
             new_obj[did]['sequencing_platform_id']  = get_sequencing_platform_index(val)
         }else if(mdname == 'adaptor_sequence'){
             new_obj[did]['adaptor_sequence_id']  = get_adaptor_sequence_index(val)
-        }else if(mdname == 'index_sequence'){
-            new_obj[did]['index_sequence_id']  = get_index_sequence_index(val)
+        }else if(mdname == 'illumina_index'){
+            new_obj[did]['illumina_index_id']  = get_illumina_index_index(val)
+        }else if(mdname == 'run'){
+            new_obj[did]['run_id']  = get_run_index(val)
         }else if(mdname == 'primer_suite'){
             new_obj[did]['primer_suite_id']  = get_primer_suite_index(val)
         }else{

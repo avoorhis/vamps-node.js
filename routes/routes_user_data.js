@@ -3116,8 +3116,9 @@ router.get('/required_metadata_options', function(req, res) {
             md_domain:              JSON.stringify(MD_DOMAIN),
             md_dna_region:          JSON.stringify(MD_DNA_REGION),
             md_adapter_sequence:    JSON.stringify(MD_ADAPTER_SEQUENCE),	
-            md_index_sequence:      JSON.stringify(MD_INDEX_SEQUENCE),
+            md_illumina_index:      JSON.stringify(MD_ILLUMINA_INDEX),
             md_primer_suite:        JSON.stringify(MD_PRIMER_SUITE),
+            md_run:					JSON.stringify(MD_RUN),
             
             hostname: req.CONFIG.hostname,
     });
@@ -3220,9 +3221,12 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
                 }else if(mdname == 'adapter_sequence_id'){
 				  test = 'adapter_sequence'
 				  value = MD_ADAPTER_SEQUENCE[AllMetadata[did][mdname]]
-				}else if(mdname == 'index_sequence_id'){
-				  test = 'index_sequence'
-				  value = MD_INDEX_SEQUENCE[AllMetadata[did][mdname]]
+				}else if(mdname == 'illumina_index_id'){
+				  test = 'illumina_index'
+				  value = MD_ILLUMINA_INDEX[AllMetadata[did][mdname]]
+				}else if(mdname == 'run_id'){
+				  test = 'run'
+				  value = MD_RUN[AllMetadata[did][mdname]]
 				}else if(mdname == 'primer_suite_id'){
 				  test = 'primer_suite'
 				  value = MD_PRIMER_SUITE[AllMetadata[did][mdname]]
@@ -3236,8 +3240,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
               }
               
 			  if(orientation == 'cols'){
-				  if(test in myrows){
-					//myrows[test].push(value);
+				  if(test in myrows){					
 					myrows[test][pjds] = value;
 				  }else{
 					myrows[test] = {};
@@ -3250,48 +3253,46 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
 				  }else{
 					myrows[pjds] = [];
 					myrows[pjds][test] = value;
-				  }
-              
+				  }              
               }
             }
         }else{
- 
+ 			// here if using HDF5 
         }
 
     }
 	var header = '\t';
 	if(orientation == 'cols'){
+       	// metadata in rows; units in column 2 ?
        	header += dataset_name_list.sort().join('\t');
     }else{
+    	
     	header += mditems_list.sort().join('\t');
     }
-    
     //console.log(header)
     header += "\n";
     rs.push(header);
-    dnl = dataset_name_list.sort()
-    mdnl = mditems_list.sort()
+    dnlist = dataset_name_list.sort()
+    mdnlist = mditems_list.sort()
     //console.log(mdnl)
     //console.log(dnl)
     if (Object.keys(myrows).length === 0) {
       rs.push("NO METADATA FOUND\n");
     } else {
-      //keys = Object.keys(myrows).sort();
       if(orientation == 'cols'){
-      	for(i in mdnl){
-      		filetxt = mdnl[i]
-      		for (n in dnl) {
-          		filetxt += "\t"+myrows[mdnl[i]][dnl[n]];
+      	for(i in mdnlist){
+      		filetxt = mdnlist[i]
+      		for (n in dnlist) {
+          		filetxt += "\t"+myrows[mdnlist[i]][dnlist[n]];
         	}
         	filetxt += "\n";
-        	//console.log(filetxt)
       		rs.push(filetxt);
       	}
       }else{
-      	for(n in dnl){
-      		filetxt = dnl[n]
-      		for (i in mdnl) {
-          		filetxt += "\t"+myrows[dnl[n]][mdnl[i]];
+      	for(n in dnlist){
+      		filetxt = dnlist[n]
+      		for (i in mdnlist) {
+          		filetxt += "\t"+myrows[dnlist[n]][mdnlist[i]];
         	}
         	filetxt += "\n";
       		rs.push(filetxt);
@@ -3415,9 +3416,12 @@ router.get('/download_selected_metadata', helpers.isLoggedIn, function download_
             }else if(mdname == 'adapter_sequence_id'){
               test = 'adapter_sequence'
               value = MD_ADAPTER_SEQUENCE[AllMetadata[did][mdname]]
-            }else if(mdname == 'index_sequence_id'){
-              test = 'index_sequence'
-              value = MD_INDEX_SEQUENCE[AllMetadata[did][mdname]]
+            }else if(mdname == 'illumina_index_id'){
+              test = 'illumina_index'
+              value = MD_ILLUMINA_INDEX[AllMetadata[did][mdname]]
+            }else if(mdname == 'run_id'){
+              test = 'run'
+              value = MD_RUN[AllMetadata[did][mdname]]
             }else if(mdname == 'primer_suite_id'){
               test = 'primer_suite'
               value = MD_PRIMER_SUITE[AllMetadata[did][mdname]]

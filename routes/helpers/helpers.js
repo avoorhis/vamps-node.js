@@ -234,14 +234,19 @@ module.exports.get_select_adapter_sequence_query = function(rows){
         MD_ADAPTER_SEQUENCE[rows[i].run_key_id] = rows[i].run_key;
     }
 };
-module.exports.get_select_index_sequence_query = function(rows){
+module.exports.get_select_illumina_index_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_INDEX_SEQUENCE[rows[i].illumina_index_id] = rows[i].illumina_index;
+        MD_ILLUMINA_INDEX[rows[i].illumina_index_id] = rows[i].illumina_index;
     }
 };
 module.exports.get_select_primer_suite_query = function(rows){
     for (var i=0; i < rows.length; i++) {
         MD_PRIMER_SUITE[rows[i].primer_suite_id] = rows[i].primer_suite;
+    }
+};
+module.exports.get_select_run_query = function(rows){
+    for (var i=0; i < rows.length; i++) {
+        MD_RUN[rows[i].run_id] = rows[i].run;
     }
 };
 // TODO: "This function's cyclomatic complexity is too high. (6)"
