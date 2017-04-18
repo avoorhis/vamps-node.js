@@ -12,14 +12,14 @@
 <% }else{ %>
   [ <input type='checkbox' id='toggle_meta_r_btn' name='taxa_ckbx_toggle'  value='all' \><span class='tiny_font'> Toggle</span> ]
   <small><i>All datasets should have these set.</i></small>
-  <table class='small_font'>
+  <table class='' border='0'>
     <tr>
       <% metadata_list = req_meta_found %>
       <% for (i in metadata_list) { %>       
-         <% if(req_meta_found[i] == 'latitude' || req_meta_found[i] == 'longitude')  { %>
-          <td><input type='checkbox' checked class='required_meta_ckbx' name='selected_metadata[]' value='<%= req_meta_found[i] %>'> <%= req_meta_found[i] %></td>
+         <% if(req_meta_found[i] == "latitude" || req_meta_found[i] == "longitude")  { %>
+            <td><input type='checkbox' checked class='required_meta_ckbx' name='selected_metadata[]' value='<%= req_meta_found[i] %>'><%= req_meta_found[i] %>&nbsp;</td>
          <% } else { %>
-            <td><input type='checkbox' class='required_meta_ckbx' name='selected_metadata[]' value='<%= req_meta_found[i] %>'> <%= req_meta_found[i] %></td>
+            <td><input type='checkbox' class='required_meta_ckbx' name='selected_metadata[]' value='<%= req_meta_found[i] %>'><%= req_meta_found[i] %>&nbsp;</td>
          <% } %>
 
          <% if(i % no_of_cols === no_of_cols-1) { %>                
@@ -47,7 +47,7 @@
     
     <% for (i in cust_meta_found) { %>       
        
-       <td><input type='checkbox' class='custom_meta_ckbx' name='selected_metadata[]' value='<%= cust_meta_found[i] %>'> <%= cust_meta_found[i] %></td>
+       <td><input type='checkbox' class='custom_meta_ckbx' name='selected_metadata[]' value='<%= cust_meta_found[i] %>'><%= cust_meta_found[i] %>&nbsp;</td>
        
        <% if(i % no_of_cols === no_of_cols-1) { %>         	   		
      			</tr><tr>
