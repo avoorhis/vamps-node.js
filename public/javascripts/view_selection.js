@@ -788,22 +788,28 @@ function create_metadata_table(new_window) {
     document.getElementById('pre_metadata_table_div').style.display = 'block';
     var html = '';
       //html += "<table border='1' id='metadata_table' class='single_border small_font md_table' >";
+    
     html += "<table border='1' id='metadata_table' class='table table-condensed' >";
     html += "<thead><tr><th>Dataset (click to sort)</th><th>Name (click to sort)</th><th>Value (click to sort)</th></tr></thead><tbody>";
-      
+             
     for (var ds in md_local) {
 
           for (var md_item in md_local[ds]) {
-            html += "<tr>";
-            html += "<td>"+ds+"</td>";
-            md_val = md_local[ds][md_item];
-            if(md_val == '' || md_val == undefined){
-              md_val = 'undefined';
+            if(md_item != 'project' && md_item != 'dataset'){
+                html += "<tr>";
+                html += "<td>"+ds+"</td>";
+        
+                md_val = md_local[ds][md_item];
+                if(md_val == '' || md_val == undefined){
+                  md_val = 'undefined';
+                }
+                html += "<td>"+md_item+"</td><td>"+md_val+"</td>";
+        
+                html += "</tr>";
             }
-            html += "<td>"+md_item+"</td><td>"+md_val+"</td>";
-            html += "</tr>";
           }        
     }
+    
     html += "</tbody></table>";
 
       //alert(md_local[0].env_matter)
