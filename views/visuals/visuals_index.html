@@ -204,7 +204,7 @@
           if (event.type == 'mouseover') {
             tip.id = link.id;
             link.id = '';
-            id_items = tip.id.split('-|-');
+            id_items = tip.id.split('/');
             html = "<div style='padding:3px;'><table class='tooltip_table'><tr>";
             if(id_items[0] == 'project') {
               html += "<td>Name:</td><td>"+id_items[1]+"</td>";

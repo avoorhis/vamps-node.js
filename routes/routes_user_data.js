@@ -3589,7 +3589,7 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
               if(x_dname === y_dname){
                 html += "<td id='' class='heat_map_td' bgcolor='#000'></td>";
               }else{
-                var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dist;
+                var id = 'dheatmap/'+x_dname+'/'+y_dname+'/'+dist;
                 var svalue = Math.round( distance_matrix[x_dname][y_dname] * 15 );
                 html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+req.CONSTS.HEATMAP_COLORS[svalue]+"'>";
                 html += "&nbsp;&nbsp;&nbsp;";
