@@ -134,7 +134,7 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
         if(tip.id==''){
           return;  // no need to show if nothing there
         }
-        id_items = tip.id.split('-|-');
+        id_items = tip.id.split('/');
         
         // html = "Requirements:<br>";
         // html += '<ul>';        

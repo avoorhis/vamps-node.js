@@ -90,7 +90,8 @@ function get_single_bar_html(obj){
       color = string_to_color_code(obj.rows[n].id)
       link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
       var pct = ((obj.data[n] / total)*100).toFixed(2);
-      var id = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n] + '-|-' + pct;
+      var id = 'barcharts/' + obj.rows[n].id + '/'+ obj.data[n] + '/' + pct;
+      //alert(id)
       html += "<tr class='tooltip_viz' id='"+id+"' ><td style='background-color:"+color+"'></td>";
       for(i=0;i<tax_col_count;i++){
         html += "<td><a href='"+link+"'>"+ordered_taxa[n][i]+'</a></td>'
@@ -144,9 +145,9 @@ function get_double_bar_html(obj, ts){
         link1 = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename1;
         link2 = 'sequences?id='+obj.columns[1].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename2;
         pct1 = ((obj.data[n][0] / total[0])*100).toFixed(2);
-        id1 = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n][0] + '-|-' + pct1;
+        id1 = 'barcharts/' + obj.rows[n].id + '/'+ obj.data[n][0] + '/' + pct1;
         pct2 = ((obj.data[n][1] / total[1])*100).toFixed(2);
-        id2 = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n][1] + '-|-' + pct2;
+        id2 = 'barcharts/' + obj.rows[n].id + '/'+ obj.data[n][1] + '/' + pct2;
         html += "<tr>"
         html += "<td style='background-color:"+color+"'></td>";
         for(i=0;i<tax_col_count;i++){
@@ -203,7 +204,7 @@ function get_single_pie_html(obj){
       color = colorsX[obj.rows[n].id]
       //link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
       var pct = ((obj.data[n] / total)*100).toFixed(2);
-      var id = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n] + '-|-' + pct;
+      var id = 'barcharts/' + obj.rows[n].id + '/'+ obj.data[n] + '/' + pct;
       html += "<tr class='tooltip_viz' id='"+id+"' ><td style='background-color:"+color+"'></td>";
       
       //html += "<td><a href='"+link+"'>"+ordered_taxa[n][i]+'</a></td>'

@@ -43,7 +43,7 @@
 <div id='barcharts_table_div' class=''></div>
 
 
-<!-- <span id='chart_tooltip' >
+ <span id='chart_tooltip' >
   <table style='margin:0'>      
     
     <tr>        
@@ -74,7 +74,7 @@ $(document).ready(function() {
   create_barcharts(bar_type, <%= ts %>, mtx_local, {});
   
   if(bar_type == 'single'){
-    // function is where?  in this file (look below)
+    // function is where?  public/javascripts/user_viz_data.js:function get_single_bar_html(obj){
     barcharts_table_div.innerHTML = get_single_bar_html(mtx_local);
   }else{
     barcharts_table_div.innerHTML = get_double_bar_html(mtx_local);
@@ -90,7 +90,7 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
       if (event.type == 'mouseover') {
         tip.id = link.id;
         link.id = '';
-        id_items = tip.id.split('-|-');
+        id_items = tip.id.split('/');
         html = "<table><tr>";
         if(id_items[0] == 'dheatmap') {
           html += "<td>"+id_items[1]+"</td>";
@@ -105,6 +105,7 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
           html += "</tr><tr>";
           html += "<td>Count: "+id_items[3]+" ("+id_items[4]+"%)</td>";
         }else{  // barcharts and piecharts            
+          //alert(tip.id)
           html += "<td>"+id_items[1]+"</td>";
           html += "</tr><tr>";
           html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";

@@ -118,7 +118,7 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
       if (event.type == 'mouseover') {
         tip.id = link.id;
         link.id = '';
-        id_items = tip.id.split('-|-');
+        id_items = tip.id.split('/');
         html = "<table><tr>";
         if(id_items[0] == 'dheatmap') {
           html += "<td>"+id_items[1]+"</td>";

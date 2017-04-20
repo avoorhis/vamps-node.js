@@ -12,7 +12,7 @@
       <% datasets = all_pr_dat[i].datasets %>
       <% if(info[pid].public  === 1 || info[pid].public  === '1') { var status='public';  %>
       <% } else { var status = 'private'; } %>
-      <% var tt_pj_id  = 'project-|-'+pname+'-|-'+title+'-|-'+status; %>
+      <% var tt_pj_id  = 'project/'+pname+'/'+title+'/'+status; %>
       
       <li>
         <label id='<%= pname %>' class='project-select'>
@@ -45,7 +45,7 @@
               <% ddesc = datasets[k].ddesc %>
               <% pd = pname + '--' + dname %>
               <% pass_thru_value = did + '--' + pname + '--' + dname %>
-              <% var tt_ds_id  = 'dataset-|-'+pname+'-|-'+dname+'-|-'+ddesc; %>
+              <% var tt_ds_id  = 'dataset/'+pname+'/'+dname+'/'+ddesc; %>
               <li>
                 <label id='<%= pd %>' class='dataset-select'  >
                    <input type='checkbox' id='<%= pd %>' name='dataset_ids[]' class='dataset_check' value='<%= did %>' onclick='checkme()'/>
