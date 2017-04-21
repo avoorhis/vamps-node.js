@@ -30,15 +30,17 @@ router.get('/users_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
           res.render('user_admin/users_index', { 
                   title: 'VAMPS:users', 
                   rows : rows, 
-                  user: req.user,hostname: req.CONFIG.hostname,  message:''  
+                  user: req.user,hostname: req.CONFIG.hostname  
 				  });
 
 		   }
 	    });
 	}else{
+	    req.flash('fail', 'Permission Denied')
         res.render('denied', { 
-                title: 'VAMPS:users', user: req.user,hostname: req.CONFIG.hostname,
-							  message: req.flash('nopermissionMessage', 'Permission Denied') 
+                title: 'VAMPS:users', 
+                user: req.user,
+                hostname: req.CONFIG.hostname,
 		    });
 
           
@@ -56,7 +58,6 @@ router.get('/login', function(req, res) {
     console.log('login', req.body)
     res.render('user_admin/login', { 
                       title: 'VAMPS:login',
-                      message: req.flash('loginMessage'), 
                       user: req.user, 
                       hostname: req.CONFIG.hostname,
                       return_to_url: req.session.returnTo });
@@ -86,11 +87,10 @@ router.post('/login',  passport.authenticate('local-login', {
 router.get('/signup', function(req, res) {
 
         // render the page and pass in any flash data if it exists
-        console.log('new_user')
+        console.log('new_user--signup')
         //console.log(new_user)
         res.render('user_admin/signup', { 
                             title   : 'VAMPS:signup',
-                            message : req.flash('message'), 
                             user    : req.user,
                             hostname: req.CONFIG.hostname,
                             new_user: new_user
@@ -120,7 +120,6 @@ console.log('PROFILE')
                 else{
                   res.render('user_admin/profile', {
                       title:'VAMPS:profile',
-                      message: req.flash('loginMessage'), 
                       user : req.user,hostname: req.CONFIG.hostname // get the user out of session and pass to template
                   });
                 }
@@ -148,7 +147,6 @@ router.get('/change_password', helpers.isLoggedIn, function(req, res) {
 
   res.render('user_admin/change_password', {
               title     :'VAMPS:change_password',
-              message   : req.flash('message'), 
               user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
             });  
 });
@@ -178,7 +176,6 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         } else {
             res.render('users/profile', {
               title     :'VAMPS:profile',
-              message   : req.flash('message'), 
               projects  : rows,
               user_info : JSON.stringify(ALL_USERS_BY_UID[uid]),
               user      : req.user,hostname: req.CONFIG.hostname // get the user out of session and pass to template

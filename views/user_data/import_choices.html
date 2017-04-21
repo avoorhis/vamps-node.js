@@ -2,11 +2,10 @@
 
 <p class='title'>Data Import Selection</p>
 
-<% if (message) { %>
-  <div class="alert_flash_message"><%= message %></div>
-<% } %>
-<% if (failmessage) { %>
-  <div class="alert_flash_message"><%= failmessage %></div>
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail" ><%- messages.fail %> </div>
 <% } %>
 
 <div id="import_choices">

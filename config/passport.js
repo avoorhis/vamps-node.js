@@ -53,7 +53,7 @@ module.exports = function(passport, db) {
     function(req, username, password, done) {
         console.log(req.body.userfirstname);
         //xx = signup_user(req, username, password, done, db);
-        console.log('xx');
+        //console.log('YYYYYY');
         console.log(done);
         return signup_user(req, username, password, done, db);
     }));
@@ -92,13 +92,13 @@ module.exports = function(passport, db) {
         newpass1 = req.body.new_password1;
         newpass2 = req.body.new_password2;
         if(newpass1 === '' || newpass2 === '' || password === ''){
-            { return done(null, false, req.flash('message', "You must fill-in all fields."));}
+            { return done(null, false, req.flash('fail', "You must fill-in all fields."));}
         }
         if(newpass1 !== newpass2){
-            { return done(null, false, req.flash('message', "Your password verification doesn't match."));}
+            { return done(null, false, req.flash('fail', "Your password verification doesn't match."));}
         }
         if(newpass1.length < 3 || newpass1.length > 12){
-            { return done(null, false, req.flash('message', 'The password must be between 3 and 20 characters.'))};
+            { return done(null, false, req.flash('fail', 'The password must be between 3 and 20 characters.'))};
         }
 
         return reset_password_auth(req, username, password, newpass1, done, db);
@@ -125,27 +125,24 @@ function reset_password_auth(req, username, password, newpass, done, db){
             { return done(null, false, { message: err }); }
         if (!rows.length) {
             // req.flash is the way to set flashdata using connect-flash
-            { return done(null, false, req.flash('message', 'No user found.'));}
+            { return done(null, false, req.flash('fail', 'No user found.'));}
         }
         // If the account is not active
         if (rows[0].active !== 1) {
-            { return done(null, false, req.flash('message', 'That account is inactive -- send email to vamps.mbl.edu to request re-activation.'));}
+            { return done(null, false, req.flash('fail', 'That account is inactive -- send email to vamps.mbl.edu to request re-activation.'));}
         }
 
         if ( validatePassword(password, rows[0].encrypted_password) )
         { 
             update_password(req, username, newpass, done, db)
-            req.flash('message', 'Success. LOGGING OUT')
+            req.flash('success', 'Success. LOGGING OUT')
             //req.session.destroy()
-//req.logout()
-
-            //return done(null, false, req.flash('message', 'Success.')); 
-            return done(null, rows[0], req.flash('message', 'Success.')); 
+            return done(null, rows[0], req.flash('success', 'Success.')); 
         }
         
         // if the user is found but the password is wrong:
         // create the loginMessage and save it to session as flashdata
-        return done(null, false, req.flash('message', 'Wrong password -- try again.'));
+        return done(null, false, req.flash('fail', 'Wrong password -- try again.'));
         // all is well, return successful user
 
     });
@@ -211,38 +208,38 @@ function signup_user(req, username, password, done, db){
     new_user.institution = req.body.userinstitution;
     new_user.password = password;
     new_user.username = username;
-
+    //console.log('XXXXXX')
     if(new_user.password.length < 3 || new_user.password.length > 12){
-        return done(null, false, req.flash('message', 'Password must be between 3 and 20 characters.'));
+        return done(null, false, req.flash('fail', 'Password must be between 3 and 20 characters.'));
     }
 
     if(helpers.checkUserName(new_user.username)){
-        return done(null, false, req.flash('message', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only."));
+        return done(null, false, req.flash('fail', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only."));
     }
 
     if(new_user.username.length < 3 || new_user.username.length > 15){
-        return done(null, false, req.flash('message', 'Username must be between 3 and 15 characters. Alphanumeric only.'));
+        return done(null, false, req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.'));
     }
 
     if( new_user.email.indexOf("@") == -1 || new_user.email.length < 3 || new_user.email.length > 100 ){
-        return done(null, false, req.flash('message', 'Email address is empty or the wrong format.'));
+        return done(null, false, req.flash('fail', 'Email address is empty or the wrong format.'));
     }
 
     if( new_user.firstname.length < 1 || new_user.firstname.length > 20 ||  new_user.lastname.length < 1 || new_user.lastname.length > 20 ){
-        return done(null, false, req.flash('message', 'Both first and last names are required.'));
+        return done(null, false, req.flash('fail', 'Both first and last names are required.'));
     }
 
     if( new_user.institution.length < 1 || new_user.institution.length > 128){
-        return done(null, false, req.flash('message', 'Institution name is required.'));
+        return done(null, false, req.flash('fail', 'Institution name is required.'));
     }
     db.query(queries.get_user_by_name(new_user.username), function(err, select_rows){
             if (err) {
               console.log(err)
-              return done(null, false, req.flash( 'message', err ));
+              return done(null, false, req.flash( 'fail', err ));
             }
             if (select_rows.length) {
                 console.log('Username is already taken.');
-                return done(null, false, req.flash('message', 'Username is already taken.'));
+                return done(null, false, req.flash('fail', 'That username is already taken.'));
             } else {
 
                 // if there is no user with that username
@@ -265,7 +262,7 @@ function signup_user(req, username, password, done, db){
                     if(err){  // error usually if contact-email-inst index is not unique
                         console.log(insertQuery);
                         console.log(err);
-                        return done(null, false, req.flash( 'message', 'There was an error. Please contact us at vamps@mbl.edu to request an account' ));
+                        return done(null, false, req.flash( 'fail', 'There was an error. Please contact us at vamps@mbl.edu to request an account' ));
                     }else{
                         new_user.user_id = insert_rows.insertId;
                         ALL_USERS_BY_UID[new_user.user_id] = {
@@ -357,7 +354,6 @@ var update_password = function(req, username, newpass, done, db) {
         if (err){ 
             return done(null, false, { message: err }); 
         }else{
-            //return done(null, false, req.flash('message', 'Success! Password Updated'));
             console.log('logging out')
             req.session.destroy()
             req.logout()

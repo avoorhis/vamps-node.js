@@ -10,7 +10,6 @@ router.get('/search_index', helpers.isLoggedIn, function(req, res) {
 
     //console.log(metadata_fields)
     res.render('search/search_index', { title: 'VAMPS:Search',
-        message:         req.flash('message'),
         user:            req.user,hostname: req.CONFIG.hostname,
     		});
 });
@@ -20,7 +19,6 @@ router.get('/search_index', helpers.isLoggedIn, function(req, res) {
 router.get('/users', helpers.isLoggedIn, function(req, res) {
 
     res.render('search/users', { title: 'VAMPS:Search',
-        message:              req.flash('message'),
         user:                 req.user,hostname: req.CONFIG.hostname,
     });
 });
@@ -30,9 +28,6 @@ router.get('/users', helpers.isLoggedIn, function(req, res) {
 router.get('/names', helpers.isLoggedIn, function(req, res) {
 
     res.render('search/names', { title: 'VAMPS:Search',
-
-        message:              req.flash('message'),
-
         user:                 req.user,hostname: req.CONFIG.hostname,
     });
 });
@@ -57,8 +52,6 @@ router.get('/blast', helpers.isLoggedIn, function(req, res) {
     }
     res.render('search/blast', { title: 'VAMPS:Search',
         blast_db_path:blast_db_path,
-        message:              req.flash('message'),
-
         user:                 req.user,hostname: req.CONFIG.hostname,
     });
 });
@@ -69,8 +62,6 @@ router.get('/geo', helpers.isLoggedIn, function(req, res) {
 
 
     res.render('search/geo_area', { title: 'VAMPS:Search',
-
-        message:  req.flash('message'),
         gekey :   req.CONFIG.GOOGLE_EARTH_KEY,
         user:     req.user,hostname: req.CONFIG.hostname,
     });
@@ -133,9 +124,6 @@ router.post('/accept_latlon_datasets', helpers.isLoggedIn, function(req, res) {
 router.get('/taxonomy', helpers.isLoggedIn, function(req, res) {
 
     res.render('search/taxonomy', { title: 'VAMPS:Search',
-
-        message:              req.flash('message'),
-
         user:                 req.user,hostname: req.CONFIG.hostname,
     });
 });
@@ -208,7 +196,6 @@ router.get('/metadata/:type', helpers.isLoggedIn, function(req, res) {
       res.render('search/metadata', { title: 'VAMPS:Search',
         metadata_items:       JSON.stringify(metadata_fields),
         metadata_search_type: req.params.type,
-        message:              req.flash('message'),
         mkeys:                metadata_fields_array,
         user:                 req.user,hostname: req.CONFIG.hostname,
       });
@@ -224,7 +211,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
 
 
   if(! req.body.tax_string){
-		req.flash('tax_message', 'Error');
+		req.flash('fail', 'Error: no tax found');
 		res.redirect('search_index#taxonomy');
     return;
 	}
@@ -248,7 +235,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
 	console.log(qSelect);
 	var query = req.db.query(qSelect, function (err, rows, fields){
     if (err) {
-        req.flash('tax_message', 'SQL Error: '+err);
+        req.flash('fail', 'SQL Error: '+err);
         res.redirect('search_index#taxonomy');
     } else {
       var datasets = {};
@@ -268,7 +255,6 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
                     title    : 'VAMPS: Search Datasets',
                     datasets : JSON.stringify(datasets),
                     tax_string : tax_string,
-
                     user     : req.user, hostname: req.CONFIG.hostname,
           });
 
@@ -360,7 +346,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
 
   if(filtered.datasets.length === 0){
   	console.log('redirecting back -- no data found');
-	  req.flash('message', 'No Data Found');
+	  req.flash('fail', 'No Data Found');
 	  res.redirect('search_index');
     return;
   }else{
@@ -389,7 +375,7 @@ router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
 			var name = AllMetadataNames[n];
 
 				if(name.substring(0,len) === q){
-          console.log('name= '+name);
+                //console.log('name= '+name);
 				  if (hint === "") {
       	              hint = name;
       	            } else {
@@ -607,7 +593,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
     console.log('search:in blast res');
     console.log(req.body);
     if(req.body.query === ''){
-      //req.flash('message', 'No Query Sequence Found');
+      req.flash('fail', 'No Query Sequence Found');
       res.redirect('search_index#blast');
       return;
     }
@@ -627,7 +613,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
     // blastn -db <dbname> -query <query_file> -outfmt 13 -out <outfile_name>
     fs.writeFile(query_file_path,req.body.query+"\n",function(err){
       if(err){
-        req.flash('message', 'ERROR - Could not write query file');
+        req.flash('fail', 'ERROR - Could not write query file');
         res.redirect('search_index');
       }else{
         var spawn = require('child_process').spawn;
@@ -655,7 +641,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
            // now read file
            fs.readFile(out_file_path1,'utf8', function(err, data){
               if(err){
-                req.flash('message', 'ERROR - Could not read blast outfile');
+                req.flash('fail', 'ERROR - Could not read blast outfile');
                 res.redirect('search_index');
               }else{
                 var obj = JSON.parse(data);
@@ -672,7 +658,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
            });
 
          }else{
-            req.flash('message', 'ERROR - BLAST command exit code: '+code);
+            req.flash('fail', 'ERROR - BLAST command exit code: '+code);
             res.redirect('search_index');
          }
         });

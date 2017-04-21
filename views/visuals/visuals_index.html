@@ -21,8 +21,10 @@
   <div class='subtitle' style='padding:3px;background:#BDEDFF;'><%- portals[portal_to_show].subtitle %><br><%= subtitle %></div>
 <% }%>
 
-<% if (message) { %>
-	<div class="alert_flash_message"><%= message %></div>
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
 <% } %>
 
       <table class='table' border='1'>

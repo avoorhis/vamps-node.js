@@ -7,8 +7,10 @@
  <div class='title'>Edit Project: <%= project %></div>
  <div class='subtitle'></div>
 
-<% if (message) { %>
-	<div class="alert_flash_message"><%= message %></div>
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail" ><%- messages.fail %> </div>
 <% } %>
 <% var env_source_id = project_info.config.GENERAL.env_source_id %>
 <% var env_source = env_hash[env_source_id] %>

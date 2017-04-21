@@ -1,8 +1,10 @@
 <% menu_section='YOURDATA' %>
 <% include ../add_ins/begin.ejs %>
-<% if (message.length > 0) { %>
-      <div class="message alert_flash_message"><%= message %></div>
-  <% } %>
+
+<% if (messages.loginMessage) { %>
+      <div class="message alert_flash_message_fail"><%= messages.loginMessage %></div>
+<% } %>
+
 <div class="title fa fa-anchor">Login</div>
 <div class="row">
     <div class="col-lg-3"></div>

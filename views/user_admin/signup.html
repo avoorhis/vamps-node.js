@@ -17,9 +17,11 @@
 <div class="well">
 
  
-  <% if (message) { %>
-      <div class="message alert_flash_message"><%= message %></div>
-  <% } %>
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+<% } %>
   <br>
   <div id='new_user_div' class='table' >All fields are required -- <a class='button' href='new_user'>Clear Form</a>
     <form id='' name='newuser_form' method='POST' action='/users/signup' >

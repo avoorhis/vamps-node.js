@@ -52,7 +52,7 @@ router.get('/view_selection/:filename/:from_configuration_file', helpers.isLogge
       console.log(req.params);
     }
     console.log('req.body: view_selectionGET>>prefix');
-    req.flash('message', 'Using data from configuration file.');
+    req.flash('success', 'Using data from configuration file.');
     TAXCOUNTS = {};
     METADATA  = {};
     var image_to_open = {}
@@ -95,7 +95,7 @@ router.get('/view_selection/:filename/:from_configuration_file', helpers.isLogge
       }
       catch(err){
         console.log('1- no file '+err.toString()+' Exiting');
-        req.flash('Message', "ERROR \
+        req.flash('fail', "ERROR \
           Dataset file not found '"+dataset_ids[i] +".json' (configuration file may be out of date)");
           //res.redirect('visuals_index');
           //return;
@@ -126,8 +126,7 @@ router.get('/view_selection/:filename/:from_configuration_file', helpers.isLogge
                                 hostname        : req.CONFIG.hostname,
                                 gekey           : req.CONFIG.GOOGLE_EARTH_KEY,
                                 image_to_render : JSON.stringify(image_to_open),
-	                          //locals: {flash: req.flash('infomessage')},
-                                message         : req.flash('Message')
+	                         
     });
 
 });
@@ -180,11 +179,11 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   if(req.body.restore_image === '1'){
     console.log('in view_selection RESTORE IMAGE')
   }else if(req.body.resorted === '1'){
-    req.flash('message','The dataset order has been updated.');
+    req.flash('success','The dataset order has been updated.');
     dataset_ids = req.body.ds_order;
     chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);
   }else if(req.body.from_configuration_file === '1' || req.query.from_configuration_file === '1'){
-    req.flash('message', 'Using data from configuration file.');
+    req.flash('success', 'Using data from configuration file.');
     TAXCOUNTS = {};
     METADATA  = {};
 
@@ -218,7 +217,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
       }
       catch(err){
         console.log('2-no file '+err.toString()+' Exiting');
-        req.flash('Message', "ERROR \
+        req.flash('fail', "ERROR \
           Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
           //res.redirect('visuals_index');
           //return;
@@ -256,7 +255,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
       }
       catch(err){
         console.log('2-no file '+err.toString()+' Exiting');
-        req.flash('Message', "ERROR \
+        req.flash('fail', "ERROR \
           Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
           //res.redirect('visuals_index');
           //return;
@@ -316,8 +315,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                 hostname        : req.CONFIG.hostname,
                                 gekey           : req.CONFIG.GOOGLE_EARTH_KEY,
                                 image_to_render : JSON.stringify({}),
-	                          //locals: {flash: req.flash('infomessage')},
-                                message         : req.flash('Message')
+	                         
                  });
 
 });
@@ -366,7 +364,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }
   if (dataset_ids === undefined || dataset_ids.length === 0){
       console.log('redirecting back -- no data selected');
-   	  req.flash('nodataMessage', 'Select Some Datasets');
+   	  req.flash('fail', 'Select Some Datasets');
    	 //res.redirect('visuals_index');
      return;
   }else{
@@ -420,12 +418,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  // // benchmarking
 	  // var start = process.hrtime();
 	  //
-	  // // benchmarking
-	  // var elapsed_time = function(note){
-	  //     var precision = 3; // 3 decimal places
-	  //     var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
-	  //     console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
-	  //     //start = process.hrtime(); // reset the timer
+	  
 	  // };
     //console.log(custom_metadata_headers)
 	  // benchmarking
@@ -451,7 +444,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 		  				  md_req       : JSON.stringify(required_metadata_headers),   // 
 		  				  //md_req       : JSON.stringify(req.CONSTS.REQ_METADATA_FIELDS),
                       unit_choice : unit_choice,
-		  				  message      : req.flash('Message'),
+		  				 
 	                    user         : req.user,hostname: req.CONFIG.hostname,
 	  });  // end render
   }
@@ -515,7 +508,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
                                   data_to_open: JSON.stringify(DATA_TO_OPEN),
                                   user        : req.user,
                                   hostname    : req.CONFIG.hostname,
-                                  message     : req.flash('nodataMessage'),
+                                  
                               });
   });
 
@@ -570,7 +563,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
                                 data_to_open: JSON.stringify(DATA_TO_OPEN),
                                 user        : req.user,
                                 hostname    : req.CONFIG.hostname,
-                                message     : req.flash('nodataMessage'),
+                               
                             });
 });
 
@@ -603,7 +596,7 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
   var dataset_ids = [];
   fs.readFile(file_path, 'utf8',function readFile(err,data) {
     if (err) {
-      msg = 'ERROR Message '+err;
+        var msg = 'ERROR Message '+err;
         helpers.render_error_page(req,res,msg);
     }else{
       console.log(data)
@@ -621,7 +614,7 @@ router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
   var dataset_ids = [];
   fs.readFile(file_path, 'utf8',function readFile(err,data) {
     if (err) {
-      msg = 'ERROR Message '+err;
+        var msg = 'ERROR Message '+err;
         helpers.render_error_page(req,res,msg);
     }else{
       res.redirect('unit_selection');
@@ -1390,7 +1383,6 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
 
     res.render('visuals/dbrowser', {
       title: 'VAMPS:Taxonomy Browser (Krona)',
-      message:             req.flash('message'),
       user:                req.user,
       html:                html,
       max_total_count:     max_total_count,
@@ -1422,7 +1414,6 @@ router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
 
     res.render('visuals/oligotyping', {
       title: 'VAMPS:Oligotyping',
-      message:             req.flash('message'),
       html:                html,
       max_total_count:     max_total_count,
       matrix:              JSON.stringify(BIOM_MATRIX),
@@ -2217,11 +2208,7 @@ router.get('/partials/tax_silva119_simple', helpers.isLoggedIn,  function(req, r
 // benchmarking
 // var start = process.hrtime();
 //
-// var elapsed_time = function(note){
-//     var precision = 3; // 3 decimal places
-//     var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
-//     console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
-//     start = process.hrtime(); // reset the timer
+
 // };
 router.get('/partials/load_metadata', helpers.isLoggedIn,  function(req, res) {
   var myurl = url.parse(req.url, true);
@@ -2322,7 +2309,7 @@ router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
     console.log('in show_saved_datasets');
     if(req.user.username == 'guest'){
-      req.flash('message', "The 'guest' user has no saved datasets");
+      req.flash('fail', "The 'guest' user cannot save datasets");
       res.redirect('/user_data/your_data');
     }else{
       //console.log('req.body: show_saved_datasets-->>');
@@ -2361,7 +2348,6 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
 
       		      finfo: JSON.stringify(file_info),
       		      times: modify_times,
-      		  	  message: req.flash('message'),
       		      user: req.user, hostname: req.CONFIG.hostname,
       		});
 

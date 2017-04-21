@@ -12,14 +12,14 @@ var spawn = require('child_process').spawn;
       res.render('help/overview', { title: 'VAMPS:Overview', 
       user: req.user,
       hostname: req.CONFIG.hostname,
-      message:'',
+      
    });
   });
 
 /* GET FAQ page. */
   router.get('/faq', function(req, res) {
       res.render('help/faq', { title: 'VAMPS:FAQ',
-                message:'',
+                
                 user: req.user,
                 hostname: req.CONFIG.hostname
                             });
@@ -36,7 +36,7 @@ var spawn = require('child_process').spawn;
               title: 'VAMPS:Contact Us',
               choices : req.CONSTS.CONTACT_US_SUBJECTS,
               user: req.user,
-              message:'',
+              
               hostname: req.CONFIG.hostname
                });
         //});
@@ -84,35 +84,7 @@ var spawn = require('child_process').spawn;
     });   
 
 
-      // var mailOpts, smtpTrans;
-      // //Setup Nodemailer transport, I chose gmail. Create an application-specific password to avoid problems.
-      // smtpTrans = nodemailer.createTransport('SMTP', {
-      //     service: 'mail.mbl.edu',
-      //     auth: {
-      //         user: "avoorhis@mbl.edu",
-      //         pass: "" 
-      //     }
-      // });
-      // //Mail options
-      // mailOpts = {
-      //     from: req.body.name + ' <' + req.body.email + '>', //grab form data from the request body object
-      //     to: 'avoorhis@mbl.edu',
-      //     subject: 'Website contact form',
-      //     text: req.body.message
-      // };
-      // console.log('mailOpts')
-      // console.log(mailOpts);
-
-      // smtpTrans.sendMail(mailOpts, function (error, response) {
-      //     //Email not sent
-      //     if (error) {
-      //         res.render('help/contact', { title: 'Raging Flame Laboratory - Contact', message: 'Error occured, message not sent.', err: true, page: 'contact', user: req.user})
-      //     }
-      //     //Yay!! Email sent
-      //     else {
-      //         res.render('help/contact', { title: 'Raging Flame Laboratory - Contact', message: 'Message sent! Thank you.', err: false, page: 'contact', user: req.user })
-      //     }
-      // });
+    
     });
 
 module.exports = router;

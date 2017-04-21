@@ -1,15 +1,17 @@
 <% include ../add_ins/begin_nomenu.ejs %>
 <% md_env_pkg = JSON.parse(md_env_pkg) %>
-<% md_country = JSON.parse(md_country) %>
+
 <% md_env_term = JSON.parse(md_env_term) %>
 <% md_sequencing_platform = JSON.parse(md_sequencing_platform) %>
-<% md_fragment_name = JSON.parse(md_fragment_name) %>
+<% md_target_gene = JSON.parse(md_target_gene) %>
 <% md_domain = JSON.parse(md_domain) %>
 <% md_dna_region = JSON.parse(md_dna_region) %>
 
 
-<% if (message) { %>
-	<div class="alert_flash_message"><%= message %></div>
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail" ><%- messages.fail %> </div>
 <% } %>
 
 
@@ -57,8 +59,8 @@
         COUNTRY: (<a href='http://ols.wordvis.com/ont=GAZ' target='_blank'>OLSVis lookup: GAZ</a>)<br>
         <div class='mdata_box'>
             <ul>
-            <% for(id in md_country){ %>
-				  <li><%= id %> - <%= md_country[id] %></li>
+            <% for(id in md_env_term){ %>
+				  <li><%= id %> - <%= md_env_term[id] %></li>
 			<% } %>
 			</ul>
         </div></div>
@@ -89,11 +91,11 @@
         </div></div>
 
     <div class="col-lg-3">
-        FRAGMENT NAME:<br>
+        TARGET GENE:<br>
         <div class='mdata_box'>
             <ul>
-			        <% for(id in md_fragment_name){ %>
-							  <li><%= id %> - <%= md_fragment_name[id] %></li>
+			        <% for(id in md_target_gene){ %>
+							  <li><%= id %> - <%= md_target_gene[id] %></li>
 							<% } %>
 						</ul>
         </div></div>

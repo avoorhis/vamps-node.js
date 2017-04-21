@@ -2,8 +2,10 @@
 <% var file_info = JSON.parse(finfo) %>
 <div><a class='btn btn-xs btn-primary' href='/user_data/file_retrieval'>Reload Page</a></div>
 <p class='title'>Download your Data Files</p>
-<% if (message) { %>
-	<div class="alert_flash_message"><%= message %></div>
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail" ><%- messages.fail %> </div>
 <% } %>
 <br><strong>Your Downloads</strong> (click header to sort)
 

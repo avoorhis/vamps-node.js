@@ -91,7 +91,7 @@ router.post('/taxa_selection', helpers.isLoggedIn, function (req, res) {
   console.log('dataset_ids '+dataset_ids);
   if (dataset_ids === undefined || dataset_ids.length === 0) {
       console.log('redirecting back -- no data selected');
-      req.flash('nodataMessage', 'Select Some Datasets');
+      req.flash('fail', 'Select Some Datasets');
       res.redirect('/visuals/visuals_index');
      return;
   } else {
@@ -109,8 +109,7 @@ router.post('/taxa_selection', helpers.isLoggedIn, function (req, res) {
               chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
               //selected_rank:'phylum', // initial condition
               //selected_domains:JSON.stringify(req.CONSTS.DOMAINS.domains), // initial condition
-              message: '',
-              //failmessage: req.flash('failMessage'),
+             
               user: req.user, hostname: req.CONFIG.hostname
       });
   }
@@ -153,13 +152,13 @@ router.post('/project_list', helpers.isLoggedIn, function (req, res) {
           tax_obj.msg = 'ERROR'
           //res.json(tax_obj)
           var msg = "NO Data Found"
-          req.flash('Message', msg)
+          req.flash('fail', msg)
           //console.log(msg)
           res.render('oligotyping/oligotyping_taxa_selection', {
               title: 'VAMPS:Oligotyping',
               referer: 'oligotyping',
               chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-              message: req.flash('Message'),
+              
               user: req.user, hostname: req.CONFIG.hostname
           });
 
@@ -324,8 +323,7 @@ router.get('/project_list', helpers.isLoggedIn, function (req, res) {
                   pinfo: JSON.stringify(project_info),
                   finfo: JSON.stringify(file_info),
                   //env_sources :   JSON.stringify(req.CONSTS.ENV_SOURCE),
-                  //failmessage : req.flash('failMessage'),
-                  message : req.flash('Message'),
+                                    
                   user: req.user, hostname: req.CONFIG.hostname
             });
 
@@ -366,7 +364,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
                   family :    config['MAIN']['family'],
                   genus :     config['MAIN']['genus'],
                   cutoff :    config['MAIN']['pynast_cutoff_length'],
-                  message : req.flash('Message'),
+                 
                   user: req.user, hostname: req.CONFIG.hostname
   });
 

@@ -1,9 +1,12 @@
 <% menu_section='LINKS' %>
 <% include ../add_ins/begin.ejs %>
 <div class="title fa fa-anchor">User Profile</div>
-  <% if (message) { %>
-      <div class="message alert_flash_message"><%= message %></div>
-  <% } %><br>
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+<% } %>
+  <br>
   <!-- USER INFORMATION -->
   <div class="row">
     <div class="col-lg-3"></div>

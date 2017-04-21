@@ -10,12 +10,13 @@
 
  <div class='title'>Projects (user: <%= user.username %>)</div>
  <div class='subtitle'></div>
-<% if (failmessage) { %>
-	<div class="alert_flash_message"><%= failmessage %></div>
+
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail" ><%- messages.fail %> </div>
 <% } %>
-<% if (successmessage) { %>
-	<div class="alert_flash_message"><%= successmessage %></div>
-<% } %>
+
 <div class='left_justify'>
 <br><strong>Your Projects:</strong>
 <br>

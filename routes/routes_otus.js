@@ -37,7 +37,6 @@ router.post('/method_selection', helpers.isLoggedIn, function (req, res) {
           title: 'VAMPS:OTUs',
           referer: 'otus',
           chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-          message: '',
           user: req.user, hostname: req.CONFIG.hostname
   });
 
@@ -362,7 +361,7 @@ router.post('/create_otus_step2/:code', helpers.isLoggedIn, function (req, res) 
         // status_params.status = status_params.statusSUCCESS;
         // status_params.msg = status_params.msgSUCCESS;
         // helpers.update_status(status_params);
-        // req.flash('successMessage', classifier + " has been started for project: '" + project + "'");
+       
         // res.redirect("/user_data/your_projects");
         // process.umask(oldmask);
         console.log("The file was saved!");
@@ -439,9 +438,7 @@ router.get('/project_list', helpers.isLoggedIn, function (req, res) {
                 { title: 'OTU Projects',
                   pinfo: JSON.stringify(project_info),
                   finfo: JSON.stringify(file_info),
-                  //env_sources :   JSON.stringify(req.CONSTS.ENV_SOURCE),
-                  //failmessage : req.flash('failMessage'),
-                  message : req.flash('Message'),
+                  
                   user: req.user, hostname: req.CONFIG.hostname
             });
 
@@ -487,7 +484,6 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
                   code : otus_code,
                   config: JSON.stringify(config_file_data),                  
                   fasta_status   : fasta_status,            
-                  message : req.flash('Message'),
                   user: req.user, hostname: req.CONFIG.hostname
   });
 
@@ -502,7 +498,6 @@ router.get('/otus_method_selection', helpers.isLoggedIn, function (req, res) {
     res.render('otus/otus_method_selection',
                 { title: 'OTU Select Method',
                   code : otus_code,
-                  message : req.flash('Message'),
                   user: req.user, hostname: req.CONFIG.hostname
     });
 });

@@ -6,8 +6,10 @@
 <br>
 <div class="well">
 
-<% if (message) { %>
-	<div class="alert_flash_message"><%= message %></div>
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
 <% } %>
 	
 	<ul>

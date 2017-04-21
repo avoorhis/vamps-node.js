@@ -14,25 +14,19 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   router.get('/', function(req, res) {
     res.render('index', {
             title: 'VAMPS:Home',
-            message   :     req.flash('message'),
             user: req.user, 
             hostname: req.CONFIG.hostname });
   });
 
 
 
-  
 
-
-
-  
   /* GET Saved Data page. */
   router.get('/saved_data', helpers.isLoggedIn, function(req, res) {
       res.render('saved_data', { title: 'VAMPS:Saved Data',
                 user: req.user, 
-                hostname: req.CONFIG.hostname,
-	               message:'',
-                            });
+                hostname: req.CONFIG.hostname
+        });
   });
  
 
@@ -47,14 +41,10 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
       hostname: req.CONFIG.hostname,
 	    geodata: JSON.stringify(DatasetsWithLatLong),
       gekey : req.CONFIG.GOOGLE_EARTH_KEY,
-	    message:'',
+	    
               });
   });
 
-  
-  
-  
- 
   
   //
   //

@@ -2,8 +2,10 @@
 <% data = JSON.parse(info)      %>
 <% portals = JSON.parse(portal)    %>
 
-  <% if (message) { %>
-  	<div class="alert_flash_message"><%= message %></div>
+  <% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+  <% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
   <% } %>
 <% if(project_prefix.substring(0,3) == 'DCO' ){ %>
     <div class='pull-right'><img src='/static/images/<%= project_prefix %>.png' alt='project_image' height='200'></div>
