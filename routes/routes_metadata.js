@@ -8,8 +8,8 @@ var helpers = require('./helpers/helpers');
       res.render('metadata/metadata', { title: 'VAMPS:Metadata',
             user: req.user,
             hostname: req.CONFIG.hostname,
-	  				message:'',
-                            });
+	  
+            });
   });
 
 router.get('/metadata_list', helpers.isLoggedIn, function(req, res) {
@@ -20,7 +20,7 @@ router.get('/metadata_list', helpers.isLoggedIn, function(req, res) {
             names_by_did: JSON.stringify(DATASET_NAME_BY_DID),
             pid_by_did:   JSON.stringify(PROJECT_ID_BY_DID),
             pinfo_by_pid: JSON.stringify(PROJECT_INFORMATION_BY_PID),
-	  				message:  '',
+	  				
                             });
   });
 
@@ -43,7 +43,7 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, function(req, res) {
             pid_by_did:   JSON.stringify(PROJECT_ID_BY_DID),
             pinfo_by_pid: JSON.stringify(PROJECT_INFORMATION_BY_PID),       
             item:         md_selected,
-	  				message:  '',
+	  				
                             });
   });
 
@@ -57,7 +57,7 @@ router.get('/geomap/:item', helpers.isLoggedIn, function(req, res) {
             md_item : md_item,
             mdinfo  : JSON.stringify(metadata_info),
             gekey   : req.CONFIG.GOOGLE_EARTH_KEY,
-            message:  '',
+           
                             });
   });
 

@@ -27,8 +27,11 @@
 <button type='submit' class='btn pull-right btn-sm btn-warning' id="" >
     Get Files <span class="glyphicon glyphicon-circle-arrow-right" ></span> 
 </button>
-<% if(messages){ %>
-  <div class="pull-right" style='color:orange;padding:3px;'><%- message %> </div>
+
+<% if(messages.success){ %>
+  <div class="pull-right alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="pull-right alert_flash_message_fail" ><%- messages.fail %> </div>
 <% } %>
 Normalization:
                 <input type="radio" checked name='normalization' value="not_normalized"> none&nbsp;&nbsp;

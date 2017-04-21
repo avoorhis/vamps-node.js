@@ -64,7 +64,7 @@ router.get('/your_data', helpers.isLoggedIn, function get_your_data(req, res) {
     res.render('user_data/your_data', {
         title: 'VAMPS:Data Administration',
         user: req.user, hostname: req.CONFIG.hostname,
-        message: req.flash('message')
+        
     });
 });
 
@@ -92,7 +92,7 @@ router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(re
       res.render('user_data/file_retrieval', { title: 'VAMPS:Retrieve Data',
               user: req.user, hostname: req.CONFIG.hostname,
               finfo: JSON.stringify(file_info),
-              message : req.flash('message'),
+              
             });
     });
 });
@@ -111,15 +111,14 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
         && req.body.metadata1 === undefined
         && req.body.metadata2 === undefined
         && req.body.biom === undefined ) {
-        req.flash('failMessage', 'Select one or more file formats');
+        req.flash('fail', 'Select one or more file formats');
         res.render('user_data/export_selection', {
-          title: 'VAMPS: Export Choices',
-          referer: 'export_data',
-          chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-          constants: JSON.stringify(req.CONSTS),
-          selected_rank:req.body.tax_depth,
-              selected_domains:JSON.stringify(req.body.domains),
-          message: 'Select one or more file formats',
+          title					: 'VAMPS: Export Choices',
+          referer				: 'export_data',
+          chosen_id_name_hash	: JSON.stringify(chosen_id_name_hash),
+          constants				: JSON.stringify(req.CONSTS),
+          selected_rank			:req.body.tax_depth,
+          selected_domains		:JSON.stringify(req.body.domains),
           user: req.user, hostname: req.CONFIG.hostname
         });
         return;
@@ -174,15 +173,14 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
             'yes',   // include_nas
             true );
     }
-
+	req.flash('success', "Your file(s) are being created -- <a href='/user_data/file_retrieval' >when ready they will be accessible here</a>");
     res.render('user_data/export_selection', {
           title: 'VAMPS: Export Choices',
           referer: 'export_data',
-          chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-          constants: JSON.stringify(req.CONSTS),
-          selected_rank:req.body.tax_depth,
-              selected_domains:JSON.stringify(req.body.domains),
-          message: "Your file(s) are being created -- <a href='/user_data/file_retrieval' >when ready they will be accessible here</a>",
+          chosen_id_name_hash 	: JSON.stringify(chosen_id_name_hash),
+          constants				: JSON.stringify(req.CONSTS),
+          selected_rank			: req.body.tax_depth,
+          selected_domains		: JSON.stringify(req.body.domains),
           user: req.user, hostname: req.CONFIG.hostname
     });
 
@@ -223,13 +221,13 @@ router.post('/export_selection', helpers.isLoggedIn, function (req, res) {
   console.log('dataset_ids '+dataset_ids);
   if (dataset_ids === undefined || dataset_ids.length === 0) {
       console.log('redirecting back -- no data selected');
-      req.flash('nodataMessage', 'Select Some Datasets');
+      req.flash('fail', 'Select Some Datasets');
       res.redirect('/visuals/visuals_index');
      return;
   } else {
    // GLOBAL Variable
   chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
-    console.log('chosen_id_name_hash-->');
+  console.log('chosen_id_name_hash-->');
   console.log(chosen_id_name_hash);
   console.log(chosen_id_name_hash.ids.length);
   console.log('<--chosen_id_name_hash');
@@ -241,8 +239,6 @@ router.post('/export_selection', helpers.isLoggedIn, function (req, res) {
           chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
           selected_rank:'phylum', // initial condition
           selected_domains:JSON.stringify(req.CONSTS.DOMAINS.domains), // initial condition
-          message: req.flash('successMessage'),
-          failmessage: req.flash('failMessage'),
           user: req.user, hostname: req.CONFIG.hostname
         });
   }
@@ -278,7 +274,7 @@ router.post('/export_selection', helpers.isLoggedIn, function (req, res) {
 //                 constants: JSON.stringify(req.CONSTS),
 //                 md_names    : AllMetadataNames,
 //                 data_to_open: JSON.stringify(DATA_TO_OPEN),
-//                 message  : req.flash('nodataMessage'),
+
 //                 user: req.user, hostname: req.CONFIG.hostname
 //           });
 // });
@@ -292,21 +288,20 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
   console.log('in import_choices');
   var project = req.query.project || '' // url should always be like: /user_data/import_choices?project=andy003 
   if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
+      req.flash('fail','Not coded yet')
       res.render('user_data/your_data', {
         title: 'VAMPS:Data Administration',
         user: req.user, hostname: req.CONFIG.hostname,
-        message: req.flash('message','Not coded yet'),
+        
       });
       return;
   }
   if (req.user.username == 'guest') {
-       req.flash('message', "The 'guest' user is not permitted to import data");
+       req.flash('fail', "The 'guest' user is not permitted to import data");
        res.redirect('/user_data/your_data');
   } else {
       res.render('user_data/import_choices', {
           title: 'VAMPS:Import Choices',
-          message: req.flash('successMessage'),
-          failmessage: req.flash('failMessage'),
           project: project,
           user: req.user, hostname: req.CONFIG.hostname
           });
@@ -355,8 +350,6 @@ router.get('/import_choices/*_fasta', [helpers.isLoggedIn], function (req, res) 
             hostname:    req.CONFIG.hostname,
             pinfo:       JSON.stringify(user_project_info),
             project: project,
-            message:     req.flash('message'),
-            failmessage: req.flash('failMessage'),
             import_type: import_type,
           });
      }
@@ -373,7 +366,7 @@ router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('u
   {
     console.log("QQQ1 in router.post('import_choices/simple_fasta'");
     if (!req.form.isValid) {
-      req.flash('messages', req.form.errors);
+      req.flash('fail', req.form.errors);
       editUploadData(req, res);
       //TODO: check if the project name is in db, if not - redirect to add_project
       return;
@@ -393,7 +386,7 @@ router.post('/import_choices/multi_fasta', [helpers.isLoggedIn, upload.array('up
   {
     console.log("QQQ12 in router.post('import_choices/multi_fasta'");
     if (!req.form.isValid) {
-      req.flash('messages', req.form.errors);
+      req.flash('fail', req.form.errors);
       editUploadData(req, res);
       //TODO: check if the project name is in db, if not - redirect to add_project
       return;
@@ -412,7 +405,7 @@ router.post('/import_choices/add_metadata_to_pr', [helpers.isLoggedIn, upload.ar
   {
     console.log("QQQ12 in router.post('import_choices/multi_fasta'");
     if (!req.form.isValid) {
-      req.flash('messages', req.form.errors);
+      req.flash('fail', req.form.errors);
       editUploadData(req, res);
       //TODO: check if the project name is in db, if not - redirect to add_project
       return;
@@ -432,8 +425,6 @@ router.get('/import_choices/upload_image_file', [helpers.isLoggedIn], function (
     title:       'Import Data',
     user:        req.user,
     hostname:    req.CONFIG.hostname,
-    message:     req.flash('message'),
-    failmessage: req.flash('failMessage'),
     import_type: import_type,
   });
 });
@@ -509,8 +500,7 @@ router.post('/import_choices/re_create_from_file', [helpers.isLoggedIn, upload.s
 
 //           res.render(render_url, {
 //             title: 'VAMPS:Import Data',
-//             message: req.flash('successMessage'),
-//             failmessage: req.flash('failMessage'),
+
 //             import_type: import_type,
 //             my_projects: my_projects,
 //             user: req.user,
@@ -536,7 +526,6 @@ router.get('/validate_format', helpers.isLoggedIn, function (req, res) {
   var file_type    = myurl.query.file_type;
   res.render('user_data/validate_format', {
     title: 'VAMPS:Import Data',
-    message: req.flash('successMessage'),
     file_type: file_type,
     file_style:'',
     result:'',
@@ -596,14 +585,12 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
           console.log(typeof ary);
 
           if (result == 'OK') {
-            req.flash('message', 'Validates');
+            req.flash('success', 'Validates');
           } else {
-            req.flash('message', 'Failed Validation');
+            req.flash('fail', 'Failed Validation');
           }
           res.render('user_data/validate_format', {
                title: 'VAMPS:Import Data',
-               message: req.flash('message'),
-
                file_type: file_type,
                //result:    JSON.stringify(ary),
                file_style: file_style,
@@ -615,10 +602,9 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
 
         } else {
           console.log('ERROR '+code);
-          req.flash('message', 'Failed Validation');
+          req.flash('fail', 'Failed Validation');
           res.render('user_data/validate_format', {
               title: 'VAMPS:Import Data',
-              message: req.flash('message'),
               file_type: file_type,
               user: req.user, hostname: req.CONFIG.hostname
                           });
@@ -646,6 +632,16 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
       title   : project,
       user: req.user, hostname: req.CONFIG.hostname
          });
+});
+
+//
+//
+//
+router.get('/update_metadata', helpers.isLoggedIn, function (req, res) {
+	console.log("IN Upload metadata");
+	console.log("not Coded yet");
+	req.flash('fail', 'Not Coded Yet');
+	res.redirect('/user_data/your_data')
 });
 //
 // USER PROJECT METADATA:ID
@@ -678,7 +674,6 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function (req, res)
         pinfo   : JSON.stringify(config),
         mdata   : data,
         title   : project,
-        message : req.flash('successMessage'),
         user: req.user, hostname: req.CONFIG.hostname
       });
   });
@@ -698,7 +693,6 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function (req, res)
       pinfo   : JSON.stringify(config),
       mdata   : [],
       title   : project,
-      message : req.flash('successMessage'),
       user: req.user, hostname: req.CONFIG.hostname
     });
   }
@@ -760,7 +754,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
       options.args = options.args.concat(['--action', 'delete_metadata_only' ]);
 
     } else {
-      req.flash('message', 'ERROR nothing deleted');
+      req.flash('fail', 'ERROR nothing deleted');
       res.redirect("/user_data/your_projects");
       return;
     }
@@ -810,7 +804,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
       } else if (delete_kind == 'meta') {
         msg = "Deletion in progress: metadata from '"+project+"'";
       } else {
-        req.flash('message', 'ERROR nothing deleted');
+        req.flash('fail', 'ERROR nothing deleted');
         res.redirect("/user_data/your_projects");
         return;
       }
@@ -828,7 +822,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
               console.log('moved project_dir to DELETED_project_dir');
               console.log('From: '+data_dir);
               console.log('To: '+deleted_data_dir);
-              req.flash('successMessage', msg);
+              req.flash('success', msg);
               res.redirect("/user_data/your_projects");
               return;
             }
@@ -836,7 +830,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
           });
 
       } else {
-        req.flash('successMessage', msg);
+        req.flash('success', msg);
         res.redirect("/user_data/your_projects");
       }
 
@@ -855,7 +849,7 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn, function (req, res
       stats = fs.lstatSync(new_data_dir);
       if (stats.isDirectory()) {
               console.log('dir exists - returning');
-              req.flash('failMessage', "Error: Could not duplicate: '"+project+"' to '"+project+"_dupe'. Does it already exist?");
+              req.flash('fail', "Error: Could not duplicate: '"+project+"' to '"+project+"_dupe'. Does it already exist?");
             res.redirect("/user_data/your_projects");
             return;
           }
@@ -900,7 +894,6 @@ router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, function (req, res)
     res.render('user_data/assign_taxonomy', {
       project : project,
       title   : project,
-      message : req.flash('successMessage'),
       tax_choices : JSON.stringify(req.CONSTS.UNIT_ASSIGNMENT_CHOICES),
       user: req.user, hostname: req.CONFIG.hostname
      });
@@ -1041,7 +1034,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
         status_params.status = status_params.statusSUCCESS;
         status_params.msg = status_params.msgSUCCESS;
         helpers.update_status(status_params);
-        req.flash('successMessage', classifier + " has been started for project: '" + project + "'");
+        req.flash('success', classifier + " has been started for project: '" + project + "'");
         res.redirect("/user_data/your_projects");
         process.umask(oldmask);
         console.log("1-The file was saved!");
@@ -1270,10 +1263,10 @@ function metadata_upload(req, options, data_dir, project)
 //
 router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
     if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
+      req.flash('fail','Not coded yet')
       res.render('user_data/your_data', {
         title: 'VAMPS:Data Administration',
         user: req.user, hostname: req.CONFIG.hostname,
-        message: req.flash('message','Not coded yet'),
       });
       return;
     }
@@ -1423,8 +1416,6 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
             pinfo: JSON.stringify(project_info),
             pnames: pnames,
             //env_sources :   JSON.stringify(MD_ENV_PACKAGE),
-            failmessage : req.flash('failMessage'),
-            successmessage : req.flash('successMessage'),
             user: req.user, hostname: req.CONFIG.hostname
         });
 
@@ -1500,8 +1491,6 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function (req, res) {
         title       : 'Edit Project',
         project     : project_name,
         pinfo       : JSON.stringify(project_info),
-        //env_sources : JSON.stringify(MD_ENV_PACKAGE),
-        message     : req.flash('message'),
         user: req.user, hostname: req.CONFIG.hostname,
     });
 });
@@ -1518,7 +1507,7 @@ router.post('/edit_project', helpers.isLoggedIn, function (req, res) {
   if (req.body.new_project_name && req.body.new_project_name != req.body.old_project_name) {
     if (req.body.new_project_name in PROJECT_INFORMATION_BY_PNAME) {
       console.log('ERROR');
-      req.flash('message', 'That project name is taken -- choose another.');
+      req.flash('fail', 'That project name is taken -- choose another.');
       res.redirect('/user_data/edit_project/'+req.body.old_project_name);
       return;
     }
@@ -1828,7 +1817,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
                                                     
                               //helpers.update_metadata_from_file();  // need to update to hdf5 file??
 
-                              req.flash('successMessage', 'Metadata Upload in Progress');
+                              req.flash('success', 'Metadata Upload in Progress');
                               res.redirect("/user_data/import_choices");
                             }
 
@@ -1837,7 +1826,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 
                   });
                 }else{  // end if(has_tax)
-                  req.flash('successMessage', 'Metadata Upload in Progress');
+                  req.flash('success', 'Metadata Upload in Progress');
                   res.redirect("/user_data/import_choices");
                 }
 
@@ -1846,7 +1835,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
               console.log('ERROR last line: '+last_line);
 
               // NO REDIRECT here
-              req.flash('failMessage', 'Script Error: '+last_line);
+              req.flash('fail', 'Script Error: '+last_line);
               res.redirect("/user_data/import_choices");
            }
         });  // end upload_metadata_process ON Close
@@ -1869,7 +1858,7 @@ function ProjectNameExists(project, req, res)
   // console.log('BBB: ProjectNameExists: project: ' + project);
 
   if (project in PROJECT_INFORMATION_BY_PNAME) {
-      req.flash('failMessage', 'That project name is already taken.');
+      req.flash('fail', 'That project name is already taken.');
       res.redirect(path.join("/user_data", req.url));
       console.log('This project name is already taken');
       return true;
@@ -1884,7 +1873,7 @@ function ProjectNameExists(project, req, res)
 function FastaProvided(req, res)
 {
   if (req.files[0].filename === undefined || req.files[0].size === 0) {
-    req.flash('failMessage', 'A fasta file is required. Check if it exists.');
+    req.flash('fail', 'A fasta file is required. Check if it exists.');
     res.redirect(path.join("/user_data", req.url));
     return false;
   }
@@ -1902,7 +1891,7 @@ function ResFilePathExists(req, data_repository, res)
     }
     else
     {
-      req.flash('failMessage', 'There is no such file: ' + data_repository);
+      req.flash('fail', 'There is no such file: ' + data_repository);
       console.log("AAA data_repository: " + data_repository);
       res.redirect(path.join("/user_data", req.url));
       return false;
@@ -1913,7 +1902,7 @@ function MetadataFileProvided(req, res)
 {
   if (req.files[1].filename === undefined || req.files[1].size === 0) {
     // console.log("DDD2 in MetadataFileProvided, filename === undefined");
-    req.flash('failMessage', 'A metadata csv file is required. Check if it exists.');
+    req.flash('fail', 'A metadata csv file is required. Check if it exists.');
     res.redirect(path.join("/user_data", req.url));
     return false;
   }
@@ -1933,7 +1922,7 @@ function ProjectExistsInDB(project, req, res)
       if (err) {
           console.log("err 5: ");
           console.log(err);
-          req.flash('failMessage', '1-There is no such project, please create one.');
+          req.flash('fail', '1-There is no such project, please create one.');
           res.redirect(redirect_url);
           return false;
       } else {
@@ -1947,7 +1936,7 @@ function ProjectExistsInDB(project, req, res)
         catch(err) {
           req.form.errors.pr_not_exists = 'No such project: ' + project;
           console.log('Redirect err from ProjectExistsInDB. No such project: ' + project + ". " + err + '; Please add a new project at /user_data/add_project');
-          req.flash('failMessage', '2-There is no such project, please create ' + project);
+          req.flash('fail', '2-There is no such project, please create ' + project);
           try        { res.redirect(redirect_url); }
           catch(err) { console.log('Redirect err from ProjectExistsInDB to ' + redirect_url + ". " + err); }
           return false;
@@ -2000,11 +1989,10 @@ var LoadDataFinishRequest = function (req, res, project, display) {
   console.log('display from LoadDataFinishRequest: ' + "display");
 
   // START STATUS //
-  req.flash('successMessage', "Upload in Progress: '" + project + "'");
+  req.flash('success', "Upload in Progress: '" + project + "'");
 
   // type, user, project, status, msg
   res.render('success', {  title   : 'VAMPS: Import Success',
-                            message : req.flash('successMessage'),
                             display : display,
                             user    : req.user, hostname: req.CONFIG.hostname
   });
@@ -2039,7 +2027,7 @@ function CheckFileTypeInfo(req, options)
   var redirect_url = path.join('/user_data', req.url);
   if (req.body.type == 'simple_fasta') {
       if (req.body.dataset === '' || req.body.dataset === undefined) {
-        req.flash('failMessage', 'A dataset name is required.');
+        req.flash('fail', 'A dataset name is required.');
         res.redirect(redirect_url);
         return;
       }
@@ -2047,7 +2035,7 @@ function CheckFileTypeInfo(req, options)
     } else if (req.body.type == 'multi_fasta') {
         options.args = options.args.concat(['-upload_type', 'multi' ]);
     } else {
-        req.flash('failMessage', 'No file type info found');
+        req.flash('fail', 'No file type info found');
         res.redirect(redirect_url);
         return;
     }
@@ -2195,9 +2183,6 @@ function editUploadData(req, res)
   
   res.render(url, {
     title:        'VAMPS:Import Data',
-    message:      req.flash('successMessage'),
-    failmessage:  req.flash('failMessage'),
-    messages:     req.flash('messages'),
     import_type:  req.body.type,
     user:         req.user,
     form_data:    req.form,
@@ -2244,7 +2229,7 @@ function failedCode(req, res, data_repository, project, last_line)
      console.log(err);  
    }
    else {
-       req.flash('failMessage', 'Script Failure: ' + last_line);
+       req.flash('fail', 'Script Failure: ' + last_line);
        status_params = {'type':    'update',
                         'user_id': req.user.user_id,
                         'project': project,
@@ -2255,7 +2240,6 @@ function failedCode(req, res, data_repository, project, last_line)
        res.render(redirect_url, {
          user: req.user,
          hostname: req.CONFIG.hostname,
-         message: req.flash('message'),
        });
        
        // res.redirect(redirect_url);  // for now we'll send errors to the browser
@@ -2465,8 +2449,6 @@ function validate_metadata(req, res, options)
                   pinfo:       JSON.stringify({}),
                   project:      '',
                   html_json:    JSON.stringify(html_json),
-                  message:     req.flash('message'),
-                  failmessage: req.flash('failMessage'),
                   import_type: import_type,
           });
         }
@@ -2549,8 +2531,6 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
     title: 'VAMPS: Add a new project',
     user: req.user,
     hostname: req.CONFIG.hostname,
-    message: req.flash('message'),
-    //env_sources: JSON.stringify(MD_ENV_PACKAGE),
   });
 });
 
@@ -2586,7 +2566,7 @@ function saveToDb(req, res){
            if (err) {
              console.log('ERROR-in project insert: ' + err);
              // TODO: fix: req flash doesn't work from here!
-             req.flash('failMessage', err);
+             req.flash('fail', err);
              return false;
            } else {
 
@@ -2614,7 +2594,6 @@ function editAddProject(req, res){
     title: 'VAMPS: Add a new project',
     user: req.user,
     hostname: req.CONFIG.hostname,
-    messages: req.messages,
     add_project_info: req.add_project_info,
     //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
   });
@@ -2690,8 +2669,6 @@ router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], function (req, re
             hostname:    req.CONFIG.hostname,
             pinfo:       JSON.stringify(user_project_info),
             project: project,
-            message:     req.flash('message'),
-            failmessage: req.flash('failMessage'),
             import_type: import_type,
           });
      }
@@ -2734,32 +2711,32 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
   var render_url = path.join("/user_data", req.url);
   
   if (req.files.length === 0 ) {
-    req.flash('failMessage', 'Make sure you are choosing a file to upload and that it is smaller than '+ req.CONFIG.UPLOAD_FILE_SIZE+' bytes');
+    req.flash('fail', 'Make sure you are choosing a file to upload and that it is smaller than '+ req.CONFIG.UPLOAD_FILE_SIZE+' bytes');
 
     res.redirect(render_url);
     return;
   }
 
   if (req.files[0] && req.files[0].size > config.UPLOAD_FILE_SIZE.bytes) {  // 1155240026
-    req.flash('failMessage', 'The file '+req.files[0].originalname+' exceeds the limit of '+config.UPLOAD_FILE_SIZE.MB);
+    req.flash('fail', 'The file '+req.files[0].originalname+' exceeds the limit of '+config.UPLOAD_FILE_SIZE.MB);
     res.redirect(render_url);
     return;
   }
   if (req.files[1] && req.files[1].size > config.UPLOAD_FILE_SIZE.bytes) {
-    req.flash('failMessage', 'The file '+req.files[1].originalname+' exceeds the limit of '+config.UPLOAD_FILE_SIZE.MB);
+    req.flash('fail', 'The file '+req.files[1].originalname+' exceeds the limit of '+config.UPLOAD_FILE_SIZE.MB);
     res.redirect(render_url);
     return;
   }
   if ((project === '' || req.body.project === undefined) && req.body.use_original_names != 'on') {
-    req.flash('failMessage', 'A project name is required.');
+    req.flash('fail', 'A project name is required.');
     res.redirect(render_url);
     return;
   } else if (project in PROJECT_INFORMATION_BY_PNAME) {
-    req.flash('failMessage', 'That project name is already taken.');
+    req.flash('fail', 'That project name is already taken.');
     res.redirect(render_url);
     return;
   } else if (req.files[0].filename === undefined || req.files[0].size === 0) {
-    req.flash('failMessage', 'A tax_by_seq file is required.');
+    req.flash('fail', 'A tax_by_seq file is required.');
     res.redirect(render_url);
     return;
   } else {
@@ -2839,7 +2816,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
       } else if (use_original_names == 'off') {
           options.args = options.args.concat(['-p', project]);
       } else {
-          req.flash('failMessage', 'No file type info found:  ');
+          req.flash('fail', 'No file type info found:  ');
           res.redirect(render_url);
           return;
       }
@@ -2918,9 +2895,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
             console.log("output: ");
             console.log(output);
             console.log('ERROR last line: '+code);
-            // NO REDIRECT here
-            //req.flash('message', 'Script Error'+last_line);
-            //res.redirect("/user_data/your_projects");
+            
            }
         });  // end tax_by_seq_process ON Close
 
@@ -2965,18 +2940,20 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
         if (err) {
           console.log("err 8: ");
           console.log(err);
+          req.flash('fail', err);
         } else {
-          req.flash('message', 'Deleted: '+req.query.filename);
+          req.flash('success', 'Deleted: '+req.query.filename);
           res.redirect("/visuals/saved_elements");
         }
       }); //
     } else {
       fs.unlink(file, function deleteFile(err) {
         if (err) {
+          req.flash('fail', err);
           console.log("err 9: ");
           console.log(err);
         } else {
-          req.flash('message', 'Deleted: '+req.query.filename);
+          req.flash('success', 'Deleted: '+req.query.filename);
           res.redirect("/user_data/file_retrieval");
         }
       });
@@ -3035,7 +3012,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
 
   } else if (req.body.download_type == 'custom_taxonomy') {
 
-      req.flash('tax_message', 'Fasta being created');
+      req.flash('success', 'Fasta being created');
       file_name = 'fasta-'+timestamp+'_custom_taxonomy.fa.gz';
       out_file_path = path.join(user_dir, file_name);
       var tax_string = req.body.tax_string;
@@ -3103,11 +3080,10 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
-router.get('/required_metadata_options', function(req, res) {
+router.get('/required_metadata_options', helpers.isLoggedIn, function(req, res) {
     console.log('in required_metadata_options')
     res.render('user_data/required_metadata_options', {
               title     :'VAMPS Validate Metadata',
-              message   : req.flash('message'),
               user: req.user,
               md_env_pkg:           JSON.stringify(MD_ENV_PACKAGE),
             md_env_term:            JSON.stringify(MD_ENV_TERM),        
@@ -3771,7 +3747,7 @@ function update_config(res, req, config_file, config_info, has_new_pname, msg) {
                 } else {
 
                   update_dataset_names(config_info);
-                  req.flash('successMessage', msg);
+                  req.flash('success', msg);
                   res.redirect('/user_data/your_projects');
 
                 }
@@ -3780,7 +3756,7 @@ function update_config(res, req, config_file, config_info, has_new_pname, msg) {
           } else {
 
             update_dataset_names(config_info);
-            req.flash('successMessage', msg);
+            req.flash('success', msg);
             res.redirect('/user_data/your_projects');
 
           }

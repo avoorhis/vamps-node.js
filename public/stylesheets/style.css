@@ -187,12 +187,31 @@ td.left_justify {
 .alert_flash_message {
 	font: bold 12px Arial;
 	color: orange;
-  position: absolute;
-  left: 3em;
-  /* top:65px; */
-  top: 2.5em;
+    position: absolute;
+    left: 3em;
+    /* top:65px; */
+    top: 2.5em;
 }
-
+.alert_flash_message_success {
+	font: bold 12px Arial;
+	color: green;
+	padding:5px;
+	background:white;
+    position: absolute;
+    left: 3em;
+    /* top:65px; */
+    top: 2.5em;
+}
+.alert_flash_message_fail {
+	font: bold 12px Arial;
+	color: red;
+	padding:5px;
+	background:white;
+    position: absolute;
+    left: 3em;
+    /* top:65px; */
+    top: 2.5em;
+}
 
 #project_profile_div ul{
   list-style-type: none;

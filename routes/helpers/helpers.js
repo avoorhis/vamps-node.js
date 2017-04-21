@@ -43,7 +43,7 @@ module.exports = {
       req.session.returnTo = req.path;
       //console.log('URL Requested: '+JSON.stringify(req));
       //console.log(util.inspect(req, {showHidden: false, depth: null}));
-      req.flash('message', 'The page you are trying to access is for VAMPS admins only.');
+      req.flash('fail', 'The page you are trying to access is for VAMPS admins only.');
       res.redirect('/');
       return;
   }
@@ -64,7 +64,7 @@ module.exports.start = process.hrtime();
 module.exports.elapsed_time = function(note){
     var precision = 3; // 3 decimal places
     var elapsed = process.hrtime(module.exports.start)[1] / 1000000; // divide by a million to get nano to milli
-    console.log(process.hrtime(module.exports.start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
+    console.log(process.hrtime(module.exports.start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); 
 };
 
 var ranks = CONSTS.RANKS;
@@ -78,10 +78,9 @@ module.exports.check_if_rank = function(field_name)
 
 module.exports.render_error_page = function(req,res,msg)
 {
-  req.flash('errorMessage', msg);
+  req.flash('fail', msg);
   res.render('error',
     { title :  'Fail',
-      message : req.flash('errorMessage'),
       user :   req.user.username
     });
 };

@@ -9,15 +9,13 @@ router.get('/methods_pubs', function(req, res) {
       res.render('resources/methods_pubs', { 
           title: 'VAMPS:Methods Publications', 
           user: req.user,
-          hostname: req.CONFIG.hostname,
-          message:'',
+          hostname: req.CONFIG.hostname,          
       });
 });
 /* GET Software page. */
 router.get('/primers', function(req, res) {
       res.render('resources/primers', { 
-          title: 'VAMPS:Primers',
-          message:'',
+          title: 'VAMPS:Primers',          
           user: req.user,
           hostname: req.CONFIG.hostname
       });
@@ -25,8 +23,7 @@ router.get('/primers', function(req, res) {
 /* GET Research Publications page. */
 router.get('/research_pubs', function(req, res) {
       res.render('resources/research_pubs', { 
-          title: 'VAMPS:Research Publications',
-          message:'',
+          title: 'VAMPS:Research Publications',         
           user: req.user,
           hostname: req.CONFIG.hostname
       });
@@ -34,8 +31,7 @@ router.get('/research_pubs', function(req, res) {
 /* GET Software page. */
 router.get('/software', function(req, res) {
       res.render('resources/software', { 
-          title: 'VAMPS:Software and Links',
-          message:'',
+          title: 'VAMPS:Software and Links',          
           user: req.user,
           hostname: req.CONFIG.hostname
       });
@@ -48,8 +44,7 @@ router.get('/reference_data', function(req, res) {
             //Send the guts of the captcha to your template
             res.render('resources/reference_data', {
               title: 'VAMPS:Reference Data',
-              user: req.user,
-              message:'',
+              user: req.user,             
               hostname: req.CONFIG.hostname
                });
         ;

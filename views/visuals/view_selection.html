@@ -66,22 +66,18 @@
 <div class='subtitle'>Display Choices</div>
 
 
-
-<% if(message != ''){ %>
-  <% if(message[0].substring(0,5) == 'ERROR'){ %>
-    <div class="alertx" style='top:100px;padding:20px;background:red;color:white;' >
-      <%= message[0] %>
-      <br>We recommend re-selecting data or selecting different data and trying again. 
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %>
+  	</div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %>
+    <br>We recommend re-selecting data or selecting different data and trying again. 
       If you are loading this page from a configuration file or image file it may be out of date.
-      Contact us at vamps.mbl.edu for help.
-    </div>
-    <script>image_to_rdr_local = {}</script>
-  <% }else{ %>
-    <div class="alert_flash_message" >
-      <%= message %>
-    </div>
-  <% } %>
+      Contact us at vamps.mbl.edu for help.</div>
 <% } %>
+
+
+
 
 
 

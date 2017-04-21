@@ -6,7 +6,11 @@
 <% include ../add_ins/begin.ejs %>
 
 <div class="container"> 
-   
+   <% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+  <% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+  <% } %>  
 <p class='title'>Portals</p>  
     <p class='subtitle'>Portals are areas of the VAMPS site dedicated to specific umbrella projects or initiatives
         that contain many VAMPS projects. <br>They typically involve more than one primary investigator and strive to make the data publicly available.

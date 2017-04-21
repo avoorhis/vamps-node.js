@@ -1,7 +1,11 @@
 <% include ../add_ins/begin.ejs %>
 
 <%  var items  = JSON.parse(chosen_id_name_hash); %>
-
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+<% } %>
 <script>
   var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
   var user_local  = '<%= user.username %>';

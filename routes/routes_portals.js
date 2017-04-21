@@ -9,7 +9,6 @@ router.get('/portals_index', function(req, res) {
             title: 'VAMPS:Portals',
             portals : JSON.stringify(req.CONSTS.PORTALS),
             user: req.user,hostname: req.CONFIG.hostname,
-            message:'',
         });
 });
 //
@@ -39,7 +38,6 @@ router.get('/visuals_index/:portal', function(req, res) {
             portal_to_show : portal,
             data_to_open : JSON.stringify({}),
             user      : req.user,hostname: req.CONFIG.hostname,
-            message   :'',
         });
 });
 //
@@ -59,7 +57,6 @@ router.get('/projects/:portal', function(req, res) {
             user      : req.user,hostname: req.CONFIG.hostname,
             portal    : req.CONSTS.PORTALS[portal].pagetitle,
             projects  : JSON.stringify(project_list),
-            message   : '',
         });
 });
 //
@@ -72,7 +69,6 @@ router.get('/metadata/:portal', function(req, res) {
             title: 'VAMPS:'+portal+' Portal Metadata',
             user: req.user,hostname: req.CONFIG.hostname,
             portal:portal,
-            message:'',
         });
 });
 
@@ -89,7 +85,6 @@ router.get('/:portal', function(req, res) {
             subtitle    : pi.subtitle,
             portal      : portal,
             user: req.user,hostname: req.CONFIG.hostname,
-            message:'',
         });
     
 });
@@ -106,7 +101,6 @@ router.get('/geomap/:portal', function(req, res) {
             portal_info : JSON.stringify(portal_info[portal]),
             user: req.user,hostname: req.CONFIG.hostname,
             gekey : req.CONFIG.GOOGLE_EARTH_KEY,
-            message:'',
         });
 
 });

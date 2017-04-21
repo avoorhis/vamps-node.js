@@ -24,7 +24,6 @@ router.get('/admin_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
   console.log('in admin');
    res.render('admin/admin_index', {
               title     :'VAMPS Site Administration',
-              message   : req.flash('message'),
               user: req.user,
               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
             });
@@ -38,7 +37,6 @@ router.get('/assign_permissions', [helpers.isLoggedIn, helpers.isAdmin], functio
     console.log('in assign_permissions');
     res.render('admin/assign_permissions', {
               title     :'VAMPS Site Administration',
-              message   : req.flash('message'),
               user: req.user,
               project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
               user_info: JSON.stringify(ALL_USERS_BY_UID),
@@ -60,7 +58,6 @@ router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
     //console.log(JSON.stringify(ALL_USERS_BY_UID))
     res.render('admin/permissions', {
               title     :'VAMPS Site Administration',
-              message   : req.flash('message'),
               user: req.user,
               project_order: JSON.stringify(project_order),
               user_order: JSON.stringify(user_order),
@@ -78,7 +75,6 @@ router.get('/public_status', [helpers.isLoggedIn, helpers.isAdmin], function(req
    
    res.render('admin/public_status', {
               title     :'VAMPS Site Administration',
-              message   : req.flash('message'),
               user: req.user,
               project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
               user_info: JSON.stringify(ALL_USERS_BY_UID),
@@ -126,10 +122,9 @@ router.get('/admin_status', [helpers.isLoggedIn, helpers.isAdmin], function(req,
     console.log('in admin_status');
   
     user_order = get_name_ordered_users_list()
-    console.log(user_order)
+    //console.log(user_order)
     res.render('admin/admin_status', {
               title     :'VAMPS Site Administration',
-              message   : req.flash('message'),
               user: req.user,
               //project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
               user_info: JSON.stringify(user_order),
@@ -225,7 +220,6 @@ router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], function(re
     console.log(myjson)
     res.render('admin/alter_datasets', {
               title     :'VAMPS Site Administration',
-              message   : req.flash('message'),
               user: req.user,
               pid: pid,
               project_info: JSON.stringify(myjson),
@@ -255,7 +249,6 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req
    project_list = get_name_ordered_projects_list()
    res.render('admin/alter_project', {
               title       : 'VAMPS Site Administration',
-              message     : req.flash('message'),
               user        : req.user,
               proj_to_open: proj_to_open,
               project_list: JSON.stringify(project_list),
@@ -533,7 +526,6 @@ router.get('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function(r
     user_order = get_name_ordered_users_list()
     res.render('admin/inactivate_user', {
               title     :'VAMPS Inactivate User',
-              message   : req.flash('message'),
               user: req.user,
               user_info: JSON.stringify(user_order),
               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
@@ -549,7 +541,6 @@ router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function(
     var finish = function(){
       res.render('admin/inactivate_user', {
               title     :'VAMPS Inactivate User',
-              message   : req.flash('message'),
               user: req.user,
               user_info: JSON.stringify(ALL_USERS_BY_UID),
               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
@@ -557,16 +548,16 @@ router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function(
 
     };
     if(uid_to_delete == 0){
-        req.flash('message', 'FAILED: Got a UID of zero!');
+        req.flash('fail', 'FAILED: Got a UID of zero!');
     }else if(uid_to_delete == req.user.user_id){ 
-        req.flash('message', 'FAILED: You cannot inactivate yourself!');
+        req.flash('fail', 'FAILED: You cannot inactivate yourself!');
     }else{       
         delete ALL_USERS_BY_UID[uid_to_delete]
         req.db.query(queries.inactivate_user(uid_to_delete), function(err, rows){
           if (err) {
-              req.flash('message', 'FAILED: sql error '+err);
+              req.flash('fail', 'FAILED: sql error '+err);
           }else{
-              req.flash('message', 'Inactivate Success ( uid: '+uid+' )');
+              req.flash('success', 'Inactivate Success ( uid: '+uid+' )');
           }
             finish();
         });
@@ -579,7 +570,6 @@ router.get('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, res
 
     res.render('admin/new_user', {
               title     :'VAMPS Create new user',
-              message   : req.flash('message'),
               user      : req.user,
               hostname  : req.CONFIG.hostname,
               new_user  : {}
@@ -602,7 +592,6 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
     var finish = function(nuser){
         res.render('admin/new_user', {
                             title     :'VAMPS Create new user',
-                            message   : req.flash('message'),
                             user: req.user,
                             hostname: req.CONFIG.hostname,
                             new_user: nuser
@@ -610,38 +599,38 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
 
     };
     if(new_user.password.length < 3 || new_user.password.length > 12){
-        req.flash('message', 'Password must be between 3 and 20 characters.');
+        req.flash('fail', 'Password must be between 3 and 20 characters.');
         finish(new_user);
     }else if(helpers.checkUserName(new_user.username)){
-        req.flash('message', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only.");
+        req.flash('fail', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only.");
         finish(new_user);
     }else if(new_user.username.length < 3 || new_user.username.length > 15){
-        req.flash('message', 'Username must be between 3 and 15 characters. Alphanumeric only.');
+        req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.');
         new_user.username = ''
         finish(new_user);
     }else if( new_user.email.indexOf("@") == -1 || new_user.email.length < 3 || new_user.email.length > 100 ){
-        req.flash('message', 'Email address is empty or the wrong format.');
+        req.flash('fail', 'Email address is empty or the wrong format.');
         finish(new_user);
     }else if( new_user.firstname.length < 1 || new_user.firstname.length > 20  ){
-        req.flash('message', 'Both first and last names are required (limit 20 characters).');      
+        req.flash('fail', 'Both first and last names are required (limit 20 characters).');      
         finish(new_user);
     }else if( new_user.lastname.length < 1 || new_user.lastname.length > 20 ){
-        req.flash('message', 'Both first and last names are required (limit 20 characters).');
+        req.flash('fail', 'Both first and last names are required (limit 20 characters).');
         finish(new_user);
     }else if( new_user.institution.length < 1 || new_user.institution.length > 128){
-        req.flash('message', 'Institution name is required.');
+        req.flash('fail', 'Institution name is required.');
         finish(new_user);
     }else{
 
         req.db.query(queries.get_user_by_name(new_user.username), function(err,rows){
                 if (err) {
                   console.log(err);
-                  req.flash('message', err);
+                  req.flash('fail', err);
                   finish(new_user);
                 }
                 if (rows.length) {
                     console.log('Username is already taken.');                    
-                    req.flash('message', 'Username "'+new_user.username+'" is already taken.');
+                    req.flash('fail', 'Username "'+new_user.username+'" is already taken.');
                     finish(new_user);
                     
                 } else {
@@ -664,7 +653,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
                             first_name: new_user.firstname,
                             institution:new_user.institution,
                         }
-                        req.flash('message', 'Success (username: '+new_user.username+'; user_id: '+new_user.user_id+')');
+                        req.flash('success', 'Success (username: '+new_user.username+'; user_id: '+new_user.user_id+')');
                         finish(new_user);                        
                     });   
                 }
@@ -682,7 +671,6 @@ router.get('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], functi
     user_order = get_name_ordered_users_list()
     res.render('admin/new_password', {
               title     :'VAMPS Reset User Password',
-              message   : req.flash('message'),
               user: req.user,
               user_info: JSON.stringify(user_order),
               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
@@ -696,7 +684,6 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], funct
     var finish = function(){
       res.render('admin/new_password', {
               title     :'VAMPS Reset User Password',
-              message   : req.flash('message'),
               user: req.user,
               user_info: JSON.stringify(ALL_USERS_BY_UID),
               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
@@ -704,18 +691,18 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], funct
 
     };
     if(password.length < 3 || password.length > 12){
-        req.flash('message', 'FAILED: The password must be between 3 and 20 characters.');
+        req.flash('fail', 'FAILED: The password must be between 3 and 20 characters.');
     }else if(uid == ''){
-        req.flash('message', 'FAILED: You must select a user.');
+        req.flash('fail', 'FAILED: You must select a user.');
     }else{
 
         var updateQuery = queries.reset_user_password_by_uid(password, uid)
         console.log(updateQuery);
         req.db.query(updateQuery, function(err,rows){
           if (err) {
-              req.flash('message', 'FAILED: sql error '+err);
+              req.flash('fail', 'FAILED: sql error '+err);
           }else{
-              req.flash('message', 'Success ( uid: '+uid+' )');
+              req.flash('success', 'Success ( uid: '+uid+' )');
           }
             finish();
 
@@ -730,7 +717,6 @@ router.get('/update_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
   console.log('in GET validate_metadata');
   res.render('admin/validate_metadata', {
               title     :'VAMPS Validate Metadata',
-              message   : req.flash('message'),
               user: req.user,
               project_info: JSON.stringify(PROJECT_INFORMATION_BY_PNAME),
               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
@@ -905,7 +891,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
   });
   update_metadata_process.stderr.on('data', function(data) {
       console.log('stderr: ' + data);
-      req.flash('message', 'Metadata Update Failed');
+      req.flash('fail', 'Metadata Update Failed');
   });
   update_metadata_process.on('close', function checkExitCode(code) {
      console.log('From apply_metadata process exited with code ' + code);
@@ -914,10 +900,9 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
      }else{
         console.log('OUTPUT:\n'+output )
      }
-     req.flash('message', 'Success in updating metadata');
+     req.flash('success', 'Success in updating metadata');
      res.render('admin/validate_metadata', {
               title     :'VAMPS Validate Metadata',
-              message   : req.flash('message'),
               user: req.user,
               project_info: JSON.stringify(PROJECT_INFORMATION_BY_PNAME),
               hostname: req.CONFIG.hostname, // get the user out of session and pass to template

@@ -2,7 +2,12 @@
 
   <div class='title center'>User List</div>
   <div class='subtitle'></div>
-
+  <% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+  <% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+  <% } %>
+  
   <% user_rows = rows %>
   <center>
   <table id='user_list_div' class='sortable' border='1'>

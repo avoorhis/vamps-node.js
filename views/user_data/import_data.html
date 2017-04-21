@@ -1,20 +1,10 @@
 <% include ../add_ins/begin.ejs %>
 
 <p class="title">Import Data</p>
-<% if (message) { %>
-	<div class="alert_flash_message"><%= message %></div>
-<% } %>
-<% if (failmessage) { %>
-	<div class="alert_flash_message"><%= failmessage %></div>
-<% } %>
-
-<% if (messages) { %>
-  <div class='alert_flash_message'>
-    <% for(var i=0; i < messages.length; i++) { %>
-      <%= messages[i] %>
-      <br>
-    <% } %>
-  </div>
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail" ><%- messages.fail %> </div>
 <% } %>
 <br>
 <% if (!form_data) {

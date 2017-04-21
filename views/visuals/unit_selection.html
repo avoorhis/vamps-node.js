@@ -26,9 +26,11 @@
   <div class='subtitle'>Select Units, Taxonomic Depth and Metadata</div>
 
 
-<% if(message){ %>
-  <div class="alert_flash_message" style='position:relative;left:-20px;top:-25px'><%= message %></div>
-<% } %> 
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+<% } %>
 
 <div class='well'>
   <div class="row">
