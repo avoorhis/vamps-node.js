@@ -77,7 +77,7 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
       if (event.type == 'mouseover') {
         tip.id = link.id;
         link.id = '';
-        id_items = tip.id.split('/');
+        id_items = tip.id.split('/');  // use slash '/' here to split save space on long/many ids
         html = "<table><tr>";
         if(id_items[0] == 'dh') {  // distance heatmap
           html += "<td>"+id_items[1]+"</td>";
