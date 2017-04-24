@@ -14,6 +14,7 @@
 
 <form method='POST' name='export_data_form' action='/user_data/export_confirm'>
 <div class='well'>
+  
   <div class="row">
     <div  id='show_selected_datasets_div'  class="col-md-6">
                   <% include ../partials/show_selected_datasets.html %> 
@@ -22,17 +23,21 @@
                   <div class='' style=''><% include partials/tax_simple.html %></div>  
     </div> <!-- End  show_selected_datasets_div -->
   </div>
+ 
+  <% if(messages.success){ %>
+  <div class="alert_flash_message_success" style='font-size:large;margin:-20px'><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail" style='font-size:large;margin:-20px'><%- messages.fail %> </div>
+<% } %>
+ 
+  
+  
 </div>  <!-- /well -->
 
 <button type='submit' class='btn pull-right btn-sm btn-warning' id="" >
     Get Files <span class="glyphicon glyphicon-circle-arrow-right" ></span> 
 </button>
 
-<% if(messages.success){ %>
-  <div class="pull-right alert_flash_message_success" ><%- messages.success %> </div>
-<% }else if(messages.fail){ %>
-    <div class="pull-right alert_flash_message_fail" ><%- messages.fail %> </div>
-<% } %>
 Normalization:
                 <input type="radio" checked name='normalization' value="not_normalized"> none&nbsp;&nbsp;
                 <input type="radio" name='normalization' value="normalized_to_maximum"> to the Maximum Sample Count&nbsp;&nbsp;

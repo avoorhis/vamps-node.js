@@ -192,6 +192,7 @@ td.left_justify {
     /* top:65px; */
     top: 2.5em;
 }
+
 .alert_flash_message_success {
 	font: bold 12px Arial;
 	color: green;
@@ -200,7 +201,7 @@ td.left_justify {
     position: absolute;
     left: 3em;
     /* top:65px; */
-    top: 2.5em;
+    
 }
 .alert_flash_message_fail {
 	font: bold 12px Arial;
@@ -210,7 +211,7 @@ td.left_justify {
     position: absolute;
     left: 3em;
     /* top:65px; */
-    top: 2.5em;
+    /* top: 1.0em; */
 }
 
 #project_profile_div ul{
