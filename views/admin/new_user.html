@@ -18,15 +18,18 @@
 <a href='admin_index'><--back</a> | <a href='new_user'>refresh</a>
 
 <div class="row">
-<div class="col-lg-3"></div>
+<div class="col-lg-3">
+    <% if (messages.success) { %>
+        <div class="alert_flash_message_success"><%= messages.success %></div>
+    <% }else if(messages.fail){ %>
+        <div class="alert_flash_message_fail"><%= messages.fail %></div>
+    <% } %>
+</div>
 <div class="col-lg-6">
+
 <div class="well">
 
-<% if (messages.success) { %>
-    <div class="message alert_flash_message_success"><%= messages.success %></div>
-<% }else if(messages.fail){ %>
-    <div class="message alert_flash_message_fail"><%= messages.fail %></div>
-<% } %>
+
 <br>
    <div id='new_user_div' class='table' >All fields are required -- <a class='button' href='new_user'>Clear Form</a>
         <form id='' name='newuser_form' method='POST' action='new_user' >          
