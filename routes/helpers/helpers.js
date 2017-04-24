@@ -486,6 +486,7 @@ module.exports.get_portal_projects = function(req, portal) {
     if(basis.prefixes.indexOf(split[0]) != -1){
       projects.push(pinfo);
     }
+    console.log('UniEuk-basis',basis);
     if(basis.suffixes.indexOf(split[split.length-1]) != -1){
       //console.log('UniEuk',JSON.stringify(pinfo));
       projects.push(pinfo);
