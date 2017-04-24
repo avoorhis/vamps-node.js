@@ -19,15 +19,16 @@
 
 <div class="row">
 <div class="col-lg-3">
-    <% if (messages.success) { %>
-        <div class="alert_flash_message_success"><%= messages.success %></div>
-    <% }else if(messages.fail){ %>
-        <div class="alert_flash_message_fail"><%= messages.fail %></div>
-    <% } %>
+    
 </div>
 <div class="col-lg-6">
 
 <div class="well">
+    <% if (messages.success) { %>
+        <div class='alert_flash_message_success' style='margin:-7px'><%= messages.success %></div>
+    <% }else if(messages.fail){ %>
+        <div class='alert_flash_message_fail' style='margin:-7px'><%= messages.fail %></div>
+    <% } %>
 
 
 <br>

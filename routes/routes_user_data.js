@@ -173,7 +173,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
             'yes',   // include_nas
             true );
     }
-	req.flash('success', "Your file(s) are being created -- <a href='/user_data/file_retrieval' >when ready they will be accessible here</a>");
+	req.flash('success', "Your file(s) are being created -- <a href='/user_data/file_retrieval' >when ready they will be accessible here: File Retrieval</a>");
     res.render('user_data/export_selection', {
           title: 'VAMPS: Export Choices',
           referer: 'export_data',

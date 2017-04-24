@@ -125,7 +125,7 @@ function reset_password_auth(req, username, password, newpass, done, db){
             { return done(null, false, { message: err }); }
         if (!rows.length) {
             // req.flash is the way to set flashdata using connect-flash
-            { return done(null, false, req.flash('fail', 'No user found.'));}
+            { return done(null, false, req.flash('fail', 'User not found.'));}
         }
         // If the account is not active
         if (rows[0].active !== 1) {
@@ -158,7 +158,7 @@ function login_auth_user(req, username, password, done, db){
             { return done(null, false, { message: err }); }
         if (!rows.length) {
             // req.flash is the way to set flashdata using connect-flash
-            { return done(null, false, req.flash('loginMessage', 'No user found.'));}
+            { return done(null, false, req.flash('loginMessage', 'User not found.'));}
         }
         // If the account is not active
         if (rows[0].active !== 1) {

@@ -22,15 +22,18 @@
   
 
 </div>
-  <div class='title title_color_viz'>Community Visualization</div>
-  <div class='subtitle'>Select Units, Taxonomic Depth and Metadata</div>
+<br>
+<div class='title title_color_viz'>Community Visualization
+    <% if (messages.success) { %>
+        <div class="alert_flash_message_success"><%= messages.success %></div>
+    <% }else if(messages.fail){ %>
+        <div class="alert_flash_message_fail"><%= messages.fail %></div>
+    <% } %>
+</div>
+<div class='subtitle'>Select Units, Taxonomic Depth and Metadata</div>
 
 
-<% if (messages.success) { %>
-  	<div class="alert_flash_message_success"><%= messages.success %></div>
-<% }else if(messages.fail){ %>
-    <div class="alert_flash_message_fail"><%= messages.fail %></div>
-<% } %>
+
 
 <div class='well'>
   <div class="row">
