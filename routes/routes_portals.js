@@ -120,28 +120,21 @@ function get_portal_metadata(req, portal){
     var project_list = helpers.get_portal_projects(req, portal)
     var pi = req.CONSTS.PORTALS[portal]
   
-    //console.log('DatasetsWithLatLong')
-    //console.log(DatasetsWithLatLong)
-    //console.log('all_metadata 1361 RARE_EFF--EFF_20090112')
-    //console.log(all_metadata[1361])
-    //console.log(all_metadata[1361].hasOwnProperty('latitude'))
-    for(did in DATASET_NAME_BY_DID){
+    
+    
+    for(did in DATASET_NAME_BY_DID){   // too big
         //did = all_metadata[i]
         pid = PROJECT_ID_BY_DID[did]
         //console.log(PROJECT_INFORMATION_BY_PID[pid])
         pname = PROJECT_INFORMATION_BY_PID[pid].project
-        if(HDF5_TAXDATA == ''){
-            dataset_metadata = AllMetadata[did] || {}
-            //console.log('dataset_metadata')
-            //console.log(did)
-            //console.log(dataset_metadata)
-        }else{
-            var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-            mdgroup.refresh()
-        }
+        
+        dataset_metadata = AllMetadata[did] || {}
+            
+        
         if(pi.prefixes.length > 0){
+            //console.log('prefixes')
             for(p in pi.prefixes){  // CMP
-              //console.log('p',p,prefixes[p])
+              //console.log('p1',p,prefixes[p])
               if( pname.substring(0, pi.prefixes[p].length) === pi.prefixes[p] ){
                   
                   pjds = pname+'--'+DATASET_NAME_BY_DID[did]
@@ -152,40 +145,30 @@ function get_portal_metadata(req, portal){
                   
               
                   //collected_metadata[pjds] = all_metadata[did]
-                  if(HDF5_TAXDATA == ''){                      
-                        //console.log('FOUND in prefixes1 '+did+' - '+pname)
-                        if(dataset_metadata.hasOwnProperty('latitude')){
-                            portal_info[portal].metadata[pjds].latitude = dataset_metadata.latitude
-                        }else{
-                            portal_info[portal].metadata[pjds].latitude = ''
-                        } 
-                        //console.log('FOUND in prefixes2 '+did+' - '+pname)                       
-                        if(dataset_metadata.hasOwnProperty('longitude')){
-                            portal_info[portal].metadata[pjds].longitude = dataset_metadata.longitude
-                        }else{
-                            portal_info[portal].metadata[pjds].longitude = ''
-                        }
-                        //console.log('FOUND in prefixes3 '+did+' - '+pname)                     
-                  }else{
-                      if(mdgroup.hasOwnProperty('lat')){
-                        portal_info[portal].metadata[pjds].latitude = mdgroup.lat
-                      }else if(mdgroup.hasOwnProperty('latitude')){
-                        portal_info[portal].metadata[pjds].latitude = mdgroup.latitude
-                      }
-                      if(mdgroup.hasOwnProperty('lon')){
-                        portal_info[portal].metadata[pjds].longitude = mdgroup.lon
-                      }else if(mdgroup.hasOwnProperty('longitude')){
-                        portal_info[portal].metadata[pjds].longitude = mdgroup.longitude
-                      }
-                  }
+                                    
+                    //console.log('FOUND in prefixes1 '+did+' - '+pname)
+                    if(dataset_metadata.hasOwnProperty('latitude')){
+                        portal_info[portal].metadata[pjds].latitude = dataset_metadata.latitude
+                    }else{
+                        portal_info[portal].metadata[pjds].latitude = ''
+                    } 
+                    //console.log('FOUND in prefixes2 '+did+' - '+pname)                       
+                    if(dataset_metadata.hasOwnProperty('longitude')){
+                        portal_info[portal].metadata[pjds].longitude = dataset_metadata.longitude
+                    }else{
+                        portal_info[portal].metadata[pjds].longitude = ''
+                    }
+                    //console.log('FOUND in prefixes3 '+did+' - '+pname)                     
+                  
                   //collected_metadata[pjds] = { 'lat':all_metadata[did].lat, 'lon':all_metadata[did].lon }
               }       
             }
         }
         //
         if(pi.projects.length > 0){
+            //console.log('projects')
             for(p in pi.projects){
-              //console.log('p',p,prefixes[p])
+              //console.log('p2',p,prefixes[p])
               if( pname === pi.projects[p] ){
                   //console.log('FOUND in projects '+pname)
                   pjds = pname+'--'+DATASET_NAME_BY_DID[did]
@@ -193,68 +176,45 @@ function get_portal_metadata(req, portal){
                   portal_info[portal].metadata[pjds].pid = pid
                   portal_info[portal].metadata[pjds].did = did
               
-                  if(HDF5_TAXDATA == ''){                      
-                        if(dataset_metadata.hasOwnProperty('latitude')){
-                            portal_info[portal].metadata[pjds].latitude = dataset_metadata.latitude
-                        }else{
-                            portal_info[portal].metadata[pjds].latitude = ''
-                        }                        
-                        if(dataset_metadata.hasOwnProperty('longitude')){
-                            portal_info[portal].metadata[pjds].longitude = dataset_metadata.longitude
-                        }else{
-                            portal_info[portal].metadata[pjds].longitude = ''
-                        }                                    
-                  }else{
-                      if(mdgroup.hasOwnProperty('lat')){
-                        portal_info[portal].metadata[pjds].latitude = mdgroup.lat
-                      }else if(mdgroup.hasOwnProperty('latitude')){
-                        portal_info[portal].metadata[pjds].latitude = mdgroup.latitude
-                      }
-                      if(mdgroup.hasOwnProperty('lon')){
-                        portal_info[portal].metadata[pjds].longitude = mdgroup.lon
-                      }else if(mdgroup.hasOwnProperty('longitude')){
-                        portal_info[portal].metadata[pjds].longitude = mdgroup.longitude
-                      }
-                  }
+                                       
+                if(dataset_metadata.hasOwnProperty('latitude')){
+                    portal_info[portal].metadata[pjds].latitude = dataset_metadata.latitude
+                }else{
+                    portal_info[portal].metadata[pjds].latitude = ''
+                }                        
+                if(dataset_metadata.hasOwnProperty('longitude')){
+                    portal_info[portal].metadata[pjds].longitude = dataset_metadata.longitude
+                }else{
+                    portal_info[portal].metadata[pjds].longitude = ''
+                }                                    
+                  
               }       
             }
         }
         //
         if(pi.suffixes.length > 0){
+            //console.log('suffixes')
             for(p in pi.suffixes){
-              //console.log('p',p,prefixes[p])
-              if( pname.substring(pname.length - pi.prefixes[p].length) === pi.prefixes[p] ){
-                  //console.log('FOUND in suffixes '+pname)
+              //console.log('p3',p,pi.suffixes[p])
+              if( pname.substring(pname.length - pi.suffixes[p].length) === pi.suffixes[p] ){
+                  console.log('FOUND in suffixes '+pname)
                   pjds = pname+'--'+DATASET_NAME_BY_DID[did]
                   portal_info[portal].metadata[pjds] = {}
                   portal_info[portal].metadata[pjds].pid = pid
                   portal_info[portal].metadata[pjds].did = did
               
-                  if(HDF5_TAXDATA == ''){                      
-                        if(dataset_metadata.hasOwnProperty('latitude')){
-                            portal_info[portal].metadata[pjds].latitude = dataset_metadata.latitude
-                        }else{
-                            portal_info[portal].metadata[pjds].latitude = ''
-                        }                        
-                        if(dataset_metadata.hasOwnProperty('longitude')){
-                            portal_info[portal].metadata[pjds].longitude = dataset_metadata.longitude
-                        }else{
-                            portal_info[portal].metadata[pjds].longitude = ''
-                        }                                      
-                  }else{
-                      if(mdgroup.hasOwnProperty('lat')){
-                        portal_info[portal].metadata[pjds].latitude = mdgroup.lat
-                      }else if(mdgroup.hasOwnProperty('latitude')){
-                        portal_info[portal].metadata[pjds].latitude = mdgroup.latitude
-                      }
-
-                      if(mdgroup.hasOwnProperty('lon')){
-                        portal_info[portal].metadata[pjds].longitude = mdgroup.lon
-                        got_lon=true
-                      }else if(mdgroup.hasOwnProperty('longitude')){
-                        portal_info[portal].metadata[pjds].longitude = mdgroup.longitude
-                      }
-                  }
+                                        
+                if(dataset_metadata.hasOwnProperty('latitude')){
+                    portal_info[portal].metadata[pjds].latitude = dataset_metadata.latitude
+                }else{
+                    portal_info[portal].metadata[pjds].latitude = ''
+                }                        
+                if(dataset_metadata.hasOwnProperty('longitude')){
+                    portal_info[portal].metadata[pjds].longitude = dataset_metadata.longitude
+                }else{
+                    portal_info[portal].metadata[pjds].longitude = ''
+                }                                      
+                  
               }       
             }
         }else{
