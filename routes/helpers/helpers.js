@@ -639,7 +639,7 @@ module.exports.run_select_datasets_query = function(rows){
                 DATASET_IDS_BY_PID[pid]=[];               
         }
         if (did === undefined || did === 'null'|| did === null){ 
-            console.log('DATASET NULL'); 
+            //console.log('DATASET NULL'); 
         }else{
           
             var dataset = rows[i].dataset;
@@ -724,10 +724,9 @@ module.exports.run_select_datasets_query = function(rows){
               if(AllMetadataNames.indexOf(mdname) == -1){
                 AllMetadataNames.push(mdname);
               }
-              if(mdname == 'latitude' || mdname == 'longitude'){
-
+              if((mdname == 'latitude' && ! isNaN(AllMetadata[did].latitude)) || (mdname == 'longitude' && ! isNaN(AllMetadata[did].longitude))){
                 if(did in DatasetsWithLatLong){
-                  if(mdname == 'latitude'){
+                  if(mdname == 'latitude' ){
                     DatasetsWithLatLong[did].latitude = +AllMetadata[did].latitude;
                   }else{
                     DatasetsWithLatLong[did].longitude = +AllMetadata[did].longitude;

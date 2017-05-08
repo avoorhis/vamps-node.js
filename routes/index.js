@@ -15,7 +15,8 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
     res.render('index', {
             title: 'VAMPS:Home',
             user: req.user, 
-            hostname: req.CONFIG.hostname });
+            hostname: req.CONFIG.hostname 
+        });
   });
 
 
@@ -37,12 +38,11 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 
 	  //console.log(DatasetsWithLatLong)
 	  res.render('geodistribution', { title: 'VAMPS:Geo_Distribution',
-      user: req.user, 
-      hostname: req.CONFIG.hostname,
-	    geodata: JSON.stringify(DatasetsWithLatLong),
-      gekey : req.CONFIG.GOOGLE_EARTH_KEY,
-	    
-              });
+            user: req.user, 
+            hostname: req.CONFIG.hostname,
+	        geodata: JSON.stringify(DatasetsWithLatLong),
+            gekey : req.CONFIG.GOOGLE_EARTH_KEY,
+        });
   });
 
   
