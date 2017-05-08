@@ -5,14 +5,19 @@
 <a href='/metadata/metadata'>&lt;&lt;--back</a>
 <table class='table table-striped table-condensed sortable'>
 	<thead>
-		<tr><th>Item</th><th></th><th></th></tr>
+		<tr><th>Item <small>(click to re-sort)</small></th><th></th><th></th></tr>
 	</thead>
 	<tbody>
 		<% for(i in metadata){ %>
 			<tr>
+				<% if(metadata[i].slice(0,1) == '#'){ %>
+				<%      val =    encodeURIComponent(metadata[i]) %>
+				<% }else{ %>
+				<%      val =    metadata[i] %>
+				<% } %>
 				<td><%= metadata[i] %></td>
-				<td><a href='list_result/<%= metadata[i] %>'>View Values</a></td>
-				<td><a href='geomap/<%= metadata[i] %>'>View Map</a></td>
+				<td><a href='list_result/<%= val %>'>View Values</a></td>
+				<td><a href='geomap/<%= val %>'>View Map</a></td>
 			</tr>
 		<% } %>
 	</tbody>

@@ -644,16 +644,22 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
                     newUserMysql.security_level = 50;  //reg user
                     var insertQuery = queries.insert_new_user(newUserMysql)
         
-                    req.db.query(insertQuery, function(err,rows){
-                        new_user.user_id = rows.insertId;
-                        ALL_USERS_BY_UID[new_user.user_id] = {
-                            email:      new_user.email,
-                            username:   new_user.username,
-                            last_name:  new_user.lastname,
-                            first_name: new_user.firstname,
-                            institution:new_user.institution,
+                    req.db.query(insertQuery, function(err, rows){
+                        if(err){
+                            console.log(insertQuery);
+                            console.log(err); 
+                            req.flash('fail', 'Username "'+new_user.username+'" is already taken.');
+                        }else{
+                            new_user.user_id = rows.insertId;
+                            ALL_USERS_BY_UID[new_user.user_id] = {
+                                email:      new_user.email,
+                                username:   new_user.username,
+                                last_name:  new_user.lastname,
+                                first_name: new_user.firstname,
+                                institution:new_user.institution,
+                            }
+                            req.flash('success', 'Success (username: '+new_user.username+'; user_id: '+new_user.user_id+')');
                         }
-                        req.flash('success', 'Success (username: '+new_user.username+'; user_id: '+new_user.user_id+')');
                         finish(new_user);                        
                     });   
                 }

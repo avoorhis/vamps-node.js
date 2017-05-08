@@ -50,7 +50,7 @@ function toggle_metadata_view()
 
 
 function create_geospatial() {
-      //alert(zoom_level)
+      //alert('zoom_level')
      //  geospatial_created = true;
      //  var geo_div = document.getElementById('map-canvas');
       var mapCanvas = document.getElementById('map-canvas');
@@ -107,13 +107,13 @@ function create_geospatial() {
           mapCanvas.innerHTML='No Lat-Lon Data Found';
 
       }else{
-        var center = new google.maps.LatLng(loc_data[0][1],loc_data[0][2]); 
+        //var center = new google.maps.LatLng(loc_data[0][1],loc_data[0][2]); 
         //alert(center)
         //var mapCanvas = document.getElementById('map-canvas');
         var mapOptions = {
-          center : center,
-          zoom   : parseInt(2),
-          //zoom: 2, for world view far out
+          center : new google.maps.LatLng(0,0),
+          zoom   : parseInt(3),
+          //zoom: 3, for world view far out
           //zoom 13 for marsh
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
