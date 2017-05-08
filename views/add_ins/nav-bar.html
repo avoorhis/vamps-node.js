@@ -28,13 +28,17 @@
 <% } %>
     <nav class="navbar navbar-custom navbar-fixed-top  ">
     <!-- <nav class="navbar navbar-inverse navbar-fixed-top  "> -->
-      <% if(hostname.substring(0,6) == 'bpcweb'){ %>
+      <% if(hostname.substring(0,7) == 'bpcweb8'){ %>
         <div class="navbar-text pull-left" style='padding:5px; background:orange;font-size:9px;border:1px solid red;-moz-border-radius:20px/10px;-webkit-border-radius:20px/10px;border-radius:20px/10px'>
           This is BETA Software
         </div>
+      <% }else if(hostname.substring(0,7) == 'bpcweb7'){ %>
+        <div class="navbar-text pull-left" style='padding:5px; background:hotpink;font-size:9px;border:1px solid yellow;-moz-border-radius:20px/10px;-webkit-border-radius:20px/10px;border-radius:20px/10px'>
+          VAMPS Development Version
+        </div>
       <% }else{ %>
-        <div class="navbar-text pull-left" style='padding:5px; background:green;color:white;font-size:9px;border:1px solid red;-moz-border-radius:20px/10px;-webkit-border-radius:20px/10px;border-radius:20px/10px'>
-          local version
+        <div class="navbar-text pull-left" style='padding:5px; background:hotpink;font-size:9px;border:1px solid yellow;-moz-border-radius:20px/10px;-webkit-border-radius:20px/10px;border-radius:20px/10px'>
+          Local Version
         </div>
       <% } %>
 

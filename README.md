@@ -41,7 +41,7 @@ If you going to assign taxonomy locally, run:
 **Install MYSQL database schema**
  * There are two mysql database schemas included in the vamps-node.js installation.
 One has some data included that you can use in visualizations:
-  db_schema.sql(.gz) (update 5-3-2016)
+  db_schema.sql(.gz) (update 4-27-2017)
   db_schema_w_test_data.sql(.gz) (they may be compressed files)
 Create a new database in your mysql installation and install one of the schemas in it.
  * Create a new file in the vamps-node.js/config directory named 'db-connection.js' with the contents as shown below.
