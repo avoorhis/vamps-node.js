@@ -1,4 +1,4 @@
-
+<% metadata_w_latlon = JSON.parse(mdata_latlon) %>
 <% include ../add_ins/begin.ejs %>
 
 <p class='title'>All Metadata List</p>
@@ -17,7 +17,13 @@
 				<% } %>
 				<td><%= metadata[i] %></td>
 				<td><a href='list_result/<%= val %>'>View Values</a></td>
-				<td><a href='geomap/<%= val %>'>View Map</a></td>
+				<td>
+				<% if(metadata_w_latlon[val] == 1) {%>
+				    <a href='geomap/<%= val %>'>View Map</a>
+				<% }else{ %>
+				    <small>(No Lat/Lon Data)</small>
+				<% } %>
+				</td>
 			</tr>
 		<% } %>
 	</tbody>
