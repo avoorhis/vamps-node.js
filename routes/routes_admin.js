@@ -1048,7 +1048,9 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
               }
               html_json.filename = username+'_'+project_name+'--'+timestamp+'.json'
               file_path = path.join(process.env.PWD,'tmp',html_json.filename)
+              
               mdata = convert_names_to_ids_for_storage(newmd)
+              
               helpers.write_to_file(file_path,JSON.stringify(mdata))
 
 
@@ -1274,8 +1276,6 @@ function validate_metadata(req, obj){
                               validation.msg.push(ds+": Latitude and Longitude must be in decimal degrees.")
                             }
                           }
-
-                              //validation.data[dset]['req_data'].push(val)
                   }
         }
     }
@@ -1290,35 +1290,8 @@ function convert_ids_to_names_for_display(obj){
         new_obj[did] = {}
         for(mdname in obj[did]){
             mdname = mdname.toLowerCase()
-            if(mdname == 'env_package_id'){
-              new_obj[did]['env_package'] = MD_ENV_PACKAGE[obj[did][mdname]]
-            }else if(mdname == 'target_gene_id'){
-              new_obj[did]['target_gene'] = MD_TARGET_GENE[obj[did][mdname]]
-            }else if(mdname == 'domain_id'){
-              new_obj[did]['domain'] = MD_DOMAIN[obj[did][mdname]]
-            }else if(mdname == 'geo_loc_name_id'){
-              new_obj[did]['geo_loc_name'] = MD_ENV_TERM[obj[did][mdname]]
-            }else if(mdname == 'sequencing_platform_id'){
-              new_obj[did]['sequencing_platform'] = MD_SEQUENCING_PLATFORM[obj[did][mdname]]
-            }else if(mdname == 'dna_region_id'){
-              new_obj[did]['dna_region'] = MD_DNA_REGION[obj[did][mdname]]
-            }else if(mdname == 'env_matter_id'){
-              new_obj[did]['env_matter'] = MD_ENV_TERM[obj[did][mdname]]
-            }else if(mdname == 'env_biome_id'){
-              new_obj[did]['env_biome'] = MD_ENV_TERM[obj[did][mdname]]
-            }else if(mdname == 'env_feature_id'){
-              new_obj[did]['env_feature'] = MD_ENV_TERM[obj[did][mdname]]
-            }else if(mdname == 'adapter_sequence_id'){
-              new_obj[did]['adapter_sequence'] = MD_ADAPTER_SEQUENCE[obj[did][mdname]]
-            }else if(mdname == 'illumina_index_id'){
-              new_obj[did]['illumina_index'] = MD_ILLUMINA_INDEX[obj[did][mdname]]
-            }else if(mdname == 'run_id'){
-              new_obj[did]['run'] = MD_RUN[obj[did][mdname]]
-            }else if(mdname == 'primer_suite_id'){
-              new_obj[did]['primer_suite'] = MD_PRIMER_SUITE[obj[did][mdname]]
-            }else{
-              new_obj[did][mdname] = obj[did][mdname]
-          }
+            var data = helpers.required_metadata_names_from_ids(obj[did], mdname)
+            new_obj[did][data.name] = data.value            
         }
     }
     return new_obj
@@ -1330,35 +1303,8 @@ function convert_names_to_ids_for_storage(obj){
         new_obj[did] = {}
       for(mdname in obj[did]){
         var val = obj[did][mdname]
-        if(mdname == 'target_gene'){
-            new_obj[did]['target_gene_id']   = get_target_gene_index(val)
-        }else if(mdname == 'geo_loc_name'){
-            new_obj[did]['geo_loc_name_id']          = get_geo_loc_name_index(val)
-        }else if(mdname == 'dna_region'){
-            new_obj[did]['dna_region_id']      = get_dna_region_index(val)
-        }else if(mdname == 'domain'){
-            new_obj[did]['domain_id']         = get_domain_index(val)
-        }else if(mdname == 'env_biome'){
-            new_obj[did]['env_biome_id']     = get_env_term_index(val)
-        }else if(mdname == 'env_feature'){
-            new_obj[did]['env_feature_id']      = get_env_term_index(val)
-        }else if(mdname == 'env_matter'){
-            new_obj[did]['env_matter_id']       = get_env_term_index(val)
-        }else if(mdname == 'env_package'){
-            new_obj[did]['env_package_id']     = get_env_package_index(val)
-        }else if(mdname == 'sequencing_platform'){
-            new_obj[did]['sequencing_platform_id']  = get_sequencing_platform_index(val)
-        }else if(mdname == 'adaptor_sequence'){
-            new_obj[did]['adaptor_sequence_id']  = get_adaptor_sequence_index(val)
-        }else if(mdname == 'illumina_index'){
-            new_obj[did]['illumina_index_id']  = get_illumina_index_index(val)
-        }else if(mdname == 'run'){
-            new_obj[did]['run_id']  = get_run_index(val)
-        }else if(mdname == 'primer_suite'){
-            new_obj[did]['primer_suite_id']  = get_primer_suite_index(val)
-        }else{
-            new_obj[did][mdname] =  val
-        }
+        var data = helpers.required_metadata_ids_from_names(obj[did], mdname)
+        new_obj[did][data.name] = data.value        
       }
     }
     return new_obj

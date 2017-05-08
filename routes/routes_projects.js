@@ -55,7 +55,16 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
     var mdata = {}
     var dscounts = {};
     console.log('in PJ:id');
-    
+//  MD_ENV_PACKAGE
+//  MD_DOMAIN
+//  MD_DNA_REGION
+//  MD_TARGET_GENE
+//  MD_SEQUENCING_PLATFORM
+//  MD_ADAPTER_SEQUENCE
+//  MD_ILLUMINA_INDEX
+//  MD_PRIMER_SUITE
+//  MD_RUN
+//  MD_ENV_TERM    
     //console.log(req.user)
 	if(req.params.id in PROJECT_INFORMATION_BY_PID){
       var info = PROJECT_INFORMATION_BY_PID[req.params.id]
@@ -75,9 +84,10 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         if(HDF5_MDATA == ''){
 
             for (var name in AllMetadata[did]){
-                val = AllMetadata[did][name];
-                //console.log(did,dsinfo[n].dname,name,val)
-                mdata[dsinfo[n].dname][name] = val
+            
+                var data = helpers.required_metadata_names_from_ids(AllMetadata[did], name)
+                mdata[dsinfo[n].dname][data.name] = data.value
+                    
             }
         }else{
           var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");

@@ -9,7 +9,7 @@ module.exports = {
 
 
 		write_metadata_file: function(chosen_id_name_hash, post_items) {
-			console.log('in metadata')
+			console.log('in metadata: write_metadata_file')
 			var metadata_names = post_items.metadata;
 			console.log(metadata_names)
 			var metadata = [];
@@ -33,47 +33,17 @@ module.exports = {
 				
 				for (var n in metadata_names) {				
 					var mdname = metadata_names[n];
-					if(mdname == 'env_package'){
-						value = MD_ENV_PACKAGE[METADATA[did]['env_package_id']]
-					}else if(mdname == 'env_biome'){
-						value = MD_ENV_TERM[METADATA[did]['env_biome_id']]
-					}else if(mdname == 'env_feature'){
-						value = MD_ENV_TERM[METADATA[did]['env_feature_id']]
-					}else if(mdname == 'env_matter'){
-						value = MD_ENV_TERM[METADATA[did]['env_matter_id']]
-					}else if(mdname == 'geo_loc_name'){
-						value = MD_ENV_TERM[METADATA[did]['geo_loc_name_id']]
-					}else if(mdname == 'sequencing_platform'){
-						value = MD_SEQUENCING_PLATFORM[METADATA[did]['sequencing_platform_id']]
-					}else if(mdname == 'dna_region'){
-						value = MD_DNA_REGION[METADATA[did]['dna_region_id']]
-					}else if(mdname == 'target_gene'){
-						value = MD_TARGET_GENE[METADATA[did]['target_gene_id']]
-					}else if(mdname == 'domain'){
-						value = MD_DOMAIN[METADATA[did]['domain_id']]
-					}else if(mdname == 'adapter_sequence'){
-						value = MD_ADAPTER_SEQUENCE[METADATA[did]['adapter_sequence_id']]
-					}else if(mdname == 'illumina_index'){
-						value = MD_ILLUMINA_INDEX[METADATA[did]['illumina_index_id']]
-					}else if(mdname == 'run'){
-						value = MD_RUN[METADATA[did]['run_id']]
-					}else if(mdname == 'primer_suite'){
-						value = MD_PRIMER_SUITE[METADATA[did]['primer_suite_id']]
-					}else{
-						value = METADATA[did][mdname];
-					}
-					//console.log('VALUE: '+value)
-
-			
+					var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname)
+								
 
 					if(did in METADATA) {
-						ds_row[mdname] = value
-						metadata2[pjds][mdname] = value
+						ds_row[mdname] = data.value
+						metadata2[pjds][mdname] = data.value
 						
-						if(value == '' || value == undefined){
+						if(data.value == '' || data.value == undefined){
 							txt2 += "\tundefined";
 						}else{
-							txt2 += "\t" + value
+							txt2 += "\t" + data.value
 						}
 					}else{
 						txt2 += "\tno_value";
@@ -101,7 +71,7 @@ module.exports = {
 		//
 		//
 		write_mapping_file: function(chosen_id_name_hash, post_items) {
-			//console.log('in metadata')
+			console.log('in metadata: write_mapping_file')
 			var metadata_names = post_items.metadata;
 			
 			var metadata = [];
@@ -125,51 +95,16 @@ module.exports = {
 				
 				for (var n in metadata_names) {				
 					var mdname = metadata_names[n];
-                    if(mdname == 'env_package'){
-						value = MD_ENV_PACKAGE[METADATA[did]['env_package_id']]
-						console.log(mdname+' VALUE: '+JSON.stringify(METADATA[did]))
-						console.log(MD_ENV_PACKAGE)
-					}else if(mdname == 'env_biome'){
-						value = MD_ENV_TERM[METADATA[did]['env_biome_id']]
-					}else if(mdname == 'env_feature'){
-						value = MD_ENV_TERM[METADATA[did]['env_feature_id']]
-					}else if(mdname == 'env_matter'){
-						value = MD_ENV_TERM[METADATA[did]['env_matter_id']]
-					}else if(mdname == 'geo_loc_name'){
-						value = MD_ENV_TERM[METADATA[did]['geo_loc_name_id']]
-					}else if(mdname == 'sequencing_platform'){
-						value = MD_SEQUENCING_PLATFORM[METADATA[did]['sequencing_platform_id']]
-					}else if(mdname == 'dna_region'){
-						value = MD_DNA_REGION[METADATA[did]['dna_region_id']]
-					}else if(mdname == 'target_gene'){
-						value = MD_TARGET_GENE[METADATA[did]['target_gene_id']]
-					}else if(mdname == 'sequencing_platform'){
-						value = MD_SEQUENCING_PLATFORM[METADATA[did]['sequencing_platform_id']]
-					}else if(mdname == 'domain'){
-						value = MD_DOMAIN[METADATA[did]['domain_id']]
-					}else if(mdname == 'adapter_sequence'){
-						value = MD_ADAPTER_SEQUENCE[METADATA[did]['adapter_sequence_id']]
-					}else if(mdname == 'illumina_index'){
-						value = MD_ILLUMINA_INDEX[METADATA[did]['illumina_index_id']]
-					}else if(mdname == 'run'){
-						value = MD_RUN[METADATA[did]['run_id']]
-					}else if(mdname == 'primer_suite'){
-						value = MD_PRIMER_SUITE[METADATA[did]['primer_suite_id']]
-					}else{
-						value = METADATA[did][mdname];
-					}
-					
-
-
+                    var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname)
 
 
 					if(did in METADATA) {
-						ds_row[mdname] = value;
-						metadata2[pjds][mdname] = value;
+						ds_row[mdname] = data.value;
+						metadata2[pjds][mdname] = data.value;
 						if(metadata2[pjds][mdname] == ''){
 							txt2 += "\tundefined";
 						}else{
-							txt2 += "\t" + value;
+							txt2 += "\t" + data.value;
 						}
 					}else{
 						txt2 += "\tno_value";
@@ -196,6 +131,7 @@ module.exports = {
 		//
 		//
 		create_metadata_table: function(chosen_id_name_hash, visual_post_items) {
+				console.log('in metadata: create_metadata_table')
 				var html = "<table border='1' id='metadata_table' class='single_border center_table'>";
 				html += "<thead><tr><th>Dataset (sortable)</th><th>Name (sortable)</th><th>Value (sortable)</th></tr></thead><tbody>";
 				var found_metadata = false;
