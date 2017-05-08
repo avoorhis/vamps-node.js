@@ -3167,68 +3167,26 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
         if(HDF5_MDATA === ''){
             for (var mdname in AllMetadata[did]){
               //console.log(mdname)
-              if(mdname == 'env_package_id'){
-                  test = 'env_package'
-                  value = MD_ENV_PACKAGE[AllMetadata[did][mdname]]
-                }else if(mdname == 'target_gene_id'){
-                  test = 'target_gene'
-                  value = MD_TARGET_GENE[AllMetadata[did][mdname]]
-                }else if(mdname == 'domain_id'){
-                  test = 'domain'
-                  value = MD_DOMAIN[AllMetadata[did][mdname]]
-                }else if(mdname == 'geo_loc_name_id'){
-                  test = 'geo_loc_name'
-                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
-                }else if(mdname == 'sequencing_platform_id'){
-                  test = 'sequencing_platform'
-                  value = MD_SEQUENCING_PLATFORM[AllMetadata[did][mdname]]
-                }else if(mdname == 'dna_region_id'){
-                  test = 'dna_region'
-                  value = MD_DNA_REGION[AllMetadata[did][mdname]]
-                }else if(mdname == 'env_matter_id'){
-                  test = 'env_matter'
-                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
-                }else if(mdname == 'env_biome_id'){
-                  test = 'env_biome'
-                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
-                }else if(mdname == 'env_feature_id'){
-                  test = 'env_feature'
-                  value = MD_ENV_TERM[AllMetadata[did][mdname]]
-                }else if(mdname == 'adapter_sequence_id'){
-				  test = 'adapter_sequence'
-				  value = MD_ADAPTER_SEQUENCE[AllMetadata[did][mdname]]
-				}else if(mdname == 'illumina_index_id'){
-				  test = 'illumina_index'
-				  value = MD_ILLUMINA_INDEX[AllMetadata[did][mdname]]
-				}else if(mdname == 'run_id'){
-				  test = 'run'
-				  value = MD_RUN[AllMetadata[did][mdname]]
-				}else if(mdname == 'primer_suite_id'){
-				  test = 'primer_suite'
-				  value = MD_PRIMER_SUITE[AllMetadata[did][mdname]]
-				}else{
-                  test = mdname
-                  value = AllMetadata[did][mdname]
-              }
-              
-              if( mditems_list.indexOf(test) == -1){
-              	mditems_list.push(test)
+              var data = helpers.required_metadata_names_from_ids(AllMetadata[did], mdname)
+               
+              if( mditems_list.indexOf(data.name) == -1){
+              	mditems_list.push(data.name)
               }
               
 			  if(orientation == 'cols'){
-				  if(test in myrows){					
-					myrows[test][pjds] = value;
+				  if(data.name in myrows){					
+					myrows[data.name][pjds] = data.value;
 				  }else{
-					myrows[test] = {};
-					myrows[test][pjds] = value;
+					myrows[data.name] = {};
+					myrows[data.name][pjds] = data.value;
 				  }
               
               }else{
               	  if(pjds in myrows){
-					myrows[pjds][test] = value;
+					myrows[pjds][data.name] = data.value;
 				  }else{
 					myrows[pjds] = [];
-					myrows[pjds][test] = value;
+					myrows[pjds][data.name] = data.value;
 				  }              
               }
             }
@@ -3362,52 +3320,10 @@ router.get('/download_selected_metadata', helpers.isLoggedIn, function download_
         for (var mdname in AllMetadata[did]){
           
           //console.log(mdname)
-            if(mdname == 'env_package_id'){
-              test = 'env_package'
-              value = MD_ENV_PACKAGE[AllMetadata[did][mdname]]
-            }else if(mdname == 'target_gene_id'){
-              test = 'target_gene'
-              value = MD_TARGET_GENE[AllMetadata[did][mdname]]
-            }else if(mdname == 'domain_id'){
-              test = 'domain'
-              value = MD_DOMAIN[AllMetadata[did][mdname]]
-            }else if(mdname == 'geo_loc_name_id'){
-              test = 'geo_loc_name'
-              value = MD_ENV_TERM[AllMetadata[did][mdname]]
-            }else if(mdname == 'sequencing_platform_id'){
-              test = 'sequencing_platform'
-              value = MD_SEQUENCING_PLATFORM[AllMetadata[did][mdname]]
-            }else if(mdname == 'dna_region_id'){
-              test = 'dna_region'
-              value = MD_DNA_REGION[AllMetadata[did][mdname]]
-            }else if(mdname == 'env_matter_id'){
-              test = 'env_matter'
-              value = MD_ENV_TERM[AllMetadata[did][mdname]]
-            }else if(mdname == 'env_biome_id'){
-              test = 'env_biome'
-              value = MD_ENV_TERM[AllMetadata[did][mdname]]
-            }else if(mdname == 'env_feature_id'){
-              test = 'env_feature'
-              value = MD_ENV_TERM[AllMetadata[did][mdname]]
-            }else if(mdname == 'adapter_sequence_id'){
-              test = 'adapter_sequence'
-              value = MD_ADAPTER_SEQUENCE[AllMetadata[did][mdname]]
-            }else if(mdname == 'illumina_index_id'){
-              test = 'illumina_index'
-              value = MD_ILLUMINA_INDEX[AllMetadata[did][mdname]]
-            }else if(mdname == 'run_id'){
-              test = 'run'
-              value = MD_RUN[AllMetadata[did][mdname]]
-            }else if(mdname == 'primer_suite_id'){
-              test = 'primer_suite'
-              value = MD_PRIMER_SUITE[AllMetadata[did][mdname]]
-            }else{
-              test = mdname
-              value = AllMetadata[did][mdname]
-            }
-
-            name_collector[test] = 1
-            myrows[did][test] = value;
+            var data = helpers.required_metadata_names_from_ids(AllMetadata[did], mdname)
+            
+            name_collector[data.name] = 1
+            myrows[did][data.name] = data.value;
         }
         
       }

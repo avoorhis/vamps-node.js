@@ -5,7 +5,7 @@
 <a href='/metadata/metadata'>&lt;&lt;--back</a>
 <table class='table table-striped table-condensed sortable'>
 	<thead>
-		<tr><th>Item <small>(click to re-sort)</small></th><th></th><th></th></tr>
+		<tr><th>Item <small>(click to re-sort)</small></th><th>Table</th><th>Map</th></tr>
 	</thead>
 	<tbody>
 		<% for(i in metadata){ %>
@@ -16,12 +16,12 @@
 				<%      val =    metadata[i] %>
 				<% } %>
 				<td><%= metadata[i] %></td>
-				<td><a href='list_result/<%= val %>'>View Values</a></td>
+				<td><a href='list_result/<%= val %>'>View</a></td>
 				<td>
 				<% if(metadata_w_latlon[val] == 1) {%>
-				    <a href='geomap/<%= val %>'>View Map</a>
+				    <a href='geomap/<%= val %>'><img border='0' alt='globe' src='/images/globe-icon.png' width='20' ></a>
 				<% }else{ %>
-				    <small>(No Lat/Lon Data)</small>
+				    <small>(no lat/lon data)</small>
 				<% } %>
 				</td>
 			</tr>

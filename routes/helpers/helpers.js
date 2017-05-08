@@ -1452,3 +1452,103 @@ module.exports.run_external_command = function(script_path)
 
 
 }
+module.exports.required_metadata_ids_from_names = function(selection_obj, mdname)
+{
+    // TODO
+    
+     if(mdname == 'env_package'){
+        name = 'env_package_id'
+        value = MD_ENV_PACKAGE[selection_obj['env_package_id']]        
+    }else if(mdname == 'env_biome'){
+        name = 'env_biome_id'
+        value = MD_ENV_TERM[selection_obj['env_biome_id']]
+    }else if(mdname == 'env_feature'){
+        name = 'env_feature_id'
+        value = MD_ENV_TERM[selection_obj['env_feature_id']]
+    }else if(mdname == 'env_matter'){
+        name = 'env_matter_id'
+        value = MD_ENV_TERM[selection_obj['env_matter_id']]
+    }else if(mdname == 'geo_loc_name'){
+        name = 'geo_loc_name_id'
+        value = MD_ENV_TERM[selection_obj['geo_loc_name_id']]
+    }else if(mdname == 'sequencing_platform'){
+        name = 'sequencing_platform_id'
+        value = MD_SEQUENCING_PLATFORM[selection_obj['sequencing_platform_id']]
+    }else if(mdname == 'dna_region'){
+        name = 'dna_region_id'
+        value = MD_DNA_REGION[selection_obj['dna_region_id']]
+    }else if(mdname == 'target_gene'){
+        name = 'target_gene_id'
+        value = MD_TARGET_GENE[selection_obj['target_gene_id']]
+    }else if(mdname == 'sequencing_platform'){
+        name = 'sequencing_platform_id'
+        value = MD_SEQUENCING_PLATFORM[selection_obj['sequencing_platform_id']]
+    }else if(mdname == 'domain'){
+        name = 'domain_id'
+        value = MD_DOMAIN[selection_obj['domain_id']]
+    }else if(mdname == 'adapter_sequence'){
+        name = 'adapter_sequence_id'
+        value = MD_ADAPTER_SEQUENCE[selection_obj['adapter_sequence_id']]
+    }else if(mdname == 'illumina_index'){
+        name = 'illumina_index_id'
+        value = MD_ILLUMINA_INDEX[selection_obj['illumina_index_id']]
+    }else if(mdname == 'run'){
+        name = 'run_id'
+        value = MD_RUN[selection_obj['run_id']]
+    }else if(mdname == 'primer_suite'){
+        name = 'primer_suite_id'
+        value = MD_PRIMER_SUITE[selection_obj['primer_suite_id']]
+    }else{
+        name = mdname
+        value = selection_obj[mdname];
+    }
+    return {"name":name, "value":value}
+}
+module.exports.required_metadata_names_from_ids = function(selection_obj, name_id)
+{
+    var name,value
+    if(name_id == 'env_package_id'){
+        name = 'env_package'
+        value = MD_ENV_PACKAGE[selection_obj[name_id]]
+    }else if(name_id == 'target_gene_id'){
+      name = 'target_gene'
+      value = MD_TARGET_GENE[selection_obj[name_id]]
+    }else if(name_id == 'domain_id'){
+      name = 'domain'
+      value = MD_DOMAIN[selection_obj[name_id]]
+    }else if(name_id == 'geo_loc_name_id'){
+      name = 'geo_loc_name'
+      value = MD_ENV_TERM[selection_obj[name_id]]
+    }else if(name_id == 'sequencing_platform_id'){
+      name = 'sequencing_platform'
+      value = MD_SEQUENCING_PLATFORM[selection_obj[name_id]]
+    }else if(name_id == 'dna_region_id'){
+      name = 'dna_region'
+      value = MD_DNA_REGION[selection_obj[name_id]]
+    }else if(name_id == 'env_matter_id'){
+      name = 'env_matter'
+      value = MD_ENV_TERM[selection_obj[name_id]]
+    }else if(name_id == 'env_biome_id'){
+      name = 'env_biome'
+      value = MD_ENV_TERM[selection_obj[name_id]]
+    }else if(name_id == 'env_feature_id'){
+      name = 'env_feature'
+      value = MD_ENV_TERM[selection_obj[name_id]]
+    }else if(name_id == 'adapter_sequence_id'){
+      name = 'adapter_sequence'
+      value = MD_ADAPTER_SEQUENCE[selection_obj[name_id]]
+    }else if(name_id == 'illumina_index_id'){
+      name = 'illumina_index'
+      value = MD_ILLUMINA_INDEX[selection_obj[name_id]]
+    }else if(name_id == 'run_id'){
+      name = 'run'
+      value = MD_RUN[selection_obj[name_id]]
+    }else if(name_id == 'primer_suite_id'){
+      name = 'primer_suite'
+      value = MD_PRIMER_SUITE[selection_obj[name_id]]
+    }else{
+      name = name_id
+      value = selection_obj[name_id]
+    }
+    return {"name":name,"value":value}
+}
