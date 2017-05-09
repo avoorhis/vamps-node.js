@@ -646,9 +646,11 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
 router.get('/update_metadata', helpers.isLoggedIn, function (req, res) {
 	console.log("IN Upload metadata");
   // console.log("not Coded yet");
+  var message = "";
+  var metadata_upload = '';
   res.render('metadata/metadata_upload', {
-      title: 'Hey',
-      message: 'Sua cotação foi de'
+    title: "metadata_upload",
+      message: 'Sua'
     
   })
   // req.flash('fail', 'Not Coded Yet');
