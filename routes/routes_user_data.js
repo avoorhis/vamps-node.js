@@ -637,12 +637,24 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
+// router.get('/update_metadata', helpers.isLoggedIn, function (req, res) {
+//   console.log("IN Upload metadata");
+//   console.log("not Coded yet");
+//   req.flash('fail', 'Not Coded Yet');
+//   res.redirect('/user_data/your_data')
+// });
 router.get('/update_metadata', helpers.isLoggedIn, function (req, res) {
 	console.log("IN Upload metadata");
-	console.log("not Coded yet");
-	req.flash('fail', 'Not Coded Yet');
-	res.redirect('/user_data/your_data')
+  // console.log("not Coded yet");
+  res.render('metadata/metadata_upload', {
+      title: 'Hey',
+      message: 'Sua cotação foi de'
+    
+  })
+  // req.flash('fail', 'Not Coded Yet');
+  // res.redirect('/user_data/your_data')
 });
+
 //
 // USER PROJECT METADATA:ID
 //
