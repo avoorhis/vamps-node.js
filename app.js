@@ -486,14 +486,16 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
 
 all_rdp_taxonomy.get_all_taxa(function(err, results) {
   if (err)
-    throw err; // or return an error message, or something
+    console.log(err); // or return an error message, or something
   else
   {
     new_rdp_taxonomy = new CustomTaxa(results);
     try{
         console.log('SIZE (rdp-taxonomy object):',sizeof(new_rdp_taxonomy));
-    }catch(e){ console.log('Could not get sizeof(new_rdp_taxonomy) in app.js') }
-    //console.log('2(rdp)-taxa_tree_dict_map_by_db_id_n_rank["3446_domain"] = ' + JSON.stringify(new_rdp_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["140108_domain"]));
+    }catch(e){ 
+        new_rdp_taxonomy = {};
+        console.log('Could not get sizeof(new_rdp_taxonomy) in app.js') 
+    }   
   }
 });
 
