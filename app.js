@@ -411,13 +411,15 @@ try{
     var meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
     AllTaxCounts = {}
 
-    try {
-        AllTaxCounts   = require(taxcounts_file);
-        console.log('Loading TAXCOUNTS as AllTaxCounts from: '+taxcounts_file);
-    }
-    catch (e) {
-      console.log(e);
-    }
+   //  try {
+//         console.log('taxcounts_file')
+//         console.log(taxcounts_file)
+//         AllTaxCounts   = require(taxcounts_file);
+//         console.log('Loading TAXCOUNTS as AllTaxCounts from: '+taxcounts_file);
+//     }
+//     catch (e) {
+//       console.log(e);
+//     }
 
     try {
         AllMetadata        = require(meta_file);
@@ -450,7 +452,9 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     new_taxonomy = new CustomTaxa(results);
     try{
         console.log('SIZE (silva-taxonomy object):',sizeof(new_taxonomy));
-    }catch(e){}
+    }catch(e){
+        console.log('Could not get sizeof(new_taxonomy) in app.js; CONNECTION Problem')
+    }
     // uncomment to print out the object:
     //console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
     //
