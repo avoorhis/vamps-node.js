@@ -490,12 +490,15 @@ all_rdp_taxonomy.get_all_taxa(function(err, results) {
   else
   {
     new_rdp_taxonomy = new CustomTaxa(results);
-    try{
-        console.log('SIZE (rdp-taxonomy object):',sizeof(new_rdp_taxonomy));
-    }catch(e){ 
-        new_rdp_taxonomy = {};
-        console.log('Could not get sizeof(new_rdp_taxonomy) in app.js') 
-    }   
+    console.log('typeof new_rdp_taxonomy: '+typeof new_rdp_taxonomy)
+    if(typeof new_rdp_taxonomy === 'object'){
+        try{
+            console.log('SIZE (rdp-taxonomy object):',sizeof(new_rdp_taxonomy));
+        }catch(e){ 
+            new_rdp_taxonomy = {};
+            console.log('Could not get sizeof(new_rdp_taxonomy) in app.js') 
+        } 
+    }  
   }
 });
 

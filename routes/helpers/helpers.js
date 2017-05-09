@@ -808,7 +808,7 @@ module.exports.run_select_datasets_query = function(rows){
         module.exports.run_permissions_query(rows);
       }
 
-      console.log(' UPDATING PERMISSIONS: '+queries.get_project_permissions());
+      console.log(' UPDATING PERMISSIONS: "'+queries.get_project_permissions()+'"');
     });
 };
 
