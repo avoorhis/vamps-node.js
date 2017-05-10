@@ -4,9 +4,46 @@
  <div class='title'>Metadata</div>
  <div class='subtitle'></div>
  
- title1
+title1
  <%= title %>
 title2
+
+user1
+ <%= user %>
+user2
+
+hostname1
+ <%= hostname %>
+hostname2
+
+<% if (edit_metadata_info) { %>
+edit_metadata_info1
+ <%= edit_metadata_info.dna_extraction_meth %>
+edit_metadata_info2
+
+<!--   { project_title: '',
+     pi_name: '',
+     pi_email: '',
+     project_abstract: '',
+     references: '',
+     project_name: '',
+     dataset_name: '',
+     sample_name: '',
+     dna_extraction_meth: 'MoBio Power Biomedical FAST DNA',
+     dna_quantitation: 'NanoQuant',
+     collection_date: '',
+     latitude: '',
+     longitude: '',
+     geo_loc_name_country: '',
+     longhurst_zone: '',
+     biome: 'pelagic',
+     env_feature_primary: '',
+     env_feature_secondary: '',
+     env_material_primary: '',
+     env_material_secondary: '' } }
+ -->
+
+<% }%>
 
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>

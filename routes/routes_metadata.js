@@ -178,9 +178,14 @@ router.post('/metadata_upload',
     // }
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
-      console.log(req.edit_metadata_info);
+
+      console.log("req.form");
+      console.log(req.form);
       
       req.edit_metadata_info = req.form;
+      console.log("req.edit_metadata_info");
+      console.log(req.edit_metadata_info);
+      
       req.flash('fail', req.form.errors);
       editMetadataForm(req, res);
       
@@ -197,10 +202,9 @@ router.post('/metadata_upload',
 
 function editMetadataForm(req, res){
   console.log('in editMetadataForm');
-  console.log(req);
+  // console.log(req);
   console.log("RRR req.edit_metadata_info");
   console.log(req.edit_metadata_info);
-  
 
   res.render('metadata/metadata_upload', {
     title: 'VAMPS: Metadata',
