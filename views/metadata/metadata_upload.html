@@ -56,9 +56,6 @@ edit_metadata_info2
   
 } %>
 
-111
- <%= edit_metadata_info.geo_loc_name_country %>
-222
 
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
@@ -96,19 +93,19 @@ edit_metadata_info2
          <fieldset id="general">
          <legend id="general-legend">General sample description</legend>
             <label for="project_title">Title of Project:</label>
-            <input type="text" id="project_title" name="project_title" />
+            <input type="text" id="project_title" name="project_title"  value='<%= edit_metadata_info.project_title %>'/>
             <br />
             <label for="pi_name">PI Name:</label>
-            <input type="text" id="pi_name" name="pi_name"/>
+            <input type="text" id="pi_name" name="pi_name"  value='<%= edit_metadata_info.pi_name %>'/>
             <br />            
             <label for="pi_email">PI's email address:</label>
-            <input type="email" id="pi_email" name="pi_email"/>
+            <input type="email" id="pi_email" name="pi_email"  value='<%= edit_metadata_info.pi_email %>'/>
             <br />
             <label for="project_abstract">CoDL project abstract (.doc format):</label>
-            <textarea id="project_abstract" name="project_abstract"></textarea>
+            <textarea id="project_abstract" name="project_abstract"  value='<%= edit_metadata_info.project_abstract %>'></textarea>
             <br />
             <label for="references">References for selected manuscripts published that describe the location:</label>
-            <textarea id="references" name="references"></textarea>
+            <textarea id="references" name="references"  value='<%= edit_metadata_info.references %>'></textarea>
             <br />   
           </fieldset>
           <fieldset id="parameters">
@@ -132,7 +129,7 @@ edit_metadata_info2
               <td>MBL Supplied
               </td>
             	<td>
-                <!-- <input type="text" id="project_name" name="project_name" placeholder="DCO_AST"/> -->
+                <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_AST" value='<%= edit_metadata_info.project_name %>'/>
               </td>
             </tr>
             <tr>
@@ -141,7 +138,7 @@ edit_metadata_info2
               </td>
               <td>MBL Supplied</td>
               <td>                
-                <!-- <input type="text" id="dataset_name" name="dataset_name" placeholder=""/> -->
+                <!-- <input type="text" id="dataset_name" name="dataset_name" placeholder="" value='<%= edit_metadata_info.dataset_name %>'/> -->
               </td>
             </tr>
             <tr>
@@ -151,7 +148,7 @@ edit_metadata_info2
               <td>User Supplied
               </td>
             	<td>
-                <input type="text" id="sample_name" name="sample_name" placeholder=""/>
+                <input type="text" id="sample_name" name="sample_name" placeholder="" value='<%= edit_metadata_info.sample_name %>'/>
               </td>
             </tr>
             <tr>
@@ -161,6 +158,7 @@ edit_metadata_info2
               <td>User Supplied
               </td>
             	<td>
+<!--TODO: add selected value from edit_metadata_info -->
                 <select id="dna_extraction_meth" name="dna_extraction_meth">
                   <option value="MoBio Power Biomedical FAST DNA">MoBio Power Biomedical FAST DNA</option>
                   <option value="MoBio PowerSoil">MoBio PowerSoil</option>
@@ -200,7 +198,7 @@ edit_metadata_info2
               <td>User supplied
               </td>
             	<td>
-                <input type="text" id="collection_date" name="collection_date" placeholder="2011-11-07"/>
+                <input type="text" id="collection_date" name="collection_date" placeholder="2011-11-07" value='<%= edit_metadata_info.collection_date %>'/>
               </td>
             </tr>
 
@@ -211,7 +209,7 @@ edit_metadata_info2
               <td>User supplied
               </td>
             	<td>
-                <input type="text" id="latitude" name="latitude" placeholder="-38.8897"/>
+                <input type="text" id="latitude" name="latitude" placeholder="-38.8897" value='<%= edit_metadata_info.latitude %>'/>
               </td>
             </tr>
 
@@ -222,7 +220,7 @@ edit_metadata_info2
               <td>User supplied
               </td>
             	<td>
-                <input type="text" id="longitude" name="longitude" placeholder="-77.0089°"/>
+                <input type="text" id="longitude" name="longitude" placeholder="-77.0089°" value='<%= edit_metadata_info.longitude %>'/>
               </td>
             </tr>
 
@@ -233,7 +231,7 @@ edit_metadata_info2
               <td>MBL Supplied
               </td>
             	<td>
-                <!-- <input type="text" id="geo_loc_name_country" name="geo_loc_name_country" placeholder=""/> -->
+                <!-- <input type="text" id="geo_loc_name_country" name="geo_loc_name_country" placeholder="" value='<%= edit_metadata_info.geo_loc_name_country %>'/> -->
               </td>
             </tr>
 
@@ -244,7 +242,7 @@ edit_metadata_info2
               <td>MBL Supplied
               </td>
             	<td>
-                <!-- <input type="text" id="longhurst_zone" name="longhurst_zone" placeholder=""/> -->
+                <!-- <input type="text" id="longhurst_zone" name="longhurst_zone" placeholder="" value='<%= edit_metadata_info.longhurst_zone %>'/> -->
               </td>
             </tr>
 
@@ -330,7 +328,7 @@ edit_metadata_info2
               <td>User supplied
               </td>
             	<td>
-                <input type="text" id="env_feature_primary" name="env_feature_primary" placeholder="fracture"/>
+                <input type="text" id="env_feature_primary" name="env_feature_primary" placeholder="fracture" value='<%= edit_metadata_info.env_feature_primary %>'/>
               </td>
             </tr>
 
@@ -341,7 +339,7 @@ edit_metadata_info2
               <td>User supplied
               </td>
             	<td>
-                <input type="text" id="env_feature_secondary" name="env_feature_secondary" placeholder=""/>
+                <input type="text" id="env_feature_secondary" name="env_feature_secondary" placeholder="" value='<%= edit_metadata_info.env_feature_secondary %>'/>
               </td>
             </tr>
 
@@ -352,7 +350,7 @@ edit_metadata_info2
               <td>User supplied
               </td>
             	<td>
-                <input type="text" id="env_material_primary" name="env_material_primary" placeholder="water"/>
+                <input type="text" id="env_material_primary" name="env_material_primary" placeholder="water" value='<%= edit_metadata_info.env_material_primary %>'/>
               </td>
             </tr>
 
@@ -363,7 +361,7 @@ edit_metadata_info2
               <td>User supplied
               </td>
             	<td>
-                <input type="text" id="env_material_secondary" name="env_material_secondary" placeholder=""/>
+                <input type="text" id="env_material_secondary" name="env_material_secondary" placeholder="" value='<%= edit_metadata_info.env_material_secondary %>'/>
               </td>
             </tr>
         </table>
