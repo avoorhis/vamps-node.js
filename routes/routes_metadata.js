@@ -135,7 +135,7 @@ function get_metadata_hash(md_selected){
 // ---- metadata_upload ----
 
 router.get('/metadata_upload', [helpers.isLoggedIn], function (req, res) {
-  console.log('in get /metadata_upload');
+  console.log('in get metadata/metadata_upload');
 
   res.render('metadata/metadata_upload', {
     title: 'VAMPS: Metadata_upload',
