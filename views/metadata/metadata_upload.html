@@ -16,6 +16,13 @@ hostname1
  <%= hostname %>
 hostname2
 
+<% if (add_project_info) {
+  var owner_hash = add_project_info
+} else {
+  var add_project_info = {}
+  var owner_hash = user
+}%>
+
 <% if (edit_metadata_info) { %>
 edit_metadata_info1
  <%= edit_metadata_info.dna_extraction_meth %>
@@ -43,7 +50,15 @@ edit_metadata_info2
      env_material_secondary: '' } }
  -->
 
-<% }%>
+<% 
+} else {
+  var edit_metadata_info = {}
+  
+} %>
+
+111
+ <%= edit_metadata_info.geo_loc_name_country %>
+222
 
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
