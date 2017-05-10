@@ -159,7 +159,7 @@ router.post('/metadata_upload',
     form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode(),
     form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode(),
     form.field("collection_date", "Sample collection date (YYYY-MM-DD)").trim().required().entityEncode().isDate("Sample collection date format: YYYY-MM-DD"),
-    form.field("latitude", "Latitude (WGS84 system, values bounded by ±90°)").trim().required().entityEncode(),
+    form.field("latitude", "Latitude (WGS84 system, values bounded by ±90°)").trim().required().entityEncode().isDecimal(),
     form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode(),
     form.field("geo_loc_name_country", "Country").trim().entityEncode(),
     form.field("longhurst_zone", "Longhurst Zone").trim().entityEncode(),
@@ -170,12 +170,7 @@ router.post('/metadata_upload',
     form.field("env_material_secondary", "Environmental Material - Secondary").trim().entityEncode()
    ),
   function (req, res) {
-    // if (!req.form.isValid) {
-    //   // Handle errors
-    //   console.log(req.form.errors);
-    //   req.flash('fail', req.form.errors);
-    //   res.redirect("/metadata/metadata_upload");
-    // }
+    // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
 
