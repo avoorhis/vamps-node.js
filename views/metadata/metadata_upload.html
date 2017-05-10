@@ -5,10 +5,10 @@
  <div class='subtitle'></div>
 
 <% if (edit_metadata_info) { %>
-<% 
+<%
 } else {
   var edit_metadata_info = {}
-  
+
 } %>
 
 
@@ -28,16 +28,26 @@
 <% }%>
 <br>
 
-<% var my_dna_extraction_meth_options = ["MoBio Power Biomedical FAST DNA", 
-"MoBio PowerSoil", 
-"MoBio Power Water", 
-"MoBio PowerBiofilm", 
-"MoBio UltraClean DNA isolation", 
-"freeze-thaw,SDS,phenol-chloroform,ethano", 
-"Hot alkaline extraction", 
-"Fast DNA Soil Spin", 
-"CTAB phenol/chloroform", 
-"Qiagen Genomic DNA"]%>
+<% var my_dna_extraction_meth_options = ["MoBio Power Biomedical FAST DNA",
+"MoBio PowerSoil",
+"MoBio Power Water",
+"MoBio PowerBiofilm",
+"MoBio UltraClean DNA isolation",
+"freeze-thaw,SDS,phenol-chloroform,ethano",
+"Hot alkaline extraction",
+"Fast DNA Soil Spin",
+"CTAB phenol/chloroform",
+"Qiagen Genomic DNA"]
+
+var dna_quantitation_options = ["NanoQuant",
+"NanoDrop",
+"Fluorescent Microspheres",
+"Perfluorocarbon Tracers",
+"PicoGreen",
+"Other"]
+%>
+
+
 
 <ul>
 <% my_dna_extraction_meth_options.forEach(function(value){ %>
@@ -72,7 +82,7 @@
             <br />
             <label for="pi_name">PI Name:</label>
             <input type="text" id="pi_name" name="pi_name"  value='<%= edit_metadata_info.pi_name %>'/>
-            <br />            
+            <br />
             <label for="pi_email">PI's email address:</label>
             <input type="email" id="pi_email" name="pi_email"  value='<%= edit_metadata_info.pi_email %>'/>
             <br />
@@ -81,7 +91,7 @@
             <br />
             <label for="references">References for selected manuscripts published that describe the location:</label>
             <textarea id="references" name="references"  placeholder='<%= edit_metadata_info.references %>'></textarea>
-            <br />   
+            <br />
         </fieldset>
         <fieldset id="parameters">
           <legend id="parameters-legend">Table of metadata parameters</legend>
@@ -112,7 +122,7 @@
                 <label for="dataset_name">VAMPS dataset name</label>
               </td>
               <td>MBL Supplied</td>
-              <td>                
+              <td>
                 <!-- <input type="text" id="dataset_name" name="dataset_name" placeholder="" value='<%= edit_metadata_info.dataset_name %>'/> -->
               </td>
             </tr>
@@ -133,10 +143,9 @@
               <td>User Supplied
               </td>
             	<td>
-<!--TODO: add selected value from edit_metadata_info -->
                 <select id="dna_extraction_meth" name="dna_extraction_meth">
                   <% my_dna_extraction_meth_options.forEach(function(value){ %>
-                    <option value="<%= value %>" 
+                    <option value="<%= value %>"
                       <% if (value == edit_metadata_info.dna_extraction_meth) {%>
                       selected
                      <% } %>
@@ -152,13 +161,15 @@
               <td>User supplied
               </td>
             	<td>
-                <select id="dna_quantitation" name="dna_quantitation">                
-                  <option value="NanoQuant">NanoQuant</option>
-                  <option value="NanoDrop">NanoDrop</option>
-                  <option value="Fluorescent Microspheres">Fluorescent Microspheres</option>
-                  <option value="Perfluorocarbon Tracers">Perfluorocarbon Tracers</option>
-                  <option value="PicoGreen">PicoGreen</option>
-                  <option value="Other">Other</option>
+                <select id="dna_quantitation" name="dna_quantitation">
+<!--TODO: function, DRY -->
+                  <% dna_quantitation_options.forEach(function(value){ %>
+                    <option value="<%= value %>" 
+                      <% if (value == edit_metadata_info.dna_quantitation) {%>
+                      selected
+                     <% } %>
+                     ><%= value %></option>
+                  <% }); %>
                 </select>
               </td>
             </tr>
@@ -234,12 +245,12 @@
                     <option value="abyssal">abyssal</option>
                     <option value="continental margin">continental margin</option>
                   </optgroup>
-                  <optgroup label="terrestrial">                  
+                  <optgroup label="terrestrial">
                     <!-- <option value="Terrestrial List">Terrestrial List</option> -->
                     <option value="aquatic">aquatic</option>
                     <option value="freshwater lake">freshwater lake</option>
                     <option value="freshwater river">freshwater river</option>
-                  
+
                   </optgroup>
 
                 </select>
@@ -268,8 +279,8 @@
                     initJumpMenus();
                 }
             </script>
-            
-            
+
+
             -->
             <!-- <div class="DDStyle" id="Biomes" onChange="populatesecondary_biome()"> -->
             <!-- <div class="DDStyle" id="Biomes">
@@ -282,7 +293,7 @@
               <select id="secondary_biomeList" class="DDStyle">
               </select>
             </div> -->
-            
+
             <!-- <tr>
             	<td class="required_fields">
                 <label for="sample_name">Biome - Secondary</label>
