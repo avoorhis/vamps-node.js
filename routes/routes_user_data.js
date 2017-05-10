@@ -695,56 +695,22 @@ router.post('/metadata_upload',
     form.field("env_material_secondary", "Environmental Material - Secondary").trim().entityEncode()
    ),
   function (req, res) {
-
-    // if (!req.form.isValid) {
-    //   req.add_project_info = req.form;
-    //   req.messages = req.form.errors;
-    //   editAddProject(req, res);
-    //   console.log('FORM INFOx')
-    //   console.log(req)
-    //  <% for message in messages.fail { %>
-  //   <li><%- message %></li>
-  // <% } %>
-    // }
     if (!req.form.isValid) {
       // Handle errors 
       console.log(req.form.errors);
-      // Print out red list
-      // req.flash('Please correct: ', req.form.errors);
       req.flash('fail', req.form.errors);
       // req.messages = req.form.errors;
       // res.render('user_data/metadata_upload', { messages: req.flash('fail') });
       
       res.redirect("/user_data/metadata_upload");
     } else {
-    
-    // else
-    // {
-      // saveToDb(req, res);
       console.log('in post /metadata_upload');
-      console.log('1req.body');
-      console.log(req.body);
-      // { title: 'DCO_1_test', name: 'Anna Shipunova' }
-      // { project_title: 'DCO_1_test', pi_name: 'Anna Shipunova' }
-      
-      // console.log("req.files from metadata_upload");
-      // console.log(req.files);  // array
+      // console.log('1req.body');
+      // console.log(req.body);
       console.log('FORM INFOx')
       console.log(req.form)
       console.log("Email:", req.form.pi_email);
-      
-      // { project_title: 'DCO_1_test', pi_name: 'Anna Shipunova' }
-      
-      // CONSTS
-      //CONFIG
-      // form: { project_title: '' } }
-      
-      
-      // var project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+req.form.new_project_name)
-      // helpers.mkdirSync(project_dir)
       res.redirect("/user_data/your_projects");
-      // res.redirect("/user_data/metadata_upload");
-      // res.redirect("/user_data/import_choices?project="+req.form.new_project_name);
     }
 
     return;
