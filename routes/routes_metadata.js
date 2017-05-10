@@ -170,14 +170,23 @@ router.post('/metadata_upload',
     form.field("env_material_secondary", "Environmental Material - Secondary").trim().entityEncode()
    ),
   function (req, res) {
+    // if (!req.form.isValid) {
+    //   // Handle errors
+    //   console.log(req.form.errors);
+    //   req.flash('fail', req.form.errors);
+    //   res.redirect("/metadata/metadata_upload");
+    // }
     if (!req.form.isValid) {
-      // Handle errors 
-      console.log(req.form.errors);
+      console.log('in post /metadata_upload, !req.form.isValid');
+      console.log(req.edit_metadata_info);
+      
+      req.edit_metadata_info = req.form;
       req.flash('fail', req.form.errors);
-      res.redirect("/metadata/metadata_upload");
-    } else {
+      editMetadataForm(req, res);
+      
+    }    
+    else {
       console.log('in post /metadata_upload');
-      console.log(req);
       
       res.redirect("/user_data/your_projects");
     }
@@ -186,4 +195,19 @@ router.post('/metadata_upload',
   }
 );
 
+function editMetadataForm(req, res){
+  console.log('in editMetadataForm');
+  console.log(req);
+  console.log("RRR req.edit_metadata_info");
+  console.log(req.edit_metadata_info);
+  
+
+  res.render('metadata/metadata_upload', {
+    title: 'VAMPS: Metadata',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    edit_metadata_info: req.edit_metadata_info,
+    //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
+  });
+}
 // ---- metadata_upload end ----

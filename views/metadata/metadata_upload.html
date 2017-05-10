@@ -3,6 +3,10 @@
 <br>
  <div class='title'>Metadata</div>
  <div class='subtitle'></div>
+ 
+ title1
+ <%= title %>
+title2
 
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
@@ -21,13 +25,6 @@
 <br>
 
 
-
-<% if (add_project_info) {
-  var owner_hash = add_project_info
-} else {
-  var add_project_info = {}
-  var owner_hash = user
-}%>
 
 
    <H3>Instructions:</H3>
@@ -91,7 +88,7 @@
                 <label for="dataset_name">VAMPS dataset name</label>
               </td>
               <td>MBL Supplied</td>
-              <td>
+              <td>                
                 <!-- <input type="text" id="dataset_name" name="dataset_name" placeholder=""/> -->
               </td>
             </tr>
