@@ -643,19 +643,33 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
 //   req.flash('fail', 'Not Coded Yet');
 //   res.redirect('/user_data/your_data')
 // });
-router.get('/update_metadata', helpers.isLoggedIn, function (req, res) {
-	console.log("IN Upload metadata");
-  // console.log("not Coded yet");
-  var message = "";
-  var metadata_upload = '';
-  res.render('metadata/metadata_upload', {
-    title: "metadata_upload",
-      message: 'Sua'
-    
-  })
-  // req.flash('fail', 'Not Coded Yet');
-  // res.redirect('/user_data/your_data')
+// router.get('/update_metadata', helpers.isLoggedIn, function (req, res) {
+//   console.log("IN Upload metadata");
+//   // console.log("not Coded yet");
+//   var message = "";
+//   var metadata_upload = '';
+//   res.render('metadata/metadata_upload', {
+//     title: "metadata_upload",
+//       message: 'Sua'
+//
+//   })
+//   // req.flash('fail', 'Not Coded Yet');
+//   // res.redirect('/user_data/your_data')
+// });
+
+// ----
+
+router.get('/update_metadata', [helpers.isLoggedIn], function (req, res) {
+  console.log('in update_metadata');
+
+  res.render('user_data/metadata_upload', {
+    title: 'VAMPS: Add a new project',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+  });
 });
+
+// ----
 
 //
 // USER PROJECT METADATA:ID
