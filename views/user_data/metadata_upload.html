@@ -1,9 +1,138 @@
 <% include ../add_ins/begin.ejs %>
 
-<p class='title'>All Metadata List</p>
+<br>
+ <div class='title'>Metadata</div>
+ <div class='subtitle'></div>
 
-			<li>
-      <%= user %>
-      <%= hostname %>
-        HERE!
-			</li>
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail" ><%- messages.fail %> </div>
+<% } %>
+<br>
+
+
+
+
+<% if (add_project_info) {
+  var owner_hash = add_project_info
+} else {
+  var add_project_info = {}
+  var owner_hash = user
+}%>
+
+
+<!-- { 
+new_project_name: 'new Name',
+  new_env_source_id: '10',
+  new_privacy: 'True',
+  new_project_title: 'new Title &lt; % &amp; ! &quot; &#39;   find packages Search sign up or log in log in Notorious Public Menace npm E',
+  new_project_description: '',
+  new_funding: '000A',
+  first_name: 'Ad dsf gd f',
+  last_name: '',
+  email: 'admin@ad@bb',
+  new_institution: 'MBL' } -->
+
+
+<form name='add_project_form' method='POST' action='/user_data/add_project'>
+  <!-- todo: back to from where was called -->
+  <a href='/user_data/your_projects'>&lt;&lt;--back</a>
+  <fieldset>
+    <table class='table table-condensed'>
+    <!--
+    <tr>
+      <th></th><th>Values</th>
+    </tr>
+    <tr>
+    -->
+      <td>
+        <label for='name'>Project Name (max length 20 chars):</label>
+      </td>
+      <td>
+        <input type='text' name='new_project_name'  maxlength='50' size='50' value='<%= add_project_info.new_project_name%>'>
+      </td>
+    </tr>
+  
+
+    <tr>
+      <td><label for='public'>Public:</label>
+      </td>
+      <td>
+        <input type='radio' checked='checked' name='new_privacy' value='True' > public
+  &nbsp;<input type='radio'                   name='new_privacy' value='False'> private
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label for='title'>Title (max length 100 chars):</label>
+      </td>
+      <td>
+        <input type='text' name='new_project_title' maxlength='100' size='50' value='<%= add_project_info.new_project_title %>'>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label for='description'>Description (max length 255 chars):</label>
+      </td>
+      <td>
+        <textarea name='new_project_description' maxlength='255' rows='1' cols='50' value='<%= add_project_info.new_project_description %>'></textarea>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label for='description'>Funding:</label>
+      </td>
+      <td>
+        <input type='text' name='new_funding' maxlength='50' size='50' value='<%= add_project_info.new_funding %>'>
+      </td>
+    </tr>
+    </fieldset>
+
+    <fieldset>
+      <!--
+        todo:
+      1) add select if first, last and email are giving ?
+      2) first time - from user, after re-render - from form
+
+      -->
+      <!-- center -->
+      
+      <tr><th colspan='2' class='hr_cell'>Owner (if different from the current user)</th></tr>
+      <tr>
+        <td><label for='first_name'>First Name:</label></td>
+        <td><input type='text' readonly name='first_name' maxlength='100' size='50' value='<%= owner_hash.first_name %>'></td>
+      </tr>
+      <tr>
+        <td><label for='last_name'>Last Name:</label></td>
+        <td><input type='text' readonly name='last_name' maxlength='100' size='50' value='<%= owner_hash.last_name %>'></td>
+      </tr>
+      <tr>
+        <td><label for='email'>Email:</label></td>
+        <td><input type='text'  name='email' maxlength='100' size='50' value='<%= owner_hash.email %>'></td>
+      </tr>
+      <tr>
+        <td><label for='institution'>Institution:</label></td><td>
+        <input type='text'  name='new_institution' maxlength='100' size='50' value='<%= owner_hash.institution %>'></td>
+      </tr>
+    </fieldset>
+
+  </table>
+  <br>
+
+  <!-- center -->
+  <button class='btn btn-sm btn-primary' type='submit'>Submit</button>
+
+</form>
+
+
+<% include ../add_ins/end.ejs %>
+<script type='text/javascript' src='/javascripts/global.js'></script>
+<script type='text/javascript' src='/javascripts/bootstrap-select.js'></script>
+<script>
+  $(document).ready(function(){
+    $('.selectpicker').selectpicker({showSubtext:true, tickIcon: '',});
+  });
+</script>
+ </body>
+ </html>
