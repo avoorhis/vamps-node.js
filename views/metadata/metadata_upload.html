@@ -28,6 +28,26 @@
 <% }%>
 <br>
 
+<% var my_dna_extraction_meth_options = ["MoBio Power Biomedical FAST DNA", 
+"MoBio PowerSoil", 
+"MoBio Power Water", 
+"MoBio PowerBiofilm", 
+"MoBio UltraClean DNA isolation", 
+"freeze-thaw,SDS,phenol-chloroform,ethano", 
+"Hot alkaline extraction", 
+"Fast DNA Soil Spin", 
+"CTAB phenol/chloroform", 
+"Qiagen Genomic DNA"]%>
+
+<ul>
+<% my_dna_extraction_meth_options.forEach(function(value){ %>
+  <li>
+    <%= value %>
+  </li>
+<% }); %>
+</ul>
+
+
 
 
 
@@ -115,7 +135,11 @@
             	<td>
 <!--TODO: add selected value from edit_metadata_info -->
                 <select id="dna_extraction_meth" name="dna_extraction_meth">
-                  <option value="MoBio Power Biomedical FAST DNA">MoBio Power Biomedical FAST DNA</option>
+                  
+                  <% my_dna_extraction_meth_options.forEach(function(value){ %>
+                    <option value="<%= value %>"><%= value %></option>
+                  <% }); %>
+                  <!-- <option value="MoBio Power Biomedical FAST DNA">MoBio Power Biomedical FAST DNA</option>
                   <option value="MoBio PowerSoil">MoBio PowerSoil</option>
                   <option value="MoBio Power Water">MoBio Power Water</option>
                   <option value="MoBio PowerBiofilm">MoBio PowerBiofilm</option>
@@ -124,7 +148,7 @@
                   <option value="Hot alkaline extraction">Hot alkaline extraction</option>
                   <option value="Fast DNA Soil Spin">Fast DNA Soil Spin</option>
                   <option value="CTAB phenol/chloroform">CTAB phenol/chloroform</option>
-                  <option value="Qiagen Genomic DNA">Qiagen Genomic DNA</option>
+                  <option value="Qiagen Genomic DNA">Qiagen Genomic DNA</option> -->
                 </select>
               </td>
             </tr>
