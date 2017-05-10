@@ -4,19 +4,12 @@
  <div class='title'>Metadata</div>
  <div class='subtitle'></div>
 
-<% if(messages){ %>
-    <div class="alert_flash_message_fail" ><%- messages %> </div>
-<% } %>
-<br>
-
-
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
 <% }else if(messages.fail){ %>
     <div class="alert_flash_message_fail" ><%- messages.fail %> </div>
 <% } %>
 <br>
-
 
 
 

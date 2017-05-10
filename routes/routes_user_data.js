@@ -702,7 +702,9 @@ router.post('/metadata_upload',
     //   editAddProject(req, res);
     //   console.log('FORM INFOx')
     //   console.log(req)
-    //
+    //  <% for message in messages.fail { %>
+  //   <li><%- message %></li>
+  // <% } %>
     // }
     if (!req.form.isValid) {
       // Handle errors 
@@ -710,14 +712,10 @@ router.post('/metadata_upload',
       // Print out red list
       // req.flash('Please correct: ', req.form.errors);
       req.flash('fail', req.form.errors);
+      // req.messages = req.form.errors;
+      // res.render('user_data/metadata_upload', { messages: req.flash('fail') });
       
       res.redirect("/user_data/metadata_upload");
-// [ 'Project title has invalid characters',
-//   'PI name has invalid characters',
-//   'Sample ID (user sample name) is required',
-//   'Country is required',
-//   'Longhurst Zone is required' ]
-      
     } else {
     
     // else
