@@ -9,13 +9,13 @@
 <% }else if(messages.fail){ %>
 <% var myArray = messages.fail %>
   <div class="alert_flash_message_fail" >
-     <ol>
-     <% myArray.forEach(function(value){ %>
-       <li>
-         <%= value %>
-       </li>
-     </ol>
-     <% }); %>
+    <ul>
+    <% myArray.forEach(function(value){ %>
+      <li>
+        <%= value %>
+      </li>
+    <% }); %>
+    </ul>
   </div>
 <% }%>
 <br>
