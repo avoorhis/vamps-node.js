@@ -637,13 +637,13 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
-// router.get('/update_metadata', helpers.isLoggedIn, function (req, res) {
+// router.get('/metadata_upload', helpers.isLoggedIn, function (req, res) {
 //   console.log("IN Upload metadata");
 //   console.log("not Coded yet");
 //   req.flash('fail', 'Not Coded Yet');
 //   res.redirect('/user_data/your_data')
 // });
-// router.get('/update_metadata', helpers.isLoggedIn, function (req, res) {
+// router.get('/metadata_upload', helpers.isLoggedIn, function (req, res) {
 //   console.log("IN Upload metadata");
 //   // console.log("not Coded yet");
 //   var message = "";
@@ -659,8 +659,8 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
 
 // ----
 
-router.get('/update_metadata', [helpers.isLoggedIn], function (req, res) {
-  console.log('in get /update_metadata');
+router.get('/metadata_upload', [helpers.isLoggedIn], function (req, res) {
+  console.log('in get /metadata_upload');
 
   res.render('user_data/metadata_upload', {
     title: 'VAMPS: Metadata_upload',
@@ -669,10 +669,9 @@ router.get('/update_metadata', [helpers.isLoggedIn], function (req, res) {
   });
 });
 
-router.post('/update_metadata_form',
+router.post('/metadata_upload',
   [helpers.isLoggedIn],
   form(
-
     form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_]+$/),
     form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z- ]+$/),
     form.field("pi_email", "PI's email address").trim().isEmail().required().entityEncode(),
@@ -709,8 +708,10 @@ router.post('/update_metadata_form',
       // Handle errors 
       console.log(req.form.errors);
       // Print out red list
-      req.flash('Please correct: ', req.form.errors);
-      res.redirect("/user_data/update_metadata");
+      // req.flash('Please correct: ', req.form.errors);
+      req.flash('fail', req.form.errors);
+      
+      res.redirect("/user_data/metadata_upload");
 // [ 'Project title has invalid characters',
 //   'PI name has invalid characters',
 //   'Sample ID (user sample name) is required',
@@ -722,13 +723,13 @@ router.post('/update_metadata_form',
     // else
     // {
       // saveToDb(req, res);
-      console.log('in post /update_metadata_form');
+      console.log('in post /metadata_upload');
       console.log('1req.body');
       console.log(req.body);
       // { title: 'DCO_1_test', name: 'Anna Shipunova' }
       // { project_title: 'DCO_1_test', pi_name: 'Anna Shipunova' }
       
-      // console.log("req.files from update_metadata_form");
+      // console.log("req.files from metadata_upload");
       // console.log(req.files);  // array
       console.log('FORM INFOx')
       console.log(req.form)
@@ -744,7 +745,7 @@ router.post('/update_metadata_form',
       // var project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+req.form.new_project_name)
       // helpers.mkdirSync(project_dir)
       res.redirect("/user_data/your_projects");
-      // res.redirect("/user_data/update_metadata");
+      // res.redirect("/user_data/metadata_upload");
       // res.redirect("/user_data/import_choices?project="+req.form.new_project_name);
     }
 
@@ -1926,7 +1927,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
                             } else {
 
                                                     
-                              //helpers.update_metadata_from_file();  // need to update to hdf5 file??
+                              //helpers.metadata_upload_from_file();  // need to update to hdf5 file??
 
                               req.flash('success', 'Metadata Upload in Progress');
                               res.redirect("/user_data/import_choices");

@@ -4,6 +4,12 @@
  <div class='title'>Metadata</div>
  <div class='subtitle'></div>
 
+<% if(messages){ %>
+    <div class="alert_flash_message_fail" ><%- messages %> </div>
+<% } %>
+<br>
+
+
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
 <% }else if(messages.fail){ %>
@@ -53,7 +59,7 @@ new_project_name: 'new Name',
    placeholder="Enter your full name" 
    
    <body> -->
-      <form name='add_project_form' method='POST' action='/user_data/update_metadata_form'>
+      <form name='add_project_form' method='POST' action='/user_data/metadata_upload'>
       <!-- <form action="" method="post" enctype="multipart/form-data"> -->
          <fieldset id="general">
          <legend id="general-legend">General sample description</legend>
