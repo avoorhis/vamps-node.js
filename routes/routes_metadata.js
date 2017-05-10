@@ -187,7 +187,12 @@ router.post('/metadata_upload',
     }    
     else {
       console.log('in post /metadata_upload');
-      
+      console.log("PPP req.form");
+      console.log(req.form);
+      // console.log(req);
+      //  req.form: 
+      //      dna_extraction_meth: 'CTAB phenol/chloroform',
+
       res.redirect("/user_data/your_projects");
     }
 
