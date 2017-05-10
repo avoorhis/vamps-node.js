@@ -123,7 +123,7 @@ new_project_name: 'new Name',
               <td>User Supplied
               </td>
             	<td>
-                <select name="dna_extraction_meth">
+                <select id="dna_extraction_meth" name="dna_extraction_meth">
                   <option value="MoBio Power Biomedical FAST DNA">MoBio Power Biomedical FAST DNA</option>
                   <option value="MoBio PowerSoil">MoBio PowerSoil</option>
                   <option value="MoBio Power Water">MoBio Power Water</option>
@@ -139,12 +139,12 @@ new_project_name: 'new Name',
             </tr>
             <tr>
             	<td>
-                <label for="sample_name">DNA Quantitation</label>
+                <label for="dna_quantitation">DNA Quantitation</label>
               </td>
               <td>User supplied
               </td>
             	<td>
-                <select>                
+                <select id="dna_quantitation" name="dna_quantitation">                
                   <option value="NanoQuant">NanoQuant</option>
                   <option value="NanoDrop">NanoDrop</option>
                   <option value="Fluorescent Microspheres">Fluorescent Microspheres</option>
@@ -157,67 +157,67 @@ new_project_name: 'new Name',
 
             <tr>
             	<td>
-                <label for="sample_name">Sample collection date (YYYY-MM-DD)</label>
+                <label for="collection_date">Sample collection date (YYYY-MM-DD)</label>
               </td>
               <td>User supplied
               </td>
             	<td>
-                <input type="text" id="sample_name" name="sample_name" placeholder="2011-11-07"/>
+                <input type="text" id="collection_date" name="collection_date" placeholder="2011-11-07"/>
               </td>
             </tr>
 
             <tr>
             	<td>
-                <label for="sample_name">Latitude    (WGS84 system, values bounded by ±90°)</label>
+                <label for="latitude">Latitude (WGS84 system, values bounded by ±90°)</label>
               </td>
               <td>User supplied
               </td>
             	<td>
-                <input type="text" id="sample_name" name="sample_name" placeholder="-38.8897"/>
+                <input type="text" id="latitude" name="latitude" placeholder="-38.8897"/>
               </td>
             </tr>
 
             <tr>
             	<td>
-                <label for="sample_name">Longitude    (values bounded by ±180°)</label>
+                <label for="longitude">Longitude    (values bounded by ±180°)</label>
               </td>
               <td>User supplied
               </td>
             	<td>
-                <input type="text" id="sample_name" name="sample_name" placeholder="-77.0089°"/>
+                <input type="text" id="longitude" name="longitude" placeholder="-77.0089°"/>
               </td>
             </tr>
 
             <tr>
             	<td>
-                <label for="sample_name">Country</label>
+                <label for="geo_loc_name_country">Country</label>
               </td>
               <td>MBL Supplied
               </td>
             	<td>
-                <!-- <input type="text" id="sample_name" name="sample_name" placeholder=""/> -->
+                <!-- <input type="text" id="geo_loc_name_country" name="geo_loc_name_country" placeholder=""/> -->
               </td>
             </tr>
 
             <tr>
             	<td>
-                <label for="sample_name">Longhurst Zone</label>
+                <label for="longhurst_zone">Longhurst Zone</label>
               </td>
               <td>MBL Supplied
               </td>
             	<td>
-                <!-- <input type="text" id="sample_name" name="sample_name" placeholder=""/> -->
+                <!-- <input type="text" id="longhurst_zone" name="longhurst_zone" placeholder=""/> -->
               </td>
             </tr>
 
             <tr>
             	<td>
-                <label for="sample_name">Biome <!-- - Primary --></label>
+                <label for="biome">Biome <!-- - Primary --></label>
               </td>
               <td>User Supplied
               </td>
             	<td>
-                <select>
+                <select id="biome" name="biome">
                   <optgroup label="marine">
                     <option value="pelagic">pelagic</option>
                     <option value="bathyal">bathyal</option>
@@ -287,45 +287,45 @@ new_project_name: 'new Name',
             </tr>
             <tr> -->
             	<td>
-                <label for="sample_name">Environmental Feature - Primary</label>
+                <label for="env_feature_primary">Environmental Feature - Primary</label>
               </td>
               <td>User supplied
               </td>
             	<td>
-                <input type="text" id="sample_name" name="sample_name" placeholder="fracture"/>
+                <input type="text" id="env_feature_primary" name="env_feature_primary" placeholder="fracture"/>
               </td>
             </tr>
 
             <tr>
             	<td>
-                <label for="sample_name">Environmental Feature - Secondary</label>
+                <label for="env_feature_secondary">Environmental Feature - Secondary</label>
               </td>
               <td>User supplied
               </td>
             	<td>
-                <input type="text" id="sample_name" name="sample_name" placeholder=""/>
+                <input type="text" id="env_feature_secondary" name="env_feature_secondary" placeholder=""/>
               </td>
             </tr>
 
             <tr>
             	<td>
-                <label for="sample_name">Environmental Material - Primary</label>
+                <label for="env_material_primary">Environmental Material - Primary</label>
               </td>
               <td>User supplied
               </td>
             	<td>
-                <input type="text" id="sample_name" name="sample_name" placeholder="water"/>
+                <input type="text" id="env_material_primary" name="env_material_primary" placeholder="water"/>
               </td>
             </tr>
 
             <tr>
             	<td>
-                <label for="sample_name">Environmental Material - Secondary</label>
+                <label for="env_material_secondary">Environmental Material - Secondary</label>
               </td>
               <td>User supplied
               </td>
             	<td>
-                <input type="text" id="sample_name" name="sample_name" placeholder=""/>
+                <input type="text" id="env_material_secondary" name="env_material_secondary" placeholder=""/>
               </td>
             </tr>
         </table>
