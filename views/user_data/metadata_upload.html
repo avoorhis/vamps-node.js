@@ -8,15 +8,15 @@
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
 <% }else if(messages.fail){ %>
 <% var myArray = messages.fail %>
-  <div class="alert_flash_message_fail" >
-    <ul>
-    <% myArray.forEach(function(value){ %>
-      <li>
-        <%= value %>
-      </li>
-    <% }); %>
-    </ul>
-  </div>
+<div class="alert_flash_message_fail" >
+  <ul>
+  <% myArray.forEach(function(value){ %>
+    <li>
+      <%= value %>
+    </li>
+  <% }); %>
+  </ul>
+</div>
 <% }%>
 <br>
 
