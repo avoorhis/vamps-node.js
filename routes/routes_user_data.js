@@ -673,22 +673,22 @@ router.post('/update_metadata_form',
   [helpers.isLoggedIn],
   form(
 
-    form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z_]+$/),
-    form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z-]+$/),
+    form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_]+$/),
+    form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z- ]+$/),
     form.field("pi_email", "PI's email address").trim().isEmail().required().entityEncode(),
     form.field("project_abstract", "Project abstract").trim().required().entityEncode(),
     form.field("references", "References").trim().required().entityEncode(),
     // References should clean URL
     form.field("project_name", "VAMPS project name").trim().entityEncode(),
     form.field("dataset_name", "VAMPS dataset name").trim().entityEncode(),
-    form.field("sample_id", "Sample ID (user sample name)").trim().required().entityEncode(),
+    form.field("sample_name", "Sample ID (user sample name)").trim().required().entityEncode(),
     form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode(),
     form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode(),
     form.field("collection_date", "Sample collection date (YYYY-MM-DD)").trim().required().entityEncode().isDate("Format: YYYY-MM-DD"),
     form.field("latitude", "Latitude (WGS84 system, values bounded by ±90°)").trim().required().entityEncode(),
     form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode(),
-    form.field("geo_loc_name_country", "Country").trim().required().entityEncode(),
-    form.field("longhurst_zone", "Longhurst Zone").trim().required().entityEncode(),
+    form.field("geo_loc_name_country", "Country").trim().entityEncode(),
+    form.field("longhurst_zone", "Longhurst Zone").trim().entityEncode(),
     form.field("biome", "Biome").trim().required().entityEncode(),
     form.field("env_feature_primary", "Environmental Feature - Primary").trim().required().entityEncode(),
     form.field("env_feature_secondary", "Environmental Feature - Secondary").trim().entityEncode(),
@@ -709,7 +709,14 @@ router.post('/update_metadata_form',
       // Handle errors 
       console.log(req.form.errors);
       // Print out red list
-
+      req.flash('Please correct: ', req.form.errors);
+      res.redirect("/user_data/update_metadata");
+// [ 'Project title has invalid characters',
+//   'PI name has invalid characters',
+//   'Sample ID (user sample name) is required',
+//   'Country is required',
+//   'Longhurst Zone is required' ]
+      
     } else {
     
     // else
