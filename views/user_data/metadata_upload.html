@@ -53,30 +53,30 @@ new_project_name: 'new Name',
    placeholder="Enter your full name" 
    
    <body> -->
-      <form name='add_project_form' method='POST' action='/user_data/metadata_upload'>
+      <form name='add_project_form' method='POST' action='/user_data/update_metadata_form'>
       <!-- <form action="" method="post" enctype="multipart/form-data"> -->
          <fieldset id="general">
          <legend id="general-legend">General sample description</legend>
-            <label for="title">Title of Project:</label>
-            <input type="text" id="title" name="title" />
+            <label for="project_title">Title of Project:</label>
+            <input type="text" id="project_title" name="project_title" />
             <br />
-            <label for="name">PI Name:</label>
-            <input type="text" id="name" name="name"/>
+            <label for="pi_name">PI Name:</label>
+            <input type="text" id="pi_name" name="pi_name"/>
             <br />            
-            <label for="email">PI's email address:</label>
-            <input type="email" id="email" name="email"/>
+            <label for="pi_email">PI's email address:</label>
+            <input type="email" id="pi_email" name="pi_email"/>
             <br />
-            <label for="abstract">CoDL project abstract (.doc format):</label>
-            <textarea id="abstract" name="abstract"></textarea>
+            <label for="project_abstract">CoDL project abstract (.doc format):</label>
+            <textarea id="project_abstract" name="project_abstract"></textarea>
             <br />
-            <label for="reference">References for selected manuscripts published that describe the location:</label>
-            <textarea id="reference" name="reference"></textarea>
+            <label for="references">References for selected manuscripts published that describe the location:</label>
+            <textarea id="references" name="references"></textarea>
             <br />   
           </fieldset>
           <fieldset id="parameters">
           <legend id="parameters-legend">Table of metadata parameters</legend>
           <!--cellpadding="1" cellspacing="1" border="1" -->
-          <table class="normal_table" border="1">
+          <table class='table table-condensed'>
             <thead>
               <!-- rowspan="1" colspan="3" -->
               <tr><td>Parameter</td><td>MBL Supplied or Optional
@@ -118,12 +118,12 @@ new_project_name: 'new Name',
             </tr>
             <tr>
             	<td>
-                <label for="sample_name">DNA Extraction</label>
+                <label for="dna_extraction_meth">DNA Extraction</label>
               </td>
               <td>User Supplied
               </td>
             	<td>
-                <select>
+                <select name="dna_extraction_meth">
                   <option value="MoBio Power Biomedical FAST DNA">MoBio Power Biomedical FAST DNA</option>
                   <option value="MoBio PowerSoil">MoBio PowerSoil</option>
                   <option value="MoBio Power Water">MoBio Power Water</option>
@@ -328,91 +328,7 @@ new_project_name: 'new Name',
                 <input type="text" id="sample_name" name="sample_name" placeholder=""/>
               </td>
             </tr>
-
-
-<form name='add_project_form' method='POST' action='/user_data/add_project'>
-  <!-- todo: back to from where was called -->
-  <a href='/user_data/your_projects'>&lt;&lt;--back</a>
-  <fieldset>
-    <table class='table table-condensed'>
-    <!--
-    <tr>
-      <th></th><th>Values</th>
-    </tr>
-    <tr>
-    -->
-      <td>
-        <label for='name'>Project Name (max length 20 chars):</label>
-      </td>
-      <td>
-        <input type='text' name='new_project_name'  maxlength='50' size='50' value='<%= add_project_info.new_project_name%>'>
-      </td>
-    </tr>
-  
-
-    <tr>
-      <td><label for='public'>Public:</label>
-      </td>
-      <td>
-        <input type='radio' checked='checked' name='new_privacy' value='True' > public
-  &nbsp;<input type='radio'                   name='new_privacy' value='False'> private
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <label for='title'>Title (max length 100 chars):</label>
-      </td>
-      <td>
-        <input type='text' name='new_project_title' maxlength='100' size='50' value='<%= add_project_info.new_project_title %>'>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <label for='description'>Description (max length 255 chars):</label>
-      </td>
-      <td>
-        <textarea name='new_project_description' maxlength='255' rows='1' cols='50' value='<%= add_project_info.new_project_description %>'></textarea>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <label for='description'>Funding:</label>
-      </td>
-      <td>
-        <input type='text' name='new_funding' maxlength='50' size='50' value='<%= add_project_info.new_funding %>'>
-      </td>
-    </tr>
-    </fieldset>
-
-    <fieldset>
-      <!--
-        todo:
-      1) add select if first, last and email are giving ?
-      2) first time - from user, after re-render - from form
-
-      -->
-      <!-- center -->
-      
-      <tr><th colspan='2' class='hr_cell'>Owner (if different from the current user)</th></tr>
-      <tr>
-        <td><label for='first_name'>First Name:</label></td>
-        <td><input type='text' readonly name='first_name' maxlength='100' size='50' value='<%= owner_hash.first_name %>'></td>
-      </tr>
-      <tr>
-        <td><label for='last_name'>Last Name:</label></td>
-        <td><input type='text' readonly name='last_name' maxlength='100' size='50' value='<%= owner_hash.last_name %>'></td>
-      </tr>
-      <tr>
-        <td><label for='email'>Email:</label></td>
-        <td><input type='text'  name='email' maxlength='100' size='50' value='<%= owner_hash.email %>'></td>
-      </tr>
-      <tr>
-        <td><label for='institution'>Institution:</label></td><td>
-        <input type='text'  name='new_institution' maxlength='100' size='50' value='<%= owner_hash.institution %>'></td>
-      </tr>
-    </fieldset>
-
-  </table>
+        </table>
   <br>
 
   <!-- center -->

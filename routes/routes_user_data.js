@@ -660,14 +660,81 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
 // ----
 
 router.get('/update_metadata', [helpers.isLoggedIn], function (req, res) {
-  console.log('in update_metadata');
+  console.log('in get /update_metadata');
 
   res.render('user_data/metadata_upload', {
-    title: 'VAMPS: Add a new project',
+    title: 'VAMPS: Metadata_upload',
     user: req.user,
     hostname: req.CONFIG.hostname,
   });
 });
+
+router.post('/update_metadata_form',
+  [helpers.isLoggedIn],
+  form(
+
+    form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z-]+$/),
+    form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z-]+$/),
+    form.field("pi_email", "PI's email address").trim().isEmail().required().entityEncode(),
+    form.field("project_abstract", "Project abstract").trim().required().entityEncode(),
+    form.field("references", "References").trim().required().entityEncode(),
+    // References should clean URL
+    form.field("project_name", "VAMPS project name").trim().required().entityEncode(),
+    form.field("dataset_name", "VAMPS dataset name").trim().required().entityEncode(),
+    form.field("sample_id", "Sample ID (user sample name)").trim().required().entityEncode(),
+    form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode(),
+    form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode(),
+    form.field("collection_date", "Sample collection date (YYYY-MM-DD)").trim().required().entityEncode(),
+    form.field("latitude", "Latitude (WGS84 system, values bounded by ±90°)").trim().required().entityEncode(),
+    form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode(),
+    form.field("geo_loc_name country", "Country").trim().required().entityEncode(),
+    form.field("longhurst_zone", "Longhurst Zone").trim().required().entityEncode(),
+    form.field("biome", "Biome").trim().required().entityEncode(),
+    form.field("env_feature_primary", "Environmental Feature - Primary").trim().required().entityEncode(),
+    form.field("env_feature_secondary", "Environmental Feature - Secondary").trim().required().entityEncode(),
+    form.field("env_material_primary", "Environmental Material - Primary").trim().required().entityEncode(),
+    form.field("env_material_secondary", "Environmental Material - Secondary").trim().required().entityEncode()
+   ),
+  function (req, res) {
+
+    // if (!req.form.isValid) {
+    //   req.add_project_info = req.form;
+    //   req.messages = req.form.errors;
+    //   editAddProject(req, res);
+    //   console.log('FORM INFOx')
+    //   console.log(req)
+    //
+    // }
+    // else
+    // {
+      // saveToDb(req, res);
+      console.log('in post /update_metadata_form');
+      console.log('1req.body');
+      console.log(req.body);
+      // { title: 'DCO_1_test', name: 'Anna Shipunova' }
+      // { project_title: 'DCO_1_test', pi_name: 'Anna Shipunova' }
+      
+      // console.log("req.files from update_metadata_form");
+      // console.log(req.files);  // array
+      console.log('FORM INFOx')
+      console.log(req.form)
+      // { project_title: 'DCO_1_test', pi_name: 'Anna Shipunova' }
+      
+      // CONSTS
+      //CONFIG
+      // form: { project_title: '' } }
+      
+      
+      // var project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+req.form.new_project_name)
+      // helpers.mkdirSync(project_dir)
+      res.redirect("/user_data/your_projects");
+      // res.redirect("/user_data/update_metadata");
+      // res.redirect("/user_data/import_choices?project="+req.form.new_project_name);
+    // }
+
+    return;
+  }
+);
 
 // ----
 
