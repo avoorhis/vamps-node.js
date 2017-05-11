@@ -348,6 +348,7 @@ function make_metadata_hash(pid, all_metadata){
             console.log("AllMetadataFromFile[dataset_id]");
             console.log(AllMetadataFromFile[dataset_id]);
             
+            all_metadata[pid][dataset_id] = AllMetadataFromFile[dataset_id]
             get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid][dataset_id]);
             
         }
