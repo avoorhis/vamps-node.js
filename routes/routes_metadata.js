@@ -174,7 +174,7 @@ router.post('/metadata_upload',
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
       // console.log('MMM AllMetadataFromFile = helpers.get_metadata_from_file()')
-      AllMetadataFromFile = helpers.get_metadata_from_file()
+      // AllMetadataFromFile = helpers.get_metadata_from_file()
       // console.log(AllMetadataFromFile);
 
       console.log("QQQ req.params");
@@ -252,14 +252,18 @@ router.post('/start_edit',
     console.log('in post /start_edit');
     
     console.log("FFF req");
-    console.log(req.body);
-    console.log(req.body.project_id);
-    console.log(req.body.project);
+    // console.log(req.body);
+    // console.log(req.body.project_id);
+    // console.log(req.body.project);
     
     // console.log('MMM AllMetadataFromFile = helpers.get_metadata_from_file()')
     AllMetadataFromFile = helpers.get_metadata_from_file()
     // console.log(AllMetadataFromFile['47']);
-    get_all_dataset_ids(47);
+    all_metadata = {}
+    make_metadata_hash(req.body.project_id, all_metadata);
+    console.log("AAA all_metadata");
+    console.log(all_metadata);
+    
     /*
     FFF req
     { project_id: '47', project: 'DCO_GAI_Bv3v5' }
@@ -274,12 +278,10 @@ router.post('/start_edit',
     */
 });
 
-function get_values_from_ids(METADATA, did) {
+function get_values_from_ids(METADATA, did, all_metadata_p_d) {
   var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_matter', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'] 
   // var ds_row = {};
-  var metadata = {}
-  
-  metadata[did] = {}
+
   metadata_names.forEach(function(mdname) {
     console.log(mdname);
     var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname)
@@ -292,7 +294,7 @@ function get_values_from_ids(METADATA, did) {
   
     if(did in METADATA) {
       // ds_row[mdname] = data.value
-      metadata[did][mdname] = data.value
+      all_metadata_p_d[mdname] = data.value
     }
     
     /*
@@ -317,16 +319,17 @@ DDD metadata
 
 
   });
-  console.log("DDD metadata");
-  console.log(metadata);
+  console.log("DDD all_metadata_p_d");
+  console.log(all_metadata_p_d);
   
 };
   
 
 
-function get_all_dataset_ids(pid){ 
+function make_metadata_hash(pid, all_metadata){ 
   if (helpers.isInt(pid))
   {
+    all_metadata[pid] = {}
     connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows, fields) {
       if (err)
       {
@@ -334,17 +337,18 @@ function get_all_dataset_ids(pid){
       }
       else
       {
-        console.log("get_all_dataset_ids");
-        console.log("rows");
+        console.log("in make_metadata_hash");
+        // console.log("rows");
         
         for (var i = 0; i < rows.length; i++) {
             var row = rows[i];
             console.log(row.did);
             var dataset_id = row.did
+            all_metadata[pid][dataset_id] = {}
             console.log("AllMetadataFromFile[dataset_id]");
             console.log(AllMetadataFromFile[dataset_id]);
             
-            get_values_from_ids(AllMetadataFromFile, dataset_id);
+            get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid][dataset_id]);
             
         }
         
