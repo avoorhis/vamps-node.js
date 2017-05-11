@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var helpers = require('./helpers/helpers');
 var form      = require("express-form");
+var queries = require(app_root + '/routes/queries');
 
 /* GET metadata page. */
  router.get('/metadata', function(req, res) {
@@ -172,10 +173,13 @@ router.post('/metadata_upload',
     // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
-      console.log('MMM AllMetadataFromFile = helpers.get_metadata_from_file()')      
+      // console.log('MMM AllMetadataFromFile = helpers.get_metadata_from_file()')
       AllMetadataFromFile = helpers.get_metadata_from_file()
-      console.log(AllMetadataFromFile);
-      
+      // console.log(AllMetadataFromFile);
+
+      console.log("QQQ req.params");
+      console.log(req.params);
+  
       
       console.log("req.form");
       console.log(req.form);
@@ -234,6 +238,84 @@ function saveMetadata(req, res){
     }
 }
 
+// router.post('/metadata_upload/:id',
 
+// app.param('id', loadProject);
+// app.get('/projects/:id/edit', editProject);
+// app.post('/projects/:id', saveProject);
 
+router.post('/start_edit',
+  [helpers.isLoggedIn],
+  function (req, res) {
+    console.log('in post /start_edit');
+    
+    console.log("FFF req");
+    console.log(req.body);
+    console.log(req.body.project_id);
+    console.log(req.body.project);
+    
+    // console.log('MMM AllMetadataFromFile = helpers.get_metadata_from_file()')
+    AllMetadataFromFile = helpers.get_metadata_from_file()
+    // console.log(AllMetadataFromFile['47']);
+    get_all_dataset_ids(47);
+    /*
+    FFF req
+    { project_id: '47', project: 'DCO_GAI_Bv3v5' }
+    47
+    DCO_GAI_Bv3v5
+  
+  
+    */
+  });
+
+function get_all_dataset_ids(pid){ 
+
+  if (helpers.isInt(pid))
+  {
+    connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows1, fields) {
+      if (err)
+      {
+        console.log('get_select_datasets_queryPID error: ' + err);
+      }
+      else
+      {
+        console.log("get_all_dataset_ids");
+        console.log("rows1");
+        console.log(rows1);
+        /*
+        ...
+  TextRow {
+    project: 'DCO_GAI_Bv3v5',
+    title: 'Icelandic Volcanic Lake',
+    did: 4319,
+    pid: 47,
+    dataset: 'Sk_hlaup',
+    dataset_description: 'NULL',
+    username: 'gaidos',
+    email: 'gaidos@hawaii.edu',
+    institution: 'University of Hawaii',
+    first_name: 'Eric',
+    last_name: 'Gaidos',
+    owner_user_id: 54,
+    public: 0 } ]
+          
+        */
+        console.log("fields");
+        console.log(fields);
+        /*
+          helpers.assignment_finish_request(res, rows1, rows2, status_params);
+          status_params.status = status_params.statusOK;
+          status_params.msg = status_params.msgOK;
+          helpers.update_status(status_params);
+          
+        */
+      }
+       // end else
+    });
+  }
+  else
+  { // end if int
+    console.log('ERROR pid is not an integer: ', pid);
+  }
+}
 // ---- metadata_upload end ----
