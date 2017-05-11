@@ -277,7 +277,7 @@ router.post('/start_edit',
 function get_all_dataset_ids(pid){ 
   if (helpers.isInt(pid))
   {
-    connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows1, fields) {
+    connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows, fields) {
       if (err)
       {
         console.log('get_select_datasets_queryPID error: ' + err);
@@ -285,15 +285,20 @@ function get_all_dataset_ids(pid){
       else
       {
         console.log("get_all_dataset_ids");
-        console.log("rows1");
+        console.log("rows");
         
-        project_dataset_info_res = JSON.stringify(rows1)
-        // console.log(JSON.stringify(rows1));
-        for (var row in rows1[0])
-        {
-          console.log(row);
-          console.log(row.did);
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            console.log(row.did);
         }
+        
+        project_dataset_info_res = JSON.stringify(rows)
+        // console.log(JSON.stringify(rows1));
+        // for (var row in rows1[0])
+        // {
+        //   console.log(row);
+        //   console.log(row.did);
+        // }
           
         /*rows1[0].did
         ...
