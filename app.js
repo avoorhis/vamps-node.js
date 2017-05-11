@@ -230,13 +230,11 @@ app.use(function(req, res, next) {
 });
 
 /// error handlers <-- these middleware go after routes
-app.set('env', process.env.NODE_ENV);
+
 // development error handler
 // will print stacktrace
-console.log('DATABASE: '+NODE_DATABASE);
-console.log('Database set in config/db-connection.js');
-console.log('ENV:',app.get('env'));
-console.log('Environment set in bin/www');
+
+
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
@@ -257,8 +255,7 @@ app.use(function(err, req, res, next) {
     });
 });
 
-var os = require("os");
-console.log('HOSTNAME: '+os.hostname())
+
 
 fs.ensureDir(config.USER_FILES_BASE, function (err) {
     if(err) {console.log(err);} // => null
@@ -427,6 +424,7 @@ try{
     console.log(e);
 }
 //see file models/silva_taxonomy.js
+
 all_silva_taxonomy.get_all_taxa(function(err, results) {
   if (err)
     throw err; // or return an error message, or something
