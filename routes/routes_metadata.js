@@ -261,8 +261,8 @@ router.post('/start_edit',
     // console.log(AllMetadataFromFile['47']);
     all_metadata = {}
     make_metadata_hash(req.body.project_id, all_metadata);
-    console.log("AAA all_metadata");
-    console.log(all_metadata);
+    // console.log("AAA all_metadata");
+    // console.log(all_metadata);
     
     /*
     FFF req
@@ -319,11 +319,26 @@ DDD metadata
 
 
   });
-  console.log("DDD all_metadata_p_d");
-  console.log(all_metadata_p_d);
+  // console.log("DDD all_metadata_p_d");
+  // console.log(all_metadata_p_d);
   return all_metadata_p_d
 };
   
+function populate_metadata_hash(rows, pid, all_metadata){ 
+  for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      // console.log(row.did);
+      var dataset_id = row.did
+      all_metadata[pid][dataset_id] = {}
+      // console.log("AllMetadataFromFile[dataset_id]");
+      // console.log(AllMetadataFromFile[dataset_id]);
+      
+      all_metadata[pid][dataset_id] = AllMetadataFromFile[dataset_id]
+      all_metadata[pid][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid][dataset_id]);
+      // all_metadata[pid][dataset_id] = all_metadata_p_d
+  }
+  return all_metadata
+};
 
 
 function make_metadata_hash(pid, all_metadata){ 
@@ -340,22 +355,11 @@ function make_metadata_hash(pid, all_metadata){
         console.log("in make_metadata_hash");
         // console.log("rows");
         
-        for (var i = 0; i < rows.length; i++) {
-            var row = rows[i];
-            console.log(row.did);
-            var dataset_id = row.did
-            all_metadata[pid][dataset_id] = {}
-            console.log("AllMetadataFromFile[dataset_id]");
-            console.log(AllMetadataFromFile[dataset_id]);
-            
-            all_metadata[pid][dataset_id] = AllMetadataFromFile[dataset_id]
-            all_metadata_p_d = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid][dataset_id]);
-            all_metadata[pid][dataset_id] = all_metadata_p_d
-        }
-        
-          console.log("TTT all_metadata");
-          console.log(all_metadata);
-        project_dataset_info_res = JSON.stringify(rows)
+
+        all_metadata = populate_metadata_hash(rows, pid, all_metadata)
+        console.log("TTT all_metadata");
+        console.log(all_metadata);
+        // project_dataset_info_res = JSON.stringify(rows)
         // console.log(JSON.stringify(rows1));
         // for (var row in rows1[0])
         // {
