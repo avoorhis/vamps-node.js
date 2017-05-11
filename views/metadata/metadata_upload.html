@@ -11,6 +11,18 @@
 
 } %>
 
+<% if (all_metadata) { %>
+    <ul>
+  <% for (var key in all_metadata) {%>
+    <li><%= JSON.stringify(all_metadata[key]) %></li>
+  <%}%>
+    </ul>
+<%
+} else {
+  var all_metadata = {}
+
+} %>
+
 
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
