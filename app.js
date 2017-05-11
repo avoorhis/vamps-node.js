@@ -230,13 +230,11 @@ app.use(function(req, res, next) {
 });
 
 /// error handlers <-- these middleware go after routes
-app.set('env', process.env.NODE_ENV);
+
 // development error handler
 // will print stacktrace
-console.log('DATABASE: '+NODE_DATABASE);
-console.log('Database set in config/db-connection.js');
-console.log('ENV:',app.get('env'));
-console.log('Environment set in bin/www');
+
+
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
@@ -257,8 +255,7 @@ app.use(function(err, req, res, next) {
     });
 });
 
-var os = require("os");
-console.log('HOSTNAME: '+os.hostname())
+
 
 fs.ensureDir(config.USER_FILES_BASE, function (err) {
     if(err) {console.log(err);} // => null
@@ -310,8 +307,8 @@ var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
 ////////////////////////////////////////////////////////
 /////// hdf5 Code //////////////
 AllMetadata = {}
-
-try{
+hdf5_is_available = false;   // GLOBAL (no var)
+if(hdf5_is_available){
     //var h5 = require('hdf5')
     var hdf5 = require('hdf5').hdf5; // File; Filters
     // var h5lt = require('hdf5').h5lt; // dataset
@@ -401,23 +398,16 @@ try{
     // console.log('group88',group88['latitude'] )
     ////////// END hdf5 Code ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
-}catch(err){
+}else{
     // If we're here we don't have HDF5
-    console.log('NOT Running HDF5')
-    console.log(err)
+    console.log('Not Running HDF5')
+    
     HDF5_MDATA  = ''
     HDF5_TAXDATA = ''
     //var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.json' );
     var meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
     AllTaxCounts = {}
 
-    try {
-        AllTaxCounts   = require(taxcounts_file);
-        console.log('Loading TAXCOUNTS as AllTaxCounts from: '+taxcounts_file);
-    }
-    catch (e) {
-      console.log(e);
-    }
 
     try {
         AllMetadata        = require(meta_file);
@@ -434,6 +424,7 @@ try{
     console.log(e);
 }
 //see file models/silva_taxonomy.js
+
 all_silva_taxonomy.get_all_taxa(function(err, results) {
   if (err)
     throw err; // or return an error message, or something
@@ -450,7 +441,9 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     new_taxonomy = new CustomTaxa(results);
     try{
         console.log('SIZE (silva-taxonomy object):',sizeof(new_taxonomy));
-    }catch(e){}
+    }catch(e){
+        console.log('Could not get sizeof(new_taxonomy) in app.js; CONNECTION Problem')
+    }
     // uncomment to print out the object:
     //console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
     //
@@ -486,14 +479,18 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
 
 all_rdp_taxonomy.get_all_taxa(function(err, results) {
   if (err)
-    throw err; // or return an error message, or something
+    console.log(err); // or return an error message, or something
   else
   {
     new_rdp_taxonomy = new CustomTaxa(results);
-    try{
-        console.log('SIZE (rdp-taxonomy object):',sizeof(new_rdp_taxonomy));
-    }catch(e){ console.log('Could not get sizeof(new_rdp_taxonomy) in app.js') }
-    //console.log('2(rdp)-taxa_tree_dict_map_by_db_id_n_rank["3446_domain"] = ' + JSON.stringify(new_rdp_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["140108_domain"]));
+    if(typeof new_rdp_taxonomy === 'object'){
+        try{
+            console.log('SIZE (rdp-taxonomy object):',sizeof(new_rdp_taxonomy));
+        }catch(e){ 
+            new_rdp_taxonomy = {};
+            console.log('Could not get sizeof(new_rdp_taxonomy) in app.js') 
+        } 
+    }  
   }
 });
 

@@ -61,28 +61,8 @@ strain_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_i
 strain_query += "%s GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
 dataset_query = "SELECT dataset_id from dataset"
 
-# these SHOULD be the same headers as in the NODE_DATABASE table: required_metadata_info (order doesn't matter)
-# required_metadata_fields = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country", "depth", "description", "dna_region", "domain", "elevation", "env_package", "fragment_name", "latitude", "longitude", "public", "sequencing_platform", "taxon_id"];
-# req_pquery = "SELECT dataset_id, " + ', '.join(required_metadata_fields) + """
-# , env_biome.term_name AS env_biome, env_feature.term_name AS env_feature, env_matter.term_name AS env_matter
-# from required_metadata_info
-#                 JOIN fragment_name USING(fragment_name_id)
-#                 JOIN dna_region USING(dna_region_id)
-#                 JOIN sequencing_platform USING(sequencing_platform_id)
-#                 JOIN domain USING(domain_id)
-#                 JOIN term AS env_biome ON(env_biome_id = env_biome.term_id)
-#                 JOIN term AS env_feature ON(env_feature_id = env_feature.term_id)
-#                 JOIN term AS env_matter ON(env_matter_id = env_matter.term_id)
-#                 JOIN country USING(country_id)
-#                 JOIN env_package USING(env_package_id)
 
-# """
-# required_metadata_fields = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country_id", "depth", "description", "dna_region_id",
-#                         "domain_id", "elevation", "env_sample_source_id", "fragment_name_id", "latitude", "longitude", "sequencing_platform_id",
-#                         "taxon_id", "env_biome_id", "env_feature_id", "env_matter_id"];
-
-req_pquery = "SELECT dataset_id, %s from required_metadata_info JOIN env_package USING(env_package_id)"
-#required_metadata_fields.extend(["env_biome", "env_feature", "env_matter"])
+req_pquery = "SELECT dataset_id, %s from required_metadata_info"
 
 cust_pquery = "SELECT project_id,field_name from custom_metadata_fields"
 
@@ -102,20 +82,14 @@ logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
                            format="%(asctime)-15s %(levelname)-8s %(message)s")
 
 def get_required_metadata_fields(args):
-    q = " SELECT `COLUMN_NAME` "
-    q += " FROM `INFORMATION_SCHEMA`.`COLUMNS`"
-    q += " WHERE `TABLE_SCHEMA`='%s'"
-    q += " AND `TABLE_NAME`='required_metadata_info';"
-    q = q % (args.NODE_DATABASE)
+    q =  "SHOW fields from required_metadata_info"   
     cur.execute(q)
-    rows = cur.fetchall()
-    required_metadata_fields = []
-
-    for row in rows:
-        if row[0] != 'required_metadata_id' and row[0] != 'dataset_id':
-            required_metadata_fields.append(row[0])
-
-    return required_metadata_fields
+    md_fields = []
+    fields_not_wanted = ['required_metadata_id','dataset_id','created_at','updated_at']    
+    for row in cur.fetchall():
+        if row[0] not in fields_not_wanted:
+            md_fields.append(row[0])
+    return md_fields
 
 def check_files(args):
     cur.execute(dataset_query)
@@ -333,7 +307,7 @@ def go_metadata():
             print(i,did,name,row[i+1])
 
             logging.debug("enumerate(required_metadata_fields): SSS")
-            logging.debug(i,did,name,row[i+1])
+            logging.debug(str(i)+' '+str(did)+' '+name+' '+str(row[i+1]))
 
             value = row[i+1]
             if value == '':
@@ -366,33 +340,35 @@ def go_metadata():
     for pid in pid_collection:
         table = 'custom_metadata_'+ pid
         fields = ['dataset_id']+pid_collection[pid]
+        q = "SELECT * FROM information_schema.tables WHERE table_schema = 'vamps2' AND table_name = '"+table+"' LIMIT 1;"
+        cur.execute(q)
+        if cur.rowcount > 0:
+            cust_dquery = "SELECT `" + '`,`'.join(fields) + "` from " + table
+            print('running other cust',cust_dquery)
+            logging.debug('running other cust: ' +cust_dquery)
+            #try:
+            cur.execute(cust_dquery)
 
-        cust_dquery = "SELECT `" + '`,`'.join(fields) + "` from " + table
-        print('running other cust',cust_dquery)
-        logging.debug('running other cust: ' +cust_dquery)
-        #try:
-        cur.execute(cust_dquery)
+            print()
+            for row in cur.fetchall():
+                print(row)
+                did = row[0]
+                n = 1
+                for field in pid_collection[pid]:
+                    #print did,n,field,row[n]
+                    name = field
+                    value = str(row[n])
+                    if value == '':
+                        warnings.append('WARNING -- dataset'+str(did)+'is missing value for metadata CUSTOM field "'+name+'"')
 
-        print()
-        for row in cur.fetchall():
-            print(row)
-            did = row[0]
-            n = 1
-            for field in pid_collection[pid]:
-                #print did,n,field,row[n]
-                name = field
-                value = str(row[n])
-                if value == '':
-                    warnings.append('WARNING -- dataset'+str(did)+'is missing value for metadata CUSTOM field "'+name+'"')
-
-                if did in metadata_lookup:
-                    metadata_lookup[did][name] = value
-                else:
-                    metadata_lookup[did] = {}
-                    metadata_lookup[did][name] = value
-                n += 1
-        #except:
-        #    warnings.append('could not find/read CUSTOM table: "'+table+'" Skipping')
+                    if did in metadata_lookup:
+                        metadata_lookup[did][name] = value
+                    else:
+                        metadata_lookup[did] = {}
+                        metadata_lookup[did][name] = value
+                    n += 1
+        else:
+            print('No "'+table+'" table found')
     db.commit()
     return metadata_lookup
 
