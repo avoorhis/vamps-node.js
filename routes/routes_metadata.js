@@ -272,7 +272,57 @@ router.post('/start_edit',
      var password= rows[0].password;
   
     */
+});
+
+function get_values_from_ids(METADATA, did) {
+  var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_matter', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'] 
+  // var ds_row = {};
+  var metadata = {}
+  
+  metadata[did] = {}
+  metadata_names.forEach(function(mdname) {
+    console.log(mdname);
+    var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname)
+    /*
+    console.log("DDD data");
+    console.log(data);
+    DDD data
+    { name: 'run_id', value: '20080709' }
+    */
+  
+    if(did in METADATA) {
+      // ds_row[mdname] = data.value
+      metadata[did][mdname] = data.value
+    }
+    
+    /*
+DDD metadata
+{ '4319': 
+   { adapter_sequence: 'TGTCA',
+     dna_region: 'v3v5',
+     domain: 'Bacteria',
+     env_biome: 'unknown',
+     env_feature: 'unknown',
+     env_matter: 'unknown',
+     env_package: 'unknown',
+     geo_loc_name: 'unknown',
+     illumina_index: 'unknown',
+     primer_suite: 'Bacterial V3-V5 Suite',
+     run: '20080709',
+     sequencing_platform: 'unknown',
+     target_gene: '16s' } }
+      
+      
+    */
+
+
   });
+  console.log("DDD metadata");
+  console.log(metadata);
+  
+};
+  
+
 
 function get_all_dataset_ids(pid){ 
   if (helpers.isInt(pid))
@@ -290,6 +340,12 @@ function get_all_dataset_ids(pid){
         for (var i = 0; i < rows.length; i++) {
             var row = rows[i];
             console.log(row.did);
+            var dataset_id = row.did
+            console.log("AllMetadataFromFile[dataset_id]");
+            console.log(AllMetadataFromFile[dataset_id]);
+            
+            get_values_from_ids(AllMetadataFromFile, dataset_id);
+            
         }
         
         project_dataset_info_res = JSON.stringify(rows)
