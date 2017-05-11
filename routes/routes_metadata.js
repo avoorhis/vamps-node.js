@@ -327,15 +327,43 @@ DDD metadata
 function populate_metadata_hash(rows, pid, all_metadata){ 
   for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
-      // console.log(row.did);
+      /*
+      console.log("WWW row");
+      console.log(row);
+      TextRow {
+        project: 'DCO_GAI_Bv3v5',
+        title: 'Icelandic Volcanic Lake',
+        did: 4312,
+        pid: 47,
+        dataset: 'S1',
+        dataset_description: 'NULL',
+        username: 'gaidos',
+        email: 'gaidos@hawaii.edu',
+        institution: 'University of Hawaii',
+        first_name: 'Eric',
+        last_name: 'Gaidos',
+        owner_user_id: 54,
+        public: 0 }
+      */
       var dataset_id = row.did
+      all_metadata[pid]["project"] = row.project
+      all_metadata[pid]["title"]   = row.title
+      all_metadata[pid]["username"]   = row.username
+      all_metadata[pid]["email"]   = row.email
+      all_metadata[pid]["institution"]   = row.institution
+      all_metadata[pid]["first_name"]   = row.first_name
+      all_metadata[pid]["last_name"]   = row.last_name
+      all_metadata[pid]["public"]   = row.public
+      
       all_metadata[pid][dataset_id] = {}
       // console.log("AllMetadataFromFile[dataset_id]");
       // console.log(AllMetadataFromFile[dataset_id]);
       
       all_metadata[pid][dataset_id] = AllMetadataFromFile[dataset_id]
       all_metadata[pid][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid][dataset_id]);
-      // all_metadata[pid][dataset_id] = all_metadata_p_d
+      all_metadata[pid][dataset_id]["dataset"] = row.dataset
+      all_metadata[pid][dataset_id]["dataset_description"] = row.dataset_description
+      
   }
   return all_metadata
 };
