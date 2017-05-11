@@ -477,6 +477,20 @@ constants.REQ_METADATA_FIELDS = [   "collection_date",  // format?? yyyy-mm-dd
                                     "primer_suite",
                                     "run"
                                     ];
+constants.REQ_METADATA_FIELDS_wIDs = [ "geo_loc_name",     // name of country or longhurst zone
+                                    "dna_region",       // v6, v4v5 v6v4 .... (from mysql table) 
+                                    "domain",           // Bacteria, Archaea or Eukarya (from mysql table)
+                                    "env_biome",
+                                    "env_feature", 
+                                    "env_matter", 
+                                    "env_package",      // (from mysql table) 
+                                    "target_gene",      // 16s or 18s (from mysql table)                                        
+                                    "sequencing_platform",
+                                    "adapter_sequence",
+                                    "illumina_index",
+                                    "primer_suite",
+                                    "run"
+                                    ];                                    
 // constants.REQ_METADATA_FIELDS = [{  "name":"collection_date",       "units":"date","format":"YYYY-MM-DD"}, // format?? yyyy-mm-dd
 //                                   {  "name":"geo_loc_name",         "units":"alpha_numeric","format":""},   // name of country or longhurst zone
 //                                   {  "name":"dna_region",           "units":"alpha_numeric","format":""},   // v6, v4v5 v6v4 .... (from mysql table) 
