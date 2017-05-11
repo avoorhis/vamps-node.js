@@ -16,8 +16,6 @@ router.get('/metadata_list', helpers.isLoggedIn, function(req, res) {
       console.log('in metadata')
       var mdata_w_latlon = {}
       console.log(DatasetsWithLatLong)
-         
-      
       
       for(n in AllMetadataNames){
         md_selected = AllMetadataNames[n]
@@ -133,6 +131,7 @@ function get_metadata_hash(md_selected){
 }
 
 // ---- metadata_upload ----
+// AllMetadataFromFile = helpers.get_metadata_from_file()
 
 router.get('/metadata_upload', [helpers.isLoggedIn], function (req, res) {
   console.log('in get metadata/metadata_upload');
@@ -173,7 +172,11 @@ router.post('/metadata_upload',
     // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
-
+      console.log('MMM AllMetadataFromFile = helpers.get_metadata_from_file()')      
+      AllMetadataFromFile = helpers.get_metadata_from_file()
+      console.log(AllMetadataFromFile);
+      
+      
       console.log("req.form");
       console.log(req.form);
       
@@ -214,4 +217,23 @@ function editMetadataForm(req, res){
     //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
   });
 }
+
+function NewMetadata(req, res, id){ /* fetch or create logic, storing as req.model or req.metadata */} 
+
+
+function loadMetadata(req, res, id){ /* fetch or create logic, storing as req.model or req.metadata */} 
+
+function editMetadata(req, res){ /* render logic */ }
+
+function saveMetadata(req, res){ 
+    if(!req.form.isValid){
+        editMetadata(req, res);
+    }else{
+        saveToDb(req.metadata);
+        res.redirect('/metadata'+req.metadata.id+'/edit');
+    }
+}
+
+
+
 // ---- metadata_upload end ----
