@@ -357,16 +357,17 @@ module.exports.clean_string = function (str) {
   // this replaces everything that is not letter,number or underscore (\w) with underscore
   return str.replace(/[^\w]/gi, '_');
 };
-// module.exports.update_metadata_from_file = function (){
-//     var meta_file      = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--metadata.json');
-//     try {
-//       AllMetadata        = require(meta_file);
-//     }
-//     catch (e) {
-//       console.log(e);
-//       AllMetadata = {};
-//     }
-// };
+
+module.exports.get_metadata_from_file = function (){
+ var meta_file = path.join(process.env.PWD, 'public', 'json', NODE_DATABASE + '--metadata.json');
+ try { AllMetadataFromFile = require(meta_file); }
+ catch (e) {
+   console.log(e);
+   AllMetadataFromFile = {};
+ }
+ return AllMetadataFromFile
+};
+
 // TODO: "This function's cyclomatic complexity is too high. (11)"
 module.exports.mysql_real_escape_string = function (str) {
     return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
