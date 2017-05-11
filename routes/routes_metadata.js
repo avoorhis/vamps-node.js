@@ -242,9 +242,9 @@ function saveMetadata(req, res){
 
 // router.post('/metadata_upload/:id',
 
-// app.param('id', loadProject);
-// app.get('/projects/:id/edit', editProject);
-// app.post('/projects/:id', saveProject);
+// app.param('id', loadMetadata);
+// app.get('/project/:id/edit', editMetadata);
+// app.post('/project/:id', saveMetadata);
 
 router.post('/start_edit',
   [helpers.isLoggedIn],
@@ -259,8 +259,8 @@ router.post('/start_edit',
     // console.log('MMM AllMetadataFromFile = helpers.get_metadata_from_file()')
     AllMetadataFromFile = helpers.get_metadata_from_file()
     // console.log(AllMetadataFromFile['47']);
-    all_metadata = {}
-    make_metadata_hash(req.body.project_id, all_metadata);
+    // all_metadata = {}
+    make_metadata_hash(req, res);
     // console.log("AAA all_metadata");
     // console.log(all_metadata);
     
@@ -283,7 +283,7 @@ function get_values_from_ids(METADATA, did, all_metadata_p_d) {
   // var ds_row = {};
 
   metadata_names.forEach(function(mdname) {
-    console.log(mdname);
+    // console.log(mdname);
     var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname)
     /*
     console.log("DDD data");
@@ -340,8 +340,10 @@ function populate_metadata_hash(rows, pid, all_metadata){
   return all_metadata
 };
 
-
-function make_metadata_hash(pid, all_metadata){ 
+// TODO: rename
+function make_metadata_hash(req, res){ 
+  pid = req.body.project_id
+  all_metadata = {}
   if (helpers.isInt(pid))
   {
     all_metadata[pid] = {}
@@ -359,6 +361,16 @@ function make_metadata_hash(pid, all_metadata){
         all_metadata = populate_metadata_hash(rows, pid, all_metadata)
         console.log("TTT all_metadata");
         console.log(all_metadata);
+        // TODO: call populated form from here
+        // res.render('users', { title: 'Users', rows: rows });
+        res.render('metadata/metadata_upload', {
+          title: 'VAMPS: Metadata_upload',
+          user: req.user,
+          hostname: req.CONFIG.hostname,
+          all_metadata: all_metadata
+        });
+        
+        
         // project_dataset_info_res = JSON.stringify(rows)
         // console.log(JSON.stringify(rows1));
         // for (var row in rows1[0])
