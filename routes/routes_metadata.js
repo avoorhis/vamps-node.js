@@ -367,7 +367,8 @@ function make_metadata_hash(req, res){
           title: 'VAMPS: Metadata_upload',
           user: req.user,
           hostname: req.CONFIG.hostname,
-          all_metadata: all_metadata
+          all_metadata: all_metadata,
+          project_name: req.body.project
         });
         
         
