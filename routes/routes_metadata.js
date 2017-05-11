@@ -321,7 +321,7 @@ DDD metadata
   });
   console.log("DDD all_metadata_p_d");
   console.log(all_metadata_p_d);
-  
+  return all_metadata_p_d
 };
   
 
@@ -349,10 +349,12 @@ function make_metadata_hash(pid, all_metadata){
             console.log(AllMetadataFromFile[dataset_id]);
             
             all_metadata[pid][dataset_id] = AllMetadataFromFile[dataset_id]
-            get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid][dataset_id]);
-            
+            all_metadata_p_d = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid][dataset_id]);
+            all_metadata[pid][dataset_id] = all_metadata_p_d
         }
         
+          console.log("TTT all_metadata");
+          console.log(all_metadata);
         project_dataset_info_res = JSON.stringify(rows)
         // console.log(JSON.stringify(rows1));
         // for (var row in rows1[0])
