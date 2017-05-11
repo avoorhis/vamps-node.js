@@ -8,7 +8,12 @@
 <%
 } else {
   var edit_metadata_info = {}
+} %>
 
+<% if (project_name) { %>
+<%
+} else {
+  var project_name = ""
 } %>
 
 <% if (all_metadata) { %>
@@ -192,6 +197,7 @@ var dna_quantitation_options = ["NanoQuant",
               </td>
             	<td>
                 <input type="text" id="latitude" name="latitude" placeholder="-38.8897" value='<%= edit_metadata_info.latitude %>'/>
+                <input type="text" id="latitude" name="latitude" placeholder="-38.8897" value='<%= all_metadata["47"]["4312"].latitude %>'/>
               </td>
             </tr>
 
