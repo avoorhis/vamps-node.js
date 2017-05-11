@@ -48,19 +48,6 @@ var dna_quantitation_options = ["NanoQuant",
 %>
 
 
-
-<ul>
-<% my_dna_extraction_meth_options.forEach(function(value){ %>
-  <li>
-    <%= value %>
-  </li>
-<% }); %>
-</ul>
-
-
-
-
-
    <H3>Instructions:</H3>
    <ol>
    <li>
@@ -236,6 +223,7 @@ var dna_quantitation_options = ["NanoQuant",
               <td>User Supplied
               </td>
             	<td>
+<!--TODO: select from array and double layer-->
                 <select id="biome" name="biome">
                   <optgroup label="marine">
                     <option value="pelagic">pelagic</option>
