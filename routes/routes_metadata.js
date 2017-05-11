@@ -222,6 +222,8 @@ function editMetadataForm(req, res){
   });
 }
 
+// http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
+
 function NewMetadata(req, res, id){ /* fetch or create logic, storing as req.model or req.metadata */} 
 
 
@@ -264,12 +266,15 @@ router.post('/start_edit',
     47
     DCO_GAI_Bv3v5
   
+     res.json(rows);
+
+     var user = rows[0].userid;
+     var password= rows[0].password;
   
     */
   });
 
 function get_all_dataset_ids(pid){ 
-
   if (helpers.isInt(pid))
   {
     connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows1, fields) {
@@ -281,9 +286,19 @@ function get_all_dataset_ids(pid){
       {
         console.log("get_all_dataset_ids");
         console.log("rows1");
-        console.log(rows1);
-        /*
+        
+        project_dataset_info_res = JSON.stringify(rows1)
+        // console.log(JSON.stringify(rows1));
+        for (var row in rows1[0])
+        {
+          console.log(row);
+          console.log(row.did);
+        }
+          
+        /*rows1[0].did
         ...
+        TODO: small query for d_ids only?
+        
   TextRow {
     project: 'DCO_GAI_Bv3v5',
     title: 'Icelandic Volcanic Lake',
@@ -300,8 +315,6 @@ function get_all_dataset_ids(pid){
     public: 0 } ]
           
         */
-        console.log("fields");
-        console.log(fields);
         /*
           helpers.assignment_finish_request(res, rows1, rows2, status_params);
           status_params.status = status_params.statusOK;
