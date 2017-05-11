@@ -310,8 +310,8 @@ var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
 ////////////////////////////////////////////////////////
 /////// hdf5 Code //////////////
 AllMetadata = {}
-
-try{
+hdf5_is_available = false;   // GLOBAL (no var)
+if(hdf5_is_available){
     //var h5 = require('hdf5')
     var hdf5 = require('hdf5').hdf5; // File; Filters
     // var h5lt = require('hdf5').h5lt; // dataset
@@ -401,25 +401,16 @@ try{
     // console.log('group88',group88['latitude'] )
     ////////// END hdf5 Code ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
-}catch(err){
+}else{
     // If we're here we don't have HDF5
-    console.log('NOT Running HDF5')
-    console.log(err)
+    console.log('Not Running HDF5')
+    
     HDF5_MDATA  = ''
     HDF5_TAXDATA = ''
     //var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.json' );
     var meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
     AllTaxCounts = {}
 
-   //  try {
-//         console.log('taxcounts_file')
-//         console.log(taxcounts_file)
-//         AllTaxCounts   = require(taxcounts_file);
-//         console.log('Loading TAXCOUNTS as AllTaxCounts from: '+taxcounts_file);
-//     }
-//     catch (e) {
-//       console.log(e);
-//     }
 
     try {
         AllMetadata        = require(meta_file);
@@ -494,7 +485,6 @@ all_rdp_taxonomy.get_all_taxa(function(err, results) {
   else
   {
     new_rdp_taxonomy = new CustomTaxa(results);
-    console.log('typeof new_rdp_taxonomy: '+typeof new_rdp_taxonomy)
     if(typeof new_rdp_taxonomy === 'object'){
         try{
             console.log('SIZE (rdp-taxonomy object):',sizeof(new_rdp_taxonomy));

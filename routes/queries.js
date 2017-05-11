@@ -23,7 +23,7 @@ get_select_datasets_query: function(){
     
     qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
     qSelectDatasets += " ORDER BY project, dataset";
-    console.log(qSelectDatasets);
+    //console.log(qSelectDatasets);
     return qSelectDatasets;
 	
 },
@@ -36,7 +36,7 @@ get_select_datasets_queryPID: function(pid){
     qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
     qSelectDatasets += " WHERE project_id = " + connection.escape(pid);
     qSelectDatasets += " ORDER BY project, dataset";
-    console.log(qSelectDatasets);
+    //console.log(qSelectDatasets);
     return qSelectDatasets;	
 },
 
