@@ -381,6 +381,77 @@ function get_all_field_names(all_metadata) {
   return all_field_names;
 }
 
+function make_sorted_field_arr(all_field_names_unsort) {
+  // needSort.sort(function(a,b){
+  //   return order.indexOf(a.id) < order.indexOf(b.id) ? -1 : 1;
+  // });
+  
+  var order_fields = ["dataset ", 
+"sample_id", 
+"dna_extraction_meth ", 
+"collection_date", 
+"latitude ", 
+"longitude ", 
+"geo_loc_name", 
+"env_biome", 
+"env_feature", 
+"env_matter", 
+"depth ", 
+"sample_volume ", 
+"formation_name", 
+"elevation", 
+"samp_store_dur ", 
+"samp_store_temp ", 
+"isol_growth_cond", 
+"domain", 
+"target_gene", 
+"dna_region", 
+"sequencing_meth", 
+"primer_suite ", 
+"illumina_index ", 
+"adapter_sequence ", 
+"run ", 
+"pH ", 
+"temp", 
+"calcium ", 
+"sodium ", 
+"sodium_mg/L_ ", 
+"sulfate ", 
+"chloride ", 
+"iron ", 
+"manganese_mn ", 
+"microbial_biomass_FISH "]
+  // needSort.sort(function(a,b){
+  //   return order.indexOf(a.id) < order.indexOf(b.id) ? -1 : 1;
+  // });
+  array_full = Array.from(new Set(all_field_names_unsort)).sort();
+  array_part = order_fields.sort();
+  intersection_arr = intersection_destructive(array_full, array_part)
+  return intersection_arr.sort();
+  //  Array.from(new Set(all_field_names_unsort)).sort(function(a, b){
+  //     return order_fields.indexOf(a.id) < order_fields.indexOf(b.id) ? -1 : 1;
+  // });
+  
+}
+
+function intersection_destructive(a, b)
+{
+  var result = [];
+  while( a.length > 0 && b.length > 0 )
+  {  
+     if      (a[0] < b[0] ){ a.shift(); }
+     else if (a[0] > b[0] ){ b.shift(); }
+     else /* they're equal */
+     {
+       result.push(a.shift());
+       b.shift();
+     }
+  }
+
+  return result;
+}
+
+
 
 // TODO: rename
 function make_metadata_hash(req, res){ 
@@ -401,7 +472,7 @@ function make_metadata_hash(req, res){
         
         all_metadata = populate_metadata_hash(rows, pid, all_metadata)
         all_field_names_unsort = get_all_field_names(all_metadata);
-        var all_field_names = Array.from(new Set(all_field_names_unsort)).sort()
+        var all_field_names = make_sorted_field_arr(all_field_names_unsort);
         console.log("EEE all_field_names");
         console.log(all_field_names);
         
