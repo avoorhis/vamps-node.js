@@ -419,9 +419,11 @@ function make_metadata_hash(req, res){
         // console.log("rows");
         
         all_metadata = populate_metadata_hash(rows, pid, all_metadata)
-        var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
-        console.log("EEE all_field_names");
-        console.log(all_field_names);
+        // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
+        // console.log("EEE all_field_names");
+        // console.log(all_field_names);
+        // var dividers = CONSTS.ORDERED_METADATA_DIVIDERS;
+        
         
         // console.log("TTT all_metadata");
         // console.log(all_metadata);
@@ -430,7 +432,8 @@ function make_metadata_hash(req, res){
           user: req.user,
           hostname: req.CONFIG.hostname,
           all_metadata: all_metadata,
-          all_field_names: all_field_names
+          all_field_names: CONSTS.ORDERED_METADATA_NAMES,
+          dividers: CONSTS.ORDERED_METADATA_DIVIDERS
         });
         
         

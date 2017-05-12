@@ -626,6 +626,16 @@ constants.ORDERED_METADATA_NAMES = [["structured comment name","Parameter","MBL 
 ["-empty-","User-added","-empty-"],
 ["-empty-","Add any other metadata parameters that you think might be useful here","-empty-"],
 ["plate_media","-empty-","-empty-"],
-["plate_count","-empty-","-empty-"]]
+["plate_count","-empty-","-empty-"]];
+
+constants.ORDERED_METADATA_DIVIDERS = ["Parameter",
+"General",
+"Enter depth values in one or more categories",
+"Sample handling",
+"MBL generated laboratory metadata",
+"Non-biological",
+"Biological",
+"User-added"];
+
 
 module.exports = constants;

@@ -95,12 +95,6 @@ var dna_quantitation_options = ["NanoQuant",
     <table class='table table-condensed'>
       <thead>
         <!-- rowspan="1" colspan="3" -->
-        <tr><td>Parameter</td><td>MBL Supplied or Optional
-        </td></tr>
-        <tr>
-          <td  colspan="3"><label for="tr_general">General</label>
-          </td>
-        </tr>        
       </thead>
       <tbody>
         <% if (all_metadata) { %>
@@ -117,10 +111,14 @@ var dna_quantitation_options = ["NanoQuant",
 
                 <% for (var did in all_metadata[pid]) {
                   d_info = all_field_names[idx][0]
-                  %>
-                    <td>
-                      <input type="text" id="<%= all_metadata[pid][did][d_info] %>" name="<%= all_metadata[pid][did][d_info] %>" value='<%= all_metadata[pid][did][d_info] %>'/>
-                    </td>
+                    if (dividers.indexOf( all_field_names[idx][1] ) != -1) {
+                    %>
+                      <td></td>
+                    <% } else { %>
+                      <td>
+                        <input type="text" id="<%= all_metadata[pid][did][d_info] %>" name="<%= all_metadata[pid][did][d_info] %>" value='<%= all_metadata[pid][did][d_info] %>'/>
+                      </td>
+                  <%}%>
                 <%}%>
           </tr>
           <% } %>
