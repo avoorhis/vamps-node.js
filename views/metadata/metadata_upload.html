@@ -19,7 +19,6 @@
 <%
 } else {
   var all_metadata = {}
-
 } %>
 
 
@@ -39,6 +38,7 @@
 <% }%>
 <br>
 
+<!--TODO: move to constants -->
 <% var my_dna_extraction_meth_options = ["MoBio Power Biomedical FAST DNA",
 "MoBio PowerSoil",
 "MoBio Power Water",
@@ -105,6 +105,29 @@ var dna_quantitation_options = ["NanoQuant",
               </tr>
             </thead>
             <tbody>
+              <% if (all_metadata) { %>
+                <% for (var pid in all_metadata) {%>
+                  <% for (var did in all_metadata[pid]) {%>
+                  
+                <tr>
+                	<td>
+                    <label for="project_name">VAMPS project name</label>
+                  </td>
+                  <td>MBL Supplied
+                  </td>
+                	<td>
+                    <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_AST" value='<%= all_metadata["47"].project %>'/>
+                  </td>
+                </tr>
+                
+                  <%}%>
+                <%}%>                
+              <%
+              } else {
+                var all_metadata = {}
+              } %>
+              
+              
             <tr>
             	<td>
                 <label for="project_name">VAMPS project name</label>
