@@ -369,6 +369,19 @@ function populate_metadata_hash(rows, pid, all_metadata){
   return all_metadata
 };
 
+function get_all_field_names(all_metadata) {
+  var all_field_names = [];
+  for (var pid in all_metadata) {
+    for (var did in all_metadata[pid]) {
+      for (var d_info in all_metadata[pid][did]) {
+        all_field_names.push(d_info);
+      }
+    }
+  }
+  return all_field_names;
+}
+
+
 // TODO: rename
 function make_metadata_hash(req, res){ 
   pid = req.body.project_id
@@ -386,12 +399,14 @@ function make_metadata_hash(req, res){
         console.log("in make_metadata_hash");
         // console.log("rows");
         
-
         all_metadata = populate_metadata_hash(rows, pid, all_metadata)
-        console.log("TTT all_metadata");
-        console.log(all_metadata);
-        // TODO: call populated form from here
-        // res.render('users', { title: 'Users', rows: rows });
+        all_field_names_unsort = get_all_field_names(all_metadata);
+        var all_field_names = Array.from(new Set(all_field_names_unsort)).sort()
+        console.log("EEE all_field_names");
+        console.log(all_field_names);
+        
+        // console.log("TTT all_metadata");
+        // console.log(all_metadata);
         res.render('metadata/metadata_upload', {
           title: 'VAMPS: Metadata_upload',
           user: req.user,
@@ -408,33 +423,6 @@ function make_metadata_hash(req, res){
         //   console.log(row.did);
         // }
           
-        /*rows1[0].did
-        ...
-        TODO: small query for d_ids only?
-        
-  TextRow {
-    project: 'DCO_GAI_Bv3v5',
-    title: 'Icelandic Volcanic Lake',
-    did: 4319,
-    pid: 47,
-    dataset: 'Sk_hlaup',
-    dataset_description: 'NULL',
-    username: 'gaidos',
-    email: 'gaidos@hawaii.edu',
-    institution: 'University of Hawaii',
-    first_name: 'Eric',
-    last_name: 'Gaidos',
-    owner_user_id: 54,
-    public: 0 } ]
-          
-        */
-        /*
-          helpers.assignment_finish_request(res, rows1, rows2, status_params);
-          status_params.status = status_params.statusOK;
-          status_params.msg = status_params.msgOK;
-          helpers.update_status(status_params);
-          
-        */
       }
        // end else
     });
