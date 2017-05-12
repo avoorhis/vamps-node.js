@@ -109,9 +109,11 @@ var dna_quantitation_options = ["NanoQuant",
           <% for (var idx in all_field_names) {%>
           <tr>
           	<td>
-              <label for=<%= all_field_names[idx][1] %>/><%= all_field_names[idx][0] %></label>
+              <label for=<%= all_field_names[idx][1] %>/><%= all_field_names[idx][1] %></label>
             </td>
-            <!-- <td>??? Supplied</td> -->
+            <!-- adapter_sequence -->
+            
+            <td><%= all_field_names[idx][2] %></td>
 
                 <% for (var did in all_metadata[pid]) {
                   d_info = all_field_names[idx][0]
