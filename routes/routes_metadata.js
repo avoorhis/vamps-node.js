@@ -137,7 +137,8 @@ function get_metadata_hash(md_selected){
 router.get('/metadata_upload', [helpers.isLoggedIn], function (req, res) {
   console.log('in get metadata/metadata_upload');
 
-  res.render('metadata/metadata_upload', {
+  //TODO: What to show for project and dataset?
+  res.render('metadata/metadata_upload_new', {
     title: 'VAMPS: Metadata_upload',
     user: req.user,
     hostname: req.CONFIG.hostname,
@@ -213,7 +214,7 @@ function editMetadataForm(req, res){
   console.log("RRR req.edit_metadata_info");
   console.log(req.edit_metadata_info);
 
-  res.render('metadata/metadata_upload', {
+  res.render('metadata/metadata_upload_new', {
     title: 'VAMPS: Metadata',
     user: req.user,
     hostname: req.CONFIG.hostname,
@@ -346,14 +347,14 @@ function populate_metadata_hash(rows, pid, all_metadata){
         public: 0 }
       */
       var dataset_id = row.did
-      all_metadata[pid]["project"] = row.project
-      all_metadata[pid]["title"]   = row.title
-      all_metadata[pid]["username"]   = row.username
-      all_metadata[pid]["email"]   = row.email
-      all_metadata[pid]["institution"]   = row.institution
-      all_metadata[pid]["first_name"]   = row.first_name
+      all_metadata[pid]["project"]     = row.project
+      all_metadata[pid]["title"]       = row.title
+      all_metadata[pid]["username"]    = row.username
+      all_metadata[pid]["email"]       = row.email
+      all_metadata[pid]["institution"] = row.institution
+      all_metadata[pid]["first_name"]  = row.first_name
       all_metadata[pid]["last_name"]   = row.last_name
-      all_metadata[pid]["public"]   = row.public
+      all_metadata[pid]["public"]      = row.public
       
       all_metadata[pid][dataset_id] = {}
       // console.log("AllMetadataFromFile[dataset_id]");
@@ -395,8 +396,7 @@ function make_metadata_hash(req, res){
           title: 'VAMPS: Metadata_upload',
           user: req.user,
           hostname: req.CONFIG.hostname,
-          all_metadata: all_metadata,
-          project_name: req.body.project
+          all_metadata: all_metadata
         });
         
         

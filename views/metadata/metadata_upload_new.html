@@ -10,18 +10,6 @@
   var edit_metadata_info = {}
 } %>
 
-<% if (all_metadata) { %>
-    <ul>
-  <% for (var key in all_metadata) {%>
-    <li><%= JSON.stringify(all_metadata[key]) %></li>
-  <%}%>
-    </ul>
-<%
-} else {
-  var all_metadata = {}
-
-} %>
-
 
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
@@ -112,7 +100,7 @@ var dna_quantitation_options = ["NanoQuant",
               <td>MBL Supplied
               </td>
             	<td>
-                <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_AST" value='<%= all_metadata["47"].project %>'/>
+                <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_AST" />
               </td>
             </tr>
             <tr>
@@ -122,7 +110,7 @@ var dna_quantitation_options = ["NanoQuant",
               <td>MBL Supplied</td>
               <td>
 <!--TODO: loop fr all datasets -->
-                <input type="text" id="dataset_name" readonly name="dataset_name"  value='<%= all_metadata["47"]["4312"].dataset %>'/>
+                <input type="text" id="dataset_name" readonly name="dataset_name" />
               </td>
             </tr>
             <tr>
@@ -192,8 +180,6 @@ var dna_quantitation_options = ["NanoQuant",
               </td>
             	<td>
                 <input type="text" id="latitude" name="latitude" placeholder="-38.8897" value='<%= edit_metadata_info.latitude %>'/>
-<!--CHANGE! -->
-                <input type="text" id="latitude" name="latitude" placeholder="-38.8897" value='<%= all_metadata["47"]["4312"].latitude %>'/>
               </td>
             </tr>
 
