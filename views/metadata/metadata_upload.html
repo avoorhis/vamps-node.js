@@ -109,12 +109,12 @@ var dna_quantitation_options = ["NanoQuant",
           <% for (var idx in all_field_names) {%>
           <tr>
           	<td>
-              <label for=<%= all_field_names[idx] %>/><%= all_field_names[idx] %></label>
+              <label for=<%= all_field_names[idx][1] %>/><%= all_field_names[idx][0] %></label>
             </td>
             <!-- <td>??? Supplied</td> -->
 
                 <% for (var did in all_metadata[pid]) {
-                  d_info = all_field_names[idx]
+                  d_info = all_field_names[idx][0]
                   %>
                     <td>
                       <input type="text" id="<%= all_metadata[pid][did][d_info] %>" name="<%= all_metadata[pid][did][d_info] %>" value='<%= all_metadata[pid][did][d_info] %>'/>
