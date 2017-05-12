@@ -386,52 +386,65 @@ function make_sorted_field_arr(all_field_names_unsort) {
   //   return order.indexOf(a.id) < order.indexOf(b.id) ? -1 : 1;
   // });
   
-  var order_fields = ["dataset ", 
+  var order_fields = ["dataset", 
 "sample_id", 
-"dna_extraction_meth ", 
+"dna_extraction_meth", 
 "collection_date", 
-"latitude ", 
-"longitude ", 
+"latitude", 
+"longitude", 
 "geo_loc_name", 
 "env_biome", 
 "env_feature", 
 "env_matter", 
-"depth ", 
-"sample_volume ", 
+"depth", 
+"sample_volume", 
 "formation_name", 
 "elevation", 
-"samp_store_dur ", 
-"samp_store_temp ", 
+"samp_store_dur", 
+"samp_store_temp", 
 "isol_growth_cond", 
 "domain", 
 "target_gene", 
 "dna_region", 
 "sequencing_meth", 
-"primer_suite ", 
-"illumina_index ", 
-"adapter_sequence ", 
-"run ", 
-"pH ", 
+"primer_suite", 
+"illumina_index", 
+"adapter_sequence", 
+"run", 
+"pH", 
 "temp", 
-"calcium ", 
-"sodium ", 
-"sodium_mg/L_ ", 
-"sulfate ", 
-"chloride ", 
-"iron ", 
-"manganese_mn ", 
-"microbial_biomass_FISH "]
+"calcium", 
+"sodium", 
+"sodium_mg/L_", 
+"sulfate", 
+"chloride", 
+"iron", 
+"manganese_mn", 
+"microbial_biomass_FISH"];
   // needSort.sort(function(a,b){
   //   return order.indexOf(a.id) < order.indexOf(b.id) ? -1 : 1;
   // });
   array_full = Array.from(new Set(all_field_names_unsort)).sort();
-  array_part = order_fields.sort();
-  intersection_arr = intersection_destructive(array_full, array_part)
-  return intersection_arr.sort();
+  // array_part = order_fields.sort();
+  // intersection_arr = intersection_destructive(array_full, array_part);
+  // return intersection_arr.sort();
   //  Array.from(new Set(all_field_names_unsort)).sort(function(a, b){
   //     return order_fields.indexOf(a.id) < order_fields.indexOf(b.id) ? -1 : 1;
   // });
   
+  // console.log("RRRR intersection_arr");
+  // console.log(intersection_arr);
+  // console.log(intersection_arr.length);
+
+  console.log("RRRR order_fields");
+  console.log(order_fields);
+  console.log(order_fields.length);
+  
+  var res_arr = []
+  array_full.sort(function(a, b){
+    return order_fields.indexOf(a.id) < order_fields.indexOf(b.id) ? -1 : 1;
+  });
+  return order_fields
 }
 
 function intersection_destructive(a, b)

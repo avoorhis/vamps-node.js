@@ -103,6 +103,8 @@ var dna_quantitation_options = ["NanoQuant",
         </tr>        
       </thead>
       <tbody>
+        <% if (all_metadata) { %>
+          <% for (var pid in all_metadata) {%>
         <% if (all_field_names) { %>
           <% for (var idx in all_field_names) {%>
           <tr>
@@ -110,8 +112,7 @@ var dna_quantitation_options = ["NanoQuant",
               <label for=<%= all_field_names[idx] %>/><%= all_field_names[idx] %></label>
             </td>
             <!-- <td>??? Supplied</td> -->
-            <% if (all_metadata) { %>
-              <% for (var pid in all_metadata) {%>
+
                 <% for (var did in all_metadata[pid]) {
                   d_info = all_field_names[idx]
                   %>
@@ -119,16 +120,16 @@ var dna_quantitation_options = ["NanoQuant",
                       <input type="text" id="<%= all_metadata[pid][did][d_info] %>" name="<%= all_metadata[pid][did][d_info] %>" value='<%= all_metadata[pid][did][d_info] %>'/>
                     </td>
                 <%}%>
-              <%}%>
-            <%
-            } else {
-              var all_metadata = {}
-            } %>
           </tr>
           <% } %>
         <% } else { %>
           
         <% } %>
+              <%}%>
+            <%
+            } else {
+              var all_metadata = {}
+            } %>
   </table>
 <br>
 
