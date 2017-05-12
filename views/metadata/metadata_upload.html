@@ -81,6 +81,16 @@ var dna_quantitation_options = ["NanoQuant",
             <label for="pi_name">PI Name:</label>
             <input type="text" id="pi_name" name="pi_name"  value='<%= edit_metadata_info.pi_name %>'/>
             <br />
+            <label for="project_name">VAMPS project name (MBL Supplied)</label>
+            <% if (all_metadata) { %>
+              <% for (var pid in all_metadata) {%>
+                    <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_GAI_Bv3v5" value='<%= all_metadata[pid].project %>'/>
+              <%}%>
+            <%
+            } else { var all_metadata = {} %>
+              <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_GAI_Bv3v5"/>
+            <%}%>
+            <br />
             <label for="pi_email">PI's email address:</label>
             <input type="email" id="pi_email" name="pi_email"  value='<%= edit_metadata_info.pi_email %>'/>
             <br />
@@ -117,22 +127,22 @@ var dna_quantitation_options = ["NanoQuant",
                       <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_AST" value='<%= all_metadata[pid].project %>'/>
                     </td>
                   <% for (var did in all_metadata[pid]) {%>
-                  
+
 
                 	<td>
                   <input type="text" id="dataset_name" readonly name="dataset_name"  value='<%= all_metadata[pid][did].dataset %>'/>
                   </td>
                   <%}%>
-                  
+
                   </tr>
-                  
-                <%}%>                
+
+                <%}%>
               <%
               } else {
                 var all_metadata = {}
               } %>
-              
-              
+
+
             <tr>
             	<td>
                 <label for="project_name">VAMPS project name</label>
@@ -191,7 +201,7 @@ var dna_quantitation_options = ["NanoQuant",
                 <select id="dna_quantitation" name="dna_quantitation">
 <!--TODO: function, DRY -->
                   <% dna_quantitation_options.forEach(function(value){ %>
-                    <option value="<%= value %>" 
+                    <option value="<%= value %>"
                       <% if (value == edit_metadata_info.dna_quantitation) {%>
                       selected
                      <% } %>
