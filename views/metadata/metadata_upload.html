@@ -112,39 +112,41 @@ var dna_quantitation_options = ["NanoQuant",
         <tr>
           <td  colspan="3"><label for="tr_general">General</label>
           </td>
-        </tr>
-        <tr>
-          for (var i = 0; i < fields.length; i++) {
-            console.log(fields[i].name);
-            theShit = theShit + ("<TH>" + fields[i].name + "</TH>");
-          }
-          
-        </tr>
-        
+        </tr>        
       </thead>
       <tbody>
-        <% if (all_metadata) { %>
-          <% for (var pid in all_metadata) {%>
-            <% for (var did in all_metadata[pid]) {%>
-              <% for (var d_info in all_metadata[pid][did]) {%>
-            <tr>
-            	<td>
-                <label for="dataset_name"/><%= d_info %></label>
-              </td>
-              <!-- <td>??? Supplied</td> -->
-                <%= // d_info + ": " + all_metadata[pid][did][d_info] %>
-                  <td>
-          <!--TODO: loop fr all datasets -->
-                    <input type="text" id="<%= all_metadata[pid][did][d_info] %>" readonly name="<%= all_metadata[pid][did][d_info] %>" value='<%= all_metadata[pid][did][d_info] %>'/>
-                  </td>
+        <% if (all_field_names) { %>
+          <% for (var idx in all_field_names) {%>
+          <tr>
+          	<td>
+              <label for=<%= all_field_names[idx] %>/><%= all_field_names[idx] %></label>
+            </td>
+            <!-- <td>??? Supplied</td> -->
+            <% if (all_metadata) { %>
+              <% for (var pid in all_metadata) {%>
+                <% for (var did in all_metadata[pid]) {
+                  d_info = all_field_names[idx]
+                  %>
+                  <% // for (var d_info in all_metadata[pid][did]) {%>
+                    <td>
+            <!--TODO: loop fr all datasets -->
+                      <input type="text" id="<%= all_metadata[pid][did][d_info] %>" name="<%= all_metadata[pid][did][d_info] %>" value='<%= all_metadata[pid][did][d_info] %>'/>
+                    </td>
+                  <%//}%>
+                <%}%>
               <%}%>
-                </tr>
-            <%}%>
-          <%}%>
-        <%
-        } else {
-          var all_metadata = {}
-        } %>
+            <%
+            } else {
+              var all_metadata = {}
+            } %>
+          </tr>
+          <% } %>
+        <% } else { %>
+          
+        <% } %>
+        
+        
+
 
 
       <tr>
