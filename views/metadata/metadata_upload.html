@@ -107,20 +107,25 @@ var dna_quantitation_options = ["NanoQuant",
             <tbody>
               <% if (all_metadata) { %>
                 <% for (var pid in all_metadata) {%>
+                  <tr>
+                  	<td>
+                      <label for="project_name">VAMPS project name</label>
+                    </td>
+                    <td>MBL Supplied
+                    </td>
+                  	<td>
+                      <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_AST" value='<%= all_metadata[pid].project %>'/>
+                    </td>
                   <% for (var did in all_metadata[pid]) {%>
                   
-                <tr>
+
                 	<td>
-                    <label for="project_name">VAMPS project name</label>
+                  <input type="text" id="dataset_name" readonly name="dataset_name"  value='<%= all_metadata[pid][did].dataset %>'/>
                   </td>
-                  <td>MBL Supplied
-                  </td>
-                	<td>
-                    <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_AST" value='<%= all_metadata["47"].project %>'/>
-                  </td>
-                </tr>
-                
                   <%}%>
+                  
+                  </tr>
+                  
                 <%}%>                
               <%
               } else {
