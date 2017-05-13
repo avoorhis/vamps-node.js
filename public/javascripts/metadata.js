@@ -190,7 +190,7 @@ function bindInfoWindow(marker, map, infowindow, html) {
 //     custChange.call(this, event);
 //   });
 
-var biome_options = {
+var biome_seq_options = {
     "marine": ["none",
     "abyssal",
     "aquatic",
@@ -222,14 +222,33 @@ var biome_options = {
     "sub-seafloor microbial biome"]
   };
   
-  var feature_options = {};
-  
+  var feature_seq_options = {
+  "well": ["none",
+  "aquifer",
+  "marine",
+  "oil well",
+  "research well",
+  "terrestrial",
+  "water well"],
+  "aquifer": ["none",
+  "confined",
+  "fracture - geological",
+  "fracture - micro",
+  "fracture - shear",
+  "groundwater",
+  "spring",
+  "sub-continental",
+  "subseafloor",
+  "unconfined",
+  "water well"]
+  };
+    
 $(document).ready(function(){  
   $('.biome_primary').change(function(){
-    populate_secondary_select.call(this, ['biome', biome_options]);
+    populate_secondary_select.call(this, ['biome', biome_seq_options]);
   });
   $('.feature_primary').change(function(){
-    populate_secondary_select.call(this, ['feature', feature_options]);
+    populate_secondary_select.call(this, ['feature', feature_seq_options]);
   });
 });
 
