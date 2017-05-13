@@ -660,7 +660,7 @@ constants.BIOME_PRIMARY = ["marine",
 "subterrestrial",
 "subseafloor"];
 
-constants.BIOME_2_MARINE = ["none",
+constants.BIOME_SECONDARY_MARINE = ["none",
 "abyssal",
 "aquatic",
 "basaltic hydrothermal vent",
@@ -675,7 +675,7 @@ constants.BIOME_2_MARINE = ["none",
 "polar",
 "ultramafic hydrothermal vent biome"];
 
-constants.BIOME_2_MARINE = ["none",
+constants.BIOME_SECONDARY_TERRESTRIAL = ["none",
 "aquatic",
 "freshwater lake",
 "freshwater river",
@@ -683,11 +683,11 @@ constants.BIOME_2_MARINE = ["none",
 "polar",
 "subglacial lake"];
 
-constants.BIOME_3_SUBTERRESTRIAL = ["none",
+constants.BIOME_SECONDARY_SUBTERRESTRIAL = ["none",
 "aquatic",
 "endolithic"];
 
-constants.BIOME_3_SUBSEAFLOOR = ["none",
+constants.BIOME_SECONDARY_SUBSEAFLOOR = ["none",
 "aquatic",
 "benthic",
 "endolithic",

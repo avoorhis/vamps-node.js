@@ -157,7 +157,13 @@ var dna_quantitation_options = ["NanoQuant",
                       <!-- <td class="required_fields"> -->
                       <td>
                         <select id="biome_secondary<%- did %>" name="biome_secondary" class="biome_secondary">
-                          <option value="none">none</option>
+                          <% biome_secondary_marine.forEach(function(value){ %>
+                            <option value="<%= value %>"
+                              <% if (value === edit_metadata_info.biome_secondary_marine) {%>
+                              selected
+                             <% } %>
+                             ><%= value %></option>
+                          <% }); %>
                         </select>
                       </td>
                     <% } else { %>
