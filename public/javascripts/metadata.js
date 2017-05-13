@@ -192,7 +192,48 @@ $(document).ready(function(){
     // });
 });
 
-function configureDropDownLists() {
+
+function a(args){
+  arguments = [1,2,4];
+  
+  b.apply(this, arguments);
+}
+function b(args){
+  alert(arguments[2]); //arguments[0] = 1, etc
+}
+
+function populate_secondary_select(args) {
+  alert(this.selectedIndex);
+  
+  //clear out B
+  B.length = 0;
+  // alert('From configureDropDownLists');
+  // alert(this.selectedIndex);
+  
+  
+  //get the selected value from A
+  var _val = this.options[this.selectedIndex].value;
+  // alert(_val);
+  
+  //loop through bOption at the selected value
+  for (var i in bOptions[_val]) {
+    // alert(i);
+    // alert(bOptions[_val][i]);
+    //create option tag
+    var op = document.createElement('option');
+    //set its value
+    op.value = bOptions[_val][i];
+    // alert(op.value);
+    
+    //set the display label
+    op.text = bOptions[_val][i];
+    // alert(op.text);
+    //append it to B
+    B.appendChild(op);
+  }    
+}
+  
+function configureDropDownLists(args) {
   // page: metadata_upload
 
   //setup an object fully of arrays
@@ -230,6 +271,11 @@ function configureDropDownLists() {
     "endolithic",
     "sub-seafloor microbial biome"]
   };
+  
+  var A = document.getElementById('biome_1');
+  var B = document.getElementById('biome_2');
+
+  
 
   var elements = document.querySelectorAll(".biome_1");
   for (var i = 0; i < elements.length; i++) {
@@ -242,38 +288,9 @@ function configureDropDownLists() {
     // });
   }
   
-  var A = document.getElementById('biome_1');
-  var B = document.getElementById('biome_2');
-
-  //on change is a good event for this because you are guarenteed the value is different
-  A.onchange = function populate_secondary_select() {
-    //clear out B
-    B.length = 0;
-    // alert('From configureDropDownLists');
-    // alert(this.selectedIndex);
-    
-    
-    //get the selected value from A
-    var _val = this.options[this.selectedIndex].value;
-    // alert(_val);
-    
-    //loop through bOption at the selected value
-    for (var i in bOptions[_val]) {
-      // alert(i);
-      // alert(bOptions[_val][i]);
-      //create option tag
-      var op = document.createElement('option');
-      //set its value
-      op.value = bOptions[_val][i];
-      // alert(op.value);
-      
-      //set the display label
-      op.text = bOptions[_val][i];
-      // alert(op.text);
-      //append it to B
-      B.appendChild(op);
-    }    
-  };
+  //on change is a good event for this because you are guarenteed the value is different  
+  A.onchange = a;
+  // populate_secondary_select.apply(this, arguments);
   //fire this to update B on load
   A.onchange();
 };
