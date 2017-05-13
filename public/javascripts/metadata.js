@@ -193,26 +193,31 @@ $(document).ready(function(){
 });
 
 
+// function a(args){
+//   var arguments = {n1: "1", n3: "5"};
+//   b.call(arguments);
+// }
+//
+// function b(args){
+//   alert(this.elements_b2.length);
+// }
+//
 function a(args){
-  var arguments = {n1: "1", n3: "5"};
-  b.call(arguments);
+    b.apply(this, arguments);
 }
-
 function b(args){
-  alert(this.elements_b2.length);
+   alert(arguments[2]); //arguments[0] = 1, etc
 }
 
-function c(args){
-  alert(this.n3);
-}
 
 
 function populate_secondary_select(args) {
-  alert(this.selectedIndex);
-  alert(this.B);
+  alert(this);
+  alert(arguments[0].id);
   
+  B = arguments[0];
   //clear out B
-  this.B.length = 0;
+  B.length = 0;
   // alert('From configureDropDownLists');
   // alert(this.selectedIndex);
   
@@ -296,8 +301,10 @@ function configureDropDownLists(args) {
   // }
   //
   //on change is a good event for this because you are guarenteed the value is different  
-  var arguments = {B: B, n3: "5"};
-  A.onchange = populate_secondary_select.call(arguments);
+  var arguments = [B];
+  // {B: B, n3: "5"};
+  A.onchange = a(1,2,3);
+  // populate_secondary_select.apply(this, arguments);
   // c(arguments);
   // "b(arguments)";
   // b.call(arguments);
