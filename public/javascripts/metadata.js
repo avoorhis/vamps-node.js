@@ -183,7 +183,13 @@ function bindInfoWindow(marker, map, infowindow, html) {
 } 
 
 $(document).ready(function(){
-  configureDropDownLists();
+  event = "E";
+  $('.biome_1').change(function(){
+    custChange.call(this, event);
+  });
+  
+  // ('change',custChange.call(this, event),false)
+  // configureDropDownLists();
   // alert('From ready');
   
     // $('a.back').click(function(){
@@ -205,8 +211,18 @@ $(document).ready(function(){
 function a(args){
     b.apply(this, arguments);
 }
+
 function b(args){
-   alert(arguments[2]); //arguments[0] = 1, etc
+  alert(this); //arguments[0] = 1, etc
+  alert(arguments[0].id); //arguments[0] = 1, etc
+}
+
+function custChange(event) {
+  alert("this.id"); //arguments[0] = 1, etc
+  alert(this.id); //arguments[0] = 1, etc
+  alert("this.selectedIndex");
+  alert(this.selectedIndex);
+  
 }
 
 
@@ -303,7 +319,17 @@ function configureDropDownLists(args) {
   //on change is a good event for this because you are guarenteed the value is different  
   var arguments = [B];
   // {B: B, n3: "5"};
-  A.onchange = a(1,2,3);
+  alert(A.id);
+  alert(A.selectedIndex);
+  
+ // element.addEventListener('change',doSomething,false)
+  A.addEventListener('change',custChange.call(this, event),false)
+  
+  // A.onchange = custChange.call(this, arguments);
+  // custChange.call(this, event);
+
+  // b.apply(this, arguments);
+  // a(B,3);
   // populate_secondary_select.apply(this, arguments);
   // c(arguments);
   // "b(arguments)";
