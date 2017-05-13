@@ -184,7 +184,7 @@ function bindInfoWindow(marker, map, infowindow, html) {
 
 $(document).ready(function(){
   configureDropDownLists();
-  alert('From ready');
+  // alert('From ready');
   
     // $('a.back').click(function(){
     //     parent.history.back();
@@ -200,38 +200,65 @@ function configureDropDownLists() {
   //{"yes":[{value:sweet, text:Sweet}.....]}
   //so you could set the label of the option tag something different than the name
   var bOptions = {
-    "marine": ["sweet", "wohoo", "yay"],
-    "terrestrial": ["you suck!", "common son"]
+    "marine": ["none",
+    "abyssal",
+    "aquatic",
+    "basaltic hydrothermal vent",
+    "bathyal",
+    "benthic",
+    "continental margin",
+    "estuarine",
+    "hadal",
+    "marine cold seep biome",
+    "neritic",
+    "pelagic",
+    "polar",
+    "ultramafic hydrothermal vent biome"],
+    "terrestrial": ["none",
+    "aquatic",
+    "freshwater lake",
+    "freshwater river",
+    "large lake biome",
+    "polar",
+    "subglacial lake"],
+    "subterrestrial": ["none",
+    "aquatic",
+    "endolithic"],
+    "subseafloor": ["none",
+    "aquatic",
+    "benthic",
+    "endolithic",
+    "sub-seafloor microbial biome"]
   };
 
   var A = document.getElementById('biome_1');
   var B = document.getElementById('biome_2');
 
   //on change is a good event for this because you are guarenteed the value is different
-  A.onchange = function() {
+  A.onchange = function populate_secondary_select() {
     //clear out B
     B.length = 0;
-    alert('From configureDropDownLists');
-    alert(this.selectedIndex);
+    // alert('From configureDropDownLists');
+    // alert(this.selectedIndex);
     
     
     //get the selected value from A
     var _val = this.options[this.selectedIndex].value;
-    alert(_val);
+    // alert(_val);
     
     //loop through bOption at the selected value
     for (var i in bOptions[_val]) {
-      alert(i);
-      alert(bOptions[_val][i]);
+      // alert(i);
+      // alert(bOptions[_val][i]);
       //create option tag
       var op = document.createElement('option');
       //set its value
       op.value = bOptions[_val][i];
-      alert(op.value);
+      // alert(op.value);
       
       //set the display label
       op.text = bOptions[_val][i];
-      alert(op.text);
+      // alert(op.text);
       //append it to B
       B.appendChild(op);
     }    
