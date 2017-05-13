@@ -361,5 +361,9 @@ td.left_justify {
 }
 
 .required_fields {
-  background:yellow;
+  background: yellow;
+}
+
+.header_divider {
+  background: #C6D7E9;
 }

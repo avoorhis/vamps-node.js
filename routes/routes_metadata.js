@@ -442,7 +442,8 @@ function make_metadata_hash(req, res){
           feature_primary: CONSTS.FEATURE_PRIMARY,
           feature_secondary_aquifer: CONSTS.FEATURE_SECONDARY_AQUIFER,
           material_primary: CONSTS.MATERIAL_PRIMARY,
-          material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM
+          material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
+          metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
         });
         
         
