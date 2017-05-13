@@ -143,7 +143,7 @@ var dna_quantitation_options = ["NanoQuant",
                     <% } else if (all_field_names[idx][1] === "Biome - Primary") { %>
                       <!-- <td class="required_fields"> -->
                       <td>
-                        <select id="biome_1" name="biome_1" class = 'biome_1'>
+                        <select id="biome_1<%- did%>" name="biome_1" class = "biome_1">
                           <% biome_1.forEach(function(value){ %>
                             <option value="<%= value %>"
                               <% if (value == edit_metadata_info.biome_1) {%>
@@ -156,7 +156,7 @@ var dna_quantitation_options = ["NanoQuant",
                     <% } else if (all_field_names[idx][1] === "Biome - Secondary") { %>
                       <!-- <td class="required_fields"> -->
                       <td>
-                        <select id="biome_2" name="biome_2">
+                        <select id="biome_2<%- did %>" name="biome_2" class="biome_2">
                           HERE
                         </select>
                       </td>

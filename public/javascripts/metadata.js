@@ -249,12 +249,19 @@ $(document).ready(function(){
 
 
 function populate_secondary_select(args) {
-  alert(this);
-  var B = document.getElementById('biome_2');
+  alert("this.id");
+  alert(this.id);
+  did = this.id.replace('biome_1', '')
+  alert("did")
+  alert(did)
+  var B = document.getElementById('biome_2'+did);
   
   // B = arguments[0];
   //clear out B
   B.length = 0;
+  alert("B.id");
+  alert(B.id);
+  
   // alert('From configureDropDownLists');
   // alert(this.selectedIndex);
   
