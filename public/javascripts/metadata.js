@@ -224,7 +224,7 @@ var bOptions = {
   
 $(document).ready(function(){  
   $('.biome_1').change(function(){
-    populate_secondary_select.call(this, 'biome_1');
+    populate_secondary_select.call(this, 'biome');
   });
 });
 
@@ -236,8 +236,9 @@ function populate_secondary_select(args) {
   id_base = arguments[0]
   alert(id_base);
 
-  did = this.id.replace(id_base, '')
-  var B = document.getElementById('biome_2'+did);
+  did = this.id.replace(id_base + "_1", '')
+  id2 = id_base + "_2"
+  var B = document.getElementById(id2+did);
   
   // B = arguments[0];
   //clear out B
