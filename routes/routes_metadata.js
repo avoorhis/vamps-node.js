@@ -165,7 +165,8 @@ router.post('/metadata_upload',
     form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode(),
     form.field("geo_loc_name_country", "Country").trim().entityEncode(),
     form.field("longhurst_zone", "Longhurst Zone").trim().entityEncode(),
-    form.field("biome", "Biome").trim().required().entityEncode(),
+    form.field("biome_1", "Biome - Primary").trim().required().entityEncode(),
+    form.field("biome_2", "Biome - Secondary").trim().entityEncode(),
     form.field("env_feature_primary", "Environmental Feature - Primary").trim().required().entityEncode(),
     form.field("env_feature_secondary", "Environmental Feature - Secondary").trim().entityEncode(),
     form.field("env_material_primary", "Environmental Material - Primary").trim().required().entityEncode(),
@@ -435,7 +436,8 @@ function make_metadata_hash(req, res){
           all_field_names: CONSTS.ORDERED_METADATA_NAMES,
           dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
           dna_extraction: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-          dna_quantitation: CONSTS.DNA_QUANTITATION_OPTIONS
+          dna_quantitation: CONSTS.DNA_QUANTITATION_OPTIONS,
+          biome_1: CONSTS.BIOME_1
         });
         
         

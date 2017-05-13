@@ -655,4 +655,44 @@ constants.DNA_QUANTITATION_OPTIONS = ["NanoQuant",
 "PicoGreen",
 "Other"];
 
+constants.BIOME_1 = ["marine",
+"terrestrial",
+"subterrestrial",
+"subseafloor"];
+
+constants.BIOME_2_MARINE = ["none",
+"abyssal",
+"aquatic",
+"basaltic hydrothermal vent",
+"bathyal",
+"benthic",
+"continental margin",
+"estuarine",
+"hadal",
+"marine cold seep biome",
+"neritic",
+"pelagic",
+"polar",
+"ultramafic hydrothermal vent biome"];
+
+constants.BIOME_2_MARINE = ["none",
+"aquatic",
+"freshwater lake",
+"freshwater river",
+"large lake biome",
+"polar",
+"subglacial lake"];
+
+constants.BIOME_3_SUBTERRESTRIAL = ["none",
+"aquatic",
+"endolithic"];
+
+constants.BIOME_3_SUBSEAFLOOR = ["none",
+"aquatic",
+"benthic",
+"endolithic",
+"sub-seafloor microbial biome"];
+
+
+
 module.exports = constants;

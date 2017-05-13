@@ -106,7 +106,7 @@ var dna_quantitation_options = ["NanoQuant",
               <label for=<%= all_field_names[idx][1] %>/><%= all_field_names[idx][1] %></label>
             </td>
             <!-- adapter_sequence -->
-            
+
             <td><%= all_field_names[idx][2] %></td>
 
                 <% for (var did in all_metadata[pid]) {
@@ -140,6 +140,26 @@ var dna_quantitation_options = ["NanoQuant",
                           <% }); %>
                         </select>
                       </td>
+                    <% } else if (all_field_names[idx][1] === "Biome - Primary") { %>
+                      <!-- <td class="required_fields"> -->
+                      <td>
+                        <select id="biome_1" name="biome_1">
+                          <% biome_1.forEach(function(value){ %>
+                            <option value="<%= value %>"
+                              <% if (value == edit_metadata_info.biome_1) {%>
+                              selected
+                             <% } %>
+                             ><%= value %></option>
+                          <% }); %>
+                        </select>
+                      </td>
+                    <% } else if (all_field_names[idx][1] === "Biome - Secondary") { %>
+                      <!-- <td class="required_fields"> -->
+                      <td>
+                        <select id="biome_2" name="biome_2">
+                          HERE
+                        </select>
+                      </td>
                     <% } else { %>
                       <td>
                         <input type="text" id="<%= all_metadata[pid][did][d_info] %>" name="<%= all_metadata[pid][did][d_info] %>" value='<%= all_metadata[pid][did][d_info] %>'/>
@@ -149,7 +169,7 @@ var dna_quantitation_options = ["NanoQuant",
           </tr>
           <% } %>
         <% } else { %>
-          
+
         <% } %>
               <%}%>
             <%
@@ -167,11 +187,8 @@ var dna_quantitation_options = ["NanoQuant",
 
 <% include ../add_ins/end.ejs %>
 <script type='text/javascript' src='/javascripts/global.js'></script>
+<script type='text/javascript' src='/javascripts/metadata.js'></script>
 <script type='text/javascript' src='/javascripts/bootstrap-select.js'></script>
-<script>
-$(document).ready(function(){
-$('.selectpicker').selectpicker({showSubtext:true, tickIcon: '',});
-});
 </script>
 </body>
 </html>
