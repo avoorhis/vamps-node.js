@@ -223,9 +223,12 @@ var bOptions = {
   };
   
 $(document).ready(function(){  
-  $('.biome_1').change(function(){
+  $('.biome_primary').change(function(){
     populate_secondary_select.call(this, 'biome');
   });
+  // $('.biome_1').change(function(){
+  //   populate_secondary_select.call(this, 'biome');
+  // });
 });
 
 function populate_secondary_select(args) {
@@ -236,8 +239,8 @@ function populate_secondary_select(args) {
   id_base = arguments[0]
   alert(id_base);
 
-  did = this.id.replace(id_base + "_1", '')
-  id2 = id_base + "_2"
+  did = this.id.replace(id_base + "_primary", '')
+  id2 = id_base + "_secondary"
   var B = document.getElementById(id2+did);
   
   // B = arguments[0];

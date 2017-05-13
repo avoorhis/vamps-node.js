@@ -655,7 +655,7 @@ constants.DNA_QUANTITATION_OPTIONS = ["NanoQuant",
 "PicoGreen",
 "Other"];
 
-constants.BIOME_1 = ["marine",
+constants.BIOME_PRIMARY = ["marine",
 "terrestrial",
 "subterrestrial",
 "subseafloor"];
