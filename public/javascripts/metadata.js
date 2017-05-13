@@ -190,7 +190,7 @@ function bindInfoWindow(marker, map, infowindow, html) {
 //     custChange.call(this, event);
 //   });
 
-var bOptions = {
+var biome_options = {
     "marine": ["none",
     "abyssal",
     "aquatic",
@@ -222,13 +222,15 @@ var bOptions = {
     "sub-seafloor microbial biome"]
   };
   
+  var feature_options = {};
+  
 $(document).ready(function(){  
   $('.biome_primary').change(function(){
-    populate_secondary_select.call(this, 'biome');
+    populate_secondary_select.call(this, ['biome', biome_options]);
   });
-  // $('.biome_1').change(function(){
-  //   populate_secondary_select.call(this, 'biome');
-  // });
+  $('.feature_primary').change(function(){
+    populate_secondary_select.call(this, ['feature', feature_options]);
+  });
 });
 
 function populate_secondary_select(args) {
@@ -236,7 +238,8 @@ function populate_secondary_select(args) {
   alert(this.id);
   alert("arguments");
   
-  id_base = arguments[0]
+  id_base = arguments[0][0]
+  sec_options = arguments[0][1]
   alert(id_base);
 
   did = this.id.replace(id_base + "_primary", '')
@@ -258,17 +261,17 @@ function populate_secondary_select(args) {
   alert(_val);
   
   //loop through bOption at the selected value
-  for (var i in bOptions[_val]) {
+  for (var i in sec_options[_val]) {
     // alert(i);
     // alert(bOptions[_val][i]);
     //create option tag
     var op = document.createElement('option');
     //set its value
-    op.value = bOptions[_val][i];
+    op.value = sec_options[_val][i];
     // alert(op.value);
     
     //set the display label
-    op.text = bOptions[_val][i];
+    op.text = sec_options[_val][i];
     // alert(op.text);
     //append it to B
     B.appendChild(op);
