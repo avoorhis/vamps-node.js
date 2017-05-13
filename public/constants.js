@@ -708,14 +708,6 @@ constants.FEATURE_PRIMARY = ["aquifer",
 "volcano",
 "well"];
 
-constants.FEATURE_SECONDARY_WELL = ["none",
-"aquifer",
-"marine",
-"oil well",
-"research well",
-"terrestrial",
-"water well"];
-
 constants.FEATURE_SECONDARY_AQUIFER = ["none",
 "confined",
 "fracture - geological",

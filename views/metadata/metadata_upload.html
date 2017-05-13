@@ -184,9 +184,9 @@ var dna_quantitation_options = ["NanoQuant",
                         <!-- <td class="required_fields"> -->
                         <td>
                           <select id="feature_secondary<%- did %>" name="feature_secondary" class="feature_secondary">
-                            <% feature_secondary_well.forEach(function(value){ %>
+                            <% feature_secondary_aquifer.forEach(function(value){ %>
                               <option value="<%= value %>"
-                                <% if (value === edit_metadata_info.feature_secondary_well) {%>
+                                <% if (value === edit_metadata_info.feature_secondary_aquifer) {%>
                                 selected
                                <% } %>
                                ><%= value %></option>
