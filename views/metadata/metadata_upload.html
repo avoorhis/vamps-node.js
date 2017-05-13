@@ -114,6 +114,32 @@ var dna_quantitation_options = ["NanoQuant",
                     if (dividers.indexOf( all_field_names[idx][1] ) != -1) {
                     %>
                       <td></td>
+                    <% } else if (all_field_names[idx][1] === "DNA Extraction") { %>
+                      <!-- <td class="required_fields"> -->
+                      <td>
+                        <select id="dna_extraction_meth" name="dna_extraction_meth">
+                          <% my_dna_extraction_meth_options.forEach(function(value){ %>
+                            <option value="<%= value %>"
+                              <% if (value == edit_metadata_info.dna_extraction_meth) {%>
+                              selected
+                             <% } %>
+                             ><%= value %></option>
+                          <% }); %>
+                        </select>
+                      </td>
+                    <% } else if (all_field_names[idx][1] === "DNA Quantitation") { %>
+                      <!-- <td class="required_fields"> -->
+                      <td>
+                        <select id="dna_quantitation" name="dna_quantitation">
+                          <% dna_quantitation.forEach(function(value){ %>
+                            <option value="<%= value %>"
+                              <% if (value == edit_metadata_info.dna_quantitation) {%>
+                              selected
+                             <% } %>
+                             ><%= value %></option>
+                          <% }); %>
+                        </select>
+                      </td>
                     <% } else { %>
                       <td>
                         <input type="text" id="<%= all_metadata[pid][did][d_info] %>" name="<%= all_metadata[pid][did][d_info] %>" value='<%= all_metadata[pid][did][d_info] %>'/>

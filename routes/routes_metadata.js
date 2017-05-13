@@ -433,7 +433,9 @@ function make_metadata_hash(req, res){
           hostname: req.CONFIG.hostname,
           all_metadata: all_metadata,
           all_field_names: CONSTS.ORDERED_METADATA_NAMES,
-          dividers: CONSTS.ORDERED_METADATA_DIVIDERS
+          dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+          dna_extraction: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+          dna_quantitation: CONSTS.DNA_QUANTITATION_OPTIONS
         });
         
         
