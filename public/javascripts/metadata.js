@@ -472,13 +472,13 @@ $(document).ready(function(){
 });
 
 function populate_secondary_select(args) {
-  alert("this.id");
-  alert(this.id);
-  alert("arguments");
+  // alert("this.id");
+  // alert(this.id);
+  // alert("arguments");
   
   id_base = arguments[0][0]
   sec_options = arguments[0][1]
-  alert(id_base);
+  // alert(id_base);
 
   did = this.id.replace(id_base + "_primary", '')
   id2 = id_base + "_secondary"
@@ -487,8 +487,8 @@ function populate_secondary_select(args) {
   // B = arguments[0];
   //clear out B
   B.length = 0;
-  alert("B.id");
-  alert(B.id);
+  // alert("B.id");
+  // alert(B.id);
   
   // alert('From configureDropDownLists');
   // alert(this.selectedIndex);
@@ -496,7 +496,7 @@ function populate_secondary_select(args) {
   
   //get the selected value from A
   var _val = this.options[this.selectedIndex].value;
-  alert(_val);
+  // alert(_val);
   
   //loop through bOption at the selected value
   for (var i in sec_options[_val]) {
