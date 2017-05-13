@@ -231,6 +231,17 @@ function configureDropDownLists() {
     "sub-seafloor microbial biome"]
   };
 
+  var elements = document.querySelectorAll(".biome_1");
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].onchange = function() {
+      alert(i);
+      alert(elements[i]);
+    }
+    // elements[i].addEventListener("click", function() {
+    //   console.log("clicked");
+    // });
+  }
+  
   var A = document.getElementById('biome_1');
   var B = document.getElementById('biome_2');
 
