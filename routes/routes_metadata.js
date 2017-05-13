@@ -440,7 +440,9 @@ function make_metadata_hash(req, res){
           biome_primary: CONSTS.BIOME_PRIMARY,
           biome_secondary_marine: CONSTS.BIOME_SECONDARY_MARINE,
           feature_primary: CONSTS.FEATURE_PRIMARY,
-          feature_secondary_aquifer: CONSTS.FEATURE_SECONDARY_AQUIFER
+          feature_secondary_aquifer: CONSTS.FEATURE_SECONDARY_AQUIFER,
+          material_primary: CONSTS.MATERIAL_PRIMARY,
+          material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM
         });
         
         

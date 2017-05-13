@@ -194,6 +194,34 @@ var dna_quantitation_options = ["NanoQuant",
                           </select>
                         </td>
 <!--feature end  -->
+<!-- Environmental Material -->
+                      <% } else if (all_field_names[idx][1] === "Environmental Material - Primary") { %>
+                        <!-- <td class="required_fields"> -->
+                        <td>
+                          <select id="material_primary<%- did%>" name="material_primary" class = "material_primary">
+                            <% material_primary.forEach(function(value){ %>
+                              <option value="<%= value %>"
+                                <% if (value == edit_metadata_info.material_primary) {%>
+                                selected
+                               <% } %>
+                               ><%= value %></option>
+                            <% }); %>
+                          </select>
+                        </td>
+                      <% } else if (all_field_names[idx][1] === "Environmental Material - Secondary") { %>
+                        <!-- <td class="required_fields"> -->
+                        <td>
+                          <select id="material_secondary<%- did %>" name="material_secondary" class="material_secondary">
+                            <% material_secondary_biofilm.forEach(function(value){ %>
+                              <option value="<%= value %>"
+                                <% if (value === edit_metadata_info.material_secondary_biofilm) {%>
+                                selected
+                               <% } %>
+                               ><%= value %></option>
+                            <% }); %>
+                          </select>
+                        </td>
+<!--material end  -->
                     <% } else { %>
                       <td>
                         <input type="text" id="<%= all_metadata[pid][did][d_info] %>" name="<%= all_metadata[pid][did][d_info] %>" value='<%= all_metadata[pid][did][d_info] %>'/>

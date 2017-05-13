@@ -656,9 +656,9 @@ constants.DNA_QUANTITATION_OPTIONS = ["NanoQuant",
 "Other"];
 
 constants.BIOME_PRIMARY = ["marine",
-"terrestrial",
+"subseafloor",
 "subterrestrial",
-"subseafloor"];
+"terrestrial"];
 
 constants.BIOME_SECONDARY_MARINE = ["none",
 "abyssal",
@@ -719,6 +719,26 @@ constants.FEATURE_SECONDARY_AQUIFER = ["none",
 "subseafloor",
 "unconfined",
 "water well"];
+
+constants.MATERIAL_PRIMARY = ["biofilm",
+"fluid",
+"microbial mat material",
+"mud",
+"oil",
+"rock",
+"sand",
+"sediment",
+"soil",
+"water"];
+
+constants.MATERIAL_SECONDARY_BIOFILM = ["none",
+"algae",
+"archaea",
+"bacteria",
+"fungi",
+"glacial",
+"protozoa",
+"thermophilic"];
 
 
 

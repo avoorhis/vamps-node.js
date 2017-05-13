@@ -352,6 +352,112 @@ var biome_seq_options = {
     "subseafloor",
     "subterrestrial"]
   };
+  
+  var material_seq_options = {
+    "sediment": ["none",
+      "anaerobic ",
+      "biogeneous (ex. forams, diatoms)",
+      "carbon dioxide-reducing ",
+      "chemical (ex. limestone, dolostone)",
+      "colloidal ",
+      "contaminated ",
+      "granular ",
+      "hydrogenous  (ex. metal sulfide, evaporites)",
+      "hyperthermal ",
+      "inorganically contaminated ",
+      "iron-reducing  ",
+      "lacustrine",
+      "manganese-reducing ",
+      "mesothermal",
+      "nitrate-reducing ",
+      "organically contaminated",
+      "petroleum contaminated ",
+      "radioactive",
+      "saline lake ",
+      "sulfate-reducing",
+      "terrigeneous (ex. sand, silt, gravel)"],
+
+    "water": ["none",
+    "acidic",
+    "alkaline",
+    "anoxic",
+    "brackish water",
+    "fresh water",
+    "groundwater",
+    "hypersaline water",
+    "saline water"],
+
+    "fluid": ["none",
+    "borehole water",
+    "drilling fluid",
+    "ground water",
+    "hydrothermal fluid",
+    "melt",
+    "oil",
+    "pore fluid",
+    "waste material"],
+
+    "biofilm": ["none",
+    "algae",
+    "archaea",
+    "bacteria",
+    "fungi",
+    "glacial",
+    "protozoa",
+    "thermophilic"],
+
+    "microbial mat material": ["none",
+    "archaea",
+    "bacteria",
+    "terrestrial",
+    "tidal",
+    "underwater"],
+
+    "rock": ["none",
+    "igneous - plutonic",
+    "igneous",
+    "metamorphic",
+    "sedimentary - biochemical",
+    "sedimentary - clastic",
+    "sedimentary - precipitated (ex. oolithic limestone)",
+    "sedimentary",
+    "volcanic - basalt",
+    "volcanic"],
+
+    "mud": ["none",
+    "anaerobic ",
+    "colloidal ",
+    "deep lacustrine",
+    "estuarine",
+    "glacial",
+    "hyperthermal ",
+    "mesothermal",
+    "seafloor",
+    "soil",
+    "turbidite"],
+
+    "soil": ["none",
+    "clay",
+    "colloidal ",
+    "contaminated",
+    "groundwater",
+    "mud",
+    "permafrost"],
+
+    "oil": ["none",
+    "asphalt",
+    "petroleum contamination",
+    "seep",
+    "spill",
+    "tar",
+    "well"],
+
+    "sand": ["none",
+    "basaltic",
+    "calcium carbonate",
+    "quartz"]
+    
+  };
     
 $(document).ready(function(){  
   $('.biome_primary').change(function(){
@@ -359,6 +465,9 @@ $(document).ready(function(){
   });
   $('.feature_primary').change(function(){
     populate_secondary_select.call(this, ['feature', feature_seq_options]);
+  });
+  $('.material_primary').change(function(){
+    populate_secondary_select.call(this, ['material', material_seq_options]);
   });
 });
 
