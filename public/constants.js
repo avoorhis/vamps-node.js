@@ -693,6 +693,41 @@ constants.BIOME_SECONDARY_SUBSEAFLOOR = ["none",
 "endolithic",
 "sub-seafloor microbial biome"];
 
+constants.FEATURE_PRIMARY = ["aquifer",
+"borehole",
+"cave",
+"enrichment",
+"fracture",
+"geyser",
+"lake",
+"mine",
+"reservoir",
+"seep",
+"spring",
+"vent",
+"volcano",
+"well"];
+
+constants.FEATURE_SECONDARY_WELL = ["none",
+"aquifer",
+"marine",
+"oil well",
+"research well",
+"terrestrial",
+"water well"];
+
+constants.FEATURE_SECONDARY_AQUIFER = ["none",
+"confined",
+"fracture - geological",
+"fracture - micro",
+"fracture - shear",
+"groundwater",
+"spring",
+"sub-continental",
+"subseafloor",
+"unconfined",
+"water well"];
+
 
 
 module.exports = constants;

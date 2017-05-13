@@ -438,7 +438,9 @@ function make_metadata_hash(req, res){
           dna_extraction: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
           dna_quantitation: CONSTS.DNA_QUANTITATION_OPTIONS,
           biome_primary: CONSTS.BIOME_PRIMARY,
-          biome_secondary_marine: CONSTS.BIOME_SECONDARY_MARINE
+          biome_secondary_marine: CONSTS.BIOME_SECONDARY_MARINE,
+          feature_primary: CONSTS.FEATURE_PRIMARY,
+          feature_secondary_well: CONSTS.FEATURE_SECONDARY_WELL
         });
         
         
