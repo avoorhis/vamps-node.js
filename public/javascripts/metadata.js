@@ -195,19 +195,24 @@ $(document).ready(function(){
 
 function a(args){
   var arguments = {n1: "1", n3: "5"};
-  // "1,2,5";
   b.call(arguments);
 }
 
 function b(args){
-  alert(this.n3); //arguments[0] = 1, etc
+  alert(this.elements_b2.length);
 }
+
+function c(args){
+  alert(this.n3);
+}
+
 
 function populate_secondary_select(args) {
   alert(this.selectedIndex);
+  alert(this.B);
   
   //clear out B
-  B.length = 0;
+  this.B.length = 0;
   // alert('From configureDropDownLists');
   // alert(this.selectedIndex);
   
@@ -230,7 +235,7 @@ function populate_secondary_select(args) {
     op.text = bOptions[_val][i];
     // alert(op.text);
     //append it to B
-    B.appendChild(op);
+    this.B.appendChild(op);
   }    
 }
   
@@ -277,21 +282,27 @@ function configureDropDownLists(args) {
   var B = document.getElementById('biome_2');
 
   
-
-  var elements = document.querySelectorAll(".biome_1");
-  for (var i = 0; i < elements.length; i++) {
-    elements[i].onchange = function() {
-      alert(i);
-      alert(elements[i]);
-    }
-    // elements[i].addEventListener("click", function() {
-    //   console.log("clicked");
-    // });
-  }
-  
+  // var elements_b2 = document.querySelectorAll(".biome_2");
+  //
+  // var elements = document.querySelectorAll(".biome_1");
+  // for (var i = 0; i < elements.length; i++) {
+  //   elements[i].onchange = function() {
+  //     alert(i);
+  //     alert(elements[i]);
+  //   }
+  //   // elements[i].addEventListener("click", function() {
+  //   //   console.log("clicked");
+  //   // });
+  // }
+  //
   //on change is a good event for this because you are guarenteed the value is different  
-  A.onchange = a;
+  var arguments = {B: B, n3: "5"};
+  A.onchange = populate_secondary_select.call(arguments);
+  // c(arguments);
+  // "b(arguments)";
+  // b.call(arguments);
+  // a;
   // populate_secondary_select.apply(this, arguments);
   //fire this to update B on load
-  A.onchange();
+  // A.onchange();
 };
