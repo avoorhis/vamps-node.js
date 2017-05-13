@@ -189,24 +189,6 @@ function bindInfoWindow(marker, map, infowindow, html) {
 //   $('.biome_1').change(function(){
 //     custChange.call(this, event);
 //   });
-//
-//   // ('change',custChange.call(this, event),false)
-//   // configureDropDownLists();
-//   // alert('From ready');
-//
-//     // $('a.back').click(function(){
-//     //     parent.history.back();
-//     //     return false;
-//     // });
-// });
-
-
-// $(document).ready(function(){
-//   event = "E";
-//   $('.biome_1').change(function(){
-//     custChange.call(this, event);
-//   });
-// });
 
 var bOptions = {
     "marine": ["none",
@@ -242,18 +224,19 @@ var bOptions = {
   
 $(document).ready(function(){  
   $('.biome_1').change(function(){
-    populate_secondary_select.call(this);
+    populate_secondary_select.call(this, 'biome_1');
   });
 });
-
-
 
 function populate_secondary_select(args) {
   alert("this.id");
   alert(this.id);
-  did = this.id.replace('biome_1', '')
-  alert("did")
-  alert(did)
+  alert("arguments");
+  
+  id_base = arguments[0]
+  alert(id_base);
+
+  did = this.id.replace(id_base, '')
   var B = document.getElementById('biome_2'+did);
   
   // B = arguments[0];
@@ -287,83 +270,3 @@ function populate_secondary_select(args) {
     B.appendChild(op);
   }    
 }
-  
-function configureDropDownLists(args) {
-  // page: metadata_upload
-
-  //setup an object fully of arrays
-  //alternativly it could be something like
-  //{"yes":[{value:sweet, text:Sweet}.....]}
-  //so you could set the label of the option tag something different than the name
-  var bOptions = {
-    "marine": ["none",
-    "abyssal",
-    "aquatic",
-    "basaltic hydrothermal vent",
-    "bathyal",
-    "benthic",
-    "continental margin",
-    "estuarine",
-    "hadal",
-    "marine cold seep biome",
-    "neritic",
-    "pelagic",
-    "polar",
-    "ultramafic hydrothermal vent biome"],
-    "terrestrial": ["none",
-    "aquatic",
-    "freshwater lake",
-    "freshwater river",
-    "large lake biome",
-    "polar",
-    "subglacial lake"],
-    "subterrestrial": ["none",
-    "aquatic",
-    "endolithic"],
-    "subseafloor": ["none",
-    "aquatic",
-    "benthic",
-    "endolithic",
-    "sub-seafloor microbial biome"]
-  };
-  
-  var A = document.getElementById('biome_1');
-  var B = document.getElementById('biome_2');
-
-  
-  // var elements_b2 = document.querySelectorAll(".biome_2");
-  //
-  // var elements = document.querySelectorAll(".biome_1");
-  // for (var i = 0; i < elements.length; i++) {
-  //   elements[i].onchange = function() {
-  //     alert(i);
-  //     alert(elements[i]);
-  //   }
-  //   // elements[i].addEventListener("click", function() {
-  //   //   console.log("clicked");
-  //   // });
-  // }
-  //
-  //on change is a good event for this because you are guarenteed the value is different  
-  var arguments = [B];
-  // {B: B, n3: "5"};
-  alert(A.id);
-  alert(A.selectedIndex);
-  
- // element.addEventListener('change',doSomething,false)
-  A.addEventListener('change',custChange.call(this, event),false)
-  
-  // A.onchange = custChange.call(this, arguments);
-  // custChange.call(this, event);
-
-  // b.apply(this, arguments);
-  // a(B,3);
-  // populate_secondary_select.apply(this, arguments);
-  // c(arguments);
-  // "b(arguments)";
-  // b.call(arguments);
-  // a;
-  // populate_secondary_select.apply(this, arguments);
-  //fire this to update B on load
-  // A.onchange();
-};
