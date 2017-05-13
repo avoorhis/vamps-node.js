@@ -194,12 +194,13 @@ $(document).ready(function(){
 
 
 function a(args){
-  arguments = [1,2,4];
-  
-  b.apply(this, arguments);
+  var arguments = {n1: "1", n3: "5"};
+  // "1,2,5";
+  b.call(arguments);
 }
+
 function b(args){
-  alert(arguments[2]); //arguments[0] = 1, etc
+  alert(this.n3); //arguments[0] = 1, etc
 }
 
 function populate_secondary_select(args) {
