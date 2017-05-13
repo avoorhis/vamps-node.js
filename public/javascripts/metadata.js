@@ -182,56 +182,77 @@ function bindInfoWindow(marker, map, infowindow, html) {
   }); 
 } 
 
-$(document).ready(function(){
-  event = "E";
+//
+// works:
+// $(document).ready(function(){
+//   event = "E";
+//   $('.biome_1').change(function(){
+//     custChange.call(this, event);
+//   });
+//
+//   // ('change',custChange.call(this, event),false)
+//   // configureDropDownLists();
+//   // alert('From ready');
+//
+//     // $('a.back').click(function(){
+//     //     parent.history.back();
+//     //     return false;
+//     // });
+// });
+
+
+// $(document).ready(function(){
+//   event = "E";
+//   $('.biome_1').change(function(){
+//     custChange.call(this, event);
+//   });
+// });
+
+var bOptions = {
+    "marine": ["none",
+    "abyssal",
+    "aquatic",
+    "basaltic hydrothermal vent",
+    "bathyal",
+    "benthic",
+    "continental margin",
+    "estuarine",
+    "hadal",
+    "marine cold seep biome",
+    "neritic",
+    "pelagic",
+    "polar",
+    "ultramafic hydrothermal vent biome"],
+    "terrestrial": ["none",
+    "aquatic",
+    "freshwater lake",
+    "freshwater river",
+    "large lake biome",
+    "polar",
+    "subglacial lake"],
+    "subterrestrial": ["none",
+    "aquatic",
+    "endolithic"],
+    "subseafloor": ["none",
+    "aquatic",
+    "benthic",
+    "endolithic",
+    "sub-seafloor microbial biome"]
+  };
+  
+$(document).ready(function(){  
   $('.biome_1').change(function(){
-    custChange.call(this, event);
+    populate_secondary_select.call(this);
   });
-  
-  // ('change',custChange.call(this, event),false)
-  // configureDropDownLists();
-  // alert('From ready');
-  
-    // $('a.back').click(function(){
-    //     parent.history.back();
-    //     return false;
-    // });
 });
-
-
-// function a(args){
-//   var arguments = {n1: "1", n3: "5"};
-//   b.call(arguments);
-// }
-//
-// function b(args){
-//   alert(this.elements_b2.length);
-// }
-//
-function a(args){
-    b.apply(this, arguments);
-}
-
-function b(args){
-  alert(this); //arguments[0] = 1, etc
-  alert(arguments[0].id); //arguments[0] = 1, etc
-}
-
-function custChange(event) {
-  alert("this.id"); //arguments[0] = 1, etc
-  alert(this.id); //arguments[0] = 1, etc
-  alert("this.selectedIndex");
-  alert(this.selectedIndex);
-  
-}
 
 
 
 function populate_secondary_select(args) {
   alert(this);
-  alert(arguments[0].id);
+  var B = document.getElementById('biome_2');
   
-  B = arguments[0];
+  // B = arguments[0];
   //clear out B
   B.length = 0;
   // alert('From configureDropDownLists');
@@ -240,7 +261,7 @@ function populate_secondary_select(args) {
   
   //get the selected value from A
   var _val = this.options[this.selectedIndex].value;
-  // alert(_val);
+  alert(_val);
   
   //loop through bOption at the selected value
   for (var i in bOptions[_val]) {
@@ -256,7 +277,7 @@ function populate_secondary_select(args) {
     op.text = bOptions[_val][i];
     // alert(op.text);
     //append it to B
-    this.B.appendChild(op);
+    B.appendChild(op);
   }    
 }
   
