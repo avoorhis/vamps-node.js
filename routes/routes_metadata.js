@@ -135,8 +135,19 @@ function get_metadata_hash(md_selected){
 // ---- metadata_upload ----
 // AllMetadataFromFile = helpers.get_metadata_from_file()
 
-router.get('/metadata_upload', [helpers.isLoggedIn], function (req, res) {
+router.get('/metadata_upload_from_file', [helpers.isLoggedIn], function (req, res) {
   console.log('in get metadata/metadata_upload');
+
+  //TODO: What to show for project and dataset?
+  res.render('metadata/metadata_upload_from_file', {
+    title: 'VAMPS: Metadata_upload',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+  });
+});
+
+router.get('/metadata_upload_new', [helpers.isLoggedIn], function (req, res) {
+  console.log('in get metadata/metadata_upload_new');
 
   //TODO: What to show for project and dataset?
   res.render('metadata/metadata_upload_new', {
@@ -165,25 +176,19 @@ router.post('/metadata_upload',
     form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode(),
     form.field("geo_loc_name_country", "Country").trim().entityEncode(),
     form.field("longhurst_zone", "Longhurst Zone").trim().entityEncode(),
-    form.field("biome_primary", "Biome - Primary").trim().required().entityEncode().custom(function(value) {
-            if (value !== "Please choose one") {
-                throw new Error("Please choose one value from the dropdown menu for %s.");
-            }
-        }),
+    form.field("biome_primary", "Biome - Primary").trim().required().entityEncode().custom(env_items_validation),
     form.field("biome_secondary", "Biome - Secondary").trim().entityEncode(),
-    form.field("env_feature_primary", "Environmental Feature - Primary").trim().required().entityEncode().custom(function(value) {
-            if (value !== "Please choose one") {
-                throw new Error("Please choose one value from the dropdown menu for %s.");
-            }
-        }),
+    // form.field("post[user][id]").isInt(),
+    // feature_primary<%- did%>
+    
+    form.field("feature_primary[id]", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation).isInt(),
+    
+    
+    // form.field("env_feature_primary", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation),
     form.field("env_feature_secondary", "Environmental Feature - Secondary").trim().entityEncode(),
-    form.field("env_material_primary", "Environmental Material - Primary").trim().required().entityEncode().custom(function(value) {
-            if (value !== "Please choose one") {
-                throw new Error("Please choose one value from the dropdown menu for %s.");
-            }
-        }),
+    form.field("env_material_primary", "Environmental Material - Primary").trim().required().entityEncode().custom(env_items_validation),
     form.field("env_material_secondary", "Environmental Material - Secondary").trim().entityEncode()
-   ),
+    ),
   function (req, res) {
     // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
     if (!req.form.isValid) {
@@ -232,7 +237,7 @@ function editMetadataForm(req, res){
   console.log(req.edit_metadata_info);
 
   if (req.body.from_where === 'metadata_upload_from_file') {
-    edit_metadata_address = 'metadata/metadata_upload'
+    edit_metadata_address = 'metadata/metadata_upload_from_file'
   }
   else {
     edit_metadata_address = 'metadata/metadata_upload_new'
@@ -449,7 +454,7 @@ function make_metadata_hash(req, res){
         
         // console.log("TTT all_metadata");
         // console.log(all_metadata);
-        res.render('metadata/metadata_upload', {
+        res.render('metadata/metadata_upload_from_file', {
           title: 'VAMPS: Metadata_upload',
           user: req.user,
           hostname: req.CONFIG.hostname,
@@ -483,6 +488,12 @@ function make_metadata_hash(req, res){
   else
   { // end if int
     console.log('ERROR pid is not an integer: ', pid);
+  }
+}
+
+function env_items_validation(value) {
+  if (value === "Please choose one") {
+      throw new Error("Please choose one value from the dropdown menu for %s.");
   }
 }
 // ---- metadata_upload end ----
