@@ -165,11 +165,23 @@ router.post('/metadata_upload',
     form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode(),
     form.field("geo_loc_name_country", "Country").trim().entityEncode(),
     form.field("longhurst_zone", "Longhurst Zone").trim().entityEncode(),
-    form.field("biome_primary", "Biome - Primary").trim().required().entityEncode(),
+    form.field("biome_primary", "Biome - Primary").trim().required().entityEncode().custom(function(value) {
+            if (value !== "Please choose one") {
+                throw new Error("Please choose one value from the dropdown menu for %s.");
+            }
+        }),
     form.field("biome_secondary", "Biome - Secondary").trim().entityEncode(),
-    form.field("env_feature_primary", "Environmental Feature - Primary").trim().required().entityEncode(),
+    form.field("env_feature_primary", "Environmental Feature - Primary").trim().required().entityEncode().custom(function(value) {
+            if (value !== "Please choose one") {
+                throw new Error("Please choose one value from the dropdown menu for %s.");
+            }
+        }),
     form.field("env_feature_secondary", "Environmental Feature - Secondary").trim().entityEncode(),
-    form.field("env_material_primary", "Environmental Material - Primary").trim().required().entityEncode(),
+    form.field("env_material_primary", "Environmental Material - Primary").trim().required().entityEncode().custom(function(value) {
+            if (value !== "Please choose one") {
+                throw new Error("Please choose one value from the dropdown menu for %s.");
+            }
+        }),
     form.field("env_material_secondary", "Environmental Material - Secondary").trim().entityEncode()
    ),
   function (req, res) {
@@ -186,6 +198,9 @@ router.post('/metadata_upload',
       
       console.log("req.form");
       console.log(req.form);
+
+      console.log("req.body");
+      console.log(req.body);
       
       req.edit_metadata_info = req.form;
       console.log("req.edit_metadata_info");
@@ -216,7 +231,13 @@ function editMetadataForm(req, res){
   console.log("RRR req.edit_metadata_info");
   console.log(req.edit_metadata_info);
 
-  res.render('metadata/metadata_upload_new', {
+  if (req.body.from_where === 'metadata_upload_from_file') {
+    edit_metadata_address = 'metadata/metadata'
+  }
+  else {
+    edit_metadata_address = 'metadata/metadata_upload_new'
+  }
+  res.render(edit_metadata_address, {
     title: 'VAMPS: Metadata',
     user: req.user,
     hostname: req.CONFIG.hostname,
@@ -232,7 +253,7 @@ function NewMetadata(req, res, id){ /* fetch or create logic, storing as req.mod
 
 function loadMetadata(req, res, id){ /* fetch or create logic, storing as req.model or req.metadata */} 
 
-function editMetadata(req, res){ /* render logic */ }
+function editMetadataFromFile(req, res){ /* render logic */ }
 
 function saveMetadata(req, res){ 
     if(!req.form.isValid){
