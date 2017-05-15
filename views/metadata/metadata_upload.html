@@ -97,14 +97,15 @@ var dna_quantitation_options = ["NanoQuant",
         <!-- rowspan="1" colspan="3" -->
       </thead>
       <tbody>
-        <% if (all_metadata) { %>
-          <% for (var pid in all_metadata) {%>
+    <% if (all_metadata) { %>
+      <% for (var pid in all_metadata) { %>
         <% if (all_field_names) { %>
-          <% for (var idx in all_field_names) {%>
+          <% for (var idx in all_field_names) { %>
           <tr>
+<!--first column  -->
             <% if (dividers.indexOf( all_field_names[idx][1] ) != -1) { %>
           	<td colspan="<%= all_field_names.length%>" class="header_divider">
-<!--TODO: show the second column if instead, if any -->
+<!--TODO: show the second column instead, if any -->
             <% } else if (metadata_form_required_fields.indexOf( all_field_names[idx][1] ) != -1) { %>
           	  <td class="required_fields">
             <% } else { %>
@@ -113,16 +114,20 @@ var dna_quantitation_options = ["NanoQuant",
               <label for=<%= all_field_names[idx][1] %>/><%= all_field_names[idx][1] %></label>
             </td>
             <!-- adapter_sequence -->
+<!-- second column: MBL or user supplied -->
 
             <td><%= all_field_names[idx][2] %></td>
+<!-- third column (value) -->
 
                 <% for (var did in all_metadata[pid]) {
+                  // if there is a dataset name
+                  if (did > 0) {
                   d_info = all_field_names[idx][0]
+                  <!-- no value if a divider -->
                     if (dividers.indexOf( all_field_names[idx][1] ) != -1) {
                     %>
                       <td></td>
                     <% } else if (all_field_names[idx][1] === "DNA Extraction") { %>
-                      <!-- <td class="required_fields"> -->
                       <td>
                         <select id="dna_extraction_meth" name="dna_extraction_meth">
                           <% my_dna_extraction_meth_options.forEach(function(value){ %>
@@ -135,7 +140,6 @@ var dna_quantitation_options = ["NanoQuant",
                         </select>
                       </td>
                     <% } else if (all_field_names[idx][1] === "DNA Quantitation") { %>
-                      <!-- <td class="required_fields"> -->
                       <td>
                         <select id="dna_quantitation" name="dna_quantitation">
                           <% dna_quantitation.forEach(function(value){ %>
@@ -147,8 +151,9 @@ var dna_quantitation_options = ["NanoQuant",
                           <% }); %>
                         </select>
                       </td>
+<!-- biome -->
+                      
                     <% } else if (all_field_names[idx][1] === "Biome - Primary") { %>
-                      <!-- <td class="required_fields"> -->
                       <td>
                         <select id="biome_primary<%- did%>" name="biome_primary" class = "biome_primary">
                           <% biome_primary.forEach(function(value){ %>
@@ -161,7 +166,6 @@ var dna_quantitation_options = ["NanoQuant",
                         </select>
                       </td>
                     <% } else if (all_field_names[idx][1] === "Biome - Secondary") { %>
-                      <!-- <td class="required_fields"> -->
                       <td>
                         <select id="biome_secondary<%- did %>" name="biome_secondary" class="biome_secondary">
                           <% biome_secondary_marine.forEach(function(value){ %>
@@ -175,7 +179,6 @@ var dna_quantitation_options = ["NanoQuant",
                       </td>
 <!--feature -->
                       <% } else if (all_field_names[idx][1] === "Environmental Feature - Primary") { %>
-                        <!-- <td class="required_fields"> -->
                         <td>
                           <select id="feature_primary<%- did%>" name="feature_primary" class = "feature_primary">
                             <% feature_primary.forEach(function(value){ %>
@@ -188,7 +191,6 @@ var dna_quantitation_options = ["NanoQuant",
                           </select>
                         </td>
                       <% } else if (all_field_names[idx][1] === "Environmental Feature - Secondary") { %>
-                        <!-- <td class="required_fields"> -->
                         <td>
                           <select id="feature_secondary<%- did %>" name="feature_secondary" class="feature_secondary">
                             <% feature_secondary_aquifer.forEach(function(value){ %>
@@ -203,7 +205,6 @@ var dna_quantitation_options = ["NanoQuant",
 <!--feature end  -->
 <!-- Environmental Material -->
                       <% } else if (all_field_names[idx][1] === "Environmental Material - Primary") { %>
-                        <!-- <td class="required_fields"> -->
                         <td>
                           <select id="material_primary<%- did%>" name="material_primary" class = "material_primary">
                             <% material_primary.forEach(function(value){ %>
@@ -216,7 +217,6 @@ var dna_quantitation_options = ["NanoQuant",
                           </select>
                         </td>
                       <% } else if (all_field_names[idx][1] === "Environmental Material - Secondary") { %>
-                        <!-- <td class="required_fields"> -->
                         <td>
                           <select id="material_secondary<%- did %>" name="material_secondary" class="material_secondary">
                             <% material_secondary_biofilm.forEach(function(value){ %>
@@ -233,16 +233,19 @@ var dna_quantitation_options = ["NanoQuant",
                       <td>
                         <input type="text" id="<%= all_metadata[pid][did][d_info] %>" name="<%= all_metadata[pid][did][d_info] %>" value='<%= all_metadata[pid][did][d_info] %>'/>
                       </td>
-                  <%}%>
-                <%}%>
+<!-- third column (value) end -->
+                      
+                  <% } %> <!-- else -->
+                <% } %> <!-- if did -->
+              <% } %> <!-- third column (value): for (var did in all_metadata[pid]) -->
           </tr>
-          <% } %>
+          <% } %> <!-- for (var idx in all_field_names)  -->
         <% } else { %>
-
-        <% } %>
-              <%}%>
+        <% } %> <!-- if/else (all_field_names) -->
+              <% } %> <!-- for (var pid in all_metadata) -->
             <%
-            } else {
+            } // end: if (all_metadata)
+             else {
               var all_metadata = {}
             } %>
   </table>
