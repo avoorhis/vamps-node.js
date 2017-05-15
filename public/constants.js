@@ -655,7 +655,8 @@ constants.DNA_QUANTITATION_OPTIONS = ["NanoQuant",
 "PicoGreen",
 "Other"];
 
-constants.BIOME_PRIMARY = ["marine",
+constants.BIOME_PRIMARY = ["Please choose one",
+"marine",
 "subseafloor",
 "subterrestrial",
 "terrestrial"];
@@ -693,7 +694,8 @@ constants.BIOME_SECONDARY_SUBSEAFLOOR = ["none",
 "endolithic",
 "sub-seafloor microbial biome"];
 
-constants.FEATURE_PRIMARY = ["aquifer",
+constants.FEATURE_PRIMARY = ["Please choose one",
+"aquifer",
 "borehole",
 "cave",
 "enrichment",
@@ -720,7 +722,8 @@ constants.FEATURE_SECONDARY_AQUIFER = ["none",
 "unconfined",
 "water well"];
 
-constants.MATERIAL_PRIMARY = ["biofilm",
+constants.MATERIAL_PRIMARY = ["Please choose one",
+"biofilm",
 "fluid",
 "microbial mat material",
 "mud",
