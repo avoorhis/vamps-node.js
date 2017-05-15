@@ -181,7 +181,7 @@ router.post('/metadata_upload',
     // form.field("post[user][id]").isInt(),
     // feature_primary<%- did%>
     
-    form.field("feature_primary[id]", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation).isInt(),
+    form.field("feature_primary", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation).array().isInt(),
     
     
     // form.field("env_feature_primary", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation),
