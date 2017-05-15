@@ -531,7 +531,7 @@ constants.ORDERED_FIELDS = ["dataset",
 "manganese_mn", 
 "microbial_biomass_FISH"];
 
-constants.ORDERED_METADATA_NAMES = [["structured comment name","Parameter","MBL Supplied or Optional"],
+constants.ORDERED_METADATA_NAMES = [["structured comment name","Parameter",""], //MBL Supplied or Optional
 ["","General",""],
 ["project","VAMPS project name","MBL Supplied"],
 ["dataset","VAMPS dataset name","MBL Supplied"],
@@ -551,7 +551,7 @@ constants.ORDERED_METADATA_NAMES = [["structured comment name","Parameter","MBL 
 ["env_material","Environmental Material - Primary","User supplied"],
 ["env_material_sec","Environmental Material - Secondary","User supplied"],
 ["env_package","Environmental Package","User supplied"],
-["","Enter depth values in one or more categories","User supplied"],
+["","Enter depth values in one or more categories",""],
 ["depth_subseafloor","Depth below seafloor","User supplied (meter)"],
 ["depth_sub_continent","Depth below terrestrial surface","User supplied (meter)"],
 ["depth_in_core","Depth within core","User supplied (centimeter)"],
@@ -574,7 +574,7 @@ constants.ORDERED_METADATA_NAMES = [["structured comment name","Parameter","MBL 
 ["illumina_index","Index sequence (for Illumina)","MBL Supplied"],
 ["adapter_sequence","Adapter sequence","MBL Supplied"],
 ["run","Sequencing run date","MBL Supplied (YYYY-MM-DD)"],
-["","Non-biological","Please use units shown below"],
+["","Non-biological",""], //Please use units shown below
 ["pH","pH",""],
 ["temp","Temperature","(degrees celsius)"],
 ["conductivity","Conductivity","(millisiemens per centimeter)"],
