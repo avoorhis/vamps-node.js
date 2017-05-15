@@ -358,8 +358,8 @@ module.exports.clean_string = function (str) {
   return str.replace(/[^\w]/gi, '_');
 };
 
-module.exports.get_metadata_from_file = function (){
- var meta_file = path.join(process.env.PWD, 'public', 'json', NODE_DATABASE + '--metadata.json');
+module.exports.get_metadata_from_file = function (){  
+ var meta_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--metadata.json');
  try { AllMetadataFromFile = require(meta_file); }
  catch (e) {
    console.log(e);
