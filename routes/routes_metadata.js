@@ -232,7 +232,7 @@ function editMetadataForm(req, res){
   console.log(req.edit_metadata_info);
 
   if (req.body.from_where === 'metadata_upload_from_file') {
-    edit_metadata_address = 'metadata/metadata'
+    edit_metadata_address = 'metadata/metadata_upload'
   }
   else {
     edit_metadata_address = 'metadata/metadata_upload_new'
