@@ -108,51 +108,26 @@ var dna_quantitation_options = ["NanoQuant",
           <!-- for each field name  -->
           <% for (var idx in all_field_names) { %>
           <tr>
+            idx
+            <%= all_field_names[idx] %>            
 <!--first column  -->
             <% include first_column.ejs %>
-
-            <!-- adapter_sequence -->
 <!-- second column: MBL or user supplied -->
-
             <td><%= all_field_names[idx][2] %></td>
 <!-- third column (value) -->
-
-                <% for (var info in all_metadata[pid]) {
-                  // if there is a dataset name
-                    // console.log(all_metadata[13]["dataset_ids"][3958]);
-                    
-                    for (var did in all_metadata[pid]["dataset_ids"]) {
-//                  if (all_metadata[pid]["dataset_ids"][did] > 0) {
-                      field_name = all_field_names[idx][0]
-// console.log(all_metadata[13]["dataset_ids"][3958]);
-
-%>
-              <!-- no value if a divider -->
-              <td>
-                did
-                <%= did %>
-                field_name
-                <%= field_name %>
-                all_metadata[pid]['dataset_ids'][did][field_name]
-                <%= all_metadata[pid]['dataset_ids'][did][field_name] %>
-                <input type="text" id="<%= all_metadata[pid]['dataset_ids'][did][field_name] %><%- did%>" name="<%= all_metadata[pid]['dataset_ids'][did][field_name] %>" value="<%= all_metadata[pid]['dataset_ids'][did][field_name] %>"/>
-              </td>
-
-  <!-- third column (value) end -->
-
-
-              <% } %> <!-- third column (value): for (var did in all_metadata[pid][dataset_ids]) -->
-            <% } %> <!-- third column (value): for (var info in all_metadata[pid]) -->
-          </tr>
+            <% for (var did in all_metadata[pid]["dataset_ids"]) { %>
+              <td><%= did %><%= all_field_names[idx][0] %></td>
+            <% } %> <!-- for (var did in all_metadata[pid]["dataset_ids"])  -->
+            
+        </tr>
           <% } %> <!-- for (var idx in all_field_names)  -->
-        <% } else { %>
-        <% } %> <!-- if/else (all_field_names) -->
-              <% } %> <!-- for (var pid in all_metadata) -->
-            <%
+        <% } %> <!-- if (all_field_names) -->
+        <% } %> <!-- for (var pid in all_metadata) -->
+        <%
             } // end: if (all_metadata)
              else {
               var all_metadata = {}
-            } %>
+        } %>
   </table>
 <br>
 
