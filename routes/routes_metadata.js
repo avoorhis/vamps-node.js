@@ -450,10 +450,11 @@ function populate_metadata_hash(rows, pid, all_metadata){
       // console.log(AllMetadataFromFile[dataset_id]);
       
       all_metadata[pid]["dataset_ids"][dataset_id] = AllMetadataFromFile[dataset_id]
+      
       all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
       
-      console.log("row.dataset");
-      console.log(row.dataset);
+      console.log("MMM all_metadata");
+      console.log(all_metadata);
       
       all_metadata[pid]["dataset_ids"][dataset_id]["dataset"] = row.dataset
       all_metadata[pid]["dataset_ids"][dataset_id]["dataset_description"] = row.dataset_description      
