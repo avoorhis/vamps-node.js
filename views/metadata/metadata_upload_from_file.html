@@ -66,7 +66,7 @@ var dna_quantitation_options = ["NanoQuant",
   <legend id="general-legend">General sample description</legend>
   <% if (all_metadata) { %>
     <% for (var pid in all_metadata) { %>
-      <!-- dataset_ids project title username email institution first_name last_name public -->        
+      <!-- dataset_id project title username email institution first_name last_name public -->        
       
       <label for="project_title">Title of Project:</label>
       <input type="text" id="project_title" name="project_title" value='<%= all_metadata[pid].title %>'/>
@@ -79,7 +79,7 @@ var dna_quantitation_options = ["NanoQuant",
       <label for="pi_name">PI Name:</label>
       <input type="text" id="pi_name" name="pi_name"  value='<%= edit_metadata_info.pi_name %>'/>
   
-      <% for (var did in all_metadata[pid]["dataset_ids"]) { %>
+      <% for (var did in all_metadata[pid]["dataset_id"]) { %>
         <input type='hidden' name='dataset_id' value='<%= did %>' />
       <% } %>
       
@@ -108,8 +108,13 @@ var dna_quantitation_options = ["NanoQuant",
       </thead>
       <tbody>
     <% if (all_metadata) { %>
+      <!-- all_metadata -->
+      <%= // JSON.stringify(all_metadata) %>
       <!-- for each project  -->
-      <% for (var pid in all_metadata) { %>
+      <% for (var key in all_metadata) { %>
+                YYY
+        <%= JSON.stringify(key) %>
+        
         <% if (all_field_names) { %>
           <!-- for each field name  -->
           <% for (var idx in all_field_names) { 
@@ -122,9 +127,11 @@ var dna_quantitation_options = ["NanoQuant",
             <td><%= all_field_names[idx][2] %></td>
 <!-- third column (value) -->
             <!-- make a cell for each dataset_id -->
-            <% for (var did in all_metadata[pid]["dataset_ids"]) { %>
+            <% for (var did in all_metadata[pid]["dataset_id"]) { %>
+              did
+      <%= JSON.stringify(did) %>
                 <% include third_column.ejs %>
-            <% } %> <!-- for (var did in all_metadata[pid]["dataset_ids"])  -->
+            <% } %> <!-- for (var did in all_metadata[pid]["dataset_id"])  -->
             
         </tr>
           <% } %> <!-- for (var idx in all_field_names)  -->

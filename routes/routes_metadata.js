@@ -408,11 +408,11 @@ DDD metadata
   return all_metadata_p_d
 };
 
-function make_all_arrays(all_metadata, dataset_id) {
+function make_all_arrays(all_metadata, pid, dataset_id) {
   for (dataset_id in AllMetadataFromFile) {
     Object.keys(AllMetadataFromFile[dataset_id]).forEach(function(key) {
       var val = AllMetadataFromFile[dataset_id][key];
-      all_metadata[key] = [];
+      all_metadata[pid][key] = [];
     });
   }
   return all_metadata
@@ -424,11 +424,8 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   all_metadata[pid]["dataset"] = [];
   all_metadata[pid]["dataset_description"] = [];
   
-  make_all_arrays(all_metadata);
-  
-  console.log("DDD all_metadata");
-  console.log(all_metadata);
-  
+  make_all_arrays(all_metadata, pid, dataset_id);
+    
   for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
       /*
@@ -491,19 +488,12 @@ function populate_metadata_hash(rows, pid, all_metadata) {
       Object.keys(AllMetadataFromFile[dataset_id]).forEach(function(key) {
         var val = AllMetadataFromFile[dataset_id][key];
         /*
-        console.log('EEE1 key');
-        console.log(key);
-        console.log('EEE2 val');
-        console.log(val);
-
-        EEE1 key
-        latitude
-        EEE2 val
-        64.49
-        
+        key
+          latitude
+        val
+          64.49        
         */
-        // logic();
-        all_metadata[key].push(val);
+        all_metadata[pid][key].push(val);
       });
       
       console.log("DDD11 all_metadata");
