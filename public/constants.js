@@ -533,7 +533,7 @@ constants.ORDERED_FIELDS = ["dataset",
 
 constants.ORDERED_METADATA_NAMES = [["structured comment name","Parameter",""], //MBL Supplied or Optional
 ["","General",""],
-["project","VAMPS project name","MBL Supplied"],
+// ["project","VAMPS project name","MBL Supplied"],
 ["dataset","VAMPS dataset name","MBL Supplied"],
 ["sample_id","Sample ID (user sample name)","User supplied"],
 ["investigation_type","Investigation Type","User supplied"],

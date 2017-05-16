@@ -25,7 +25,6 @@
     </select>
   </td>
 <!-- biome -->
-  
 <% } else if (all_field_names[idx][1] === "Biome - Primary") { %>
   <td>
     <select id="biome_primary<%- did%>" name="biome_primary" class = "biome_primary">
@@ -102,18 +101,10 @@
       </select>
     </td>
 <!--material end  -->
+  
 <% } else { %>
+<!-- regular field-->
 <td>
-<!--                 did
-  <%= did %>
-  field_name
-  <%= field_name %>
-  all_metadata[pid]['dataset_ids'][did][field_name]
-  <%= all_metadata[pid]['dataset_ids'][did][field_name] %>
--->                
   <input type="text" id="<%= all_metadata[pid]['dataset_ids'][did][field_name] %><%- did%>" name="<%= all_metadata[pid]['dataset_ids'][did][field_name] %>" value="<%= all_metadata[pid]['dataset_ids'][did][field_name] %>"/>
 </td>
 <% } %> <!-- else -->
-<td>
-<input type="text" id="<%= all_metadata[pid][info][field_name] %><%- info%>" name="<%= all_metadata[pid][info][field_name] %>" value='<%= all_metadata[pid][info][field_name] %>'/>
-</td>

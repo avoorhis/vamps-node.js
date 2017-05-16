@@ -64,19 +64,25 @@ var dna_quantitation_options = ["NanoQuant",
 <!-- <form action="" method="post" enctype="multipart/form-data"> -->
   <fieldset id="general" class="required_fields" >
   <legend id="general-legend">General sample description</legend>
-  <label for="project_title">Title of Project:</label>
-  <input type="text" id="project_title" name="project_title"  value='<%= edit_metadata_info.project_title %>'/>
-  <br />
-  <label for="pi_name">PI Name:</label>
-  <input type="text" id="pi_name" name="pi_name"  value='<%= edit_metadata_info.pi_name %>'/>
-  <br />
-  <label for="project_name">VAMPS project name (MBL Supplied)</label>
   <% if (all_metadata) { %>
     <% for (var pid in all_metadata) { %>
-        <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_GAI_Bv3v5" value='<%= all_metadata[pid].project %>'/>
-        <% for (var did in all_metadata[pid]["dataset_ids"]) { %>
-          <input type='hidden' name='dataset_id' value='<%= did %>' />
-        <% } %>
+      <!-- dataset_ids project title username email institution first_name last_name public -->        
+      
+      <label for="project_title">Title of Project:</label>
+      <input type="text" id="project_title" name="project_title" value='<%= all_metadata[pid].title %>'/>
+
+      <br />
+      <label for="project_name">VAMPS project name (MBL Supplied)</label>
+      <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_GAI_Bv3v5" value='<%= all_metadata[pid].project %>'/>
+
+      <br />
+      <label for="pi_name">PI Name:</label>
+      <input type="text" id="pi_name" name="pi_name"  value='<%= edit_metadata_info.pi_name %>'/>
+  
+      <% for (var did in all_metadata[pid]["dataset_ids"]) { %>
+        <input type='hidden' name='dataset_id' value='<%= did %>' />
+      <% } %>
+      
     <% } %>
   <%
   } else { var all_metadata = {} %>
@@ -117,7 +123,7 @@ var dna_quantitation_options = ["NanoQuant",
 <!-- third column (value) -->
             <!-- make a cell for each dataset_id -->
             <% for (var did in all_metadata[pid]["dataset_ids"]) { %>
-                <% include third_column_temp.ejs %>
+                <% include third_column.ejs %>
             <% } %> <!-- for (var did in all_metadata[pid]["dataset_ids"])  -->
             
         </tr>
