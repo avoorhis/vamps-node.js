@@ -115,8 +115,11 @@ var dna_quantitation_options = ["NanoQuant",
 <!-- second column: MBL or user supplied -->
             <td><%= all_field_names[idx][2] %></td>
 <!-- third column (value) -->
+            <!-- make a cell for each dataset_id -->
             <% for (var did in all_metadata[pid]["dataset_ids"]) { %>
-              <td><%= did %><%= all_field_names[idx][0] %></td>
+              <td><%= did %> <%= all_field_names[idx][0] %> 
+                <%= all_metadata[pid]["dataset_ids"][did][all_field_names[idx][0]]%>
+                </td>
             <% } %> <!-- for (var did in all_metadata[pid]["dataset_ids"])  -->
             
         </tr>
