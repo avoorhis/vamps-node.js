@@ -102,21 +102,15 @@ var dna_quantitation_options = ["NanoQuant",
       </thead>
       <tbody>
     <% if (all_metadata) { %>
+      <!-- for each project  -->
       <% for (var pid in all_metadata) { %>
         <% if (all_field_names) { %>
+          <!-- for each field name  -->
           <% for (var idx in all_field_names) { %>
           <tr>
 <!--first column  -->
-            <% if (dividers.indexOf( all_field_names[idx][1] ) != -1) { %>
-          	<td colspan="<%= all_field_names.length%>" class="header_divider">
-<!--TODO: show the second column instead, if any -->
-            <% } else if (metadata_form_required_fields.indexOf( all_field_names[idx][1] ) != -1) { %>
-          	  <td class="required_fields">
-            <% } else { %>
-          	  <td>
-            <% } %>
-              <label for=<%= all_field_names[idx][1] %>/><%= all_field_names[idx][1] %></label>
-            </td>
+            <% include first_column.ejs %>
+
             <!-- adapter_sequence -->
 <!-- second column: MBL or user supplied -->
 

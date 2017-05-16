@@ -1,0 +1,120 @@
+                    if (dividers.indexOf( all_field_names[idx][1] ) != -1) {
+                    %>
+                      <td></td>
+                    <% } else if (all_field_names[idx][1] === "DNA Extraction") { %>
+                      <td>
+                        <select id="dna_extraction_meth<%- did %>" name="dna_extraction_meth">
+                          <% my_dna_extraction_meth_options.forEach(function(value){ %>
+                            <option value="<%= value %>"
+                              <% if (value == edit_metadata_info.dna_extraction_meth) {%>
+                              selected
+                             <% } %>
+                             ><%= value %></option>
+                          <% }); %>
+                        </select>
+                      </td>
+                    <% } else if (all_field_names[idx][1] === "DNA Quantitation") { %>
+                      <td>
+                        <select id="dna_quantitation<%- did%>" name="dna_quantitation">
+                          <% dna_quantitation.forEach(function(value){ %>
+                            <option value="<%= value %>"
+                              <% if (value == edit_metadata_info.dna_quantitation) {%>
+                              selected
+                             <% } %>
+                             ><%= value %></option>
+                          <% }); %>
+                        </select>
+                      </td>
+<!-- biome -->
+                      
+                    <% } else if (all_field_names[idx][1] === "Biome - Primary") { %>
+                      <td>
+                        <select id="biome_primary<%- did%>" name="biome_primary" class = "biome_primary">
+                          <% biome_primary.forEach(function(value){ %>
+                            <option value="<%= value %>"
+                              <% if (value == edit_metadata_info.biome_primary) {%>
+                              selected
+                             <% } %>
+                             ><%= value %></option>
+                          <% }); %>
+                        </select>
+                      </td>
+                    <% } else if (all_field_names[idx][1] === "Biome - Secondary") { %>
+                      <td>
+                        <select id="biome_secondary<%- did %>" name="biome_secondary" class="biome_secondary">
+                          <% biome_secondary_marine.forEach(function(value){ %>
+                            <option value="<%= value %>"
+                              <% if (value === edit_metadata_info.biome_secondary_marine) {%>
+                              selected
+                             <% } %>
+                             ><%= value %></option>
+                          <% }); %>
+                        </select>
+                      </td>
+<!--feature -->
+                      <% } else if (all_field_names[idx][1] === "Environmental Feature - Primary") { %>
+                        <td>
+                          <select id="feature_primary<%- did%>" name="feature_primary" class = "feature_primary">
+                            <% feature_primary.forEach(function(value){ %>
+                              <option value="<%= value %>"
+                                <% if (value == edit_metadata_info.feature_primary) {%>
+                                selected
+                               <% } %>
+                               ><%= value %></option>
+                            <% }); %>
+                          </select>
+                        </td>
+                      <% } else if (all_field_names[idx][1] === "Environmental Feature - Secondary") { %>
+                        <td>
+                          <select id="feature_secondary<%- did %>" name="feature_secondary" class="feature_secondary">
+                            <% feature_secondary_aquifer.forEach(function(value){ %>
+                              <option value="<%= value %>"
+                                <% if (value === edit_metadata_info.feature_secondary_aquifer) {%>
+                                selected
+                               <% } %>
+                               ><%= value %></option>
+                            <% }); %>
+                          </select>
+                        </td>
+<!--feature end  -->
+<!-- Environmental Material -->
+                      <% } else if (all_field_names[idx][1] === "Environmental Material - Primary") { %>
+                        <td>
+                          <select id="material_primary<%- did%>" name="material_primary" class = "material_primary">
+                            <% material_primary.forEach(function(value){ %>
+                              <option value="<%= value %>"
+                                <% if (value == edit_metadata_info.material_primary) {%>
+                                selected
+                               <% } %>
+                               ><%= value %></option>
+                            <% }); %>
+                          </select>
+                        </td>
+                      <% } else if (all_field_names[idx][1] === "Environmental Material - Secondary") { %>
+                        <td>
+                          <select id="material_secondary<%- did %>" name="material_secondary" class="material_secondary">
+                            <% material_secondary_biofilm.forEach(function(value){ %>
+                              <option value="<%= value %>"
+                                <% if (value === edit_metadata_info.material_secondary_biofilm) {%>
+                                selected
+                               <% } %>
+                               ><%= value %></option>
+                            <% }); %>
+                          </select>
+                        </td>
+<!--material end  -->
+                    <% } else { %>
+                    <td>
+      <!--                 did
+                      <%= did %>
+                      field_name
+                      <%= field_name %>
+                      all_metadata[pid]['dataset_ids'][did][field_name]
+                      <%= all_metadata[pid]['dataset_ids'][did][field_name] %>
+      -->                
+                      <input type="text" id="<%= all_metadata[pid]['dataset_ids'][did][field_name] %><%- did%>" name="<%= all_metadata[pid]['dataset_ids'][did][field_name] %>" value="<%= all_metadata[pid]['dataset_ids'][did][field_name] %>"/>
+                    </td>
+                  <% } %> <!-- else -->
+                <td>
+                  <input type="text" id="<%= all_metadata[pid][info][field_name] %><%- info%>" name="<%= all_metadata[pid][info][field_name] %>" value='<%= all_metadata[pid][info][field_name] %>'/>
+                </td>
