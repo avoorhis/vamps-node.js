@@ -415,13 +415,19 @@ function populate_metadata_hash(rows, pid, all_metadata){
       all_metadata[pid]["first_name"]  = row.first_name
       all_metadata[pid]["last_name"]   = row.last_name
       all_metadata[pid]["public"]      = row.public
-      // console.log("AllMetadataFromFile[dataset_id]");
-      // console.log(AllMetadataFromFile[dataset_id]);
+      console.log("AllMetadataFromFile[dataset_id]");
+      console.log(AllMetadataFromFile[dataset_id]);
       
       all_metadata[pid]["dataset_ids"][dataset_id] = AllMetadataFromFile[dataset_id]
+      console.log('LLL1 all_metadata[pid]["dataset_ids"][dataset_id]');
+      console.log(all_metadata[pid]["dataset_ids"][dataset_id]);
       all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
+      console.log('LLL2  all_metadata[pid]["dataset_ids"][dataset_id]');
+      console.log(all_metadata[pid]["dataset_ids"][dataset_id]);
       all_metadata[pid]["dataset_ids"][dataset_id]["dataset"] = row.dataset
       all_metadata[pid]["dataset_ids"][dataset_id]["dataset_description"] = row.dataset_description
+      console.log('LLL3 all_metadata[pid]["dataset_ids"][dataset_id]["dataset"]');
+      console.log(all_metadata[pid]["dataset_ids"][dataset_id]["dataset"]);
       
   }
   return all_metadata
