@@ -12,6 +12,43 @@
       <% }); %>
     </select>
   </td>
+<% } else if (all_field_names[idx][1] === "DNA Quantitation") { %>
+  <td>
+    <select id="dna_quantitation<%- did%>" name="dna_quantitation">
+      <% dna_quantitation.forEach(function(value){ %>
+        <option value="<%= value %>"
+          <% if (value == edit_metadata_info.dna_quantitation) {%>
+          selected
+         <% } %>
+         ><%= value %></option>
+      <% }); %>
+    </select>
+  </td>
+<!-- biome -->
+<% } else if (all_field_names[idx][1] === "Biome - Primary") { %>
+  <td>
+    <select id="biome_primary<%- did%>" name="biome_primary" class = "biome_primary">
+      <% biome_primary.forEach(function(value){ %>
+        <option value="<%= value %>"
+          <% if (value == edit_metadata_info.biome_primary) {%>
+          selected
+         <% } %>
+         ><%= value %></option>
+      <% }); %>
+    </select>
+  </td>
+<% } else if (all_field_names[idx][1] === "Biome - Secondary") { %>
+  <td>
+    <select id="biome_secondary<%- did %>" name="biome_secondary" class="biome_secondary">
+      <% biome_secondary_marine.forEach(function(value){ %>
+        <option value="<%= value %>"
+          <% if (value === edit_metadata_info.biome_secondary_marine) {%>
+          selected
+         <% } %>
+         ><%= value %></option>
+      <% }); %>
+    </select>
+  </td>
 <% } else { %>
 <td>
   <input type="text" id="<%= all_metadata[pid]['dataset_ids'][did][field_name] %><%- did%>" name="<%= all_metadata[pid]['dataset_ids'][did][field_name] %>" value="<%= all_metadata[pid]['dataset_ids'][did][field_name] %>"/>
