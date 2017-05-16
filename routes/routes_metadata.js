@@ -408,8 +408,21 @@ DDD metadata
   return all_metadata_p_d
 };
 
-function populate_metadata_hash(rows, pid, all_metadata){ 
-  all_metadata[pid]["dataset_ids"] = {}
+function make_all_arrays(all_metadata, dataset_id) {
+  for (dataset_id in AllMetadataFromFile) {
+    Object.keys(AllMetadataFromFile[dataset_id]).forEach(function(key) {
+      var val = AllMetadataFromFile[dataset_id][key];
+      all_metadata[key] = [];
+    });
+  }
+  return all_metadata
+}
+
+function populate_metadata_hash(rows, pid, all_metadata) { 
+  // all_metadata[pid]["dataset_ids"] = {}
+  all_metadata[pid]["dataset_id"] = [];
+  make_all_arrays(all_metadata);
+  
   console.log("DDD all_metadata");
   console.log(all_metadata);
   
@@ -433,28 +446,84 @@ function populate_metadata_hash(rows, pid, all_metadata){
         owner_user_id: 54,
         public: 0 }
       
-{ dataset_id: [ '4312', '4313', '4314', '4315', '4316', '4317', '4318', '4319' ],
+{ 
+      dataset_id: [ '4312', '4313', '4314', '4315', '4316', '4317', '4318', '4319' ],
   project_title: [ 'Icelandic Volcanic Lake' ],
+  collection_date: 
+   [ '2007-06-01',
+     '2007-06-01',
+     '2007-06-01',
+     '2007-06-01',
+     '2007-06-01',
+     '2007-06-01',
+     '2007-06-01',
+     '2008-10-11' ],
+      
       
       */
       var dataset_id = row.did
-      all_metadata[pid]["project"]     = row.project
-      all_metadata[pid]["title"]       = row.title
-      all_metadata[pid]["username"]    = row.username
-      all_metadata[pid]["email"]       = row.email
-      all_metadata[pid]["institution"] = row.institution
-      all_metadata[pid]["first_name"]  = row.first_name
-      all_metadata[pid]["last_name"]   = row.last_name
-      all_metadata[pid]["public"]      = row.public
+      all_metadata[pid]["project"]     = row.project;
+      all_metadata[pid]["title"]       = row.title;
+      all_metadata[pid]["username"]    = row.username;
+      all_metadata[pid]["email"]       = row.email;
+      all_metadata[pid]["institution"] = row.institution;
+      all_metadata[pid]["first_name"]  = row.first_name;
+      all_metadata[pid]["last_name"]   = row.last_name;
+      all_metadata[pid]["public"]      = row.public;
       // console.log("AllMetadataFromFile[dataset_id]");
       // console.log(AllMetadataFromFile[dataset_id]);
+      all_metadata[pid]["dataset_id"].push(row.did);
+
+      console.log('AAA5 all_metadata[pid]["dataset_id"]');
+      console.log(all_metadata[pid]["dataset_id"]);
+      /*
+      console.log("AllMetadataFromFile[dataset_id]");
+      console.log(AllMetadataFromFile[dataset_id]);
+  sodium: '30.65',
+  collection_date: '2007-06-01',
+      */
       
-      all_metadata[pid]["dataset_ids"][dataset_id] = AllMetadataFromFile[dataset_id]
+      Object.keys(AllMetadataFromFile[dataset_id]).forEach(function(key) {
+        var val = AllMetadataFromFile[dataset_id][key];
+        /*
+        console.log('EEE1 key');
+        console.log(key);
+        console.log('EEE2 val');
+        console.log(val);
+
+        EEE1 key
+        latitude
+        EEE2 val
+        64.49
+        
+        */
+        // logic();
+        all_metadata[key].push(val);
+      });
       
       all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
       
       console.log("MMM all_metadata");
       console.log(all_metadata);
+      /* MMM all_metadata
+{ '47': 
+   { dataset_ids: 
+      { '4312': [Object],
+        '4313': [Object],
+        '4314': [Object],
+        '4315': [Object],
+        '4316': [Object],
+        '4317': [Object],
+        '4318': [Object] },
+     project: 'DCO_GAI_Bv3v5',
+     title: 'Icelandic Volcanic Lake',
+     username: 'gaidos',
+     email: 'gaidos@hawaii.edu',
+     institution: 'University of Hawaii',
+     first_name: 'Eric',
+     last_name: 'Gaidos',
+     public: 0 } }
+ */
       
       all_metadata[pid]["dataset_ids"][dataset_id]["dataset"] = row.dataset
       all_metadata[pid]["dataset_ids"][dataset_id]["dataset_description"] = row.dataset_description      
