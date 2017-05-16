@@ -161,13 +161,13 @@ router.post('/metadata_upload',
   [helpers.isLoggedIn],
   form(    
     form.field("dataset_id", "").trim().required().entityEncode().isInt().array(),
-    form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_ -]+$/).array(),
-    form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z- ]+$/).array(),
-    form.field("pi_email", "PI's email address").trim().isEmail().required().entityEncode().array(),
-    form.field("project_abstract", "Project abstract").trim().required().entityEncode().array(),
+    form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_ -]+$/),
+    form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z- ]+$/),
+    form.field("pi_email", "PI's email address").trim().isEmail().required().entityEncode(),
+    form.field("project_abstract", "Project abstract").trim().required().entityEncode(),
     form.field("references", "References").trim().required().entityEncode().array(),
     // References should clean URL
-    form.field("project_name", "VAMPS project name").trim().entityEncode().array(),
+    form.field("project_name", "VAMPS project name").trim().entityEncode(),
     form.field("dataset_name", "VAMPS dataset name").trim().entityEncode().array(),
     form.field("sample_name", "Sample ID (user sample name)").trim().required().entityEncode().array(),
     form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode().array(),
@@ -230,8 +230,20 @@ function format_form(req, res) {
   edit_metadata_info = {}
   console.log("RRR req.body");
   console.log(req.body);
+  /*
+  '16s': [ '16s', '16s', '16s', '16s', '16s', '16s', '16s', '16s' ],
+  project_name: 'DCO_GAI_Bv3v5',
+  pi_name: '',
+  dataset_id: [ '4312', '4313', '4314', '4315', '4316', '4317', '4318', '4319' ],
+  pi_email: '',
+    
+    
+  */
   console.log("QQQ req.form");
   console.log(req.form);
+// { dataset_id: [ '4312', '4313', '4314', '4315', '4316', '4317', '4318', '4319' ],
+  // project_title: [ 'Icelandic Volcanic Lake' ],
+  
   return edit_metadata_info
 }
 
@@ -395,9 +407,11 @@ DDD metadata
   // console.log(all_metadata_p_d);
   return all_metadata_p_d
 };
-  
+
 function populate_metadata_hash(rows, pid, all_metadata){ 
   all_metadata[pid]["dataset_ids"] = {}
+  console.log("DDD all_metadata");
+  console.log(all_metadata);
   
   for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
@@ -418,6 +432,10 @@ function populate_metadata_hash(rows, pid, all_metadata){
         last_name: 'Gaidos',
         owner_user_id: 54,
         public: 0 }
+      
+{ dataset_id: [ '4312', '4313', '4314', '4315', '4316', '4317', '4318', '4319' ],
+  project_title: [ 'Icelandic Volcanic Lake' ],
+      
       */
       var dataset_id = row.did
       all_metadata[pid]["project"]     = row.project
@@ -433,11 +451,62 @@ function populate_metadata_hash(rows, pid, all_metadata){
       
       all_metadata[pid]["dataset_ids"][dataset_id] = AllMetadataFromFile[dataset_id]
       all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
+      
+      console.log("row.dataset");
+      console.log(row.dataset);
+      
       all_metadata[pid]["dataset_ids"][dataset_id]["dataset"] = row.dataset
       all_metadata[pid]["dataset_ids"][dataset_id]["dataset_description"] = row.dataset_description      
   }
   return all_metadata
 };
+  
+// function populate_metadata_hash(rows, pid, all_metadata){
+//   all_metadata[pid]["dataset_ids"] = {}
+//
+//   for (var i = 0; i < rows.length; i++) {
+//       var row = rows[i];
+//       /*
+//       console.log("WWW row");
+//       console.log(row);
+//       TextRow {
+//         project: 'DCO_GAI_Bv3v5',
+//         title: 'Icelandic Volcanic Lake',
+//         did: 4312,
+//         pid: 47,
+//         dataset: 'S1',
+//         dataset_description: 'NULL',
+//         username: 'gaidos',
+//         email: 'gaidos@hawaii.edu',
+//         institution: 'University of Hawaii',
+//         first_name: 'Eric',
+//         last_name: 'Gaidos',
+//         owner_user_id: 54,
+//         public: 0 }
+//
+// { dataset_id: [ '4312', '4313', '4314', '4315', '4316', '4317', '4318', '4319' ],
+//   project_title: [ 'Icelandic Volcanic Lake' ],
+//
+//       */
+//       var dataset_id = row.did
+//       all_metadata[pid]["project"]     = row.project
+//       all_metadata[pid]["title"]       = row.title
+//       all_metadata[pid]["username"]    = row.username
+//       all_metadata[pid]["email"]       = row.email
+//       all_metadata[pid]["institution"] = row.institution
+//       all_metadata[pid]["first_name"]  = row.first_name
+//       all_metadata[pid]["last_name"]   = row.last_name
+//       all_metadata[pid]["public"]      = row.public
+//       // console.log("AllMetadataFromFile[dataset_id]");
+//       // console.log(AllMetadataFromFile[dataset_id]);
+//
+//       all_metadata[pid]["dataset_ids"][dataset_id] = AllMetadataFromFile[dataset_id]
+//       all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
+//       all_metadata[pid]["dataset_ids"][dataset_id]["dataset"] = row.dataset
+//       all_metadata[pid]["dataset_ids"][dataset_id]["dataset_description"] = row.dataset_description
+//   }
+//   return all_metadata
+// };
 
 function get_all_field_names(all_metadata) {
   var all_field_names = [];
@@ -488,6 +557,7 @@ function make_metadata_hash(req, res){
         console.log("in make_metadata_hash");
         // console.log("rows");
         
+        // empty all_metadata
         all_metadata = populate_metadata_hash(rows, pid, all_metadata)
         // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
         // console.log("EEE all_field_names");
