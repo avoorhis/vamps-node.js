@@ -136,7 +136,7 @@ function get_metadata_hash(md_selected){
 // AllMetadataFromFile = helpers.get_metadata_from_file()
 
 router.get('/metadata_upload_from_file', [helpers.isLoggedIn], function (req, res) {
-  console.log('in get metadata/metadata_upload');
+  console.log('in get metadata/metadata_upload_from_file');
 
   //TODO: What to show for project and dataset?
   res.render('metadata/metadata_upload_from_file', {
@@ -159,34 +159,29 @@ router.get('/metadata_upload_new', [helpers.isLoggedIn], function (req, res) {
 
 router.post('/metadata_upload',
   [helpers.isLoggedIn],
-  form(
-    form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_]+$/),
-    form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z- ]+$/),
-    form.field("pi_email", "PI's email address").trim().isEmail().required().entityEncode(),
-    form.field("project_abstract", "Project abstract").trim().required().entityEncode(),
-    form.field("references", "References").trim().required().entityEncode(),
+  form(    
+    form.field("dataset_id", "").trim().required().entityEncode().isInt().array(),
+    form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_]+$/).array(),
+    form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z- ]+$/).array(),
+    form.field("pi_email", "PI's email address").trim().isEmail().required().entityEncode().array(),
+    form.field("project_abstract", "Project abstract").trim().required().entityEncode().array(),
+    form.field("references", "References").trim().required().entityEncode().array(),
     // References should clean URL
-    form.field("project_name", "VAMPS project name").trim().entityEncode(),
-    form.field("dataset_name", "VAMPS dataset name").trim().entityEncode(),
-    form.field("sample_name", "Sample ID (user sample name)").trim().required().entityEncode(),
-    form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode(),
-    form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode(),
-    form.field("collection_date", "Sample collection date (YYYY-MM-DD)").trim().required().entityEncode().isDate("Sample collection date format: YYYY-MM-DD"),
-    form.field("latitude", "Latitude (WGS84 system, values bounded by ±90°)").trim().required().entityEncode().isDecimal(),
-    form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode(),
-    form.field("geo_loc_name_country", "Country").trim().entityEncode(),
-    form.field("longhurst_zone", "Longhurst Zone").trim().entityEncode(),
-    form.field("biome_primary", "Biome - Primary").trim().required().entityEncode().custom(env_items_validation),
-    form.field("biome_secondary", "Biome - Secondary").trim().entityEncode(),
-    // form.field("post[user][id]").isInt(),
-    // feature_primary<%- did%>
-    
-    form.field("feature_primary", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation).array().isInt(),
-    
-    
-    // form.field("env_feature_primary", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation),
-    form.field("env_feature_secondary", "Environmental Feature - Secondary").trim().entityEncode(),
-    form.field("env_material_primary", "Environmental Material - Primary").trim().required().entityEncode().custom(env_items_validation),
+    form.field("project_name", "VAMPS project name").trim().entityEncode().array(),
+    form.field("dataset_name", "VAMPS dataset name").trim().entityEncode().array(),
+    form.field("sample_name", "Sample ID (user sample name)").trim().required().entityEncode().array(),
+    form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode().array(),
+    form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode().array(),
+    form.field("collection_date", "Sample collection date (YYYY-MM-DD)").trim().required().entityEncode().isDate("Sample collection date format: YYYY-MM-DD").array(),
+    form.field("latitude", "Latitude (WGS84 system, values bounded by ±90°)").trim().required().entityEncode().isDecimal().array(),
+    form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode().array(),
+    form.field("geo_loc_name_country", "Country").trim().entityEncode().array(),
+    form.field("longhurst_zone", "Longhurst Zone").trim().entityEncode().array(),
+    form.field("biome_primary", "Biome - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("biome_secondary", "Biome - Secondary").trim().entityEncode().array(),
+    form.field("feature_primary", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("env_feature_secondary", "Environmental Feature - Secondary").trim().entityEncode().array(),
+    form.field("env_material_primary", "Environmental Material - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
     form.field("env_material_secondary", "Environmental Material - Secondary").trim().entityEncode()
     ),
   function (req, res) {
@@ -207,6 +202,7 @@ router.post('/metadata_upload',
       console.log("req.body");
       console.log(req.body);
       
+      // TODO change to have pid, dids etc, see YYY
       req.edit_metadata_info = req.form;
       console.log("req.edit_metadata_info");
       console.log(req.edit_metadata_info);
@@ -237,19 +233,53 @@ function editMetadataForm(req, res){
   console.log(req.edit_metadata_info);
 
   if (req.body.from_where === 'metadata_upload_from_file') {
-    edit_metadata_address = 'metadata/metadata_upload_from_file'
+    edit_metadata_address = 'metadata/metadata_upload_from_file';
+    console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
+    res.render(edit_metadata_address, {
+      title: 'VAMPS: Metadata_upload',
+      user: req.user,
+      hostname: req.CONFIG.hostname,
+      user: req.user,
+      hostname: req.CONFIG.hostname,
+      all_metadata: req.edit_metadata_info,      
+      all_field_names: CONSTS.ORDERED_METADATA_NAMES,
+      dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+      dna_extraction: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+      dna_quantitation: CONSTS.DNA_QUANTITATION_OPTIONS,
+      biome_primary: CONSTS.BIOME_PRIMARY,
+      biome_secondary_marine: CONSTS.BIOME_SECONDARY_MARINE,
+      feature_primary: CONSTS.FEATURE_PRIMARY,
+      feature_secondary_aquifer: CONSTS.FEATURE_SECONDARY_AQUIFER,
+      material_primary: CONSTS.MATERIAL_PRIMARY,
+      material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
+      metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
+    }      
+      );
+
+    // Object.assign(obj1, obj2);
+    
   }
   else {
-    edit_metadata_address = 'metadata/metadata_upload_new'
-  }
-  res.render(edit_metadata_address, {
+    edit_metadata_address = 'metadata/metadata_upload_new';
+    console.log("AAA1 edit_metadata_address = 'metadata/metadata_upload_new'");
+    res.render(edit_metadata_address, {
     title: 'VAMPS: Metadata',
     user: req.user,
     hostname: req.CONFIG.hostname,
     edit_metadata_info: req.edit_metadata_info,
     //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
   });
+    
+  }
+  // res.render(edit_metadata_address, {
+  //   title: 'VAMPS: Metadata',
+  //   user: req.user,
+  //   hostname: req.CONFIG.hostname,
+  //   edit_metadata_info: req.edit_metadata_info,
+  //   //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
+  // });
 }
+
 
 // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
 
@@ -290,8 +320,8 @@ router.post('/start_edit',
     // console.log(AllMetadataFromFile['47']);
     // all_metadata = {}
     make_metadata_hash(req, res);
-    // console.log("AAA all_metadata");
-    // console.log(all_metadata);
+    console.log("TTT all_metadata from start_edit");
+    console.log(all_metadata);
     
     /*
     FFF req
@@ -354,6 +384,8 @@ DDD metadata
 };
   
 function populate_metadata_hash(rows, pid, all_metadata){ 
+  all_metadata[pid]["dataset_ids"] = {}
+  
   for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
       /*
@@ -383,15 +415,13 @@ function populate_metadata_hash(rows, pid, all_metadata){
       all_metadata[pid]["first_name"]  = row.first_name
       all_metadata[pid]["last_name"]   = row.last_name
       all_metadata[pid]["public"]      = row.public
-      
-      all_metadata[pid][dataset_id] = {}
       // console.log("AllMetadataFromFile[dataset_id]");
       // console.log(AllMetadataFromFile[dataset_id]);
       
-      all_metadata[pid][dataset_id] = AllMetadataFromFile[dataset_id]
-      all_metadata[pid][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid][dataset_id]);
-      all_metadata[pid][dataset_id]["dataset"] = row.dataset
-      all_metadata[pid][dataset_id]["dataset_description"] = row.dataset_description
+      all_metadata[pid]["dataset_ids"][dataset_id] = AllMetadataFromFile[dataset_id]
+      all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
+      all_metadata[pid]["dataset_ids"][dataset_id]["dataset"] = row.dataset
+      all_metadata[pid]["dataset_ids"][dataset_id]["dataset_description"] = row.dataset_description
       
   }
   return all_metadata
@@ -429,6 +459,7 @@ function intersection_destructive(a, b)
 
 
 // TODO: rename
+// todo: if there is req.form (or req.body?) use the result?
 function make_metadata_hash(req, res){ 
   pid = req.body.project_id
   all_metadata = {}
@@ -452,8 +483,8 @@ function make_metadata_hash(req, res){
         // var dividers = CONSTS.ORDERED_METADATA_DIVIDERS;
         
         
-        // console.log("TTT all_metadata");
-        // console.log(all_metadata);
+        console.log("YYY all_metadata from make_metadata_hash");
+        console.log(all_metadata);
         res.render('metadata/metadata_upload_from_file', {
           title: 'VAMPS: Metadata_upload',
           user: req.user,
