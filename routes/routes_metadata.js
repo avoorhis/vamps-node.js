@@ -161,7 +161,7 @@ router.post('/metadata_upload',
   [helpers.isLoggedIn],
   form(    
     form.field("dataset_id", "").trim().required().entityEncode().isInt().array(),
-    form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_]+$/).array(),
+    form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_ -]+$/).array(),
     form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z- ]+$/).array(),
     form.field("pi_email", "PI's email address").trim().isEmail().required().entityEncode().array(),
     form.field("project_abstract", "Project abstract").trim().required().entityEncode().array(),
@@ -203,9 +203,9 @@ router.post('/metadata_upload',
       console.log(req.body);
       
       // TODO change to have pid, dids etc, see YYY
-      req.edit_metadata_info = req.form;
-      console.log("req.edit_metadata_info");
-      console.log(req.edit_metadata_info);
+      // req.edit_metadata_info = req.form;
+      // console.log("req.edit_metadata_info");
+      // console.log(req.edit_metadata_info);
       
       req.flash('fail', req.form.errors);
       editMetadataForm(req, res);
@@ -226,13 +226,26 @@ router.post('/metadata_upload',
   }
 );
 
+function format_form(req, res) {
+  edit_metadata_info = {}
+  console.log("RRR req.body");
+  console.log(req.body);
+  console.log("QQQ req.form");
+  console.log(req.form);
+  return edit_metadata_info
+}
+
 function editMetadataForm(req, res){
   console.log('in editMetadataForm');
   // console.log(req);
-  console.log("RRR req.edit_metadata_info");
-  console.log(req.edit_metadata_info);
+  
+
 
   if (req.body.from_where === 'metadata_upload_from_file') {
+    req.edit_metadata_info = format_form(req, res);
+    console.log("QQQ req.edit_metadata_info");
+    console.log(req.edit_metadata_info);
+    
     edit_metadata_address = 'metadata/metadata_upload_from_file';
     console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
     res.render(edit_metadata_address, {
@@ -266,7 +279,7 @@ function editMetadataForm(req, res){
     title: 'VAMPS: Metadata',
     user: req.user,
     hostname: req.CONFIG.hostname,
-    edit_metadata_info: req.edit_metadata_info,
+    edit_metadata_info: req.form,
     //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
   });
     
@@ -484,8 +497,6 @@ function make_metadata_hash(req, res){
         
         console.log("YYY all_metadata from make_metadata_hash");
         console.log(all_metadata);
-        console.log('LLL1 all_metadata[pid]["dataset_ids"][dataset_id]');
-        console.log(all_metadata[13]["dataset_ids"][3958]);
         
         res.render('metadata/metadata_upload_from_file', {
           title: 'VAMPS: Metadata_upload',
