@@ -421,6 +421,9 @@ function make_all_arrays(all_metadata, dataset_id) {
 function populate_metadata_hash(rows, pid, all_metadata) { 
   // all_metadata[pid]["dataset_ids"] = {}
   all_metadata[pid]["dataset_id"] = [];
+  all_metadata[pid]["dataset"] = [];
+  all_metadata[pid]["dataset_description"] = [];
+  
   make_all_arrays(all_metadata);
   
   console.log("DDD all_metadata");
@@ -473,6 +476,8 @@ function populate_metadata_hash(rows, pid, all_metadata) {
       // console.log("AllMetadataFromFile[dataset_id]");
       // console.log(AllMetadataFromFile[dataset_id]);
       all_metadata[pid]["dataset_id"].push(row.did);
+      all_metadata[pid]["dataset"].push(row.dataset);
+      all_metadata[pid]["dataset_description"].push(row.dataset_description);
 
       console.log('AAA5 all_metadata[pid]["dataset_id"]');
       console.log(all_metadata[pid]["dataset_id"]);
@@ -501,10 +506,13 @@ function populate_metadata_hash(rows, pid, all_metadata) {
         all_metadata[key].push(val);
       });
       
-      all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
-      
-      console.log("MMM all_metadata");
+      console.log("DDD11 all_metadata");
       console.log(all_metadata);
+      
+      // all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
+      
+      // console.log("MMM all_metadata");
+      // console.log(all_metadata);
       /* MMM all_metadata
 { '47': 
    { dataset_ids: 
@@ -525,8 +533,6 @@ function populate_metadata_hash(rows, pid, all_metadata) {
      public: 0 } }
  */
       
-      all_metadata[pid]["dataset_ids"][dataset_id]["dataset"] = row.dataset
-      all_metadata[pid]["dataset_ids"][dataset_id]["dataset_description"] = row.dataset_description      
   }
   return all_metadata
 };
