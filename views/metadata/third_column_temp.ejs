@@ -1,0 +1,7 @@
+<% if (dividers.indexOf( all_field_names[idx][1] ) != -1) { %>
+  <td></td>
+<% } else { %>
+<td>
+  <input type="text" id="<%= all_metadata[pid]['dataset_ids'][did][field_name] %><%- did%>" name="<%= all_metadata[pid]['dataset_ids'][did][field_name] %>" value="<%= all_metadata[pid]['dataset_ids'][did][field_name] %>"/>
+</td>
+<% } %> <!-- else -->
