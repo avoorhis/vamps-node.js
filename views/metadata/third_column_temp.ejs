@@ -1,5 +1,17 @@
 <% if (dividers.indexOf( all_field_names[idx][1] ) != -1) { %>
   <td></td>
+<% } else if (all_field_names[idx][1] === "DNA Extraction") { %>
+  <td>
+    <select id="dna_extraction_meth<%- did %>" name="dna_extraction_meth">
+      <% my_dna_extraction_meth_options.forEach(function(value){ %>
+        <option value="<%= value %>"
+          <% if (value == edit_metadata_info.dna_extraction_meth) {%>
+          selected
+         <% } %>
+         ><%= value %></option>
+      <% }); %>
+    </select>
+  </td>
 <% } else { %>
 <td>
   <input type="text" id="<%= all_metadata[pid]['dataset_ids'][did][field_name] %><%- did%>" name="<%= all_metadata[pid]['dataset_ids'][did][field_name] %>" value="<%= all_metadata[pid]['dataset_ids'][did][field_name] %>"/>

@@ -117,9 +117,7 @@ var dna_quantitation_options = ["NanoQuant",
 <!-- third column (value) -->
             <!-- make a cell for each dataset_id -->
             <% for (var did in all_metadata[pid]["dataset_ids"]) { %>
-              <td>
                 <% include third_column_temp.ejs %>
-              </td>
             <% } %> <!-- for (var did in all_metadata[pid]["dataset_ids"])  -->
             
         </tr>
