@@ -276,7 +276,6 @@ function editMetadataForm(req, res){
   console.log(pid);
   console.log("XXX3 req.body.project_id");
   console.log(all_metadata);
-  pid = req.body.project_id
   all_metadata = {pid: req.form}
   res.render('metadata/metadata_upload_from_file', {
       title: 'VAMPS: Metadata_upload',
