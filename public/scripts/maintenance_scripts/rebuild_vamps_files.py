@@ -570,6 +570,7 @@ if __name__ == '__main__':
         dbhost = 'bpcweb7'
     else:
         dbhost = 'localhost'
+        args.NODE_DATABASE = 'vamps_development'
     if args.units == 'silva119':
         args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_silva119")
     elif args.units == 'rdp2.6':

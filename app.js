@@ -265,7 +265,7 @@ fs.ensureDir(config.USER_FILES_BASE, function (err) {
                 if(err) {console.log(err);} // ug+rwx
             });
         }
-        console.log('Ensured USER FILES dir is present: '+config.USER_FILES_BASE)
+        console.log('Ensured USER FILES dir is present:\n\t'+config.USER_FILES_BASE)
 
     }        // dir has now been created, including the directory it is to be placed in
 
@@ -416,7 +416,7 @@ if(hdf5_is_available){
       console.log(e);
       AllMetadata = {}
     }
-    console.log('Loading METADATA as AllMetadata from: '+meta_file);
+    console.log('Loading METADATA as AllMetadata from:\n\t'+meta_file);
 }
 try{
     var sizeof = require('object-sizeof');
