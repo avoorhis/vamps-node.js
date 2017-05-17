@@ -124,12 +124,33 @@ var dna_quantitation_options = ["NanoQuant",
 <!-- third column (value) -->
             <!-- make a cell for each dataset_id -->
             <% for (var did in all_metadata[pid]["dataset_id"]) { %>
+              <% yourArray = ["dna_extraction_meth", 
+              "dna_quantitation", 
+              "biome_primary", 
+              "biome_secondary", 
+              "feature_primary", 
+              "feature_secondary", 
+              "material_primary", 
+              "material_secondary"]
+              
+              if (yourArray.indexOf(all_field_names[idx][0]) > -1) { %>
+                <% include third_column_dropdowns.ejs %>
+              <% } else { %>
               <% if (all_metadata[pid][field_name]) { %>
                 <% for (var one_val in all_metadata[pid][field_name]) { %>              
-                  <% include third_column.ejs %>
+                  <td>
+                    <!-- [ 4312, 4313, 4314, 4315, 4316, 4317 ] -->
+                    <input type="text" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= all_metadata[pid][field_name][one_val] %>"/>
+                  </td>
+                  
                 <% } %> <!-- for (var one_val in all_metadata[pid][field_name])   -->
               <% } else if (all_metadata[pid][field_name] == null){ %> <!-- if (all_metadata[pid][field_name])   -->
-                <% include third_column_dropdowns.ejs %>
+                <!-- regular field-->
+                <td>
+                  <input type="text" id="<%= field_name %><%- did%>" name="<%= field_name %>"/>
+                </td>
+                <% } %>
+                
               <% } %> <!-- if (all_metadata[pid][field_name])  -->
               
             <% } %> <!-- for (var did in all_metadata[pid]["dataset_id"])  -->
