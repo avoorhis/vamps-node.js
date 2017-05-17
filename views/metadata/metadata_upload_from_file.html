@@ -124,17 +124,7 @@ var dna_quantitation_options = ["NanoQuant",
 <!-- third column (value) -->
             <!-- make a cell for each dataset_id -->
             <% for (var did in all_metadata[pid]["dataset_id"]) { %>
-              <% if (all_metadata[pid][field_name]) { %>
-                <!-- If there is a value -->
-                <% for (var one_val in all_metadata[pid][field_name]) { %>
-                  <% include third_column.ejs %>
-                <% } %> <!-- for (var one_val in all_metadata[pid][field_name]) -->
-              <% } else { %> <!-- if (all_metadata[pid][field_name][one_val]) { -->
-                <td>
-                  <input type="text" id="<%= field_name %><%- did%>" name="<%= field_name %>" />
-                </td>
-              <% } %> <!-- else: if not (all_metadata[pid][field_name][one_val]) { -->
-              
+              <% include third_column.ejs %>
             <% } %> <!-- for (var did in all_metadata[pid]["dataset_id"])  -->
 
         </tr>
