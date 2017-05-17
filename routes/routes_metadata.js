@@ -53,14 +53,11 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, function(req, res) {
       console.log('in metadatalist result')
       var md_selected = req.params.mditem;
       console.log(md_selected) 
-        
       var mdvalues = {};
       for(did in DATASET_NAME_BY_DID){
         if(did in AllMetadata){
         if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_selected.slice(0,md_selected.length-3)) != -1){
             var data = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected)  // send _id
-            console.log('data')
-            console.log(data)
             mdvalues[did] = data.value
             md_selected_show = data.name
         }else if(AllMetadata[did].hasOwnProperty(md_selected)){

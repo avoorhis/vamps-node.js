@@ -1,4 +1,43 @@
 
+selection_btn_visuals = document.getElementById('selection_btn_visuals') || null;
+if (selection_btn_visuals !== null) {
+  selection_btn_visuals.addEventListener('click', function () {
+        
+        // get selected matrix
+        radios = document.getElementsByName('otu')
+        selected_id = 0
+        for(r in radios){
+            if(radios[r].checked == true){
+                selected_id = radios[r].id
+            }
+        }
+        if(selected_id > 0){
+            
+          var f = document.createElement("form");
+          f.setAttribute('method',"post");
+          f.setAttribute('action',"view_selection");
+          var input = document.createElement('input');
+         
+          input.type = 'hidden';
+          input.name = 'otu_id';
+          input.value = selected_id;
+          f.appendChild(input);
+          
+          var submit = document.createElement('input');
+          submit.setAttribute('type', "submit");
+          f.appendChild(submit);
+          document.body.appendChild(f);
+
+          f.submit();
+          document.body.removeChild(f);
+        }else{
+            alert('Select some data');
+            return;
+        }
+        
+        
+  });
+}
 
 function delete_project(method,code){
 	var resp = confirm('are you sure?')
@@ -99,4 +138,20 @@ function adjust_radios(method){
 
 
 
+}
+
+function load_otu_list(){
+
+
+var xmlhttp = new XMLHttpRequest();
+	xmlhttp.open("GET", "/otus/load_otu_list", true);
+    xmlhttp.onreadystatechange = function() {
+          if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            var response = xmlhttp.responseText;
+            //console.log(response)
+            document.getElementById('otus_select_div').innerHTML = response
+
+          }
+    }
+	xmlhttp.send();
 }

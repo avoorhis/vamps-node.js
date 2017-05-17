@@ -182,6 +182,7 @@ module.exports.get_datasets = function(callback){
       }
       console.log(' INITIALIZING MD_ILLUMINA_INDEX');
   });
+  
   connection.query(queries.get_select_primer_suite_query(), function(err, rows, fields){    
       if (err)  {
         console.log('Query error: ' + err);
@@ -190,7 +191,8 @@ module.exports.get_datasets = function(callback){
       } else {
         helpers.get_select_primer_suite_query(rows);          
       }
-      console.log(' INITIALIZING MD_PRIMER_SUITE');
+      console.log(' INITIALIZING MD_PRIMER_SUITEx');
+      console.log(MD_PRIMER_SUITE)
   });
   connection.query(queries.get_select_run_query(), function(err, rows, fields){    
       if (err)  {
