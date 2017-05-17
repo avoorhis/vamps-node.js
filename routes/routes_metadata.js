@@ -266,22 +266,23 @@ function editMetadataForm(req, res){
   console.log('in editMetadataForm');
   // console.log(req);
   
+  edit_metadata_address = 'metadata/metadata_upload_from_file';
+  console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
 
-
-  if (req.body.from_where === 'metadata_upload_from_file') {
-    req.edit_metadata_info = format_form(req, res);
-    console.log("QQQ req.edit_metadata_info");
-    console.log(req.edit_metadata_info);
-    
-    edit_metadata_address = 'metadata/metadata_upload_from_file';
-    console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
-    res.render(edit_metadata_address, {
+  console.log("XXX1 all_metadata: req.form");
+  console.log(req.form);
+  console.log("XXX2 req.body.project_id");
+  console.log(req.body.project_id);
+  console.log(pid);
+  console.log("XXX3 req.body.project_id");
+  console.log(all_metadata);
+  pid = req.body.project_id
+  all_metadata = {pid: req.form}
+  res.render('metadata/metadata_upload_from_file', {
       title: 'VAMPS: Metadata_upload',
       user: req.user,
       hostname: req.CONFIG.hostname,
-      user: req.user,
-      hostname: req.CONFIG.hostname,
-      all_metadata: req.edit_metadata_info,      
+      all_metadata: all_metadata,
       all_field_names: CONSTS.ORDERED_METADATA_NAMES,
       dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
       dna_extraction: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
@@ -293,24 +294,53 @@ function editMetadataForm(req, res){
       material_primary: CONSTS.MATERIAL_PRIMARY,
       material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
       metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
-    }      
-      );
-
-    // Object.assign(obj1, obj2);
-    
-  }
-  else {
-    edit_metadata_address = 'metadata/metadata_upload_new';
-    console.log("AAA1 edit_metadata_address = 'metadata/metadata_upload_new'");
-    res.render(edit_metadata_address, {
-    title: 'VAMPS: Metadata',
-    user: req.user,
-    hostname: req.CONFIG.hostname,
-    edit_metadata_info: req.form,
-    //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
   });
-    
-  }
+  
+
+
+  // if (req.body.from_where === 'metadata_upload_from_file') {
+  //    req.edit_metadata_info = format_form(req, res);
+  //    console.log("QQQ req.edit_metadata_info");
+  //    console.log(req.edit_metadata_info);
+  //    
+  //    edit_metadata_address = 'metadata/metadata_upload_from_file';
+  //    console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
+  //    res.render(edit_metadata_address, {
+  //      title: 'VAMPS: Metadata_upload',
+  //      user: req.user,
+  //      hostname: req.CONFIG.hostname,
+  //      user: req.user,
+  //      hostname: req.CONFIG.hostname,
+  //      all_metadata: req.edit_metadata_info,      
+  //      all_field_names: CONSTS.ORDERED_METADATA_NAMES,
+  //      dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+  //      dna_extraction: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+  //      dna_quantitation: CONSTS.DNA_QUANTITATION_OPTIONS,
+  //      biome_primary: CONSTS.BIOME_PRIMARY,
+  //      biome_secondary_marine: CONSTS.BIOME_SECONDARY_MARINE,
+  //      feature_primary: CONSTS.FEATURE_PRIMARY,
+  //      feature_secondary_aquifer: CONSTS.FEATURE_SECONDARY_AQUIFER,
+  //      material_primary: CONSTS.MATERIAL_PRIMARY,
+  //      material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
+  //      metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
+  //    }      
+  //      );
+  // 
+  //    // Object.assign(obj1, obj2);
+  //    
+  //  }
+  //  else {
+  //    edit_metadata_address = 'metadata/metadata_upload_new';
+  //    console.log("AAA1 edit_metadata_address = 'metadata/metadata_upload_new'");
+  //    res.render(edit_metadata_address, {
+  //    title: 'VAMPS: Metadata',
+  //    user: req.user,
+  //    hostname: req.CONFIG.hostname,
+  //    edit_metadata_info: req.form,
+  //    //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
+  //  });
+  //    
+  //  }
   // res.render(edit_metadata_address, {
   //   title: 'VAMPS: Metadata',
   //   user: req.user,
@@ -648,7 +678,21 @@ function make_metadata_hash(req, res){
         
         console.log("YYY all_metadata from make_metadata_hash");
         console.log(all_metadata);
+        /*
+        YYY all_metadata from make_metadata_hash
+        { '47': 
+           { dataset_id: [ 4312, 4313, 4314, 4315, 4316, 4317, 4318, 4319 ],
+             dataset: [ 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'Sk_hlaup' ],
+        ...
+        project: 'DCO_GAI_Bv3v5',
+        title: 'Icelandic Volcanic Lake',
         
+        XXX1 all_metadata: req.form
+        { dataset_id: [ '0', '1', '2', '3', '4', '5', '6', '7' ],
+          project_title: 'Icelandic Volcanic Lake',
+          pi_name: '',
+        
+        */
         res.render('metadata/metadata_upload_from_file', {
           title: 'VAMPS: Metadata_upload',
           user: req.user,
