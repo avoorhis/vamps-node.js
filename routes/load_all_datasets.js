@@ -191,6 +191,7 @@ module.exports.get_datasets = function(callback){
         helpers.get_select_primer_suite_query(rows);          
       }
       console.log(' INITIALIZING MD_PRIMER_SUITE');
+      
   });
   connection.query(queries.get_select_run_query(), function(err, rows, fields){    
       if (err)  {

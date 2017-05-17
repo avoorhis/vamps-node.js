@@ -175,7 +175,6 @@ class Mysql_util:
 
     def execute_simple_select(self, field_name, table_name, where_part):
       id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
-      #print id_query
       return self.execute_fetch_select(id_query)[0]
 
     def get_id(self, field_name, table_name, where_part, rows_affected = [0,0]):
@@ -191,7 +190,8 @@ class Mysql_util:
         except:
           self.utils.print_both("Unexpected:")
           # self.utils.print_both(sys.exc_info()[0])
-          raise
+          id_result = 0
+          #raise
 
       # self.utils.print_array_w_title(id_result, "=====\nid_result IN get_id")
       return id_result
@@ -239,7 +239,10 @@ class Utils:
       print message
 
     def read_csv_into_list(self, file_name):
-      csv_file_content_all = list(csv.reader(open(file_name, 'rb'), delimiter = ','))
+      xx = open(file_name, 'rb')
+      yy = csv.reader(xx, delimiter = ',')
+      print yy
+      csv_file_content_all = list(yy)
       try:
         csv_file_fields      = csv_file_content_all[0]
         csv_file_content     = csv_file_content_all[1:]
@@ -612,6 +615,14 @@ class User:
 class Project:
 
   def __init__(self, mysql_util):
+    self.project    = args.project
+    pid= self.get_project_id()
+    if pid:
+        print('This project is already in database -- you must delete it first if you want to update; pid=',pid)
+        sys.exit()
+    else:
+        print 'project okay'
+    
     self.utils      = Utils()
     self.contact    = ""
     self.project_id = ""
@@ -619,7 +630,9 @@ class Project:
     self.project_dict = {}
     self.project    = ""
     self.public     = args.public
-
+    
+    
+    
   def parse_project_csv(self, project_csv_file_name):
     # "project","title","project_description","funding","env_sample_source_id","contact","email","institution"
 
@@ -647,9 +660,11 @@ class Project:
     
   def get_project_id(self):
     self.project_id = mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % self.project)
+    return self.project_id
     
   def make_project_dict(self):
-    self.project_dict[self.project] = self.project_id    
+    self.project_dict[self.project] = self.project_id 
+  
 
 class Dataset:
   def __init__(self, mysql_util):
@@ -956,10 +971,8 @@ class Metadata:
   custom_metadata fields are per project,
   but data could be by dataset
 
-  csv: "dataset"	"parameterName"	"parameterValue"	"units"	"miens_units"	"project"	"units_id"	"structured_comment_name"	"method"	"other"	"notes"	"ts"	"entry_date"	"parameter_id"	"project_dataset"
-"SMS_0001_2007_09_19"	"domain"	"Bacteria"	"Alphanumeric"	"Alphanumeric"	"ICM_SMS_Bv6"	"1"	"domain"	""	"0"	"sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19"	"2012-04-27 08:25:07"	""	"0"	"ICM_SMS_Bv6--SMS_0001_2007_09_19"
-
-  required_metadata_info (dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public)
+ 
+  required_metadata_info (dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, geo_loc_name, elevation, env_biome, env_feature, env_matter, latitude, longitude, public)
   custom_metadata_fields (project_id, field_name, field_units, example)
   
   create all metadata values
@@ -993,47 +1006,34 @@ class Metadata:
     self.metadata_file_fields            = []
     self.metadata_file_content           = []
     self.metadata_w_names                = []
-    self.required_metadata_info_fields   = ["dataset_id", 
-                                            "taxon_id", 
-                                            "description", 
-                                            "common_name", 
-                                            "assigned_from_geo",
-                                            "altitude", 
-                                            "collection_date", 
-                                            "depth", 
-                                            #"country", 
-                                            "elevation", 
-                                            #"env_biome", 
-                                            #"env_feature", 
-                                            #"env_matter", 
+    self.required_metadata_info_fields   = ["dataset_id",                                        
+                                            "collection_date",
                                             "latitude", 
-                                            "longitude", 
-                                            #"public",
-                                            "fragment_name_id",   # 16s or 18s FROM NAME
+                                            "longitude",                                            
+                                            "target_gene_id",   # 16s or 18s FROM NAME
                                             "dna_region_id",     # v6 v3 v4v6 .... FROM NAME
                                             "sequencing_platform_id", # 454 or illumina ???
                                             "domain_id",            # Bacteria, Archaea....FROM NAME
-                                            "country_id",           #  from country table ???
+                                            "geo_loc_name_id",           #  from term table ???
                                             "env_feature_id",      
                                             "env_matter_id",       
                                             "env_biome_id",        
-                                            "env_package_id"
+                                            "env_package_id",
+                                            "adapter_sequence",
+                                            "illumina_index",
+                                            "primer_suite",
+                                            "run"
                                             ]
     
-    self.substitute_field_names          = { \
-                                            "latitude" : ["lat","LATITUDE"], \
-                                            "longitude": ["long", "lon","LONGITUDE"], \
+    self.substitute_field_names          = { 
+                                            "latitude" : ["lat","LATITUDE"], 
+                                            "longitude": ["long", "lon","LONGITUDE"],
                                             #"env_biome_id": ["envo_biome","ENV_BIOME","ENVO_BIOME"], \
                                             #"env_matter_id":["envo_matter","envo_material","env_meterial","ENV_MATTER","ENVO_MATTER"], \
-                                            #"env_feature_id":["envo_feature","ENV_FEATURE","ENVO_FEATURE"], \
-                                            "depth":["DEPTH"], \
-                                            "dataset_id":["DATASET_ID"], \
-                                            "taxon_id":["TAXON_ID"], \
-                                            "description":["DESCRIPTION"], \
-                                            "common_name":["COMMON_NAME"], \
-                                            "altitude":["ALTITUDE"], \
-                                            "collection_date":["COLLECTION_DATE"], \
-                                            "dataset_id":["DATASET_ID"], \
+                                            #"env_feature_id":["envo_feature","ENV_FEATURE","ENVO_FEATURE"], \                                           
+                                            "dataset_id":["DATASET_ID"],
+                                            "collection_date":["COLLECTION_DATE"], 
+                                            "run":["rundate"]
                                             }
     self.existing_field_names            = set()
     self.required_metadata               = []
@@ -1047,91 +1047,114 @@ class Metadata:
     self.project_ids                              = set()
     self.custom_metadata_per_project_dataset_dict = defaultdict(lambda: defaultdict(dict))
     
-    self.get_fragment_ids()
-    self.get_dna_region_ids()
-    self.get_domain_ids()
-    self.get_sequencing_platform_ids()
-    self.get_country_ids()
-    self.get_term_ids()
-    self.get_package_ids()
+    self.get_target_gene_ids()             # args.target_gene
+    self.get_dna_region_ids()           # args.dna_region
+    self.get_domain_ids()               # args.domain
+    self.get_sequencing_platform_ids()  # args.platform
+    #self.get_geo_loc_name_ids()              # args.geo_loc_name
+    self.get_term_ids()                 # args.env_matter, args.env_feature, args.env_biome
+    self.get_package_ids()              # args.env_package
+    self.get_adapter_sequence_ids()
+    self.get_illumina_index_ids()
+    self.get_primer_suite_ids()
+    self.get_run_ids()
+    
+    #print('self.target_gene_list',self.target_gene_list)
+    #print('self.dna_region_list',self.dna_region_list)
+    #print('self.domain_list',self.domain_list)
+    print('self.sequencing_platform_list',self.sequencing_platform_list)
+    #print('self.geo_loc_name_list',self.geo_loc_name_list)
+    print('self.package_list',self.package_list)
+    #print('self.adapter_sequence_list',self.adapter_sequence_list)
+    print('self.illumina_index_list',self.illumina_index_list)
+    print('self.primer_suite_list',self.primer_suite_list)
+    #print('self.run_list',self.run_list)
+    
+    (target_gene, self.target_gene_id)              = self.find_required_id('target_gene', args.target_gene)
+    (dna_region,self.dna_region_id)                  = self.find_required_id('dna_region', args.dna_region)
+    (domain,self.domain_id)                          = self.find_required_id('domain', args.domain)
+    (sequencing_platform,self.sequencing_platform_id)= self.find_required_id('platform', args.platform)
+    (geo_loc_name,self.geo_loc_name_id)              = self.find_required_id('geo_loc_name', args.geo_loc_name)
+    (env_matter,self.env_matter_id)                  = self.find_required_id('env_matter', args.env_matter)
+    (env_feature,self.env_feature_id)                = self.find_required_id('env_feature', args.env_feature)
+    (env_biome,self.env_biome_id)                    = self.find_required_id('env_biome', args.env_biome)
+    (env_package,self.env_package_id)                = self.find_required_id('env_package', args.env_package)
+    (adapter_sequence,self.adapter_sequence_id)      = self.find_required_id('adapter_sequence', args.adapter_sequence)
+    (illumina_index,self.illumina_index_id)          = self.find_required_id('illumina_index', args.illumina_index)
+    (primer_suite,self.primer_suite_id)              = self.find_required_id('primer_suite', args.primer_suite)
+    (run,self.run_id)                               = self.find_required_id('run', args.run)
+    
+    self.report = ''
+    self.report += '\nProject::\t'+args.project+'\n'
+    self.report += 'target_gene::\t'+target_gene+' (id:'+self.target_gene_id+')'+'\n'
+    self.report += 'dna_region::\t'+dna_region+' (id:'+self.dna_region_id+')'+'\n'
+    self.report += 'domain::\t'+domain+' (id:'+self.domain_id+')'+'\n'
+    self.report += 'platform::\t'+sequencing_platform+' (id:'+self.sequencing_platform_id+')'+'\n'
+    self.report += 'geo_loc_name::\t'+geo_loc_name+' (id:'+self.geo_loc_name_id+')'+'\n'
+    self.report += 'env_matter::\t'+env_matter+' (id:'+self.env_matter_id+')'+'\n'
+    self.report += 'env_feature::\t'+env_feature+' (id:'+self.env_feature_id+')'+'\n'
+    self.report += 'env_biome::\t'+env_biome+' (id:'+self.env_biome_id+')'+'\n'
+    self.report += 'env_package::\t'+env_package+' (id:'+self.env_package_id+')'+'\n'
+    self.report += 'adapter_seq::\t'+adapter_sequence+' (id:'+self.adapter_sequence_id+')'+'\n'
+    self.report += 'illumina_idx::\t'+illumina_index+' (id:'+self.illumina_index_id+')'+'\n'
+    self.report += 'primer_suite::\t'+primer_suite+' (id:'+self.primer_suite_id+')'+'\n'
+    self.report += 'run::\t\t'+run+' (id:'+self.run_id+')'+'\n'
 
-    self.sequencing_platform = args.platform
-    self.country = args.country
-    self.env_biome = args.biome
-    self.env_package = 'unknown' # default
-    self.fragment_name = args.fragment
-    self.domain = 'Unknown'
-    self.dna_region = ''
-    project_parts = args.project.split('_')
-    if len(project_parts) == 3:
-        suffix = project_parts[-1]
-        self.dna_region = suffix[1:] 
-        first_letter = suffix[0]
-        if first_letter.upper() == 'B':
-            self.domain = 'Bacteria'
-        elif first_letter.upper() == 'A':
-            self.domain = 'Archaea'            
-        elif first_letter.upper() == 'E':  
-            self.domain = 'Eukarya'
-        elif first_letter.upper() == 'I':  # ITS
-            self.domain = 'Fungi'  
-            self.fragment_name = '18s' # there should be an 'unknown' or '_blank' in the database!
-            self.dna_region = 'ITS1' 
+  
+  def find_required_id(self, term, req_name):
+    id = 'id_not_found'
+    name = 'unknown'
+    #if not req_name:
+    #print 'term',term,req_name
+    #    req_name = 'unknown'
+    if term == 'target_gene':
+        list = self.target_gene_list
+    elif term == 'dna_region':
+        list = self.dna_region_list
+    elif term == 'domain':
+        list = self.domain_list
+    elif term == 'platform':
+        list = self.sequencing_platform_list
+    elif term == 'geo_loc_name':
+        list = self.term_list
+    elif term == 'env_matter':
+        list = self.term_list
+    elif term == 'env_feature':
+        list = self.term_list
+    elif term == 'env_biome':
+        list = self.term_list
+    elif term == 'env_package':
+        list = self.package_list        
+    elif term == 'adapter_sequence':
+        list = self.adapter_sequence_list
+    elif term == 'illumina_index':
+        list = self.illumina_index_list
+    elif term == 'primer_suite':
+        list = self.primer_suite_list
+    elif term == 'run':
+        list = self.run_list
+    else:
+        id='no list!!'    
+    
+    for t in list:
+        if not req_name and (t[1].lower() == 'unknown' or t[1].lower() == 'undefined'):
+            id =str(t[0])
+            name = t[1]
+            break
+        elif t[1].lower() == req_name.lower():
+            id = str(t[0])
+            name = t[1]
+            break
         else:
-            self.domain = 'Unknown'
-                   
-    
-    for row in self.fragment_name_list:
-        if row[1] == self.fragment_name:
-            self.fragment_name_id = row[0]
-    for row in self.domain_list:
-        if row[1] == self.domain:
-            self.domain_id = row[0]
-    for row in self.dna_region_list:
-        if row[1] == self.dna_region:
-            self.dna_region_id = row[0]
-    for row in self.sequencing_platform_list:
-        if row[1] == self.sequencing_platform:
-            self.sequencing_platform_id = row[0]
-    for row in self.country_list:
-        if row[1] == self.country:
-            self.country_id = row[0]
-    
-    self.env_biome_id = '1'
-    self.env_feature_id = '1'
-    self.env_matter_id = '1'
-    self.env_package_id = '1'
-    for row in self.package_list:
-        if row[1] == self.env_package:
-            self.package_id = row[0]
-    for row in self.term_list:
-        if row[1] == self.env_biome:
-            self.env_biome_id = row[0]
-            
-    self.fragment_name_id       = self.fragment_name_id         or '1' # '0' will error if id not in table   
-    self.domain_id              = self.domain_id                or '1' # '0' will error if id not in table 
-    self.dna_region_id          = self.dna_region_id            or '1' # '0' will error if id not in table 
-    self.sequencing_platform_id = self.sequencing_platform_id   or '5' # '0' will error if id not in table  
-    self.country_id                = self.country_id                or '385' # '0' will error if id not in table 
-    self.env_biome_id              = self.env_biome_id              or '1' # '0' will error if id not in table 
-    self.env_feature_id            = self.env_feature_id            or '1' # '0' will error if id not in table 
-    self.env_matter_id             = self.env_matter_id             or '1' # '0' will error if id not in table  
-    self.env_package_id             = self.env_package_id             or '1' # '0' will error if id not in table        
-    #print  self.dna_region_id ,self.dna_region, self.domain_id, self.domain, self.fragment_name_id, self.fragment_name
-    # self.parameter_name_project_dict   = defaultdict(dict)
-    # self.parameter_by_dataset_dict     = defaultdict(dict)
-    # defaultdict(list)
-    # self.required_metadata_by_pr_dict          = defaultdict(dict)
-    # self.custom_metadata_field_data_by_pr_dict = defaultdict(list)
-    # self.all_insert_req_met_vals               = {}
-    # self.param_per_dataset_dict                = defaultdict(dict)
-
+            id =str(t[0])
+            name = 'unknown'
+    return (name,id)
+  
   def parse_metadata_csv(self, metadata_csv_file_name):
     print "=" * 20
     print metadata_csv_file_name
     self.metadata_file_fields, self.metadata_file_content = self.utils.read_csv_into_list(metadata_csv_file_name)
-    # print self.metadata_file_fields
-    # print self.metadata_file_content
+    
     """
     metadata_ICM_SMS_Bv6_short.csv
     ['dataset', 'parameterName', 'parameterValue', 'units', 'miens_units', 'project', 'units_id', 'structured_comment_name', 'method', 'other', 'notes', 'ts', 'entry_date', 'parameter_id', 'project_dataset']
@@ -1228,26 +1251,29 @@ class Metadata:
   def required_metadata_for_insert(self):
     all_required_metadata = []
     field_list_temp       = []
+    
     for required_metadata_dict in self.required_metadata:      
       field_list_temp.append(required_metadata_dict.keys())
       all_required_metadata.append(required_metadata_dict.values())
-    #print 'field_list_temp:',field_list_temp
-    print 'all_required_metadata'
-    add_on_names = [self.fragment_name_id, self.dna_region_id, self.domain_id, self.sequencing_platform_id, self.country_id, self.env_biome_id,self.env_feature_id,self.env_matter_id,self.env_package_id]
-    all_required_metadata = [x+add_on_names for x in all_required_metadata]
-    print all_required_metadata
+    add_on_names = [self.target_gene_id, self.dna_region_id, self.domain_id, self.sequencing_platform_id, self.geo_loc_name_id, self.env_biome_id,self.env_feature_id,self.env_matter_id,self.env_package_id,self.adapter_sequence_id,self.illumina_index_id,self.primer_suite_id,self.run_id]
+    
     if len(all_required_metadata) > 0:
+        all_required_metadata = [x + add_on_names for x in all_required_metadata]
         self.required_metadata_insert_values = self.utils.make_insert_values(all_required_metadata)      
-        #self.required_metadata_field_list    = ", ".join(set(self.utils.flatten_2d_list(field_list_temp)))
         self.required_metadata_field_list    = ", ".join(field_list_temp[0])
-        #print 'self.required_metadata_insert_values:',self.required_metadata_insert_values 
-        #print
-        #print 'self.required_metadata_field_list:',self.required_metadata_field_list
+        self.required_metadata_field_list += ", "
+        
     else:
+        # NO file metadata
         self.required_metadata_insert_values = []      
-        self.required_metadata_field_list =[]
-    # add CONSTRAINT Items    
-    self.required_metadata_field_list += ", fragment_name_id, dna_region_id, domain_id, sequencing_platform_id, country_id, env_biome_id, env_feature_id, env_matter_id, env_package_id"
+        self.required_metadata_field_list = 'dataset_id,'   # needed first item
+        for dset in dataset.dataset_id_by_name_dict:
+            self.required_metadata_insert_values.append([dataset.dataset_id_by_name_dict[dset]] + add_on_names)  #prepend did
+        self.required_metadata_insert_values = self.utils.make_insert_values(self.required_metadata_insert_values) 
+    #all_required_metadata = [x + add_on_names for x in all_required_metadata]
+    self.required_metadata_field_list += "target_gene_id, dna_region_id, domain_id, sequencing_platform_id, geo_loc_name_id, env_biome_id, env_feature_id, env_matter_id, env_package_id,adapter_sequence_id,illumina_index_id,primer_suite_id,run_id"
+    return
+    
     
   def insert_required_metadata(self):
     if self.required_metadata_insert_values:
@@ -1394,55 +1420,78 @@ class Metadata:
       
       rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
       self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
-  def get_fragment_ids(self):
-    field_names = "fragment_name_id, fragment_name"
-    table_name  = "fragment_name"
+      
+  def get_target_gene_ids(self):
+    field_names = "target_gene_id, target_gene"
+    table_name  = "target_gene"
     where_part  = ""
-    self.fragment_name_list = mysql_util.execute_simple_select(field_names, table_name, where_part)
-    print 'got fragment_name list'
-    #print self.fragment_name_list
+    self.target_gene_list = mysql_util.execute_simple_select(field_names, table_name, where_part)
+    #print 'got target_gene list'
+    #print self.target_gene_list
 
   def get_dna_region_ids(self):
     field_names = "dna_region_id, dna_region"
     table_name  = "dna_region"
     where_part  = ""
     self.dna_region_list = mysql_util.execute_simple_select(field_names, table_name, where_part)
-    print 'got dna_region list'
+    #print 'got dna_region list'
     #print self.dna_region_list
   def get_domain_ids(self):
     field_names = "domain_id, domain"
     table_name  = "domain"
     where_part  = ""
     self.domain_list = mysql_util.execute_simple_select(field_names, table_name, where_part)
-    print 'got domain list'
+    #print 'got domain list'
     #print self.domain_list
   def get_sequencing_platform_ids(self):
     field_names = "sequencing_platform_id, sequencing_platform"
     table_name  = "sequencing_platform"
     where_part  = ""
     self.sequencing_platform_list = mysql_util.execute_simple_select(field_names, table_name, where_part)
-    print 'got sequencing_platform list'
-    #print self.sequencing_platform_list
-  def get_country_ids(self):
-    field_names = "country_id, country"
-    table_name  = "country"
-    where_part  = ""
-    self.country_list = mysql_util.execute_simple_select(field_names, table_name, where_part)
-    print 'got country list'
-    #print self.country_list
+    #print 'got sequencing_platform list'
+    
   def get_term_ids(self):
     field_names = "term_id, term_name"
     table_name  = "term"
     where_part  = ""
     self.term_list = mysql_util.execute_simple_select(field_names, table_name, where_part)
-    print 'got term list'
+    #print 'got term list'
   def get_package_ids(self):
     field_names = "env_package_id, env_package"
     table_name  = "env_package"
     where_part  = ""
     self.package_list = mysql_util.execute_simple_select(field_names, table_name, where_part)
-    print 'got package list'
+    #print 'got package list'
     #print self.env_biome_list
+  def get_adapter_sequence_ids(self):
+    field_names = "run_key_id, run_key"
+    table_name  = "run_key"
+    where_part  = ""
+    self.adapter_sequence_list = mysql_util.execute_simple_select(field_names, table_name, where_part)
+    #print 'got adapter_sequence list'
+    #print self.adapter_sequence_list
+  def get_illumina_index_ids(self):
+    field_names = "illumina_index_id, illumina_index"
+    table_name  = "illumina_index"
+    where_part  = ""
+    self.illumina_index_list = mysql_util.execute_simple_select(field_names, table_name, where_part)
+    #print 'got illumina_index list'
+    #print self.index_sequence_list
+  def get_primer_suite_ids(self):
+    field_names = "primer_suite_id, primer_suite"
+    table_name  = "primer_suite"
+    where_part  = ""
+    self.primer_suite_list = mysql_util.execute_simple_select(field_names, table_name, where_part)
+    #print 'got primer_suite list'
+    #print self.primer_suite_list
+  def get_run_ids(self):
+    field_names = "run_id, run"
+    table_name  = "run"
+    where_part  = ""
+    self.run_list = mysql_util.execute_simple_select(field_names, table_name, where_part)
+    #print 'got run list'
+    #print self.primer_suite_list
+    
 if __name__ == '__main__':
   import subprocess
   import argparse
@@ -1464,9 +1513,9 @@ if __name__ == '__main__':
     
     For these the entered name MUST match name in New VAMPS table
         -sp/-sequencing_platform        default: illumina 
-        -c/--country                    default: United States
+        -geo_loc_name/--geo_loc_name                    default: United States
         -biome/--env_biome              default: ''
-        -fragment/--fragment_name       default: '16s'
+        -target_gene/--target_gene       default: 'unknown'
   
   """
   parser.add_argument("-p","--project",
@@ -1487,29 +1536,133 @@ if __name__ == '__main__':
   parser.add_argument("-mo","--metadata_only",
       required = False, action = "store_true", dest = "metadata_only", default = False,
       help = """No seqs or taxonomy - just metadata""")    
-  parser.add_argument("-site", "--site",
-        required = True, action = "store", dest = "site", 
+  parser.add_argument("-host", "--host",
+        required = True, action = "store", dest = "host", 
         help = """Site where the script is running""")
   
-  parser.add_argument("-sp","--sequencing_platform",
-      required = False, action = "store", dest = "platform", default = 'illumina',
+  # Required Metadata
+  parser.add_argument("-platform","--sequencing_platform",
+      required = False, action = "store", dest = "platform", default = '',
       help = """Sequencing platform -- must match text in newVAMPS Table""")
-  parser.add_argument("-c","--country",
-      required = False, action = "store", dest = "country", default = 'United States',
-      help = """Country -- must match text in newVAMPS Table""")    
-  parser.add_argument("-biome", "--env_biome",
-        required = False, action = "store", dest = "biome", default = '',
+  parser.add_argument("-geo_loc_name","--geo_loc_name",
+      required = False, action = "store", dest = "geo_loc_name", default = '',
+      help = """geo_loc_name -- must match text in newVAMPS Table""")    
+  parser.add_argument("-target_gene", "--target_gene",
+        required = False, action = "store", dest = "target_gene", default='',
+        help = """target_gene Name -- no entry results in 'unknown' """)
+  parser.add_argument("-domain", "--domain",
+        required = False, action = "store", dest = "domain", default='',
+        help = """Domain -- no entry results in 'unknown' """)   
+  parser.add_argument("-dna_region", "--dna_region",
+        required = False, action = "store", dest = "dna_region", default='',
+        help = """dna_region -- no entry results in 'unknown' """) 
+  parser.add_argument("-env_biome", "--env_biome",
+        required = False, action = "store", dest = "env_biome", default = '',
         help = """ENV_Biome -- must match text in newVAMPS Table""")
-  parser.add_argument("-fragment", "--fragment_name",
-        required = False, action = "store", dest = "fragment", default = '16s',
-        help = """Fragment Name -- must match text in newVAMPS Table""")
-
-  
+  parser.add_argument("-env_feature", "--env_feature",
+        required = False, action = "store", dest = "env_feature", default='',
+        help = """env_feature -- no entry results in 'unknown' """)
+  parser.add_argument("-env_matter", "--env_matter",
+        required = False, action = "store", dest = "env_matter", default='',
+        help = """env_matter -- no entry results in 'unknown' """)
+  parser.add_argument("-env_package", "--env_package",
+        required = False, action = "store", dest = "env_package", default='',
+        help = """env_package -- no entry results in 'unknown' """) 
+  parser.add_argument("-run_key", "--run_key",
+        required = False, action = "store", dest = "adapter_sequence", default='',
+        help = """run_key (adapter_sequence) -- no entry results in 'unknown' """)
+  parser.add_argument("-illumina_index", "--illumina_index",
+        required = False, action = "store", dest = "illumina_index", default='',
+        help = """illumina_index -- no entry results in 'unknown' """)
+  parser.add_argument("-primer_suite", "--primer_suite",
+        required = False, action = "store", dest = "primer_suite", default='',
+        help = """primer_suite -- no entry results in 'unknown' """) 
+  parser.add_argument("-run", "--run",
+        required = False, action = "store", dest = "run", default='',
+        help = """run -- no entry results in 'unknown' """) 
+  parser.add_argument("-non_mbl_format", "--non_mbl_format",
+        required = False, action = "store_true", dest = "non_mbl_format", default=False,
+        help = """MBL Format: three parts; end with Bv6, Ev4... """)      
+            
+  # METADATA  IDS      
+#   parser.add_argument("-platform_id","--sequencing_platform_id",
+#       required = False, action = "store", dest = "platform_id", default = '',
+#       help = """Sequencing platform_id -- must match id in newVAMPS Table""")
+#   parser.add_argument("-geo_loc_name_id","--geo_loc_name_id",
+#       required = False, action = "store", dest = "geo_loc_name_id", default = '',
+#       help = """geo_loc_name_id""")    
+#   parser.add_argument("-target_gene_id", "--target_gene_id",
+#         required = False, action = "store", dest = "target_gene_id", default='',
+#         help = """target_gene_id -- no entry results in 'unknown' """)
+#   parser.add_argument("-domain_id", "--domain_id",
+#         required = False, action = "store", dest = "domain_id", default='',
+#         help = """Domain_id -- no entry results in 'unknown' """)   
+#   parser.add_argument("-dna_region_id", "--dna_region_id",
+#         required = False, action = "store", dest = "dna_region_id", default='',
+#         help = """dna_region_id -- no entry results in 'unknown' """) 
+#   parser.add_argument("-env_biome_id", "--env_biome_id",
+#         required = False, action = "store", dest = "env_biome_id", default = '',
+#         help = """ENV_Biome_id -- must match id in newVAMPS Table""")
+#   parser.add_argument("-env_feature_id", "--env_feature_id",
+#         required = False, action = "store", dest = "env_feature_id", default='',
+#         help = """env_feature_id -- no entry results in 'unknown' """)
+#   parser.add_argument("-env_matter_id", "--env_matter_id",
+#         required = False, action = "store", dest = "env_matter_id", default='',
+#         help = """env_matter_id -- no entry results in 'unknown' """)
+#   parser.add_argument("-env_package_id", "--env_package_id",
+#         required = False, action = "store", dest = "env_package_id", default='',
+#         help = """env_package_id -- no entry results in 'unknown' """)      
+    
   
   if len(sys.argv[1:]) == 0:
         print myusage
         sys.exit() 
   args = parser.parse_args()
+  print args
+  if args.non_mbl_format:
+    print 'This is a non MBL Formatted project -- using command line metadata'
+  else:
+    pparts = args.project.split('_') 
+    print pparts   
+    if len(pparts) != 3:
+        sys.exit('project in not formatted correctly')
+    
+    if pparts[2].startswith('A'):
+        args.domain = 'Archaea'
+        args.target_gene = '16s'
+        
+    elif pparts[2].startswith('B'):
+        args.domain = 'Bacteria'
+        args.target_gene = '16s'
+    elif pparts[2].startswith('E'):
+        args.domain = 'Eukarya'
+        args.target_gene = '18s'
+    else:
+          sys.exit('project suffix is not in ABE') 
+    args.dna_region = pparts[2][1:]
+    args.primer_suite =  args.domain
+    if args.dna_region == 'v6':
+        args.primer_suite +='l V6 Suite'
+    elif args.dna_region == 'v4':
+        args.primer_suite +='l V4 Suite'
+    elif args.dna_region == 'v4v5':
+        args.primer_suite +='l V4-V5 Suite'
+    elif args.dna_region == 'v6v4':
+        args.primer_suite +='l V6-V4 Suite'
+    elif args.dna_region == 'v3':
+        args.primer_suite +='l V3 Suite'
+    elif args.dna_region == 'v3v1':
+        args.primer_suite +='l V3-V1 Suite'
+    elif args.dna_region == 'v3v5':
+        args.primer_suite +='l V3-V5 Suite'
+    elif args.dna_region == 'v4v6':
+        args.primer_suite +='l V4-V6 Suite'
+    elif args.dna_region == 'v5v3':
+        args.primer_suite +='l V5-V3 Suite'
+    elif args.dna_region == 'v9':
+        args.primer_suite +='l V9 Suite'
+    else:
+        print 'No good primer suite found'
   
   utils = Utils()
   
@@ -1518,12 +1671,12 @@ if __name__ == '__main__':
   print "args.write_files"
   print args.write_files
 
-  host_prod   = "vampsdev"
+  host_prod   = "bpcweb7"
   to_database = 'vamps2'
-  if args.site == 'vamps':
+  if args.host == 'vamps' or args.host == 'vampsdb':
       host_prod = "vampsdb"
   else:
-      host_prod = "vampsdev"
+      host_prod = "bpcweb7"
   if (args.write_files == True):
      csv_files = CSV_files()
 # 
@@ -1575,26 +1728,93 @@ if __name__ == '__main__':
 
   print "metadata_csv_file_name = %s, seq_csv_file_name = %s, project_csv_file_name = %s, dataset_csv_file_name = %s, user_contact_csv_file_name = %s" % (metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name)
   
-  #mysql_util = Mysql_util(host = host_prod, db = 'vamps2')
-  mysql_util = Mysql_util(host = 'localhost', db = 'vamps_development')
+  mysql_util = Mysql_util(host = host_prod, db = 'vamps2')
+  seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
+  taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
+  #refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
+  sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
+  pr = Project(mysql_util)
+  dataset = Dataset(mysql_util)
+  metadata = Metadata(mysql_util, dataset, pr.project_dict)
+  
+#   command_line_req_met_list = {  'platform':args.platform, 
+#                     'country':args.country,
+#                     'fragment':args.fragment,
+#                     'domain':args.domain,
+#                     'dna_region':args.dna_region,
+#                     'env_biome':args.env_biome,
+#                     'env_feature':args.env_feature,
+#                     'env_matter':args.env_matter,
+#                     'env_package':args.env_package
+#                     }
+                    
+  command_line_req_met_list = {   
+                        "target_gene" : args.target_gene,
+                        "dna_region" : args.dna_region,
+                        "platform" : args.platform,
+                        "domain" : args.domain,
+                        "geo_loc_name" : args.geo_loc_name, 
+                        "env_biome" : args.env_biome,
+                        "env_feature" : args.env_feature,
+                        "env_matter" : args.env_matter,
+                        "env_package" : args.env_package, 
+                        "adapter_sequence" : args.adapter_sequence,
+                        "illumina_index" : args.illumina_index,
+                        "primer_suite" : args.primer_suite,
+                        "run" : args.run
+         }
+                    
+  req_md_okay = True
+  for term in command_line_req_met_list:
+    if command_line_req_met_list[term] == '':
+        print
+        print('You left '+term + " to be 'unknown'")
+        if term == 'target_gene':
+            mdlist = metadata.target_gene_list
+        elif term == 'dna_region':
+            mdlist = metadata.dna_region_list
+        elif term == 'domain':
+            mdlist = metadata.domain_list
+        elif term == 'platform':
+            mdlist = metadata.sequencing_platform_list
+        elif term == 'geo_loc_name':
+            mdlist = 'list is too big to print here -- see database'  #metadata.term_list
+        elif term == 'env_matter' or term == 'env_feature' or term == 'env_biome':
+            mdlist = 'term list is too big to print here -- see database'  #metadata.term_list
+        elif term == 'env_package':
+            mdlist = metadata.package_list
+        elif term == 'adapter_sequence':
+            mdlist = 'run_key list is too big to print here -- see database'  #metadata.adapter_sequence_list
+        elif term == 'illumina_index':
+            mdlist = metadata.illumina_index_list
+        elif term == 'primer_suite':
+            mdlist = metadata.primer_suite_list  
+        elif term == 'run':
+            mdlist = 'list is too big to print here -- see database'    
+        print 'tag is -'+term + "; Enter the name not the id"
+        print('Choose from the list:',mdlist)
+        req_md_okay = False
+  if not req_md_okay:
+    print metadata.report
+    ans = raw_input("Do you want to continue? (type 'Y' to continue): ")
+    if ans.upper() != 'Y':
+        sys.exit()
+    
   # test_query1 = "SHOW tables" 
   # print mysql_util.execute_fetch_select(test_query1)
   
 
-  seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
-  taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
-  refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
-  sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
+  
   
   if (args.do_not_insert == False):
     utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
   utils.benchmarking(sequence.get_seq_ids, "get_seq_ids")
   
-  utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
-  if (args.do_not_insert == False):
-    utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
+  # utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
+#   if (args.do_not_insert == False):
+#     utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
+#   
   
-  pr = Project(mysql_util)
   
   utils.benchmarking(pr.parse_project_csv, "parse_project_csv", project_csv_file_name)
 
@@ -1612,7 +1832,7 @@ if __name__ == '__main__':
   seq_csv_parser.utils.print_array_w_title(pr.project_id, "pr.project_id main")
   seq_csv_parser.utils.print_array_w_title(pr.project_dict, "pr.project_dict main 1")
   
-  dataset = Dataset(mysql_util)
+  
   utils.benchmarking(dataset.parse_dataset_csv, "parse_dataset_csv", dataset_csv_file_name)
   utils.benchmarking(dataset.make_dataset_project_dictionary, "make_dataset_project_dictionary")
 
@@ -1647,34 +1867,39 @@ if __name__ == '__main__':
   if (args.do_not_insert == False):
     utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
   
-  metadata = Metadata(mysql_util, dataset, pr.project_dict)
+  # METADATA
+  
+  
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   
   ## TODO Required Metadata should run regardless of if MD was found in old vamps
-  if metadata.metadata_file_fields:
-      utils.benchmarking(metadata.add_names_to_params, "add_names_to_params")
-      utils.benchmarking(metadata.add_ids_to_params, "add_ids_to_params")  
-  
-      utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
-      utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
-      utils.benchmarking(metadata.get_existing_custom_metadata_fields, "get_existing_custom_metadata_fields")
+  if not metadata.metadata_file_fields:
+    print "No Metadata Found in file"
+    
+  utils.benchmarking(metadata.add_names_to_params, "add_names_to_params")
+  utils.benchmarking(metadata.add_ids_to_params, "add_ids_to_params")  
 
-      utils.benchmarking(metadata.prepare_required_metadata, "prepare_required_metadata")
-      utils.benchmarking(metadata.required_metadata_for_insert, "required_metadata_for_insert")  
-      if (args.do_not_insert == False):
-        utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
+  utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
+  utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
+  utils.benchmarking(metadata.get_existing_custom_metadata_fields, "get_existing_custom_metadata_fields")
 
-      utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table")
-      if (args.do_not_insert == False):
-        utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
-  
-      if not metadata.custom_metadata_fields_uniqued_for_tbl:
-        utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields", pr.project_dict)
-      utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
-      if (args.do_not_insert == False):
-        utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
-  else:
-      print "No Metadata Found"
+  utils.benchmarking(metadata.prepare_required_metadata, "prepare_required_metadata")
+  utils.benchmarking(metadata.required_metadata_for_insert, "required_metadata_for_insert")  
+  if (args.do_not_insert == False):
+
+    utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
+
+  utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table")
+  if (args.do_not_insert == False):
+    utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
+
+  if not metadata.custom_metadata_fields_uniqued_for_tbl:
+    utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields", pr.project_dict)
+  utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
+  if (args.do_not_insert == False):
+    utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
+
+      
   print "** Finished ** ",args.project,"--ProjectID:",pr.project_id
   # import winsound
 #   Freq = 2500 # Set Frequency To 2500 Hertz
