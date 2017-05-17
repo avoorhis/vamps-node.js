@@ -65,8 +65,8 @@ var dna_quantitation_options = ["NanoQuant",
   <legend id="general-legend">General sample description</legend>
   <% if (all_metadata) { %>
     <% for (var pid in all_metadata) { %>
-      <!-- dataset_id project title username email institution first_name last_name public -->        
-      
+      <!-- dataset_id project title username email institution first_name last_name public -->
+
       <label for="project_title">Title of Project:</label>
       <input type="text" id="project_title" name="project_title" value='<%= all_metadata[pid].title %>'/>
 
@@ -77,11 +77,11 @@ var dna_quantitation_options = ["NanoQuant",
       <br />
       <label for="pi_name">PI Name:</label>
       <input type="text" id="pi_name" name="pi_name"  value='<%= edit_metadata_info.pi_name %>'/>
-  
+
       <% for (var did in all_metadata[pid]["dataset_id"]) { %>
         <input type='hidden' name='dataset_id' value='<%= did %>' />
       <% } %>
-      
+
     <% } %>
   <%
   } else { var all_metadata = {} %>
@@ -113,7 +113,7 @@ var dna_quantitation_options = ["NanoQuant",
       <% for (var key in all_metadata) { %>
         <% if (all_field_names) { %>
           <!-- for each field name  -->
-          <% for (var idx in all_field_names) { 
+          <% for (var idx in all_field_names) {
               field_name = all_field_names[idx][0]
           %>
           <tr>
@@ -126,7 +126,7 @@ var dna_quantitation_options = ["NanoQuant",
             <% for (var did in all_metadata[pid]["dataset_id"]) { %>
               <% include third_column.ejs %>
             <% } %> <!-- for (var did in all_metadata[pid]["dataset_id"])  -->
-            
+
         </tr>
           <% } %> <!-- for (var idx in all_field_names)  -->
         <% } %> <!-- if (all_field_names) -->
