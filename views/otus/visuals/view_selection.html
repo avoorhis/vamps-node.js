@@ -1,0 +1,155 @@
+<% menu_section='VISUALS' %>
+<% include ../../add_ins/begin.ejs %>
+
+<%  var cnsts  = JSON.parse(constants) %>
+<%  var mtx    = JSON.parse(data); %>
+
+<%  var activate_thumbs = true; %>
+<%  var visuals = cnsts.VISUAL_THUMBNAILS.visuals %>
+<script> 
+  var ds_ord = JSON.parse('<%- ds_order %>')
+  var otu_tax = JSON.parse('<%- otu_tax %>')
+  var mtx_local = JSON.parse('<%- data %>');
+  var cts_local  = JSON.parse('<%- constants %>');
+  var user_local  = '<%= user.username %>';
+   
+</script>
+
+
+
+
+<br>
+<div class='title title_color_viz'>OTU Community Visualization: <%= project %>
+    <% if (messages.success) { %>
+        <div class="alert_flash_message_success"><%= messages.success %>
+        </div>
+    <% }else if(messages.fail){ %>
+        <div class="alert_flash_message_fail"><%= messages.fail %>
+        <br>We recommend re-selecting data or selecting different data and trying again. 
+          If you are loading this page from a configuration file or image file it may be out of date.
+          Contact us at vamps.mbl.edu for help.</div>
+    <% } %>
+</div>
+<div class='subtitle'>Display Choices</div>
+
+
+
+
+
+  <div class="row">
+      
+    
+     
+  </div>
+
+<hr>
+<% var allowed = ['counts_matrix', 'dheatmap', 'barcharts'] %>
+<table border='1' class='table'>
+        <tr>
+          
+          <% for(n in visuals) {                                                %>
+          <%    var thumb = visuals[n].thumb;                                   %>
+          <%    var name = visuals[n].name;                                     %>          
+          <%    var prefix = visuals[n].prefix;                                  %>
+          <%    var link_id = prefix+'_link_id';                                  %>
+          <%    var link = '#';                                                   %>
+          <%    var target='';                                                   %>
+          <%    var ttip = visuals[n].tip;                                      %>
+          <%    var cols = 5                                                    %>
+                                                                       
+          <% if(allowed.indexOf(prefix) != -1 ){  %>
+            <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
+                <center>                        
+                  <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
+                    <%= name %><br>              
+                     <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
+                  </a>
+                </center>                     
+            </td>
+            <% } %>                 
+        <% } %>                 
+        </tr>
+</table>
+       
+<% for(n in visuals) {                                                                                  %>
+<%    var prefix   = visuals[n].prefix;                                                                 %>
+<%    var name     = visuals[n].name;                                                                   %>
+<%    var prediv   = 'pre_'+prefix+'_div'                                                               %>
+<%    var div      = prefix+'_div'                                                                      %>
+<%    var title    = prefix+'_title'                                                                    %>
+<%    var dnld_btn = prefix+'_dnld_btn'                                                                 %>
+<%    var hide_btn = prefix+'_hide_btn'                                                                 %>
+<%    var open_btn = prefix+'_open_btn'                                                                 %>
+
+    <nav id='<%= prediv %>' class="navbar navbar-inverse viz_hidden_div display_none">
+      <div class="navbar-header" >      
+        <span id='<%= title %>' class="navbar-brand table_title" ><%= name %></span>  
+      </div>
+      <div class='button_div pull-right'>
+        <button type='button' id='<%= hide_btn %>' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
+        <button type='button' id='<%= open_btn %>' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
+        <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+        <li class="dropdown">
+          <button disabled id='<%= dnld_btn %>' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+            Downloads<span class="caret"></span>
+          </button>
+            <ul class="dropdown-menu" role="menu">          
+            <% if(prefix=='counts_matrix'){ %>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="create_freq_table_file('matrix','')">as Table (csv)</button></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('counts_matrix','')">JSON Image Config File</button></li>
+            <% }else if(prefix == 'dheatmap') { %>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-py','')">Distance File</button></li> 
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('dheatmap','')">JSON Image Config File</button></li> 
+              <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('dheatmap','')">Image as PDF</button></li> 
+            <% }else if(prefix == 'barcharts') { %>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('barcharts','')">Image as PDF</button></li> 
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('barcharts','')">JSON Image Config File</button></li>
+            
+            <% }else if(prefix == 'cytoscape') { %>
+            <% }else if(prefix == 'dendrogram0') { %>
+            <% } %>
+            </ul>
+        </li>
+      </div>
+    </nav>
+    <center><div id='<%= div %>'   class='display_none well overflow_500'></div></center>
+
+
+<% } %>	 
+	
+  
+
+<!-- -------------------------------------------------- -->
+
+  <div id='counts_tooltip_div' class=''></div>
+  <div id='piebarcharts_tooltip_div' class=''></div>
+  <div id='q' class=''></div> 
+
+ 
+ 
+  <% include ../../add_ins/end.ejs %>
+ <!-- <script src ="https://maps.googleapis.com/maps/api/js"></script> -->
+
+ <script type="text/javascript" src="/javascripts/tablesort.min.js"></script>
+ <script type="text/javascript" src="/javascripts/jquery.scrollTo.min.js"></script>
+ <script type="text/javascript" src="/javascripts/jquery.tablednd.js"></script>
+ <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
+ <script type="text/javascript" src="/javascripts/d3pie.min.js" charset="utf-8"></script>
+ 
+
+
+ <script type="text/javascript" src="/javascripts/newick.js" charset="utf-8"></script>
+ <script type="text/javascript" src="/javascripts/drag_rows.js"></script>
+ <script type="text/javascript" src="/javascripts/global.js"></script>
+ <script type="text/javascript" src="/javascripts/common_selection.js"></script>
+ <script type="text/javascript" src="/javascripts/view_selection_otus.js"></script>
+<!--  <script type="text/javascript" src="/javascripts/visual_divs.js"></script> -->
+ <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>
+ <script type="text/javascript" src="/javascripts/jquery.flot.min.js"></script>
+
+ <script type="text/javascript" src="/javascripts/tooltipster.bundle.min.js"></script>
+
+</body>
+</html>
+
+
