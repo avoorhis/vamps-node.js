@@ -289,8 +289,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   //metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
 
   var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
-console.log('MeTaDaTa')
-console.log(metadata)
+
   //metadata = JSON.parse(metadata);
   //console.log(metadata);
   //console.log('<<metadata');

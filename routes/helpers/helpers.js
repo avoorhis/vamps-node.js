@@ -240,9 +240,7 @@ module.exports.get_select_illumina_index_query = function(rows){
 };
 module.exports.get_select_primer_suite_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        //MD_PRIMER_SUITE[primer_suite_id] = primer_suite name
-        //MD_PRIMER_SUITE[rows[i].primer_suite_id] = rows[i].primer_suite;
-        // [{'sequence':xxx, 'direction':'F','original_seq':xxxx,'name':967F,'region':'v6','domain':}
+        
         if( ! MD_PRIMER_SUITE.hasOwnProperty(rows[i].primer_suite_id)){
             MD_PRIMER_SUITE[rows[i].primer_suite_id] = {}
             MD_PRIMER_SUITE[rows[i].primer_suite_id].id = rows[i].primer_suite_id
