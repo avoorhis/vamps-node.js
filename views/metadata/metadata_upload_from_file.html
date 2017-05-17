@@ -79,7 +79,7 @@ var dna_quantitation_options = ["NanoQuant",
       <input type="text" id="pi_name" name="pi_name"  value='<%= edit_metadata_info.pi_name %>'/>
 
       <% for (var did in all_metadata[pid]["dataset_id"]) { %>
-        <input type='hidden' name='dataset_id' value='<%= did %>' />
+        <input type='hidden' name='dataset_id' value='<%= all_metadata[pid]["dataset_id"][did] %>' />
       <% } %>
 
     <% } %>
