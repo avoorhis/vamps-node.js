@@ -208,7 +208,7 @@ td.left_justify {
 	color: red;
 	padding:5px;
 	background:white;
-    position: absolute;
+/*    position: absolute;*/
     left: 3em;
     /* top:65px; */
     /* top: 1.0em; */
@@ -358,4 +358,12 @@ td.left_justify {
   background:coral;
   padding:10px;
   border:1px solid black;
+}
+
+.required_fields {
+  background: yellow;
+}
+
+.header_divider {
+  background: #C6D7E9;
 }

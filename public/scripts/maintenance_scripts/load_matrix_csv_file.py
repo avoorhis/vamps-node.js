@@ -472,8 +472,7 @@ if __name__ == '__main__':
             sys.exit('need matrix or OTU pid to delete')
         else:
             delete(args)
-    
-    
+
     if not args.matrix_file:
           sys.exit('need infile') 
     if not args.project:

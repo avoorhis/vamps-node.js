@@ -181,3 +181,337 @@ function bindInfoWindow(marker, map, infowindow, html) {
     infowindow.open(map, marker); 
   }); 
 } 
+
+//
+// works:
+// $(document).ready(function(){
+//   event = "E";
+//   $('.biome_1').change(function(){
+//     custChange.call(this, event);
+//   });
+
+var biome_seq_options = {
+    "marine": ["none",
+    "abyssal",
+    "aquatic",
+    "basaltic hydrothermal vent",
+    "bathyal",
+    "benthic",
+    "continental margin",
+    "estuarine",
+    "hadal",
+    "marine cold seep biome",
+    "neritic",
+    "pelagic",
+    "polar",
+    "ultramafic hydrothermal vent biome"],
+  
+    "terrestrial": ["none",
+    "aquatic",
+    "freshwater lake",
+    "freshwater river",
+    "large lake biome",
+    "polar",
+    "subglacial lake"],
+  
+    "subterrestrial": ["none",
+    "aquatic",
+    "endolithic"],
+  
+    "subseafloor": ["none",
+    "aquatic",
+    "benthic",
+    "endolithic",
+    "sub-seafloor microbial biome"]
+  };
+  
+  var feature_seq_options = {
+    "well": ["none",
+      "aquifer",
+      "marine",
+      "oil well",
+      "research well",
+      "terrestrial",
+      "water well"],
+    
+    "aquifer": ["none",
+      "confined",
+      "fracture - geological",
+      "fracture - micro",
+      "fracture - shear",
+      "groundwater",
+      "spring",
+      "sub-continental",
+      "subseafloor",
+      "unconfined",
+      "water well"],
+    
+    "borehole": ["none",
+      "research well",
+      "oil well",
+      "water well",
+      "CORK",
+      "casing",
+      "wellhead"],
+    
+  "cave": ["none",
+    "erosional cave",
+    "fault cave",
+    "fissure cave",
+    "fracture - geological",
+    "glacial cave",
+    "karst cave"],
+    
+  "seep": ["none",
+    "brine pool",
+    "cold seep",
+    "hydrothermal seep",
+    "methane seep",
+    "microbial mat",
+    "mud volcano",
+    "petroleum seep",
+    "seafloor",
+    "seamount",
+    "trench",
+    "vent-field associated",
+    "warm seep"],
+    
+  "enrichment": ["none",
+    "animal carcass fall",
+    "microbial mat",
+    "organic matter fall",
+    "whale fall"],
+    
+  "fracture": ["none",
+    "active geological fault",
+    "aquifer",
+    "fracture - geological",
+    "fracture - micro",
+    "fracture - shear",
+    "intrusion",
+    "trench"],
+    
+  "geyser": ["none",
+    "hydrothermal",
+    "mineral deposit",
+    "terrestrial"],
+    
+  "spring": ["none",
+    "acidic hot",
+    "alkaline hot",
+    "geyser",
+    "hydrothermal",
+    "mineral deposit",
+    "mineral spring",
+    "terrestrial"],
+
+  "vent": ["none",
+    "flank",
+    "hydrothermal",
+    "magma driven (black smoker)",
+    "microbial mat",
+    "mineral deposit",
+    "ridge",
+    "serpentinization driven (white smoker)",
+    "vent chimney",
+    "vent plume"],
+
+  "mine": ["none",
+    "cave",
+    "mine drainage"],
+
+  "lake": ["none",
+    "acidic hot",
+    "alkaline hot",
+    "amictic - ice covered",
+    "brackish",
+    "freshwater",
+    "glacial",
+    "holomictic - fully mixed",
+    "lake bed",
+    "meromictic - non-mixing",
+    "periglacial",
+    "saline",
+    "subglacial",
+    "underground"],
+
+  "volcano": ["none",
+    "caldera",
+    "crater floor",
+    "crater wall",
+    "crater",
+    "mud",
+    "ridge",
+    "seamount",
+    "seep"],
+
+  "reservoir": ["none",
+    "aquifer",
+    "freshwater",
+    "saline",
+    "subseafloor",
+    "subterrestrial"]
+  };
+  
+  var material_seq_options = {
+    "sediment": ["none",
+      "anaerobic ",
+      "biogeneous (ex. forams, diatoms)",
+      "carbon dioxide-reducing ",
+      "chemical (ex. limestone, dolostone)",
+      "colloidal ",
+      "contaminated ",
+      "granular ",
+      "hydrogenous  (ex. metal sulfide, evaporites)",
+      "hyperthermal ",
+      "inorganically contaminated ",
+      "iron-reducing  ",
+      "lacustrine",
+      "manganese-reducing ",
+      "mesothermal",
+      "nitrate-reducing ",
+      "organically contaminated",
+      "petroleum contaminated ",
+      "radioactive",
+      "saline lake ",
+      "sulfate-reducing",
+      "terrigeneous (ex. sand, silt, gravel)"],
+
+    "water": ["none",
+    "acidic",
+    "alkaline",
+    "anoxic",
+    "brackish water",
+    "fresh water",
+    "groundwater",
+    "hypersaline water",
+    "saline water"],
+
+    "fluid": ["none",
+    "borehole water",
+    "drilling fluid",
+    "ground water",
+    "hydrothermal fluid",
+    "melt",
+    "oil",
+    "pore fluid",
+    "waste material"],
+
+    "biofilm": ["none",
+    "algae",
+    "archaea",
+    "bacteria",
+    "fungi",
+    "glacial",
+    "protozoa",
+    "thermophilic"],
+
+    "microbial mat material": ["none",
+    "archaea",
+    "bacteria",
+    "terrestrial",
+    "tidal",
+    "underwater"],
+
+    "rock": ["none",
+    "igneous - plutonic",
+    "igneous",
+    "metamorphic",
+    "sedimentary - biochemical",
+    "sedimentary - clastic",
+    "sedimentary - precipitated (ex. oolithic limestone)",
+    "sedimentary",
+    "volcanic - basalt",
+    "volcanic"],
+
+    "mud": ["none",
+    "anaerobic ",
+    "colloidal ",
+    "deep lacustrine",
+    "estuarine",
+    "glacial",
+    "hyperthermal ",
+    "mesothermal",
+    "seafloor",
+    "soil",
+    "turbidite"],
+
+    "soil": ["none",
+    "clay",
+    "colloidal ",
+    "contaminated",
+    "groundwater",
+    "mud",
+    "permafrost"],
+
+    "oil": ["none",
+    "asphalt",
+    "petroleum contamination",
+    "seep",
+    "spill",
+    "tar",
+    "well"],
+
+    "sand": ["none",
+    "basaltic",
+    "calcium carbonate",
+    "quartz"]
+    
+  };
+    
+$(document).ready(function(){  
+  $('.biome_primary').change(function(){
+    populate_secondary_select.call(this, ['biome', biome_seq_options]);
+  });
+  $('.feature_primary').change(function(){
+    populate_secondary_select.call(this, ['feature', feature_seq_options]);
+  });
+  $('.material_primary').change(function(){
+    populate_secondary_select.call(this, ['material', material_seq_options]);
+  });
+});
+
+function populate_secondary_select(args) {
+  // alert("this.id");
+  // alert(this.id);
+  // alert("arguments");
+  
+  id_base = arguments[0][0]
+  sec_options = arguments[0][1]
+  // alert(id_base);
+
+  did = this.id.replace(id_base + "_primary", '')
+  id2 = id_base + "_secondary"
+  var B = document.getElementById(id2+did);
+  
+  // B = arguments[0];
+  //clear out B
+  B.length = 0;
+  // alert("B.id");
+  // alert(B.id);
+  
+  // alert('From configureDropDownLists');
+  // alert(this.selectedIndex);
+  
+  
+  //get the selected value from A
+  var _val = this.options[this.selectedIndex].value;
+  // alert(_val);
+  
+  //loop through bOption at the selected value
+  for (var i in sec_options[_val]) {
+    // alert(i);
+    // alert(bOptions[_val][i]);
+    //create option tag
+    var op = document.createElement('option');
+    //set its value
+    op.value = sec_options[_val][i];
+    // alert(op.value);
+    
+    //set the display label
+    op.text = sec_options[_val][i];
+    // alert(op.text);
+    //append it to B
+    B.appendChild(op);
+  }    
+}

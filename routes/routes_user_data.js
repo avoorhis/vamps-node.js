@@ -634,15 +634,62 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
          });
 });
 
+// // ---- metadata_upload ----
 //
+// router.get('/metadata_upload', [helpers.isLoggedIn], function (req, res) {
+//   console.log('in get /metadata_upload');
 //
+//   res.render('user_data/metadata_upload', {
+//     title: 'VAMPS: Metadata_upload',
+//     user: req.user,
+//     hostname: req.CONFIG.hostname,
+//   });
+// });
 //
-router.get('/update_metadata', helpers.isLoggedIn, function (req, res) {
-	console.log("IN Upload metadata");
-	console.log("not Coded yet");
-	req.flash('fail', 'Not Coded Yet');
-	res.redirect('/user_data/your_data')
-});
+// router.post('/metadata_upload',
+//   [helpers.isLoggedIn],
+//   form(
+//     form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_]+$/),
+//     form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z- ]+$/),
+//     form.field("pi_email", "PI's email address").trim().isEmail().required().entityEncode(),
+//     form.field("project_abstract", "Project abstract").trim().required().entityEncode(),
+//     form.field("references", "References").trim().required().entityEncode(),
+//     // References should clean URL
+//     form.field("project_name", "VAMPS project name").trim().entityEncode(),
+//     form.field("dataset_name", "VAMPS dataset name").trim().entityEncode(),
+//     form.field("sample_name", "Sample ID (user sample name)").trim().required().entityEncode(),
+//     form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode(),
+//     form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode(),
+//     form.field("collection_date", "Sample collection date (YYYY-MM-DD)").trim().required().entityEncode().isDate("Sample collection date format: YYYY-MM-DD"),
+//     form.field("latitude", "Latitude (WGS84 system, values bounded by ±90°)").trim().required().entityEncode(),
+//     form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode(),
+//     form.field("geo_loc_name_country", "Country").trim().entityEncode(),
+//     form.field("longhurst_zone", "Longhurst Zone").trim().entityEncode(),
+//     form.field("biome", "Biome").trim().required().entityEncode(),
+//     form.field("env_feature_primary", "Environmental Feature - Primary").trim().required().entityEncode(),
+//     form.field("env_feature_secondary", "Environmental Feature - Secondary").trim().entityEncode(),
+//     form.field("env_material_primary", "Environmental Material - Primary").trim().required().entityEncode(),
+//     form.field("env_material_secondary", "Environmental Material - Secondary").trim().entityEncode()
+//    ),
+//   function (req, res) {
+//     if (!req.form.isValid) {
+//       // Handle errors
+//       console.log(req.form.errors);
+//       req.flash('fail', req.form.errors);
+//       res.redirect("/user_data/metadata_upload");
+//     } else {
+//       console.log('in post /metadata_upload');
+//       console.log(req);
+//
+//       res.redirect("/user_data/your_projects");
+//     }
+//
+//     return;
+//   }
+// );
+//
+// // ---- metadata_upload end ----
+
 //
 // USER PROJECT METADATA:ID
 //
@@ -1815,7 +1862,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
                             } else {
 
                                                     
-                              //helpers.update_metadata_from_file();  // need to update to hdf5 file??
+                              //helpers.metadata_upload_from_file();  // need to update to hdf5 file??
 
                               req.flash('success', 'Metadata Upload in Progress');
                               res.redirect("/user_data/import_choices");

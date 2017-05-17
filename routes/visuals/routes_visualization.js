@@ -282,7 +282,8 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   }
   console.log('<<VS--visual_post_items');
 
-
+ 
+ 
   // GLOBAL
   //console.log('metadata>>');
   //metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);

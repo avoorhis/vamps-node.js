@@ -1,0 +1,159 @@
+<% include ../add_ins/begin.ejs %>
+
+<br>
+ <div class='title'>Metadata</div>
+ <div class='subtitle'></div>
+
+<% if (edit_metadata_info) { %>
+<%
+} else {
+  var edit_metadata_info = {}
+} %>
+
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+<% var myArray = messages.fail %>
+<div class="alert_flash_message_fail" >
+  <ul>
+  <% myArray.forEach(function(value){ %>
+    <li>
+      <%= value %>
+    </li>
+  <% }); %>
+  </ul>
+</div>
+<% }%>
+<br>
+
+<!--TODO: move to constants -->
+<% var my_dna_extraction_meth_options = ["MoBio Power Biomedical FAST DNA",
+"MoBio PowerSoil",
+"MoBio Power Water",
+"MoBio PowerBiofilm",
+"MoBio UltraClean DNA isolation",
+"freeze-thaw,SDS,phenol-chloroform,ethano",
+"Hot alkaline extraction",
+"Fast DNA Soil Spin",
+"CTAB phenol/chloroform",
+"Qiagen Genomic DNA"]
+
+var dna_quantitation_options = ["NanoQuant",
+"NanoDrop",
+"Fluorescent Microspheres",
+"Perfluorocarbon Tracers",
+"PicoGreen",
+"Other"]
+%>
+
+
+<H3>Instructions:</H3>
+<ol>
+<li>
+ Fields in yellow are mandatory; other unknown entries may be left blank.
+</li>
+<li>
+ The parameter names listed below are from the MIGS/MIMS/MIMARKS project of the  Genomic Standards Consortium.
+</li>
+<li class="message">
+ A range is not permitted for any value.
+</li>
+
+<form name='add_project_form' method='POST' action='/metadata/metadata_upload'>
+<!-- <form action="" method="post" enctype="multipart/form-data"> -->
+  <fieldset id="general" class="required_fields" >
+  <legend id="general-legend">General sample description</legend>
+  <% if (all_metadata) { %>
+    <% for (var pid in all_metadata) { %>
+      <!-- dataset_id project title username email institution first_name last_name public -->        
+      
+      <label for="project_title">Title of Project:</label>
+      <input type="text" id="project_title" name="project_title" value='<%= all_metadata[pid].title %>'/>
+
+      <br />
+      <label for="project_name">VAMPS project name (MBL Supplied)</label>
+      <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_GAI_Bv3v5" value='<%= all_metadata[pid].project %>'/>
+
+      <br />
+      <label for="pi_name">PI Name:</label>
+      <input type="text" id="pi_name" name="pi_name"  value='<%= edit_metadata_info.pi_name %>'/>
+  
+      <% for (var did in all_metadata[pid]["dataset_id"]) { %>
+        <input type='hidden' name='dataset_id' value='<%= did %>' />
+      <% } %>
+      
+    <% } %>
+  <%
+  } else { var all_metadata = {} %>
+    <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_GAI_Bv3v5"/>
+  <%}%>
+  <br />
+  <label for="pi_email">PI's email address:</label>
+  <input type="email" id="pi_email" name="pi_email"  value='<%= edit_metadata_info.pi_email %>'/>
+  <br />
+  <label for="project_abstract">CoDL project abstract (.doc format):</label>
+  <textarea id="project_abstract" name="project_abstract"  placeholder= '<%= edit_metadata_info.project_abstract %>'></textarea>
+  <br />
+  <label for="references">References for selected manuscripts published that describe the location:</label>
+  <textarea id="references" name="references"  placeholder='<%= edit_metadata_info.references %>'></textarea>
+  <br />
+  </fieldset>
+  <fieldset id="parameters">
+    <legend id="parameters-legend">Table of metadata parameters</legend>
+    <!--cellpadding="1" cellspacing="1" border="1" -->
+    <table class='table table-condensed'>
+      <thead>
+        <!-- rowspan="1" colspan="3" -->
+      </thead>
+      <tbody>
+    <% if (all_metadata) { %>
+      <!-- all_metadata -->
+      <%= // JSON.stringify(all_metadata) %>
+      <!-- for each project  -->
+      <% for (var key in all_metadata) { %>
+        <% if (all_field_names) { %>
+          <!-- for each field name  -->
+          <% for (var idx in all_field_names) { 
+              field_name = all_field_names[idx][0]
+          %>
+          <tr>
+<!--first column  -->
+            <% include first_column.ejs %>
+<!-- second column: MBL or user supplied -->
+            <td><%= all_field_names[idx][2] %></td>
+<!-- third column (value) -->
+            <!-- make a cell for each dataset_id -->
+            <% for (var did in all_metadata[pid]["dataset_id"]) { %>
+              <% for (var one_val in all_metadata[pid][field_name]) { %>              
+                <% include third_column.ejs %>
+                <% } %> <!-- for (var one_val in all_metadata[pid][field_name])   -->
+            <% } %> <!-- for (var did in all_metadata[pid]["dataset_id"])  -->
+            
+        </tr>
+          <% } %> <!-- for (var idx in all_field_names)  -->
+        <% } %> <!-- if (all_field_names) -->
+        <% } %> <!-- for (var pid in all_metadata) -->
+        <%
+            } // end: if (all_metadata)
+             else {
+              var all_metadata = {}
+        } %>
+  </table>
+<br>
+
+<!-- center -->
+<input type='hidden' name='project_id' value='<%= pid %>' />
+<input type='hidden' name='from_where' value='metadata_upload_from_file' />
+
+<button class='btn btn-sm btn-primary' type='submit'>Submit</button>
+
+</form>
+
+
+<% include ../add_ins/end.ejs %>
+<script type='text/javascript' src='/javascripts/global.js'></script>
+<script type='text/javascript' src='/javascripts/metadata.js'></script>
+<script type='text/javascript' src='/javascripts/bootstrap-select.js'></script>
+</script>
+</body>
+</html>

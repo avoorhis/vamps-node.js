@@ -5,8 +5,14 @@
 <% abstract_data  = JSON.parse(abstract_info) %>
 
 <% var reveal_all = false %>
+<% var edit_metadata = false %>
+<!-- Public OR User Permission OR Admin OR MBL Power User -->
 <% if(data.public || data.permissions.indexOf(user.user_id) != -1 || user.security_level == 1 || user.security_level == 10){ %>
 <%  reveal_all = true %>
+<% } %>
+<!-- DCO only - AND (owner or admin) can see/edit -->
+<% if(user.user_id == data.oid  || user.security_level == 1){ %>
+<%  edit_metadata = true %>
 <% } %>
 <img src='/images/dna01.jpg' alt="Helix Cartoon"  height='80' >
 
@@ -72,7 +78,16 @@
 		    </form>
 		  </li>
 		  <% } %>
-
+	    <% if(edit_metadata == true) { %>
+	    <li>
+           
+            <form id='viz_select_form_id' method='POST' action='/metadata/start_edit'>
+		  	  <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Edit Metadata</button>
+		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
+		  	  <input type='hidden' name='project' value='<%= data.project %>' />
+		    </form>
+	    </li>
+	    <% } %>
 		 </ul>
 	</li> <!-- End dropdown -->
 <% } %>

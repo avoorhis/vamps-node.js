@@ -165,6 +165,36 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
 });
 
+// router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
+// router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],
+//   form(
+//     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
+//     form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s (no spaces)").maxLength(64).entityEncode()
+//   ),
+//   function (req, res)
+//   {
+//     console.log("QQQ1 in router.post('import_choices/simple_fasta'");
+//     if (!req.form.isValid) {
+//       req.flash('fail', req.form.errors);
+//       editUploadData(req, res);
+//       //TODO: check if the project name is in db, if not - redirect to add_project
+//       return;
+//     }
+//     else
+//     {
+//       uploadData(req, res);
+//     }
+//   }
+// );
+
+// router.get('/update_metadata', helpers.isLoggedIn, function (req, res) {
+//   console.log("IN Upload metadata");
+//   console.log("not Coded yet");
+//   res.render('/metadata', {
+//   })
+//   // req.flash('fail', 'Not Coded Yet');
+//   // res.redirect('/user_data/your_data')
+// });
 
 module.exports = router;

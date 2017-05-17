@@ -157,6 +157,7 @@ router.post('/method_selection', helpers.isLoggedIn, function (req, res) {
 //     });
     
 });
+
 router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     console.log('in GET OTU view_selection')
     console.log(req.body);
@@ -167,19 +168,24 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     var otudata = {}
     //visual_post_items = COMMON.save_post_items(req);
     //console.log(visual_post_items)
-    var q = "SELECT otu_project, otu_dataset, otu_label, count,"
-    q += " concat_ws(';',domain,phylum,klass,`order`,family,genus) as taxonomy"
-    q += " FROM otu_pdr_info"
-    q += " JOIN otu_dataset using(otu_dataset_id)"
-    q += " JOIN otu_project using(otu_project_id)"
-    q += " JOIN otu_taxonomy using(otu_taxonomy_id)"
-    q += " JOIN domain using(domain_id)"
-    q += " JOIN phylum using(phylum_id)"
-    q += " JOIN klass using(klass_id)"
-    q += " JOIN `order` using(order_id)"
-    q += " JOIN family using(family_id)"
-    q += " JOIN genus using(genus_id)"
-    
+    var q = "SELECT otu_project.otu_project, otu_dataset.otu_dataset, otu_pdr_info.otu_label, otu_pdr_info.count,\n"
+    q += " (\n"
+    q += "   CASE\n"
+	q += "      WHEN otu_taxonomy_id IS NULL\n"
+	q += "      THEN '0'\n"
+	q += "      ELSE concat_ws(';',domain,phylum,klass,`order`,family,genus)\n"
+    q += "   END\n"
+    q += " ) as taxonomy\n"
+    q += " FROM otu_pdr_info\n" 
+    q += " JOIN otu_dataset using(otu_dataset_id)\n" 
+    q += " JOIN otu_project using(otu_project_id)\n"
+    q += " LEFT JOIN otu_taxonomy  using(otu_taxonomy_id)\n"
+    q += " LEFT  JOIN domain using(domain_id)\n" 
+    q += " LEFT JOIN phylum using(phylum_id)\n" 
+    q += " LEFT JOIN klass using(klass_id)\n" 
+    q += " LEFT JOIN `order` using(order_id)\n" 
+    q += " LEFT JOIN family using(family_id)\n" 
+    q += " LEFT JOIN genus using(genus_id)\n"    
      q += " WHERE otu_project_id='"+opid+"'" 
      console.log(q)
     connection.query(q, function otu_data(err, rows, fields){

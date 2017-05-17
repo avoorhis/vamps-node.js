@@ -4,6 +4,10 @@
 *.fasta
 .vagrant
 public/scripts/*.pyc
+old_2_new_vamps_by_project.py
+rebuild_vamps_files.py
+metadata_files_synchrony.py
+export_project.sh
 *.pyc
 !db_schema.sql
 !db_config.sql.gz

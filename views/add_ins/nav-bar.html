@@ -103,20 +103,25 @@
                 <li><a href='/projects/projects_index'>All Projects List</a></li>
                 <li><a href='/geodistribution'>Distribution Map</a></li>
                 <li><a href='/metadata/metadata'>Metadata</a></li>
-               <%// if(hostname.substring(0,6) === 'bpcweb'){ %>
+               
                     <li><a href='/portals/portals_index'>Portals</a></li>
 
-                <%// }else{ %>
+              
                     <li><a href='https://vamps2.mbl.edu'>VAMPS Home (internet)</a></li>
-                <%// } %>
+               
 
                 <li>
+
                 <form action="/visuals/visuals_index" method="POST">
                   <button type="submit" class='btn btn-md btn-link' name="" value="" style='color:black;padding-left:20px;'>Downloads</button>
                 </form>
                 </li>
-                <li><a href='/otus/otus_index'>OTUs</a></li>
 
+<% if (user !== undefined && user.security_level === 1) { %>    
+                <li><a href='/otus/otus_index'>OTUs (Admins only for now)</a></li>
+<% } %>                
+                    
+               
                 <li class="divider"></li>
                 <li class="dropdown-header">Resources</li>
                 <li><a href='/resources/reference_data'>Reference Data</a></li>
