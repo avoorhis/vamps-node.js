@@ -105,7 +105,11 @@
 <% } else { %>
 <!-- regular field-->
 <td>
-  <!-- [ 4312, 4313, 4314, 4315, 4316, 4317 ] -->
-  <input type="text" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= all_metadata[pid][field_name] %>"/>
+  
+  <% for (var one_val in all_metadata[pid][field_name]) { %>              
+    <% if (did == one_val) { %>
+      <input type="text" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= all_metadata[pid][field_name][one_val] %>"/>
+    <% } %>
+  <% } %>
 </td>
 <% } %> <!-- else -->
