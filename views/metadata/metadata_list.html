@@ -1,4 +1,5 @@
 <% metadata_w_latlon = JSON.parse(mdata_latlon) %>
+<% req_mdata = JSON.parse(req_mdata_names) %>
 <% include ../add_ins/begin.ejs %>
 
 <p class='title'>All Metadata List</p>
@@ -11,15 +12,18 @@
 		<% for(i in metadata){ %>
 			<tr>
 				<% if(metadata[i].slice(0,1) == '#'){ %>
-				<%      val =    encodeURIComponent(metadata[i]) %>
+				<%      mdname_to_show =    encodeURIComponent(metadata[i]) %>
+				<% }else if(req_mdata.indexOf(metadata[i].slice(0,metadata[i].length-3)) != -1){ %>
+				<%      mdname_to_show =    metadata[i].slice(0,metadata[i].length-3) %>
 				<% }else{ %>
-				<%      val =    metadata[i] %>
+				<%      mdname_to_show =    metadata[i] %>
 				<% } %>
-				<td><%= metadata[i] %></td>
-				<td><a href='list_result/<%= val %>'>View</a></td>
+				 
+				<td><%= mdname_to_show %></td>
+				<td><a href='list_result/<%= metadata[i] %>'>View</a></td>
 				<td>
-				<% if(metadata_w_latlon[val] == 1) {%>
-				    <a href='geomap/<%= val %>'><img border='0' alt='globe' src='/images/globe-icon.png' width='20' ></a>
+				<% if(metadata_w_latlon[metadata[i]] == 1) {%>
+				    <a href='geomap/<%= metadata[i] %>'><img border='0' alt='globe' src='/images/globe-icon.png' width='20' ></a>
 				<% }else{ %>
 				    <small>(no lat/lon data)</small>
 				<% } %>
