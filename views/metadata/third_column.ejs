@@ -105,11 +105,7 @@
 <% } else { %>
 <!-- regular field-->
 <td>
-  UUU
-
-  <% for (idx in all_metadata[pid][field_name]) { %>
   <!-- [ 4312, 4313, 4314, 4315, 4316, 4317 ] -->
-  <input type="text" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= all_metadata[pid][field_name][idx] %>"/>
-  <% } %>
+  <input type="text" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= all_metadata[pid][field_name][one_val] %>"/>
 </td>
 <% } %> <!-- else -->

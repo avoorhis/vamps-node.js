@@ -111,9 +111,6 @@ var dna_quantitation_options = ["NanoQuant",
       <%= // JSON.stringify(all_metadata) %>
       <!-- for each project  -->
       <% for (var key in all_metadata) { %>
-                YYY
-        <%= JSON.stringify(key) %>
-        
         <% if (all_field_names) { %>
           <!-- for each field name  -->
           <% for (var idx in all_field_names) { 
@@ -127,9 +124,9 @@ var dna_quantitation_options = ["NanoQuant",
 <!-- third column (value) -->
             <!-- make a cell for each dataset_id -->
             <% for (var did in all_metadata[pid]["dataset_id"]) { %>
-              did
-      <%= JSON.stringify(did) %>
+              <% for (var one_val in all_metadata[pid][field_name]) { %>              
                 <% include third_column.ejs %>
+                <% } %> <!-- for (var one_val in all_metadata[pid][field_name])   -->
             <% } %> <!-- for (var did in all_metadata[pid]["dataset_id"])  -->
             
         </tr>
