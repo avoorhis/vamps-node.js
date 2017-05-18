@@ -1,3 +1,4 @@
+<% include ../../routes/helpers/metadata_functions %>
 <% if (dividers.indexOf( all_field_names[idx][1] ) != -1) { %>
   <td></td>
 <% } else if (all_field_names[idx][1] === "DNA Extraction") { %>
@@ -15,7 +16,7 @@
 <% } else if (all_field_names[idx][1] === "DNA Quantitation") { %>
   <td>
       <% //v = fs.get_selected_val(pid) %>
-      <% var v = fs.sayHi(pid, did, field_name) %>
+      <% var v = sayHi(pid, did, field_name) %>
       v
       <%= JSON.stringify(v) %>
     <select id="dna_quantitation<%- did%>" name="dna_quantitation">

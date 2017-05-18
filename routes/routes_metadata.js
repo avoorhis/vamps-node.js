@@ -1,7 +1,7 @@
 var express = require("express");
-var router = express.Router();
+var router  = express.Router();
 var helpers = require("./helpers/helpers");
-var form      = require("express-form");
+var form    = require("express-form");
 var queries = require(app_root + "/routes/queries");
 var CONSTS  = require(app_root + "/public/constants");
 
@@ -288,19 +288,8 @@ function editMetadataForm(req, res){
       material_primary: CONSTS.MATERIAL_PRIMARY,
       material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
       metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
-      , fs: { sayHi:sayHi()}
+      // , fs: { sayHi:sayHi()}
   });
-
-    function sayHi(pid, did, field_name){
-        // for (var one_val in all_metadata[pid].dna_quantitation) {
-        //     selected_val = did;
-        // }
-        selected_val = all_metadata[pid];
-        // all_metadata[pid][field_name];
-        //[did]
-        // selected_val = "hello " + did + pid + field_name;
-        return selected_val;
-    }
 
   // if (req.body.from_where === "metadata_upload_from_file") {
   //    req.edit_metadata_info = format_form(req, res);
@@ -356,6 +345,7 @@ function editMetadataForm(req, res){
 
 
 // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
+
 
 function NewMetadata(req, res, id){ /* fetch or create logic, storing as req.model or req.metadata */} 
 
@@ -711,16 +701,18 @@ function make_metadata_hash(req, res){
           material_primary: CONSTS.MATERIAL_PRIMARY,
           material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
           metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
-            , fs: { sayHi:function(pid, did, field_name){
-                // for (var one_val in all_metadata[pid].dna_quantitation) {
-                //     selected_val = did;
-                // }
-               selected_val = all_metadata[pid];
-                   // all_metadata[pid][field_name];
-                //[did]
-                // selected_val = "hello " + did + pid + field_name;
-                return selected_val;
-            }}
+            // , fs: { sayHi: sayHi(pid, did, field_name)}
+
+            // , fs: { sayHi:function(pid, did, field_name){
+            //     // for (var one_val in all_metadata[pid].dna_quantitation) {
+            //     //     selected_val = did;
+            //     // }
+            //    selected_val = all_metadata[pid];
+            //        // all_metadata[pid][field_name];
+            //     //[did]
+            //     // selected_val = "hello " + did + pid + field_name;
+            //     return selected_val;
+            // }}
       //       , fs: { get_selected_val:function(pid) {
       //           for (var one_val in all_metadata[pid].dna_quantitation) {
       //               console.log("one_val");
