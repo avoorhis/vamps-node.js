@@ -3,10 +3,12 @@
   <td></td>
 <% } else if (all_field_names[idx][1] === "DNA Extraction") { %>
   <td>
-    <select id="dna_extraction_meth<%- did %>" name="dna_extraction_meth">
+      <% var selected_val = get_selected_val(pid, did, "dna_extraction_meth") %>
+
+      <select id="dna_extraction_meth<%- did %>" name="dna_extraction_meth">
       <% my_dna_extraction_meth_options.forEach(function(value){ %>
         <option value="<%= value %>"
-          <% if (value == all_metadata.dna_extraction_meth) {%>
+          <% if (value == selected_val) {%>
           selected
          <% } %>
          ><%= value %></option>
@@ -15,14 +17,11 @@
   </td>
 <% } else if (all_field_names[idx][1] === "DNA Quantitation") { %>
   <td>
-      <% //v = fs.get_selected_val(pid) %>
-      <% var v = sayHi(pid, did, "dna_quantitation") %>
-      v
-      <%= JSON.stringify(v) %>
+    <% var selected_val = get_selected_val(pid, did, "dna_quantitation") %>
     <select id="dna_quantitation<%- did%>" name="dna_quantitation">
       <% dna_quantitation.forEach(function(value){ %>
         <option value="<%= value %>"
-          <% if (value == v) {%>
+          <% if (value == selected_val) {%>
           selected
          <% } %>
          ><%= value %></option>

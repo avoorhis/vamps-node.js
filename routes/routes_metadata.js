@@ -288,7 +288,6 @@ function editMetadataForm(req, res){
       material_primary: CONSTS.MATERIAL_PRIMARY,
       material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
       metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
-      // , fs: { sayHi:sayHi()}
   });
 
   // if (req.body.from_where === "metadata_upload_from_file") {
@@ -701,32 +700,6 @@ function make_metadata_hash(req, res){
           material_primary: CONSTS.MATERIAL_PRIMARY,
           material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
           metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
-            // , fs: { sayHi: sayHi(pid, did, field_name)}
-
-            // , fs: { sayHi:function(pid, did, field_name){
-            //     // for (var one_val in all_metadata[pid].dna_quantitation) {
-            //     //     selected_val = did;
-            //     // }
-            //    selected_val = all_metadata[pid];
-            //        // all_metadata[pid][field_name];
-            //     //[did]
-            //     // selected_val = "hello " + did + pid + field_name;
-            //     return selected_val;
-            // }}
-      //       , fs: { get_selected_val:function(pid) {
-      //           for (var one_val in all_metadata[pid].dna_quantitation) {
-      //               console.log("one_val");
-      //               console.log(one_val);
-      //               if (did === one_val) {
-      //                   return all_metadata[pid][field_name][one_val];
-      //                   // <input type="text" id="= field_name - did" name="= field_name " value="= all_metadata[pid][field_name][one_val] "/>
-      //               } // if (did === one_val)
-      //               else {
-      //                   return "DIII";
-      //               }
-      //           }  // for (var one_val in all_metadata[pid][field_name])
-      //       }
-      // }
         });
         
         

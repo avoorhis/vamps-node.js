@@ -1,28 +1,15 @@
 <%
-sayHi = function (pid, did, field_name) {
+get_selected_val = function (pid, did, field_name) {
     if (all_metadata[pid][field_name]) {
-
         for (var one_val in all_metadata[pid][field_name]) {
-         try {
                if (did == one_val) {
                 selected_val = all_metadata[pid][field_name][one_val];
-             }
-         }
-         catch (e) {
-             selected_val = e;
-             console.log("EEE")
-             console.log(e)
          }
      }
     }
     else {
-        selected_val = dna_quantitation[0];
+        selected_val = "";
     }
-
-//    selected_val = all_metadata[pid][field_name];
-    // all_metadata[pid][field_name];
-    //[did]
-    // selected_val = "hello " + did + pid + field_name;
     return selected_val;
 }
 %>
