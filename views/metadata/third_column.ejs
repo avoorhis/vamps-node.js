@@ -31,10 +31,10 @@
 <!-- biome -->
 <% } else if (all_field_names[idx][1] === "Biome - Primary") { %>
   <td>
-      <% var selected_val = get_selected_val(pid, did, "biome_primary") %>
+      <% var selected_val = get_selected_val(pid, did, "env_biome_primary") %>
 
-      <select id="biome_primary<%- did%>" name="biome_primary" class = "biome_primary">
-      <% biome_primary.forEach(function(value){ %>
+      <select id="env_biome_primary<%- did%>" name="env_biome_primary" class = "env_biome_primary">
+      <% env_biome_primary.forEach(function(value){ %>
         <option value="<%= value %>"
           <% if (value == selected_val) {%>
           selected
