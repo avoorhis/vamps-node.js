@@ -15,9 +15,9 @@
 <% } else if (all_field_names[idx][1] === "DNA Quantitation") { %>
   <td>
       <% //v = fs.get_selected_val(pid) %>
-      <%= fs.sayHi('bill') %>
+      <% var v = fs.sayHi(pid, did, field_name) %>
       v
-      <%= //v %>
+      <%= JSON.stringify(v) %>
     <select id="dna_quantitation<%- did%>" name="dna_quantitation">
       <% dna_quantitation.forEach(function(value){ %>
         <option value="<%= value %>"
