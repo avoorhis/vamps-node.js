@@ -414,6 +414,7 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
       return q;
   },
   get_select_primer_suite_query: function() {      
+
       var q = "SELECT primer, primer_id, primer_suite, primer_suite_id,  direction, sequence, region, domain"
         q += " FROM ref_primer_suite_primer"
         q += " JOIN primer_suite USING(primer_suite_id)"
@@ -421,6 +422,7 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
         //console.log(q)
       return q;
   }
+  
   
  
 } // end of module.exports
