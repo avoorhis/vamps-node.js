@@ -194,7 +194,7 @@ router.post("/metadata_upload",
     form.field("feature_primary", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
     form.field("feature_secondary", "Environmental Feature - Secondary").trim().entityEncode().array(),
     form.field("material_primary", "Environmental Material - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
-    form.field("material_secondary", "Environmental Material - Secondary").trim().entityEncode()
+    form.field("material_secondary", "Environmental Material - Secondary").trim().entityEncode().array()
     ),
   function (req, res) {
     // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
