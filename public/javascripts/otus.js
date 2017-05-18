@@ -15,7 +15,9 @@ if (selection_btn_visuals !== null) {
             
           var f = document.createElement("form");
           f.setAttribute('method',"post");
-          f.setAttribute('action',"/otus/visuals/view_selection");
+
+          f.setAttribute('action',"view_selection");
+
           var input = document.createElement('input');
          
           input.type = 'hidden';

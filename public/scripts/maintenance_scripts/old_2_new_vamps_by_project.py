@@ -1515,7 +1515,9 @@ if __name__ == '__main__':
         -sp/-sequencing_platform        default: illumina 
         -geo_loc_name/--geo_loc_name                    default: United States
         -biome/--env_biome              default: ''
+
         -target_gene/--target_gene       default: 'unknown'
+
   
   """
   parser.add_argument("-p","--project",
@@ -1929,4 +1931,5 @@ if __name__ == '__main__':
 # *) required_metadata_info -4??? see on vampsprod for pr MBE_1666G_Bv4
 # *) change print to print_both
 # *) use more the one project at once
+
 

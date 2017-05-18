@@ -157,11 +157,9 @@ router.post('/method_selection', helpers.isLoggedIn, function (req, res) {
 //     });
     
 });
-//
-//
-//
-router.post('/visuals/view_selection', helpers.isLoggedIn, function(req, res) {
-    console.log('in POST OTU view_selection')
+
+router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
+    console.log('in GET OTU view_selection')
     console.log(req.body);
     console.log('<<--in OTU view_selection')
     opid= req.body.otu_id
@@ -170,25 +168,24 @@ router.post('/visuals/view_selection', helpers.isLoggedIn, function(req, res) {
     var otudata = {}
     //visual_post_items = COMMON.save_post_items(req);
     //console.log(visual_post_items)
-    var q = "SELECT otu_project, otu_dataset, otu_label, count,"
-    q += " ("
-    q += "  CASE"
-	q += "    WHEN otu_taxonomy_id IS NULL"
-	q += "    THEN '0'"
-	q += "    ELSE concat_ws(';',domain,phylum,klass,`order`,family,genus)"
-    q += "  END"
-    q += " ) as taxonomy"
-    q += " FROM otu_pdr_info"
-    q += " JOIN otu_dataset using(otu_dataset_id)"
-    q += " JOIN otu_project using(otu_project_id)"
-    q += " LEFT JOIN otu_taxonomy using(otu_taxonomy_id)"
-    q += " LEFT JOIN domain using(domain_id)"
-    q += " LEFT JOIN phylum using(phylum_id)"
-    q += " LEFT JOIN klass using(klass_id)"
-    q += " LEFT JOIN `order` using(order_id)"
-    q += " LEFT JOIN family using(family_id)"
-    q += " LEFT JOIN genus using(genus_id)"
-    
+    var q = "SELECT otu_project.otu_project, otu_dataset.otu_dataset, otu_pdr_info.otu_label, otu_pdr_info.count,\n"
+    q += " (\n"
+    q += "   CASE\n"
+	q += "      WHEN otu_taxonomy_id IS NULL\n"
+	q += "      THEN '0'\n"
+	q += "      ELSE concat_ws(';',domain,phylum,klass,`order`,family,genus)\n"
+    q += "   END\n"
+    q += " ) as taxonomy\n"
+    q += " FROM otu_pdr_info\n" 
+    q += " JOIN otu_dataset using(otu_dataset_id)\n" 
+    q += " JOIN otu_project using(otu_project_id)\n"
+    q += " LEFT JOIN otu_taxonomy  using(otu_taxonomy_id)\n"
+    q += " LEFT  JOIN domain using(domain_id)\n" 
+    q += " LEFT JOIN phylum using(phylum_id)\n" 
+    q += " LEFT JOIN klass using(klass_id)\n" 
+    q += " LEFT JOIN `order` using(order_id)\n" 
+    q += " LEFT JOIN family using(family_id)\n" 
+    q += " LEFT JOIN genus using(genus_id)\n"    
      q += " WHERE otu_project_id='"+opid+"'" 
      console.log(q)
     connection.query(q, function otu_data(err, rows, fields){
@@ -225,7 +222,7 @@ router.post('/visuals/view_selection', helpers.isLoggedIn, function(req, res) {
                 cnt = rows[n]['count']
                 tax = rows[n]['taxonomy']
                 ds_order[ds] = 1
-                otu_tax[otu] = tax
+                otu_tax[otu] = tax  // lookup
                 if(otudata.hasOwnProperty(otu)){
                     otudata[otu][ds] = cnt
                 }else{
