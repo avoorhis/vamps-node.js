@@ -453,7 +453,7 @@ function make_all_arrays(all_metadata, pid, dataset_id) {
       all_metadata[pid][key] = [];
     });
   }
-  return all_metadata
+  return all_metadata;
 }
 
 function populate_metadata_hash(rows, pid, all_metadata) { 
@@ -499,7 +499,7 @@ function populate_metadata_hash(rows, pid, all_metadata) {
       
       
       */
-      var dataset_id = row.did
+      var dataset_id = row.did;
       all_metadata[pid]["project"]     = row.project;
       all_metadata[pid]["title"]       = row.title;
       all_metadata[pid]["username"]    = row.username;
@@ -649,7 +649,7 @@ function make_metadata_hash(req, res){
   all_metadata = {};
   if (helpers.isInt(pid))
   {
-    all_metadata[pid] = {}
+    all_metadata[pid] = {};
     connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows, fields) {
       if (err)
       {
@@ -661,7 +661,7 @@ function make_metadata_hash(req, res){
         // console.log("rows");
         
         // empty all_metadata
-        all_metadata = populate_metadata_hash(rows, pid, all_metadata)
+        all_metadata = populate_metadata_hash(rows, pid, all_metadata);
         // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
         // console.log("EEE all_field_names");
         // console.log(all_field_names);
