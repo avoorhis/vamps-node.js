@@ -690,6 +690,41 @@ constants.BIOME_SECONDARY_MARINE = ["none",
 "polar",
 "ultramafic hydrothermal vent biome"];
 
+constants.BIOME_SEQ_OPTIONS = {
+    "marine": ["none",
+        "abyssal",
+        "aquatic",
+        "basaltic hydrothermal vent",
+        "bathyal",
+        "benthic",
+        "continental margin",
+        "estuarine",
+        "hadal",
+        "marine cold seep biome",
+        "neritic",
+        "pelagic",
+        "polar",
+        "ultramafic hydrothermal vent biome"],
+
+    "terrestrial": ["none",
+        "aquatic",
+        "freshwater lake",
+        "freshwater river",
+        "large lake biome",
+        "polar",
+        "subglacial lake"],
+
+    "subterrestrial": ["none",
+        "aquatic",
+        "endolithic"],
+
+    "subseafloor": ["none",
+        "aquatic",
+        "benthic",
+        "endolithic",
+        "sub-seafloor microbial biome"]
+};
+
 constants.BIOME_SECONDARY_TERRESTRIAL = ["none",
 "aquatic",
 "freshwater lake",
