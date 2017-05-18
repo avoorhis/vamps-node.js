@@ -500,19 +500,3 @@ function populate_secondary_select(args) {
     B.appendChild(op);
   }
 }
-
-$(document).ready(function(){
-    get_selected_val(this);
-    // $('.material_primary').change(function(){
-    //     populate_secondary_select.call(this, ['material', material_seq_options]);
-    // });
-});
-
-// function get_selected_val(args) {
-//   for (var one_val in all_metadata[pid][field_name]) {
-//     if (did === one_val) {
-//       all_metadata[pid][field_name][one_val];
-//       // <input type="text" id="= field_name - did" name="= field_name " value="= all_metadata[pid][field_name][one_val] "/>
-//     } // if (did === one_val)
-//   }  // for (var one_val in all_metadata[pid][field_name])
-// }
