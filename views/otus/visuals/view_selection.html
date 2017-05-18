@@ -2,16 +2,15 @@
 <% include ../../add_ins/begin.ejs %>
 
 <%  var cnsts  = JSON.parse(constants) %>
-<%  var mtx    = JSON.parse(data); %>
+<%  var mtx    = JSON.parse(matrix); %>
 
 <%  var activate_thumbs = true; %>
 <%  var visuals = cnsts.VISUAL_THUMBNAILS.visuals %>
 <script> 
-  var ds_ord = JSON.parse('<%- ds_order %>')
-  var otu_tax = JSON.parse('<%- otu_tax %>')
-  var mtx_local = JSON.parse('<%- data %>');
+  var ts_local   = '<%- ts %>'
+  var mtx_local  = JSON.parse('<%- matrix %>');
   var cts_local  = JSON.parse('<%- constants %>');
-  var user_local  = '<%= user.username %>';
+  var user_local = '<%= user.username %>';
    
 </script>
 
@@ -147,7 +146,6 @@
 <!--  <script type="text/javascript" src="/javascripts/visual_divs.js"></script> -->
  <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>
  <script type="text/javascript" src="/javascripts/jquery.flot.min.js"></script>
-
  <script type="text/javascript" src="/javascripts/tooltipster.bundle.min.js"></script>
 
 </body>

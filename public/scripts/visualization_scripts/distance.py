@@ -538,7 +538,7 @@ if __name__ == '__main__':
 
     if args.function == 'dheatmap':
         # IMPORTANT print for dist heatmap
-        #print(json.dumps(dm2))
+        print(json.dumps(dm2))
         pass
 
     if args.function == 'dendrogram-svg':

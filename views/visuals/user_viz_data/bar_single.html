@@ -76,6 +76,7 @@ $(document).ready(function() {
   if(bar_type == 'single'){
     // function is where?  public/javascripts/user_viz_data.js:function get_single_bar_html(obj){
     barcharts_table_div.innerHTML = get_single_bar_html(mtx_local);
+    
   }else{
     barcharts_table_div.innerHTML = get_double_bar_html(mtx_local);
   }
@@ -144,6 +145,7 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
 </script>
 <script type="text/javascript" src="/javascripts/user_viz_data.js" charset="utf-8"></script>
 <script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
+
 
 </body>
 </html>

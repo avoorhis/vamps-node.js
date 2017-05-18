@@ -163,12 +163,13 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     console.log(req.body);
     console.log('<<--in OTU view_selection')
     opid= req.body.otu_id
-    var rando = Math.floor((Math.random() * 100000) + 1);
-    var date = new Date();
+    var timestamp = +new Date();
+    timestamp = req.user.username+'-'+timestamp
+    chosen_id_name_hash = {}
     var otudata = {}
     //visual_post_items = COMMON.save_post_items(req);
     //console.log(visual_post_items)
-    var q = "SELECT otu_project.otu_project, otu_dataset.otu_dataset, otu_pdr_info.otu_label, otu_pdr_info.count,\n"
+    var q = "SELECT otu_project.otu_project, otu_dataset.otu_dataset, otu_dataset.otu_dataset_id, otu_pdr_info.otu_label, otu_pdr_info.count,\n"
     q += " (\n"
     q += "   CASE\n"
 	q += "      WHEN otu_taxonomy_id IS NULL\n"
@@ -192,53 +193,35 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
         if(err){
             console.log(err)
         }else{
-            otu_matrix = {}
-            otu_matrix.id = req.user.username+'_'+rando
-            otu_matrix.format = "Biological Observation Matrix 0.9.1-dev"
-            otu_matrix.format_url = "http://biom-format.org/documentation/format_versions/biom-1.0.html"
-            otu_matrix.type = "OTU table"
-            otu_matrix.units = "OTU Taxonomy" //# or no taxonomy
-            otu_matrix.generated_by = "VAMPS-NodeJS Version 2.0"
-            otu_matrix.date = date.toISOString()
-            otu_matrix.column_totals = 
-            otu_matrix.max_dataset_count = 
-            otu_matrix.matrix_type = "dense"
-            otu_matrix.matrix_element_type = "int"
-            otu_matrix.shape = []
-            otu_matrix.rows = {}
-            otu_matrix.columns = {}
-            otu_matrix.data = {}
+            OTU_MATRIX = get_otu_matrix(req, rows);
+            matrix_file = '../../tmp/'+timestamp+'_count_matrix.biom';
             
-             
-            prj = rows[0]['otu_project']
-            
-            var ds_order = {}
-            var otu_tax = {}
-            var otudata = {}
-            for(n in rows){
-                
-                ds = rows[n]['otu_dataset']
-                otu = rows[n]['otu_label']
-                cnt = rows[n]['count']
-                tax = rows[n]['taxonomy']
-                ds_order[ds] = 1
-                otu_tax[otu] = tax  // lookup
-                if(otudata.hasOwnProperty(otu)){
-                    otudata[otu][ds] = cnt
-                }else{
-                    otudata[otu] = {}
-                    otudata[otu][ds] = cnt                    
-                }
+			//COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
+			COMMON.write_file( matrix_file, JSON.stringify(OTU_MATRIX,null,2) );
+			prj = rows[0]['otu_project']
+			
+			chosen_id_name_hash.ids = []
+			chosen_id_name_hash.names = []
+			for(n in OTU_MATRIX.columns){
+			    //fullname = prj+'--'+OTU_MATRIX.columns[n].id
+			    fullname = OTU_MATRIX.columns[n].id
+			    chosen_id_name_hash.ids.push(OTU_MATRIX.columns[n].did)
+			    chosen_id_name_hash.names.push(fullname)
+			}
 
-            }
+            console.log(OTU_MATRIX)
+            console.log(chosen_id_name_hash)
+            
+            
+            
+ 
             
             
             res.render('otus/visuals/view_selection', {
                                 title           : 'VAMPS: OTU Visuals',                                 
-                                data            : JSON.stringify(otudata), 
-                                project         : prj,
-                                ds_order        : JSON.stringify(ds_order), 
-                                otu_tax         : JSON.stringify(otu_tax),                         
+                                matrix          : JSON.stringify(OTU_MATRIX), 
+                                project         : prj, 
+                                ts              : timestamp,                                                  
                                 constants       : JSON.stringify(req.CONSTS),                                
                                 user            : req.user,
                                 hostname        : req.CONFIG.hostname 
@@ -247,62 +230,153 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     });        
 
 });
-
-// {
-//   "id": "andy_1494878156738",
-//   "format": "Biological Observation Matrix 0.9.1-dev",
-//   "format_url": "http://biom-format.org/documentation/format_versions/biom-1.0.html",
-//   "type": "OTU table",
-//   "units": "tax_silva119_simple",
-//   "generated_by": "VAMPS-NodeJS Version 2.0",
-//   "date": "2017-05-15T19:55:56.739Z",
-//   "rows": [
-//     {
-//       "id": "Bacteria;Acidobacteria",
-//       "metadata": null
-//     },
-//   ...
-//     {
-//       "id": "Unknown;phylum_NA",
-//       "metadata": null
-//     }
-//   ],
-//   "columns": [
-//     {
-//       "did": "49",
-//       "id": "ICM_LCY_Bv6--LCY_0001_2003_05_11",
-//       "metadata": null
-//     },
-//     ...
-//     {
-//       "did": "52",
-//       "id": "ICM_LCY_Bv6--LCY_0007_2003_05_04",
-//       "metadata": null
-//     }
-//   ],
-//   "column_totals": [
-//     8717,
-//     5567,
-//     21582,
-//     7162
-//   ],
-//   "max_dataset_count": 21582,
-//   "matrix_type": "dense",
-//   "matrix_element_type": "int",
-//   "shape": [
-//     29,
-//     4
-//   ],
-//   "data": [
-//     [
-//       13,      2,      0,      20
-//     ],
-//   ...
-//     [
-//       46,      15, 12,      82
-//     ]
-//   ]
-// }
+function get_otu_matrix(req, rows){
+    otu_matrix = {}
+    var date = new Date();
+    var rando = Math.floor((Math.random() * 100000) + 1);
+    otu_matrix.id = req.user.username+'_'+rando
+    otu_matrix.format = "Biological Observation Matrix 0.9.1-dev"
+    otu_matrix.format_url = "http://biom-format.org/documentation/format_versions/biom-1.0.html"
+    otu_matrix.type = "OTU table"
+    otu_matrix.units = "OTU names" //# or no taxonomy
+    otu_matrix.generated_by = "VAMPS-NodeJS Version 2.0"
+    otu_matrix.date = date.toISOString()
+    otu_matrix.column_totals = []
+    otu_matrix.matrix_type = "dense"
+    otu_matrix.matrix_element_type = "int"
+    otu_matrix.shape = []
+    otu_matrix.rows = []
+    otu_matrix.columns = []
+    otu_matrix.data = []
+    var ds_order = {}
+    var otu_tax = {}
+    var otudata = {}
+    ds_totals = {}
+    for(n in rows){
+        ds = rows[n]['otu_dataset']
+        did = rows[n]['otu_dataset_id']
+        otu = rows[n]['otu_label']
+        cnt = rows[n]['count']
+        tax = rows[n]['taxonomy']
+        ds_order[ds] = did
+        otu_tax[otu] = tax  // lookup
+        if(ds_totals.hasOwnProperty(ds)){
+            ds_totals[ds] += cnt
+        }else{
+            ds_totals[ds] = cnt
+        }
+        if(otudata.hasOwnProperty(otu)){
+            otudata[otu][ds] = cnt
+        }else{
+            otudata[otu] = {}
+            otudata[otu][ds] = cnt                    
+        }
+    }
+    otu_matrix.shape[0] = Object.keys(otu_tax).length
+    otu_matrix.shape[1] = Object.keys(ds_order).length
+    
+    for(ds in ds_order){
+        otu_matrix.columns.push({"did":ds_order[ds],"id":ds,"metadata":null})
+        otu_matrix.column_totals.push(ds_totals[ds])
+    }
+    n=0
+    for(otu in otu_tax){
+        otu_matrix.rows.push({"id":otu,"metadata":null})   
+        otu_matrix.data[n] = []
+        for(ds in ds_order){
+            
+            otu_matrix.data[n].push(otudata[otu][ds])
+        }
+        n += 1
+    }
+    return otu_matrix
+}
+// router.post('/otu_heatmap', helpers.isLoggedIn, function (req, res) {
+//     console.log('in otu_heatmap')
+//     console.log(req.body);
+//     var ts = req.body.ts;  // ie avoorhis-1495119485990
+//     var metric = req.body.metric;
+//     var biom_file_name = ts+'_count_matrix.biom';
+//     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+//     var biom_file = path.join(pwd,'tmp', biom_file_name);
+//     console.log(biom_file) 
+//     var html = '';
+//     var title = 'VAMPS';
+// 
+//     var distmtx_file_name = ts+'_distance.csv';
+//     var distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
+//     var dist_json_file = path.join(pwd,'tmp', ts+'_distance.json')
+//     var options = {
+//      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+//        args :       [ '-in', biom_file, '-metric', metric, '--function', 'dheatmap', '--outdir', path.join(pwd,'tmp'), '--prefix', ts],
+//      };
+// 
+//     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+// 
+//     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+//     var heatmap_process = spawn( options.scriptPath+'/distance.py', options.args, {
+//             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+//             detached: true,
+//             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+//             stdio: 'pipe' // stdin, stdout, stderr
+//         });
+// 
+// 
+//     var stdout = '';
+//     heatmap_process.stdout.on('data', function heatmapProcessStdout(data) {
+//         //console.log('stdout: ' + data);
+//         //data = data.toString().replace(/^\s+|\s+$/g, '');
+//         data = data.toString();
+//         stdout += data;
+//     });
+//     var stderr = '';
+//     heatmap_process.stderr.on('data', function heatmapProcessStderr(data) {
+// 
+//         console.log('stderr: ' + data);
+//         //data = data.toString().replace(/^\s+|\s+$/g, '');
+//         data = data.toString();
+//         stderr += data;
+//     });
+// 
+//     heatmap_process.on('close', function heatmapProcessOnClose(code) {
+//         console.log('heatmap_process process exited with code ' + code);
+// 
+//         //var last_line = ary[ary.length - 1];
+//         if(code === 0){   // SUCCESS
+//           try{
+//             console.log(dist_json_file)
+//             fs.readFile(dist_json_file, 'utf8', function (err, distance_matrix) {
+//                 if (err) throw err;
+//                 //distance_matrix = JSON.parse(data);
+//                 res.render('visuals/partials/create_distance_heatmap',{
+//                   dm        : distance_matrix,
+//                   hash      : JSON.stringify(chosen_id_name_hash),
+//                   constants : JSON.stringify(req.CONSTS),
+//                   mt        : metric,
+//                   ts        : ts
+//                 });
+//             });
+//             if(req.CONFIG.site == 'vamps' ){
+//               console.log('VAMPS PRODUCTION -- no print to log');
+//             }else{
+//               console.log(stdout)
+//             }
+//             //distance_matrix = JSON.parse(stdout);
+//             distance_matrix = stdout;
+//           }
+//           catch(err){
+//             distance_matrix = JSON.stringify({'ERROR':err});
+//           }
+//         }else{
+//           console.log('output: '+stderr);
+//           res.send(stderr);
+//         }
+//     });   
+//         
+// });
+//
+//
+//
 router.get('/load_otu_list', helpers.isLoggedIn, function (req, res) {
     console.log('in load_otu_list')
     var q = 'SELECT otu_project, otu_project_id, title, project_description, owner_user_id from otu_project order by otu_project'
