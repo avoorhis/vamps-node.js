@@ -1,11 +1,11 @@
 <%
 sayHi = function (pid, did, field_name) {
-     for (var one_val in all_metadata[pid]["dna_quantitation"]) {
-         if (did == one_val) {
-             selected_val = all_metadata[pid]["dna_quantitation"][one_val];
-         }
-     }
-//    selected_val = all_metadata[pid]["dna_quantitation"];
+//     for (var one_val in all_metadata[pid][field_name]) {
+//         if (did == one_val) {
+//             selected_val = all_metadata[pid][field_name][one_val];
+//         }
+//     }
+    selected_val = all_metadata[pid]["dna_quantitation"];
     // all_metadata[pid][field_name];
     //[did]
     // selected_val = "hello " + did + pid + field_name;
