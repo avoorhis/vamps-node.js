@@ -64,7 +64,7 @@ router.get("/list_result/:mditem", helpers.isLoggedIn, function(req, res) {
             var data = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected);  // send _id
             mdvalues[did] = data.value;
             md_selected_show = data.name;
-        }else if(AllMetadata[did].hasOwnProperty(md_selected)){
+        } else if (AllMetadata[did].hasOwnProperty(md_selected)) {
              mdvalues[did] = AllMetadata[did][md_selected];
              md_selected_show = md_selected;
              
