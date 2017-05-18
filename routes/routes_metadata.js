@@ -189,12 +189,12 @@ router.post("/metadata_upload",
     form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode().array(),
     form.field("geo_loc_name_country", "Country").trim().entityEncode().array(),
     form.field("longhurst_zone", "Longhurst Zone").trim().entityEncode().array(),
-    form.field("env_biome_primary", "Biome - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
-    form.field("env_biome_secondary", "Biome - Secondary").trim().entityEncode().array(),
-    form.field("env_feature_primary", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
-    form.field("env_feature_secondary", "Environmental Feature - Secondary").trim().entityEncode().array(),
-    form.field("env_material_primary", "Environmental Material - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
-    form.field("env_material_secondary", "Environmental Material - Secondary").trim().entityEncode()
+    form.field("biome_primary", "Biome - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("biome_secondary", "Biome - Secondary").trim().entityEncode().array(),
+    form.field("feature_primary", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("feature_secondary", "Environmental Feature - Secondary").trim().entityEncode().array(),
+    form.field("material_primary", "Environmental Material - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("material_secondary", "Environmental Material - Secondary").trim().entityEncode()
     ),
   function (req, res) {
     // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
@@ -693,7 +693,7 @@ function make_metadata_hash(req, res){
           dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
           dna_extraction: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
           dna_quantitation: CONSTS.DNA_QUANTITATION_OPTIONS,
-          env_biome_primary: CONSTS.BIOME_PRIMARY,
+          biome_primary: CONSTS.BIOME_PRIMARY,
           biome_secondary_marine: CONSTS.BIOME_SECONDARY_MARINE,
           feature_primary: CONSTS.FEATURE_PRIMARY,
           feature_secondary_aquifer: CONSTS.FEATURE_SECONDARY_AQUIFER,

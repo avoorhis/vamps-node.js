@@ -186,11 +186,11 @@ function bindInfoWindow(marker, map, infowindow, html) {
 // works:
 // $(document).ready(function(){
 //   event = "E";
-//   $('.env_biome_1').change(function(){
+//   $('.biome_1').change(function(){
 //     custChange.call(this, event);
 //   });
 
-var env_biome_seq_options = {
+var biome_seq_options = {
     "marine": ["none",
     "abyssal",
     "aquatic",
@@ -200,17 +200,17 @@ var env_biome_seq_options = {
     "continental margin",
     "estuarine",
     "hadal",
-    "marine cold seep env_biome",
+    "marine cold seep biome",
     "neritic",
     "pelagic",
     "polar",
-    "ultramafic hydrothermal vent env_biome"],
+    "ultramafic hydrothermal vent biome"],
 
     "terrestrial": ["none",
     "aquatic",
     "freshwater lake",
     "freshwater river",
-    "large lake env_biome",
+    "large lake biome",
     "polar",
     "subglacial lake"],
 
@@ -222,7 +222,7 @@ var env_biome_seq_options = {
     "aquatic",
     "benthic",
     "endolithic",
-    "sub-seafloor microbial env_biome"]
+    "sub-seafloor microbial biome"]
   };
 
   var feature_seq_options = {
@@ -460,8 +460,8 @@ var env_biome_seq_options = {
   };
 
 $(document).ready(function(){
-  $('.env_biome_primary').change(function(){
-    populate_secondary_select.call(this, ['env_biome', env_biome_seq_options]);
+  $('.biome_primary').change(function(){
+    populate_secondary_select.call(this, ['biome', biome_seq_options]);
   });
   $('.feature_primary').change(function(){
     populate_secondary_select.call(this, ['feature', feature_seq_options]);
