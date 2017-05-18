@@ -7,10 +7,9 @@
 <%  var dm      = JSON.parse(dm) %>
 
 <!-- 
-This version is css only (no tables) but also no row dragging :( 
-It was written because it allows heatmaps of more than 1000 datasets.
-But because it is not an html <table> structure rowdragging doesn't work
+Selects between CSS only and Table with row dragging capabilities (highly desirable)
 -->
+
 <% if( no.length > max  ){ %>
     <p>Too many datasets selected. The heatmap will not work with more than <%= max %> datasets.</p>
 <% }else if(no.length > cutoff){ %>

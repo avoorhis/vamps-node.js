@@ -4,10 +4,10 @@
  <div class='title'>Metadata</div>
  <div class='subtitle'></div>
 
-<% if (edit_metadata_info) { %>
+<% if (all_metadata) { %>
 <%
 } else {
-  var edit_metadata_info = {}
+  var all_metadata = {}
 } %>
 
 <% %>
@@ -76,10 +76,10 @@ var dna_quantitation_options = ["NanoQuant",
 
       <br />
       <label for="pi_name">PI Name:</label>
-      <input type="text" id="pi_name" name="pi_name"  value='<%= edit_metadata_info.pi_name %>'/>
+      <input type="text" id="pi_name" name="pi_name"  value='<%= all_metadata.pi_name %>'/>
 
       <% for (var did in all_metadata[pid]["dataset_id"]) { %>
-        <input type='hidden' name='dataset_id' value='<%= did %>' />
+        <input type='hidden' name='dataset_id' value='<%= all_metadata[pid]["dataset_id"][did] %>' />
       <% } %>
 
     <% } %>
@@ -89,13 +89,13 @@ var dna_quantitation_options = ["NanoQuant",
   <%}%>
   <br />
   <label for="pi_email">PI's email address:</label>
-  <input type="email" id="pi_email" name="pi_email"  value='<%= edit_metadata_info.pi_email %>'/>
+  <input type="email" id="pi_email" name="pi_email"  value='<%= all_metadata.pi_email %>'/>
   <br />
   <label for="project_abstract">CoDL project abstract (.doc format):</label>
-  <textarea id="project_abstract" name="project_abstract"  placeholder= '<%= edit_metadata_info.project_abstract %>'></textarea>
+  <textarea id="project_abstract" name="project_abstract"  placeholder= '<%= all_metadata.project_abstract %>'></textarea>
   <br />
   <label for="references">References for selected manuscripts published that describe the location:</label>
-  <textarea id="references" name="references"  placeholder='<%= edit_metadata_info.references %>'></textarea>
+  <textarea id="references" name="references"  placeholder='<%= all_metadata.references %>'></textarea>
   <br />
   </fieldset>
   <fieldset id="parameters">
@@ -108,7 +108,7 @@ var dna_quantitation_options = ["NanoQuant",
       <tbody>
     <% if (all_metadata) { %>
       <!-- all_metadata -->
-   
+
       <!-- for each project  -->
       <% for (var key in all_metadata) { %>
         <% if (all_field_names) { %>
