@@ -103,7 +103,7 @@ $(document).ready(function() {
   
   if(bar_type == 'single'){
     // function is where?  in this file (look below)
-    barcharts_table_div.innerHTML = get_single_bar_html(mtx_local);
+    barcharts_table_div.innerHTML = get_single_bar_html(mtx_local, <%= ts %>);
   }else{
     barcharts_table_div.innerHTML = get_double_bar_html(mtx_local, <%= ts %>);
   }

@@ -7,7 +7,6 @@
   var mtx_local = JSON.parse('<%- matrix %>');
   var user_local  = '<%= user.username %>';
   var bar_type    = '<%= bar_type %>';
-  var filename    = '<%= seqs_file %>';
 </script>
   
 <div class='title'><%= title %></div>
@@ -75,10 +74,10 @@ $(document).ready(function() {
   
   if(bar_type == 'single'){
     // function is where?  public/javascripts/user_viz_data.js:function get_single_bar_html(obj){
-    barcharts_table_div.innerHTML = get_single_bar_html(mtx_local);
+    barcharts_table_div.innerHTML = get_single_bar_html(mtx_local, <%= ts %>);
     
   }else{
-    barcharts_table_div.innerHTML = get_double_bar_html(mtx_local);
+    barcharts_table_div.innerHTML = get_double_bar_html(mtx_local, <%= ts %>);
   }
     //new Tablesort(document.getElementById('single_barchart_table_id'));
         

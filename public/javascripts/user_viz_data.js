@@ -53,7 +53,7 @@ if (download_fasta_btn !== null) {
 }
 
 
-function get_single_bar_html(obj){
+function get_single_bar_html(obj, ts){
   
   var total = 0;
   var html ='';
@@ -88,6 +88,7 @@ function get_single_bar_html(obj){
   for(n in obj.rows){
     if(obj.data[n] > 0){
       color = string_to_color_code(obj.rows[n].id)
+      filename = user_local+'_'+obj.columns[0].did+'_'+ts+'_sequences.json';
       link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
       var pct = ((obj.data[n] / total)*100).toFixed(2);
       var id = 'barcharts/' + obj.rows[n].id + '/'+ obj.data[n] + '/' + pct;
