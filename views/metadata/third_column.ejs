@@ -1,120 +1,125 @@
+<% include ../../routes/helpers/metadata_functions %>
 <% if (dividers.indexOf( all_field_names[idx][1] ) != -1) { %>
-  <td></td>
+<td></td>
 <% } else if (all_field_names[idx][1] === "DNA Extraction") { %>
-  <td>
+<td>
+    <% selected_val = get_selected_val(pid, did, "dna_extraction_meth") %>
+
     <select id="dna_extraction_meth<%- did %>" name="dna_extraction_meth">
-      <% my_dna_extraction_meth_options.forEach(function(value){ %>
+        <% dna_extraction_options.forEach(function(value){ %>
         <option value="<%= value %>"
-          <% if (value == all_metadata.dna_extraction_meth) {%>
-          selected
-         <% } %>
-         ><%= value %></option>
-      <% }) %>
+                <% if (value == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value %></option>
+        <% }) %>
     </select>
-  </td>
+</td>
 <% } else if (all_field_names[idx][1] === "DNA Quantitation") { %>
-  <td>
+<td>
+    <% selected_val = get_selected_val(pid, did, "dna_quantitation") %>
     <select id="dna_quantitation<%- did%>" name="dna_quantitation">
-      <% dna_quantitation.forEach(function(value){ %>
+        <% dna_quantitation_options.forEach(function(value){ %>
         <option value="<%= value %>"
-          <% if (value == all_metadata.dna_quantitation) {%>
-          selected
-         <% } %>
-         ><%= value %></option>
-      <% }) %>
+                <% if (value == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value %></option>
+        <% }) %>
     </select>
-  </td>
+</td>
 <!-- biome -->
 <% } else if (all_field_names[idx][1] === "Biome - Primary") { %>
-  <td>
+<td>
+    <% selected_val = get_selected_val(pid, did, "biome_primary")
+    %>
+
     <select id="biome_primary<%- did%>" name="biome_primary" class = "biome_primary">
-      <% biome_primary.forEach(function(value){ %>
+        <% biome_primary_options.forEach(function(value){ %>
         <option value="<%= value %>"
-          <% if (value == all_metadata.biome_primary) {%>
-          selected
-         <% } %>
-         ><%= value %></option>
-      <% }) %>
+                <% if (value == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value %></option>
+        <% }) %>
     </select>
-  </td>
+</td>
 <% } else if (all_field_names[idx][1] === "Biome - Secondary") { %>
-  <td>
+<td>
+    <% var selected_val = get_selected_val(pid, did, "biome_secondary") %>
     <select id="biome_secondary<%- did %>" name="biome_secondary" class="biome_secondary">
-      <% biome_secondary_marine.forEach(function(value){ %>
-        <option value="<%= value %>"
-          <% if (value === all_metadata.biome_secondary_marine) {%>
-          selected
-         <% } %>
-         ><%= value %></option>
-      <% }) %>
+
+        <% if (selected_val) { %>
+        <option value="<%= selected_val%>"><%= selected_val%></option>
+        <% } else { %>
+        <option value="none">none</option>
+
+        <% } %>
     </select>
-  </td>
+</td>
 <!--feature -->
-  <% } else if (all_field_names[idx][1] === "Environmental Feature - Primary") { %>
-    <td>
-      <select id="feature_primary<%- did%>" name="feature_primary" class = "feature_primary">
-        <% feature_primary.forEach(function(value){ %>
-          <option value="<%= value %>"
-            <% if (value == all_metadata.feature_primary) {%>
-            selected
-           <% } %>
-           ><%= value %></option>
+<% } else if (all_field_names[idx][1] === "Environmental Feature - Primary") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "feature_primary") %>
+
+    <select id="feature_primary<%- did%>" name="feature_primary" class = "feature_primary">
+        <% feature_primary_options.forEach(function(value){ %>
+        <option value="<%= value %>"
+                <% if (value == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value %></option>
         <% }) %>
-      </select>
-    </td>
-  <% } else if (all_field_names[idx][1] === "Environmental Feature - Secondary") { %>
-    <td>
-      <select id="feature_secondary<%- did %>" name="feature_secondary" class="feature_secondary">
-        <% feature_secondary_aquifer.forEach(function(value){ %>
-          <option value="<%= value %>"
-            <% if (value === all_metadata.feature_secondary_aquifer) {%>
-            selected
-           <% } %>
-           ><%= value %></option>
-        <% }) %>
-      </select>
-    </td>
+    </select>
+</td>
+<% } else if (all_field_names[idx][1] === "Environmental Feature - Secondary") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "feature_secondary")
+    %>
+    <select id="feature_secondary<%- did %>" name="feature_secondary" class="feature_secondary">
+        <% if (selected_val) { %>
+        <option value="<%= selected_val%>"><%= selected_val%></option>
+        <% } else { %>
+        <option value="none">none</option>
+        <% } %>
+    </select>
+</td>
 <!--feature end  -->
 <!-- Environmental Material -->
-  <% } else if (all_field_names[idx][1] === "Environmental Material - Primary") { %>
-    <td>
-      <select id="material_primary<%- did%>" name="material_primary" class = "material_primary">
-        <% material_primary.forEach(function(value){ %>
-          <option value="<%= value %>"
-            <% if (value == all_metadata.material_primary) {%>
-            selected
-           <% } %>
-           ><%= value %></option>
+<% } else if (all_field_names[idx][1] === "Environmental Material - Primary") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "material_primary") %>
+
+    <select id="material_primary<%- did%>" name="material_primary" class = "material_primary">
+        <% material_primary_options.forEach(function(value){ %>
+        <option value="<%= value %>"
+                <% if (value == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value %></option>
         <% }) %>
-      </select>
-    </td>
-  <% } else if (all_field_names[idx][1] === "Environmental Material - Secondary") { %>
-    <td>
-      <select id="material_secondary<%- did %>" name="material_secondary" class="material_secondary">
-        <% material_secondary_biofilm.forEach(function(value){ %>
-          <option value="<%= value %>"
-            <% if (value === all_metadata.material_secondary_biofilm) {%>
-            selected
-           <% } %>
-           ><%= value %></option>
-        <% }) %>
-      </select>
-    </td>
+    </select>
+</td>
+<% } else if (all_field_names[idx][1] === "Environmental Material - Secondary") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "material_secondary") %>
+
+    <select id="material_secondary<%- did %>" name="material_secondary" class="material_secondary">
+        <% if (selected_val) { %>
+        <option value="<%= selected_val%>"><%= selected_val%></option>
+        <% } else { %>
+        <option value="none">none</option>
+
+        <% } %>
+    </select>
+</td>
 <!--material end  -->
-  
+
 <% } else { %>
 <td>
-  <!-- If there are data -->
-  <!-- regular field with data -->
-  <% if (all_metadata[pid][field_name]) { %>
-    <% for (var one_val in all_metadata[pid][field_name]) { %>              
-      <% if (did == one_val) { %>
-        <input type="text" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= all_metadata[pid][field_name][one_val] %>"/>
-        <% } %> <!-- if (did == one_val) -->
-      <% } %> <!-- for (var one_val in all_metadata[pid][field_name]) -->
-  <% } else { %> <!-- else: not if (all_metadata[pid][field_name]) -->
-    <!-- regular field -->
-    <input type="text" id="<%= field_name %><%- did%>" name="<%= field_name %>" />    
-  <% } %> <!-- else -->
+    <!-- regular field with data -->
+    <% selected_val = get_selected_val(pid, did, field_name) %>
+    <input type="text" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= selected_val %>"/>
+
 </td>
 <% } %> <!-- else -->

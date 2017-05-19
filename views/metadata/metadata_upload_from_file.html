@@ -26,26 +26,6 @@
 <% }%>
 <br>
 
-<!--TODO: move to constants -->
-<% var my_dna_extraction_meth_options = ["MoBio Power Biomedical FAST DNA",
-"MoBio PowerSoil",
-"MoBio Power Water",
-"MoBio PowerBiofilm",
-"MoBio UltraClean DNA isolation",
-"freeze-thaw,SDS,phenol-chloroform,ethano",
-"Hot alkaline extraction",
-"Fast DNA Soil Spin",
-"CTAB phenol/chloroform",
-"Qiagen Genomic DNA"]
-
-var dna_quantitation_options = ["NanoQuant",
-"NanoDrop",
-"Fluorescent Microspheres",
-"Perfluorocarbon Tracers",
-"PicoGreen",
-"Other"]
-%>
-
 
 <H3>Instructions:</H3>
 <ol>
@@ -58,7 +38,7 @@ var dna_quantitation_options = ["NanoQuant",
 <li class="message">
  A range is not permitted for any value.
 </li>
-
+</ol>
 <form name='add_project_form' method='POST' action='/metadata/metadata_upload'>
 <!-- <form action="" method="post" enctype="multipart/form-data"> -->
   <fieldset id="general" class="required_fields" >
@@ -85,7 +65,7 @@ var dna_quantitation_options = ["NanoQuant",
     <% } %>
   <%
   } else { var all_metadata = {} %>
-    <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_GAI_Bv3v5"/>
+    <!--<input type="text" id="project_name" readonly name="project_name" placeholder="DCO_GAI_Bv3v5"/>-->
   <%}%>
   <br />
   <label for="pi_email">PI's email address:</label>
@@ -124,7 +104,7 @@ var dna_quantitation_options = ["NanoQuant",
             <!-- make a cell for each dataset_id -->
             <% for (var did in all_metadata[pid]["dataset_id"]) { %>
               <% include third_column.ejs %>
-            <% } %> <!-- for (var did in all_metadata[pid]["dataset_id"])  -->
+              <% } %> <!-- for (var did in all_metadata[pid]["dataset_id"])  -->
 
         </tr>
           <% } %> <!-- for (var idx in all_field_names)  -->
@@ -136,6 +116,7 @@ var dna_quantitation_options = ["NanoQuant",
               var all_metadata = {}
         } %>
   </table>
+  </fieldset>
 <br>
 
 <!-- center -->

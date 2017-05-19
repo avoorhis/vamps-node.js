@@ -1,0 +1,33 @@
+<%
+get_selected_val = function (pid, did, field_name) {
+    selected_val = "";
+    if (all_metadata[pid][field_name]) {
+        for (var one_val in all_metadata[pid][field_name]) {
+               if (did == one_val) {
+                selected_val = all_metadata[pid][field_name][one_val];
+         }
+     }
+    }
+    else {
+        selected_val = "";
+    }
+    return selected_val;
+}
+%>
+
+<%
+get_selected_val_from_arr = function (myArr, field_name) {
+    if (myArr & all_metadata[pid][field_name]) {
+        myArr_sliced = myArr.slice(1);
+        for (var one_val in myArr_sliced) {
+            if (did == one_val) {
+                selected_val = all_metadata[pid][field_name][one_val];
+            }
+        }
+    }
+    else {
+        selected_val = "";
+    }
+    return selected_val;
+}
+%>
