@@ -410,15 +410,18 @@ function create_counts_matrix() {
          
       html += "<br><table id='counts_matrix_id' border='0' class='' >";
       html += "<tr><td>OTU</td>"
-      for (var ds in ds_ord){
+      for (var n in mtx_local.columns){
+          ds = mtx_local.columns[n].id
           html += "<td>"+ds+"</td>"  
       }
       html += "</tr>"
-      for (var otu in otu_tax){
+      for (var n in mtx_local.rows){
+        otu = mtx_local.rows[n].id
         html += "<tr>";
         html += '<td>'+otu+'</td>';   
-        for (var ds in ds_ord){
-            html += '<td>'+mtx_local[otu][ds] +'</td>'
+        for (var m in mtx_local.columns){
+            cnt = mtx_local.data[n][m]
+            html += '<td>'+ cnt +'</td>'
         }
         html += "</tr>"; 
       }
@@ -550,22 +553,20 @@ function average(data){
 //
 //
 //
-function create_dheatmap() {
-      //alert('im HM')
+function create_dheatmap() {      
       
-      dheatmap_created = true;
       var dhm_div = document.getElementById('dheatmap_div');
       dhm_div.innerHTML = '';
       dhm_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
-      var init = {"selected_distance":"horn","normalization":"none","min_range":"0","max_range":"100"}
+      var init = {"selected_distance":"morisita_horn","normalization":"none","min_range":"0","max_range":"100"}
       var info_line = create_header('dhm', init);
       document.getElementById('dheatmap_title').innerHTML = info_line;
       document.getElementById('dheatmap_title').style.color = 'white';
       document.getElementById('dheatmap_title').style['font-size'] = 'small';
       var html = '';
       var args =  "metric="+init.selected_distance;
-      args += "&ts=";
+      args += "&ts="+ts_local;
       document.getElementById('pre_dheatmap_div').style.display = 'block';
        // get distance matrix via AJAX
       var xmlhttp = new XMLHttpRequest();  
@@ -576,12 +577,10 @@ function create_dheatmap() {
       xmlhttp.onreadystatechange = function() {        
         if (xmlhttp.readyState == 4 ) {
             clearInterval(myWaitVar);
-            var htmlstring = xmlhttp.responseText;           
-            
+            var htmlstring = xmlhttp.responseText;             
             dhm_div.innerHTML = htmlstring;
             document.getElementById('dheatmap_dnld_btn').disabled = false
             
-
         }
       };
       xmlhttp.send(args);      
@@ -593,7 +592,7 @@ function create_dheatmap() {
 function create_piecharts_group() {
     
     piecharts_created = true;
-    var init = {"selected_distance":"horn","normalization":"none","min_range":"0","max_range":"100"}
+    var init = {"selected_distance":"morisita_horn","normalization":"none","min_range":"0","max_range":"100"}
     var info_line = create_header('pies', init);
     
     document.getElementById('piecharts_title').innerHTML = info_line;
@@ -606,7 +605,7 @@ function create_piecharts_group() {
     document.getElementById('pre_piecharts_div').style.display = 'block';
      
     // this fxn is in common_selection.js
-    create_piecharts('group', ts, mtx_local);
+    create_piecharts('group', ts_local, mtx_local);
     
     document.getElementById('piecharts_dnld_btn').disabled = false
 
@@ -620,7 +619,7 @@ function create_barcharts_group() {
       
     
     barcharts_created = true;
-    var init = {"selected_distance":"horn","normalization":"none","min_range":"0","max_range":"100"}
+    var init = {"selected_distance":"morisita_horn","normalization":"none","min_range":"0","max_range":"100"}
     var info_line = create_header('bars', init);
     document.getElementById('barcharts_title').innerHTML = info_line;
     document.getElementById('barcharts_title').style.color = 'white';
@@ -631,7 +630,7 @@ function create_barcharts_group() {
     document.getElementById('pre_barcharts_div').style.display = 'block';
      
          // this fxn is in common_selection.js
-    create_barcharts('group', ts, mtx_local, {alpha_value:'z',count_value:"min"});
+    create_barcharts('group', ts_local, mtx_local, {alpha_value:'z',count_value:"min"});
     document.getElementById('barcharts_dnld_btn').disabled = false
 
 }

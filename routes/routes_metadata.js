@@ -23,7 +23,7 @@ router.get("/metadata_list", helpers.isLoggedIn, function(req, res) {
       for (var n in AllMetadataNames) {
         md_selected = AllMetadataNames[n];
         mdata_w_latlon[md_selected] = 0;
-        
+
         //console.log(md_selected)
         for (var did in DatasetsWithLatLong) {
         //console.log(AllMetadata[did])
@@ -31,11 +31,11 @@ router.get("/metadata_list", helpers.isLoggedIn, function(req, res) {
             //console.log("found1",did)
             //var mdata = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected)
             mdata = AllMetadata[did];   // has ids
-            
+
             pid = PROJECT_ID_BY_DID[did];
             //console.log("pid",pid)
             pname = PROJECT_INFORMATION_BY_PID[pid].project;
-            
+
             if(mdata.hasOwnProperty(md_selected)){
                     mdata_w_latlon[md_selected] = 1;
             }
@@ -67,17 +67,17 @@ router.get("/list_result/:mditem", helpers.isLoggedIn, function(req, res) {
         } else if (AllMetadata[did].hasOwnProperty(md_selected)) {
              mdvalues[did] = AllMetadata[did][md_selected];
              md_selected_show = md_selected;
-             
+
         }
        }
-      }      
+      }
       res.render("metadata/list_result", { title: "VAMPS:Metadata List Result",
             user:           req.user,hostname: req.CONFIG.hostname,
             vals:         JSON.stringify(mdvalues),
             names_by_did:   JSON.stringify(DATASET_NAME_BY_DID),
             pid_by_did:     JSON.stringify(PROJECT_ID_BY_DID),
-            pinfo_by_pid:   JSON.stringify(PROJECT_INFORMATION_BY_PID),       
-            item:           md_selected_show            
+            pinfo_by_pid:   JSON.stringify(PROJECT_INFORMATION_BY_PID),
+            item:           md_selected_show
         });
   });
 
@@ -112,7 +112,7 @@ function get_metadata_hash(md_selected){
     //console.log(PROJECT_ID_BY_DID)
     //console.log(Object.keys(PROJECT_ID_BY_DID).length)
     for (var did in PROJECT_ID_BY_DID) {
-        
+
         if (AllMetadata.hasOwnProperty(did)) {
             //console.log("found1",did)
             var mdata = AllMetadata[did];
@@ -123,21 +123,21 @@ function get_metadata_hash(md_selected){
                 if(mdata["latitude"] !== "None" && mdata["longitude"] !== "None"){
                     //console.log("found2",md_selected)
                     var pjds = pname+"--"+DATASET_NAME_BY_DID[did];
-                    md_info.metadata[pjds] ={};        
+                    md_info.metadata[pjds] ={};
                     md_info.metadata[pjds].pid = pid;
                     md_info.metadata[pjds].did = did;
                     var data = helpers.required_metadata_names_from_ids(mdata, md_selected);
                     md_info.metadata[pjds].value = data.value;
                     //md_info.metadata[pjds].value = mdata[md_selected]
-                    md_info.metadata[pjds].latitude = mdata["latitude"]; 
+                    md_info.metadata[pjds].latitude = mdata["latitude"];
                     md_info.metadata[pjds].longitude = mdata["longitude"];
                 }
-             
+
             }
-        }else{            
+        }else{
             //console.log("did "+did+" not found in PROJECT_ID_BY_DID")
-        }        
-        
+        }
+
     }
 
     return md_info;
@@ -171,7 +171,7 @@ router.get("/metadata_upload_new", [helpers.isLoggedIn], function (req, res) {
 
 router.post("/metadata_upload",
   [helpers.isLoggedIn],
-  form(    
+  form(
     form.field("dataset_id", "").trim().required().entityEncode().isInt().array(),
     form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_ -]+$/),
     form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z- ]+$/),
@@ -206,29 +206,29 @@ router.post("/metadata_upload",
 
       console.log("QQQ req.params");
       console.log(req.params);
-  
-      
+
+
       console.log("req.form");
       console.log(req.form);
 
       console.log("req.body");
       console.log(req.body);
-      
+
       // TODO change to have pid, dids etc, see YYY
       // req.edit_metadata_info = req.form;
       // console.log("req.edit_metadata_info");
       // console.log(req.edit_metadata_info);
-      
+
       req.flash("fail", req.form.errors);
       editMetadataForm(req, res);
-      
-    }    
+
+    }
     else {
       console.log("in post /metadata_upload");
       console.log("PPP req.form");
       console.log(req.form);
       // console.log(req);
-      //  req.form: 
+      //  req.form:
       //      dna_extraction_meth: "CTAB phenol/chloroform",
 
       res.redirect("/user_data/your_projects");
@@ -246,21 +246,21 @@ function format_form(req, res) {
   pi_name: "",
   dataset_id: [ "4312", "4313", "4314", "4315", "4316", "4317", "4318", "4319" ],
   pi_email: "",
-    
-    
+
+
   */
   console.log("QQQ req.form");
   console.log(req.form);
 // { dataset_id: [ "4312", "4313", "4314", "4315", "4316", "4317", "4318", "4319" ],
   // project_title: [ "Icelandic Volcanic Lake" ],
-  
+
   return edit_metadata_info;
 }
 
 function editMetadataForm(req, res){
   console.log("in editMetadataForm");
   // console.log(req);
-  
+
   edit_metadata_address = "metadata/metadata_upload_from_file";
   console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
 
@@ -294,7 +294,7 @@ function editMetadataForm(req, res){
   //    req.edit_metadata_info = format_form(req, res);
   //    console.log("QQQ req.edit_metadata_info");
   //    console.log(req.edit_metadata_info);
-  //    
+  //
   //    edit_metadata_address = "metadata/metadata_upload_from_file";
   //    console.log("AAA2 edit_metadata_address = "metadata/metadata_upload_from_file"");
   //    res.render(edit_metadata_address, {
@@ -303,7 +303,7 @@ function editMetadataForm(req, res){
   //      hostname: req.CONFIG.hostname,
   //      user: req.user,
   //      hostname: req.CONFIG.hostname,
-  //      all_metadata: req.edit_metadata_info,      
+  //      all_metadata: req.edit_metadata_info,
   //      all_field_names: CONSTS.ORDERED_METADATA_NAMES,
   //      dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
   //      dna_extraction: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
@@ -315,11 +315,11 @@ function editMetadataForm(req, res){
   //      material_primary: CONSTS.MATERIAL_PRIMARY,
   //      material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
   //      metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
-  //    }      
+  //    }
   //      );
-  // 
+  //
   //    // Object.assign(obj1, obj2);
-  //    
+  //
   //  }
   //  else {
   //    edit_metadata_address = "metadata/metadata_upload_new";
@@ -331,7 +331,7 @@ function editMetadataForm(req, res){
   //    edit_metadata_info: req.form,
   //    //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
   //  });
-  //    
+  //
   //  }
   // res.render(edit_metadata_address, {
   //   title: "VAMPS: Metadata",
@@ -346,14 +346,14 @@ function editMetadataForm(req, res){
 // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
 
 
-function NewMetadata(req, res, id){ /* fetch or create logic, storing as req.model or req.metadata */} 
+function NewMetadata(req, res, id){ /* fetch or create logic, storing as req.model or req.metadata */}
 
 
-function loadMetadata(req, res, id){ /* fetch or create logic, storing as req.model or req.metadata */} 
+function loadMetadata(req, res, id){ /* fetch or create logic, storing as req.model or req.metadata */}
 
 function editMetadataFromFile(req, res){ /* render logic */ }
 
-function saveMetadata(req, res){ 
+function saveMetadata(req, res){
     if(!req.form.isValid){
         editMetadata(req, res);
     }else{
@@ -372,12 +372,12 @@ router.post("/start_edit",
   [helpers.isLoggedIn],
   function (req, res) {
     console.log("in post /start_edit");
-    
+
     console.log("FFF req");
     // console.log(req.body);
     // console.log(req.body.project_id);
     // console.log(req.body.project);
-    
+
     // console.log("MMM AllMetadataFromFile = helpers.get_metadata_from_file()")
     AllMetadataFromFile = helpers.get_metadata_from_file();
     // console.log(AllMetadataFromFile["47"]);
@@ -385,18 +385,18 @@ router.post("/start_edit",
     make_metadata_hash(req, res);
     console.log("TTT all_metadata from start_edit");
     console.log(all_metadata);
-    
+
     /*
     FFF req
     { project_id: "47", project: "DCO_GAI_Bv3v5" }
     47
     DCO_GAI_Bv3v5
-  
+
      res.json(rows);
 
      var user = rows[0].userid;
      var password= rows[0].password;
-  
+
     */
 });
 
@@ -413,15 +413,15 @@ function get_values_from_ids(METADATA, did, all_metadata_p_d) {
     DDD data
     { name: "run_id", value: "20080709" }
     */
-  
+
     if(did in METADATA) {
       // ds_row[mdname] = data.value
       all_metadata_p_d[mdname] = data.value;
     }
-    
+
     /*
 DDD metadata
-{ "4319": 
+{ "4319":
    { adapter_sequence: "TGTCA",
      dna_region: "v3v5",
      domain: "Bacteria",
@@ -435,8 +435,8 @@ DDD metadata
      run: "20080709",
      sequencing_platform: "unknown",
      target_gene: "16s" } }
-      
-      
+
+
     */
 
 
@@ -455,14 +455,14 @@ function make_all_arrays(all_metadata, pid, dataset_id) {
   return all_metadata;
 }
 
-function populate_metadata_hash(rows, pid, all_metadata) { 
+function populate_metadata_hash(rows, pid, all_metadata) {
   // all_metadata[pid]["dataset_ids"] = {}
   all_metadata[pid]["dataset_id"] = [];
   all_metadata[pid]["dataset"] = [];
   all_metadata[pid]["dataset_description"] = [];
-  
+
   make_all_arrays(all_metadata, pid, dataset_id);
-    
+
   for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
       /*
@@ -482,11 +482,11 @@ function populate_metadata_hash(rows, pid, all_metadata) {
         last_name: "Gaidos",
         owner_user_id: 54,
         public: 0 }
-      
-{ 
+
+{
       dataset_id: [ "4312", "4313", "4314", "4315", "4316", "4317", "4318", "4319" ],
   project_title: [ "Icelandic Volcanic Lake" ],
-  collection_date: 
+  collection_date:
    [ "2007-06-01",
      "2007-06-01",
      "2007-06-01",
@@ -495,8 +495,8 @@ function populate_metadata_hash(rows, pid, all_metadata) {
      "2007-06-01",
      "2007-06-01",
      "2008-10-11" ],
-      
-      
+
+
       */
       var dataset_id = row.did;
       all_metadata[pid]["project"]     = row.project;
@@ -521,28 +521,28 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   sodium: "30.65",
   collection_date: "2007-06-01",
       */
-      
+
       Object.keys(AllMetadataFromFile[dataset_id]).forEach(function(key) {
         var val = AllMetadataFromFile[dataset_id][key];
         /*
         key
           latitude
         val
-          64.49        
+          64.49
         */
         all_metadata[pid][key].push(val);
       });
-      
+
       console.log("DDD11 all_metadata");
       console.log(all_metadata);
-      
+
       // all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
-      
+
       // console.log("MMM all_metadata");
       // console.log(all_metadata);
       /* MMM all_metadata
-{ "47": 
-   { dataset_ids: 
+{ "47":
+   { dataset_ids:
       { "4312": [Object],
         "4313": [Object],
         "4314": [Object],
@@ -559,7 +559,7 @@ function populate_metadata_hash(rows, pid, all_metadata) {
      last_name: "Gaidos",
      public: 0 } }
  */
-      
+
   }
   return all_metadata;
 }
@@ -626,7 +626,7 @@ function intersection_destructive(a, b)
 {
   var result = [];
   while( a.length > 0 && b.length > 0 )
-  {  
+  {
      if      (a[0] < b[0] ){ a.shift(); }
      else if (a[0] > b[0] ){ b.shift(); }
      else /* they"re equal */
@@ -643,7 +643,7 @@ function intersection_destructive(a, b)
 
 // TODO: rename
 // todo: if there is req.form (or req.body?) use the result?
-function make_metadata_hash(req, res){ 
+function make_metadata_hash(req, res){
   pid = req.body.project_id;
   all_metadata = {};
   if (helpers.isInt(pid))
@@ -658,31 +658,31 @@ function make_metadata_hash(req, res){
       {
         console.log("in make_metadata_hash");
         // console.log("rows");
-        
+
         // empty all_metadata
         all_metadata = populate_metadata_hash(rows, pid, all_metadata);
         // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
         // console.log("EEE all_field_names");
         // console.log(all_field_names);
         // var dividers = CONSTS.ORDERED_METADATA_DIVIDERS;
-        
-        
+
+
         console.log("YYY all_metadata from make_metadata_hash");
         console.log(all_metadata);
         /*
         YYY all_metadata from make_metadata_hash
-        { "47": 
+        { "47":
            { dataset_id: [ 4312, 4313, 4314, 4315, 4316, 4317, 4318, 4319 ],
              dataset: [ "S1", "S2", "S3", "S4", "S5", "S6", "S7", "Sk_hlaup" ],
         ...
         project: "DCO_GAI_Bv3v5",
         title: "Icelandic Volcanic Lake",
-        
+
         XXX1 all_metadata: req.form
         { dataset_id: [ "0", "1", "2", "3", "4", "5", "6", "7" ],
           project_title: "Icelandic Volcanic Lake",
           pi_name: "",
-        
+
         */
         res.render("metadata/metadata_upload_from_file", {
           title: "VAMPS: Metadata_upload",
@@ -701,8 +701,8 @@ function make_metadata_hash(req, res){
           material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
           metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
         });
-        
-        
+
+
         // project_dataset_info_res = JSON.stringify(rows)
         // console.log(JSON.stringify(rows1));
         // for (var row in rows1[0])
@@ -710,7 +710,7 @@ function make_metadata_hash(req, res){
         //   console.log(row);
         //   console.log(row.did);
         // }
-          
+
       }
        // end else
     });

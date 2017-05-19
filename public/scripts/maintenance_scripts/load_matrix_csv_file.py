@@ -343,8 +343,7 @@ def parse_file(args):
         elif args.source == 'tax2':            
             count_list = line_items[2:]
         elif args.source == 'slp':            
-            count_list = line_items[7:]
-            
+            count_list = line_items[7:]            
         elif args.source == 'tax_end':            
             count_list = line_items[1:-1]
         else:            
@@ -398,10 +397,66 @@ def check_owner(args):
         return ('ERROR','Owner Not Found: '+args.owner, 0)
     row = args.cur.fetchone()
     return ('OK','',row[1])
+    
+def connect_mysql(args):
+    print "ARGS: dbhost  =",args.host
+    if args.host == 'vamps' or args.host == 'vampsdb' or args.host == 'bpcweb8':
+        args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
+        args.NODE_DATABASE = 'vamps2'
+        args.dbhost = 'vampsdb'
+    elif args.host == 'vampsdev' or args.host == 'bpcweb7':
+        args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
+        args.NODE_DATABASE = 'vamps2'
+        args.dbhost = 'bpcweb7'
+    else:
+        args.json_file_path = '../../json'  # run from the maintenance_scripts dir
+        args.NODE_DATABASE = args.NODE_DATABASE
+        args.dbhost = 'localhost'
+    
+    if os.path.exists(args.json_file_path):
+        print 'Validated: json file path'
+    else:
+        print "Could not find json directory: '",args.json_file_path,"'-Exiting"
+        sys.exit(-1)
+    print "ARGS: json_dir=",args.json_file_path 
+
+      
+    
+    mysql_conn = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
+                          db = args.NODE_DATABASE,
+                          read_default_file=os.path.expanduser("~/.my.cnf_node")  )
+    return mysql_conn
 
 def delete(args):
 
     print 'in delete'
+    
+    # get dids
+    q = "SELECT otu_dataset_id from otu_dataset where otu_project_id='"+args.pid+"'"
+    args.cur.execute(q)
+    rows = args.cur.fetchall()
+    id_list = []
+    for row in rows:
+        id_list.append(str(row[0]))
+    sql_list = "','".join(id_list)
+    print sql_list
+    
+    q= "delete from otu_pdr_info where otu_dataset_id in('"+sql_list+"')"
+    print(q)
+    
+    args.cur.execute(q)
+    print 'rows affected',args.cur.rowcount
+    mysql_conn.commit() 
+    q= "delete from otu_dataset where otu_dataset_id in('"+sql_list+"')"
+    print(q)
+    args.cur.execute(q)
+    print 'rows affected',args.cur.rowcount
+    mysql_conn.commit() 
+    q= "delete from otu_project where otu_project_id ='"+args.pid+"'"
+    print(q)
+    args.cur.execute(q)
+    print 'rows affected',args.cur.rowcount
+    mysql_conn.commit() 
 
 if __name__ == '__main__':
     import argparse
@@ -412,20 +467,25 @@ if __name__ == '__main__':
          Loads a matrix or OTU text file
             
             -i/--infile
-            -p/--project
-            -o/--owner            
-            -db/--NODE_DATABASE
-            -host/--host   
-            
-            Optional:
-            -comp/--compressed    defaults to uncompressed              
-            -pub/--public         defaults to False
-            -source/--source_file_type tax0, tax1, tax_end, slp, [Default: none]
+            -p/--project                       
+            -db/--NODE_DATABASE  default='vamps_development' for localhost; vamps2 otherwise
+            -host/--host  localhost, vamps or vampsdev
+            -s/--source_file_type tax0, tax1, tax_end, slp
                 tax1    taxonomy present in first col (taxonomy will be used as OTU name)
                 tax2    taxonomy present in second col (OTU name in first col)
                 tax_end taxonomy present in last col
                 slp     special SLP OTU format
-                none    No taxonomy; Just OTU name in first col and datasets (with counts) in subsequent cols
+                notax    No taxonomy; Just OTU name in first col and datasets (with counts) in subsequent cols
+             
+            
+            Delete OTU:
+            -del/--delete 
+            -pid/--pid   
+            
+            Optional:
+            -comp/--compressed    defaults to uncompressed              
+            -pub/--public         defaults to False
+            -o/--owner            defaults to admin
             
     """
     parser = argparse.ArgumentParser(description="", usage=myusage)                 
@@ -451,10 +511,10 @@ if __name__ == '__main__':
     parser.add_argument('-comp', '--compressed', required=False,   action="store_true",  dest = "compressed",  
                 help = '')
     parser.add_argument('-host', '--host',         
-                required=False,   action="store",   dest = "host",  default='localhost', 
+                required=True,   action="store",   dest = "host", 
                 help = '')
-    parser.add_argument('-source', '--source_file_type',         
-                required=False,   action="store",   dest = "source",  default='none', # tax1, tax2, tax_end, slp, none
+    parser.add_argument('-s', '--source_file_type',         
+                required=False,   action="store",   dest = "source",   # tax1, tax2, tax_end, slp, notax
                 help = '')
     parser.add_argument('-del', '--delete',         
                 required=False,   action="store_true",   dest = "delete", 
@@ -467,52 +527,37 @@ if __name__ == '__main__':
     if len(sys.argv[1:])==0:
         print(myusage)
         sys.exit()
+    args.datetime     = str(datetime.date.today()) 
+    
+    mysql_conn = connect_mysql(args)
+    args.cur = mysql_conn.cursor()
     if args.delete:
         if not args.pid:
             sys.exit('need matrix or OTU pid to delete')
         else:
+            
             delete(args)
-
-    if not args.matrix_file:
-          sys.exit('need infile') 
-    if not args.project:
-          sys.exit('need project') 
-       
-    args.datetime     = str(datetime.date.today()) 
-    if args.source not in ['tax1','tax2','tax_end','slp','none']:
-        sys.exit('Error: -source not in "tax1, tax2, tax_end, slp, none"')   
-    print "ARGS: dbhost  =",args.host
-    if args.host == 'vamps' or args.host == 'vampsdb' or args.host == 'bpcweb8':
-        args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
-        args.NODE_DATABASE = 'vamps2'
-        args.dbhost = 'vampsdb'
-    elif args.host == 'vampsdev' or args.host == 'bpcweb7':
-        args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
-        args.NODE_DATABASE = 'vamps2'
-        args.dbhost = 'bpcweb7'
-    else:
-        args.json_file_path = '../../json'  # run from the maintenance_scripts dir
-        args.NODE_DATABASE = args.NODE_DATABASE
-        args.dbhost = 'localhost'
+        sys.exit()
     
-    if os.path.exists(args.json_file_path):
-        print 'Validated: json file path'
-    else:
-        print "Could not find json directory: '",args.json_file_path,"'-Exiting"
-        sys.exit(-1)
-    print "ARGS: json_dir=",args.json_file_path 
-
-
+    if not args.matrix_file:
+        print(myusage)
+        sys.exit('need infile (-i)') 
+    if not args.project:
+        print(myusage)
+        sys.exit('need project (-p)') 
+    if not args.source:
+        print(myusage)
+        sys.exit('need source type (-s)')    
+    
+    if args.source not in ['tax1','tax2','tax_end','slp','notax']:
+        sys.exit('Error: -source not in "tax1, tax2, tax_end, slp, notax"')   
+    #mysql_conn = connect_mysql(args)
+    #args.cur = mysql_conn.cursor()
+    
     args.ref_db_dir = 'none'   
     args.classifier = 'unknown' 
     args.input_type = 'matrix' 
-    args.datetime     = str(datetime.date.today())    
     
-    mysql_conn = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
-                          db = args.NODE_DATABASE,
-                          read_default_file=os.path.expanduser("~/.my.cnf_node")  )
-    
-    args.cur = mysql_conn.cursor()
     start(args)
 
     print 'Done; PID =',args.pid
