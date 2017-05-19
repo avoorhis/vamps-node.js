@@ -88,7 +88,9 @@ Screening/Options:<br>
 <input type='hidden' name='unit_choice' value='<%= pi.unit_choice %>'>
 <input type='hidden' name='selected_metadata' value='<%= pi.metadata %>'>
 <input type='hidden' name='update_data' value='1'>
-
+<% if(pi.unit_choice == 'OTUs'){ %>
+    <input type='hidden' name='otu_id' value='<%= pid %>'>
+<% } %>
 
 </form>
 </div>

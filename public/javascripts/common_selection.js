@@ -305,7 +305,7 @@ function create_barcharts(imagetype, ts, mtx, new_order) {
       
     if(imagetype=='single'){
       //alert(filename)
-      create_singlebar_svg_object(svg, props, data, filename);
+      create_singlebar_svg_object(svg, props, data, ts);
     }else if(imagetype=='double'){
       create_doublebar_svg_object(svg, props, data, ts);
     }else{  // group
@@ -469,7 +469,7 @@ function create_doublebar_svg_object(svg, props, data, ts) {
 //
 //
 //
-function create_singlebar_svg_object(svg, props, data, filename) {
+function create_singlebar_svg_object(svg, props, data, ts) {
 
          //alert(JSON.stringify(data))
          var datasetBar = svg.selectAll(".bar")
@@ -491,6 +491,7 @@ function create_singlebar_svg_object(svg, props, data, filename) {
              .enter()
                .append('a').attr("xlink:href",  function(d) {
              //return 'sequences?did='+mtx_local.did+'&taxa='+encodeURIComponent(d.id);
+             var filename = user_local+'_'+d.did+'_'+ts+'_sequences.json'
              return 'sequences?id='+data[0].datasetName+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
           }).style("fill",   function(d) { return string_to_color_code(d.name); })
 

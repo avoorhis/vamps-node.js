@@ -3,19 +3,58 @@
 
 <%  var cnsts  = JSON.parse(constants) %>
 <%  var mtx    = JSON.parse(matrix); %>
-
+<%  var pi     = JSON.parse(post_items); %>
+<%  var items  = JSON.parse(chosen_id_name_hash); %>
 <%  var activate_thumbs = true; %>
 <%  var visuals = cnsts.VISUAL_THUMBNAILS.visuals %>
 <script> 
-  var ts_local   = '<%- ts %>'
+  var pi_local  = JSON.parse('<%- post_items %>');
   var mtx_local  = JSON.parse('<%- matrix %>');
   var cts_local  = JSON.parse('<%- constants %>');
+  var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
   var user_local = '<%= user.username %>';
    
 </script>
 
 
+<div id='info_bar' class='navbar-fixed-top ' >
+  <small>
+    <div id='view_selection_links'>
+      <ul>
+        <li><form id='back_form_id' name='' method='POST' action='/otus/otus_index'>
+                  <a class='link_black' href='#' onclick="document.getElementById('back_form_id').submit();return false;">&lt;&lt;--back</a>
+                  <input type='hidden' name='retain_data' value='1' >
+                  <input type='hidden' name='dataset_ids' value='<%= JSON.stringify(items.ids) %>' >
+            </form>
+        </li>
+        <li>
+          <form class='' id='reload_form_id' name='reload_form' method='POST' action='/visuals/view_selection'>
+           
+            <input type='submit' value='Reload Page' />
+            <input type='hidden' name='normalization' value='<%= pi.normalization %>'>
+            <input type='hidden' name='selected_distance' value='<%= pi.selected_distance %>'>
+            <input type='hidden' name='min_range' value='<%= pi.min_range %>'>
+            <input type='hidden' name='max_range' value='<%= pi.max_range %>'>
+            <input type='hidden' name='include_nas' value='<%= pi.include_nas %>'>            
+            <% if(pi.unit_choice == 'tax_silva119_simple' || pi.unit_choice == 'tax_rdp2.6_simple'){ %>
+              <input type='hidden' name='domains' value='<%= pi.domains %>'>
+            <% } %>           
+            <input type='hidden' name='tax_depth' value='<%= pi.tax_depth %>'>
+            <input type='hidden' name='unit_choice' value='<%= pi.unit_choice %>'>
+            <input type='hidden' name='selected_metadata' value='<%= pi.metadata %>'>
+            <input type='hidden' name='retain_data' value='1' >
+            <input type='hidden' name='dataset_ids' value='<%= JSON.stringify(items.ids) %>' >
+          </form>
+        </li>
+        
+        <li><a href='#' id='save_config_id' style='' class='link_black'>Save Configuration</a></li>
+        <li><span id='save_config_confirmation' ></span></li>
+      </ul>
+    </div>
 
+    <div id='viz_info'></div>
+  </small>
+</div>
 
 <br>
 <div class='title title_color_viz'>OTU Community Visualization: <%= project %>
@@ -33,12 +72,39 @@
 
 
 
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %>
+  	</div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %>
+    <br>We recommend re-selecting data or selecting different data and trying again. 
+      If you are loading this page from a configuration file or image file it may be out of date.
+      Contact us at vamps.mbl.edu for help.</div>
+<% } %>
 
 
   <div class="row">
+  
+      <div  id='show_selected_datasets_div'  class="col-lg-4">
+        <div class='well'>
+              <% include ../../partials/show_selected_datasets.html %>
+        </div>
+      </div>
+    
       
     
+      <div  id='show_select_items_div' class="col-lg-4">
+        <div class='well'>
+              <% include ../../visuals/partials/show_visual_output_choices.html %>
+        </div>
+      </div>
      
+      <div  id='show_other_items_div' class="col-lg-4">
+        <div class='well'>
+          <% include ../../visuals/partials/show_parameters.html %>
+        </div>
+      </div>
+  
   </div>
 
 <hr>
