@@ -203,13 +203,11 @@ var dna_quantitation_options = ["NanoQuant",
                   <% selected_val = get_selected_val(pid, did, "feature_secondary")
                   %>
                   <select id="feature_secondary<%- did %>" name="feature_secondary" class="feature_secondary">
-                      <% feature_secondary_aquifer.forEach(function(value){ %>
-                      <option value="<%= value %>"
-                      <% if (value === selected_val) {%>
-                      selected
+                      <% if (selected_val) { %>
+                      <option value="<%= selected_val%>"><%= selected_val%></option>
+                      <% } else { %>
+                      <option value="none">none</option>
                       <% } %>
-                      ><%= value %></option>
-                      <% }) %>
                   </select>
               </td>
               <!--feature end  -->
@@ -233,14 +231,12 @@ var dna_quantitation_options = ["NanoQuant",
                   <% selected_val = get_selected_val(pid, did, "material_secondary") %>
 
                   <select id="material_secondary<%- did %>" name="material_secondary" class="material_secondary">
-                      <% material_secondary_biofilm.forEach(function(value){ %>
-                      <option value="<%= value %>"
-                      <% if (value === selected_val) {%>
-                      <!--all_metadata.material_secondary_biofilm-->
-                      selected
+                      <% if (selected_val) { %>
+                      <option value="<%= selected_val%>"><%= selected_val%></option>
+                      <% } else { %>
+                      <option value="none">none</option>
+
                       <% } %>
-                      ><%= value %></option>
-                      <% }) %>
                   </select>
               </td>
               <!--material end  -->
