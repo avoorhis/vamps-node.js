@@ -58,7 +58,7 @@ var dna_quantitation_options = ["NanoQuant",
 <li class="message">
  A range is not permitted for any value.
 </li>
-
+</ol>
 <form name='add_project_form' method='POST' action='/metadata/metadata_upload'>
 <!-- <form action="" method="post" enctype="multipart/form-data"> -->
   <fieldset id="general" class="required_fields" >
@@ -85,7 +85,7 @@ var dna_quantitation_options = ["NanoQuant",
     <% } %>
   <%
   } else { var all_metadata = {} %>
-    <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_GAI_Bv3v5"/>
+    <!--<input type="text" id="project_name" readonly name="project_name" placeholder="DCO_GAI_Bv3v5"/>-->
   <%}%>
   <br />
   <label for="pi_email">PI's email address:</label>
@@ -172,21 +172,14 @@ var dna_quantitation_options = ["NanoQuant",
               </td>
               <% } else if (all_field_names[idx][1] === "Biome - Secondary") { %>
               <td>
-                  <% selected_val = get_selected_val(pid, did, "biome_secondary") %>
-                  <% var selected_biome_primary = get_selected_val(pid, did, "biome_primary")
-                  var biome_secondary_by_primary = biome_secondary_options[selected_biome_primary]
-                  %>
+                  <% var selected_val = get_selected_val(pid, did, "biome_secondary") %>
                   <select id="biome_secondary<%- did %>" name="biome_secondary" class="biome_secondary">
 
-                      <% if (biome_secondary_by_primary) {
-                      biome_secondary_by_primary.forEach(function(value){ %>
-                      <option value="<%= value %>"
-                      <% if (value === selected_val) {%>
-                      selected
-                      <% } %>
-                      ><%= value %></option>
-                      <% }) } else { %>
+                      <% if (selected_val) { %>
+                      <option value="<%= selected_val%>"><%= selected_val%></option>
+                      <% } else { %>
                       <option value="none">none</option>
+
                       <% } %>
                   </select>
               </td>
@@ -273,6 +266,7 @@ var dna_quantitation_options = ["NanoQuant",
               var all_metadata = {}
         } %>
   </table>
+  </fieldset>
 <br>
 
 <!-- center -->
