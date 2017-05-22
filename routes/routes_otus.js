@@ -146,7 +146,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     q += " (\n"
     q += "   CASE\n"
 	q += "      WHEN otu_taxonomy_id IS NULL\n"
-	q += "      THEN '0'\n"
+	q += "      THEN 'n/a'\n"
 	q += "      ELSE concat_ws(';', domain, phylum, klass, `order`, family, genus)\n"
     q += "   END\n"
     q += " ) as taxonomy\n"
@@ -160,8 +160,8 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     q += " LEFT JOIN `order` using(order_id)\n" 
     q += " LEFT JOIN family using(family_id)\n" 
     q += " LEFT JOIN genus using(genus_id)\n"    
-     q += " WHERE otu_project_id='"+opid+"'" 
-     console.log(q)
+    q += " WHERE otu_project_id='"+opid+"'" 
+    console.log(q)
     connection.query(q, function otu_data(err, rows, fields){
         if(err){
             console.log(err)
@@ -285,10 +285,9 @@ function get_otu_matrix(req, rows){
     otu_matrix.max_ds_count = Math.max.apply(null, otu_matrix.column_totals)
     n=0
     for(otu in otu_tax){
-        otu_matrix.rows.push({"id":otu,"metadata":otu_tax[otu]})   
+        otu_matrix.rows.push({"id":otu,"metadata":{"taxonomy":otu_tax[otu]}})   
         otu_matrix.data[n] = []
-        for(ds in ds_order){
-            
+        for(ds in ds_order){            
             otu_matrix.data[n].push(otudata[otu][ds])
         }
         n += 1
