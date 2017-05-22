@@ -368,9 +368,9 @@ td.left_justify {
   background: #C6D7E9;
 }
 
-/* Ensure that the demo table scrolls */
-th, td { white-space: nowrap; }
-div.dataTables_wrapper {
-    width: 80em;
-    margin: 0 auto;
+/*metadata_upload*/
+#fixed_col_wrap {
+    cellspacing: 0;
+    cellpadding: 0;
+    border: 0;
 }
