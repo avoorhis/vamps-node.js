@@ -1,0 +1,62 @@
+<% if (all_metadata) { %>
+
+<table cellspacing="0" cellpadding="0" border="0" >
+    <!--<tr>-->
+        <!--<td id="firstTd">-->
+        <!--</td>-->
+        <!--<td>-->
+            <!--<div id="divHeader" style="overflow:hidden; width: 30em; ">-->
+                <!--<table cellspacing="0" cellpadding="0" border="1" >-->
+                    <!--<tr>-->
+                        <!--<td ><div class="tableHeader">Title1</div></td><td><div class="tableHeader">Title2</div></td><td><div class="tableHeader">Title3</div></td><td><div class="tableHeader">Title4</div></td><td><div class="tableHeader">Title5</div></td>-->
+                    <!--</tr>-->
+                <!--</table>-->
+            <!--</div>-->
+        <!--</td>-->
+    <!--</tr>-->
+
+    <tr>
+        <td valign="top">
+            <div id="firstcol" style="overflow: hidden; height: 800px">
+                <table width="200px" cellspacing="0" cellpadding="0" border="1" >
+                    <!-- all_metadata -->
+                    <!-- for each project  -->
+                    <% for (var key in all_metadata) { %>
+                        <% if (all_field_names) { %>
+                        <!-- for each field name  -->
+                        <% for (var idx in all_field_names) {
+                            field_name = all_field_names[idx][0]
+                        %>
+                        <tr>
+                        <!--first column  -->
+                        <% include first_column.ejs %>
+                        <!-- second column: MBL or user supplied -->
+                        <td nowrap><%= all_field_names[idx][2] %></td>
+                        <% } %>
+                        <% } %>
+                    <% } %>
+                </table>
+            </div>
+        </td>
+        <td valign="top">
+            <div id="table_div" style="overflow: scroll; width:700px; height:820px; position:relative" onscroll="fnScroll()" >
+                <table width="800px" cellspacing="0" cellpadding="0" border="1" >
+                    <% for (var key in all_metadata) { %>
+                    <% if (all_field_names) { %>
+                    <!-- for each field name  -->
+                    <% for (var idx in all_field_names) {
+                        field_name = all_field_names[idx][0]
+                    %>
+                    <tr>
+                        <% for (var did in all_metadata[pid]["dataset_id"]) { %>
+                        <% include third_column.ejs %>
+                        <% } %> <!-- for (var did in all_metadata[pid]["dataset_id"])  -->
+                    </tr>
+                        <% } %>
+                        <% } %>
+                        <% } %>
+                </table>
+            </div>
+    </tr>
+</table>
+<% } %>
