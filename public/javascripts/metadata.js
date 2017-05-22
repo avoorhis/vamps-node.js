@@ -500,3 +500,29 @@ function populate_secondary_select(args) {
     B.appendChild(op);
   }
 }
+
+$(document).ready(function() {
+    $('#example').DataTable( {
+        scrollY:        300,
+        scrollX:        true,
+        scrollCollapse: true,
+        paging:         false,
+        fixedColumns:   true
+    } );
+    alert("in HERE1");
+    
+} );
+
+
+// $(document).ready(function() {
+//     var table = $('#example').DataTable( {
+//         scrollY:        "300px",
+//         scrollX:        true,
+//         scrollCollapse: true,
+//         paging:         false,
+//         fixedColumns:   {
+//             leftColumns: 1,
+//             rightColumns: 1
+//         }
+//     } );
+// } );

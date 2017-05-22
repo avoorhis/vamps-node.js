@@ -1,4 +1,33 @@
-<% include ../add_ins/begin.ejs %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title><%= title %></title>
+  
+  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css"> 
+  <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.min.css" >
+  <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap-theme.min.css">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/../DataTables/datatables.min.css"/>
+
+
+   <style type="text/css">
+     body {
+       padding-top: 60px;
+       padding-bottom: 40px;
+     }
+   </style>
+  <link href="/stylesheets/bootstrap-responsive.css" rel="stylesheet" \>
+
+</head>
+<body>
+    <!-- Fixed navbar at top -->
+      <% include ../add_ins/nav-bar.html %>
+    <!-- Fixed navbar at top -->
+  
+  <div class="container-fluid">       <!-- ends in end.ejs -->
+    <div class="row-fluid">             <!-- ends in end.ejs -->
+     <div class="col-lg-12" id="">        <!-- ends in end.ejs -->
+
 
 <br>
  <div class='title'>Metadata</div>
@@ -39,6 +68,45 @@
  A range is not permitted for any value.
 </li>
 </ol>
+
+<div class="dataTables_wrapper">
+    <table id="example" class="stripe row-border order-column" cellspacing="0" width="100%">
+    <thead>
+      <!-- rowspan="1" colspan="3" -->
+      <tr>
+      <th> r1-c1</th>
+      <th> r1-c2</th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr>
+      <td> r2-c1</td>
+      <td> r2-c2</td>
+      </tr>
+      <tr>
+      <td> r3-c1</td>
+      <td> r3-c2</td>
+      <td> r3-c3</td>
+      <td> r3-c4</td>
+      <td> r3-c5</td>
+      <td> r3-c6</td>
+      <td> r3-c7</td>
+      <td> r3-c8</td>
+      <td> r3-c9</td>
+      <td> r3-c10</td>
+      <td> r3-c11</td>
+      <td> r3-c12</td>
+      <td> r3-c13</td>
+      <td> r3-c14</td>
+      <td> r3-c15</td>
+      <td> r3-c16</td>
+      <td> r3-c17</td>
+      <td> r3-c18</td>
+      <td> r3-c19</td>
+      </tr>
+    </tbody>
+</div>
+
 <form name='add_project_form' method='POST' action='/metadata/metadata_upload'>
 <!-- <form action="" method="post" enctype="multipart/form-data"> -->
   <fieldset id="general" class="required_fields" >
@@ -81,7 +149,9 @@
   <fieldset id="parameters">
     <legend id="parameters-legend">Table of metadata parameters</legend>
     <!--cellpadding="1" cellspacing="1" border="1" -->
-    <table class='table table-condensed'>
+    <!-- <table class='table table-condensed' id="example"> -->
+
+      <table id="example" class="stripe row-border order-column" cellspacing="0" width="100%">
       <thead>
         <!-- rowspan="1" colspan="3" -->
       </thead>
@@ -130,8 +200,10 @@
 
 <% include ../add_ins/end.ejs %>
 <script type='text/javascript' src='/javascripts/global.js'></script>
-<script type='text/javascript' src='/javascripts/metadata.js'></script>
 <script type='text/javascript' src='/javascripts/bootstrap-select.js'></script>
+<script type='text/javascript' src='/javascripts/metadata.js'></script>
+<script type="text/javascript" src="/javascripts/../DataTables/datatables.min.js"></script>
+
 </script>
 </body>
 </html>

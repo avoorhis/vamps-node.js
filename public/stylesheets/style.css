@@ -367,3 +367,10 @@ td.left_justify {
 .header_divider {
   background: #C6D7E9;
 }
+
+/* Ensure that the demo table scrolls */
+th, td { white-space: nowrap; }
+div.dataTables_wrapper {
+    width: 80em;
+    margin: 0 auto;
+}
