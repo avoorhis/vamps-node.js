@@ -1,6 +1,6 @@
 <% if (all_metadata) { %>
 
-<table cellspacing="0" cellpadding="0" border="0" >
+<table #fixed_col_wrap>
     <!--<tr>-->
         <!--<td id="firstTd">-->
         <!--</td>-->
@@ -17,8 +17,8 @@
 
     <tr>
         <td valign="top">
-            <div id="firstcol" style="overflow: hidden; height: 800px">
-                <table width="200px" cellspacing="0" cellpadding="0" border="1" >
+            <div id="firstcol_div" >
+                <table id="first_col_table">
                     <!-- all_metadata -->
                     <!-- for each project  -->
                     <% for (var key in all_metadata) { %>
@@ -39,8 +39,8 @@
             </div>
         </td>
         <td valign="top">
-            <div id="table_div" style="overflow: scroll; width:700px; height:820px; position:relative" onscroll="fnScroll()" >
-                <table width="800px" cellspacing="0" cellpadding="0" border="1" >
+            <div id="table_div" onscroll="fnScroll()" >
+                <table id="fixed_table_base" >
                     <% for (var key in all_metadata) { %>
                     <% if (all_field_names) { %>
                     <!-- for each field name  -->

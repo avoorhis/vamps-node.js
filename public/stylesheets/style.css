@@ -374,3 +374,46 @@ td.left_justify {
     cellpadding: 0;
     border: 0;
 }
+
+#firstcol_div {
+    overflow: hidden;
+    height: 800px;
+}
+
+#first_col_table {
+     width: 200px;
+     cellspacing: 0;
+     cellpadding: 0;
+     border: 1px;
+}
+
+#table_div {
+    overflow: scroll;
+    width: 700px;
+    height: 820px;
+    position: relative;
+}
+
+#fixed_table_base {
+    width: 800px;
+    cellspacing: 0;
+    cellpadding: 0;
+    border: 1px;
+}
+
+#first_col_table td, fixed_table_base td {
+    height: 20px;
+    white-space: nowrap;
+}
+
+/*#fixed_table_base select {*/
+    /*border: 1px solid #ccc;*/
+    /*vertical-align: top;*/
+    /*height: 20px;*/
+/*}*/
+
+/*fixed_table_base input, fixed_table_base select{*/
+    /*box-sizing: border-box;*/
+    /*-moz-box-sizing: border-box;*/
+    /*-webkit-box-sizing: border-box;*/
+/*}*/
