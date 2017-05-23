@@ -182,7 +182,7 @@ router.post('/metadata_upload',
     form.field("project_abstract", "Project abstract").trim().required().entityEncode(),
     form.field("references", "References").trim().required().entityEncode().array(),
     // References should clean URL
-    form.field("project_name", "VAMPS project name").trim().entityEncode(),
+    form.field("project", "VAMPS project name").trim().entityEncode(),
     form.field("dataset", "VAMPS dataset name").trim().entityEncode().array(),
     form.field("sample_name", "Sample ID (user sample name)").trim().required().entityEncode().array(),
     form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode().custom(env_items_validation).array(),
@@ -244,7 +244,7 @@ function format_form(req, res) {
   console.log(req.body);
   /*
   "16s": [ "16s", "16s", "16s", "16s", "16s", "16s", "16s", "16s" ],
-  project_name: "DCO_GAI_Bv3v5",
+  project: "DCO_GAI_Bv3v5",
   pi_name: "",
   dataset_id: [ "4312", "4313", "4314", "4315", "4316", "4317", "4318", "4319" ],
   pi_email: "",
@@ -691,7 +691,7 @@ function make_csv(req, res) {
      pi_email: '',
      project_abstract: '',
      references: [],
-     project_name: 'DCO_GAI_Bv3v5',
+     project: 'DCO_GAI_Bv3v5',
      dataset_name: [],
      sample_name: [],
      dna_extraction_meth:
@@ -778,26 +778,74 @@ function convertArrayOfObjectsToCSV(args) {
     console.log("CCC03 convertArrayOfObjectsToCSV: lineDelimiter");
     console.log(lineDelimiter);
 
-    keys = data['dataset'];
-    console.log("CCC04 convertArrayOfObjectsToCSV: keys");
-    console.log(keys);
+    headers = data['dataset'];
+    headers_length = headers.length;
+    console.log("CCC04 convertArrayOfObjectsToCSV: headers.length");
+    console.log(headers_length);
 
-    result = '';
-    result += keys.join(columnDelimiter);
+    result = ' ';
+    result += columnDelimiter;
+    result += headers.join(columnDelimiter);
     result += lineDelimiter;
     console.log("CCC1 convertArrayOfObjectsToCSV: result");
     console.log(result);
 
-    data.forEach(function(item) {
-        ctr = 0;
-        keys.forEach(function(key) {
-            if (ctr > 0) result += columnDelimiter;
+    var csv_fields = Object.keys(input);
 
-            result += item[key];
-            ctr++;
-        });
+    for (var key in data) {
+        ctr = 0;
+        console.log("CCC11 convertArrayOfObjectsToCSV: key");
+        console.log(key);
+
+        item = data[key];
+        console.log("typeof item:");
+        console.log(typeof item);
+        console.log("CCC12 convertArrayOfObjectsToCSV: item");
+        console.log(item);
+
+        result += key;
+        result += columnDelimiter;
+        if (typeof item === "object") {
+            result += item.join(columnDelimiter);
+        } else if (typeof item === "string") {
+            for(i = 0; i < headers_length; i++) {
+                result += item;
+                result += columnDelimiter;
+            }
+        }
         result += lineDelimiter;
-    });
+
+
+        // try {
+        //     for (var arr_item in item) {
+        //         console.log("CCC13 convertArrayOfObjectsToCSV: item[arr_item]");
+        //         console.log(item[arr_item]);
+        //     //    CCC13 convertArrayOfObjectsToCSV: arr_item
+        //     //     0
+        //     }
+        // }
+        // catch (e) {
+        //     console.log("entering catch block");
+        //     console.log(e);
+        //
+        //     console.log("leaving catch block");
+        // }
+        // finally {
+        //     console.log("finally");
+        // }
+
+
+        // csv_fields.forEach(function(key) {
+        //     console.log("CCC12 convertArrayOfObjectsToCSV: key");
+        //     console.log(key);
+        //
+        //     // if (ctr > 0) result += columnDelimiter;
+        //     //
+        //     // result += item[key];
+        //     ctr++;
+        //     });
+        // result += lineDelimiter;
+    }
 
     console.log("CCC3 convertArrayOfObjectsToCSV result");
     console.log(result);
