@@ -221,6 +221,9 @@ router.post("/metadata_upload",
 
       req.flash("fail", req.form.errors);
       editMetadataForm(req, res);
+      //TODO: remove from here, use only if valid.
+      make_csv(req, res);
+
 
     }
     else {
@@ -230,6 +233,7 @@ router.post("/metadata_upload",
       // console.log(req);
       //  req.form:
       //      dna_extraction_meth: "CTAB phenol/chloroform",
+      saveMetadata(req, res);
 
       res.redirect("/user_data/your_projects");
     }
@@ -290,56 +294,6 @@ function editMetadataForm(req, res){
       metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
   });
 
-  // if (req.body.from_where === "metadata_upload_from_file") {
-  //    req.edit_metadata_info = format_form(req, res);
-  //    console.log("QQQ req.edit_metadata_info");
-  //    console.log(req.edit_metadata_info);
-  //
-  //    edit_metadata_address = "metadata/metadata_upload_from_file";
-  //    console.log("AAA2 edit_metadata_address = "metadata/metadata_upload_from_file"");
-  //    res.render(edit_metadata_address, {
-  //      title: "VAMPS: Metadata_upload",
-  //      user: req.user,
-  //      hostname: req.CONFIG.hostname,
-  //      user: req.user,
-  //      hostname: req.CONFIG.hostname,
-  //      all_metadata: req.edit_metadata_info,
-  //      all_field_names: CONSTS.ORDERED_METADATA_NAMES,
-  //      dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-  //      dna_extraction: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-  //      dna_quantitation: CONSTS.DNA_QUANTITATION_OPTIONS,
-  //      biome_primary: CONSTS.BIOME_PRIMARY,
-  //      biome_secondary_marine: CONSTS.BIOME_SECONDARY_MARINE,
-  //      feature_primary: CONSTS.FEATURE_PRIMARY,
-  //      feature_secondary_aquifer: CONSTS.FEATURE_SECONDARY_AQUIFER,
-  //      material_primary: CONSTS.MATERIAL_PRIMARY,
-  //      material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
-  //      metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
-  //    }
-  //      );
-  //
-  //    // Object.assign(obj1, obj2);
-  //
-  //  }
-  //  else {
-  //    edit_metadata_address = "metadata/metadata_upload_new";
-  //    console.log("AAA1 edit_metadata_address = 'metadata/metadata_upload_new'");
-  //    res.render(edit_metadata_address, {
-  //    title: "VAMPS: Metadata",
-  //    user: req.user,
-  //    hostname: req.CONFIG.hostname,
-  //    edit_metadata_info: req.form,
-  //    //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
-  //  });
-  //
-  //  }
-  // res.render(edit_metadata_address, {
-  //   title: "VAMPS: Metadata",
-  //   user: req.user,
-  //   hostname: req.CONFIG.hostname,
-  //   edit_metadata_info: req.edit_metadata_info,
-  //   //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
-  // });
 }
 
 
@@ -355,9 +309,13 @@ function editMetadataFromFile(req, res){ /* render logic */ }
 
 function saveMetadata(req, res){
     if(!req.form.isValid){
+        // TODO: remove here, should be after validation only
+        make_csv(req, res);
         editMetadata(req, res);
     }else{
+        make_csv(req, res);
         saveToDb(req.metadata);
+        // TODO: change
         res.redirect("/metadata"+req.metadata.id+"/edit");
     }
 }
@@ -726,4 +684,32 @@ function env_items_validation(value) {
       throw new Error("Please choose one value from the dropdown menu for %s.");
   }
 }
+
+function make_csv(req, res) {
+    //TODO: check where it is called from
+    console.log("MMM make_csv: form_values");
+    console.log(req.form);
+    /*
+     { dataset_id: [ '4312', '4313', '4314', '4315', '4316', '4317', '4318', '4319' ],
+     project_title: 'Icelandic Volcanic Lake',
+     pi_name: '',
+     pi_email: '',
+     project_abstract: '',
+     references: [],
+     project_name: 'DCO_GAI_Bv3v5',
+     dataset_name: [],
+     sample_name: [],
+     dna_extraction_meth:
+     [ 'MoBio Power Water',
+     'Please choose one',
+     'Please choose one',
+     'Please choose one',
+     'Please choose one',
+     'Please choose one',
+     'Please choose one',
+     'Please choose one' ],
+    */
+
+}
+
 // ---- metadata_upload end ----
