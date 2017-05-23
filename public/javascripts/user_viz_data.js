@@ -77,8 +77,13 @@ function get_single_bar_html(obj, ts){
   html += "<table id='single_barchart_table_id' class='table table-condensed overflow200 sortable'>";
   html += '<thead>'
   html += "<tr><th width='25' >color</th>";  //<th>Taxonomy <small>(click to sort)</small></th>
-  for(i=0;i<tax_col_count;i++){
-    html += '<th>'+ranks[i]+'</th>'
+  
+  if(pi_local.unit_choice == 'OTUs'){
+    html += '<th>OTU Name</th>'
+  }else{
+      for(i=0;i<tax_col_count;i++){
+        html += '<th>'+ranks[i]+'</th>'
+      }
   }
   html += "<th>Count</th></tr>";
   
@@ -132,8 +137,12 @@ function get_double_bar_html(obj, ts){
   html += "<table class='table table-condensed overflow200 sortable'>";
   html += '<thead>'
   html += "<tr><th width='25' >color</th>"
-  for(i=0;i<tax_col_count;i++){
-    html += '<th>'+ranks[i]+'</th>'
+  if(pi_local.unit_choice == 'OTUs'){
+    html += '<th>OTU Name</th>'
+  }else{
+      for(i=0;i<tax_col_count;i++){
+        html += '<th>'+ranks[i]+'</th>'
+      }
   }
   html += "<th>"+obj.datasets[0]+" </th><th>"+obj.datasets[1]+"</th></tr>";
   html += '</thead><tbody>'

@@ -388,9 +388,9 @@ function create_viz(visual, ts, new_window, cts_local) {
     }else if(visual === 'metadata_table'){
       create_metadata_table(new_window);
     }else if(visual === 'piecharts'){
-      create_piecharts_group(ts, new_window);
+      create_piecharts_group(new_window);
     }else if(visual === 'barcharts'){
-      create_barcharts_group(ts, new_window);
+      create_barcharts_group(new_window);
     }else if(visual === 'dheatmap'){
       create_dheatmap(ts, new_window);
     }else if(visual === 'dendrogram01'){
@@ -1362,7 +1362,7 @@ function setMarkers(map, loc_data, infowindow) {
 //
 //  CREATE PIECHARTS
 //
-function create_piecharts_group(ts, new_window) {
+function create_piecharts_group(new_window) {
     if(new_window){
         
           var htmlstring = document.getElementById('piecharts_div').innerHTML;
@@ -1393,7 +1393,7 @@ function create_piecharts_group(ts, new_window) {
     document.getElementById('pre_piecharts_div').style.display = 'block';
      
     // this fxn is in common_selection.js
-    create_piecharts('group', ts, mtx_local);
+    create_piecharts('group', pi_local.ts, mtx_local);
     
     document.getElementById('piecharts_dnld_btn').disabled = false
 
@@ -1403,7 +1403,7 @@ function create_piecharts_group(ts, new_window) {
 //
 //  CREATE BARCHARTS
 //
-function create_barcharts_group(ts, new_window) {
+function create_barcharts_group(new_window) {
       
     if(new_window){
           var htmlstring = document.getElementById('barcharts_div').innerHTML;
@@ -1429,7 +1429,7 @@ function create_barcharts_group(ts, new_window) {
     document.getElementById('pre_barcharts_div').style.display = 'block';
      
          // this fxn is in common_selection.js
-    create_barcharts('group', ts, mtx_local, {alpha_value:'z',count_value:"min"});
+    create_barcharts('group', pi_local.ts, mtx_local, {alpha_value:'z',count_value:"min"});
     document.getElementById('barcharts_dnld_btn').disabled = false
 
 }

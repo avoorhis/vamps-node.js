@@ -467,8 +467,8 @@ function create_counts_matrix() {
             
       
       tax_table_created = true;
-      var init = {"selected_distance":"horn","normalization":"none","min_range":"0","max_range":"100"}
-      var info_line = create_header('ftable', init);
+      //var init = {"selected_distance":"horn","normalization":"none","min_range":"0","max_range":"100"}
+      var info_line = create_header('ftable', pi_local);
       
 
       document.getElementById('counts_matrix_title').innerHTML = info_line;
@@ -481,14 +481,20 @@ function create_counts_matrix() {
       tax_counts_div.innerHTML = '';
       tax_counts_div.style.display = 'block';
       var html = '';
-         
+      if(mtx_local.taxonomy == 0){
+        html += "<div class='pull-left'>No Taxonomy Available</div>";
+      }else{
+        html += "<div class='pull-left'>Taxonomy is in far right column.</div>";
+      }   
       html += "<br><table id='counts_matrix_id' border='0' class='' >";
       html += "<tr><td>OTU</td>"
       for (var n in mtx_local.columns){
           ds = mtx_local.columns[n].id
           html += "<td>"+ds+"</td>"  
       }
-      html += "<td>Taxonomy</td>" 
+      if(mtx_local.taxonomy == 1){
+          html += "<td>Taxonomy</td>" 
+      }
       html += "</tr>"
       for (var n in mtx_local.rows){
         otu = mtx_local.rows[n].id
@@ -498,7 +504,9 @@ function create_counts_matrix() {
             cnt = mtx_local.data[n][m]
             html += '<td>'+ cnt +'</td>'
         }
-        html += '<td>'+ mtx_local.rows[n].metadata +'</td>'
+        if(mtx_local.taxonomy == 1){
+            html += '<td>'+ mtx_local.rows[n].metadata.taxonomy +'</td>'
+        }
         html += "</tr>"; 
       }
       html += "</table>";
@@ -635,13 +643,13 @@ function create_dheatmap() {
       dhm_div.innerHTML = '';
       dhm_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
-      var init = {"selected_distance":"morisita_horn","normalization":"none","min_range":"0","max_range":"100"}
-      var info_line = create_header('dhm', init);
+      //var init = {"selected_distance":"morisita_horn","normalization":"none","min_range":"0","max_range":"100"}
+      var info_line = create_header('dhm', pi_local);
       document.getElementById('dheatmap_title').innerHTML = info_line;
       document.getElementById('dheatmap_title').style.color = 'white';
       document.getElementById('dheatmap_title').style['font-size'] = 'small';
       var html = '';
-      var args =  "metric="+init.selected_distance;
+      var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+pi_local.ts;
       document.getElementById('pre_dheatmap_div').style.display = 'block';
        // get distance matrix via AJAX
@@ -668,8 +676,8 @@ function create_dheatmap() {
 function create_piecharts_group() {
     
     piecharts_created = true;
-    var init = {"selected_distance":"morisita_horn","normalization":"none","min_range":"0","max_range":"100"}
-    var info_line = create_header('pies', init);
+    //var init = {"selected_distance":"morisita_horn","normalization":"none","min_range":"0","max_range":"100"}
+    var info_line = create_header('pies', pi_local);
     
     document.getElementById('piecharts_title').innerHTML = info_line;
     var piecharts_div = document.getElementById('piecharts_div');
@@ -695,8 +703,8 @@ function create_barcharts_group() {
       
     
     barcharts_created = true;
-    var init = {"selected_distance":"morisita_horn","normalization":"none","min_range":"0","max_range":"100"}
-    var info_line = create_header('bars', init);
+    //var init = {"selected_distance":"morisita_horn","normalization":"none","min_range":"0","max_range":"100"}
+    var info_line = create_header('bars', pi_local);
     document.getElementById('barcharts_title').innerHTML = info_line;
     document.getElementById('barcharts_title').style.color = 'white';
     document.getElementById('barcharts_title').style['font-size'] = 'small';

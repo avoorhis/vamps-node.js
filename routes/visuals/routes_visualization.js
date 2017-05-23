@@ -1820,10 +1820,14 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     new_rows = {}
     new_rows[selected_did] = []
     var LoadDataFinishRequest = function (req, res, project, display) {
-       console.log('LoadDataFinishRequest in bar_single');
-
-       res.render('visuals/user_viz_data/bar_single', {
-              title: 'Taxonomic Data',
+        console.log('LoadDataFinishRequest in bar_single');
+        if(visual_post_items.unit_choice == 'OTUs'){
+            var title = 'OTU Count Data'
+        }else{
+            var title = 'Taxonomic Data'
+        }
+        res.render('visuals/user_viz_data/bar_single', {
+              title: title,
               ts: timestamp,
               matrix    :           JSON.stringify(new_matrix),
               post_items:           JSON.stringify(visual_post_items),
@@ -1918,7 +1922,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     var ds1  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did1)]
     var ds2  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did2)]
     //var ds_items = pjds.split('--');
-console.log('ds1, ds2')
+
     console.log(ds1, ds2)
 
     //var html  = 'My HTML';
@@ -1966,7 +1970,7 @@ console.log('ds1, ds2')
     }
 
 
-console.log(new_matrix)
+
 
     //DOUBLE
     //console.log(JSON.stringify(new_matrix))
@@ -2005,9 +2009,13 @@ console.log(new_matrix)
     //console.log(new_rows)
     var LoadDataFinishRequest = function (req, res, timestamp, new_matrix, new_order, dist) {
        console.log('LoadDataFinishRequest in bar_double');
-
+       if(visual_post_items.unit_choice == 'OTUs'){
+            var title = 'OTU Count Data'
+       }else{
+            var title = 'Taxonomic Data'
+       }
        res.render('visuals/user_viz_data/bar_double', {
-                  title: 'Taxonomic Data',
+                  title: title,
                   ts: timestamp,
                   matrix    :           JSON.stringify(new_matrix),
                   post_items:           JSON.stringify(visual_post_items),
