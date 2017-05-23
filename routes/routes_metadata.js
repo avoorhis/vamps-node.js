@@ -4,6 +4,10 @@ var helpers = require("./helpers/helpers");
 var form    = require("express-form");
 var queries = require(app_root + "/routes/queries");
 var CONSTS  = require(app_root + "/public/constants");
+var stringify = require("csv-stringify");
+var csv_generate = require("csv-generate");
+var json2csv = require('json2csv');
+var fs = require('fs');
 
 /* GET metadata page. */
  router.get('/metadata', function(req, res) {
@@ -708,15 +712,46 @@ function make_csv(req, res) {
      'Please choose one' ],
     */
 
-        for (var key in req.form) {
-            console.log("MMM");
-            console.log("key");
+        // for (var key in req.form) {
+        //     console.log("MMM");
+        //     console.log("key");
+        //
+        //     console.log(key);
+        //     console.log("req.form[key]");
+        //
+        //     console.log(req.form[key]);
+        // }
+    console.log("VVV");
+    input = req.form;
+    console.log("VVV1");
+    // rr = stringify(input, function(err, output){
+    //     console.log("VVV2");
+    //     console.log(output);
+    // });
+    //
+    // console.log("VVV3");
+    // console.log(rr);
 
-            console.log(key);
-            console.log("req.form.key");
+    var csv_fields = Object.keys(input);
+    var csv = json2csv({ data: input, fields: csv_fields });
+    fs.writeFile('file.csv', csv, function(err) {
+        if (err) throw err;
+        console.log('file saved');
+    });
 
-            console.log(req.form.key);
-        }
+    /*
+    * key
+     material_primary
+     req.form[key]
+     [ 'microbial mat material',
+     'biofilm',
+     'Please choose one',
+     'Please choose one',
+     'Please choose one',
+     'Please choose one',
+     'Please choose one',
+     'Please choose one' ]
+    * */
 
 
     }
