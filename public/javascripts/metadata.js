@@ -456,21 +456,6 @@ var biome_seq_options = {
 
   };
 
-$(document).ready(function(){
-  $('.biome_primary').change(function(){
-    populate_secondary_select.call(this, ['biome', biome_seq_options]);
-  });
-  $('.feature_primary').change(function(){
-    populate_secondary_select.call(this, ['feature', feature_seq_options]);
-  });
-  $('.material_primary').change(function(){
-    populate_secondary_select.call(this, ['material', material_seq_options]);
-  });
-  
-  fnAdjustTable();
-
-});
-
 function populate_secondary_select(args) {
   id_base = arguments[0][0];
   sec_options = arguments[0][1];
@@ -558,3 +543,21 @@ fnScroll = function(){
     $('#divHeader').scrollLeft($('#table_div').scrollLeft());
     $('#firstcol_div').scrollTop($('#table_div').scrollTop());
 };
+
+$(document).ready(function(){
+    $('.biome_primary').change(function(){
+        populate_secondary_select.call(this, ['biome', biome_seq_options]);
+    });
+    $('.feature_primary').change(function(){
+        populate_secondary_select.call(this, ['feature', feature_seq_options]);
+    });
+    $('.material_primary').change(function(){
+        populate_secondary_select.call(this, ['material', material_seq_options]);
+    });
+
+    $('#table_div').scroll(function(){
+        fnScroll();
+    });
+
+    fnAdjustTable();
+});
