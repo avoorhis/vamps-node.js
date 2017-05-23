@@ -1,6 +1,8 @@
 <% include ../../routes/helpers/metadata_functions %>
 <% if (dividers.indexOf( all_field_names[idx][1] ) != -1) { %>
-<td></td>
+<td class="header_divider">
+    &nbsp;
+</td>
 <% } else if (all_field_names[idx][1] === "DNA Extraction") { %>
 <td>
     <% selected_val = get_selected_val(pid, did, "dna_extraction_meth") %>
