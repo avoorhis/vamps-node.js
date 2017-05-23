@@ -160,6 +160,80 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
 });    
 
 var showDots='';
+// normalization radio-buttons
+var norm_counts_radios = document.getElementsByName('normalization');
+if (typeof norm_counts_radios[1] !=="undefined") {
+  norm_counts_radios[1].addEventListener('click', function () {
+    val = norm_counts_radios[1].value
+    //alert('1 '+val)
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+}
+if (typeof norm_counts_radios[2] !=="undefined") {
+  norm_counts_radios[2].addEventListener('click', function () {
+    val = norm_counts_radios[2].value
+    //alert('2 '+val)
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+}
+if (typeof norm_counts_radios[3] !=="undefined") {
+  norm_counts_radios[3].addEventListener('click', function () {
+    //alert('3')
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+}
+// include_nas radio-buttons
+var include_nas_radios = document.getElementsByName('include_nas');
+if (typeof include_nas_radios[1] !=="undefined") {
+  include_nas_radios[1].addEventListener('click', function () {
+    //alert('1')
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+}
+if (typeof include_nas_radios[2] !=="undefined") {
+  include_nas_radios[2].addEventListener('click', function () {
+    //alert('2')
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+}
+// Distance Metric Select (Combo)
+var selected_distance_combo = document.getElementById('selected_distance');
+if (typeof selected_distance_combo !=="undefined") {
+  $('.selectpicker').on('change', function () {
+      //alert(selected_distance_combo)
+      document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+      document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+}
+// MIN Select (Combo)
+var min_range_combo = document.getElementById('min_range') ;
+if (typeof min_range_combo !=="undefined") {
+  min_range_combo.addEventListener('change', function () {
+      document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+      document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+}
+// MAX Select (Combo)
+var max_range_combo = document.getElementById('max_range');
+if (typeof max_range_combo !=="undefined") {
+  max_range_combo.addEventListener('change', function () {
+      document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+      document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+}
 
 //
 // COUNTS MATRIX
@@ -414,6 +488,7 @@ function create_counts_matrix() {
           ds = mtx_local.columns[n].id
           html += "<td>"+ds+"</td>"  
       }
+      html += "<td>Taxonomy</td>" 
       html += "</tr>"
       for (var n in mtx_local.rows){
         otu = mtx_local.rows[n].id
@@ -423,6 +498,7 @@ function create_counts_matrix() {
             cnt = mtx_local.data[n][m]
             html += '<td>'+ cnt +'</td>'
         }
+        html += '<td>'+ mtx_local.rows[n].metadata +'</td>'
         html += "</tr>"; 
       }
       html += "</table>";
@@ -566,7 +642,7 @@ function create_dheatmap() {
       document.getElementById('dheatmap_title').style['font-size'] = 'small';
       var html = '';
       var args =  "metric="+init.selected_distance;
-      args += "&ts="+ts_local;
+      args += "&ts="+pi_local.ts;
       document.getElementById('pre_dheatmap_div').style.display = 'block';
        // get distance matrix via AJAX
       var xmlhttp = new XMLHttpRequest();  
@@ -605,7 +681,7 @@ function create_piecharts_group() {
     document.getElementById('pre_piecharts_div').style.display = 'block';
      
     // this fxn is in common_selection.js
-    create_piecharts('group', ts_local, mtx_local);
+    create_piecharts('group', pi_local.ts, mtx_local);
     
     document.getElementById('piecharts_dnld_btn').disabled = false
 
@@ -630,40 +706,40 @@ function create_barcharts_group() {
     document.getElementById('pre_barcharts_div').style.display = 'block';
      
          // this fxn is in common_selection.js
-    create_barcharts('group', ts_local, mtx_local, {alpha_value:'z',count_value:"min"});
+    create_barcharts('group', pi_local.ts, mtx_local, {alpha_value:'z',count_value:"min"});
     document.getElementById('barcharts_dnld_btn').disabled = false
 
 }
 //
 //
 //
-function heatmap_click_fxn(did1,ds1,did2,ds2){
-      //alert(did1)
-      var args =  "did1="+did1;
-      args += "&ds1="+ds1;
-      args += "&did2="+did2;
-      args += "&ds2="+ds2;
-      //args += "&ts="+ts;
-      //document.getElementById('pre_adiversity_div').style.display = 'block';
-       // get distance matrix via AJAX
-      var xmlhttp = new XMLHttpRequest();  
-      xmlhttp.open("POST", '/visuals/bar_double', true);
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-      //showDots='';
-      //var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);
-      xmlhttp.onreadystatechange = function() {        
-        if (xmlhttp.readyState == 4 ) {
-
-          
-           //clearInterval(myWaitVar);
-            var retstring = xmlhttp.responseText;           
-        alert(retstring)
-        window.open(retstring,"_blank")
-        
-        }
-      };
-      xmlhttp.send(args);      
-}
+// function heatmap_click_fxn(did1,ds1,did2,ds2){
+//       alert(did1)
+//       var args =  "did1="+did1;
+//       args += "&ds1="+ds1;
+//       args += "&did2="+did2;
+//       args += "&ds2="+ds2;
+//       //args += "&ts="+ts;
+//       //document.getElementById('pre_adiversity_div').style.display = 'block';
+//        // get distance matrix via AJAX
+//       var xmlhttp = new XMLHttpRequest();  
+//       xmlhttp.open("POST", '/visuals/bar_double', true);
+//       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+//       //showDots='';
+//       //var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);
+//       xmlhttp.onreadystatechange = function() {        
+//         if (xmlhttp.readyState == 4 ) {
+// 
+//           
+//            //clearInterval(myWaitVar);
+//             var retstring = xmlhttp.responseText;           
+//         alert(retstring)
+//         window.open(retstring,"_blank")
+//         
+//         }
+//       };
+//       xmlhttp.send(args);      
+// }
 
 //
 //
