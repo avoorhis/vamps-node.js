@@ -687,15 +687,9 @@ function make_csv(req, res) {
     var csv = convertArrayOfObjectsToCSV({
         data: req.form
     });
-    // console.log('SSS csv');
-    // console.log(csv);
-    // var out_csv_file_name = path.join(config.USER_FILES_BASE, metadata-<random_number>.csv);
+
     project = req.form["project"];
-    console.log("CCC01 project");
-    console.log(project);
     out_csv_file_name = makeFileName(req, project);
-    console.log("CCC11 out_csv_file_name");
-    console.log(out_csv_file_name);
 
     fs.writeFile(out_csv_file_name, csv, function(err) {
         if (err) throw err;
@@ -704,27 +698,15 @@ function make_csv(req, res) {
     }
 
     function makeFileName(req, project) {
-        console.log("CCC12 in makeFileName");
         var rando = helpers.getRandomInt(10000, 99999);
-        // console.log("CCC13 rando");
-        // console.log(rando);
-        // console.log("CCC14 project");
-        // console.log(project);
-        console.log("CCC15 config.USER_FILES_BASE");
-        console.log(config.USER_FILES_BASE);
+
         file_name = path.join(config.USER_FILES_BASE, req.user["username"], "metadata_" + rando.toString() + '_' + project + ".csv");
 
-        console.log("CCC16 req.user");
-        console.log(req.user);
-        console.log("CCC17 file_name");
-        console.log(file_name);
         return file_name
     }
 
 function convertArrayOfObjectsToCSV(args) {
     var result, ctr, keys, columnDelimiter, lineDelimiter, data;
-    console.log("CCC10 in convertArrayOfObjectsToCSV");
-
 
     data = args.data || null;
     if (data === null) {
