@@ -688,7 +688,7 @@ function env_items_validation(value) {
 function make_csv(req, res) {
     //TODO: check where it is called from
     console.log("MMM make_csv: form_values");
-    console.log(req.form);
+    // console.log(req.form);
     /*
      { dataset_id: [ '4312', '4313', '4314', '4315', '4316', '4317', '4318', '4319' ],
      project_title: 'Icelandic Volcanic Lake',
@@ -710,6 +710,17 @@ function make_csv(req, res) {
      'Please choose one' ],
     */
 
-}
+        for (var key in req.form) {
+            console.log("MMM");
+            console.log("key");
+
+            console.log(key);
+            console.log("req.form.key");
+
+            console.log(req.form.key);
+        }
+
+
+    }
 
 // ---- metadata_upload end ----
