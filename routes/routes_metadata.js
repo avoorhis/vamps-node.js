@@ -11,7 +11,7 @@ var fs = require('fs');
 
 /* GET metadata page. */
  router.get('/metadata', function(req, res) {
-      console.log('in metadata')
+      console.log('in metadata');
       res.render('metadata/metadata', { title: 'VAMPS:Metadata',
             user: req.user,
             hostname: req.CONFIG.hostname
@@ -19,29 +19,29 @@ var fs = require('fs');
   });
 
 router.get('/metadata_list', helpers.isLoggedIn, function(req, res) {
-      console.log('in metadata')
-      var mdata_w_latlon = {}
-      console.log(DatasetsWithLatLong)
+      console.log('in metadata');
+      var mdata_w_latlon = {};
+      console.log(DatasetsWithLatLong);
       //console.log(DatasetsWithLatLong)  // json
       //console.log(AllMetadataNames)  // list (req w _ids)
-      for(n in AllMetadataNames){
-        md_selected = AllMetadataNames[n]
-        mdata_w_latlon[md_selected] = 0
+      for(var n in AllMetadataNames){
+        md_selected = AllMetadataNames[n];
+        mdata_w_latlon[md_selected] = 0;
         
         //console.log(md_selected)
-        for(did in DatasetsWithLatLong){
+        for(var did in DatasetsWithLatLong){
         //console.log(AllMetadata[did])
         //if(AllMetadata.hasOwnProperty(did)){
             //console.log('found1',did)
             //var mdata = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected)
-            mdata = AllMetadata[did]   // has ids
+            mdata = AllMetadata[did];   // has ids
             
-            pid = PROJECT_ID_BY_DID[did]
+            pid = PROJECT_ID_BY_DID[did];
             //console.log('pid',pid)
-            pname = PROJECT_INFORMATION_BY_PID[pid].project
+            pname = PROJECT_INFORMATION_BY_PID[pid].project;
             
             if(mdata.hasOwnProperty(md_selected)){
-                    mdata_w_latlon[md_selected] = 1                
+                    mdata_w_latlon[md_selected] = 1;
             }
         }
       }
@@ -58,19 +58,19 @@ router.get('/metadata_list', helpers.isLoggedIn, function(req, res) {
 });
 
 router.get('/list_result/:mditem', helpers.isLoggedIn, function(req, res) {
-      console.log('in metadatalist result')
+      console.log('in metadatalist result');
       var md_selected = req.params.mditem;
-      console.log(md_selected) 
+      console.log(md_selected);
       var mdvalues = {};
-      for(did in DATASET_NAME_BY_DID){
+      for(var did in DATASET_NAME_BY_DID){
         if(did in AllMetadata){
-        if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_selected.slice(0,md_selected.length-3)) != -1){
-            var data = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected)  // send _id
-            mdvalues[did] = data.value
-            md_selected_show = data.name
+        if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_selected.slice(0,md_selected.length-3)) !== -1){
+            var data = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected);  // send _id
+            mdvalues[did] = data.value;
+            md_selected_show = data.name;
         }else if(AllMetadata[did].hasOwnProperty(md_selected)){
-             mdvalues[did] = AllMetadata[did][md_selected]
-             md_selected_show = md_selected
+             mdvalues[did] = AllMetadata[did][md_selected];
+             md_selected_show = md_selected;
              
         }
        }
@@ -86,14 +86,14 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, function(req, res) {
   });
 
 router.get('/geomap/:item', helpers.isLoggedIn, function(req, res) {
-      console.log('in metadata - geomap')
+      console.log('in metadata - geomap');
       var md_item = req.params.item;
-      if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_item.slice(0,md_item.length-3)) != -1){
-        md_item_show = md_item.slice(0,md_item.length-3)
+      if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_item.slice(0,md_item.length-3)) !== -1){
+        md_item_show = md_item.slice(0,md_item.length-3);
       }else{
-        md_item_show = md_item
+        md_item_show = md_item;
       }
-      var metadata_info = get_metadata_hash(md_item)  // fxn: see below
+      var metadata_info = get_metadata_hash(md_item);  // fxn: see below
       //console.log('metadata_info')
       res.render('metadata/geomap', { title: 'VAMPS:Metadata Distribution',
             user    : req.user,hostname: req.CONFIG.hostname,
@@ -107,33 +107,33 @@ module.exports = router;
 
 //////////////////////////////
 function get_metadata_hash(md_selected){
-    var md_info = {}
+    var md_info = {};
     //md_info[md_item] = {}
-    md_info.metadata = {}
-    var got_lat, got_lon
+    md_info.metadata = {};
+    var got_lat, got_lon;
     //console.log('PROJECT_ID_BY_DID.length')
     //console.log(PROJECT_ID_BY_DID)
     //console.log(Object.keys(PROJECT_ID_BY_DID).length)
-    for(did in PROJECT_ID_BY_DID){
+    for(var did in PROJECT_ID_BY_DID){
         
         if(AllMetadata.hasOwnProperty(did)){
             //console.log('found1',did)
-            var mdata = AllMetadata[did]
-            var pid = PROJECT_ID_BY_DID[did]
+            var mdata = AllMetadata[did];
+            var pid = PROJECT_ID_BY_DID[did];
             //console.log('pid',pid)
-            pname = PROJECT_INFORMATION_BY_PID[pid].project
+            pname = PROJECT_INFORMATION_BY_PID[pid].project;
             if(mdata.hasOwnProperty(md_selected) && mdata.hasOwnProperty('latitude') && mdata.hasOwnProperty('longitude')){
-                if(mdata['latitude'] != 'None' && mdata['longitude'] != 'None'){
+                if(mdata['latitude'] !== 'None' && mdata['longitude'] !== 'None'){
                     //console.log('found2',md_selected)
-                    var pjds = pname+'--'+DATASET_NAME_BY_DID[did]
-                    md_info.metadata[pjds] ={}        
-                    md_info.metadata[pjds].pid = pid
-                    md_info.metadata[pjds].did = did
-                    var data = helpers.required_metadata_names_from_ids(mdata, md_selected)
-                    md_info.metadata[pjds].value = data.value
+                    var pjds = pname+'--'+DATASET_NAME_BY_DID[did];
+                    md_info.metadata[pjds] ={};
+                    md_info.metadata[pjds].pid = pid;
+                    md_info.metadata[pjds].did = did;
+                    var data = helpers.required_metadata_names_from_ids(mdata, md_selected);
+                    md_info.metadata[pjds].value = data.value;
                     //md_info.metadata[pjds].value = mdata[md_selected]
-                    md_info.metadata[pjds].latitude = mdata['latitude'] 
-                    md_info.metadata[pjds].longitude = mdata['longitude']
+                    md_info.metadata[pjds].latitude = mdata['latitude'];
+                    md_info.metadata[pjds].longitude = mdata['longitude'];
                 }
 
             }
@@ -157,7 +157,7 @@ router.get("/metadata_upload_from_file", [helpers.isLoggedIn], function (req, re
   res.render('metadata/metadata_upload_from_file', {
     title: 'VAMPS: Metadata_upload',
     user: req.user,
-    hostname: req.CONFIG.hostname,
+    hostname: req.CONFIG.hostname
   });
 });
 
@@ -168,7 +168,7 @@ router.get("/metadata_upload_new", [helpers.isLoggedIn], function (req, res) {
   res.render('metadata/metadata_upload_new', {
     title: 'VAMPS: Metadata_upload',
     user: req.user,
-    hostname: req.CONFIG.hostname,
+    hostname: req.CONFIG.hostname
   });
 });
 
@@ -235,13 +235,11 @@ router.post('/metadata_upload',
 
       res.redirect("/user_data/your_projects");
     }
-
-    return;
   }
 );
 
 function format_form(req, res) {
-  edit_metadata_info = {}
+  edit_metadata_info = {};
   console.log("RRR req.body");
   console.log(req.body);
   /*
@@ -275,7 +273,7 @@ function editMetadataForm(req, res){
   console.log(pid);
   console.log("XXX3 req.body.project_id");
   console.log(all_metadata);
-  all_metadata = {pid: req.form}
+  all_metadata = {pid: req.form};
   res.render('metadata/metadata_upload_from_file', {
       title: 'VAMPS: Metadata_upload',
       user: req.user,
@@ -356,12 +354,12 @@ router.post('/start_edit',
 });
 
 function get_values_from_ids(METADATA, did, all_metadata_p_d) {
-  var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_matter', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'] 
+  var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_matter', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'];
   // var ds_row = {};
 
   metadata_names.forEach(function(mdname) {
     // console.log(mdname);
-    var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname)
+    var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname);
     /*
     console.log("DDD data");
     console.log(data);
@@ -371,7 +369,7 @@ function get_values_from_ids(METADATA, did, all_metadata_p_d) {
 
     if(did in METADATA) {
       // ds_row[mdname] = data.value
-      all_metadata_p_d[mdname] = data.value
+      all_metadata_p_d[mdname] = data.value;
     }
 
     /*
@@ -408,7 +406,7 @@ function make_all_arrays(all_metadata, pid, dataset_id) {
       all_metadata[pid][key] = [];
     });
   }
-  return all_metadata
+  return all_metadata;
 }
 
 function populate_metadata_hash(rows, pid, all_metadata) {
@@ -454,7 +452,7 @@ function populate_metadata_hash(rows, pid, all_metadata) {
 
 
       */
-      var dataset_id = row.did
+      var dataset_id = row.did;
       all_metadata[pid]["project"]     = row.project;
       all_metadata[pid]["title"]       = row.title;
       all_metadata[pid]["username"]    = row.username;
@@ -517,8 +515,8 @@ function populate_metadata_hash(rows, pid, all_metadata) {
  */
 
   }
-  return all_metadata
-};
+  return all_metadata;
+}
   
 // function populate_metadata_hash(rows, pid, all_metadata){
 //   all_metadata[pid]["dataset_ids"] = {}
@@ -605,7 +603,7 @@ function make_metadata_hash(req, res){
   all_metadata = {};
   if (helpers.isInt(pid))
   {
-    all_metadata[pid] = {}
+    all_metadata[pid] = {};
     connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows, fields) {
       if (err)
       {
@@ -682,11 +680,6 @@ function env_items_validation(value) {
   }
 }
 
-function env_items_validation(value) {
-  if (value === "Please choose one") {
-      throw new Error("Please choose one value from the dropdown menu for %s.");
-  }
-}
 function make_csv(req, res) {
     //TODO: check where it is called from
     console.log("MMM make_csv: form_values");
