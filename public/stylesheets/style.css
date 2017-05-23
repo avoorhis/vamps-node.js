@@ -405,7 +405,8 @@ td.left_justify {
 }
 
 #first_col_table td, #fixed_table_base td {
-    height: 30px;
+    min-height: 0.3em;
+    height: 2.8em;
     white-space: nowrap;
     border: 1px;
     border-color: black;
