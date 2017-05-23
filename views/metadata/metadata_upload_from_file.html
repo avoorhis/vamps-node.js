@@ -80,42 +80,7 @@
   </fieldset>
   <fieldset id="parameters">
     <legend id="parameters-legend">Table of metadata parameters</legend>
-    <!--cellpadding="1" cellspacing="1" border="1" -->
-    <table class='table table-condensed'>
-      <thead>
-        <!-- rowspan="1" colspan="3" -->
-      </thead>
-      <tbody>
-    <% if (all_metadata) { %>
-      <!-- all_metadata -->
-      <!-- for each project  -->
-      <% for (var key in all_metadata) { %>
-        <% if (all_field_names) { %>
-          <!-- for each field name  -->
-          <% for (var idx in all_field_names) {
-              field_name = all_field_names[idx][0]
-          %>
-          <tr>
-<!--first column  -->
-            <% include first_column.ejs %>
-<!-- second column: MBL or user supplied -->
-            <td><%= all_field_names[idx][2] %></td>
-<!-- third column (value) -->
-            <!-- make a cell for each dataset_id -->
-            <% for (var did in all_metadata[pid]["dataset_id"]) { %>
-              <% include third_column.ejs %>
-              <% } %> <!-- for (var did in all_metadata[pid]["dataset_id"])  -->
-
-        </tr>
-          <% } %> <!-- for (var idx in all_field_names)  -->
-        <% } %> <!-- if (all_field_names) -->
-        <% } %> <!-- for (var pid in all_metadata) -->
-        <%
-            } // end: if (all_metadata)
-             else {
-              var all_metadata = {}
-        } %>
-  </table>
+      <% include first_fixed_table.ejs %>
   </fieldset>
 <br>
 
