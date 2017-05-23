@@ -183,7 +183,7 @@ router.post('/metadata_upload',
     form.field("references", "References").trim().required().entityEncode().array(),
     // References should clean URL
     form.field("project_name", "VAMPS project name").trim().entityEncode(),
-    form.field("dataset_name", "VAMPS dataset name").trim().entityEncode().array(),
+    form.field("dataset", "VAMPS dataset name").trim().entityEncode().array(),
     form.field("sample_name", "Sample ID (user sample name)").trim().required().entityEncode().array(),
     form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode().custom(env_items_validation).array(),
     form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode().custom(env_items_validation).array(),
@@ -266,13 +266,13 @@ function editMetadataForm(req, res){
   edit_metadata_address = "metadata/metadata_upload_from_file";
   console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
 
-  console.log("XXX1 all_metadata: req.form");
-  console.log(req.form);
-  console.log("XXX2 req.body.project_id");
-  console.log(req.body.project_id);
-  console.log(pid);
-  console.log("XXX3 req.body.project_id");
-  console.log(all_metadata);
+  // console.log("XXX1 all_metadata: req.form");
+  // console.log(req.form);
+  // console.log("XXX2 req.body.project_id");
+  // console.log(req.body.project_id);
+  // console.log(pid);
+  // console.log("XXX3 req.body.project_id");
+  // console.log(all_metadata);
   all_metadata = {pid: req.form};
   res.render('metadata/metadata_upload_from_file', {
       title: 'VAMPS: Metadata_upload',
@@ -725,12 +725,17 @@ function make_csv(req, res) {
     // console.log("VVV3");
     // console.log(rr);
 
-    var csv_fields = Object.keys(input);
-    var csv = json2csv({ data: input, fields: csv_fields });
-    fs.writeFile('file.csv', csv, function(err) {
-        if (err) throw err;
-        console.log('file saved');
+    // var csv_fields = Object.keys(input);
+    // var csv = json2csv({ data: input, fields: csv_fields });
+    // fs.writeFile('file.csv', csv, function(err) {
+    //     if (err) throw err;
+    //     console.log('file saved');
+    // });
+    var csv = convertArrayOfObjectsToCSV({
+        data: req.form
     });
+    console.log('SSS csv');
+    console.log(csv);
 
     /*
     * key
@@ -748,6 +753,56 @@ function make_csv(req, res) {
 
 
     }
+
+
+function convertArrayOfObjectsToCSV(args) {
+    var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+    console.log("CCC10 convertArrayOfObjectsToCSV");
+
+
+    data = args.data || null;
+    console.log("CCC01 convertArrayOfObjectsToCSV: data");
+    console.log(data);
+
+    if (data === null) {
+        return null;
+    }
+
+
+    columnDelimiter = args.columnDelimiter || ',';
+    console.log("CCC02 convertArrayOfObjectsToCSV: columnDelimiter");
+    console.log(columnDelimiter);
+
+    lineDelimiter = args.lineDelimiter || '\n';
+
+    console.log("CCC03 convertArrayOfObjectsToCSV: lineDelimiter");
+    console.log(lineDelimiter);
+
+    keys = data['dataset'];
+    console.log("CCC04 convertArrayOfObjectsToCSV: keys");
+    console.log(keys);
+
+    result = '';
+    result += keys.join(columnDelimiter);
+    result += lineDelimiter;
+    console.log("CCC1 convertArrayOfObjectsToCSV: result");
+    console.log(result);
+
+    data.forEach(function(item) {
+        ctr = 0;
+        keys.forEach(function(key) {
+            if (ctr > 0) result += columnDelimiter;
+
+            result += item[key];
+            ctr++;
+        });
+        result += lineDelimiter;
+    });
+
+    console.log("CCC3 convertArrayOfObjectsToCSV result");
+    console.log(result);
+    return result;
+}
 
 // ---- metadata_upload end ----
 
