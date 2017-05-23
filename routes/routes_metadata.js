@@ -683,131 +683,50 @@ function env_items_validation(value) {
 function make_csv(req, res) {
     //TODO: check where it is called from
     console.log("MMM make_csv: form_values");
-    // console.log(req.form);
-    /*
-     { dataset_id: [ '4312', '4313', '4314', '4315', '4316', '4317', '4318', '4319' ],
-     project_title: 'Icelandic Volcanic Lake',
-     pi_name: '',
-     pi_email: '',
-     project_abstract: '',
-     references: [],
-     project: 'DCO_GAI_Bv3v5',
-     dataset_name: [],
-     sample_name: [],
-     dna_extraction_meth:
-     [ 'MoBio Power Water',
-     'Please choose one',
-     'Please choose one',
-     'Please choose one',
-     'Please choose one',
-     'Please choose one',
-     'Please choose one',
-     'Please choose one' ],
-    */
-
-        // for (var key in req.form) {
-        //     console.log("MMM");
-        //     console.log("key");
-        //
-        //     console.log(key);
-        //     console.log("req.form[key]");
-        //
-        //     console.log(req.form[key]);
-        // }
-    console.log("VVV");
     input = req.form;
-    console.log("VVV1");
-    // rr = stringify(input, function(err, output){
-    //     console.log("VVV2");
-    //     console.log(output);
-    // });
-    //
-    // console.log("VVV3");
-    // console.log(rr);
 
-    // var csv_fields = Object.keys(input);
-    // var csv = json2csv({ data: input, fields: csv_fields });
-    // fs.writeFile('file.csv', csv, function(err) {
-    //     if (err) throw err;
-    //     console.log('file saved');
-    // });
     var csv = convertArrayOfObjectsToCSV({
         data: req.form
     });
-    console.log('SSS csv');
-    console.log(csv);
-    fs.writeFile('file.csv', csv, function(err) {
+    // console.log('SSS csv');
+    // console.log(csv);
+    var out_csv_file_name = 'file.csv';
+    fs.writeFile(out_csv_file_name, csv, function(err) {
         if (err) throw err;
-        console.log('file saved');
+        console.log('file ' + out_csv_file_name + ' saved');
     });
-    /*
-    * key
-     material_primary
-     req.form[key]
-     [ 'microbial mat material',
-     'biofilm',
-     'Please choose one',
-     'Please choose one',
-     'Please choose one',
-     'Please choose one',
-     'Please choose one',
-     'Please choose one' ]
-    * */
-
-
     }
 
 
 function convertArrayOfObjectsToCSV(args) {
     var result, ctr, keys, columnDelimiter, lineDelimiter, data;
-    console.log("CCC10 convertArrayOfObjectsToCSV");
+    console.log("CCC10 in convertArrayOfObjectsToCSV");
 
 
     data = args.data || null;
-    console.log("CCC01 convertArrayOfObjectsToCSV: data");
-    console.log(data);
-
     if (data === null) {
         return null;
     }
 
-
     columnDelimiter = args.columnDelimiter || ',';
-    console.log("CCC02 convertArrayOfObjectsToCSV: columnDelimiter");
-    console.log(columnDelimiter);
-
     lineDelimiter = args.lineDelimiter || '\n';
-
-    console.log("CCC03 convertArrayOfObjectsToCSV: lineDelimiter");
-    console.log(lineDelimiter);
 
     headers = data['dataset'];
     headers_length = headers.length;
-    console.log("CCC04 convertArrayOfObjectsToCSV: headers.length");
-    console.log(headers_length);
 
+    // first line = datasets
     result = ' ';
     result += columnDelimiter;
     result += headers.join(columnDelimiter);
     result += lineDelimiter;
-    console.log("CCC1 convertArrayOfObjectsToCSV: result");
-    console.log(result);
 
-    var csv_fields = Object.keys(input);
-
+    // TODO: get keys from an array of what to save (not dataset_id, for example)
     for (var key in data) {
-        ctr = 0;
-        console.log("CCC11 convertArrayOfObjectsToCSV: key");
-        console.log(key);
-
         item = data[key];
-        console.log("typeof item:");
-        console.log(typeof item);
-        console.log("CCC12 convertArrayOfObjectsToCSV: item");
-        console.log(item);
 
         result += key;
         result += columnDelimiter;
+
         if (typeof item === "object") {
             result += item.join(columnDelimiter);
         } else if (typeof item === "string") {
@@ -819,8 +738,8 @@ function convertArrayOfObjectsToCSV(args) {
         result += lineDelimiter;
     }
 
-    console.log("CCC3 convertArrayOfObjectsToCSV result");
-    console.log(result);
+    // console.log("CCC3 convertArrayOfObjectsToCSV result");
+    // console.log(result);
     return result;
 }
 
