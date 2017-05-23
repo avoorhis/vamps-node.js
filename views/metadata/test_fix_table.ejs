@@ -1,19 +1,19 @@
 <% if (all_metadata) { %>
 
 <table #fixed_col_wrap>
-    <!--<tr>-->
-        <!--<td id="firstTd">-->
-        <!--</td>-->
-        <!--<td>-->
-            <!--<div id="divHeader" style="overflow:hidden; width: 30em; ">-->
+    <tr>
+        <td id="firstTd">
+        </td>
+        <td>
+            <div id="divHeader" style="overflow:hidden; width: 30em; ">
                 <!--<table cellspacing="0" cellpadding="0" border="1" >-->
                     <!--<tr>-->
                         <!--<td ><div class="tableHeader">Title1</div></td><td><div class="tableHeader">Title2</div></td><td><div class="tableHeader">Title3</div></td><td><div class="tableHeader">Title4</div></td><td><div class="tableHeader">Title5</div></td>-->
                     <!--</tr>-->
                 <!--</table>-->
-            <!--</div>-->
-        <!--</td>-->
-    <!--</tr>-->
+            </div>
+        </td>
+    </tr>
 
     <tr>
         <td valign="top">
@@ -31,7 +31,7 @@
                         <!--first column  -->
                         <% include first_column.ejs %>
                         <!-- second column: MBL or user supplied -->
-                        <td nowrap><%= all_field_names[idx][2] %></td>
+                        <td><%= all_field_names[idx][2] %></td>
                         <% } %>
                         <% } %>
                     <% } %>

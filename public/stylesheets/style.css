@@ -360,6 +360,7 @@ td.left_justify {
   border:1px solid black;
 }
 
+/* metadata upload */
 .required_fields {
   background: yellow;
 }
@@ -381,10 +382,11 @@ td.left_justify {
 }
 
 #first_col_table {
-     width: 200px;
-     cellspacing: 0;
-     cellpadding: 0;
-     border: 1px;
+    width: 200px;
+    border-spacing: 0;
+    border-collapse: separate;
+    padding: 0;
+    border: 1px;
 }
 
 #table_div {
@@ -396,14 +398,18 @@ td.left_justify {
 
 #fixed_table_base {
     width: 800px;
-    cellspacing: 0;
-    cellpadding: 0;
+    border-spacing: 0;
+    border-collapse: separate;
+    padding: 0;
     border: 1px;
 }
 
-#first_col_table td, fixed_table_base td {
-    height: 20px;
+#first_col_table td, #fixed_table_base td {
+    height: 30px;
     white-space: nowrap;
+    border: 1px;
+    border-color: black;
+    border-style: solid;
 }
 
 /*#fixed_table_base select {*/
