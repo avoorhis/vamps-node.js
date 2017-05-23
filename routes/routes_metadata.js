@@ -736,7 +736,10 @@ function make_csv(req, res) {
     });
     console.log('SSS csv');
     console.log(csv);
-
+    fs.writeFile('file.csv', csv, function(err) {
+        if (err) throw err;
+        console.log('file saved');
+    });
     /*
     * key
      material_primary
@@ -814,37 +817,6 @@ function convertArrayOfObjectsToCSV(args) {
             }
         }
         result += lineDelimiter;
-
-
-        // try {
-        //     for (var arr_item in item) {
-        //         console.log("CCC13 convertArrayOfObjectsToCSV: item[arr_item]");
-        //         console.log(item[arr_item]);
-        //     //    CCC13 convertArrayOfObjectsToCSV: arr_item
-        //     //     0
-        //     }
-        // }
-        // catch (e) {
-        //     console.log("entering catch block");
-        //     console.log(e);
-        //
-        //     console.log("leaving catch block");
-        // }
-        // finally {
-        //     console.log("finally");
-        // }
-
-
-        // csv_fields.forEach(function(key) {
-        //     console.log("CCC12 convertArrayOfObjectsToCSV: key");
-        //     console.log(key);
-        //
-        //     // if (ctr > 0) result += columnDelimiter;
-        //     //
-        //     // result += item[key];
-        //     ctr++;
-        //     });
-        // result += lineDelimiter;
     }
 
     console.log("CCC3 convertArrayOfObjectsToCSV result");
