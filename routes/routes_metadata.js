@@ -700,7 +700,7 @@ function make_csv(req, res) {
     function makeFileName(req, project) {
         var rando = helpers.getRandomInt(10000, 99999);
 
-        file_name = path.join(config.USER_FILES_BASE, req.user["username"], "metadata_" + rando.toString() + '_' + project + ".csv");
+        file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-" + rando.toString() + '_' + project + ".csv");
 
         return file_name
     }
