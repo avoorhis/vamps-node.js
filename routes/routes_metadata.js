@@ -4,10 +4,13 @@ var helpers = require("./helpers/helpers");
 var form    = require("express-form");
 var queries = require(app_root + "/routes/queries");
 var CONSTS  = require(app_root + "/public/constants");
+var fs = require("fs");
+var path = require("path");
+var config  = require(app_root + '/config/config');
 
 /* GET metadata page. */
  router.get('/metadata', function(req, res) {
-      console.log('in metadata')
+      console.log('in metadata');
       res.render('metadata/metadata', { title: 'VAMPS:Metadata',
             user: req.user,
             hostname: req.CONFIG.hostname
@@ -15,29 +18,29 @@ var CONSTS  = require(app_root + "/public/constants");
   });
 
 router.get('/metadata_list', helpers.isLoggedIn, function(req, res) {
-      console.log('in metadata')
-      var mdata_w_latlon = {}
-      console.log(DatasetsWithLatLong)
+      console.log('in metadata');
+      var mdata_w_latlon = {};
+      console.log(DatasetsWithLatLong);
       //console.log(DatasetsWithLatLong)  // json
       //console.log(AllMetadataNames)  // list (req w _ids)
-      for(n in AllMetadataNames){
-        md_selected = AllMetadataNames[n]
-        mdata_w_latlon[md_selected] = 0
+      for(var n in AllMetadataNames){
+        md_selected = AllMetadataNames[n];
+        mdata_w_latlon[md_selected] = 0;
         
         //console.log(md_selected)
-        for(did in DatasetsWithLatLong){
+        for(var did in DatasetsWithLatLong){
         //console.log(AllMetadata[did])
         //if(AllMetadata.hasOwnProperty(did)){
             //console.log('found1',did)
             //var mdata = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected)
-            mdata = AllMetadata[did]   // has ids
+            mdata = AllMetadata[did];   // has ids
             
-            pid = PROJECT_ID_BY_DID[did]
+            pid = PROJECT_ID_BY_DID[did];
             //console.log('pid',pid)
-            pname = PROJECT_INFORMATION_BY_PID[pid].project
+            pname = PROJECT_INFORMATION_BY_PID[pid].project;
             
             if(mdata.hasOwnProperty(md_selected)){
-                    mdata_w_latlon[md_selected] = 1                
+                    mdata_w_latlon[md_selected] = 1;
             }
         }
       }
@@ -54,19 +57,19 @@ router.get('/metadata_list', helpers.isLoggedIn, function(req, res) {
 });
 
 router.get('/list_result/:mditem', helpers.isLoggedIn, function(req, res) {
-      console.log('in metadatalist result')
+      console.log('in metadatalist result');
       var md_selected = req.params.mditem;
-      console.log(md_selected) 
+      console.log(md_selected);
       var mdvalues = {};
-      for(did in DATASET_NAME_BY_DID){
+      for(var did in DATASET_NAME_BY_DID){
         if(did in AllMetadata){
-        if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_selected.slice(0,md_selected.length-3)) != -1){
-            var data = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected)  // send _id
-            mdvalues[did] = data.value
-            md_selected_show = data.name
+        if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_selected.slice(0,md_selected.length-3)) !== -1){
+            var data = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected);  // send _id
+            mdvalues[did] = data.value;
+            md_selected_show = data.name;
         }else if(AllMetadata[did].hasOwnProperty(md_selected)){
-             mdvalues[did] = AllMetadata[did][md_selected]
-             md_selected_show = md_selected
+             mdvalues[did] = AllMetadata[did][md_selected];
+             md_selected_show = md_selected;
              
         }
        }
@@ -82,14 +85,14 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, function(req, res) {
   });
 
 router.get('/geomap/:item', helpers.isLoggedIn, function(req, res) {
-      console.log('in metadata - geomap')
+      console.log('in metadata - geomap');
       var md_item = req.params.item;
-      if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_item.slice(0,md_item.length-3)) != -1){
-        md_item_show = md_item.slice(0,md_item.length-3)
+      if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_item.slice(0,md_item.length-3)) !== -1){
+        md_item_show = md_item.slice(0,md_item.length-3);
       }else{
-        md_item_show = md_item
+        md_item_show = md_item;
       }
-      var metadata_info = get_metadata_hash(md_item)  // fxn: see below
+      var metadata_info = get_metadata_hash(md_item);  // fxn: see below
       //console.log('metadata_info')
       res.render('metadata/geomap', { title: 'VAMPS:Metadata Distribution',
             user    : req.user,hostname: req.CONFIG.hostname,
@@ -103,33 +106,33 @@ module.exports = router;
 
 //////////////////////////////
 function get_metadata_hash(md_selected){
-    var md_info = {}
+    var md_info = {};
     //md_info[md_item] = {}
-    md_info.metadata = {}
-    var got_lat, got_lon
+    md_info.metadata = {};
+    var got_lat, got_lon;
     //console.log('PROJECT_ID_BY_DID.length')
     //console.log(PROJECT_ID_BY_DID)
     //console.log(Object.keys(PROJECT_ID_BY_DID).length)
-    for(did in PROJECT_ID_BY_DID){
+    for(var did in PROJECT_ID_BY_DID){
         
         if(AllMetadata.hasOwnProperty(did)){
             //console.log('found1',did)
-            var mdata = AllMetadata[did]
-            var pid = PROJECT_ID_BY_DID[did]
+            var mdata = AllMetadata[did];
+            var pid = PROJECT_ID_BY_DID[did];
             //console.log('pid',pid)
-            pname = PROJECT_INFORMATION_BY_PID[pid].project
+            pname = PROJECT_INFORMATION_BY_PID[pid].project;
             if(mdata.hasOwnProperty(md_selected) && mdata.hasOwnProperty('latitude') && mdata.hasOwnProperty('longitude')){
-                if(mdata['latitude'] != 'None' && mdata['longitude'] != 'None'){
+                if(mdata['latitude'] !== 'None' && mdata['longitude'] !== 'None'){
                     //console.log('found2',md_selected)
-                    var pjds = pname+'--'+DATASET_NAME_BY_DID[did]
-                    md_info.metadata[pjds] ={}        
-                    md_info.metadata[pjds].pid = pid
-                    md_info.metadata[pjds].did = did
-                    var data = helpers.required_metadata_names_from_ids(mdata, md_selected)
-                    md_info.metadata[pjds].value = data.value
+                    var pjds = pname+'--'+DATASET_NAME_BY_DID[did];
+                    md_info.metadata[pjds] ={};
+                    md_info.metadata[pjds].pid = pid;
+                    md_info.metadata[pjds].did = did;
+                    var data = helpers.required_metadata_names_from_ids(mdata, md_selected);
+                    md_info.metadata[pjds].value = data.value;
                     //md_info.metadata[pjds].value = mdata[md_selected]
-                    md_info.metadata[pjds].latitude = mdata['latitude'] 
-                    md_info.metadata[pjds].longitude = mdata['longitude']
+                    md_info.metadata[pjds].latitude = mdata['latitude'];
+                    md_info.metadata[pjds].longitude = mdata['longitude'];
                 }
 
             }
@@ -153,7 +156,7 @@ router.get("/metadata_upload_from_file", [helpers.isLoggedIn], function (req, re
   res.render('metadata/metadata_upload_from_file', {
     title: 'VAMPS: Metadata_upload',
     user: req.user,
-    hostname: req.CONFIG.hostname,
+    hostname: req.CONFIG.hostname
   });
 });
 
@@ -164,7 +167,7 @@ router.get("/metadata_upload_new", [helpers.isLoggedIn], function (req, res) {
   res.render('metadata/metadata_upload_new', {
     title: 'VAMPS: Metadata_upload',
     user: req.user,
-    hostname: req.CONFIG.hostname,
+    hostname: req.CONFIG.hostname
   });
 });
 
@@ -178,8 +181,8 @@ router.post('/metadata_upload',
     form.field("project_abstract", "Project abstract").trim().required().entityEncode(),
     form.field("references", "References").trim().required().entityEncode().array(),
     // References should clean URL
-    form.field("project_name", "VAMPS project name").trim().entityEncode(),
-    form.field("dataset_name", "VAMPS dataset name").trim().entityEncode().array(),
+    form.field("project", "VAMPS project name").trim().entityEncode(),
+    form.field("dataset", "VAMPS dataset name").trim().entityEncode().array(),
     form.field("sample_name", "Sample ID (user sample name)").trim().required().entityEncode().array(),
     form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode().custom(env_items_validation).array(),
     form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode().custom(env_items_validation).array(),
@@ -215,6 +218,9 @@ router.post('/metadata_upload',
 
       req.flash("fail", req.form.errors);
       editMetadataForm(req, res);
+      //TODO: remove from here, use only if valid.
+      make_csv(req, res);
+
 
     }
     else {
@@ -224,21 +230,20 @@ router.post('/metadata_upload',
       // console.log(req);
       //  req.form:
       //      dna_extraction_meth: "CTAB phenol/chloroform",
+      saveMetadata(req, res);
 
       res.redirect("/user_data/your_projects");
     }
-
-    return;
   }
 );
 
 function format_form(req, res) {
-  edit_metadata_info = {}
+  edit_metadata_info = {};
   console.log("RRR req.body");
   console.log(req.body);
   /*
   "16s": [ "16s", "16s", "16s", "16s", "16s", "16s", "16s", "16s" ],
-  project_name: "DCO_GAI_Bv3v5",
+  project: "DCO_GAI_Bv3v5",
   pi_name: "",
   dataset_id: [ "4312", "4313", "4314", "4315", "4316", "4317", "4318", "4319" ],
   pi_email: "",
@@ -260,14 +265,14 @@ function editMetadataForm(req, res){
   edit_metadata_address = "metadata/metadata_upload_from_file";
   console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
 
-  console.log("XXX1 all_metadata: req.form");
-  console.log(req.form);
-  console.log("XXX2 req.body.project_id");
-  console.log(req.body.project_id);
-  console.log(pid);
-  console.log("XXX3 req.body.project_id");
-  console.log(all_metadata);
-  all_metadata = {pid: req.form}
+  // console.log("XXX1 all_metadata: req.form");
+  // console.log(req.form);
+  // console.log("XXX2 req.body.project_id");
+  // console.log(req.body.project_id);
+  // console.log(pid);
+  // console.log("XXX3 req.body.project_id");
+  // console.log(all_metadata);
+  all_metadata = {pid: req.form};
   res.render('metadata/metadata_upload_from_file', {
       title: 'VAMPS: Metadata_upload',
       user: req.user,
@@ -285,57 +290,6 @@ function editMetadataForm(req, res){
       material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
       metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
   });
-
-  // if (req.body.from_where === 'metadata_upload_from_file') {
-  //    req.edit_metadata_info = format_form(req, res);
-  //    console.log("QQQ req.edit_metadata_info");
-  //    console.log(req.edit_metadata_info);
-  //
-  //    edit_metadata_address = "metadata/metadata_upload_from_file";
-  //    console.log("AAA2 edit_metadata_address = "metadata/metadata_upload_from_file"");
-  //    res.render(edit_metadata_address, {
-  //      title: 'VAMPS: Metadata_upload',
-  //      user: req.user,
-  //      hostname: req.CONFIG.hostname,
-  //      user: req.user,
-  //      hostname: req.CONFIG.hostname,
-  //      all_metadata: req.edit_metadata_info,
-  //      all_field_names: CONSTS.ORDERED_METADATA_NAMES,
-  //      dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-  //      dna_extraction: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-  //      dna_quantitation: CONSTS.DNA_QUANTITATION_OPTIONS,
-  //      biome_primary: CONSTS.BIOME_PRIMARY,
-  //      biome_secondary_marine: CONSTS.BIOME_SECONDARY_MARINE,
-  //      feature_primary: CONSTS.FEATURE_PRIMARY,
-  //      feature_secondary_aquifer: CONSTS.FEATURE_SECONDARY_AQUIFER,
-  //      material_primary: CONSTS.MATERIAL_PRIMARY,
-  //      material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
-  //      metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
-  //    }
-  //      );
-  //
-  //    // Object.assign(obj1, obj2);
-  //
-  //  }
-  //  else {
-  //    edit_metadata_address = 'metadata/metadata_upload_new';
-  //    console.log("AAA1 edit_metadata_address = 'metadata/metadata_upload_new'");
-  //    res.render(edit_metadata_address, {
-  //    title: 'VAMPS: Metadata',
-  //    user: req.user,
-  //    hostname: req.CONFIG.hostname,
-  //    edit_metadata_info: req.form,
-  //    //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
-  //  });
-  //
-  //  }
-  // res.render(edit_metadata_address, {
-  //   title: 'VAMPS: Metadata',
-  //   user: req.user,
-  //   hostname: req.CONFIG.hostname,
-  //   edit_metadata_info: req.edit_metadata_info,
-  //   //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
-  // });
 }
 
 
@@ -351,10 +305,14 @@ function editMetadataFromFile(req, res){ /* render logic */ }
 
 function saveMetadata(req, res){
     if(!req.form.isValid){
+        // TODO: remove here, should be after validation only
+        make_csv(req, res);
         editMetadata(req, res);
     }else{
+        make_csv(req, res);
         saveToDb(req.metadata);
-        res.redirect('/metadata'+req.metadata.id+'/edit');
+        // TODO: change
+        res.redirect("/metadata"+req.metadata.id+"/edit");
     }
 }
 
@@ -395,12 +353,12 @@ router.post('/start_edit',
 });
 
 function get_values_from_ids(METADATA, did, all_metadata_p_d) {
-  var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_matter', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'] 
+  var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_matter', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'];
   // var ds_row = {};
 
   metadata_names.forEach(function(mdname) {
     // console.log(mdname);
-    var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname)
+    var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname);
     /*
     console.log("DDD data");
     console.log(data);
@@ -410,7 +368,7 @@ function get_values_from_ids(METADATA, did, all_metadata_p_d) {
 
     if(did in METADATA) {
       // ds_row[mdname] = data.value
-      all_metadata_p_d[mdname] = data.value
+      all_metadata_p_d[mdname] = data.value;
     }
 
     /*
@@ -447,7 +405,7 @@ function make_all_arrays(all_metadata, pid, dataset_id) {
       all_metadata[pid][key] = [];
     });
   }
-  return all_metadata
+  return all_metadata;
 }
 
 function populate_metadata_hash(rows, pid, all_metadata) {
@@ -493,7 +451,7 @@ function populate_metadata_hash(rows, pid, all_metadata) {
 
 
       */
-      var dataset_id = row.did
+      var dataset_id = row.did;
       all_metadata[pid]["project"]     = row.project;
       all_metadata[pid]["title"]       = row.title;
       all_metadata[pid]["username"]    = row.username;
@@ -556,8 +514,8 @@ function populate_metadata_hash(rows, pid, all_metadata) {
  */
 
   }
-  return all_metadata
-};
+  return all_metadata;
+}
   
 // function populate_metadata_hash(rows, pid, all_metadata){
 //   all_metadata[pid]["dataset_ids"] = {}
@@ -644,7 +602,7 @@ function make_metadata_hash(req, res){
   all_metadata = {};
   if (helpers.isInt(pid))
   {
-    all_metadata[pid] = {}
+    all_metadata[pid] = {};
     connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows, fields) {
       if (err)
       {
@@ -721,9 +679,74 @@ function env_items_validation(value) {
   }
 }
 
-function env_items_validation(value) {
-  if (value === "Please choose one") {
-      throw new Error("Please choose one value from the dropdown menu for %s.");
-  }
+function make_csv(req, res) {
+    //TODO: check where it is called from
+    console.log("MMM make_csv: form_values");
+    input = req.form;
+
+    var csv = convertArrayOfObjectsToCSV({
+        data: req.form
+    });
+
+    project = req.form["project"];
+    out_csv_file_name = makeFileName(req, project);
+
+    fs.writeFile(out_csv_file_name, csv, function(err) {
+        if (err) throw err;
+        console.log('file ' + out_csv_file_name + ' saved');
+    });
+    }
+
+    function makeFileName(req, project) {
+        var rando = helpers.getRandomInt(10000, 99999);
+
+        file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-" + rando.toString() + '_' + project + ".csv");
+
+        return file_name
+    }
+
+function convertArrayOfObjectsToCSV(args) {
+    var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+
+    data = args.data || null;
+    if (data === null) {
+        return null;
+    }
+
+    columnDelimiter = args.columnDelimiter || ',';
+    lineDelimiter = args.lineDelimiter || '\n';
+
+    headers = data['dataset'];
+    headers_length = headers.length;
+
+    // first line = datasets
+    result = ' ';
+    result += columnDelimiter;
+    result += headers.join(columnDelimiter);
+    result += lineDelimiter;
+
+    // TODO: get keys from an array of what to save (not dataset_id, for example)
+    for (var key in data) {
+        item = data[key];
+
+        result += key;
+        result += columnDelimiter;
+
+        if (typeof item === "object") {
+            result += item.join(columnDelimiter);
+        } else if (typeof item === "string") {
+            for(i = 0; i < headers_length; i++) {
+                result += item;
+                result += columnDelimiter;
+            }
+        }
+        result += lineDelimiter;
+    }
+
+    // console.log("CCC3 convertArrayOfObjectsToCSV result");
+    // console.log(result);
+    return result;
 }
+
 // ---- metadata_upload end ----
+

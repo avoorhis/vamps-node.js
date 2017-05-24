@@ -51,8 +51,8 @@
       <input type="text" id="project_title" name="project_title" value='<%= all_metadata[pid].title %>'/>
 
       <br />
-      <label for="project_name">VAMPS project name (MBL Supplied)</label>
-      <input type="text" id="project_name" readonly name="project_name" placeholder="DCO_GAI_Bv3v5" value='<%= all_metadata[pid].project %>'/>
+      <label for="project">VAMPS project name (MBL Supplied)</label>
+      <input type="text" id="project" readonly name="project" placeholder="DCO_GAI_Bv3v5" value='<%= all_metadata[pid].project %>'/>
 
       <br />
       <label for="pi_name">PI Name:</label>
@@ -65,7 +65,7 @@
     <% } %>
   <%
   } else { var all_metadata = {} %>
-    <!--<input type="text" id="project_name" readonly name="project_name" placeholder="DCO_GAI_Bv3v5"/>-->
+    <!--<input type="text" id="project" readonly name="project" placeholder="DCO_GAI_Bv3v5"/>-->
   <%}%>
   <br />
   <label for="pi_email">PI's email address:</label>
