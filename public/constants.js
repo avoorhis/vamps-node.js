@@ -652,98 +652,33 @@ constants.ORDERED_METADATA_DIVIDERS = ["Parameter",
 "User-added"];
 
 constants.MY_DNA_EXTRACTION_METH_OPTIONS = ["Please choose one",
-    "MoBio Power Biomedical FAST DNA",
-"MoBio PowerSoil",
-"MoBio Power Water",
-"MoBio PowerBiofilm",
-"MoBio UltraClean DNA isolation",
-"freeze-thaw,SDS,phenol-chloroform,ethano",
-"Hot alkaline extraction",
-"Fast DNA Soil Spin",
-"CTAB phenol/chloroform",
-"Qiagen Genomic DNA"];
+    "CTAB phenol–chloroform",
+    "Hot alkaline extraction",
+    "MP Biomedical Fast DNA",
+    "MP Biomedical Fast DNA Spin Kit for Soil",
+    "Mo Bio/Qiagen PowerBiofilm",
+    "Mo Bio/Qiagen PowerMax Soil",
+    "Mo Bio/Qiagen PowerSoil",
+    "Mo Bio/Qiagen PowerWater",
+    "Mo Bio/Qiagen UltraClean Microbial",
+    "Other",
+    "Phenol–chloroform",
+    "Qiagen Genomic DNA lysis buffer",
+    "SDS Phenol–chloroform"];
 
 constants.DNA_QUANTITATION_OPTIONS = ["Please choose one",
+    "Fluorescent Microspheres",
+    "NanoDrop",
     "NanoQuant",
-"NanoDrop",
-"Fluorescent Microspheres",
-"Perfluorocarbon Tracers",
-"PicoGreen",
-"Other"];
+    "Perfluorocarbon Tracers",
+    "PicoGreen",
+    "Other"];
 
 constants.BIOME_PRIMARY = ["Please choose one",
 "marine",
 "subseafloor",
 "subterrestrial",
 "terrestrial"];
-
-constants.BIOME_SECONDARY_MARINE = ["none",
-"abyssal",
-"aquatic",
-"basaltic hydrothermal vent",
-"bathyal",
-"benthic",
-"continental margin",
-"estuarine",
-"hadal",
-"marine cold seep biome",
-"neritic",
-"pelagic",
-"polar",
-"ultramafic hydrothermal vent biome"];
-
-constants.BIOME_SEQ_OPTIONS = {
-    "marine": ["none",
-        "abyssal",
-        "aquatic",
-        "basaltic hydrothermal vent",
-        "bathyal",
-        "benthic",
-        "continental margin",
-        "estuarine",
-        "hadal",
-        "marine cold seep biome",
-        "neritic",
-        "pelagic",
-        "polar",
-        "ultramafic hydrothermal vent biome"],
-
-    "terrestrial": ["none",
-        "aquatic",
-        "freshwater lake",
-        "freshwater river",
-        "large lake biome",
-        "polar",
-        "subglacial lake"],
-
-    "subterrestrial": ["none",
-        "aquatic",
-        "endolithic"],
-
-    "subseafloor": ["none",
-        "aquatic",
-        "benthic",
-        "endolithic",
-        "sub-seafloor microbial biome"]
-};
-
-constants.BIOME_SECONDARY_TERRESTRIAL = ["none",
-"aquatic",
-"freshwater lake",
-"freshwater river",
-"large lake biome",
-"polar",
-"subglacial lake"];
-
-constants.BIOME_SECONDARY_SUBTERRESTRIAL = ["none",
-"aquatic",
-"endolithic"];
-
-constants.BIOME_SECONDARY_SUBSEAFLOOR = ["none",
-"aquatic",
-"benthic",
-"endolithic",
-"sub-seafloor microbial biome"];
 
 constants.FEATURE_PRIMARY = ["Please choose one",
 "aquifer",
@@ -761,18 +696,6 @@ constants.FEATURE_PRIMARY = ["Please choose one",
 "volcano",
 "well"];
 
-constants.FEATURE_SECONDARY_AQUIFER = ["none",
-"confined",
-"fracture - geological",
-"fracture - micro",
-"fracture - shear",
-"groundwater",
-"spring",
-"sub-continental",
-"subseafloor",
-"unconfined",
-"water well"];
-
 constants.MATERIAL_PRIMARY = ["Please choose one",
 "biofilm",
 "fluid",
@@ -785,14 +708,6 @@ constants.MATERIAL_PRIMARY = ["Please choose one",
 "soil",
 "water"];
 
-constants.MATERIAL_SECONDARY_BIOFILM = ["none",
-"algae",
-"archaea",
-"bacteria",
-"fungi",
-"glacial",
-"protozoa",
-"thermophilic"];
 
 constants.METADATA_FORM_REQUIRED_FIELDS = ["VAMPS project name",
 "VAMPS dataset name",
@@ -824,5 +739,29 @@ constants.METADATA_FORM_REQUIRED_FIELDS = ["VAMPS project name",
 "pH",
 "Temperature",
 "Conductivity"];
+
+constants.DCO_ENVIRONMENTAL_PACKAGES = [
+    "misc environment",
+    "microbial mat/biofilm",
+    "plant-associated",
+    "sediment",
+    "soil",
+    "water"];
+
+// definition
+constants.INVESTIGATION_TYPE = [["mimarks-survey", "marker gene from whole community (e.g. 16S survey)"],
+    ["mimarks-specimen", "marker gene from single organism (e.g. culture"],
+    ["metagenome", "whole metagenome survey"],
+    ["bacteria_archaea", "genome from bacterial or archaeal origin"],
+    ["eukaryote", "genome from eukaryotic origin"],
+    ["plasmid", ""],
+    ["virus", ""],
+    ["organelle", ""]];
+
+
+constants.SAMPLE_TYPE = ["control",
+    "enrichment",
+    "environmental sample",
+    "isolate"];
 
 module.exports = constants;

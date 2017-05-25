@@ -284,11 +284,8 @@ function editMetadataForm(req, res){
       dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
       dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
       biome_primary_options: CONSTS.BIOME_PRIMARY,
-      biome_secondary_options: CONSTS.BIOME_SEQ_OPTIONS,
       feature_primary_options: CONSTS.FEATURE_PRIMARY,
-      feature_secondary_aquifer: CONSTS.FEATURE_SECONDARY_AQUIFER,
       material_primary_options: CONSTS.MATERIAL_PRIMARY,
-      material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
       metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
   });
 }
@@ -647,11 +644,8 @@ function make_metadata_hash(req, res){
           dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
           dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
           biome_primary_options: CONSTS.BIOME_PRIMARY,
-          biome_secondary_options: CONSTS.BIOME_SEQ_OPTIONS,
           feature_primary_options: CONSTS.FEATURE_PRIMARY,
-          feature_secondary_aquifer: CONSTS.FEATURE_SECONDARY_AQUIFER,
           material_primary_options: CONSTS.MATERIAL_PRIMARY,
-          material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
           metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
         });
 
