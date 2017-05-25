@@ -171,6 +171,7 @@ router.get("/metadata_upload_new", [helpers.isLoggedIn], function (req, res) {
   });
 });
 
+// TODO: update pairs from https://docs.google.com/spreadsheets/d/1adAtGc9DdY2QBQZfd1oaRdWBzjOv4t-PF1hBfO8mAoA/edit#gid=1223926458
 router.post('/metadata_upload',
   [helpers.isLoggedIn],
   form(
