@@ -181,19 +181,38 @@ function adjust_radios(method){
 function load_otu_list(){
 
 
-var xmlhttp = new XMLHttpRequest();
+    var xmlhttp = new XMLHttpRequest();
 	xmlhttp.open("GET", "/otus/load_otu_list", true);
     xmlhttp.onreadystatechange = function() {
           if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            var response = xmlhttp.responseText;
+            //var response = xmlhttp.responseText;
             //console.log(response)
-            document.getElementById('otus_select_div').innerHTML = response
+            result = JSON.parse(xmlhttp.responseText);
+            var html = create_otu_table_from_otu_project(result)
+            document.getElementById('otus_select_div').innerHTML = html
 
           }
     }
 	xmlhttp.send();
 }
+function create_otu_table_from_otu_project(obj){
 
+    html = ''
+    html += "<table border='1' class='table'>"
+    html += "<tr><td></td><td>OTU Project Name</td><td>DS Count</td><td>OTU Count</td><td>OTU Size</td><td>Method</td></tr>"
+    for(prj in obj){
+        html += "<tr>"
+        html += "<td><input type='radio' id='"+ obj[prj].opid +"' name='otu'></td>"
+        html += "<td>"+prj+"</td>"
+        html += "<td>"+obj[prj].ds_count+"</td>"
+        html += "<td>"+obj[prj].otu_count+"</td>"
+        html += "<td>"+obj[prj].size+"</td>"
+        html += "<td>"+obj[prj].method+"</td>"
+        html += "</tr>"
+    }
+    html += "</table>"
+    return html
+}
 // CLEAR FILTERS
 ////////////////////////////////////////////
 function clear_filters() {
@@ -216,9 +235,9 @@ function clear_filters() {
   xmlhttp.setRequestHeader("Content-type","application/json");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-        result = xmlhttp.responseText;        
-        document.getElementById('otus_select_div').innerHTML = result        
-        //update_gui_elements(result)
+        result = JSON.parse(xmlhttp.responseText);
+        var html = create_otu_table_from_otu_project(result)
+        document.getElementById('otus_select_div').innerHTML = html
             
     }
   }
@@ -250,9 +269,9 @@ function showLiveProjectNames(str) {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-        result = xmlhttp.responseText;        
-        document.getElementById('otus_select_div').innerHTML = result
-        //update_gui_elements(result)         
+        result = JSON.parse(xmlhttp.responseText);
+        var html = create_otu_table_from_otu_project(result)
+        document.getElementById('otus_select_div').innerHTML = html    
     }
   }
   xmlhttp.send();
@@ -280,9 +299,9 @@ function filter_by_target() {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-        result = xmlhttp.responseText;        
-        document.getElementById('otus_select_div').innerHTML = result
-        //update_gui_elements(result)
+        result = JSON.parse(xmlhttp.responseText);
+        var html = create_otu_table_from_otu_project(result)
+        document.getElementById('otus_select_div').innerHTML = html
         
     }
   }
@@ -305,9 +324,9 @@ function filter_by_otu_size(size) {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
-        result = xmlhttp.responseText;        
-        document.getElementById('otus_select_div').innerHTML = result
-        //update_gui_elements(result)  
+        result = JSON.parse(xmlhttp.responseText);
+        var html = create_otu_table_from_otu_project(result)
+        document.getElementById('otus_select_div').innerHTML = html
     }
   }
   xmlhttp.send();

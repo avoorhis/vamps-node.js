@@ -620,14 +620,11 @@ router.get('/load_otu_list', helpers.isLoggedIn, function (req, res) {
     //q += ' JOIN otu_dataset using(otu_project_id)' 
     //q += ' group by otu_project_id'
     q += ' order by otu_project'
-    html = ''
     otu_project_list = {}
     connection.query(q, function otu_projects(err, rows, fields){
         if(err){
             console.log(err)
         }else{
-            html += "<table border='1'>"
-            html += "<tr><td></td><td>OTU</td><td>DS Count</td><td>OTU Count</td><td>OTU Size</td><td>Method</td></tr>"
             for(n in rows){
                 //console.log(rows[n])
                 
@@ -640,21 +637,14 @@ router.get('/load_otu_list', helpers.isLoggedIn, function (req, res) {
                 oid =  rows[n]['owner_user_id']
                 ds_count = rows[n]['ds_count'].toString()
                 otu_count = rows[n]['otu_count'].toString()
-                otu_project_list[prj] = {"ds_count":ds_count,"title":title,"opid":opid,"otu_count":otu_count,"method":method}
-                html += "<tr>"
-                html += "<td><input type='radio' id='"+ opid +"' name='otu'></td><td> "+prj+' ('+title+')</td>'
-                html += "<td>"+ds_count+"</td>"
-                html += "<td>"+otu_count+"</td>"
-                html += "<td>"+size+"</td>"
-                html += "<td>"+method+"</td>"
-                //json.item.push({id:'p'+pid, text:itemtext, checked:false,  child:1, item:[]});
-                html += "</tr>"   
+                otu_project_list[prj] = {"ds_count":ds_count,"title":title,"opid":opid,"otu_count":otu_count,"method":method,"size":size}
+                
             }
-            html += "</table>"
+            
         }
         //console.log('json')
         //console.log(json)
-        res.send(html)
+        res.json(otu_project_list)
     })
     
 });
@@ -1125,14 +1115,8 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     //SHOW_DATA = ALL_DATASETS;
     console.log('GET OTUs: in clear filters')
 
-    var html = ''
-    for(prj in otu_project_list){
-    opid = otu_project_list[prj].opid
-    title = otu_project_list[prj].title
-    ds_count = otu_project_list[prj].ds_count
-    html += "<input type='radio' id='"+ opid +"' name='otu' value=''> "+prj+' ('+ds_count+' datasets) ('+title+')<br>'
-  }
-  res.send(html);
+    
+    res.json(otu_project_list);
 
 });
 //
@@ -1145,19 +1129,14 @@ router.get('/livesearch_projects/:substring', function(req, res) {
   if(substring === '.....'){
     substring = ''
   }
-  var html = ''
-  for(prj in otu_project_list){
-  //otu_project_list.forEach(function(prj) {
-    opid = otu_project_list[prj].opid
-    title = otu_project_list[prj].title
-    ds_count = otu_project_list[prj].ds_count
+  var filtered_otu_project_list = {}
+  for(prj in otu_project_list){    
     if(prj.toUpperCase().indexOf(substring) != -1){
-          html += "<input type='radio' id='"+ opid +"' name='otu' value=''> "+prj+' ('+ds_count+' datasets) ('+title+')<br>'
+        filtered_otu_project_list[prj] = otu_project_list[prj]  
     }
-    
   }
- 
-  res.send(html);
+  res.json(filtered_otu_project_list);
+  
 
 });
 router.get('/livesearch_target/:gene_target', function(req, res) {
@@ -1169,18 +1148,14 @@ router.get('/livesearch_target/:gene_target', function(req, res) {
     }
     //otu_project_list.forEach(function(prj) {
     console.log(gene_target)
-    var html = ''
+    var filtered_otu_project_list = {}
     for(prj in otu_project_list){
-        opid = otu_project_list[prj].opid
-        title = otu_project_list[prj].title
-        ds_count = otu_project_list[prj].ds_count
         if(prj.toUpperCase().indexOf(gene_target) != -1){
-          html += "<input type='radio' id='"+ opid +"' name='otu' value=''> "+prj+' ('+ds_count+' datasets) ('+title+')<br>'
+            filtered_otu_project_list[prj] = otu_project_list[prj]
         }
-    
     }
-  
-    res.send(html);
+    res.json(filtered_otu_project_list);
+    
   
 
 });
@@ -1195,18 +1170,14 @@ router.get('/livesearch_otu_size/:q', function(req, res) {
   console.log('OTU viz:in livesearch_otu_size')
   var size = req.params.q;   // 3, 6 or 10 percent
   var myurl = url.parse(req.url, true);
-  var html = ''
+  var filtered_otu_project_list = {}
   for(prj in otu_project_list){
-        opid = otu_project_list[prj].opid
-        title = otu_project_list[prj].title
-        ds_count = otu_project_list[prj].ds_count
         if(prj.indexOf(size) != -1){
-          html += "<input type='radio' id='"+ opid +"' name='otu' value=''> "+prj+' ('+ds_count+' datasets) ('+title+')<br>'
+          filtered_otu_project_list[prj] = otu_project_list[prj]
         }
     
     }
-  
-    res.send(html);
+    res.json(filtered_otu_project_list);
   
 
 });

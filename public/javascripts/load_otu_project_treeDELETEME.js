@@ -236,7 +236,6 @@ function afterCall(){
 //  FILTER #1
 //
 function showLiveProjectNames(str) {
-  alert(str)
   var filtering = 1;
   var datasets_local = {};
   if (str.length==0) {
