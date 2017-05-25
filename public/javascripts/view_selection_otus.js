@@ -60,7 +60,7 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
           html += "</tr><tr>";
           html += "<td>"+id_items[2]+"</td>";
           html += "</tr><tr>";
-          html += "<td>Distance: "+id_items[3]+":"+id_items[4]+"</td>";
+          html += "<td>Distance: "+id_items[3]+": "+id_items[4]+"</td>";
         }else if(id_items[0] == 'fq'){  // frequencies for tax table
           html += "<td>"+id_items[1]+"</td>";
           html += "</tr><tr>";
@@ -304,6 +304,41 @@ if (typeof barcharts_btn !=="undefined") {
       
   });
 }
+//
+// PIECHARTS
+//
+var piecharts_link = document.getElementById('piecharts_link_id') || null;
+var piecharts_btn = document.getElementById('piecharts_hide_btn');
+var piecharts_div = document.getElementById('piecharts_div');
+
+var pre_piecharts_div = document.getElementById('pre_piecharts_div');
+if (piecharts_link !== null) {
+  piecharts_link.addEventListener('click', function () {
+      
+    if(typeof piecharts_created == "undefined"){
+        create_viz('piecharts', pi_local.ts, false, cts_local);
+    		
+      }else{
+        if(piecharts_btn.value == 'hide'){
+          //toggle_visual_element(piecharts_div,'show',piecharts_btn);
+        }else{
+          toggle_visual_element(piecharts_div,'hide',piecharts_btn);
+        }
+      }
+      $(pre_piecharts_div).scrollView();
+  });
+}
+if (typeof piecharts_btn !=="undefined") {
+  piecharts_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(piecharts_btn.value == 'hide'){
+        toggle_visual_element(piecharts_div,'show',piecharts_btn);
+      }else{
+        toggle_visual_element(piecharts_div,'hide',piecharts_btn);
+      }
+      
+  });
+}
 
 //
 // DISTANCE HEATMAP
@@ -482,12 +517,14 @@ function create_counts_matrix() {
       tax_counts_div.style.display = 'block';
       var html = '';
       if(mtx_local.taxonomy == 0){
-        html += "<div class='pull-left'>No Taxonomy Available</div>";
+        html += "<div class='pull-left'>OTU Count: "+mtx_local.shape[0]+"; No Taxonomy Available</div>";
       }else{
-        html += "<div class='pull-left'>Taxonomy is in far right column.</div>";
+        html += "<div class='pull-left'>OTU Count: "+mtx_local.shape[0]+"; Taxonomy is in the far right hand column.</div>";
       }   
-      html += "<br><table id='counts_matrix_id' border='0' class='' >";
-      html += "<tr><td>OTU</td>"
+      html += "<br>"
+      html += "<div style='height:500px;overflow:auto;'>"
+      html += "<table id='counts_matrix_id' border='0' class='' >";
+      html += "<tr><td></td><td>OTU</td>"
       for (var n in mtx_local.columns){
           ds = mtx_local.columns[n].id
           html += "<td>"+ds+"</td>"  
@@ -499,6 +536,7 @@ function create_counts_matrix() {
       for (var n in mtx_local.rows){
         otu = mtx_local.rows[n].id
         html += "<tr>";
+        html += '<td>'+(parseInt(n)+1)+'</td>';
         html += '<td>'+otu+'</td>';   
         for (var m in mtx_local.columns){
             cnt = mtx_local.data[n][m]
@@ -509,7 +547,7 @@ function create_counts_matrix() {
         }
         html += "</tr>"; 
       }
-      html += "</table>";
+      html += "</table></div>";
       tax_counts_div.innerHTML = html; 
       document.getElementById('counts_matrix_dnld_btn').disabled = false
       
@@ -721,33 +759,6 @@ function create_barcharts_group() {
 //
 //
 //
-// function heatmap_click_fxn(did1,ds1,did2,ds2){
-//       alert(did1)
-//       var args =  "did1="+did1;
-//       args += "&ds1="+ds1;
-//       args += "&did2="+did2;
-//       args += "&ds2="+ds2;
-//       //args += "&ts="+ts;
-//       //document.getElementById('pre_adiversity_div').style.display = 'block';
-//        // get distance matrix via AJAX
-//       var xmlhttp = new XMLHttpRequest();  
-//       xmlhttp.open("POST", '/visuals/bar_double', true);
-//       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-//       //showDots='';
-//       //var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);
-//       xmlhttp.onreadystatechange = function() {        
-//         if (xmlhttp.readyState == 4 ) {
-// 
-//           
-//            //clearInterval(myWaitVar);
-//             var retstring = xmlhttp.responseText;           
-//         alert(retstring)
-//         window.open(retstring,"_blank")
-//         
-//         }
-//       };
-//       xmlhttp.send(args);      
-// }
 
 //
 //

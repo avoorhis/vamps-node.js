@@ -84,7 +84,7 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
           html += "</tr><tr>";
           html += "<td>"+id_items[2]+"</td>";
           html += "</tr><tr>";
-          html += "<td>Distance: "+id_items[3]+":"+id_items[4]+"</td>";
+          html += "<td>Distance: "+id_items[3]+": "+id_items[4]+"</td>";
         }else if(id_items[0] == 'fq'){  // frequencies for tax table
           html += "<td>"+id_items[1]+"</td>";
           html += "</tr><tr>";

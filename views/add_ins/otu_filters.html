@@ -1,0 +1,44 @@
+Filter Projects
+          <!-- FILTER -->
+          <div id='' class=''>
+            <table id='filters_table' class='table table-striped' border='1' width=''>
+              <tr>
+                <td>by Text Substring:<br>
+                  <input id="pname_search_id" class="" autocomplete="off"  type="text" size='15' value='' onkeyup="showLiveProjectNames(this.value)"/>
+                  <span id='substring_on_id' class='pull-right filter_note'></span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  by OTU Size:<br>
+                  <input type='radio' id='size03'  name='otu_size' value='3' > 3%&nbsp;&nbsp;
+                  <input type='radio' id='size06' name='otu_size' value='6'> 6%&nbsp;&nbsp;
+                  <input type='radio' id='size10' name='otu_size' value='10'> 10%
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  by Domain/Target:<br>
+                  <select  id='target_select'>
+                    <option>.....</option>
+                    <% for(n in targets) { %>
+                      <option value='<%= targets[n] %>'><%= targets[n] %></option>
+                    <% } %>
+                  </select>
+                  <span id='target_on_id' class='pull-right filter_note'></span>
+                </td>
+              </tr>
+              
+              <tr>
+                <!-- 
+<td>
+                  <input type='radio' id='status_pub'  name='pub_priv' value='1' > public&nbsp;&nbsp;
+                  <input type='radio' id='status_priv' name='pub_priv' value='0'> private
+                  <span id='public_on_id' class='pull-right filter_note'></span>
+                </td>
+ -->
+              </tr>
+              
+            </table>
+            
+          </div>
