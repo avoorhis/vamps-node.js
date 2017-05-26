@@ -546,6 +546,8 @@ constants.ORDERED_FIELDS = ["dataset",
 "microbial_biomass_FISH"];
 
 constants.ORDERED_METADATA_NAMES = [
+    ["structured comment name","Parameter",""], //MBL Supplied or Optional
+    ["","General",""],
     // ["project","VAMPS project name","MBL Supplied"],
     ["dataset","VAMPS dataset name","MBL Supplied"],
     ["sample_id","Sample ID (user sample name)","User supplied"],
@@ -563,21 +565,21 @@ constants.ORDERED_METADATA_NAMES = [
     ["env_feature_sec","Environmental Feature - Secondary","User supplied"],
     ["env_material","Environmental Material - Primary","User supplied"],
     ["env_material_sec","Environmental Material - Secondary","User supplied"],
-    ["","Enter depth values in one or more categories ","User supplied"],
+    ["","Enter depth values in one or more categories",""],
     ["depth_subseafloor","Depth below seafloor","User supplied"],
     ["depth_subterrestrial","Depth below terrestrial surface","User supplied"],
     ["depth_in_core","Depth within core","User supplied"],
     ["tot_depth_water_col","Water column depth (Sampling depth if applicable. If sampling below seafloor, depth of water column at the seafloor)","User supplied"],
     ["elevation","Elevation above sea level (land only)","User supplied"],
     ["dna_extraction_meth","DNA Extraction","User supplied"],
-    ["quant_meth","DNA Quantitation","User supplied"],
+    ["dna_quantitation","DNA Quantitation","User supplied"],
     ["","Enter either volume or mass",""],
     ["sample_size_vol","Sample Size (volume)","Optional user supplied"],
     ["sample_size_mass","Sample Size (mass)","Optional user supplied"],
     ["formation_name","Formation name","Optional user supplied"],
     ["access_point_type","Access Point Type","Optional user supplied"],
     ["","Sample handling",""],
-    ["samp_store_dur","Storage duration ","Optional user supplied"],
+    ["samp_store_dur","Storage duration","Optional user supplied"],
     ["samp_store_temp","Storage temperature","Optional user supplied"],
     ["isol_growth_cond","Isolation and growth condition (publication reference)","Optional user supplied"],
     ["","MBL generated laboratory metadata",""],
@@ -592,7 +594,7 @@ constants.ORDERED_METADATA_NAMES = [
     ["run","Sequencing run date (YYYY-MM-DD)","MBL Supplied"],
     ["","Non-biological",""],
     ["pH","pH","User supplied"],
-    ["temp","Temperature","User supplied"],
+    ["temperature","Temperature","User supplied"],
     ["conductivity","Conductivity","User supplied"],
     ["resistivity","Resistivity",""],
     ["salinity","Salinity",""],
@@ -651,14 +653,16 @@ constants.ORDERED_METADATA_NAMES = [
     ["enzyme_activities","enzyme activities (key findings)",""]
 ];
 
-constants.ORDERED_METADATA_DIVIDERS = ["Parameter",
-"General",
-"Enter depth values in one or more categories",
-"Sample handling",
-"MBL generated laboratory metadata",
-"Non-biological",
-"Biological",
-"User-added"];
+constants.ORDERED_METADATA_DIVIDERS = ["Biological",
+    "Enter depth values in one or more categories",
+    "Enter either volume or mass",
+    "General",
+    "MBL generated laboratory metadata",
+    "Non-biological",
+    "Parameter",
+    "Sample handling",
+    "User-added"
+];
 
 constants.MY_DNA_EXTRACTION_METH_OPTIONS = ["Please choose one",
     "CTAB phenol–chloroform",
