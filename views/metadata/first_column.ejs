@@ -3,7 +3,7 @@
 <td colspan="<%= all_field_names.length%>" class="header_divider">
 <!-- TODO: show the second column instead, if any -->
 <!-- if required  -->
-<% } else if (metadata_form_required_fields.indexOf( all_field_names[idx][1] ) != -1) { %>
+<% } else if (metadata_form_required_fields.indexOf( all_field_names[idx][0] ) != -1) { %>
   <td class="required_fields">
 <% } else { %>
   <td>
