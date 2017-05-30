@@ -751,7 +751,7 @@ constants.METADATA_FORM_REQUIRED_FIELDS = ["adapter_sequence",
     "target_gene",
     "temperature"];
 
-constants.DCO_ENVIRONMENTAL_PACKAGES = [
+constants.DCO_ENVIRONMENTAL_PACKAGES = ["Please choose one",
     "misc environment",
     "microbial mat/biofilm",
     "plant-associated",

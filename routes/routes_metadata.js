@@ -355,18 +355,19 @@ function editMetadataForm(req, res){
   // console.log(all_metadata);
   all_metadata = {pid: req.form};
   res.render('metadata/metadata_upload_from_file', {
-      title: 'VAMPS: Metadata_upload',
-      user: req.user,
-      hostname: req.CONFIG.hostname,
-      all_metadata: all_metadata,
-      all_field_names: CONSTS.ORDERED_METADATA_NAMES,
-      dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-      dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-      dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-      biome_primary_options: CONSTS.BIOME_PRIMARY,
-      feature_primary_options: CONSTS.FEATURE_PRIMARY,
-      material_primary_options: CONSTS.MATERIAL_PRIMARY,
-      metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
+    title: 'VAMPS: Metadata_upload',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    all_metadata: all_metadata,
+    all_field_names: CONSTS.ORDERED_METADATA_NAMES,
+    dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+    dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+    dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+    biome_primary_options: CONSTS.BIOME_PRIMARY,
+    feature_primary_options: CONSTS.FEATURE_PRIMARY,
+    material_primary_options: CONSTS.MATERIAL_PRIMARY,
+    metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+    env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES
   });
 }
 
@@ -726,7 +727,8 @@ function make_metadata_hash(req, res){
           biome_primary_options: CONSTS.BIOME_PRIMARY,
           feature_primary_options: CONSTS.FEATURE_PRIMARY,
           material_primary_options: CONSTS.MATERIAL_PRIMARY,
-          metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
+          metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+          env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES
         });
 
 

@@ -116,6 +116,22 @@
 </td>
 <!--material end  -->
 
+<!-- env_package_options start -->
+<!-- Environmental Material -->
+<% } else if (all_field_names[idx][0] === "env_package") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "env_package") %>
+
+    <select id="env_package<%- did%>" name="env_package" class = "env_package">
+        <% env_package_options.forEach(function(value){ %>
+        <option value="<%= value %>"
+                <% if (value == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value %></option>
+        <% }) %>
+    </select>
+</td>
 <% } else { %>
 <td>
     <!-- regular field with data -->
