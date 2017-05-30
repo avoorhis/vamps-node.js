@@ -117,7 +117,6 @@
 <!--material end  -->
 
 <!-- env_package_options start -->
-<!-- Environmental Material -->
 <% } else if (all_field_names[idx][0] === "env_package") { %>
 <td>
     <% selected_val = get_selected_val(pid, did, "env_package") %>
@@ -132,6 +131,25 @@
         <% }) %>
     </select>
 </td>
+<!-- env_package_options end -->
+
+<!-- investigation_type_options start -->
+<% } else if (all_field_names[idx][0] === "investigation_type") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "investigation_type") %>
+
+    <select id="investigation_type<%- did%>" name="investigation_type" class = "investigation_type">
+        <% investigation_type_options.forEach(function(value){ %>
+        <option value="<%= value[0] %>"
+                <% if (value[0] == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value[0] %></option>
+        <% }) %>
+    </select>
+</td>
+<!-- investigation_type_options end -->
+
 <% } else { %>
 <td>
     <!-- regular field with data -->

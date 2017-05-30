@@ -760,7 +760,8 @@ constants.DCO_ENVIRONMENTAL_PACKAGES = ["Please choose one",
     "water"];
 
 // definition
-constants.INVESTIGATION_TYPE = [["mimarks-survey", "marker gene from whole community (e.g. 16S survey)"],
+constants.INVESTIGATION_TYPE = [["Please choose one", "Please choose one"],
+    ["mimarks-survey", "marker gene from whole community (e.g. 16S survey)"],
     ["mimarks-specimen", "marker gene from single organism (e.g. culture"],
     ["metagenome", "whole metagenome survey"],
     ["bacteria_archaea", "genome from bacterial or archaeal origin"],

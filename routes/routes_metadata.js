@@ -367,7 +367,8 @@ function editMetadataForm(req, res){
     feature_primary_options: CONSTS.FEATURE_PRIMARY,
     material_primary_options: CONSTS.MATERIAL_PRIMARY,
     metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-    env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES
+    env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+    investigation_type_options: CONSTS.INVESTIGATION_TYPE
   });
 }
 
@@ -728,7 +729,8 @@ function make_metadata_hash(req, res){
           feature_primary_options: CONSTS.FEATURE_PRIMARY,
           material_primary_options: CONSTS.MATERIAL_PRIMARY,
           metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-          env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES
+          env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+          investigation_type_options: CONSTS.INVESTIGATION_TYPE
         });
 
 
