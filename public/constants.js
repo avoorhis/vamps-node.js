@@ -550,7 +550,7 @@ constants.ORDERED_METADATA_NAMES = [
     ["","General",""],
     // ["project","VAMPS project name","MBL Supplied"],
     ["dataset","VAMPS dataset name","MBL Supplied"],
-    ["sample_id","Sample ID (user sample name)","User supplied"],
+    ["sample_name","Sample ID (user sample name)","User supplied"],
     ["investigation_type","Investigation Type","User supplied"],
     ["sample_type","Sample Type (most often environmental)","User supplied"],
     ["collection_date","Sample collection date (YYYY-MM-DD)","User supplied"],
