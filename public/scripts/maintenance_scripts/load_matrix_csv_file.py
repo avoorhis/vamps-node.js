@@ -46,6 +46,7 @@ std_tax_ids = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_
     
 def start(args):
     global OTU_COLLECTOR
+    global OTU_COUNT
     global TAXONOMY
     global DATASET_ID_BY_NAME
     global RANK_COLLECTOR
@@ -53,6 +54,7 @@ def start(args):
     RANK_COLLECTOR = {}
     OTU_COLLECTOR = {}
     DATASET_ID_BY_NAME = {}
+    OTU_COUNT = {}
     
     
     logging.info('CMD> '+' '.join(sys.argv))
@@ -209,10 +211,13 @@ def push_project(args):
     rev = args.project[::-1]    
     pub = 1 if args.public else 0
     
-    fields = ['otu_project','title','project_description','rev_project_name','owner_user_id','public']
+    fields = ['otu_project','title','project_description','rev_project_name','owner_user_id','public','otu_size','method','ds_count','otu_count']
     q = "INSERT into otu_project ("+(',').join(fields)+")"
-    q += " VALUES('%s','%s','%s','%s','%s','%s')"
-    q = q % (args.project,title,desc,rev,args.oid,pub)
+    place_holders = "','".join(["%s" for n in fields])
+    q += " VALUES('"+place_holders+"')"
+    ds_count  = len(OTU_COLLECTOR)
+    otu_count = len(OTU_COUNT)
+    q = q % (args.project,title,desc,rev,args.oid,pub,args.otu_size,args.otu_method,ds_count,otu_count)
     print q
     
     pid = 0
@@ -231,9 +236,11 @@ def push_dataset(args):
       
     global DATASET_ID_BY_NAME
     global mysql_conn
+    
     fields = ['otu_dataset','dataset_description','otu_project_id']
     q = "INSERT into otu_dataset ("+(',').join(fields)+")"
-    q += " VALUES('%s','%s','%s')"
+    place_holders = "','".join(["%s" for n in fields])
+    q += " VALUES('"+place_holders+"')"
 
     for ds in OTU_COLLECTOR:
         desc = ds+'_description'
@@ -333,9 +340,10 @@ def parse_file(args):
             else:
                 print 'No Taxonomy'
             continue            
-        print 'dataset order:',ds_order
+        #print 'dataset order:',ds_order
         #print line_items
         otu_name = line_items[0]
+        OTU_COUNT[otu_name] = 1
         #count_list = deepcopy(line_items)
         
         if args.source == 'tax1':
@@ -354,7 +362,7 @@ def parse_file(args):
                 sys.exit('OTU names are not unique- Exiting')
             else:
                 TAXONOMY[otu_name] = line_items[taxonomy_index]
-        print otu_name,count_list
+        #print otu_name,count_list
         
         for i,ds in enumerate(ds_order):
             count = int(count_list[i])
@@ -475,7 +483,7 @@ if __name__ == '__main__':
                 tax2    taxonomy present in second col (OTU name in first col)
                 tax_end taxonomy present in last col
                 slp     special SLP OTU format
-                notax    No taxonomy; Just OTU name in first col and datasets (with counts) in subsequent cols
+                none    No taxonomy; Just OTU name in first col and datasets (with counts) in subsequent cols
              
             
             Delete OTU:
@@ -486,6 +494,9 @@ if __name__ == '__main__':
             -comp/--compressed    defaults to uncompressed              
             -pub/--public         defaults to False
             -o/--owner            defaults to admin
+            -size/--size    3     default: none
+            -method/--method  slp default: none
+            
             
     """
     parser = argparse.ArgumentParser(description="", usage=myusage)                 
@@ -499,6 +510,12 @@ if __name__ == '__main__':
     parser.add_argument("-pub", "--public",        
     			required=False,  action='store_true', dest = "public",  default=False, # default: private
     			help="")
+    parser.add_argument("-size", "--size",        
+    			required=False,  action='store', dest = "otu_size",  default='', 
+    			help="VAMPS Username")
+    parser.add_argument('-method', '--method',         
+                required=False,   action="store",  dest = "otu_method", default='',           
+                help = 'node database') 			
     parser.add_argument("-o", "--owner",        
     			required=False,  action='store', dest = "owner",  default='admin', 
     			help="VAMPS Username")
@@ -514,7 +531,7 @@ if __name__ == '__main__':
                 required=True,   action="store",   dest = "host", 
                 help = '')
     parser.add_argument('-s', '--source_file_type',         
-                required=False,   action="store",   dest = "source",   # tax1, tax2, tax_end, slp, notax
+                required=False,   action="store",   dest = "source",   # tax1, tax2, tax_end, slp, none
                 help = '')
     parser.add_argument('-del', '--delete',         
                 required=False,   action="store_true",   dest = "delete", 
@@ -549,8 +566,8 @@ if __name__ == '__main__':
         print(myusage)
         sys.exit('need source type (-s)')    
     
-    if args.source not in ['tax1','tax2','tax_end','slp','notax']:
-        sys.exit('Error: -source not in "tax1, tax2, tax_end, slp, notax"')   
+    if args.source not in ['tax1','tax2','tax_end','slp','none']:
+        sys.exit('Error: -source not in "tax1, tax2, tax_end, slp, none"')   
     #mysql_conn = connect_mysql(args)
     #args.cur = mysql_conn.cursor()
     
@@ -562,5 +579,4 @@ if __name__ == '__main__':
 
     print 'Done; PID =',args.pid
     
-        
-    
+ 

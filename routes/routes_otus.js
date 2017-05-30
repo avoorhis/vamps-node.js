@@ -13,9 +13,11 @@ var mysql = require('mysql2');
 var url = require('url');
 var iniparser = require('iniparser');
 var COMMON = require('./visuals/routes_common');
+var MTX     = require('./visuals/routes_counts_matrix');
 var Readable = require('readable-stream').Readable;
 //var chokidar = require('chokidar');
 var spawn = require('child_process').spawn;
+var extend = require('util')._extend;
 //var USER_DATA  = require('./routes_user_data');
 
 //
@@ -146,8 +148,8 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     q += " (\n"
     q += "   CASE\n"
 	q += "      WHEN otu_taxonomy_id IS NULL\n"
-	q += "      THEN 'n/a'\n"
-	q += "      ELSE concat_ws(';', domain, phylum, klass, `order`, family, genus)\n"
+	q += "      THEN ''\n"
+	q += "      ELSE concat_ws(';', domain, phylum, klass, `order`, family, genus, species)\n"
     q += "   END\n"
     q += " ) as taxonomy\n"
     q += " FROM otu_pdr_info\n" 
@@ -159,37 +161,43 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     q += " LEFT JOIN klass using(klass_id)\n" 
     q += " LEFT JOIN `order` using(order_id)\n" 
     q += " LEFT JOIN family using(family_id)\n" 
-    q += " LEFT JOIN genus using(genus_id)\n"    
+    q += " LEFT JOIN genus using(genus_id)\n"
+    q += " LEFT JOIN species using(species_id)\n"    
     q += " WHERE otu_project_id='"+opid+"'" 
-    console.log(q)
+    //console.log(q)
     connection.query(q, function otu_data(err, rows, fields){
         if(err){
             console.log(err)
         }else{
-            BIOM_MATRIX = get_otu_matrix(req, rows);
+            
+            prj = rows[0]['otu_project']
+            
             visual_post_items = get_post_items(req)
             visual_post_items.ts = timestamp;
-            console.log('otu post items:')
-            console.log(visual_post_items)
-            matrix_file = '../../tmp/'+timestamp+'_count_matrix.biom';
             
-			//COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
-			COMMON.write_file( matrix_file, JSON.stringify(BIOM_MATRIX,null,2) );
-			
-			prj = rows[0]['otu_project']
-			
+            
+            //console.log('otu post items:')
+            //console.log(visual_post_items)
+            
+            
 			chosen_id_name_hash.ids = []
 			chosen_id_name_hash.names = []
-			for(n in BIOM_MATRIX.columns){
-			    //fullname = prj+'--'+BIOM_MATRIX.columns[n].id
-			    fullname = BIOM_MATRIX.columns[n].id
-			    chosen_id_name_hash.ids.push( BIOM_MATRIX.columns[n].did.toString() )
-			    chosen_id_name_hash.names.push(fullname)
-			}
-
-            //console.log(BIOM_MATRIX)
-            //console.log(chosen_id_name_hash)
+		
+            //BIOM_MATRIX = get_otu_matrix(req, rows);
+            //BIOM_MATRIX2 = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
+            BIOM_MATRIX = get_otu_matrix(rows, visual_post_items);
             
+            //console.log(chosen_id_name_hash)
+            visual_post_items.no_of_datasets = chosen_id_name_hash.ids.length;
+            visual_post_items.max_ds_count   = BIOM_MATRIX.max_ds_count;
+            // console.log('chosen_id_name_hash')
+//             console.log(chosen_id_name_hash)
+//             console.log('visual_post_items')
+//             console.log(visual_post_items)
+//             console.log('BIOM_MATRIX')
+//             console.log(BIOM_MATRIX)
+            //console.log('BIOM_MATRIX2')
+            //console.log(BIOM_MATRIX2)
             
             
  
@@ -214,7 +222,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 function get_post_items(req){
     var post_items = {
         "unit_choice"       : "OTUs",
-        "no_of_datasets"    : BIOM_MATRIX.shape[1],
+        //"no_of_datasets"    : BIOM_MATRIX.shape[1],
         "normalization"     : req.body.normalization || 'none',
         "visuals"           : req.body.visuals || '',
         "selected_distance" : req.body.selected_distance || "morisita_horn",
@@ -226,74 +234,299 @@ function get_post_items(req){
         "max_range"         : req.body.max_range || 100,
         "metadata"          : [],
         "update_data"       : req.body.update_data  || false,
-        "max_ds_count"      : BIOM_MATRIX.max_ds_count
+        //"max_ds_count"      : BIOM_MATRIX.max_ds_count
         }          // GLOBAL
      if(typeof post_items.domains == 'string') {
               post_items.domains = post_items.domains.split(',');
      }
      return post_items   
 }
-function get_otu_matrix(req, rows){
-    otu_matrix = {}
-    var date = new Date();
-    var rando = Math.floor((Math.random() * 100000) + 1);
-    otu_matrix.id = req.user.username+'_'+rando
-    otu_matrix.format = "Biological Observation Matrix 0.9.1-dev"
-    otu_matrix.format_url = "http://biom-format.org/documentation/format_versions/biom-1.0.html"
-    otu_matrix.type = "OTU table"
-    otu_matrix.units = "OTU names" //# or no taxonomy
-    otu_matrix.generated_by = "VAMPS-NodeJS Version 2.0"
-    otu_matrix.date = date.toISOString()
-    otu_matrix.column_totals = []
-    otu_matrix.matrix_type = "dense"
-    otu_matrix.matrix_element_type = "int"
-    otu_matrix.shape = []
-    otu_matrix.rows = []
-    otu_matrix.columns = []
-    otu_matrix.data = []
-    var ds_order = {}
-    var otu_tax = {}
-    var otudata = {}
-    ds_totals = {}
-    for(n in rows){
-        ds = rows[n]['otu_dataset']
-        did = rows[n]['otu_dataset_id']
-        otu = rows[n]['otu_label']
-        cnt = rows[n]['count']
-        tax = rows[n]['taxonomy']
-        ds_order[ds] = did
-        otu_tax[otu] = tax  // lookup
-        if(ds_totals.hasOwnProperty(ds)){
-            ds_totals[ds] += cnt
-        }else{
-            ds_totals[ds] = cnt
-        }
-        if(otudata.hasOwnProperty(otu)){
-            otudata[otu][ds] = cnt
-        }else{
-            otudata[otu] = {}
-            otudata[otu][ds] = cnt                    
-        }
-    }
-    otu_matrix.shape[0] = Object.keys(otu_tax).length
-    otu_matrix.shape[1] = Object.keys(ds_order).length
+function get_otu_matrix(rows, post_items){
+        console.log('get_otu_matrix')
+        var date = new Date();
+        var otu_matrix = {}
+        var ds_order = {}
+        var otu_tax = {}
+        var otudata = {}
+        ds_totals = {}
+        var did,rank,db_tax_id,node_id,cnt,matrix_file;
+        otu_matrix = {
+                id: post_items.ts,
+                format: "Biological Observation Matrix 0.9.1-dev",
+                format_url:"http://biom-format.org/documentation/format_versions/biom-1.0.html",
+                type: "OTU table",
+                units: post_items.unit_choice,
+                generated_by:"VAMPS-NodeJS Version 2.0",
+                date: date.toISOString(),
+                rows:[],												// taxonomy (or OTUs, MED nodes) names
+                columns:[],											// ORDERED dataset names
+                column_totals:[],								// ORDERED datasets count sums
+                matrix_type: 'dense',
+            matrix_element_type: 'int',
+            shape: [],									// [row_count, col_count]
+            data:  []										// ORDERED list of lists of counts: [ [],[],[] ... ]
+            };
+        //GLOBAL.boim_matrix;
+        var ukeys = [];
+        var unit_name_lookup = {};
+        var unit_name_lookup_per_dataset = {};
+        var unit_name_counts = {};
+
+		db_tax_id_list = {};
+		
+		for (var n in rows) { // has correct order
+			ds = rows[n]['otu_dataset']
+            did = rows[n]['otu_dataset_id']
+            otu = rows[n]['otu_label']
+            cnt = rows[n]['count']
+            tax = rows[n]['taxonomy']
+            //console.log('oldtax')
+            //console.log(tax)
+            tax = clean_tax_string(tax)
+            //console.log('newtax')
+            //console.log(tax)
+            ds_order[ds] = did
+			if(tax == '' || tax == 'n/a' || tax == 'none'){
+                otu_tax[otu] = ''
+                otu_matrix.taxonomy = 0
+            }else{
+                otu_tax[otu] = tax  // lookup
+                otu_matrix.taxonomy = 1
+            }
+        
+            if(ds_totals.hasOwnProperty(ds)){
+                ds_totals[ds] += cnt
+            }else{
+                ds_totals[ds] = cnt
+            }
+            if(otudata.hasOwnProperty(otu)){
+                otudata[otu][ds] = cnt
+            }else{
+                otudata[otu] = {}
+                otudata[otu][ds] = cnt                    
+            }	  
+
+				  
+				  		
+
+					
+		}
+		otu_matrix.shape[0] = Object.keys(otu_tax).length
+        otu_matrix.shape[1] = Object.keys(ds_order).length
     
-    for(ds in ds_order){
-        otu_matrix.columns.push({"did":ds_order[ds],"id":ds,"metadata":null})
-        otu_matrix.column_totals.push(ds_totals[ds])
-    }
-    otu_matrix.max_ds_count = Math.max.apply(null, otu_matrix.column_totals)
-    n=0
-    for(otu in otu_tax){
-        otu_matrix.rows.push({"id":otu,"metadata":{"taxonomy":otu_tax[otu]}})   
-        otu_matrix.data[n] = []
-        for(ds in ds_order){            
-            otu_matrix.data[n].push(otudata[otu][ds])
+        for(ds in ds_order){
+            otu_matrix.columns.push({"did":ds_order[ds],"id":ds,"metadata":null})
+            otu_matrix.column_totals.push(ds_totals[ds])
+            chosen_id_name_hash.ids.push(ds_order[ds])
+            chosen_id_name_hash.names.push(ds)
         }
-        n += 1
-    }
-    return otu_matrix
+        otu_matrix.max_ds_count = Math.max.apply(null, otu_matrix.column_totals)
+        n=0
+        for(otu in otu_tax){
+            otu_matrix.rows.push({"id":otu,"metadata":{"taxonomy":otu_tax[otu]}})   
+            otu_matrix.data[n] = []
+            for(ds in ds_order){            
+                otu_matrix.data[n].push(otudata[otu][ds])
+            }
+            n += 1
+        }
+        
+		if(post_items.update_data === true || post_items.update_data === 1 || post_items.update_data === '1'){
+                
+				otu_matrix = get_custom_biom_matrix( post_items, otu_matrix );
+
+		}else{
+			// nothing here for the time being.....
+		}
+
+			
+            
+        matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
+        //COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
+        COMMON.write_file( matrix_file, JSON.stringify(otu_matrix,null,2) );
+
+        return otu_matrix	
+
+        // function onlyUnique(value, index, self) {
+//             return self.indexOf(value) === index;
+//         }
+
 }
+//
+//
+//
+function clean_tax_string(tax){
+    var taxlist = tax.split(';')
+    var newlist = []
+    for(n in taxlist){
+        ln = taxlist[n].length
+        if(taxlist[n].substring(ln - 3) != '_NA'){
+            newlist.push(taxlist[n])
+        }
+    }
+    return newlist.join(';')
+}
+//
+//
+//
+function get_custom_biom_matrix( post_items, mtx) {
+    var custom_count_matrix = extend({},mtx);  // this clones count_matrix which keeps original intact.
+
+    var max_cnt = mtx.max_dataset_count,
+        min     = post_items.min_range,
+        max     = post_items.max_range,
+        norm    = post_items.normalization;
+
+    //console.log('in custom biom '+max_cnt.toString());
+
+        // Adjust for percent limit change
+        var new_counts = [];
+        var new_units = [];
+        for(var c in custom_count_matrix.data) {
+
+          var got_one = false;
+          for(var k in custom_count_matrix.data[c]) {
+            var thispct = (custom_count_matrix.data[c][k]*100)/custom_count_matrix.column_totals[k];
+            if(thispct > min && thispct < max){
+              got_one = true;
+            }
+          }
+
+          if(got_one){
+            new_counts.push(custom_count_matrix.data[c]);
+            new_units.push(custom_count_matrix.rows[c]);
+          }else{
+            console.log('rejecting '+custom_count_matrix.rows[c].name);
+          }
+        }
+        custom_count_matrix.data = new_counts;
+        custom_count_matrix.rows = new_units;
+
+
+        // Adjust for normalization
+        var tmp1 = [];
+        if (norm === 'maximum'|| norm === 'max') {
+            console.log('calculating norm MAX')
+						for(var cc in custom_count_matrix.data) {
+              new_counts = [];
+              for (var kc in custom_count_matrix.data[cc]) {
+                  new_counts.push(parseInt( ( custom_count_matrix.data[cc][kc] * max_cnt ) / custom_count_matrix.column_totals[kc], 10) );
+
+              }
+              tmp1.push(new_counts);
+            }
+            custom_count_matrix.data = tmp1;
+        }else if(norm === 'frequency' || norm === 'freq'){
+            console.log('calculating norm FREQ')
+						for (var cc1 in custom_count_matrix.data) {
+              new_counts = [];
+              for (var kc1 in custom_count_matrix.data[cc1]) {
+                  new_counts.push(parseFloat( (custom_count_matrix.data[cc1][kc1] / custom_count_matrix.column_totals[kc1]).toFixed(6) ) );
+              }
+              tmp1.push(new_counts);
+            }
+            custom_count_matrix.data = tmp1;
+        }else{
+          // nothing here
+					console.log('no-calculating norm NORM')
+        }
+
+        // re-calculate totals
+        var tots = [];
+        // TODO: "'tmp' is already defined."
+	        var tmp2 = {};
+        for(var cc2 in custom_count_matrix.data) {
+          for(var kc2 in custom_count_matrix.data[cc2]) {
+            if(kc2 in tmp2){
+              tmp2[kc2] += custom_count_matrix.data[cc2][kc2];
+            }else{
+              tmp2[kc2] = custom_count_matrix.data[cc2][kc2];
+            }
+          }
+        }
+        for (var kc3 in custom_count_matrix.columns){
+          tots.push(tmp2[kc3]);
+        }
+        custom_count_matrix.column_totals = tots;
+        custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
+
+    //console.log('returning custom_count_matrix');
+    return custom_count_matrix;
+  }
+
+
+
+
+// function get_otu_matrix2(req, rows){
+//     otu_matrix = {}
+//     var date = new Date();
+//     var rando = Math.floor((Math.random() * 100000) + 1);
+//     otu_matrix.id = req.user.username+'_'+rando
+//     otu_matrix.format = "Biological Observation Matrix 0.9.1-dev"
+//     otu_matrix.format_url = "http://biom-format.org/documentation/format_versions/biom-1.0.html"
+//     otu_matrix.type = "OTU table"
+//     otu_matrix.units = "OTU names" //# or no taxonomy
+//     otu_matrix.generated_by = "VAMPS-NodeJS Version 2.0"
+//     otu_matrix.date = date.toISOString()
+//     otu_matrix.column_totals = []
+//     otu_matrix.matrix_type = "dense"
+//     otu_matrix.matrix_element_type = "int"
+//     otu_matrix.shape = []
+//     otu_matrix.rows = []
+//     otu_matrix.columns = []
+//     otu_matrix.data = []
+//     otu_matrix.taxonomy = 0
+//     var ds_order = {}
+//     var otu_tax = {}
+//     var otudata = {}
+//     ds_totals = {}
+//     
+//     for(n in rows){
+//         ds = rows[n]['otu_dataset']
+//         did = rows[n]['otu_dataset_id']
+//         otu = rows[n]['otu_label']
+//         cnt = rows[n]['count']
+//         tax = rows[n]['taxonomy']
+//         ds_order[ds] = did
+//         if(tax == '' || tax == 'n/a' || tax == 'none'){
+//             otu_tax[otu] = ''
+//             otu_matrix.taxonomy = 0
+//         }else{
+//             otu_tax[otu] = tax  // lookup
+//             otu_matrix.taxonomy = 1
+//         }
+//         
+//         if(ds_totals.hasOwnProperty(ds)){
+//             ds_totals[ds] += cnt
+//         }else{
+//             ds_totals[ds] = cnt
+//         }
+//         if(otudata.hasOwnProperty(otu)){
+//             otudata[otu][ds] = cnt
+//         }else{
+//             otudata[otu] = {}
+//             otudata[otu][ds] = cnt                    
+//         }
+//     }
+//     otu_matrix.shape[0] = Object.keys(otu_tax).length
+//     otu_matrix.shape[1] = Object.keys(ds_order).length
+//     
+//     for(ds in ds_order){
+//         otu_matrix.columns.push({"did":ds_order[ds],"id":ds,"metadata":null})
+//         otu_matrix.column_totals.push(ds_totals[ds])
+//     }
+//     otu_matrix.max_ds_count = Math.max.apply(null, otu_matrix.column_totals)
+//     n=0
+//     for(otu in otu_tax){
+//         otu_matrix.rows.push({"id":otu,"metadata":{"taxonomy":otu_tax[otu]}})   
+//         otu_matrix.data[n] = []
+//         for(ds in ds_order){            
+//             otu_matrix.data[n].push(otudata[otu][ds])
+//         }
+//         n += 1
+//     }
+//     return otu_matrix
+// }
 // router.post('/otu_heatmap', helpers.isLoggedIn, function (req, res) {
 //     console.log('in otu_heatmap')
 //     console.log(req.body);
@@ -382,32 +615,36 @@ function get_otu_matrix(req, rows){
 //
 router.get('/load_otu_list', helpers.isLoggedIn, function (req, res) {
     console.log('in load_otu_list')
-    var q = 'SELECT otu_project, otu_project_id, title, project_description, owner_user_id, COUNT(*) as ds_count'
+    var q = 'SELECT otu_project, otu_project_id, title, otu_size, method, project_description, owner_user_id, ds_count, otu_count'
     q += ' from  otu_project'
-    q += ' JOIN otu_dataset using(otu_project_id)' 
-    q += ' group by otu_project_id'
+    //q += ' JOIN otu_dataset using(otu_project_id)' 
+    //q += ' group by otu_project_id'
     q += ' order by otu_project'
-    html = ''
+    otu_project_list = {}
     connection.query(q, function otu_projects(err, rows, fields){
         if(err){
             console.log(err)
         }else{
-            
             for(n in rows){
                 //console.log(rows[n])
+                
                 opid = rows[n]['otu_project_id'].toString()
                 prj = rows[n]['otu_project']
                 title =  rows[n]['title']
+                size  =  rows[n]['otu_size']
+                method = rows[n]['method'] 
                 desc =  rows[n]['project_description']
                 oid =  rows[n]['owner_user_id']
                 ds_count = rows[n]['ds_count'].toString()
-                html += "<input type='radio' id='"+ opid +"' name='otu' value=''> "+prj+' ('+ds_count+' datasets) ('+title+')<br>'
-                //json.item.push({id:'p'+pid, text:itemtext, checked:false,  child:1, item:[]});   
+                otu_count = rows[n]['otu_count'].toString()
+                otu_project_list[prj] = {"ds_count":ds_count,"title":title,"opid":opid,"otu_count":otu_count,"method":method,"size":size}
+                
             }
+            
         }
         //console.log('json')
         //console.log(json)
-        res.send(html)
+        res.json(otu_project_list)
     })
     
 });
@@ -874,4 +1111,74 @@ router.get('/otus_method_selection', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
+router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
+    //SHOW_DATA = ALL_DATASETS;
+    console.log('GET OTUs: in clear filters')
+
+    
+    res.json(otu_project_list);
+
+});
+//
+//
+//
+router.get('/livesearch_projects/:substring', function(req, res) {
+  console.log('OTU viz:in livesearch_projects/:substring')
+  var substring = req.params.substring.toUpperCase();
+  var myurl = url.parse(req.url, true);
+  if(substring === '.....'){
+    substring = ''
+  }
+  var filtered_otu_project_list = {}
+  for(prj in otu_project_list){    
+    if(prj.toUpperCase().indexOf(substring) != -1){
+        filtered_otu_project_list[prj] = otu_project_list[prj]  
+    }
+  }
+  res.json(filtered_otu_project_list);
+  
+
+});
+router.get('/livesearch_target/:gene_target', function(req, res) {
+    console.log('OTU viz:in livesearch_target')
+    var gene_target = req.params.gene_target.toUpperCase();
+    var myurl = url.parse(req.url, true);
+    if(gene_target === '.....'){
+        gene_target = ''
+    }
+    //otu_project_list.forEach(function(prj) {
+    console.log(gene_target)
+    var filtered_otu_project_list = {}
+    for(prj in otu_project_list){
+        if(prj.toUpperCase().indexOf(gene_target) != -1){
+            filtered_otu_project_list[prj] = otu_project_list[prj]
+        }
+    }
+    res.json(filtered_otu_project_list);
+    
+  
+
+});
+// router.get('/livesearch_status/:q', function(req, res) {
+//   console.log('OTU viz:in livesearch status')
+//   var q = req.params.q;
+//   var myurl = url.parse(req.url, true);
+//   var html = ''
+//     
+// });
+router.get('/livesearch_otu_size/:q', function(req, res) {
+  console.log('OTU viz:in livesearch_otu_size')
+  var size = req.params.q;   // 3, 6 or 10 percent
+  var myurl = url.parse(req.url, true);
+  var filtered_otu_project_list = {}
+  for(prj in otu_project_list){
+        if(prj.indexOf(size) != -1){
+          filtered_otu_project_list[prj] = otu_project_list[prj]
+        }
+    
+    }
+    res.json(filtered_otu_project_list);
+  
+
+});
 module.exports = router;

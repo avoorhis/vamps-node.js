@@ -28,12 +28,12 @@
       <tr>
 
         <td>
-           
+           <a  id='clear_filters_btn_id' type='button' value='' class='btn btn-xs btn-primary' >Clear Filters/Reset Projects</a>
         </td>
 
         <td>
           
-          <strong>Select OTU Projects Below:</strong></div>
+          <strong>Select OTU Set Below:</strong></div>
         </td>
 
         <td>
@@ -45,22 +45,22 @@
       <tr>
 
         <td style='width:100px;'>
-          <% include ../add_ins/filters.html %>
+          <% include ../add_ins/otu_filters.html %>
         </td>
 
         <td>
-            <div id='otus_select_div'>
+            <div id='otus_select_div' style='height:500px;overflow:auto;'>
               <span id='nodata_span' style='visiblity:hidden'>Loading Project List</span>
             </div>
         </td>
 
-		    <td class='td_top' width="50%">
+		<td class='td_top' width="30%">
           <div class='clean_list'>
             <li><button type="button" class="btn btn-sm btn-warning" name='Next' id="selection_btn_visuals">
                 &nbsp;Visualizations&nbsp;&nbsp;&nbsp;&nbsp;
                 <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
                 </button>
-                - Next: select taxonomy-database, domains and metadata.
+                - Next: select how you want to view data.
             </li>
             <br>
             <li>
@@ -75,18 +75,11 @@
                     <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
                     </button>
                 <% } %>
-                - Download sequences, biom, metadata and taxonomy files.
+                - Download count matrix data.
             </li>
-            <br>
-            
-            <li>- The projects to the left include all the public projects, your private projects, and any others that you have permissions to access.</li>
-            <li>- Selecting the <span class='glyphicon glyphicon-question-sign'></span> next to the project name will take you to that project's profile.</li>
-            <li>- Use the 'Go To Saved Datasets' button to re-use previously saved datasets.</li>
-            <li>- Filter the projects using the filters to the left.</li>
-            <li>- In the project tree click on the checkbox or plus(+) box to view and select datasets.</li>
-            <li>- Once you select your datasets move to the next page by selecting a button above.</li>
+           
           </div>
-		    </td>
+		</td>
 
       </tr>
       </table>
