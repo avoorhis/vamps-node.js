@@ -31,11 +31,10 @@
     </select>
 </td>
 <!-- biome -->
-<% } else if (all_field_names[idx][1] === "Biome - Primary") { %>
+<% } else if (all_field_names[idx][0] === "env_biome") { %>
 <td>
     <% selected_val = get_selected_val(pid, did, "biome_primary")
     %>
-
     <select id="biome_primary<%- did%>" name="biome_primary" class = "biome_primary">
         <% biome_primary_options.forEach(function(value){ %>
         <option value="<%= value %>"
@@ -46,7 +45,7 @@
         <% }) %>
     </select>
 </td>
-<% } else if (all_field_names[idx][1] === "Biome - Secondary") { %>
+<% } else if (all_field_names[idx][0] === "env_biome_sec") { %>
 <td>
     <% var selected_val = get_selected_val(pid, did, "biome_secondary") %>
     <select id="biome_secondary<%- did %>" name="biome_secondary" class="biome_secondary">
@@ -60,7 +59,7 @@
     </select>
 </td>
 <!--feature -->
-<% } else if (all_field_names[idx][1] === "Environmental Feature - Primary") { %>
+<% } else if (all_field_names[idx][0] === "env_feature") { %>
 <td>
     <% selected_val = get_selected_val(pid, did, "feature_primary") %>
 
@@ -74,7 +73,7 @@
         <% }) %>
     </select>
 </td>
-<% } else if (all_field_names[idx][1] === "Environmental Feature - Secondary") { %>
+<% } else if (all_field_names[idx][0] === "env_feature_sec") { %>
 <td>
     <% selected_val = get_selected_val(pid, did, "feature_secondary")
     %>
@@ -88,7 +87,7 @@
 </td>
 <!--feature end  -->
 <!-- Environmental Material -->
-<% } else if (all_field_names[idx][1] === "Environmental Material - Primary") { %>
+<% } else if (all_field_names[idx][0] === "env_material") { %>
 <td>
     <% selected_val = get_selected_val(pid, did, "material_primary") %>
 
@@ -102,7 +101,7 @@
         <% }) %>
     </select>
 </td>
-<% } else if (all_field_names[idx][1] === "Environmental Material - Secondary") { %>
+<% } else if (all_field_names[idx][0] === "env_material_sec") { %>
 <td>
     <% selected_val = get_selected_val(pid, did, "material_secondary") %>
 
