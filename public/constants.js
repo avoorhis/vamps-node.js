@@ -509,6 +509,7 @@ constants.REQ_METADATA_FIELDS_wIDs = [ "geo_loc_name",     // name of country or
 //                                 ];                                    
 constants.CONTACT_US_SUBJECTS = ["Account Request", "Report a Problem", "Announce a Publication", "Other"];
 
+// ???
 constants.ORDERED_FIELDS = ["dataset", 
 "sample_id", 
 "dna_extraction_meth", 

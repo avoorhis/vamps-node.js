@@ -175,37 +175,37 @@ router.get("/metadata_upload_new", [helpers.isLoggedIn], function (req, res) {
 router.post('/metadata_upload',
   [helpers.isLoggedIn],
   form(
-      form.field("NPOC", "NPOC (Non-purgeable organic carbon)").trim().entityEncode().array(),
-      form.field("access_point_type", "Access Point Type").trim().entityEncode().array(),
-      form.field("adapter_sequence", "Adapter sequence").trim().entityEncode().array().required(),
-      form.field("alkalinity", "Alkalinity").trim().entityEncode().array(),
-      form.field("ammonium", "Ammonium").trim().entityEncode().array(),
-      form.field("bicarbonate", "Bicarbonate").trim().entityEncode().array(),
-      form.field("env_biome", "Biome - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
-      form.field("env_biome_sec", "Biome - Secondary").trim().entityEncode().array(),
-      form.field("calcium", "Calcium").trim().entityEncode().array(),
-      form.field("calcium_carbonate", "Calcium carbonate").trim().entityEncode().array(),
-      form.field("chloride", "Chloride").trim().entityEncode().array(),
-      form.field("clone_library_results", "clone library results (key findings)").trim().entityEncode().array(),
-      form.field("collection_date", "Sample collection date (YYYY-MM-DD)").trim().required().entityEncode().isDate("Sample collection date format: YYYY-MM-DD").array(),
-      form.field("conductivity", "Conductivity").trim().entityEncode().array().required(),
-      form.field("dataset", "VAMPS dataset name").trim().entityEncode().array().required(),
-      form.field("dataset_id", "").trim().required().entityEncode().isInt().array(),
-      form.field("del18O_water", "Delta 18O of water").trim().entityEncode().array(),
-      form.field("depth_in_core", "Depth within core").trim().entityEncode().array(),
-      form.field("depth_subseafloor", "Depth below seafloor").trim().entityEncode().array(),
-      form.field("depth_subterrestrial", "Depth below terrestrial surface").trim().entityEncode().array(),
-      form.field("diss_hydrogen", "Dissolved hydrogen").trim().entityEncode().array(),
-      form.field("diss_inorg_carb", "Dissolved inorganic carbon").trim().entityEncode().array(),
-      form.field("diss_inorg_carbon_del13C", "Delta 13C for dissolved inorganic carbon").trim().entityEncode().array(),
-      form.field("diss_org_carb", "Dissolved organic carbon").trim().entityEncode().array(),
-      form.field("diss_oxygen", "Dissolved oxygen").trim().entityEncode().array(),
-      form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode().custom(env_items_validation).array(),
-      form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode().custom(env_items_validation).array(),
-      form.field("dna_region", "DNA region").trim().entityEncode().array().required(),
-      form.field("domain", "Domain").trim().entityEncode().array().required(),
-      form.field("elevation", "Elevation above sea level (land only)").trim().entityEncode().array().required(),
-      form.field("env_package", "Environmental Package").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("NPOC", "NPOC (Non-purgeable organic carbon)").trim().entityEncode().array(),
+    form.field("access_point_type", "Access Point Type").trim().entityEncode().array(),
+    form.field("adapter_sequence", "Adapter sequence").trim().entityEncode().array().required(),
+    form.field("alkalinity", "Alkalinity").trim().entityEncode().array(),
+    form.field("ammonium", "Ammonium").trim().entityEncode().array(),
+    form.field("bicarbonate", "Bicarbonate").trim().entityEncode().array(),
+    form.field("env_biome", "Biome - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("env_biome_sec", "Biome - Secondary").trim().entityEncode().array(),
+    form.field("calcium", "Calcium").trim().entityEncode().array(),
+    form.field("calcium_carbonate", "Calcium carbonate").trim().entityEncode().array(),
+    form.field("chloride", "Chloride").trim().entityEncode().array(),
+    form.field("clone_library_results", "clone library results (key findings)").trim().entityEncode().array(),
+    form.field("collection_date", "Sample collection date (YYYY-MM-DD)").trim().required().entityEncode().isDate("Sample collection date format: YYYY-MM-DD").array(),
+    form.field("conductivity", "Conductivity").trim().entityEncode().array().required(),
+    form.field("dataset", "VAMPS dataset name").trim().entityEncode().array().required(),
+    form.field("dataset_id", "").trim().required().entityEncode().isInt().array(),
+    form.field("del18O_water", "Delta 18O of water").trim().entityEncode().array(),
+    form.field("depth_in_core", "Depth within core").trim().entityEncode().array(),
+    form.field("depth_subseafloor", "Depth below seafloor").trim().entityEncode().array(),
+    form.field("depth_subterrestrial", "Depth below terrestrial surface").trim().entityEncode().array(),
+    form.field("diss_hydrogen", "Dissolved hydrogen").trim().entityEncode().array(),
+    form.field("diss_inorg_carb", "Dissolved inorganic carbon").trim().entityEncode().array(),
+    form.field("diss_inorg_carbon_del13C", "Delta 13C for dissolved inorganic carbon").trim().entityEncode().array(),
+    form.field("diss_org_carb", "Dissolved organic carbon").trim().entityEncode().array(),
+    form.field("diss_oxygen", "Dissolved oxygen").trim().entityEncode().array(),
+    form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("dna_region", "DNA region").trim().entityEncode().array().required(),
+    form.field("domain", "Domain").trim().entityEncode().array().required(),
+    form.field("elevation", "Elevation above sea level (land only)").trim().entityEncode().array().required(),
+    form.field("env_package", "Environmental Package").trim().required().entityEncode().custom(env_items_validation).array(),
     form.field("enzyme_activities", "enzyme activities (key findings)").trim().entityEncode().array(),
     form.field("env_feature", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
     form.field("env_feature_sec", "Environmental Feature - Secondary").trim().entityEncode().array(),
@@ -225,7 +225,8 @@ router.post('/metadata_upload',
     form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode().isDecimal().array(),
     form.field("magnesium", "Magnesium").trim().entityEncode().array(),
     form.field("manganese", "Manganese").trim().entityEncode().array(),
-    form.field("env_material_sec", "Environmental Material - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("env_material", "Environmental Material - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("env_material_sec", "Environmental Material - Secondary").trim().entityEncode().array(),
     form.field("methane", "Methane").trim().entityEncode().array(),
     form.field("methane_del13C", "Delta 13C for methane").trim().entityEncode().array(),
     form.field("microbial_biomass_FISH", "Microbial biomass – FISH").trim().entityEncode().array(),
@@ -298,8 +299,16 @@ router.post('/metadata_upload',
       console.log(req.body);
 
       req.flash("fail", req.form.errors);
+      console.log("req.form.errors");
+      console.log(req.form.errors);
+
+      console.log('req.form.getErrors("env_biome")');
+      console.log(req.form.getErrors("env_biome"));
+      console.log('req.form.getErrors.env_biome[0]');
+      console.log(req.form.getErrors.env_biome[0]);
+
       editMetadataForm(req, res);
-      //TODO: remove from here, use only if valid.
+      //TODO: remove make_csv from here, use only if valid.
       make_csv(req, res);
 
 
@@ -753,6 +762,8 @@ function make_metadata_hash(req, res){
 }
 
 function env_items_validation(value) {
+  console.log("EEE env_items_validation(value)");
+  console.log(value);
   if (value === "Please choose one") {
       throw new Error("Please choose one value from the dropdown menu for %s.");
   }
