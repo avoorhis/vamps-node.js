@@ -3,6 +3,8 @@ VAMPS -- Node.js (javascript)
 Visualization and Analysis of Microbial Population Structures
 -----------------
 
+Open Source Lisence
+--------------
 INSTALL
 --------------
 
