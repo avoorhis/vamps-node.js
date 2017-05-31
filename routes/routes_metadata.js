@@ -304,8 +304,11 @@ router.post('/metadata_upload',
 
       console.log('req.form.getErrors("env_biome")');
       console.log(req.form.getErrors("env_biome"));
-      console.log('req.form.getErrors.env_biome[0]');
-      console.log(req.form.getErrors.env_biome[0]);
+
+
+      console.log('req.form.getErrors()');
+      console.log(req.form.getErrors());
+
 
       editMetadataForm(req, res);
       //TODO: remove make_csv from here, use only if valid.
