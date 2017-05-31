@@ -288,26 +288,26 @@ router.post('/metadata_upload',
       // AllMetadataFromFile = helpers.get_metadata_from_file()
       // console.log(AllMetadataFromFile);
 
-      // console.log("QQQ req.params");
-      // console.log(req.params);
-      //
-      //
-      // console.log("req.form");
-      // console.log(req.form);
-      //
-      // console.log("req.body");
-      // console.log(req.body);
-      //
-      // req.flash("fail", req.form.errors);
-      // console.log("req.form.errors");
-      // console.log(req.form.errors);
-      //
-      // console.log('req.form.getErrors("env_biome")');
-      // console.log(req.form.getErrors("env_biome"));
-      //
-      //
-      // console.log('req.form.getErrors()');
-      // console.log(req.form.getErrors());
+      console.log("QQQ req.params");
+      console.log(req.params);
+
+
+      console.log("req.form");
+      console.log(req.form);
+
+      console.log("req.body");
+      console.log(req.body);
+
+      req.flash("fail", req.form.errors);
+      console.log("req.form.errors");
+      console.log(req.form.errors);
+
+      console.log('req.form.getErrors("env_biome")');
+      console.log(req.form.getErrors("env_biome"));
+
+
+      console.log('req.form.getErrors()');
+      console.log(req.form.getErrors());
 
 
       editMetadataForm(req, res);
