@@ -686,8 +686,6 @@ constants.MATERIAL_PRIMARY = ["Please choose one",
 "soil",
 "water"];
 
-<<<<<<< Updated upstream
-
 constants.METADATA_FORM_REQUIRED_FIELDS = ["project",
   "dataset",
   "sample_name",
@@ -742,45 +740,5 @@ constants.SAMPLE_TYPE = ["control",
     "enrichment",
     "environmental sample",
     "isolate"];
-=======
-constants.MATERIAL_SECONDARY_BIOFILM = ["none",
-"algae",
-"archaea",
-"bacteria",
-"fungi",
-"glacial",
-"protozoa",
-"thermophilic"];
-
-constants.METADATA_FORM_REQUIRED_FIELDS = [["project", "VAMPS project name"],
-  ["dataset", "VAMPS dataset name"],
-  ["sample_name", "Sample ID (user sample name)"],
-  ["investigation_type", "Investigation Type"],
-  ["sample_type", "Sample Type (most often environmental)"],
-  ["collection_date", "Sample collection date (YYYY-MM-DD)"],
-  ["latitude", "Latitude (WGS84 system, values bounded by ±90°)"],
-  ["longitude", "Longitude (values bounded by ±180°)"],
-  ["geo_loc_name_continental", "Country"],
-  ["geo_loc_name_marine", "Longhurst Zone"],
-  ["env_package", "Environmental Package"],
-  ["env_biome", "Environmental Biome - Primary"],
-  ["env_feature", "Environmental Feature - Primary"],
-  ["env_material", "Environmental Material - Primary"],
-  ["elevation", "Elevation above sea level (land only)"],
-  ["dna_extraction_meth", "DNA Extraction"],
-  ["dna_quantitation", "DNA Quantitation"],
-  ["domain", "Domain"],
-  ["target_gene", "Target gene name (16S rRNA, mcrA)"],
-  ["dna_region", "DNA region"],
-  ["sequencing_meth", "Sequencing method"],
-  ["forward_primer", "Forward PCR Primer"],
-  ["reverse_primer", "Reverse PCR Primer"],
-  ["illumina_index", "Index sequence (for Illumina)"],
-  ["adapter_sequence", "Adapter sequence"],
-  ["run", "Sequencing run date (YYYY-MM-DD)"],
-  ["pH", "pH"],
-  ["temperature", "Temperature"],
-  ["conductivity", "Conductivity"]];
->>>>>>> Stashed changes
 
 module.exports = constants;
