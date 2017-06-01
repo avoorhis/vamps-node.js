@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://vampsdev.jbpc-np.mbl.edu:8124/" />
+<title>metadata_viz_table</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">metadata_viz_table</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/metadata/start_edit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@name='']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=pname_search_id</td>
+	<td>TCO</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='projects_select_div']/div/table/tbody/tr[3]/td[2]/table/tbody/tr/td[2]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=selection_btn_visuals</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=toggle_meta_r_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=toggle_meta_c_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=get_graphics_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#metadata_table_link_id &gt; img.thumb_img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//table[@id='metadata_table']/thead/tr/th[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=th.sort-header.sort-up</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//table[@id='metadata_table']/tbody/tr[369]/td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//table[@id='metadata_table']/tbody/tr[369]/td[2]</td>
+	<td>env_material_id</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//table[@id='metadata_table']/tbody/tr[341]/td[2]</td>
+	<td>envo_material</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//table[@id='metadata_table']/tbody/tr[57]/td[2]</td>
+	<td>sequencing_platform</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//table[@id='metadata_table']/tbody/tr[57]/td[3]</td>
+	<td>unknown</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//table[@id='metadata_table']/tbody/tr[129]/td[2]</td>
+	<td>redox_potential</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//table[@id='metadata_table']/tbody/tr[129]/td[3]</td>
+	<td>-97.6</td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
