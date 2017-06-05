@@ -445,7 +445,7 @@ router.post('/start_edit',
 });
 
 function get_values_from_ids(METADATA, did, all_metadata_p_d) {
-  var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_matter', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'];
+  var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_material', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'];
   // var ds_row = {};
 
   metadata_names.forEach(function(mdname) {
@@ -471,7 +471,7 @@ DDD metadata
      domain: "Bacteria",
      env_biome: "unknown",
      env_feature: "unknown",
-     env_matter: "unknown",
+     env_material: "unknown",
      env_package: "unknown",
      geo_loc_name: "unknown",
      illumina_index: "unknown",

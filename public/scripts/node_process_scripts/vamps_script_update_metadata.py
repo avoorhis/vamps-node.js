@@ -36,14 +36,14 @@ import json
 req_names = ["altitude", "assigned_from_geo", "collection_date",
                                 "common_name", "country", "depth", "description",
                                 "dna_region", "domain", "elevation", "env_biome",
-                                "env_feature", "env_matter", "env_package",
+                                "env_feature", "env_material", "env_package",
                                 "fragment_name", "latitude", "longitude",
                                 "sequencing_platform", "taxon_id"]
 
 req_names_with_ids = ["altitude", "assigned_from_geo", "collection_date",
                                 "common_name", "country_id", "depth", "description",
                                 "dna_region_id", "domain_id", "elevation", "env_biome_id",
-                                "env_feature_id", "env_matter_id", "env_package_id",
+                                "env_feature_id", "env_material_id", "env_package_id",
                                 "fragment_name_id", "latitude", "longitude",
                                 "sequencing_platform_id", "taxon_id"]
 

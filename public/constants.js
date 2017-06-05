@@ -456,7 +456,7 @@ constants.VISUAL_THUMBNAILS = {
 // constants.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date",
 //                                 "common_name", "country", "depth", "description",
 //                                 "dna_region", "domain", "elevation", "env_biome",
-//                                 "env_feature", "env_matter", "env_package",
+//                                 "env_feature", "env_material", "env_package",
 //                                 "fragment_name", "latitude", "longitude",
 //                                 "sequencing_platform", "taxon_id"];
 
@@ -466,7 +466,7 @@ constants.REQ_METADATA_FIELDS = [   "collection_date",  // format?? yyyy-mm-dd
                                     "domain",           // Bacteria, Archaea or Eukarya (from mysql table)
                                     "env_biome",
                                     "env_feature", 
-                                    "env_matter", 
+                                    "env_material", 
                                     "env_package",      // (from mysql table) 
                                     "target_gene",      // 16s or 18s (from mysql table)
                                     "latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
@@ -482,7 +482,7 @@ constants.REQ_METADATA_FIELDS_wIDs = [ "geo_loc_name",     // name of country or
                                     "domain",           // Bacteria, Archaea or Eukarya (from mysql table)
                                     "env_biome",
                                     "env_feature", 
-                                    "env_matter", 
+                                    "env_material", 
                                     "env_package",      // (from mysql table) 
                                     "target_gene",      // 16s or 18s (from mysql table)                                        
                                     "sequencing_platform",
@@ -497,7 +497,7 @@ constants.REQ_METADATA_FIELDS_wIDs = [ "geo_loc_name",     // name of country or
 //                                   {  "name":"domain",               "units":"alpha_numeric","format":""},   // Bacteria, Archaea or Eukarya (from mysql table)
 //                                   {  "name":"env_biome",            "units":"alpha_numeric","format":""},
 //                                   {  "name":"env_feature",          "units":"alpha_numeric","format":""}, 
-//                                   {  "name":"env_matter",           "units":"alpha_numeric","format":""},
+//                                   {  "name":"env_material",           "units":"alpha_numeric","format":""},
 //                                   {  "name":"env_package",          "units":"alpha_numeric","format":""},   // (from mysql table) 
 //                                   {  "name":"target_gene",          "units":"alpha_numeric","format":""},   // 16s or 18s (from mysql table)
 //                                   {  "name":"latitude",             "units":"decimal_degrees","format":""}, // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)

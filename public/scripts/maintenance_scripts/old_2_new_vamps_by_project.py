@@ -972,7 +972,7 @@ class Metadata:
   but data could be by dataset
 
  
-  required_metadata_info (dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, geo_loc_name, elevation, env_biome, env_feature, env_matter, latitude, longitude, public)
+  required_metadata_info (dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, geo_loc_name, elevation, env_biome, env_feature, env_material, latitude, longitude, public)
   custom_metadata_fields (project_id, field_name, field_units, example)
   
   create all metadata values
@@ -1016,7 +1016,7 @@ class Metadata:
                                             "domain_id",            # Bacteria, Archaea....FROM NAME
                                             "geo_loc_name_id",           #  from term table ???
                                             "env_feature_id",      
-                                            "env_matter_id",       
+                                            "env_material_id",       
                                             "env_biome_id",        
                                             "env_package_id",
                                             "adapter_sequence",
@@ -1029,7 +1029,7 @@ class Metadata:
                                             "latitude" : ["lat","LATITUDE"], 
                                             "longitude": ["long", "lon","LONGITUDE"],
                                             #"env_biome_id": ["envo_biome","ENV_BIOME","ENVO_BIOME"], \
-                                            #"env_matter_id":["envo_matter","envo_material","env_meterial","ENV_MATTER","ENVO_MATTER"], \
+                                            #"env_material_id":["envo_matter","envo_material","env_meterial","ENV_MATTER","ENVO_MATTER"], \
                                             #"env_feature_id":["envo_feature","ENV_FEATURE","ENVO_FEATURE"], \                                           
                                             "dataset_id":["DATASET_ID"],
                                             "collection_date":["COLLECTION_DATE"], 
@@ -1052,7 +1052,7 @@ class Metadata:
     self.get_domain_ids()               # args.domain
     self.get_sequencing_platform_ids()  # args.platform
     #self.get_geo_loc_name_ids()              # args.geo_loc_name
-    self.get_term_ids()                 # args.env_matter, args.env_feature, args.env_biome
+    self.get_term_ids()                 # args.env_material, args.env_feature, args.env_biome
     self.get_package_ids()              # args.env_package
     self.get_adapter_sequence_ids()
     self.get_illumina_index_ids()
@@ -1075,7 +1075,7 @@ class Metadata:
     (domain,self.domain_id)                          = self.find_required_id('domain', args.domain)
     (sequencing_platform,self.sequencing_platform_id)= self.find_required_id('platform', args.platform)
     (geo_loc_name,self.geo_loc_name_id)              = self.find_required_id('geo_loc_name', args.geo_loc_name)
-    (env_matter,self.env_matter_id)                  = self.find_required_id('env_matter', args.env_matter)
+    (env_material,self.env_material_id)                  = self.find_required_id('env_material', args.env_material)
     (env_feature,self.env_feature_id)                = self.find_required_id('env_feature', args.env_feature)
     (env_biome,self.env_biome_id)                    = self.find_required_id('env_biome', args.env_biome)
     (env_package,self.env_package_id)                = self.find_required_id('env_package', args.env_package)
@@ -1091,7 +1091,7 @@ class Metadata:
     self.report += 'domain::\t'+domain+' (id:'+self.domain_id+')'+'\n'
     self.report += 'platform::\t'+sequencing_platform+' (id:'+self.sequencing_platform_id+')'+'\n'
     self.report += 'geo_loc_name::\t'+geo_loc_name+' (id:'+self.geo_loc_name_id+')'+'\n'
-    self.report += 'env_matter::\t'+env_matter+' (id:'+self.env_matter_id+')'+'\n'
+    self.report += 'env_material::\t'+env_material+' (id:'+self.env_material_id+')'+'\n'
     self.report += 'env_feature::\t'+env_feature+' (id:'+self.env_feature_id+')'+'\n'
     self.report += 'env_biome::\t'+env_biome+' (id:'+self.env_biome_id+')'+'\n'
     self.report += 'env_package::\t'+env_package+' (id:'+self.env_package_id+')'+'\n'
@@ -1117,7 +1117,7 @@ class Metadata:
         list = self.sequencing_platform_list
     elif term == 'geo_loc_name':
         list = self.term_list
-    elif term == 'env_matter':
+    elif term == 'env_material':
         list = self.term_list
     elif term == 'env_feature':
         list = self.term_list
@@ -1255,7 +1255,7 @@ class Metadata:
     for required_metadata_dict in self.required_metadata:      
       field_list_temp.append(required_metadata_dict.keys())
       all_required_metadata.append(required_metadata_dict.values())
-    add_on_names = [self.target_gene_id, self.dna_region_id, self.domain_id, self.sequencing_platform_id, self.geo_loc_name_id, self.env_biome_id,self.env_feature_id,self.env_matter_id,self.env_package_id,self.adapter_sequence_id,self.illumina_index_id,self.primer_suite_id,self.run_id]
+    add_on_names = [self.target_gene_id, self.dna_region_id, self.domain_id, self.sequencing_platform_id, self.geo_loc_name_id, self.env_biome_id,self.env_feature_id,self.env_material_id,self.env_package_id,self.adapter_sequence_id,self.illumina_index_id,self.primer_suite_id,self.run_id]
     
     if len(all_required_metadata) > 0:
         all_required_metadata = [x + add_on_names for x in all_required_metadata]
@@ -1271,7 +1271,7 @@ class Metadata:
             self.required_metadata_insert_values.append([dataset.dataset_id_by_name_dict[dset]] + add_on_names)  #prepend did
         self.required_metadata_insert_values = self.utils.make_insert_values(self.required_metadata_insert_values) 
     #all_required_metadata = [x + add_on_names for x in all_required_metadata]
-    self.required_metadata_field_list += "target_gene_id, dna_region_id, domain_id, sequencing_platform_id, geo_loc_name_id, env_biome_id, env_feature_id, env_matter_id, env_package_id,adapter_sequence_id,illumina_index_id,primer_suite_id,run_id"
+    self.required_metadata_field_list += "target_gene_id, dna_region_id, domain_id, sequencing_platform_id, geo_loc_name_id, env_biome_id, env_feature_id, env_material_id, env_package_id,adapter_sequence_id,illumina_index_id,primer_suite_id,run_id"
     return
     
     
@@ -1564,9 +1564,9 @@ if __name__ == '__main__':
   parser.add_argument("-env_feature", "--env_feature",
         required = False, action = "store", dest = "env_feature", default='',
         help = """env_feature -- no entry results in 'unknown' """)
-  parser.add_argument("-env_matter", "--env_matter",
-        required = False, action = "store", dest = "env_matter", default='',
-        help = """env_matter -- no entry results in 'unknown' """)
+  parser.add_argument("-env_material", "--env_material",
+        required = False, action = "store", dest = "env_material", default='',
+        help = """env_material -- no entry results in 'unknown' """)
   parser.add_argument("-env_package", "--env_package",
         required = False, action = "store", dest = "env_package", default='',
         help = """env_package -- no entry results in 'unknown' """) 
@@ -1608,9 +1608,9 @@ if __name__ == '__main__':
 #   parser.add_argument("-env_feature_id", "--env_feature_id",
 #         required = False, action = "store", dest = "env_feature_id", default='',
 #         help = """env_feature_id -- no entry results in 'unknown' """)
-#   parser.add_argument("-env_matter_id", "--env_matter_id",
-#         required = False, action = "store", dest = "env_matter_id", default='',
-#         help = """env_matter_id -- no entry results in 'unknown' """)
+#   parser.add_argument("-env_material_id", "--env_material_id",
+#         required = False, action = "store", dest = "env_material_id", default='',
+#         help = """env_material_id -- no entry results in 'unknown' """)
 #   parser.add_argument("-env_package_id", "--env_package_id",
 #         required = False, action = "store", dest = "env_package_id", default='',
 #         help = """env_package_id -- no entry results in 'unknown' """)      
@@ -1746,7 +1746,7 @@ if __name__ == '__main__':
 #                     'dna_region':args.dna_region,
 #                     'env_biome':args.env_biome,
 #                     'env_feature':args.env_feature,
-#                     'env_matter':args.env_matter,
+#                     'env_material':args.env_material,
 #                     'env_package':args.env_package
 #                     }
                     
@@ -1758,7 +1758,7 @@ if __name__ == '__main__':
                         "geo_loc_name" : args.geo_loc_name, 
                         "env_biome" : args.env_biome,
                         "env_feature" : args.env_feature,
-                        "env_matter" : args.env_matter,
+                        "env_material" : args.env_material,
                         "env_package" : args.env_package, 
                         "adapter_sequence" : args.adapter_sequence,
                         "illumina_index" : args.illumina_index,
@@ -1781,7 +1781,7 @@ if __name__ == '__main__':
             mdlist = metadata.sequencing_platform_list
         elif term == 'geo_loc_name':
             mdlist = 'list is too big to print here -- see database'  #metadata.term_list
-        elif term == 'env_matter' or term == 'env_feature' or term == 'env_biome':
+        elif term == 'env_material' or term == 'env_feature' or term == 'env_biome':
             mdlist = 'term list is too big to print here -- see database'  #metadata.term_list
         elif term == 'env_package':
             mdlist = metadata.package_list

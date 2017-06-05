@@ -1502,8 +1502,8 @@ module.exports.required_metadata_ids_from_names = function(selection_obj, mdname
     }else if(mdname == 'env_feature'){
         idname = 'env_feature_id'
         value = MD_ENV_TERM[selection_obj[idname]]
-    }else if(mdname == 'env_matter'){
-        idname = 'env_matter_id'
+    }else if(mdname == 'env_material'){
+        idname = 'env_material_id'
         value = MD_ENV_TERM[selection_obj[idname]]
     }else if(mdname == 'geo_loc_name'){
         idname = 'geo_loc_name_id'
@@ -1564,8 +1564,8 @@ module.exports.required_metadata_names_from_ids = function(selection_obj, name_i
     }else if(name_id == 'dna_region_id'){
       real_name = 'dna_region'
       value = MD_DNA_REGION[selection_obj[name_id]]
-    }else if(name_id == 'env_matter_id'){
-      real_name = 'env_matter'
+    }else if(name_id == 'env_material_id'){
+      real_name = 'env_material'
       value = MD_ENV_TERM[selection_obj[name_id]]
     }else if(name_id == 'env_biome_id'){
       real_name = 'env_biome'

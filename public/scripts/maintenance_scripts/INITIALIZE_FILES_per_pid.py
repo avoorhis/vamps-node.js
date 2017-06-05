@@ -65,7 +65,7 @@ dataset_query = "SELECT dataset_id from dataset"
 # these SHOULD be the same headers as in the NODE_DATABASE table: required_metadata_info (order doesn't matter)
 # required_metadata_fields = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country", "depth", "description", "dna_region", "domain", "elevation", "env_package", "fragment_name", "latitude", "longitude", "public", "sequencing_platform", "taxon_id"];
 # req_pquery = "SELECT dataset_id, " + ', '.join(required_metadata_fields) + """
-# , env_biome.term_name AS env_biome, env_feature.term_name AS env_feature, env_matter.term_name AS env_matter
+# , env_biome.term_name AS env_biome, env_feature.term_name AS env_feature, env_material.term_name AS env_material
 # from required_metadata_info
 #                 JOIN fragment_name USING(fragment_name_id)
 #                 JOIN dna_region USING(dna_region_id)
@@ -73,18 +73,18 @@ dataset_query = "SELECT dataset_id from dataset"
 #                 JOIN domain USING(domain_id)
 #                 JOIN term AS env_biome ON(env_biome_id = env_biome.term_id)
 #                 JOIN term AS env_feature ON(env_feature_id = env_feature.term_id)
-#                 JOIN term AS env_matter ON(env_matter_id = env_matter.term_id)
+#                 JOIN term AS env_material ON(env_material_id = env_material.term_id)
 #                 JOIN country USING(country_id)
 #                 JOIN env_package USING(env_package_id)
 
 # """
 # required_metadata_fields = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country_id", "depth", "description", "dna_region_id", 
 #                         "domain_id", "elevation", "env_sample_source_id", "fragment_name_id", "latitude", "longitude", "sequencing_platform_id", 
-#                         "taxon_id", "env_biome_id", "env_feature_id", "env_matter_id"];
+#                         "taxon_id", "env_biome_id", "env_feature_id", "env_material_id"];
 
 req_pquery = "SELECT dataset_id, %s from required_metadata_info JOIN env_package USING(env_package_id)"
 req_pquery += " WHERE dataset_id in ('%s')"
-#required_metadata_fields.extend(["env_biome", "env_feature", "env_matter"])
+#required_metadata_fields.extend(["env_biome", "env_feature", "env_material"])
 
 cust_pquery = "SELECT project_id,field_name from custom_metadata_fields"
 cust_pquery += " WHERE project_id='%s'"

@@ -1249,10 +1249,10 @@ function validate_metadata(req, obj){
                               validation.error = true
                               validation.msg.push(ds+": The 'dna_region' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'env_matter'){
+                          }else if(mdname == 'env_material'){
                             if(get_env_term_index(val) == -1){
                               validation.error = true
-                              validation.msg.push(ds+": The 'env_matter' value ('"+val+"') is not in the allowed list.")
+                              validation.msg.push(ds+": The 'env_material' value ('"+val+"') is not in the allowed list.")
                             }
                           }else if(mdname == 'env_biome'){
                             if(get_env_term_index(val) == -1){
