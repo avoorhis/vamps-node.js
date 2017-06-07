@@ -513,12 +513,8 @@ function make_empty_arrays(all_metadata, pid) {
     console.log("KKK555 dataset_id");
     console.log(dataset_id);
 
-    var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_material', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'];
 
-    metadata_names.forEach(function(mdname) {
-      all_metadata[pid][mdname] = [];
 
-    });
 
       // get_values_from_ids(METADATA, did, all_metadata_p_d)
 
@@ -632,6 +628,16 @@ function populate_metadata_hash(rows, pid, all_metadata) {
       console.log("DDD11 all_metadata");
       console.log(all_metadata);
 
+      CONSTS.REQ_METADATA_FIELDS_wIDs.forEach(function(mdname) {
+      console.log("MDMDM mdname: ");
+      console.log(mdname);
+      console.log("all_metadata[pid][mdname]: ");
+      console.log(all_metadata[pid][mdname]);
+
+
+        // all_metadata[pid][mdname].push(val);
+      });
+
       // all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
 
       // console.log("MMM all_metadata");
@@ -740,7 +746,7 @@ function intersection_destructive(a, b)
 
 // TODO: rename
 // todo: if there is req.form (or req.body?) use the result?
-function make_metadata_hash(req, res){
+function make_metadata_hash(req, res) {
   pid = req.body.project_id;
   all_metadata = {};
   if (helpers.isInt(pid))
