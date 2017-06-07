@@ -615,26 +615,8 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   collection_date: '2007-06-01',
       */
 
-      // key_hash = Object.keys(AllMetadataFromFile[dataset_id]);
-      // for (var i1 = 0, len1 = key_hash.length; i1 < len1; i1++) {
-      //   var key = key_hash[i1];
-      //   var val = AllMetadataFromFile[dataset_id][key];
-      //   all_metadata[pid][key].push(val);
-      //
-      // }
     add_all_metadata_from_file(Object.keys(AllMetadataFromFile[dataset_id]), dataset_id);
     add_required_metadata_from_id(CONSTS.REQ_METADATA_FIELDS_wIDs, dataset_id);
-
-      // for (var i2 = 0, len2 = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i2 < len2; i2++) {
-      //   var mdname = CONSTS.REQ_METADATA_FIELDS_wIDs[i2];
-      //
-      //   console.log("MDMDM11 mdname: ");
-      //   console.log(mdname);
-      //
-      //   var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], mdname + "_id");
-      //   all_metadata[pid][mdname].push(data.value);
-      //
-      // }
 
   }
   return all_metadata;
@@ -643,7 +625,7 @@ function populate_metadata_hash(rows, pid, all_metadata) {
 function add_all_metadata_from_file(my_hash, dataset_id) {
   for (var i1 = 0, len1 = my_hash.length; i1 < len1; i1++) {
     var key = my_hash[i1];
-    var val = AllMetadataFromFile[dataset_id][key];
+    var val = AllMetadataFromFile[dataset_id][key]; // TODO: combine with add_required_metadata_from_id? That's the only difference besides "my_hash"
     all_metadata[pid][key].push(val);
   }
 }
