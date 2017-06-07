@@ -477,7 +477,7 @@ constants.REQ_METADATA_FIELDS = [   "collection_date",  // format?? yyyy-mm-dd
                                     "primer_suite",
                                     "run"
                                     ];
-constants.REQ_METADATA_FIELDS_wIDs = [ "geo_loc_name",     // name of country or longhurst zone
+constants.REQ_METADATA_FIELDS_wIDs = ["geo_loc_name",     // name of country or longhurst zone
                                     "dna_region",       // v6, v4v5 v6v4 .... (from mysql table) 
                                     "domain",           // Bacteria, Archaea or Eukarya (from mysql table)
                                     "env_biome",
