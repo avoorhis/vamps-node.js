@@ -629,40 +629,89 @@ function populate_metadata_hash(rows, pid, all_metadata) {
       console.log("DDD11 all_metadata");
       console.log(all_metadata);
 
-      CONSTS.REQ_METADATA_FIELDS_wIDs.forEach(function(mdname) {
-        console.log("MDMDM mdname: ");
-        console.log(mdname);
-        console.log("all_metadata[pid][mdname]: ");
-        console.log(all_metadata[pid][mdname]);
+      for (var i2 = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i2 < len; i2++) {
+        var mdname = CONSTS.REQ_METADATA_FIELDS_wIDs[i2];
 
+        console.log("MDMDM11 mdname: ");
+        console.log(mdname);
 
         var id_name = mdname + "_id";
-        console.log("DADAD00 id_name: ");
-        console.log(id_name);
-
-        console.log("LLLMMM11 AllMetadataFromFile[dataset_id][id_name]: ");
-        console.log(AllMetadataFromFile[dataset_id][id_name]);
-        //6191
-
         var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], id_name);
-        console.log("DADAD data: ");
-        console.log(data);
-
-
-
         all_metadata[pid][mdname].push(data.value);
 
 
-        // DADAD data:
-        // { name: 'env_material', value: 'water' }
+      }
 
-        // helpers.required_metadata_names_from_ids()
+    //   CONSTS.REQ_METADATA_FIELDS_wIDs.forEach(function(mdname) {
+    //   console.log("MDMDM mdname: ");
+    //   console.log(mdname);
+    //   console.log("all_metadata[pid][mdname]: ");
+    //   console.log(all_metadata[pid][mdname]);
+    //
+    //
+    //   var id_name = mdname + "_id";
+    //   console.log("DADAD00 id_name: ");
+    //   console.log(id_name);
+    //
+    //   console.log("LLLMMM11 AllMetadataFromFile[dataset_id][id_name]: ");
+    //   console.log(AllMetadataFromFile[dataset_id][id_name]);
+    //   //6191
+    //
+    //   var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], id_name);
+    //   console.log("DADAD data: ");
+    //   console.log(data);
+    //
+    //
+    //
+    //   all_metadata[pid][mdname].push(data.value);
+    //
+    //
+    //   // DADAD data:
+    //   // { name: 'env_material', value: 'water' }
+    //
+    //   // helpers.required_metadata_names_from_ids()
+    //
+    //   // = function(selection_obj, name_id)
+    //   // routes/routes_user_data.js:3370:            var data = helpers.required_metadata_names_from_ids(AllMetadata[did], mdname)
+    //
+    //   // all_metadata[pid][mdname].push(val);
+    // });
 
-          // = function(selection_obj, name_id)
-        // routes/routes_user_data.js:3370:            var data = helpers.required_metadata_names_from_ids(AllMetadata[did], mdname)
 
-        // all_metadata[pid][mdname].push(val);
-      });
+      // CONSTS.REQ_METADATA_FIELDS_wIDs.forEach(function(mdname) {
+      //   console.log("MDMDM mdname: ");
+      //   console.log(mdname);
+      //   console.log("all_metadata[pid][mdname]: ");
+      //   console.log(all_metadata[pid][mdname]);
+      //
+      //
+      //   var id_name = mdname + "_id";
+      //   console.log("DADAD00 id_name: ");
+      //   console.log(id_name);
+      //
+      //   console.log("LLLMMM11 AllMetadataFromFile[dataset_id][id_name]: ");
+      //   console.log(AllMetadataFromFile[dataset_id][id_name]);
+      //   //6191
+      //
+      //   var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], id_name);
+      //   console.log("DADAD data: ");
+      //   console.log(data);
+      //
+      //
+      //
+      //   all_metadata[pid][mdname].push(data.value);
+      //
+      //
+      //   // DADAD data:
+      //   // { name: 'env_material', value: 'water' }
+      //
+      //   // helpers.required_metadata_names_from_ids()
+      //
+      //     // = function(selection_obj, name_id)
+      //   // routes/routes_user_data.js:3370:            var data = helpers.required_metadata_names_from_ids(AllMetadata[did], mdname)
+      //
+      //   // all_metadata[pid][mdname].push(val);
+      // });
 
       // all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
 
