@@ -645,17 +645,15 @@ function add_all_metadata_from_file(my_hash, dataset_id) {
     var key = my_hash[i1];
     var val = AllMetadataFromFile[dataset_id][key];
     all_metadata[pid][key].push(val);
-
   }
 }
-
 
 function add_required_metadata_from_id(my_hash, dataset_id) {
   for (var idx = 0, len = my_hash.length; idx < len; idx++) {
     var key = my_hash[idx];
     var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], key + "_id");
-
-    all_metadata[pid][key].push(data.value);
+    var val = data.value;
+    all_metadata[pid][key].push(val);
   }
 }
 
