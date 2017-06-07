@@ -615,16 +615,29 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   collection_date: '2007-06-01',
       */
 
-      Object.keys(AllMetadataFromFile[dataset_id]).forEach(function(key) {
+      key_hash = Object.keys(AllMetadataFromFile[dataset_id]);
+      console.log("HHH Object.keys(AllMetadataFromFile[dataset_id])");
+      console.log(key_hash);
+
+      for (var i1 = 0, len = key_hash.length; i1 < len; i1++) {
+        var key = key_hash[i1];
         var val = AllMetadataFromFile[dataset_id][key];
-        /*
-        key
-          latitude
-        val
-          64.49
-        */
         all_metadata[pid][key].push(val);
-      });
+
+      }
+
+
+      //
+      // Object.keys(AllMetadataFromFile[dataset_id]).forEach(function(key) {
+      //   var val = AllMetadataFromFile[dataset_id][key];
+      //   /*
+      //   key
+      //     latitude
+      //   val
+      //     64.49
+      //   */
+      //   all_metadata[pid][key].push(val);
+      // });
 
       console.log("DDD11 all_metadata");
       console.log(all_metadata);
