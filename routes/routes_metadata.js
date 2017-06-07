@@ -510,13 +510,14 @@ function make_empty_arrays(all_metadata, pid) {
 
     });
 
-    console.log("KKK555 dataset_id");
-    console.log(dataset_id);
+    for (var i = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i < len; i++) {
+      var key_name = CONSTS.REQ_METADATA_FIELDS_wIDs[i];
+      all_metadata[pid][key_name] = [];
+    }
 
 
 
-
-      // get_values_from_ids(METADATA, did, all_metadata_p_d)
+    // get_values_from_ids(METADATA, did, all_metadata_p_d)
 
     // var ds_row = {};
 
@@ -641,14 +642,18 @@ function populate_metadata_hash(rows, pid, all_metadata) {
 
         console.log("LLLMMM11 AllMetadataFromFile[dataset_id][id_name]: ");
         console.log(AllMetadataFromFile[dataset_id][id_name]);
-
+        //6191
 
         var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], id_name);
         console.log("DADAD data: ");
         console.log(data);
 
+        all_metadata[pid][mdname].push(data.value);
+
+
         // DADAD data:
         // { name: 'env_material', value: 'water' }
+
         // helpers.required_metadata_names_from_ids()
 
           // = function(selection_obj, name_id)
