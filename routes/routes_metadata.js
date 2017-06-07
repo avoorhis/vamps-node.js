@@ -635,107 +635,13 @@ function populate_metadata_hash(rows, pid, all_metadata) {
         console.log("MDMDM11 mdname: ");
         console.log(mdname);
 
-        var id_name = mdname + "_id";
-        var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], id_name);
+        var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], mdname + "_id");
         all_metadata[pid][mdname].push(data.value);
 
 
       }
 
-    //   CONSTS.REQ_METADATA_FIELDS_wIDs.forEach(function(mdname) {
-    //   console.log("MDMDM mdname: ");
-    //   console.log(mdname);
-    //   console.log("all_metadata[pid][mdname]: ");
-    //   console.log(all_metadata[pid][mdname]);
-    //
-    //
-    //   var id_name = mdname + "_id";
-    //   console.log("DADAD00 id_name: ");
-    //   console.log(id_name);
-    //
-    //   console.log("LLLMMM11 AllMetadataFromFile[dataset_id][id_name]: ");
-    //   console.log(AllMetadataFromFile[dataset_id][id_name]);
-    //   //6191
-    //
-    //   var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], id_name);
-    //   console.log("DADAD data: ");
-    //   console.log(data);
-    //
-    //
-    //
-    //   all_metadata[pid][mdname].push(data.value);
-    //
-    //
-    //   // DADAD data:
-    //   // { name: 'env_material', value: 'water' }
-    //
-    //   // helpers.required_metadata_names_from_ids()
-    //
-    //   // = function(selection_obj, name_id)
-    //   // routes/routes_user_data.js:3370:            var data = helpers.required_metadata_names_from_ids(AllMetadata[did], mdname)
-    //
-    //   // all_metadata[pid][mdname].push(val);
-    // });
 
-
-      // CONSTS.REQ_METADATA_FIELDS_wIDs.forEach(function(mdname) {
-      //   console.log("MDMDM mdname: ");
-      //   console.log(mdname);
-      //   console.log("all_metadata[pid][mdname]: ");
-      //   console.log(all_metadata[pid][mdname]);
-      //
-      //
-      //   var id_name = mdname + "_id";
-      //   console.log("DADAD00 id_name: ");
-      //   console.log(id_name);
-      //
-      //   console.log("LLLMMM11 AllMetadataFromFile[dataset_id][id_name]: ");
-      //   console.log(AllMetadataFromFile[dataset_id][id_name]);
-      //   //6191
-      //
-      //   var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], id_name);
-      //   console.log("DADAD data: ");
-      //   console.log(data);
-      //
-      //
-      //
-      //   all_metadata[pid][mdname].push(data.value);
-      //
-      //
-      //   // DADAD data:
-      //   // { name: 'env_material', value: 'water' }
-      //
-      //   // helpers.required_metadata_names_from_ids()
-      //
-      //     // = function(selection_obj, name_id)
-      //   // routes/routes_user_data.js:3370:            var data = helpers.required_metadata_names_from_ids(AllMetadata[did], mdname)
-      //
-      //   // all_metadata[pid][mdname].push(val);
-      // });
-
-      // all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
-
-      // console.log("MMM all_metadata");
-      // console.log(all_metadata);
-      /* MMM all_metadata
-{ "47":
-   { dataset_ids:
-      { "4312": [Object],
-        "4313": [Object],
-        "4314": [Object],
-        "4315": [Object],
-        "4316": [Object],
-        "4317": [Object],
-        "4318": [Object] },
-     project: "DCO_GAI_Bv3v5",
-     title: "Icelandic Volcanic Lake",
-     username: "gaidos",
-     email: "gaidos@hawaii.edu",
-     institution: "University of Hawaii",
-     first_name: "Eric",
-     last_name: "Gaidos",
-     public: 0 } }
- */
 
   }
   return all_metadata;
