@@ -490,13 +490,60 @@ DDD metadata
   return all_metadata_p_d;
 }
 
-function make_all_arrays(all_metadata, pid, dataset_id) {
-  for (dataset_id in AllMetadataFromFile) {
+function make_empty_arrays(all_metadata, pid) {
+  console.log("KKK From AllMetadataFromFile");
+  console.log("KKK333 AllMetadataFromFile");
+  console.log(AllMetadataFromFile);
+
+  for (var dataset_id in AllMetadataFromFile) {
+    console.log("DADA dataset_id");
     Object.keys(AllMetadataFromFile[dataset_id]).forEach(function(key) {
-      var val = AllMetadataFromFile[dataset_id][key];
+      // var val = AllMetadataFromFile[dataset_id][key];
       all_metadata[pid][key] = [];
+
+      console.log("KKK1 key:");
+      console.log(key);
+      console.log("KKK2 pid:");
+      console.log(pid);
+      // console.log("KKK3 val:");
+      // console.log(val);
+
     });
+
+    console.log("KKK555 dataset_id");
+    console.log(dataset_id);
+
+    var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_material', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'];
+
+    metadata_names.forEach(function(mdname) {
+      all_metadata[pid][mdname] = [];
+
+    });
+
+      // get_values_from_ids(METADATA, did, all_metadata_p_d)
+
+    // var ds_row = {};
+
+    // metadata_names.forEach(function(mdname) {
+    //   // console.log(mdname);
+    //   var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname);
+    //   /*
+    //    console.log("DDD data");
+    //    console.log(data);
+    //    DDD data
+    //    { name: 'run_id', value: '20080709' }
+    //    */
+    //
+    //   if(did in METADATA) {
+    //     // ds_row[mdname] = data.value
+    //     all_metadata_p_d[mdname] = data.value;
+    //   }
+    // });
+
   }
+  // all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
+
+
   return all_metadata;
 }
 
@@ -506,7 +553,11 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   all_metadata[pid]["dataset"] = [];
   all_metadata[pid]["dataset_description"] = [];
 
-  make_all_arrays(all_metadata, pid, dataset_id);
+  console.log("PPP1 populate_metadata_hash: ");
+  make_empty_arrays(all_metadata, pid);
+
+  console.log("PPP2 all_metadata");
+  console.log(all_metadata);
 
   for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
