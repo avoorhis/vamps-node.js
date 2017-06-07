@@ -616,48 +616,40 @@ function populate_metadata_hash(rows, pid, all_metadata) {
       */
 
       key_hash = Object.keys(AllMetadataFromFile[dataset_id]);
-      console.log("HHH Object.keys(AllMetadataFromFile[dataset_id])");
-      console.log(key_hash);
-
-      for (var i1 = 0, len = key_hash.length; i1 < len; i1++) {
+      for (var i1 = 0, len1 = key_hash.length; i1 < len1; i1++) {
         var key = key_hash[i1];
         var val = AllMetadataFromFile[dataset_id][key];
         all_metadata[pid][key].push(val);
 
       }
 
-
-      //
-      // Object.keys(AllMetadataFromFile[dataset_id]).forEach(function(key) {
-      //   var val = AllMetadataFromFile[dataset_id][key];
-      //   /*
-      //   key
-      //     latitude
-      //   val
-      //     64.49
-      //   */
-      //   all_metadata[pid][key].push(val);
-      // });
-
       console.log("DDD11 all_metadata");
       console.log(all_metadata);
 
-      for (var i2 = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i2 < len; i2++) {
-        var mdname = CONSTS.REQ_METADATA_FIELDS_wIDs[i2];
+    add_required_metadata_from_id(CONSTS.REQ_METADATA_FIELDS_wIDs, dataset_id);
 
-        console.log("MDMDM11 mdname: ");
-        console.log(mdname);
-
-        var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], mdname + "_id");
-        all_metadata[pid][mdname].push(data.value);
-
-
-      }
-
-
+      // for (var i2 = 0, len2 = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i2 < len2; i2++) {
+      //   var mdname = CONSTS.REQ_METADATA_FIELDS_wIDs[i2];
+      //
+      //   console.log("MDMDM11 mdname: ");
+      //   console.log(mdname);
+      //
+      //   var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], mdname + "_id");
+      //   all_metadata[pid][mdname].push(data.value);
+      //
+      // }
 
   }
   return all_metadata;
+}
+
+function add_required_metadata_from_id(my_hash, dataset_id) {
+  for (var idx = 0, len = my_hash.length; idx < len; idx++) {
+    var key = my_hash[idx];
+    var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], key + "_id");
+
+    all_metadata[pid][key].push(data.value);
+  }
 }
 
 // function populate_metadata_hash(rows, pid, all_metadata){
