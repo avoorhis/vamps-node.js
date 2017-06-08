@@ -1502,8 +1502,8 @@ module.exports.required_metadata_ids_from_names = function(selection_obj, mdname
     }else if(mdname == 'env_feature'){
         idname = 'env_feature_id'
         value = MD_ENV_TERM[selection_obj[idname]]
-    }else if(mdname == 'env_matter'){
-        idname = 'env_matter_id'
+    }else if(mdname == 'env_material'){
+        idname = 'env_material_id'
         value = MD_ENV_TERM[selection_obj[idname]]
     }else if(mdname == 'geo_loc_name'){
         idname = 'geo_loc_name_id'
@@ -1545,54 +1545,68 @@ module.exports.required_metadata_ids_from_names = function(selection_obj, mdname
 }
 module.exports.required_metadata_names_from_ids = function(selection_obj, name_id)
 {
-    var real_name,value
+  var id = selection_obj[name_id];
+
+  console.log("EEE000 name_id = ");
+  console.log(name_id);
+
+  console.log("EEE001 selection_obj[name_id] (id) = ");
+  console.log(id);
+
+
+  console.log("EEE1 MD_ENV_TERM = ");
+  console.log(MD_ENV_TERM);
+
+    var real_name, value;
     if(name_id == 'env_package_id'){
-        real_name = 'env_package'
-        value = MD_ENV_PACKAGE[selection_obj[name_id]]
+        real_name = 'env_package';
+        value = MD_ENV_PACKAGE[id];
     }else if(name_id == 'target_gene_id'){
-      real_name = 'target_gene'
-      value = MD_TARGET_GENE[selection_obj[name_id]]
+      real_name = 'target_gene';
+      value = MD_TARGET_GENE[id];
     }else if(name_id == 'domain_id'){
-      real_name = 'domain'
-      value = MD_DOMAIN[selection_obj[name_id]]
+      real_name = 'domain';
+      value = MD_DOMAIN[id];
     }else if(name_id == 'geo_loc_name_id'){
-      real_name = 'geo_loc_name'
-      value = MD_ENV_TERM[selection_obj[name_id]]
+      real_name = 'geo_loc_name';
+      value = MD_ENV_TERM[id];
     }else if(name_id == 'sequencing_platform_id'){
-      real_name = 'sequencing_platform'
-      value = MD_SEQUENCING_PLATFORM[selection_obj[name_id]]
+      real_name = 'sequencing_platform';
+      value = MD_SEQUENCING_PLATFORM[id];
     }else if(name_id == 'dna_region_id'){
-      real_name = 'dna_region'
-      value = MD_DNA_REGION[selection_obj[name_id]]
-    }else if(name_id == 'env_matter_id'){
-      real_name = 'env_matter'
-      value = MD_ENV_TERM[selection_obj[name_id]]
+      real_name = 'dna_region';
+      value = MD_DNA_REGION[id];
+    }else if(name_id == 'env_material_id'){
+      real_name = 'env_material';
+      value = MD_ENV_TERM[id];
+      console.log("EEE2221 value = ");
+      console.log(value);
     }else if(name_id == 'env_biome_id'){
-      real_name = 'env_biome'
-      value = MD_ENV_TERM[selection_obj[name_id]]
+      real_name = 'env_biome';
+      value = MD_ENV_TERM[id]
     }else if(name_id == 'env_feature_id'){
-      real_name = 'env_feature'
-      value = MD_ENV_TERM[selection_obj[name_id]]
+      real_name = 'env_feature';
+      value = MD_ENV_TERM[id];
     }else if(name_id == 'adapter_sequence_id'){
-      real_name = 'adapter_sequence'
-      value = MD_ADAPTER_SEQUENCE[selection_obj[name_id]]
+      real_name = 'adapter_sequence';
+      value = MD_ADAPTER_SEQUENCE[id];
     }else if(name_id == 'illumina_index_id'){
-      real_name = 'illumina_index'
-      value = MD_ILLUMINA_INDEX[selection_obj[name_id]]
+      real_name = 'illumina_index';
+      value = MD_ILLUMINA_INDEX[id];
     }else if(name_id == 'run_id'){
-      real_name = 'run'
-      value = MD_RUN[selection_obj[name_id]]
+      real_name = 'run';
+      value = MD_RUN[id];
     }else if(name_id == 'primer_suite_id'){
-      real_name = 'primer_suite'
-      //value = MD_PRIMER_SUITE[selection_obj[name_id]]
-      if(MD_PRIMER_SUITE.hasOwnProperty(selection_obj[name_id]) && MD_PRIMER_SUITE[selection_obj[name_id]].hasOwnProperty('name')){
-        value = MD_PRIMER_SUITE[selection_obj[name_id]].name
+      real_name = 'primer_suite';
+      //value = MD_PRIMER_SUITE[id]
+      if(MD_PRIMER_SUITE.hasOwnProperty(id) && MD_PRIMER_SUITE[id].hasOwnProperty('name')){
+        value = MD_PRIMER_SUITE[id].name;
       }else{
-        value = 'unknown'
+        value = 'unknown';
       }
     }else{
-      real_name = name_id
-      value = selection_obj[name_id]
+      real_name = name_id;
+      value = id;
     }
     // eg: { name: 'primer_suite', value: 'Bacterial V6 Suite' } or { name: 'domain', value: 'Bacteria' }
     return {"name":real_name,"value":value}

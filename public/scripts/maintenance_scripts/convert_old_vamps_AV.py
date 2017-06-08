@@ -49,7 +49,7 @@ ranks =['domain','phylum','klass','order','family','genus','species','strain']
 REQ_METADATA_ITEMS = {}
 CUST_METADATA_ITEMS = {}
 
-required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
+required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_material", "latitude", "longitude", "public","taxon_id","description","common_name"];
 classifiers = {"GAST":{'ITS1':1,'SILVA108_FULL_LENGTH':2,'GG_FEB2011':3,'GG_MAY2013':4},
                 "RDP":{'ITS1':6,'2.10.1':5,'GG_FEB2011':7,'GG_MAY2013':8},
                 'unknown':{'unknown':9}}

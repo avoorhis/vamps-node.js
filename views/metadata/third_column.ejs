@@ -89,7 +89,7 @@
 <!-- Environmental Material -->
 <% } else if (all_field_names[idx][0] === "env_material") { %>
 <td>
-    <% selected_val = get_selected_val(pid, did, "material_primary") %>
+    <% selected_val = get_selected_val(pid, did, "env_material") %>
 
     <select id="material_primary<%- did%>" name="material_primary" class = "material_primary">
         <% material_primary_options.forEach(function(value){ %>

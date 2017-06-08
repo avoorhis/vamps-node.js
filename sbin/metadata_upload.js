@@ -341,12 +341,12 @@ function format_required_metadata_info(metadata_dict_w_ids)
       // var elevation = this_entry["elevation"];
       // var env_biome = this_entry["env_biome"];
       // var env_feature = this_entry["env_feature"];
-      // var env_matter = this_entry["env_matter"];
+      // var env_material = this_entry["env_material"];
       // var latitude = this_entry["latitude"];
       // var longitude = this_entry["longitude"];
       // var is_public = this_entry["public"];
       // 
-      // var into_db = dataset_id + ", " + altitude + ", '" + assigned_from_geo + "', '" + collection_date + "', " + depth + ", '" + country + "', " + elevation + ", '" + env_biome + "', '" + env_feature + "', '" + env_matter + "', " + latitude + ", " + longitude + ", " + temp + ", " + salinity + ", " + diss_oxygen + ", '" + is_public + "'";
+      // var into_db = dataset_id + ", " + altitude + ", '" + assigned_from_geo + "', '" + collection_date + "', " + depth + ", '" + country + "', " + elevation + ", '" + env_biome + "', '" + env_feature + "', '" + env_material + "', " + latitude + ", " + longitude + ", " + temp + ", " + salinity + ", " + diss_oxygen + ", '" + is_public + "'";
       insert_into_required_metadata_info_txt.push(into_db);
     }
     else

@@ -812,7 +812,7 @@ function create_metadata_table(new_window) {
     
     html += "</tbody></table>";
 
-      //alert(md_local[0].env_matter)
+      //alert(md_local[0].env_material)
     metadata_div.innerHTML = html;
     document.getElementById('metadata_table_dnld_btn').disabled = false
 }

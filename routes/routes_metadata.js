@@ -445,7 +445,7 @@ router.post('/start_edit',
 });
 
 function get_values_from_ids(METADATA, did, all_metadata_p_d) {
-  var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_matter', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'];
+  var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_material', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'];
   // var ds_row = {};
 
   metadata_names.forEach(function(mdname) {
@@ -471,7 +471,7 @@ DDD metadata
      domain: "Bacteria",
      env_biome: "unknown",
      env_feature: "unknown",
-     env_matter: "unknown",
+     env_material: "unknown",
      env_package: "unknown",
      geo_loc_name: "unknown",
      illumina_index: "unknown",
@@ -490,13 +490,57 @@ DDD metadata
   return all_metadata_p_d;
 }
 
-function make_all_arrays(all_metadata, pid, dataset_id) {
-  for (dataset_id in AllMetadataFromFile) {
+function make_empty_arrays(all_metadata, pid) {
+  console.log("KKK From AllMetadataFromFile");
+  console.log("KKK333 AllMetadataFromFile");
+  console.log(AllMetadataFromFile);
+
+  for (var dataset_id in AllMetadataFromFile) {
+    console.log("DADA dataset_id");
     Object.keys(AllMetadataFromFile[dataset_id]).forEach(function(key) {
-      var val = AllMetadataFromFile[dataset_id][key];
+      // var val = AllMetadataFromFile[dataset_id][key];
       all_metadata[pid][key] = [];
+
+      console.log("KKK1 key:");
+      console.log(key);
+      console.log("KKK2 pid:");
+      console.log(pid);
+      // console.log("KKK3 val:");
+      // console.log(val);
+
     });
+
+    for (var i = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i < len; i++) {
+      var key_name = CONSTS.REQ_METADATA_FIELDS_wIDs[i];
+      all_metadata[pid][key_name] = [];
+    }
+
+
+
+    // get_values_from_ids(METADATA, did, all_metadata_p_d)
+
+    // var ds_row = {};
+
+    // metadata_names.forEach(function(mdname) {
+    //   // console.log(mdname);
+    //   var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname);
+    //   /*
+    //    console.log("DDD data");
+    //    console.log(data);
+    //    DDD data
+    //    { name: 'run_id', value: '20080709' }
+    //    */
+    //
+    //   if(did in METADATA) {
+    //     // ds_row[mdname] = data.value
+    //     all_metadata_p_d[mdname] = data.value;
+    //   }
+    // });
+
   }
+  // all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
+
+
   return all_metadata;
 }
 
@@ -506,7 +550,11 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   all_metadata[pid]["dataset"] = [];
   all_metadata[pid]["dataset_description"] = [];
 
-  make_all_arrays(all_metadata, pid, dataset_id);
+  console.log("PPP1 populate_metadata_hash: ");
+  make_empty_arrays(all_metadata, pid);
+
+  console.log("PPP2 all_metadata");
+  console.log(all_metadata);
 
   for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
@@ -567,48 +615,30 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   collection_date: '2007-06-01',
       */
 
-      Object.keys(AllMetadataFromFile[dataset_id]).forEach(function(key) {
-        var val = AllMetadataFromFile[dataset_id][key];
-        /*
-        key
-          latitude
-        val
-          64.49
-        */
-        all_metadata[pid][key].push(val);
-      });
-
-      console.log("DDD11 all_metadata");
-      console.log(all_metadata);
-
-      // all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
-
-      // console.log("MMM all_metadata");
-      // console.log(all_metadata);
-      /* MMM all_metadata
-{ "47":
-   { dataset_ids:
-      { "4312": [Object],
-        "4313": [Object],
-        "4314": [Object],
-        "4315": [Object],
-        "4316": [Object],
-        "4317": [Object],
-        "4318": [Object] },
-     project: "DCO_GAI_Bv3v5",
-     title: "Icelandic Volcanic Lake",
-     username: "gaidos",
-     email: "gaidos@hawaii.edu",
-     institution: "University of Hawaii",
-     first_name: "Eric",
-     last_name: "Gaidos",
-     public: 0 } }
- */
+    add_all_metadata_from_file(Object.keys(AllMetadataFromFile[dataset_id]), dataset_id);
+    add_required_metadata_from_id(CONSTS.REQ_METADATA_FIELDS_wIDs, dataset_id);
 
   }
   return all_metadata;
 }
-  
+
+function add_all_metadata_from_file(my_hash, dataset_id) {
+  for (var i1 = 0, len1 = my_hash.length; i1 < len1; i1++) {
+    var key = my_hash[i1];
+    var val = AllMetadataFromFile[dataset_id][key]; // TODO: combine with add_required_metadata_from_id? That's the only difference besides "my_hash"
+    all_metadata[pid][key].push(val);
+  }
+}
+
+function add_required_metadata_from_id(my_hash, dataset_id) {
+  for (var idx = 0, len = my_hash.length; idx < len; idx++) {
+    var key = my_hash[idx];
+    var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], key + "_id");
+    var val = data.value;
+    all_metadata[pid][key].push(val);
+  }
+}
+
 // function populate_metadata_hash(rows, pid, all_metadata){
 //   all_metadata[pid]["dataset_ids"] = {}
 //
@@ -689,7 +719,7 @@ function intersection_destructive(a, b)
 
 // TODO: rename
 // todo: if there is req.form (or req.body?) use the result?
-function make_metadata_hash(req, res){
+function make_metadata_hash(req, res) {
   pid = req.body.project_id;
   all_metadata = {};
   if (helpers.isInt(pid))

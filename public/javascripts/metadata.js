@@ -485,6 +485,12 @@ function populate_secondary_select(args) {
   id_base = arguments[0][0];
   sec_options = arguments[0][1];
 
+  // alert("id_base");
+  // alert(id_base);
+  //
+  // alert("this");
+  // alert(this);
+
   did = this.id.replace(id_base + "_primary", '');
   id2 = id_base + "_secondary";
   var B = document.getElementById(id2+did);
@@ -569,6 +575,43 @@ fnScroll = function(){
     $('#firstcol_div').scrollTop($('#table_div').scrollTop());
 };
 
+var someVariable;
+callMe = function(){
+  someVariable = 4;
+  someVariable++;
+  alert(someVariable);
+
+  var x = document.getElementsByClassName('material_primary');
+  var i;
+  for (i = 0; i < x.length; i++) {
+    // x[i].style.backgroundColor = 'red';
+    // var y = x[i].attributes;
+    // y;
+    var v = x[i].value;
+    // v;
+    if (v === "water") {
+      // x[i].style.backgroundColor = 'blue';
+      populate_secondary_select.call(x[i], ['material', material_seq_options]);
+
+    }
+    // alert("v");
+    // alert(v);
+
+  }
+
+  // alert("this");
+  // alert(JSON.stringify(this));
+  // populate_secondary_select.call(this, ['material', material_seq_options]);
+
+}
+
+
+
+
+
+
+
+
 $(document).ready(function(){
     $('.biome_primary').change(function(){
         populate_secondary_select.call(this, ['biome', biome_seq_options]);
@@ -583,6 +626,9 @@ $(document).ready(function(){
     $('#table_div').scroll(function(){
         fnScroll();
     });
+
+    callMe();
+    // alert(someVariable);
 
     fnAdjustTable();
 });
