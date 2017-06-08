@@ -575,61 +575,51 @@ fnScroll = function(){
     $('#firstcol_div').scrollTop($('#table_div').scrollTop());
 };
 
-var someVariable;
-callMe = function(){
-  someVariable = 4;
-  someVariable++;
-  alert(someVariable);
-
-  var x = document.getElementsByClassName('material_primary');
-  var i;
-  for (i = 0; i < x.length; i++) {
-    // x[i].style.backgroundColor = 'red';
-    // var y = x[i].attributes;
-    // y;
-    var v = x[i].value;
-    // v;
-    if (v !== "Please choose one") {
-    // if (v === "water") {
-      // x[i].style.backgroundColor = 'blue';
-      populate_secondary_select.call(x[i], ['material', material_seq_options]);
-
-    }
-    // alert("v");
-    // alert(v);
-
-  }
-
-  // alert("this");
-  // alert(JSON.stringify(this));
-  // populate_secondary_select.call(this, ['material', material_seq_options]);
-
-}
-
-
-
-
-
-
-
 
 $(document).ready(function(){
-    $('.biome_primary').change(function(){
-        populate_secondary_select.call(this, ['biome', biome_seq_options]);
-    });
-    $('.feature_primary').change(function(){
-        populate_secondary_select.call(this, ['feature', feature_seq_options]);
-    });
-    $('.material_primary').change(function(){
+  $('.biome_primary').change(function(){
+      populate_secondary_select.call(this, ['biome', biome_seq_options]);
+  });
+  $('.feature_primary').change(function(){
+      populate_secondary_select.call(this, ['feature', feature_seq_options]);
+  });
+  $('.material_primary').change(function(){
+      populate_secondary_select.call(this, ['material', material_seq_options]);
+  }).each(function(){
+      this.style.backgroundColor = "blue";
+
+      if (this !== "Please choose one") {
+        this.style.backgroundColor = "green";
+
         populate_secondary_select.call(this, ['material', material_seq_options]);
+      }
     });
 
-    $('#table_div').scroll(function(){
-        fnScroll();
-    });
+  $('#table_div').scroll(function(){
+      fnScroll();
+  });
 
-    callMe();
-    // alert(someVariable);
+  $('.biome_primary').each(function(){
+    if (this !== "Please choose one") {
+      populate_secondary_select.call($( this ), ['biome', biome_seq_options]);
+    }
+  });
+
+  $('.feature_primary').each(function(){
+    if (this !== "Please choose one") {
+      populate_secondary_select.call($( this ), ['primary', primary_seq_options]);
+    }
+  });
+
+  // $('.material_primary').each(function(){
+  //   this.style.backgroundColor = "blue";
+  //
+  //   if (this !== "Please choose one") {
+  //     this.style.backgroundColor = "yellow";
+  //
+  //     populate_secondary_select.call($( this ), ['material', material_seq_options]);
+  //   }
+  // });
 
     fnAdjustTable();
 });
