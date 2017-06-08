@@ -1542,21 +1542,11 @@ module.exports.required_metadata_ids_from_names = function(selection_obj, mdname
     }
     // eg: { name: 'primer_suite_id', value: 'Bacterial V6 Suite' } or { name: 'domain_id', value: 'Bacteria' }
     return {"name":idname, "value":value}
-}
+};
+
 module.exports.required_metadata_names_from_ids = function(selection_obj, name_id)
 {
   var id = selection_obj[name_id];
-
-  console.log("EEE000 name_id = ");
-  console.log(name_id);
-
-  console.log("EEE001 selection_obj[name_id] (id) = ");
-  console.log(id);
-
-
-  console.log("EEE1 MD_ENV_TERM = ");
-  console.log(MD_ENV_TERM);
-
     var real_name, value;
     if(name_id == 'env_package_id'){
         real_name = 'env_package';
@@ -1610,4 +1600,4 @@ module.exports.required_metadata_names_from_ids = function(selection_obj, name_i
     }
     // eg: { name: 'primer_suite', value: 'Bacterial V6 Suite' } or { name: 'domain', value: 'Bacteria' }
     return {"name":real_name,"value":value}
-}
+};

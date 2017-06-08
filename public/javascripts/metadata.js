@@ -613,17 +613,17 @@ $(document).ready(function(){
       fnScroll();
   });
 
-  $('.biome_primary').each(function(){
-    if (this !== "Please choose one") {
-      populate_secondary_select.call(this, ['biome', biome_seq_options]);
-    }
-  });
-
-  $('.feature_primary').each(function(){
-    if (this !== "Please choose one") {
-      populate_secondary_select.call(this, ['primary', primary_seq_options]);
-    }
-  });
+  // $('.biome_primary').each(function(){
+  //   if (this !== "Please choose one") {
+  //     populate_secondary_select.call(this, ['biome', biome_seq_options]);
+  //   }
+  // });
+  //
+  // $('.feature_primary').each(function(){
+  //   if (this !== "Please choose one") {
+  //     populate_secondary_select.call(this, ['primary', primary_seq_options]);
+  //   }
+  // });
 
   // $('.material_primary').each(function(){
   //   this.style.backgroundColor = "blue";
