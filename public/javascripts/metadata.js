@@ -589,7 +589,8 @@ callMe = function(){
     // y;
     var v = x[i].value;
     // v;
-    if (v === "water") {
+    if (v !== "Please choose one") {
+    // if (v === "water") {
       // x[i].style.backgroundColor = 'blue';
       populate_secondary_select.call(x[i], ['material', material_seq_options]);
 
