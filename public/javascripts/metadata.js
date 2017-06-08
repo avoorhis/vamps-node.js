@@ -612,28 +612,7 @@ $(document).ready(function(){
   $('#table_div').scroll(function(){
       fnScroll();
   });
-
-  // $('.biome_primary').each(function(){
-  //   if (this !== "Please choose one") {
-  //     populate_secondary_select.call(this, ['biome', biome_seq_options]);
-  //   }
-  // });
-  //
-  // $('.feature_primary').each(function(){
-  //   if (this !== "Please choose one") {
-  //     populate_secondary_select.call(this, ['primary', primary_seq_options]);
-  //   }
-  // });
-
-  // $('.material_primary').each(function(){
-  //   this.style.backgroundColor = "blue";
-  //
-  //   if (this !== "Please choose one") {
-  //     this.style.backgroundColor = "yellow";
-  //
-  //     populate_secondary_select.call($( this ), ['material', material_seq_options]);
-  //   }
-  // });
+  
 
     fnAdjustTable();
 });
