@@ -582,37 +582,31 @@ $(document).ready(function(){
   }).each(function(){
 
     if($(this).val() !== "Please choose one") {
-      this.style.backgroundColor = "green";
       populate_secondary_select.call(this, ['biome', biome_seq_options]);
     }
-    else {
-      this.style.backgroundColor = "blue";
-    }
+
   });
-  
+
   $('.feature_primary').change(function(){
       populate_secondary_select.call(this, ['feature', feature_seq_options]);
   }).each(function(){
 
     if($(this).val() !== "Please choose one") {
-      this.style.backgroundColor = "green";
       populate_secondary_select.call(this, ['feature', feature_seq_options]);
     }
-    else {
-      this.style.backgroundColor = "blue";
-    }
+
   });
   $('.material_primary').change(function(){
       populate_secondary_select.call(this, ['material', material_seq_options]);
   }).each(function(){
 
     if($(this).val() !== "Please choose one") {
-      this.style.backgroundColor = "green";
+      // this.style.backgroundColor = "green";
       populate_secondary_select.call(this, ['material', material_seq_options]);
     }
-    else {
-      this.style.backgroundColor = "blue";
-    }
+    // else {
+    //   this.style.backgroundColor = "blue";
+    // }
   });
 
   $('#table_div').scroll(function(){
