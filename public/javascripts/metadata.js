@@ -579,21 +579,41 @@ fnScroll = function(){
 $(document).ready(function(){
   $('.biome_primary').change(function(){
       populate_secondary_select.call(this, ['biome', biome_seq_options]);
+  }).each(function(){
+
+    if($(this).val() !== "Please choose one") {
+      this.style.backgroundColor = "green";
+      populate_secondary_select.call(this, ['biome', biome_seq_options]);
+    }
+    else {
+      this.style.backgroundColor = "blue";
+    }
   });
+  
   $('.feature_primary').change(function(){
       populate_secondary_select.call(this, ['feature', feature_seq_options]);
+  }).each(function(){
+
+    if($(this).val() !== "Please choose one") {
+      this.style.backgroundColor = "green";
+      populate_secondary_select.call(this, ['feature', feature_seq_options]);
+    }
+    else {
+      this.style.backgroundColor = "blue";
+    }
   });
   $('.material_primary').change(function(){
       populate_secondary_select.call(this, ['material', material_seq_options]);
   }).each(function(){
+
+    if($(this).val() !== "Please choose one") {
+      this.style.backgroundColor = "green";
+      populate_secondary_select.call(this, ['material', material_seq_options]);
+    }
+    else {
       this.style.backgroundColor = "blue";
-
-      if (this !== "Please choose one") {
-        this.style.backgroundColor = "green";
-
-        populate_secondary_select.call(this, ['material', material_seq_options]);
-      }
-    });
+    }
+  });
 
   $('#table_div').scroll(function(){
       fnScroll();
@@ -601,13 +621,13 @@ $(document).ready(function(){
 
   $('.biome_primary').each(function(){
     if (this !== "Please choose one") {
-      populate_secondary_select.call($( this ), ['biome', biome_seq_options]);
+      populate_secondary_select.call(this, ['biome', biome_seq_options]);
     }
   });
 
   $('.feature_primary').each(function(){
     if (this !== "Please choose one") {
-      populate_secondary_select.call($( this ), ['primary', primary_seq_options]);
+      populate_secondary_select.call(this, ['primary', primary_seq_options]);
     }
   });
 
