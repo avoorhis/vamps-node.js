@@ -90,8 +90,10 @@
 <% } else if (all_field_names[idx][0] === "env_material") { %>
 <td>
     <% selected_val = get_selected_val(pid, did, "env_material") %>
+    selected_val
+    <%= selected_val %>
 
-    <select id="material_primary<%- did%>" name="material_primary" class = "material_primary">
+    <select id="env_material<%- did%>" name="env_material" class = "env_material">
         <% material_primary_options.forEach(function(value){ %>
         <option value="<%= value %>"
                 <% if (value == selected_val) {%>
@@ -101,17 +103,20 @@
         <% }) %>
     </select>
 </td>
-<% } else if (all_field_names[idx][0] === "env_material_sec") { %>
+<% } else if (all_field_names[idx][0] === "material_secondary") { %>
 <td>
     <% selected_val = get_selected_val(pid, did, "material_secondary") %>
+    selected_val
+    <%= selected_val %>
+
 
     <select id="material_secondary<%- did %>" name="material_secondary" class="material_secondary">
-        <% if (selected_val) { %>
-        <option value="<%= selected_val%>"><%= selected_val%></option>
-        <% } else { %>
-        <option value="none">none</option>
+        <!--<% // if (selected_val) { %>-->
+        <!--<option value="<%= //  selected_val%>" selected ><%=//  selected_val%></option>-->
+        <!--<% // } else { %>-->
+        <!--<option value="none">none</option>-->
 
-        <% } %>
+        <!--<% // } %>-->
     </select>
 </td>
 <!--material end  -->

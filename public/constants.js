@@ -528,7 +528,7 @@ constants.ORDERED_METADATA_NAMES = [
     ["env_feature","Environmental Feature - Primary","User supplied"],
     ["env_feature_sec","Environmental Feature - Secondary","User supplied"],
     ["env_material","Environmental Material - Primary","User supplied"],
-    ["env_material_sec","Environmental Material - Secondary","User supplied"],
+    ["material_secondary","Environmental Material - Secondary","User supplied"],
     ["","Enter depth values in one or more categories",""],
     ["depth_subseafloor","Depth below seafloor","User supplied"],
     ["depth_subterrestrial","Depth below terrestrial surface","User supplied"],

@@ -485,14 +485,10 @@ function populate_secondary_select(args) {
   id_base = arguments[0][0];
   sec_options = arguments[0][1];
 
-  // alert("id_base");
-  // alert(id_base);
-  //
-  // alert("this");
-  // alert(this);
+  did = this.id.replace("env_" + id_base, '');
 
-  did = this.id.replace(id_base + "_primary", '');
   id2 = id_base + "_secondary";
+
   var B = document.getElementById(id2+did);
 
   //clear out B
@@ -596,7 +592,7 @@ $(document).ready(function(){
     }
 
   });
-  $('.material_primary').change(function(){
+  $('.env_material').change(function(){
       populate_secondary_select.call(this, ['material', material_seq_options]);
   }).each(function(){
 
@@ -612,7 +608,7 @@ $(document).ready(function(){
   $('#table_div').scroll(function(){
       fnScroll();
   });
-  
+
 
     fnAdjustTable();
 });

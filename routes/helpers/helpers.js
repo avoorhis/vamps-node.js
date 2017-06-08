@@ -1569,8 +1569,6 @@ module.exports.required_metadata_names_from_ids = function(selection_obj, name_i
     }else if(name_id == 'env_material_id'){
       real_name = 'env_material';
       value = MD_ENV_TERM[id];
-      console.log("EEE2221 value = ");
-      console.log(value);
     }else if(name_id == 'env_biome_id'){
       real_name = 'env_biome';
       value = MD_ENV_TERM[id]

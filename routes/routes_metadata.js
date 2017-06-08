@@ -226,7 +226,7 @@ router.post('/metadata_upload',
     form.field("magnesium", "Magnesium").trim().entityEncode().array(),
     form.field("manganese", "Manganese").trim().entityEncode().array(),
     form.field("env_material", "Environmental Material - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
-    form.field("env_material_sec", "Environmental Material - Secondary").trim().entityEncode().array(),
+    form.field("material_secondary", "Environmental Material - Secondary").trim().entityEncode().array(),
     form.field("methane", "Methane").trim().entityEncode().array(),
     form.field("methane_del13C", "Delta 13C for methane").trim().entityEncode().array(),
     form.field("microbial_biomass_FISH", "Microbial biomass – FISH").trim().entityEncode().array(),
@@ -358,14 +358,18 @@ function editMetadataForm(req, res){
   edit_metadata_address = "metadata/metadata_upload_from_file";
   console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
 
-  // console.log("XXX1 all_metadata: req.form");
-  // console.log(req.form);
-  // console.log("XXX2 req.body.project_id");
-  // console.log(req.body.project_id);
-  // console.log(pid);
-  // console.log("XXX3 req.body.project_id");
-  // console.log(all_metadata);
+  console.log("XXX1 all_metadata: req.form");
+  console.log(req.form);
+
+  console.log("XXX2 req.body.project_id");
+  console.log(req.body.project_id);
+  console.log(pid);
+
   all_metadata = {pid: req.form};
+
+  console.log("XXX3 all_metadata");
+  console.log(all_metadata);
+
   res.render('metadata/metadata_upload_from_file', {
     title: 'VAMPS: Metadata_upload',
     user: req.user,
@@ -606,8 +610,8 @@ function populate_metadata_hash(rows, pid, all_metadata) {
       all_metadata[pid]["dataset"].push(row.dataset);
       all_metadata[pid]["dataset_description"].push(row.dataset_description);
 
-      console.log('AAA5 all_metadata[pid]["dataset_id"]');
-      console.log(all_metadata[pid]["dataset_id"]);
+      // console.log('AAA5 all_metadata[pid]["dataset_id"]');
+      // console.log(all_metadata[pid]["dataset_id"]);
       /*
       console.log("AllMetadataFromFile[dataset_id]");
       console.log(AllMetadataFromFile[dataset_id]);
@@ -795,8 +799,10 @@ function make_metadata_hash(req, res) {
 }
 
 function env_items_validation(value) {
-  console.log("EEE env_items_validation(value)");
-  console.log(value);
+  // console.log("EEE env_items_validation(value)");
+  // console.log(value);
+  // console.log(this);
+
   if (value === "Please choose one") {
       throw new Error("Please choose one value from the dropdown menu for %s.");
   }
