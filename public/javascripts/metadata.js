@@ -515,9 +515,20 @@ function populate_secondary_select(args) {
     var op = document.createElement('option');
     //set its value
     op.value = sec_options[_val][i];
+  // .setAttribute('selected','selected');
+    alert("op.value.nodeType");
+    alert(op.value.nodeType);
+
+
+    if (op.value === sel_val)
+    {
+      op.setAttribute('selected','selected');
+    }
 
     //set the display label
     op.text = sec_options[_val][i];
+    alert("op.text");
+    alert(op.text);
 
     //append it to B
     B.appendChild(op);
