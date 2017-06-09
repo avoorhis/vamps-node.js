@@ -601,7 +601,7 @@ $("#addrow").on('click', function() {
     rowIndex + '" type="text" placeholder="Column Name"/></td>"' + '<td><input id="Units' + rowIndex +
     '" name="Units' + rowIndex + '" type="text" placeholder="Units"/></td>"';
 
-  var newRow2 = '<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
+  var newRow2 = '<tr id="new_row' + rowIndex + '"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
 
 
   $("#first_col_table > tbody > tr:last").after(newRow1);
@@ -616,10 +616,22 @@ $("#addrow").on('click', function() {
 // });
 
 $("#removerow").on('click', function() {
-  alert("removerow");
-  alert(rowIndex);
-  // $(this).parents('tr').remove();
-  $("#first_col_table > tbody > tr:last").remove();
+  // alert("removerow");
+  // alert(rowIndex);
+  //
+  // var a = $("#first_col_table > tbody > tr:last");
+  // alert('a.attr("id")');
+  // alert(a.attr("id"));
+
+  last_row_id = "new_row" + rowIndex;
+  alert(last_row_id + " was removed");
+
+  $('table#first_col_table tr#'+last_row_id).remove();
+  $('table#fixed_table_base tr#'+last_row_id).remove();
+
+  rowIndex--;
+  // $("#first_col_table > tbody > tr#last_row_id").remove();
+  // $("#fixed_table_base > tbody > tr#last_row_id").remove();
 
 });
 // ---
