@@ -601,7 +601,12 @@ $("#addrow").on('click', function() {
     rowIndex + '" type="text" placeholder="Column Name"/></td>"' + '<td><input id="Units' + rowIndex +
     '" name="Units' + rowIndex + '" type="text" placeholder="Units"/></td>"';
 
-  var newRow2 = '<tr id="new_row' + rowIndex + '"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
+  var row_length = $("#fixed_table_base > tbody > tr:last").children('td').length;
+
+  var cells = Array(row_length).join('<td><input type="text" name="" id="" value=""/></td>');
+
+
+  var newRow2 = '<tr id="new_row' + rowIndex + '">' + cells + '</tr>';
 
 
   $("#first_col_table > tbody > tr:last").after(newRow1);
@@ -623,8 +628,8 @@ $("#removerow").on('click', function() {
     // alert(last_row_id + " was removed");
     // alert("One user-added row was removed");
 
-    $('table#first_col_table tr#'+last_row_id).remove();
-    $('table#fixed_table_base tr#'+last_row_id).remove();
+    $('table#first_col_table tr#' + last_row_id).remove();
+    $('table#fixed_table_base tr#' + last_row_id).remove();
 
     rowIndex--;
   }
