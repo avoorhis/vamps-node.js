@@ -111,12 +111,12 @@
 
 
     <select id="material_secondary<%- did %>" name="material_secondary" class="material_secondary">
-        <!--<% // if (selected_val) { %>-->
-        <!--<option value="<%= //  selected_val%>" selected ><%=//  selected_val%></option>-->
-        <!--<% // } else { %>-->
-        <!--<option value="none">none</option>-->
+        <%  if (selected_val) { %>
+        <option value="<%=  selected_val%>" selected ><%= selected_val%></option>
+        <%  } else { %>
+        <option value="none">none</option>
 
-        <!--<% // } %>-->
+        <%  } %>
     </select>
 </td>
 <!--material end  -->

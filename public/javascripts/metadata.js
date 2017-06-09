@@ -491,11 +491,22 @@ function populate_secondary_select(args) {
 
   var B = document.getElementById(id2+did);
 
+
+  //---
+
+  var sel_val = $(B).find(":selected").val();
+
+  alert("sel_val");
+  alert(sel_val);
+
+  //---
+
   //clear out B
   B.length = 0;
 
   //get the selected value from A
   var _val = this.options[this.selectedIndex].value;
+
 
   //loop through bOption at the selected value
   for (var i in sec_options[_val]) {
@@ -593,11 +604,14 @@ $(document).ready(function(){
 
   });
   $('.env_material').change(function(){
-      populate_secondary_select.call(this, ['material', material_seq_options]);
+    alert("On change");
+    populate_secondary_select.call(this, ['material', material_seq_options]);
   }).each(function(){
+    alert("on each")
 
     if($(this).val() !== "Please choose one") {
       // this.style.backgroundColor = "green";
+
       populate_secondary_select.call(this, ['material', material_seq_options]);
     }
     // else {
