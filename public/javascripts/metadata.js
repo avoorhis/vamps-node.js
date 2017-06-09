@@ -588,13 +588,39 @@ fnScroll = function(){
     $('#firstcol_div').scrollTop($('#table_div').scrollTop());
 };
 
+// ---
+var rowIndex = 0;
+
+$("#addrow").on('click', function() {
+
+  rowIndex++;
+  alert("addrow");
+  alert(rowIndex);
+
+  var newRow1 = '<tr><td><input id="Column Name' + rowIndex + '" name="Column Name' +
+    rowIndex + '" type="text" placeholder="Column Name"/></td>"' + '<td><input id="Units' + rowIndex +
+    '" name="Units' + rowIndex + '" type="text" placeholder="Units"/></td>"' +
+    '<td><input type="button" class="removerow" id="removerow' +
+    rowIndex + '" name="removerow' + rowIndex + '" value="Remove"/></td>';
+  
+  var newRow2 = '<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
+
+
+  $("#first_col_table > tbody > tr:last").after(newRow1);
+  $("#fixed_table_base > tbody > tr:last").after(newRow2);
+
+});
+
+$("#first_col_table").on('click','.removerow',function(){
+  alert("removerow");
+  alert(rowIndex);
+
+});
+
+
+// ---
 
 $(document).ready(function(){
-
-  $("button").click(function () {
-    $("#DataRow").clone().appendTo("#first_col_table");
-  });
-
   $('.env_biome').change(function(){
       populate_secondary_select.call(this, ['biome', biome_seq_options]);
   }).each(function(){
