@@ -590,7 +590,7 @@ fnScroll = function(){
 
 
 $(document).ready(function(){
-  $('.biome_primary').change(function(){
+  $('.env_biome').change(function(){
       populate_secondary_select.call(this, ['biome', biome_seq_options]);
   }).each(function(){
 
@@ -600,7 +600,7 @@ $(document).ready(function(){
 
   });
 
-  $('.feature_primary').change(function(){
+  $('.env_feature').change(function(){
       populate_secondary_select.call(this, ['feature', feature_seq_options]);
   }).each(function(){
 

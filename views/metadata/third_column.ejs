@@ -33,9 +33,9 @@
 <!-- biome -->
 <% } else if (all_field_names[idx][0] === "env_biome") { %>
 <td>
-    <% selected_val = get_selected_val(pid, did, "biome_primary")
+    <% selected_val = get_selected_val(pid, did, "env_biome")
     %>
-    <select id="biome_primary<%- did%>" name="biome_primary" class = "biome_primary">
+    <select id="env_biome<%- did%>" name="env_biome" class = "env_biome">
         <% biome_primary_options.forEach(function(value){ %>
         <option value="<%= value %>"
                 <% if (value == selected_val) {%>
@@ -45,25 +45,26 @@
         <% }) %>
     </select>
 </td>
-<% } else if (all_field_names[idx][0] === "env_biome_sec") { %>
+<% } else if (all_field_names[idx][0] === "biome_secondary") { %>
 <td>
     <% var selected_val = get_selected_val(pid, did, "biome_secondary") %>
     <select id="biome_secondary<%- did %>" name="biome_secondary" class="biome_secondary">
 
-        <% if (selected_val) { %>
-        <option value="<%= selected_val%>"><%= selected_val%></option>
-        <% } else { %>
+        <%  if (selected_val) { %>
+        <option value="<%=  selected_val%>" selected ><%= selected_val%></option>
+        <%  } else { %>
         <option value="none">none</option>
-        <% } %>
+
+        <%  } %>
 
     </select>
 </td>
 <!--feature -->
 <% } else if (all_field_names[idx][0] === "env_feature") { %>
 <td>
-    <% selected_val = get_selected_val(pid, did, "feature_primary") %>
+    <% selected_val = get_selected_val(pid, did, "env_feature") %>
 
-    <select id="feature_primary<%- did%>" name="feature_primary" class = "feature_primary">
+    <select id="env_feature<%- did%>" name="env_feature" class = "env_feature">
         <% feature_primary_options.forEach(function(value){ %>
         <option value="<%= value %>"
                 <% if (value == selected_val) {%>
@@ -73,16 +74,19 @@
         <% }) %>
     </select>
 </td>
-<% } else if (all_field_names[idx][0] === "env_feature_sec") { %>
+<% } else if (all_field_names[idx][0] === "feature_secondary") { %>
 <td>
     <% selected_val = get_selected_val(pid, did, "feature_secondary")
     %>
     <select id="feature_secondary<%- did %>" name="feature_secondary" class="feature_secondary">
-        <% if (selected_val) { %>
-        <option value="<%= selected_val%>"><%= selected_val%></option>
-        <% } else { %>
+
+        <%  if (selected_val) { %>
+        <option value="<%=  selected_val%>" selected ><%= selected_val%></option>
+        <%  } else { %>
         <option value="none">none</option>
-        <% } %>
+
+        <%  } %>
+
     </select>
 </td>
 <!--feature end  -->
@@ -90,9 +94,6 @@
 <% } else if (all_field_names[idx][0] === "env_material") { %>
 <td>
     <% selected_val = get_selected_val(pid, did, "env_material") %>
-    selected_val
-    <%= selected_val %>
-
     <select id="env_material<%- did%>" name="env_material" class = "env_material">
         <% material_primary_options.forEach(function(value){ %>
         <option value="<%= value %>"
@@ -106,9 +107,6 @@
 <% } else if (all_field_names[idx][0] === "material_secondary") { %>
 <td>
     <% selected_val = get_selected_val(pid, did, "material_secondary") %>
-    selected_val
-    <%= selected_val %>
-
 
     <select id="material_secondary<%- did %>" name="material_secondary" class="material_secondary">
         <%  if (selected_val) { %>
