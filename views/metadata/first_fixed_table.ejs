@@ -1,6 +1,7 @@
 <% if (all_metadata) { %>
 
 <table #fixed_col_wrap>
+    <tbody>
     <tr>
         <td id="firstTd">
         </td>
@@ -19,6 +20,7 @@
         <td valign="top">
             <div id="firstcol_div" >
                 <table id="first_col_table">
+                    <tbody>
                     <!-- all_metadata -->
                     <!-- for each project  -->
                     <% for (var key in all_metadata) { %>
@@ -35,6 +37,7 @@
                         <% } %>
                         <% } %>
                     <% } %>
+                    </tbody>
                 </table>
             </div>
         </td>
@@ -43,6 +46,7 @@
             <div id="table_div">
 
             <table id="fixed_table_base" >
+                <tbody>
                     <% for (var key in all_metadata) { %>
                     <% if (all_field_names) { %>
                     <!-- for each field name  -->
@@ -57,8 +61,15 @@
                         <% } %>
                         <% } %>
                         <% } %>
+                    </tbody>
                 </table>
             </div>
     </tr>
+    <tfoot>
+    <tr>
+        <td colspan="2"><button type="button" id="addrow">Add Row</button></td>
+    </tr>
+    </tfoot>
+    </tbody>
 </table>
 <% } %>

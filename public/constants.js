@@ -620,7 +620,9 @@ constants.ORDERED_METADATA_NAMES = [
     ["plate_counts","Plate counts – colony forming ","", "CFU/ml"],
     ["functional_gene_assays","functional gene assays (key findings)","", ""],
     ["clone_library_results","clone library results (key findings)","", ""],
-    ["enzyme_activities","enzyme activities (key findings)","", ""]
+    ["enzyme_activities","enzyme activities (key findings)","", ""],
+    ["","User-added","", ""]
+
 ];
 
 constants.ORDERED_METADATA_DIVIDERS = ["Biological",

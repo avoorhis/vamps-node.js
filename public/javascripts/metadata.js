@@ -590,6 +590,11 @@ fnScroll = function(){
 
 
 $(document).ready(function(){
+
+  $("button").click(function () {
+    $("#DataRow").clone().appendTo("#first_col_table");
+  });
+
   $('.env_biome').change(function(){
       populate_secondary_select.call(this, ['biome', biome_seq_options]);
   }).each(function(){
