@@ -496,8 +496,8 @@ function populate_secondary_select(args) {
 
   var sel_val = $(B).find(":selected").val();
 
-  alert("sel_val");
-  alert(sel_val);
+  // alert("sel_val");
+  // alert(sel_val);
 
   //---
 
@@ -516,9 +516,6 @@ function populate_secondary_select(args) {
     //set its value
     op.value = sec_options[_val][i];
   // .setAttribute('selected','selected');
-    alert("op.value.nodeType");
-    alert(op.value.nodeType);
-
 
     if (op.value === sel_val)
     {
@@ -527,8 +524,6 @@ function populate_secondary_select(args) {
 
     //set the display label
     op.text = sec_options[_val][i];
-    alert("op.text");
-    alert(op.text);
 
     //append it to B
     B.appendChild(op);
@@ -615,10 +610,10 @@ $(document).ready(function(){
 
   });
   $('.env_material').change(function(){
-    alert("On change");
+    // alert("On change");
     populate_secondary_select.call(this, ['material', material_seq_options]);
   }).each(function(){
-    alert("on each")
+    // alert("on each")
 
     if($(this).val() !== "Please choose one") {
       // this.style.backgroundColor = "green";
