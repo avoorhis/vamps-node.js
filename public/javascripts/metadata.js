@@ -616,23 +616,22 @@ $("#addrow").on('click', function() {
 // });
 
 $("#removerow").on('click', function() {
-  // alert("removerow");
-  // alert(rowIndex);
-  //
-  // var a = $("#first_col_table > tbody > tr:last");
-  // alert('a.attr("id")');
-  // alert(a.attr("id"));
 
-  last_row_id = "new_row" + rowIndex;
-  alert(last_row_id + " was removed");
+  if (rowIndex > 0){
 
-  $('table#first_col_table tr#'+last_row_id).remove();
-  $('table#fixed_table_base tr#'+last_row_id).remove();
+    last_row_id = "new_row" + rowIndex;
+    // alert(last_row_id + " was removed");
+    // alert("One user-added row was removed");
 
-  rowIndex--;
-  // $("#first_col_table > tbody > tr#last_row_id").remove();
-  // $("#fixed_table_base > tbody > tr#last_row_id").remove();
+    $('table#first_col_table tr#'+last_row_id).remove();
+    $('table#fixed_table_base tr#'+last_row_id).remove();
 
+    rowIndex--;
+  }
+  else {
+    // $('#removerow').hide();
+    alert('Only user-added rows can be removed');
+  }
 });
 // ---
 
