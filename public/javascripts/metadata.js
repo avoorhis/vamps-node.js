@@ -599,10 +599,8 @@ $("#addrow").on('click', function() {
 
   var newRow1 = '<tr><td><input id="Column Name' + rowIndex + '" name="Column Name' +
     rowIndex + '" type="text" placeholder="Column Name"/></td>"' + '<td><input id="Units' + rowIndex +
-    '" name="Units' + rowIndex + '" type="text" placeholder="Units"/></td>"' +
-    '<td><input type="button" class="removerow" id="removerow' +
-    rowIndex + '" name="removerow' + rowIndex + '" value="Remove"/></td>';
-  
+    '" name="Units' + rowIndex + '" type="text" placeholder="Units"/></td>"';
+
   var newRow2 = '<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
 
 
@@ -611,13 +609,16 @@ $("#addrow").on('click', function() {
 
 });
 
-$("#first_col_table").on('click','.removerow',function(){
+// $("#first_col_table").on('click','.removerow',function(){
+//   alert("removerow");
+//   alert(rowIndex);
+//
+// });
+
+$("#removerow").on('click', function() {
   alert("removerow");
   alert(rowIndex);
-
 });
-
-
 // ---
 
 $(document).ready(function(){
