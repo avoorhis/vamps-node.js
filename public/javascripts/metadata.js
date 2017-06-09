@@ -594,8 +594,8 @@ var rowIndex = 0;
 $("#addrow").on('click', function() {
 
   rowIndex++;
-  alert("addrow");
-  alert(rowIndex);
+  // alert("addrow");
+  // alert(rowIndex);
 
   var newRow1 = '<tr id="new_row' + rowIndex + '"><td><input id="Column Name' + rowIndex + '" name="Column Name' +
     rowIndex + '" type="text" placeholder="Column Name"/></td>"' + '<td><input id="Units' + rowIndex +
@@ -603,8 +603,7 @@ $("#addrow").on('click', function() {
 
   var row_length = $("#fixed_table_base > tbody > tr:last").children('td').length;
 
-  var cells = Array(row_length).join('<td><input type="text" name="" id="" value=""/></td>');
-
+  var cells = Array(row_length+1).join('<td><input type="text" name="" id="" value=""/></td>');
 
   var newRow2 = '<tr id="new_row' + rowIndex + '">' + cells + '</tr>';
 
