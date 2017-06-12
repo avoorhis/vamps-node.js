@@ -594,8 +594,8 @@ var rowIndex = 0;
 $("#addrow").on('click', function() {
   var i = 0;
   rowIndex++;
-  alert("addrow");
-  alert(rowIndex);
+  // alert("addrow");
+  // alert(rowIndex);
 
   var newRow1 = '<tr id="new_row' + rowIndex + '"><td><input id="Column Name' + rowIndex + '" name="Column Name' +
     rowIndex + '" type="text" placeholder="Column Name"/></td>"' + '<td><input id="Units' + rowIndex +
@@ -617,34 +617,11 @@ $("#addrow").on('click', function() {
 
   $("#first_col_table > tbody > tr:last").after(newRow1);
   $("#fixed_table_base > tbody > tr:last").after(newRow2);
-  // var new_row_num = $("#new_row_num").val();
-
-  alert("new_row_num");
-
-    // var text = $( this ).text();
-  // alert(text);
-
-  // $( "#new_row_num" ).val( text );
-
 
   $('#new_row_num').val( rowIndex );
 
-  var new_row_num = $("#new_row_num").val();
-
-  alert("new_row_num1");
-  alert(new_row_num);
-
-  // .attr('value', "10");
-
-  // $("#new_row_num").val("10");
-  // alert(new_row_num);
 });
 
-// $("#first_col_table").on('click','.removerow',function(){
-//   alert("removerow");
-//   alert(rowIndex);
-//
-// });
 
 $("#removerow").on('click', function() {
 

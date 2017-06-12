@@ -309,7 +309,7 @@ router.post('/metadata_upload',
       console.log('req.form.getErrors()');
       console.log(req.form.getErrors());
 
-
+      new_row_num_validation(req.body);
       editMetadataForm(req, res);
       //TODO: remove make_csv from here, use only if valid.
       make_csv(req, res);
@@ -879,6 +879,17 @@ function convertArrayOfObjectsToCSV(args) {
     // console.log("CCC3 convertArrayOfObjectsToCSV result");
     // console.log(result);
     return result;
+}
+
+function new_row_num_validation(req_body) {
+  console.log("new_row_num11");
+  console.log(req_body.new_row_num);
+  new_row_num = req_body.new_row_num;
+
+  for (var i = 0; i < parseInt(new_row_num); i++) {
+    console.log(i);
+
+  }
 }
 
 // ---- metadata_upload end ----
