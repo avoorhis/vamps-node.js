@@ -627,12 +627,14 @@ $("#addrow").on('click', function() {
   // $( "#new_row_num" ).val( text );
 
 
-  $('#new_row_num').val("15");
+  $('#new_row_num').val( rowIndex );
 
-  // var new_row_num = $("#new_row_num").val();
+  var new_row_num = $("#new_row_num").val();
 
   alert("new_row_num1");
-    // .attr('value', "10");
+  alert(new_row_num);
+
+  // .attr('value', "10");
 
   // $("#new_row_num").val("10");
   // alert(new_row_num);
@@ -656,6 +658,8 @@ $("#removerow").on('click', function() {
     $('table#fixed_table_base tr#' + last_row_id).remove();
 
     rowIndex--;
+    $('#new_row_num').val( rowIndex );
+
   }
   else {
     // $('#removerow').hide();
