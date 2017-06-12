@@ -330,26 +330,26 @@ router.post('/metadata_upload',
   }
 );
 
-function format_form(req, res) {
-  edit_metadata_info = {};
-  console.log("RRR req.body");
-  console.log(req.body);
-  /*
-  "16s": [ "16s", "16s", "16s", "16s", "16s", "16s", "16s", "16s" ],
-  project: "DCO_GAI_Bv3v5",
-  pi_name: "",
-  dataset_id: [ "4312", "4313", "4314", "4315", "4316", "4317", "4318", "4319" ],
-  pi_email: "",
-
-
-  */
-  console.log("QQQ req.form");
-  console.log(req.form);
-// { dataset_id: [ "4312", "4313", "4314", "4315", "4316", "4317", "4318", "4319" ],
-  // project_title: [ "Icelandic Volcanic Lake" ],
-
-  return edit_metadata_info;
-}
+// function format_form(req, res) {
+//   edit_metadata_info = {};
+//   console.log("RRR req.body");
+//   console.log(req.body);
+//   /*
+//   "16s": [ "16s", "16s", "16s", "16s", "16s", "16s", "16s", "16s" ],
+//   project: "DCO_GAI_Bv3v5",
+//   pi_name: "",
+//   dataset_id: [ "4312", "4313", "4314", "4315", "4316", "4317", "4318", "4319" ],
+//   pi_email: "",
+//
+//
+//   */
+//   console.log("QQQ req.form");
+//   console.log(req.form);
+// // { dataset_id: [ "4312", "4313", "4314", "4315", "4316", "4317", "4318", "4319" ],
+//   // project_title: [ "Icelandic Volcanic Lake" ],
+//
+//   return edit_metadata_info;
+// }
 
 function editMetadataForm(req, res){
   console.log('in editMetadataForm');
@@ -747,6 +747,10 @@ function make_metadata_hash(req, res) {
 
         console.log("YYY all_metadata from make_metadata_hash");
         console.log(all_metadata);
+
+        // console.log("GGG req.body new lines from make_metadata_hash");
+        // console.log(req.body.);
+
         /*
         YYY all_metadata from make_metadata_hash
         { "47":
