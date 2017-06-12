@@ -592,7 +592,7 @@ fnScroll = function(){
 var rowIndex = 0;
 
 $("#addrow").on('click', function() {
-
+  var i = 0;
   rowIndex++;
   // alert("addrow");
   // alert(rowIndex);
@@ -603,7 +603,14 @@ $("#addrow").on('click', function() {
 
   var row_length = $("#fixed_table_base > tbody > tr:last").children('td').length;
 
-  var cells = Array(row_length+1).join('<td><input type="text" name="" id="" value=""/></td>');
+  var cells = "";
+  for (i = 0; i < row_length; i++) {
+    cells += '<td style="background-color:powderblue;"><input type="text" name="new_row' + rowIndex + 'cell' + i + '" id="new_row' + rowIndex + 'cell' + i + '" value=""/></td>';
+    // text += cars[i] + "<br>";
+  }
+
+
+  // var cells = Array(row_length+1).join('<td><input type="text" name="new_row' + rowIndex + 'cell" id="" value=""/></td>');
 
   var newRow2 = '<tr id="new_row' + rowIndex + '">' + cells + '</tr>';
 
