@@ -904,19 +904,39 @@ function new_row_num_validation(req_body) {
 
     var units_field_name = "Units" + i;
     var column_name_field_name = "Column Name" + i;
-    console.log("units_field");
-    console.log(units_field_name);
-    console.log(sanitizeHtml(req_body[units_field_name]));
+    // console.log("units_field");
+    // console.log(units_field_name);
+    // console.log(sanitizeHtml(req_body[units_field_name]));
 
-    console.log("column_name_field_name");
-    console.log(column_name_field_name);
-    console.log(sanitizeHtml(req_body[column_name_field_name]));
+    // console.log("column_name_field_name");
+    // console.log(column_name_field_name);
+    // console.log(sanitizeHtml(req_body[column_name_field_name]));
     // new_row1cell0: 'c11',
 
     //   "16s": [ "16s", "16s", "16s", "16s", "16s", "16s", "16s", "16s" ],
+    // TODO: check if column_name_field_name and units_field_name are not empty and are alphanumeric
+    new_row_name = sanitizeHtml(req_body[column_name_field_name]) + "__" + sanitizeHtml(req_body[units_field_name]);
+    console.log("EEE new_row_name");
+    console.log(new_row_name);
 
-    new_row_name = column_name_field_name + "__" + units_field_name
-    new_row_info.new_row_name = [];
+    new_row_info[new_row_name] = [];
+    for (var n = 0; n < parseInt(new_row_length); n++) {
+      // console.log("CCC n");
+      // console.log(n);
+
+      cell_name = "new_row1cell" + n.toString();
+      console.log("CCC cell_name");
+      console.log(cell_name);
+
+      console.log("LLL req_body[cell_name]");
+      console.log(req_body[cell_name]);
+
+      new_row_info[new_row_name].push(req_body[cell_name]);
+    }
+    console.log("WWW new_row_info");
+    console.log(new_row_info);
+    // { col1__units1: [ '', 'r1c2', '', '', '', '', '', '' ] }
+
     // new_row1cell4
     //new_row
   }
