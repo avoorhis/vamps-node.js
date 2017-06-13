@@ -7,6 +7,7 @@ var CONSTS  = require(app_root + "/public/constants");
 var fs = require("fs");
 var path = require("path");
 var config  = require(app_root + '/config/config');
+var validator = require('validator');
 
 /* GET metadata page. */
  router.get('/metadata', function(req, res) {
@@ -312,9 +313,11 @@ router.post('/metadata_upload',
 
 
       var new_row_info_arr = new_row_num_validation(req.body);
-      console.log("FFF new_row_info_arr");
-
-      console.log(new_row_info_arr);
+      // console.log("FFF new_row_info_arr");
+      // console.log(new_row_info_arr);
+      // [ { col1__units1: [ '', 'r1c2', '', '', '', '', '', '' ] },
+      //   { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] },
+      //   { col3__: [ 'r3c1', 'r2c3', '', '', '', '', '', '' ] } ]
 
       editMetadataForm(req, res);
       //TODO: remove make_csv from here, use only if valid.
@@ -892,15 +895,15 @@ function new_row_num_validation(req_body) {
 
   var new_row_info_arr = [];
 
-  console.log("new_row_num11");
+  // console.log("new_row_num11");
   var new_row_num = req_body.new_row_num;
 
-  console.log(new_row_num);
-
-  console.log("new_row_length 111");
+  // console.log(new_row_num);
+  //
+  // console.log("new_row_length 111");
   var new_row_length = req_body.new_row_length;
 
-  console.log(new_row_length);
+  // console.log(new_row_length);
 
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
     console.log("row_idx");
@@ -910,14 +913,24 @@ function new_row_num_validation(req_body) {
 
     var units_field_name = "Units" + row_idx;
     var column_name_field_name = "Column Name" + row_idx;
-    // console.log("units_field");
-    // console.log(units_field_name);
-    // console.log(sanitizeHtml(req_body[units_field_name]));
 
-    // console.log("column_name_field_name");
-    // console.log(column_name_field_name);
-    // console.log(sanitizeHtml(req_body[column_name_field_name]));
+
+
+    console.log("units_field");
+    console.log(units_field_name);
+    console.log(sanitizeHtml(req_body[units_field_name]));
+
+    console.log("column_name_field_name");
+    console.log(column_name_field_name);
+    console.log(sanitizeHtml(req_body[column_name_field_name]));
     // new_row1cell0: 'c11',
+
+    console.log("validator isEmpty");
+    a = validator.isEmpty(sanitizeHtml(req_body[column_name_field_name]));
+    console.log(a);
+    b = validator.isEmpty(sanitizeHtml(req_body[units_field_name]));
+    console.log(b);
+
 
     //   "16s": [ "16s", "16s", "16s", "16s", "16s", "16s", "16s", "16s" ],
     // TODO: check if column_name_field_name and units_field_name are not empty and are alphanumeric
