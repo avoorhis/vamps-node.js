@@ -925,10 +925,18 @@ function new_row_num_validation(req_body) {
     console.log(sanitizeHtml(req_body[column_name_field_name]));
     // new_row1cell0: 'c11',
 
+
+    var column_name_field_val = sanitizeHtml(req_body[column_name_field_name]);
+    var units_field_val = sanitizeHtml(req_body[units_field_name]);
+
     console.log("validator isEmpty");
-    a = validator.isEmpty(sanitizeHtml(req_body[column_name_field_name]));
+    a = validator.escape(column_name_field_val);
+    a = validator.trim(a);
+    a = validator.isEmpty(a);
     console.log(a);
-    b = validator.isEmpty(sanitizeHtml(req_body[units_field_name]));
+    b = validator.escape(units_field_val);
+    b = validator.trim(b);
+    b = validator.isEmpty(b);
     console.log(b);
 
 
