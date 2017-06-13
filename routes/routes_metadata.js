@@ -311,7 +311,11 @@ router.post('/metadata_upload',
       console.log(req.form.getErrors());
 
 
-      new_row_num_validation(req.body);
+      var new_row_info_arr = new_row_num_validation(req.body);
+      console.log("FFF new_row_info_arr");
+
+      console.log(new_row_info_arr);
+
       editMetadataForm(req, res);
       //TODO: remove make_csv from here, use only if valid.
       make_csv(req, res);
@@ -886,13 +890,15 @@ function convertArrayOfObjectsToCSV(args) {
 function new_row_num_validation(req_body) {
   var sanitizeHtml = require('sanitize-html');
 
+  var new_row_info_arr = [];
+
   console.log("new_row_num11");
-  new_row_num = req_body.new_row_num;
+  var new_row_num = req_body.new_row_num;
 
   console.log(new_row_num);
 
   console.log("new_row_length 111");
-  new_row_length = req_body.new_row_length;
+  var new_row_length = req_body.new_row_length;
 
   console.log(new_row_length);
 
@@ -935,11 +941,14 @@ function new_row_num_validation(req_body) {
     }
     console.log("WWW new_row_info");
     console.log(new_row_info);
+
+    new_row_info_arr.push(new_row_info);
     // { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] }
 
     // new_row1cell4
     //new_row
   }
+  return new_row_info_arr;
 }
 
 // ---- metadata_upload end ----
