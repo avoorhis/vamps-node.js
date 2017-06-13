@@ -886,17 +886,20 @@ function new_row_num_validation(req_body) {
   console.log(req_body.new_row_num);
   new_row_num = req_body.new_row_num;
 
+  var sanitizeHtml = require('sanitize-html');
+
   for (var i = 1; i < parseInt(new_row_num) + 1; i++) {
+    // var clean = sanitizeHtml(dirty);
     console.log(i);
     var units_field_name = "Units" + i;
     var column_name_field_name = "Column Name" + i;
     console.log("units_field");
     console.log(units_field_name);
-    console.log(req_body[units_field_name]);
+    console.log(sanitizeHtml(req_body[units_field_name]));
 
     console.log("column_name_field_name");
     console.log(column_name_field_name);
-    console.log(req_body[column_name_field_name]);
+    console.log(sanitizeHtml(req_body[column_name_field_name]));
     // new_row1cell0: 'c11',
 
     //new_row
