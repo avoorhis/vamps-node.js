@@ -310,9 +310,8 @@ router.post('/metadata_upload',
       console.log('req.form.getErrors()');
       console.log(req.form.getErrors());
 
-      req.body.sanitized = req.sanitize(req.body);
 
-      new_row_num_validation(req.body.sanitized);
+      new_row_num_validation(req.body);
       editMetadataForm(req, res);
       //TODO: remove make_csv from here, use only if valid.
       make_csv(req, res);
@@ -885,15 +884,15 @@ function convertArrayOfObjectsToCSV(args) {
 }
 
 function new_row_num_validation(req_body) {
-
-  console.log("new_row_num11");
-  console.log(req_body.new_row_num);
-  new_row_num = req_body.new_row_num;
-
   var sanitizeHtml = require('sanitize-html');
 
+  console.log("new_row_num11");
+  new_row_num = req_body.new_row_num;
+
+  console.log(new_row_num);
+
   for (var i = 1; i < parseInt(new_row_num) + 1; i++) {
-    // var clean = sanitizeHtml(dirty);
+    console.log("i");
     console.log(i);
     var units_field_name = "Units" + i;
     var column_name_field_name = "Column Name" + i;
@@ -905,6 +904,8 @@ function new_row_num_validation(req_body) {
     console.log(column_name_field_name);
     console.log(sanitizeHtml(req_body[column_name_field_name]));
     // new_row1cell0: 'c11',
+
+
 
     //new_row
   }
