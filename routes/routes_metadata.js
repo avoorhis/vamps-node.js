@@ -896,14 +896,14 @@ function new_row_num_validation(req_body) {
 
   console.log(new_row_length);
 
-  for (var i = 1; i < parseInt(new_row_num) + 1; i++) {
-    console.log("i");
-    console.log(i);
+  for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
+    console.log("row_idx");
+    console.log(row_idx);
     var new_row_info = {};
 
 
-    var units_field_name = "Units" + i;
-    var column_name_field_name = "Column Name" + i;
+    var units_field_name = "Units" + row_idx;
+    var column_name_field_name = "Column Name" + row_idx;
     // console.log("units_field");
     // console.log(units_field_name);
     // console.log(sanitizeHtml(req_body[units_field_name]));
@@ -920,11 +920,11 @@ function new_row_num_validation(req_body) {
     console.log(new_row_name);
 
     new_row_info[new_row_name] = [];
-    for (var n = 0; n < parseInt(new_row_length); n++) {
-      // console.log("CCC n");
-      // console.log(n);
+    for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
+      // console.log("CCC cell_idx");
+      // console.log(cell_idx);
 
-      cell_name = "new_row1cell" + n.toString();
+      cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
       console.log("CCC cell_name");
       console.log(cell_name);
 
@@ -935,7 +935,7 @@ function new_row_num_validation(req_body) {
     }
     console.log("WWW new_row_info");
     console.log(new_row_info);
-    // { col1__units1: [ '', 'r1c2', '', '', '', '', '', '' ] }
+    // { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] }
 
     // new_row1cell4
     //new_row
