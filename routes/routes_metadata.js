@@ -281,6 +281,7 @@ router.post('/metadata_upload',
     form.field("water_age", "Water age").trim().entityEncode().array()
   ),
   function (req, res) {
+
     // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
@@ -309,7 +310,9 @@ router.post('/metadata_upload',
       console.log('req.form.getErrors()');
       console.log(req.form.getErrors());
 
-      new_row_num_validation(req.body);
+      req.body.sanitized = req.sanitize(req.body);
+
+      new_row_num_validation(req.body.sanitized);
       editMetadataForm(req, res);
       //TODO: remove make_csv from here, use only if valid.
       make_csv(req, res);
@@ -882,6 +885,7 @@ function convertArrayOfObjectsToCSV(args) {
 }
 
 function new_row_num_validation(req_body) {
+
   console.log("new_row_num11");
   console.log(req_body.new_row_num);
   new_row_num = req_body.new_row_num;

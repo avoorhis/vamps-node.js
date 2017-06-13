@@ -26,7 +26,7 @@
   ],
   "dependencies": {
     "async": "0.9.x",
-    "body-parser": "",
+    "body-parser": "^1.17.2",
     "compression": "",
     "connect-ensure-login": "^0.1.1",
     "cookie-parser": "",
@@ -40,6 +40,8 @@
     "express-flash": "",
     "express-form": "",
     "express-messages": "",
+    "express-sanitized": "",
+    "express-sanitizer": "^1.0.2",
     "express-session": "",
     "fs-extra": "",
     "html-pdf": "",

@@ -58,6 +58,8 @@ if(config.hostname.substring(0,7) == 'bpcweb8'){
 
 var compression = require('compression');
 var express = require('express');
+var expressSanitizer = require('express-sanitizer');
+
 //var expose = require('express-expose');
 var router = express.Router();
 var session = require('express-session');
@@ -99,6 +101,7 @@ var metadata   = require('./routes/routes_metadata');
 //console.log('test')
 var visuals = require('./routes/visuals/routes_visualization');
 //console.log('test2')
+var expressSanitized = require('express-sanitized');
 
 
 var app = express();
@@ -121,6 +124,9 @@ app.use(bodyParser.urlencoded({
     limit: '50mb',          // size of body
     parameterLimit: 1000000 // number of parameters
 }));
+
+app.use(expressSanitizer()); // this line follows bodyParser() instantiations
+app.use(expressSanitized()); // this line follows bodyParser()
 
 
 //upload.single('singleInputFileName')
