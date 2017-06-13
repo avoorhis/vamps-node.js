@@ -601,16 +601,16 @@ $("#addrow").on('click', function() {
     rowIndex + '" type="text" placeholder="Column Name"/></td>"' + '<td><input id="Units' + rowIndex +
     '" name="Units' + rowIndex + '" type="text" placeholder="Units"/></td>"';
 
-  var row_length = $("#fixed_table_base > tbody > tr:last").children('td').length;
+  var rowLength = $("#fixed_table_base > tbody > tr:last").children('td').length;
 
   var cells = "";
-  for (i = 0; i < row_length; i++) {
+  for (i = 0; i < rowLength; i++) {
     cells += '<td style="background-color:powderblue;"><input type="text" name="new_row' + rowIndex + 'cell' + i + '" id="new_row' + rowIndex + 'cell' + i + '" value=""/></td>';
     // text += cars[i] + "<br>";
   }
 
 
-  // var cells = Array(row_length+1).join('<td><input type="text" name="new_row' + rowIndex + 'cell" id="" value=""/></td>');
+  // var cells = Array(rowLength+1).join('<td><input type="text" name="new_row' + rowIndex + 'cell" id="" value=""/></td>');
 
   var newRow2 = '<tr id="new_row' + rowIndex + '">' + cells + '</tr>';
 
@@ -619,6 +619,8 @@ $("#addrow").on('click', function() {
   $("#fixed_table_base > tbody > tr:last").after(newRow2);
 
   $('#new_row_num').val( rowIndex );
+  $('#new_row_length').val( rowLength );
+
 
 });
 

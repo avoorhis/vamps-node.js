@@ -891,9 +891,17 @@ function new_row_num_validation(req_body) {
 
   console.log(new_row_num);
 
+  console.log("new_row_length 111");
+  new_row_length = req_body.new_row_length;
+
+  console.log(new_row_length);
+
   for (var i = 1; i < parseInt(new_row_num) + 1; i++) {
     console.log("i");
     console.log(i);
+    var new_row_info = {};
+
+
     var units_field_name = "Units" + i;
     var column_name_field_name = "Column Name" + i;
     console.log("units_field");
@@ -905,8 +913,11 @@ function new_row_num_validation(req_body) {
     console.log(sanitizeHtml(req_body[column_name_field_name]));
     // new_row1cell0: 'c11',
 
+    //   "16s": [ "16s", "16s", "16s", "16s", "16s", "16s", "16s", "16s" ],
 
-
+    new_row_name = column_name_field_name + "__" + units_field_name
+    new_row_info.new_row_name = [];
+    // new_row1cell4
     //new_row
   }
 }
