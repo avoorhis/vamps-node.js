@@ -905,23 +905,23 @@ function convertArrayOfObjectsToCSV(args) {
     return result;
 }
 
-function new_row_val_validation(req, column_name_field_val) {
+function new_row_val_validation(req, field_val, field_name) {
   console.log("validator isEmpty");
-  var column_name_field_val_trimmed = validator.escape(column_name_field_val);
-  column_name_field_val_trimmed = validator.trim(column_name_field_val_trimmed);
-  var column_name_field_val_not_valid = validator.isEmpty(column_name_field_val_trimmed);
-  console.log(column_name_field_val_trimmed);
+  var field_val_trimmed = validator.escape(field_val);
+  field_val_trimmed = validator.trim(field_val_trimmed);
+  var field_val_not_valid = validator.isEmpty(field_val_trimmed);
+  console.log(field_val_trimmed);
 
-  if (column_name_field_val_not_valid)
+  if (field_val_not_valid)
   {
     console.log("ERRRR");
-    req.form.errors.push('column_name_field_name should be not empty');
+    req.form.errors.push(field_name + ' should be not empty');
   }
   else
   {
     console.log("OK");
   }
-  return [req, column_name_field_val_trimmed];
+  return [req, field_val_trimmed];
 }
 
 function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_valid, row_idx) {
@@ -1027,7 +1027,7 @@ function collect_new_row(req) {
 
     }
 
-    var col_val_res = new_row_val_validation(req, column_name_field_val)
+    var col_val_res = new_row_val_validation(req, column_name_field_val, 'Column name');
     req = col_val_res[0];
     var column_name_field_val_trimmed = col_val_res[1];
 
