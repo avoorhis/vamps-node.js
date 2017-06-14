@@ -924,9 +924,9 @@ function new_row_val_validation(req, field_val, field_name) {
   return [req, field_val_trimmed];
 }
 
-function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_valid, row_idx) {
+function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx) {
   var new_row_length = req.body.new_row_length;
-  var new_row_name = [column_name_field_val_trimmed, units_field_val_valid];
+  var new_row_name = [column_name_field_val_trimmed, units_field_val_trimmed];
   var new_row_info = {};
 
   new_row_info[new_row_name] = [];
@@ -999,10 +999,10 @@ function collect_new_row(req) {
     // var column_name_field_val_is_valid = validator.isEmpty(column_name_field_val_trimmed);
     // console.log(column_name_field_val_trimmed);
 
-    var units_field_val_valid = validator.escape(units_field_val);
-    units_field_val_valid = validator.trim(units_field_val_valid);
-    var units_field_val_is_valid = validator.isEmpty(units_field_val_valid);
-    console.log(units_field_val_valid);
+    // var units_field_val_trimmed = validator.escape(units_field_val);
+    // units_field_val_trimmed = validator.trim(units_field_val_trimmed);
+    // var units_field_val_is_valid = validator.isEmpty(units_field_val_trimmed);
+    // console.log(units_field_val_trimmed);
 
     // if (column_name_field_val_trimmed)
     // {
@@ -1015,30 +1015,35 @@ function collect_new_row(req) {
     //
     // }
 
-    if (units_field_val_valid)
-    {
-      console.log("ERRRR");
-      req.form.errors.push('units_field_name should be not empty');
+  //   if (units_field_val_trimmed)
+  //   {
+  //     console.log("ERRRR");
+  //     req.form.errors.push('units_field_name should be not empty');
+  //
+  //   }
+  // else
+  //   {
+  //     console.log("OK");
+  // }
 
-    }
-  else
-    {
-      console.log("OK");
 
-    }
 
-    var col_val_res = new_row_val_validation(req, column_name_field_val, 'Column name');
+  var col_val_res = new_row_val_validation(req, column_name_field_val, 'Column name');
     req = col_val_res[0];
     var column_name_field_val_trimmed = col_val_res[1];
 
-    console.log("column_name_field_val_trimmed");
+    var units_val_res = new_row_val_validation(req, units_field_val, 'Units');
+    req = units_val_res[0];
+    var units_field_val_trimmed = units_val_res[1];
 
-    console.log(column_name_field_val_trimmed);
-    console.log("QQQ req.form.errors");
-    console.log(req.form.errors);
+    // console.log("column_name_field_val_trimmed");
+    //
+    // console.log(column_name_field_val_trimmed);
+    // console.log("QQQ req.form.errors");
+    // console.log(req.form.errors);
 
 
-    make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_valid, row_idx);
+    make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx);
 
     // row = 0 row = {"Column name 1,units in row 1":["cell 1 row 1","row1 cell 2","","","","","",""]} row = 1 row = {",":["","","","","","","",""]}
 
