@@ -941,7 +941,9 @@ function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed,
     // console.log("LLL req.body[cell_name]");
     // console.log(req.body[cell_name]);
 
-    new_row_info[new_row_name].push(req.body[cell_name]);
+    var clean_val = validator.escape(req.body[cell_name]);
+    clean_val = validator.trim(clean_val);
+    new_row_info[new_row_name].push(clean_val);
   }
   console.log("WWW new_row_info");
   console.log(new_row_info);
@@ -994,8 +996,9 @@ function collect_new_row(req) {
     make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx);
 
     // row = 0 row = {"Column name 1,units in row 1":["cell 1 row 1","row1 cell 2","","","","","",""]} row = 1 row = {",":["","","","","","","",""]}
-    
+
   }
+  
   return [new_row_info_arr, req];
 //  how to return 2 things?
 }
