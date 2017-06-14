@@ -908,30 +908,20 @@ function convertArrayOfObjectsToCSV(args) {
 // function new_row_num_validation(req) {
 // }
 
-function make_new_row_hash(req, column_name_field_name, units_field_name, new_row_info_arr, column_name_field_val_valid, units_field_val_valid, row_idx) {
-  var new_row_info = {};
+function make_new_row_hash(req, new_row_info_arr, column_name_field_val_valid, units_field_val_valid, row_idx) {
   var new_row_length = req.body.new_row_length;
-
-
-  //   "16s": [ "16s", "16s", "16s", "16s", "16s", "16s", "16s", "16s" ],
-  // TODO: check if column_name_field_name and units_field_name are not empty and are alphanumeric
-  // new_row_name = sanitizeHtml(req.body[column_name_field_name]) + "__" + sanitizeHtml(req.body[units_field_name]);
   var new_row_name = [column_name_field_val_valid, units_field_val_valid];
-
-  console.log("EEE new_row_name");
-  console.log(new_row_name);
+  var new_row_info = {};
 
   new_row_info[new_row_name] = [];
   for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
-    // console.log("CCC cell_idx");
-    // console.log(cell_idx);
 
     var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
-    console.log("CCC cell_name");
-    console.log(cell_name);
-
-    console.log("LLL req.body[cell_name]");
-    console.log(req.body[cell_name]);
+    // console.log("CCC cell_name");
+    // console.log(cell_name);
+    //
+    // console.log("LLL req.body[cell_name]");
+    // console.log(req.body[cell_name]);
 
     new_row_info[new_row_name].push(req.body[cell_name]);
   }
@@ -1021,7 +1011,7 @@ function collect_new_row(req) {
 
     }
 
-    make_new_row_hash(req, column_name_field_name, units_field_name, new_row_info_arr, column_name_field_val_valid, units_field_val_valid, row_idx);
+    make_new_row_hash(req, new_row_info_arr, column_name_field_val_valid, units_field_val_valid, row_idx);
 
     // row = 0 row = {"Column name 1,units in row 1":["cell 1 row 1","row1 cell 2","","","","","",""]} row = 1 row = {",":["","","","","","","",""]}
 
