@@ -908,6 +908,45 @@ function convertArrayOfObjectsToCSV(args) {
 // function new_row_num_validation(req) {
 // }
 
+function make_new_row_hash(req, column_name_field_name, units_field_name, new_row_info_arr, row_idx) {
+  var new_row_info = {};
+  var new_row_length = req.body.new_row_length;
+
+
+  //   "16s": [ "16s", "16s", "16s", "16s", "16s", "16s", "16s", "16s" ],
+  // TODO: check if column_name_field_name and units_field_name are not empty and are alphanumeric
+  // new_row_name = sanitizeHtml(req.body[column_name_field_name]) + "__" + sanitizeHtml(req.body[units_field_name]);
+  var new_row_name = [req.body[column_name_field_name], req.body[units_field_name]];
+
+  console.log("EEE new_row_name");
+  console.log(new_row_name);
+
+  new_row_info[new_row_name] = [];
+  for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
+    // console.log("CCC cell_idx");
+    // console.log(cell_idx);
+
+    var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
+    console.log("CCC cell_name");
+    console.log(cell_name);
+
+    console.log("LLL req.body[cell_name]");
+    console.log(req.body[cell_name]);
+
+    new_row_info[new_row_name].push(req.body[cell_name]);
+  }
+  console.log("WWW new_row_info");
+  console.log(new_row_info);
+
+  new_row_info_arr.push(new_row_info);
+  // { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] }
+
+  // new_row1cell4
+  //new_row
+  return new_row_info_arr;
+}
+
+
 function collect_new_row(req) {
   // var sanitizeHtml = require('sanitize-html');
 
@@ -919,15 +958,11 @@ function collect_new_row(req) {
   // console.log(new_row_num);
   //
   // console.log("new_row_length 111");
-  var new_row_length = req.body.new_row_length;
-
   // console.log(new_row_length);
 
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
     console.log("row_idx");
     console.log(row_idx);
-    var new_row_info = {};
-
 
     var units_field_name = "Units" + row_idx;
     var column_name_field_name = "Column Name" + row_idx;
@@ -986,38 +1021,11 @@ function collect_new_row(req) {
 
     }
 
+    make_new_row_hash(req, column_name_field_name, units_field_name, new_row_info_arr, row_idx);
+
+    // row = 0 row = {"1,1":["1","","","","","","",""]}
 
 
-    //   "16s": [ "16s", "16s", "16s", "16s", "16s", "16s", "16s", "16s" ],
-    // TODO: check if column_name_field_name and units_field_name are not empty and are alphanumeric
-    // new_row_name = sanitizeHtml(req.body[column_name_field_name]) + "__" + sanitizeHtml(req.body[units_field_name]);
-    new_row_name = req.body[column_name_field_name] + "__" + req.body[units_field_name];
-
-    console.log("EEE new_row_name");
-    console.log(new_row_name);
-
-    new_row_info[new_row_name] = [];
-    for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
-      // console.log("CCC cell_idx");
-      // console.log(cell_idx);
-
-      cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
-      console.log("CCC cell_name");
-      console.log(cell_name);
-
-      console.log("LLL req.body[cell_name]");
-      console.log(req.body[cell_name]);
-
-      new_row_info[new_row_name].push(req.body[cell_name]);
-    }
-    console.log("WWW new_row_info");
-    console.log(new_row_info);
-
-    new_row_info_arr.push(new_row_info);
-    // { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] }
-
-    // new_row1cell4
-    //new_row
   }
   return [new_row_info_arr, req];
 //  how to return 2 things?
