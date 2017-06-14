@@ -754,9 +754,9 @@ function make_metadata_hash(req, res) {
       }
       else
       {
-        var new_row_info_arr_err = new_row_num_validation(req);
-        var new_row_info_arr = new_row_info_arr_err[0];
-        req = new_row_info_arr_err[1];
+        // var new_row_info_arr_err = new_row_num_validation(req);
+        // var new_row_info_arr = new_row_info_arr_err[0];
+        // req = new_row_info_arr_err[1];
 
         console.log("in make_metadata_hash");
         // console.log("rows");
@@ -803,7 +803,7 @@ function make_metadata_hash(req, res) {
           metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
           env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
           investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-          new_row_info_arr: new_row_info_arr
+          new_row_info_arr: ""
 
         });
 
