@@ -905,7 +905,9 @@ function convertArrayOfObjectsToCSV(args) {
     return result;
 }
 
-function new_row_val_validation(req, field_val, field_name) {
+function new_row_val_validation(req, field_name) {
+  var field_val = req.body[field_name];
+
   console.log("validator isEmpty");
   var field_val_trimmed = validator.escape(field_val);
   field_val_trimmed = validator.trim(field_val_trimmed);
@@ -974,65 +976,11 @@ function collect_new_row(req) {
     var column_name_field_name = "Column Name" + row_idx;
 
 
-
-    // console.log("units_field");
-    // console.log(units_field_name);
-    // // console.log(sanitizeHtml(req.body[units_field_name]));
-    // console.log(req.body[units_field_name]);
-    //
-    // console.log("column_name_field_name");
-    // console.log(column_name_field_name);
-    // // console.log(sanitizeHtml(req.body[column_name_field_name]));
-    // console.log(req.body[column_name_field_name]);
-
-    // new_row1cell0: 'c11',
-
-
-    var column_name_field_val = req.body[column_name_field_name];
-    var units_field_val = req.body[units_field_name];
-    // var column_name_field_val = sanitizeHtml(req.body[column_name_field_name]);
-    // var units_field_val = sanitizeHtml(req.body[units_field_name]);
-
-    // console.log("validator isEmpty");
-    // var column_name_field_val_trimmed = validator.escape(column_name_field_val);
-    // column_name_field_val_trimmed = validator.trim(column_name_field_val_trimmed);
-    // var column_name_field_val_is_valid = validator.isEmpty(column_name_field_val_trimmed);
-    // console.log(column_name_field_val_trimmed);
-
-    // var units_field_val_trimmed = validator.escape(units_field_val);
-    // units_field_val_trimmed = validator.trim(units_field_val_trimmed);
-    // var units_field_val_is_valid = validator.isEmpty(units_field_val_trimmed);
-    // console.log(units_field_val_trimmed);
-
-    // if (column_name_field_val_trimmed)
-    // {
-    //   console.log("ERRRR");
-    //   req.form.errors.push('column_name_field_name should be not empty');
-    // }
-    // else
-    // {
-    //   console.log("OK");
-    //
-    // }
-
-  //   if (units_field_val_trimmed)
-  //   {
-  //     console.log("ERRRR");
-  //     req.form.errors.push('units_field_name should be not empty');
-  //
-  //   }
-  // else
-  //   {
-  //     console.log("OK");
-  // }
-
-
-
-  var col_val_res = new_row_val_validation(req, column_name_field_val, 'Column name');
+    var col_val_res = new_row_val_validation(req, column_name_field_name);
     req = col_val_res[0];
     var column_name_field_val_trimmed = col_val_res[1];
 
-    var units_val_res = new_row_val_validation(req, units_field_val, 'Units');
+    var units_val_res = new_row_val_validation(req, units_field_name);
     req = units_val_res[0];
     var units_field_val_trimmed = units_val_res[1];
 
@@ -1046,7 +994,7 @@ function collect_new_row(req) {
     make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx);
 
     // row = 0 row = {"Column name 1,units in row 1":["cell 1 row 1","row1 cell 2","","","","","",""]} row = 1 row = {",":["","","","","","","",""]}
-
+    
   }
   return [new_row_info_arr, req];
 //  how to return 2 things?
