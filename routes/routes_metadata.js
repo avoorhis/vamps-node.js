@@ -380,11 +380,34 @@ function editMetadataForm(req, res){
   // [ { 'Column name 1,units in row 1': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] },
   //   { ',': [ '', '', '', '', '', '', '', '' ] } ]
 
-  console.log("RRR555 req.form.errors");
-  console.log(req.form.errors);
+  // console.log("RRR555 req.form.errors");
+  // console.log(req.form.errors);
 
+  console.log("RRR555");
+  var metadata_form = req.form;
+  for (var a1 in new_row_info_arr) {
+    console.log("a1 in new_row_info_arr");
+    console.log(a1);
+    console.log("new_row_info_arr[a1]");
+    console.log(new_row_info_arr[a1]);
+    for (var a2 in a1) {
+      console.log("a2 in new_row_info_arr");
+      console.log(a2);
+      console.log("a1[a2]");
+      console.log(a2);
+      for (var a3 in a2) {
+        console.log("a3 in new_row_info_arr");
+        console.log(a3);
+        console.log("a2[a3]");
+        console.log(a2[a3]);
+      }
 
-  all_metadata = {pid: req.form};
+    }
+  }
+  // metadata_form["new_row1"] = new_row_info_arr[0];
+
+  // all_metadata = {pid: req.form};
+  var all_metadata = {pid: metadata_form};
 
   console.log("XXX3 all_metadata");
   console.log(all_metadata);
