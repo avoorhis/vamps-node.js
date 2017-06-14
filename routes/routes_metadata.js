@@ -312,21 +312,6 @@ router.post('/metadata_upload',
       console.log(req.form.getErrors());
 
 
-      var new_row_info_arr_err = new_row_num_validation(req);
-      var new_row_info_arr = new_row_info_arr_err[0];
-      req = new_row_info_arr_err[1];
-
-
-      console.log("FFF new_row_info_arr");
-      console.log(new_row_info_arr);
-      // [ { col1__units1: [ '', 'r1c2', '', '', '', '', '', '' ] },
-      //   { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] },
-      //   { col3__: [ 'r3c1', 'r2c3', '', '', '', '', '', '' ] } ]
-
-      console.log("RRR req.form.errors");
-      console.log(req.form.errors);
-
-
       editMetadataForm(req, res);
       //TODO: remove make_csv from here, use only if valid.
       make_csv(req, res);
@@ -382,6 +367,21 @@ function editMetadataForm(req, res){
   console.log(req.body.project_id);
   console.log(pid);
 
+  var new_row_info_arr_err = new_row_num_validation(req);
+  var new_row_info_arr = new_row_info_arr_err[0];
+  req = new_row_info_arr_err[1];
+
+
+  console.log("FFF new_row_info_arr");
+  console.log(new_row_info_arr);
+  // [ { col1__units1: [ '', 'r1c2', '', '', '', '', '', '' ] },
+  //   { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] },
+  //   { col3__: [ 'r3c1', 'r2c3', '', '', '', '', '', '' ] } ]
+
+  console.log("RRR req.form.errors");
+  console.log(req.form.errors);
+
+
   all_metadata = {pid: req.form};
 
   console.log("XXX3 all_metadata");
@@ -401,7 +401,8 @@ function editMetadataForm(req, res){
     material_primary_options: CONSTS.MATERIAL_PRIMARY,
     metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
     env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-    investigation_type_options: CONSTS.INVESTIGATION_TYPE
+    investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+    new_row_info_arr: new_row_info_arr
   });
 }
 
@@ -753,6 +754,10 @@ function make_metadata_hash(req, res) {
       }
       else
       {
+        var new_row_info_arr_err = new_row_num_validation(req);
+        var new_row_info_arr = new_row_info_arr_err[0];
+        req = new_row_info_arr_err[1];
+
         console.log("in make_metadata_hash");
         // console.log("rows");
         // empty all_metadata
@@ -797,7 +802,9 @@ function make_metadata_hash(req, res) {
           material_primary_options: CONSTS.MATERIAL_PRIMARY,
           metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
           env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-          investigation_type_options: CONSTS.INVESTIGATION_TYPE
+          investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+          new_row_info_arr: new_row_info_arr
+
         });
 
 
