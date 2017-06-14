@@ -1,0 +1,102 @@
+<% include ../add_ins/begin.ejs %>
+
+<br>
+ <div class='title'>Metadata</div>
+ <div class='subtitle'></div>
+
+<% if (all_metadata) { %>
+<%
+} else {
+  var all_metadata = {}
+} %>
+
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+<% var myArray = messages.fail %>
+<div class="alert_flash_message_fail" >
+  <ul>
+  <% myArray.forEach(function(value){ %>
+    <li>
+      <%= value %>
+    </li>
+  <% }) %>
+  </ul>
+</div>
+<% }%>
+<br>
+
+
+<H3>Instructions:</H3>
+<ol>
+<li>
+ Fields in yellow are mandatory; other unknown entries may be left blank.
+</li>
+<li>
+ The parameter names listed below are from the MIGS/MIMS/MIMARKS project of the  Genomic Standards Consortium.
+</li>
+<li class="message">
+ A range is not permitted for any value.
+</li>
+</ol>
+<form name='add_project_form' method='POST' action='/metadata/metadata_upload'>
+<!-- <form action="" method="post" enctype="multipart/form-data"> -->
+  <fieldset id="general" class="required_fields" >
+  <legend id="general-legend">General sample description</legend>
+  <% if (all_metadata) { %>
+    <% for (var pid in all_metadata) { %>
+      <!-- dataset_id project title username email institution first_name last_name public -->
+
+      <label for="project_title">Title of Project:</label>
+      <input type="text" id="project_title" name="project_title" value='<%= all_metadata[pid].title %>'/>
+
+      <br />
+      <label for="project">VAMPS project name (MBL Supplied)</label>
+      <input type="text" id="project" readonly name="project" placeholder="DCO_GAI_Bv3v5" value='<%= all_metadata[pid].project %>'/>
+
+      <br />
+      <label for="pi_name">PI Name:</label>
+      <input type="text" id="pi_name" name="pi_name"  value='<%= all_metadata.pi_name %>'/>
+
+      <% for (var did in all_metadata[pid]["dataset_id"]) { %>
+        <input type='hidden' name='dataset_id' value='<%= all_metadata[pid]["dataset_id"][did] %>' />
+      <% } %>
+
+    <% } %>
+  <%
+  } else { var all_metadata = {} %>
+    <!--<input type="text" id="project" readonly name="project" placeholder="DCO_GAI_Bv3v5"/>-->
+  <%}%>
+  <br />
+  <label for="pi_email">PI's email address:</label>
+  <input type="email" id="pi_email" name="pi_email"  value='<%= all_metadata.pi_email %>'/>
+  <br />
+  <label for="project_abstract">CoDL project abstract (.doc format):</label>
+  <textarea id="project_abstract" name="project_abstract"  placeholder= '<%= all_metadata.project_abstract %>'></textarea>
+  <br />
+  <label for="references">References for selected manuscripts published that describe the location:</label>
+  <textarea id="references" name="references"  placeholder='<%= all_metadata.references %>'></textarea>
+  <br />
+  </fieldset>
+  <fieldset id="parameters">
+    <legend id="parameters-legend">Table of metadata parameters</legend>
+      <% include first_fixed_table.ejs %>
+  </fieldset>
+<br>
+
+<!-- center -->
+<input type='hidden' name='project_id' value='<%= pid %>' />
+<input type='hidden' name='from_where' value='metadata_upload_from_file' />
+
+<button class='btn btn-sm btn-primary' type='submit'>Submit</button>
+
+</form>
+
+
+<% include ../add_ins/end.ejs %>
+<script type='text/javascript' src='/javascripts/global.js'></script>
+<script type='text/javascript' src='/javascripts/metadata.js'></script>
+<script type='text/javascript' src='/javascripts/bootstrap-select.js'></script>
+</script>
+</body>
+</html>

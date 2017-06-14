@@ -581,3 +581,7 @@ i.icon-minus-sign {
     color:black;
        
 }
+#otu_select_div {
+    height:500px;
+    overflow:auto;
+}

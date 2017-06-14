@@ -7,7 +7,6 @@
   var mtx_local = JSON.parse('<%- matrix %>');
   var user_local  = '<%= user.username %>';
   var bar_type    = '<%= bar_type %>';
-  var filename    = '<%= seqs_file %>';
 </script>
   
 <div class='title'><%= title %></div>
@@ -42,12 +41,11 @@
 
 <div id='barcharts_table_div' class=''></div>
 
-
+<!--
  <span id='chart_tooltip' >
   <table style='margin:0'>      
-    
     <tr>        
-      <td class='tax'>Tax:</td>
+      <td class='tax'>vTax:</td>
       <td id='unit'></td>
     </tr>
     <tr>        
@@ -75,9 +73,10 @@ $(document).ready(function() {
   
   if(bar_type == 'single'){
     // function is where?  public/javascripts/user_viz_data.js:function get_single_bar_html(obj){
-    barcharts_table_div.innerHTML = get_single_bar_html(mtx_local);
+    barcharts_table_div.innerHTML = get_single_bar_html(mtx_local, <%= ts %>);
+    
   }else{
-    barcharts_table_div.innerHTML = get_double_bar_html(mtx_local);
+    barcharts_table_div.innerHTML = get_double_bar_html(mtx_local, <%= ts %>);
   }
     //new Tablesort(document.getElementById('single_barchart_table_id'));
         
@@ -144,6 +143,7 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
 </script>
 <script type="text/javascript" src="/javascripts/user_viz_data.js" charset="utf-8"></script>
 <script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
+
 
 </body>
 </html>

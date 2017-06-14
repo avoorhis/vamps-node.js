@@ -98,8 +98,8 @@ strain_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_
 strain_queryB = " WHERE dataset_id in ('%s')"
 strain_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
 
-#required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"];
-required_metadata_fields = [ "taxon_id", "description", "common_name", "altitude", "assigned_from_geo", "collection_date", "depth", "elevation", "env_biome_id", "latitude", "longitude", "fragment_name_id", "dna_region_id", "sequencing_platform_id", "domain_id", "country_id", "env_feature_id","env_matter_id","env_package_id"]
+#required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_material", "latitude", "longitude", "public"];
+required_metadata_fields = [ "taxon_id", "description", "common_name", "altitude", "assigned_from_geo", "collection_date", "depth", "elevation", "env_biome_id", "latitude", "longitude", "fragment_name_id", "dna_region_id", "sequencing_platform_id", "domain_id", "country_id", "env_feature_id","env_material_id","env_package_id"]
 
 
 req_query = "SELECT dataset_id, "+','.join(required_metadata_fields)+" from required_metadata_info WHERE dataset_id in ('%s')"

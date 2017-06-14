@@ -450,16 +450,20 @@ if __name__ == '__main__':
         print("ARGS: json_dir=",args.json_file_path,'[Validated]')
         print("ARGS: dbhost  =",args.dbhost)
 
-
-
+    from os.path import expanduser
+    home = expanduser("~")
+    if not os.path.exists(os.path.join(home,".my.cnf_node")):
+        print("Install a mysql .my.cnf file in this location: ","~/.my.cnf_node")
+        sys.exit()
     try:
         db = MySQLdb.connect( host=args.dbhost, # your host, usually localhost
             read_default_file="~/.my.cnf_node" # you can use another ini file, for example .my.cnf_node
         )
     except:
         print("ARGS: json_dir=",args.json_file_path,'[Validated]')
-        print("ARGS: dbhost  =",args.dbhost)
         print(myusage)
+        print("ARGS: dbhost  =",args.dbhost)
+        print('Could not connect to mysql database')
         sys.exit()
     cur = db.cursor()
 

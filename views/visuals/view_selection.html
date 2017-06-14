@@ -93,28 +93,28 @@
 
 
   <div class="row">
-      <div  id='show_selected_datasets_div'  class="col-md-3">
+      <div  id='show_selected_datasets_div'  class="col-lg-3">
         <div class='well'>
               <% include ../partials/show_selected_datasets.html %>
-        </div> <!-- End  show_selected_datasets_div -->
+        </div>
       </div>
     
-      <div id='show_selected_metadata_div'  class="col-md-3">
+      <div id='show_selected_metadata_div'  class="col-lg-3">
         <div class='well'>
               <% include ../partials/show_selected_metadata.html %>
-        </div> <!-- End  show_selected_metadata_div -->
+        </div>
       </div>
     
-      <div  id='show_select_items_div' class="col-md-3">
+      <div  id='show_select_items_div' class="col-lg-3">
         <div class='well'>
               <% include partials/show_visual_output_choices.html %>
-        </div> <!-- End  show_select_items_div -->  
+        </div>
       </div>
      
-      <div  id='show_other_items_div' class="col-md-3">
+      <div  id='show_other_items_div' class="col-lg-3">
         <div class='well'>
           <% include partials/show_parameters.html %>
-        </div> <!-- End  show_select_items_div -->  
+        </div> 
       </div>
   </div>
 
@@ -201,15 +201,15 @@
 <table border='1' class='table'>
         <tr>
           
-          <% for(n in visuals) {                                                %>
-          <%    var thumb = visuals[n].thumb;                                   %>
-          <%    var name = visuals[n].name;                                     %>          
-          <%    var prefix = visuals[n].prefix;                                  %>
-          <%    var link_id = prefix+'_link_id';                                  %>
-          <%    var link = '#';                                                                       %>
-          <%    var target='';                                                                        %>
+          <% for(n in visuals) {                                              %>
+          <%    var thumb = visuals[n].thumb;                                 %>
+          <%    var name = visuals[n].name;                                   %>          
+          <%    var prefix = visuals[n].prefix;                               %>
+          <%    var link_id = prefix+'_link_id';                              %>
+          <%    var link = '#';                                               %>
+          <%    var target='';                                                %>
           <%    var ttip = visuals[n].tip;                                    %>
-          <%    var cols = 5                                                                          %>
+          <%    var cols = 5                                                  %>
           <%    if((ds_count === 1)  && (prefix === 'dheatmap' 
                                         || prefix.substring(0,10) === 'dendrogram' 
                                         || prefix === 'fheatmap'
@@ -231,7 +231,7 @@
                             </center>                     
                     </td>
           <%    } else {                                                                              %>
-          <%        if(activate_thumbs == false) {                                                              %>
+          <%        if(activate_thumbs == false) {                                                    %>
                       <td class='td_top'><%= name %><br>
                         <center> 
                         <img src='<%= thumb %>' border='0' alt='<%= name %>' class='thumb_img' >
@@ -685,6 +685,7 @@
  <script type="text/javascript" src="/javascripts/visual_divs.js"></script>
  <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>
  <script type="text/javascript" src="/javascripts/jquery.flot.min.js"></script>
+ 
  <script type="text/javascript" src="/javascripts/cytoscape.min.js"></script>
  <script type="text/javascript" src="/javascripts/tooltipster.bundle.min.js"></script>
 <!--

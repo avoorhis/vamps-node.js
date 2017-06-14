@@ -1,0 +1,163 @@
+<% include ../../routes/helpers/metadata_functions %>
+<% if (dividers.indexOf( all_field_names[idx][1] ) != -1) { %>
+<td class="header_divider">
+    &nbsp;
+</td>
+<% } else if (all_field_names[idx][0] === "dna_extraction_meth") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "dna_extraction_meth") %>
+
+    <select id="dna_extraction_meth<%- did %>" name="dna_extraction_meth">
+        <% dna_extraction_options.forEach(function(value){ %>
+        <option value="<%= value %>"
+                <% if (value == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value %></option>
+        <% }) %>
+    </select>
+</td>
+<% } else if (all_field_names[idx][1] === "DNA Quantitation") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "dna_quantitation") %>
+    <select id="dna_quantitation<%- did%>" name="dna_quantitation">
+        <% dna_quantitation_options.forEach(function(value){ %>
+        <option value="<%= value %>"
+                <% if (value == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value %></option>
+        <% }) %>
+    </select>
+</td>
+<!-- biome -->
+<% } else if (all_field_names[idx][0] === "env_biome") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "env_biome")
+    %>
+    <select id="env_biome<%- did%>" name="env_biome" class = "env_biome">
+        <% biome_primary_options.forEach(function(value){ %>
+        <option value="<%= value %>"
+                <% if (value == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value %></option>
+        <% }) %>
+    </select>
+</td>
+<% } else if (all_field_names[idx][0] === "biome_secondary") { %>
+<td>
+    <% var selected_val = get_selected_val(pid, did, "biome_secondary") %>
+    <select id="biome_secondary<%- did %>" name="biome_secondary" class="biome_secondary">
+
+        <%  if (selected_val) { %>
+        <option value="<%=  selected_val%>" selected ><%= selected_val%></option>
+        <%  } else { %>
+        <option value="none">none</option>
+
+        <%  } %>
+
+    </select>
+</td>
+<!--feature -->
+<% } else if (all_field_names[idx][0] === "env_feature") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "env_feature") %>
+
+    <select id="env_feature<%- did%>" name="env_feature" class = "env_feature">
+        <% feature_primary_options.forEach(function(value){ %>
+        <option value="<%= value %>"
+                <% if (value == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value %></option>
+        <% }) %>
+    </select>
+</td>
+<% } else if (all_field_names[idx][0] === "feature_secondary") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "feature_secondary")
+    %>
+    <select id="feature_secondary<%- did %>" name="feature_secondary" class="feature_secondary">
+
+        <%  if (selected_val) { %>
+        <option value="<%=  selected_val%>" selected ><%= selected_val%></option>
+        <%  } else { %>
+        <option value="none">none</option>
+
+        <%  } %>
+
+    </select>
+</td>
+<!--feature end  -->
+<!-- Environmental Material -->
+<% } else if (all_field_names[idx][0] === "env_material") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "env_material") %>
+    <select id="env_material<%- did%>" name="env_material" class = "env_material">
+        <% material_primary_options.forEach(function(value){ %>
+        <option value="<%= value %>"
+                <% if (value == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value %></option>
+        <% }) %>
+    </select>
+</td>
+<% } else if (all_field_names[idx][0] === "material_secondary") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "material_secondary") %>
+
+    <select id="material_secondary<%- did %>" name="material_secondary" class="material_secondary">
+        <%  if (selected_val) { %>
+        <option value="<%=  selected_val%>" selected ><%= selected_val%></option>
+        <%  } else { %>
+        <option value="none">none</option>
+
+        <%  } %>
+    </select>
+</td>
+<!--material end  -->
+
+<!-- env_package_options start -->
+<% } else if (all_field_names[idx][0] === "env_package") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "env_package") %>
+
+    <select id="env_package<%- did%>" name="env_package" class = "env_package">
+        <% env_package_options.forEach(function(value){ %>
+        <option value="<%= value %>"
+                <% if (value == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value %></option>
+        <% }) %>
+    </select>
+</td>
+<!-- env_package_options end -->
+
+<!-- investigation_type_options start -->
+<% } else if (all_field_names[idx][0] === "investigation_type") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "investigation_type") %>
+
+    <select id="investigation_type<%- did%>" name="investigation_type" class = "investigation_type">
+        <% investigation_type_options.forEach(function(value){ %>
+        <option value="<%= value[0] %>"
+                <% if (value[0] == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value[0] %></option>
+        <% }) %>
+    </select>
+</td>
+<!-- investigation_type_options end -->
+
+<% } else { %>
+<td>
+    <!-- regular field with data -->
+    <% selected_val = get_selected_val(pid, did, field_name) %>
+    <input type="text" placeholder="<%= all_field_names[idx][3] %>" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= selected_val %>"/>
+
+</td>
+<% } %> <!-- else -->

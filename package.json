@@ -39,6 +39,7 @@
     "express": "",
     "express-flash": "",
     "express-form": "",
+    "express-messages": "",
     "express-session": "",
     "fs-extra": "",
     "html-pdf": "",

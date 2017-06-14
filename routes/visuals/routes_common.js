@@ -464,8 +464,8 @@ get_metadata_selection: function(dataset_ids, metadata, type) {
             test = 'sequencing_platform'
           }else if(field == 'env_biome_id'){
             test = 'env_biome'
-          }else if(field == 'env_matter_id'){
-            test = 'env_matter'
+          }else if(field == 'env_material_id'){
+            test = 'env_material'
           }else if(field == 'env_feature_id'){
             test = 'env_feature'
           }else if(field == 'adapter_sequence_id'){

@@ -208,7 +208,7 @@ td.left_justify {
 	color: red;
 	padding:5px;
 	background:white;
-    position: absolute;
+/*    position: absolute;*/
     left: 3em;
     /* top:65px; */
     /* top: 1.0em; */
@@ -359,3 +359,68 @@ td.left_justify {
   padding:10px;
   border:1px solid black;
 }
+
+/* metadata upload */
+.required_fields {
+  background: yellow;
+}
+
+.header_divider {
+  background: #C6D7E9;
+}
+
+/*metadata_upload*/
+#fixed_col_wrap {
+    cellspacing: 0;
+    cellpadding: 0;
+    border: 0;
+}
+
+#firstcol_div {
+    overflow: hidden;
+    height: 800px;
+}
+
+#first_col_table {
+    width: 200px;
+    border-spacing: 0;
+    border-collapse: separate;
+    padding: 0;
+    border: 1px;
+}
+
+#table_div {
+    overflow: scroll;
+    width: 700px;
+    height: 820px;
+    position: relative;
+}
+
+#fixed_table_base {
+    width: 800px;
+    border-spacing: 0;
+    border-collapse: separate;
+    padding: 0;
+    border: 1px;
+}
+
+#first_col_table td, #fixed_table_base td {
+    min-height: 0.3em;
+    height: 2.8em;
+    white-space: nowrap;
+    border: 1px;
+    border-color: black;
+    border-style: solid;
+}
+
+/*#fixed_table_base select {*/
+    /*border: 1px solid #ccc;*/
+    /*vertical-align: top;*/
+    /*height: 20px;*/
+/*}*/
+
+/*fixed_table_base input, fixed_table_base select{*/
+    /*box-sizing: border-box;*/
+    /*-moz-box-sizing: border-box;*/
+    /*-webkit-box-sizing: border-box;*/
+/*}*/

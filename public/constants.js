@@ -456,18 +456,18 @@ constants.VISUAL_THUMBNAILS = {
 // constants.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date",
 //                                 "common_name", "country", "depth", "description",
 //                                 "dna_region", "domain", "elevation", "env_biome",
-//                                 "env_feature", "env_matter", "env_package",
+//                                 "env_feature", "env_material", "env_package",
 //                                 "fragment_name", "latitude", "longitude",
 //                                 "sequencing_platform", "taxon_id"];
 
 constants.REQ_METADATA_FIELDS = [   "collection_date",  // format?? yyyy-mm-dd
                                     "geo_loc_name",     // name of country or longhurst zone
-                                    "dna_region",       // v6, v4v5 v6v4 .... (from mysql table) 
+                                    "dna_region",       // v6, v4v5 v6v4 .... (from mysql table)
                                     "domain",           // Bacteria, Archaea or Eukarya (from mysql table)
                                     "env_biome",
-                                    "env_feature", 
-                                    "env_matter", 
-                                    "env_package",      // (from mysql table) 
+                                    "env_feature",
+                                    "env_material",
+                                    "env_package",      // (from mysql table)
                                     "target_gene",      // 16s or 18s (from mysql table)
                                     "latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
                                     "longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
@@ -477,28 +477,28 @@ constants.REQ_METADATA_FIELDS = [   "collection_date",  // format?? yyyy-mm-dd
                                     "primer_suite",
                                     "run"
                                     ];
-constants.REQ_METADATA_FIELDS_wIDs = [ "geo_loc_name",     // name of country or longhurst zone
-                                    "dna_region",       // v6, v4v5 v6v4 .... (from mysql table) 
+constants.REQ_METADATA_FIELDS_wIDs = ["geo_loc_name",     // name of country or longhurst zone
+                                    "dna_region",       // v6, v4v5 v6v4 .... (from mysql table)
                                     "domain",           // Bacteria, Archaea or Eukarya (from mysql table)
                                     "env_biome",
-                                    "env_feature", 
-                                    "env_matter", 
-                                    "env_package",      // (from mysql table) 
-                                    "target_gene",      // 16s or 18s (from mysql table)                                        
+                                    "env_feature",
+                                    "env_material",
+                                    "env_package",      // (from mysql table)
+                                    "target_gene",      // 16s or 18s (from mysql table)
                                     "sequencing_platform",
                                     "adapter_sequence",
                                     "illumina_index",
                                     "primer_suite",
                                     "run"
-                                    ];                                    
+                                    ];
 // constants.REQ_METADATA_FIELDS = [{  "name":"collection_date",       "units":"date","format":"YYYY-MM-DD"}, // format?? yyyy-mm-dd
 //                                   {  "name":"geo_loc_name",         "units":"alpha_numeric","format":""},   // name of country or longhurst zone
-//                                   {  "name":"dna_region",           "units":"alpha_numeric","format":""},   // v6, v4v5 v6v4 .... (from mysql table) 
+//                                   {  "name":"dna_region",           "units":"alpha_numeric","format":""},   // v6, v4v5 v6v4 .... (from mysql table)
 //                                   {  "name":"domain",               "units":"alpha_numeric","format":""},   // Bacteria, Archaea or Eukarya (from mysql table)
 //                                   {  "name":"env_biome",            "units":"alpha_numeric","format":""},
-//                                   {  "name":"env_feature",          "units":"alpha_numeric","format":""}, 
-//                                   {  "name":"env_matter",           "units":"alpha_numeric","format":""},
-//                                   {  "name":"env_package",          "units":"alpha_numeric","format":""},   // (from mysql table) 
+//                                   {  "name":"env_feature",          "units":"alpha_numeric","format":""},
+//                                   {  "name":"env_material",           "units":"alpha_numeric","format":""},
+//                                   {  "name":"env_package",          "units":"alpha_numeric","format":""},   // (from mysql table)
 //                                   {  "name":"target_gene",          "units":"alpha_numeric","format":""},   // 16s or 18s (from mysql table)
 //                                   {  "name":"latitude",             "units":"decimal_degrees","format":""}, // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
 //                                   {  "name":"longitude",            "units":"decimal_degrees","format":""}, // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
@@ -506,7 +506,244 @@ constants.REQ_METADATA_FIELDS_wIDs = [ "geo_loc_name",     // name of country or
 //                                   {  "name":"adapter_sequence",     "units":"alpha_numeric","format":""},
 //                                   {  "name":"index_sequence",       "units":"alpha_numeric","format":""},
 //                                   {  "name":"primer_suite",         "units":"alpha_numeric","format":""}
-//                                 ];                                    
+//                                 ];
 constants.CONTACT_US_SUBJECTS = ["Account Request", "Report a Problem", "Announce a Publication", "Other"];
+
+constants.ORDERED_METADATA_NAMES = [
+    ["structured comment name","Parameter","", ""], //MBL Supplied or Optional
+    ["","General","", ""],
+    // ["project","VAMPS project name","MBL Supplied", ""],
+    ["dataset","VAMPS dataset name","MBL Supplied", ""],
+    ["sample_name","Sample ID (user sample name)","User supplied", ""],
+    ["investigation_type","Investigation Type","User supplied", ""],
+    ["sample_type","Sample Type (most often environmental)","User supplied", ""],
+    ["collection_date","Sample collection date (YYYY-MM-DD)","User supplied", ""],
+    ["latitude","Latitude (WGS84 system, values bounded by ±90°)","User supplied", "decimal degrees"],
+    ["longitude","Longitude (values bounded by ±180°)","User supplied", "decimal degrees"],
+    ["geo_loc_name_continental","Country","MBL Supplied", ""],
+    ["geo_loc_name_marine","Longhurst Zone","MBL Supplied", ""],
+    ["env_package","Environmental Package","User supplied", ""],
+    ["env_biome","Environmental Biome - Primary","User supplied", ""],
+    ["biome_secondary","Environmental Biome - Secondary","User supplied", ""],
+    ["env_feature","Environmental Feature - Primary","User supplied", ""],
+    ["feature_secondary","Environmental Feature - Secondary","User supplied", ""],
+    ["env_material","Environmental Material - Primary","User supplied", ""],
+    ["material_secondary","Environmental Material - Secondary","User supplied", ""],
+    ["","Enter depth values in one or more categories","", ""],
+    ["depth_subseafloor","Depth below seafloor","User supplied", "m"],
+    ["depth_subterrestrial","Depth below terrestrial surface","User supplied", "m"],
+    // ["depth_in_core","Depth within core","User supplied", "cm"],
+    ["tot_depth_water_col","Water column depth (Sampling depth if applicable. If sampling below seafloor, depth of water column at the seafloor)","User supplied", "m"],
+    ["elevation","Elevation above sea level (land only)","User supplied", "m"],
+    ["dna_extraction_meth","DNA Extraction","User supplied", ""],
+    ["dna_quantitation","DNA Quantitation","User supplied", ""],
+    ["","Enter either volume or mass","", ""],
+    ["sample_size_vol","Sample Size (volume)","Optional user supplied", "L"],
+    ["sample_size_mass","Sample Size (mass)","Optional user supplied", "g"],
+    ["formation_name","Formation name","Optional user supplied", ""],
+    ["access_point_type","Access Point Type","Optional user supplied", ""],
+    ["","Sample handling","", ""],
+    ["samp_store_dur","Storage duration","Optional user supplied", "days"],
+    ["samp_store_temp","Storage temperature","Optional user supplied", "degrees celsius"],
+    ["isol_growth_cond","Isolation and growth condition (publication reference)","Optional user supplied", ""],
+    ["","MBL generated laboratory metadata","", ""],
+    ["domain","Domain","MBL Supplied", ""],
+    ["target_gene","Target gene name (16S rRNA, mcrA)","MBL Supplied", ""],
+    ["dna_region","DNA region","MBL Supplied", ""],
+    ["sequencing_meth","Sequencing method","MBL Supplied", ""],
+    ["forward_primer","Forward PCR Primer","MBL Supplied", ""],
+    ["reverse_primer","Reverse PCR Primer","MBL Supplied", ""],
+    ["illumina_index","Index sequence (for Illumina)","MBL Supplied", ""],
+    ["adapter_sequence","Adapter sequence","MBL Supplied", ""],
+    ["run","Sequencing run date (YYYY-MM-DD)","MBL Supplied", ""],
+    ["","Non-biological","", ""],
+    ["pH","pH","User supplied", ""],
+    ["temperature","Temperature","User supplied", "degrees celsius"],
+    ["conductivity","Conductivity","User supplied", "mS/cm"],
+    ["resistivity","Resistivity","", "ohm-meter"],
+    ["salinity","Salinity","", "PSS-78"],
+    //It is measured in unit of PSU (Practical Salinity Unit), which is a unit based on the properties of sea water conductivity. It is equivalent to per thousand or (o/00) or to  g/kg.
+    ["pressure","Pressure","", "decibar"],
+    ["redox_state","Redox state","", ""],
+    ["redox_potential","Redox potential","", "mV"],
+    ["diss_oxygen","Dissolved oxygen","", "µmol/kg"],
+    ["diss_hydrogen","Dissolved hydrogen","", "µmol/kg"],
+    ["diss_org_carb","Dissolved organic carbon","", "µmol/kg"],
+    ["diss_inorg_carb","Dissolved inorganic carbon","", "µmol/kg"],
+    ["tot_org_carb","Total organic carbon","", "µmol/kg"],
+    ["NPOC","NPOC (Non-purgeable organic carbon)","", ""],
+    ["tot_inorg_carb","Total inorganic carbon","", "µmol/kg"],
+    ["tot_carb","Total carbon","", "percent"],
+    ["calcium_carbonate","Calcium carbonate","", "percent"],
+    ["bicarbonate","Bicarbonate","", "µmol/kg"],
+    ["del18O_water","Delta 18O of water","", "per mil (VPDB)"],
+    ["part_org_carbon_del13C","Delta 13C for particulate organic carbon","", "per mil (VPDB)"],
+    ["diss_inorg_carbon_del13C","Delta 13C for dissolved inorganic carbon","", "per mil (VPDB)"],
+    ["methane_del13C","Delta 13C for methane","", "per mil (VPDB)"],
+    ["alkalinity","Alkalinity","", "meq/L"],
+    ["calcium","Calcium","", "µmol/kg"],
+    ["sodium","Sodium","", "µmol/kg"],
+    ["ammonium","Ammonium","", "µmol/kg"],
+    ["nitrate","Nitrate","", "µmol/kg"],
+    ["nitrite","Nitrite","", "µmol/kg"],
+    ["nitrogen_tot","Total nitrogen","", "mg/L"],
+    ["org_carb_nitro_ratio","Carbon nitrogen ratio","", ""],
+    ["sulfate","Sulfate","", "µmol/kg"],
+    ["sulfide","Sulfide","", "µmol/kg"],
+    ["sulfur_tot","Total sulfur","", "µmol/kg"],
+    ["chloride","Chloride","", "µmol/kg"],
+    ["phosphate","Phosphate","", "µmol/kg"],
+    ["potassium","Potassium","", "µmol/kg"],
+    ["iron","Total iron","", "µmol/kg"],
+    ["iron_II","Iron II","", "µmol/kg"],
+    ["iron_III","Iron III","", "µmol/kg"],
+    ["magnesium","Magnesium","", "µmol/kg"],
+    ["manganese","Manganese","", "µmol/kg"],
+    ["methane","Methane","", "µmol/kg"],
+    ["noble_gas_chemistry","Noble gas chemistry","", ""],
+    ["trace_element_geochem","Trace element geochemistry","", ""],
+    ["porosity","Porosity","", "percent"],
+    ["rock_age","Sediment or rock age","", "millions of years (Ma)"],
+    ["water_age","Water age","", "thousands of years (ka)"],
+    ["","Biological","", ""],
+    ["microbial_biomass_microscopic","Microbial biomass – total cell counts","", "cells/g"],
+    ["n_acid_for_cell_cnt","Nucleic acid dyes used for total cell counts","",""],
+    ["microbial_biomass_FISH","FISH-based cell counts (if doing multiple, add to the User-added section)","", "cells/g"],
+    ["FISH_probe_name","Name of FISH probe","",""],
+    ["FISH_probe_seq","Sequence of FISH probe","",""],
+    ["microbial_biomass_intactpolarlipid","Intact polar lipid","", "pg/g"],
+    ["microbial_biomass_qPCR","qPCR and primers used","", "gene copies"],
+    // ["microbial_biomass_platecounts","Microbial biomass – plate counts - cell numbers","", ""],
+    // ["microbial_biomass_avg_cell_number","Microbial biomass – other","", ""],
+    ["microbial_biomass_wet_weight","Biomass – wet weight","", "g"],
+    ["microbial_biomass_dry_weight","Biomass – dry weight","", "g"],
+    ["plate_counts","Plate counts – colony forming ","", "CFU/ml"],
+    ["functional_gene_assays","functional gene assays (key findings)","", ""],
+    ["clone_library_results","clone library results (key findings)","", ""],
+    ["enzyme_activities","enzyme activities (key findings)","", ""]
+];
+
+constants.ORDERED_METADATA_DIVIDERS = ["Biological",
+    "Enter depth values in one or more categories",
+    "Enter either volume or mass",
+    "General",
+    "MBL generated laboratory metadata",
+    "Non-biological",
+    "Parameter",
+    "Sample handling",
+    "User-added"
+];
+
+constants.MY_DNA_EXTRACTION_METH_OPTIONS = ["Please choose one",
+    "CTAB phenol–chloroform",
+    "Hot alkaline extraction",
+    "MP Biomedical Fast DNA",
+    "MP Biomedical Fast DNA Spin Kit for Soil",
+    "Mo Bio/Qiagen PowerBiofilm",
+    "Mo Bio/Qiagen PowerMax Soil",
+    "Mo Bio/Qiagen PowerSoil",
+    "Mo Bio/Qiagen PowerWater",
+    "Mo Bio/Qiagen UltraClean Microbial",
+    "Other",
+    "Phenol–chloroform",
+    "Qiagen Genomic DNA lysis buffer",
+    "SDS Phenol–chloroform"];
+
+constants.DNA_QUANTITATION_OPTIONS = ["Please choose one",
+    "Fluorescent Microspheres",
+    "NanoDrop",
+    "NanoQuant",
+    "Perfluorocarbon Tracers",
+    "PicoGreen",
+    "Other"];
+
+constants.BIOME_PRIMARY = ["Please choose one",
+"marine",
+"subseafloor",
+"subterrestrial",
+"terrestrial"];
+
+constants.FEATURE_PRIMARY = ["Please choose one",
+"aquifer",
+"borehole",
+"cave",
+"enrichment",
+"fracture",
+"geyser",
+"lake",
+"mine",
+"reservoir",
+"seep",
+"spring",
+"vent",
+"volcano",
+"well"];
+
+constants.MATERIAL_PRIMARY = ["Please choose one",
+"biofilm",
+"fluid",
+"microbial mat material",
+"mud",
+"oil",
+"rock",
+"sand",
+"sediment",
+"soil",
+"water"];
+
+constants.METADATA_FORM_REQUIRED_FIELDS = ["project",
+  "dataset",
+  "sample_name",
+  "investigation_type",
+  "sample_type",
+  "collection_date",
+  "latitude",
+  "longitude",
+  "geo_loc_name_continental",
+  "geo_loc_name_marine",
+  "env_package",
+  "env_biome",
+  "env_feature",
+  "env_material",
+  "elevation",
+  "dna_extraction_meth",
+  "dna_quantitation",
+  "domain",
+  "target_gene",
+  "dna_region",
+  "sequencing_meth",
+  "forward_primer",
+  "reverse_primer",
+  "illumina_index",
+  "adapter_sequence",
+  "run",
+  "pH",
+  "temperature",
+  "conductivity"];
+
+constants.DCO_ENVIRONMENTAL_PACKAGES = ["Please choose one",
+    "misc environment",
+    "microbial mat/biofilm",
+    "plant-associated",
+    "sediment",
+    "soil",
+    "water"];
+
+// definition
+constants.INVESTIGATION_TYPE = [["Please choose one", "Please choose one"],
+    ["mimarks-survey", "marker gene from whole community (e.g. 16S survey)"],
+    ["mimarks-specimen", "marker gene from single organism (e.g. culture"],
+    ["metagenome", "whole metagenome survey"],
+    ["bacteria_archaea", "genome from bacterial or archaeal origin"],
+    ["eukaryote", "genome from eukaryotic origin"],
+    ["plasmid", ""],
+    ["virus", ""],
+    ["organelle", ""]];
+
+
+constants.SAMPLE_TYPE = ["control",
+    "enrichment",
+    "environmental sample",
+    "isolate"];
 
 module.exports = constants;

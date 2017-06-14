@@ -72,17 +72,17 @@ function create_piecharts(imagetype, ts, mtx) {
       unit_list.push(mtx.rows[n].id);
   }
     
-  colorsX = {}
+  //colorsX = {}
   var total = 0
   for(n in mtx.rows){
     if(imagetype == 'single'){
-      colorsX[mtx.rows[n].id] = get_random_color()
+      //colorsX[mtx.rows[n].id] = get_random_color()
       total +=  parseInt(mtx.data[n])
     }else{
-      colorsX[mtx.rows[n].id] = string_to_color_code(mtx.rows[n].id)
+      //colorsX[mtx.rows[n].id] = string_to_color_code(mtx.rows[n].id)
     }
   }
-  console.log(total)
+  
   var tmp={};
   var tmp_names={};
     for (var d in mtx.columns){
@@ -182,9 +182,9 @@ function create_piecharts(imagetype, ts, mtx) {
         .style("fill", function(d, i) {
             
             //if(=='single'){
-              return colorsX[unit_list[i]]
+              //return colorsX[unit_list[i]]
             //}else{
-            //  return string_to_color_code(unit_list[i])
+            return string_to_color_code(unit_list[i])
             //}
             
         });
@@ -208,7 +208,9 @@ function create_barcharts(imagetype, ts, mtx, new_order) {
             unit_list.push(mtx.rows[n].id);
         }
         // function is in this file
-        var colors = get_colors(unit_list);
+        var select_random = false
+        //var colors = get_colors(unit_list, select_random);
+        
 
         data = [];
         //did_by_names ={}
@@ -230,15 +232,15 @@ function create_barcharts(imagetype, ts, mtx, new_order) {
         
         var props = get_image_properties(imagetype, ds_count); 
         //console.log(props)
-        var color = d3.scale.ordinal()                  
-          .range( colors );
+        var scaler = d3.scale.ordinal()                  
+          .range( mtx.rows );
 
-        color.domain(d3.keys(data[0]).filter(function(key) { return key !== "datasetName" && key !== "did"; }));
+        scaler.domain(d3.keys(data[0]).filter(function(key) { return key !== "datasetName" && key !== "did"; }));
 
         
         data.forEach(function(d) {
           var x0 = 0;
-          d.unitObj = color.domain().map(function(name) { 
+          d.unitObj = scaler.domain().map(function(name) { 
             return { name: name, x0: x0, x1: x0 += +d[name], did: d.did, dsname: d.datasetName, cnt: d[name] }; 
           });
           //console.log(d.unitObj);
@@ -303,7 +305,7 @@ function create_barcharts(imagetype, ts, mtx, new_order) {
       
     if(imagetype=='single'){
       //alert(filename)
-      create_singlebar_svg_object(svg, props, data, filename);
+      create_singlebar_svg_object(svg, props, data, ts);
     }else if(imagetype=='double'){
       create_doublebar_svg_object(svg, props, data, ts);
     }else{  // group
@@ -460,12 +462,14 @@ function create_doublebar_svg_object(svg, props, data, ts) {
           }) 
 
           .attr("class","tooltip_viz")
-          .style("fill",   function(d,i) { return string_to_color_code(d.name); });
+          .style("fill",   function(d,i) { 
+                return string_to_color_code(d.name); 
+            });
 }
 //
 //
 //
-function create_singlebar_svg_object(svg, props, data, filename) {
+function create_singlebar_svg_object(svg, props, data, ts) {
 
          //alert(JSON.stringify(data))
          var datasetBar = svg.selectAll(".bar")
@@ -487,6 +491,7 @@ function create_singlebar_svg_object(svg, props, data, filename) {
              .enter()
                .append('a').attr("xlink:href",  function(d) {
              //return 'sequences?did='+mtx_local.did+'&taxa='+encodeURIComponent(d.id);
+             var filename = user_local+'_'+d.did+'_'+ts+'_sequences.json'
              return 'sequences?id='+data[0].datasetName+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
           }).style("fill",   function(d) { return string_to_color_code(d.name); })
 
@@ -568,7 +573,10 @@ function create_svg_object(svg, props, data, ts) {
           }) 
 
           .attr("class","tooltip_viz")
-          .style("fill",   function(d,i) { return string_to_color_code(d.name); });
+          .style("fill",   function(d,i) { 
+          //return get_random_color()
+          return string_to_color_code(d.name); 
+          });
 
 
        //rect.append("svg:a").attr("xlink:href",  'http://www.google.com')
@@ -589,13 +597,7 @@ function get_image_properties(imagetype, ds_count) {
     props.y = d3.scale.ordinal()
         .rangeBands([0, (props.bar_height + 2 * gap) * ds_count]);
     
-    // props.xAxis = d3.svg.axis()
- //             .scale(props.x)
- //             .orient("top");
- //
- //     props.yAxis = d3.svg.axis()
- //             .scale(props.y)
- //             .orient("left");
+
   }else{
     props.bar_height = 15;
     //props.margin = {top: 20, right: 20, bottom: 300, left: 50};
@@ -621,28 +623,48 @@ function get_image_properties(imagetype, ds_count) {
   
   return props;
 }
-function get_colors(unit_names){
-  var colors = [];
-  for(var n in unit_names){
-    //alert(unit_names[n]);
-    col = string_to_color_code(unit_names[n]);
-    //console.log(col);
-    colors.push(col);
-  }
-  return colors;
+// function get_colors(unit_names, random){
+//   var colors = [];
+//   for(var n in unit_names){
+//     //alert(unit_names[n]);
+//     //if(random){
+//         //col = get_random_color();
+//         col = '#fff';
+//         //alert(col)
+//     //}else{
+//         //col = string_to_color_code(unit_names[n]);
+//     //}
+//     //console.log(col);
+//     colors.push(col);
+//   }
+//   return colors;
+// }
+// function string_to_color_code2(str) {
+//     // requires seedrandom.js library
+//     Math.seedrandom(str);
+//     var rand = Math.random() * Math.pow(255,3);
+//     Math.seedrandom(); // don't leave a non-random seed in the generator
+//     for (var i = 0, colour = "#"; i < 3; colour += ("00" + ((rand >> i++ * 8) & 0xFF).toString(16)).slice(-2));
+//     //alert(colour)
+//     return colour;
+// }
+function string_to_color_code(str) {
+    for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
+    color = Math.floor(Math.abs((Math.sin(hash) * 10000) % 1 * 16777216)).toString(16);
+    return '#' + Array(6 - color.length + 1).join('0') + color;
 }
-
-function string_to_color_code(str){
-    var hash = 0;
-    for(var i=0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 3) - hash);
-    }
-    var color = Math.abs(hash).toString(16).substring(0, 6);
-    return "#" + '000000'.substring(0, 6 - color.length) + color;
-}
-function get_random_color(){
-  return '#'+(Math.random()*0xFFFFFF<<0).toString(16);
-}
+// function string_to_color_codeOLD(str){
+//     var hash = 0;
+//     for(var i=0; i < str.length; i++) {
+//       hash = str.charCodeAt(i) + ((hash << 5) - hash);
+//     }
+//     var color = Math.abs(hash).toString(16).substring(0, 6);
+//     return "#" + '000000'.substring(0, 6 - color.length) + color;
+// }
+// function get_random_color(){
+//   //return '#'+(Math.random()*0xFFFFFF<<0).toString(16);
+//   return '#' + Math.floor(Math.random() * 16777215).toString(16)
+// }
 // function string_to_color_codeX(str){
 //     var hash = 0;
 //     //str = str.split('--')[1]

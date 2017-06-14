@@ -81,7 +81,7 @@ var queries = [{"rank":"domain","query1":domain_query1,"query2":domain_query2},
            {"rank":"strain","query1":strain_query1,"query2":strain_query2}
            ]
 str_ids = ['domain_id', 'phylum_id', 'klass_id', 'order_id', 'family_id', 'genus_id', 'species_id', 'strain_id'];
-required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"];
+required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_material", "latitude", "longitude", "public"];
 
 //ids = get_dataset_ids(conn, pid) 
 //console.log('ids',ids)

@@ -504,12 +504,9 @@ def get_dataset_ids(pid):
 if __name__ == '__main__':
 
     myusage = """
-        -pid/--project_id  ID 
+        -pids/--pids  [list of comma separated pids]
         
-        This script only add to taxcounts files NOT MySQL
-        -add/--add          Add project (will delete and overwrite if already present)
-        OR
-                
+                        
         -l/  --list         List: list all projects in the DATABASE [default]
         
         -json_file_path/--json_file_path   json files path [Default: ../json]
@@ -570,6 +567,7 @@ if __name__ == '__main__':
         dbhost = 'bpcweb7'
     else:
         dbhost = 'localhost'
+        args.NODE_DATABASE = 'vamps_development'
     if args.units == 'silva119':
         args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_silva119")
     elif args.units == 'rdp2.6':

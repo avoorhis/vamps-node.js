@@ -565,6 +565,22 @@ router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function(
     }
     finish();
 });
+//
+//
+//
+router.get('/update_metadata_object', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+    console.log('in update_metadata_object')
+    var meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
+    delete require.cache[require.resolve(meta_file)];  // THIS CLEARS THE REQUIRE CACHE
+    //console.log(require.cache)
+    //AllMetadata  = {}
+    AllMetadata        = require(meta_file);
+    //console.log(AllMetadata['52'])
+    var backURL = '/admin/admin_index'
+    req.flash('success', 'Done');
+    res.redirect(backURL);
+    
+});
 router.get('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
     console.log('in new_user GET ADMIN')
 
@@ -1249,10 +1265,10 @@ function validate_metadata(req, obj){
                               validation.error = true
                               validation.msg.push(ds+": The 'dna_region' value ('"+val+"') is not in the allowed list.")
                             }
-                          }else if(mdname == 'env_matter'){
+                          }else if(mdname == 'env_material'){
                             if(get_env_term_index(val) == -1){
                               validation.error = true
-                              validation.msg.push(ds+": The 'env_matter' value ('"+val+"') is not in the allowed list.")
+                              validation.msg.push(ds+": The 'env_material' value ('"+val+"') is not in the allowed list.")
                             }
                           }else if(mdname == 'env_biome'){
                             if(get_env_term_index(val) == -1){

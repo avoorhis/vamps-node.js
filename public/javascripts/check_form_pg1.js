@@ -16,15 +16,13 @@ if (selection_btn_visuals !== null)
 
     //c = count_checked_datasets();
     
-      var f = document.createElement("form");
-      f.setAttribute('method',"post");
-      f.setAttribute('action',"/visuals/unit_selection");
-    
       dids = projectTree.getAllChecked();
       //alert(dids)
       if(dids){
           didArray = dids.split(',');
-          
+          var f = document.createElement("form");
+          f.setAttribute('method',"post");
+          f.setAttribute('action',"/visuals/unit_selection");
           var input = document.createElement('input');
           input.type = 'hidden';
           input.name = 'dataset_ids';

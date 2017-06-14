@@ -416,7 +416,90 @@ router.post('/import_choices/add_metadata_to_pr', [helpers.isLoggedIn, upload.ar
     }
   }
 );
+router.get('/upload_configuration', [helpers.isLoggedIn], function (req, res) {
+  console.log('in upload_configuration')
+
+
+  res.render('user_data/import_choices/config_file', {
+            title:       'Configuration File',
+            user:        req.user,
+            hostname:    req.CONFIG.hostname,
+            //pinfo:       JSON.stringify(user_project_info),
+            //project: project,
+            //import_type: import_type,
+          });
+});
+//
+//
+//
+router.post('/config_file', [helpers.isLoggedIn, upload.single('upload_files', 12)],function (req, res) {
+    console.log('in POST config_file')
+    console.log(req.body)
+    console.log('file',req.file)
+    var upld_obj = JSON.parse(fs.readFileSync(req.file.path, 'utf8'));
+    console.log(upld_obj)
+    var timestamp = +new Date();
+    if(upld_obj.hasOwnProperty('image')){
+      console.log('1) FILE is IMAGE')
+      image = upld_obj.image
+      new_filename = 'image-'+image+'-'+timestamp+'.json'
+    }else{
+      console.log('2) FILE is CONFIG')
+      new_filename = 'configuration-'+timestamp+'.json'
+    }
+    // vet data ids for permissions!!
+    var ids = upld_obj.id_name_hash.ids
+    console.log('original_ids',ids)
+    new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
+    console.log('new_ids',new_dataset_ids)
+    // if no dids deny saving file
+    // otherwise save config with new did set
+    // update: ids, names and number_of_ds
+    if(new_dataset_ids.length == 0){
+      req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
+      res.redirect('/user_data/upload_configuration');
+      return;
+    //}else if(new_dataset_ids.length != ids.length){
+      // SOME of the datasets are being excluded (either because they dont exist or no permissions)
+    }else{
+      // move the file ASIS to the CONFIG.USER_FILES_BASE location
+      upld_obj.id_name_hash.ids = new_dataset_ids
+      upld_obj.id_name_hash.names = []
+      upld_obj.post_items.no_of_datasets = new_dataset_ids.length
+      for(n in upld_obj.id_name_hash.ids){
+         did = upld_obj.id_name_hash.ids[n]
+          pid = PROJECT_ID_BY_DID[did]
+          pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did]
+          upld_obj.id_name_hash.names.push(pjds)
+      }
+      new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename)
+      console.log('new_filename_path')
+      console.log(new_filename_path)
+      fs.writeFile(new_filename_path, JSON.stringify(upld_obj),  function writeConfigFile01(err) {
+        if (err) {
+          console.log("err 11: ");
+          console.log(err);
+          res.send(err);
+        } else {
+          console.log('write new config file success');
+          res.redirect('/visuals/view_selection/'+new_filename+'/1')  
+        }
+      });
+      
+      //fs.move(req.file.path, new_filename_path, function(err){
+        //if (err) return console.error(err)
+        //var args = "?filename="+new_filename
+        //args += "&from_configuration_file=1"
+        //res.redirect('/visuals/view_selection'+args)
+        //res.redirect('/visuals/view_selection/'+new_filename+'/1')
+      //})
+    }
+});
+//
+//
+//
 router.get('/import_choices/upload_image_file', [helpers.isLoggedIn], function (req, res) {
+  
   url         = path.join('user_data', req.url);
   import_type = req.url.split("/").slice(-1)[0];
   //'/import_choices/multi_fasta', 'multi_fasta'
@@ -634,15 +717,62 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
          });
 });
 
+// // ---- metadata_upload ----
 //
+// router.get('/metadata_upload', [helpers.isLoggedIn], function (req, res) {
+//   console.log('in get /metadata_upload');
 //
+//   res.render('user_data/metadata_upload', {
+//     title: 'VAMPS: Metadata_upload',
+//     user: req.user,
+//     hostname: req.CONFIG.hostname,
+//   });
+// });
 //
-router.get('/update_metadata', helpers.isLoggedIn, function (req, res) {
-	console.log("IN Upload metadata");
-	console.log("not Coded yet");
-	req.flash('fail', 'Not Coded Yet');
-	res.redirect('/user_data/your_data')
-});
+// router.post('/metadata_upload',
+//   [helpers.isLoggedIn],
+//   form(
+//     form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_]+$/),
+//     form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z- ]+$/),
+//     form.field("pi_email", "PI's email address").trim().isEmail().required().entityEncode(),
+//     form.field("project_abstract", "Project abstract").trim().required().entityEncode(),
+//     form.field("references", "References").trim().required().entityEncode(),
+//     // References should clean URL
+//     form.field("project_name", "VAMPS project name").trim().entityEncode(),
+//     form.field("dataset_name", "VAMPS dataset name").trim().entityEncode(),
+//     form.field("sample_name", "Sample ID (user sample name)").trim().required().entityEncode(),
+//     form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode(),
+//     form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode(),
+//     form.field("collection_date", "Sample collection date (YYYY-MM-DD)").trim().required().entityEncode().isDate("Sample collection date format: YYYY-MM-DD"),
+//     form.field("latitude", "Latitude (WGS84 system, values bounded by ±90°)").trim().required().entityEncode(),
+//     form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode(),
+//     form.field("geo_loc_name_country", "Country").trim().entityEncode(),
+//     form.field("longhurst_zone", "Longhurst Zone").trim().entityEncode(),
+//     form.field("biome", "Biome").trim().required().entityEncode(),
+//     form.field("env_feature_primary", "Environmental Feature - Primary").trim().required().entityEncode(),
+//     form.field("env_feature_secondary", "Environmental Feature - Secondary").trim().entityEncode(),
+//     form.field("env_material_primary", "Environmental Material - Primary").trim().required().entityEncode(),
+//     form.field("env_material_secondary", "Environmental Material - Secondary").trim().entityEncode()
+//    ),
+//   function (req, res) {
+//     if (!req.form.isValid) {
+//       // Handle errors
+//       console.log(req.form.errors);
+//       req.flash('fail', req.form.errors);
+//       res.redirect("/user_data/metadata_upload");
+//     } else {
+//       console.log('in post /metadata_upload');
+//       console.log(req);
+//
+//       res.redirect("/user_data/your_projects");
+//     }
+//
+//     return;
+//   }
+// );
+//
+// // ---- metadata_upload end ----
+
 //
 // USER PROJECT METADATA:ID
 //
@@ -1815,7 +1945,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
                             } else {
 
                                                     
-                              //helpers.update_metadata_from_file();  // need to update to hdf5 file??
+                              //helpers.metadata_upload_from_file();  // need to update to hdf5 file??
 
                               req.flash('success', 'Metadata Upload in Progress');
                               res.redirect("/user_data/import_choices");

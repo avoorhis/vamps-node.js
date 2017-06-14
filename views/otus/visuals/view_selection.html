@@ -1,0 +1,228 @@
+<% menu_section='VISUALS' %>
+<% include ../../add_ins/begin.ejs %>
+
+<%  var cnsts  = JSON.parse(constants) %>
+<%  var mtx    = JSON.parse(matrix); %>
+<%  var pi     = JSON.parse(post_items); %>
+<%  var items  = JSON.parse(chosen_id_name_hash); %>
+<%  var activate_thumbs = true; %>
+<%  var visuals = cnsts.VISUAL_THUMBNAILS.visuals %>
+<script> 
+  var pi_local  = JSON.parse('<%- post_items %>');
+  var mtx_local  = JSON.parse('<%- matrix %>');
+  var cts_local  = JSON.parse('<%- constants %>');
+  var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
+  var user_local = '<%= user.username %>';
+   
+</script>
+
+
+<div id='info_bar' class='navbar-fixed-top ' >
+  <small>
+    <div id='view_selection_links'>
+      <ul>
+        <li><form id='back_form_id' name='' method='POST' action='/otus/otus_index'>
+                  <a class='link_black' href='#' onclick="document.getElementById('back_form_id').submit();return false;">&lt;&lt;--back</a>
+                  <input type='hidden' name='retain_data' value='1' >
+                  <input type='hidden' name='dataset_ids' value='<%= JSON.stringify(items.ids) %>' >
+            </form>
+        </li>
+        <li>
+          <form class='' id='reload_form_id' name='reload_form' method='POST' action='/visuals/view_selection'>
+           
+            <input type='submit' value='Reload Page' />
+            <input type='hidden' name='normalization' value='<%= pi.normalization %>'>
+            <input type='hidden' name='selected_distance' value='<%= pi.selected_distance %>'>
+            <input type='hidden' name='min_range' value='<%= pi.min_range %>'>
+            <input type='hidden' name='max_range' value='<%= pi.max_range %>'>
+            <input type='hidden' name='include_nas' value='<%= pi.include_nas %>'>            
+            <% if(pi.unit_choice == 'tax_silva119_simple' || pi.unit_choice == 'tax_rdp2.6_simple'){ %>
+              <input type='hidden' name='domains' value='<%= pi.domains %>'>
+            <% } %>           
+            <input type='hidden' name='tax_depth' value='<%= pi.tax_depth %>'>
+            <input type='hidden' name='unit_choice' value='<%= pi.unit_choice %>'>
+            <input type='hidden' name='selected_metadata' value='<%= pi.metadata %>'>
+            <input type='hidden' name='retain_data' value='1' >
+            <input type='hidden' name='dataset_ids' value='<%= JSON.stringify(items.ids) %>' >
+          </form>
+        </li>
+        
+        <li><a href='#' id='save_config_id' style='' class='link_black'>Save Configuration</a></li>
+        <li><span id='save_config_confirmation' ></span></li>
+      </ul>
+    </div>
+
+    <div id='viz_info'></div>
+  </small>
+</div>
+
+<br>
+<div class='title title_color_viz'>OTU Community Visualization: <%= project %>
+    <% if (messages.success) { %>
+        <div class="alert_flash_message_success"><%= messages.success %>
+        </div>
+    <% }else if(messages.fail){ %>
+        <div class="alert_flash_message_fail"><%= messages.fail %>
+        <br>We recommend re-selecting data or selecting different data and trying again. 
+          If you are loading this page from a configuration file or image file it may be out of date.
+          Contact us at vamps.mbl.edu for help.</div>
+    <% } %>
+</div>
+<div class='subtitle'>Display Choices</div>
+
+
+
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %>
+  	</div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %>
+    <br>We recommend re-selecting data or selecting different data and trying again. 
+      If you are loading this page from a configuration file or image file it may be out of date.
+      Contact us at vamps.mbl.edu for help.</div>
+<% } %>
+
+
+  <div class="row">
+  
+      <div  id='show_selected_datasets_div'  class="col-lg-4">
+        <div class='well'>
+              <% include ../../partials/show_selected_datasets.html %>
+        </div>
+      </div>
+    
+      
+    
+      <div  id='show_select_items_div' class="col-lg-4">
+        <div class='well'>
+              <% include ../../visuals/partials/show_visual_output_choices.html %>
+        </div>
+      </div>
+     
+      <div  id='show_other_items_div' class="col-lg-4">
+        <div class='well'>
+          <% include ../../visuals/partials/show_parameters.html %>
+        </div>
+      </div>
+  
+  </div>
+
+<hr>
+<% var allowed = ['counts_matrix', 'dheatmap', 'barcharts','piecharts','fheatmap','dendrogram01','dendrogram03','adiversity'] %>
+<table border='1' class='table'>
+        <tr>
+          <% var c = 0 %>
+          <% for(n in visuals) { %>
+          <%    var prefix = visuals[n].prefix;                                 %>
+          <%    if(allowed.indexOf(prefix) != -1 ){  %>                                                %>
+          <%        var thumb = visuals[n].thumb;                                   %>
+          <%        var name = visuals[n].name;                                     %>          
+          
+          <%        var link_id = prefix+'_link_id';                                %>
+          <%        var link = '#';                                                 %>
+          <%        var target='';                                                  %>
+          <%        var ttip = visuals[n].tip;                                      %>
+          <%        var cols = 4                                                    %>
+                                                                       
+          
+                    <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
+                    <center>                        
+                      <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
+                        <%= name %><br>              
+                         <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
+                      </a>
+                    </center>                     
+                    </td>
+          <%        if( c % cols === (cols - 1) ) {                                                       %>
+                    </tr><tr>
+          <%        }   %>
+          <%        c = c+1                                                                                  %>        
+          <%    } %>  
+            
+          <% } %>                 
+        </tr>
+</table>
+       
+
+<% for(n in visuals) {                                                                                  %>
+<%    var prefix   = visuals[n].prefix;                                                                 %>
+<%    var name     = visuals[n].name;                                                                   %>
+<%    var prediv   = 'pre_'+prefix+'_div'                                                               %>
+<%    var div      = prefix+'_div'                                                                      %>
+<%    var title    = prefix+'_title'                                                                    %>
+<%    var dnld_btn = prefix+'_dnld_btn'                                                                 %>
+<%    var hide_btn = prefix+'_hide_btn'                                                                 %>
+<%    var open_btn = prefix+'_open_btn'                                                                 %>
+
+    <nav id='<%= prediv %>' class="navbar navbar-inverse viz_hidden_div display_none">
+      <div class="navbar-header" >      
+        <span id='<%= title %>' class="navbar-brand table_title" ><%= name %></span>  
+      </div>
+      <div class='button_div pull-right'>
+        <button type='button' id='<%= hide_btn %>' class='close_open_btn btn btn-xs btn-info' value='hide'>Hide Panel</button>
+        <button type='button' id='<%= open_btn %>' class='close_open_btn btn btn-xs btn-info' value='open'>New Window</button>
+        <button type="button" class="btn btn-xs btn-info" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+        <li class="dropdown">
+          <button disabled id='<%= dnld_btn %>' class="btn btn-xs btn-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false">
+            Downloads<span class="caret"></span>
+          </button>
+            <ul class="dropdown-menu" role="menu">          
+            <% if(prefix=='counts_matrix'){ %>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="create_freq_table_file('matrix','')">as Table (csv)</button></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('counts_matrix','')">JSON Image Config File</button></li>
+            <% }else if(prefix == 'dheatmap') { %>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-py','')">Distance File</button></li> 
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('dheatmap','')">JSON Image Config File</button></li> 
+              <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('dheatmap','')">Image as PDF</button></li> 
+            <% }else if(prefix == 'barcharts') { %>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('barcharts','')">Image as PDF</button></li> 
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('barcharts','')">JSON Image Config File</button></li>
+            
+            <% }else if(prefix == 'cytoscape') { %>
+            <% }else if(prefix == 'dendrogram0') { %>
+            <% } %>
+            </ul>
+        </li>
+      </div>
+    </nav>
+    <center><div id='<%= div %>'   class='display_none well overflow_500'></div></center>
+
+
+<% } %>	 
+	
+  
+
+<!-- -------------------------------------------------- -->
+
+  <div id='counts_tooltip_div' class=''></div>
+  <div id='piebarcharts_tooltip_div' class=''></div>
+  <div id='q' class=''></div> 
+
+ 
+ 
+  <% include ../../add_ins/end.ejs %>
+ <!-- <script src ="https://maps.googleapis.com/maps/api/js"></script> -->
+
+ <script type="text/javascript" src="/javascripts/tablesort.min.js"></script>
+ <script type="text/javascript" src="/javascripts/jquery.scrollTo.min.js"></script>
+ <script type="text/javascript" src="/javascripts/jquery.tablednd.js"></script>
+ <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
+ <script type="text/javascript" src="/javascripts/d3pie.min.js" charset="utf-8"></script>
+ 
+ <script type="text/javascript" src="/javascripts/d3.phylogram.js" charset="utf-8"></script>
+ <script type="text/javascript" src="/javascripts/d3.phylonator.js" charset="utf-8"></script>
+
+ <script type="text/javascript" src="/javascripts/newick.js" charset="utf-8"></script>
+ <script type="text/javascript" src="/javascripts/drag_rows.js"></script>
+ <script type="text/javascript" src="/javascripts/global.js"></script>
+ <script type="text/javascript" src="/javascripts/common_selection.js"></script>
+ <script type="text/javascript" src="/javascripts/view_selection_otus.js"></script>
+<!--  <script type="text/javascript" src="/javascripts/visual_divs.js"></script> -->
+ <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>
+ <script type="text/javascript" src="/javascripts/jquery.flot.min.js"></script>
+ <script type="text/javascript" src="/javascripts/tooltipster.bundle.min.js"></script>
+
+</body>
+</html>
+
+

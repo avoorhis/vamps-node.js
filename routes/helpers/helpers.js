@@ -6,7 +6,7 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport();
+var transporter = nodemailer.createTransport({});
 var util = require('util');
 var path  = require('path');
 var crypto = require('crypto');
@@ -238,11 +238,41 @@ module.exports.get_select_illumina_index_query = function(rows){
         MD_ILLUMINA_INDEX[rows[i].illumina_index_id] = rows[i].illumina_index;
     }
 };
+
+///////////////////////
 module.exports.get_select_primer_suite_query = function(rows){
     for (var i=0; i < rows.length; i++) {
-        MD_PRIMER_SUITE[rows[i].primer_suite_id] = rows[i].primer_suite;
+
+        if( ! MD_PRIMER_SUITE.hasOwnProperty(rows[i].primer_suite_id)){
+            MD_PRIMER_SUITE[rows[i].primer_suite_id] = {}
+            MD_PRIMER_SUITE[rows[i].primer_suite_id].id = rows[i].primer_suite_id
+            MD_PRIMER_SUITE[rows[i].primer_suite_id].name   = rows[i].primer_suite
+            MD_PRIMER_SUITE[rows[i].primer_suite_id].region = rows[i].region
+            MD_PRIMER_SUITE[rows[i].primer_suite_id].domain = rows[i].domain
+            MD_PRIMER_SUITE[rows[i].primer_suite_id].primer = []            
+        }
+        MD_PRIMER_SUITE[rows[i].primer_suite_id].primer.push({
+                "primer"    :   rows[i].primer,
+                "primer_id" :   rows[i].primer_id,
+                "direction" :   rows[i].direction,
+                "sequence"  :   rows[i].sequence                              
+
+            })
+            
+        
     }
 };
+// module.exports.get_select_primer_query = function(rows){
+//     for (var i=0; i < rows.length; i++) {
+//         // MD_PRIMER[primer_suite_id] = [array of primers] names or seqs???? 
+//         // [{'sequence':xxx, 'direction':'F','original_seq':xxxx,'name':967F,'region':'v6','domain':}
+//         
+//         if(rows[i].primer_suite_id in MD_PRIMER)
+//         
+//     }
+// };
+////////////////////
+
 module.exports.get_select_run_query = function(rows){
     for (var i=0; i < rows.length; i++) {
         MD_RUN[rows[i].run_id] = rows[i].run;
@@ -357,16 +387,17 @@ module.exports.clean_string = function (str) {
   // this replaces everything that is not letter,number or underscore (\w) with underscore
   return str.replace(/[^\w]/gi, '_');
 };
-// module.exports.update_metadata_from_file = function (){
-//     var meta_file      = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--metadata.json');
-//     try {
-//       AllMetadata        = require(meta_file);
-//     }
-//     catch (e) {
-//       console.log(e);
-//       AllMetadata = {};
-//     }
-// };
+
+module.exports.get_metadata_from_file = function (){  
+ var meta_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--metadata.json');
+ try { AllMetadataFromFile = require(meta_file); }
+ catch (e) {
+   console.log(e);
+   AllMetadataFromFile = {};
+ }
+ return AllMetadataFromFile
+};
+
 // TODO: "This function's cyclomatic complexity is too high. (11)"
 module.exports.mysql_real_escape_string = function (str) {
     return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
@@ -519,7 +550,7 @@ module.exports.get_public_projects = function(req) {
 
 };
 
-module.exports.get_attributes_from_hdf5_group =function(did, type) {
+module.exports.get_attributes_from_hdf5_group = function(did, type) {
     var hash = {};
     var h5group;
     if(type == 'metadata'){
@@ -1132,17 +1163,23 @@ module.exports.isLocal = function (req) {
 module.exports.deleteFolderRecursive = function(path) {
   if( fs.existsSync(path) ) {
     if(fs.lstatSync(path).isFile()) {
-      fs.unlinkSync(path);
+      try {
+        fs.unlinkSync(path);
+      } catch(e){ console.log("Could not delete1: "+path) }
     }else{
         fs.readdirSync(path).forEach(function(file,index){
           var curPath = path + "/" + file;
           if(fs.lstatSync(curPath).isDirectory()) { // recurse
             module.exports.deleteFolderRecursive(curPath);
           } else { // delete file
-            fs.unlinkSync(curPath);
+            try {
+              fs.unlinkSync(curPath);
+            } catch(e){ console.log("Could not delete2: "+curPath) }
           }
         });
-        fs.rmdirSync(path);
+        try {
+          fs.rmdirSync(path);
+        } catch(e){ console.log("Could not delete3: "+path) }
     }
   }
 };
@@ -1455,100 +1492,137 @@ module.exports.run_external_command = function(script_path)
 module.exports.required_metadata_ids_from_names = function(selection_obj, mdname)
 {
     // TODO
-    
+     var idname,value
      if(mdname == 'env_package'){
-        name = 'env_package_id'
-        value = MD_ENV_PACKAGE[selection_obj['env_package_id']]        
+        idname = 'env_package_id'
+        value = MD_ENV_PACKAGE[selection_obj[idname]]        
     }else if(mdname == 'env_biome'){
-        name = 'env_biome_id'
-        value = MD_ENV_TERM[selection_obj['env_biome_id']]
+        idname = 'env_biome_id'
+        value = MD_ENV_TERM[selection_obj[idname]]
     }else if(mdname == 'env_feature'){
-        name = 'env_feature_id'
-        value = MD_ENV_TERM[selection_obj['env_feature_id']]
-    }else if(mdname == 'env_matter'){
-        name = 'env_matter_id'
-        value = MD_ENV_TERM[selection_obj['env_matter_id']]
+        idname = 'env_feature_id'
+        value = MD_ENV_TERM[selection_obj[idname]]
+    }else if(mdname == 'env_material'){
+        idname = 'env_material_id'
+        value = MD_ENV_TERM[selection_obj[idname]]
     }else if(mdname == 'geo_loc_name'){
-        name = 'geo_loc_name_id'
-        value = MD_ENV_TERM[selection_obj['geo_loc_name_id']]
+        idname = 'geo_loc_name_id'
+        value = MD_ENV_TERM[selection_obj[idname]]
     }else if(mdname == 'sequencing_platform'){
-        name = 'sequencing_platform_id'
-        value = MD_SEQUENCING_PLATFORM[selection_obj['sequencing_platform_id']]
+        idname = 'sequencing_platform_id'
+        value = MD_SEQUENCING_PLATFORM[selection_obj[idname]]
     }else if(mdname == 'dna_region'){
-        name = 'dna_region_id'
-        value = MD_DNA_REGION[selection_obj['dna_region_id']]
+        idname = 'dna_region_id'
+        value = MD_DNA_REGION[selection_obj[idname]]
     }else if(mdname == 'target_gene'){
-        name = 'target_gene_id'
-        value = MD_TARGET_GENE[selection_obj['target_gene_id']]
-    }else if(mdname == 'sequencing_platform'){
-        name = 'sequencing_platform_id'
-        value = MD_SEQUENCING_PLATFORM[selection_obj['sequencing_platform_id']]
+        idname = 'target_gene_id'
+        value = MD_TARGET_GENE[selection_obj[idname]]
     }else if(mdname == 'domain'){
-        name = 'domain_id'
-        value = MD_DOMAIN[selection_obj['domain_id']]
+        idname = 'domain_id'
+        value = MD_DOMAIN[selection_obj[idname]]
     }else if(mdname == 'adapter_sequence'){
-        name = 'adapter_sequence_id'
-        value = MD_ADAPTER_SEQUENCE[selection_obj['adapter_sequence_id']]
+        idname = 'adapter_sequence_id'
+        value = MD_ADAPTER_SEQUENCE[selection_obj[idname]]
     }else if(mdname == 'illumina_index'){
-        name = 'illumina_index_id'
-        value = MD_ILLUMINA_INDEX[selection_obj['illumina_index_id']]
+        idname = 'illumina_index_id'
+        value = MD_ILLUMINA_INDEX[selection_obj[idname]]
     }else if(mdname == 'run'){
-        name = 'run_id'
-        value = MD_RUN[selection_obj['run_id']]
+        idname = 'run_id'
+        value = MD_RUN[selection_obj[idname]]
     }else if(mdname == 'primer_suite'){
-        name = 'primer_suite_id'
-        value = MD_PRIMER_SUITE[selection_obj['primer_suite_id']]
+        idname = 'primer_suite_id'
+        if(MD_PRIMER_SUITE.hasOwnProperty(selection_obj[idname]) && MD_PRIMER_SUITE[selection_obj[idname]].hasOwnProperty('name')){
+            value = MD_PRIMER_SUITE[selection_obj[idname]].name
+        }else{
+            value = 'unknown'
+        }
     }else{
-        name = mdname
+        idname = mdname
         value = selection_obj[mdname];
     }
-    return {"name":name, "value":value}
-}
+    // eg: { name: 'primer_suite_id', value: 'Bacterial V6 Suite' } or { name: 'domain_id', value: 'Bacteria' }
+    return {"name":idname, "value":value}
+};
+
 module.exports.required_metadata_names_from_ids = function(selection_obj, name_id)
 {
-    var name,value
+  var id = selection_obj[name_id];
+    var real_name, value;
     if(name_id == 'env_package_id'){
-        name = 'env_package'
-        value = MD_ENV_PACKAGE[selection_obj[name_id]]
+        real_name = 'env_package';
+        value = MD_ENV_PACKAGE[id];
     }else if(name_id == 'target_gene_id'){
-      name = 'target_gene'
-      value = MD_TARGET_GENE[selection_obj[name_id]]
+      real_name = 'target_gene';
+      value = MD_TARGET_GENE[id];
     }else if(name_id == 'domain_id'){
-      name = 'domain'
-      value = MD_DOMAIN[selection_obj[name_id]]
+      real_name = 'domain';
+      value = MD_DOMAIN[id];
     }else if(name_id == 'geo_loc_name_id'){
-      name = 'geo_loc_name'
-      value = MD_ENV_TERM[selection_obj[name_id]]
+      real_name = 'geo_loc_name';
+      value = MD_ENV_TERM[id];
     }else if(name_id == 'sequencing_platform_id'){
-      name = 'sequencing_platform'
-      value = MD_SEQUENCING_PLATFORM[selection_obj[name_id]]
+      real_name = 'sequencing_platform';
+      value = MD_SEQUENCING_PLATFORM[id];
     }else if(name_id == 'dna_region_id'){
-      name = 'dna_region'
-      value = MD_DNA_REGION[selection_obj[name_id]]
-    }else if(name_id == 'env_matter_id'){
-      name = 'env_matter'
-      value = MD_ENV_TERM[selection_obj[name_id]]
+      real_name = 'dna_region';
+      value = MD_DNA_REGION[id];
+    }else if(name_id == 'env_material_id'){
+      real_name = 'env_material';
+      value = MD_ENV_TERM[id];
     }else if(name_id == 'env_biome_id'){
-      name = 'env_biome'
-      value = MD_ENV_TERM[selection_obj[name_id]]
+      real_name = 'env_biome';
+      value = MD_ENV_TERM[id]
     }else if(name_id == 'env_feature_id'){
-      name = 'env_feature'
-      value = MD_ENV_TERM[selection_obj[name_id]]
+      real_name = 'env_feature';
+      value = MD_ENV_TERM[id];
     }else if(name_id == 'adapter_sequence_id'){
-      name = 'adapter_sequence'
-      value = MD_ADAPTER_SEQUENCE[selection_obj[name_id]]
+      real_name = 'adapter_sequence';
+      value = MD_ADAPTER_SEQUENCE[id];
     }else if(name_id == 'illumina_index_id'){
-      name = 'illumina_index'
-      value = MD_ILLUMINA_INDEX[selection_obj[name_id]]
+      real_name = 'illumina_index';
+      value = MD_ILLUMINA_INDEX[id];
     }else if(name_id == 'run_id'){
-      name = 'run'
-      value = MD_RUN[selection_obj[name_id]]
+      real_name = 'run';
+      value = MD_RUN[id];
     }else if(name_id == 'primer_suite_id'){
-      name = 'primer_suite'
-      value = MD_PRIMER_SUITE[selection_obj[name_id]]
+      real_name = 'primer_suite';
+      //value = MD_PRIMER_SUITE[id]
+      if(MD_PRIMER_SUITE.hasOwnProperty(id) && MD_PRIMER_SUITE[id].hasOwnProperty('name')){
+        value = MD_PRIMER_SUITE[id].name;
+      }else{
+        value = 'unknown';
+      }
     }else{
-      name = name_id
-      value = selection_obj[name_id]
+      real_name = name_id;
+      value = id;
     }
-    return {"name":name,"value":value}
-}
+    // eg: { name: 'primer_suite', value: 'Bacterial V6 Suite' } or { name: 'domain', value: 'Bacteria' }
+    return {"name":real_name,"value":value}
+
+};
+//
+//
+module.exports.screen_dids_for_permissions = function(req, dids)
+{
+  // This is called from unit_select and view_select (others?)  to catch and remove dids that
+  // are found through searches such as geo_search and go to unit_select directly
+  // bypassing the usual tree filter 'filter_project_tree_for_permissions' (fxn above)
+  // permissions are in PROJECT_INFORMATION_BY_PID
+  var new_did_list = []
+  for(i in dids){
+    if(PROJECT_ID_BY_DID.hasOwnProperty(dids[i]) && PROJECT_INFORMATION_BY_PID.hasOwnProperty(PROJECT_ID_BY_DID[dids[i]])){
+      pinfo = PROJECT_INFORMATION_BY_PID[ PROJECT_ID_BY_DID[dids[i]] ]
+      if(pinfo.public == 1 || pinfo.public == '1'){
+        new_did_list.push(dids[i])
+      }else{
+        // allow if user is owner (should have uid in permissions but check anyway)
+        // allow if user is admin
+        // allow if user is in pinfo.permission
+        if(req.user.user_id == pinfo.oid || req.user.security_level == 1 || req.user.security_level === 10 || pinfo.permissions.indexOf(req.user.user_id) != -1 ){
+          new_did_list.push(dids[i])
+        }
+      }
+    }
+  }
+  return new_did_list
+};
