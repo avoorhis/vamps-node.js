@@ -504,12 +504,9 @@ def get_dataset_ids(pid):
 if __name__ == '__main__':
 
     myusage = """
-        -pid/--project_id  ID 
+        -pids/--pids  [list of comma separated pids]
         
-        This script only add to taxcounts files NOT MySQL
-        -add/--add          Add project (will delete and overwrite if already present)
-        OR
-                
+                        
         -l/  --list         List: list all projects in the DATABASE [default]
         
         -json_file_path/--json_file_path   json files path [Default: ../json]

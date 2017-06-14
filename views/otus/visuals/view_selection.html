@@ -108,31 +108,38 @@
   </div>
 
 <hr>
-<% var allowed = ['counts_matrix', 'dheatmap', 'barcharts','piecharts'] %>
+<% var allowed = ['counts_matrix', 'dheatmap', 'barcharts','piecharts','fheatmap','dendrogram01','dendrogram03','adiversity'] %>
 <table border='1' class='table'>
         <tr>
+          <% var c = 0 %>
+          <% for(n in visuals) { %>
+          <%    var prefix = visuals[n].prefix;                                 %>
+          <%    if(allowed.indexOf(prefix) != -1 ){  %>                                                %>
+          <%        var thumb = visuals[n].thumb;                                   %>
+          <%        var name = visuals[n].name;                                     %>          
           
-          <% for(n in visuals) {                                                %>
-          <%    var thumb = visuals[n].thumb;                                   %>
-          <%    var name = visuals[n].name;                                     %>          
-          <%    var prefix = visuals[n].prefix;                                  %>
-          <%    var link_id = prefix+'_link_id';                                  %>
-          <%    var link = '#';                                                   %>
-          <%    var target='';                                                   %>
-          <%    var ttip = visuals[n].tip;                                      %>
-          <%    var cols = 5                                                    %>
+          <%        var link_id = prefix+'_link_id';                                %>
+          <%        var link = '#';                                                 %>
+          <%        var target='';                                                  %>
+          <%        var ttip = visuals[n].tip;                                      %>
+          <%        var cols = 4                                                    %>
                                                                        
-          <% if(allowed.indexOf(prefix) != -1 ){  %>
-            <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
-                <center>                        
-                  <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
-                    <%= name %><br>              
-                     <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
-                  </a>
-                </center>                     
-            </td>
-            <% } %>                 
-        <% } %>                 
+          
+                    <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
+                    <center>                        
+                      <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
+                        <%= name %><br>              
+                         <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
+                      </a>
+                    </center>                     
+                    </td>
+          <%        if( c % cols === (cols - 1) ) {                                                       %>
+                    </tr><tr>
+          <%        }   %>
+          <%        c = c+1                                                                                  %>        
+          <%    } %>  
+            
+          <% } %>                 
         </tr>
 </table>
        
@@ -202,7 +209,8 @@
  <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
  <script type="text/javascript" src="/javascripts/d3pie.min.js" charset="utf-8"></script>
  
-
+ <script type="text/javascript" src="/javascripts/d3.phylogram.js" charset="utf-8"></script>
+ <script type="text/javascript" src="/javascripts/d3.phylonator.js" charset="utf-8"></script>
 
  <script type="text/javascript" src="/javascripts/newick.js" charset="utf-8"></script>
  <script type="text/javascript" src="/javascripts/drag_rows.js"></script>

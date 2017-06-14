@@ -365,6 +365,7 @@ def parse_file(args):
         #print otu_name,count_list
         
         for i,ds in enumerate(ds_order):
+            ds = ds.replace(';','-').replace(',','-')
             count = int(count_list[i])
             if ds not in OTU_COLLECTOR:
                 OTU_COLLECTOR[ds] = {}

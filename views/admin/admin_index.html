@@ -4,18 +4,14 @@
 <div class="col-lg-3"></div>
 <div class="col-lg-6">
 <br>
-<div class="well">
-
 <% if (messages.success) { %>
   	<div class="alert_flash_message_success"><%= messages.success %></div>
 <% }else if(messages.fail){ %>
     <div class="alert_flash_message_fail"><%= messages.fail %></div>
 <% } %>
-	
+
+<div class="well">	
 	<ul>
-		
-		
-		
 		
 		<li>Project Aministration:
 		<ul>
@@ -32,7 +28,8 @@
             <li><a href='/users/users_index'>View User List</a></li>
             <li><a href='/admin/new_user'>Create New User</a></li>
             <li><a href='/admin/reset_user_password'>Reset Users Password</a></li>
-            <li><a href='/admin/inactivate_user'>Delete (inactivate) Users</a></li>            
+            <li><a href='/admin/inactivate_user'>Inactivate Users</a></li>  
+            <li><a href='/admin/update_metadata_object'>Re-Create JSON Metadata Object from File</a></li>          
 		</ul>
 		</li>
 		<li>Other:
