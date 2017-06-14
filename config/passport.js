@@ -151,7 +151,7 @@ function reset_password_auth(req, username, password, newpass, done, db){
 function login_auth_user(req, username, password, done, db){
    
     var qSelectUser = queries.get_user_by_name(username)
-  
+    console.log('login_auth_user')
     db.query(qSelectUser, function(err,rows){
         if (err)
             //return done(err);
@@ -183,7 +183,7 @@ function login_auth_user(req, username, password, done, db){
             }catch(e){
                 console.log(e)
             }
-
+console.log('login_auth_user-2')
             return done(null, rows[0]); 
         }
         
