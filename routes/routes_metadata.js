@@ -312,12 +312,20 @@ router.post('/metadata_upload',
       console.log(req.form.getErrors());
 
 
-      var new_row_info_arr = new_row_num_validation(req);
+      var new_row_info_arr_err = new_row_num_validation(req);
+      var new_row_info_arr = new_row_info_arr_err[0];
+      req = new_row_info_arr_err[1];
+
+
       console.log("FFF new_row_info_arr");
       console.log(new_row_info_arr);
       // [ { col1__units1: [ '', 'r1c2', '', '', '', '', '', '' ] },
       //   { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] },
       //   { col3__: [ 'r3c1', 'r2c3', '', '', '', '', '', '' ] } ]
+
+      console.log("RRR req.form.errors");
+      console.log(req.form.errors);
+
 
       editMetadataForm(req, res);
       //TODO: remove make_csv from here, use only if valid.
@@ -891,7 +899,7 @@ function convertArrayOfObjectsToCSV(args) {
 }
 
 function new_row_num_validation(req) {
-  var sanitizeHtml = require('sanitize-html');
+  // var sanitizeHtml = require('sanitize-html');
 
   var new_row_info_arr = [];
 
@@ -918,16 +926,21 @@ function new_row_num_validation(req) {
 
     console.log("units_field");
     console.log(units_field_name);
-    console.log(sanitizeHtml(req.body[units_field_name]));
+    // console.log(sanitizeHtml(req.body[units_field_name]));
+    console.log(req.body[units_field_name]);
 
     console.log("column_name_field_name");
     console.log(column_name_field_name);
-    console.log(sanitizeHtml(req.body[column_name_field_name]));
+    // console.log(sanitizeHtml(req.body[column_name_field_name]));
+    console.log(req.body[column_name_field_name]);
+
     // new_row1cell0: 'c11',
 
 
-    var column_name_field_val = sanitizeHtml(req.body[column_name_field_name]);
-    var units_field_val = sanitizeHtml(req.body[units_field_name]);
+    var column_name_field_val = req.body[column_name_field_name];
+    var units_field_val = req.body[units_field_name];
+    // var column_name_field_val = sanitizeHtml(req.body[column_name_field_name]);
+    // var units_field_val = sanitizeHtml(req.body[units_field_name]);
 
     console.log("validator isEmpty");
     column_name_field_val_valid = validator.escape(column_name_field_val);
@@ -967,7 +980,9 @@ function new_row_num_validation(req) {
 
     //   "16s": [ "16s", "16s", "16s", "16s", "16s", "16s", "16s", "16s" ],
     // TODO: check if column_name_field_name and units_field_name are not empty and are alphanumeric
-    new_row_name = sanitizeHtml(req.body[column_name_field_name]) + "__" + sanitizeHtml(req.body[units_field_name]);
+    // new_row_name = sanitizeHtml(req.body[column_name_field_name]) + "__" + sanitizeHtml(req.body[units_field_name]);
+    new_row_name = req.body[column_name_field_name] + "__" + req.body[units_field_name];
+
     console.log("EEE new_row_name");
     console.log(new_row_name);
 
@@ -994,7 +1009,7 @@ function new_row_num_validation(req) {
     // new_row1cell4
     //new_row
   }
-  return new_row_info_arr, req;
+  return [new_row_info_arr, req];
 //  how to return 2 things?
 }
 

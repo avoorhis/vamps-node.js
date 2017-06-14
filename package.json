@@ -53,7 +53,7 @@
     "mysql2": "",
     "node-json-minify": "^0.1.4-a",
     "node-json2html": "",
-    "nodemailer": "",
+    "nodemailer": "2.2",
     "open": "0.0.5",
     "passport": "",
     "passport-local": "",
@@ -62,6 +62,7 @@
     "serve-favicon": "",
     "tree-model": "",
     "uid-safe": "",
+    "underscore": "",
     "validator": "",
     "xmldom": "",
     "ya-csv": ""
