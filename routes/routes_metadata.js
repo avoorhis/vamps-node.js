@@ -377,8 +377,10 @@ function editMetadataForm(req, res){
   // [ { col1__units1: [ '', 'r1c2', '', '', '', '', '', '' ] },
   //   { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] },
   //   { col3__: [ 'r3c1', 'r2c3', '', '', '', '', '', '' ] } ]
+  // [ { 'Column name 1,units in row 1': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] },
+  //   { ',': [ '', '', '', '', '', '', '', '' ] } ]
 
-  console.log("RRR req.form.errors");
+  console.log("RRR555 req.form.errors");
   console.log(req.form.errors);
 
 
@@ -928,10 +930,12 @@ function new_row_val_validation(req, field_name) {
 
 function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx) {
   var new_row_length = req.body.new_row_length;
-  var new_row_name = [column_name_field_val_trimmed, units_field_val_trimmed];
+  // var new_row_names = [column_name_field_val_trimmed, units_field_val_trimmed];
   var new_row_info = {};
 
-  new_row_info[new_row_name] = [];
+  new_row_info[row_idx] = [];
+  new_row_info[row_idx].push(column_name_field_val_trimmed, units_field_val_trimmed);
+
   for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
 
     var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
@@ -943,7 +947,7 @@ function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed,
 
     var clean_val = validator.escape(req.body[cell_name]);
     clean_val = validator.trim(clean_val);
-    new_row_info[new_row_name].push(clean_val);
+    new_row_info[row_idx].push(clean_val);
   }
   console.log("WWW new_row_info");
   console.log(new_row_info);
@@ -998,7 +1002,7 @@ function collect_new_row(req) {
     // row = 0 row = {"Column name 1,units in row 1":["cell 1 row 1","row1 cell 2","","","","","",""]} row = 1 row = {",":["","","","","","","",""]}
 
   }
-  
+
   return [new_row_info_arr, req];
 //  how to return 2 things?
 }

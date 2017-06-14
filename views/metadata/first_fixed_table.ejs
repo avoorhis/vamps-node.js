@@ -65,13 +65,32 @@
                 </table>
             </div>
     </tr>
-    <% if (new_row_info_arr) {
-      for (row_num in new_row_info_arr) {
+    <% if (new_row_info_arr) {%>
+    <%= JSON.stringify(new_row_info_arr) %>
+    <br/>
+
+    <br/>
+    <!-- [{"1":["Column name 1","units in row 1","cell 1 row 1","row1 cell 2","","","","","",""]},{"2":["","","","","","","","","",""]}] -->
+
+      <% for (row_num in new_row_info_arr) {
     %>
 
         <tr>
-            row = <%= row_num %>
+            <!--
+            row = 0 row = {"1":["Column name 1","units in row 1","cell 1 row 1","row1 cell 2","","","","","",""]} row = 1 row = {"2":["","","","","","","","","",""]}  -->
+            row # <%= row_num %>
             row = <%= JSON.stringify(new_row_info_arr[row_num]) %>
+            <%for (row_num_in in new_row_info_arr[row_num]) {%>
+            typeof new_row_info_arr[row_num] = <%= new_row_info_arr[row_num] %>
+            typeof new_row_info_arr[row_num][row_num_in]  = <%=  new_row_info_arr[row_num][row_num_in] %>
+
+            <%for (cell_data in new_row_info_arr[row_num][row_num_in]) {%>
+
+            <td><%= cell_data %></td>
+            <%}%>
+
+            <%}%>
+
         </tr>
         <% } %> <!-- for -->
     <% } %> <!-- if -->
