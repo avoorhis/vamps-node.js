@@ -50,7 +50,7 @@ METADATA (how to get it into new vamps)
         left join required_metadata_info using(dataset_id)
         where required_metadata_info.dataset_id is null
     ------ Manually:
-    INSERT ignore into required_metadata_info (dataset_id, env_package_id, dna_region_id,sequencing_platform_id,fragment_name_id,domain_id,env_feature_id,env_matter_id,env_biome_id,country_id)
+    INSERT ignore into required_metadata_info (dataset_id, env_package_id, dna_region_id,sequencing_platform_id,fragment_name_id,domain_id,env_feature_id,env_material_id,env_biome_id,country_id)
     VALUES    ('344488','8','11','2','1','3','6191','6191','6191','365'),('344489','8','11','2','1','3','6191','6191','6191','365')
     SELECT concat("('",dataset_id,"','8','11','2','1','3','6191','6191','6191','365'),") from dataset where project_id in ('697')
 ------------------------------------------------------------------

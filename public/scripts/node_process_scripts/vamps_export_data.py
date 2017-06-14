@@ -134,7 +134,7 @@ def get_req_metadata_sql(args, dids, req_headersA, req_headersB):
     sql += " JOIN sequencing_platform using (sequencing_platform_id)\n"
     sql += " JOIN term as t1 on (env_biome_id=t1.term_id)\n"
     sql += " JOIN term as t2 on (env_feature_id=t2.term_id)\n"
-    sql += " JOIN term as t3 on (env_matter_id=t3.term_id)\n"
+    sql += " JOIN term as t3 on (env_material_id=t3.term_id)\n"
     sql += " where dataset_id in ('" + dids + "')\n"
     return sql
 
@@ -367,7 +367,7 @@ def run_metadata(args):
                                 "dna_region", "domain", "elevation", "env_package",
                                 "fragment_name", "latitude", "longitude",
                                 "sequencing_platform", "taxon_id"]
-    required_headersB = [  "env_biome",  "env_feature", "env_matter" ]      # these have to be matched with term table
+    required_headersB = [  "env_biome",  "env_feature", "env_material" ]      # these have to be matched with term table
     sql = get_req_metadata_sql(args, dids, required_headersA, required_headersB)
     print sql
     cursor.execute(sql)

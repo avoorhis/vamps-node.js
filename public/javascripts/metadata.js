@@ -189,257 +189,279 @@ function bindInfoWindow(marker, map, infowindow, html) {
 
 var biome_seq_options = {
     "marine": ["none",
-    "abyssal",
-    "aquatic",
-    "basaltic hydrothermal vent",
-    "bathyal",
-    "benthic",
-    "continental margin",
-    "estuarine",
-    "hadal",
-    "marine cold seep biome",
-    "neritic",
-    "pelagic",
-    "polar",
-    "ultramafic hydrothermal vent biome"],
+        "abyssal",
+        "bathyal",
+        "benthic",
+        "continental margin",
+        "endolithic",
+        "estuarine",
+        "hadal",
+        "neritic",
+        "pelagic",
+        "polar"
+    ],
 
     "terrestrial": ["none",
-    "aquatic",
-    "freshwater lake",
-    "freshwater river",
-    "large lake biome",
-    "polar",
-    "subglacial lake"],
+        "aquatic",
+        "polar",
+        "endolithic",
+        "desert",
+        "grassland",
+        "tundra",
+        "forest",
+        "montane",
+        "tropical",
+        "temperate",
+        "permafrost"],
 
     "subterrestrial": ["none",
-    "aquatic",
-    "endolithic"],
+        "aquatic",
+        "polar",
+        "endolithic",
+        "desert",
+        "grassland",
+        "tundra",
+        "forest",
+        "montane",
+        "tropical",
+        "temperate",
+        "permafrost"],
 
     "subseafloor": ["none",
-    "aquatic",
-    "benthic",
-    "endolithic",
-    "sub-seafloor microbial biome"]
+        "benthic",
+        "bathyal",
+        "abyssal",
+        "hadal",
+        "neritic",
+        "continental margin",
+        "estuarine",
+        "polar",
+        "endolithic"]
   };
 
   var feature_seq_options = {
     "well": ["none",
-      "aquifer",
-      "marine",
-      "oil well",
-      "research well",
-      "terrestrial",
-      "water well"],
+        "oil well",
+        "water well"],
 
     "aquifer": ["none",
-      "confined",
+        "confined",
+        "fracture - geological",
+        "fracture - micro",
+        "fracture - shear",
+        "spring",
+        "sub-continental",
+        "unconfined",
+        "water well"],
+
+    "borehole": ["none",
+        "CORK",
+        "casing",
+        "oil well",
+        "research borehole/well",
+        "water well",
+        "wellhead"],
+
+  "cave": ["none",
+      "erosional cave",
+      "fault cave",
+      "fissure cave",
+      "fracture - geological",
+      "glacier cave",
+      "karst cave",
+      "wall"],
+
+  "seep": ["none",
+      "brine pool",
+      "cold seep",
+      "hydrothermal seep",
+      "mound",
+      "mud volcano",
+      "oil seep",
+      "seafloor",
+      "seamount",
+      "vent-field associated",
+      "warm seep"],
+
+  "enrichment": ["none",
+      "animal carcass fall",
+      "batch culture ",
+      "bioreactor",
+      "continuous culture",
+      "fed batch culture",
+      "mesocosm",
+      "microcosm",
+      "organic matter fall",
+      "whale fall"],
+
+  "fracture": ["none",
+      "active geological fault",
+      "aquifer",
       "fracture - geological",
       "fracture - micro",
       "fracture - shear",
-      "groundwater",
-      "spring",
-      "sub-continental",
-      "subseafloor",
-      "unconfined",
-      "water well"],
-
-    "borehole": ["none",
-      "research well",
-      "oil well",
-      "water well",
-      "CORK",
-      "casing",
-      "wellhead"],
-
-  "cave": ["none",
-    "erosional cave",
-    "fault cave",
-    "fissure cave",
-    "fracture - geological",
-    "glacial cave",
-    "karst cave"],
-
-  "seep": ["none",
-    "brine pool",
-    "cold seep",
-    "hydrothermal seep",
-    "methane seep",
-    "microbial mat",
-    "mud volcano",
-    "petroleum seep",
-    "seafloor",
-    "seamount",
-    "trench",
-    "vent-field associated",
-    "warm seep"],
-
-  "enrichment": ["none",
-    "animal carcass fall",
-    "microbial mat",
-    "organic matter fall",
-    "whale fall"],
-
-  "fracture": ["none",
-    "active geological fault",
-    "aquifer",
-    "fracture - geological",
-    "fracture - micro",
-    "fracture - shear",
-    "intrusion",
-    "trench"],
+      "intrusion",
+      "trench"],
 
   "geyser": ["none",
     "hydrothermal",
-    "mineral deposit",
-    "terrestrial"],
+    "mineral deposit"],
 
   "spring": ["none",
-    "acidic hot",
-    "alkaline hot",
-    "geyser",
-    "hydrothermal",
-    "mineral deposit",
-    "mineral spring",
-    "terrestrial"],
+      "acidic hot",
+      "alkaline hot",
+      "hydrothermal",
+      "mineral deposit",
+      "mineral spring"],
 
   "vent": ["none",
-    "flank",
-    "hydrothermal",
-    "magma driven (black smoker)",
-    "microbial mat",
-    "mineral deposit",
-    "ridge",
-    "serpentinization driven (white smoker)",
-    "vent chimney",
-    "vent plume"],
+      "flank",
+      "hydrothermal",
+      "magma driven (black smoker)",
+      "mineral deposit",
+      "ridge",
+      "serpentinization driven (white smoker)",
+      "vent chimney",
+      "vent plume"],
 
   "mine": ["none",
-    "cave",
-    "mine drainage"],
+      "cave",
+      "mine drainage",
+      "mine tailing",
+      "wall"],
 
   "lake": ["none",
-    "acidic hot",
-    "alkaline hot",
-    "amictic - ice covered",
-    "brackish",
-    "freshwater",
-    "glacial",
-    "holomictic - fully mixed",
-    "lake bed",
-    "meromictic - non-mixing",
-    "periglacial",
-    "saline",
-    "subglacial",
-    "underground"],
+      "acidic hot",
+      "alkaline salt",
+      "glacial",
+      "holomictic - fully mixed",
+      "lake bed",
+      "meromictic - non-mixing",
+      "periglacial",
+      "subglacial",
+      "underground"],
 
   "volcano": ["none",
-    "caldera",
-    "crater floor",
-    "crater wall",
-    "crater",
-    "mud",
-    "ridge",
-    "seamount",
-    "seep"],
+      "caldera",
+      "crater",
+      "crater floor",
+      "crater wall",
+      "mud volcano",
+      "ridge",
+      "seamount",
+      "seep"],
 
   "reservoir": ["none",
-    "aquifer",
-    "freshwater",
-    "saline",
-    "subseafloor",
-    "subterrestrial"]
+      "aquifer",
+      "confined",
+      "freshwater",
+      "saline",
+      "subsurface",
+      "unconfined"]
   };
 
   var material_seq_options = {
     "sediment": ["none",
-      "anaerobic ",
-      "biogeneous (ex. forams, diatoms)",
-      "carbon dioxide-reducing ",
-      "chemical (ex. limestone, dolostone)",
-      "colloidal ",
-      "contaminated ",
-      "granular ",
-      "hydrogenous  (ex. metal sulfide, evaporites)",
-      "hyperthermal ",
-      "inorganically contaminated ",
-      "iron-reducing  ",
-      "lacustrine",
-      "manganese-reducing ",
-      "mesothermal",
-      "nitrate-reducing ",
-      "organically contaminated",
-      "petroleum contaminated ",
-      "radioactive",
-      "saline lake ",
-      "sulfate-reducing",
-      "terrigeneous (ex. sand, silt, gravel)"],
+        "anaerobic",
+        "biogeneous (ex. forams, diatoms)",
+        "carbon dioxide-reducing",
+        "chemical precip. (ex. carbonate ooids)",
+        "clay",
+        "colloidal",
+        "contaminated",
+        "granular",
+        "hydrogenous (ex. metal sulfide, evaporites)",
+        "hyperthermophilic (changed from hyperthermal)",
+        "inorganically contaminated",
+        "iron-reducing",
+        "manganese-reducing",
+        "mesophilic (changed from mesothermal)",
+        "nitrate-reducing",
+        "organically contaminated",
+        "petroleum contaminated",
+        "radioactive",
+        "saline lake sediment",
+        "silt",
+        "sulfate-reducing",
+        "terrigeneous (ex. sand, silt, gravel)"],
 
     "water": ["none",
-    "acidic",
-    "alkaline",
-    "anoxic",
-    "brackish water",
-    "fresh water",
-    "groundwater",
-    "hypersaline water",
-    "saline water"],
+        "acidic water",
+        "alkaline water",
+        "anoxic",
+        "brackish water",
+        "fresh water",
+        "ground water",
+        "hypersaline water",
+        "saline deep groundwater",
+        "saline water",
+        "sea water"],
 
     "fluid": ["none",
-    "borehole water",
-    "drilling fluid",
-    "ground water",
-    "hydrothermal fluid",
-    "melt",
-    "oil",
-    "pore fluid",
-    "waste material"],
+        "borehole water",
+        "drilling fluid",
+        "ground water",
+        "hydrothermal fluid",
+        "meltwater",
+        "oil",
+        "pore fluid",
+        "waste material"],
 
     "biofilm": ["none",
-    "algae",
-    "archaea",
-    "bacteria",
-    "fungi",
-    "glacial",
-    "protozoa",
-    "thermophilic"],
+        "algae",
+        "archaea",
+        "bacteria",
+        "fungi",
+        "glacial",
+        "protozoa",
+        "thermophilic"],
 
     "microbial mat material": ["none",
-    "archaea",
-    "bacteria",
-    "terrestrial",
-    "tidal",
-    "underwater"],
+        "archaea",
+        "bacteria",
+        "biofilm-groundwater flowcell",
+        "hypersaline",
+        "submerged",
+        "terrestrial",
+        "tidal"],
 
     "rock": ["none",
-    "igneous - plutonic",
-    "igneous",
-    "metamorphic",
-    "sedimentary - biochemical",
-    "sedimentary - clastic",
-    "sedimentary - precipitated (ex. oolithic limestone)",
-    "sedimentary",
-    "volcanic - basalt",
-    "volcanic"],
+        "andesite",
+        "conglomerate",
+        "dolomite",
+        "granite",
+        "igneous",
+        "igneous - plutonic",
+        "limestone",
+        "metamorphic",
+        "pumice",
+        "sandstone",
+        "sedimentary",
+        "sedimentary - biogeneous (ex. limestone)",
+        "sedimentary - clastic",
+        "sedimentary - precipitated (ex. chert)",
+        "shale",
+        "volcanic",
+        "volcanic - basalt"],
 
     "mud": ["none",
-    "anaerobic ",
-    "colloidal ",
-    "deep lacustrine",
-    "estuarine",
-    "glacial",
-    "hyperthermal ",
-    "mesothermal",
-    "seafloor",
-    "soil",
-    "turbidite"],
+        "anaerobic ",
+        "colloidal (sediment)",
+        "estuarine",
+        "glacial",
+        "hyperthermal ",
+        "lake bottom mud (changed from deep lacustrine)",
+        "marine (changed from sea floor)",
+        "mesothermal",
+        "soil",
+        "turbidite"],
 
     "soil": ["none",
-    "clay",
-    "colloidal ",
-    "contaminated",
-    "groundwater",
-    "mud",
-    "permafrost"],
+        "clay",
+        "colloidal ",
+        "contaminated",
+        "mud",
+        "permafrost"],
 
     "oil": ["none",
     "asphalt",
@@ -450,9 +472,12 @@ var biome_seq_options = {
     "well"],
 
     "sand": ["none",
-    "basaltic",
-    "calcium carbonate",
-    "quartz"]
+        "basaltic",
+        "beach sand",
+        "calcium carbonate",
+        "desert sand",
+        "quartz",
+        "sea sand"]
 
   };
 
@@ -460,15 +485,28 @@ function populate_secondary_select(args) {
   id_base = arguments[0][0];
   sec_options = arguments[0][1];
 
-  did = this.id.replace(id_base + "_primary", '');
+  did = this.id.replace("env_" + id_base, '');
+
   id2 = id_base + "_secondary";
+
   var B = document.getElementById(id2+did);
+
+
+  //---
+
+  var sel_val = $(B).find(":selected").val();
+
+  // alert("sel_val");
+  // alert(sel_val);
+
+  //---
 
   //clear out B
   B.length = 0;
 
   //get the selected value from A
   var _val = this.options[this.selectedIndex].value;
+
 
   //loop through bOption at the selected value
   for (var i in sec_options[_val]) {
@@ -477,6 +515,12 @@ function populate_secondary_select(args) {
     var op = document.createElement('option');
     //set its value
     op.value = sec_options[_val][i];
+  // .setAttribute('selected','selected');
+
+    if (op.value === sel_val)
+    {
+      op.setAttribute('selected','selected');
+    }
 
     //set the display label
     op.text = sec_options[_val][i];
@@ -544,20 +588,47 @@ fnScroll = function(){
     $('#firstcol_div').scrollTop($('#table_div').scrollTop());
 };
 
-$(document).ready(function(){
-    $('.biome_primary').change(function(){
-        populate_secondary_select.call(this, ['biome', biome_seq_options]);
-    });
-    $('.feature_primary').change(function(){
-        populate_secondary_select.call(this, ['feature', feature_seq_options]);
-    });
-    $('.material_primary').change(function(){
-        populate_secondary_select.call(this, ['material', material_seq_options]);
-    });
 
-    $('#table_div').scroll(function(){
-        fnScroll();
-    });
+$(document).ready(function(){
+  $('.env_biome').change(function(){
+      populate_secondary_select.call(this, ['biome', biome_seq_options]);
+  }).each(function(){
+
+    if($(this).val() !== "Please choose one") {
+      populate_secondary_select.call(this, ['biome', biome_seq_options]);
+    }
+
+  });
+
+  $('.env_feature').change(function(){
+      populate_secondary_select.call(this, ['feature', feature_seq_options]);
+  }).each(function(){
+
+    if($(this).val() !== "Please choose one") {
+      populate_secondary_select.call(this, ['feature', feature_seq_options]);
+    }
+
+  });
+  $('.env_material').change(function(){
+    // alert("On change");
+    populate_secondary_select.call(this, ['material', material_seq_options]);
+  }).each(function(){
+    // alert("on each")
+
+    if($(this).val() !== "Please choose one") {
+      // this.style.backgroundColor = "green";
+
+      populate_secondary_select.call(this, ['material', material_seq_options]);
+    }
+    // else {
+    //   this.style.backgroundColor = "blue";
+    // }
+  });
+
+  $('#table_div').scroll(function(){
+      fnScroll();
+  });
+
 
     fnAdjustTable();
 });

@@ -216,7 +216,7 @@ def write_metafile(args,stats):
     
     #f = open(args.mdfile_clean, 'wt')
     
-    req_metadata = ['altitude','assigned_from_geo','collection_date','common_name','country','depth','description','elevation','env_biome','env_feature','env_matter','latitude','longitude','public','taxon_id']
+    req_metadata = ['altitude','assigned_from_geo','collection_date','common_name','country','depth','description','elevation','env_biome','env_feature','env_material','latitude','longitude','public','taxon_id']
     req_first_col = ['#SampleID','sample_name','dataset_name']
     with open(args.mdfile, mode='r') as infile:
         reader = csv.reader(infile, delimiter='\t')  # TAB Only delimiter

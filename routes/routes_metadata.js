@@ -171,33 +171,115 @@ router.get("/metadata_upload_new", [helpers.isLoggedIn], function (req, res) {
   });
 });
 
+// TODO: update pairs from https://docs.google.com/spreadsheets/d/1adAtGc9DdY2QBQZfd1oaRdWBzjOv4t-PF1hBfO8mAoA/edit#gid=1223926458
 router.post('/metadata_upload',
   [helpers.isLoggedIn],
   form(
+    form.field("NPOC", "NPOC (Non-purgeable organic carbon)").trim().entityEncode().array(),
+    form.field("access_point_type", "Access Point Type").trim().entityEncode().array(),
+    form.field("adapter_sequence", "Adapter sequence").trim().entityEncode().array().required(),
+    form.field("alkalinity", "Alkalinity").trim().entityEncode().array(),
+    form.field("ammonium", "Ammonium").trim().entityEncode().array(),
+    form.field("bicarbonate", "Bicarbonate").trim().entityEncode().array(),
+    form.field("env_biome", "Biome - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("biome_secondary", "Biome - Secondary").trim().entityEncode().array(),
+    form.field("calcium", "Calcium").trim().entityEncode().array(),
+    form.field("calcium_carbonate", "Calcium carbonate").trim().entityEncode().array(),
+    form.field("chloride", "Chloride").trim().entityEncode().array(),
+    form.field("clone_library_results", "clone library results (key findings)").trim().entityEncode().array(),
+    form.field("collection_date", "Sample collection date (YYYY-MM-DD)").trim().required().entityEncode().isDate("Sample collection date format: YYYY-MM-DD").array(),
+    form.field("conductivity", "Conductivity").trim().entityEncode().array().required(),
+    form.field("dataset", "VAMPS dataset name").trim().entityEncode().array().required(),
     form.field("dataset_id", "").trim().required().entityEncode().isInt().array(),
-    form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_ -]+$/),
-    form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z- ]+$/),
-    form.field("pi_email", "PI's email address").trim().isEmail().required().entityEncode(),
-    form.field("project_abstract", "Project abstract").trim().required().entityEncode(),
-    form.field("references", "References").trim().required().entityEncode().array(),
-    // References should clean URL
-    form.field("project", "VAMPS project name").trim().entityEncode(),
-    form.field("dataset", "VAMPS dataset name").trim().entityEncode().array(),
-    form.field("sample_name", "Sample ID (user sample name)").trim().required().entityEncode().array(),
+    form.field("del18O_water", "Delta 18O of water").trim().entityEncode().array(),
+    form.field("depth_in_core", "Depth within core").trim().entityEncode().array(),
+    form.field("depth_subseafloor", "Depth below seafloor").trim().entityEncode().array(),
+    form.field("depth_subterrestrial", "Depth below terrestrial surface").trim().entityEncode().array(),
+    form.field("diss_hydrogen", "Dissolved hydrogen").trim().entityEncode().array(),
+    form.field("diss_inorg_carb", "Dissolved inorganic carbon").trim().entityEncode().array(),
+    form.field("diss_inorg_carbon_del13C", "Delta 13C for dissolved inorganic carbon").trim().entityEncode().array(),
+    form.field("diss_org_carb", "Dissolved organic carbon").trim().entityEncode().array(),
+    form.field("diss_oxygen", "Dissolved oxygen").trim().entityEncode().array(),
     form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode().custom(env_items_validation).array(),
     form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode().custom(env_items_validation).array(),
-    form.field("collection_date", "Sample collection date (YYYY-MM-DD)").trim().required().entityEncode().isDate("Sample collection date format: YYYY-MM-DD").array(),
-    form.field("latitude", "Latitude (WGS84 system, values bounded by ±90°)").trim().required().entityEncode().isDecimal().array(),
-    form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode().array(),
-    form.field("geo_loc_name_country", "Country").trim().entityEncode().array(),
-    form.field("longhurst_zone", "Longhurst Zone").trim().entityEncode().array(),
-    form.field("biome_primary", "Biome - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
-    form.field("biome_secondary", "Biome - Secondary").trim().entityEncode().array(),
-    form.field("feature_primary", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("dna_region", "DNA region").trim().entityEncode().array().required(),
+    form.field("domain", "Domain").trim().entityEncode().array().required(),
+    form.field("elevation", "Elevation above sea level (land only)").trim().entityEncode().array().required(),
+    form.field("env_package", "Environmental Package").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("enzyme_activities", "enzyme activities (key findings)").trim().entityEncode().array(),
+    form.field("env_feature", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
     form.field("feature_secondary", "Environmental Feature - Secondary").trim().entityEncode().array(),
-    form.field("material_primary", "Environmental Material - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
-    form.field("material_secondary", "Environmental Material - Secondary").trim().entityEncode().array()
-    ),
+    form.field("formation_name", "Formation name").trim().entityEncode().array(),
+    form.field("forward_primer", "Forward PCR Primer").trim().entityEncode().array().required(),
+    form.field("functional_gene_assays", "functional gene assays (key findings)").trim().entityEncode().array(),
+    form.field("geo_loc_name_continental", "Country").trim().entityEncode().array().required(),
+    form.field("geo_loc_name_marine", "Longhurst Zone").trim().entityEncode().array().required(),
+    form.field("illumina_index", "Index sequence (for Illumina)").trim().entityEncode().array(),
+    // Index sequence (required for Illumina)
+    form.field("investigation_type", "Investigation Type").trim().entityEncode().array().required(),
+    form.field("iron", "Total iron").trim().entityEncode().array(),
+    form.field("iron_II", "Iron II").trim().entityEncode().array(),
+    form.field("iron_III", "Iron III").trim().entityEncode().array(),
+    form.field("isol_growth_cond", "Isolation and growth condition (publication reference)").trim().entityEncode().array(),
+    form.field("latitude", "Latitude (WGS84 system, values bounded by ±90°)").trim().required().entityEncode().isDecimal().array(),
+    form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode().isDecimal().array(),
+    form.field("magnesium", "Magnesium").trim().entityEncode().array(),
+    form.field("manganese", "Manganese").trim().entityEncode().array(),
+    form.field("env_material", "Environmental Material - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("material_secondary", "Environmental Material - Secondary").trim().entityEncode().array(),
+    form.field("methane", "Methane").trim().entityEncode().array(),
+    form.field("methane_del13C", "Delta 13C for methane").trim().entityEncode().array(),
+    form.field("microbial_biomass_FISH", "Microbial biomass – FISH").trim().entityEncode().array(),
+    form.field("microbial_biomass_avg_cell_number", "Microbial biomass – other").trim().entityEncode().array(),
+    form.field("microbial_biomass_intactpolarlipid", "Microbial biomass – intact polar lipid").trim().entityEncode().array(),
+    form.field("microbial_biomass_microscopic", "Microbial biomass – microscopic").trim().entityEncode().array(),
+    form.field("microbial_biomass_platecounts", "Microbial biomass – plate counts - cell numbers").trim().entityEncode().array(),
+    form.field("microbial_biomass_qPCR", "Microbial biomass – Q-PCR and primers used").trim().entityEncode().array(),
+    form.field("nitrate", "Nitrate").trim().entityEncode().array(),
+    form.field("nitrite", "Nitrite").trim().entityEncode().array(),
+    form.field("nitrogen_tot", "Total nitrogen").trim().entityEncode().array(),
+    form.field("noble_gas_chemistry", "Noble gas chemistry").trim().entityEncode().array(),
+    form.field("org_carb_nitro_ratio", "Carbon nitrogen ratio").trim().entityEncode().array(),
+    form.field("pH", "pH").trim().entityEncode().array().required(),
+    form.field("part_org_carbon_del13C", "Delta 13C for particulate organic carbon").trim().entityEncode().array(),
+    form.field("phosphate", "Phosphate").trim().entityEncode().array(),
+    form.field("pi_email", "PI's email address").trim().isEmail().required().entityEncode(),
+    form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z- ]+$/),
+    form.field("plate_counts", "Plate counts – colony forming units").trim().entityEncode().array(),
+    form.field("porosity", "Porosity").trim().entityEncode().array(),
+    form.field("potassium", "Potassium").trim().entityEncode().array(),
+    form.field("pressure", "Pressure").trim().entityEncode().array(),
+    form.field("project", "VAMPS project name").trim().entityEncode().array().required(),
+    form.field("project_abstract", "Project abstract").trim().required().entityEncode(),
+    form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_ -]+$/),
+    form.field("redox_potential", "Redox potential").trim().entityEncode().array(),
+    form.field("redox_state", "Redox state").trim().entityEncode().array().required(),
+    form.field("references", "References").trim().entityEncode().array(),
+    form.field("resistivity", "Resistivity").trim().entityEncode().array(),
+    form.field("reverse_primer", "Reverse PCR Primer").trim().entityEncode().array().required(),
+    form.field("rock_age", "Sediment or rock age").trim().entityEncode().array(),
+    form.field("run", "Sequencing run date (YYYY-MM-DD)").trim().entityEncode().array().required(),
+    form.field("salinity", "Salinity").trim().entityEncode().array(),
+    form.field("samp_store_dur", "Storage duration ").trim().entityEncode().array(),
+    form.field("samp_store_temp", "Storage temperature").trim().entityEncode().array(),
+    form.field("sample_name", "Sample ID (user sample name)").trim().entityEncode().array().required(),
+    form.field("sample_size_mass", "Sample Size (mass)").trim().entityEncode().array(),
+    form.field("sample_size_vol", "Sample Size (volume)").trim().entityEncode().array(),
+    form.field("sample_type", "Sample Type (most often environmental)").trim().entityEncode().array().required(),
+    form.field("sequencing_meth", "Sequencing method").trim().entityEncode().array().required(),
+    form.field("sodium", "Sodium").trim().entityEncode().array(),
+    form.field("sulfate", "Sulfate").trim().entityEncode().array(),
+    form.field("sulfide", "Sulfide").trim().entityEncode().array(),
+    form.field("sulfur_tot", "Total sulfur").trim().entityEncode().array(),
+    form.field("target_gene", "Target gene name (16S rRNA, mcrA)").trim().entityEncode().array().required(),
+    form.field("temperature", "Temperature").trim().entityEncode().array().required(),
+    form.field("tot_carb", "Total carbon").trim().entityEncode().array(),
+    form.field("tot_depth_water_col", "Water column depth (Sampling depth if applicable. If sampling below seafloor, depth of water column at the seafloor)").trim().entityEncode().array(),
+    form.field("tot_inorg_carb", "Total inorganic carbon").trim().entityEncode().array(),
+    form.field("tot_org_carb", "Total organic carbon").trim().entityEncode().array(),
+    form.field("trace_element_geochem", "Trace element geochemistry").trim().entityEncode().array(),
+    form.field("water_age", "Water age").trim().entityEncode().array()
+  ),
   function (req, res) {
     // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
     if (!req.form.isValid) {
@@ -217,8 +299,19 @@ router.post('/metadata_upload',
       console.log(req.body);
 
       req.flash("fail", req.form.errors);
+      console.log("req.form.errors");
+      console.log(req.form.errors);
+
+      console.log('req.form.getErrors("env_biome")');
+      console.log(req.form.getErrors("env_biome"));
+
+
+      console.log('req.form.getErrors()');
+      console.log(req.form.getErrors());
+
+
       editMetadataForm(req, res);
-      //TODO: remove from here, use only if valid.
+      //TODO: remove make_csv from here, use only if valid.
       make_csv(req, res);
 
 
@@ -265,30 +358,33 @@ function editMetadataForm(req, res){
   edit_metadata_address = "metadata/metadata_upload_from_file";
   console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
 
-  // console.log("XXX1 all_metadata: req.form");
-  // console.log(req.form);
-  // console.log("XXX2 req.body.project_id");
-  // console.log(req.body.project_id);
-  // console.log(pid);
-  // console.log("XXX3 req.body.project_id");
-  // console.log(all_metadata);
+  console.log("XXX1 all_metadata: req.form");
+  console.log(req.form);
+
+  console.log("XXX2 req.body.project_id");
+  console.log(req.body.project_id);
+  console.log(pid);
+
   all_metadata = {pid: req.form};
+
+  console.log("XXX3 all_metadata");
+  console.log(all_metadata);
+
   res.render('metadata/metadata_upload_from_file', {
-      title: 'VAMPS: Metadata_upload',
-      user: req.user,
-      hostname: req.CONFIG.hostname,
-      all_metadata: all_metadata,
-      all_field_names: CONSTS.ORDERED_METADATA_NAMES,
-      dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-      dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-      dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-      biome_primary_options: CONSTS.BIOME_PRIMARY,
-      biome_secondary_options: CONSTS.BIOME_SEQ_OPTIONS,
-      feature_primary_options: CONSTS.FEATURE_PRIMARY,
-      feature_secondary_aquifer: CONSTS.FEATURE_SECONDARY_AQUIFER,
-      material_primary_options: CONSTS.MATERIAL_PRIMARY,
-      material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
-      metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
+    title: 'VAMPS: Metadata_upload',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    all_metadata: all_metadata,
+    all_field_names: CONSTS.ORDERED_METADATA_NAMES,
+    dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+    dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+    dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+    biome_primary_options: CONSTS.BIOME_PRIMARY,
+    feature_primary_options: CONSTS.FEATURE_PRIMARY,
+    material_primary_options: CONSTS.MATERIAL_PRIMARY,
+    metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+    env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+    investigation_type_options: CONSTS.INVESTIGATION_TYPE
   });
 }
 
@@ -353,7 +449,7 @@ router.post('/start_edit',
 });
 
 function get_values_from_ids(METADATA, did, all_metadata_p_d) {
-  var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_matter', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'];
+  var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_material', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'];
   // var ds_row = {};
 
   metadata_names.forEach(function(mdname) {
@@ -379,7 +475,7 @@ DDD metadata
      domain: "Bacteria",
      env_biome: "unknown",
      env_feature: "unknown",
-     env_matter: "unknown",
+     env_material: "unknown",
      env_package: "unknown",
      geo_loc_name: "unknown",
      illumina_index: "unknown",
@@ -398,13 +494,57 @@ DDD metadata
   return all_metadata_p_d;
 }
 
-function make_all_arrays(all_metadata, pid, dataset_id) {
-  for (dataset_id in AllMetadataFromFile) {
+function make_empty_arrays(all_metadata, pid) {
+  console.log("KKK From AllMetadataFromFile");
+  console.log("KKK333 AllMetadataFromFile");
+  console.log(AllMetadataFromFile);
+
+  for (var dataset_id in AllMetadataFromFile) {
+    console.log("DADA dataset_id");
     Object.keys(AllMetadataFromFile[dataset_id]).forEach(function(key) {
-      var val = AllMetadataFromFile[dataset_id][key];
+      // var val = AllMetadataFromFile[dataset_id][key];
       all_metadata[pid][key] = [];
+
+      console.log("KKK1 key:");
+      console.log(key);
+      console.log("KKK2 pid:");
+      console.log(pid);
+      // console.log("KKK3 val:");
+      // console.log(val);
+
     });
+
+    for (var i = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i < len; i++) {
+      var key_name = CONSTS.REQ_METADATA_FIELDS_wIDs[i];
+      all_metadata[pid][key_name] = [];
+    }
+
+
+
+    // get_values_from_ids(METADATA, did, all_metadata_p_d)
+
+    // var ds_row = {};
+
+    // metadata_names.forEach(function(mdname) {
+    //   // console.log(mdname);
+    //   var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname);
+    //   /*
+    //    console.log("DDD data");
+    //    console.log(data);
+    //    DDD data
+    //    { name: 'run_id', value: '20080709' }
+    //    */
+    //
+    //   if(did in METADATA) {
+    //     // ds_row[mdname] = data.value
+    //     all_metadata_p_d[mdname] = data.value;
+    //   }
+    // });
+
   }
+  // all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
+
+
   return all_metadata;
 }
 
@@ -414,7 +554,11 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   all_metadata[pid]["dataset"] = [];
   all_metadata[pid]["dataset_description"] = [];
 
-  make_all_arrays(all_metadata, pid, dataset_id);
+  console.log("PPP1 populate_metadata_hash: ");
+  make_empty_arrays(all_metadata, pid);
+
+  console.log("PPP2 all_metadata");
+  console.log(all_metadata);
 
   for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
@@ -466,8 +610,8 @@ function populate_metadata_hash(rows, pid, all_metadata) {
       all_metadata[pid]["dataset"].push(row.dataset);
       all_metadata[pid]["dataset_description"].push(row.dataset_description);
 
-      console.log('AAA5 all_metadata[pid]["dataset_id"]');
-      console.log(all_metadata[pid]["dataset_id"]);
+      // console.log('AAA5 all_metadata[pid]["dataset_id"]');
+      // console.log(all_metadata[pid]["dataset_id"]);
       /*
       console.log("AllMetadataFromFile[dataset_id]");
       console.log(AllMetadataFromFile[dataset_id]);
@@ -475,48 +619,30 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   collection_date: '2007-06-01',
       */
 
-      Object.keys(AllMetadataFromFile[dataset_id]).forEach(function(key) {
-        var val = AllMetadataFromFile[dataset_id][key];
-        /*
-        key
-          latitude
-        val
-          64.49
-        */
-        all_metadata[pid][key].push(val);
-      });
-
-      console.log("DDD11 all_metadata");
-      console.log(all_metadata);
-
-      // all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
-
-      // console.log("MMM all_metadata");
-      // console.log(all_metadata);
-      /* MMM all_metadata
-{ "47":
-   { dataset_ids:
-      { "4312": [Object],
-        "4313": [Object],
-        "4314": [Object],
-        "4315": [Object],
-        "4316": [Object],
-        "4317": [Object],
-        "4318": [Object] },
-     project: "DCO_GAI_Bv3v5",
-     title: "Icelandic Volcanic Lake",
-     username: "gaidos",
-     email: "gaidos@hawaii.edu",
-     institution: "University of Hawaii",
-     first_name: "Eric",
-     last_name: "Gaidos",
-     public: 0 } }
- */
+    add_all_metadata_from_file(Object.keys(AllMetadataFromFile[dataset_id]), dataset_id);
+    add_required_metadata_from_id(CONSTS.REQ_METADATA_FIELDS_wIDs, dataset_id);
 
   }
   return all_metadata;
 }
-  
+
+function add_all_metadata_from_file(my_hash, dataset_id) {
+  for (var i1 = 0, len1 = my_hash.length; i1 < len1; i1++) {
+    var key = my_hash[i1];
+    var val = AllMetadataFromFile[dataset_id][key]; // TODO: combine with add_required_metadata_from_id? That's the only difference besides "my_hash"
+    all_metadata[pid][key].push(val);
+  }
+}
+
+function add_required_metadata_from_id(my_hash, dataset_id) {
+  for (var idx = 0, len = my_hash.length; idx < len; idx++) {
+    var key = my_hash[idx];
+    var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], key + "_id");
+    var val = data.value;
+    all_metadata[pid][key].push(val);
+  }
+}
+
 // function populate_metadata_hash(rows, pid, all_metadata){
 //   all_metadata[pid]["dataset_ids"] = {}
 //
@@ -597,7 +723,7 @@ function intersection_destructive(a, b)
 
 // TODO: rename
 // todo: if there is req.form (or req.body?) use the result?
-function make_metadata_hash(req, res){
+function make_metadata_hash(req, res) {
   pid = req.body.project_id;
   all_metadata = {};
   if (helpers.isInt(pid))
@@ -646,12 +772,11 @@ function make_metadata_hash(req, res){
           dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
           dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
           biome_primary_options: CONSTS.BIOME_PRIMARY,
-          biome_secondary_options: CONSTS.BIOME_SEQ_OPTIONS,
           feature_primary_options: CONSTS.FEATURE_PRIMARY,
-          feature_secondary_aquifer: CONSTS.FEATURE_SECONDARY_AQUIFER,
           material_primary_options: CONSTS.MATERIAL_PRIMARY,
-          material_secondary_biofilm: CONSTS.MATERIAL_SECONDARY_BIOFILM,
-          metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS
+          metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+          env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+          investigation_type_options: CONSTS.INVESTIGATION_TYPE
         });
 
 
@@ -674,6 +799,10 @@ function make_metadata_hash(req, res){
 }
 
 function env_items_validation(value) {
+  // console.log("EEE env_items_validation(value)");
+  // console.log(value);
+  // console.log(this);
+
   if (value === "Please choose one") {
       throw new Error("Please choose one value from the dropdown menu for %s.");
   }

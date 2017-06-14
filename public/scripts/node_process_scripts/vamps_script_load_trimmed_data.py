@@ -201,7 +201,7 @@ def write_seqfiles(args):
 def write_metafile(args,stats):
     
         
-    req_metadata = ['altitude','assigned_from_geo','collection_date','common_name','country','depth','description','elevation','env_biome','env_feature','env_matter','latitude','longitude','public','taxon_id']
+    req_metadata = ['altitude','assigned_from_geo','collection_date','common_name','country','depth','description','elevation','env_biome','env_feature','env_material','latitude','longitude','public','taxon_id']
     req_first_col = ['#SampleID','sample_name','dataset_name']
     if args.md_comp:
         infile=gzip.open(args.mdfile_path,'r')

@@ -152,7 +152,7 @@ def write_seqfiles(args, projects):
 def write_metafile(args,projects,stats):
     print "STARTing Metadata"
     #mdfile = os.path.join(args.outdir,'meta_original.csv') 
-    req_metadata = ['altitude','assigned_from_geo','collection_date','common_name','country','depth','description','elevation','env_biome','env_feature','env_matter','latitude','longitude','public','taxon_id']
+    req_metadata = ['altitude','assigned_from_geo','collection_date','common_name','country','depth','description','elevation','env_biome','env_feature','env_material','latitude','longitude','public','taxon_id']
     #req_for_multi = ['#SampleID','sample_name','dataset']
     in_md_file = args.metafile
     metadata = {}
