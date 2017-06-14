@@ -367,7 +367,7 @@ function editMetadataForm(req, res){
   console.log(req.body.project_id);
   console.log(pid);
 
-  var new_row_info_arr_err = new_row_num_validation(req);
+  var new_row_info_arr_err = collect_new_row(req);
   var new_row_info_arr = new_row_info_arr_err[0];
   req = new_row_info_arr_err[1];
 
@@ -905,7 +905,10 @@ function convertArrayOfObjectsToCSV(args) {
     return result;
 }
 
-function new_row_num_validation(req) {
+// function new_row_num_validation(req) {
+// }
+
+function collect_new_row(req) {
   // var sanitizeHtml = require('sanitize-html');
 
   var new_row_info_arr = [];
@@ -959,7 +962,7 @@ function new_row_num_validation(req) {
     units_field_val_valid = validator.trim(units_field_val_valid);
     units_field_val_valid = validator.isEmpty(units_field_val_valid);
     console.log(units_field_val_valid);
-    
+
     if (column_name_field_val_valid)
     {
       console.log("ERRRR");

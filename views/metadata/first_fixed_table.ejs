@@ -65,6 +65,16 @@
                 </table>
             </div>
     </tr>
+    <% if (new_row_info_arr) {
+      for (row_num in new_row_info_arr) {
+    %>
+
+        <tr>
+            row = <%= row_num %>
+            row = <%= JSON.stringify(new_row_info_arr[row_num]) %>
+        </tr>
+        <% } %> <!-- for -->
+    <% } %> <!-- if -->
     <tfoot>
     <tr>
         <td colspan="<%= all_field_names.length%>" class="header_divider">
