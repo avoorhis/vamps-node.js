@@ -434,6 +434,9 @@ router.get('/upload_configuration', [helpers.isLoggedIn], function (req, res) {
 //
 router.post('/config_file', [helpers.isLoggedIn, upload.single('upload_files', 12)],function (req, res) {
     console.log('in POST config_file')
+    // UPLOAD of outside config file make sure defaults are in place
+    // "unit_choice":"tax_silva119_simple"
+    //"custom_taxa":["NA"]
     console.log(req.body)
     console.log('file',req.file)
     var upld_obj = JSON.parse(fs.readFileSync(req.file.path, 'utf8'));
@@ -455,6 +458,14 @@ router.post('/config_file', [helpers.isLoggedIn, upload.single('upload_files', 1
     // if no dids deny saving file
     // otherwise save config with new did set
     // update: ids, names and number_of_ds
+    if(! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) != 'VAMPS'){
+      req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
+      res.redirect('/user_data/upload_configuration');
+      return;
+    }
+    if(! upld_obj.hasOwnProperty('post_items') ){
+        upld_obj.post_items = {}
+    }
     if(new_dataset_ids.length == 0){
       req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
       res.redirect('/user_data/upload_configuration');
@@ -472,6 +483,34 @@ router.post('/config_file', [helpers.isLoggedIn, upload.single('upload_files', 1
           pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did]
           upld_obj.id_name_hash.names.push(pjds)
       }
+      // ADD DEFAULTS if needed
+      if(! upld_obj.post_items.hasOwnProperty('metadata') || upld_obj.post_items.metadata.length == 0){
+        upld_obj.post_items.metadata = ['latitude','longitude']
+      }
+      upld_obj.post_items.unit_choice = 'tax_silva119_simple'
+      upld_obj.post_items.custom_taxa = ["NA"]
+      if(! upld_obj.post_items.hasOwnProperty('normalization')){
+        upld_obj.post_items.normalization = 'none'
+      }
+      if(! upld_obj.post_items.hasOwnProperty('selected_distance')){
+        upld_obj.post_items.selected_distance = 'morisita_horn'
+      }
+      if(! upld_obj.post_items.hasOwnProperty('tax_depth')){
+        upld_obj.post_items.tax_depth = 'phylum'
+      }
+      if(! upld_obj.post_items.hasOwnProperty('include_nas')){
+        upld_obj.post_items.include_nas = 'yes'
+      }
+      if(! upld_obj.post_items.hasOwnProperty('domains') || upld_obj.post_items.domains.length == 0){
+        upld_obj.post_items.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
+      }
+      if(! upld_obj.post_items.hasOwnProperty('min_range')){
+        upld_obj.post_items.min_range = 0
+      }
+      if(! upld_obj.post_items.hasOwnProperty('max_range')){
+        upld_obj.post_items.max_range = 100
+      }
+      
       new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename)
       console.log('new_filename_path')
       console.log(new_filename_path)

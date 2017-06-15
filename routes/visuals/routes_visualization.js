@@ -184,7 +184,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     var config_file_data = JSON.parse(fs.readFileSync(config_file_path, 'utf8'))
     //console.log(file_data)
     var ids = config_file_data.id_name_hash.ids
-    new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
+    var new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
     if(new_dataset_ids.length == 0){
       req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
       res.redirect('saved_elements');
@@ -203,6 +203,9 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
           pid = PROJECT_ID_BY_DID[did]
           pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did]
           chosen_id_name_hash.names.push(pjds)
+      }
+      if(! config_file_data.hasOwnProperty('metadata') || config_file_data['metadata'].length == 0){
+        visual_post_items.metadata = ['latitude','longitude']
       }
     }
     
