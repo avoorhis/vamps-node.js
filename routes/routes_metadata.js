@@ -959,13 +959,13 @@ function new_row_val_validation(req, field_name) {
   if (field_val_not_valid)
   {
     console.log("ERRRR");
-    req.form.errors.push(field_name + ' should be not empty');
+    return [true, field_val_trimmed];
   }
   else
   {
     console.log("OK");
+    return [false, field_val_trimmed];
   }
-  return [req, field_val_trimmed];
 }
 
 function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx) {
@@ -1021,13 +1021,25 @@ function collect_new_row(req) {
     var column_name_field_name = "Column Name" + row_idx;
 
 
-    var col_val_res = new_row_val_validation(req, column_name_field_name);
-    req = col_val_res[0];
-    var column_name_field_val_trimmed = col_val_res[1];
+    var col_val_res = [];
+    col_val_res = new_row_val_validation(req, column_name_field_name);
+    if (col_val_res[0]) {
+      req.form.errors.push(column_name_field_name + ' should be not empty');
+      continue;
+    }
+    else {
+      var column_name_field_val_trimmed = col_val_res[1];
+    }
 
-    var units_val_res = new_row_val_validation(req, units_field_name);
-    req = units_val_res[0];
-    var units_field_val_trimmed = units_val_res[1];
+    var units_val_res = [];
+    units_val_res = new_row_val_validation(req, units_field_name);
+    if (units_val_res[0]) {
+      req.form.errors.push(units_field_name + ' should be not empty');
+      continue;
+    }
+    else {
+      var units_field_val_trimmed = units_val_res[1];
+    }
 
     // console.log("column_name_field_val_trimmed");
     //
