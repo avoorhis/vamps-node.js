@@ -385,31 +385,47 @@ function editMetadataForm(req, res){
 
   console.log("RRR555");
   var metadata_form = req.form;
+  var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
+  var result_it = "";
+
   for (var a1 in new_row_info_arr) {
     console.log("a1 in new_row_info_arr");
     console.log(a1);
-    console.log("new_row_info_arr[a1]");
-    console.log(new_row_info_arr[a1]);
-    for (var a2 in a1) {
-      console.log("a2 in new_row_info_arr");
-      console.log(a2);
-      console.log("a1[a2]");
-      console.log(a2);
-      for (var a3 in a2) {
-        console.log("a3 in new_row_info_arr");
-        console.log(a3);
-        console.log("a2[a3]");
-        console.log(a2[a3]);
-      }
+    // new_row_info_arr[a1]
+    // { 'Column name 1 (units in row 1)': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] }
 
+    for (var key in new_row_info_arr[a1]) {
+      if( new_row_info_arr[a1].hasOwnProperty(key) ) {
+        result_it += 'key = ' + key + " , val = " + new_row_info_arr[a1][key] + "\n";
+        console.log("Array.isArray(variable) = ");
+        console.log(Array.isArray(new_row_info_arr[a1][key]));
+      /*
+      * Array.isArray(variable) =
+       true
+       new_row_info_arr result
+       key = Column name 1 (units in row 1) , val = cell 1 row 1,row1 cell 2,,,,,,
+       key =  () , val = ,,,,,,,
+      * */
+        metadata_form[key] = new_row_info_arr[a1][key];
+        // TODO: change "new_row" + a1 to a  database field name
+        // TODO: add units to the field placeholder
+        all_field_names.push(["new_row" + a1, key, "", ""]);
+        // ["enzyme_activities","enzyme activities (key findings)","", ""],
+
+      }
     }
   }
+  console.log("new_row_info_arr result");
+  console.log(result_it);
   // metadata_form["new_row1"] = new_row_info_arr[0];
 
   // all_metadata = {pid: req.form};
   var all_metadata = {pid: metadata_form};
 
-  console.log("XXX3 all_metadata");
+
+
+
+    console.log("XXX3 all_metadata");
   console.log(all_metadata);
 
   res.render('metadata/metadata_upload_from_file', {
@@ -417,7 +433,7 @@ function editMetadataForm(req, res){
     user: req.user,
     hostname: req.CONFIG.hostname,
     all_metadata: all_metadata,
-    all_field_names: CONSTS.ORDERED_METADATA_NAMES,
+    all_field_names: all_field_names,
     dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
     dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
     dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
@@ -953,11 +969,10 @@ function new_row_val_validation(req, field_name) {
 
 function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx) {
   var new_row_length = req.body.new_row_length;
-  // var new_row_names = [column_name_field_val_trimmed, units_field_val_trimmed];
+  var new_row_names = column_name_field_val_trimmed + " (" + units_field_val_trimmed + ")";
   var new_row_info = {};
 
-  new_row_info[row_idx] = [];
-  new_row_info[row_idx].push(column_name_field_val_trimmed, units_field_val_trimmed);
+  new_row_info[new_row_names] = [];
 
   for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
 
@@ -970,7 +985,7 @@ function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed,
 
     var clean_val = validator.escape(req.body[cell_name]);
     clean_val = validator.trim(clean_val);
-    new_row_info[row_idx].push(clean_val);
+    new_row_info[new_row_names].push(clean_val);
   }
   console.log("WWW new_row_info");
   console.log(new_row_info);
