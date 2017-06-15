@@ -928,9 +928,9 @@ function new_row_val_validation(req, field_name) {
   var field_val = req.body[field_name];
 
   console.log("validator isEmpty");
-  var field_val_trimmed = validator.escape(field_val);
-  field_val_trimmed = validator.trim(field_val_trimmed);
-  var field_val_not_valid = validator.isEmpty(field_val_trimmed);
+  var field_val_trimmed = validator.escape(field_val + "");
+  field_val_trimmed = validator.trim(field_val_trimmed + "");
+  var field_val_not_valid = validator.isEmpty(field_val_trimmed + "");
   console.log(field_val_trimmed);
 
   if (field_val_not_valid)
@@ -963,8 +963,8 @@ function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed,
     // console.log("LLL req.body[cell_name]");
     // console.log(req.body[cell_name]);
 
-    var clean_val = validator.escape(req.body[cell_name]);
-    clean_val = validator.trim(clean_val);
+    var clean_val = validator.escape(req.body[cell_name] + "");
+    clean_val = validator.trim(clean_val + "");
     new_row_info[new_row_head_arr].push(clean_val);
   }
   console.log("WWW new_row_info");
