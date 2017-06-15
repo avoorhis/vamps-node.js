@@ -393,6 +393,7 @@ function editMetadataForm(req, res){
     console.log(a1);
     // new_row_info_arr[a1]
     // { 'Column name 1 (units in row 1)': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] }
+    var row_field_name = "new_row" + a1;
 
     for (var key in new_row_info_arr[a1]) {
       if( new_row_info_arr[a1].hasOwnProperty(key) ) {
@@ -406,10 +407,10 @@ function editMetadataForm(req, res){
        key = Column name 1 (units in row 1) , val = cell 1 row 1,row1 cell 2,,,,,,
        key =  () , val = ,,,,,,,
       * */
-        metadata_form[key] = new_row_info_arr[a1][key];
+        metadata_form[row_field_name] = new_row_info_arr[a1][key];
         // TODO: change "new_row" + a1 to a  database field name
         // TODO: add units to the field placeholder
-        all_field_names.push(["new_row" + a1, key, "", ""]);
+        all_field_names.push([row_field_name, key, "", ""]);
         // ["enzyme_activities","enzyme activities (key findings)","", ""],
 
       }
