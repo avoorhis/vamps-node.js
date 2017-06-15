@@ -635,9 +635,27 @@ $("#addrow").on('click', function() {
 
   $('#new_row_num').val( rowIndex );
 
-  $( "#" + row_id_base + "_fixed_table_base" )[0].scrollIntoView();
-  $( "#" + row_id_base + "_first_col_table")[0].scrollIntoView();
+  // var rowpos = $('#first_col_table tr#' + row_id_base + "_first_col_table").position();
+  // alert(rowpos.top); //(4000, then 800?)
+  //
+  //
+  //
+  // $("#firstcol_div").scrollTop(rowpos.top);
+  // // $("#table_div").scrollTop(rowpos.top);
+  // rowpos.top = 0;
 
+  // alert(row_id_base);
+
+  // var rowpos = $("#" + row_id_base + "_fixed_table_base" ).position();
+  // alert(rowpos.top);
+  //
+  // $("#" + row_id_base + "_fixed_table_base" ).scrollTop(rowpos.top);
+
+
+  $("#" + row_id_base + "_fixed_table_base" )[0].scrollIntoView();
+  // $("#" + row_id_base + "_fixed_table_base" ).scrollLeft(-10);
+  $( "#" + row_id_base + "_first_col_table" )[0].scrollIntoView();
+  window.scrollBy(-100, 0);
 
 });
 
