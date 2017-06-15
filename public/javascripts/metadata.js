@@ -592,9 +592,13 @@ fnScroll = function(){
 var rowIndex = 0;
 
 function first_col_table_add_row(args) {
-  var newRow1 = '<tr id="new_row' + rowIndex + '"><td><input id="Column Name' + rowIndex + '" name="Column Name' +
-    rowIndex + '" type="text" placeholder="Column Name"/></td>"' + '<td><input id="Units' + rowIndex +
-    '" name="Units' + rowIndex + '" type="text" placeholder="Units"/></td>"';
+  var currRowIndex = arguments[0];
+  var row_id = arguments[1];
+
+  alert(row_id);
+  var newRow1 = '<tr id="' + row_id + '"><td><input id="Column Name' + currRowIndex + '" name="Column Name' +
+    currRowIndex + '" type="text" placeholder="Column Name"/></td>"' + '<td><input id="Units' + currRowIndex +
+    '" name="Units' + currRowIndex + '" type="text" placeholder="Units"/></td>"';
 
   return newRow1;
 }
@@ -604,7 +608,6 @@ $("#addrow").on('click', function() {
   rowIndex++;
   // alert("addrow");
   // alert(rowIndex);
-  var newRow1 = first_col_table_add_row.call(this, rowIndex);
 
   var rowLength = $("#fixed_table_base > tbody > tr:last").children('td').length;
 
@@ -618,6 +621,7 @@ $("#addrow").on('click', function() {
   // var cells = Array(rowLength+1).join('<td><input type="text" name="new_row' + rowIndex + 'cell" id="" value=""/></td>');
   var row_id = 'new_row' + rowIndex;
   var newRow2 = '<tr id="' + row_id + '">' + cells + '</tr>';
+  var newRow1 = first_col_table_add_row.call(rowIndex, row_id);
 
 
   $('#first_col_table > tbody > tr:last').after(newRow1);
