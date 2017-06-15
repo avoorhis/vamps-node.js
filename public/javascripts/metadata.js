@@ -642,7 +642,7 @@ $("#removerow").on('click', function() {
   }
   else {
     // $('#removerow').hide();
-    alert('Only user-added rows can be removed');
+    alert('There is no rows to remove');
   }
 });
 // ---

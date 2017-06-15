@@ -332,82 +332,50 @@ router.post('/metadata_upload',
   }
 );
 
-// function format_form(req, res) {
-//   edit_metadata_info = {};
-//   console.log("RRR req.body");
-//   console.log(req.body);
-//   /*
-//   "16s": [ "16s", "16s", "16s", "16s", "16s", "16s", "16s", "16s" ],
-//   project: "DCO_GAI_Bv3v5",
-//   pi_name: "",
-//   dataset_id: [ "4312", "4313", "4314", "4315", "4316", "4317", "4318", "4319" ],
-//   pi_email: "",
-//
-//
-//   */
-//   console.log("QQQ req.form");
-//   console.log(req.form);
-// // { dataset_id: [ "4312", "4313", "4314", "4315", "4316", "4317", "4318", "4319" ],
-//   // project_title: [ "Icelandic Volcanic Lake" ],
-//
-//   return edit_metadata_info;
-// }
-
 function editMetadataForm(req, res){
   console.log('in editMetadataForm');
   // console.log(req);
 
-  edit_metadata_address = "metadata/metadata_upload_from_file";
-  console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
-
-  console.log("XXX1 all_metadata: req.form");
-  console.log(req.form);
-
-  console.log("XXX2 req.body.project_id");
-  console.log(req.body.project_id);
-  console.log(pid);
+  var edit_metadata_address = "metadata/metadata_upload_from_file";
+  // console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
+  //
+  // console.log("XXX1 all_metadata: req.form");
+  // console.log(req.form);
+  //
+  // console.log("XXX2 req.body.project_id");
+  // console.log(req.body.project_id);
+  // console.log(pid);
 
   var new_row_info_arr_err = collect_new_row(req);
   var new_row_info_arr = new_row_info_arr_err[0];
   req = new_row_info_arr_err[1];
 
 
-  console.log("FFF new_row_info_arr");
-  console.log(new_row_info_arr);
+  // console.log("FFF new_row_info_arr");
+  // console.log(new_row_info_arr);
   // [ { col1__units1: [ '', 'r1c2', '', '', '', '', '', '' ] },
   //   { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] },
   //   { col3__: [ 'r3c1', 'r2c3', '', '', '', '', '', '' ] } ]
   // [ { 'Column name 1,units in row 1': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] },
   //   { ',': [ '', '', '', '', '', '', '', '' ] } ]
 
-  // console.log("RRR555 req.form.errors");
-  // console.log(req.form.errors);
-
-  console.log("RRR555");
   var metadata_form = req.form;
   var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
   var result_it = "";
 
   for (var a1 in new_row_info_arr) {
-    console.log("a1 in new_row_info_arr");
-    console.log(new_row_info_arr[a1]);
     // new_row_info_arr[a1]
-    // { 'Column name 1 (units in row 1)': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] }
+    // { 'Column name 1,units in row 1': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] }
     var row_field_name = "new_row" + a1;
 
     for (var key in new_row_info_arr[a1]) {
       if( new_row_info_arr[a1].hasOwnProperty(key) ) {
-        result_it += 'key = ' + key + " , val = " + new_row_info_arr[a1][key] + "\n";
-        // console.log("Array.isArray(key) = ");
-        // console.log(Array.isArray(key));
-
+        // result_it += 'key = ' + key + " , val = " + new_row_info_arr[a1][key] + "\n";
         // console.log(Array.isArray(new_row_info_arr[a1][key]));
       /*
       * Array.isArray(variable) =
        true
-       new_row_info_arr result
-       key = Column name 1 (units in row 1) , val = cell 1 row 1,row1 cell 2,,,,,,
-       key =  () , val = ,,,,,,,
+       key = Column name 1,units in row 1 , val = cell 1 row 1,row1 cell 2,,,,,,
       * */
         metadata_form[row_field_name] = new_row_info_arr[a1][key];
         // TODO: change "new_row" + a1 to a  database field name
@@ -423,17 +391,19 @@ function editMetadataForm(req, res){
       }
     }
   }
-  console.log("new_row_info_arr result");
-  console.log(result_it);
+  // console.log("new_row_info_arr result");
+  // console.log(result_it);
   // metadata_form["new_row1"] = new_row_info_arr[0];
 
   // all_metadata = {pid: req.form};
   var all_metadata = {pid: metadata_form};
 
 
+  console.log("RRR555 req.form.errors");
+  console.log(req.form.errors);
 
 
-    console.log("XXX3 all_metadata");
+  console.log("XXX3 all_metadata");
   console.log(all_metadata);
 
   res.render('metadata/metadata_upload_from_file', {
