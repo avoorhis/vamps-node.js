@@ -596,7 +596,7 @@ function first_col_table_add_row(args) {
   var row_id_base = arguments[0][1];
 
   // alert(row_id_base);
-  
+
   var newRow1 = '<tr id="' + row_id_base + '_first_col_table"><td><input id="Column Name' + currRowIndex + '" name="Column Name' +
     currRowIndex + '" type="text" placeholder="Column Name"/></td>"' + '<td><input id="Units' + currRowIndex +
     '" name="Units' + currRowIndex + '" type="text" placeholder="Units"/></td>"';
@@ -605,39 +605,48 @@ function first_col_table_add_row(args) {
 
 }
 
-$("#addrow").on('click', function() {
-  var i = 0;
-  rowIndex++;
-  // alert("addrow");
-  // alert(rowIndex);
-
+function fixed_table_base_add_row(args) {
+  var currRowIndex = arguments[0][0];
+  var row_id_base = arguments[0][1];
+  
   var rowLength = $("#fixed_table_base > tbody > tr:last").children('td').length;
 
   var cells = "";
   for (i = 0; i < rowLength; i++) {
-    cells += '<td style="background-color:powderblue;"><input type="text" name="new_row' + rowIndex + 'cell' + i + '" id="new_row' + rowIndex + 'cell' + i + '" value=""/></td>';
-    // text += cars[i] + "<br>";
+    cells += '<td style="background-color:powderblue;"><input type="text" name="new_row' + currRowIndex + 'cell' + i + '" id="new_row' + currRowIndex + 'cell' + i + '" value=""/></td>';
   }
 
-
-  // var cells = Array(rowLength+1).join('<td><input type="text" name="new_row' + rowIndex + 'cell" id="" value=""/></td>');
-  var row_id_base = 'new_row' + rowIndex;
-  var newRow2 = '<tr id="' + row_id_base + '">' + cells + '</tr>';
-  first_col_table_add_row.call(this, [rowIndex, row_id_base]);
-
+  var newRow2 = '<tr id="' + row_id_base + '_fixed_table_base">' + cells + '</tr>';
 
   $('#fixed_table_base > tbody > tr:last').after(newRow2);
-
-  $('#new_row_num').val( rowIndex );
   $('#new_row_length').val( rowLength );
 
+}
+
+
+$("#addrow").on('click', function() {
+  var i = 0;
+  rowIndex++;
+
+  var row_id_base = 'new_row' + rowIndex;
+  first_col_table_add_row.call(this, [rowIndex, row_id_base]);
+  fixed_table_base_add_row.call(this, [rowIndex, row_id_base]);
+
+  $('#new_row_num').val( rowIndex );
+
   // var rowpos = $('#first_col_table > tbody > tr:last').position();
+  // alert("HERE0");
 
   // $('#firstcol_div').scrollTop(rowpos.top);
-  $( "#" + row_id_base )[0].scrollIntoView();
+  // var row_id_fixed_table_base = row_id_base + "_fixed_table_base";
+  // alert("HERE1");
+  // alert(row_id_fixed_table_base);
+
+  $( "#" + row_id_base + "_fixed_table_base" )[0].scrollIntoView();
+  //$( "#" + row_id_base + "_first_col_table")[0].scrollIntoView();
 
   // alert("HERE");
-  // alert(row_id_base);
+  // alert(row_id_fixed_table_base);
 
 });
 
