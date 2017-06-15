@@ -611,8 +611,9 @@ function fixed_table_base_add_row(args) {
 
   var currRowIndex = arguments[0][0];
   var row_id_base = arguments[0][1];
+  var fixed_table_base_el = $('#fixed_table_base');
   
-  var rowLength = $("#fixed_table_base > tbody > tr:last").children('td').length;
+  var rowLength = fixed_table_base_el.find('tbody').find('tr:last').children('td').length;
 
   var cells = "";
   for (i = 0; i < rowLength; i++) {
@@ -621,7 +622,7 @@ function fixed_table_base_add_row(args) {
 
   var newRow2 = '<tr id="' + row_id_base + '_fixed_table_base">' + cells + '</tr>';
 
-  $('#fixed_table_base > tbody > tr:last').after(newRow2);
+  fixed_table_base_el.find('tbody').find('tr:last').after(newRow2);
   $('#new_row_length').val( rowLength );
 
 }
