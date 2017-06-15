@@ -601,7 +601,8 @@ function first_col_table_add_row(args) {
     currRowIndex + '" type="text" placeholder="Column Name"/></td>"' + '<td><input id="Units' + currRowIndex +
     '" name="Units' + currRowIndex + '" type="text" placeholder="Units"/></td>"';
 
-  $('#first_col_table > tbody > tr:last').after(newRow1);
+  // $('#first_col_table > tbody > tr:last').after(newRow1);
+  $('#first_col_table').find('tbody').find('tr:last').after(newRow1);
 
 }
 
