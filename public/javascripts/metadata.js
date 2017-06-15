@@ -547,35 +547,37 @@ fnAdjustTable = function(){
     $('.tableHeader').each(function(i){
         if (m < colCount){
 
+          var td_el = '#table_div td:eq('+m+')';
             if (brow === 'mozilla'){
                 $('#firstTd').css("width",$('.tableFirstCol').innerWidth());//for adjusting first td
-                $(this).css('width',$('#table_div td:eq('+m+')').innerWidth());//for assigning width to table Header div
+                $(this).css('width',$(td_el).innerWidth());//for assigning width to table Header div
             }
             else if (brow === 'msie'){
                 $('#firstTd').css("width",$('.tableFirstCol').width());
-                $(this).css('width',$('#table_div td:eq('+m+')').width()-2);//In IE there is difference of 2 px
+                $(this).css('width',$(td_el).width()-2);//In IE there is difference of 2 px
             }
             else if (brow === 'safari'){
                 $('#firstTd').css("width",$('.tableFirstCol').width());
-                $(this).css('width',$('#table_div td:eq('+m+')').width());
+                $(this).css('width',$(td_el).width());
             }
             else {
                 $('#firstTd').css("width",$('.tableFirstCol').width());
-                $(this).css('width',$('#table_div td:eq('+m+')').innerWidth());
+                $(this).css('width',$(td_el).innerWidth());
             }
         }
         m++;
     });
 
     $('.tableFirstCol').each(function(i){
-        if(brow == 'mozilla'){
-            $(this).css('height',$('#table_div td:eq('+colCount*n+')').outerHeight());//for providing height using scrollable table column height
+      var cur_td_colCount_el = $('#table_div td:eq('+colCount*n+')');
+        if(brow === 'mozilla'){
+            $(this).css('height',cur_td_colCount_el.outerHeight());//for providing height using scrollable table column height
         }
-        else if(brow == 'msie'){
-            $(this).css('height',$('#table_div td:eq('+colCount*n+')').innerHeight()-2);
+        else if(brow === 'msie'){
+            $(this).css('height',cur_td_colCount_el.innerHeight()-2);
         }
         else {
-            $(this).css('height',$('#table_div td:eq('+colCount*n+')').height());
+            $(this).css('height',cur_td_colCount_el.height());
         }
         n++;
     });
