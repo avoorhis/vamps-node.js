@@ -539,7 +539,7 @@ fnAdjustTable = function(){
     var brow = 'mozilla';
 
     jQuery.each(jQuery.browser, function(i, val) {
-        if(val == true){
+        if(val === true){
             brow = i.toString();
         }
     });
@@ -547,15 +547,15 @@ fnAdjustTable = function(){
     $('.tableHeader').each(function(i){
         if (m < colCount){
 
-            if (brow == 'mozilla'){
+            if (brow === 'mozilla'){
                 $('#firstTd').css("width",$('.tableFirstCol').innerWidth());//for adjusting first td
                 $(this).css('width',$('#table_div td:eq('+m+')').innerWidth());//for assigning width to table Header div
             }
-            else if (brow == 'msie'){
+            else if (brow === 'msie'){
                 $('#firstTd').css("width",$('.tableFirstCol').width());
                 $(this).css('width',$('#table_div td:eq('+m+')').width()-2);//In IE there is difference of 2 px
             }
-            else if (brow == 'safari'){
+            else if (brow === 'safari'){
                 $('#firstTd').css("width",$('.tableFirstCol').width());
                 $(this).css('width',$('#table_div td:eq('+m+')').width());
             }
