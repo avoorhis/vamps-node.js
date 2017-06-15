@@ -591,15 +591,20 @@ fnScroll = function(){
 // ---
 var rowIndex = 0;
 
+function first_col_table_add_row(args) {
+  var newRow1 = '<tr id="new_row' + rowIndex + '"><td><input id="Column Name' + rowIndex + '" name="Column Name' +
+    rowIndex + '" type="text" placeholder="Column Name"/></td>"' + '<td><input id="Units' + rowIndex +
+    '" name="Units' + rowIndex + '" type="text" placeholder="Units"/></td>"';
+
+  return newRow1;
+}
+
 $("#addrow").on('click', function() {
   var i = 0;
   rowIndex++;
   // alert("addrow");
   // alert(rowIndex);
-
-  var newRow1 = '<tr id="new_row' + rowIndex + '"><td><input id="Column Name' + rowIndex + '" name="Column Name' +
-    rowIndex + '" type="text" placeholder="Column Name"/></td>"' + '<td><input id="Units' + rowIndex +
-    '" name="Units' + rowIndex + '" type="text" placeholder="Units"/></td>"';
+  var newRow1 = first_col_table_add_row.call(this, rowIndex);
 
   var rowLength = $("#fixed_table_base > tbody > tr:last").children('td').length;
 
@@ -611,16 +616,23 @@ $("#addrow").on('click', function() {
 
 
   // var cells = Array(rowLength+1).join('<td><input type="text" name="new_row' + rowIndex + 'cell" id="" value=""/></td>');
+  var row_id = 'new_row' + rowIndex;
+  var newRow2 = '<tr id="' + row_id + '">' + cells + '</tr>';
 
-  var newRow2 = '<tr id="new_row' + rowIndex + '">' + cells + '</tr>';
 
-
-  $("#first_col_table > tbody > tr:last").after(newRow1);
-  $("#fixed_table_base > tbody > tr:last").after(newRow2);
+  $('#first_col_table > tbody > tr:last').after(newRow1);
+  $('#fixed_table_base > tbody > tr:last').after(newRow2);
 
   $('#new_row_num').val( rowIndex );
   $('#new_row_length').val( rowLength );
 
+  // var rowpos = $('#first_col_table > tbody > tr:last').position();
+
+  // $('#firstcol_div').scrollTop(rowpos.top);
+  $( "#" + row_id )[0].scrollIntoView();
+
+  alert("HERE");
+  alert(row_id);
 
 });
 
