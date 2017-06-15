@@ -537,6 +537,7 @@ fnAdjustTable = function(){
     var m = 0;
     var n = 0;
     var brow = 'mozilla';
+    var table_div_el = $('#table_div');
 
     jQuery.each(jQuery.browser, function(i, val) {
         if(val === true){
@@ -569,7 +570,7 @@ fnAdjustTable = function(){
     });
 
     $('.tableFirstCol').each(function(i){
-      var cur_td_colCount_el = $('#table_div td:eq('+colCount*n+')');
+      var cur_td_colCount_el = table_div_el.find('td:eq('+colCount*n+')');
         if(brow === 'mozilla'){
             $(this).css('height',cur_td_colCount_el.outerHeight());//for providing height using scrollable table column height
         }
