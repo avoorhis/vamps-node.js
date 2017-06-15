@@ -390,7 +390,7 @@ function editMetadataForm(req, res){
 
   for (var a1 in new_row_info_arr) {
     console.log("a1 in new_row_info_arr");
-    console.log(a1);
+    console.log(new_row_info_arr[a1]);
     // new_row_info_arr[a1]
     // { 'Column name 1 (units in row 1)': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] }
     var row_field_name = "new_row" + a1;
@@ -398,8 +398,10 @@ function editMetadataForm(req, res){
     for (var key in new_row_info_arr[a1]) {
       if( new_row_info_arr[a1].hasOwnProperty(key) ) {
         result_it += 'key = ' + key + " , val = " + new_row_info_arr[a1][key] + "\n";
-        console.log("Array.isArray(variable) = ");
-        console.log(Array.isArray(new_row_info_arr[a1][key]));
+        // console.log("Array.isArray(key) = ");
+        // console.log(Array.isArray(key));
+
+        // console.log(Array.isArray(new_row_info_arr[a1][key]));
       /*
       * Array.isArray(variable) =
        true
@@ -410,7 +412,12 @@ function editMetadataForm(req, res){
         metadata_form[row_field_name] = new_row_info_arr[a1][key];
         // TODO: change "new_row" + a1 to a  database field name
         // TODO: add units to the field placeholder
-        all_field_names.push([row_field_name, key, "", ""]);
+        var key_arr;
+        key_arr = key.split(",");
+
+        var curr_header = key_arr[0];
+        var curr_units = key_arr[1];
+        all_field_names.push([row_field_name, curr_header + " (" + curr_units +")", "", curr_units]);
         // ["enzyme_activities","enzyme activities (key findings)","", ""],
 
       }
@@ -970,10 +977,12 @@ function new_row_val_validation(req, field_name) {
 
 function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx) {
   var new_row_length = req.body.new_row_length;
-  var new_row_names = column_name_field_val_trimmed + " (" + units_field_val_trimmed + ")";
+  var new_row_head_arr = [column_name_field_val_trimmed, units_field_val_trimmed];
+
+        // column_name_field_val_trimmed + " (" + units_field_val_trimmed + ")";
   var new_row_info = {};
 
-  new_row_info[new_row_names] = [];
+  new_row_info[new_row_head_arr] = [];
 
   for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
 
@@ -986,7 +995,7 @@ function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed,
 
     var clean_val = validator.escape(req.body[cell_name]);
     clean_val = validator.trim(clean_val);
-    new_row_info[new_row_names].push(clean_val);
+    new_row_info[new_row_head_arr].push(clean_val);
   }
   console.log("WWW new_row_info");
   console.log(new_row_info);
