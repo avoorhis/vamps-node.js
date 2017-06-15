@@ -82,7 +82,7 @@ function create_geospatial() {
           if(typeof lat === 'number' && typeof lon === 'number'){
             latlon = lat.toString() +';'+ lon.toString();
             if (latlon in lat_lon_collector) {
-              newds = lat_lon_collector[latlon] + ":::" + ds;
+              var newds = lat_lon_collector[latlon] + ":::" + ds;
               lat_lon_collector[latlon] = newds;
             }else{
               lat_lon_collector[latlon] = ds;
@@ -139,7 +139,7 @@ function setMarkers(map, loc_data, pid_collector, infowindow) {
     });
 
     // add an event listener for this marker
-    lines = data[0].split(':::');
+    var lines = data[0].split(':::');
 
     // if(lines.length > 10){
     //   var html = "<div style='height:200px;width:300px;overflow:auto;'>";
@@ -548,22 +548,22 @@ fnAdjustTable = function(){
     $('.tableHeader').each(function(i){
         if (m < colCount){
 
-          var td_el = '#table_div td:eq('+m+')';
+          var td_el = table_div_el.find('td:eq('+m+')');
             if (brow === 'mozilla'){
                 $('#firstTd').css("width",$('.tableFirstCol').innerWidth());//for adjusting first td
-                $(this).css('width',$(td_el).innerWidth());//for assigning width to table Header div
+                $(this).css('width', td_el.innerWidth());//for assigning width to table Header div
             }
             else if (brow === 'msie'){
                 $('#firstTd').css("width",$('.tableFirstCol').width());
-                $(this).css('width',$(td_el).width()-2);//In IE there is difference of 2 px
+                $(this).css('width', td_el.width()-2);//In IE there is difference of 2 px
             }
             else if (brow === 'safari'){
                 $('#firstTd').css("width",$('.tableFirstCol').width());
-                $(this).css('width',$(td_el).width());
+                $(this).css('width', td_el.width());
             }
             else {
                 $('#firstTd').css("width",$('.tableFirstCol').width());
-                $(this).css('width',$(td_el).innerWidth());
+                $(this).css('width', td_el.innerWidth());
             }
         }
         m++;
@@ -611,8 +611,6 @@ function first_col_table_add_row(args) {
 }
 
 function fixed_table_base_add_row(args) {
-  var i = 0;
-
   var currRowIndex = arguments[0][0];
   var row_id_base = arguments[0][1];
   var fixed_table_base_el = $('#fixed_table_base');
@@ -620,7 +618,7 @@ function fixed_table_base_add_row(args) {
   var rowLength = fixed_table_base_el.find('tbody').find('tr:last').children('td').length;
 
   var cells = "";
-  for (i = 0; i < rowLength; i++) {
+  for (var i = 0; i < rowLength; i++) {
     cells += '<td style="background-color:powderblue;"><input type="text" name="new_row' + currRowIndex + 'cell' + i + '" id="new_row' + currRowIndex + 'cell' + i + '" value=""/></td>';
   }
 
@@ -641,25 +639,7 @@ $("#addrow").on('click', function() {
 
   $('#new_row_num').val( rowIndex );
 
-  // var rowpos = $('#first_col_table tr#' + row_id_base + "_first_col_table").position();
-  // alert(rowpos.top); //(4000, then 800?)
-  //
-  //
-  //
-  // $("#firstcol_div").scrollTop(rowpos.top);
-  // // $("#table_div").scrollTop(rowpos.top);
-  // rowpos.top = 0;
-
-  // alert(row_id_base);
-
-  // var rowpos = $("#" + row_id_base + "_fixed_table_base" ).position();
-  // alert(rowpos.top);
-  //
-  // $("#" + row_id_base + "_fixed_table_base" ).scrollTop(rowpos.top);
-
-
   $("#" + row_id_base + "_fixed_table_base" )[0].scrollIntoView();
-  // $("#" + row_id_base + "_fixed_table_base" ).scrollLeft(-10);
   $( "#" + row_id_base + "_first_col_table" )[0].scrollIntoView();
   window.scrollBy(-100, 0);
 
@@ -682,7 +662,6 @@ $("#removerow").on('click', function() {
 
   }
   else {
-    // $('#removerow').hide();
     alert('There is no rows to remove');
   }
 });
