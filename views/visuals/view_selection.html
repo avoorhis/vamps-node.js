@@ -201,15 +201,15 @@
 <table border='1' class='table'>
         <tr>
           
-          <% for(n in visuals) {                                                %>
-          <%    var thumb = visuals[n].thumb;                                   %>
-          <%    var name = visuals[n].name;                                     %>          
-          <%    var prefix = visuals[n].prefix;                                  %>
-          <%    var link_id = prefix+'_link_id';                                  %>
-          <%    var link = '#';                                                                       %>
-          <%    var target='';                                                                        %>
+          <% for(n in visuals) {                                              %>
+          <%    var thumb = visuals[n].thumb;                                 %>
+          <%    var name = visuals[n].name;                                   %>          
+          <%    var prefix = visuals[n].prefix;                               %>
+          <%    var link_id = prefix+'_link_id';                              %>
+          <%    var link = '#';                                               %>
+          <%    var target='';                                                %>
           <%    var ttip = visuals[n].tip;                                    %>
-          <%    var cols = 5                                                                          %>
+          <%    var cols = 5                                                  %>
           <%    if((ds_count === 1)  && (prefix === 'dheatmap' 
                                         || prefix.substring(0,10) === 'dendrogram' 
                                         || prefix === 'fheatmap'

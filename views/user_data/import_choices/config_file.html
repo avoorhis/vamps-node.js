@@ -1,0 +1,70 @@
+<% include ../../add_ins/begin.ejs %>
+
+
+<p class="title">Import Data</p>
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail" ><%- messages.fail %> </div>
+<% } %>
+<br>
+<% if (!form_data) {
+  var form_data = {}
+} %>
+
+<!-- ========== SIMPLE / SINGLE FASTA ============================================================================================== 
+    Todo later: raw data processing (illumina -hiseq -miseq -newseq; 454)
+    -->	
+ 
+ <a href="/user_data/import_choices" >&lt;&lt;--back</a>
+    
+  <form class="form-horizontal" role="form" method="POST" action="config_file" enctype="multipart/form-data">
+    
+	<h4>Upload Configuration File: </h4>
+  <!-- 
+<div class="form-group">
+        <label class="control-label col-sm-3" for="project">RECOMMENDED:</label>         
+        <div class="col-sm-2 btn">
+          <a href="validate_format?file_type=fasta" >Validate Fasta File</a> | <a href="validate_format?file_type=metadata" >Validate Metadata File</a>
+        </div> 
+  </div>
+ -->
+	
+	
+    
+	<div class="form-group">
+      <label class="control-label col-sm-3" for="fasta">Choose File <small>(required)</small>:</label>
+      <div class="col-sm-3 btn">
+
+
+        <input type="file" name="upload_files" class="" id="fasta">
+
+
+      </div>Format: JSON (uncompressed) 
+	       <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
+      </div>
+	<div class="form-group">
+      
+
+
+      
+
+    <div class="form-group">        
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-default">Submit</button>
+      </div>
+    </div>
+	
+  </form>
+
+	
+<% include ../../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/import.js"></script>
+<script type='text/javascript' src='/javascripts/bootstrap-select.js'></script>
+<script>
+  $(document).ready(function(){
+    $('.selectpicker').selectpicker({showSubtext:true, tickIcon: '',});
+  });
+</script>
+ </body>
+ </html>

@@ -9,7 +9,7 @@ var fs   = require('fs-extra');
 var open = require('open');
 var async = require('async');
 var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport();
+var transporter = nodemailer.createTransport({});
 var zlib = require('zlib');
 var Readable = require('readable-stream').Readable;
 
@@ -176,16 +176,43 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     dataset_ids = req.body.ds_order;
     chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);
   }else if(req.body.from_configuration_file === '1' || req.query.from_configuration_file === '1'){
-    req.flash('success', 'Using data from configuration file.');
+    
     TAXCOUNTS = {};
     METADATA  = {};
 
     var config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
     var config_file_data = JSON.parse(fs.readFileSync(config_file_path, 'utf8'))
     //console.log(file_data)
-    visual_post_items = config_file_data.post_items;
-    chosen_id_name_hash = config_file_data.id_name_hash;
+    var ids = config_file_data.id_name_hash.ids
+    var new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
+    if(new_dataset_ids.length == 0){
+      req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
+      res.redirect('saved_elements');
+      return;
+    }else{
+      req.flash('success', 'Using data from configuration file.');
+      console.log('in view_selection FROM CONFIG or IMAGE')
+      chosen_id_name_hash = {}
+      visual_post_items = {}
+      chosen_id_name_hash.ids = new_dataset_ids
+      chosen_id_name_hash.names = []
+      visual_post_items = config_file_data.post_items;
+      visual_post_items.no_of_datasets = new_dataset_ids.length
+      for(n in chosen_id_name_hash.ids){
+         did = chosen_id_name_hash.ids[n]
+          pid = PROJECT_ID_BY_DID[did]
+          pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did]
+          chosen_id_name_hash.names.push(pjds)
+      }
+      if(! config_file_data.hasOwnProperty('metadata') || config_file_data['metadata'].length == 0){
+        visual_post_items.metadata = ['latitude','longitude']
+      }
+    }
+    
+
     dataset_ids = chosen_id_name_hash.ids;
+
+
     for(var i in dataset_ids){
       var did = dataset_ids[i]
 
@@ -332,11 +359,27 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }else{
     dataset_ids = JSON.parse(req.body.dataset_ids);
   }
+  var LoadFailureRequest = function (req, res) {
+        // return to 
+        res.render('visuals/visuals_index', {
+                                    title       : 'VAMPS: Select Datasets',
+                                    subtitle    : 'Dataset Selection Page',
+                                    proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+                                    constants   : JSON.stringify(req.CONSTS),
+                                    md_env_package : JSON.stringify(MD_ENV_PACKAGE),
+                                    md_names    : AllMetadataNames,
+                                    filtering   : 0,
+                                    portal_to_show : '',
+                                    data_to_open: JSON.stringify(DATA_TO_OPEN),
+                                    user        : req.user,
+                                    hostname    : req.CONFIG.hostname,                                   
+                                });
+    };
   // I call this here and NOT in view_selection
   // A user can jump here directly from geo_search
   // However a user can jump directly to view_select from
   // saved datasets or configuration which they could conceivably manipulate
-  dataset_ids = screen_dids_for_permissions(req, dataset_ids)
+  dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids)
 
   if(req.CONFIG.site == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
@@ -346,40 +389,69 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   if (dataset_ids === undefined || dataset_ids.length === 0){
       console.log('redirecting back -- no data selected');
    	  req.flash('fail', 'Select Some Datasets');
-   	 //res.redirect('visuals_index');
-     return;
+   	  LoadFailureRequest(req, res);
+      return;
   }else{
-	  // Global TAXCOUNTS, METADATA
-	  TAXCOUNTS = {};
+	    // Global TAXCOUNTS, METADATA
+	    TAXCOUNTS = {};
 
-	  METADATA  = {};
-	  // Gather just the tax data of selected datasets
-	  //
+	    METADATA  = {};
+	    // Gather just the tax data of selected datasets
+	  
+
+      //  try{
+            for(var i in dataset_ids){
+              //console.log('ds',dataset_ids[i])
+              var did = dataset_ids[i]
+
+                if(HDF5_TAXDATA == ''){
+                    // use default taxonomy here (may choose other on this page)
+                    var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
+                    var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+            try{
+                    var jsonfile = require(path_to_file);
+            }catch(err){
+                console.log(err)
+                pid = PROJECT_ID_BY_DID[dataset_ids[i]]
+                pname = PROJECT_INFORMATION_BY_PID[pid].project
+                dname = DATASET_NAME_BY_DID[dataset_ids[i]]
+                req.flash('fail', 'No Data File found for this dataset:'+pname+'--'+dname+' (did:'+dataset_ids[i]+')');
+                LoadFailureRequest(req, res);
+                return
+              }
+            
+                    //TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
+                    METADATA[dataset_ids[i]]  = jsonfile['metadata'];
+                }else{
+                    TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
+                    METADATA[did] = helpers.get_attributes_from_hdf5_group(did, 'metadata')
+                }
+              }
+
+      //       }catch(err){
+//                 console.log(err)
+//                 req.flash('fail', 'No Data File fount for some datasets');
+//                 res.render('visuals/visuals_index', {
+//                                     title       : 'VAMPS: Select Datasets',
+//                                     subtitle    : 'Dataset Selection Page',
+//                                     proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+//                                     constants   : JSON.stringify(req.CONSTS),
+//                                     md_env_package : JSON.stringify(MD_ENV_PACKAGE),
+//                                     md_names    : AllMetadataNames,
+//                                     filtering   : 0,
+//                                     portal_to_show : '',
+//                                     data_to_open: JSON.stringify(DATA_TO_OPEN),
+//                                     user        : req.user,
+//                                     hostname    : req.CONFIG.hostname,
+//                                    
+//                                 });
+//                  return
+//               }
 
 
-    for(var i in dataset_ids){
-      //console.log('ds',dataset_ids[i])
-      var did = dataset_ids[i]
 
 
-        if(HDF5_TAXDATA == ''){
-            // use default taxonomy here (may choose other on this page)
-            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
-            var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
-            var jsonfile = require(path_to_file);
-            //TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
-            METADATA[dataset_ids[i]]  = jsonfile['metadata'];
-        }else{
-            TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
-            METADATA[did] = helpers.get_attributes_from_hdf5_group(did, 'metadata')
-        }
-
-
-
-
-
-
-	  }
+	
 	  console.log(JSON.stringify(METADATA))
 	  //console.log('49x',JSON.stringify(TAXCOUNTS['49']))
     //console.log(JSON.stringify(TAXCOUNTS2[49]))
@@ -418,14 +490,12 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
 	  res.render('visuals/unit_selection', {
 	                    title: 'VAMPS: Units Selection',
-                      referer: 'visuals_index',
+                        referer: 'visuals_index',
 	                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
 	                    constants    : JSON.stringify(req.CONSTS),
 	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
-		  				  md_req       : JSON.stringify(required_metadata_headers),   // 
-		  				  //md_req       : JSON.stringify(req.CONSTS.REQ_METADATA_FIELDS),
-                      unit_choice : unit_choice,
-		  				 
+		  				md_req       : JSON.stringify(required_metadata_headers),   // 
+                        unit_choice : unit_choice,		  				 
 	                    user         : req.user,hostname: req.CONFIG.hostname,
 	  });  // end render
   }
@@ -2627,27 +2697,7 @@ function filter_project_tree_for_permissions(req, obj){
 //
 //
 //
-function screen_dids_for_permissions(req,dids){
-  // This is called from unit_select and view_select (others?)  to catch and remove dids that
-  // are found through searches such as geo_search and go to unit_select directly
-  // bypassing the usual tree filter 'filter_project_tree_for_permissions' (fxn above)
-  // permissions are in PROJECT_INFORMATION_BY_PID
-  var new_did_list = []
-  for(i in dids){
-    pinfo = PROJECT_INFORMATION_BY_PID[ PROJECT_ID_BY_DID[dids[i]] ]
-    if(pinfo.public == 1 || pinfo.public == '1'){
-      new_did_list.push(dids[i])
-    }else{
-      // allow if user is owner (should have uid in permissions but check anyway)
-      // allow if user is admin
-      // allow if user is in pinfo.permission
-      if(req.user.user_id == pinfo.oid || req.user.security_level == 1 || req.user.security_level === 10 || pinfo.permissions.indexOf(req.user.user_id) != -1 ){
-        new_did_list.push(dids[i])
-      }
-    }
-  }
-  return new_did_list
-}
+
 //
 //
 //

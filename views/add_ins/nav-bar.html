@@ -116,10 +116,15 @@
                   <button type="submit" class='btn btn-md btn-link' name="" value="" style='color:black;padding-left:20px;'>Downloads</button>
                 </form>
                 </li>
-
-<% if (user !== undefined && user.security_level === 1) { %>    
-                <li><a href='/otus/otus_index'>OTUs (Admins only for now)</a></li>
-<% } %>                
+                
+                <% if(hostname.substring(0,7) == 'bpcweb8'){ %>                
+                    
+                <% }else if(hostname.substring(0,7) == 'bpcweb7'){ %>
+                    <li><a href='/otus/otus_index'>OTUs (Admins only for now)</a></li>
+                <% }else{ %>
+                    <li><a href='/otus/otus_index'>OTUs (Admins only for now)</a></li>
+                <% } %>
+             
                     
                
                 <li class="divider"></li>

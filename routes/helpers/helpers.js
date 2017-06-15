@@ -6,7 +6,7 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport();
+var transporter = nodemailer.createTransport({});
 var util = require('util');
 var path  = require('path');
 var crypto = require('crypto');
@@ -1598,4 +1598,31 @@ module.exports.required_metadata_names_from_ids = function(selection_obj, name_i
     }
     // eg: { name: 'primer_suite', value: 'Bacterial V6 Suite' } or { name: 'domain', value: 'Bacteria' }
     return {"name":real_name,"value":value}
+
+};
+//
+//
+module.exports.screen_dids_for_permissions = function(req, dids)
+{
+  // This is called from unit_select and view_select (others?)  to catch and remove dids that
+  // are found through searches such as geo_search and go to unit_select directly
+  // bypassing the usual tree filter 'filter_project_tree_for_permissions' (fxn above)
+  // permissions are in PROJECT_INFORMATION_BY_PID
+  var new_did_list = []
+  for(i in dids){
+    if(PROJECT_ID_BY_DID.hasOwnProperty(dids[i]) && PROJECT_INFORMATION_BY_PID.hasOwnProperty(PROJECT_ID_BY_DID[dids[i]])){
+      pinfo = PROJECT_INFORMATION_BY_PID[ PROJECT_ID_BY_DID[dids[i]] ]
+      if(pinfo.public == 1 || pinfo.public == '1'){
+        new_did_list.push(dids[i])
+      }else{
+        // allow if user is owner (should have uid in permissions but check anyway)
+        // allow if user is admin
+        // allow if user is in pinfo.permission
+        if(req.user.user_id == pinfo.oid || req.user.security_level == 1 || req.user.security_level === 10 || pinfo.permissions.indexOf(req.user.user_id) != -1 ){
+          new_did_list.push(dids[i])
+        }
+      }
+    }
+  }
+  return new_did_list
 };

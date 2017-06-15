@@ -389,7 +389,52 @@ or
 								<li>Download the TaxBySeq and Metadata files to your harddrive.</li>
 								<li>Import them as a pair either directly (still compressed) or uncompressed.</li>
 							</ul>
-
+                        <br>
+						<p class='standard'><strong>JSON Configuration File</strong></p>
+							<ul>
+								<li>Required to be valid JSON (try <a href='https://jsonlint.com'>https://jsonlint.com</a>)</li>	
+								<li>Requires "source":"VAMPS*"</li>								
+								<li>Requires id_name_hash.ids: [ ] --A valid list of dataset ids that you have permissions to view.</li>
+								<li>Optional:
+								    <ol>
+								        <li>normalization&nbsp;&nbsp;(Valid values: "none", "maximum", "frequency")
+								        <li>selected_distance&nbsp;&nbsp;(Valid values: "morisita-horn", "jaccard", "kulczynski", "canberra" or "bray-curtis"
+								        <li>tax_depth&nbsp;&nbsp;(Valid values: one of "domain", "phylum", "klass", "order", "family", "genus", "species", "strain")
+								        <li>include_nas&nbsp;&nbsp;(Valid values: "yes" or "no")
+								        <li>domains&nbsp;&nbsp;(Valid values: any or all of "Archaea","Bacteria","Eukarya","Organelle","Unknown")
+								        <li>min_range&nbsp;&nbsp;(Valid values: integers 0-99)
+								        <li>max_range&nbsp;&nbsp;(Valid values: integers 1-100)								        
+								    </ol>
+								<li>Image -- (optional) To render a table, chart or other visual element automatically on upload try:</li>
+								    <ul>
+								    "image":"dheatmap"  (added at same level as "source")
+								    <br>possible values: "dheatmap", "piecharts", "barcharts", "counts_matrix", "metadata_table", "fheatmap", "dendrogram01", "dendrogram03", "pcoa", "pcoa3d",
+								    "geospatial" or "adiversity"
+								    </ul>
+								</li>
+							<pre>
+SAMPLE:							
+{
+  "source":"VAMPS",
+  "post_items":
+  { 
+    "normalization":"maximum",
+    "selected_distance":"morisita_horn",
+    "tax_depth":"phylum",
+    "domains":["Archaea","Bacteria","Eukarya","Organelle","Unknown"],
+    "include_nas":"yes",
+    "min_range":0,
+    "max_range":100
+  },
+    "id_name_hash":
+    {
+      "ids":["49","50","51","52"]
+    }
+}
+							</pre>
+							
+							</ul>
+							
           </p>
         </div>
       </div>
