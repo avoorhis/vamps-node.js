@@ -532,7 +532,7 @@ function populate_secondary_select(args) {
 
 fnAdjustTable = function(){
 
-    var colCount = $('#firstTr>td').length; //get total number of column
+    var colCount = $('#firstTr').find('td').length; //get total number of column
 
     var m = 0;
     var n = 0;
@@ -584,8 +584,9 @@ fnAdjustTable = function(){
 
 //function to support scrolling of title and first column
 fnScroll = function(){
-    $('#divHeader').scrollLeft($('#table_div').scrollLeft());
-    $('#firstcol_div').scrollTop($('#table_div').scrollTop());
+  var table_div_el = $('#table_div');
+    $('#divHeader').scrollLeft(table_div_el.scrollLeft());
+    $('#firstcol_div').scrollTop(table_div_el.scrollTop());
 };
 
 // ---
