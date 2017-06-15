@@ -20,12 +20,12 @@ function toggle_metadata_view()
           ckbx.checked = true;
           document.getElementById('md_select_phrase1').innerHTML = "Showing All Metadata";
           document.getElementById('md_select_phrase2').innerHTML = "Show Selected Metadata Only?";
-          load = 'all'
+          load = 'all';
   } else {
           ckbx.checked = false;
           document.getElementById('md_select_phrase1').innerHTML = "Showing Selected Metadata Only";
           document.getElementById('md_select_phrase2').innerHTML = "Show All Metadata?";
-          load = 'selected'
+          load = 'selected';
   }
 
 	var xmlhttp = new XMLHttpRequest();
@@ -63,9 +63,9 @@ function create_geospatial() {
       for (var ds in md_local) {
           //ds = md_local[ds]
           //alert(ds)
-          pid_collector[ds]       = {}
-          pid_collector[ds].pid   = md_local[ds].pid
-          pid_collector[ds].value = md_local[ds].value
+          pid_collector[ds]       = {};
+          pid_collector[ds].pid   = md_local[ds].pid;
+          pid_collector[ds].value = md_local[ds].value;
           var lat = '';
           var lon = '';
           for (var k in md_local[ds]) {
@@ -139,7 +139,7 @@ function setMarkers(map, loc_data, pid_collector, infowindow) {
     });
 
     // add an event listener for this marker
-    lines = data[0].split(':::')
+    lines = data[0].split(':::');
 
     // if(lines.length > 10){
     //   var html = "<div style='height:200px;width:300px;overflow:auto;'>";
@@ -155,14 +155,14 @@ function setMarkers(map, loc_data, pid_collector, infowindow) {
 
 
     var html = '';
-    html += "<table  class='table table_striped' >"
+    html += "<table  class='table table_striped' >";
     html += '<tr><th>Dataset</th><th>'+mditem+'</th></tr>';
-    for(l in lines){
+    for(var l in lines){
       var pid = pid_collector[lines[l]].pid;
       var val = pid_collector[lines[l]].value;
-      html += "<tr><td><a href='/projects/"+pid+"'>" + lines[l] + "</a></td><td>"+val+"</td></tr>"
+      html += "<tr><td><a href='/projects/"+pid+"'>" + lines[l] + "</a></td><td>"+val+"</td></tr>";
     }
-    html += '</table>'
+    html += '</table>';
 
     bindInfoWindow(marker, map, infowindow, "<p>"+html+"</p>");
 
@@ -482,12 +482,12 @@ var biome_seq_options = {
   };
 
 function populate_secondary_select(args) {
-  id_base = arguments[0][0];
-  sec_options = arguments[0][1];
+  var id_base = arguments[0][0];
+  var sec_options = arguments[0][1];
 
-  did = this.id.replace("env_" + id_base, '');
+  var did = this.id.replace("env_" + id_base, '');
 
-  id2 = id_base + "_secondary";
+  var id2 = id_base + "_secondary";
 
   var B = document.getElementById(id2+did);
 
@@ -606,6 +606,8 @@ function first_col_table_add_row(args) {
 }
 
 function fixed_table_base_add_row(args) {
+  var i = 0;
+
   var currRowIndex = arguments[0][0];
   var row_id_base = arguments[0][1];
   
@@ -625,7 +627,6 @@ function fixed_table_base_add_row(args) {
 
 
 $("#addrow").on('click', function() {
-  var i = 0;
   rowIndex++;
 
   var row_id_base = 'new_row' + rowIndex;
@@ -634,19 +635,9 @@ $("#addrow").on('click', function() {
 
   $('#new_row_num').val( rowIndex );
 
-  // var rowpos = $('#first_col_table > tbody > tr:last').position();
-  // alert("HERE0");
-
-  // $('#firstcol_div').scrollTop(rowpos.top);
-  // var row_id_fixed_table_base = row_id_base + "_fixed_table_base";
-  // alert("HERE1");
-  // alert(row_id_fixed_table_base);
-
   $( "#" + row_id_base + "_fixed_table_base" )[0].scrollIntoView();
-  //$( "#" + row_id_base + "_first_col_table")[0].scrollIntoView();
+  $( "#" + row_id_base + "_first_col_table")[0].scrollIntoView();
 
-  // alert("HERE");
-  // alert(row_id_fixed_table_base);
 
 });
 
@@ -655,12 +646,12 @@ $("#removerow").on('click', function() {
 
   if (rowIndex > 0){
 
-    last_row_id = "new_row" + rowIndex;
+    var last_row_id_base = "new_row" + rowIndex;
     // alert(last_row_id + " was removed");
     // alert("One user-added row was removed");
 
-    $('table#first_col_table tr#' + last_row_id).remove();
-    $('table#fixed_table_base tr#' + last_row_id).remove();
+    $('table#first_col_table tr#' + last_row_id_base + "_first_col_table").remove();
+    $('table#fixed_table_base tr#' + last_row_id_base + "_fixed_table_base").remove();
 
     rowIndex--;
     $('#new_row_num').val( rowIndex );
