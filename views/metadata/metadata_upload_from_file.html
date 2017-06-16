@@ -13,10 +13,13 @@
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
 <% }else if(messages.fail){ %>
-<% var myArray = messages.fail %>
+<% var myArray = messages.fail;
+var uSet = new Set(myArray);
+myArray_fail = [...uSet];
+%>
 <div class="alert_flash_message_fail" >
   <ul>
-  <% myArray.forEach(function(value){ %>
+  <% myArray_fail.forEach(function(value){ %>
     <li>
       <%= value %>
     </li>
