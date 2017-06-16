@@ -8,6 +8,7 @@ var fs = require("fs");
 var path = require("path");
 var config  = require(app_root + '/config/config');
 var validator = require('validator');
+var expressValidator = require('express-validator');
 
 /* GET metadata page. */
  router.get('/metadata', function(req, res) {
@@ -928,10 +929,54 @@ function new_row_val_validation(req, field_name) {
   var field_val = req.body[field_name];
 
   console.log("validator isEmpty");
+  // console.log("field_name");
+  // console.log(field_name);
+
+  // console.log("XXX1 field_val");
+  // console.log(field_val);
   var field_val_trimmed = validator.escape(field_val + "");
+  // console.log("XXX2 field_val_trimmed");
+  // console.log(field_val_trimmed);
   field_val_trimmed = validator.trim(field_val_trimmed + "");
+  // console.log("XXX3 field_val_trimmed");
+  // console.log(field_val_trimmed);
   var field_val_not_valid = validator.isEmpty(field_val_trimmed + "");
+  // console.log("XXX4 field_val_not_valid");
+  // console.log(field_val_not_valid);
+
+  rrr = req.checkBody(field_name)
+    .notEmpty().withMessage('User added field "' + field_name + '" must be not empty')
+    .isAlphanumeric().withMessage('User added field "' + field_name + '" must have alphanumeric characters only')
+    .isAscii();
+  console.log("rrr");
+  console.log(rrr);
+  // ValidatorChain {
+  //   errorFormatter: [Function: errorFormatter],
+  //   param: 'Units3',
+  //     value: '',
+  //     validationErrors:
+  //   [ { param: 'Units3', msg: 'Users must be an array', value: '' },
+  //     { param: 'Units3', msg: 'Users must be an array', value: '' },
+  //     { param: 'Units3', msg: 'Users must be an array', value: '' } ],
+
+  // isAlphanumeric
+  // isAscii
+  // stripLow
   console.log(field_val_trimmed);
+
+  var errors = req.validationErrors();
+  console.log("VVV validationErrors");
+  console.log(errors);
+/*
+* VVV validationErrors
+ [ { param: 'Units3',
+ msg: 'User added field "Units3" must be not empty',
+ value: '' },
+ { param: 'Units3',
+ msg: 'User added field "Units3" must have alphanumeric characters only',
+ value: '' },
+ { param: 'Units3', msg: 'Invalid value', value: '' } ]
+* */
 
   if (field_val_not_valid)
   {
