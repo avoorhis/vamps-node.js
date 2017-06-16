@@ -852,7 +852,7 @@ function env_items_validation(value) {
   // console.log(this);
 
   if (value === "Please choose one") {
-      throw new Error("Please choose one value from the dropdown menu for %s.");
+      throw new Error("%s is required. Please choose one value from the dropdown menu");
   }
 }
 
