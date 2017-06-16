@@ -177,7 +177,7 @@ router.get("/metadata_upload_new", [helpers.isLoggedIn], function (req, res) {
 router.post('/metadata_upload',
   [helpers.isLoggedIn],
   form(
-    form.field("NPOC", "NPOC (Non-purgeable organic carbon)").trim().entityEncode().array(),
+    form.field("NPOC").trim().entityEncode().array(),
     form.field("access_point_type", "Access Point Type").trim().entityEncode().array(),
     form.field("adapter_sequence", "Adapter sequence").trim().entityEncode().array().required(),
     form.field("alkalinity", "Alkalinity").trim().entityEncode().array(),
