@@ -173,23 +173,46 @@ router.get("/metadata_upload_new", [helpers.isLoggedIn], function (req, res) {
   });
 });
 
+
+function get_second(element) {
+  for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES)
+  {
+    if (CONSTS.ORDERED_METADATA_NAMES[met_names_row].includes(element))
+    {
+      // console.log("ETET met_names_row[1]");
+      // console.log(CONSTS.ORDERED_METADATA_NAMES[met_names_row][1]);
+      return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
+    }
+  }
+}
+
+// function filterItems(query) {
+//   for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES)
+//   {
+//     return met_names_row.filter(function(el) {
+//     return el.toLowerCase().indexOf(query.toLowerCase()) > -1;
+//
+//   });
+//   }
+// }
+
 // TODO: update pairs from https://docs.google.com/spreadsheets/d/1adAtGc9DdY2QBQZfd1oaRdWBzjOv4t-PF1hBfO8mAoA/edit#gid=1223926458
 router.post('/metadata_upload',
   [helpers.isLoggedIn],
   form(
-    form.field("NPOC").trim().entityEncode().array(),
+    form.field("NPOC", "Non-purgeable organic carbon").trim().entityEncode().array(),
     form.field("access_point_type", "Access Point Type").trim().entityEncode().array(),
     form.field("adapter_sequence", "Adapter sequence").trim().entityEncode().array().required(),
     form.field("alkalinity", "Alkalinity").trim().entityEncode().array(),
     form.field("ammonium", "Ammonium").trim().entityEncode().array(),
     form.field("bicarbonate", "Bicarbonate").trim().entityEncode().array(),
-    form.field("env_biome", "Biome - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
-    form.field("biome_secondary", "Biome - Secondary").trim().entityEncode().array(),
+    form.field("env_biome", get_second("env_biome")).trim().required().entityEncode().custom(env_items_validation).array(),
+    form.field("biome_secondary", get_second("biome_secondary")).trim().entityEncode().array(),
     form.field("calcium", "Calcium").trim().entityEncode().array(),
     form.field("calcium_carbonate", "Calcium carbonate").trim().entityEncode().array(),
     form.field("chloride", "Chloride").trim().entityEncode().array(),
     form.field("clone_library_results", "clone library results (key findings)").trim().entityEncode().array(),
-    form.field("collection_date", "Sample collection date (YYYY-MM-DD)").trim().required().entityEncode().isDate("Sample collection date format: YYYY-MM-DD").array(),
+    form.field("collection_date", "Sample collection date").trim().required().entityEncode().isDate("Sample collection date format: YYYY-MM-DD").array(),
     form.field("conductivity", "Conductivity").trim().entityEncode().array().required(),
     form.field("dataset", "VAMPS dataset name").trim().entityEncode().array().required(),
     form.field("dataset_id", "").trim().required().entityEncode().isInt().array(),
@@ -206,7 +229,7 @@ router.post('/metadata_upload',
     form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode().custom(env_items_validation).array(),
     form.field("dna_region", "DNA region").trim().entityEncode().array().required(),
     form.field("domain", "Domain").trim().entityEncode().array().required(),
-    form.field("elevation", "Elevation above sea level (land only)").trim().entityEncode().array().required(),
+    form.field("elevation", get_second("elevation")).trim().entityEncode().array().required(),
     form.field("env_package", "Environmental Package").trim().required().entityEncode().custom(env_items_validation).array(),
     form.field("enzyme_activities", "enzyme activities (key findings)").trim().entityEncode().array(),
     form.field("env_feature", "Environmental Feature - Primary").trim().required().entityEncode().custom(env_items_validation).array(),
@@ -222,7 +245,7 @@ router.post('/metadata_upload',
     form.field("iron", "Total iron").trim().entityEncode().array(),
     form.field("iron_II", "Iron II").trim().entityEncode().array(),
     form.field("iron_III", "Iron III").trim().entityEncode().array(),
-    form.field("isol_growth_cond", "Isolation and growth condition (publication reference)").trim().entityEncode().array(),
+    form.field("isol_growth_cond", "Isolation and growth condition (reference)").trim().entityEncode().array(),
     form.field("latitude", "Latitude (WGS84 system, values bounded by ±90°)").trim().required().entityEncode().isDecimal().array(),
     form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode().isDecimal().array(),
     form.field("magnesium", "Magnesium").trim().entityEncode().array(),
@@ -260,7 +283,7 @@ router.post('/metadata_upload',
     form.field("resistivity", "Resistivity").trim().entityEncode().array(),
     form.field("reverse_primer", "Reverse PCR Primer").trim().entityEncode().array().required(),
     form.field("rock_age", "Sediment or rock age").trim().entityEncode().array(),
-    form.field("run", "Sequencing run date (YYYY-MM-DD)").trim().entityEncode().array().required(),
+    form.field("run", "Sequencing run date").trim().entityEncode().array().required(),
     form.field("salinity", "Salinity").trim().entityEncode().array(),
     form.field("samp_store_dur", "Storage duration ").trim().entityEncode().array(),
     form.field("samp_store_temp", "Storage temperature").trim().entityEncode().array(),
@@ -276,7 +299,7 @@ router.post('/metadata_upload',
     form.field("target_gene", "Target gene name (16S rRNA, mcrA)").trim().entityEncode().array().required(),
     form.field("temperature", "Temperature").trim().entityEncode().array().required(),
     form.field("tot_carb", "Total carbon").trim().entityEncode().array(),
-    form.field("tot_depth_water_col", "Water column depth (Sampling depth if applicable. If sampling below seafloor, depth of water column at the seafloor)").trim().entityEncode().array(),
+    form.field("tot_depth_water_col", "Water column depth").trim().entityEncode().array(),
     form.field("tot_inorg_carb", "Total inorganic carbon").trim().entityEncode().array(),
     form.field("tot_org_carb", "Total organic carbon").trim().entityEncode().array(),
     form.field("trace_element_geochem", "Trace element geochemistry").trim().entityEncode().array(),
