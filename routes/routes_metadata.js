@@ -314,26 +314,26 @@ router.post('/metadata_upload',
       // AllMetadataFromFile = helpers.get_metadata_from_file()
       // console.log(AllMetadataFromFile);
 
-      // console.log("QQQ req.params");
-      // console.log(req.params);
-      //
-      //
-      // console.log("req.form");
-      // console.log(req.form);
-      //
-      // console.log("req.body");
-      // console.log(req.body);
-      //
-      // req.flash("fail", req.form.errors);
-      // console.log("req.form.errors");
-      // console.log(req.form.errors);
-      //
-      // console.log('req.form.getErrors("env_biome")');
-      // console.log(req.form.getErrors("env_biome"));
-      //
-      //
-      // console.log('req.form.getErrors()');
-      // console.log(req.form.getErrors());
+      console.log("QQQ req.params");
+      console.log(req.params);
+
+
+      console.log("req.form");
+      console.log(req.form);
+
+      console.log("req.body");
+      console.log(req.body);
+
+      req.flash("fail", req.form.errors);
+      console.log("req.form.errors");
+      console.log(req.form.errors);
+
+      console.log('req.form.getErrors("env_biome")');
+      console.log(req.form.getErrors("env_biome"));
+
+
+      console.log('req.form.getErrors()');
+      console.log(req.form.getErrors());
 
 
       editMetadataForm(req, res);
@@ -423,12 +423,12 @@ function editMetadataForm(req, res){
   var all_metadata = {pid: metadata_form};
 
 
-  // console.log("RRR555 req.form.errors");
-  // console.log(req.form.errors);
-  //
-  //
-  // console.log("XXX3 all_metadata");
-  // console.log(all_metadata);
+  console.log("RRR555 req.form.errors");
+  console.log(req.form.errors);
+
+
+  console.log("XXX3 all_metadata");
+  console.log(all_metadata);
 
   res.render('metadata/metadata_upload_from_file', {
     title: 'VAMPS: Metadata_upload',
