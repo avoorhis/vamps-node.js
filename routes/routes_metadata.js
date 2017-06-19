@@ -434,26 +434,6 @@ function editMetadataForm(req, res){
       }
     }
   }
-  // console.log("new_row_info_arr result");
-  // console.log(result_it);
-  // metadata_form["new_row1"] = new_row_info_arr[0];
-
-  // console.log("MMM PROJECT_INFORMATION_BY_PID");
-  // console.log(PROJECT_INFORMATION_BY_PID);
-  // '47':
-  // { last: 'Gaidos',
-  //   first: 'Eric',
-  //   username: 'gaidos',
-  //   oid: 54,
-  //   email: 'gaidos@hawaii.edu',
-  //   env_package_id: '19',
-  //   institution: 'University of Hawaii',
-  //   project: 'DCO_GAI_Bv3v5',
-  //   pid: 47,
-  //   title: 'Icelandic Volcanic Lake',
-  //   description: 'Cold-Tolerant Acetogenic and Lithoautotrophic Microbial Community in a Subglacial Lake',
-  //   public: 0,
-  //   permissions: [ 54, 39 ] },
 
   metadata_form.pi_name = PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last;
   metadata_form.pi_email = PROJECT_INFORMATION_BY_PID[pid].email;
@@ -762,8 +742,7 @@ function populate_metadata_hash(rows, pid, all_metadata) {
       all_metadata[pid]["dataset_description"].push(row.dataset_description);
 
 
-    console.log('AAA5 all_metadata[pid]["pi_email"]');
-      console.log(all_metadata[pid]["pi_email"]);
+
       /*
       console.log("AllMetadata[dataset_id]");
       console.log(AllMetadata[dataset_id]);
