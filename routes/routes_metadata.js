@@ -741,8 +741,6 @@ function populate_metadata_hash(rows, pid, all_metadata) {
       all_metadata[pid]["dataset"].push(row.dataset);
       all_metadata[pid]["dataset_description"].push(row.dataset_description);
 
-
-
       /*
       console.log("AllMetadata[dataset_id]");
       console.log(AllMetadata[dataset_id]);
@@ -917,10 +915,29 @@ function make_metadata_hash(req, res) {
           pi_name: "",
 
         */
+        // var info = PROJECT_INFORMATION_BY_PID[req.params.id]
+        //
+        // var info_file = '';
+        var abstract_data = {};
+        var project = all_metadata[pid]["project"];
+        if (project.substring(0,3) === 'DCO'){
+          info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'abstracts', 'DCO_info.json');
+          //console.log(info_file)
+          //fs.readFileSync(info_file, 'utf8', function (err, data) {
+          //if (err) {console.log(err);return};
+          abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+        }
+
+        var project_prefix = get_project_prefix(project);
+
+        console.log("AAA abstract_data");
+        console.log(abstract_data);
+
         res.render("metadata/metadata_upload_from_file", {
           title: "VAMPS: Metadata_upload",
           user: req.user,
           hostname: req.CONFIG.hostname,
+          abstract_data_pr: abstract_data[project_prefix],
           all_metadata: all_metadata,
           all_field_names: CONSTS.ORDERED_METADATA_NAMES,
           dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
@@ -955,6 +972,18 @@ function make_metadata_hash(req, res) {
   }
   console.timeEnd("2) make_metadata_hash");
 
+}
+
+// TODO: move to helpers, use here and for project_profile
+function get_project_prefix(project) {
+  console.time("get_project_prefix");
+  var project_parts = project.split('_');
+  var project_prefix = project;
+  if(project_parts.length >= 2 ){
+    project_prefix = project_parts[0] + '_' + project_parts[1];
+  }
+  console.timeEnd("get_project_prefix");
+  return project_prefix;
 }
 
 function env_items_validation(value) {
