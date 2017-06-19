@@ -447,14 +447,22 @@ function editMetadataForm(req, res){
   // console.log(req.form.errors);
   //
   //
-  console.log("XXX3 all_metadata");
-  console.log(all_metadata);
+    console.log("XXX3 all_metadata");
+    console.log(all_metadata);
+
+    var project = all_metadata[pid]["project"];
+    var abstract_data = get_project_abstract_data(project)
+    var project_prefix = get_project_prefix(project);
+
+    console.log("AAA2 abstract_data");
+    console.log(abstract_data);
 
 
-  res.render('metadata/metadata_upload_from_file', {
+    res.render('metadata/metadata_upload_from_file', {
     title: 'VAMPS: Metadata_upload',
     user: req.user,
     hostname: req.CONFIG.hostname,
+    abstract_data_pr: abstract_data[project_prefix],
     all_metadata: all_metadata,
     all_field_names: all_field_names,
     dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
@@ -915,17 +923,11 @@ function make_metadata_hash(req, res) {
           pi_name: "",
 
         */
-        var info_file = '';
-        var abstract_data = {};
         var project = all_metadata[pid]["project"];
-        if (project.substring(0,3) === 'DCO'){
-          info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'abstracts', 'DCO_info.json');
-          abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
-        }
-
+        var abstract_data = get_project_abstract_data(project)
         var project_prefix = get_project_prefix(project);
 
-        console.log("AAA abstract_data");
+        console.log("AAA1 abstract_data");
         console.log(abstract_data);
 
         res.render("metadata/metadata_upload_from_file", {
@@ -967,6 +969,18 @@ function make_metadata_hash(req, res) {
   }
   console.timeEnd("2) make_metadata_hash");
 
+}
+
+function get_project_abstract_data(project)
+{
+  var info_file = '';
+  var abstract_data = {};
+  if (project.substring(0,3) === 'DCO'){
+    info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'abstracts', 'DCO_info.json');
+    abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+  }
+
+  return abstract_data;
 }
 
 // TODO: move to helpers, use here and for project_profile

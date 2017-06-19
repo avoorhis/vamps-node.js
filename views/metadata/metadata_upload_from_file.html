@@ -78,7 +78,7 @@ myArray_fail.sort();
   <label for="project_abstract">CoDL project abstract (.doc format):</label>
     <div class="white_box" >
 
-    <% if (abstract_data_pr.pdfs) {
+    <% if (abstract_data_pr) {
       for (var n in abstract_data_pr.pdfs) { %>
       <a href='/static/abstracts/<%= abstract_data_pr.pdfs[n] %>' target='_blank'><%= abstract_data_pr.pdfs[n] %></a><br/>
     <% } } %> <!-- for (var pid in all_metadata)-->
