@@ -436,3 +436,18 @@ td.left_justify {
 .readonly_td {
     padding-left: 4px;
 }
+
+.textarea_long {
+    width: 30em;
+    padding: 3px;
+}
+
+.white_box {
+    border-color: #DADADA;
+    border: 3px;
+    width: 30em;
+    padding: 3px;
+    background-color: white;
+
+}
+

@@ -76,14 +76,16 @@ myArray_fail.sort();
   <input type="email" id="pi_email" name="pi_email"  value='<%= all_metadata[pid]["pi_email"] %>'/>
   <br />
   <label for="project_abstract">CoDL project abstract (.doc format):</label>
-    <% for (var n in abstract_data_pr.pdfs) { %>
-      <a href='/static/abstracts/<%= abstract_data_pr.pdfs[n] %>' target='_blank'><%= abstract_data_pr.pdfs[n] %></a>
-    <% } %> <!-- for (var pid in all_metadata)-->
+    <div class="white_box" >
 
+    <% for (var n in abstract_data_pr.pdfs) { %>
+      <a href='/static/abstracts/<%= abstract_data_pr.pdfs[n] %>' target='_blank'><%= abstract_data_pr.pdfs[n] %></a><br/>
+    <% } %> <!-- for (var pid in all_metadata)-->
+    </div>
     <input type = "hidden" id="project_abstract" name="project_abstract"  placeholder= '<%= abstract_data_pr %>'/>
   <br />
   <label for="references">References for selected manuscripts published that describe the location:</label>
-  <textarea id="references" name="references"  placeholder='<%= all_metadata[pid].references %>'></textarea>
+  <textarea class="textarea_long" id="references" name="references"  placeholder='<%= all_metadata[pid].references %>'></textarea>
   <br />
   </fieldset>
   <fieldset id="parameters">
