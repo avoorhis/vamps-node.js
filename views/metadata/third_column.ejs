@@ -153,6 +153,23 @@
 </td>
 <!-- investigation_type_options end -->
 
+<!-- sample_type_options start -->
+<% } else if (all_field_names[idx][0] === "sample_type") { %>
+<td>
+    <% selected_val = get_selected_val(pid, did, "sample_type") %>
+
+    <select id="sample_type<%- did%>" name="sample_type" class = "sample_type">
+        <% sample_type_options.forEach(function(value){ %>
+        <option value="<%= value %>"
+                <% if (value == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value %></option>
+        <% }) %>
+    </select>
+</td>
+<!-- sample_type_options end -->
+
 <% } else { %>
 <td>
     <!-- regular field with data -->

@@ -464,6 +464,7 @@ function editMetadataForm(req, res){
     metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
     env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
     investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+    sample_type_options: CONSTS.SAMPLE_TYPE,
     new_row_info_arr: new_row_info_arr
   });
   console.timeEnd("editMetadataForm");
@@ -928,8 +929,8 @@ function make_metadata_hash(req, res) {
           metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
           env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
           investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+          sample_type_options: CONSTS.SAMPLE_TYPE,
           new_row_info_arr: ""
-
         });
 
 
