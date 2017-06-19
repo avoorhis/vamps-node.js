@@ -429,6 +429,7 @@ router.post('/start_edit',
     // console.log(req.body.project);
     // console.log("MMM AllMetadataFromFile = helpers.get_metadata_from_file()")
     AllMetadataFromFile = helpers.get_metadata_from_file();
+    
     // console.log(AllMetadataFromFile["47"]);
     // all_metadata = {}
     make_metadata_hash(req, res);

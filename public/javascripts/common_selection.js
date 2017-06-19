@@ -67,6 +67,7 @@ var save_datasets_list = function(ds_local, user)
 function create_piecharts(imagetype, ts, mtx) {
     //alert(imagetype)  // group or single
     //d3.select('svg').remove();
+  
   var unit_list = [];
   for (var n in mtx.rows){
       unit_list.push(mtx.rows[n].id);
@@ -124,8 +125,12 @@ function create_piecharts(imagetype, ts, mtx) {
     var pie = d3.layout.pie();
   
     var svgContainer = d3.select("#piecharts_div").append("svg")
-        .attr("width",image_w)
-        .attr("height",image_h);
+        .attr("width", image_w)
+        .attr("height", image_h)
+        .attr("id", 'piecharts_'+ts)
+        .attr("version", "1.1") 
+        .attr("xmlns", "http://www.w3.org/2000/svg") 
+        //.attr("xmlns:xlink", "http://www.w3.org/1999/xlink");
     
     var pies = svgContainer.selectAll("svg")
         .data(myjson_obj.values)
@@ -297,6 +302,10 @@ function create_barcharts(imagetype, ts, mtx, new_order) {
     var svg = d3.select("#barcharts_div").append("svg")
             .attr("width",  props.width)
             .attr("height", props.height)
+            .attr("id", 'barcharts_'+ts)
+            .attr("version","1.1") 
+            .attr("xmlns","http://www.w3.org/2000/svg") 
+            //.attr("xmlns:xlink","http://www.w3.org/1999/xlink")            
           .append("g")
             .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
     // axis legends -- would like to rotate dataset names
