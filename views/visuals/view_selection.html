@@ -584,9 +584,11 @@
               <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('dheatmap','<%= pi.ts %>')">Image as PDF</button></li> 
             <% }else if(prefix == 'barcharts') { %>
               <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('barcharts','<%= pi.ts %>')">Image as PDF</button></li> 
+              <li><button type="button" class="btn-link dropdown_btn" onclick="download_svg('barcharts','<%= pi.ts %>')">Image as SVG</button></li>
               <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('barcharts','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'piecharts') { %>
               <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('piecharts','<%= pi.ts %>')">Image as PDF</button></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="download_svg('piecharts','<%= pi.ts %>')">Image as SVG</button></li>
               <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('piecharts','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'fheatmap') { %>
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('pdf-fheatmap','<%= pi.ts %>')">PDF Image File</button></li> 

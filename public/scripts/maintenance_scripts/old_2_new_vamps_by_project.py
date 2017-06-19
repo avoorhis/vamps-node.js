@@ -1515,9 +1515,7 @@ if __name__ == '__main__':
         -sp/-sequencing_platform        default: illumina 
         -geo_loc_name/--geo_loc_name                    default: United States
         -biome/--env_biome              default: ''
-
         -target_gene/--target_gene       default: 'unknown'
-
   
   """
   parser.add_argument("-p","--project",
@@ -1586,34 +1584,6 @@ if __name__ == '__main__':
         required = False, action = "store_true", dest = "non_mbl_format", default=False,
         help = """MBL Format: three parts; end with Bv6, Ev4... """)      
             
-  # METADATA  IDS      
-#   parser.add_argument("-platform_id","--sequencing_platform_id",
-#       required = False, action = "store", dest = "platform_id", default = '',
-#       help = """Sequencing platform_id -- must match id in newVAMPS Table""")
-#   parser.add_argument("-geo_loc_name_id","--geo_loc_name_id",
-#       required = False, action = "store", dest = "geo_loc_name_id", default = '',
-#       help = """geo_loc_name_id""")    
-#   parser.add_argument("-target_gene_id", "--target_gene_id",
-#         required = False, action = "store", dest = "target_gene_id", default='',
-#         help = """target_gene_id -- no entry results in 'unknown' """)
-#   parser.add_argument("-domain_id", "--domain_id",
-#         required = False, action = "store", dest = "domain_id", default='',
-#         help = """Domain_id -- no entry results in 'unknown' """)   
-#   parser.add_argument("-dna_region_id", "--dna_region_id",
-#         required = False, action = "store", dest = "dna_region_id", default='',
-#         help = """dna_region_id -- no entry results in 'unknown' """) 
-#   parser.add_argument("-env_biome_id", "--env_biome_id",
-#         required = False, action = "store", dest = "env_biome_id", default = '',
-#         help = """ENV_Biome_id -- must match id in newVAMPS Table""")
-#   parser.add_argument("-env_feature_id", "--env_feature_id",
-#         required = False, action = "store", dest = "env_feature_id", default='',
-#         help = """env_feature_id -- no entry results in 'unknown' """)
-#   parser.add_argument("-env_material_id", "--env_material_id",
-#         required = False, action = "store", dest = "env_material_id", default='',
-#         help = """env_material_id -- no entry results in 'unknown' """)
-#   parser.add_argument("-env_package_id", "--env_package_id",
-#         required = False, action = "store", dest = "env_package_id", default='',
-#         help = """env_package_id -- no entry results in 'unknown' """)      
     
   
   if len(sys.argv[1:]) == 0:
@@ -1627,7 +1597,7 @@ if __name__ == '__main__':
     pparts = args.project.split('_') 
     print pparts   
     if len(pparts) != 3:
-        sys.exit('project in not formatted correctly')
+        sys.exit('project in not formatted correctly. Use (-non_mbl_format) and command line metadata for domain, dna_region, primer_suite, target_gene')
     
     if pparts[2].startswith('A'):
         args.domain = 'Archaea'
@@ -1931,5 +1901,4 @@ if __name__ == '__main__':
 # *) required_metadata_info -4??? see on vampsprod for pr MBE_1666G_Bv4
 # *) change print to print_both
 # *) use more the one project at once
-
 

@@ -1,5 +1,3 @@
-
-
 $(document).ready(function(){
 
     $('.selectpicker').selectpicker({showSubtext:true, tickIcon: '',});
@@ -16,7 +14,7 @@ $(document).ready(function(){
    
     //click_on_graph_icon = false;
     //alert(pi_local.ts)
-    if(image_to_rdr_local.hasOwnProperty('image')){
+    if(typeof image_to_rdr_local !== "undefined" && image_to_rdr_local.hasOwnProperty('image')){
       //alert(image_to_render)
       create_viz(image_to_rdr_local.image, pi_local.ts, false, cts_local)
       $(document.getElementById('pre_'+image_to_rdr_local.image+'_div')).scrollView();
@@ -338,31 +336,31 @@ if (typeof include_nas_radios[2] !=="undefined") {
   });
 }
 // Distance Metric Select (Combo)
-var selected_distance_combo = document.getElementById('selected_distance');
-if (typeof selected_distance_combo !=="undefined") {
+var selected_distance_combo = document.getElementById('selected_distance') || null;
+if (selected_distance_combo !== null) {
   $('.selectpicker').on('change', function () {
       //alert(selected_distance_combo)
-      document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').disabled = false;
     document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
-      document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
 }
 // MIN Select (Combo)
-var min_range_combo = document.getElementById('min_range') ;
-if (typeof min_range_combo !=="undefined") {
-  min_range_combo.addEventListener('change', function () {
-      document.getElementById('output_choices_submit_btn').disabled = false;
+var min_range_combo = document.getElementById('min_range') || null;
+if (min_range_combo !== null) {
+    min_range_combo.addEventListener('change', function () {
+    document.getElementById('output_choices_submit_btn').disabled = false;
     document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
-      document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
 }
 // MAX Select (Combo)
-var max_range_combo = document.getElementById('max_range');
-if (typeof max_range_combo !=="undefined") {
-  max_range_combo.addEventListener('change', function () {
-      document.getElementById('output_choices_submit_btn').disabled = false;
+var max_range_combo = document.getElementById('max_range') || null;
+if (max_range_combo !== null) {
+    max_range_combo.addEventListener('change', function () {
+    document.getElementById('output_choices_submit_btn').disabled = false;
     document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
-      document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
 }
 
@@ -1114,6 +1112,19 @@ function recreate_image_from_html(image, ts) {
         }
       };
   xmlhttp.send(args);      
+}
+function download_svg(image, ts) {
+    var id = image+'_'+ts
+    var svgData = $("#"+id)[0].outerHTML;
+    var svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
+    var svgUrl = URL.createObjectURL(svgBlob);
+    var downloadLink = document.createElement("a");
+    downloadLink.href = svgUrl;
+    downloadLink.download = id+".svg";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+
 }
 //
 //
