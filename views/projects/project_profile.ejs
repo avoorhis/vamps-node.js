@@ -10,8 +10,8 @@
 <% if(data.public || data.permissions.indexOf(user.user_id) != -1 || user.security_level == 1 || user.security_level == 10){ %>
 <%  reveal_all = true %>
 <% } %>
-<!-- DCO only - AND (owner or admin) can see/edit -->
-<% if(user.user_id == data.oid  || user.security_level == 1){ %>
+<!-- DCO only - AND (owner or admin) can see/edit ALSO MBL power users (Mitch)-->
+<% if(user.user_id == data.oid  || user.security_level == 1 || user.security_level == 10){ %>
 <%  edit_metadata = true %>
 <% } %>
 <img src='/images/dna01.jpg' alt="Helix Cartoon"  height='80' />
