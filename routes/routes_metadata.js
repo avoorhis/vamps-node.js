@@ -451,7 +451,7 @@ function editMetadataForm(req, res){
     console.log(all_metadata);
 
     var project = all_metadata[pid]["project"];
-    var abstract_data = get_project_abstract_data(project)
+    var abstract_data = get_project_abstract_data(project, req);
     var project_prefix = get_project_prefix(project);
 
     console.log("AAA2 abstract_data");
@@ -924,7 +924,7 @@ function make_metadata_hash(req, res) {
 
         */
         var project = all_metadata[pid]["project"];
-        var abstract_data = get_project_abstract_data(project)
+        var abstract_data = get_project_abstract_data(project, req);
         var project_prefix = get_project_prefix(project);
 
         console.log("AAA1 abstract_data");
@@ -971,7 +971,7 @@ function make_metadata_hash(req, res) {
 
 }
 
-function get_project_abstract_data(project)
+function get_project_abstract_data(project, req)
 {
   var info_file = '';
   var abstract_data = {};
