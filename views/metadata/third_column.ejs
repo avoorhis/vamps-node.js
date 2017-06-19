@@ -173,15 +173,12 @@
 <% } else { %>
 <td>
     <!-- regular field with data -->
-    <% selected_val = get_selected_val(pid, did, field_name)
-        var readonly_mark = "";
-    %>
-    <% if (all_field_names[idx][2] === "MBL Supplied") {
-        readonly_mark = "readonly";
-
-    %>
-    <input type="text" placeholder="<%= all_field_names[idx][3] %>" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= selected_val %>" <%= readonly_mark%>/>
-    <% } %> <!-- if MBL Supplied -->
+    <% selected_val = get_selected_val(pid, did, field_name) %>
+    <% if (all_field_names[idx][2] === "MBL Supplied") { %>
+    <%= selected_val %>
+    <% } else { %>
+    <input type="text" placeholder="<%= all_field_names[idx][3] %>" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= selected_val %>"/>
+    <% } %> <!-- end else if MBL Supplied -->
 
 </td>
 <% } %> <!-- else -->
