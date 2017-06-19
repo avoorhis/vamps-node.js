@@ -7,6 +7,7 @@ var CONSTS  = require(app_root + "/public/constants");
 var fs = require("fs");
 var path = require("path");
 var config  = require(app_root + '/config/config');
+var validator = require('validator');
 
 /* GET metadata page. */
  router.get('/metadata', function(req, res) {
@@ -281,6 +282,7 @@ router.post('/metadata_upload',
     form.field("water_age", "Water age").trim().entityEncode().array()
   ),
   function (req, res) {
+
     // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
@@ -330,42 +332,76 @@ router.post('/metadata_upload',
   }
 );
 
-function format_form(req, res) {
-  edit_metadata_info = {};
-  console.log("RRR req.body");
-  console.log(req.body);
-  /*
-  "16s": [ "16s", "16s", "16s", "16s", "16s", "16s", "16s", "16s" ],
-  project: "DCO_GAI_Bv3v5",
-  pi_name: "",
-  dataset_id: [ "4312", "4313", "4314", "4315", "4316", "4317", "4318", "4319" ],
-  pi_email: "",
-
-
-  */
-  console.log("QQQ req.form");
-  console.log(req.form);
-// { dataset_id: [ "4312", "4313", "4314", "4315", "4316", "4317", "4318", "4319" ],
-  // project_title: [ "Icelandic Volcanic Lake" ],
-
-  return edit_metadata_info;
-}
-
 function editMetadataForm(req, res){
   console.log('in editMetadataForm');
   // console.log(req);
 
-  edit_metadata_address = "metadata/metadata_upload_from_file";
-  console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
+  var edit_metadata_address = "metadata/metadata_upload_from_file";
+  // console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
+  //
+  // console.log("XXX1 all_metadata: req.form");
+  // console.log(req.form);
+  //
+  // console.log("XXX2 req.body.project_id");
+  // console.log(req.body.project_id);
+  // console.log(pid);
 
-  console.log("XXX1 all_metadata: req.form");
-  console.log(req.form);
+  var new_row_info_arr_err = collect_new_row(req);
+  var new_row_info_arr = new_row_info_arr_err[0];
+  req = new_row_info_arr_err[1];
 
-  console.log("XXX2 req.body.project_id");
-  console.log(req.body.project_id);
-  console.log(pid);
 
-  all_metadata = {pid: req.form};
+  // console.log("FFF new_row_info_arr");
+  // console.log(new_row_info_arr);
+  // [ { col1__units1: [ '', 'r1c2', '', '', '', '', '', '' ] },
+  //   { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] },
+  //   { col3__: [ 'r3c1', 'r2c3', '', '', '', '', '', '' ] } ]
+  // [ { 'Column name 1,units in row 1': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] },
+  //   { ',': [ '', '', '', '', '', '', '', '' ] } ]
+
+  var metadata_form = req.form;
+  var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
+  var result_it = "";
+
+  for (var a1 in new_row_info_arr) {
+    // new_row_info_arr[a1]
+    // { 'Column name 1,units in row 1': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] }
+    var row_field_name = "new_row" + a1;
+
+    for (var key in new_row_info_arr[a1]) {
+      if( new_row_info_arr[a1].hasOwnProperty(key) ) {
+        // result_it += 'key = ' + key + " , val = " + new_row_info_arr[a1][key] + "\n";
+        // console.log(Array.isArray(new_row_info_arr[a1][key]));
+      /*
+      * Array.isArray(variable) =
+       true
+       key = Column name 1,units in row 1 , val = cell 1 row 1,row1 cell 2,,,,,,
+      * */
+        metadata_form[row_field_name] = new_row_info_arr[a1][key];
+        // TODO: change "new_row" + a1 to a  database field name
+        // TODO: add units to the field placeholder
+        var key_arr;
+        key_arr = key.split(",");
+
+        var curr_header = key_arr[0];
+        var curr_units = key_arr[1];
+        all_field_names.push([row_field_name, curr_header + " (" + curr_units +")", "", curr_units]);
+        // ["enzyme_activities","enzyme activities (key findings)","", ""],
+
+      }
+    }
+  }
+  // console.log("new_row_info_arr result");
+  // console.log(result_it);
+  // metadata_form["new_row1"] = new_row_info_arr[0];
+
+  // all_metadata = {pid: req.form};
+  var all_metadata = {pid: metadata_form};
+
+
+  console.log("RRR555 req.form.errors");
+  console.log(req.form.errors);
+
 
   console.log("XXX3 all_metadata");
   console.log(all_metadata);
@@ -375,7 +411,7 @@ function editMetadataForm(req, res){
     user: req.user,
     hostname: req.CONFIG.hostname,
     all_metadata: all_metadata,
-    all_field_names: CONSTS.ORDERED_METADATA_NAMES,
+    all_field_names: all_field_names,
     dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
     dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
     dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
@@ -384,7 +420,8 @@ function editMetadataForm(req, res){
     material_primary_options: CONSTS.MATERIAL_PRIMARY,
     metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
     env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-    investigation_type_options: CONSTS.INVESTIGATION_TYPE
+    investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+    new_row_info_arr: new_row_info_arr
   });
 }
 
@@ -737,6 +774,10 @@ function make_metadata_hash(req, res) {
       }
       else
       {
+        // var new_row_info_arr_err = new_row_num_validation(req);
+        // var new_row_info_arr = new_row_info_arr_err[0];
+        // req = new_row_info_arr_err[1];
+
         console.log("in make_metadata_hash");
         // console.log("rows");
         // empty all_metadata
@@ -748,6 +789,10 @@ function make_metadata_hash(req, res) {
 
         console.log("YYY all_metadata from make_metadata_hash");
         console.log(all_metadata);
+
+        // console.log("GGG req.body new lines from make_metadata_hash");
+        // console.log(req.body.);
+
         /*
         YYY all_metadata from make_metadata_hash
         { "47":
@@ -777,7 +822,9 @@ function make_metadata_hash(req, res) {
           material_primary_options: CONSTS.MATERIAL_PRIMARY,
           metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
           env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-          investigation_type_options: CONSTS.INVESTIGATION_TYPE
+          investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+          new_row_info_arr: ""
+
         });
 
 
@@ -876,6 +923,119 @@ function convertArrayOfObjectsToCSV(args) {
     // console.log("CCC3 convertArrayOfObjectsToCSV result");
     // console.log(result);
     return result;
+}
+
+function new_row_val_validation(req, field_name) {
+  var field_val = req.body[field_name];
+
+  console.log("validator isEmpty");
+  var field_val_trimmed = validator.escape(field_val + "");
+  field_val_trimmed = validator.trim(field_val_trimmed + "");
+  var field_val_not_valid = validator.isEmpty(field_val_trimmed + "");
+  console.log(field_val_trimmed);
+
+  if (field_val_not_valid)
+  {
+    console.log("ERRRR");
+    return [true, field_val_trimmed];
+  }
+  else
+  {
+    console.log("OK");
+    return [false, field_val_trimmed];
+  }
+}
+
+function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx) {
+  var new_row_length = req.body.new_row_length;
+  var new_row_head_arr = [column_name_field_val_trimmed, units_field_val_trimmed];
+
+        // column_name_field_val_trimmed + " (" + units_field_val_trimmed + ")";
+  var new_row_info = {};
+
+  new_row_info[new_row_head_arr] = [];
+
+  for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
+
+    var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
+    // console.log("CCC cell_name");
+    // console.log(cell_name);
+    //
+    // console.log("LLL req.body[cell_name]");
+    // console.log(req.body[cell_name]);
+
+    var clean_val = validator.escape(req.body[cell_name] + "");
+    clean_val = validator.trim(clean_val + "");
+    new_row_info[new_row_head_arr].push(clean_val);
+  }
+  console.log("WWW new_row_info");
+  console.log(new_row_info);
+
+  new_row_info_arr.push(new_row_info);
+  // { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] }
+
+  // new_row1cell4
+  //new_row
+  return new_row_info_arr;
+}
+
+
+function collect_new_row(req) {
+  // var sanitizeHtml = require('sanitize-html');
+
+  var new_row_info_arr = [];
+
+  // console.log("new_row_num11");
+  var new_row_num = req.body.new_row_num;
+
+  // console.log(new_row_num);
+  //
+  // console.log("new_row_length 111");
+  // console.log(new_row_length);
+
+  for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
+    console.log("row_idx");
+    console.log(row_idx);
+
+    var units_field_name = "Units" + row_idx;
+    var column_name_field_name = "Column Name" + row_idx;
+
+
+    var col_val_res = [];
+    col_val_res = new_row_val_validation(req, column_name_field_name);
+    if (col_val_res[0]) {
+      req.form.errors.push(column_name_field_name + ' should be not empty');
+      continue;
+    }
+    else {
+      var column_name_field_val_trimmed = col_val_res[1];
+    }
+
+    var units_val_res = [];
+    units_val_res = new_row_val_validation(req, units_field_name);
+    if (units_val_res[0]) {
+      req.form.errors.push(units_field_name + ' should be not empty');
+      continue;
+    }
+    else {
+      var units_field_val_trimmed = units_val_res[1];
+    }
+
+    // console.log("column_name_field_val_trimmed");
+    //
+    // console.log(column_name_field_val_trimmed);
+    // console.log("QQQ req.form.errors");
+    // console.log(req.form.errors);
+
+
+    make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx);
+
+    // row = 0 row = {"Column name 1,units in row 1":["cell 1 row 1","row1 cell 2","","","","","",""]} row = 1 row = {",":["","","","","","","",""]}
+
+  }
+
+  return [new_row_info_arr, req];
+//  how to return 2 things?
 }
 
 // ---- metadata_upload end ----

@@ -20,12 +20,12 @@ function toggle_metadata_view()
           ckbx.checked = true;
           document.getElementById('md_select_phrase1').innerHTML = "Showing All Metadata";
           document.getElementById('md_select_phrase2').innerHTML = "Show Selected Metadata Only?";
-          load = 'all'
+          load = 'all';
   } else {
           ckbx.checked = false;
           document.getElementById('md_select_phrase1').innerHTML = "Showing Selected Metadata Only";
           document.getElementById('md_select_phrase2').innerHTML = "Show All Metadata?";
-          load = 'selected'
+          load = 'selected';
   }
 
 	var xmlhttp = new XMLHttpRequest();
@@ -63,9 +63,9 @@ function create_geospatial() {
       for (var ds in md_local) {
           //ds = md_local[ds]
           //alert(ds)
-          pid_collector[ds]       = {}
-          pid_collector[ds].pid   = md_local[ds].pid
-          pid_collector[ds].value = md_local[ds].value
+          pid_collector[ds]       = {};
+          pid_collector[ds].pid   = md_local[ds].pid;
+          pid_collector[ds].value = md_local[ds].value;
           var lat = '';
           var lon = '';
           for (var k in md_local[ds]) {
@@ -82,7 +82,7 @@ function create_geospatial() {
           if(typeof lat === 'number' && typeof lon === 'number'){
             latlon = lat.toString() +';'+ lon.toString();
             if (latlon in lat_lon_collector) {
-              newds = lat_lon_collector[latlon] + ":::" + ds;
+              var newds = lat_lon_collector[latlon] + ":::" + ds;
               lat_lon_collector[latlon] = newds;
             }else{
               lat_lon_collector[latlon] = ds;
@@ -139,7 +139,7 @@ function setMarkers(map, loc_data, pid_collector, infowindow) {
     });
 
     // add an event listener for this marker
-    lines = data[0].split(':::')
+    var lines = data[0].split(':::');
 
     // if(lines.length > 10){
     //   var html = "<div style='height:200px;width:300px;overflow:auto;'>";
@@ -155,14 +155,14 @@ function setMarkers(map, loc_data, pid_collector, infowindow) {
 
 
     var html = '';
-    html += "<table  class='table table_striped' >"
+    html += "<table  class='table table_striped' >";
     html += '<tr><th>Dataset</th><th>'+mditem+'</th></tr>';
-    for(l in lines){
+    for(var l in lines){
       var pid = pid_collector[lines[l]].pid;
       var val = pid_collector[lines[l]].value;
-      html += "<tr><td><a href='/projects/"+pid+"'>" + lines[l] + "</a></td><td>"+val+"</td></tr>"
+      html += "<tr><td><a href='/projects/"+pid+"'>" + lines[l] + "</a></td><td>"+val+"</td></tr>";
     }
-    html += '</table>'
+    html += '</table>';
 
     bindInfoWindow(marker, map, infowindow, "<p>"+html+"</p>");
 
@@ -482,12 +482,12 @@ var biome_seq_options = {
   };
 
 function populate_secondary_select(args) {
-  id_base = arguments[0][0];
-  sec_options = arguments[0][1];
+  var id_base = arguments[0][0];
+  var sec_options = arguments[0][1];
 
-  did = this.id.replace("env_" + id_base, '');
+  var did = this.id.replace("env_" + id_base, '');
 
-  id2 = id_base + "_secondary";
+  var id2 = id_base + "_secondary";
 
   var B = document.getElementById(id2+did);
 
@@ -532,14 +532,15 @@ function populate_secondary_select(args) {
 
 fnAdjustTable = function(){
 
-    var colCount = $('#firstTr>td').length; //get total number of column
+    var colCount = $('#firstTr').find('td').length; //get total number of column
 
     var m = 0;
     var n = 0;
     var brow = 'mozilla';
+    var table_div_el = $('#table_div');
 
     jQuery.each(jQuery.browser, function(i, val) {
-        if(val == true){
+        if(val === true){
             brow = i.toString();
         }
     });
@@ -547,35 +548,37 @@ fnAdjustTable = function(){
     $('.tableHeader').each(function(i){
         if (m < colCount){
 
-            if (brow == 'mozilla'){
+          var td_el = table_div_el.find('td:eq('+m+')');
+            if (brow === 'mozilla'){
                 $('#firstTd').css("width",$('.tableFirstCol').innerWidth());//for adjusting first td
-                $(this).css('width',$('#table_div td:eq('+m+')').innerWidth());//for assigning width to table Header div
+                $(this).css('width', td_el.innerWidth());//for assigning width to table Header div
             }
-            else if (brow == 'msie'){
+            else if (brow === 'msie'){
                 $('#firstTd').css("width",$('.tableFirstCol').width());
-                $(this).css('width',$('#table_div td:eq('+m+')').width()-2);//In IE there is difference of 2 px
+                $(this).css('width', td_el.width()-2);//In IE there is difference of 2 px
             }
-            else if (brow == 'safari'){
+            else if (brow === 'safari'){
                 $('#firstTd').css("width",$('.tableFirstCol').width());
-                $(this).css('width',$('#table_div td:eq('+m+')').width());
+                $(this).css('width', td_el.width());
             }
             else {
                 $('#firstTd').css("width",$('.tableFirstCol').width());
-                $(this).css('width',$('#table_div td:eq('+m+')').innerWidth());
+                $(this).css('width', td_el.innerWidth());
             }
         }
         m++;
     });
 
     $('.tableFirstCol').each(function(i){
-        if(brow == 'mozilla'){
-            $(this).css('height',$('#table_div td:eq('+colCount*n+')').outerHeight());//for providing height using scrollable table column height
+      var cur_td_colCount_el = table_div_el.find('td:eq('+colCount*n+')');
+        if(brow === 'mozilla'){
+            $(this).css('height',cur_td_colCount_el.outerHeight());//for providing height using scrollable table column height
         }
-        else if(brow == 'msie'){
-            $(this).css('height',$('#table_div td:eq('+colCount*n+')').innerHeight()-2);
+        else if(brow === 'msie'){
+            $(this).css('height',cur_td_colCount_el.innerHeight()-2);
         }
         else {
-            $(this).css('height',$('#table_div td:eq('+colCount*n+')').height());
+            $(this).css('height',cur_td_colCount_el.height());
         }
         n++;
     });
@@ -584,10 +587,85 @@ fnAdjustTable = function(){
 
 //function to support scrolling of title and first column
 fnScroll = function(){
-    $('#divHeader').scrollLeft($('#table_div').scrollLeft());
-    $('#firstcol_div').scrollTop($('#table_div').scrollTop());
+  var table_div_el = $('#table_div');
+    $('#divHeader').scrollLeft(table_div_el.scrollLeft());
+    $('#firstcol_div').scrollTop(table_div_el.scrollTop());
 };
 
+// ---
+var rowIndex = 0;
+
+function first_col_table_add_row(args) {
+  var currRowIndex = arguments[0][0];
+  var row_id_base = arguments[0][1];
+
+  // alert(row_id_base);
+
+  var newRow1 = '<tr id="' + row_id_base + '_first_col_table"><td><input id="Column Name' + currRowIndex + '" name="Column Name' +
+    currRowIndex + '" type="text" placeholder="Column Name"/></td>"' + '<td><input id="Units' + currRowIndex +
+    '" name="Units' + currRowIndex + '" type="text" placeholder="Units"/></td>"';
+
+  // $('#first_col_table > tbody > tr:last').after(newRow1);
+  $('#first_col_table').find('tbody').find('tr:last').after(newRow1);
+
+}
+
+function fixed_table_base_add_row(args) {
+  var currRowIndex = arguments[0][0];
+  var row_id_base = arguments[0][1];
+  var fixed_table_base_el = $('#fixed_table_base');
+  
+  var rowLength = fixed_table_base_el.find('tbody').find('tr:last').children('td').length;
+
+  var cells = "";
+  for (var i = 0; i < rowLength; i++) {
+    cells += '<td style="background-color:powderblue;"><input type="text" name="new_row' + currRowIndex + 'cell' + i + '" id="new_row' + currRowIndex + 'cell' + i + '" value=""/></td>';
+  }
+
+  var newRow2 = '<tr id="' + row_id_base + '_fixed_table_base">' + cells + '</tr>';
+
+  fixed_table_base_el.find('tbody').find('tr:last').after(newRow2);
+  $('#new_row_length').val( rowLength );
+
+}
+
+
+$("#addrow").on('click', function() {
+  rowIndex++;
+
+  var row_id_base = 'new_row' + rowIndex;
+  first_col_table_add_row.call(this, [rowIndex, row_id_base]);
+  fixed_table_base_add_row.call(this, [rowIndex, row_id_base]);
+
+  $('#new_row_num').val( rowIndex );
+
+  $("#" + row_id_base + "_fixed_table_base" )[0].scrollIntoView();
+  $( "#" + row_id_base + "_first_col_table" )[0].scrollIntoView();
+  window.scrollBy(-100, 0);
+
+});
+
+
+$("#removerow").on('click', function() {
+
+  if (rowIndex > 0){
+
+    var last_row_id_base = "new_row" + rowIndex;
+    // alert(last_row_id + " was removed");
+    // alert("One user-added row was removed");
+
+    $('table#first_col_table tr#' + last_row_id_base + "_first_col_table").remove();
+    $('table#fixed_table_base tr#' + last_row_id_base + "_fixed_table_base").remove();
+
+    rowIndex--;
+    $('#new_row_num').val( rowIndex );
+
+  }
+  else {
+    alert('There is no rows to remove');
+  }
+});
+// ---
 
 $(document).ready(function(){
   $('.env_biome').change(function(){
