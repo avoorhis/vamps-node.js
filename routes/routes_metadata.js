@@ -149,7 +149,7 @@ function get_metadata_hash(md_selected){
 }
 
 // ---- metadata_upload ----
-// AllMetadataFromFile = helpers.get_metadata_from_file()
+// AllMetadata = helpers.get_metadata_from_file()
 
 router.get("/metadata_upload_from_file", [helpers.isLoggedIn], function (req, res) {
   console.log("in get metadata/metadata_upload_from_file");
@@ -310,9 +310,9 @@ router.post('/metadata_upload',
     // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
-      // console.log('MMM AllMetadataFromFile = helpers.get_metadata_from_file()')
-      // AllMetadataFromFile = helpers.get_metadata_from_file()
-      // console.log(AllMetadataFromFile);
+      // console.log('MMM AllMetadata = helpers.get_metadata_from_file()')
+      // AllMetadata = helpers.get_metadata_from_file()
+      // console.log(AllMetadata);
 
       console.log("QQQ req.params");
       console.log(req.params);
@@ -488,9 +488,9 @@ router.post('/start_edit',
     // console.log(req.body);
     // console.log(req.body.project_id);
     // console.log(req.body.project);
-    // console.log("MMM AllMetadataFromFile = helpers.get_metadata_from_file()")
-    AllMetadataFromFile = helpers.get_metadata_from_file();
-    // console.log(AllMetadataFromFile["47"]);
+    // console.log("MMM AllMetadata = helpers.get_metadata_from_file()")
+    // AllMetadata = helpers.get_metadata_from_file();
+    console.log(AllMetadata["47"]);
     // all_metadata = {}
     make_metadata_hash(req, res);
     console.log("TTT all_metadata from start_edit");
@@ -556,14 +556,14 @@ DDD metadata
 }
 
 function make_empty_arrays(all_metadata, pid) {
-  console.log("KKK From AllMetadataFromFile");
-  console.log("KKK333 AllMetadataFromFile");
-  console.log(AllMetadataFromFile);
+  console.log("KKK From AllMetadata");
+  console.log("KKK333 AllMetadata");
+  console.log(AllMetadata);
 
-  for (var dataset_id in AllMetadataFromFile) {
+  for (var dataset_id in AllMetadata) {
     console.log("DADA dataset_id");
-    Object.keys(AllMetadataFromFile[dataset_id]).forEach(function(key) {
-      // var val = AllMetadataFromFile[dataset_id][key];
+    Object.keys(AllMetadata[dataset_id]).forEach(function(key) {
+      // var val = AllMetadata[dataset_id][key];
       all_metadata[pid][key] = [];
 
       console.log("KKK1 key:");
@@ -603,7 +603,7 @@ function make_empty_arrays(all_metadata, pid) {
     // });
 
   }
-  // all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
+  // all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadata, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
 
 
   return all_metadata;
@@ -665,8 +665,8 @@ function populate_metadata_hash(rows, pid, all_metadata) {
       all_metadata[pid]["first_name"]  = row.first_name;
       all_metadata[pid]["last_name"]   = row.last_name;
       all_metadata[pid]["public"]      = row.public;
-      // console.log("AllMetadataFromFile[dataset_id]");
-      // console.log(AllMetadataFromFile[dataset_id]);
+      // console.log("AllMetadata[dataset_id]");
+      // console.log(AllMetadata[dataset_id]);
       all_metadata[pid]["dataset_id"].push(row.did);
       all_metadata[pid]["dataset"].push(row.dataset);
       all_metadata[pid]["dataset_description"].push(row.dataset_description);
@@ -674,13 +674,13 @@ function populate_metadata_hash(rows, pid, all_metadata) {
       // console.log('AAA5 all_metadata[pid]["dataset_id"]');
       // console.log(all_metadata[pid]["dataset_id"]);
       /*
-      console.log("AllMetadataFromFile[dataset_id]");
-      console.log(AllMetadataFromFile[dataset_id]);
+      console.log("AllMetadata[dataset_id]");
+      console.log(AllMetadata[dataset_id]);
   sodium: '30.65',
   collection_date: '2007-06-01',
       */
 
-    add_all_metadata_from_file(Object.keys(AllMetadataFromFile[dataset_id]), dataset_id);
+    add_all_metadata_from_file(Object.keys(AllMetadata[dataset_id]), dataset_id);
     add_required_metadata_from_id(CONSTS.REQ_METADATA_FIELDS_wIDs, dataset_id);
 
   }
@@ -690,7 +690,7 @@ function populate_metadata_hash(rows, pid, all_metadata) {
 function add_all_metadata_from_file(my_hash, dataset_id) {
   for (var i1 = 0, len1 = my_hash.length; i1 < len1; i1++) {
     var key = my_hash[i1];
-    var val = AllMetadataFromFile[dataset_id][key]; // TODO: combine with add_required_metadata_from_id? That's the only difference besides "my_hash"
+    var val = AllMetadata[dataset_id][key]; // TODO: combine with add_required_metadata_from_id? That's the only difference besides "my_hash"
     all_metadata[pid][key].push(val);
   }
 }
@@ -698,7 +698,7 @@ function add_all_metadata_from_file(my_hash, dataset_id) {
 function add_required_metadata_from_id(my_hash, dataset_id) {
   for (var idx = 0, len = my_hash.length; idx < len; idx++) {
     var key = my_hash[idx];
-    var data = helpers.required_metadata_names_from_ids(AllMetadataFromFile[dataset_id], key + "_id");
+    var data = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
     var val = data.value;
     all_metadata[pid][key].push(val);
   }
@@ -740,11 +740,11 @@ function add_required_metadata_from_id(my_hash, dataset_id) {
 //       all_metadata[pid]["first_name"]  = row.first_name
 //       all_metadata[pid]["last_name"]   = row.last_name
 //       all_metadata[pid]["public"]      = row.public
-//       // console.log("AllMetadataFromFile[dataset_id]");
-//       // console.log(AllMetadataFromFile[dataset_id]);
+//       // console.log("AllMetadata[dataset_id]");
+//       // console.log(AllMetadata[dataset_id]);
 //
-//       all_metadata[pid]["dataset_ids"][dataset_id] = AllMetadataFromFile[dataset_id]
-//       all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadataFromFile, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
+//       all_metadata[pid]["dataset_ids"][dataset_id] = AllMetadata[dataset_id]
+//       all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadata, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
 //       all_metadata[pid]["dataset_ids"][dataset_id]["dataset"] = row.dataset
 //       all_metadata[pid]["dataset_ids"][dataset_id]["dataset_description"] = row.dataset_description
 //   }
