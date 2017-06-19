@@ -591,6 +591,32 @@ function make_empty_arrays(all_metadata, pid) {
   // console.log(AllMetadata);
 
   for (var dataset_id in AllMetadata) {
+
+    // console.time("41) keys_array");
+    //
+    // keys_array = Object.keys(AllMetadata[dataset_id]);
+    //
+    // // console.log("RRR keys_array");
+    // // console.log(keys_array);
+    // // RRR keys_array
+    // //   [ 'adapter_sequence_id',
+    // //   'geo_loc_name_id',
+    //
+    //
+    // for (var i1 = 0; i1 < keys_array.length; i1++) {
+    //   // console.log("RRR1 keys_array[i]");
+    //   // console.log(keys_array[i]);
+    //   AllMetadata[dataset_id][keys_array[i]] = [];
+    // }
+    // console.timeEnd("41) keys_array");
+
+    // console.log("RRR1 AllMetadata[dataset_id]");
+    // console.log(AllMetadata[dataset_id]);
+
+
+
+    // console.time("42) Object.keys(AllMetadata");
+
     // console.log("DADA dataset_id");
     Object.keys(AllMetadata[dataset_id]).forEach(function(key) {
       // var val = AllMetadata[dataset_id][key];
@@ -604,12 +630,19 @@ function make_empty_arrays(all_metadata, pid) {
       // console.log(val);
 
     });
+    // console.timeEnd("42) Object.keys(AllMetadata");
+
+    // console.log("RRR2 AllMetadata[dataset_id]");
+    // console.log(AllMetadata[dataset_id]);
+
+    // console.time("43) CONSTS.REQ_METADATA_FIELDS_wIDs");
 
     for (var i = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i < len; i++) {
       var key_name = CONSTS.REQ_METADATA_FIELDS_wIDs[i];
       all_metadata[pid][key_name] = [];
     }
 
+    // console.timeEnd("43) CONSTS.REQ_METADATA_FIELDS_wIDs");
 
 
     // get_values_from_ids(METADATA, did, all_metadata_p_d)

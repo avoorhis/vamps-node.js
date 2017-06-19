@@ -43,6 +43,7 @@
     "express-sanitized": "",
     "express-sanitizer": "^1.0.2",
     "express-session": "",
+    "express-validator": ""
     "fs-extra": "",
     "html-pdf": "",
     "ini": "",
