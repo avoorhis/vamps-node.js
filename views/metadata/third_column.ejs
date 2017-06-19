@@ -171,14 +171,15 @@
 <!-- sample_type_options end -->
 
 <% } else { %>
-<td>
-    <!-- regular field with data -->
-    <% selected_val = get_selected_val(pid, did, field_name) %>
-    <% if (all_field_names[idx][2] === "MBL Supplied") { %>
+<!-- regular field with data -->
+<% selected_val = get_selected_val(pid, did, field_name) %>
+
+<% if (all_field_names[idx][2] === "MBL Supplied") { %>
+<td class = "readonly_td">
     <%= selected_val %>
     <% } else { %>
+<td>
     <input type="text" placeholder="<%= all_field_names[idx][3] %>" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= selected_val %>"/>
     <% } %> <!-- end else if MBL Supplied -->
-
 </td>
 <% } %> <!-- else -->

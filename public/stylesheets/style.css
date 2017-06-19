@@ -432,3 +432,7 @@ td.left_justify {
     /*-moz-box-sizing: border-box;*/
     /*-webkit-box-sizing: border-box;*/
 /*}*/
+
+.readonly_td {
+    padding-left: 4px;
+}
