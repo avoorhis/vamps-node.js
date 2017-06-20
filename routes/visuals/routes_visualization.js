@@ -2686,7 +2686,7 @@ function filter_project_tree_for_permissions(req, obj){
       pid = obj[i].pid;
       node = PROJECT_INFORMATION_BY_PID[pid];
       //console.log(node)
-      if(node.public || req.user.security_level === 1 || req.user.security_level === 10 || node.permissions.length === 0 || node.permissions.indexOf(req.user.user_id) !== -1 ) {
+      if(node.public || req.user.security_level <= 10 || node.permissions.length === 0 || node.permissions.indexOf(req.user.user_id) !== -1 ) {
         //console.log(node)
         new_project_tree_pids.push(pid)
       }

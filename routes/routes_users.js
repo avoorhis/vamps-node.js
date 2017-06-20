@@ -16,7 +16,7 @@ router.get('/users_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
     
 	console.log('in indexusers')
 	console.log(req.user)
-    if(req.user.security_level === 1 || req.user.security_level === 10){
+    if(req.user.security_level <= 10){
 		var qSelect = "SELECT * from user";
 	    var collection = req.db.query(qSelect, function (err, rows, fields){
 	      if (err)  {

@@ -28,6 +28,8 @@
             <strong>Security Level</strong>: <%= user.security_level %> (Administrator) -- Access to all the data and administrative pages.<br>
           <% }else if(user.security_level === 10) { %>
             <strong>Security Level</strong>: <%= user.security_level %> (MBL User) -- Access to all the projects public and private.<br>
+          <% }else if(user.security_level === 45) { %>
+            <strong>Security Level</strong>: <%= user.security_level %> (CoDL Metadata Editor) -- Access to Edit CoDL (DCO) Metadata.<br>  
           <% }else if(user.security_level === 50) { %>
             <strong>Security Level</strong>: <%= user.security_level %> (Registered User) -- Public project access plus other projects with permission.<br>
           <% }else { %>

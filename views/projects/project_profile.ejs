@@ -7,11 +7,11 @@
 <% var reveal_all = false %>
 <% var edit_metadata = false %>
 <!-- Public OR User Permission OR Admin OR MBL Power User -->
-<% if(data.public || data.permissions.indexOf(user.user_id) != -1 || user.security_level == 1 || user.security_level == 10){ %>
+<% if(data.public || data.permissions.indexOf(user.user_id) != -1 || user.security_level <= 10){ %>
 <%  reveal_all = true %>
 <% } %>
 <!-- DCO only - AND (owner or admin) can see/edit ALSO MBL power users (Mitch)-->
-<% if(user.user_id == data.oid  || user.security_level == 1 || user.security_level == 10){ %>
+<% if(user.user_id == data.oid  || user.security_level <= 10){ %>
 <%  edit_metadata = true %>
 <% } %>
 <img src='/images/dna01.jpg' alt="Helix Cartoon"  height='80' />
@@ -25,7 +25,6 @@
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#project" aria-controls="project" role="tab" data-toggle="tab">Project</a></li>
 <% if(reveal_all) { %>
-		<li role="presentation" >              <a href="#abstract" aria-controls="abstract" role="tab" data-toggle="tab">Abstract/Proposal</a></li>
 
 		<li role="presentation" >              <a href="#datasets" aria-controls="datasets" role="tab" data-toggle="tab">Datasets</a></li>
 
@@ -104,7 +103,7 @@
 		  <tr><td>Project Name: </td><td><%= data.project %></td></tr>
 		  <tr><td>Project_id:</td><td> <%= pid %></td></tr>
 		  <% if(project_prefix.substring(0,3) == 'DCO' && abstract_data[project_prefix].id != ''){ %>
-		    <tr><td>DCO id</td>
+		    <tr><td>DCO id (Link to DeepCarbon.net site)</td>
 		        <td><a href='<%= abstract_data[project_prefix].url %>' target='_blank'> <%= abstract_data[project_prefix].id %></td>
 		    </tr>
 		  <% } %>
@@ -118,24 +117,33 @@
 		  <% } %>
 		  <tr><td>Primary Investigator:</td><td> <%= data.first %> <%= data.last %> (<%= data.email %>)</td></tr>
 		  <tr><td>Institution:</td><td> <%= data.institution %></li>
-      <tr><td>Date (processed or uploaded):</td><td></td></tr>
-      <% if(data.public || data.permissions.indexOf(user.user_id) != -1) { %>
-          <tr><td>Project Sequence Count:</td><td> <%= pcount %></td></tr>
-          <!-- <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr> -->
-          <tr><td>Number of samples (datasets):</td><td> <%= dsinfo.length %></td></tr>
-      <% } %>
+          <tr><td>Date (processed or uploaded):</td><td></td></tr>
+          <% if(data.public || data.permissions.indexOf(user.user_id) != -1) { %>
+              <tr><td>Project Sequence Count:</td><td> <%= pcount %></td></tr>
+              <!-- <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr> -->
+              <tr><td>Number of samples (datasets):</td><td> <%= dsinfo.length %></td></tr>
+          <% } %>
+          
+          
+          <!-- ABSTRACT -->
+				    
+		  	  <% if(abstract_data.hasOwnProperty(project_prefix)){ %>
+		  		 <tr><td>Abstract</td><td>
+		  		<% for(n in abstract_data[project_prefix].pdfs){ %>		  		
+		  		   <a href='/static/abstracts/<%= abstract_data[project_prefix].pdfs[n] %>' target='_blank'>
+		  		    <%= abstract_data[project_prefix].pdfs[n] %></a>
+		  		  <br>
+		  	  <% } %>
+		  	    </td></tr>
+		  	<% } %>		  	
+		
+
+
+
 		  </table>
   	</div> <!-- End project div -->
 <% if(reveal_all) { %>
-		<!-- ABSTRACT -->
-		<div role="tabpanel" class="tab-pane" id="abstract">		    
-		  	  <% if(abstract_data.hasOwnProperty(project_prefix)){ %>
-		  		<% for(n in abstract_data[project_prefix].pdfs){ %>		  		
-		  		    <br><a href='/static/abstracts/<%= abstract_data[project_prefix].pdfs[n] %>' target='_blank'><%= abstract_data[project_prefix].pdfs[n] %></a><br>
-		  	  <% } %>
-		  		<% } %>		  	
-		</div> <!-- End abstract div -->
-
+		
 		<!-- DATASETS -->
   	<div role="tabpanel" class="tab-pane" id="datasets">
 		  <div id='profile_dataset_list' >

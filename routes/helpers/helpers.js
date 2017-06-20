@@ -1618,7 +1618,7 @@ module.exports.screen_dids_for_permissions = function(req, dids)
         // allow if user is owner (should have uid in permissions but check anyway)
         // allow if user is admin
         // allow if user is in pinfo.permission
-        if(req.user.user_id == pinfo.oid || req.user.security_level == 1 || req.user.security_level === 10 || pinfo.permissions.indexOf(req.user.user_id) != -1 ){
+        if(req.user.user_id == pinfo.oid || req.user.security_level <= 10 || pinfo.permissions.indexOf(req.user.user_id) != -1 ){
           new_did_list.push(dids[i])
         }
       }
