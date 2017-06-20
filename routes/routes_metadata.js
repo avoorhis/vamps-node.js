@@ -301,7 +301,7 @@ router.post('/metadata_upload',
     form.field("sample_name", get_second("sample_name")).trim().entityEncode().array().required(),
     form.field("sample_size_mass", get_second("sample_size_mass")).trim().entityEncode().array(),
     form.field("sample_size_vol", get_second("sample_size_vol")).trim().entityEncode().array(),
-    form.field("sample_type", get_second("sample_type")).trim().entityEncode().array().required(),
+    form.field("sample_type", get_second("sample_type")).trim().entityEncode().array().required().custom(env_items_validation),
     form.field("sequencing_meth", get_second("sequencing_meth")).trim().entityEncode().array().required(),
     form.field("sodium", get_second("sodium")).trim().entityEncode().array(),
     form.field("sulfate", get_second("sulfate")).trim().entityEncode().array(),
@@ -450,7 +450,10 @@ function editMetadataForm(req, res){
     console.log("XXX3 all_metadata");
     console.log(all_metadata);
 
-    var project = all_metadata[pid]["project"];
+  console.log('PPP2 from editMetadataForm all_metadata[pid]');
+  console.log(all_metadata[pid]);
+
+  var project = all_metadata[pid]["project"];
     var abstract_data = get_project_abstract_data(project, req);
     var project_prefix = get_project_prefix(project);
 
@@ -734,6 +737,9 @@ function populate_metadata_hash(rows, pid, all_metadata) {
 
       */
       var dataset_id = row.did;
+    console.log('PPP3 from populate_metadata_hash row');
+    console.log(row);
+
       all_metadata[pid]["project"]     = row.project;
       all_metadata[pid]["project_title"] = row.title;
       all_metadata[pid]["username"]    = row.username;
@@ -923,12 +929,12 @@ function make_metadata_hash(req, res) {
           pi_name: "",
 
         */
+        console.log('PPP4 from populate_metadata_hash all_metadata[pid]');
+        console.log(all_metadata[pid]);
+
         var project = all_metadata[pid]["project"];
         var abstract_data = get_project_abstract_data(project, req);
         var project_prefix = get_project_prefix(project);
-
-        console.log("AAA1 abstract_data");
-        console.log(abstract_data);
 
         res.render("metadata/metadata_upload_from_file", {
           title: "VAMPS: Metadata_upload",
@@ -1016,7 +1022,10 @@ function make_csv(req, res) {
         data: req.form
     });
 
-    project = req.form["project"];
+  console.log('PPP5 from make_csv req.form["project"]');
+  console.log(req.form);
+
+  project = req.form["project"];
     out_csv_file_name = makeFileName(req, project);
 
     fs.writeFile(out_csv_file_name, csv, function(err) {
