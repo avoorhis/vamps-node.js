@@ -128,11 +128,12 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         var info_file = ''
         var abstract_data = {}
         if(info.project.substring(0,3) == 'DCO'){
-                info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','DCO_info.json')
-                //console.log(info_file)
-                //fs.readFileSync(info_file, 'utf8', function (err, data) {
-                    //if (err) {console.log(err);return};
-                abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+                try{
+                  info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','DCO_info.json')
+                  abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+                }catch(e){
+                  abstract_data = {}
+                }
         }
                     //console.log(obj_data)
                     res.render('projects/profile', {
