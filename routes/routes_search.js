@@ -758,11 +758,10 @@ function get_search_datasets(user, search){
         for (var did in AllMetadata){
           // search only if did allowed by permissions
           var pid = PROJECT_ID_BY_DID[did];
-          //console.log('pid',pid,'did',did)
-          //console.log('IN METADATA',user.security_level,PROJECT_INFORMATION_BY_PID[pid]);
+          
           try{
 
-              if(user.security_level === 1 || user.security_level === 10 || PROJECT_INFORMATION_BY_PID[pid].permissions.length === 0 || PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(user.user_id) !=-1 ){
+              if(user.security_level <= 10 || PROJECT_INFORMATION_BY_PID[pid].permissions.length === 0 || PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(user.user_id) !=-1 ){
                 for (var mdname in AllMetadata[did]){
                   if(mdname === search['metadata-item']){
                     mdvalue = AllMetadata[did][mdname];
@@ -782,7 +781,7 @@ function get_search_datasets(user, search){
           // search only if did allowed by permissions
           var pid = PROJECT_ID_BY_DID[did];
           try{
-              if(user.security_level === 1 || user.security_level === 10 || PROJECT_INFORMATION_BY_PID[pid].permissions.length === 0 || PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(user.user_id) !=-1 ){
+              if(user.security_level <= 10 || PROJECT_INFORMATION_BY_PID[pid].permissions.length === 0 || PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(user.user_id) !=-1 ){
                 var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
                 mdgroup.refresh()
                 var mdname = search['metadata-item']

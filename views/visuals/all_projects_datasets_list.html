@@ -5,7 +5,7 @@
   <% var pid = all_pr_dat[i].pid %>
   <!-- admin OR public-project OR this-users-project -->
   <!-- permissions[pid]  === 0   means PUBLIC -->
-    <% if(user.security_level === 1 || user.security_level === 10 || info[pid].permissions.length === 0 || (info[pid].permissions.indexOf(user.user_id) !== -1) ) { %>
+    <% if(user.security_level <= 10 || info[pid].permissions.length === 0 || (info[pid].permissions.indexOf(user.user_id) !== -1) ) { %>
     <% //if(info[pid].permissions.length == 0 ) { %>
       <% pname = all_pr_dat[i].name %>
       <% title = all_pr_dat[i].title %>
@@ -29,7 +29,7 @@
             </span>
           </a><small> <i>(public)</i></small>
       <% }else{ %>
-        <% if(user.security_level === 1 || user.security_level === 10){ %>
+        <% if(user.security_level <= 10){ %>
          <%= pname %> </span></a></a><small> <i>(PI: <%= info[pid].username %>)</i></small>
         <% }else{ %>
         <%= pname %> </span></a></a>
