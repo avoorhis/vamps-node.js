@@ -668,7 +668,7 @@ $("#removerow").on('click', function() {
 
 
 $('a.td_clone_add').on('click', function() {
-  var this_row;
+  var input_row;
   var first_td;
 
   alert('done');
@@ -677,8 +677,8 @@ $('a.td_clone_add').on('click', function() {
 
   alert(trIndex);
 
-  this_row = $('table#fixed_table_base tr').eq(trIndex);
-  first_td = this_row.find('td:first');
+  input_row = $('table#fixed_table_base tr').eq(trIndex);
+  first_td = input_row.find('td:first');
 
   var first_input_value = first_td.find('input[type=text], textarea, select').attr('value');
         // $('table#fixed_table_base tr').eq(trIndex).find('td:first').find('input');
@@ -690,6 +690,21 @@ $('a.td_clone_add').on('click', function() {
   // var first_cell = $('table#fixed_table_base').find('tr:eq(trIndex)');
   alert(first_input_value);
   // .find('td:eq(0)'
+
+
+  input_row.each(function(){
+    $(this).find('td').each (function() {
+      $(this).children('input').css('background-color','blue');
+    });
+
+      //check if td having empty text
+  //   if ($(this).text().trim() === "")
+  //   {
+      //get parent of td and put css
+      // $(this).parent().css('background-color','blue');
+    // }
+  });
+
 
 });
 
