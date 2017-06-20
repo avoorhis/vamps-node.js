@@ -8,11 +8,16 @@
 <% } else { %>
   <td>
 <% } %>
-  <span class="makeLeft">
-  <label for=<%= all_field_names[idx][0] %>/><%= all_field_names[idx][1] %>
-  </label>
-  </span>
-  <span class="makeRight">
-  <a href="#" class="td_clone_add">Copy 1st</a>
-  </span>
+
+  <!-- if dividers  -->
+  <% if (dividers.indexOf( all_field_names[idx][1] ) != -1) { %>
+    <label for=<%= all_field_names[idx][0] %>/><%= all_field_names[idx][1] %></label>
+  <% } else { %>
+    <span class="makeLeft">
+      <label for=<%= all_field_names[idx][0] %>/><%= all_field_names[idx][1] %></label>
+    </span>
+    <span class="makeRight">
+      <a href="#" class="td_clone_add">Copy 1st</a>
+    </span>
+  <% } %>
 </td>
