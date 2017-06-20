@@ -606,23 +606,15 @@ function make_empty_arrays(all_metadata, pid) {
 
   for (var dataset_id in AllMetadata) {
 
-    // console.log("dataset_id");
-    // console.log(dataset_id);
-    console.time("41) dataset_id.keys 2");
+    console.time("41) dataset_id.keys");
 
     var all_keys = Object.keys(AllMetadata[dataset_id]);
-    // console.log("all_keys");
-    // console.log(all_keys);
-
-    // console.log("all_keys === first_dataset_id_keys");
-    // console.log(all_keys === first_dataset_id_keys);
-
 
     for (var k1 = 0; k1 < all_keys.length; k1++ ) {
       var key_name1 = all_keys[k1];
       all_metadata[pid][key_name1] = [];
     }
-    console.timeEnd("41) dataset_id.keys 2");
+    console.timeEnd("41) dataset_id.keys");
 
   }
 
@@ -634,10 +626,6 @@ function make_empty_arrays(all_metadata, pid) {
   }
 
   console.timeEnd("42) CONSTS.REQ_METADATA_FIELDS_wIDs");
-
-  // console.log("RRR11 all_metadata[pid]");
-  // console.log(all_metadata[pid]);
-
 
   console.timeEnd("4) make_empty_arrays");
 
