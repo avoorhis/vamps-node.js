@@ -674,11 +674,16 @@ $('a.td_clone_add').on('click', function() {
 
   alert(trIndex);
 
-  // var first_cell =
-        $('table#fixed_table_base tr').eq(trIndex).css({'background-color':'#343434'});
+  var first_input = $('table#fixed_table_base tr').eq(trIndex).find('td:first').find('input[type=text], textarea, select');
+        // $('table#fixed_table_base tr').eq(trIndex).find('td:first').find('input');
+    // .css({'background-color':'#343434'});
 
+  // $( "tr:first" ).css( "font-style", "italic" );
+  // $('table#fixed_table_base tr').eq(trIndex).find('td:first').find('input[type=text], textarea, select').css({'background-color':'#343434'});
+  // html body div.container-fluid div.row-fluid div.col-lg-12 form fieldset#parameters table tbody tr td div#table_div table#fixed_table_base tbody tr td input#latitude0
   // var first_cell = $('table#fixed_table_base').find('tr:eq(trIndex)');
-  alert(first_cell.index());
+  var qq = first_input.attr('value');
+  alert(qq);
   // .find('td:eq(0)'
 
 });
