@@ -606,26 +606,34 @@ function make_empty_arrays(all_metadata, pid) {
 
   for (var dataset_id in AllMetadata) {
 
-    console.time("41) object.keys 2");
+    // console.log("dataset_id");
+    // console.log(dataset_id);
+    console.time("41) dataset_id.keys 2");
 
     var all_keys = Object.keys(AllMetadata[dataset_id]);
+    // console.log("all_keys");
+    // console.log(all_keys);
+
+    // console.log("all_keys === first_dataset_id_keys");
+    // console.log(all_keys === first_dataset_id_keys);
+
+
     for (var k1 = 0; k1 < all_keys.length; k1++ ) {
       var key_name1 = all_keys[k1];
       all_metadata[pid][key_name1] = [];
     }
-    console.timeEnd("41) object.keys 2");
-
-    console.time("42) CONSTS.REQ_METADATA_FIELDS_wIDs");
-
-    for (var i = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i < len; i++) {
-      var key_name = CONSTS.REQ_METADATA_FIELDS_wIDs[i];
-      all_metadata[pid][key_name] = [];
-
-    }
-
-    console.timeEnd("42) CONSTS.REQ_METADATA_FIELDS_wIDs");
+    console.timeEnd("41) dataset_id.keys 2");
 
   }
+
+  console.time("42) CONSTS.REQ_METADATA_FIELDS_wIDs");
+
+  for (var i = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i < len; i++) {
+    var key_name2 = CONSTS.REQ_METADATA_FIELDS_wIDs[i];
+    all_metadata[pid][key_name2] = [];
+  }
+
+  console.timeEnd("42) CONSTS.REQ_METADATA_FIELDS_wIDs");
 
   // console.log("RRR11 all_metadata[pid]");
   // console.log(all_metadata[pid]);
