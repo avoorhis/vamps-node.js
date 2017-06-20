@@ -669,12 +669,15 @@ $("#removerow").on('click', function() {
 
 $('a.td_clone_add').on('click', function() {
   alert('done');
-  var trIndex = $(this).closest('tr').index();
+  var trIndex = $(this).closest('tr').eq(0).index();
         // $(this).parent().prevAll();
 
   alert(trIndex);
 
-  var first_cell = $('table#fixed_table_base').find('tr:eq(trIndex)');
+  // var first_cell =
+        $('table#fixed_table_base tr').eq(trIndex).css({'background-color':'#343434'});
+
+  // var first_cell = $('table#fixed_table_base').find('tr:eq(trIndex)');
   alert(first_cell.index());
   // .find('td:eq(0)'
 
