@@ -152,7 +152,7 @@ function get_metadata_hash(md_selected){
 // AllMetadata = helpers.get_metadata_from_file()
 
 router.get("/metadata_upload_from_file", [helpers.isLoggedIn], function (req, res) {
-  console.time("get metadata_upload_from_file");
+  console.time("TIME: get metadata_upload_from_file");
   console.log("in get metadata/metadata_upload_from_file");
 
   //TODO: What to show for project and dataset?
@@ -161,12 +161,12 @@ router.get("/metadata_upload_from_file", [helpers.isLoggedIn], function (req, re
     user: req.user,
     hostname: req.CONFIG.hostname
   });
-  console.timeEnd("get metadata_upload_from_file");
+  console.timeEnd("TIME: get metadata_upload_from_file");
 
 });
 
 router.get("/metadata_upload_new", [helpers.isLoggedIn], function (req, res) {
-  console.time("get metadata_upload_new");
+  console.time("TIME: get metadata_upload_new");
 
   console.log("in get metadata/metadata_upload_new");
 
@@ -176,13 +176,13 @@ router.get("/metadata_upload_new", [helpers.isLoggedIn], function (req, res) {
     user: req.user,
     hostname: req.CONFIG.hostname
   });
-  console.timeEnd("get metadata_upload_new");
+  console.timeEnd("TIME: get metadata_upload_new");
 
 });
 
 //TODO: benchmark
 function get_second(element) {
-  console.time("get_second");
+  console.time("TIME: get_second");
 
   for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES)
   {
@@ -193,19 +193,9 @@ function get_second(element) {
       return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
     }
   }
-  console.timeEnd("get_second");
+  console.timeEnd("TIME: get_second");
 
 }
-
-// function filterItems(query) {
-//   for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES)
-//   {
-//     return met_names_row.filter(function(el) {
-//     return el.toLowerCase().indexOf(query.toLowerCase()) > -1;
-//
-//   });
-//   }
-// }
 
 // TODO: update field names from https://docs.google.com/spreadsheets/d/1adAtGc9DdY2QBQZfd1oaRdWBzjOv4t-PF1hBfO8mAoA/edit#gid=1223926458
 router.post('/metadata_upload',
@@ -317,7 +307,7 @@ router.post('/metadata_upload',
     form.field("water_age", get_second("water_age")).trim().entityEncode().array()
   ),
   function (req, res) {
-    console.time("post metadata_upload");
+    console.time("TIME: post metadata_upload");
 
 
     // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
@@ -362,19 +352,19 @@ router.post('/metadata_upload',
       // console.log(req);
       //  req.form:
       //      dna_extraction_meth: "CTAB phenol/chloroform",
-      console.time("saveMetadata");
+      console.time("TIME: saveMetadata");
       saveMetadata(req, res);
-      console.timeEnd("saveMetadata");
+      console.timeEnd("TIME: saveMetadata");
 
 
       res.redirect("/user_data/your_projects");
     }
-    console.timeEnd("post metadata_upload");
+    console.timeEnd("TIME: post metadata_upload");
 
   });
 
 function editMetadataForm(req, res){
-  console.time("editMetadataForm");
+  console.time("TIME: editMetadataForm");
 
   console.log('in editMetadataForm');
   // console.log(req);
@@ -439,33 +429,17 @@ function editMetadataForm(req, res){
   metadata_form.pi_email = PROJECT_INFORMATION_BY_PID[pid].email;
   metadata_form.project_title = PROJECT_INFORMATION_BY_PID[pid].title;
 
-  // all_metadata = {pid: req.form};
   var all_metadata = {};
   all_metadata[pid] = metadata_form;
 
-
-  // console.log("RRR555 req.form.errors");
-  // console.log(req.form.errors);
-  //
-  //
-    console.log("XXX3 all_metadata");
-    console.log(all_metadata);
-
-  // console.log('PPP2 from editMetadataForm all_metadata[pid]');
-  // console.log(all_metadata[pid]);
+  console.log("XXX3 all_metadata");
+  console.log(all_metadata);
 
   var project = all_metadata[pid]["project"][0];
-  // console.log('PPP22 from editMetadataForm project[0]');
-  // console.log(project);
+  var abstract_data = get_project_abstract_data(project, req);
+  var project_prefix = get_project_prefix(project);
 
-    var abstract_data = get_project_abstract_data(project, req);
-    var project_prefix = get_project_prefix(project);
-
-    // console.log("AAA2 abstract_data");
-    // console.log(abstract_data);
-
-
-    res.render('metadata/metadata_upload_from_file', {
+  res.render('metadata/metadata_upload_from_file', {
     title: 'VAMPS: Metadata_upload',
     user: req.user,
     hostname: req.CONFIG.hostname,
@@ -484,7 +458,7 @@ function editMetadataForm(req, res){
     sample_type_options: CONSTS.SAMPLE_TYPE,
     new_row_info_arr: new_row_info_arr
   });
-  console.timeEnd("editMetadataForm");
+  console.timeEnd("TIME: editMetadataForm");
 }
 
 
@@ -499,7 +473,7 @@ function editMetadataForm(req, res){
 // function editMetadataFromFile(req, res){ /* render logic */ }
 
 function saveMetadata(req, res){
-  console.time("saveMetadata");
+  console.time("TIME: saveMetadata");
 
   if(!req.form.isValid){
         // TODO: remove here, should be after validation only
@@ -511,32 +485,16 @@ function saveMetadata(req, res){
         // TODO: change
         res.redirect("/metadata"+req.metadata.id+"/edit");
     }
-  console.timeEnd("saveMetadata");
+  console.timeEnd("TIME: saveMetadata");
 
 }
-
-// router.post('/metadata_upload/:id',
-
-// app.param('id', loadMetadata);
-// app.get('/project/:id/edit', editMetadata);
-// app.post('/project/:id', saveMetadata);
 
 router.post('/start_edit',
   [helpers.isLoggedIn],
   function (req, res) {
 
-    // console.log("in post /start_edit");
-    console.time("1) in post /start_edit");
+    console.time("TIME: 1) in post /start_edit");
 
-
-    // console.log("FFF req");
-    // console.log(req.body);
-    // console.log(req.body.project_id);
-    // console.log(req.body.project);
-    // console.log("MMM AllMetadata = helpers.get_metadata_from_file()")
-    // AllMetadata = helpers.get_metadata_from_file();
-    // console.log(AllMetadata["47"]);
-    // all_metadata = {}
     make_metadata_hash(req, res);
     // console.log("TTT all_metadata from start_edit");
     // console.log(all_metadata);
@@ -552,61 +510,15 @@ router.post('/start_edit',
      var password= rows[0].password;
 
     */
-    console.timeEnd("1) in post /start_edit");
+    console.timeEnd("TIME: 1) in post /start_edit");
 });
 
-// function get_values_from_ids(METADATA, did, all_metadata_p_d) {
-//   var metadata_names = ['adapter_sequence', 'dna_region', 'domain', 'env_biome', 'env_feature', 'env_material', 'env_package', 'geo_loc_name', 'illumina_index', 'primer_suite', 'run', 'sequencing_platform', 'target_gene'];
-//   // var ds_row = {};
-//
-//   metadata_names.forEach(function(mdname) {
-//     // console.log(mdname);
-//     var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname);
-//     /*
-//     console.log("DDD data");
-//     console.log(data);
-//     DDD data
-//     { name: 'run_id', value: '20080709' }
-//     */
-//
-//     if(did in METADATA) {
-//       // ds_row[mdname] = data.value
-//       all_metadata_p_d[mdname] = data.value;
-//     }
-
-    /*
-DDD metadata
-{ "4319":
-   { adapter_sequence: "TGTCA",
-     dna_region: "v3v5",
-     domain: "Bacteria",
-     env_biome: "unknown",
-     env_feature: "unknown",
-     env_material: "unknown",
-     env_package: "unknown",
-     geo_loc_name: "unknown",
-     illumina_index: "unknown",
-     primer_suite: "Bacterial V3-V5 Suite",
-     run: "20080709",
-     sequencing_platform: "unknown",
-     target_gene: "16s" } }
-
-
-    */
-
-
-  // });
-  // console.log("DDD all_metadata_p_d");
-  // console.log(all_metadata_p_d);
-//   return all_metadata_p_d;
-// }
-
 function make_empty_arrays(all_metadata, pid) {
-  console.time("4) make_empty_arrays");
+  console.time("TIME: 4) make_empty_arrays");
 
   for (var dataset_id in AllMetadata) {
 
-    console.time("41) dataset_id.keys");
+    console.time("TIME: 41) dataset_id.keys");
 
     var all_keys = Object.keys(AllMetadata[dataset_id]);
 
@@ -614,26 +526,26 @@ function make_empty_arrays(all_metadata, pid) {
       var key_name1 = all_keys[k1];
       all_metadata[pid][key_name1] = [];
     }
-    console.timeEnd("41) dataset_id.keys");
+    console.timeEnd("TIME: 41) dataset_id.keys");
 
   }
 
-  console.time("42) CONSTS.REQ_METADATA_FIELDS_wIDs");
+  console.time("TIME: 42) CONSTS.REQ_METADATA_FIELDS_wIDs");
 
   for (var i = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i < len; i++) {
     var key_name2 = CONSTS.REQ_METADATA_FIELDS_wIDs[i];
     all_metadata[pid][key_name2] = [];
   }
 
-  console.timeEnd("42) CONSTS.REQ_METADATA_FIELDS_wIDs");
+  console.timeEnd("TIME: 42) CONSTS.REQ_METADATA_FIELDS_wIDs");
 
-  console.timeEnd("4) make_empty_arrays");
+  console.timeEnd("TIME: 4) make_empty_arrays");
 
   return all_metadata;
 }
 
 function populate_metadata_hash(rows, pid, all_metadata) {
-  console.time("3) populate_metadata_hash");
+  console.time("TIME: 3) populate_metadata_hash");
 
   // all_metadata[pid]["dataset_ids"] = {}
   all_metadata[pid]["dataset_id"] = [];
@@ -712,84 +624,37 @@ function populate_metadata_hash(rows, pid, all_metadata) {
     add_required_metadata_from_id(CONSTS.REQ_METADATA_FIELDS_wIDs, dataset_id);
 
   }
-  console.timeEnd("3) populate_metadata_hash");
+  console.timeEnd("TIME: 3) populate_metadata_hash");
 
   return all_metadata;
 }
 
 function add_all_metadata_from_file(my_hash, dataset_id) {
-  console.time("5) add_all_metadata_from_file");
+  console.time("TIME: 5) add_all_metadata_from_file");
 
   for (var i1 = 0, len1 = my_hash.length; i1 < len1; i1++) {
     var key = my_hash[i1];
     var val = AllMetadata[dataset_id][key]; // TODO: combine with add_required_metadata_from_id? That's the only difference besides "my_hash"
     all_metadata[pid][key].push(val);
   }
-  console.timeEnd("5) add_all_metadata_from_file");
+  console.timeEnd("TIME: 5) add_all_metadata_from_file");
 
 }
 
 function add_required_metadata_from_id(my_hash, dataset_id) {
-  console.time("6) add_required_metadata_from_id");
+  console.time("TIME: 6) add_required_metadata_from_id");
   for (var idx = 0, len = my_hash.length; idx < len; idx++) {
     var key = my_hash[idx];
     var data = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
     var val = data.value;
     all_metadata[pid][key].push(val);
   }
-  console.timeEnd("6) add_required_metadata_from_id");
+  console.timeEnd("TIME: 6) add_required_metadata_from_id");
 
 }
 
-// function populate_metadata_hash(rows, pid, all_metadata){
-//   all_metadata[pid]["dataset_ids"] = {}
-//
-//   for (var i = 0; i < rows.length; i++) {
-//       var row = rows[i];
-//       /*
-//       console.log("WWW row");
-//       console.log(row);
-//       TextRow {
-//         project: 'DCO_GAI_Bv3v5',
-//         title: 'Icelandic Volcanic Lake',
-//         did: 4312,
-//         pid: 47,
-//         dataset: 'S1',
-//         dataset_description: 'NULL',
-//         username: 'gaidos',
-//         email: 'gaidos@hawaii.edu',
-//         institution: 'University of Hawaii',
-//         first_name: 'Eric',
-//         last_name: 'Gaidos',
-//         owner_user_id: 54,
-//         public: 0 }
-//
-// { dataset_id: [ '4312', '4313', '4314', '4315', '4316', '4317', '4318', '4319' ],
-//   project_title: [ 'Icelandic Volcanic Lake' ],
-//
-//       */
-//       var dataset_id = row.did
-//       all_metadata[pid]["project"]     = row.project
-//       all_metadata[pid]["title"]       = row.title
-//       all_metadata[pid]["username"]    = row.username
-//       all_metadata[pid]["email"]       = row.email
-//       all_metadata[pid]["institution"] = row.institution
-//       all_metadata[pid]["first_name"]  = row.first_name
-//       all_metadata[pid]["last_name"]   = row.last_name
-//       all_metadata[pid]["public"]      = row.public
-//       // console.log("AllMetadata[dataset_id]");
-//       // console.log(AllMetadata[dataset_id]);
-//
-//       all_metadata[pid]["dataset_ids"][dataset_id] = AllMetadata[dataset_id]
-//       all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadata, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
-//       all_metadata[pid]["dataset_ids"][dataset_id]["dataset"] = row.dataset
-//       all_metadata[pid]["dataset_ids"][dataset_id]["dataset_description"] = row.dataset_description
-//   }
-//   return all_metadata
-// };
-
 function get_all_field_names(all_metadata) {
-  console.time("get_all_field_names");
+  console.time("TIME: get_all_field_names");
 
   var all_field_names = [];
   for (var pid in all_metadata) {
@@ -799,34 +664,17 @@ function get_all_field_names(all_metadata) {
       }
     }
   }
-  console.timeEnd("get_all_field_names");
+  console.timeEnd("TIME: get_all_field_names");
 
   return all_field_names;
 }
-//
-// function intersection_destructive(a, b)
-// {
-//   var result = [];
-//   while( a.length > 0 && b.length > 0 )
-//   {
-//      if      (a[0] < b[0] ){ a.shift(); }
-//      else if (a[0] > b[0] ){ b.shift(); }
-//      else /* they're equal */
-//      {
-//        result.push(a.shift());
-//        b.shift();
-//      }
-//   }
-//
-//   return result;
-// }
 
 
 
 // TODO: rename
 // todo: if there is req.form (or req.body?) use the result?
 function make_metadata_hash(req, res) {
-  console.time("2) make_metadata_hash");
+  console.time("TIME: 2) make_metadata_hash");
 
   pid = req.body.project_id;
   all_metadata = {};
@@ -901,15 +749,6 @@ function make_metadata_hash(req, res) {
           new_row_info_arr: ""
         });
 
-
-        // project_dataset_info_res = JSON.stringify(rows)
-        // console.log(JSON.stringify(rows1));
-        // for (var row in rows1[0])
-        // {
-        //   console.log(row);
-        //   console.log(row.did);
-        // }
-
       }
        // end else
     });
@@ -918,7 +757,7 @@ function make_metadata_hash(req, res) {
   { // end if int
     console.log('ERROR pid is not an integer: ', pid);
   }
-  console.timeEnd("2) make_metadata_hash");
+  console.timeEnd("TIME: 2) make_metadata_hash");
 
 }
 
@@ -936,63 +775,56 @@ function get_project_abstract_data(project, req)
 
 // TODO: move to helpers, use here and for project_profile
 function get_project_prefix(project) {
-  console.time("get_project_prefix");
+  console.time("TIME: get_project_prefix");
   var project_parts = project.split('_');
   var project_prefix = project;
   if(project_parts.length >= 2 ){
     project_prefix = project_parts[0] + '_' + project_parts[1];
   }
-  console.timeEnd("get_project_prefix");
+  console.timeEnd("TIME: get_project_prefix");
   return project_prefix;
 }
 
 function env_items_validation(value) {
-  // console.log("EEE env_items_validation(value)");
-  // console.log(value);
-  // console.log(this);
-
   if (value === "Please choose one") {
       throw new Error("%s is required. Please choose one value from the dropdown menu");
   }
 }
 
 function make_csv(req, res) {
-  console.time("make_csv");
+  console.time("TIME: make_csv");
 
   //TODO: check where it is called from
-    console.log("MMM make_csv: form_values");
-    input = req.form;
+  console.log("MMM make_csv: form_values");
+  input = req.form;
 
-    var csv = convertArrayOfObjectsToCSV({
-        data: req.form
-    });
-
-  // console.log('PPP5 from make_csv req.form["project"]');
-  // console.log(req.form);
+  var csv = convertArrayOfObjectsToCSV({
+      data: req.form
+  });
 
   project = req.form["project"];
-    out_csv_file_name = makeFileName(req, project);
+  out_csv_file_name = makeFileName(req, project);
 
-    fs.writeFile(out_csv_file_name, csv, function(err) {
-        if (err) throw err;
-        console.log('file ' + out_csv_file_name + ' saved');
-    });
-    console.timeEnd("make_csv");
-    }
+  fs.writeFile(out_csv_file_name, csv, function(err) {
+      if (err) throw err;
+      console.log('file ' + out_csv_file_name + ' saved');
+  });
+  console.timeEnd("TIME: make_csv");
+}
 
 function makeFileName(req, project) {
-  console.time("makeFileName");
+  console.time("TIME: makeFileName");
 
   var rando = helpers.getRandomInt(10000, 99999);
 
   file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-" + rando.toString() + '_' + project + ".csv");
 
-  console.timeEnd("makeFileName");
-  return file_name
+  console.timeEnd("TIME: makeFileName");
+  return file_name;
 }
 
 function convertArrayOfObjectsToCSV(args) {
-  console.time("convertArrayOfObjectsToCSV");
+  console.time("TIME: convertArrayOfObjectsToCSV");
 
   var result, ctr, keys, columnDelimiter, lineDelimiter, data;
 
@@ -1033,13 +865,13 @@ function convertArrayOfObjectsToCSV(args) {
 
     // console.log("CCC3 convertArrayOfObjectsToCSV result");
     // console.log(result);
-  console.timeEnd("convertArrayOfObjectsToCSV");
+  console.timeEnd("TIME: convertArrayOfObjectsToCSV");
 
   return result;
 }
 
 function new_row_val_validation(req, field_name) {
-  console.time("new_row_val_validation");
+  console.time("TIME: new_row_val_validation");
   var field_val = req.body[field_name];
 
   // console.log("validator isEmpty");
@@ -1102,12 +934,12 @@ function new_row_val_validation(req, field_name) {
     console.log("OK");
     return [false, field_val_trimmed];
   }
-  console.timeEnd("new_row_val_validation");
+  console.timeEnd("TIME: new_row_val_validation");
 
 }
 
 function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx) {
-  console.time("make_new_row_hash");
+  console.time("TIME: make_new_row_hash");
 
   var new_row_length = req.body.new_row_length;
   var new_row_head_arr = [column_name_field_val_trimmed, units_field_val_trimmed];
@@ -1138,14 +970,14 @@ function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed,
 
   // new_row1cell4
   //new_row
-  console.timeEnd("make_new_row_hash");
+  console.timeEnd("TIME: make_new_row_hash");
 
   return new_row_info_arr;
 }
 
 
 function collect_new_row(req) {
-  console.time("collect_new_row");
+  console.time("TIME: collect_new_row");
 
   // var sanitizeHtml = require('sanitize-html');
 
@@ -1200,9 +1032,8 @@ function collect_new_row(req) {
 
   }
 
-  console.timeEnd("collect_new_row");
+  console.timeEnd("TIME: collect_new_row");
   return [new_row_info_arr, req];
-//  how to return 2 things?
 }
 
 // ---- metadata_upload end ----
