@@ -743,7 +743,8 @@ constants.INVESTIGATION_TYPE = [["Please choose one", "Please choose one"],
   ["organelle", ""]];
 
 
-constants.SAMPLE_TYPE = ["control",
+constants.SAMPLE_TYPE = ["Please choose one",
+  "control",
   "enrichment",
   "environmental sample",
   "isolate"];
