@@ -402,6 +402,7 @@ function editMetadataForm(req, res){
   // [ { 'Column name 1,units in row 1': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] },
   //   { ',': [ '', '', '', '', '', '', '', '' ] } ]
 
+  //TODO: move to add_new_fields_to_all function
   var metadata_form = req.form;
   var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
   var result_it = "";
@@ -422,7 +423,6 @@ function editMetadataForm(req, res){
       * */
         metadata_form[row_field_name] = new_row_info_arr[a1][key];
         // TODO: change "new_row" + a1 to a  database field name
-        // TODO: add units to the field placeholder
         var key_arr;
         key_arr = key.split(",");
 
@@ -440,7 +440,8 @@ function editMetadataForm(req, res){
   metadata_form.project_title = PROJECT_INFORMATION_BY_PID[pid].title;
 
   // all_metadata = {pid: req.form};
-  var all_metadata = {pid: metadata_form};
+  var all_metadata = {};
+  all_metadata[pid] = metadata_form;
 
 
   // console.log("RRR555 req.form.errors");
@@ -450,15 +451,18 @@ function editMetadataForm(req, res){
     console.log("XXX3 all_metadata");
     console.log(all_metadata);
 
-  console.log('PPP2 from editMetadataForm all_metadata[pid]');
-  console.log(all_metadata[pid]);
+  // console.log('PPP2 from editMetadataForm all_metadata[pid]');
+  // console.log(all_metadata[pid]);
 
-  var project = all_metadata[pid]["project"];
+  var project = all_metadata[pid]["project"][0];
+  // console.log('PPP22 from editMetadataForm project[0]');
+  // console.log(project);
+
     var abstract_data = get_project_abstract_data(project, req);
     var project_prefix = get_project_prefix(project);
 
-    console.log("AAA2 abstract_data");
-    console.log(abstract_data);
+    // console.log("AAA2 abstract_data");
+    // console.log(abstract_data);
 
 
     res.render('metadata/metadata_upload_from_file', {
@@ -737,8 +741,8 @@ function populate_metadata_hash(rows, pid, all_metadata) {
 
       */
       var dataset_id = row.did;
-    console.log('PPP3 from populate_metadata_hash row');
-    console.log(row);
+    // console.log('PPP3 from populate_metadata_hash row');
+    // console.log(row);
 
       all_metadata[pid]["project"]     = row.project;
       all_metadata[pid]["project_title"] = row.title;
@@ -929,8 +933,8 @@ function make_metadata_hash(req, res) {
           pi_name: "",
 
         */
-        console.log('PPP4 from populate_metadata_hash all_metadata[pid]');
-        console.log(all_metadata[pid]);
+        // console.log('PPP4 from populate_metadata_hash all_metadata[pid]');
+        // console.log(all_metadata[pid]);
 
         var project = all_metadata[pid]["project"];
         var abstract_data = get_project_abstract_data(project, req);
@@ -1022,8 +1026,8 @@ function make_csv(req, res) {
         data: req.form
     });
 
-  console.log('PPP5 from make_csv req.form["project"]');
-  console.log(req.form);
+  // console.log('PPP5 from make_csv req.form["project"]');
+  // console.log(req.form);
 
   project = req.form["project"];
     out_csv_file_name = makeFileName(req, project);
