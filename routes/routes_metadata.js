@@ -610,81 +610,52 @@ function make_empty_arrays(all_metadata, pid) {
 
   for (var dataset_id in AllMetadata) {
 
-    // console.time("41) keys_array");
-    //
-    // keys_array = Object.keys(AllMetadata[dataset_id]);
-    //
-    // // console.log("RRR keys_array");
-    // // console.log(keys_array);
-    // // RRR keys_array
-    // //   [ 'adapter_sequence_id',
-    // //   'geo_loc_name_id',
-    //
-    //
-    // for (var i1 = 0; i1 < keys_array.length; i1++) {
-    //   // console.log("RRR1 keys_array[i]");
-    //   // console.log(keys_array[i]);
-    //   AllMetadata[dataset_id][keys_array[i]] = [];
-    // }
-    // console.timeEnd("41) keys_array");
+    //1
+    console.time("41) object.keys 1");
 
-    // console.log("RRR1 AllMetadata[dataset_id]");
-    // console.log(AllMetadata[dataset_id]);
-
-
-
-    // console.time("42) Object.keys(AllMetadata");
-
-    // console.log("DADA dataset_id");
     Object.keys(AllMetadata[dataset_id]).forEach(function(key) {
-      // var val = AllMetadata[dataset_id][key];
       all_metadata[pid][key] = [];
 
-      // console.log("KKK1 key:");
-      // console.log(key);
-      // console.log("KKK2 pid:");
-      // console.log(pid);
-      // console.log("KKK3 val:");
-      // console.log(val);
-
     });
-    // console.timeEnd("42) Object.keys(AllMetadata");
+    console.timeEnd("41) object.keys 1");
 
-    // console.log("RRR2 AllMetadata[dataset_id]");
-    // console.log(AllMetadata[dataset_id]);
+    console.log("MMM1 all_metadata[pid]");
+    console.log(all_metadata[pid]);
 
-    // console.time("43) CONSTS.REQ_METADATA_FIELDS_wIDs");
+    //2
+    console.time("42) object.keys 2");
+
+    var all_keys = Object.keys(AllMetadata[dataset_id]);
+    for (var k1 = 0; k1 < all_keys.length; k1++ ) {
+      var key_name1 = all_keys[k1];
+      all_metadata[pid][key_name1] = [];
+    }
+
+    console.timeEnd("42) object.keys 2");
+
+    console.log("MMM2 all_metadata[pid]");
+    console.log(all_metadata[pid]);
+
+    // keys_array = Object.keys(AllMetadata[dataset_id]);
+    // for (var i1 = 0; i1 < keys_array.length; i1++) {
+    //   AllMetadata[dataset_id][keys_array[i1]] = [];
+    // }
+    //
+    console.time("43) CONSTS.REQ_METADATA_FIELDS_wIDs");
 
     for (var i = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i < len; i++) {
       var key_name = CONSTS.REQ_METADATA_FIELDS_wIDs[i];
       all_metadata[pid][key_name] = [];
+
     }
 
-    // console.timeEnd("43) CONSTS.REQ_METADATA_FIELDS_wIDs");
-
-
-    // get_values_from_ids(METADATA, did, all_metadata_p_d)
-
-    // var ds_row = {};
-
-    // metadata_names.forEach(function(mdname) {
-    //   // console.log(mdname);
-    //   var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname);
-    //   /*
-    //    console.log("DDD data");
-    //    console.log(data);
-    //    DDD data
-    //    { name: 'run_id', value: '20080709' }
-    //    */
-    //
-    //   if(did in METADATA) {
-    //     // ds_row[mdname] = data.value
-    //     all_metadata_p_d[mdname] = data.value;
-    //   }
-    // });
+    console.timeEnd("43) CONSTS.REQ_METADATA_FIELDS_wIDs");
 
   }
-  // all_metadata[pid]["dataset_ids"][dataset_id] = get_values_from_ids(AllMetadata, dataset_id, all_metadata[pid]["dataset_ids"][dataset_id]);
+
+  // console.log("RRR11 all_metadata[pid]");
+  // console.log(all_metadata[pid]);
+
 
   console.timeEnd("4) make_empty_arrays");
 
