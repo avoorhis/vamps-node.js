@@ -667,12 +667,16 @@ $("#removerow").on('click', function() {
 });
 
 
-$("a.td_clone_add").on('click', function() {
-  alert("done");
-  var trIndex = $(this).parent().parent().parent().index();
+$('a.td_clone_add').on('click', function() {
+  alert('done');
+  var trIndex = $(this).closest('tr').index();
         // $(this).parent().prevAll();
 
   alert(trIndex);
+
+  var first_cell = $('table#fixed_table_base').find('tr:eq(trIndex)');
+  alert(first_cell.index());
+  // .find('td:eq(0)'
 
 });
 
