@@ -81,7 +81,7 @@ myArray_fail.sort();
         <% for (var n in abstract_data_pr.pdfs) { %>
           <a href='/static/abstracts/<%= abstract_data_pr.pdfs[n] %>' target='_blank'><%= abstract_data_pr.pdfs[n] %></a><br/>
         <% } %> <!-- for (var pid in all_metadata)-->
-        <input type = "hidden" id="project_abstract" name="project_abstract"  placeholder= '<%= abstract_data_pr %>'/>
+        <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= abstract_data_pr %>'/>
       </div>
       <% } else { %> <!-- if (abstract_data_pr) -->
     <textarea class="textarea_long" id="project_abstract" name="project_abstract"></textarea>
