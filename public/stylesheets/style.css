@@ -451,3 +451,18 @@ td.left_justify {
 
 }
 
+.makeLeft {
+    /*float: left;*/
+    text-align: left;
+    width: 80%;
+    display: inline-block;
+}
+.makeRight {
+    /*float: right;*/
+    /*width: 10em;*/
+    text-align: right;
+    width: 20%;
+    display: inline-block;
+    padding-right: 0.5em;
+}
+

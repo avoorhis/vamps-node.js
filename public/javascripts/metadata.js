@@ -665,6 +665,18 @@ $("#removerow").on('click', function() {
     alert('There is no rows to remove');
   }
 });
+
+
+$("a.td_clone_add").on('click', function() {
+  alert("done");
+  var trIndex = $(this).parent().parent().parent().index();
+        // $(this).parent().prevAll();
+
+  alert(trIndex);
+
+});
+
+
 // ---
 
 $(document).ready(function(){
@@ -707,6 +719,6 @@ $(document).ready(function(){
       fnScroll();
   });
 
+  fnAdjustTable();
 
-    fnAdjustTable();
 });
