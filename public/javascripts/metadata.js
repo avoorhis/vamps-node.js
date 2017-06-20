@@ -668,13 +668,19 @@ $("#removerow").on('click', function() {
 
 
 $('a.td_clone_add').on('click', function() {
+  var this_row;
+  var first_td;
+
   alert('done');
   var trIndex = $(this).closest('tr').eq(0).index();
-        // $(this).parent().prevAll();
+  // $(this).parent().prevAll();
 
   alert(trIndex);
 
-  var first_input = $('table#fixed_table_base tr').eq(trIndex).find('td:first').find('input[type=text], textarea, select');
+  this_row = $('table#fixed_table_base tr').eq(trIndex);
+  first_td = this_row.find('td:first');
+
+  var first_input_value = first_td.find('input[type=text], textarea, select').attr('value');
         // $('table#fixed_table_base tr').eq(trIndex).find('td:first').find('input');
     // .css({'background-color':'#343434'});
 
@@ -682,8 +688,7 @@ $('a.td_clone_add').on('click', function() {
   // $('table#fixed_table_base tr').eq(trIndex).find('td:first').find('input[type=text], textarea, select').css({'background-color':'#343434'});
   // html body div.container-fluid div.row-fluid div.col-lg-12 form fieldset#parameters table tbody tr td div#table_div table#fixed_table_base tbody tr td input#latitude0
   // var first_cell = $('table#fixed_table_base').find('tr:eq(trIndex)');
-  var qq = first_input.attr('value');
-  alert(qq);
+  alert(first_input_value);
   // .find('td:eq(0)'
 
 });
