@@ -10,8 +10,8 @@
 <% if(data.public || data.permissions.indexOf(user.user_id) != -1 || user.security_level <= 10){ %>
 <%  reveal_all = true %>
 <% } %>
-<!-- DCO only - AND (owner or admin) can see/edit ALSO MBL power users (Mitch)-->
-<% if(user.user_id == data.oid  || user.security_level <= 10){ %>
+<!-- DCO only - AND (owner or admin) can see/edit ALSO MBL power users (Mitch) and DCO_metadata_editors(45)-->
+<% if(user.user_id == data.oid  || user.security_level <= 10 || user.security_level == 45){ %>
 <%  edit_metadata = true %>
 <% } %>
 <img src='/images/dna01.jpg' alt="Helix Cartoon"  height='80' />
@@ -125,10 +125,8 @@
               <!-- <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr> -->
               <tr><td>Number of samples (datasets):</td><td> <%= dsinfo.length %></td></tr>
           <% } %>
-          
-          
-          <!-- ABSTRACT -->
-				    
+
+          <!-- ABSTRACT --> 
 		  	  <% if(abstract_data.hasOwnProperty(project_prefix)){ %>
 		  		 <tr><td>Abstract</td><td>
 		  		<% for(n in abstract_data[project_prefix].pdfs){ %>		  		
@@ -139,9 +137,6 @@
 		  	    </td></tr>
 		  	<% } %>		  	
 		
-
-
-
 		  </table>
   	</div> <!-- End project div -->
 <% if(reveal_all) { %>
