@@ -102,10 +102,12 @@
 		  <table class="table table-striped">
 		  <tr><td>Project Name: </td><td><%= data.project %></td></tr>
 		  <tr><td>Project_id:</td><td> <%= pid %></td></tr>
-		  <% if(project_prefix.substring(0,3) == 'DCO' && abstract_data[project_prefix].id != ''){ %>
-		    <tr><td>DCO id (Link to DeepCarbon.net site)</td>
-		        <td><a href='<%= abstract_data[project_prefix].url %>' target='_blank'> <%= abstract_data[project_prefix].id %></td>
-		    </tr>
+		  <% if(project_prefix.substring(0,3) == 'DCO' ){ %>
+		    <% if(abstract_data.hasOwnProperty('project_prefix') && abstract_data[project_prefix].id != '') { %>
+                <tr><td>DCO id (Link to DeepCarbon.net site)</td>
+                    <td><a href='<%= abstract_data[project_prefix].url %>' target='_blank'> <%= abstract_data[project_prefix].id %></td>
+                </tr>
+              <% } %>
 		  <% } %>
 		  <tr><td>Title:</td><td> <%= data.title %></td></tr>
 		  <tr><td>Description:</td><td> <%= data.description %></td></tr>
