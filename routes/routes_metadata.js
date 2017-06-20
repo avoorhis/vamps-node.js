@@ -604,44 +604,18 @@ DDD metadata
 function make_empty_arrays(all_metadata, pid) {
   console.time("4) make_empty_arrays");
 
-  // console.log("KKK From AllMetadata");
-  // console.log("KKK333 AllMetadata");
-  // console.log(AllMetadata);
-
   for (var dataset_id in AllMetadata) {
 
-    //1
-    console.time("41) object.keys 1");
-
-    Object.keys(AllMetadata[dataset_id]).forEach(function(key) {
-      all_metadata[pid][key] = [];
-
-    });
-    console.timeEnd("41) object.keys 1");
-
-    console.log("MMM1 all_metadata[pid]");
-    console.log(all_metadata[pid]);
-
-    //2
-    console.time("42) object.keys 2");
+    console.time("41) object.keys 2");
 
     var all_keys = Object.keys(AllMetadata[dataset_id]);
     for (var k1 = 0; k1 < all_keys.length; k1++ ) {
       var key_name1 = all_keys[k1];
       all_metadata[pid][key_name1] = [];
     }
+    console.timeEnd("41) object.keys 2");
 
-    console.timeEnd("42) object.keys 2");
-
-    console.log("MMM2 all_metadata[pid]");
-    console.log(all_metadata[pid]);
-
-    // keys_array = Object.keys(AllMetadata[dataset_id]);
-    // for (var i1 = 0; i1 < keys_array.length; i1++) {
-    //   AllMetadata[dataset_id][keys_array[i1]] = [];
-    // }
-    //
-    console.time("43) CONSTS.REQ_METADATA_FIELDS_wIDs");
+    console.time("42) CONSTS.REQ_METADATA_FIELDS_wIDs");
 
     for (var i = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i < len; i++) {
       var key_name = CONSTS.REQ_METADATA_FIELDS_wIDs[i];
@@ -649,7 +623,7 @@ function make_empty_arrays(all_metadata, pid) {
 
     }
 
-    console.timeEnd("43) CONSTS.REQ_METADATA_FIELDS_wIDs");
+    console.timeEnd("42) CONSTS.REQ_METADATA_FIELDS_wIDs");
 
   }
 
