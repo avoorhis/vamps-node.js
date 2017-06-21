@@ -152,7 +152,14 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     // For this we need the upload.single('upload_files', 12) in the post definition
     // creates clean visual_post_items and chosen_id_name_hash
     var config_file_data = create_clean_config(req, res)
+    if(Object.keys(config_file_data).length == 0){
+        //error
+        res.redirect('saved_elements');
+        return
+    }
+    
     //var config_file_data = JSON.parse(fs.readFileSync(req.file.path, 'utf8'))
+    
     var image_to_open = load_configuration_file(req, res, config_file_data)
     
 
@@ -234,19 +241,16 @@ function load_configuration_file(req, res, config_file_data )
 {
     //console.log(req)
     var image_to_open = {}
-    // console.log(req.CONFIG.USER_FILES_BASE)
-//     console.log(req.user.username)
-//     console.log(req.params.filename)
-//     var config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, filename);
-//     console.log(config_file_path)
-    //var config_file_data = JSON.parse(fs.readFileSync(filepath, 'utf8'))
-    console.log(config_file_data)
-    if(config_file_data.hasOwnProperty('image')){
-      console.log('FILE is IMAGE')
-      image_to_open.image = config_file_data.image
-    }else{
-      console.log('FILE is CONFIG')
+    var allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix", "metadata_table", "fheatmap", "dendrogram01", "dendrogram03", "pcoa", "pcoa3d", "geospatial", "adiversity"]
+    
+    if(allowed_images.indexOf(config_file_data.image) != -1){
+        console.log('FILE is IMAGE-2')
     }
+    if(config_file_data.hasOwnProperty('image') ){
+      console.log('FILE is IMAGE-1')
+      image_to_open.image = config_file_data.image
+    }
+    
     if(config_file_data.hasOwnProperty('phylum')){
       console.log('FILE is IMAGE (phyloseq bars or heatmap)')
       image_to_open.phylum = config_file_data.phylum
@@ -256,28 +260,23 @@ function load_configuration_file(req, res, config_file_data )
     visual_post_items = config_file_data.post_items;
     var ids = config_file_data.id_name_hash.ids
     var new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
-    if(new_dataset_ids.length == 0){
-        req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
-        res.redirect('saved_elements');
-        return;
-    }else{
-        req.flash('success', 'Using data from configuration file.');
-        console.log('in view_selection FROM CONFIG or IMAGE')
-        chosen_id_name_hash = {}
-        
-        chosen_id_name_hash.ids = new_dataset_ids
-        chosen_id_name_hash.names = []
+    
+    req.flash('success', 'Using data from configuration file.');
+    console.log('in view_selection FROM CONFIG or IMAGE')
+    chosen_id_name_hash = {}
+    
+    chosen_id_name_hash.ids = new_dataset_ids
+    chosen_id_name_hash.names = []
 
-        visual_post_items.no_of_datasets = new_dataset_ids.length
-        for(n in chosen_id_name_hash.ids){
-             did = chosen_id_name_hash.ids[n]
-              pid = PROJECT_ID_BY_DID[did]
-              pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did]
-              chosen_id_name_hash.names.push(pjds)
-        }
-        if(! config_file_data.hasOwnProperty('metadata') || config_file_data['metadata'].length == 0){
-            visual_post_items.metadata = ['latitude','longitude']
-        }
+    visual_post_items.no_of_datasets = new_dataset_ids.length
+    for(n in chosen_id_name_hash.ids){
+        did = chosen_id_name_hash.ids[n]
+        pid = PROJECT_ID_BY_DID[did]
+        pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did]
+        chosen_id_name_hash.names.push(pjds)
+    }
+    if(! config_file_data.hasOwnProperty('metadata') || config_file_data['metadata'].length == 0){
+        visual_post_items.metadata = ['latitude','longitude']
     }
     
     for(var i in chosen_id_name_hash.ids){
@@ -301,27 +300,7 @@ function load_configuration_file(req, res, config_file_data )
     }
     return image_to_open
 }
-//
-// Render View Selection page
-//
-// function render_view_selection(res,req, metadata, image_to_open)
-// {
-// 
-//                                 
-//     res.render('visuals/view_selection', {
-//                                 title           : 'VAMPS: Visuals Select',
-//                                 referer         : 'unit_selection',
-//                                 chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-//                                 matrix          : JSON.stringify(BIOM_MATRIX),
-//                                 metadata        : JSON.stringify(metadata),
-//                                 constants       : JSON.stringify(req.CONSTS),
-//                                 post_items      : JSON.stringify(visual_post_items),
-//                                 user            : req.user,
-//                                 hostname        : req.CONFIG.hostname,
-//                                 gekey           : req.CONFIG.GOOGLE_EARTH_KEY,
-//                                 image_to_render : JSON.stringify(image_to_open),	                         
-//              });
-// }
+
 //
 //  Create Clean Configuration File (From file upload)
 //
@@ -337,24 +316,24 @@ function create_clean_config(req, res)
       console.log('2) FILE is CONFIG')
       new_filename = 'configuration-'+timestamp+'.json'
     }
-    var ids = upld_obj.id_name_hash.ids
-    console.log('original_ids',ids)
-    new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
-    console.log('new_ids',new_dataset_ids)
-    if(! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) != 'VAMPS'){
-      req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
-      res.redirect('/user_data/upload_configuration');
-      return;
-    }
     if(! upld_obj.hasOwnProperty('post_items') ){
         upld_obj.post_items = {}
     }
+    if(! upld_obj.hasOwnProperty('id_name_hash') ){
+        req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
+        return {};
+    }
+    var ids = upld_obj.id_name_hash.ids
+    new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
+    if(! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) != 'VAMPS'){
+      req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
+      return {};
+    }
+    
     if(new_dataset_ids.length == 0){
       req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
-      res.redirect('/user_data/upload_configuration');
-      return;
-    //}else if(new_dataset_ids.length != ids.length){
-      // SOME of the datasets are being excluded (either because they dont exist or no permissions)
+      return {};
+    
     }else{
       // move the file ASIS to the CONFIG.USER_FILES_BASE location
       upld_obj.id_name_hash.ids = new_dataset_ids
@@ -404,7 +383,7 @@ function create_clean_config(req, res)
             upld_obj.post_items.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
           }
       }
-        console.log('min', typeof upld_obj.post_items.min_range)
+    
       if(typeof upld_obj.post_items.min_range == 'string'){
         upld_obj.post_items.min_range = parseInt(upld_obj.post_items.min_range) || 0
       }
@@ -419,23 +398,9 @@ function create_clean_config(req, res)
       }
       
       new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename)
-      console.log('new_filename_path')
-      console.log(new_filename_path)
       fs.writeFileSync(new_filename_path, JSON.stringify(upld_obj))
       return upld_obj
       
-     //  ,  function writeConfigFile01(err) {
-//         if (err) {
-//           req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
-//             //res.redirect('/user_data/upload_configuration');
-//           res.send(err);
-//         } else {
-//           console.log('write new config file success');
-//           console.log(new_filename_path);
-//           return new_filename_path
-//           
-//         }
-//       });
     }
 }
 //
