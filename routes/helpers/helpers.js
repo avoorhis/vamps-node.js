@@ -49,29 +49,59 @@ module.exports = {
       return;
   },
 
-    walk: function(dir, done) {
-      var results = [];
-      fs.readdir(dir, function(err, list) {
-        if (err) return done(err);
-        var pending = list.length;
-        if (!pending) return done(null, results);
-        list.forEach(function(file) {
-          file = path.resolve(dir, file);
-          fs.stat(file, function(err, stat) {
-            if (stat && stat.isDirectory()) {
-              walk(file, function(err, res) {
-                results = results.concat(res);
-                if (!--pending) done(null, results);
-              });
-            } else {
-              results.push(file);
+  walk: function(dir, done) {
+    var file_formats = CONSTS.download_file_formats;
+    var results = [];
+    fs.readdir(dir, function(err, list) {
+      if (err) return done(err);
+      var pending = list.length;
+      if (!pending) return done(null, results);
+      list.forEach(function(file) {
+        file = path.resolve(dir, file);
+        fs.stat(file, function(err, stat) {
+          if (stat && stat.isDirectory()) {
+            walk(file, function(err, res) {
+              results = results.concat(res);
               if (!--pending) done(null, results);
+            });
+          } else {
+            console.log("FIFI111");
+            console.log(file);
+            var pts = path.basename(file).split('-');
+            console.log("FIFI222 pts");
+            console.log(pts);
+
+            console.log("FIFI333 file_formats");
+            console.log(file_formats);
+
+            if (file_formats.indexOf(pts[0]) !== -1) {
+              console.log("FIFI444 stat");
+              console.log(stat);
+
+              // stat = fs.statSync(dir + '/' + files[f]);
+              results.push({ 'filename':file, 'size':stat.size, 'time':stat.mtime});
             }
-          });
+            // results.push(file);
+
+            console.log("FIFI555 results");
+            console.log(results);
+
+            if (!--pending) done(null, results);
+          }
         });
       });
-    }
+    });
+  }
 };
+
+// // fs.readdir(export_dir, function readExportDir(err, files) {
+//   for (var f in files) {
+//     var pts = files[f].split('-');
+//     if (file_formats.indexOf(pts[0]) != -1) {
+//       stat = fs.statSync(export_dir+'/'+files[f]);
+//       file_info.push({ 'filename':files[f], 'size':stat.size, 'time':stat.mtime});
+//     }
+//   }
 
 /** Benchmarking
 * Usage:
