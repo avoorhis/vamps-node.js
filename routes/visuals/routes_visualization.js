@@ -151,7 +151,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     METADATA  = {};
     // For this we need the upload.single('upload_files', 12) in the post definition
     // creates clean visual_post_items and chosen_id_name_hash
-    var config_file_data = create_clean_config(req, req.file)
+    var config_file_data = create_clean_config(req, res)
     //var config_file_data = JSON.parse(fs.readFileSync(req.file.path, 'utf8'))
     var image_to_open = load_configuration_file(req, res, config_file_data)
     
@@ -325,9 +325,9 @@ function load_configuration_file(req, res, config_file_data )
 //
 //  Create Clean Configuration File (From file upload)
 //
-function create_clean_config(req, fileobj)
+function create_clean_config(req, res)
 {
-    var upld_obj = JSON.parse(fs.readFileSync(fileobj.path, 'utf8'));
+    var upld_obj = JSON.parse(fs.readFileSync(req.file.path, 'utf8'));
     var timestamp = +new Date();
     if(upld_obj.hasOwnProperty('image')){
       console.log('1) FILE is IMAGE')
