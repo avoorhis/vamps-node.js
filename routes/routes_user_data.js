@@ -73,9 +73,17 @@ router.get('/your_data', helpers.isLoggedIn, function get_your_data(req, res) {
 //
 /* GET Export Data page. */
 router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(req, res) {
+  var export_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
 
-  // helpers.walk();
-    var export_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+  helpers.walk(export_dir, function(err, results) {
+    if (err) throw err;
+    console.log("FIFI");
+    console.log(results);
+  });
+
+
+  // file_info1 = helpers.walk(export_dir);
+
     var file_formats = req.CONSTS.download_file_formats;
     var file_info = [];
     fs.readdir(export_dir, function readExportDir(err, files) {
