@@ -693,13 +693,14 @@ $('a.td_clone_add').on('click', function() {
   // first_input_value = first_td.find('input[type=text], textarea, select').attr('value'); - gives default value!
   // first_input_value = first_td.children('input[type=text]').val();
   // first_input_value = first_td.children( 'option:selected' ).text();
-  first_input_value = first_td.children( 'select' ).val();
+  // first_input_value = first_td.children( 'select' ).val();
+  first_input_value = first_td.children( ':input' ).val();
 
   alert(first_input_value);
 
   input_row.find('td').each(function() {
-    $(this).children('input').val(first_input_value);
-    $(this).children('select').val(first_input_value);
+    $(this).children(':input').val(first_input_value);
+    // $(this).children('select').val(first_input_value);
 
     // .css('background-color','blue');
   });
