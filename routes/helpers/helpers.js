@@ -50,7 +50,7 @@ module.exports = {
   },
 
   walk: function(dir, done) {
-    var file_formats = CONSTS.download_file_formats;
+    // var file_formats = CONSTS.download_file_formats;
     var results = [];
     fs.readdir(dir, function(err, list) {
       if (err) return done(err);
@@ -66,10 +66,12 @@ module.exports = {
             });
           } else {
             var filename = path.basename(file);
-            var file_first_part = filename.split('-')[0];
-            if (file_formats.indexOf(file_first_part) !== -1) {
-              results.push({ 'filename':path.basename(file), 'size':stat.size, 'time':stat.mtime});
+            // var file_first_part = filename.split('-')[0];
+            // if (file_formats.indexOf(file_first_part) !== -1) {
+            if (check_file_formats(filename)) {
+              results.push({ 'filename':filename, 'size':stat.size, 'time':stat.mtime});
             }
+            // }
             if (!--pending) done(null, results);
           }
         });
@@ -78,14 +80,18 @@ module.exports = {
   }
 };
 
-// // fs.readdir(export_dir, function readExportDir(err, files) {
-//   for (var f in files) {
-//     var pts = files[f].split('-');
-//     if (file_formats.indexOf(pts[0]) != -1) {
-//       stat = fs.statSync(export_dir+'/'+files[f]);
-//       file_info.push({ 'filename':files[f], 'size':stat.size, 'time':stat.mtime});
-//     }
-//   }
+function check_file_formats(filename) {
+  var file_formats = CONSTS.download_file_formats;
+  var file_first_part = filename.split('-')[0];
+  if (file_formats.indexOf(file_first_part) !== -1) {
+    return true;
+  }
+  else {
+    return false;
+  }
+
+
+}
 
 /** Benchmarking
 * Usage:
