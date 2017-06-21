@@ -142,7 +142,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     // creates visual_post_items and chosen_id_name_hash
     // No Cleaning needed as file is from our server
     var config_file_data = JSON.parse(fs.readFileSync(config_file_path, 'utf8'))
-    var image_to_open = load_configuration_file(req, config_file_data)
+    var image_to_open = load_configuration_file(req, res, config_file_data)
     
   }else if(req.body.from_upload_configuration_file === '1'){
     // UPLOAD Config file
@@ -153,7 +153,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     // creates clean visual_post_items and chosen_id_name_hash
     var config_file_data = create_clean_config(req, req.file)
     //var config_file_data = JSON.parse(fs.readFileSync(req.file.path, 'utf8'))
-    var image_to_open = load_configuration_file(req, config_file_data)
+    var image_to_open = load_configuration_file(req, res, config_file_data)
     
 
   }else{
@@ -230,7 +230,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 //
 // Load Configuration File
 //
-function load_configuration_file(req, config_file_data )
+function load_configuration_file(req, res, config_file_data )
 {
     //console.log(req)
     var image_to_open = {}
