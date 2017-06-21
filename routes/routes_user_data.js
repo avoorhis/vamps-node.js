@@ -539,19 +539,19 @@ router.get('/upload_configuration', [helpers.isLoggedIn], function (req, res) {
 //
 //
 //
-router.get('/import_choices/upload_image_file', [helpers.isLoggedIn], function (req, res) {
-  
-  url         = path.join('user_data', req.url);
-  import_type = req.url.split("/").slice(-1)[0];
-  //'/import_choices/multi_fasta', 'multi_fasta'
-  
-  res.render(url, {
-    title:       'Import Data',
-    user:        req.user,
-    hostname:    req.CONFIG.hostname,
-    import_type: import_type,
-  });
-});
+// router.get('/import_choices/upload_image_file', [helpers.isLoggedIn], function (req, res) {
+//   
+//   url         = path.join('user_data', req.url);
+//   import_type = req.url.split("/").slice(-1)[0];
+//   //'/import_choices/multi_fasta', 'multi_fasta'
+//   
+//   res.render(url, {
+//     title:       'Import Data',
+//     user:        req.user,
+//     hostname:    req.CONFIG.hostname,
+//     import_type: import_type,
+//   });
+// });
 //
 //
 //
