@@ -681,55 +681,56 @@ $('a.td_clone_add').on('click', function() {
   // alert(first_input_value);
 
   input_row.find('td').each(function() {
-    $(this).children(':input').val(first_input_value);
+    $(this).children(':input').val(first_input_value).change();
     // .css('background-color','blue');
   });
 
   return(false);
 });
 
+$('.env_biome').change(function(){
+  populate_secondary_select.call(this, ['biome', biome_seq_options]);
+}).each(function(){
+
+  if($(this).val() !== "Please choose one") {
+    populate_secondary_select.call(this, ['biome', biome_seq_options]);
+  }
+
+});
+
+$('.env_feature').change(function(){
+  populate_secondary_select.call(this, ['feature', feature_seq_options]);
+}).each(function(){
+
+  if($(this).val() !== "Please choose one") {
+    populate_secondary_select.call(this, ['feature', feature_seq_options]);
+  }
+
+});
+$('.env_material').change(function(){
+  // alert("On change");
+  populate_secondary_select.call(this, ['material', material_seq_options]);
+}).each(function(){
+  // alert("on each")
+
+  if($(this).val() !== "Please choose one") {
+    // this.style.backgroundColor = "green";
+
+    populate_secondary_select.call(this, ['material', material_seq_options]);
+  }
+  // else {
+  //   this.style.backgroundColor = "blue";
+  // }
+});
+
+$('#table_div').scroll(function(){
+  fnScroll();
+});
 
 // ---
 
 $(document).ready(function(){
-  $('.env_biome').change(function(){
-      populate_secondary_select.call(this, ['biome', biome_seq_options]);
-  }).each(function(){
 
-    if($(this).val() !== "Please choose one") {
-      populate_secondary_select.call(this, ['biome', biome_seq_options]);
-    }
-
-  });
-
-  $('.env_feature').change(function(){
-      populate_secondary_select.call(this, ['feature', feature_seq_options]);
-  }).each(function(){
-
-    if($(this).val() !== "Please choose one") {
-      populate_secondary_select.call(this, ['feature', feature_seq_options]);
-    }
-
-  });
-  $('.env_material').change(function(){
-    // alert("On change");
-    populate_secondary_select.call(this, ['material', material_seq_options]);
-  }).each(function(){
-    // alert("on each")
-
-    if($(this).val() !== "Please choose one") {
-      // this.style.backgroundColor = "green";
-
-      populate_secondary_select.call(this, ['material', material_seq_options]);
-    }
-    // else {
-    //   this.style.backgroundColor = "blue";
-    // }
-  });
-
-  $('#table_div').scroll(function(){
-      fnScroll();
-  });
 
   fnAdjustTable();
 
