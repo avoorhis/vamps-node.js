@@ -65,27 +65,11 @@ module.exports = {
               if (!--pending) done(null, results);
             });
           } else {
-            console.log("FIFI111");
-            console.log(file);
-            var pts = path.basename(file).split('-');
-            console.log("FIFI222 pts");
-            console.log(pts);
-
-            console.log("FIFI333 file_formats");
-            console.log(file_formats);
-
-            if (file_formats.indexOf(pts[0]) !== -1) {
-              console.log("FIFI444 stat");
-              console.log(stat);
-
-              // stat = fs.statSync(dir + '/' + files[f]);
-              results.push({ 'filename':file, 'size':stat.size, 'time':stat.mtime});
+            var filename = path.basename(file);
+            var file_first_part = filename.split('-')[0];
+            if (file_formats.indexOf(file_first_part) !== -1) {
+              results.push({ 'filename':path.basename(file), 'size':stat.size, 'time':stat.mtime});
             }
-            // results.push(file);
-
-            console.log("FIFI555 results");
-            console.log(results);
-
             if (!--pending) done(null, results);
           }
         });
