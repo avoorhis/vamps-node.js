@@ -681,20 +681,14 @@ $('a.td_clone_add').on('click', function() {
   first_td  = input_row.find('td:first');
 
   first_input_value = first_td.find('input[type=text], textarea, select').attr('value');
-    // .css({'background-color':'#343434'});
   // alert(first_input_value);
 
-  input_row.each(function(){
+  input_row.find('td').each(function() {
+    // alert(first_input_value);
 
-    $(this).find('td').each(function() {
-      // alert(first_input_value);
-
-      $(this).children('input').val(first_input_value);
-        // .css('background-color','blue');
-    });
+    $(this).children('input').val(first_input_value);
+      // .css('background-color','blue');
   });
-
-
 });
 
 
