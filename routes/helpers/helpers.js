@@ -62,7 +62,9 @@ module.exports = {
           if (stat && stat.isDirectory()) {
             walk(file, function(err, res) {
               results = results.concat(res);
-              if (!--pending) done(null, results);
+              if (!--pending){
+                done(null, results);
+              }
             });
           } else {
             var filename = path.basename(file);
@@ -83,14 +85,7 @@ module.exports = {
 function check_file_formats(filename) {
   var file_formats = CONSTS.download_file_formats;
   var file_first_part = filename.split('-')[0];
-  if (file_formats.indexOf(file_first_part) !== -1) {
-    return true;
-  }
-  else {
-    return false;
-  }
-
-
+  return file_formats.indexOf(file_first_part) !== -1;
 }
 
 /** Benchmarking
