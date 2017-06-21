@@ -691,9 +691,10 @@ $('a.td_clone_add').on('click', function() {
 
 
   // first_input_value = first_td.find('input[type=text], textarea, select').attr('value'); - gives default value!
-  first_input_value = first_td.find('input[type=text], textarea, select').val();
+  first_input_value = first_td.children('input[type=text]').val();
+  // first_input_value = first_td.children( 'option:selected' ).text();
 
-  // alert(first_input_value);
+  alert(first_input_value);
 
   input_row.find('td').each(function() {
     $(this).children('input').val(first_input_value);
