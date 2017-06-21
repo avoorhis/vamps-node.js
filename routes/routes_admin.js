@@ -1096,6 +1096,30 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
 
 
 });
+
+router.get('/metadata_file_retrieval', helpers.isLoggedIn, function get_metadata_file_retrieval(req, res) {
+  var export_dir = path.join(config.USER_METADATA);
+
+  console.log("XXX export_dir");
+  console.log(export_dir);
+
+  helpers.walk(export_dir, function(err, files) {
+    if (err) throw err;
+    files.sort(function sortByTime(a, b) {
+      //reverse sort: recent-->oldest
+      return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
+    });
+    res.render('user_data/file_retrieval', { title: 'VAMPS: Metadata Files',
+      user: req.user, hostname: req.CONFIG.hostname,
+      finfo: JSON.stringify(files)
+
+    });
+  });
+});
+
+
+
+
 //
 function get_env_package_index(val){
   var idx = -1
