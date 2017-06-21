@@ -12,14 +12,12 @@
   var form_data = {}
 } %>
 
-<!-- ========== SIMPLE / SINGLE FASTA ============================================================================================== 
-    Todo later: raw data processing (illumina -hiseq -miseq -newseq; 454)
-    -->	
+
  
  <a href="/user_data/import_choices" >&lt;&lt;--back</a>
     
-  <form class="form-horizontal" role="form" method="POST" action="config_file" enctype="multipart/form-data">
-    
+  <!-- <form class="form-horizontal" role="form" method="POST" action="config_file" enctype="multipart/form-data"> -->
+    <form  method="POST" action="/visuals/view_selection" enctype="multipart/form-data">
 	<h4>Upload Configuration File: </h4>
   <!-- 
 <div class="form-group">
@@ -32,28 +30,21 @@
 	
 	
     
-	<div class="form-group">
-      <label class="control-label col-sm-3" for="fasta">Choose File <small>(required)</small>:</label>
+	
+      <label class="control-label col-sm-2" for="fasta">Choose File <small>(required)</small>:</label>
+      
       <div class="col-sm-3 btn">
-
-
         <input type="file" name="upload_files" class="" id="fasta">
-
-
-      </div>Format: JSON (uncompressed) 
-	       <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
       </div>
-	<div class="form-group">
       
-
-
-      
-
-    <div class="form-group">        
-      <div class="col-sm-offset-2 col-sm-10">
+      Format: JSON (uncompressed)     
+	  <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
+         <br><br><br>
+      <div class="col-sm-offset-1 col-sm-10">
         <button type="submit" class="btn btn-default">Submit</button>
       </div>
-    </div>
+    
+    <input type='hidden'  name='from_upload_configuration_file' value='1' />
 	
   </form>
 

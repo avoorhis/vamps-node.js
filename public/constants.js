@@ -114,17 +114,16 @@ constants.NORMALIZATIONCHOICES = { choices: [
 
 constants.DISTANCECHOICES = { choices: [
 
-  {id: 'jaccard',         show: 'Jaccard'     },
-  {id: 'kulczynski',      show: 'Kulczynski'  },
-  {id: 'canberra',        show: 'Canberra'    },
-  {id: 'morisita_horn',   show: 'Morisita-Horn'},
-  // both R and python
 
+    {id: 'jaccard',         show: 'Jaccard'     },
+    {id: 'kulczynski',      show: 'Kulczynski'  },
+    {id: 'canberra',        show: 'Canberra'    },
+    {id: 'morisita_horn',   show: 'Morisita-Horn'},
+    {id: 'bray_curtis',     show: 'Bray-Curtis' },
+ //       {id: 'manhattan',       show: 'Manhattan'   },
+ //       {id: 'gower',           show: 'Gower'       },
+ //       {id: 'euclidean',       show: 'Euclidean'   },
 
-  {id: 'bray_curtis',     show: 'Bray-Curtis' },
-  //       {id: 'manhattan',       show: 'Manhattan'   },
-  //       {id: 'gower',           show: 'Gower'       },
-  //       {id: 'euclidean',       show: 'Euclidean'   },
 
 
   //       {id: 'pearson',         show: 'Pearson'     },

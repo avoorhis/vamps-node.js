@@ -13,9 +13,9 @@ $(document).ready(function(){
     //});
    
     //click_on_graph_icon = false;
-    //alert(pi_local.ts)
+    //alert(image_to_rdr)
     if(typeof image_to_rdr_local !== "undefined" && image_to_rdr_local.hasOwnProperty('image')){
-      //alert(image_to_render)
+      //alert(image_to_rdr_local.image)
       create_viz(image_to_rdr_local.image, pi_local.ts, false, cts_local)
       $(document.getElementById('pre_'+image_to_rdr_local.image+'_div')).scrollView();
     }
