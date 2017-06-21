@@ -49,29 +49,28 @@ module.exports = {
       return;
   },
 
-  get_file_retrieval: function (req, res) {
-    var export_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-    var file_formats = req.CONSTS.download_file_formats;
-    var file_info = [];
-    fs.readdir(export_dir, function readExportDir(err, files) {
-      for (var f in files) {
-        var pts = files[f].split('-');
-        if (file_formats.indexOf(pts[0]) !== -1) {
-          stat = fs.statSync(export_dir+'/'+files[f]);
-          file_info.push({ 'filename':files[f], 'size':stat.size, 'time':stat.mtime});
-        }
-      }
-      // file_info.sort(function sortByTime(a, b) {
-      //   //reverse sort: recent-->oldest
-      //   return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
-      // });
-      res.render('user_data/file_retrieval', { title: 'VAMPS:Retrieve Data',
-        user: req.user, hostname: req.CONFIG.hostname,
-        finfo: JSON.stringify(file_info)
+    walk: function(dir, done) {
+      var results = [];
+      fs.readdir(dir, function(err, list) {
+        if (err) return done(err);
+        var pending = list.length;
+        if (!pending) return done(null, results);
+        list.forEach(function(file) {
+          file = path.resolve(dir, file);
+          fs.stat(file, function(err, stat) {
+            if (stat && stat.isDirectory()) {
+              walk(file, function(err, res) {
+                results = results.concat(res);
+                if (!--pending) done(null, results);
+              });
+            } else {
+              results.push(file);
+              if (!--pending) done(null, results);
+            }
+          });
+        });
       });
-    });
-  }
-
+    }
 };
 
 /** Benchmarking

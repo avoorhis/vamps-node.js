@@ -72,7 +72,31 @@ router.get('/your_data', helpers.isLoggedIn, function get_your_data(req, res) {
 // FILE RETRIEVAL
 //
 /* GET Export Data page. */
-router.get('/file_retrieval', helpers.isLoggedIn, helpers.get_file_retrieval);
+router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(req, res) {
+
+  // helpers.walk();
+    var export_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+    var file_formats = req.CONSTS.download_file_formats;
+    var file_info = [];
+    fs.readdir(export_dir, function readExportDir(err, files) {
+      for (var f in files) {
+        var pts = files[f].split('-');
+        if (file_formats.indexOf(pts[0]) != -1) {
+          stat = fs.statSync(export_dir+'/'+files[f]);
+          file_info.push({ 'filename':files[f], 'size':stat.size, 'time':stat.mtime});
+        }
+      }
+      file_info.sort(function sortByTime(a, b) {
+          //reverse sort: recent-->oldest
+          return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
+      });
+      res.render('user_data/file_retrieval', { title: 'VAMPS:Retrieve Data',
+              user: req.user, hostname: req.CONFIG.hostname,
+              finfo: JSON.stringify(file_info),
+
+            });
+    });
+});
 
 //
 //  EXPORT CONFIRM
