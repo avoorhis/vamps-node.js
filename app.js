@@ -59,6 +59,7 @@ if(config.hostname.substring(0,7) == 'bpcweb8'){
 var compression = require('compression');
 var express = require('express');
 var expressSanitizer = require('express-sanitizer');
+var expressValidator = require('express-validator');
 
 //var expose = require('express-expose');
 var router = express.Router();
@@ -127,6 +128,8 @@ app.use(bodyParser.urlencoded({
 
 app.use(expressSanitizer()); // this line follows bodyParser() instantiations
 app.use(expressSanitized()); // this line follows bodyParser()
+app.use(expressValidator()); // this line must be immediately after any of the bodyParser middlewares!
+
 
 
 //upload.single('singleInputFileName')

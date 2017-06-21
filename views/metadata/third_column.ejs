@@ -153,11 +153,34 @@
 </td>
 <!-- investigation_type_options end -->
 
-<% } else { %>
+<!-- sample_type_options start -->
+<% } else if (all_field_names[idx][0] === "sample_type") { %>
 <td>
-    <!-- regular field with data -->
-    <% selected_val = get_selected_val(pid, did, field_name) %>
-    <input type="text" placeholder="<%= all_field_names[idx][3] %>" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= selected_val %>"/>
+    <% selected_val = get_selected_val(pid, did, "sample_type") %>
 
+    <select id="sample_type<%- did%>" name="sample_type" class = "sample_type">
+        <% sample_type_options.forEach(function(value){ %>
+        <option value="<%= value %>"
+                <% if (value == selected_val) {%>
+                selected
+                <% } %>
+        ><%= value %></option>
+        <% }) %>
+    </select>
+</td>
+<!-- sample_type_options end -->
+
+<% } else { %>
+<!-- regular field with data -->
+<% selected_val = get_selected_val(pid, did, field_name) %>
+
+<% if (all_field_names[idx][2] === "MBL Supplied") { %>
+<td class = "readonly_td">
+    <%= selected_val %>
+    <input type='hidden' type="text" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= selected_val %>"/>
+    <% } else { %>
+<td>
+    <input type="text" placeholder="<%= all_field_names[idx][3] %>" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= selected_val %>"/>
+    <% } %> <!-- end else if MBL Supplied -->
 </td>
 <% } %> <!-- else -->

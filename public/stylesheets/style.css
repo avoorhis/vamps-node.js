@@ -378,11 +378,14 @@ td.left_justify {
 
 #firstcol_div {
     overflow: hidden;
-    height: 800px;
+    height: 70ex;
+    /*height: 800px;*/
 }
 
 #first_col_table {
-    width: 200px;
+    /*width: 200px;*/
+    width: 20%;
+    max-width: 200ex;
     border-spacing: 0;
     border-collapse: separate;
     padding: 0;
@@ -391,13 +394,18 @@ td.left_justify {
 
 #table_div {
     overflow: scroll;
-    width: 700px;
-    height: 820px;
+    width: 60%;
+    max-width: 200ex;
+    /*width: 700px;*/
+    /*height: 820px;*/
+    height: 72ex;
     position: relative;
 }
 
 #fixed_table_base {
-    width: 800px;
+    /*width: 800px;*/
+    width: 70%;
+    max-width: 200ex;
     border-spacing: 0;
     border-collapse: separate;
     padding: 0;
@@ -424,3 +432,22 @@ td.left_justify {
     /*-moz-box-sizing: border-box;*/
     /*-webkit-box-sizing: border-box;*/
 /*}*/
+
+.readonly_td {
+    padding-left: 4px;
+}
+
+.textarea_long {
+    width: 30em;
+    padding: 3px;
+}
+
+.white_box {
+    border-color: #DADADA;
+    border: 3px;
+    width: 30em;
+    padding: 3px;
+    background-color: white;
+
+}
+
