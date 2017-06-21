@@ -684,6 +684,7 @@ $('a.td_clone_add').on('click', function() {
   first_input_value = first_td.find('input[type=text], textarea, select').attr('value');
         // $('table#fixed_table_base tr').eq(trIndex).find('td:first').find('input');
     // .css({'background-color':'#343434'});
+  alert(first_input_value);
 
   // $( "tr:first" ).css( "font-style", "italic" );
   // $('table#fixed_table_base tr').eq(trIndex).find('td:first').find('input[type=text], textarea, select').css({'background-color':'#343434'});
@@ -691,15 +692,16 @@ $('a.td_clone_add').on('click', function() {
   // var first_cell = $('table#fixed_table_base').find('tr:eq(trIndex)');
   // .find('td:eq(0)'
 
+  // first_input_value = "155";
 
   input_row.each(function(){
     // var id_base = arguments[0][0];
-    $(this).find('td').each (function() {
-      // first_input_value = "55";
-      // alert(first_input_value);
+
+    $(this).find('td').each(function() {
+      alert(first_input_value);
 
       // $("#name").val($("#user").val());
-      $(this).children('input').val("55");
+      $(this).children('input').val(first_input_value);
         // .css('background-color','blue');
     });
 
