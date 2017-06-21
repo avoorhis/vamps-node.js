@@ -666,6 +666,8 @@ $("#removerow").on('click', function() {
   }
 });
 
+// $("#various3").click(function() {
+//   $.fancybox({...
 
 $('a.td_clone_add').on('click', function() {
   var first_input_value;
@@ -680,15 +682,25 @@ $('a.td_clone_add').on('click', function() {
   input_row = $('table#fixed_table_base tr').eq(trIndex);
   first_td  = input_row.find('td:first');
 
-  first_input_value = first_td.find('input[type=text], textarea, select').attr('value');
+  // var x = first_td.find('input[type=text], textarea, select');
+  // var defaultVal = x.defaultValue;
+  // var currentVal = x.value;
+  //
+  // alert(defaultVal);
+  // alert(currentVal);
+
+
+  // first_input_value = first_td.find('input[type=text], textarea, select').attr('value'); - gives default value!
+  first_input_value = first_td.find('input[type=text], textarea, select').val();
+
   // alert(first_input_value);
 
   input_row.find('td').each(function() {
-    // alert(first_input_value);
-
     $(this).children('input').val(first_input_value);
       // .css('background-color','blue');
   });
+
+  return(false);
 });
 
 
