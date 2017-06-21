@@ -12,6 +12,7 @@ var path  = require('path');
 var crypto = require('crypto');
 var mysql = require('mysql2');
 var spawn = require('child_process').spawn;
+var helpers = require(app_root + '/routes/helpers/helpers');
 
 module.exports = {
   // route middleware to make sure a user is logged in
@@ -46,8 +47,31 @@ module.exports = {
       req.flash('fail', 'The page you are trying to access is for VAMPS admins only.');
       res.redirect('/');
       return;
+  },
+
+  get_file_retrieval: function (req, res) {
+    var export_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+    var file_formats = req.CONSTS.download_file_formats;
+    var file_info = [];
+    fs.readdir(export_dir, function readExportDir(err, files) {
+      for (var f in files) {
+        var pts = files[f].split('-');
+        if (file_formats.indexOf(pts[0]) !== -1) {
+          stat = fs.statSync(export_dir+'/'+files[f]);
+          file_info.push({ 'filename':files[f], 'size':stat.size, 'time':stat.mtime});
+        }
+      }
+      // file_info.sort(function sortByTime(a, b) {
+      //   //reverse sort: recent-->oldest
+      //   return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
+      // });
+      res.render('user_data/file_retrieval', { title: 'VAMPS:Retrieve Data',
+        user: req.user, hostname: req.CONFIG.hostname,
+        finfo: JSON.stringify(file_info)
+      });
+    });
   }
-  
+
 };
 
 /** Benchmarking

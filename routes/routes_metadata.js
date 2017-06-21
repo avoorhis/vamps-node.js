@@ -806,20 +806,16 @@ function make_csv(req, res) {
   project = req.form["project"];
 
   out_csv_file_names = makeFileName(req, project);
-  console.log("OOO out_csv_file_names");
-  console.log(out_csv_file_names);
 
   for (var f = 0; f < out_csv_file_names.length; f++) {
-    console.log('FFF ' + f);
-
     out_csv_file_name = out_csv_file_names[f];
-    console.log('file ' + out_csv_file_name + ' ' + f);
 
     fs.writeFile(out_csv_file_name, csv, function (err) {
       if (err) throw err;
-      console.log('file ' + out_csv_file_name + ' saved');
     });
   }
+  console.log('file ' + out_csv_file_name + ' saved');
+
   console.timeEnd("TIME: make_csv");
 }
 
@@ -829,7 +825,7 @@ function makeFileName(req, project) {
   var rando = helpers.getRandomInt(10000, 99999);
 
   file_name1 = path.join(config.USER_FILES_BASE, req.user.username, "metadata-" + rando.toString() + '_' + project + ".csv");
-  file_name2 = path.join(config.USER_METADATA, "metadata-" + rando.toString() + req.user.username + '_' + project + ".csv");
+  file_name2 = path.join(config.USER_METADATA, "metadata-" + rando.toString() + '_' + req.user.username + '_' + project + ".csv");
 
   console.timeEnd("TIME: makeFileName");
   return [file_name1, file_name2];

@@ -1337,6 +1337,7 @@ function get_name_ordered_users_list(){
     });
     return user_order
 }
+
 function get_name_ordered_projects_list(){
     project_order = []
     for(pid in  PROJECT_INFORMATION_BY_PID){
