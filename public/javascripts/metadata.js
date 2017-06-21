@@ -672,45 +672,26 @@ $('a.td_clone_add').on('click', function() {
   var input_row;
   var first_td;
 
-  alert('done');
+  // alert('done');
   var trIndex = $(this).closest('tr').eq(0).index();
-  // $(this).parent().prevAll();
 
-  alert(trIndex);
+  // alert(trIndex);
 
   input_row = $('table#fixed_table_base tr').eq(trIndex);
   first_td  = input_row.find('td:first');
 
   first_input_value = first_td.find('input[type=text], textarea, select').attr('value');
-        // $('table#fixed_table_base tr').eq(trIndex).find('td:first').find('input');
     // .css({'background-color':'#343434'});
-  alert(first_input_value);
-
-  // $( "tr:first" ).css( "font-style", "italic" );
-  // $('table#fixed_table_base tr').eq(trIndex).find('td:first').find('input[type=text], textarea, select').css({'background-color':'#343434'});
-  // html body div.container-fluid div.row-fluid div.col-lg-12 form fieldset#parameters table tbody tr td div#table_div table#fixed_table_base tbody tr td input#latitude0
-  // var first_cell = $('table#fixed_table_base').find('tr:eq(trIndex)');
-  // .find('td:eq(0)'
-
-  // first_input_value = "155";
+  // alert(first_input_value);
 
   input_row.each(function(){
-    // var id_base = arguments[0][0];
 
     $(this).find('td').each(function() {
-      alert(first_input_value);
+      // alert(first_input_value);
 
-      // $("#name").val($("#user").val());
       $(this).children('input').val(first_input_value);
         // .css('background-color','blue');
     });
-
-      //check if td having empty text
-  //   if ($(this).text().trim() === "")
-  //   {
-      //get parent of td and put css
-      // $(this).parent().css('background-color','blue');
-    // }
   });
 
 
