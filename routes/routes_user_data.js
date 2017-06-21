@@ -432,108 +432,110 @@ router.get('/upload_configuration', [helpers.isLoggedIn], function (req, res) {
 //
 //
 //
-router.post('/config_file', [helpers.isLoggedIn, upload.single('upload_files', 12)],function (req, res) {
-    console.log('in POST config_file')
-    // UPLOAD of outside config file make sure defaults are in place
-    // "unit_choice":"tax_silva119_simple"
-    //"custom_taxa":["NA"]
-    console.log(req.body)
-    console.log('file',req.file)
-    var upld_obj = JSON.parse(fs.readFileSync(req.file.path, 'utf8'));
-    console.log(upld_obj)
-    var timestamp = +new Date();
-    if(upld_obj.hasOwnProperty('image')){
-      console.log('1) FILE is IMAGE')
-      image = upld_obj.image
-      new_filename = 'image-'+image+'-'+timestamp+'.json'
-    }else{
-      console.log('2) FILE is CONFIG')
-      new_filename = 'configuration-'+timestamp+'.json'
-    }
-    // vet data ids for permissions!!
-    var ids = upld_obj.id_name_hash.ids
-    console.log('original_ids',ids)
-    new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
-    console.log('new_ids',new_dataset_ids)
-    // if no dids deny saving file
-    // otherwise save config with new did set
-    // update: ids, names and number_of_ds
-    if(! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) != 'VAMPS'){
-      req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
-      res.redirect('/user_data/upload_configuration');
-      return;
-    }
-    if(! upld_obj.hasOwnProperty('post_items') ){
-        upld_obj.post_items = {}
-    }
-    if(new_dataset_ids.length == 0){
-      req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
-      res.redirect('/user_data/upload_configuration');
-      return;
-    //}else if(new_dataset_ids.length != ids.length){
-      // SOME of the datasets are being excluded (either because they dont exist or no permissions)
-    }else{
-      // move the file ASIS to the CONFIG.USER_FILES_BASE location
-      upld_obj.id_name_hash.ids = new_dataset_ids
-      upld_obj.id_name_hash.names = []
-      upld_obj.post_items.no_of_datasets = new_dataset_ids.length
-      for(n in upld_obj.id_name_hash.ids){
-         did = upld_obj.id_name_hash.ids[n]
-          pid = PROJECT_ID_BY_DID[did]
-          pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did]
-          upld_obj.id_name_hash.names.push(pjds)
-      }
-      // ADD DEFAULTS if needed
-      if(! upld_obj.post_items.hasOwnProperty('metadata') || upld_obj.post_items.metadata.length == 0){
-        upld_obj.post_items.metadata = ['latitude','longitude']
-      }
-      upld_obj.post_items.unit_choice = 'tax_silva119_simple'
-      upld_obj.post_items.custom_taxa = ["NA"]
-      if(! upld_obj.post_items.hasOwnProperty('normalization')){
-        upld_obj.post_items.normalization = 'none'
-      }
-      if(! upld_obj.post_items.hasOwnProperty('selected_distance')){
-        upld_obj.post_items.selected_distance = 'morisita_horn'
-      }
-      if(! upld_obj.post_items.hasOwnProperty('tax_depth')){
-        upld_obj.post_items.tax_depth = 'phylum'
-      }
-      if(! upld_obj.post_items.hasOwnProperty('include_nas')){
-        upld_obj.post_items.include_nas = 'yes'
-      }
-      if(! upld_obj.post_items.hasOwnProperty('domains') || upld_obj.post_items.domains.length == 0){
-        upld_obj.post_items.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
-      }
-      if(! upld_obj.post_items.hasOwnProperty('min_range')){
-        upld_obj.post_items.min_range = 0
-      }
-      if(! upld_obj.post_items.hasOwnProperty('max_range')){
-        upld_obj.post_items.max_range = 100
-      }
-      
-      new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename)
-      console.log('new_filename_path')
-      console.log(new_filename_path)
-      fs.writeFile(new_filename_path, JSON.stringify(upld_obj),  function writeConfigFile01(err) {
-        if (err) {
-          console.log("err 11: ");
-          console.log(err);
-          res.send(err);
-        } else {
-          console.log('write new config file success');
-          res.redirect('/visuals/view_selection/'+new_filename+'/1')  
-        }
-      });
-      
-      //fs.move(req.file.path, new_filename_path, function(err){
-        //if (err) return console.error(err)
-        //var args = "?filename="+new_filename
-        //args += "&from_configuration_file=1"
-        //res.redirect('/visuals/view_selection'+args)
-        //res.redirect('/visuals/view_selection/'+new_filename+'/1')
-      //})
-    }
-});
+// router.post('/config_file', [helpers.isLoggedIn, upload.single('upload_files', 12)],function (req, res) {
+//     console.log('in POST config_file')
+//     // UPLOAD of outside config file make sure defaults are in place
+//     // "unit_choice":"tax_silva119_simple"
+//     //"custom_taxa":["NA"]
+//     console.log(req.body)
+//     console.log('file',req.file)
+//     var upld_obj = JSON.parse(fs.readFileSync(req.file.path, 'utf8'));
+//     console.log(upld_obj)
+//     var timestamp = +new Date();
+//     if(upld_obj.hasOwnProperty('image')){
+//       console.log('1) FILE is IMAGE')
+//       image = upld_obj.image
+//       new_filename = 'image-'+image+'-'+timestamp+'.json'
+//     }else{
+//       console.log('2) FILE is CONFIG')
+//       new_filename = 'configuration-'+timestamp+'.json'
+//     }
+//     // vet data ids for permissions!!
+//     var ids = upld_obj.id_name_hash.ids
+//     console.log('original_ids',ids)
+//     new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
+//     console.log('new_ids',new_dataset_ids)
+//     // if no dids deny saving file
+//     // otherwise save config with new did set
+//     // update: ids, names and number_of_ds
+//     if(! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) != 'VAMPS'){
+//       req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
+//       res.redirect('/user_data/upload_configuration');
+//       return;
+//     }
+//     if(! upld_obj.hasOwnProperty('post_items') ){
+//         upld_obj.post_items = {}
+//     }
+//     if(new_dataset_ids.length == 0){
+//       req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
+//       res.redirect('/user_data/upload_configuration');
+//       return;
+//     //}else if(new_dataset_ids.length != ids.length){
+//       // SOME of the datasets are being excluded (either because they dont exist or no permissions)
+//     }else{
+//       // move the file ASIS to the CONFIG.USER_FILES_BASE location
+//       upld_obj.id_name_hash.ids = new_dataset_ids
+//       upld_obj.id_name_hash.names = []
+//       upld_obj.post_items.no_of_datasets = new_dataset_ids.length
+//       for(n in upld_obj.id_name_hash.ids){
+//          did = upld_obj.id_name_hash.ids[n]
+//           pid = PROJECT_ID_BY_DID[did]
+//           pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did]
+//           upld_obj.id_name_hash.names.push(pjds)
+//       }
+//       // ADD DEFAULTS if needed
+//       if(! upld_obj.post_items.hasOwnProperty('metadata') || upld_obj.post_items.metadata.length == 0){
+//         upld_obj.post_items.metadata = ['latitude','longitude']
+//       }
+//       upld_obj.post_items.unit_choice = 'tax_silva119_simple'
+//       upld_obj.post_items.custom_taxa = ["NA"]
+//       if(! upld_obj.post_items.hasOwnProperty('normalization')){
+//         upld_obj.post_items.normalization = 'none'
+//       }
+//       if(! upld_obj.post_items.hasOwnProperty('selected_distance')){
+//         upld_obj.post_items.selected_distance = 'morisita_horn'
+//       }
+//       if(! upld_obj.post_items.hasOwnProperty('tax_depth')){
+//         upld_obj.post_items.tax_depth = 'phylum'
+//       }
+//       if(! upld_obj.post_items.hasOwnProperty('include_nas')){
+//         upld_obj.post_items.include_nas = 'yes'
+//       }
+//       if(! upld_obj.post_items.hasOwnProperty('domains') || upld_obj.post_items.domains.length == 0){
+//         upld_obj.post_items.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
+//       }
+//       if(! upld_obj.post_items.hasOwnProperty('min_range')){
+//         upld_obj.post_items.min_range = 0
+//       }
+//       if(! upld_obj.post_items.hasOwnProperty('max_range')){
+//         upld_obj.post_items.max_range = 100
+//       }
+//       
+//       new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename)
+//       console.log('new_filename_path')
+//       console.log(new_filename_path)
+//       fs.writeFile(new_filename_path, JSON.stringify(upld_obj),  function writeConfigFile01(err) {
+//         if (err) {
+//           console.log("err 11: ");
+//           console.log(err);
+//           res.send(err);
+//         } else {
+//           console.log('write new config file success');
+//           //res.redirect('/visuals/view_selection/'+new_filename+'/1') 
+//           // 307 redirect to post request
+//           res.redirect(307,'/visuals/view_selection?from_configuration_file=1&fn='+new_filename)  
+//         }
+//       });
+//       
+//       //fs.move(req.file.path, new_filename_path, function(err){
+//         //if (err) return console.error(err)
+//         //var args = "?filename="+new_filename
+//         //args += "&from_configuration_file=1"
+//         //res.redirect('/visuals/view_selection'+args)
+//         //res.redirect('/visuals/view_selection/'+new_filename+'/1')
+//       //})
+//     }
+// });
 //
 //
 //

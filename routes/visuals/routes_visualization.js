@@ -12,7 +12,9 @@ var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport({});
 var zlib = require('zlib');
 var Readable = require('readable-stream').Readable;
-
+var multer    = require('multer');
+var config  = require(app_root + '/config/config');
+var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
 var helpers = require('../helpers/helpers');
 var QUERY = require('../queries');
 
@@ -43,98 +45,54 @@ BIOM_MATRIX = {};
 /*
  * GET visualization page from uploaded IMAGE or CONFIGURATION FILE
  */
-router.get('/view_selection/:filename/:from_configuration_file', helpers.isLoggedIn, function(req, res) {
-    console.log(req.user.username+' req.body: view_selectionGET::prefix-->>');
-    if(req.CONFIG.site == 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print to log');
-    }else{
-      console.log(req.body);
-      console.log(req.params);
-    }
-    console.log('req.body: view_selectionGET>>prefix');
-    req.flash('success', 'Using data from configuration file.');
-    TAXCOUNTS = {};
-    METADATA  = {};
-    var image_to_open = {}
-    var config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.params.filename);
-    var config_file_data = JSON.parse(fs.readFileSync(config_file_path, 'utf8'))
-    if(config_file_data.hasOwnProperty('image')){
-      console.log('FILE is IMAGE')
-      image_to_open['image'] = config_file_data.image
-    }else{
-      console.log('FILE is CONFIG')
-    }
-    if(config_file_data.hasOwnProperty('phylum')){
-      console.log('FILE is IMAGE (phyloseq bars or heatmap)')
-      image_to_open['phylum'] = config_file_data.phylum
-    }else{
-      console.log('FILE is CONFIG or IMAGE w/o phyloseq bars or heatmap')
-    }
-    //console.log(file_data)
-    visual_post_items = config_file_data.post_items;
-    chosen_id_name_hash = config_file_data.id_name_hash;
-    dataset_ids = chosen_id_name_hash.ids;
-    for(var i in dataset_ids){
-      var did = dataset_ids[i]
-      try{
-          if(HDF5_TAXDATA == ''){
-            if(visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
-                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
-            }else{
-                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
-            }
-            var path_to_file = path.join(files_prefix, did +'.json');
-            var jsonfile = require(path_to_file);
-            TAXCOUNTS[did] = jsonfile['taxcounts'];
-            METADATA[did]  = jsonfile['metadata'];
-
-          }else{
-            TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
-            METADATA[did] = helpers.get_attributes_from_hdf5_group(did, 'metadata')
-          }
-      }
-      catch(err){
-        console.log('1- no file '+err.toString()+' Exiting');
-        req.flash('fail', "ERROR \
-          Dataset file not found '"+dataset_ids[i] +".json' (configuration file may be out of date)");
-          //res.redirect('visuals_index');
-          //return;
-      }
-
-    }
-    if(req.CONFIG.site == 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print to log');
-    }else{
-      console.log(visual_post_items)
-    }
-    //var timestamp = +new Date();  // millisecs since the epoch!
-    //timestamp = req.user.username + '_' + timestamp;
-    //visual_post_items.ts = timestamp;
-    distance_matrix = {};
-    BIOM_MATRIX = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
-    var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
-
-    res.render('visuals/view_selection', {
-                                title           : 'VAMPS: Visuals Select',
-                                referer         : 'unit_selection',
-                                chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-                                matrix          : JSON.stringify(BIOM_MATRIX),
-                                metadata        : JSON.stringify(metadata),
-                                constants       : JSON.stringify(req.CONSTS),
-                                post_items      : JSON.stringify(visual_post_items),
-                                user            : req.user,
-                                hostname        : req.CONFIG.hostname,
-                                gekey           : req.CONFIG.GOOGLE_EARTH_KEY,
-                                image_to_render : JSON.stringify(image_to_open),
-	                         
-    });
-
-});
+// router.get('/view_selection/:filename/:from_configuration_file', helpers.isLoggedIn, function(req, res) {
+//     console.log('From Configuration File-GET')
+//     console.log(req.user.username+' req.body: view_selectionGET::prefix-->>');
+//     if(req.CONFIG.site == 'vamps' ){
+//       console.log('VAMPS PRODUCTION -- no print to log');
+//     }else{
+//       console.log(req.body);
+//       console.log(req.params);
+//     }
+//     console.log('req.body: view_selectionGET>>prefix');
+//     TAXCOUNTS = {};
+//     METADATA  = {};
+//     var image_to_open = load_configuration_file(req, req.params.filename)
+//     
+//     
+//     console.log('VS--visual_post_items and id-hash:>>');
+//     if(req.CONFIG.site == 'vamps' ){
+//       console.log('VAMPS PRODUCTION -- no print to log');
+//     }else{
+//       console.log('visual_post_items:');
+//       console.log(visual_post_items);
+//       console.log('chosen_id_name_hash:');
+//       console.log(chosen_id_name_hash);
+//     }
+//     console.log('<<VS--visual_post_items');
+//     console.log('image to open',image_to_open);
+// 
+//     distance_matrix = {};
+//     BIOM_MATRIX = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
+//     var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
+// 
+//     // function see below
+//     render_view_selection(res, req, metadata, image_to_open)
+//    
+// 
+// });
 //
 //  V I E W  S E L E C T I O N
 //
-router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
-
+router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files', 12)], function(req, res) {
+   console.log('in POST view_selection')
+  
+    // var url_parts = url.parse(req.url, true);
+//     var query = url_parts.query;
+    //console.log('query', req.query)
+    //console.log('file',req.file)
+    //console.log('body',req.body);
+    //console.log('upload',upload.single('upload_files', 12))
   // This page (view_selection) comes after the datasets and units have been selected
   //    in the previous two pages.
   // It should be protected with isLoggedIn like /unit_selection below.
@@ -167,7 +125,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   console.log('<<--req.body: view_selection');
 
   helpers.start = process.hrtime();
-
+  image_to_open = {}
 
   if(req.body.restore_image === '1'){
     console.log('in view_selection RESTORE IMAGE')
@@ -175,75 +133,29 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     req.flash('success','The dataset order has been updated.');
     dataset_ids = req.body.ds_order;
     chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);
-  }else if(req.body.from_configuration_file === '1' || req.query.from_configuration_file === '1'){
-    
+  }else if(req.body.from_directory_configuration_file === '1'){
+    // ALL Config files now loaded through GET (see router.get('/view_selection/:filename/:from_configuration_file')
+    console.log('From System Configuration File-POST')
     TAXCOUNTS = {};
     METADATA  = {};
-
     var config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
+    // creates visual_post_items and chosen_id_name_hash
+    // No Cleaning needed as file is from our server
     var config_file_data = JSON.parse(fs.readFileSync(config_file_path, 'utf8'))
-    //console.log(file_data)
-    var ids = config_file_data.id_name_hash.ids
-    var new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
-    if(new_dataset_ids.length == 0){
-      req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
-      res.redirect('saved_elements');
-      return;
-    }else{
-      req.flash('success', 'Using data from configuration file.');
-      console.log('in view_selection FROM CONFIG or IMAGE')
-      chosen_id_name_hash = {}
-      visual_post_items = {}
-      chosen_id_name_hash.ids = new_dataset_ids
-      chosen_id_name_hash.names = []
-      visual_post_items = config_file_data.post_items;
-      visual_post_items.no_of_datasets = new_dataset_ids.length
-      for(n in chosen_id_name_hash.ids){
-         did = chosen_id_name_hash.ids[n]
-          pid = PROJECT_ID_BY_DID[did]
-          pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did]
-          chosen_id_name_hash.names.push(pjds)
-      }
-      if(! config_file_data.hasOwnProperty('metadata') || config_file_data['metadata'].length == 0){
-        visual_post_items.metadata = ['latitude','longitude']
-      }
-    }
+    var image_to_open = load_configuration_file(req, config_file_data)
+    
+  }else if(req.body.from_upload_configuration_file === '1'){
+    // UPLOAD Config file
+    console.log('From Upload Config File-POST')
+    TAXCOUNTS = {};
+    METADATA  = {};
+    // For this we need the upload.single('upload_files', 12) in the post definition
+    // creates clean visual_post_items and chosen_id_name_hash
+    var config_file_data = create_clean_config(req, req.file)
+    //var config_file_data = JSON.parse(fs.readFileSync(req.file.path, 'utf8'))
+    var image_to_open = load_configuration_file(req, config_file_data)
     
 
-    dataset_ids = chosen_id_name_hash.ids;
-
-
-    for(var i in dataset_ids){
-      var did = dataset_ids[i]
-
-      try{
-
-        if(HDF5_TAXDATA == ''){
-            if(visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
-                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
-            }else{
-                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
-            }
-            var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
-            var jsonfile = require(path_to_file);
-            TAXCOUNTS[did] = jsonfile['taxcounts'];
-            METADATA[did]  = jsonfile['metadata'];
-        }else{
-
-            TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
-            METADATA[did] = helpers.get_attributes_from_hdf5_group(did, 'metadata')
-        }
-
-      }
-      catch(err){
-        console.log('2-no file '+err.toString()+' Exiting');
-        req.flash('fail', "ERROR \
-          Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
-          //res.redirect('visuals_index');
-          //return;
-      }
-
-    }
   }else{
     // Direct from unit_select
     // GLOBAL Variable:
@@ -255,8 +167,6 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 
       try{
 
-
-        if(HDF5_TAXDATA == ''){
             if(visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
             }else{
@@ -266,12 +176,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
             var jsonfile = require(path_to_file);
             TAXCOUNTS[did] = jsonfile['taxcounts'];
             METADATA[did]  = jsonfile['metadata'];
-        }else{
-
-            TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
-            METADATA[did] = helpers.get_attributes_from_hdf5_group(did, 'metadata')
-        }
-
+        
       }
       catch(err){
         console.log('2-no file '+err.toString()+' Exiting');
@@ -291,26 +196,22 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   distance_matrix = {};
   BIOM_MATRIX = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
   visual_post_items.max_ds_count = BIOM_MATRIX.max_dataset_count;
-
-
-  console.log('VS--visual_post_items:>>');
+  var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
+  
+  console.log('VS--visual_post_items and id-hash:>>');
   if(req.CONFIG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
-      console.log(visual_post_items);
-      console.log('visual_post_items');
+      console.log('visual_post_items:');
+      console.log(visual_post_items); 
+      console.log('chosen_id_name_hash:');
+      console.log(chosen_id_name_hash);     
   }
   console.log('<<VS--visual_post_items');
-
- 
- 
-  // GLOBAL
-  //console.log('metadata>>');
-  //metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
-
-  var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
-
+  console.log('image to open',image_to_open);
   
+  // function see below
+  //render_view_selection(res, req, metadata, image_to_open)
   res.render('visuals/view_selection', {
                                 title           : 'VAMPS: Visuals Select',
                                 referer         : 'unit_selection',
@@ -322,13 +223,221 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                 user            : req.user,
                                 hostname        : req.CONFIG.hostname,
                                 gekey           : req.CONFIG.GOOGLE_EARTH_KEY,
-                                image_to_render : JSON.stringify({}),
-	                         
-                 });
+                                image_to_render : JSON.stringify(image_to_open),	                         
+             });
 
 });
+//
+// Load Configuration File
+//
+function load_configuration_file(req, config_file_data )
+{
+    //console.log(req)
+    var image_to_open = {}
+    // console.log(req.CONFIG.USER_FILES_BASE)
+//     console.log(req.user.username)
+//     console.log(req.params.filename)
+//     var config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, filename);
+//     console.log(config_file_path)
+    //var config_file_data = JSON.parse(fs.readFileSync(filepath, 'utf8'))
+    console.log(config_file_data)
+    if(config_file_data.hasOwnProperty('image')){
+      console.log('FILE is IMAGE')
+      image_to_open.image = config_file_data.image
+    }else{
+      console.log('FILE is CONFIG')
+    }
+    if(config_file_data.hasOwnProperty('phylum')){
+      console.log('FILE is IMAGE (phyloseq bars or heatmap)')
+      image_to_open.phylum = config_file_data.phylum
+    }else{
+      console.log('FILE is CONFIG or IMAGE w/o phyloseq bars or heatmap')
+    }
+    visual_post_items = config_file_data.post_items;
+    var ids = config_file_data.id_name_hash.ids
+    var new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
+    if(new_dataset_ids.length == 0){
+        req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
+        res.redirect('saved_elements');
+        return;
+    }else{
+        req.flash('success', 'Using data from configuration file.');
+        console.log('in view_selection FROM CONFIG or IMAGE')
+        chosen_id_name_hash = {}
+        
+        chosen_id_name_hash.ids = new_dataset_ids
+        chosen_id_name_hash.names = []
 
-
+        visual_post_items.no_of_datasets = new_dataset_ids.length
+        for(n in chosen_id_name_hash.ids){
+             did = chosen_id_name_hash.ids[n]
+              pid = PROJECT_ID_BY_DID[did]
+              pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did]
+              chosen_id_name_hash.names.push(pjds)
+        }
+        if(! config_file_data.hasOwnProperty('metadata') || config_file_data['metadata'].length == 0){
+            visual_post_items.metadata = ['latitude','longitude']
+        }
+    }
+    
+    for(var i in chosen_id_name_hash.ids){
+      var did = chosen_id_name_hash.ids[i]
+      try{
+            if(visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
+                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
+            }else{
+                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
+            }
+            var path_to_file = path.join(files_prefix, did.toString() +'.json');
+            var jsonfile = require(path_to_file);
+            TAXCOUNTS[did] = jsonfile['taxcounts'];
+            METADATA[did]  = jsonfile['metadata'];
+      }
+      catch(err){
+        console.log('2-no file '+err.toString()+' Exiting');
+        req.flash('fail', "ERROR \
+          Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
+      }
+    }
+    return image_to_open
+}
+//
+// Render View Selection page
+//
+// function render_view_selection(res,req, metadata, image_to_open)
+// {
+// 
+//                                 
+//     res.render('visuals/view_selection', {
+//                                 title           : 'VAMPS: Visuals Select',
+//                                 referer         : 'unit_selection',
+//                                 chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
+//                                 matrix          : JSON.stringify(BIOM_MATRIX),
+//                                 metadata        : JSON.stringify(metadata),
+//                                 constants       : JSON.stringify(req.CONSTS),
+//                                 post_items      : JSON.stringify(visual_post_items),
+//                                 user            : req.user,
+//                                 hostname        : req.CONFIG.hostname,
+//                                 gekey           : req.CONFIG.GOOGLE_EARTH_KEY,
+//                                 image_to_render : JSON.stringify(image_to_open),	                         
+//              });
+// }
+//
+//  Create Clean Configuration File (From file upload)
+//
+function create_clean_config(req, fileobj)
+{
+    var upld_obj = JSON.parse(fs.readFileSync(fileobj.path, 'utf8'));
+    var timestamp = +new Date();
+    if(upld_obj.hasOwnProperty('image')){
+      console.log('1) FILE is IMAGE')
+      image = upld_obj.image
+      new_filename = 'image-'+image+'-'+timestamp+'.json'
+    }else{
+      console.log('2) FILE is CONFIG')
+      new_filename = 'configuration-'+timestamp+'.json'
+    }
+    var ids = upld_obj.id_name_hash.ids
+    console.log('original_ids',ids)
+    new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
+    console.log('new_ids',new_dataset_ids)
+    if(! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) != 'VAMPS'){
+      req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
+      res.redirect('/user_data/upload_configuration');
+      return;
+    }
+    if(! upld_obj.hasOwnProperty('post_items') ){
+        upld_obj.post_items = {}
+    }
+    if(new_dataset_ids.length == 0){
+      req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
+      res.redirect('/user_data/upload_configuration');
+      return;
+    //}else if(new_dataset_ids.length != ids.length){
+      // SOME of the datasets are being excluded (either because they dont exist or no permissions)
+    }else{
+      // move the file ASIS to the CONFIG.USER_FILES_BASE location
+      upld_obj.id_name_hash.ids = new_dataset_ids
+      upld_obj.id_name_hash.names = []
+      upld_obj.post_items.no_of_datasets = new_dataset_ids.length
+      for(n in upld_obj.id_name_hash.ids){
+         did = upld_obj.id_name_hash.ids[n]
+          pid = PROJECT_ID_BY_DID[did]
+          pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did]
+          upld_obj.id_name_hash.names.push(pjds)
+      }
+      // ADD DEFAULTS if needed
+      if(! upld_obj.post_items.hasOwnProperty('metadata') || upld_obj.post_items.metadata.length == 0){
+        upld_obj.post_items.metadata = ['latitude','longitude']
+      }
+      upld_obj.post_items.unit_choice = 'tax_silva119_simple'
+      upld_obj.post_items.custom_taxa = ["NA"]
+      var allowed_norms = ['none','maximum','frequency']
+      if(! upld_obj.post_items.hasOwnProperty('normalization') || allowed_norms.indexOf(upld_obj.post_items.normalization) == -1){
+        upld_obj.post_items.normalization = 'none'
+      }
+      var allowed_distance_metrics = ['jaccard','kulczynski','canberra','morisita_horn','bray_curtis']
+      if(! upld_obj.post_items.hasOwnProperty('selected_distance') || allowed_distance_metrics.indexOf(upld_obj.post_items.selected_distance) == -1){
+        upld_obj.post_items.selected_distance = 'morisita_horn'
+      }
+      var allowed_ranks = req.CONSTS.RANKS
+      if(! upld_obj.post_items.hasOwnProperty('tax_depth') || allowed_ranks.indexOf(upld_obj.post_items.tax_depth) == -1){
+        upld_obj.post_items.tax_depth = 'phylum'
+      }
+      var allowed_incnas = ['yes','no']
+      if(! upld_obj.post_items.hasOwnProperty('include_nas') || allowed_incnas.indexOf(upld_obj.post_items.include_nas) == -1){
+        upld_obj.post_items.include_nas = 'yes'
+      }
+      // DOMAINS
+      var allowed_domains = req.CONSTS.DOMAINS.domains
+      if(! upld_obj.post_items.hasOwnProperty('domains') || upld_obj.post_items.domains.length == 0){
+        upld_obj.post_items.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
+      }else{
+          var arr = []          
+          for( n in allowed_domains){
+            if(upld_obj.post_items.domains.indexOf(allowed_domains[n].name) != -1){
+                arr.push(allowed_domains[n].name)
+            }
+          }
+          upld_obj.post_items.domains = arr
+          if(upld_obj.post_items.domains.length == 0){
+            upld_obj.post_items.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
+          }
+      }
+        console.log('min', typeof upld_obj.post_items.min_range)
+      if(typeof upld_obj.post_items.min_range == 'string'){
+        upld_obj.post_items.min_range = parseInt(upld_obj.post_items.min_range) || 0
+      }
+      if(! upld_obj.post_items.hasOwnProperty('min_range') || upld_obj.post_items.min_range <0  || upld_obj.post_items.min_range >99){
+        upld_obj.post_items.min_range = 0
+      }
+      if(typeof upld_obj.post_items.max_range == 'string'){
+        upld_obj.post_items.max_range = parseInt(upld_obj.post_items.max_range) || 100
+      }
+      if(! upld_obj.post_items.hasOwnProperty('max_range') || upld_obj.post_items.max_range <1  || upld_obj.post_items.max_range >100){
+        upld_obj.post_items.max_range = 100
+      }
+      
+      new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename)
+      console.log('new_filename_path')
+      console.log(new_filename_path)
+      fs.writeFileSync(new_filename_path, JSON.stringify(upld_obj))
+      return upld_obj
+      
+     //  ,  function writeConfigFile01(err) {
+//         if (err) {
+//           req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
+//             //res.redirect('/user_data/upload_configuration');
+//           res.send(err);
+//         } else {
+//           console.log('write new config file success');
+//           console.log(new_filename_path);
+//           return new_filename_path
+//           
+//         }
+//       });
+    }
+}
 //
 // U N I T  S E L E C T I O N
 //

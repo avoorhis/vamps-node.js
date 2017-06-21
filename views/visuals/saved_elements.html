@@ -58,9 +58,14 @@
 		</td>
 		<td>						
 			<% if(datatype == 'configuration' || datatype == 'image'){ %>
+				<!-- 
+<% lnk = 'view_selection/'+filename +'/1' %>
+<a href='<%= lnk %>' >GET-Load (view)</a>
+ -->
+				
 				<form id='' method='POST' action='view_selection'>
-					<input type='submit' class='btn btn-xs btn-link' value='Load' />
-					<input type='hidden'  name='from_configuration_file' value='1' />
+					<input type='submit' class='btn btn-xs btn-link' value='POST-Load (view)' />
+					<input type='hidden'  name='from_directory_configuration_file' value='1' />
 					<input type='hidden'  name='filename' value='<%= filename %>' />
 				</form>
 				<!-- <a href='#' onclick="load_configuration('<%= filename %>','<%= user.username %>')">Visualizations</a> -->

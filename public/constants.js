@@ -118,9 +118,6 @@ constants.DISTANCECHOICES = { choices: [
     {id: 'kulczynski',      show: 'Kulczynski'  },
     {id: 'canberra',        show: 'Canberra'    },
     {id: 'morisita_horn',   show: 'Morisita-Horn'},
-        // both R and python
-
-
     {id: 'bray_curtis',     show: 'Bray-Curtis' },
  //       {id: 'manhattan',       show: 'Manhattan'   },
  //       {id: 'gower',           show: 'Gower'       },
