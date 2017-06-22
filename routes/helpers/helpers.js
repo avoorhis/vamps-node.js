@@ -14,79 +14,43 @@ var mysql = require('mysql2');
 var spawn = require('child_process').spawn;
 var helpers = require(app_root + '/routes/helpers/helpers');
 
-module.exports = {
+// module.exports = {
   // route middleware to make sure a user is logged in
-  isLoggedIn: function (req, res, next) {
-      // if user is authenticated in the session, carry on
+module.exports.isLoggedIn = function(req, res, next) {
+    // if user is authenticated in the session, carry on
 
-      if (req.isAuthenticated()) {
-        console.log("Hurray! isLoggedIn.req.isAuthenticated:",req.user.username);
-        return next();
-      }
-      // if they aren't redirect them to the home page
-      console.log("Oops! NOT isLoggedIn.req.isAuthenticated");
-      // save the url in the session
-      req.session.returnTo = req.originalUrl;
-      req.flash('loginMessage', 'Please login or register before continuing.');
-      res.redirect('/users/login');
-      return;
-  },
+    if (req.isAuthenticated()) {
+      console.log("Hurray! isLoggedIn.req.isAuthenticated:", req.user.username);
+      return next();
+    }
+    // if they aren't redirect them to the home page
+    console.log("Oops! NOT isLoggedIn.req.isAuthenticated");
+    // save the url in the session
+    req.session.returnTo = req.originalUrl;
+    req.flash('loginMessage', 'Please login or register before continuing.');
+    res.redirect('/users/login');
+    // return;
+  };
 
   // route middleware to make sure a user is an aministrator
-  isAdmin: function (req, res, next) {
-      if (req.user.security_level === 1) {
-        console.log("Hurray! USER is an Admin:",req.user.username);
-        return next();
-      }
-      // if they aren't redirect them to the home page
-      console.log("Whoa! NOT an Admin: ",req.user.username);
-      // save the url in the session
-      req.session.returnTo = req.path;
-      //console.log('URL Requested: '+JSON.stringify(req));
-      //console.log(util.inspect(req, {showHidden: false, depth: null}));
-      req.flash('fail', 'The page you are trying to access is for VAMPS admins only.');
-      res.redirect('/');
-      return;
-  },
+  module.exports.isAdmin = function(req, res, next) {
+    if (req.user.security_level === 1) {
+      console.log("Hurray! USER is an Admin:", req.user.username);
+      return next();
+    }
+    // if they aren't redirect them to the home page
+    console.log("Whoa! NOT an Admin: ", req.user.username);
+    // save the url in the session
+    req.session.returnTo = req.path;
+    //console.log('URL Requested: '+JSON.stringify(req));
+    //console.log(util.inspect(req, {showHidden: false, depth: null}));
+    req.flash('fail', 'The page you are trying to access is for VAMPS admins only.');
+    res.redirect('/');
+    // return;
+  };
 
-  walk: function(dir, done) {
-    // var file_formats = CONSTS.download_file_formats;
-    var results = [];
-    fs.readdir(dir, function(err, list) {
-      if (err) return done(err);
-      var pending = list.length;
-      if (!pending) return done(null, results);
-      list.forEach(function(file) {
-        file = path.resolve(dir, file);
-        fs.stat(file, function(err, stat) {
-          if (stat && stat.isDirectory()) {
-            walk(file, function(err, res) {
-              results = results.concat(res);
-              if (!--pending){
-                done(null, results);
-              }
-            });
-          } else {
-            var filename = path.basename(file);
-            // var file_first_part = filename.split('-')[0];
-            // if (file_formats.indexOf(file_first_part) !== -1) {
-            if (check_file_formats(filename)) {
-              results.push({ 'filename':filename, 'size':stat.size, 'time':stat.mtime});
-            }
-            // }
-            if (!--pending) done(null, results);
-          }
-        });
-      });
-    });
-  }
-};
 
-function check_file_formats(filename) {
-  var file_formats = CONSTS.download_file_formats;
-  var file_first_part = filename.split('-')[0];
-  return file_formats.indexOf(file_first_part) !== -1;
-}
+// };
 
 /** Benchmarking
 * Usage:
@@ -98,6 +62,45 @@ function check_file_formats(filename) {
 */
 
 module.exports.start = process.hrtime();
+
+function check_file_formats(filename) {
+  var file_formats = CONSTS.download_file_formats;
+  var file_first_part = filename.split('-')[0];
+  return file_formats.indexOf(file_first_part) !== -1;
+}
+
+function walk_recursively(dir, done) {
+// var file_formats = CONSTS.download_file_formats;
+var results = [];
+fs.readdir(dir, function(err, list) {
+  if (err) return done(err);
+  var pending = list.length;
+  if (!pending) return done(null, results);
+  list.forEach(function(file) {
+    file = path.resolve(dir, file);
+    fs.stat(file, function(err, stat) {
+      if (stat && stat.isDirectory()) {
+        walk_recursively(file, function(err, res) {
+          results = results.concat(res);
+          if (!--pending){
+            done(null, results);
+          }
+        });
+      } else {
+        var filename = path.basename(file);
+        if (check_file_formats(filename)) {
+          results.push({ 'filename':filename, 'size':stat.size, 'time':stat.mtime});
+        }
+        if (!--pending) done(null, results);
+      }
+    });
+  });
+});
+}
+
+module.exports.walk = function(dir, done) {
+  walk_recursively(dir, done);
+};
 
 module.exports.elapsed_time = function(note){
     var precision = 3; // 3 decimal places

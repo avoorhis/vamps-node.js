@@ -1098,7 +1098,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
 });
 
 router.get('/metadata_file_retrieval', [helpers.isLoggedIn, helpers.isAdmin], function get_metadata_file_retrieval(req, res) {
-  var export_dir = path.join(config.USER_METADATA);
+  var export_dir = path.join(config.USER_FILES_BASE);
 
   console.log("XXX export_dir");
   console.log(export_dir);
