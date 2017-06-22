@@ -742,20 +742,9 @@ CopyColumn = function() {
     // var columnNo = $(this).index();
     alert(columnNo);
     $(this).closest("table")
-      .find("tr td:nth-child(" + (columnNo+1) + ")")
-      // .find("tr").eq(columnNo)
+      .find("tr td:nth-child(" + (columnNo + 2) + ")")
       .css("color", "blue");
   });
-  // $(".cp_clmn").click(function () {
-  //   var column_idx = $(this).closest('td').index();
-  //   alert('clicked!');
-  //   alert(column_idx);
-  //
-  //   $("#table#fixed_table_base").find('tr').each(function() {
-  //     var $td_curr = $(this).find('td').eq(column_idx);
-  //     var $td_next = $(this).find('td').eq(column_idx + 1);
-  //   });
-  //   alert("iii");
 
       //     $row = $("<tr></tr>");
       // $row.append($tds.eq(0).clone()).append($tds.eq(1).clone()).appendTo($target);
