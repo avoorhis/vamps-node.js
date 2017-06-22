@@ -805,15 +805,25 @@ function make_csv(req, res) {
 
   project = req.form["project"];
 
-  out_csv_file_names = makeFileName(req, project);
+  // out_csv_file_names = makeFileName(req, project);
 
-  for (var f = 0; f < out_csv_file_names.length; f++) {
-    out_csv_file_name = out_csv_file_names[f];
+  // for (var f = 0; f < out_csv_file_names.length; f++) {
+  //   out_csv_file_name = out_csv_file_names[f];
+  //
+  //   fs.writeFile(out_csv_file_name, csv, function (err) {
+  //     if (err) throw err;
+  //   });
+  // }
+  var rando = helpers.getRandomInt(10000, 99999);
 
-    fs.writeFile(out_csv_file_name, csv, function (err) {
-      if (err) throw err;
-    });
-  }
+  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-" + rando.toString() + '_' + project + ".csv");
+  console.log("OOO out_csv_file_name");
+  console.log(out_csv_file_name);
+
+  fs.writeFile(out_csv_file_name, csv, function (err) {
+    if (err) throw err;
+  });
+
   console.log('file ' + out_csv_file_name + ' saved');
 
   console.timeEnd("TIME: make_csv");
