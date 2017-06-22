@@ -816,7 +816,7 @@ function make_csv(req, res) {
   // }
   var rando = helpers.getRandomInt(10000, 99999);
 
-  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-" + rando.toString() + '_' + project + ".csv");
+  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + project + '_' + rando.toString() + ".csv");
   console.log("OOO out_csv_file_name");
   console.log(out_csv_file_name);
 
