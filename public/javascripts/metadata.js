@@ -739,41 +739,17 @@ addCopyBtns = function() {
 CopyColumn = function() {
   $(".cp_clmn").click(function(){
     var columnNo = $(this).closest('td').index();
-    // var columnNo = $(this).index();
-    // alert(columnNo);
-    // $(this).closest("table")
-    //   .find("tr td:nth-child(" + (columnNo + 2) + ")")
-    //   .css("color", "blue");
     var this_tbl = $('table#fixed_table_base');
     var $tdsInColumnCurrent = this_tbl
       .find("tr td:nth-child(" + (columnNo + 1) + ")");
-    // var $tdsInColumnNext = this_tbl
-    //   .find("tr td:nth-child(" + (columnNo + 2) + ")");
-    // $tds.filter(":nth-child(" + index + ")");
 
-    // manipulate $tdsInColumn in any way
     $tdsInColumnCurrent.each(function () {
       var current_val = $(this).children( ':input' ).val();
-      // var next_val = $(this).siblings().eq(columnNo + 2).children( ':input' ).val();
-      // alert('current_val = ' + current_val + '; next_val = ' + next_val);
       $(this).siblings().eq(columnNo).children( ':input' ).val(current_val).change();
-      // input_row.find('td').each(function() {
-      //   $(this).children(':input').val(first_input_value).change();
-        // .css('background-color','blue');
-      // });
-      // var next_val = $(this).closest('td').next('td').find('input').val();
-      // alert(next_val);
-
-      // current_val = $(this).css("color", "green");
     });
   });
-
-
-
-      //     $row = $("<tr></tr>");
-      // $row.append($tds.eq(0).clone()).append($tds.eq(1).clone()).appendTo($target);
-  // });
 };
+
 // ---
 
 $(document).ready(function(){
