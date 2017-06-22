@@ -141,14 +141,14 @@ module.exports.write_to_file = function(fileName, text)
   fs.writeFile(fileName, text, function(err){
     if(err) {
       throw err;
-      } else {
-
-    }
+      }
   });
 };
+
 module.exports.getRandomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+};
+
 module.exports.isInt = function(value)
 {
   return !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value));
@@ -285,12 +285,12 @@ module.exports.get_select_primer_suite_query = function(rows){
     for (var i=0; i < rows.length; i++) {
 
         if( ! MD_PRIMER_SUITE.hasOwnProperty(rows[i].primer_suite_id)){
-            MD_PRIMER_SUITE[rows[i].primer_suite_id] = {}
-            MD_PRIMER_SUITE[rows[i].primer_suite_id].id = rows[i].primer_suite_id
-            MD_PRIMER_SUITE[rows[i].primer_suite_id].name   = rows[i].primer_suite
-            MD_PRIMER_SUITE[rows[i].primer_suite_id].region = rows[i].region
-            MD_PRIMER_SUITE[rows[i].primer_suite_id].domain = rows[i].domain
-            MD_PRIMER_SUITE[rows[i].primer_suite_id].primer = []            
+            MD_PRIMER_SUITE[rows[i].primer_suite_id] = {};
+            MD_PRIMER_SUITE[rows[i].primer_suite_id].id = rows[i].primer_suite_id;
+            MD_PRIMER_SUITE[rows[i].primer_suite_id].name   = rows[i].primer_suite;
+            MD_PRIMER_SUITE[rows[i].primer_suite_id].region = rows[i].region;
+            MD_PRIMER_SUITE[rows[i].primer_suite_id].domain = rows[i].domain;
+            MD_PRIMER_SUITE[rows[i].primer_suite_id].primer = [];
         }
         MD_PRIMER_SUITE[rows[i].primer_suite_id].primer.push({
                 "primer"    :   rows[i].primer,
@@ -298,7 +298,7 @@ module.exports.get_select_primer_suite_query = function(rows){
                 "direction" :   rows[i].direction,
                 "sequence"  :   rows[i].sequence                              
 
-            })
+            });
             
         
     }
@@ -436,7 +436,7 @@ module.exports.get_metadata_from_file = function (){
    console.log(e);
    AllMetadataFromFile = {};
  }
- return AllMetadataFromFile
+ return AllMetadataFromFile;
 };
 
 // TODO: "This function's cyclomatic complexity is too high. (11)"
@@ -496,20 +496,20 @@ module.exports.sort_json_matrix = function(mtx, fxn_obj) {
     // else original mtx returned
     // sorts MATRIX by tax alpha or counts OF FIRST COLUMN only
     // Does not (yet) sort datasets
-    obj = []
-    for(i in mtx.data){
-      obj.push({tax:mtx.rows[i],cnt:mtx.data[i]})
+    obj = [];
+    for(var i in mtx.data){
+      obj.push({tax:mtx.rows[i],cnt:mtx.data[i]});
     }
     var reorder = false;
     if(fxn_obj.orderby == 'alpha'){
       if(fxn_obj.value == 'a'){
         obj.sort(function sortByAlpha(a, b) {
-               return module.exports.compareStrings_alpha(b.tax.id, a.tax.id)
+               return module.exports.compareStrings_alpha(b.tax.id, a.tax.id);
         });
         reorder = true;
       }else{
         obj.sort(function sortByAlpha(a, b) {
-               return module.exports.compareStrings_alpha(a.tax.id, b.tax.id)
+               return module.exports.compareStrings_alpha(a.tax.id, b.tax.id);
         });
         reorder = true;
       }
@@ -530,20 +530,20 @@ module.exports.sort_json_matrix = function(mtx, fxn_obj) {
     }
 
     if(reorder){
-      mtx.rows = []
-      mtx.data = []
+      mtx.rows = [];
+      mtx.data = [];
       for(i in obj){
         //console.log(i,obj[i])
-        mtx.rows.push(obj[i].tax)
-        mtx.data.push(obj[i].cnt)
+        mtx.rows.push(obj[i].tax);
+        mtx.data.push(obj[i].cnt);
       }
     }
-    return mtx
+    return mtx;
 
 };
 module.exports.get_portal_projects = function(req, portal) {
 
-  projects = [];
+  var projects = [];
   var basis = req.CONSTS.PORTALS[portal];
   //switch (portal) {
   console.log('ALL_DATASETS-PORTAL', ALL_DATASETS);
@@ -571,7 +571,7 @@ module.exports.get_portal_projects = function(req, portal) {
 };
 module.exports.get_public_projects = function(req) {
 
-  projects = [];
+  var projects = [];
   //var basis = req.CONSTS.PORTALS[portal]
   //switch (portal) {
   //console.log('ALL_DATASETS--get_public_projects', ALL_DATASETS);
@@ -610,19 +610,19 @@ module.exports.get_attributes_from_hdf5_group = function(did, type) {
 };
 
 module.exports.get_PTREE_metadata = function(OBJ, q) {
-    projects = [];
-    phash = {}
+    var projects = [];
+    phash = {};
     OBJ.forEach(function(prj) {
-      dids = DATASET_IDS_BY_PID[prj.pid]
-      for(n in dids){
+      dids = DATASET_IDS_BY_PID[prj.pid];
+      for(var n in dids){
 
         if(dids[n] in AllMetadata && AllMetadata[dids[n]].hasOwnProperty(q)){
-          phash[prj.pid] = 1
+          phash[prj.pid] = 1;
         }
       }
     });
 
-    for(pid in phash){
+    for(var pid in phash){
         projects.push(PROJECT_INFORMATION_BY_PID[pid]);
     }
 
@@ -662,20 +662,20 @@ module.exports.make_color_seq = function(seq){
 };    //end of function make_color_seq
 
 module.exports.update_project_information_global_object = function(pid, form, user_obj){
-    console.log('Updating PROJECT_INFORMATION_BY_PID')
+    console.log('Updating PROJECT_INFORMATION_BY_PID');
     if(config.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
     }else{
-      console.log(pid)
-      console.log(JSON.stringify(form))
-      console.log(JSON.stringify(user_obj))
+      console.log(pid);
+      console.log(JSON.stringify(form));
+      console.log(JSON.stringify(user_obj));
     }
     if( PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid) == true){
-        console.log('pid already in PROJECT_INFORMATION_BY_PID -- how can that be?')
-        return
+        console.log('pid already in PROJECT_INFORMATION_BY_PID -- how can that be?');
+        return;
     }
-    console.log('Creating new PROJECT_INFORMATION_BY_PID[pid]')
-    PROJECT_INFORMATION_BY_PID[pid] = {}
+    console.log('Creating new PROJECT_INFORMATION_BY_PID[pid]');
+    PROJECT_INFORMATION_BY_PID[pid] = {};
     PROJECT_INFORMATION_BY_PID[pid] = {
             "last" :             user_obj.last_name,
             "first" :            user_obj.first_name,
@@ -693,9 +693,9 @@ module.exports.update_project_information_global_object = function(pid, form, us
             "permissions" :     [user_obj.user_id]
           };
     PROJECT_INFORMATION_BY_PNAME[form.new_project_name] =  PROJECT_INFORMATION_BY_PID[pid];
-    console.log('PROJECT_INFORMATION_BY_PID[pid]')
-    console.log(PROJECT_INFORMATION_BY_PID[pid])
-}
+    console.log('PROJECT_INFORMATION_BY_PID[pid]');
+    console.log(PROJECT_INFORMATION_BY_PID[pid]);
+};
 
 // TODO: Column: 52 "This function's cyclomatic complexity is too high. (20)"
 module.exports.run_select_datasets_query = function(rows){
@@ -728,17 +728,18 @@ module.exports.run_select_datasets_query = function(rows){
             DATASET_IDS_BY_PID[pid].push(did);
            
         }
-        
+
+      var envpkgid;
         if(AllMetadata.hasOwnProperty(did) && AllMetadata[did].hasOwnProperty('env_package_id')){
-            var envpkgid = AllMetadata[did].env_package_id
+            envpkgid = AllMetadata[did].env_package_id;
         }else{
-            var envpkgid = '1'
+            envpkgid = '1';
         }
           
           
           
         if( ! PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid)){
-                var public = rows[i].public;
+                var isPublic = rows[i].public;
                 var owner_id = rows[i].owner_user_id;
                 PROJECT_INFORMATION_BY_PID[pid] = {
                 "last" :            rows[i].last_name,
@@ -752,9 +753,9 @@ module.exports.run_select_datasets_query = function(rows){
                 "pid" :             pid,
                 "title" :           rows[i].title,
                 "description" :     rows[i].project_description,
-                "public" :          rows[i].public,
+                "public" :          rows[i]. isPublic
                 };
-                if(public || rows[i].username === 'guest'){
+                if( isPublic || rows[i].username === 'guest'){
                 PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
                 }else{
                 PROJECT_INFORMATION_BY_PID[pid].permissions = [owner_id]; // initially has only project owner_id
@@ -1195,10 +1196,7 @@ module.exports.get_qsub_script_text_only = function(req, scriptlog, dir_path, cm
 };
 
 module.exports.isLocal = function (req) {
-  if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
-    {return false;}
-  else
-    {return true;}
+  return !(req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb');
 };
 
 module.exports.deleteFolderRecursive = function(path) {
@@ -1423,12 +1421,12 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
 
   // public/private
   var NewPROJECT_TREE_OBJ5 = []
-  if(filter_obj.public == '-1'){
+  if(filter_obj. isPublic == '-1'){
       NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4
   }else{
       //console.log('Filtering for PRIVACY')
       NewPROJECT_TREE_OBJ4.forEach(function(prj) {
-           if(PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public)){
+           if(PROJECT_INFORMATION_BY_PID[prj.pid]. isPublic === parseInt(filter_obj. isPublic)){
              NewPROJECT_TREE_OBJ5.push(prj);
            }
        });
@@ -1457,7 +1455,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   }  
   
   
-  var new_obj = NewPROJECT_TREE_OBJ8
+  var new_obj = NewPROJECT_TREE_OBJ8;
   //console.log('new_obj')
   //console.log(new_obj)
   return new_obj
@@ -1650,10 +1648,10 @@ module.exports.screen_dids_for_permissions = function(req, dids)
   // bypassing the usual tree filter 'filter_project_tree_for_permissions' (fxn above)
   // permissions are in PROJECT_INFORMATION_BY_PID
   var new_did_list = []
-  for(i in dids){
+  for(var i in dids){
     if(PROJECT_ID_BY_DID.hasOwnProperty(dids[i]) && PROJECT_INFORMATION_BY_PID.hasOwnProperty(PROJECT_ID_BY_DID[dids[i]])){
-      pinfo = PROJECT_INFORMATION_BY_PID[ PROJECT_ID_BY_DID[dids[i]] ]
-      if(pinfo.public == 1 || pinfo.public == '1'){
+      var pinfo = PROJECT_INFORMATION_BY_PID[ PROJECT_ID_BY_DID[dids[i]] ]
+      if(pinfo. isPublic == 1 || pinfo. isPublic == '1'){
         new_did_list.push(dids[i])
       }else{
         // allow if user is owner (should have uid in permissions but check anyway)
