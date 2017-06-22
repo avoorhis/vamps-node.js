@@ -829,17 +829,17 @@ function make_csv(req, res) {
   console.timeEnd("TIME: make_csv");
 }
 
-function makeFileName(req, project) {
-  console.time("TIME: makeFileName");
-
-  var rando = helpers.getRandomInt(10000, 99999);
-
-  file_name1 = path.join(config.USER_FILES_BASE, req.user.username, "metadata-" + rando.toString() + '_' + project + ".csv");
-  file_name2 = path.join(config.USER_METADATA, "metadata-" + rando.toString() + '_' + req.user.username + '_' + project + ".csv");
-
-  console.timeEnd("TIME: makeFileName");
-  return [file_name1, file_name2];
-}
+// function makeFileName(req, project) {
+//   console.time("TIME: makeFileName");
+//
+//   var rando = helpers.getRandomInt(10000, 99999);
+//
+//   file_name1 = path.join(config.USER_FILES_BASE, req.user.username, "metadata-" + rando.toString() + '_' + project + ".csv");
+//   file_name2 = path.join(config.USER_METADATA, "metadata-" + rando.toString() + '_' + req.user.username + '_' + project + ".csv");
+//
+//   console.timeEnd("TIME: makeFileName");
+//   return [file_name1, file_name2];
+// }
 
 function convertArrayOfObjectsToCSV(args) {
   console.time("TIME: convertArrayOfObjectsToCSV");
