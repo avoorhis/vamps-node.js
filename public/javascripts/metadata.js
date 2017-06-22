@@ -745,7 +745,7 @@ CopyColumn = function() {
 
     $tdsInColumnCurrent.each(function () {
       var current_val = $(this).children( ':input' ).val();
-      $(this).siblings().eq(columnNo).children( ':input' ).val(current_val).change();
+      $(this).siblings().not('.readonly_td').eq(columnNo).children( ':input' ).val(current_val).change();
     });
   });
 };
