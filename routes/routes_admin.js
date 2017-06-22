@@ -1097,7 +1097,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
 
 });
 
-router.get('/metadata_file_retrieval', [helpers.isLoggedIn, helpers.isAdmin], function get_metadata_file_retrieval(req, res) {
+router.get('/all_files_retrieval', [helpers.isLoggedIn, helpers.isAdmin], function get_all_files_retrieval(req, res) {
   var export_dir = path.join(config.USER_FILES_BASE);
 
   console.log("XXX export_dir");
@@ -1110,8 +1110,8 @@ router.get('/metadata_file_retrieval', [helpers.isLoggedIn, helpers.isAdmin], fu
       return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
     });
 
-    res.render('admin/metadata_file_retrieval', {
-      title: 'VAMPS: Metadata Files',
+    res.render('admin/all_files_retrieval', {
+      title: 'VAMPS: Users Files',
       user: req.user, hostname: req.CONFIG.hostname,
       // project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
       finfo: JSON.stringify(files)
@@ -1366,7 +1366,7 @@ function get_name_ordered_users_list(){
 }
 
 function get_name_ordered_projects_list(){
-    project_order = []
+    project_order = [];
     for(pid in  PROJECT_INFORMATION_BY_PID){
                project_order.push(PROJECT_INFORMATION_BY_PID[pid])
     }
@@ -1376,7 +1376,7 @@ function get_name_ordered_projects_list(){
     return project_order
 }
 
-//
+// TODO: mv to helpers and refactor
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 
   console.log('in file_utils');
