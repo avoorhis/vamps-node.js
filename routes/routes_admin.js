@@ -738,10 +738,10 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], funct
 router.get('/update_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
   console.log('in GET validate_metadata');
   res.render('admin/validate_metadata', {
-              title     :'VAMPS Validate Metadata',
-              user: req.user,
+              title       :'VAMPS Validate Metadata',
+              user        : req.user,
               project_info: JSON.stringify(PROJECT_INFORMATION_BY_PNAME),
-              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+              hostname    : req.CONFIG.hostname // get the user out of session and pass to template
   });
 });
 //
@@ -1097,7 +1097,9 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
 
 });
 
-router.get('/metadata_file_retrieval', helpers.isLoggedIn, function get_metadata_file_retrieval(req, res) {
+router.get('/metadata_file_retrieval', [helpers.isLoggedIn, helpers.isAdmin], function get_metadata_file_retrieval(req, res) {
+  console.log("config.USER_METADATA");
+  console.log(config.USER_METADATA);
   var export_dir = path.join(config.USER_METADATA);
 
   console.log("XXX export_dir");
@@ -1109,8 +1111,12 @@ router.get('/metadata_file_retrieval', helpers.isLoggedIn, function get_metadata
       //reverse sort: recent-->oldest
       return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
     });
-    res.render('user_data/file_retrieval', { title: 'VAMPS: Metadata Files',
+    console.log("files fff");
+    console.log(files);
+    res.render('admin/validate_metadata', {
+      title: 'VAMPS: Metadata Files',
       user: req.user, hostname: req.CONFIG.hostname,
+      project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
       finfo: JSON.stringify(files)
 
     });
