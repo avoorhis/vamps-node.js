@@ -688,6 +688,8 @@ $('a.td_clone_add').on('click', function() {
   return(false);
 });
 
+
+
 $('.env_biome').change(function(){
   populate_secondary_select.call(this, ['biome', biome_seq_options]);
 }).each(function(){
@@ -727,11 +729,31 @@ $('#table_div').scroll(function(){
   fnScroll();
 });
 
+
+addCopyBtns = function() {
+  $('table#fixed_table_base').find('tr').eq(1).find('td').each(function() {
+    $(this).append("stuff you want to append");
+  });
+  alert("TTTT");
+
+  // $('table#fixed_table_base').find('tr').eq(1).find('td').eq(1).css('background-color', 'blue');
+
+
+  // alert("UUU");
+  // $('table#fixed_table_base').find('tr').eq(1).hide();
+
+  // var trIndex = $(this).closest('tr').eq(0).index();
+  // .closest('tr').eq(0).index();
+  //$('table#fixed_table_base').find('tr').eq(1).css('background-color','blue');
+//.children('td');
+//.css('background-color','blue');
+
+};
 // ---
 
 $(document).ready(function(){
 
-
+  addCopyBtns();
   fnAdjustTable();
 
 });
