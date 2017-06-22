@@ -741,10 +741,25 @@ CopyColumn = function() {
     var columnNo = $(this).closest('td').index();
     // var columnNo = $(this).index();
     alert(columnNo);
-    $(this).closest("table")
-      .find("tr td:nth-child(" + (columnNo + 2) + ")")
-      .css("color", "blue");
+    // $(this).closest("table")
+    //   .find("tr td:nth-child(" + (columnNo + 2) + ")")
+    //   .css("color", "blue");
+    var this_tbl = $('table#fixed_table_base');
+    var $tdsInColumnCurrent = this_tbl
+      .find("tr td:nth-child(" + (columnNo + 1) + ")");
+    var $tdsInColumnNext = this_tbl
+      .find("tr td:nth-child(" + (columnNo + 2) + ")");
+    // $tds.filter(":nth-child(" + index + ")");
+
+    // manipulate $tdsInColumn in any way
+    $tdsInColumnCurrent.each(function () {
+      current_val = $(this).children( ':input' ).val();
+      alert(current_val);
+      // current_val = $(this).css("color", "green");
+    });
   });
+
+
 
       //     $row = $("<tr></tr>");
       // $row.append($tds.eq(0).clone()).append($tds.eq(1).clone()).appendTo($target);
