@@ -734,26 +734,20 @@ addCopyBtns = function() {
   $('table#fixed_table_base').find('tr').eq(1).find('td').each(function() {
     $(this).append('<input type="button" value="Copy to next" class="cp_clmn"/>');
   });
-  alert("TTTT");
+};
 
-  // $('table#fixed_table_base').find('tr').eq(1).find('td').eq(1).css('background-color', 'blue');
-
-
-  // alert("UUU");
-  // $('table#fixed_table_base').find('tr').eq(1).hide();
-
-  // var trIndex = $(this).closest('tr').eq(0).index();
-  // .closest('tr').eq(0).index();
-  //$('table#fixed_table_base').find('tr').eq(1).css('background-color','blue');
-//.children('td');
-//.css('background-color','blue');
-
+CopyColumn = function() {
+  $(".cp_clmn").click(function () {
+    var column_idx = $(this).closest('td').index();
+    alert('clicked!');
+    alert(column_idx);
+  });
 };
 // ---
 
 $(document).ready(function(){
-
   addCopyBtns();
+  CopyColumn();
   fnAdjustTable();
 
 });
