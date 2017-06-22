@@ -732,7 +732,7 @@ $('#table_div').scroll(function(){
 
 addCopyBtns = function() {
   $('table#fixed_table_base').find('tr').eq(1).find('td').each(function() {
-    $(this).append("stuff you want to append");
+    $(this).append('<input type="button" value="Copy to next" class="cp_clmn"/>');
   });
   alert("TTTT");
 
