@@ -729,6 +729,40 @@ $('#table_div').scroll(function(){
   fnScroll();
 });
 
+addCopyFirst = function () {
+  // .not('.header_divider').not('.required_fields') $('div:not(.a,.b)').empty()
+  var columnNo = 0;
+  var this_tbl = $('table#first_col_table');
+  var $tdsInColumnCurrent = this_tbl
+    .find("tr td:nth-child(" + (columnNo + 1) + "):not('.header_divider')");
+
+
+
+
+  $tdsInColumnCurrent.each(function () {
+    // alert('JIJIJ');
+    // alert($(this).index());
+    // $(this).append('<input type="button" value="CNNN" class="cp_first"/>');
+    var next_text = $(this).parent().find('td').eq(1).text();
+    // $(this).parent().next('td').text();
+    // alert(next_text);
+
+    if (next_text !== "MBL Supplied") {
+      $(this).css('background-color','Aqua');
+
+    }
+
+    // $( "input:not(:checked) + span" ).css( "background-color", "yellow" );
+
+  });
+
+  //   $('table#first_col_table').find('tr').each(function() {
+  //   var curr_td = $(this).find('td').eq(0).not('.header_divider');
+  //   alert('JIJIJ');
+  //   alert($(this).index());
+  //   curr_td.append('<input type="button" value="CNNN" class="cp_first"/>');
+  // });
+};
 
 addCopyBtns = function() {
   $('table#fixed_table_base').find('tr').eq(1).find('td').each(function() {
@@ -756,6 +790,7 @@ CopyColumn = function() {
 $(document).ready(function(){
   addCopyBtns();
   CopyColumn();
+  addCopyFirst();
   fnAdjustTable();
 
 });
