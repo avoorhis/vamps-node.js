@@ -666,28 +666,29 @@ $("#removerow").on('click', function() {
   }
 });
 
-$('a.td_clone_add').on('click', function() {
-  var first_input_value;
-  var input_row;
-  var first_td;
+copy_first = function() {
+  $('a.td_clone_add').on('click', function() {
+    var first_input_value;
+    var input_row;
+    var first_td;
 
-  var trIndex = $(this).closest('tr').eq(0).index();
+    var trIndex = $(this).closest('tr').eq(0).index();
 
-  input_row = $('table#fixed_table_base tr').eq(trIndex);
-  first_td  = input_row.find('td:first');
+    input_row = $('table#fixed_table_base tr').eq(trIndex);
+    first_td  = input_row.find('td:first');
 
-  first_input_value = first_td.children( ':input' ).val();
+    first_input_value = first_td.children( ':input' ).val();
 
-  // alert(first_input_value);
+    // alert(first_input_value);
 
-  input_row.find('td').each(function() {
-    $(this).children(':input').val(first_input_value).change();
-    // .css('background-color','blue');
+    input_row.find('td').each(function() {
+      $(this).children(':input').val(first_input_value).change();
+      // .css('background-color','blue');
+    });
+
+    return(false);
   });
-
-  return(false);
-});
-
+};
 
 
 $('.env_biome').change(function(){
@@ -749,7 +750,10 @@ addCopyFirst = function () {
 
     if (next_text !== "MBL Supplied") {
       $(this).css('background-color','Aqua');
+      // <!--<span class="makeLeft">-->
 
+      $(this).wrapInner('<span class="makeLeft"></span>')
+        .append('<span class="makeRight"><a href="#" class="td_clone_add">Copy 1st</a></span>');
     }
 
     // $( "input:not(:checked) + span" ).css( "background-color", "yellow" );
@@ -791,6 +795,7 @@ $(document).ready(function(){
   addCopyBtns();
   CopyColumn();
   addCopyFirst();
+  copy_first();
   fnAdjustTable();
 
 });
