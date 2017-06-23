@@ -595,7 +595,7 @@ fnScroll = function(){
 // ---
 var rowIndex = 0;
 
-function first_col_table_add_row(args) {
+function firstColTableAddRow(args) {
   var currRowIndex = arguments[0][0];
   var row_id_base = arguments[0][1];
 
@@ -610,7 +610,7 @@ function first_col_table_add_row(args) {
 
 }
 
-function fixed_table_base_add_row(args) {
+function fixedTableBaseAddRow(args) {
   var currRowIndex = arguments[0][0];
   var row_id_base = arguments[0][1];
   var fixed_table_base_el = $('#fixed_table_base');
@@ -629,13 +629,12 @@ function fixed_table_base_add_row(args) {
 
 }
 
-
 $("#addrow").on('click', function() {
   rowIndex++;
 
   var row_id_base = 'new_row' + rowIndex;
-  first_col_table_add_row.call(this, [rowIndex, row_id_base]);
-  fixed_table_base_add_row.call(this, [rowIndex, row_id_base]);
+  firstColTableAddRow.call(this, [rowIndex, row_id_base]);
+  fixedTableBaseAddRow.call(this, [rowIndex, row_id_base]);
 
   $('#new_row_num').val( rowIndex );
 
@@ -779,6 +778,6 @@ $(document).ready(function(){
   addCopyFirst();
   copyFirst();
   fnAdjustTable();
-  fixed_table_base_add_row();
+
 
 });
