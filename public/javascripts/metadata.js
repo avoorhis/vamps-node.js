@@ -779,5 +779,6 @@ $(document).ready(function(){
   addCopyFirst();
   copyFirst();
   fnAdjustTable();
+  fixed_table_base_add_row();
 
 });
