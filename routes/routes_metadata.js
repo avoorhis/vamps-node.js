@@ -375,55 +375,18 @@ router.post('/metadata_upload',
   ),
   function (req, res) {
     console.time("TIME: post metadata_upload");
-
-
-    // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
-      // console.log('MMM AllMetadata = helpers.get_metadata_from_file()')
-      // AllMetadata = helpers.get_metadata_from_file()
-      // console.log(AllMetadata);
-
-      // console.log("QQQ req.params");
-      // console.log(req.params);
-      //
-      //
-      // console.log("req.form");
-      // console.log(req.form);
-      //
-      // console.log("req.body");
-      // console.log(req.body);
-
       req.flash("fail", req.form.errors);
-      // console.log("req.form.errors");
-      // console.log(req.form.errors);
-      //
-      // console.log('req.form.getErrors("env_biome")');
-      // console.log(req.form.getErrors("env_biome"));
-      //
-      //
-      // console.log('req.form.getErrors()');
-      // console.log(req.form.getErrors());
-
-
       editMetadataForm(req, res);
       //TODO: remove make_csv from here, use only if valid.
       make_csv(req, res);
-
-
     }
     else {
       console.log('in post /metadata_upload');
-      // console.log("PPP req.form");
-      // console.log(req.form);
-      // console.log(req);
-      //  req.form:
-      //      dna_extraction_meth: "CTAB phenol/chloroform",
       console.time("TIME: saveMetadata");
       saveMetadata(req, res);
       console.timeEnd("TIME: saveMetadata");
-
-
       res.redirect("/user_data/your_projects");
     }
     console.timeEnd("TIME: post metadata_upload");
@@ -528,35 +491,6 @@ function editMetadataForm(req, res){
   console.timeEnd("TIME: editMetadataForm");
 }
 
-//
-// router.get("/metadata_upload_from_file", [helpers.isLoggedIn], function (req, res) {
-//   console.time("TIME: get metadata_upload_from_file");
-//   console.log("in get metadata/metadata_upload_from_file");
-//
-//   //TODO: What to show for project and dataset?
-//   res.render('metadata/metadata_upload_from_file', {
-//     title: 'VAMPS: Metadata_upload',
-//     user: req.user,
-//     hostname: req.CONFIG.hostname
-//   });
-//   console.timeEnd("TIME: get metadata_upload_from_file");
-//
-// });
-
-router.get("/metadata_upload_new", [helpers.isLoggedIn], function (req, res) {
-  console.time("TIME: get metadata_upload_new");
-
-  console.log("in get metadata/metadata_upload_new");
-
-  //TODO: What to show for project and dataset?
-  res.render('metadata/metadata_upload_new', {
-    title: 'VAMPS: Metadata_upload',
-    user: req.user,
-    hostname: req.CONFIG.hostname
-  });
-  console.timeEnd("TIME: get metadata_upload_new");
-
-});
 
 //TODO: benchmark
 function get_second(element) {
