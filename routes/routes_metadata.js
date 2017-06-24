@@ -600,21 +600,21 @@ function populate_metadata_hash(rows, pid, all_metadata) {
     // console.log(all_metadata[pid]);
 
     all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
+    all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, AllMetadata[dataset_id], all_metadata[pid]);
+
+    // console.log("6_2 all_metadata[pid] add_all_val_by_key");
+    // console.log(all_metadata[pid]);
 
 
-    console.log("555222 all_metadata[pid] add_all_metadata_from_file");
-    console.log(all_metadata[pid]);
+    // console.log("555222 all_metadata[pid] add_all_metadata_from_file");
+    // console.log(all_metadata[pid]);
 
     // add_required_metadata_from_id(CONSTS.REQ_METADATA_FIELDS_wIDs, dataset_id);
 
-    add_required_metadata_from_id(CONSTS.REQ_METADATA_FIELDS_wIDs, dataset_id, all_metadata[pid]);
-    console.log("6_1 all_metadata[pid] add_required_metadata_from_id");
-    console.log(all_metadata[pid]);
+    // add_required_metadata_from_id(CONSTS.REQ_METADATA_FIELDS_wIDs, dataset_id, all_metadata[pid]);
+    // console.log("6_1 all_metadata[pid] add_required_metadata_from_id");
+    // console.log(all_metadata[pid]);
   }
-  all_metadata = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, AllMetadata[dataset_id], all_metadata);
-
-  console.log("6_2 all_metadata[pid] add_all_val_by_key");
-  console.log(all_metadata[pid]);
 
   console.timeEnd("TIME: 3) populate_metadata_hash");
 
@@ -674,18 +674,18 @@ function add_all_val_by_key(my_key_hash, my_val_hash, res_hash) {
 //
 // }
 
-function add_required_metadata_from_id(my_hash, dataset_id, all_metadata_pid) {
-  console.time("TIME: 6) add_required_metadata_from_id");
-  for (var idx = 0, len = my_hash.length; idx < len; idx++) {
-    var key = my_hash[idx];
-    var data = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
-    var val = data.value;
-    all_metadata_pid[key].push(val);
-  }
-  console.timeEnd("TIME: 6) add_required_metadata_from_id");
-  return all_metadata_pid;
-
-}
+// function add_required_metadata_from_id(my_hash, dataset_id, all_metadata_pid) {
+//   console.time("TIME: 6) add_required_metadata_from_id");
+//   for (var idx = 0, len = my_hash.length; idx < len; idx++) {
+//     var key = my_hash[idx];
+//     var data = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
+//     var val = data.value;
+//     all_metadata_pid[key].push(val);
+//   }
+//   console.timeEnd("TIME: 6) add_required_metadata_from_id");
+//   return all_metadata_pid;
+//
+// }
 
 // function add_required_metadata_from_id(my_hash, dataset_id, all_metadata) {
 //   console.time("TIME: 6) add_required_metadata_from_id");
