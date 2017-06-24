@@ -593,8 +593,9 @@ function populate_metadata_hash(rows, pid, all_metadata) {
 
     all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
 
+    all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, AllMetadata[dataset_id], all_metadata[pid]);
+
   }
-  all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, AllMetadata[dataset_id], all_metadata[pid]);
 
   console.timeEnd("TIME: 3) populate_metadata_hash");
 
@@ -603,18 +604,18 @@ function populate_metadata_hash(rows, pid, all_metadata) {
 
 
 function add_all_val_by_key(my_key_hash, my_val_hash, res_hash) {
-  console.time("TIME: 5c) add_all_val_by_key");
+  console.time("TIME: 5) add_all_val_by_key");
 
   for (var i1 = 0, len1 = my_key_hash.length; i1 < len1; i1++) {
     var key = my_key_hash[i1];
     var val = my_val_hash[key];
-    // if ()
-    res_hash[key] = [];
+    // if (!(res_hash.hasOwnProperty(key))) {
+    //   res_hash[key] = [];
+    // }
     res_hash[key].push(val);
   }
-  console.timeEnd("TIME: 5c) add_all_val_by_key");
+  console.timeEnd("TIME: 5) add_all_val_by_key");
   return res_hash;
-
 }
 
 function get_all_field_names(all_metadata) {
