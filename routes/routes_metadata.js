@@ -600,7 +600,6 @@ function populate_metadata_hash(rows, pid, all_metadata) {
     // console.log(all_metadata[pid]);
 
     all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
-    all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, AllMetadata[dataset_id], all_metadata[pid]);
 
     // console.log("6_2 all_metadata[pid] add_all_val_by_key");
     // console.log(all_metadata[pid]);
@@ -615,6 +614,7 @@ function populate_metadata_hash(rows, pid, all_metadata) {
     // console.log("6_1 all_metadata[pid] add_required_metadata_from_id");
     // console.log(all_metadata[pid]);
   }
+  all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, AllMetadata[dataset_id], all_metadata[pid]);
 
   console.timeEnd("TIME: 3) populate_metadata_hash");
 
