@@ -590,29 +590,9 @@ function populate_metadata_hash(rows, pid, all_metadata) {
       */
 
     var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
-    // all_metadata_add1 = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id]);
-    // console.log("555111 all_metadata_add1 add_all_metadata_from_file");
-    // console.log(all_metadata_add1);
-    //
-    // all_metadata[pid] = add_all_metadata_from_file(all_metadata_keys_hash, dataset_id, all_metadata[pid]);
-    //
-    // console.log("555 all_metadata[pid] add_all_metadata_from_file");
-    // console.log(all_metadata[pid]);
 
     all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
 
-    // console.log("6_2 all_metadata[pid] add_all_val_by_key");
-    // console.log(all_metadata[pid]);
-
-
-    // console.log("555222 all_metadata[pid] add_all_metadata_from_file");
-    // console.log(all_metadata[pid]);
-
-    // add_required_metadata_from_id(CONSTS.REQ_METADATA_FIELDS_wIDs, dataset_id);
-
-    // add_required_metadata_from_id(CONSTS.REQ_METADATA_FIELDS_wIDs, dataset_id, all_metadata[pid]);
-    // console.log("6_1 all_metadata[pid] add_required_metadata_from_id");
-    // console.log(all_metadata[pid]);
   }
   all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, AllMetadata[dataset_id], all_metadata[pid]);
 
@@ -621,38 +601,14 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   return all_metadata;
 }
 
-// function add_all_val_by_key(my_key_hash, my_value_hash) {
-//   console.time("TIME: 5a) add_all_val_by_key");
-//   var my_result_hash = {};
-//
-//   for (var idx = 0; idx < my_key_hash.length; idx++) {
-//     var key = my_key_hash[idx];
-//     my_result_hash[key] = [];
-//     var val = my_value_hash[key];
-//     my_result_hash[key].push(val);
-//   }
-//   console.timeEnd("TIME: 5a) add_all_val_by_key");
-//   return my_result_hash;
-// }
-
-// function add_all_val_by_key1(input_object, input_keys_arr) {
-//   console.time("TIME: 5b) add_all_val_by_key1");
-//   Object.keys(input_object)
-//     .filter(i => keys.includes(i))
-//     .reduce((acc, key) => {
-//     acc[key] = obj[key];
-//   return acc;
-// }
-//   console.timeEnd("TIME: 5b) add_all_val_by_key1");
-//   return my_result_hash;
-// }
 
 function add_all_val_by_key(my_key_hash, my_val_hash, res_hash) {
   console.time("TIME: 5c) add_all_val_by_key");
 
   for (var i1 = 0, len1 = my_key_hash.length; i1 < len1; i1++) {
     var key = my_key_hash[i1];
-    var val = my_val_hash[key]; // TODO: combine with add_required_metadata_from_id? That's the only difference besides "my_hash"
+    var val = my_val_hash[key];
+    // if ()
     res_hash[key] = [];
     res_hash[key].push(val);
   }
@@ -660,45 +616,6 @@ function add_all_val_by_key(my_key_hash, my_val_hash, res_hash) {
   return res_hash;
 
 }
-
-// function add_all_metadata_from_file(my_key_hash, dataset_id, all_metadata_pid) {
-//   console.time("TIME: 5) add_all_metadata_from_file");
-//
-//   for (var i1 = 0, len1 = my_key_hash.length; i1 < len1; i1++) {
-//     var key = my_key_hash[i1];
-//     var val = AllMetadata[dataset_id][key]; // TODO: combine with add_required_metadata_from_id? That's the only difference besides "my_hash"
-//     all_metadata_pid[key].push(val);
-//   }
-//   console.timeEnd("TIME: 5) add_all_metadata_from_file");
-//   return all_metadata_pid;
-//
-// }
-
-// function add_required_metadata_from_id(my_hash, dataset_id, all_metadata_pid) {
-//   console.time("TIME: 6) add_required_metadata_from_id");
-//   for (var idx = 0, len = my_hash.length; idx < len; idx++) {
-//     var key = my_hash[idx];
-//     var data = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
-//     var val = data.value;
-//     all_metadata_pid[key].push(val);
-//   }
-//   console.timeEnd("TIME: 6) add_required_metadata_from_id");
-//   return all_metadata_pid;
-//
-// }
-
-// function add_required_metadata_from_id(my_hash, dataset_id, all_metadata) {
-//   console.time("TIME: 6) add_required_metadata_from_id");
-//   for (var idx = 0, len = my_hash.length; idx < len; idx++) {
-//     var key = my_hash[idx];
-//     var data = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
-//     var val = data.value;
-//     all_metadata[pid][key].push(val);
-//   }
-//   console.timeEnd("TIME: 6) add_required_metadata_from_id");
-//   return all_metadata;
-//
-// }
 
 function get_all_field_names(all_metadata) {
   console.time("TIME: get_all_field_names");
