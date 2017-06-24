@@ -363,11 +363,11 @@ function editMetadataForm(req, res){
 
   console.log('in editMetadataForm');
   var edit_metadata_address = "metadata/metadata_upload_from_file";
-
+  var pid = req.body.project_id;
   var new_row_info_arr_err = collect_new_row(req);
   var new_row_info_arr = new_row_info_arr_err[0];
+  //TODO:   req = new_row_info_arr_err[1]; return not the whole req
   req = new_row_info_arr_err[1];
-
 
   console.log("FFF new_row_info_arr");
   console.log(new_row_info_arr);
