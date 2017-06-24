@@ -158,20 +158,7 @@ router.post('/start_edit',
     console.time("TIME: 1) in post /start_edit");
 
     make_metadata_hash(req, res);
-    // console.log("TTT all_metadata from start_edit");
-    // console.log(all_metadata);
-    /*
-     FFF req
-     { project_id: '47', project: 'DCO_GAI_Bv3v5' }
-     47
-     DCO_GAI_Bv3v5
 
-     res.json(rows);
-
-     var user = rows[0].userid;
-     var password= rows[0].password;
-
-     */
     console.timeEnd("TIME: 1) in post /start_edit");
   });
 
@@ -192,42 +179,8 @@ function make_metadata_hash(req, res) {
       }
       else
       {
-        // var new_row_info_arr_err = new_row_num_validation(req);
-        // var new_row_info_arr = new_row_info_arr_err[0];
-        // req = new_row_info_arr_err[1];
-
         console.log("in make_metadata_hash");
-        // console.log("rows");
-        // empty all_metadata
         all_metadata = populate_metadata_hash(rows, pid, all_metadata);
-        // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
-        // console.log("EEE all_field_names");
-        // console.log(all_field_names);
-        // var dividers = CONSTS.ORDERED_METADATA_DIVIDERS;
-
-        // console.log("YYY all_metadata from make_metadata_hash");
-        // console.log(all_metadata);
-
-        // console.log("GGG req.body new lines from make_metadata_hash");
-        // console.log(req.body.);
-
-        /*
-         YYY all_metadata from make_metadata_hash
-         { "47":
-         { dataset_id: [ 4312, 4313, 4314, 4315, 4316, 4317, 4318, 4319 ],
-         dataset: [ 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'Sk_hlaup' ],
-         ...
-         project: "DCO_GAI_Bv3v5",
-         title: "Icelandic Volcanic Lake",
-
-         XXX1 all_metadata: req.form
-         { dataset_id: [ "0", "1", "2", "3", "4", "5", "6", "7" ],
-         project_title: "Icelandic Volcanic Lake",
-         pi_name: "",
-
-         */
-        // console.log('PPP4 from populate_metadata_hash all_metadata[pid]');
-        // console.log(all_metadata[pid]);
 
         var project = all_metadata[pid]["project"];
         var abstract_data = get_project_abstract_data(project, req);
