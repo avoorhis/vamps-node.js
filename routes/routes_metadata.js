@@ -151,6 +151,120 @@ function get_metadata_hash(md_selected){
 // ---- metadata_upload ----
 // AllMetadata = helpers.get_metadata_from_file()
 
+router.post('/start_edit',
+  [helpers.isLoggedIn],
+  function (req, res) {
+
+    console.time("TIME: 1) in post /start_edit");
+
+    make_metadata_hash(req, res);
+    // console.log("TTT all_metadata from start_edit");
+    // console.log(all_metadata);
+    /*
+     FFF req
+     { project_id: '47', project: 'DCO_GAI_Bv3v5' }
+     47
+     DCO_GAI_Bv3v5
+
+     res.json(rows);
+
+     var user = rows[0].userid;
+     var password= rows[0].password;
+
+     */
+    console.timeEnd("TIME: 1) in post /start_edit");
+  });
+
+// TODO: rename
+// todo: if there is req.form (or req.body?) use the result?
+function make_metadata_hash(req, res) {
+  console.time("TIME: 2) make_metadata_hash");
+
+  pid = req.body.project_id;
+  all_metadata = {};
+  if (helpers.isInt(pid))
+  {
+    all_metadata[pid] = {};
+    connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows, fields) {
+      if (err)
+      {
+        console.log('get_select_datasets_queryPID error: ' + err);
+      }
+      else
+      {
+        // var new_row_info_arr_err = new_row_num_validation(req);
+        // var new_row_info_arr = new_row_info_arr_err[0];
+        // req = new_row_info_arr_err[1];
+
+        console.log("in make_metadata_hash");
+        // console.log("rows");
+        // empty all_metadata
+        all_metadata = populate_metadata_hash(rows, pid, all_metadata);
+        // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
+        // console.log("EEE all_field_names");
+        // console.log(all_field_names);
+        // var dividers = CONSTS.ORDERED_METADATA_DIVIDERS;
+
+        // console.log("YYY all_metadata from make_metadata_hash");
+        // console.log(all_metadata);
+
+        // console.log("GGG req.body new lines from make_metadata_hash");
+        // console.log(req.body.);
+
+        /*
+         YYY all_metadata from make_metadata_hash
+         { "47":
+         { dataset_id: [ 4312, 4313, 4314, 4315, 4316, 4317, 4318, 4319 ],
+         dataset: [ 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'Sk_hlaup' ],
+         ...
+         project: "DCO_GAI_Bv3v5",
+         title: "Icelandic Volcanic Lake",
+
+         XXX1 all_metadata: req.form
+         { dataset_id: [ "0", "1", "2", "3", "4", "5", "6", "7" ],
+         project_title: "Icelandic Volcanic Lake",
+         pi_name: "",
+
+         */
+        // console.log('PPP4 from populate_metadata_hash all_metadata[pid]');
+        // console.log(all_metadata[pid]);
+
+        var project = all_metadata[pid]["project"];
+        var abstract_data = get_project_abstract_data(project, req);
+        var project_prefix = get_project_prefix(project);
+
+        res.render("metadata/metadata_upload_from_file", {
+          title: "VAMPS: Metadata_upload",
+          user: req.user,
+          hostname: req.CONFIG.hostname,
+          abstract_data_pr: abstract_data[project_prefix],
+          all_metadata: all_metadata,
+          all_field_names: CONSTS.ORDERED_METADATA_NAMES,
+          dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+          dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+          dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+          biome_primary_options: CONSTS.BIOME_PRIMARY,
+          feature_primary_options: CONSTS.FEATURE_PRIMARY,
+          material_primary_options: CONSTS.MATERIAL_PRIMARY,
+          metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+          env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+          investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+          sample_type_options: CONSTS.SAMPLE_TYPE,
+          new_row_info_arr: ""
+        });
+
+      }
+      // end else
+    });
+  }
+  else
+  { // end if int
+    console.log('ERROR pid is not an integer: ', pid);
+  }
+  console.timeEnd("TIME: 2) make_metadata_hash");
+}
+
+
 router.get("/metadata_upload_from_file", [helpers.isLoggedIn], function (req, res) {
   console.time("TIME: get metadata_upload_from_file");
   console.log("in get metadata/metadata_upload_from_file");
@@ -489,30 +603,6 @@ function saveMetadata(req, res){
 
 }
 
-router.post('/start_edit',
-  [helpers.isLoggedIn],
-  function (req, res) {
-
-    console.time("TIME: 1) in post /start_edit");
-
-    make_metadata_hash(req, res);
-    // console.log("TTT all_metadata from start_edit");
-    // console.log(all_metadata);
-    /*
-    FFF req
-    { project_id: '47', project: 'DCO_GAI_Bv3v5' }
-    47
-    DCO_GAI_Bv3v5
-
-     res.json(rows);
-
-     var user = rows[0].userid;
-     var password= rows[0].password;
-
-    */
-    console.timeEnd("TIME: 1) in post /start_edit");
-});
-
 function make_empty_arrays(all_metadata, pid) {
   console.time("TIME: 4) make_empty_arrays");
 
@@ -619,10 +709,6 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   collection_date: '2007-06-01',
       */
 
-    // add_all_metadata_from_file(Object.keys(AllMetadata[dataset_id]), dataset_id);
-    //
-    // add_required_metadata_from_id(CONSTS.REQ_METADATA_FIELDS_wIDs, dataset_id);
-
     var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
 
     all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
@@ -650,30 +736,6 @@ function add_all_val_by_key(my_key_hash, my_val_hash, res_hash) {
   return res_hash;
 }
 
-function add_all_metadata_from_file(my_hash, dataset_id) {
-  console.time("TIME: 5) add_all_metadata_from_file");
-
-  for (var i1 = 0, len1 = my_hash.length; i1 < len1; i1++) {
-    var key = my_hash[i1];
-    var val = AllMetadata[dataset_id][key]; // TODO: combine with add_required_metadata_from_id? That's the only difference besides "my_hash"
-    all_metadata[pid][key].push(val);
-  }
-  console.timeEnd("TIME: 5) add_all_metadata_from_file");
-
-}
-
-function add_required_metadata_from_id(my_hash, dataset_id) {
-  console.time("TIME: 6) add_required_metadata_from_id");
-  for (var idx = 0, len = my_hash.length; idx < len; idx++) {
-    var key = my_hash[idx];
-    var data = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
-    var val = data.value;
-    all_metadata[pid][key].push(val);
-  }
-  console.timeEnd("TIME: 6) add_required_metadata_from_id");
-
-}
-
 function get_all_field_names(all_metadata) {
   console.time("TIME: get_all_field_names");
 
@@ -688,98 +750,6 @@ function get_all_field_names(all_metadata) {
   console.timeEnd("TIME: get_all_field_names");
 
   return all_field_names;
-}
-
-
-
-// TODO: rename
-// todo: if there is req.form (or req.body?) use the result?
-function make_metadata_hash(req, res) {
-  console.time("TIME: 2) make_metadata_hash");
-
-  pid = req.body.project_id;
-  all_metadata = {};
-  if (helpers.isInt(pid))
-  {
-    all_metadata[pid] = {};
-    connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows, fields) {
-      if (err)
-      {
-        console.log('get_select_datasets_queryPID error: ' + err);
-      }
-      else
-      {
-        // var new_row_info_arr_err = new_row_num_validation(req);
-        // var new_row_info_arr = new_row_info_arr_err[0];
-        // req = new_row_info_arr_err[1];
-
-        console.log("in make_metadata_hash");
-        // console.log("rows");
-        // empty all_metadata
-        all_metadata = populate_metadata_hash(rows, pid, all_metadata);
-        // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
-        // console.log("EEE all_field_names");
-        // console.log(all_field_names);
-        // var dividers = CONSTS.ORDERED_METADATA_DIVIDERS;
-
-        // console.log("YYY all_metadata from make_metadata_hash");
-        // console.log(all_metadata);
-
-        // console.log("GGG req.body new lines from make_metadata_hash");
-        // console.log(req.body.);
-
-        /*
-        YYY all_metadata from make_metadata_hash
-        { "47":
-           { dataset_id: [ 4312, 4313, 4314, 4315, 4316, 4317, 4318, 4319 ],
-             dataset: [ 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'Sk_hlaup' ],
-        ...
-        project: "DCO_GAI_Bv3v5",
-        title: "Icelandic Volcanic Lake",
-
-        XXX1 all_metadata: req.form
-        { dataset_id: [ "0", "1", "2", "3", "4", "5", "6", "7" ],
-          project_title: "Icelandic Volcanic Lake",
-          pi_name: "",
-
-        */
-        // console.log('PPP4 from populate_metadata_hash all_metadata[pid]');
-        // console.log(all_metadata[pid]);
-
-        var project = all_metadata[pid]["project"];
-        var abstract_data = get_project_abstract_data(project, req);
-        var project_prefix = get_project_prefix(project);
-
-        res.render("metadata/metadata_upload_from_file", {
-          title: "VAMPS: Metadata_upload",
-          user: req.user,
-          hostname: req.CONFIG.hostname,
-          abstract_data_pr: abstract_data[project_prefix],
-          all_metadata: all_metadata,
-          all_field_names: CONSTS.ORDERED_METADATA_NAMES,
-          dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-          dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-          dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-          biome_primary_options: CONSTS.BIOME_PRIMARY,
-          feature_primary_options: CONSTS.FEATURE_PRIMARY,
-          material_primary_options: CONSTS.MATERIAL_PRIMARY,
-          metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-          env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-          investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-          sample_type_options: CONSTS.SAMPLE_TYPE,
-          new_row_info_arr: ""
-        });
-
-      }
-       // end else
-    });
-  }
-  else
-  { // end if int
-    console.log('ERROR pid is not an integer: ', pid);
-  }
-  console.timeEnd("TIME: 2) make_metadata_hash");
-
 }
 
 function get_project_abstract_data(project, req)
