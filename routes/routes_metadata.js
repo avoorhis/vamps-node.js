@@ -264,53 +264,6 @@ function make_metadata_hash(req, res) {
   console.timeEnd("TIME: 2) make_metadata_hash");
 }
 
-
-router.get("/metadata_upload_from_file", [helpers.isLoggedIn], function (req, res) {
-  console.time("TIME: get metadata_upload_from_file");
-  console.log("in get metadata/metadata_upload_from_file");
-
-  //TODO: What to show for project and dataset?
-  res.render('metadata/metadata_upload_from_file', {
-    title: 'VAMPS: Metadata_upload',
-    user: req.user,
-    hostname: req.CONFIG.hostname
-  });
-  console.timeEnd("TIME: get metadata_upload_from_file");
-
-});
-
-router.get("/metadata_upload_new", [helpers.isLoggedIn], function (req, res) {
-  console.time("TIME: get metadata_upload_new");
-
-  console.log("in get metadata/metadata_upload_new");
-
-  //TODO: What to show for project and dataset?
-  res.render('metadata/metadata_upload_new', {
-    title: 'VAMPS: Metadata_upload',
-    user: req.user,
-    hostname: req.CONFIG.hostname
-  });
-  console.timeEnd("TIME: get metadata_upload_new");
-
-});
-
-//TODO: benchmark
-function get_second(element) {
-  console.time("TIME: get_second");
-
-  for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES)
-  {
-    if (CONSTS.ORDERED_METADATA_NAMES[met_names_row].includes(element))
-    {
-      // console.log("ETET met_names_row[1]");
-      // console.log(CONSTS.ORDERED_METADATA_NAMES[met_names_row][1]);
-      return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
-    }
-  }
-  console.timeEnd("TIME: get_second");
-
-}
-
 // TODO: update field names from https://docs.google.com/spreadsheets/d/1adAtGc9DdY2QBQZfd1oaRdWBzjOv4t-PF1hBfO8mAoA/edit#gid=1223926458
 router.post('/metadata_upload',
   [helpers.isLoggedIn],
@@ -520,11 +473,11 @@ function editMetadataForm(req, res){
       if( new_row_info_arr[a1].hasOwnProperty(key) ) {
         // result_it += 'key = ' + key + " , val = " + new_row_info_arr[a1][key] + "\n";
         // console.log(Array.isArray(new_row_info_arr[a1][key]));
-      /*
-      * Array.isArray(variable) =
-       true
-       key = Column name 1,units in row 1 , val = cell 1 row 1,row1 cell 2,,,,,,
-      * */
+        /*
+         * Array.isArray(variable) =
+         true
+         key = Column name 1,units in row 1 , val = cell 1 row 1,row1 cell 2,,,,,,
+         * */
         metadata_form[row_field_name] = new_row_info_arr[a1][key];
         // TODO: change "new_row" + a1 to a  database field name
         var key_arr;
@@ -573,6 +526,53 @@ function editMetadataForm(req, res){
     new_row_info_arr: new_row_info_arr
   });
   console.timeEnd("TIME: editMetadataForm");
+}
+
+//
+// router.get("/metadata_upload_from_file", [helpers.isLoggedIn], function (req, res) {
+//   console.time("TIME: get metadata_upload_from_file");
+//   console.log("in get metadata/metadata_upload_from_file");
+//
+//   //TODO: What to show for project and dataset?
+//   res.render('metadata/metadata_upload_from_file', {
+//     title: 'VAMPS: Metadata_upload',
+//     user: req.user,
+//     hostname: req.CONFIG.hostname
+//   });
+//   console.timeEnd("TIME: get metadata_upload_from_file");
+//
+// });
+
+router.get("/metadata_upload_new", [helpers.isLoggedIn], function (req, res) {
+  console.time("TIME: get metadata_upload_new");
+
+  console.log("in get metadata/metadata_upload_new");
+
+  //TODO: What to show for project and dataset?
+  res.render('metadata/metadata_upload_new', {
+    title: 'VAMPS: Metadata_upload',
+    user: req.user,
+    hostname: req.CONFIG.hostname
+  });
+  console.timeEnd("TIME: get metadata_upload_new");
+
+});
+
+//TODO: benchmark
+function get_second(element) {
+  console.time("TIME: get_second");
+
+  for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES)
+  {
+    if (CONSTS.ORDERED_METADATA_NAMES[met_names_row].includes(element))
+    {
+      // console.log("ETET met_names_row[1]");
+      // console.log(CONSTS.ORDERED_METADATA_NAMES[met_names_row][1]);
+      return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
+    }
+  }
+  console.timeEnd("TIME: get_second");
+
 }
 
 
