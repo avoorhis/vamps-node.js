@@ -337,9 +337,7 @@ router.post('/metadata_upload',
     }
     else {
       console.log('in post /metadata_upload');
-      console.time("TIME: saveMetadata");
       saveMetadata(req, res);
-      console.timeEnd("TIME: saveMetadata");
       res.redirect("/user_data/your_projects");
     }
     console.timeEnd("TIME: post metadata_upload");
@@ -350,20 +348,13 @@ function editMetadataForm(req, res){
   console.time("TIME: editMetadataForm");
 
   console.log('in editMetadataForm');
-  // console.log(req);
 
   var edit_metadata_address = "metadata/metadata_upload_from_file";
-  // console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
-  //
-  // console.log("XXX1 all_metadata: req.form");
-  // console.log(req.form);
-  //
-  // console.log("XXX2 req.body.project_id");
-  // console.log(req.body.project_id);
-  // console.log(pid);
 
   var new_row_info_arr_err = collect_new_row(req);
   var new_row_info_arr = new_row_info_arr_err[0];
+  //TODO:   req = new_row_info_arr_err[1]; return not the whole req
+
   req = new_row_info_arr_err[1];
 
 
@@ -695,8 +686,6 @@ function make_csv(req, res) {
   var rando = helpers.getRandomInt(10000, 99999);
 
   out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + project + '_' + rando.toString() + ".csv");
-  console.log("OOO out_csv_file_name");
-  console.log(out_csv_file_name);
 
   fs.writeFile(out_csv_file_name, csv, function (err) {
     if (err) throw err;
@@ -751,7 +740,7 @@ function convertArrayOfObjectsToCSV(args) {
         if (typeof item === "object") {
             result += item.join(columnDelimiter);
         } else if (typeof item === "string") {
-            for(i = 0; i < headers_length; i++) {
+            for(var i = 0; i < headers_length; i++) {
                 result += item;
                 result += columnDelimiter;
             }
@@ -786,12 +775,12 @@ function new_row_val_validation(req, field_name) {
   // console.log("XXX4 field_val_not_valid");
   // console.log(field_val_not_valid);
 
-  rrr = req.checkBody(field_name)
+  var req_check_body = req.checkBody(field_name)
     .notEmpty().withMessage('User added field "' + field_name + '" must be not empty')
     .isAlphanumeric().withMessage('User added field "' + field_name + '" must have alphanumeric characters only')
     .isAscii();
-  // console.log("rrr");
-  // console.log(rrr);
+  // console.log("req_check_body");
+  // console.log(req_check_body);
   // ValidatorChain {
   //   errorFormatter: [Function: errorFormatter],
   //   param: 'Units3',
