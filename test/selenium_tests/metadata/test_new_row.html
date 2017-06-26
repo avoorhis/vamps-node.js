@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:3000/" />
+<title>New Test</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">New Test</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/projects/307</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Options</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//button[@id='viz_select_form_btn'])[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=addrow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Column Name1</td>
+	<td>col1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Units1</td>
+	<td>un1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=new_row1cell0</td>
+	<td>val1</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=addrow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Column Name2</td>
+	<td>row2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Units2</td>
+	<td>un2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Column Name1</td>
+	<td>row1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=new_row1cell0</td>
+	<td>val 1 in col1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=new_row1cell1</td>
+	<td>val 1 in col2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=new_row2cell0</td>
+	<td>val 2 in col1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=new_row2cell1</td>
+	<td>val 2&nbsp;&nbsp;in col2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=new_row2cell2</td>
+	<td>val 2 in col3</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//button[@type='submit'])[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//table[@id='first_col_table']/tbody/tr[108]/td/span/label</td>
+	<td>row2 (un1)</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//table[@id='first_col_table']/tbody/tr[109]/td/span/label</td>
+	<td>row2 (un2)</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=new_row00</td>
+	<td>val 1 in col1</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=new_row10</td>
+	<td>val 2 in col1</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=new_row12</td>
+	<td>val 2 in col3</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=new_row11</td>
+	<td>val 2&nbsp;&nbsp;in col2</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>xpath=(//a[contains(text(),'Copy 1st')])[88]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=new_row13</td>
+	<td>val 2 in col1</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=input.cp_clmn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=new_row01</td>
+	<td>val 1 in col1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=enzyme_activities0</td>
+	<td>1</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>xpath=(//a[contains(text(),'Copy 1st')])[86]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//button[@type='submit'])[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=new_row00</td>
+	<td>val 1 in col1</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=new_row10</td>
+	<td>val 2 in col1</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=new_row12</td>
+	<td>val 2 in col3</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=new_row11</td>
+	<td>val 2&nbsp;&nbsp;in col2</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=new_row13</td>
+	<td>val 2 in col1</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=new_row01</td>
+	<td>val 1 in col1</td>
+</tr>
+</tbody></table>
+</body>
+</html>
