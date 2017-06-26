@@ -503,14 +503,14 @@ function make_empty_arrays(all_metadata, pid) {
 
   }
 
-  console.time("TIME: 42) CONSTS.REQ_METADATA_FIELDS_wIDs");
-
-  for (var i = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i < len; i++) {
-    var key_name2 = CONSTS.REQ_METADATA_FIELDS_wIDs[i];
-    all_metadata[pid][key_name2] = [];
-  }
-
-  console.timeEnd("TIME: 42) CONSTS.REQ_METADATA_FIELDS_wIDs");
+  // console.time("TIME: 42) CONSTS.REQ_METADATA_FIELDS_wIDs");
+  //
+  // for (var i = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i < len; i++) {
+  //   var key_name2 = CONSTS.REQ_METADATA_FIELDS_wIDs[i];
+  //   all_metadata[pid][key_name2] = [];
+  // }
+  //
+  // console.timeEnd("TIME: 42) CONSTS.REQ_METADATA_FIELDS_wIDs");
 
   console.timeEnd("TIME: 4) make_empty_arrays");
 
@@ -526,7 +526,7 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   all_metadata[pid]["dataset_description"] = [];
 
   // console.log("PPP1 populate_metadata_hash: ");
-  make_empty_arrays(all_metadata, pid);
+  // make_empty_arrays(all_metadata, pid);
 
   // console.log("PPP2 all_metadata");
   // console.log(all_metadata);
@@ -629,8 +629,11 @@ function add_all_val_by_key(my_key_hash, my_val_hash) {
   for (var i1 = 0, len1 = my_key_hash.length; i1 < len1; i1++) {
     var key = my_key_hash[i1];
     var val = my_val_hash[key];
-
+    if (!(all_metadata[pid].hasOwnProperty(key))) {
+      all_metadata[pid][key] = [];
+    }
     all_metadata[pid][key].push(val);
+
   }
   console.timeEnd("TIME: 6) add_all_val_by_key");
 }
