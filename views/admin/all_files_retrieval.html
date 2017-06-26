@@ -1,0 +1,19 @@
+<% include ../add_ins/begin.ejs %>
+<% if (finfo) { %>
+	<% var file_info = JSON.parse(finfo) %>
+<% } else {
+	var file_info = {}
+ } %>
+<div><a class='btn btn-xs btn-primary' href='/admin/all_files_retrieval'>Reload Page</a></div>
+<h1>User Files</h1>
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail" ><%- messages.fail %> </div>
+<% } %>
+
+<!--<br><h2>Metadata files</h2> -->
+(click header to sort)
+
+<% include ../add_ins/file_retrieval.ejs %>
+
