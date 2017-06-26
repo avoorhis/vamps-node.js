@@ -166,6 +166,8 @@ router.post('/start_edit',
 // todo: if there is req.form (or req.body?) use the result?
 function make_metadata_hash(req, res) {
   console.time("TIME: 2) make_metadata_hash");
+  console.log("ALLL1 AllMetadata = ");
+  console.log(AllMetadata);
 
   pid = req.body.project_id;
   all_metadata = {};
@@ -483,6 +485,9 @@ function saveMetadata(req, res){
 
 function make_empty_arrays(all_metadata, pid) {
   console.time("TIME: 4) make_empty_arrays");
+  console.log("ALLL AllMetadata = ");
+  console.log(AllMetadata);
+
 
   for (var dataset_id in AllMetadata) {
 
