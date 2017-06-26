@@ -592,14 +592,8 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   collection_date: '2007-06-01',
       */
 
-    // var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
-    //
-    // all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
-    //
-    // all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, AllMetadata[dataset_id], all_metadata[pid]);
-    var ids_data = get_all_req_metadata(dataset_id);
-
     var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
+    var ids_data = get_all_req_metadata(dataset_id);
 
     add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id]);
 
@@ -613,39 +607,32 @@ function populate_metadata_hash(rows, pid, all_metadata) {
 
 
 function get_all_req_metadata(dataset_id) {
+  console.time("TIME: 5) add_all_val_by_key");
+
   var data = {};
   for (var idx = 0; idx < CONSTS.REQ_METADATA_FIELDS_wIDs.length; idx++) {
     var key  = CONSTS.REQ_METADATA_FIELDS_wIDs[idx];
-
-    // console.log('TTT0 key = ');
-    // console.log(key);
-
     data[key] = [];
     var val_hash = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
 
     data[key].push(val_hash.value);
   }
-
-  // console.log('TTT data = ');
-  // console.log(data);
-  // run_id: [ { name: 'run', value: '20110708' } ] }
+  console.time("TIME: 5) add_all_val_by_key");
 
   return data;
 }
 
 
 function add_all_val_by_key(my_key_hash, my_val_hash) {
-  console.time("TIME: 5) add_all_val_by_key");
+  console.time("TIME: 6) add_all_val_by_key");
 
   for (var i1 = 0, len1 = my_key_hash.length; i1 < len1; i1++) {
     var key = my_key_hash[i1];
     var val = my_val_hash[key];
-    // if (!(all_metadata[pid].hasOwnProperty(key))) {
-    //   all_metadata[pid][key] = [];
-    // }
+
     all_metadata[pid][key].push(val);
   }
-  console.timeEnd("TIME: 5) add_all_val_by_key");
+  console.timeEnd("TIME: 6) add_all_val_by_key");
 }
 
 function get_all_field_names(all_metadata) {
