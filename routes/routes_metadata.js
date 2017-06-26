@@ -353,6 +353,9 @@ function editMetadataForm(req, res){
 
   var edit_metadata_address = "metadata/metadata_upload_from_file";
 
+  console.log("FFF1 req");
+  console.log(req);
+
   var new_row_info_arr_err = collect_new_row(req);
   var new_row_info_arr = new_row_info_arr_err[0];
   //TODO:   req = new_row_info_arr_err[1]; return not the whole req
@@ -360,8 +363,8 @@ function editMetadataForm(req, res){
   req = new_row_info_arr_err[1];
 
 
-  // console.log("FFF new_row_info_arr");
-  // console.log(new_row_info_arr);
+  console.log("FFF new_row_info_arr");
+  console.log(new_row_info_arr);
   // [ { col1__units1: [ '', 'r1c2', '', '', '', '', '', '' ] },
   //   { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] },
   //   { col3__: [ 'r3c1', 'r2c3', '', '', '', '', '', '' ] } ]
@@ -907,6 +910,7 @@ function collect_new_row(req) {
     var units_field_name = "Units" + row_idx;
     var column_name_field_name = "Column Name" + row_idx;
 
+    //TODO add column names and values to req.form
 
     var col_val_res = [];
     col_val_res = new_row_val_validation(req, column_name_field_name);
@@ -936,7 +940,8 @@ function collect_new_row(req) {
 
 
     make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx);
-
+    console.log("NNN new_row_info_arr");
+    console.log(new_row_info_arr);
     // row = 0 row = {"Column name 1,units in row 1":["cell 1 row 1","row1 cell 2","","","","","",""]} row = 1 row = {",":["","","","","","","",""]}
 
   }
