@@ -151,72 +151,50 @@ function get_metadata_hash(md_selected){
 // ---- metadata_upload ----
 // AllMetadata = helpers.get_metadata_from_file()
 
-router.post('/start_edit',
-  [helpers.isLoggedIn],
-  function (req, res) {
+// router.get("/metadata_upload_from_file", [helpers.isLoggedIn], function (req, res) {
+//   console.time("TIME: get metadata_upload_from_file");
+//   console.log("in get metadata/metadata_upload_from_file");
+//
+//   //TODO: What to show for project and dataset?
+//   res.render('metadata/metadata_upload_from_file', {
+//     title: 'VAMPS: Metadata_upload',
+//     user: req.user,
+//     hostname: req.CONFIG.hostname
+//   });
+//   console.timeEnd("TIME: get metadata_upload_from_file");
+//
+// });
 
-    console.time("TIME: 1) in post /start_edit");
+router.get("/metadata_upload_new", [helpers.isLoggedIn], function (req, res) {
+  console.time("TIME: get metadata_upload_new");
 
-    make_metadata_hash(req, res);
+  console.log("in get metadata/metadata_upload_new");
 
-    console.timeEnd("TIME: 1) in post /start_edit");
+  //TODO: What to show for project and dataset?
+  res.render('metadata/metadata_upload_new', {
+    title: 'VAMPS: Metadata_upload',
+    user: req.user,
+    hostname: req.CONFIG.hostname
   });
+  console.timeEnd("TIME: get metadata_upload_new");
 
-// TODO: rename
-// todo: if there is req.form (or req.body?) use the result?
-function make_metadata_hash(req, res) {
-  console.time("TIME: 2) make_metadata_hash");
-  console.log("ALLL1 AllMetadata = ");
-  console.log(AllMetadata);
+});
 
-  pid = req.body.project_id;
-  all_metadata = {};
-  if (helpers.isInt(pid))
+//TODO: benchmark
+function get_second(element) {
+  console.time("TIME: get_second");
+
+  for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES)
   {
-    all_metadata[pid] = {};
-    connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows, fields) {
-      if (err)
-      {
-        console.log('get_select_datasets_queryPID error: ' + err);
-      }
-      else
-      {
-        console.log("in make_metadata_hash");
-        all_metadata = populate_metadata_hash(rows, pid, all_metadata);
-
-        var project = all_metadata[pid]["project"];
-        var abstract_data = get_project_abstract_data(project, req);
-        var project_prefix = get_project_prefix(project);
-
-        res.render("metadata/metadata_upload_from_file", {
-          title: "VAMPS: Metadata_upload",
-          user: req.user,
-          hostname: req.CONFIG.hostname,
-          abstract_data_pr: abstract_data[project_prefix],
-          all_metadata: all_metadata,
-          all_field_names: CONSTS.ORDERED_METADATA_NAMES,
-          dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-          dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-          dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-          biome_primary_options: CONSTS.BIOME_PRIMARY,
-          feature_primary_options: CONSTS.FEATURE_PRIMARY,
-          material_primary_options: CONSTS.MATERIAL_PRIMARY,
-          metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-          env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-          investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-          sample_type_options: CONSTS.SAMPLE_TYPE,
-          new_row_info_arr: ""
-        });
-
-      }
-      // end else
-    });
+    if (CONSTS.ORDERED_METADATA_NAMES[met_names_row].includes(element))
+    {
+      // console.log("ETET met_names_row[1]");
+      // console.log(CONSTS.ORDERED_METADATA_NAMES[met_names_row][1]);
+      return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
+    }
   }
-  else
-  { // end if int
-    console.log('ERROR pid is not an integer: ', pid);
-  }
-  console.timeEnd("TIME: 2) make_metadata_hash");
+  console.timeEnd("TIME: get_second");
+
 }
 
 // TODO: update field names from https://docs.google.com/spreadsheets/d/1adAtGc9DdY2QBQZfd1oaRdWBzjOv4t-PF1hBfO8mAoA/edit#gid=1223926458
@@ -299,7 +277,7 @@ router.post('/metadata_upload',
     form.field("pressure", get_second("pressure")).trim().entityEncode().array(),
     form.field("project", get_second("project")).trim().entityEncode().array().required(),
     form.field("project_abstract", get_second("project_abstract")).trim().required().entityEncode(),
-    form.field("project_title", get_second("project_title")).trim().required().entityEncode().is(/^[a-zA-Z0-9,_ -]+$/),
+    form.field("project_title", get_second("project_title")).trim().required().entityEncode().is(/^[a-zA-Z0-9_ -]+$/),
     form.field("redox_potential", get_second("redox_potential")).trim().entityEncode().array(),
     form.field("redox_state", get_second("redox_state")).trim().entityEncode().array().required(),
     form.field("references", get_second("references")).trim().entityEncode().array(),
@@ -330,16 +308,55 @@ router.post('/metadata_upload',
   ),
   function (req, res) {
     console.time("TIME: post metadata_upload");
+
+
+    // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
+      // console.log('MMM AllMetadata = helpers.get_metadata_from_file()')
+      // AllMetadata = helpers.get_metadata_from_file()
+      // console.log(AllMetadata);
+
+      // console.log("QQQ req.params");
+      // console.log(req.params);
+      //
+      //
+      // console.log("req.form");
+      // console.log(req.form);
+      //
+      // console.log("req.body");
+      // console.log(req.body);
+
       req.flash("fail", req.form.errors);
+      // console.log("req.form.errors");
+      // console.log(req.form.errors);
+      //
+      // console.log('req.form.getErrors("env_biome")');
+      // console.log(req.form.getErrors("env_biome"));
+      //
+      //
+      // console.log('req.form.getErrors()');
+      // console.log(req.form.getErrors());
+
+
       editMetadataForm(req, res);
       //TODO: remove make_csv from here, use only if valid.
       make_csv(req, res);
+
+
     }
     else {
       console.log('in post /metadata_upload');
+      // console.log("PPP req.form");
+      // console.log(req.form);
+      // console.log(req);
+      //  req.form:
+      //      dna_extraction_meth: "CTAB phenol/chloroform",
+      console.time("TIME: saveMetadata");
       saveMetadata(req, res);
+      console.timeEnd("TIME: saveMetadata");
+
+
       res.redirect("/user_data/your_projects");
     }
     console.timeEnd("TIME: post metadata_upload");
@@ -350,13 +367,20 @@ function editMetadataForm(req, res){
   console.time("TIME: editMetadataForm");
 
   console.log('in editMetadataForm');
+  // console.log(req);
 
   var edit_metadata_address = "metadata/metadata_upload_from_file";
+  // console.log("AAA2 edit_metadata_address = 'metadata/metadata_upload_from_file'");
+  //
+  // console.log("XXX1 all_metadata: req.form");
+  // console.log(req.form);
+  //
+  // console.log("XXX2 req.body.project_id");
+  // console.log(req.body.project_id);
+  // console.log(pid);
 
   var new_row_info_arr_err = collect_new_row(req);
   var new_row_info_arr = new_row_info_arr_err[0];
-  //TODO:   req = new_row_info_arr_err[1]; return not the whole req
-
   req = new_row_info_arr_err[1];
 
 
@@ -382,11 +406,11 @@ function editMetadataForm(req, res){
       if( new_row_info_arr[a1].hasOwnProperty(key) ) {
         // result_it += 'key = ' + key + " , val = " + new_row_info_arr[a1][key] + "\n";
         // console.log(Array.isArray(new_row_info_arr[a1][key]));
-        /*
-         * Array.isArray(variable) =
-         true
-         key = Column name 1,units in row 1 , val = cell 1 row 1,row1 cell 2,,,,,,
-         * */
+      /*
+      * Array.isArray(variable) =
+       true
+       key = Column name 1,units in row 1 , val = cell 1 row 1,row1 cell 2,,,,,,
+      * */
         metadata_form[row_field_name] = new_row_info_arr[a1][key];
         // TODO: change "new_row" + a1 to a  database field name
         var key_arr;
@@ -438,24 +462,6 @@ function editMetadataForm(req, res){
 }
 
 
-//TODO: benchmark
-function get_second(element) {
-  console.time("TIME: get_second");
-
-  for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES)
-  {
-    if (CONSTS.ORDERED_METADATA_NAMES[met_names_row].includes(element))
-    {
-      // console.log("ETET met_names_row[1]");
-      // console.log(CONSTS.ORDERED_METADATA_NAMES[met_names_row][1]);
-      return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
-    }
-  }
-  console.timeEnd("TIME: get_second");
-
-}
-
-
 // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
 
 
@@ -483,11 +489,32 @@ function saveMetadata(req, res){
 
 }
 
+router.post('/start_edit',
+  [helpers.isLoggedIn],
+  function (req, res) {
+
+    console.time("TIME: 1) in post /start_edit");
+
+    make_metadata_hash(req, res);
+    // console.log("TTT all_metadata from start_edit");
+    // console.log(all_metadata);
+    /*
+    FFF req
+    { project_id: '47', project: 'DCO_GAI_Bv3v5' }
+    47
+    DCO_GAI_Bv3v5
+
+     res.json(rows);
+
+     var user = rows[0].userid;
+     var password= rows[0].password;
+
+    */
+    console.timeEnd("TIME: 1) in post /start_edit");
+});
+
 function make_empty_arrays(all_metadata, pid) {
   console.time("TIME: 4) make_empty_arrays");
-  console.log("ALLL AllMetadata = ");
-  console.log(AllMetadata);
-
 
   for (var dataset_id in AllMetadata) {
 
@@ -591,33 +618,115 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   sodium: '30.65',
   collection_date: '2007-06-01',
       */
+    var ids_data = get_all_req_metadata(dataset_id);
 
     var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
 
-    all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
+    add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id]);
 
-    all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, AllMetadata[dataset_id], all_metadata[pid]);
+    add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, ids_data);
+
+    // add_all_metadata_from_file(Object.keys(AllMetadata[dataset_id]), dataset_id);
+    //
+    // add_required_metadata_from_id(CONSTS.REQ_METADATA_FIELDS_wIDs, dataset_id);
 
   }
   console.timeEnd("TIME: 3) populate_metadata_hash");
 
+  console.log('HHH AllMetadata[dataset_id] for helpers.required_metadata_names_from_ids(AllMetadata[dataset_id]');
+  console.log(AllMetadata[dataset_id]);
+
+
+
   return all_metadata;
 }
 
-function add_all_val_by_key(my_key_hash, my_val_hash, res_hash) {
+function get_all_req_metadata(dataset_id) {
+  var data = {};
+  for (var idx = 0; idx < CONSTS.REQ_METADATA_FIELDS_wIDs.length; idx++) {
+    var key  = CONSTS.REQ_METADATA_FIELDS_wIDs[idx];
+
+    console.log('TTT0 key = ');
+    console.log(key);
+
+    data[key] = [];
+    var val_hash = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
+
+    data[key].push(val_hash.value);
+  }
+
+  console.log('TTT data = ');
+  console.log(data);
+  // run_id: [ { name: 'run', value: '20110708' } ] }
+
+return data;
+}
+
+
+function add_all_metadata_from_file(my_hash, dataset_id) {
+  console.time("TIME: 5) add_all_metadata_from_file");
+
+  for (var i1 = 0, len1 = my_hash.length; i1 < len1; i1++) {
+    var key = my_hash[i1];
+    var val = AllMetadata[dataset_id][key]; // TODO: combine with add_required_metadata_from_id? That's the only difference besides "my_hash"
+    console.log('VVV1 key = ');
+    console.log(key);
+
+    console.log('VVV val = ');
+    console.log(val);
+    all_metadata[pid][key].push(val);
+  }
+  console.timeEnd("TIME: 5) add_all_metadata_from_file");
+
+  console.log('all_metadata in 5) add_all_metadata_from_file');
+  console.log(all_metadata);
+
+}
+
+function add_required_metadata_from_id(my_hash, dataset_id) {
+  console.time("TIME: 6) add_required_metadata_from_id");
+  for (var idx = 0, len = my_hash.length; idx < len; idx++) {
+    var key = my_hash[idx];
+    console.log('YYYUUU key in add_required_metadata_from_id');
+    console.log(key);
+
+
+    var data = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
+    var val = data.value;
+    all_metadata[pid][key].push(val);
+  }
+  console.timeEnd("TIME: 6) add_required_metadata_from_id");
+
+  console.log('all_metadata in 6) add_required_metadata_from_id');
+  console.log(all_metadata);
+}
+
+function add_all_val_by_key(my_key_hash, my_val_hash) {
   console.time("TIME: 5) add_all_val_by_key");
 
   for (var i1 = 0, len1 = my_key_hash.length; i1 < len1; i1++) {
     var key = my_key_hash[i1];
+
+    console.log('EEE1 key in 5) add_all_val_by_key');
+    console.log(key);
+
     var val = my_val_hash[key];
+
+    console.log('EEE2 val in 5) add_all_val_by_key');
+    console.log(val);
+
     // if (!(res_hash.hasOwnProperty(key))) {
     //   res_hash[key] = [];
     // }
-    res_hash[key].push(val);
+    all_metadata[pid][key].push(val);
   }
   console.timeEnd("TIME: 5) add_all_val_by_key");
-  return res_hash;
+
+  console.log('all_metadata in 5) add_all_val_by_key');
+  console.log(all_metadata);
+  // return res_hash;
 }
+
 
 function get_all_field_names(all_metadata) {
   console.time("TIME: get_all_field_names");
@@ -633,6 +742,98 @@ function get_all_field_names(all_metadata) {
   console.timeEnd("TIME: get_all_field_names");
 
   return all_field_names;
+}
+
+
+
+// TODO: rename
+// todo: if there is req.form (or req.body?) use the result?
+function make_metadata_hash(req, res) {
+  console.time("TIME: 2) make_metadata_hash");
+
+  pid = req.body.project_id;
+  all_metadata = {};
+  if (helpers.isInt(pid))
+  {
+    all_metadata[pid] = {};
+    connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows, fields) {
+      if (err)
+      {
+        console.log('get_select_datasets_queryPID error: ' + err);
+      }
+      else
+      {
+        // var new_row_info_arr_err = new_row_num_validation(req);
+        // var new_row_info_arr = new_row_info_arr_err[0];
+        // req = new_row_info_arr_err[1];
+
+        console.log("in make_metadata_hash");
+        // console.log("rows");
+        // empty all_metadata
+        all_metadata = populate_metadata_hash(rows, pid, all_metadata);
+        // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
+        // console.log("EEE all_field_names");
+        // console.log(all_field_names);
+        // var dividers = CONSTS.ORDERED_METADATA_DIVIDERS;
+
+        // console.log("YYY all_metadata from make_metadata_hash");
+        // console.log(all_metadata);
+
+        // console.log("GGG req.body new lines from make_metadata_hash");
+        // console.log(req.body.);
+
+        /*
+        YYY all_metadata from make_metadata_hash
+        { "47":
+           { dataset_id: [ 4312, 4313, 4314, 4315, 4316, 4317, 4318, 4319 ],
+             dataset: [ 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'Sk_hlaup' ],
+        ...
+        project: "DCO_GAI_Bv3v5",
+        title: "Icelandic Volcanic Lake",
+
+        XXX1 all_metadata: req.form
+        { dataset_id: [ "0", "1", "2", "3", "4", "5", "6", "7" ],
+          project_title: "Icelandic Volcanic Lake",
+          pi_name: "",
+
+        */
+        // console.log('PPP4 from populate_metadata_hash all_metadata[pid]');
+        // console.log(all_metadata[pid]);
+
+        var project = all_metadata[pid]["project"];
+        var abstract_data = get_project_abstract_data(project, req);
+        var project_prefix = get_project_prefix(project);
+
+        res.render("metadata/metadata_upload_from_file", {
+          title: "VAMPS: Metadata_upload",
+          user: req.user,
+          hostname: req.CONFIG.hostname,
+          abstract_data_pr: abstract_data[project_prefix],
+          all_metadata: all_metadata,
+          all_field_names: CONSTS.ORDERED_METADATA_NAMES,
+          dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+          dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+          dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+          biome_primary_options: CONSTS.BIOME_PRIMARY,
+          feature_primary_options: CONSTS.FEATURE_PRIMARY,
+          material_primary_options: CONSTS.MATERIAL_PRIMARY,
+          metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+          env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+          investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+          sample_type_options: CONSTS.SAMPLE_TYPE,
+          new_row_info_arr: ""
+        });
+
+      }
+       // end else
+    });
+  }
+  else
+  { // end if int
+    console.log('ERROR pid is not an integer: ', pid);
+  }
+  console.timeEnd("TIME: 2) make_metadata_hash");
+
 }
 
 function get_project_abstract_data(project, req)
@@ -691,6 +892,8 @@ function make_csv(req, res) {
   var rando = helpers.getRandomInt(10000, 99999);
 
   out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + project + '_' + rando.toString() + ".csv");
+  console.log("OOO out_csv_file_name");
+  console.log(out_csv_file_name);
 
   fs.writeFile(out_csv_file_name, csv, function (err) {
     if (err) throw err;
@@ -745,7 +948,7 @@ function convertArrayOfObjectsToCSV(args) {
         if (typeof item === "object") {
             result += item.join(columnDelimiter);
         } else if (typeof item === "string") {
-            for(var i = 0; i < headers_length; i++) {
+            for(i = 0; i < headers_length; i++) {
                 result += item;
                 result += columnDelimiter;
             }
@@ -780,12 +983,12 @@ function new_row_val_validation(req, field_name) {
   // console.log("XXX4 field_val_not_valid");
   // console.log(field_val_not_valid);
 
-  var req_check_body = req.checkBody(field_name)
+  rrr = req.checkBody(field_name)
     .notEmpty().withMessage('User added field "' + field_name + '" must be not empty')
     .isAlphanumeric().withMessage('User added field "' + field_name + '" must have alphanumeric characters only')
     .isAscii();
-  // console.log("req_check_body");
-  // console.log(req_check_body);
+  // console.log("rrr");
+  // console.log(rrr);
   // ValidatorChain {
   //   errorFormatter: [Function: errorFormatter],
   //   param: 'Units3',
