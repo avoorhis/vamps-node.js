@@ -595,7 +595,7 @@ fnScroll = function(){
 // ---
 var rowIndex = 0;
 
-function first_col_table_add_row(args) {
+function firstColTableAddRow(args) {
   var currRowIndex = arguments[0][0];
   var row_id_base = arguments[0][1];
 
@@ -610,7 +610,7 @@ function first_col_table_add_row(args) {
 
 }
 
-function fixed_table_base_add_row(args) {
+function fixedTableBaseAddRow(args) {
   var currRowIndex = arguments[0][0];
   var row_id_base = arguments[0][1];
   var fixed_table_base_el = $('#fixed_table_base');
@@ -629,13 +629,12 @@ function fixed_table_base_add_row(args) {
 
 }
 
-
 $("#addrow").on('click', function() {
   rowIndex++;
 
   var row_id_base = 'new_row' + rowIndex;
-  first_col_table_add_row.call(this, [rowIndex, row_id_base]);
-  fixed_table_base_add_row.call(this, [rowIndex, row_id_base]);
+  firstColTableAddRow.call(this, [rowIndex, row_id_base]);
+  fixedTableBaseAddRow.call(this, [rowIndex, row_id_base]);
 
   $('#new_row_num').val( rowIndex );
 
@@ -666,27 +665,30 @@ $("#removerow").on('click', function() {
   }
 });
 
-$('a.td_clone_add').on('click', function() {
-  var first_input_value;
-  var input_row;
-  var first_td;
+copyFirst = function() {
+  $('a.td_clone_add').on('click', function() {
+    var first_input_value;
+    var input_row;
+    var first_td;
 
-  var trIndex = $(this).closest('tr').eq(0).index();
+    var trIndex = $(this).closest('tr').eq(0).index();
 
-  input_row = $('table#fixed_table_base tr').eq(trIndex);
-  first_td  = input_row.find('td:first');
+    input_row = $('table#fixed_table_base tr').eq(trIndex);
+    first_td  = input_row.find('td:first');
 
-  first_input_value = first_td.children( ':input' ).val();
+    first_input_value = first_td.children( ':input' ).val();
 
-  // alert(first_input_value);
+    // alert(first_input_value);
 
-  input_row.find('td').each(function() {
-    $(this).children(':input').val(first_input_value).change();
-    // .css('background-color','blue');
+    input_row.find('td').each(function() {
+      $(this).children(':input').val(first_input_value).change();
+      // .css('background-color','blue');
+    });
+
+    return(false);
   });
+};
 
-  return(false);
-});
 
 $('.env_biome').change(function(){
   populate_secondary_select.call(this, ['biome', biome_seq_options]);
@@ -727,11 +729,55 @@ $('#table_div').scroll(function(){
   fnScroll();
 });
 
+addCopyFirst = function () {
+  var columnNo = 0;
+  var this_tbl = $('table#first_col_table');
+  var $tdsInColumnCurrent = this_tbl
+    .find("tr td:nth-child(" + (columnNo + 1) + "):not('.header_divider')");
+
+
+  $tdsInColumnCurrent.each(function () {
+    var next_text = $(this).parent().find('td').eq(columnNo + 1).text();
+
+    if (next_text !== "MBL Supplied") {
+      // $(this).css('background-color','Aqua');
+
+      $(this).wrapInner('<span class="makeLeft"></span>')
+        .append('<span class="makeRight"><a href="#" class="td_clone_add">Copy 1st</a></span>');
+    }
+
+  });
+};
+
+addCopyBtns = function() {
+  $('table#fixed_table_base').find('tr').eq(1).find('td').each(function() {
+    $(this).append('<input type="button" value="Copy to next" class="cp_clmn"/>');
+  });
+};
+
+CopyColumn = function() {
+  $(".cp_clmn").click(function(){
+    var columnNo = $(this).closest('td').index();
+    var this_tbl = $('table#fixed_table_base');
+    var $tdsInColumnCurrent = this_tbl
+      .find("tr td:nth-child(" + (columnNo + 1) + ")");
+
+    $tdsInColumnCurrent.each(function () {
+      var current_val = $(this).children( ':input' ).val();
+      $(this).siblings().not('.readonly_td').eq(columnNo)
+        .children( ':input' ).val(current_val).change();
+    });
+  });
+};
+
 // ---
 
 $(document).ready(function(){
-
-
+  addCopyBtns();
+  CopyColumn();
+  addCopyFirst();
+  copyFirst();
   fnAdjustTable();
+
 
 });

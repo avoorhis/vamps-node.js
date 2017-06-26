@@ -738,10 +738,10 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], funct
 router.get('/update_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
   console.log('in GET validate_metadata');
   res.render('admin/validate_metadata', {
-              title     :'VAMPS Validate Metadata',
-              user: req.user,
+              title       :'VAMPS Validate Metadata',
+              user        : req.user,
               project_info: JSON.stringify(PROJECT_INFORMATION_BY_PNAME),
-              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+              hostname    : req.CONFIG.hostname // get the user out of session and pass to template
   });
 });
 //
@@ -1096,6 +1096,33 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
 
 
 });
+
+router.get('/all_files_retrieval', [helpers.isLoggedIn, helpers.isAdmin], function get_all_files_retrieval(req, res) {
+  var export_dir = path.join(config.USER_FILES_BASE);
+
+  console.log("XXX export_dir");
+  console.log(export_dir);
+
+  helpers.walk(export_dir, function(err, files) {
+    if (err) throw err;
+    files.sort(function sortByTime(a, b) {
+      //reverse sort: recent-->oldest
+      return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
+    });
+
+    res.render('admin/all_files_retrieval', {
+      title: 'VAMPS: Users Files',
+      user: req.user, hostname: req.CONFIG.hostname,
+      // project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+      finfo: JSON.stringify(files)
+
+    });
+  });
+});
+
+
+
+
 //
 function get_env_package_index(val){
   var idx = -1
@@ -1337,8 +1364,9 @@ function get_name_ordered_users_list(){
     });
     return user_order
 }
+
 function get_name_ordered_projects_list(){
-    project_order = []
+    project_order = [];
     for(pid in  PROJECT_INFORMATION_BY_PID){
                project_order.push(PROJECT_INFORMATION_BY_PID[pid])
     }
@@ -1347,6 +1375,65 @@ function get_name_ordered_projects_list(){
     });
     return project_order
 }
+
+// TODO: mv to helpers and refactor
+router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
+
+  console.log('in file_utils');
+  var user = req.query.user;
+
+  console.log("file from file_utils: ");
+  console.log(file);
+  //// DOWNLOAD //////
+  if (req.query.fxn == 'download' && req.query.template == '1') {
+    var file = path.join(process.env.PWD, req.query.filename);
+    res.setHeader('Content-Type', 'text');
+    res.download(file); // Set disposition and send it.
+  } else if (req.query.fxn == 'download' &&  req.query.type=='pcoa') {
+    var file = path.join(process.env.PWD, 'tmp', req.query.filename);
+    res.setHeader('Content-Type', 'text');
+    res.download(file); // Set disposition and send it.
+  } else if (req.query.fxn == 'download') {
+    var file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
+
+    res.setHeader('Content-Type', 'text');
+    res.download(file); // Set disposition and send it.
+    ///// DELETE /////
+  } else if (req.query.fxn == 'delete') {
+    console.log("UUU req.query");
+    console.log(req.query);
+
+
+    var file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
+
+    if (req.query.type == 'elements') {
+      fs.unlink(file, function deleteFile(err) {
+        if (err) {
+          console.log("err 8: ");
+          console.log(err);
+          req.flash('fail', err);
+        } else {
+          req.flash('success', 'Deleted: '+req.query.filename);
+          res.redirect("/visuals/saved_elements");
+        }
+      }); //
+    } else {
+      fs.unlink(file, function deleteFile(err) {
+        if (err) {
+          req.flash('fail', err);
+          console.log("err 9: ");
+          console.log(err);
+        } else {
+          req.flash('success', 'Deleted: '+req.query.filename);
+          res.redirect("/user_data/file_retrieval");
+        }
+      });
+    }
+
+  }
+
+});
+
 //
 //
 //

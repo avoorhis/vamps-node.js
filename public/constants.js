@@ -470,10 +470,12 @@ constants.REQ_METADATA_FIELDS = [   "collection_date",  // format?? yyyy-mm-dd
   "target_gene",      // 16s or 18s (from mysql table)
   "latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
   "longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-  "sequencing_platform",
+  "sequencing_meth",
   "adapter_sequence",
   "illumina_index",
   "primer_suite",
+  "forward_primer",
+  "reverse_primer",
   "run"
 ];
 constants.REQ_METADATA_FIELDS_wIDs = ["geo_loc_name",     // name of country or longhurst zone
@@ -484,10 +486,12 @@ constants.REQ_METADATA_FIELDS_wIDs = ["geo_loc_name",     // name of country or 
   "env_material",
   "env_package",      // (from mysql table)
   "target_gene",      // 16s or 18s (from mysql table)
-  "sequencing_platform",
+  "sequencing_meth",
   "adapter_sequence",
   "illumina_index",
   "primer_suite",
+  "forward_primer",
+  "reverse_primer",
   "run"
 ];
 // constants.REQ_METADATA_FIELDS = [{  "name":"collection_date",       "units":"date","format":"YYYY-MM-DD"}, // format?? yyyy-mm-dd

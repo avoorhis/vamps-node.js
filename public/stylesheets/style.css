@@ -4,6 +4,10 @@ body {
   background: #F8F8F8;  /* very light grey */
 }
 
+h1 {
+    text-align: center;
+}
+
 h2 {
   margin:0 0 .5em 0;
 }
