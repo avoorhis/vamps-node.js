@@ -3733,8 +3733,8 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
     }else if (file_type == 'distance-R') {
       old_file_name = old_ts+'_distance.R';
     }else if (file_type == 'distance-py') {
-      old_file_name = old_ts+'_distance.csv';
-      new_file_name = file_type+'-'+timestamp+'.csv';
+      old_file_name = old_ts+'_distance.json';
+      new_file_name = file_type+'-'+timestamp+'.json';
     }else if (file_type == 'emperor-pc') {
       old_file_name = old_ts+'.pc';
     }else if (file_type == 'pdf-fheatmap') {
