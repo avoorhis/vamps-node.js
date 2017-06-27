@@ -928,13 +928,33 @@ function collect_new_rows(req) {
   console.time("TIME: collect_new_rows");
   var new_rows_hash = {};
   var new_row_num = req.body.new_row_num;
+  var new_row_length = req.body.new_row_length;
+
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
     new_rows_hash[get_column_name(row_idx, req)] = [];
 
-  }
 
-  var new_row_length = req.body.new_row_length;
-  // for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
+    for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
+      var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
+      console.log("CCC cell_name");
+      console.log(cell_name);
+      //
+      // console.log("LLL req.body[cell_name]");
+      // console.log(req.body[cell_name]);
+
+      var clean_val = validator.escape(req.body[cell_name] + "");
+      clean_val = validator.trim(clean_val + "");
+
+      console.log("CCC clean_val");
+      console.log(clean_val);
+
+      // new_row_info[new_row_head_arr].push(clean_val);
+    }
+    // console.log("WWW new_row_info");
+    // console.log(new_row_info);
+
+
+  }
 
 
   console.log("UUU new_rows_hash");
