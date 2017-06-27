@@ -912,46 +912,85 @@ function convertArrayOfObjectsToCSV(args) {
 // }
 //
 
-function get_column_name(row_idx, req) {
+function new_row_field_validation(req, field_name) {
+  console.time("TIME: new_row_field_validation");
+
+  //todo: send a value instead of "req.body[field_name]"?
+  var field_val_trimmed = validator.escape(req.body[field_name] + "");
+  field_val_trimmed = validator.trim(field_val_trimmed + "");
+  var field_val_not_valid = validator.isEmpty(field_val_trimmed + "");
+
+  if (field_val_not_valid)
+  {
+    console.log("ERRRR");
+    return ['User added field "' + field_name + '" must be not empty and have only alpha numeric characters', ''];
+  }
+  else
+  {
+    console.log("No errors in new rows");
+    return ['', field_val_trimmed];
+  }
+  console.timeEnd("TIME: new_row_field_validation");
+}
+
+function get_column_name(row_idx, req, validation_errors) {
   console.time("TIME: get_column_name");
   //    TODO: add validation!
 
   var units_field_name = "Units" + row_idx;
+  validation_results = new_row_field_validation(req, units_field_name);
+  if (validation_results[1] === '') {
+    validation_errors.push(validation_results[0]);
+  }
+  else {
+    units_field_name = validation_results[1];
+  }
+
   var temp_column_name = "Column Name" + row_idx;
+  b = new_row_field_validation(req, temp_column_name);
+  console.log("BBB");
+  console.log(b);
+
   var users_column_name = req.body[temp_column_name];
 
   console.timeEnd("TIME: get_column_name");
   return users_column_name + ' (' + units_field_name + ')';
 }
 
+function get_cell_val_by_row(req, row_idx) {
+  console.time("TIME: get_cell_val_by_row");
+  var new_row_length = req.body.new_row_length;
+  var new_row_val = [];
+
+  for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
+    var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
+    var clean_val = validator.escape(req.body[cell_name] + "");
+    clean_val = validator.trim(clean_val + "");
+
+    // console.log("CCC clean_val");
+    // console.log(clean_val);
+
+    new_row_val.push(clean_val);
+  }
+  console.timeEnd("TIME: get_cell_val_by_row");
+
+  return new_row_val;
+}
+
 function collect_new_rows(req) {
   console.time("TIME: collect_new_rows");
   var new_rows_hash = {};
   var new_row_num = req.body.new_row_num;
-  var new_row_length = req.body.new_row_length;
+  var validation_errors = [];
+
 
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
-    new_rows_hash[get_column_name(row_idx, req)] = [];
+    new_rows_hash[get_column_name(row_idx, req, validation_errors)] = [];
 
 
-    for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
-      var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
-      console.log("CCC cell_name");
-      console.log(cell_name);
-      //
-      // console.log("LLL req.body[cell_name]");
-      // console.log(req.body[cell_name]);
-
-      var clean_val = validator.escape(req.body[cell_name] + "");
-      clean_val = validator.trim(clean_val + "");
-
-      console.log("CCC clean_val");
-      console.log(clean_val);
-
-      // new_row_info[new_row_head_arr].push(clean_val);
-    }
-    // console.log("WWW new_row_info");
-    // console.log(new_row_info);
+    var new_row_info = get_cell_val_by_row(req, row_idx);
+    console.log("WWW new_row_info");
+    console.log(new_row_info);
 
 
   }
