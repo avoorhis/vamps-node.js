@@ -381,7 +381,7 @@ function editMetadataForm(req, res){
 
 
 
-  collect_new_rows(req.body);
+  collect_new_rows(req);
   // var new_row_info_arr_err = collect_new_rows(req.body);
   // var new_row_info_arr = new_row_info_arr_err[0];
   // //TODO:   req = new_row_info_arr_err[1]; return not the whole req
@@ -912,41 +912,30 @@ function convertArrayOfObjectsToCSV(args) {
 // }
 //
 
-function get_column_name(row_idx, req_body) {
+function get_column_name(row_idx, req) {
   console.time("TIME: get_column_name");
   //    TODO: add validation!
 
   var units_field_name = "Units" + row_idx;
   var temp_column_name = "Column Name" + row_idx;
-  var users_column_name = req_body[temp_column_name];
+  var users_column_name = req.body[temp_column_name];
 
   console.timeEnd("TIME: get_column_name");
   return users_column_name + ' (' + units_field_name + ')';
 }
 
-function collect_new_rows(req_body) {
+function collect_new_rows(req) {
   console.time("TIME: collect_new_rows");
   var new_rows_hash = {};
-//
-//   // var sanitizeHtml = require('sanitize-html');
-//
-//   var new_row_info_arr = [];
-//
-//   // console.log("new_row_num11");
-  var new_row_num = req_body.new_row_num;
-//
-//   // console.log(new_row_num);
-//   //
-//   // console.log("new_row_length 111");
-//   // console.log(new_row_length);
-//
+  var new_row_num = req.body.new_row_num;
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
-//     // console.log("row_idx");
-//     // console.log(row_idx);
-//
-    new_rows_hash[get_column_name(row_idx, req_body)] = [];
+    new_rows_hash[get_column_name(row_idx, req)] = [];
 
   }
+
+  var new_row_length = req.body.new_row_length;
+  // for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
+
 
   console.log("UUU new_rows_hash");
   console.log(new_rows_hash);
