@@ -353,56 +353,80 @@ function editMetadataForm(req, res){
 
   var edit_metadata_address = "metadata/metadata_upload_from_file";
 
-  console.log("FFF1 req");
-  console.log(req);
-
-  var new_row_info_arr_err = collect_new_row(req);
-  var new_row_info_arr = new_row_info_arr_err[0];
-  //TODO:   req = new_row_info_arr_err[1]; return not the whole req
-
-  req = new_row_info_arr_err[1];
-
-
-  console.log("FFF new_row_info_arr");
-  console.log(new_row_info_arr);
-  // [ { col1__units1: [ '', 'r1c2', '', '', '', '', '', '' ] },
-  //   { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] },
-  //   { col3__: [ 'r3c1', 'r2c3', '', '', '', '', '', '' ] } ]
-  // [ { 'Column name 1,units in row 1': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] },
-  //   { ',': [ '', '', '', '', '', '', '', '' ] } ]
-
-  //TODO: move to add_new_fields_to_all function
   var metadata_form = req.form;
   var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
-  var result_it = "";
+  // var result_it = "";
 
-  for (var a1 in new_row_info_arr) {
-    // new_row_info_arr[a1]
-    // { 'Column name 1,units in row 1': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] }
-    var row_field_name = "new_row" + a1;
+  new_row_info_arr = [];
 
-    for (var key in new_row_info_arr[a1]) {
-      if( new_row_info_arr[a1].hasOwnProperty(key) ) {
-        // result_it += 'key = ' + key + " , val = " + new_row_info_arr[a1][key] + "\n";
-        // console.log(Array.isArray(new_row_info_arr[a1][key]));
-        /*
-         * Array.isArray(variable) =
-         true
-         key = Column name 1,units in row 1 , val = cell 1 row 1,row1 cell 2,,,,,,
-         * */
-        metadata_form[row_field_name] = new_row_info_arr[a1][key];
-        // TODO: change "new_row" + a1 to a  database field name
-        var key_arr;
-        key_arr = key.split(",");
+  console.log("FFF1 req.body");
+  console.log(req.body);
+  /*
+  *      new_row0: [ 'val 1 in col1', 'val 1 in col1', '', '', '', '', '', '' ],
+   new_row1:
+   [ 'val 2 in col1',
+   'val 2 in col1',
+   'val 2 in col1',
+   'val 2 in col1',
+   'val 2 in col1',
+   'val 2 in col1',
+   'val 2 in col1',
+   'val 2 in col1' ],
+   new_row_num: '',
+   new_row_length: '',
+   enzyme_activities: [ '1', '1', '1', '1', '1', '1', '1', '1' ],
 
-        var curr_header = key_arr[0];
-        var curr_units = key_arr[1];
-        all_field_names.push([row_field_name, curr_header + " (" + curr_units +")", "", curr_units]);
-        // ["enzyme_activities","enzyme activities (key findings)","", ""],
+   *
+  * */
 
-      }
-    }
-  }
+
+
+  collect_new_rows(req.body);
+  // var new_row_info_arr_err = collect_new_rows(req.body);
+  // var new_row_info_arr = new_row_info_arr_err[0];
+  // //TODO:   req = new_row_info_arr_err[1]; return not the whole req
+  //
+  // req = new_row_info_arr_err[1];
+  //
+  //
+  // console.log("FFF new_row_info_arr");
+  // console.log(new_row_info_arr);
+  // // [ { col1__units1: [ '', 'r1c2', '', '', '', '', '', '' ] },
+  // //   { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] },
+  // //   { col3__: [ 'r3c1', 'r2c3', '', '', '', '', '', '' ] } ]
+  // // [ { 'Column name 1,units in row 1': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] },
+  // //   { ',': [ '', '', '', '', '', '', '', '' ] } ]
+  //
+  // //TODO: move to add_new_fields_to_all function
+
+  //
+  // for (var a1 in new_row_info_arr) {
+  //   // new_row_info_arr[a1]
+  //   // { 'Column name 1,units in row 1': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] }
+  //   var row_field_name = "new_row" + a1;
+  //
+  //   for (var key in new_row_info_arr[a1]) {
+  //     if( new_row_info_arr[a1].hasOwnProperty(key) ) {
+  //       // result_it += 'key = ' + key + " , val = " + new_row_info_arr[a1][key] + "\n";
+  //       // console.log(Array.isArray(new_row_info_arr[a1][key]));
+  //       /*
+  //        * Array.isArray(variable) =
+  //        true
+  //        key = Column name 1,units in row 1 , val = cell 1 row 1,row1 cell 2,,,,,,
+  //        * */
+  //       metadata_form[row_field_name] = new_row_info_arr[a1][key];
+  //       // TODO: change "new_row" + a1 to a  database field name
+  //       var key_arr;
+  //       key_arr = key.split(",");
+  //
+  //       var curr_header = key_arr[0];
+  //       var curr_units = key_arr[1];
+  //       all_field_names.push([row_field_name, curr_header + " (" + curr_units +")", "", curr_units]);
+  //       // ["enzyme_activities","enzyme activities (key findings)","", ""],
+  //
+  //     }
+  //   }
+  // }
 
   metadata_form.pi_name = PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last;
   metadata_form.pi_email = PROJECT_INFORMATION_BY_PID[pid].email;
@@ -781,173 +805,193 @@ function convertArrayOfObjectsToCSV(args) {
 
   return result;
 }
+//
+// function new_row_val_validation(req, field_name) {
+//   console.time("TIME: new_row_val_validation");
+//   var field_val = req.body[field_name];
+//
+//   // console.log("validator isEmpty");
+//   // console.log("field_name");
+//   // console.log(field_name);
+//
+//   // console.log("XXX1 field_val");
+//   // console.log(field_val);
+//   var field_val_trimmed = validator.escape(field_val + "");
+//   // console.log("XXX2 field_val_trimmed");
+//   // console.log(field_val_trimmed);
+//   field_val_trimmed = validator.trim(field_val_trimmed + "");
+//   // console.log("XXX3 field_val_trimmed");
+//   // console.log(field_val_trimmed);
+//   var field_val_not_valid = validator.isEmpty(field_val_trimmed + "");
+//   // console.log("XXX4 field_val_not_valid");
+//   // console.log(field_val_not_valid);
+//
+//   var req_check_body = req.checkBody(field_name)
+//     .notEmpty().withMessage('User added field "' + field_name + '" must be not empty')
+//     .isAlphanumeric().withMessage('User added field "' + field_name + '" must have alphanumeric characters only')
+//     .isAscii();
+//   // console.log("req_check_body");
+//   // console.log(req_check_body);
+//   // ValidatorChain {
+//   //   errorFormatter: [Function: errorFormatter],
+//   //   param: 'Units3',
+//   //     value: '',
+//   //     validationErrors:
+//   //   [ { param: 'Units3', msg: 'Users must be an array', value: '' },
+//   //     { param: 'Units3', msg: 'Users must be an array', value: '' },
+//   //     { param: 'Units3', msg: 'Users must be an array', value: '' } ],
+//
+//   // isAlphanumeric
+//   // isAscii
+//   // stripLow
+//   // console.log(field_val_trimmed);
+//
+//   var errors = req.validationErrors();
+//   // console.log("VVV validationErrors");
+//   // console.log(errors);
+// /*
+// * VVV validationErrors
+//  [ { param: 'Units3',
+//  msg: 'User added field "Units3" must be not empty',
+//  value: '' },
+//  { param: 'Units3',
+//  msg: 'User added field "Units3" must have alphanumeric characters only',
+//  value: '' },
+//  { param: 'Units3', msg: 'Invalid value', value: '' } ]
+// * */
+//
+//   if (field_val_not_valid)
+//   {
+//     console.log("ERRRR");
+//     return [true, field_val_trimmed];
+//   }
+//   else
+//   {
+//     console.log("OK");
+//     return [false, field_val_trimmed];
+//   }
+//   console.timeEnd("TIME: new_row_val_validation");
+//
+// }
+//
+// function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx) {
+//   console.time("TIME: make_new_row_hash");
+//
+//   var new_row_length = req.body.new_row_length;
+//   var new_row_head_arr = [column_name_field_val_trimmed, units_field_val_trimmed];
+//
+//         // column_name_field_val_trimmed + " (" + units_field_val_trimmed + ")";
+//   var new_row_info = {};
+//
+//   new_row_info[new_row_head_arr] = [];
+//
+//   for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
+//
+//     var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
+//     // console.log("CCC cell_name");
+//     // console.log(cell_name);
+//     //
+//     // console.log("LLL req.body[cell_name]");
+//     // console.log(req.body[cell_name]);
+//
+//     var clean_val = validator.escape(req.body[cell_name] + "");
+//     clean_val = validator.trim(clean_val + "");
+//     new_row_info[new_row_head_arr].push(clean_val);
+//   }
+//   // console.log("WWW new_row_info");
+//   // console.log(new_row_info);
+//
+//   new_row_info_arr.push(new_row_info);
+//   // { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] }
+//
+//   // new_row1cell4
+//   //new_row
+//   console.timeEnd("TIME: make_new_row_hash");
+//
+//   return new_row_info_arr;
+// }
+//
 
-function new_row_val_validation(req, field_name) {
-  console.time("TIME: new_row_val_validation");
-  var field_val = req.body[field_name];
+function get_column_name(row_idx, req_body) {
+  console.time("TIME: get_column_name");
+  //    TODO: add validation!
 
-  // console.log("validator isEmpty");
-  // console.log("field_name");
-  // console.log(field_name);
+  var units_field_name = "Units" + row_idx;
+  var temp_column_name = "Column Name" + row_idx;
+  var users_column_name = req_body[temp_column_name];
 
-  // console.log("XXX1 field_val");
-  // console.log(field_val);
-  var field_val_trimmed = validator.escape(field_val + "");
-  // console.log("XXX2 field_val_trimmed");
-  // console.log(field_val_trimmed);
-  field_val_trimmed = validator.trim(field_val_trimmed + "");
-  // console.log("XXX3 field_val_trimmed");
-  // console.log(field_val_trimmed);
-  var field_val_not_valid = validator.isEmpty(field_val_trimmed + "");
-  // console.log("XXX4 field_val_not_valid");
-  // console.log(field_val_not_valid);
-
-  var req_check_body = req.checkBody(field_name)
-    .notEmpty().withMessage('User added field "' + field_name + '" must be not empty')
-    .isAlphanumeric().withMessage('User added field "' + field_name + '" must have alphanumeric characters only')
-    .isAscii();
-  // console.log("req_check_body");
-  // console.log(req_check_body);
-  // ValidatorChain {
-  //   errorFormatter: [Function: errorFormatter],
-  //   param: 'Units3',
-  //     value: '',
-  //     validationErrors:
-  //   [ { param: 'Units3', msg: 'Users must be an array', value: '' },
-  //     { param: 'Units3', msg: 'Users must be an array', value: '' },
-  //     { param: 'Units3', msg: 'Users must be an array', value: '' } ],
-
-  // isAlphanumeric
-  // isAscii
-  // stripLow
-  // console.log(field_val_trimmed);
-
-  var errors = req.validationErrors();
-  // console.log("VVV validationErrors");
-  // console.log(errors);
-/*
-* VVV validationErrors
- [ { param: 'Units3',
- msg: 'User added field "Units3" must be not empty',
- value: '' },
- { param: 'Units3',
- msg: 'User added field "Units3" must have alphanumeric characters only',
- value: '' },
- { param: 'Units3', msg: 'Invalid value', value: '' } ]
-* */
-
-  if (field_val_not_valid)
-  {
-    console.log("ERRRR");
-    return [true, field_val_trimmed];
-  }
-  else
-  {
-    console.log("OK");
-    return [false, field_val_trimmed];
-  }
-  console.timeEnd("TIME: new_row_val_validation");
-
+  console.timeEnd("TIME: get_column_name");
+  return users_column_name + ' (' + units_field_name + ')';
 }
 
-function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx) {
-  console.time("TIME: make_new_row_hash");
-
-  var new_row_length = req.body.new_row_length;
-  var new_row_head_arr = [column_name_field_val_trimmed, units_field_val_trimmed];
-
-        // column_name_field_val_trimmed + " (" + units_field_val_trimmed + ")";
-  var new_row_info = {};
-
-  new_row_info[new_row_head_arr] = [];
-
-  for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
-
-    var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
-    // console.log("CCC cell_name");
-    // console.log(cell_name);
-    //
-    // console.log("LLL req.body[cell_name]");
-    // console.log(req.body[cell_name]);
-
-    var clean_val = validator.escape(req.body[cell_name] + "");
-    clean_val = validator.trim(clean_val + "");
-    new_row_info[new_row_head_arr].push(clean_val);
-  }
-  // console.log("WWW new_row_info");
-  // console.log(new_row_info);
-
-  new_row_info_arr.push(new_row_info);
-  // { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] }
-
-  // new_row1cell4
-  //new_row
-  console.timeEnd("TIME: make_new_row_hash");
-
-  return new_row_info_arr;
-}
-
-
-function collect_new_row(req) {
-  console.time("TIME: collect_new_row");
-
-  // var sanitizeHtml = require('sanitize-html');
-
-  var new_row_info_arr = [];
-
-  // console.log("new_row_num11");
-  var new_row_num = req.body.new_row_num;
-
-  // console.log(new_row_num);
-  //
-  // console.log("new_row_length 111");
-  // console.log(new_row_length);
-
+function collect_new_rows(req_body) {
+  console.time("TIME: collect_new_rows");
+  var new_rows_hash = {};
+//
+//   // var sanitizeHtml = require('sanitize-html');
+//
+//   var new_row_info_arr = [];
+//
+//   // console.log("new_row_num11");
+  var new_row_num = req_body.new_row_num;
+//
+//   // console.log(new_row_num);
+//   //
+//   // console.log("new_row_length 111");
+//   // console.log(new_row_length);
+//
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
-    // console.log("row_idx");
-    // console.log(row_idx);
-
-    var units_field_name = "Units" + row_idx;
-    var column_name_field_name = "Column Name" + row_idx;
-
-    //TODO add column names and values to req.form
-
-    var col_val_res = [];
-    col_val_res = new_row_val_validation(req, column_name_field_name);
-    if (col_val_res[0]) {
-      req.form.errors.push(column_name_field_name + ' should be not empty');
-      continue;
-    }
-    else {
-      var column_name_field_val_trimmed = col_val_res[1];
-    }
-
-    var units_val_res = [];
-    units_val_res = new_row_val_validation(req, units_field_name);
-    if (units_val_res[0]) {
-      req.form.errors.push(units_field_name + ' should be not empty');
-      continue;
-    }
-    else {
-      var units_field_val_trimmed = units_val_res[1];
-    }
-
-    // console.log("column_name_field_val_trimmed");
-    //
-    // console.log(column_name_field_val_trimmed);
-    // console.log("QQQ req.form.errors");
-    // console.log(req.form.errors);
-
-
-    make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx);
-    console.log("NNN new_row_info_arr");
-    console.log(new_row_info_arr);
-    // row = 0 row = {"Column name 1,units in row 1":["cell 1 row 1","row1 cell 2","","","","","",""]} row = 1 row = {",":["","","","","","","",""]}
+//     // console.log("row_idx");
+//     // console.log(row_idx);
+//
+    new_rows_hash[get_column_name(row_idx, req_body)] = [];
 
   }
 
-  console.timeEnd("TIME: collect_new_row");
-  return [new_row_info_arr, req];
+  console.log("UUU new_rows_hash");
+  console.log(new_rows_hash);
+    //UUU new_rows_hash
+  // { 'row1 (Units1)': [], 'row2 (Units2)': [] }
+
+//
+//     //TODO add column names and values to req.form
+//
+//     var col_val_res = [];
+//     col_val_res = new_row_val_validation(req, column_name_field_name);
+//     if (col_val_res[0]) {
+//       req.form.errors.push(column_name_field_name + ' should be not empty');
+//       continue;
+//     }
+//     else {
+//       var column_name_field_val_trimmed = col_val_res[1];
+//     }
+//
+//     var units_val_res = [];
+//     units_val_res = new_row_val_validation(req, units_field_name);
+//     if (units_val_res[0]) {
+//       req.form.errors.push(units_field_name + ' should be not empty');
+//       continue;
+//     }
+//     else {
+//       var units_field_val_trimmed = units_val_res[1];
+//     }
+//
+//     // console.log("column_name_field_val_trimmed");
+//     //
+//     // console.log(column_name_field_val_trimmed);
+//     // console.log("QQQ req.form.errors");
+//     // console.log(req.form.errors);
+//
+//
+//     make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx);
+//     console.log("NNN new_row_info_arr");
+//     console.log(new_row_info_arr);
+//     // row = 0 row = {"Column name 1,units in row 1":["cell 1 row 1","row1 cell 2","","","","","",""]} row = 1 row = {",":["","","","","","","",""]}
+//
+//   }
+//
+  console.timeEnd("TIME: collect_new_rows");
+//   return [new_row_info_arr, req];
 }
 
 // ---- metadata_upload end ----
