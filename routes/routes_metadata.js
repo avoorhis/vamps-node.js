@@ -919,11 +919,9 @@ function new_row_field_validation(req, field_name) {
   var field_val_trimmed = validator.escape(req.body[field_name] + "");
   field_val_trimmed = validator.trim(field_val_trimmed + "");
   var field_val_not_valid = validator.isEmpty(field_val_trimmed + "");
-  console.log("field_name1");
-  console.log(field_name);
 
   if (field_val_not_valid) {
-    console.log("ERRRR");
+    console.log("ERROR: an empty user's" + field_name);
     err_msg = 'User added field "' + field_name + '" must be not empty and have only alpha numeric characters';
     req.form.errors.push(err_msg);
   }
@@ -934,41 +932,14 @@ function new_row_field_validation(req, field_name) {
 
 function get_column_name(row_idx, req) {
   console.time("TIME: get_column_name");
-  //    TODO: add validation!
 
-  // var units_field_name = "Units" + row_idx;
-  var units_field_name = new_row_field_validation(req, "Units" + row_idx);
-  console.log("AAA units_field_name");
-  console.log(units_field_name);
-
-  // validation_errors = validation_results[0];
-  // units_field_name = validation_results[1];
-
-  // var temp_column_name = ;
+  var units_field_name  = new_row_field_validation(req, "Units" + row_idx);
   var users_column_name = new_row_field_validation(req, "Column Name" + row_idx);
-  // validation_errors = validation_results[0];
-  // temp_column_name = validation_results[1];
-
-  console.log("AAA1 temp_column_name");
-  console.log(users_column_name);
-
-  // console.log("EEE");
-  // console.log(req.form.errors);
-
-
 
   if (units_field_name !== "" && users_column_name !== "") {
-    var new_field_name = users_column_name + ' (' + units_field_name + ')';
-    console.log("AAA2 units_field_name && temp_column_name new_field_name ");
-    console.log(new_field_name);
-
-    return new_field_name;
+    return users_column_name + ' (' + units_field_name + ')';
   }
-  // else {
-  //   return ['', validation_errors];
-  // }
   console.timeEnd("TIME: get_column_name");
-
 }
 
 function get_cell_val_by_row(row_idx, req) {
@@ -981,9 +952,6 @@ function get_cell_val_by_row(row_idx, req) {
     var clean_val = validator.escape(req.body[cell_name] + "");
     clean_val = validator.trim(clean_val + "");
 
-    // console.log("CCC clean_val");
-    // console.log(clean_val);
-
     new_row_val.push(clean_val);
   }
   console.timeEnd("TIME: get_cell_val_by_row");
@@ -995,13 +963,9 @@ function collect_new_rows(req) {
   console.time("TIME: collect_new_rows");
   var new_rows_hash = {};
   var new_row_num = req.body.new_row_num;
-  var validation_errors = [];
 
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
     var column_name = get_column_name(row_idx, req);
-
-    console.log("CCC");
-    console.log(column_name);
 
     if (!column_name) {
       continue;
@@ -1010,8 +974,6 @@ function collect_new_rows(req) {
       new_rows_hash[column_name] = [];
 
       var new_row_info = get_cell_val_by_row(row_idx, req);
-      console.log("WWW new_row_info");
-      console.log(new_row_info);
       new_rows_hash[column_name] = new_row_info;
     }
 
