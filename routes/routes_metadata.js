@@ -977,27 +977,20 @@ function collect_new_rows(req, all_field_names) {
 
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
     var column_n_unit_names = get_column_name(row_idx, req);
-    console.log("LLL00 row_idx");
-    console.log(row_idx);
-
-    console.log("LLL column_n_unit_names");
-    console.log(column_n_unit_names);
-
 
     if (column_n_unit_names) {
-      console.log("LLL0 column_n_unit_names.length");
-      console.log(column_n_unit_names.length);
+      // console.log("LLL0 column_n_unit_names.length");
+      // console.log(column_n_unit_names.length);
 
       var users_column_name = column_n_unit_names[0];
-      var units_field_name = column_n_unit_names[1];
+      var units_field_name  = column_n_unit_names[1];
       var column_name = users_column_name + ' (' + units_field_name + ')';
 
       if (column_name) {
         // [ 'run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD' ],
-          var clean_column_name = users_column_name.toLowerCase() + '_' + units_field_name.toLowerCase();
-          all_field_names.push([clean_column_name, column_name, '', units_field_name]);
+        var clean_column_name = users_column_name.toLowerCase() + '_' + units_field_name.toLowerCase();
+        all_field_names.push([clean_column_name, column_name, '', units_field_name]);
         req.form[clean_column_name] = [];
-
         req.form[clean_column_name] = get_cell_val_by_row(row_idx, req);
       }
     }
