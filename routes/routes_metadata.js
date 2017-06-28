@@ -331,7 +331,6 @@ router.post('/metadata_upload',
     console.time("TIME: post metadata_upload");
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
-      req.flash("fail", req.form.errors);
       editMetadataForm(req, res);
       //TODO: remove make_csv from here, use only if valid.
       make_csv(req, res);
@@ -381,11 +380,12 @@ function editMetadataForm(req, res){
   var req_all_field_names = collect_new_rows(req, all_field_names);
   req = req_all_field_names[0];
   all_field_names = req_all_field_names[1];
-  console.log("WWW req.form");
-  console.log(req.form);
+  // console.log("WWW req.form.errors");
+  // console.log(req.form.errors);
+  req.flash("fail", req.form.errors);
 
-  console.log("WWW1 all_field_names");
-  console.log(all_field_names);
+  // console.log("WWW1 all_field_names");
+  // console.log(all_field_names);
   // var metadata_form = req.form;
 
   // var new_row_info_arr_err = collect_new_rows(req.body);
