@@ -921,7 +921,7 @@ function new_row_field_validation(req, field_name) {
   var field_val_not_valid = validator.isEmpty(field_val_trimmed + "");
 
   if (field_val_not_valid) {
-    console.log("ERROR: an empty user's" + field_name);
+    console.log("ERROR: an empty user's " + field_name);
     err_msg = 'User added field "' + field_name + '" must be not empty and have only alpha numeric characters';
     req.form.errors.push(err_msg);
   }
@@ -967,23 +967,18 @@ function collect_new_rows(req) {
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
     var column_name = get_column_name(row_idx, req);
 
-    if (!column_name) {
-      continue;
-    }
-    else {
+    if (column_name) {
       new_rows_hash[column_name] = [];
 
-      var new_row_info = get_cell_val_by_row(row_idx, req);
-      new_rows_hash[column_name] = new_row_info;
+      new_rows_hash[column_name] = get_cell_val_by_row(row_idx, req);
     }
-
   }
 
 
   console.log("UUU new_rows_hash");
   console.log(new_rows_hash);
-    //UUU new_rows_hash
-  // { 'row1 (Units1)': [], 'row2 (Units2)': [] }
+  // UUU new_rows_hash
+  // { 'row1 (un1)': [ '', 'val 1 in col2', '', '', '', '', '', '' ],
 
 //
 //     //TODO add column names and values to req.form
