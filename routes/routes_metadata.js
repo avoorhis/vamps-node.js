@@ -1003,7 +1003,7 @@ function collect_new_rows(req) {
     console.log("CCC");
     console.log(column_name);
 
-    if (column_name == "") {
+    if (!column_name) {
       continue;
     }
     else {
@@ -1012,6 +1012,7 @@ function collect_new_rows(req) {
       var new_row_info = get_cell_val_by_row(row_idx, req);
       console.log("WWW new_row_info");
       console.log(new_row_info);
+      new_rows_hash[column_name] = new_row_info;
     }
 
   }
