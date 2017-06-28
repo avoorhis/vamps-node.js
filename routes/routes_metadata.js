@@ -996,9 +996,9 @@ function collect_new_rows(req, all_field_names) {
         // [ 'run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD' ],
           var clean_column_name = users_column_name.toLowerCase() + '_' + units_field_name.toLowerCase();
           all_field_names.push([clean_column_name, column_name, '', units_field_name]);
-        req.form[column_name] = [];
+        req.form[clean_column_name] = [];
 
-        req.form[column_name] = get_cell_val_by_row(row_idx, req);
+        req.form[clean_column_name] = get_cell_val_by_row(row_idx, req);
       }
     }
   }
