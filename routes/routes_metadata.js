@@ -938,7 +938,9 @@ function get_column_name(row_idx, req, validation_errors) {
   //    TODO: add validation!
 
   var units_field_name = "Units" + row_idx;
-  validation_results = new_row_field_validation(req, units_field_name);
+  var validation_results = new_row_field_validation(req, units_field_name);
+  // console.log("AAA");
+  // console.log(validation_results);
   if (validation_results[1] === '') {
     validation_errors.push(validation_results[0]);
   }
@@ -946,10 +948,21 @@ function get_column_name(row_idx, req, validation_errors) {
     units_field_name = validation_results[1];
   }
 
+
+
   var temp_column_name = "Column Name" + row_idx;
-  b = new_row_field_validation(req, temp_column_name);
+  var validation_results1 = new_row_field_validation(req, temp_column_name);
+  if (validation_results1[1] === '') {
+    validation_errors.push(validation_results1[0]);
+  }
+  else {
+    units_field_name = validation_results1[1];
+  }
+
+  // console.log("BBB");
+  // console.log(validation_results1);
   console.log("BBB");
-  console.log(b);
+  console.log(validation_errors);
 
   var users_column_name = req.body[temp_column_name];
 
