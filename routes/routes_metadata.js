@@ -204,8 +204,7 @@ function make_metadata_hash(req, res) {
           metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
           env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
           investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-          sample_type_options: CONSTS.SAMPLE_TYPE,
-          new_row_info_arr: ""
+          sample_type_options: CONSTS.SAMPLE_TYPE
         });
 
       }
@@ -353,11 +352,9 @@ function editMetadataForm(req, res){
 
   var edit_metadata_address = "metadata/metadata_upload_from_file";
 
-  var metadata_form = req.form;
   var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
   // var result_it = "";
 
-  new_row_info_arr = [];
 
   console.log("FFF1 req.body");
   console.log(req.body);
@@ -381,7 +378,16 @@ function editMetadataForm(req, res){
 
 
 
-  collect_new_rows(req);
+  var req_all_field_names = collect_new_rows(req, all_field_names);
+  req = req_all_field_names[0];
+  all_field_names = req_all_field_names[1];
+  console.log("WWW req.form");
+  console.log(req.form);
+
+  console.log("WWW1 all_field_names");
+  console.log(all_field_names);
+  // var metadata_form = req.form;
+
   // var new_row_info_arr_err = collect_new_rows(req.body);
   // var new_row_info_arr = new_row_info_arr_err[0];
   // //TODO:   req = new_row_info_arr_err[1]; return not the whole req
@@ -428,15 +434,15 @@ function editMetadataForm(req, res){
   //   }
   // }
 
-  metadata_form.pi_name = PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last;
-  metadata_form.pi_email = PROJECT_INFORMATION_BY_PID[pid].email;
-  metadata_form.project_title = PROJECT_INFORMATION_BY_PID[pid].title;
+  req.form.pi_name = PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last;
+  req.form.pi_email = PROJECT_INFORMATION_BY_PID[pid].email;
+  req.form.project_title = PROJECT_INFORMATION_BY_PID[pid].title;
 
   var all_metadata = {};
-  all_metadata[pid] = metadata_form;
+  all_metadata[pid] = req.form;
 
-  // console.log("XXX3 all_metadata");
-  // console.log(all_metadata);
+  console.log("XXX3 all_metadata");
+  console.log(all_metadata);
 
   var project = all_metadata[pid]["project"][0];
   var abstract_data = get_project_abstract_data(project, req);
@@ -458,8 +464,7 @@ function editMetadataForm(req, res){
     metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
     env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
     investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-    sample_type_options: CONSTS.SAMPLE_TYPE,
-    new_row_info_arr: new_row_info_arr
+    sample_type_options: CONSTS.SAMPLE_TYPE
   });
   console.timeEnd("TIME: editMetadataForm");
 }
@@ -936,8 +941,14 @@ function get_column_name(row_idx, req) {
   var units_field_name  = new_row_field_validation(req, "Units" + row_idx);
   var users_column_name = new_row_field_validation(req, "Column Name" + row_idx);
 
+  console.log("LLL1 units_field_name");
+  console.log(units_field_name);
+
+  console.log("LLL2 users_column_name");
+  console.log(users_column_name);
+
   if (units_field_name !== "" && users_column_name !== "") {
-    return users_column_name + ' (' + units_field_name + ')';
+    return [users_column_name, units_field_name];
   }
   console.timeEnd("TIME: get_column_name");
 }
@@ -959,26 +970,49 @@ function get_cell_val_by_row(row_idx, req) {
   return new_row_val;
 }
 
-function collect_new_rows(req) {
+function collect_new_rows(req, all_field_names) {
   console.time("TIME: collect_new_rows");
-  var new_rows_hash = {};
+  // var new_rows_hash = {};
   var new_row_num = req.body.new_row_num;
 
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
-    var column_name = get_column_name(row_idx, req);
+    var column_n_unit_names = get_column_name(row_idx, req);
+    console.log("LLL00 row_idx");
+    console.log(row_idx);
 
-    if (column_name) {
-      new_rows_hash[column_name] = [];
+    console.log("LLL column_n_unit_names");
+    console.log(column_n_unit_names);
 
-      new_rows_hash[column_name] = get_cell_val_by_row(row_idx, req);
+
+    if (column_n_unit_names) {
+      console.log("LLL0 column_n_unit_names.length");
+      console.log(column_n_unit_names.length);
+
+      var users_column_name = column_n_unit_names[0];
+      var units_field_name = column_n_unit_names[1];
+      var column_name = users_column_name + ' (' + units_field_name + ')';
+
+      if (column_name) {
+        // [ 'run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD' ],
+          var clean_column_name = users_column_name.toLowerCase() + '_' + units_field_name.toLowerCase();
+          all_field_names.push([clean_column_name, column_name, '', units_field_name]);
+        req.form[column_name] = [];
+
+        req.form[column_name] = get_cell_val_by_row(row_idx, req);
+      }
     }
   }
 
 
-  console.log("UUU new_rows_hash");
-  console.log(new_rows_hash);
+  // console.log("UUU new_rows_hash");
+  // console.log(new_rows_hash);
   // UUU new_rows_hash
   // { 'row1 (un1)': [ '', 'val 1 in col2', '', '', '', '', '', '' ],
+
+
+  console.timeEnd("TIME: collect_new_rows");
+
+  return [req, all_field_names];
 
 //
 //     //TODO add column names and values to req.form
@@ -1017,7 +1051,6 @@ function collect_new_rows(req) {
 //
 //   }
 //
-  console.timeEnd("TIME: collect_new_rows");
 //   return [new_row_info_arr, req];
 }
 
