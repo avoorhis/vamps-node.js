@@ -961,13 +961,13 @@ function get_column_name(row_idx, req, validation_errors) {
 
   // console.log("BBB");
   // console.log(validation_results1);
-  console.log("BBB");
-  console.log(validation_errors);
+
 
   var users_column_name = req.body[temp_column_name];
-
+  var new_field_name = users_column_name + ' (' + units_field_name + ')'
   console.timeEnd("TIME: get_column_name");
-  return users_column_name + ' (' + units_field_name + ')';
+  return [new_field_name, validation_errors];
+
 }
 
 function get_cell_val_by_row(req, row_idx) {
@@ -998,8 +998,13 @@ function collect_new_rows(req) {
 
 
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
-    new_rows_hash[get_column_name(row_idx, req, validation_errors)] = [];
+    var column_name_n_err = get_column_name(row_idx, req, validation_errors);
+    var new_feild_name = column_name_n_err[0];
+    validation_errors = column_name_n_err[1];
+    console.log("BBB");
+    console.log(validation_errors);
 
+    new_rows_hash[new_feild_name] = [];
 
     var new_row_info = get_cell_val_by_row(req, row_idx);
     console.log("WWW new_row_info");
