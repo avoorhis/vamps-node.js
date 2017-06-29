@@ -354,24 +354,24 @@ function editMetadataForm(req, res){
   //TODO: move! so the new fields stay after reload
   // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
 
-  console.log("FFF1 req.body");
-  console.log(req.body);
+  // console.log("FFF1 req.body");
+  // console.log(req.body);
 
   var req_all_field_names = collect_new_rows(req, all_field_names);
   req = req_all_field_names[0];
 
-  console.log("FFF2 req.body");
-  console.log(req.body);
+  // console.log("FFF2 req.body");
+  // console.log(req.body);
 
   all_field_names = req_all_field_names[1];
   // console.log("WWW req.form.errors");
   // console.log(req.form.errors);
   var all_field_names_from_body = Object.keys(req.body);
-  console.log("WWW all_field_names_from_body");
-  console.log(JSON.stringify(all_field_names_from_body));
-
-  console.log("WWW1 all_field_names");
-  console.log(JSON.stringify(all_field_names));
+  // console.log("WWW all_field_names_from_body");
+  // console.log(JSON.stringify(all_field_names_from_body));
+  //
+  // console.log("WWW1 all_field_names");
+  // console.log(JSON.stringify(all_field_names));
 
   var myArray_fail = helpers.unique_array(req.form.errors);
   myArray_fail.sort();
@@ -384,13 +384,13 @@ function editMetadataForm(req, res){
   req.form.pi_email = PROJECT_INFORMATION_BY_PID[pid].email;
   req.form.project_title = PROJECT_INFORMATION_BY_PID[pid].title;
 
-  console.log("FFF2 req.form");
-  console.log(req.form);
+  // console.log("FFF2 req.form");
+  // console.log(req.form);
   var all_metadata = {};
   all_metadata[pid] = req.form;
 
-  console.log("XXX3 all_metadata");
-  console.log(all_metadata);
+  // console.log("XXX3 all_metadata");
+  // console.log(all_metadata);
 
   var project = all_metadata[pid]["project"][0];
   var abstract_data  = get_project_abstract_data(project, req);
@@ -764,11 +764,11 @@ function get_column_name(row_idx, req) {
   var units_field_name  = new_row_field_validation(req, "Units" + row_idx);
   var users_column_name = new_row_field_validation(req, "Column Name" + row_idx);
 
-  console.log("LLL1 units_field_name");
-  console.log(units_field_name);
-
-  console.log("LLL2 users_column_name");
-  console.log(users_column_name);
+  // console.log("LLL1 units_field_name");
+  // console.log(units_field_name);
+  //
+  // console.log("LLL2 users_column_name");
+  // console.log(users_column_name);
 
   if (units_field_name !== "" && users_column_name !== "") {
     return [users_column_name, units_field_name];
