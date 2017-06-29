@@ -169,8 +169,8 @@ function make_metadata_hash(req, res) {
   // console.log("ALLL1 AllMetadata = ");
   // console.log(AllMetadata);
 
-  pid = req.body.project_id;
-  all_metadata = {};
+  var pid = req.body.project_id;
+  var all_metadata = {};
   if (helpers.isInt(pid))
   {
     all_metadata[pid] = {};
@@ -351,6 +351,7 @@ function editMetadataForm(req, res){
 
   var edit_metadata_address = "metadata/metadata_upload_from_file";
 
+  //TODO: move! so the new fields stay after reload
   var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
 
   console.log("FFF1 req.body");
@@ -368,6 +369,7 @@ function editMetadataForm(req, res){
 
   req.flash("fail", myArray_fail);
 
+  var pid = req.body.project_id;
 
   req.form.pi_name = PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last;
   req.form.pi_email = PROJECT_INFORMATION_BY_PID[pid].email;
@@ -562,9 +564,9 @@ function populate_metadata_hash(rows, pid, all_metadata) {
     var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
     var ids_data = get_all_req_metadata(dataset_id);
 
-    add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id]);
+    all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
 
-    add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, ids_data);
+    all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, ids_data, all_metadata[pid]);
 
   }
   console.timeEnd("TIME: 3) populate_metadata_hash");
@@ -590,19 +592,20 @@ function get_all_req_metadata(dataset_id) {
 }
 
 
-function add_all_val_by_key(my_key_hash, my_val_hash) {
+function add_all_val_by_key(my_key_hash, my_val_hash, all_metadata_pid) {
   console.time("TIME: 6) add_all_val_by_key");
 
   for (var i1 = 0, len1 = my_key_hash.length; i1 < len1; i1++) {
     var key = my_key_hash[i1];
     var val = my_val_hash[key];
-    if (!(all_metadata[pid].hasOwnProperty(key))) {
-      all_metadata[pid][key] = [];
+    if (!(all_metadata_pid.hasOwnProperty(key))) {
+      all_metadata_pid[key] = [];
     }
-    all_metadata[pid][key].push(val);
+    all_metadata_pid[key].push(val);
 
   }
   console.timeEnd("TIME: 6) add_all_val_by_key");
+  return all_metadata_pid;
 }
 
 function get_all_field_names(all_metadata) {
@@ -623,13 +626,14 @@ function get_all_field_names(all_metadata) {
 
 function get_project_abstract_data(project, req)
 {
+  console.time("TIME: get_project_abstract_data");
   var info_file = '';
   var abstract_data = {};
   if (project.substring(0,3) === 'DCO'){
     info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'abstracts', 'DCO_info.json');
     abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
   }
-
+  console.timeEnd("TIME: get_project_abstract_data");
   return abstract_data;
 }
 
@@ -665,15 +669,6 @@ function make_csv(req, res) {
 
   project = req.form["project"];
 
-  // out_csv_file_names = makeFileName(req, project);
-
-  // for (var f = 0; f < out_csv_file_names.length; f++) {
-  //   out_csv_file_name = out_csv_file_names[f];
-  //
-  //   fs.writeFile(out_csv_file_name, csv, function (err) {
-  //     if (err) throw err;
-  //   });
-  // }
   var rando = helpers.getRandomInt(10000, 99999);
 
   out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + project + '_' + rando.toString() + ".csv");
@@ -686,18 +681,6 @@ function make_csv(req, res) {
 
   console.timeEnd("TIME: make_csv");
 }
-
-// function makeFileName(req, project) {
-//   console.time("TIME: makeFileName");
-//
-//   var rando = helpers.getRandomInt(10000, 99999);
-//
-//   file_name1 = path.join(config.USER_FILES_BASE, req.user.username, "metadata-" + rando.toString() + '_' + project + ".csv");
-//   file_name2 = path.join(config.USER_METADATA, "metadata-" + rando.toString() + '_' + req.user.username + '_' + project + ".csv");
-//
-//   console.timeEnd("TIME: makeFileName");
-//   return [file_name1, file_name2];
-// }
 
 function convertArrayOfObjectsToCSV(args) {
   console.time("TIME: convertArrayOfObjectsToCSV");
@@ -712,8 +695,8 @@ function convertArrayOfObjectsToCSV(args) {
     columnDelimiter = args.columnDelimiter || ',';
     lineDelimiter = args.lineDelimiter || '\n';
 
-    headers = data['dataset'];
-    headers_length = headers.length;
+    var headers = data['dataset'];
+    var headers_length = headers.length;
 
     // first line = datasets
     result = ' ';
@@ -723,7 +706,7 @@ function convertArrayOfObjectsToCSV(args) {
 
     // TODO: get keys from an array of what to save (not dataset_id, for example)
     for (var key in data) {
-        item = data[key];
+        var item = data[key];
 
         result += key;
         result += columnDelimiter;
@@ -745,112 +728,6 @@ function convertArrayOfObjectsToCSV(args) {
 
   return result;
 }
-//
-// function new_row_val_validation(req, field_name) {
-//   console.time("TIME: new_row_val_validation");
-//   var field_val = req.body[field_name];
-//
-//   // console.log("validator isEmpty");
-//   // console.log("field_name");
-//   // console.log(field_name);
-//
-//   // console.log("XXX1 field_val");
-//   // console.log(field_val);
-//   var field_val_trimmed = validator.escape(field_val + "");
-//   // console.log("XXX2 field_val_trimmed");
-//   // console.log(field_val_trimmed);
-//   field_val_trimmed = validator.trim(field_val_trimmed + "");
-//   // console.log("XXX3 field_val_trimmed");
-//   // console.log(field_val_trimmed);
-//   var field_val_not_valid = validator.isEmpty(field_val_trimmed + "");
-//   // console.log("XXX4 field_val_not_valid");
-//   // console.log(field_val_not_valid);
-//
-//   var req_check_body = req.checkBody(field_name)
-//     .notEmpty().withMessage('User added field "' + field_name + '" must be not empty')
-//     .isAlphanumeric().withMessage('User added field "' + field_name + '" must have alphanumeric characters only')
-//     .isAscii();
-//   // console.log("req_check_body");
-//   // console.log(req_check_body);
-//   // ValidatorChain {
-//   //   errorFormatter: [Function: errorFormatter],
-//   //   param: 'Units3',
-//   //     value: '',
-//   //     validationErrors:
-//   //   [ { param: 'Units3', msg: 'Users must be an array', value: '' },
-//   //     { param: 'Units3', msg: 'Users must be an array', value: '' },
-//   //     { param: 'Units3', msg: 'Users must be an array', value: '' } ],
-//
-//   // isAlphanumeric
-//   // isAscii
-//   // stripLow
-//   // console.log(field_val_trimmed);
-//
-//   var errors = req.validationErrors();
-//   // console.log("VVV validationErrors");
-//   // console.log(errors);
-// /*
-// * VVV validationErrors
-//  [ { param: 'Units3',
-//  msg: 'User added field "Units3" must be not empty',
-//  value: '' },
-//  { param: 'Units3',
-//  msg: 'User added field "Units3" must have alphanumeric characters only',
-//  value: '' },
-//  { param: 'Units3', msg: 'Invalid value', value: '' } ]
-// * */
-//
-//   if (field_val_not_valid)
-//   {
-//     console.log("ERRRR");
-//     return [true, field_val_trimmed];
-//   }
-//   else
-//   {
-//     console.log("OK");
-//     return [false, field_val_trimmed];
-//   }
-//   console.timeEnd("TIME: new_row_val_validation");
-//
-// }
-//
-// function make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx) {
-//   console.time("TIME: make_new_row_hash");
-//
-//   var new_row_length = req.body.new_row_length;
-//   var new_row_head_arr = [column_name_field_val_trimmed, units_field_val_trimmed];
-//
-//         // column_name_field_val_trimmed + " (" + units_field_val_trimmed + ")";
-//   var new_row_info = {};
-//
-//   new_row_info[new_row_head_arr] = [];
-//
-//   for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
-//
-//     var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
-//     // console.log("CCC cell_name");
-//     // console.log(cell_name);
-//     //
-//     // console.log("LLL req.body[cell_name]");
-//     // console.log(req.body[cell_name]);
-//
-//     var clean_val = validator.escape(req.body[cell_name] + "");
-//     clean_val = validator.trim(clean_val + "");
-//     new_row_info[new_row_head_arr].push(clean_val);
-//   }
-//   // console.log("WWW new_row_info");
-//   // console.log(new_row_info);
-//
-//   new_row_info_arr.push(new_row_info);
-//   // { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] }
-//
-//   // new_row1cell4
-//   //new_row
-//   console.timeEnd("TIME: make_new_row_hash");
-//
-//   return new_row_info_arr;
-// }
-//
 
 function new_row_field_validation(req, field_name) {
   console.time("TIME: new_row_field_validation");
@@ -907,10 +784,13 @@ function get_cell_val_by_row(row_idx, req) {
 }
 
 function getCol(matrix, col) {
+  console.time("TIME: getCol");
   var column = [];
   for (var i=0; i < matrix.length; i++) {
     column.push(matrix[i][col]);
   }
+  console.timeEnd("TIME: getCol");
+
   return column;
 }
 
@@ -940,11 +820,6 @@ function collect_new_rows(req, all_field_names) {
       var re = / /g;
       var clean_column_name = users_column_name.toLowerCase().replace(re, '_') + '_' + units_field_name.toLowerCase().replace(re, '_');
 
-      // console.log("NNN1 all_clean_field_names_arr.indexOf(clean_column_name)");
-      // console.log(all_clean_field_names_arr.indexOf(clean_column_name));
-      //
-      // console.log("NNN2 isUnique(all_clean_field_names_arr, clean_column_name)");
-      // console.log(isUnique(all_clean_field_names_arr, clean_column_name));
 
       if (column_name && isUnique(all_clean_field_names_arr, clean_column_name)) {
         // [ 'run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD' ],
@@ -956,54 +831,10 @@ function collect_new_rows(req, all_field_names) {
   }
 
 
-  // console.log("UUU new_rows_hash");
-  // console.log(new_rows_hash);
-  // UUU new_rows_hash
-  // { 'row1 (un1)': [ '', 'val 1 in col2', '', '', '', '', '', '' ],
-
-
   console.timeEnd("TIME: collect_new_rows");
 
   return [req, all_field_names];
 
-//
-//     //TODO add column names and values to req.form
-//
-//     var col_val_res = [];
-//     col_val_res = new_row_val_validation(req, column_name_field_name);
-//     if (col_val_res[0]) {
-//       req.form.errors.push(column_name_field_name + ' should be not empty');
-//       continue;
-//     }
-//     else {
-//       var column_name_field_val_trimmed = col_val_res[1];
-//     }
-//
-//     var units_val_res = [];
-//     units_val_res = new_row_val_validation(req, units_field_name);
-//     if (units_val_res[0]) {
-//       req.form.errors.push(units_field_name + ' should be not empty');
-//       continue;
-//     }
-//     else {
-//       var units_field_val_trimmed = units_val_res[1];
-//     }
-//
-//     // console.log("column_name_field_val_trimmed");
-//     //
-//     // console.log(column_name_field_val_trimmed);
-//     // console.log("QQQ req.form.errors");
-//     // console.log(req.form.errors);
-//
-//
-//     make_new_row_hash(req, new_row_info_arr, column_name_field_val_trimmed, units_field_val_trimmed, row_idx);
-//     console.log("NNN new_row_info_arr");
-//     console.log(new_row_info_arr);
-//     // row = 0 row = {"Column name 1,units in row 1":["cell 1 row 1","row1 cell 2","","","","","",""]} row = 1 row = {",":["","","","","","","",""]}
-//
-//   }
-//
-//   return [new_row_info_arr, req];
 }
 
 // ---- metadata_upload end ----
