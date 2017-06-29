@@ -8,7 +8,7 @@ var fs = require("fs");
 var path = require("path");
 var config  = require(app_root + '/config/config');
 var validator = require('validator');
-var expressValidator = require('express-validator');
+// var expressValidator = require('express-validator');
 
 /* GET metadata page. */
  router.get('/metadata', function(req, res) {
@@ -187,14 +187,14 @@ function make_metadata_hash(req, res) {
         var project = all_metadata[pid]["project"];
         var abstract_data = get_project_abstract_data(project, req);
         var project_prefix = get_project_prefix(project);
-
+        all_field_names = CONSTS.ORDERED_METADATA_NAMES;
         res.render("metadata/metadata_upload_from_file", {
           title: "VAMPS: Metadata_upload",
           user: req.user,
           hostname: req.CONFIG.hostname,
           abstract_data_pr: abstract_data[project_prefix],
           all_metadata: all_metadata,
-          all_field_names: CONSTS.ORDERED_METADATA_NAMES,
+          all_field_names: all_field_names,
           dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
           dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
           dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
@@ -349,14 +349,18 @@ function editMetadataForm(req, res){
 
   console.log('in editMetadataForm');
 
-  var edit_metadata_address = "metadata/metadata_upload_from_file";
+  // var edit_metadata_address = "metadata/metadata_upload_from_file";
 
   //TODO: move! so the new fields stay after reload
-  var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
+  // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
+
+  // var all_field_names = Object.keys(req.body);
 
   console.log("FFF1 req.body");
   console.log(req.body);
 
+  console.log("FFF11 all_field_names");
+  console.log(all_field_names);
 
   var req_all_field_names = collect_new_rows(req, all_field_names);
   req = req_all_field_names[0];
@@ -608,21 +612,21 @@ function add_all_val_by_key(my_key_hash, my_val_hash, all_metadata_pid) {
   return all_metadata_pid;
 }
 
-function get_all_field_names(all_metadata) {
-  console.time("TIME: get_all_field_names");
-
-  var all_field_names = [];
-  for (var pid in all_metadata) {
-    for (var did in all_metadata[pid]) {
-      for (var d_info in all_metadata[pid][did]) {
-        all_field_names.push(d_info);
-      }
-    }
-  }
-  console.timeEnd("TIME: get_all_field_names");
-
-  return all_field_names;
-}
+// function get_all_field_names(all_metadata) {
+//   console.time("TIME: get_all_field_names");
+//
+//   var all_field_names = [];
+//   for (var pid in all_metadata) {
+//     for (var did in all_metadata[pid]) {
+//       for (var d_info in all_metadata[pid][did]) {
+//         all_field_names.push(d_info);
+//       }
+//     }
+//   }
+//   console.timeEnd("TIME: get_all_field_names");
+//
+//   return all_field_names;
+// }
 
 function get_project_abstract_data(project, req)
 {
@@ -655,13 +659,12 @@ function env_items_validation(value) {
   }
 }
 
-function make_csv(req, res) {
+function make_csv(req) {
   var out_csv_file_name;
   console.time("TIME: make_csv");
 
   //TODO: check where it is called from
   console.log("MMM make_csv: form_values");
-  input = req.form;
 
   var csv = convertArrayOfObjectsToCSV({
     data: req.form
@@ -685,7 +688,7 @@ function make_csv(req, res) {
 function convertArrayOfObjectsToCSV(args) {
   console.time("TIME: convertArrayOfObjectsToCSV");
 
-  var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+  var result, columnDelimiter, lineDelimiter, data, headers, headers_length;
 
     data = args.data || null;
     if (data === null) {
@@ -695,8 +698,8 @@ function convertArrayOfObjectsToCSV(args) {
     columnDelimiter = args.columnDelimiter || ',';
     lineDelimiter = args.lineDelimiter || '\n';
 
-    var headers = data['dataset'];
-    var headers_length = headers.length;
+    headers = data['dataset'];
+    headers_length = data['dataset'].length;
 
     // first line = datasets
     result = ' ';
