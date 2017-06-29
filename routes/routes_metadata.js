@@ -189,16 +189,20 @@ function make_metadata_hash(req, res) {
         var abstract_data  = get_project_abstract_data(project, req);
         var project_prefix = get_project_prefix(project);
         var primers_info   = get_primers_info(all_metadata[pid]["dataset_id"]);
-        var forward_primer_seqs = primers_info[0];
-        var reverse_primer_seqs = primers_info[1];
+        var forward_primer_seqs = primers_info[0].join(', ');
+        var reverse_primer_seqs = primers_info[1].join(', ');
 
-        console.log("DDD forward_primer_seqs");
-        console.log(JSON.stringify(forward_primer_seqs));
-
-        console.log("DDD reverse_primer_seqs");
-        console.log(JSON.stringify(reverse_primer_seqs));
-
-
+        // console.log("DDD forward_primer_seqs");
+        // console.log(JSON.stringify(forward_primer_seqs));
+        //
+        // console.log("DDD reverse_primer_seqs");
+        // console.log(JSON.stringify(reverse_primer_seqs));
+        //
+        // DDD forward_primer_seqs
+        // "CCTACGGGAGGCAGCAG, CCTACGGG.GGC[AT]GCAG, TCTACGGAAGGCTGCAG"
+        // DDD reverse_primer_seqs
+        // "GGATTAG.TACCC"
+        //
         all_field_names = CONSTS.ORDERED_METADATA_NAMES;
         res.render("metadata/metadata_upload_from_file", {
           title: "VAMPS: Metadata_upload",
