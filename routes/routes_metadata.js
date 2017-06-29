@@ -354,19 +354,24 @@ function editMetadataForm(req, res){
   //TODO: move! so the new fields stay after reload
   // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
 
-  // var all_field_names = Object.keys(req.body);
-
   console.log("FFF1 req.body");
   console.log(req.body);
 
-  console.log("FFF11 all_field_names");
-  console.log(all_field_names);
-
   var req_all_field_names = collect_new_rows(req, all_field_names);
   req = req_all_field_names[0];
+
+  console.log("FFF2 req.body");
+  console.log(req.body);
+
   all_field_names = req_all_field_names[1];
   // console.log("WWW req.form.errors");
   // console.log(req.form.errors);
+  var all_field_names_from_body = Object.keys(req.body);
+  console.log("WWW all_field_names_from_body");
+  console.log(JSON.stringify(all_field_names_from_body));
+
+  console.log("WWW1 all_field_names");
+  console.log(JSON.stringify(all_field_names));
 
   var myArray_fail = helpers.unique_array(req.form.errors);
   myArray_fail.sort();
@@ -379,6 +384,8 @@ function editMetadataForm(req, res){
   req.form.pi_email = PROJECT_INFORMATION_BY_PID[pid].email;
   req.form.project_title = PROJECT_INFORMATION_BY_PID[pid].title;
 
+  console.log("FFF2 req.form");
+  console.log(req.form);
   var all_metadata = {};
   all_metadata[pid] = req.form;
 
@@ -456,39 +463,39 @@ function saveMetadata(req, res){
 
 }
 
-function make_empty_arrays(all_metadata, pid) {
-  console.time("TIME: 4) make_empty_arrays");
-  // console.log("ALLL AllMetadata = ");
-  // console.log(AllMetadata);
-
-
-  for (var dataset_id in AllMetadata) {
-
-    console.time("TIME: 41) dataset_id.keys");
-
-    var all_keys = Object.keys(AllMetadata[dataset_id]);
-
-    for (var k1 = 0; k1 < all_keys.length; k1++ ) {
-      var key_name1 = all_keys[k1];
-      all_metadata[pid][key_name1] = [];
-    }
-    console.timeEnd("TIME: 41) dataset_id.keys");
-
-  }
-
-  // console.time("TIME: 42) CONSTS.REQ_METADATA_FIELDS_wIDs");
-  //
-  // for (var i = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i < len; i++) {
-  //   var key_name2 = CONSTS.REQ_METADATA_FIELDS_wIDs[i];
-  //   all_metadata[pid][key_name2] = [];
-  // }
-  //
-  // console.timeEnd("TIME: 42) CONSTS.REQ_METADATA_FIELDS_wIDs");
-
-  console.timeEnd("TIME: 4) make_empty_arrays");
-
-  return all_metadata;
-}
+// function make_empty_arrays(all_metadata, pid) {
+//   console.time("TIME: 4) make_empty_arrays");
+//   // console.log("ALLL AllMetadata = ");
+//   // console.log(AllMetadata);
+//
+//
+//   for (var dataset_id in AllMetadata) {
+//
+//     console.time("TIME: 41) dataset_id.keys");
+//
+//     var all_keys = Object.keys(AllMetadata[dataset_id]);
+//
+//     for (var k1 = 0; k1 < all_keys.length; k1++ ) {
+//       var key_name1 = all_keys[k1];
+//       all_metadata[pid][key_name1] = [];
+//     }
+//     console.timeEnd("TIME: 41) dataset_id.keys");
+//
+//   }
+//
+//   // console.time("TIME: 42) CONSTS.REQ_METADATA_FIELDS_wIDs");
+//   //
+//   // for (var i = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i < len; i++) {
+//   //   var key_name2 = CONSTS.REQ_METADATA_FIELDS_wIDs[i];
+//   //   all_metadata[pid][key_name2] = [];
+//   // }
+//   //
+//   // console.timeEnd("TIME: 42) CONSTS.REQ_METADATA_FIELDS_wIDs");
+//
+//   console.timeEnd("TIME: 4) make_empty_arrays");
+//
+//   return all_metadata;
+// }
 
 function populate_metadata_hash(rows, pid, all_metadata) {
   console.time("TIME: 3) populate_metadata_hash");
