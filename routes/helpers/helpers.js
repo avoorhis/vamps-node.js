@@ -1667,3 +1667,10 @@ module.exports.screen_dids_for_permissions = function(req, dids)
   }
   return new_did_list
 };
+
+module.exports.unique_array = function(myArray)
+{
+  var uSet = new Set(myArray);
+  return [...uSet];
+};
+

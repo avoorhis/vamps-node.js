@@ -991,8 +991,8 @@ function collect_new_rows(req, all_field_names) {
   // var new_rows_hash = {};
   var new_row_num = req.body.new_row_num;
   var all_clean_field_names_arr = getCol(all_field_names, 0);
-  console.log("JSON.stringify(all_clean_field_names_arr)");
-  console.log(JSON.stringify(all_clean_field_names_arr));
+  console.log("JSON.stringify(unique_array.all_clean_field_names_arr)");
+  console.log(JSON.stringify(helpers.unique_array(all_clean_field_names_arr)));
 
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
     var column_n_unit_names = get_column_name(row_idx, req);
@@ -1004,11 +1004,11 @@ function collect_new_rows(req, all_field_names) {
       var column_name = users_column_name + ' (' + units_field_name + ')';
       var clean_column_name = users_column_name.toLowerCase() + '_' + units_field_name.toLowerCase();
 
-      console.log("NNN1 all_clean_field_names_arr.indexOf(clean_column_name)");
-      console.log(all_clean_field_names_arr.indexOf(clean_column_name));
-
-      console.log("NNN2 isUnique(all_clean_field_names_arr, column_name)");
-      console.log(isUnique(all_clean_field_names_arr, column_name));
+      // console.log("NNN1 all_clean_field_names_arr.indexOf(clean_column_name)");
+      // console.log(all_clean_field_names_arr.indexOf(clean_column_name));
+      //
+      // console.log("NNN2 isUnique(all_clean_field_names_arr, clean_column_name)");
+      // console.log(isUnique(all_clean_field_names_arr, clean_column_name));
       // if(zipCodes.indexOf('90001') > -1) {
 
 
