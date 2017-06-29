@@ -13,14 +13,9 @@
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
 <% }else if(messages.fail){ %>
-<% var myArray = messages.fail;
-var uSet = new Set(myArray);
-myArray_fail = [...uSet];
-myArray_fail.sort();
-%>
 <div class="alert_flash_message_fail" >
   <ul>
-  <% myArray_fail.forEach(function(value){ %>
+  <% messages.fail.forEach(function(value){ %>
     <li>
       <%= value %>
     </li>

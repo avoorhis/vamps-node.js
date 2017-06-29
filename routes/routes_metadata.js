@@ -382,7 +382,11 @@ function editMetadataForm(req, res){
   all_field_names = req_all_field_names[1];
   // console.log("WWW req.form.errors");
   // console.log(req.form.errors);
-  req.flash("fail", req.form.errors);
+
+  var myArray_fail = helpers.unique_array(req.form.errors);
+  myArray_fail.sort();
+
+  req.flash("fail", myArray_fail);
 
   // console.log("WWW1 all_field_names");
   // console.log(all_field_names);
@@ -990,9 +994,9 @@ function collect_new_rows(req, all_field_names) {
   console.time("TIME: collect_new_rows");
   // var new_rows_hash = {};
   var new_row_num = req.body.new_row_num;
-  var all_clean_field_names_arr = getCol(all_field_names, 0);
-  console.log("JSON.stringify(unique_array.all_clean_field_names_arr)");
-  console.log(JSON.stringify(helpers.unique_array(all_clean_field_names_arr)));
+  var all_clean_field_names_arr = helpers.unique_array(getCol(all_field_names, 0));
+  // console.log("JSON.stringify(unique_array.all_clean_field_names_arr)");
+  // console.log(JSON.stringify(helpers.unique_array(all_clean_field_names_arr)));
 
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
     var column_n_unit_names = get_column_name(row_idx, req);
