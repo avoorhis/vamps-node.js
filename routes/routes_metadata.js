@@ -189,6 +189,15 @@ function make_metadata_hash(req, res) {
         var abstract_data  = get_project_abstract_data(project, req);
         var project_prefix = get_project_prefix(project);
         var primers_info   = get_primers_info(all_metadata[pid]["dataset_id"]);
+        var forward_primer_seqs = primers_info[0];
+        var reverse_primer_seqs = primers_info[1];
+
+        console.log("DDD forward_primer_seqs");
+        console.log(JSON.stringify(forward_primer_seqs));
+
+        console.log("DDD reverse_primer_seqs");
+        console.log(JSON.stringify(reverse_primer_seqs));
+
 
         all_field_names = CONSTS.ORDERED_METADATA_NAMES;
         res.render("metadata/metadata_upload_from_file", {
@@ -438,15 +447,38 @@ function get_primers_info(dataset_ids) {
     // console.log(AllMetadata[dataset_ids[idx]]["primer_suite_id"]);
     primer_suite_ids.push(AllMetadata[dataset_ids[idx]]["primer_suite_id"]);
 
-
   }
   var primer_suite_id = helpers.unique_array(primer_suite_ids);
 
-  console.log("DDD MD_PRIMER_SUITE[primer_suite_id])");
-  console.log(JSON.stringify(MD_PRIMER_SUITE[primer_suite_id]));
+  // console.log("DDD MD_PRIMER_SUITE[primer_suite_id])");
+  // console.log(JSON.stringify(MD_PRIMER_SUITE[primer_suite_id]));
+
+  // {"id":5,"name":"Bacterial V3-V5 Suite","region":"v3","domain":"bacteria","primer":
+  //   [
+  //     {"primer":"341F-1","primer_id":38,"direction":"F","sequence":"CCTACGGGAGGCAGCAG"},
+  //     {"primer":"341F-2","primer_id":39,"direction":"F","sequence":"CCTACGGG.GGC[AT]GCAG"},
+  //     {"primer":"341F-3","primer_id":40,"direction":"F","sequence":"TCTACGGAAGGCTGCAG"},
+  //     {"primer":"926R","primer_id":74,"direction":"R","sequence":"GGATTAG.TACCC"}
+  //   ]}
+
+  var forward_primer_seqs = [];
+  var reverse_primer_seqs = [];
+  for (var idx1 in MD_PRIMER_SUITE[primer_suite_id].primer) {
+    var primer_info = MD_PRIMER_SUITE[primer_suite_id].primer[idx1];
+    // console.log("DDD primer_info");
+    // console.log(JSON.stringify(primer_info));
+
+    if (primer_info.direction === "F") {
+
+      forward_primer_seqs.push(primer_info.sequence);
+    }
+    else if (primer_info.direction === "R") {
+      reverse_primer_seqs.push(primer_info.sequence);
+    }
+  }
 
   console.timeEnd("TIME: get_primers_info");
-
+  return [forward_primer_seqs, reverse_primer_seqs];
 }
 
 //TODO: benchmark
