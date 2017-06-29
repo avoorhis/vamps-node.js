@@ -352,29 +352,9 @@ function editMetadataForm(req, res){
   var edit_metadata_address = "metadata/metadata_upload_from_file";
 
   var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
-  // var result_it = "";
-
 
   console.log("FFF1 req.body");
   console.log(req.body);
-  /*
-  *      new_row0: [ 'val 1 in col1', 'val 1 in col1', '', '', '', '', '', '' ],
-   new_row1:
-   [ 'val 2 in col1',
-   'val 2 in col1',
-   'val 2 in col1',
-   'val 2 in col1',
-   'val 2 in col1',
-   'val 2 in col1',
-   'val 2 in col1',
-   'val 2 in col1' ],
-   new_row_num: '',
-   new_row_length: '',
-   enzyme_activities: [ '1', '1', '1', '1', '1', '1', '1', '1' ],
-
-   *
-  * */
-
 
 
   var req_all_field_names = collect_new_rows(req, all_field_names);
@@ -388,55 +368,6 @@ function editMetadataForm(req, res){
 
   req.flash("fail", myArray_fail);
 
-  // console.log("WWW1 all_field_names");
-  // console.log(all_field_names);
-  // var metadata_form = req.form;
-
-  // var new_row_info_arr_err = collect_new_rows(req.body);
-  // var new_row_info_arr = new_row_info_arr_err[0];
-  // //TODO:   req = new_row_info_arr_err[1]; return not the whole req
-  //
-  // req = new_row_info_arr_err[1];
-  //
-  //
-  // console.log("FFF new_row_info_arr");
-  // console.log(new_row_info_arr);
-  // // [ { col1__units1: [ '', 'r1c2', '', '', '', '', '', '' ] },
-  // //   { col2__units2: [ 'r2c1', 'r2c2', '', '', '', '', '', '' ] },
-  // //   { col3__: [ 'r3c1', 'r2c3', '', '', '', '', '', '' ] } ]
-  // // [ { 'Column name 1,units in row 1': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] },
-  // //   { ',': [ '', '', '', '', '', '', '', '' ] } ]
-  //
-  // //TODO: move to add_new_fields_to_all function
-
-  //
-  // for (var a1 in new_row_info_arr) {
-  //   // new_row_info_arr[a1]
-  //   // { 'Column name 1,units in row 1': [ 'cell 1 row 1', 'row1 cell 2', '', '', '', '', '', '' ] }
-  //   var row_field_name = "new_row" + a1;
-  //
-  //   for (var key in new_row_info_arr[a1]) {
-  //     if( new_row_info_arr[a1].hasOwnProperty(key) ) {
-  //       // result_it += 'key = ' + key + " , val = " + new_row_info_arr[a1][key] + "\n";
-  //       // console.log(Array.isArray(new_row_info_arr[a1][key]));
-  //       /*
-  //        * Array.isArray(variable) =
-  //        true
-  //        key = Column name 1,units in row 1 , val = cell 1 row 1,row1 cell 2,,,,,,
-  //        * */
-  //       metadata_form[row_field_name] = new_row_info_arr[a1][key];
-  //       // TODO: change "new_row" + a1 to a  database field name
-  //       var key_arr;
-  //       key_arr = key.split(",");
-  //
-  //       var curr_header = key_arr[0];
-  //       var curr_units = key_arr[1];
-  //       all_field_names.push([row_field_name, curr_header + " (" + curr_units +")", "", curr_units]);
-  //       // ["enzyme_activities","enzyme activities (key findings)","", ""],
-  //
-  //     }
-  //   }
-  // }
 
   req.form.pi_name = PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last;
   req.form.pi_email = PROJECT_INFORMATION_BY_PID[pid].email;
@@ -1006,7 +937,8 @@ function collect_new_rows(req, all_field_names) {
       var users_column_name = column_n_unit_names[0];
       var units_field_name  = column_n_unit_names[1];
       var column_name = users_column_name + ' (' + units_field_name + ')';
-      var clean_column_name = users_column_name.toLowerCase() + '_' + units_field_name.toLowerCase();
+      var re = / /g;
+      var clean_column_name = users_column_name.toLowerCase().replace(re, '_') + '_' + units_field_name.toLowerCase().replace(re, '_');
 
       // console.log("NNN1 all_clean_field_names_arr.indexOf(clean_column_name)");
       // console.log(all_clean_field_names_arr.indexOf(clean_column_name));
