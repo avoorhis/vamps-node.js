@@ -449,7 +449,7 @@ function editMetadataForm(req, res){
   console.log(all_metadata);
 
   var project = all_metadata[pid]["project"][0];
-  var abstract_data = get_project_abstract_data(project, req);
+  var abstract_data  = get_project_abstract_data(project, req);
   var project_prefix = get_project_prefix(project);
 
   res.render('metadata/metadata_upload_from_file', {
@@ -1013,10 +1013,8 @@ function collect_new_rows(req, all_field_names) {
       //
       // console.log("NNN2 isUnique(all_clean_field_names_arr, clean_column_name)");
       // console.log(isUnique(all_clean_field_names_arr, clean_column_name));
-      // if(zipCodes.indexOf('90001') > -1) {
 
-
-        if (column_name && isUnique(all_clean_field_names_arr, clean_column_name)) {
+      if (column_name && isUnique(all_clean_field_names_arr, clean_column_name)) {
         // [ 'run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD' ],
         all_field_names.push([clean_column_name, column_name, '', units_field_name]);
         req.form[clean_column_name] = [];
