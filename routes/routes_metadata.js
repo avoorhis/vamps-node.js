@@ -427,29 +427,25 @@ function get_primers_info(dataset_ids) {
   // console.log("DDD dataset_ids");
   // console.log(dataset_ids);
   // [ 4312, 4313, 4314, 4315, 4316, 4317, 4318, 4319 ]
+  console.time("TIME: get_primers_info");
+  var primer_suite_ids = [];
 
-
-  console.time("TIME: var idx0 = 0; idx0 < dataset_ids.length; idx0++");
-  for (var idx0 = 0; idx0 < dataset_ids.length; idx0++) {
-
-    console.log("DDD dataset_id");
-    console.log(dataset_ids[idx0]);
-    // console.log("AllMetadata[dataset_id][primer_suite_id]");
-    // console.log(AllMetadata[dataset_id]["primer_suite_id"]);
-
-  }
-  console.timeEnd("TIME: var idx0 = 0; idx0 < dataset_ids.length; idx0++");
-
-  console.time("TIME: var idx in dataset_ids");
   for (var idx in dataset_ids) {
 
-    console.log("DDD dataset_id");
-    console.log(dataset_ids[idx]);
-    // console.log("AllMetadata[dataset_id][primer_suite_id]");
-    // console.log(AllMetadata[dataset_id]["primer_suite_id"]);
+    // console.log("DDD dataset_id");
+    // console.log(dataset_ids[idx]);
+    // console.log("AllMetadata[dataset_ids[idx]][primer_suite_id]");
+    // console.log(AllMetadata[dataset_ids[idx]]["primer_suite_id"]);
+    primer_suite_ids.push(AllMetadata[dataset_ids[idx]]["primer_suite_id"]);
+
 
   }
-  console.timeEnd("TIME: var idx in dataset_ids");
+  var primer_suite_id = helpers.unique_array(primer_suite_ids);
+
+  console.log("DDD MD_PRIMER_SUITE[primer_suite_id])");
+  console.log(JSON.stringify(MD_PRIMER_SUITE[primer_suite_id]));
+
+  console.timeEnd("TIME: get_primers_info");
 
 }
 
