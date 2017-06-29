@@ -440,7 +440,16 @@ function get_primers_info(dataset_ids) {
   }
   console.timeEnd("TIME: var idx0 = 0; idx0 < dataset_ids.length; idx0++");
 
+  console.time("TIME: var idx in dataset_ids");
+  for (var idx in dataset_ids) {
 
+    console.log("DDD dataset_id");
+    console.log(dataset_ids[idx]);
+    // console.log("AllMetadata[dataset_id][primer_suite_id]");
+    // console.log(AllMetadata[dataset_id]["primer_suite_id"]);
+
+  }
+  console.timeEnd("TIME: var idx in dataset_ids");
 
 }
 
