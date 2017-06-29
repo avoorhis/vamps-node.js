@@ -920,6 +920,7 @@ function convertArrayOfObjectsToCSV(args) {
 function new_row_field_validation(req, field_name) {
   console.time("TIME: new_row_field_validation");
   var err_msg = '';
+
   //todo: send a value instead of "req.body[field_name]"?
   var field_val_trimmed = validator.escape(req.body[field_name] + "");
   field_val_trimmed = validator.trim(field_val_trimmed + "");
@@ -970,25 +971,49 @@ function get_cell_val_by_row(row_idx, req) {
   return new_row_val;
 }
 
+function getCol(matrix, col) {
+  var column = [];
+  for (var i=0; i < matrix.length; i++) {
+    column.push(matrix[i][col]);
+  }
+  return column;
+}
+
+function isUnique(all_clean_field_names_arr, column_name) {
+  return (all_clean_field_names_arr.indexOf(column_name) < 0);
+}
+
+// var array = [new Array(20), new Array(20), new Array(20)]; //..your 3x20 array
+// getCol(array, 0); //Get first column
+
 function collect_new_rows(req, all_field_names) {
   console.time("TIME: collect_new_rows");
   // var new_rows_hash = {};
   var new_row_num = req.body.new_row_num;
+  var all_clean_field_names_arr = getCol(all_field_names, 0);
+  console.log("JSON.stringify(all_clean_field_names_arr)");
+  console.log(JSON.stringify(all_clean_field_names_arr));
 
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
     var column_n_unit_names = get_column_name(row_idx, req);
 
     if (column_n_unit_names) {
-      // console.log("LLL0 column_n_unit_names.length");
-      // console.log(column_n_unit_names.length);
 
       var users_column_name = column_n_unit_names[0];
       var units_field_name  = column_n_unit_names[1];
       var column_name = users_column_name + ' (' + units_field_name + ')';
+      var clean_column_name = users_column_name.toLowerCase() + '_' + units_field_name.toLowerCase();
 
-      if (column_name) {
+      console.log("NNN1 all_clean_field_names_arr.indexOf(clean_column_name)");
+      console.log(all_clean_field_names_arr.indexOf(clean_column_name));
+
+      console.log("NNN2 isUnique(all_clean_field_names_arr, column_name)");
+      console.log(isUnique(all_clean_field_names_arr, column_name));
+      // if(zipCodes.indexOf('90001') > -1) {
+
+
+        if (column_name && isUnique(all_clean_field_names_arr, clean_column_name)) {
         // [ 'run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD' ],
-        var clean_column_name = users_column_name.toLowerCase() + '_' + units_field_name.toLowerCase();
         all_field_names.push([clean_column_name, column_name, '', units_field_name]);
         req.form[clean_column_name] = [];
         req.form[clean_column_name] = get_cell_val_by_row(row_idx, req);
