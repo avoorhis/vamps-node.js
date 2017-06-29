@@ -184,9 +184,12 @@ function make_metadata_hash(req, res) {
         console.log("in make_metadata_hash");
         all_metadata = populate_metadata_hash(rows, pid, all_metadata);
 
+        //TODO: do once here and keep with form
         var project = all_metadata[pid]["project"];
-        var abstract_data = get_project_abstract_data(project, req);
+        var abstract_data  = get_project_abstract_data(project, req);
         var project_prefix = get_project_prefix(project);
+        var primers_info   = get_primers_info(all_metadata[pid]["dataset_id"]);
+
         all_field_names = CONSTS.ORDERED_METADATA_NAMES;
         res.render("metadata/metadata_upload_from_file", {
           title: "VAMPS: Metadata_upload",
@@ -383,6 +386,7 @@ function editMetadataForm(req, res){
   req.form.pi_name = PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last;
   req.form.pi_email = PROJECT_INFORMATION_BY_PID[pid].email;
   req.form.project_title = PROJECT_INFORMATION_BY_PID[pid].title;
+  // req.form.forward_primer =
 
   // console.log("FFF2 req.form");
   // console.log(req.form);
@@ -395,6 +399,7 @@ function editMetadataForm(req, res){
   var project = all_metadata[pid]["project"][0];
   var abstract_data  = get_project_abstract_data(project, req);
   var project_prefix = get_project_prefix(project);
+  // var primers_info   = get_primers_info();
 
   res.render('metadata/metadata_upload_from_file', {
     title: 'VAMPS: Metadata_upload',
@@ -417,6 +422,27 @@ function editMetadataForm(req, res){
   console.timeEnd("TIME: editMetadataForm");
 }
 
+function get_primers_info(dataset_ids) {
+  // MD_PRIMER_SUITE
+  // console.log("DDD dataset_ids");
+  // console.log(dataset_ids);
+  // [ 4312, 4313, 4314, 4315, 4316, 4317, 4318, 4319 ]
+
+
+  console.time("TIME: var idx0 = 0; idx0 < dataset_ids.length; idx0++");
+  for (var idx0 = 0; idx0 < dataset_ids.length; idx0++) {
+
+    console.log("DDD dataset_id");
+    console.log(dataset_ids[idx0]);
+    // console.log("AllMetadata[dataset_id][primer_suite_id]");
+    // console.log(AllMetadata[dataset_id]["primer_suite_id"]);
+
+  }
+  console.timeEnd("TIME: var idx0 = 0; idx0 < dataset_ids.length; idx0++");
+
+
+
+}
 
 //TODO: benchmark
 function get_second(element) {
@@ -462,40 +488,6 @@ function saveMetadata(req, res){
   console.timeEnd("TIME: saveMetadata");
 
 }
-
-// function make_empty_arrays(all_metadata, pid) {
-//   console.time("TIME: 4) make_empty_arrays");
-//   // console.log("ALLL AllMetadata = ");
-//   // console.log(AllMetadata);
-//
-//
-//   for (var dataset_id in AllMetadata) {
-//
-//     console.time("TIME: 41) dataset_id.keys");
-//
-//     var all_keys = Object.keys(AllMetadata[dataset_id]);
-//
-//     for (var k1 = 0; k1 < all_keys.length; k1++ ) {
-//       var key_name1 = all_keys[k1];
-//       all_metadata[pid][key_name1] = [];
-//     }
-//     console.timeEnd("TIME: 41) dataset_id.keys");
-//
-//   }
-//
-//   // console.time("TIME: 42) CONSTS.REQ_METADATA_FIELDS_wIDs");
-//   //
-//   // for (var i = 0, len = CONSTS.REQ_METADATA_FIELDS_wIDs.length; i < len; i++) {
-//   //   var key_name2 = CONSTS.REQ_METADATA_FIELDS_wIDs[i];
-//   //   all_metadata[pid][key_name2] = [];
-//   // }
-//   //
-//   // console.timeEnd("TIME: 42) CONSTS.REQ_METADATA_FIELDS_wIDs");
-//
-//   console.timeEnd("TIME: 4) make_empty_arrays");
-//
-//   return all_metadata;
-// }
 
 function populate_metadata_hash(rows, pid, all_metadata) {
   console.time("TIME: 3) populate_metadata_hash");
