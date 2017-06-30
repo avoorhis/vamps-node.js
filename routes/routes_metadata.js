@@ -446,13 +446,12 @@ function get_primers_info(dataset_id) {
 
     primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
   }
-  console.log("DDD primer_info");
-  console.log(JSON.stringify(primer_info));
+  // console.log("DDD primer_info");
+  // console.log(JSON.stringify(primer_info));
   // {"F":["CCTACGGGAGGCAGCAG","CCTACGGG.GGC[AT]GCAG","TCTACGGAAGGCTGCAG"],"R":["GGATTAG.TACCC"]}
 
   console.timeEnd("TIME: get_primers_info");
   return primer_info;
-  // return [forward_primer_seqs.join(', '), reverse_primer_seqs.join(', ')];
 }
 
 //TODO: benchmark
@@ -526,24 +525,14 @@ function populate_metadata_hash(rows, pid, all_metadata) {
     all_metadata[pid]["dataset_description"].push(row.dataset_description);
 
     var primers_info_by_dataset_id = get_primers_info(row.did);
-    // {"F":["CCTACGGGAGGCAGCAG","CCTACGGG.GGC[AT]GCAG","TCTACGGAAGGCTGCAG"],"R":["GGATTAG.TACCC"]}
-
-
-    console.log("PPP AllMetadata[dataset_id].forward_primer");
-    console.log(AllMetadata[dataset_id]["forward_primer"]);
 
     AllMetadata[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
     AllMetadata[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
 
-    console.log("PPP1 AllMetadata[dataset_id].forward_primer");
-    console.log(AllMetadata[dataset_id]["forward_primer"]);
 
     var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
     var ids_data = get_all_req_metadata(dataset_id);
 
-
-    console.log("LLL all_metadata_keys_hash");
-    console.log(all_metadata_keys_hash);
 
     all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
 
@@ -551,8 +540,6 @@ function populate_metadata_hash(rows, pid, all_metadata) {
 
   }
   console.timeEnd("TIME: 3) populate_metadata_hash");
-  console.log("XXX all_metadata");
-  console.log(all_metadata);
   return all_metadata;
 }
 
@@ -580,12 +567,6 @@ function add_all_val_by_key(my_key_hash, my_val_hash, all_metadata_pid) {
   for (var i1 = 0, len1 = my_key_hash.length; i1 < len1; i1++) {
     var key = my_key_hash[i1];
     var val = my_val_hash[key];
-
-    console.log("KKK1 key");
-    console.log(JSON.stringify(key));
-
-    console.log("KKK2 val");
-    console.log(JSON.stringify(val));
     
     if (!(all_metadata_pid.hasOwnProperty(key))) {
       all_metadata_pid[key] = [];
