@@ -432,78 +432,25 @@ function editMetadataForm(req, res){
 }
 
 function get_primers_info(dataset_id) {
-  // MD_PRIMER_SUITE
-  // console.log("DDD0 dataset_id");
-  // console.log(dataset_id);
-  // [ 4312, 4313, 4314, 4315, 4316, 4317, 4318, 4319 ]
   console.time("TIME: get_primers_info");
-  // var primer_suite_ids = [];
 
-  // for (var idx in dataset_ids) {
   var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
-  console.log("DDD0 MD_PRIMER_SUITE[primer_suite_id].primer.length");
-  console.log(MD_PRIMER_SUITE[primer_suite_id].primer.length);
-  //
-  // console.log("DDD1 MD_PRIMER_SUITE[primer_suite_id])");
-  // console.log(JSON.stringify(MD_PRIMER_SUITE[primer_suite_id]));
-
-  // {"id":5,"name":"Bacterial V3-V5 Suite","region":"v3","domain":"bacteria","primer":
-  //   [
-  //     {"primer":"341F-1","primer_id":38,"direction":"F","sequence":"CCTACGGGAGGCAGCAG"},
-  //     {"primer":"341F-2","primer_id":39,"direction":"F","sequence":"CCTACGGG.GGC[AT]GCAG"},
-  //     {"primer":"341F-3","primer_id":40,"direction":"F","sequence":"TCTACGGAAGGCTGCAG"},
-  //     {"primer":"926R","primer_id":74,"direction":"R","sequence":"GGATTAG.TACCC"}
-  //   ]}
-
-  // var forward_primer_seqs = [];
-  // var reverse_primer_seqs = [];
-
-
   var primer_info = {};
-  // for (var idx1 in MD_PRIMER_SUITE[primer_suite_id].primer) {
   for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
-    // console.log("PPP MD_PRIMER_SUITE[primer_suite_id].primer");
-    // console.log(JSON.stringify(MD_PRIMER_SUITE[primer_suite_id].primer));
-
-    console.log("PPP1 MD_PRIMER_SUITE[primer_suite_id].primer[i].direction");
-    console.log(JSON.stringify(MD_PRIMER_SUITE[primer_suite_id].primer[i].direction));
-
-    console.log("PPP1 MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence");
-    console.log(JSON.stringify(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence));
-
-    // try {
-    //   // the synchronous code that we want to catch thrown errors on
-    //   var err = new Error('example')
-    //   throw err
-    // } catch (err) {
-    //   // handle the error safely
-    //   console.log(err)
-    // }
 
     var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
     console.log("XXX curr_direction");
     console.log(curr_direction);
 
     if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
-    // }
-    // else {
       primer_info[curr_direction] = [];
     }
 
     primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
-
-    // primer_info[MD_PRIMER_SUITE[primer_suite_id].primer[i].direction] = MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence;
-  //
-  //   if (primer_info.direction === "F") {
-  //
-  //     forward_primer_seqs.push(primer_info.sequence);
-  //   }
-  //   else if (primer_info.direction === "R") {
-  //     reverse_primer_seqs.push(primer_info.sequence);
-  //   }
   }
   console.log("DDD primer_info");
   console.log(JSON.stringify(primer_info));
+  // {"F":["CCTACGGGAGGCAGCAG","CCTACGGG.GGC[AT]GCAG","TCTACGGAAGGCTGCAG"],"R":["GGATTAG.TACCC"]}
 
   console.timeEnd("TIME: get_primers_info");
   // return [forward_primer_seqs.join(', '), reverse_primer_seqs.join(', ')];
