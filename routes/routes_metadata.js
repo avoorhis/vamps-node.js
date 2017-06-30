@@ -433,6 +433,8 @@ function editMetadataForm(req, res){
 
 function get_primers_info(dataset_id) {
   console.time("TIME: get_primers_info");
+  console.log("MMM MD_PRIMER_SUITE");
+  console.log("MD_PRIMER_SUITE");
 
   var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
   var primer_info = {};
