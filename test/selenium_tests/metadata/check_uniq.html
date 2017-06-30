@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:3000/" />
+<title>check_uniq</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">check_uniq</td></tr>
+</thead><tbody>
+<tr>
+	<td>click</td>
+	<td>id=addrow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=addrow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Column Name1</td>
+	<td>Column name 1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Units1</td>
+	<td>units in row 1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=new_row1cell0</td>
+	<td>cell 1 row 1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=new_row1cell1</td>
+	<td>row1 cell 2</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//button[@type='submit'])[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=addrow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=addrow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Column Name1</td>
+	<td>Column name 1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Units1</td>
+	<td>units in row 1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=new_row1cell0</td>
+	<td>cell 1 row 122</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=new_row1cell1</td>
+	<td>row1 cell 2333</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Column Name2</td>
+	<td>col1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Units2</td>
+	<td>unq</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=new_row2cell0</td>
+	<td>55rer</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=new_row2cell1</td>
+	<td>t5try</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//button[@type='submit'])[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//table[@id='first_col_table']/tbody/tr[110]/td/span</td>
+	<td>col1 (unq)</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//table[@id='first_col_table']/tbody/tr[110]/td/span/label</td>
+	<td>col1 (unq)</td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td>xpath=(//label[@name=''])[2]</td>
+	<td>Column name 1 (units in row 1)</td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td>id=col1_unq0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=col1_unq1</td>
+	<td>t5try</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=col1_unq0</td>
+	<td>55rer</td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
