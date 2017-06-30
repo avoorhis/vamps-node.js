@@ -188,9 +188,6 @@ function make_metadata_hash(req, res) {
         var project = all_metadata[pid]["project"];
         var abstract_data  = get_project_abstract_data(project, req);
         var project_prefix = get_project_prefix(project);
-        var primers_info   = get_primers_info(all_metadata[pid]["dataset_id"]);
-        var forward_primer_seqs = primers_info[0].join(', ');
-        var reverse_primer_seqs = primers_info[1].join(', ');
 
         // console.log("DDD forward_primer_seqs");
         // console.log(JSON.stringify(forward_primer_seqs));
@@ -412,7 +409,6 @@ function editMetadataForm(req, res){
   var project = all_metadata[pid]["project"][0];
   var abstract_data  = get_project_abstract_data(project, req);
   var project_prefix = get_project_prefix(project);
-  // var primers_info   = get_primers_info();
 
   res.render('metadata/metadata_upload_from_file', {
     title: 'VAMPS: Metadata_upload',
@@ -435,26 +431,20 @@ function editMetadataForm(req, res){
   console.timeEnd("TIME: editMetadataForm");
 }
 
-function get_primers_info(dataset_ids) {
+function get_primers_info(dataset_id) {
   // MD_PRIMER_SUITE
-  // console.log("DDD dataset_ids");
-  // console.log(dataset_ids);
+  // console.log("DDD0 dataset_id");
+  // console.log(dataset_id);
   // [ 4312, 4313, 4314, 4315, 4316, 4317, 4318, 4319 ]
   console.time("TIME: get_primers_info");
-  var primer_suite_ids = [];
+  // var primer_suite_ids = [];
 
-  for (var idx in dataset_ids) {
-
-    // console.log("DDD dataset_id");
-    // console.log(dataset_ids[idx]);
-    // console.log("AllMetadata[dataset_ids[idx]][primer_suite_id]");
-    // console.log(AllMetadata[dataset_ids[idx]]["primer_suite_id"]);
-    primer_suite_ids.push(AllMetadata[dataset_ids[idx]]["primer_suite_id"]);
-
-  }
-  var primer_suite_id = helpers.unique_array(primer_suite_ids);
-
-  // console.log("DDD MD_PRIMER_SUITE[primer_suite_id])");
+  // for (var idx in dataset_ids) {
+  var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
+  console.log("DDD0 MD_PRIMER_SUITE[primer_suite_id].primer.length");
+  console.log(MD_PRIMER_SUITE[primer_suite_id].primer.length);
+  //
+  // console.log("DDD1 MD_PRIMER_SUITE[primer_suite_id])");
   // console.log(JSON.stringify(MD_PRIMER_SUITE[primer_suite_id]));
 
   // {"id":5,"name":"Bacterial V3-V5 Suite","region":"v3","domain":"bacteria","primer":
@@ -465,24 +455,58 @@ function get_primers_info(dataset_ids) {
   //     {"primer":"926R","primer_id":74,"direction":"R","sequence":"GGATTAG.TACCC"}
   //   ]}
 
-  var forward_primer_seqs = [];
-  var reverse_primer_seqs = [];
-  for (var idx1 in MD_PRIMER_SUITE[primer_suite_id].primer) {
-    var primer_info = MD_PRIMER_SUITE[primer_suite_id].primer[idx1];
-    // console.log("DDD primer_info");
-    // console.log(JSON.stringify(primer_info));
+  // var forward_primer_seqs = [];
+  // var reverse_primer_seqs = [];
 
-    if (primer_info.direction === "F") {
 
-      forward_primer_seqs.push(primer_info.sequence);
+  var primer_info = {};
+  // for (var idx1 in MD_PRIMER_SUITE[primer_suite_id].primer) {
+  for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
+    // console.log("PPP MD_PRIMER_SUITE[primer_suite_id].primer");
+    // console.log(JSON.stringify(MD_PRIMER_SUITE[primer_suite_id].primer));
+
+    console.log("PPP1 MD_PRIMER_SUITE[primer_suite_id].primer[i].direction");
+    console.log(JSON.stringify(MD_PRIMER_SUITE[primer_suite_id].primer[i].direction));
+
+    console.log("PPP1 MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence");
+    console.log(JSON.stringify(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence));
+
+    // try {
+    //   // the synchronous code that we want to catch thrown errors on
+    //   var err = new Error('example')
+    //   throw err
+    // } catch (err) {
+    //   // handle the error safely
+    //   console.log(err)
+    // }
+
+    var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
+    console.log("XXX curr_direction");
+    console.log(curr_direction);
+
+    if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
+    // }
+    // else {
+      primer_info[curr_direction] = [];
     }
-    else if (primer_info.direction === "R") {
-      reverse_primer_seqs.push(primer_info.sequence);
-    }
+
+    primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
+
+    // primer_info[MD_PRIMER_SUITE[primer_suite_id].primer[i].direction] = MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence;
+  //
+  //   if (primer_info.direction === "F") {
+  //
+  //     forward_primer_seqs.push(primer_info.sequence);
+  //   }
+  //   else if (primer_info.direction === "R") {
+  //     reverse_primer_seqs.push(primer_info.sequence);
+  //   }
   }
+  console.log("DDD primer_info");
+  console.log(JSON.stringify(primer_info));
 
   console.timeEnd("TIME: get_primers_info");
-  return [forward_primer_seqs, reverse_primer_seqs];
+  // return [forward_primer_seqs.join(', '), reverse_primer_seqs.join(', ')];
 }
 
 //TODO: benchmark
@@ -533,77 +557,32 @@ function saveMetadata(req, res){
 function populate_metadata_hash(rows, pid, all_metadata) {
   console.time("TIME: 3) populate_metadata_hash");
 
-  // all_metadata[pid]["dataset_ids"] = {}
   all_metadata[pid]["dataset_id"] = [];
   all_metadata[pid]["dataset"] = [];
   all_metadata[pid]["dataset_description"] = [];
 
-  // console.log("PPP1 populate_metadata_hash: ");
-  // make_empty_arrays(all_metadata, pid);
-
-  // console.log("PPP2 all_metadata");
-  // console.log(all_metadata);
-
   for (var i = 0; i < rows.length; i++) {
-      var row = rows[i];
-      /*
-      console.log("WWW row");
-      console.log(row);
-      TextRow {
-        project: 'DCO_GAI_Bv3v5',
-        title: 'Icelandic Volcanic Lake',
-        did: 4312,
-        pid: 47,
-        dataset: 'S1',
-        dataset_description: 'NULL',
-        username: 'gaidos',
-        email: 'gaidos@hawaii.edu',
-        institution: 'University of Hawaii',
-        first_name: 'Eric',
-        last_name: 'Gaidos',
-        owner_user_id: 54,
-        public: 0 }
+    var row = rows[i];
 
-{
-      dataset_id: [ "4312", "4313", "4314", "4315", "4316", "4317", "4318", "4319" ],
-  project_title: [ "Icelandic Volcanic Lake" ],
-  collection_date:
-   [ "2007-06-01",
-     "2007-06-01",
-     "2007-06-01",
-     "2007-06-01",
-     "2007-06-01",
-     "2007-06-01",
-     "2007-06-01",
-     "2008-10-11" ],
+    var dataset_id = row.did;
 
+    all_metadata[pid]["project"]     = row.project;
+    all_metadata[pid]["project_title"] = row.title;
+    all_metadata[pid]["username"]    = row.username;
+    all_metadata[pid]["pi_name"]     = row.first_name + " " + row.last_name;
+    all_metadata[pid]["pi_email"]    = row.email;
+    all_metadata[pid]["institution"] = row.institution;
+    all_metadata[pid]["first_name"]  = row.first_name;
+    all_metadata[pid]["last_name"]   = row.last_name;
+    all_metadata[pid]["public"]      = row.public;
+    all_metadata[pid]["dataset_id"].push(row.did);
+    all_metadata[pid]["dataset"].push(row.dataset);
+    all_metadata[pid]["dataset_description"].push(row.dataset_description);
 
-      */
-      var dataset_id = row.did;
-    // console.log('PPP3 from populate_metadata_hash row');
-    // console.log(row);
+    var primers_info_by_dataset_id = get_primers_info(row.did);
+    // var forward_primer_seqs = primers_info[0].join(', ');
+    // var reverse_primer_seqs = primers_info[1].join(', ');
 
-      all_metadata[pid]["project"]     = row.project;
-      all_metadata[pid]["project_title"] = row.title;
-      all_metadata[pid]["username"]    = row.username;
-      all_metadata[pid]["pi_name"]     = row.first_name + " " + row.last_name;
-      all_metadata[pid]["pi_email"]    = row.email;
-      all_metadata[pid]["institution"] = row.institution;
-      all_metadata[pid]["first_name"]  = row.first_name;
-      all_metadata[pid]["last_name"]   = row.last_name;
-      all_metadata[pid]["public"]      = row.public;
-      // console.log("AllMetadata[dataset_id]");
-      // console.log(AllMetadata[dataset_id]);
-      all_metadata[pid]["dataset_id"].push(row.did);
-      all_metadata[pid]["dataset"].push(row.dataset);
-      all_metadata[pid]["dataset_description"].push(row.dataset_description);
-
-      /*
-      console.log("AllMetadata[dataset_id]");
-      console.log(AllMetadata[dataset_id]);
-  sodium: '30.65',
-  collection_date: '2007-06-01',
-      */
 
     var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
     var ids_data = get_all_req_metadata(dataset_id);
