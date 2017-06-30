@@ -541,6 +541,10 @@ function populate_metadata_hash(rows, pid, all_metadata) {
     var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
     var ids_data = get_all_req_metadata(dataset_id);
 
+
+    console.log("LLL all_metadata_keys_hash");
+    console.log(all_metadata_keys_hash);
+
     all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
 
     all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, ids_data, all_metadata[pid]);

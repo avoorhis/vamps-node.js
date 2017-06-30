@@ -490,8 +490,8 @@ constants.REQ_METADATA_FIELDS_wIDs = ["geo_loc_name",     // name of country or 
   "adapter_sequence",
   "illumina_index",
   "primer_suite",
-  "forward_primer",
-  "reverse_primer",
+  // "forward_primer",
+  // "reverse_primer",
   "run"
 ];
 // constants.REQ_METADATA_FIELDS = [{  "name":"collection_date",       "units":"date","format":"YYYY-MM-DD"}, // format?? yyyy-mm-dd
