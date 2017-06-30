@@ -545,7 +545,6 @@ constants.ORDERED_METADATA_NAMES = [
   ["sample_size_mass","Sample Size (mass)","User supplied", "g"],
   ["sample_collection_device","Sample collection device","", ""],
   ["formation_name","Formation name","User supplied", ""],
-  ["access_point_type","Access Point Type","User supplied", ""],
   ["","Sample handling","", ""],
   ["samp_store_dur","Storage duration","User supplied", "days"],
   ["samp_store_temp","Storage temperature","User supplied", "degrees celsius"],
