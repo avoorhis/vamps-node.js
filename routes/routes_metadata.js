@@ -442,15 +442,21 @@ function get_primers_info(dataset_id) {
 
   var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
   var primer_info = {};
-  for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
+  if (typeof primer_suite_id === 'undefined') {
+    return {};
+  }
+  else {
 
-    var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
+    for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
 
-    if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
-      primer_info[curr_direction] = [];
+      var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
+
+      if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
+        primer_info[curr_direction] = [];
+      }
+
+      primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
     }
-
-    primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
   }
   // console.log("DDD primer_info");
   // console.log(JSON.stringify(primer_info));
