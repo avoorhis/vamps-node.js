@@ -439,8 +439,6 @@ function get_primers_info(dataset_id) {
   for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
 
     var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
-    console.log("XXX curr_direction");
-    console.log(curr_direction);
 
     if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
       primer_info[curr_direction] = [];
@@ -453,6 +451,7 @@ function get_primers_info(dataset_id) {
   // {"F":["CCTACGGGAGGCAGCAG","CCTACGGG.GGC[AT]GCAG","TCTACGGAAGGCTGCAG"],"R":["GGATTAG.TACCC"]}
 
   console.timeEnd("TIME: get_primers_info");
+  return primer_info;
   // return [forward_primer_seqs.join(', '), reverse_primer_seqs.join(', ')];
 }
 
@@ -527,9 +526,17 @@ function populate_metadata_hash(rows, pid, all_metadata) {
     all_metadata[pid]["dataset_description"].push(row.dataset_description);
 
     var primers_info_by_dataset_id = get_primers_info(row.did);
-    // var forward_primer_seqs = primers_info[0].join(', ');
-    // var reverse_primer_seqs = primers_info[1].join(', ');
+    // {"F":["CCTACGGGAGGCAGCAG","CCTACGGG.GGC[AT]GCAG","TCTACGGAAGGCTGCAG"],"R":["GGATTAG.TACCC"]}
 
+
+    console.log("PPP AllMetadata[dataset_id].forward_primer");
+    console.log(AllMetadata[dataset_id]["forward_primer"]);
+
+    AllMetadata[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
+    AllMetadata[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
+
+    console.log("PPP1 AllMetadata[dataset_id].forward_primer");
+    console.log(AllMetadata[dataset_id]["forward_primer"]);
 
     var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
     var ids_data = get_all_req_metadata(dataset_id);
@@ -540,13 +547,14 @@ function populate_metadata_hash(rows, pid, all_metadata) {
 
   }
   console.timeEnd("TIME: 3) populate_metadata_hash");
-
+  console.log("XXX all_metadata");
+  console.log(all_metadata);
   return all_metadata;
 }
 
 
 function get_all_req_metadata(dataset_id) {
-  console.time("TIME: 5) add_all_val_by_key");
+  console.time("TIME: 5) get_all_req_metadata");
 
   var data = {};
   for (var idx = 0; idx < CONSTS.REQ_METADATA_FIELDS_wIDs.length; idx++) {
@@ -556,7 +564,7 @@ function get_all_req_metadata(dataset_id) {
 
     data[key].push(val_hash.value);
   }
-  console.time("TIME: 5) add_all_val_by_key");
+  console.time("TIME: 5) get_all_req_metadata");
 
   return data;
 }
@@ -568,6 +576,13 @@ function add_all_val_by_key(my_key_hash, my_val_hash, all_metadata_pid) {
   for (var i1 = 0, len1 = my_key_hash.length; i1 < len1; i1++) {
     var key = my_key_hash[i1];
     var val = my_val_hash[key];
+
+    console.log("KKK1 key");
+    console.log(JSON.stringify(key));
+
+    console.log("KKK2 val");
+    console.log(JSON.stringify(val));
+    
     if (!(all_metadata_pid.hasOwnProperty(key))) {
       all_metadata_pid[key] = [];
     }
