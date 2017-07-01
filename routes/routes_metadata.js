@@ -380,11 +380,20 @@ function editMetadataForm(req, res){
   // console.log("WWW req.form.errors");
   // console.log(req.form.errors);
   var all_field_names_from_body = Object.keys(req.body);
-  // console.log("WWW all_field_names_from_body");
-  // console.log(JSON.stringify(all_field_names_from_body));
-  //
-  // console.log("WWW1 all_field_names");
-  // console.log(JSON.stringify(all_field_names));
+  console.log("WWW all_field_names_from_body");
+  console.log(JSON.stringify(all_field_names_from_body));
+
+  var all_field_names_first_column = get_first_column(all_field_names, 0);
+
+  var diff = all_field_names_from_body.filter(function(x) { return all_field_names_first_column.indexOf(x) < 0; });
+
+  console.log("SSS all_field_names");
+  console.log(diff);
+
+
+
+  console.log("WWW1 all_field_names_first_column");
+  console.log(JSON.stringify(all_field_names_first_column));
 
   var myArray_fail = helpers.unique_array(req.form.errors);
   myArray_fail.sort();
@@ -398,13 +407,18 @@ function editMetadataForm(req, res){
   req.form.project_title = PROJECT_INFORMATION_BY_PID[pid].title;
   // req.form.forward_primer =
 
-  // console.log("FFF2 req.form");
-  // console.log(req.form);
+  console.log("FFF2 req.body");
+  console.log(req.body);
+
+  console.log("BBB all_field_names");
+  console.log(all_field_names);
+
   var all_metadata = {};
   all_metadata[pid] = req.form;
 
-  // console.log("XXX3 all_metadata");
-  // console.log(all_metadata);
+  console.log("XXX3 all_metadata");
+  console.log(all_metadata);
+
 
   var project = all_metadata[pid]["project"][0];
   var abstract_data  = get_project_abstract_data(project, req);
@@ -764,13 +778,13 @@ function get_cell_val_by_row(row_idx, req) {
   return new_row_val;
 }
 
-function getCol(matrix, col) {
-  console.time("TIME: getCol");
+function get_first_column(matrix, col) {
+  console.time("TIME: get_first_column");
   var column = [];
   for (var i=0; i < matrix.length; i++) {
     column.push(matrix[i][col]);
   }
-  console.timeEnd("TIME: getCol");
+  console.timeEnd("TIME: get_first_column");
 
   return column;
 }
@@ -780,13 +794,13 @@ function isUnique(all_clean_field_names_arr, column_name) {
 }
 
 // var array = [new Array(20), new Array(20), new Array(20)]; //..your 3x20 array
-// getCol(array, 0); //Get first column
+// get_first_column(array, 0); //Get first column
 
 function collect_new_rows(req, all_field_names) {
   console.time("TIME: collect_new_rows");
   // var new_rows_hash = {};
   var new_row_num = req.body.new_row_num;
-  var all_clean_field_names_arr = helpers.unique_array(getCol(all_field_names, 0));
+  var all_clean_field_names_arr = helpers.unique_array(get_first_column(all_field_names, 0));
   // console.log("JSON.stringify(unique_array.all_clean_field_names_arr)");
   // console.log(JSON.stringify(helpers.unique_array(all_clean_field_names_arr)));
 
