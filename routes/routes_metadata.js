@@ -385,14 +385,8 @@ function editMetadataForm(req, res){
 
   var all_field_names_first_column = get_first_column(all_field_names, 0);
 
-  // var diff = all_field_names_from_body.filter(function(x) { return all_field_names_first_column.indexOf(x) < 0; });
-  //
-  // console.log("SSS all_field_names diff");
-  // console.log(diff);
-
-
-  console.log("WWW1 all_field_names_first_column");
-  console.log(JSON.stringify(all_field_names_first_column));
+  // console.log("WWW1 all_field_names_first_column");
+  // console.log(JSON.stringify(all_field_names_first_column));
 
   var myArray_fail = helpers.unique_array(req.form.errors);
   myArray_fail.sort();
@@ -404,46 +398,16 @@ function editMetadataForm(req, res){
   req.form.pi_name = PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last;
   req.form.pi_email = PROJECT_INFORMATION_BY_PID[pid].email;
   req.form.project_title = PROJECT_INFORMATION_BY_PID[pid].title;
-  // req.form.forward_primer =
-
-  console.log("FFF2 req.body");
-  console.log(req.body);
-
-  console.log("BBB all_field_names");
-  console.log(JSON.stringify(all_field_names));
-
-  // console.log('all_field_names_first_column.indexOf("enzyme_activities")');
-  // console.log(all_field_names_first_column.indexOf("enzyme_activities"));
-
-
 
   var all_metadata = {};
 
   var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
 
-  console.log('TTT all_new_names');
-  console.log(all_new_names);
-  // TTT all_new_names
-  //   [ '', 'my_row_my_units' ]
   all_metadata[pid] = req.form;
   all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
-  // for (var new_name_idx in all_new_names) {
-  //   var new_name = all_new_names[new_name_idx];
-  //   if (new_name !== '')
-  //   {
-  //     new_val = req.body[new_name];
-  //     console.log('TTT1 new_val');
-  //     console.log(new_val);
-  //   }
-  //   if (typeof new_val !== 'undefined' && new_val.length !== 0) {
-  //     all_metadata[pid][new_name] = new_val;
-  //     console.log('TTT2 all_metadata[pid][new_name]');
-  //     console.log(all_metadata[pid][new_name]);
-  //   }
-  // }
 
-  console.log("XXX3 all_metadata");
-  console.log(all_metadata);
+  // console.log("XXX3 all_metadata");
+  // console.log(all_metadata);
 
 
   var project = all_metadata[pid]["project"][0];
@@ -478,16 +442,12 @@ function get_new_val(req, all_metadata_pid, all_new_names) {
     if (new_name !== '')
     {
       new_val = req.body[new_name];
-      console.log('TTT1 new_val');
-      console.log(new_val);
     }
     if (typeof new_val !== 'undefined' && new_val.length !== 0) {
       all_metadata_pid[new_name] = new_val;
-      console.log('TTT2 all_metadata_pid[new_name]');
-      console.log(all_metadata_pid[new_name]);
     }
   }
-  return all_metadata_pid
+  return all_metadata_pid;
 }
 
 function get_primers_info(dataset_id) {
