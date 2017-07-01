@@ -415,16 +415,32 @@ function editMetadataForm(req, res){
   // console.log('all_field_names_first_column.indexOf("enzyme_activities")');
   // console.log(all_field_names_first_column.indexOf("enzyme_activities"));
 
+
+
+  var all_metadata = {};
+  all_metadata[pid] = req.form;
+
   var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
 
   console.log('TTT all_new_names');
   console.log(all_new_names);
   // TTT all_new_names
   //   [ '', 'my_row_my_units' ]
-
-
-  var all_metadata = {};
-  all_metadata[pid] = req.form;
+  var new_val = "";
+  for (var new_name_idx in all_new_names) {
+    var new_name = all_new_names[new_name_idx];
+    if (new_name !== '')
+    {
+      new_val = req.body[new_name];
+      console.log('TTT1 new_val');
+      console.log(new_val);
+    }
+    if (typeof new_val !== 'undefined' && new_val.length !== 0) {
+      all_metadata[pid][new_name] = new_val;
+      console.log('TTT2 all_metadata[pid][new_name]');
+      console.log(all_metadata[pid][new_name]);
+    }
+  }
 
   console.log("XXX3 all_metadata");
   console.log(all_metadata);
@@ -457,13 +473,6 @@ function editMetadataForm(req, res){
 
 function get_primers_info(dataset_id) {
   console.time("TIME: get_primers_info");
-  console.log("MMM MD_PRIMER_SUITE");
-  console.log(JSON.stringify(MD_PRIMER_SUITE));
-
-  console.log("MMM1 AllMetadata[dataset_id].primer_suite_id");
-  console.log(JSON.stringify(AllMetadata[dataset_id]["primer_suite_id"]));
-
-
   var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
   var primer_info = {};
   if (typeof primer_suite_id === 'undefined') {
@@ -666,7 +675,7 @@ function make_csv(req) {
   console.time("TIME: make_csv");
 
   //TODO: check where it is called from
-  console.log("MMM make_csv: form_values");
+  // console.log("MMM make_csv: form_values");
 
   var csv = convertArrayOfObjectsToCSV({
     data: req.form
