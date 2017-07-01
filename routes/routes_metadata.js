@@ -418,7 +418,6 @@ function editMetadataForm(req, res){
 
 
   var all_metadata = {};
-  all_metadata[pid] = req.form;
 
   var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
 
@@ -426,21 +425,22 @@ function editMetadataForm(req, res){
   console.log(all_new_names);
   // TTT all_new_names
   //   [ '', 'my_row_my_units' ]
-  var new_val = "";
-  for (var new_name_idx in all_new_names) {
-    var new_name = all_new_names[new_name_idx];
-    if (new_name !== '')
-    {
-      new_val = req.body[new_name];
-      console.log('TTT1 new_val');
-      console.log(new_val);
-    }
-    if (typeof new_val !== 'undefined' && new_val.length !== 0) {
-      all_metadata[pid][new_name] = new_val;
-      console.log('TTT2 all_metadata[pid][new_name]');
-      console.log(all_metadata[pid][new_name]);
-    }
-  }
+  all_metadata[pid] = req.form;
+  all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
+  // for (var new_name_idx in all_new_names) {
+  //   var new_name = all_new_names[new_name_idx];
+  //   if (new_name !== '')
+  //   {
+  //     new_val = req.body[new_name];
+  //     console.log('TTT1 new_val');
+  //     console.log(new_val);
+  //   }
+  //   if (typeof new_val !== 'undefined' && new_val.length !== 0) {
+  //     all_metadata[pid][new_name] = new_val;
+  //     console.log('TTT2 all_metadata[pid][new_name]');
+  //     console.log(all_metadata[pid][new_name]);
+  //   }
+  // }
 
   console.log("XXX3 all_metadata");
   console.log(all_metadata);
@@ -469,6 +469,25 @@ function editMetadataForm(req, res){
     sample_type_options: CONSTS.SAMPLE_TYPE
   });
   console.timeEnd("TIME: editMetadataForm");
+}
+
+function get_new_val(req, all_metadata_pid, all_new_names) {
+  var new_val = [];
+  for (var new_name_idx in all_new_names) {
+    var new_name = all_new_names[new_name_idx];
+    if (new_name !== '')
+    {
+      new_val = req.body[new_name];
+      console.log('TTT1 new_val');
+      console.log(new_val);
+    }
+    if (typeof new_val !== 'undefined' && new_val.length !== 0) {
+      all_metadata_pid[new_name] = new_val;
+      console.log('TTT2 all_metadata_pid[new_name]');
+      console.log(all_metadata_pid[new_name]);
+    }
+  }
+  return all_metadata_pid
 }
 
 function get_primers_info(dataset_id) {
