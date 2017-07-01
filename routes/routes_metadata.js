@@ -379,17 +379,16 @@ function editMetadataForm(req, res){
   all_field_names = req_all_field_names[1];
   // console.log("WWW req.form.errors");
   // console.log(req.form.errors);
-  var all_field_names_from_body = Object.keys(req.body);
-  console.log("WWW all_field_names_from_body");
-  console.log(JSON.stringify(all_field_names_from_body));
+  // var all_field_names_from_body = Object.keys(req.body);
+  // console.log("WWW all_field_names_from_body");
+  // console.log(JSON.stringify(all_field_names_from_body));
 
   var all_field_names_first_column = get_first_column(all_field_names, 0);
 
-  var diff = all_field_names_from_body.filter(function(x) { return all_field_names_first_column.indexOf(x) < 0; });
-
-  console.log("SSS all_field_names");
-  console.log(diff);
-
+  // var diff = all_field_names_from_body.filter(function(x) { return all_field_names_first_column.indexOf(x) < 0; });
+  //
+  // console.log("SSS all_field_names diff");
+  // console.log(diff);
 
 
   console.log("WWW1 all_field_names_first_column");
@@ -411,7 +410,18 @@ function editMetadataForm(req, res){
   console.log(req.body);
 
   console.log("BBB all_field_names");
-  console.log(all_field_names);
+  console.log(JSON.stringify(all_field_names));
+
+  // console.log('all_field_names_first_column.indexOf("enzyme_activities")');
+  // console.log(all_field_names_first_column.indexOf("enzyme_activities"));
+
+  var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
+
+  console.log('TTT all_new_names');
+  console.log(all_new_names);
+  // TTT all_new_names
+  //   [ '', 'my_row_my_units' ]
+
 
   var all_metadata = {};
   all_metadata[pid] = req.form;
