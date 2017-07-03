@@ -364,27 +364,10 @@ function editMetadataForm(req, res){
 
   // var edit_metadata_address = "metadata/metadata_upload_from_file";
 
-  //TODO: move! so the new fields stay after reload
-  // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
-
-  // console.log("FFF1 req.body");
-  // console.log(req.body);
-
-  // console.log("WWW1 req.form.errors");
-  // console.log(req.form.errors);
-
-  // var req_all_field_names = collect_new_rows(req, all_field_names);
-
   // console.log("FFF2 req.body");
   // console.log(req.body);
 
   all_field_names = collect_new_rows(req, all_field_names);
-    // [1];
-  // console.log("WWW2 req.form.errors");
-  // console.log(req.form.errors);
-  // var all_field_names_from_body = Object.keys(req.body);
-  // console.log("WWW all_field_names_from_body");
-  // console.log(JSON.stringify(all_field_names_from_body));
 
   var all_field_names_first_column = get_first_column(all_field_names, 0);
 
