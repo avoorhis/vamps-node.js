@@ -89,7 +89,7 @@ function walk_recursively(dir, done) {
         } else {
           var filename = path.basename(file);
           if (check_file_formats(filename)) {
-            results.push({ 'filename':filename, 'size':stat.size, 'time':stat.mtime});
+            results.push({ 'filename':filename, 'size':stat.size, 'time':stat.mtime, 'dirname': path.dirname(file)});
           }
           if (!--pending) done(null, results);
         }
