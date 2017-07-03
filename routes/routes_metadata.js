@@ -364,24 +364,10 @@ function editMetadataForm(req, res){
 
   // var edit_metadata_address = "metadata/metadata_upload_from_file";
 
-  //TODO: move! so the new fields stay after reload
-  // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
-
-  // console.log("FFF1 req.body");
-  // console.log(req.body);
-
-  var req_all_field_names = collect_new_rows(req, all_field_names);
-  req = req_all_field_names[0];
-
   // console.log("FFF2 req.body");
   // console.log(req.body);
 
-  all_field_names = req_all_field_names[1];
-  // console.log("WWW req.form.errors");
-  // console.log(req.form.errors);
-  // var all_field_names_from_body = Object.keys(req.body);
-  // console.log("WWW all_field_names_from_body");
-  // console.log(JSON.stringify(all_field_names_from_body));
+  all_field_names = collect_new_rows(req, all_field_names);
 
   var all_field_names_first_column = get_first_column(all_field_names, 0);
 
@@ -745,6 +731,7 @@ function get_column_name(row_idx, req) {
   console.time("TIME: get_column_name");
 
   var units_field_name  = new_row_field_validation(req, "Units" + row_idx);
+
   var users_column_name = new_row_field_validation(req, "Column Name" + row_idx);
 
   // console.log("LLL1 units_field_name");
@@ -826,7 +813,7 @@ function collect_new_rows(req, all_field_names) {
 
   console.timeEnd("TIME: collect_new_rows");
 
-  return [req, all_field_names];
+  return all_field_names;
 
 }
 
