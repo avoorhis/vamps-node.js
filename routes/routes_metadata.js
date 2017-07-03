@@ -370,15 +370,19 @@ function editMetadataForm(req, res){
   // console.log("FFF1 req.body");
   // console.log(req.body);
 
+  console.log("WWW1 req.form.errors");
+  console.log(req.form.errors);
+
   var req_all_field_names = collect_new_rows(req, all_field_names);
-  req = req_all_field_names[0];
+  // req = req_all_field_names[0];
 
-  // console.log("FFF2 req.body");
-  // console.log(req.body);
+  console.log("FFF2 req.body");
+  console.log(req.body);
 
-  all_field_names = req_all_field_names[1];
-  // console.log("WWW req.form.errors");
-  // console.log(req.form.errors);
+  all_field_names = req_all_field_names;
+    // [1];
+  console.log("WWW2 req.form.errors");
+  console.log(req.form.errors);
   // var all_field_names_from_body = Object.keys(req.body);
   // console.log("WWW all_field_names_from_body");
   // console.log(JSON.stringify(all_field_names_from_body));
@@ -745,6 +749,7 @@ function get_column_name(row_idx, req) {
   console.time("TIME: get_column_name");
 
   var units_field_name  = new_row_field_validation(req, "Units" + row_idx);
+
   var users_column_name = new_row_field_validation(req, "Column Name" + row_idx);
 
   // console.log("LLL1 units_field_name");
@@ -804,6 +809,8 @@ function collect_new_rows(req, all_field_names) {
 
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
     var column_n_unit_names = get_column_name(row_idx, req);
+    console.log("NNN1 req.form.errors");
+    console.log(req.form.errors);
 
     if (column_n_unit_names) {
 
@@ -826,7 +833,7 @@ function collect_new_rows(req, all_field_names) {
 
   console.timeEnd("TIME: collect_new_rows");
 
-  return [req, all_field_names];
+  return all_field_names;
 
 }
 
