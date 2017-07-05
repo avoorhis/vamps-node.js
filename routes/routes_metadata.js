@@ -807,6 +807,10 @@ function collect_new_rows(req, all_field_names) {
         req.form[clean_column_name] = [];
         req.form[clean_column_name] = get_cell_val_by_row(row_idx, req);
       }
+      else if (! isUnique(all_clean_field_names_arr, clean_column_name)) {
+        var err_msg = 'User added field with units "' + column_name + '" must be unique and have only alpha numeric characters';
+        req.form.errors.push(err_msg);
+      }
     }
   }
 
