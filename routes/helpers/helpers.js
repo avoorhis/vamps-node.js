@@ -92,6 +92,12 @@ function get_sizer_and_filesize(size) {
   return [fileSize, sizer];
 }
 
+function format_time(mtime){
+  return mtime.toISOString().replace(/T/,' ').replace(/.000Z$/,'');
+    // .toString();
+    // .replace(/T/,' ').replace(/.000Z$/,'');
+  // Wed Jul 05 2017 12:15:22 GMT-0400 (EDT)
+}
 
 function walk_recursively(dir, done) {
 // var file_formats = CONSTS.download_file_formats;
@@ -114,12 +120,12 @@ function walk_recursively(dir, done) {
           var filename = path.basename(file);
           if (check_file_formats(filename)) {
             var sizer_and_filesize = get_sizer_and_filesize(stat.size);
-
             results.push({'filename': filename,
                           'size': stat.size,
                           'fileSize': sizer_and_filesize[0],
                           'sizer': sizer_and_filesize[1],
                           'time': stat.mtime,
+                          'mtime_format': format_time(stat.mtime),
                           'user_dirname': get_user_dirname(path.dirname(file))});
           }
           if (!--pending) done(null, results);

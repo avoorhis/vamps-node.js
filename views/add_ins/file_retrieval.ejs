@@ -6,12 +6,6 @@
     <% for(t in file_info){ %>
 		<% var filename = file_info[t].filename %>
 
-		<% parts = filename.split('_') %>
-
-		<br/>
-		file_info[t]:
-		<%= JSON.stringify(file_info[t]) %>
-
 		<tr>
 			<td><%= parseInt(t)+1 %></td>
 			<td>
@@ -21,7 +15,7 @@
 				<%= file_info[t].fileSize %> <%= file_info[t].sizer %>
 			</td>
 			<td>
-				<%= file_info[t].time.toString().replace(/T/,' ').replace(/.000Z$/,'') %>
+				<%= file_info[t].mtime_format %>
 			</td>
 			<td>
 				<a href='file_utils?fxn=delete&user=<%= file_info[t].user_dirname %>&filename=<%= filename %>' >delete from the server</a>
