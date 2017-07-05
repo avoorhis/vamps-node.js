@@ -115,8 +115,12 @@ function walk_recursively(dir, done) {
           if (check_file_formats(filename)) {
             var sizer_and_filesize = get_sizer_and_filesize(stat.size);
 
-            results.push({ 'filename':filename, 'size':stat.size, 'fileSize': sizer_and_filesize[0],
-              'sizer': sizer_and_filesize[1], 'time':stat.mtime, 'user_dirname': get_user_dirname(path.dirname(file))});
+            results.push({'filename': filename,
+                          'size': stat.size,
+                          'fileSize': sizer_and_filesize[0],
+                          'sizer': sizer_and_filesize[1],
+                          'time': stat.mtime,
+                          'user_dirname': get_user_dirname(path.dirname(file))});
           }
           if (!--pending) done(null, results);
         }

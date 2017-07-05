@@ -1110,8 +1110,8 @@ router.get('/all_files_retrieval', [helpers.isLoggedIn, helpers.isAdmin], functi
       return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
     });
 
-    console.log("JJJ JSON.stringify(files)");
-    console.log(JSON.stringify(files));
+    // console.log("JJJ JSON.stringify(files)");
+    // console.log(JSON.stringify(files));
 
     res.render('admin/all_files_retrieval', {
       title: 'VAMPS: Users Files',
