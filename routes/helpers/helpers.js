@@ -69,6 +69,11 @@ function check_file_formats(filename) {
   return file_formats.indexOf(file_first_part) !== -1;
 }
 
+function get_user_dirname(dirname) {
+  var dirname_arr = dirname.split('/');
+  return dirname_arr[dirname_arr.length - 1];
+}
+
 function walk_recursively(dir, done) {
 // var file_formats = CONSTS.download_file_formats;
   var results = [];
@@ -89,7 +94,7 @@ function walk_recursively(dir, done) {
         } else {
           var filename = path.basename(file);
           if (check_file_formats(filename)) {
-            results.push({ 'filename':filename, 'size':stat.size, 'time':stat.mtime, 'dirname': path.dirname(file)});
+            results.push({ 'filename':filename, 'size':stat.size, 'time':stat.mtime, 'user_dirname': get_user_dirname(path.dirname(file))});
           }
           if (!--pending) done(null, results);
         }
