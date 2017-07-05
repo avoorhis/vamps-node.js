@@ -93,7 +93,7 @@ function get_sizer_and_filesize(size) {
 }
 
 function format_time(mtime){
-  return mtime.toISOString().replace(/T/,' ').replace(/.000Z$/,'');
+  return mtime.toISOString().replace(/T/,' ').replace(/.Z$/,'').replace(/.000Z$/,'');
     // .toString();
     // .replace(/T/,' ').replace(/.000Z$/,'');
   // Wed Jul 05 2017 12:15:22 GMT-0400 (EDT)
