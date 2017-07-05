@@ -118,13 +118,14 @@ function walk_recursively(dir, done) {
           });
         } else {
           var filename = path.basename(file);
+
           if (check_file_formats(filename)) {
             var sizer_and_filesize = get_sizer_and_filesize(stat.size);
             results.push({'filename': filename,
-                          'size': stat.size,
+                          // 'size': stat.size,
                           'fileSize': sizer_and_filesize[0],
-                          'sizer': sizer_and_filesize[1],
-                          'time': stat.mtime,
+                          'sizer':    sizer_and_filesize[1],
+                          'time':     stat.mtime,
                           'mtime_format': format_time(stat.mtime),
                           'user_dirname': get_user_dirname(path.dirname(file))});
           }
