@@ -74,6 +74,25 @@ function get_user_dirname(dirname) {
   return dirname_arr[dirname_arr.length - 1];
 }
 
+function get_sizer_and_filesize(size) {
+  var fileSize = (size).toFixed(1);
+  var sizer = 'Bytes';
+  if (size > 1000) {
+    fileSize = (size / 1000.0).toFixed(1);
+    sizer = 'KB';
+  }
+  if (size > 1000000) {
+    fileSize = (size / 1000000.0).toFixed(1);
+    sizer = 'MB';
+  }
+  if (size > 1000000000) {
+    fileSize = (size / 1000000000.0).toFixed(1);
+    sizer = 'GB';
+  }
+  return [fileSize, sizer];
+}
+
+
 function walk_recursively(dir, done) {
 // var file_formats = CONSTS.download_file_formats;
   var results = [];
@@ -94,7 +113,10 @@ function walk_recursively(dir, done) {
         } else {
           var filename = path.basename(file);
           if (check_file_formats(filename)) {
-            results.push({ 'filename':filename, 'size':stat.size, 'time':stat.mtime, 'user_dirname': get_user_dirname(path.dirname(file))});
+            var sizer_and_filesize = get_sizer_and_filesize(stat.size);
+
+            results.push({ 'filename':filename, 'size':stat.size, 'fileSize': sizer_and_filesize[0],
+              'sizer': sizer_and_filesize[1], 'time':stat.mtime, 'user_dirname': get_user_dirname(path.dirname(file))});
           }
           if (!--pending) done(null, results);
         }

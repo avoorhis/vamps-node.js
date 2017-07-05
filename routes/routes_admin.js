@@ -1100,8 +1100,8 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
 router.get('/all_files_retrieval', [helpers.isLoggedIn, helpers.isAdmin], function get_all_files_retrieval(req, res) {
   var export_dir = path.join(config.USER_FILES_BASE);
 
-  console.log("XXX export_dir");
-  console.log(export_dir);
+  // console.log("XXX export_dir");
+  // console.log(export_dir);
 
   helpers.walk(export_dir, function(err, files) {
     if (err) throw err;
@@ -1109,29 +1109,14 @@ router.get('/all_files_retrieval', [helpers.isLoggedIn, helpers.isAdmin], functi
       //reverse sort: recent-->oldest
       return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
     });
-    // var filename = path.basename(file);
 
-
-    // console.log("JJJ JSON.stringify(files)");
-    // console.log(JSON.stringify(files));
-    // [{"filename":"metadata-project_DCO_GAI_Bv3v5_53234.csv","size":5688,"time":"2017-07-03T20:26:17.000Z","dirname":"/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh"},
-    //   {"filename":"metadata-project_DCO_GAI_Bv3v5_13407.csv","size":5821,"time":"2017-07-03T20:16:40.000Z","dirname":"/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/somename"}]
-
-    // for (var f_info_idx in files) {
-    //   var user_name_arr = files[f_info_idx].dirname.split('/');
-    //   files[f_info_idx].file_user_name = user_name_arr[user_name_arr.length - 1];
-    //
-    // }
     console.log("JJJ JSON.stringify(files)");
     console.log(JSON.stringify(files));
-
 
     res.render('admin/all_files_retrieval', {
       title: 'VAMPS: Users Files',
       user: req.user, hostname: req.CONFIG.hostname,
-      // project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
       finfo: JSON.stringify(files)
-
 
     });
   });
