@@ -1117,12 +1117,22 @@ router.get('/all_files_retrieval', [helpers.isLoggedIn, helpers.isAdmin], functi
     // [{"filename":"metadata-project_DCO_GAI_Bv3v5_53234.csv","size":5688,"time":"2017-07-03T20:26:17.000Z","dirname":"/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh"},
     //   {"filename":"metadata-project_DCO_GAI_Bv3v5_13407.csv","size":5821,"time":"2017-07-03T20:16:40.000Z","dirname":"/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/somename"}]
 
+    for (var f_info_idx in files) {
+      var user_name_arr = files[f_info_idx].dirname.split('/');
+      files[f_info_idx].file_user_name = user_name_arr[user_name_arr.length - 1];
+
+    }
+    console.log("JJJ JSON.stringify(files)");
+    console.log(JSON.stringify(files));
+    // [{"filename":"metadata-project_DCO_GAI_Bv3v5_38692.csv","size":5702,"time":"2017-07-05T16:50:44.000Z","dirname":"/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/Somename","file_user_name":"Somename"},{"filename":"metadata-project_DCO_GAI_Bv3v5_15513.csv","size":5779,"time":"2017-07-05T16:32:40.000Z","dirname":"/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/Somename","file_user_name":"Somename"},{"filename":"metadata-project_DCO_GAI_Bv3v5_75286.csv","size":5778,"time":"2017-07-05T16:32:29.000Z","dirname":"/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/Somename","file_user_name":"Somename"},{"filename":"metadata-project_DCO_GAI_Bv3v5_82599.csv","size":5664,"time":"2017-07-05T16:15:22.000Z","dirname":"/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh","file_user_name":"AnnaSh"}]
+
 
     res.render('admin/all_files_retrieval', {
       title: 'VAMPS: Users Files',
       user: req.user, hostname: req.CONFIG.hostname,
       // project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
       finfo: JSON.stringify(files)
+
 
     });
   });

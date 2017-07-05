@@ -192,9 +192,7 @@ console.log('login_auth_user-2')
         // create the loginMessage and save it to session as flashdata
         return done(null, false, req.flash('loginMessage', 'Wrong password -- try again.'));
         // all is well, return successful user
-
     });
-
 }
 function signup_user(req, username, password, done, db){
     // validate all 6 entries here

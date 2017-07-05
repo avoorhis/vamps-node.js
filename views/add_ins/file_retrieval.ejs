@@ -1,13 +1,10 @@
 <table class='table sortable'>
 	<thead>
 	<tr><th></th><th>File Name</th><th>Size</th><th>Creation Time</th><th></th></tr>
-  </thead>
-  <tbody>
-	<% for(t in file_info){ %>
-		<% var filename = file_info[t].filename;
-			var full_path = file_info[t].dirname + "/" + filename;
-
-        %>
+	</thead>
+	<tbody>
+    <% for(t in file_info){ %>
+		<% var filename = file_info[t].filename %>
 		<% var fileSizeInBytes = file_info[t].size %>
 		<% var fileSize = (fileSizeInBytes).toFixed(1) %>
 		<% var sizer = 'Bytes' %>
@@ -25,25 +22,25 @@
 		<% } %>
 
 		<% parts = filename.split('_') %>
-	
-			<tr>
-				<td><%= parseInt(t)+1 %></td>
-				<td>
-					<a href='file_utils?fxn=download&user=<%= user.username %>&type=fasta&filename=<%= full_path %>' ><%= filename %></a>
-				</td>
-				<td>
-					<%= fileSize %> <%= sizer %>
-				</td>
-				<td>
-					<%= file_info[t].time.toString().replace(/T/,' ').replace(/.000Z$/,'') %>
-				</td>
-				<td>	 
-					<a href='file_utils?fxn=delete&user=<%= user.username %>&filename=<%= full_path %>' >delete from the server</a>
-				</td>
-			</tr>
-		
-	<% } %>
-</tbody>
+
+		<tr>
+			<td><%= parseInt(t)+1 %></td>
+			<td>
+				<a href='file_utils?fxn=download&user=<%= user.username %>&type=fasta&filename=<%= filename %>' ><%= filename %></a>
+			</td>
+			<td>
+				<%= fileSize %> <%= sizer %>
+			</td>
+			<td>
+				<%= file_info[t].time.toString().replace(/T/,' ').replace(/.000Z$/,'') %>
+			</td>
+			<td>
+				<a href='file_utils?fxn=delete&user=<%= user.username %>&filename=<%= filename %>' >delete from the server</a>
+			</td>
+		</tr>
+
+    <% } %>
+	</tbody>
 </table>
 
 <% include ../add_ins/end.ejs %>
