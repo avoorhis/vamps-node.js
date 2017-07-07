@@ -822,4 +822,3 @@ function collect_new_rows(req, all_field_names) {
 }
 
 // ---- metadata_upload end ----
-
