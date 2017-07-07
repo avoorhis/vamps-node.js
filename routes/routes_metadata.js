@@ -440,21 +440,26 @@ function get_primers_info(dataset_id) {
   console.time("TIME: get_primers_info");
   var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
   var primer_info = {};
-  if (typeof primer_suite_id === 'undefined') {
+  if (typeof primer_suite_id === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined' ) {
     return {};
   }
   else {
+    try {
+      for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
 
-    for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
+        var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
 
-      var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
+        if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
+          primer_info[curr_direction] = [];
+        }
 
-      if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
-        primer_info[curr_direction] = [];
+        primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
       }
-
-      primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
+    } catch (err) {
+      // Handle the error here.
+      return {};
     }
+
   }
   // console.log("DDD primer_info");
   // console.log(JSON.stringify(primer_info));
