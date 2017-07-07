@@ -440,6 +440,9 @@ function get_primers_info(dataset_id) {
   console.time("TIME: get_primers_info");
   var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
   var primer_info = {};
+  console.log("TTT typeof primer_suite_id:");
+  console.log(typeof primer_suite_id);
+
   if (typeof primer_suite_id === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined' ) {
     return {};
   }
