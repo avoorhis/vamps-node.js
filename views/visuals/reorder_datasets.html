@@ -7,8 +7,8 @@
 <!-- <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css"> -->
 
   <div class='title'>Re-Order Datasets</div>
-  
-      
+
+
 <div id='' class=''>
 Here are your <%= items.names.length %> selected datasets:<br>
 
@@ -17,38 +17,43 @@ Here are your <%= items.names.length %> selected datasets:<br>
     <table class='table' >
       <tr><td>Original order</td><td><span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span></td><td></td></tr>
       <tr><td class='td_top'>
-        
+
 		  <table  id='' class='table table-condensed' >
             <% for (var i in items.names){ %>
-               <tr><td>  <%= parseInt(i)+1 %> (id:<%= items.ids[i] %>) - <%= items.names[i] %></td></tr>
+               <tr>
+                 <td>
+                  <input type='hidden' name='original_order[]' value="<%= items.ids[i] %>" >
+                  <%= parseInt(i)+1 %> (id:<%= items.ids[i] %>) - <%= items.names[i] %>
+               </td>
+             </tr>
             <% } %>
           </table>
-		
+
       </td>
 	  <td>
-        <div id='reorder_ds_div' >	  
+        <div id='reorder_ds_div' >
 		      <table id='drag_table' class='table table-condensed' >
 		      	<thead></thead>
 		      	<tbody>
 	          <% for (var i in items.names){ %>
 	            <tr class='tooltip_row' >
-	              <td class='dragHandle' id='<%= items.ids[i]+'--'+items.names[i] %>'>   
+	              <td class='dragHandle' id='<%= items.ids[i]+'--'+items.names[i] %>'>
 			              <!--  <input type='hidden' name='ds_order[]' value="<%= items.ids[i]+'--'+items.names[i] %>" > -->
-							      <input type='hidden' name='ds_order[]' value="<%= items.ids[i] %>" > 
-			                <%= parseInt(i)+1 %> (id:<%= items.ids[i] %>) - <%= items.names[i] %> 
+							      <input type='hidden' name='ds_order[]' value="<%= items.ids[i] %>" >
+			                <%= parseInt(i)+1 %> (id:<%= items.ids[i] %>) - <%= items.names[i] %>
 	              </td>
 	              <td>
 	              		<a href='#' title='move to top' onclick='move_to_the_top(<%= parseInt(i)+1 %>,"<%= items.ids[i]+'--'+items.names[i] %>")'>^</a>
 	              </td>
 	            </tr>
-	          <% } %> 
+	          <% } %>
 	        	</tbody>
-	        </table>				
+	        </table>
         </div>
 
     </td>
     <td class=''>
-        
+
         <table class='table'>
           <tr>
 			<td class=''>
@@ -56,17 +61,18 @@ Here are your <%= items.names.length %> selected datasets:<br>
 				  <button type='submit' id='save_order_btn' class='btn btn-xs btn-success'>Use this Order and Return</button>
 				  <input  type='hidden' id='' class='' name='resorted' value='1'>
 				  <button type='button' id='cancel_btn'  onclick='javscript:window.history.back();' aria-label="Close"  class='btn btn-xs btn-success'>Cancel and Return</button>
-				
+          <button type='button' id='cancel_btn2'  onclick="cancel_resort('<%= referer %>')" aria-label="Close"  class='btn btn-xs btn-success'>Cancel and Return2</button>
+
 			  </div>
 			</td>
 		  </tr>
-          
+
           <tr>
 			<td class=''>
 				Drag rows to re-order<br>or use up arrow (^) to move dataset to the top.
 			</td>
 		  </tr>
-        
+
           <tr>
 			<td class='small_font'>
 					<button type='button' id='reset_order_btn'class='btn btn-xs btn-primary'>Reset Order</button>
@@ -84,20 +90,20 @@ Here are your <%= items.names.length %> selected datasets:<br>
               <% for(d in distrows ) { %>
                 <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
               <% } %>
-              </select>   
-          			  	
+              </select>
+
 	  		 </td>
-		   </tr> 
+		   </tr>
 		   <tr><td>
 		   	<div id='ascii_tree_div'></div>
 		   </td></tr>
-                 
+
         </table>
-        
+
     </td>
     </tr>
     </table>
-  
+
 </form>
 
 </div>
@@ -112,8 +118,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
  <script src="/javascripts/drag_rows.js"></script>
  <script type="text/javascript" src="/javascripts/global.js"></script>
  <script type="text/javascript" src="/javascripts/reorder_datasets.js"></script>
- 
+
 
 </body>
 </html>
-

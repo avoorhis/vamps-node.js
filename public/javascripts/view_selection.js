@@ -11,11 +11,12 @@ $(document).ready(function(){
     //  e_page_click = window.event
      // page_click(e_page_click)
     //});
-   
+
     //click_on_graph_icon = false;
     //alert(image_to_rdr)
     if(typeof image_to_rdr_local !== "undefined" && image_to_rdr_local.hasOwnProperty('image')){
       //alert(image_to_rdr_local.image)
+      console.log('Trying to create '+image_to_rdr_local.image)
       create_viz(image_to_rdr_local.image, pi_local.ts, false, cts_local)
       $(document.getElementById('pre_'+image_to_rdr_local.image+'_div')).scrollView();
     }
@@ -71,7 +72,7 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
       var link = this,
       html = '';
       $link = $(this);
-     
+
       if (event.type == 'mouseover') {
         tip.id = link.id;
         link.id = '';
@@ -89,7 +90,7 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
           html += "<td>"+id_items[2]+"</td>";
           html += "</tr><tr>";
           html += "<td>Count: "+id_items[3]+" ("+id_items[4]+"%)</td>";
-        }else{  // barcharts and piecharts            
+        }else{  // barcharts and piecharts
           html += "<td>"+id_items[1]+"</td>";
           html += "</tr><tr>";
           html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
@@ -103,7 +104,7 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
           .html('<div>' + html  + '</div>')
           .fadeOut(0)
           .fadeIn(200);
-     
+
         }, tip.delay);
       }
       if (event.type == 'mouseout') {
@@ -117,14 +118,14 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
       }
       if (event.type == 'mousemove' && $link.data('tipActive')) {
         tip.position(event);
-      }      
-});              
+      }
+});
 
 $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function (event) {
       var link = this,
       html = '';
       $link = $(this);
-     
+
       if (event.type == 'mouseover') {
         tip.id = link.id;
         //alert(tip.id)
@@ -133,12 +134,12 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
           return;  // no need to show if nothing there
         }
         id_items = tip.id.split('-|-'); // MUST split on '-|-' see constants.js for constants.VISUAL_THUMBNAILS
-        
+
         // html = "Requirements:<br>";
-        // html += '<ul>';        
+        // html += '<ul>';
         // for(var i=0;i<=id_items.length-1;i++){
-        //    //html += "<tr><td>"+id_items[i]+"</td></tr>"; 
-        //    html += "<li>"+id_items[i]+"</li>"      
+        //    //html += "<tr><td>"+id_items[i]+"</td></tr>";
+        //    html += "<li>"+id_items[i]+"</li>"
         // }
         // html += '</ul>';
 
@@ -146,25 +147,25 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
         html = "<table>";
         html += "<tr><td>Requirements:</td></tr>";
         for(var i=0;i<=id_items.length-1;i++){
-          html += "<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;"+id_items[i]+"</td></tr>";       
+          html += "<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;"+id_items[i]+"</td></tr>";
         }
         html += "<table>";
 
-        
+
         showTip = setTimeout(function() {
-     
+
           $link.data('tipActive', true);
-          
+
           tip.position(event);
      //alert(event.pageX)
           $liveTip
           .html('<div>' + html  + '</div>')
           .fadeOut(0)
           .fadeIn(200);
-     
+
         }, tip.delay);
       }
-     
+
       if (event.type == 'mouseout') {
         link.id = tip.id || link.id;
         if ($link.data('tipActive')) {
@@ -174,12 +175,12 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
           clearTimeout(showTip);
         }
       }
-     
+
       if (event.type == 'mousemove' && $link.data('tipActive')) {
         tip.position(event);
       }
-              
-});    
+
+});
 // $("body").delegate(".tooltip_units", "mouseover mouseout mousemove", function (event) {
 //     var link = this,
 //     html = '';
@@ -191,7 +192,7 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
 //         if(tip.id==''){
 //           return;  // no need to show if nothing there
 //         }
-        
+
 //         var wikipedia_link  = 'https://en.wikipedia.org/wiki/'
 //         var eol_link        = "http://www.eol.org/search?q="
 //         var ncbi_link       = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name="
@@ -203,18 +204,18 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
 //         html += "<tr><td><a href='"+ncbi_link+tip.id+"' target='_blank'>NCBI</a></td></tr>";
 //         html += "<table>";
 
-        
+
 //         showTip = setTimeout(function() {
-     
+
 //           $link.data('tipActive', true);
-          
+
 //           tip.position(event);
-     
+
 //           $liveTip
 //           .html( html)
 //           .fadeOut(200)
 //           .fadeIn(50);
-     
+
 //         }, tip.delay);
 //     }
 //       if (event.type == 'mouseout') {
@@ -226,7 +227,7 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
 //           clearTimeout(showTip);
 //         }
 //       }
-     
+
 //       // if (event.type == 'mousemove' && $link.data('tipActive')) {
 //       //   //tip.position(event);
 //       // }
@@ -248,8 +249,8 @@ if (download_fasta_btn !== null) {
   download_fasta_btn.addEventListener('click', function () {
       //alert(selected_distance_combo)
       form = document.getElementById('download_fasta_form_id');
-      download_type = form.download_type.value; 
-      ts =  '';       
+      download_type = form.download_type.value;
+      ts =  '';
       download_data('fasta',  download_type, ts);
   });
 }
@@ -260,8 +261,8 @@ if (download_metadata_btn !== null) {
   download_metadata_btn.addEventListener('click', function () {
       //alert(selected_distance_combo)
       form = document.getElementById('download_metadata_form_id');
-      download_type = form.download_type.value;  
-      ts =  '';      
+      download_type = form.download_type.value;
+      ts =  '';
       download_data('metadata', download_type, ts);
   });
 }
@@ -269,10 +270,10 @@ if (download_metadata_btn !== null) {
 var download_matrix_btn = document.getElementById('download_matrix_btn') || null;
 if (download_matrix_btn !== null) {
   download_matrix_btn.addEventListener('click', function () {
-      
+
       form = document.getElementById('download_matrix_form_id');
-      download_type = form.download_type.value;       
-      ts =  form.ts.value;    
+      download_type = form.download_type.value;
+      ts =  form.ts.value;
       download_data('matrix', download_type, ts);
   });
 }
@@ -280,7 +281,7 @@ if (download_matrix_btn !== null) {
 
 
 function create_freq_table_file(script, ts) {
-    // for view_selection tables: frequency 
+    // for view_selection tables: frequency
     download_data(script, 'partial_project', ts);
 }
 function transfer_file_for_download(script, ts) {
@@ -380,9 +381,9 @@ function toggle_visual_element(table_div, tog, btn){
 
 
 function create_viz(visual, ts, new_window, cts_local) {
-   
+
     if(visual === 'counts_matrix'){
-      create_counts_matrix(new_window, cts_local.show_nas);      
+      create_counts_matrix(new_window, cts_local.show_nas);
     }else if(visual === 'metadata_table'){
       create_metadata_table(new_window);
     }else if(visual === 'piecharts'){
@@ -392,12 +393,12 @@ function create_viz(visual, ts, new_window, cts_local) {
     }else if(visual === 'dheatmap'){
       create_dheatmap(ts, new_window);
     }else if(visual === 'dendrogram01'){
-      create_dendrogram(ts,'svg','phylogram', new_window);
+      create_dendrogram(ts,'d3','phylogram', new_window);
     //}
     //else if(visual === 'dendrogram2'){
     //  create_dendrogram(ts,'svg','phylonator', new_window);
     }else if(visual === 'dendrogram03'){
-      create_dendrogram(ts,'svg','radial', new_window);
+      create_dendrogram(ts,'d3','radial', new_window);
     }else if(visual === 'pcoa'){
       create_pcoa(ts,'2d', new_window);
     }else if(visual === 'pcoa3d'){
@@ -436,10 +437,10 @@ function create_cytoscape(ts){
   var cydiv = document.getElementById('cytoscape_div');
 
   // cytoscape_created = true;
-      
-      
+
+
   //     //cydiv.innerHTML = '';
-    
+
 
   var cy = cytoscape({
     container: cydiv,
@@ -484,178 +485,202 @@ document.getElementById('pre_cytoscape_div').style.display = 'block';
 // TAX TABLE
 //
 function create_counts_matrix(new_window, show_nas) {
-            
-      if(new_window == true){
-        var htmlstring = document.getElementById('counts_matrix_div').innerHTML;
-        function openindex()
-            {
-                  rando = Math.floor(Math.random() * 20);
-                  OpenWindow=window.open("", "counts_matrix"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
-                  OpenWindow.document.write(new_window_skeleton(htmlstring))
-                  OpenWindow.document.close()
-                  self.name="main"
+
+        if(new_window == true){
+            var htmlstring = document.getElementById('counts_matrix_div').innerHTML;
+            function openindex()
+                {
+                      rando = Math.floor(Math.random() * 20);
+                      OpenWindow=window.open("", "counts_matrix"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+                      OpenWindow.document.write(new_window_skeleton(htmlstring))
+                      OpenWindow.document.close()
+                      self.name="main"
+                }
+            openindex()
+            return
+        }
+        tax_table_created = true;
+        var info_line = create_header('ftable', pi_local);
+        document.getElementById('counts_matrix_title').innerHTML = info_line;
+        document.getElementById('pre_counts_matrix_div').style.display = 'block';
+        document.getElementById('counts_matrix_title').style.color = 'white';
+        document.getElementById('counts_matrix_title').style['font-size'] = 'small';
+        var tax_counts_div = document.getElementById('counts_matrix_div');
+        tax_counts_div.innerHTML = '';
+        tax_counts_div.style.display = 'block';
+        var html = '';
+///////////////////////////////        
+        var xmlhttp = new XMLHttpRequest();
+
+        var args = {}
+        args.image = 'counts_matrix'
+        args.source = 'website'
+        xmlhttp.open("POST", '/api', true); 
+        //         alert(xmlhttp) 
+        xmlhttp.setRequestHeader("Content-type","application/json");
+              
+        xmlhttp.onreadystatechange = function(){
+            if (xmlhttp.readyState == 4 ) {
+               data = JSON.parse(xmlhttp.response)
+               
+               //alert(data)          
+               tax_counts_div.innerHTML = data.html;
+                document.getElementById('counts_matrix_dnld_btn').disabled = false          
             }
-        openindex()
+         }
+
+        xmlhttp.send(JSON.stringify(args));
         return
-      }
-      tax_table_created = true;
-      var info_line = create_header('ftable', pi_local);
+/////////////////////////////
       
 
-      document.getElementById('counts_matrix_title').innerHTML = info_line;
       
-      document.getElementById('pre_counts_matrix_div').style.display = 'block';
-      document.getElementById('counts_matrix_title').style.color = 'white';
-      document.getElementById('counts_matrix_title').style['font-size'] = 'small';
-      
-      var tax_counts_div = document.getElementById('counts_matrix_div');
-      tax_counts_div.innerHTML = '';
-      tax_counts_div.style.display = 'block';
-      var html = '';
-         
+
       // need the max ranks
-      maxrank = 0;
-      for (var i in mtx_local.rows){
-        taxitems = mtx_local.rows[i].id.split(';');
-        if(maxrank < taxitems.length){
-          maxrank = taxitems.length;
-        }
-      }
-      html += "<div id='tax_counts_graph_div' style='background-color:white;width:600px;height:400px;display:none;'></div>";
-      html += "<br><br><br><br><br><table id='counts_matrix_id' border='0' class='' >";
-      html += "<tr><td class='no_border'></td>"
-      for (t = 0; t < maxrank; t++) {
-        if(t==2){
-          html += "<th class='' valign='bottom'><small>Class</small></th>";
-        }else{
-          html += "<th class='' valign='bottom'><small>"+cts_local.RANKS[t].toUpperCase().charAt(0)+cts_local.RANKS[t].slice(1)+"</small></th>";
-        }
-      }
-      html += "<th class='right_justify' valign='bottom'><small>Graph</small></th>";
-      for (var n in mtx_local.columns) {
-        //html += "<th class='verticalTableHeader' >"+mtx_local.columns[n].id +"</th>";
-        html += "<th class='rotate'><div><span><a href='/visuals/bar_single?id="+mtx_local.columns[n].id+"&ts="+pi_local.ts+"&orderby=alpha&val=z' target='_blank' >"+(parseInt(n)+1).toString()+') '
-        
-        html += mtx_local.columns[n].id+"</a></span></div></th>";
-      
-      }
+//       maxrank = 0;
+//       for (var i in mtx_local.rows){
+//         taxitems = mtx_local.rows[i].id.split(';');
+//         if(maxrank < taxitems.length){
+//           maxrank = taxitems.length;
+//         }
+//       }
+//       html += "<div id='tax_counts_graph_div' style='background-color:white;width:600px;height:400px;display:none;'></div>";
+//       html += "<br><br><br><br><br><table id='counts_matrix_id' border='0' class='' >";
+//       
+//       
+//       html += "<tr><td class='no_border'></td>"
+//       for (t = 0; t < maxrank; t++) {
+//         if(t==2){
+//           html += "<th class='' valign='bottom'><small>Class</small></th>";
+//         }else{
+//           html += "<th class='' valign='bottom'><small>"+cts_local.RANKS[t].toUpperCase().charAt(0)+cts_local.RANKS[t].slice(1)+"</small></th>";
+//         }
+//       }
+//       html += "<th class='right_justify' valign='bottom'><small>Graph</small></th>";
+//       for (var n in mtx_local.columns) {
+//         //html += "<th class='verticalTableHeader' >"+mtx_local.columns[n].id +"</th>";
+//         html += "<th class='rotate'><div><span><a href='/visuals/bar_single?id="+mtx_local.columns[n].id+"&ts="+pi_local.ts+"&orderby=alpha&val=z' target='_blank' >"+(parseInt(n)+1).toString()+') '
+// 
+//         html += mtx_local.columns[n].id+"</a></span></div></th>";
+// 
+//       }
+// 
+//       html += "<th class='center' valign='bottom'><small>Total</small></th>";
+//       html += "<th class='center' valign='bottom'><small>Avg</small></th>";
+//       html += "<th class='center' valign='bottom'><small>Min</small></th>";
+//       html += "<th class='center' valign='bottom'><small>Max</small></th>";
+//       html += "<th class='center' valign='bottom'><small>Std Dev</small></th>";
+// 
+//       html += "</tr>";
+//       // END OF TITLE ROW
+//       for (var i in mtx_local.rows){
+//         count = parseInt(i)+1;
+//         taxitems = mtx_local.rows[i].id.split(';');
+// 
+//         html += "<tr class='chart_row'><td><a href='taxa_piechart?tax="+mtx_local.rows[i].id+"' title='Link to Taxa PieChart' target='_blank'>"+count.toString()+"</a></td>";
+// 
+//         for (t = 0; t < maxrank; t++) {
+//           ttip = ''
+//           ttip2 = ''
+//           if(taxitems.length > t){
+//             if(taxitems[t].substring(taxitems[t].length-2,taxitems[t].length) != 'NA'
+//                     && taxitems[t].substring(1,6) != 'mpty_'
+//                     && taxitems[t] != 'Unknown'
+//                     && taxitems[t] != 'Unassigned'){
+//               ttip = '<span class="taxa">External "'+taxitems[t]+'" Links:'
+//               ttip += '<li><a href="https://en.wikipedia.org/wiki/'+taxitems[t]+'" target="_blank">Wikipedia</a></li>'
+//               ttip += '<li><a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name='+taxitems[t]+'" target="_blank">NCBI</a></li>'
+//               ttip += '<li><a href="http://www.eol.org/search?q='+taxitems[t]+'" target="_blank">EOL</a></li>'
+//               ttip += '</span>'
+//               ttip2 = taxitems[t]
+//             }
+// 
+//             if(taxitems[t].substring(taxitems[t].length-3, taxitems[t].length) == '_NA'){
+//               if(show_nas.raw){
+//                 html += "<td id='' >"+taxitems[t]+"</td>";
+//               }else{
+//                 html += "<td class='center' id='' >"+show_nas.string +"</td>";
+//               }
+//             }else{
+//               html += "<td class='left_justify' id='"+ttip2+"' ><div class='taxa_name'>"+taxitems[t]
+//               html += "<span class='taxa_tooltip' >"+ttip+"</span>";
+//               html += "</div></td>";
+//             }
+//           }else{
+//             html += "<td class='left_justify' id=''>--</td>";
+//           }
+//         }
+//         counts_string=JSON.stringify(mtx_local.data[i])
+// 
+//         graph_link_id = 'flot_graph_link'+i.toString()
+//         html += "<td align='center' style='cursor:pointer;'>"
+//         html += "<img width='25' id='"+graph_link_id+"' src='/images/visuals/graph.png' onclick=\"graph_counts('"+i.toString()+"','"+mtx_local.rows[i].id+"','"+counts_string+"')\">"
+//         html += "</td>";
+// 
+// 
+//         var tot   = 0;
+//         var avg   = 0;
+//         var min   = mtx_local.data[i][0];
+//         var max   = 0;
+//         var sd    = 0;
+//         for (var da in mtx_local.data[i]) {
+//           var cnt = mtx_local.data[i][da];
+//           var ds_num = (parseInt(da)+1).toString()
+//           var pct =  (cnt * 100 / mtx_local.column_totals[da]).toFixed(2);
+//           var id  = 'fq/'+mtx_local.rows[i].id+'/'+ds_num+') '+mtx_local.columns[da].id+'/'+cnt.toString()+'/'+pct.toString();
+//           html += "<td id='"+id+"' class='tooltip_viz right_justify tax_data'>"+cnt.toString()+'</td>';
+//           tot += cnt;
+//           if(cnt > max){
+//             max = cnt
+//           }
+//           if(cnt < min){
+//             min = cnt
+//           }
+// 
+//         }
+// 
+// 
+//         avg = (tot/(mtx_local.columns).length).toFixed(2)
+//         sd = standardDeviation(mtx_local.data[i]).toFixed(2)
+//         html += "<td title='Total' class='right_justify tax_result'><small>"+tot.toString()+'</small></td>';
+//         html += "<td title='Average' class='right_justify tax_result'><small>"+avg.toString()+"</small></td>";
+//         html += "<td title='Minimum' class='right_justify tax_result'><small>"+min.toString()+"</small></td>";
+//         html += "<td title='Maximum' class='right_justify tax_result'><small>"+max.toString()+"</small></td>";
+//         html += "<td title='Standard Deviation' class='right_justify tax_result'><small>"+sd.toString()+"</small></td>";
+//         html += "</tr>";
+//       }
+//       // TOTALS
+//       html += "<tr><td></td>";
+//       for (t = 0; t < maxrank; t++) {
+//         html += "<td></td>";
+//       }
+//       html += "<td class='right_justify'><strong>Sums:</strong></td>";
+//       for (var m in mtx_local.column_totals){
+//         var total;
+//         if(pi_local.normalization == 'frequency'){
+//           total = mtx_local.column_totals[m].toFixed(6);
+//         }else{
+//           total = mtx_local.column_totals[m];
+//         }
+//         html += "<td title='Column Sum' class='right_justify'>" + total + "</td>";
+//       }
+//       html += "</tr>";
+//       html += "</table>";
+// 
+//       tax_counts_div.innerHTML = html;
+//       document.getElementById('counts_matrix_dnld_btn').disabled = false
+//       //$(".verticalTableHeader").each(function(){$(this).height($(this).width())
 
-      html += "<th class='center' valign='bottom'><small>Total</small></th>";
-      html += "<th class='center' valign='bottom'><small>Avg</small></th>";
-      html += "<th class='center' valign='bottom'><small>Min</small></th>";
-      html += "<th class='center' valign='bottom'><small>Max</small></th>";
-      html += "<th class='center' valign='bottom'><small>Std Dev</small></th>";
-
-      html += "</tr>";
-      // END OF TITLE ROW
-      for (var i in mtx_local.rows){
-        count = parseInt(i)+1;
-        taxitems = mtx_local.rows[i].id.split(';');
-
-        html += "<tr class='chart_row'><td><a href='taxa_piechart?tax="+mtx_local.rows[i].id+"' title='Link to Taxa PieChart' target='_blank'>"+count.toString()+"</a></td>";
-        
-        for (t = 0; t < maxrank; t++) {
-          ttip = ''
-          ttip2 = ''
-          if(taxitems.length > t){
-            if(taxitems[t].substring(taxitems[t].length-2,taxitems[t].length) != 'NA' 
-                    && taxitems[t].substring(1,6) != 'mpty_' 
-                    && taxitems[t] != 'Unknown' 
-                    && taxitems[t] != 'Unassigned'){
-              ttip = '<span class="taxa">External "'+taxitems[t]+'" Links:'
-              ttip += '<li><a href="https://en.wikipedia.org/wiki/'+taxitems[t]+'" target="_blank">Wikipedia</a></li>'
-              ttip += '<li><a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name='+taxitems[t]+'" target="_blank">NCBI</a></li>'
-              ttip += '<li><a href="http://www.eol.org/search?q='+taxitems[t]+'" target="_blank">EOL</a></li>'
-              ttip += '</span>'
-              ttip2 = taxitems[t]
-            }
-            
-            if(taxitems[t].substring(taxitems[t].length-3, taxitems[t].length) == '_NA'){
-              if(show_nas.raw){
-                html += "<td id='' >"+taxitems[t]+"</td>";
-              }else{
-                html += "<td class='center' id='' >"+show_nas.string +"</td>";
-              }
-            }else{
-              html += "<td class='left_justify' id='"+ttip2+"' ><div class='taxa_name'>"+taxitems[t]
-              html += "<span class='taxa_tooltip' >"+ttip+"</span>";
-              html += "</div></td>";
-            }
-          }else{
-            html += "<td class='left_justify' id=''>--</td>";
-          }
-        }
-        counts_string=JSON.stringify(mtx_local.data[i])
-        
-        graph_link_id = 'flot_graph_link'+i.toString()
-        html += "<td align='center' style='cursor:pointer;'>"
-        html += "<img width='25' id='"+graph_link_id+"' src='/images/visuals/graph.png' onclick=\"graph_counts('"+i.toString()+"','"+mtx_local.rows[i].id+"','"+counts_string+"')\">"
-        html += "</td>";
-
-
-        var tot   = 0;
-        var avg   = 0;
-        var min   = mtx_local.data[i][0];
-        var max   = 0;
-        var sd    = 0;
-        for (var da in mtx_local.data[i]) {
-          var cnt = mtx_local.data[i][da];
-          var ds_num = (parseInt(da)+1).toString()
-          var pct =  (cnt * 100 / mtx_local.column_totals[da]).toFixed(2);
-          var id  = 'fq/'+mtx_local.rows[i].id+'/'+ds_num+') '+mtx_local.columns[da].id+'/'+cnt.toString()+'/'+pct.toString();
-          html += "<td id='"+id+"' class='tooltip_viz right_justify tax_data'>"+cnt.toString()+'</td>';
-          tot += cnt;
-          if(cnt > max){
-            max = cnt
-          }
-          if(cnt < min){
-            min = cnt
-          }
-          
-        }
-        
-        
-        avg = (tot/(mtx_local.columns).length).toFixed(2)
-        sd = standardDeviation(mtx_local.data[i]).toFixed(2)
-        html += "<td title='Total' class='right_justify tax_result'><small>"+tot.toString()+'</small></td>';
-        html += "<td title='Average' class='right_justify tax_result'><small>"+avg.toString()+"</small></td>";
-        html += "<td title='Minimum' class='right_justify tax_result'><small>"+min.toString()+"</small></td>";
-        html += "<td title='Maximum' class='right_justify tax_result'><small>"+max.toString()+"</small></td>";
-        html += "<td title='Standard Deviation' class='right_justify tax_result'><small>"+sd.toString()+"</small></td>";
-        html += "</tr>";
-      }
-      // TOTALS
-      html += "<tr><td></td>";
-      for (t = 0; t < maxrank; t++) {
-        html += "<td></td>";
-      }
-      html += "<td class='right_justify'><strong>Sums:</strong></td>";
-      for (var m in mtx_local.column_totals){
-        var total;
-        if(pi_local.normalization == 'frequency'){
-          total = mtx_local.column_totals[m].toFixed(6);
-        }else{
-          total = mtx_local.column_totals[m];
-        }
-        html += "<td title='Column Sum' class='right_justify'>" + total + "</td>";
-      }
-      html += "</tr>";
-      html += "</table>";
-     
-      tax_counts_div.innerHTML = html; 
-      document.getElementById('counts_matrix_dnld_btn').disabled = false
-      //$(".verticalTableHeader").each(function(){$(this).height($(this).width())  
-      
 }
 
 function graph_counts(new_id,taxonomy,counts){
-  
-  
+
+  // This is from the graph icon on the website tax table
   var bodyRect = document.body.getBoundingClientRect()
   var graphRect = document.getElementById('flot_graph_link'+new_id).getBoundingClientRect();
   topOffset   = graphRect.top  - bodyRect.top;
   leftOffset  = graphRect.left - bodyRect.left;
-   
+
   if(typeof id !== 'undefined' && id == new_id){
     // same: hide graph
     chart_data = []
@@ -664,19 +689,19 @@ function graph_counts(new_id,taxonomy,counts){
     }
   }else{
     // different: -- show graph
-    
+
     $('#tax_counts_graph_div').css({
                 'top':topOffset-200,
-                'left':leftOffset, 
-                'z-index':1000, 
+                'left':leftOffset,
+                'z-index':1000,
                 'width': '600px',
-                'height': '400px', 
-                "display":"block",   
-                'position': 'absolute', 
-                'border':'1px solid black', 
+                'height': '400px',
+                "display":"block",
+                'position': 'absolute',
+                'border':'1px solid black',
                 'padding':'55px'
               });
-  
+
     id = new_id
   }
   counts = JSON.parse(counts)
@@ -693,7 +718,7 @@ function graph_counts(new_id,taxonomy,counts){
   chart_data.push({data:myseries, label:deepest_tax, lines:{show:true}, points:{show:true}})
   //alert(data.length)
   var options = {
-    
+
     legend:{position:'nw'},
     grid: {
         borderWidth: 1,
@@ -707,7 +732,7 @@ function graph_counts(new_id,taxonomy,counts){
             left: 5
         }
     },
-    
+
     xaxis:{
           min: 1,
           //max: datasetcount,
@@ -720,14 +745,14 @@ function graph_counts(new_id,taxonomy,counts){
          tickDecimals: 0
       }
   };
-  
+
     $.plot($("#tax_counts_graph_div"), chart_data, options);
     var xaxisLabel = $("<div class='axisLabel xaxisLabel'></div>").text("Dataset").appendTo($('#tax_counts_graph_div'));
     var graph_title = $("<div class='graph_title'></div>").text("Sequence Counts").appendTo($('#tax_counts_graph_div'));
     var close_button = $("<input class='graph_close_btn axisLabel btn btn-xs btn-primary' type='button' value='Close' onclick='close_graph()'>").appendTo($('#tax_counts_graph_div'));
-   
+
     graph_title.css("margin-top",  0);
-  
+
 }
 function close_graph(){
     chart_data = []
@@ -736,13 +761,13 @@ function close_graph(){
 
 function standardDeviation(values){
   var avg = average(values);
-  
+
   var squareDiffs = values.map(function(value){
     var diff = value - avg;
     var sqrDiff = diff * diff;
     return sqrDiff;
   });
-  
+
   var avgSquareDiff = average(squareDiffs);
   var stdDev = Math.sqrt(avgSquareDiff);
   return stdDev;
@@ -760,7 +785,7 @@ function average(data){
 //  CREATE METADATA TABLE
 //
 function create_metadata_table(new_window) {
-     
+
     if(new_window){
         var htmlstring = document.getElementById('metadata_table_div').innerHTML;
         function openindex()
@@ -780,34 +805,34 @@ function create_metadata_table(new_window) {
     document.getElementById('metadata_table_title').style.color = 'white';
     document.getElementById('metadata_table_title').style['font-size'] = 'small';
     var metadata_div = document.getElementById('metadata_table_div');
-    
+
     metadata_div.innerHTML = '';
     metadata_div.style.display = 'block';
     document.getElementById('pre_metadata_table_div').style.display = 'block';
     var html = '';
       //html += "<table border='1' id='metadata_table' class='single_border small_font md_table' >";
-    
+
     html += "<table border='1' id='metadata_table' class='table table-condensed' >";
     html += "<thead><tr><th>Dataset (click to sort)</th><th>Name (click to sort)</th><th>Value (click to sort)</th></tr></thead><tbody>";
-             
+
     for (var ds in md_local) {
 
           for (var md_item in md_local[ds]) {
             if(md_item != 'project' && md_item != 'dataset'){
                 html += "<tr>";
                 html += "<td>"+ds+"</td>";
-        
+
                 md_val = md_local[ds][md_item];
                 if(md_val == '' || md_val == undefined){
                   md_val = 'undefined';
                 }
                 html += "<td>"+md_item+"</td><td>"+md_val+"</td>";
-        
+
                 html += "</tr>";
             }
-          }        
+          }
     }
-    
+
     html += "</tbody></table>";
 
       //alert(md_local[0].env_material)
@@ -826,12 +851,12 @@ function create_dendrogram(ts, image_type, script, new_window) {
           //var htmlstring = document.getElementById('dendrogram_pdf_div').innerHTML;
         }else if(script == 'phylogram'){
           var htmlstring = document.getElementById('dendrogram01_div').innerHTML;
-        //}else if(script == 'phylonator'){  
+        //}else if(script == 'phylonator'){
         //  var htmlstring = document.getElementById('dendrogram2_div').innerHTML;
-        }else if(script == 'radial'){ 
+        }else if(script == 'radial'){
           var htmlstring = document.getElementById('dendrogram03_div').innerHTML;
         }
-        
+
         function openindex()
             {
                   rando = Math.floor(Math.random() * 20);
@@ -847,19 +872,19 @@ function create_dendrogram(ts, image_type, script, new_window) {
     }
       var info_line = create_header('dend', pi_local);
       var dend_div;
-      if(script == 'phylogram'){  // svg
+      if(script == 'phylogram'){  // d3
         //dendrogram1_created = true;
-        var dend_div = document.getElementById('dendrogram01_div');        
-        document.getElementById('pre_dendrogram01_div').style.display = 'block';        
+        var dend_div = document.getElementById('dendrogram01_div');
+        document.getElementById('pre_dendrogram01_div').style.display = 'block';
         dend_div.style.display = 'block';
         document.getElementById('dendrogram01_title').innerHTML = info_line;
         document.getElementById('dendrogram01_title').style.color = 'white';
         document.getElementById('dendrogram01_title').style['font-size'] = 'small';
-      
-      }else if(script == 'radial'){  // svg
+
+      }else if(script == 'radial'){  // d3
         //dendrogram3_created = true;
-        var dend_div = document.getElementById('dendrogram03_div');        
-        document.getElementById('pre_dendrogram03_div').style.display = 'block';        
+        var dend_div = document.getElementById('dendrogram03_div');
+        document.getElementById('pre_dendrogram03_div').style.display = 'block';
         dend_div.style.display = 'block';
         document.getElementById('dendrogram03_title').innerHTML = info_line;
         document.getElementById('dendrogram03_title').style.color = 'white';
@@ -868,30 +893,30 @@ function create_dendrogram(ts, image_type, script, new_window) {
         return;
       }
       dend_div.innerHTML = '';
-      
+
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
-      
-      
-      
+
+
+
       var html = '';
       var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
       args += "&image_type="+image_type;
       args += "&script="+script;
-      
-      var xmlhttp = new XMLHttpRequest();  
+
+      var xmlhttp = new XMLHttpRequest();
       xmlhttp.open("POST", '/visuals/dendrogram', true);  // gets newick
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       showDots='';
       var myWaitVar = setInterval(myWaitFunction,1000,dend_div);
-      xmlhttp.onreadystatechange = function() {        
+      xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
           clearInterval(myWaitVar);
           var htmlstring = xmlhttp.responseText;
-          
+
           //htmlstring ="('ICM_LCY_Bv6--LCY_0007_2003_05_04':0.090874090613,('ICM_LCY_Bv6--LCY_0001_2003_05_11':0.00863121477239,('ICM_LCY_Bv6--LCY_0005_2003_05_16':0.00382350678165,'ICM_LCY_Bv6--LCY_0003_2003_05_04':0.00382350678165)))"
           var newick = Newick.parse(htmlstring);
-         
+
           //alert(JSON.stringify(newick, null, 4))
           //var newick = JSON.parse(newick);
           var newickNodes = []
@@ -917,41 +942,41 @@ function create_dendrogram(ts, image_type, script, new_window) {
                 height: h,
                 skipBranchLengthScaling: true  //Make a dendrogram instead of a phylogram. (right justified tree)
               });
-              
+
           }else if(script == 'radial') {
-              
+
               document.getElementById('dendrogram03_div').innerHTML = '';
               document.getElementById('dendrogram03_dnld_btn').disabled = false
               d3.phylogram.buildRadial('#dendrogram03_div', newick, {
                 width: w,
                 height: h
               });
-              
-              
+
+
           }
 
-         
-          
+
+
 
         }  // end if xmlhttp.readyState
 
 
       };
       xmlhttp.send(args);
- 
+
 }
 
 
 //
 //  CREATE PCoA -- both 2d and 3d
 //
-function create_pcoa(ts,image_type, new_window) {
+function create_pcoa(ts, image_type, new_window) {
       //alert('JS PCoA: '+image_type)
     if(new_window){
         if(image_type === '2d'){
           var htmlstring = document.getElementById('pcoa_div').innerHTML;
-        
-        
+
+
           function openindex()
             {
                   rando = Math.floor(Math.random() * 20);
@@ -966,14 +991,14 @@ function create_pcoa(ts,image_type, new_window) {
         }
 
     }
-    var address, info_line, pcoa_div;
+    var url, info_line, pcoa_div;
     var args =  "metric="+pi_local.selected_distance;
     args += "&ts="+ts;
     args += "&image_type="+image_type;
     if(image_type === '2d'){
         //pcoa_created = true;
-        pcoa_div = document.getElementById('pcoa_div');        
-        info_line = create_header('pcoa', pi_local);        
+        pcoa_div = document.getElementById('pcoa_div');
+        info_line = create_header('pcoa', pi_local);
         pcoa_div.style.display = 'block';
         md1 = document.getElementById('pcoa_md1').value;
         md2 = document.getElementById('pcoa_md2').value;
@@ -981,52 +1006,52 @@ function create_pcoa(ts,image_type, new_window) {
         document.getElementById('pcoa_title').style.color = 'white';
         document.getElementById('pcoa_title').style['font-size'] = 'small';
         document.getElementById('pre_pcoa_div').style.display = 'block';
-        address = '/visuals/pcoa';
+        url = '/visuals/pcoa';
         args += "&md1="+md1+"&md2="+md2;
     }else if(image_type === '3d'){
         //alert('3d')
         pcoa_created = true;
-        pcoa_div = document.getElementById('pcoa3d_div');        
-        info_line = create_header('pcoa3d', pi_local);        
+        pcoa_div = document.getElementById('pcoa3d_div');
+        info_line = create_header('pcoa3d', pi_local);
         pcoa_div.style.display = 'block';
         document.getElementById('pcoa3d_title').innerHTML = info_line;
         document.getElementById('pcoa3d_title').style.color = 'white';
         document.getElementById('pcoa3d_title').style['font-size'] = 'small';
         document.getElementById('pre_pcoa3d_div').style.display = 'block';
-        address = '/visuals/pcoa3d';
+        url = '/visuals/pcoa3d';
     }else{
         // ERROR
     }
-      
+
       pcoa_div.innerHTML = '';
-      
-      
-      var xmlhttp = new XMLHttpRequest();  
-      xmlhttp.open("POST", address, true);
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+
+
+      var xmlhttp = new XMLHttpRequest();
+      xmlhttp.open("POST", url, true);
+      xmlhttp.setRequestHeader("Content-type","application/json");
       xmlhttp.setRequestHeader("data-type","html");
       showDots='';
       var myWaitVar = setInterval(myWaitFunction,1000,pcoa_div);
-      xmlhttp.onreadystatechange = function() {        
+      xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
             clearInterval(myWaitVar);
-            var response = xmlhttp.responseText;            
-            pcoa_div.innerHTML = response; 
+            var response = xmlhttp.responseText;
+            pcoa_div.innerHTML = response;
             if(image_type === '2d'){
               document.getElementById('pcoa_dnld_btn').disabled = false
             }else{
-              document.getElementById('pcoa3d_dnld_btn').disabled = false     
+              document.getElementById('pcoa3d_dnld_btn').disabled = false
             }
         }
       };
       xmlhttp.send(args);
-      
+
 }
 //
 //  CREATE DBROWSER
 //
 // function create_dbrowser(ts) {
-     
+
 //          dbrowser_created = true;
 //          var info_line = create_header('dbrowser', pi_local);
 //          var dbrowser_div = document.getElementById('dbrowser_div');
@@ -1034,25 +1059,25 @@ function create_pcoa(ts,image_type, new_window) {
 //          document.getElementById('dbrowser_title').style.color = 'white';
 //         document.getElementById('dbrowser_title').style['font-size'] = 'small';
 //          dbrowser_div.style.display = 'block';
-         
+
 //          document.getElementById('pre_dbrowser_div').style.display = 'block';
 //          var args =  "ts="+ts;
-//          var xmlhttp = new XMLHttpRequest();  
+//          var xmlhttp = new XMLHttpRequest();
 //          xmlhttp.open("POST", '/visuals/dbrowser', true);
 //          xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 //          showDots='';
 //          var myWaitVar = setInterval(myWaitFunction,1000,dbrowser_div);
-//          xmlhttp.onreadystatechange = function() {          
+//          xmlhttp.onreadystatechange = function() {
 //            if (xmlhttp.readyState == 4 ) {
 //               clearInterval(myWaitVar);
-//               var response = xmlhttp.responseText;              
-//               dbrowser_div.innerHTML = response;            
+//               var response = xmlhttp.responseText;
+//               dbrowser_div.innerHTML = response;
 //            }
 //          };
 //          xmlhttp.send(args);
 // }
 function create_oligotyping(ts) {
-     
+
         oligotyping_created = true;
         var info_line = create_header('oligotyping', pi_local);
         var oligotyping_div = document.getElementById('oligotyping_div');
@@ -1060,19 +1085,19 @@ function create_oligotyping(ts) {
         document.getElementById('oligotyping_title').style.color = 'white';
         document.getElementById('oligotyping_title').style['font-size'] = 'small';
         oligotyping_div.style.display = 'block';
-         
+
         document.getElementById('pre_oligotyping_div').style.display = 'block';
         var args =  "ts="+ts;
-        var xmlhttp = new XMLHttpRequest();  
+        var xmlhttp = new XMLHttpRequest();
         xmlhttp.open("POST", '/visuals/oligotyping', true);
         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
         showDots='';
         var myWaitVar = setInterval(myWaitFunction,1000,oligotyping_div);
-        xmlhttp.onreadystatechange = function() {          
+        xmlhttp.onreadystatechange = function() {
            if (xmlhttp.readyState == 4 ) {
               clearInterval(myWaitVar);
-              var response = xmlhttp.responseText;              
-              oligotyping_div.innerHTML = response;            
+              var response = xmlhttp.responseText;
+              oligotyping_div.innerHTML = response;
            }
         };
         xmlhttp.send(args);
@@ -1102,16 +1127,16 @@ function recreate_image_from_html(image, ts) {
     htmlstring = document.getElementById('dheatmap_div').innerHTML;
   }
   //alert(args)
-  var xmlhttp = new XMLHttpRequest(); 
+  var xmlhttp = new XMLHttpRequest();
   xmlhttp.open("POST", '/user_data/copy_html_to_image', true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-  xmlhttp.onreadystatechange = function() {        
+  xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
             html = 'Saved!\n\n(File available from the "File Retrieval" button on the "Your Data" page)'
-            alert(html)            
+            alert(html)
         }
       };
-  xmlhttp.send(args);      
+  xmlhttp.send(args);
 }
 function download_svg(image, ts) {
     var id = image+'_'+ts
@@ -1156,27 +1181,31 @@ function create_dheatmap(ts, new_window) {
       document.getElementById('dheatmap_title').style.color = 'white';
       document.getElementById('dheatmap_title').style['font-size'] = 'small';
       var html = '';
-      var args =  "metric="+pi_local.selected_distance;
-      args += "&ts="+ts;
+      var args = {}
+      args.image = 'dheatmap'
+      args.source = 'website'
+      //args.metric = pi_local.selected_distance
+      //args.ts = ts
+      //var args =  "metric="+pi_local.selected_distance;
+      //args += "&ts="+ts;
       document.getElementById('pre_dheatmap_div').style.display = 'block';
        // get distance matrix via AJAX
-      var xmlhttp = new XMLHttpRequest();  
-      xmlhttp.open("POST", '/visuals/heatmap', true);
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      var xmlhttp = new XMLHttpRequest();
+      xmlhttp.open("POST", '/api', true);
+      //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.setRequestHeader("Content-Type", "application/json");
       showDots='';
       var myWaitVar = setInterval(myWaitFunction,1000,dhm_div);
-      xmlhttp.onreadystatechange = function() {        
+      xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
             clearInterval(myWaitVar);
-            var htmlstring = xmlhttp.responseText;           
-            
-            dhm_div.innerHTML = htmlstring;
+            data = JSON.parse(xmlhttp.response)
+            dhm_div.innerHTML = data.html;
             document.getElementById('dheatmap_dnld_btn').disabled = false
-            
-
         }
       };
-      xmlhttp.send(args);      
+      
+      xmlhttp.send(JSON.stringify(args));
 }
 //
 //  CREATE FREQUENCY HEATMAP
@@ -1184,10 +1213,10 @@ function create_dheatmap(ts, new_window) {
 function create_fheatmap(ts, new_window) {
       //alert('im HM')
       if(new_window){
-        
+
           var htmlstring = document.getElementById('fheatmap_div').innerHTML;
-        
-        
+
+
           function openindex()
             {
               rando = Math.floor(Math.random() * 20);
@@ -1199,12 +1228,12 @@ function create_fheatmap(ts, new_window) {
 
           openindex()
           return
-       
+
 
     }
       fheatmap_created = true;
       var fhm_div = document.getElementById('fheatmap_div');
-      
+
       fhm_div.innerHTML = '';
       fhm_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
@@ -1212,26 +1241,28 @@ function create_fheatmap(ts, new_window) {
       document.getElementById('fheatmap_title').innerHTML = info_line;
       document.getElementById('fheatmap_title').style.color = 'white';
       document.getElementById('fheatmap_title').style['font-size'] = 'small';
-      
+
       var html = '';
-      var args =  "metric="+pi_local.selected_distance;
-      args += "&ts="+ts;
+      //var args =  "metric="+pi_local.selected_distance;
+      //args += "&ts="+ts;
       document.getElementById('pre_fheatmap_div').style.display = 'block';
-      var xmlhttp = new XMLHttpRequest();  
+      var xmlhttp = new XMLHttpRequest();
       xmlhttp.open("POST", '/visuals/frequency_heatmap', true);
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.setRequestHeader("Content-Type", "application/json");
       showDots='';
       var myWaitVar = setInterval(myWaitFunction,1000,fhm_div);
-      xmlhttp.onreadystatechange = function() {        
+      xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
             clearInterval(myWaitVar);
-            var htmlstring = xmlhttp.responseText;           
+            var htmlstring = xmlhttp.responseText;
             fhm_div.innerHTML = htmlstring;
             document.getElementById('fheatmap_dnld_btn').disabled = false
         }
       };
-      xmlhttp.send(args);   
-      
+      args = JSON.stringify({"metric":pi_local.selected_distance,"ts":ts})
+      xmlhttp.send(args);
+
 }
 //
 //  CREATE GEOSPATIAL
@@ -1239,10 +1270,10 @@ function create_fheatmap(ts, new_window) {
 function create_geospatial(new_window) {
       //alert('in GEO')
       if(new_window){
-        
+
           var htmlstring = document.getElementById('geospatial_div').innerHTML;
-        
-        
+
+
           function openindex()
             {
               rando = Math.floor(Math.random() * 20);
@@ -1254,26 +1285,26 @@ function create_geospatial(new_window) {
 
           openindex()
           return
-       
+
 
     }
       geospatial_created = true;
       var geo_div = document.getElementById('geospatial_div');
-      
+
       geo_div.innerHTML = '';
       geo_div.style.display = 'block';
       geo_div.style.height = '900px';
-            
-      var info_line = create_header('geo', pi_local);      
+
+      var info_line = create_header('geo', pi_local);
       document.getElementById('geospatial_title').innerHTML = info_line;
       document.getElementById('geospatial_title').style.color = 'white';
       document.getElementById('geospatial_title').style['font-size'] = 'small';
       document.getElementById('pre_geospatial_div').style.display = 'block';
-      
+
       var loc_data = [];
       var lat_lon_collector = {};
       var latlon;
-      
+
       for (var ds in md_local) {
           var lat = '';
           var lon = '';
@@ -1282,12 +1313,12 @@ function create_geospatial(new_window) {
             if(md_item == 'latitude') {
               lat = Number(md_local[ds][k]);
             }
-            if(md_item == 'longitude'){              
+            if(md_item == 'longitude'){
               lon = Number(md_local[ds][k]);
-            }           
-            
-          } 
-          
+            }
+
+          }
+
           if(typeof lat == 'number' && typeof lon == 'number'){
             latlon = lat.toString() +';'+ lon.toString();
             if (latlon in lat_lon_collector) {
@@ -1295,7 +1326,7 @@ function create_geospatial(new_window) {
               lat_lon_collector[latlon] = newds;
             }else{
               lat_lon_collector[latlon] = ds;
-            }            
+            }
           }
       }
       var z = 1;
@@ -1305,14 +1336,14 @@ function create_geospatial(new_window) {
         ds = lat_lon_collector[latlon];
         var latlons =  latlon.split(';');
         loc_data.push([ds,latlons[0],latlons[1],z]);
-        z+=1; 
+        z+=1;
 
       }
 //alert(ds)
       if (loc_data.length === 0){
           geospatial_div.innerHTML='No Lat/Lon Data Found/Selected';
       }else{
-        var center = new google.maps.LatLng(loc_data[0][1],loc_data[0][2]); 
+        var center = new google.maps.LatLng(loc_data[0][1],loc_data[0][2]);
         var mapCanvas = document.getElementById('geospatial_div');
         var mapOptions = {
           center : center,
@@ -1327,17 +1358,17 @@ function create_geospatial(new_window) {
 
         setMarkers(map, loc_data, infowindow);
         document.getElementById('geospatial_dnld_btn').disabled = false
-      }  
+      }
 }
 //
 //
 //
-function bindInfoWindow(marker, map, infowindow, html) { 
-  google.maps.event.addListener(marker, 'click', function() { 
-    infowindow.setContent(html); 
-    infowindow.open(map, marker); 
-  }); 
-} 
+function bindInfoWindow(marker, map, infowindow, html) {
+  google.maps.event.addListener(marker, 'click', function() {
+    infowindow.setContent(html);
+    infowindow.open(map, marker);
+  });
+}
 //
 //
 //
@@ -1346,8 +1377,8 @@ function setMarkers(map, loc_data, infowindow) {
     // create a marker
    // alert(locations[0])
     //var data = loc_data[i];
-  
-    var myLatLng = new google.maps.LatLng(loc_data[i][1],loc_data[i][2]); 
+
+    var myLatLng = new google.maps.LatLng(loc_data[i][1],loc_data[i][2]);
     var marker = new google.maps.Marker({
       title: loc_data[i][0],
       position: myLatLng,
@@ -1365,7 +1396,7 @@ function setMarkers(map, loc_data, infowindow) {
       html += "<tr><td>" + ds_array[d] + "</td></tr>"
     }
     html += '</table>'
-    bindInfoWindow(marker, map, infowindow, "<p>" + html + "</p>"); 
+    bindInfoWindow(marker, map, infowindow, "<p>" + html + "</p>");
 
   }
 
@@ -1375,10 +1406,10 @@ function setMarkers(map, loc_data, infowindow) {
 //
 function create_piecharts_group(new_window) {
     if(new_window){
-        
+
           var htmlstring = document.getElementById('piecharts_div').innerHTML;
-        
-        
+
+
           function openindex()
             {
               rando = Math.floor(Math.random() * 20);
@@ -1393,20 +1424,36 @@ function create_piecharts_group(new_window) {
     }
     piecharts_created = true;
     var info_line = create_header('pies', pi_local);
-    
+
     document.getElementById('piecharts_title').innerHTML = info_line;
     var piecharts_div = document.getElementById('piecharts_div');
     document.getElementById('piecharts_title').style.color = 'white';
     document.getElementById('piecharts_title').style['font-size'] = 'small';
     piecharts_div.innerHTML = '';
     piecharts_div.style.display = 'block';
-    
+
     document.getElementById('pre_piecharts_div').style.display = 'block';
-     
-    // this fxn is in common_selection.js
-    create_piecharts('group', pi_local.ts, mtx_local);
-    
-    document.getElementById('piecharts_dnld_btn').disabled = false
+    var xmlhttp = new XMLHttpRequest();
+
+        var args = {}
+        args.image = 'piecharts'
+        args.source = 'website'
+        xmlhttp.open("POST", '/api', true); 
+        //         alert(xmlhttp) 
+        xmlhttp.setRequestHeader("Content-type","application/json");
+              
+        xmlhttp.onreadystatechange = function(){
+            if (xmlhttp.readyState == 4 ) {
+               data = JSON.parse(xmlhttp.response)
+               
+               //alert(data)          
+               piecharts_div.innerHTML = data.html;
+                document.getElementById('piecharts_dnld_btn').disabled = false          
+            }
+         }
+
+        xmlhttp.send(JSON.stringify(args));
+        return
 
 }
 
@@ -1415,7 +1462,7 @@ function create_piecharts_group(new_window) {
 //  CREATE BARCHARTS
 //
 function create_barcharts_group(new_window) {
-      
+
     if(new_window){
           var htmlstring = document.getElementById('barcharts_div').innerHTML;
           function openindex()
@@ -1432,16 +1479,35 @@ function create_barcharts_group(new_window) {
     barcharts_created = true;
     var info_line = create_header('bars', pi_local);
     document.getElementById('barcharts_title').innerHTML = info_line;
+    var barcharts_div = document.getElementById('barcharts_div');
     document.getElementById('barcharts_title').style.color = 'white';
     document.getElementById('barcharts_title').style['font-size'] = 'small';
-    document.getElementById('barcharts_div').innerHTML = '';
-//    barcharts_div.style.display = 'block';
-         
+    barcharts_div.innerHTML = '';
+    barcharts_div.style.display = 'block';
+
     document.getElementById('pre_barcharts_div').style.display = 'block';
-     
+    var xmlhttp = new XMLHttpRequest();
+
+    var args = {}
+    args.image = 'barcharts'
+    args.source = 'website'
+    xmlhttp.open("POST", '/api', true); 
+    //         alert(xmlhttp) 
+    xmlhttp.setRequestHeader("Content-type","application/json");
+          
+    xmlhttp.onreadystatechange = function(){
+        if (xmlhttp.readyState == 4 ) {
+           data = JSON.parse(xmlhttp.response)        
+           barcharts_div.innerHTML = data.html;
+           document.getElementById('barcharts_dnld_btn').disabled = false          
+        }
+     }
+
+    xmlhttp.send(JSON.stringify(args));
+    return
          // this fxn is in common_selection.js
-    create_barcharts('group', pi_local.ts, mtx_local, {alpha_value:'z',count_value:"min"});
-    document.getElementById('barcharts_dnld_btn').disabled = false
+    //create_barcharts('group', pi_local.ts, mtx_local, {alpha_value:'z',count_value:"min"});
+    //document.getElementById('barcharts_dnld_btn').disabled = false
 
 }
 //
@@ -1456,46 +1522,23 @@ function heatmap_click_fxn(did1,ds1,did2,ds2){
       //args += "&ts="+ts;
       //document.getElementById('pre_adiversity_div').style.display = 'block';
        // get distance matrix via AJAX
-      var xmlhttp = new XMLHttpRequest();  
+      var xmlhttp = new XMLHttpRequest();
       xmlhttp.open("POST", '/visuals/bar_double', true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       //showDots='';
       //var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);
-      xmlhttp.onreadystatechange = function() {        
+      xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
 
-          
+
            //clearInterval(myWaitVar);
-            var retstring = xmlhttp.responseText;           
+            var retstring = xmlhttp.responseText;
         alert(retstring)
         window.open(retstring,"_blank")
-        //    var lines = retstring.split('\n');
-        //    //alert(lines[0])
-        //    var headers = lines.shift();
-        //    //var line2 = lines.pop();
-        //    //alert(headers)
-        //    html = "<table class='table'>";
-        //    html += '<tr>';
-        //    //alert(line2)
-        //    var header_items = headers.split('\t')
-        //    for(i in header_items){
-        //      html += '<td>'+header_items[i]+'</td>';
-        //    }
-        //    html +=  '</tr>';
-        //    for(i in lines){
-        //       html +=  '<tr>';
-        //       items = lines[i].split('\t');
-        //       for(j in items){
-        //         html += '<td>'+items[j]+'</td>';
-        //       }
-        //       html +=  '</tr>';
-        //    }
-        //    html += '</table>';
-
-        //    adiversity_div.innerHTML = html;
+        
         }
       };
-      xmlhttp.send(args);      
+      xmlhttp.send(args);
 }
 
 //
@@ -1504,9 +1547,9 @@ function heatmap_click_fxn(did1,ds1,did2,ds2){
 function create_adiversity(ts, new_window){
     //python scripts
     if(new_window){
-        
+
           var htmlstring = document.getElementById('adiversity_div').innerHTML;
-        
+
           function openindex()
             {
               rando = Math.floor(Math.random() * 20);
@@ -1518,7 +1561,7 @@ function create_adiversity(ts, new_window){
 
           openindex()
           return
-       
+
 
     }
     adiversity_created = true;
@@ -1537,21 +1580,22 @@ function create_adiversity(ts, new_window){
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = create_header('adiversity', pi_local);
       document.getElementById('adiversity_title').innerHTML = info_line;
-      
+
       var html = '';
-      var args =  "metric="+pi_local.selected_distance;
-      args += "&ts="+ts;
+      //var args =  "metric="+pi_local.selected_distance;
+      //args += "&ts="+ts;
       document.getElementById('pre_adiversity_div').style.display = 'block';
        // get distance matrix via AJAX
-      var xmlhttp = new XMLHttpRequest();  
+      var xmlhttp = new XMLHttpRequest();
       xmlhttp.open("POST", '/visuals/alpha_diversity', true);
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.setRequestHeader("Content-Type", "application/json");
       showDots='';
       var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);
-      xmlhttp.onreadystatechange = function() {        
+      xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
            clearInterval(myWaitVar);
-           var retstring = xmlhttp.responseText;           
+           var retstring = xmlhttp.responseText;
            var lines = retstring.split('\n');
            //alert(lines[0])
            var headers = lines.shift();
@@ -1579,8 +1623,9 @@ function create_adiversity(ts, new_window){
            document.getElementById('adiversity_dnld_btn').disabled = false
         }
       };
-      xmlhttp.send(args);      
-         
+      args = JSON.stringify({"metric":pi_local.selected_distance,"ts":ts})
+      xmlhttp.send(args);
+
 
 }
 
@@ -1613,14 +1658,18 @@ function create_phyloseq(ts, code, new_window) {
 
           openindex()
           return
-       
+
 
     }
       var phylo_div,info_line,md1='',md2='',phy='',ord_type;
       var html = '';
-      var args =  "metric="+pi_local.selected_distance;
-      args += "&plot_type="+code;
-      args += "&ts="+ts;
+      var args =  {}
+      args.metric = pi_local.selected_distance;
+      args.plot_type = code;
+      args.ts = ts;
+      // "metric="+pi_local.selected_distance;
+      // args += "&plot_type="+code;
+      // args += "&ts="+ts;
 
       if(code == 'bar'){
         phy = document.getElementById('phyloseq_bar_phylum').value;
@@ -1634,8 +1683,8 @@ function create_phyloseq(ts, code, new_window) {
         document.getElementById('phyloseq_bars01_title').style.color = 'white';
         document.getElementById('phyloseq_bars01_title').style['font-size'] = 'small';
         document.getElementById('pre_phyloseq_bars01_div').style.display = 'block';
-        
-        args += "&phy="+phy;
+        args.phy = phy;
+        //args += "&phy="+phy;
       }else if(code == 'heatmap'){
         phy = document.getElementById('phyloseq_heatmap_phylum').value;
         if(phy == '0'){
@@ -1648,14 +1697,17 @@ function create_phyloseq(ts, code, new_window) {
         document.getElementById('phyloseq_hm02_title').style.color = 'white';
         document.getElementById('phyloseq_hm02_title').style['font-size'] = 'small';
         document.getElementById('pre_phyloseq_hm02_div').style.display = 'block';
-        
+
         ord_types = document.getElementsByName('phyloseq_heatmap_type');
         md1 = document.getElementById('phyloseq_heatmap_md1').value;
         ord_type = 'PCoA';
         if(ord_types[0].checked == true){
           ord_type = 'NMDS';
         }
-        args += "&phy="+phy+"&md1="+md1+"&ordtype="+ord_type;
+        //args += "&phy="+phy+"&md1="+md1+"&ordtype="+ord_type;
+        args.phy = phy;
+        args.md1 = md1;
+        args.ordtype = ord_type;
       }else if(code == 'network'){
         phylo_div = document.getElementById('phyloseq_nw03_div');
         info_line = create_header('phyloseq_nw03', pi_local);
@@ -1676,9 +1728,13 @@ function create_phyloseq(ts, code, new_window) {
         }else if(max_dists[3].checked == true){
           max_dist = '0.4';
         }
-        args += "&md1="+md1+"&md2="+md2+"&maxdist="+max_dist;
+        //args += "&md1="+md1+"&md2="+md2+"&maxdist="+max_dist;
+
+        args.md1 = md1;
+        args.md2 = md2;
+        args.maxdist = max_dist;
       }else if(code == 'ord'){
-        
+
         phylo_div = document.getElementById('phyloseq_ord04_div');
         info_line = create_header('phyloseq_ord04', pi_local);
         document.getElementById('phyloseq_ord04_title').innerHTML = info_line;
@@ -1692,8 +1748,10 @@ function create_phyloseq(ts, code, new_window) {
         if(ord_types[0].checked == true){
           ord_type = 'NMDS';
         }
-        args += "&md1="+md1+"&md2="+md2+"&ordtype="+ord_type;
-        
+        //args += "&md1="+md1+"&md2="+md2+"&ordtype="+ord_type;
+        args.md1 = md1;
+        args.md2 = md2;
+        args.ordtype = ord_type;
       }else if(code == 'tree'){
         phylo_div = document.getElementById('phyloseq_tree05_div');
         info_line = create_header('phyloseq_tree05', pi_local);
@@ -1702,23 +1760,25 @@ function create_phyloseq(ts, code, new_window) {
         document.getElementById('phyloseq_tree05_title').style['font-size'] = 'small';
         document.getElementById('pre_phyloseq_tree05_div').style.display = 'block';
         md1 = document.getElementById('phyloseq_tree_md1').value;
-        args += "&md1="+md1;
+        //args += "&md1="+md1;
+        args.md1 = md1;
 
       }
       phylo_div.innerHTML = '';
       phylo_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
-      
-      var xmlhttp = new XMLHttpRequest();  
+
+      var xmlhttp = new XMLHttpRequest();
       xmlhttp.open("POST", '/visuals/phyloseq', true);
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.setRequestHeader("Content-Type", "application/json");
       //xmlhttp.setRequestHeader("Content-type","application/xml");
       showDots='';
       var myWaitVar = setInterval(myWaitFunction,1000,phylo_div);
-      xmlhttp.onreadystatechange = function() {        
+      xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
            clearInterval(myWaitVar);
-           var response = xmlhttp.responseText;          
+           var response = xmlhttp.responseText;
            phylo_div.innerHTML = response;
            if(code == 'bar'){
               document.getElementById('phyloseq_bars01_dnld_btn').disabled = false
@@ -1733,11 +1793,12 @@ function create_phyloseq(ts, code, new_window) {
             }
         }
       };
-      xmlhttp.send(args);   
-      
+      args = JSON.stringify(args)
+      xmlhttp.send(args);
+
 }
 //
-//  Interval timer  
+//  Interval timer
 //
 function myWaitFunction(div) {
     if(showDots === '..........'){ showDots = ''; }
@@ -1750,10 +1811,10 @@ function myWaitFunction(div) {
 //
 
 function create_header(viz, pi) {
-  
+
   var txt;
-  //viz_possibles = ['bars','pies','geo','dhm','fhm','dend-svg','dend-pdf','pcoa','ftable','mtable'];
-  
+  //viz_possibles = ['bars','pies','geo','dhm','fhm','dend-d3','dend-pdf','pcoa','ftable','mtable'];
+
     if(viz == 'geo'){
       txt = 'Geospatial --> ';
     }else if(viz == 'bars'){
@@ -1762,19 +1823,19 @@ function create_header(viz, pi) {
       txt = 'Piecharts --> ';
     }else if(viz == 'dhm'){
       txt = 'Distance Heatmap --> ';
-      txt += ' Metric: ' + pi.selected_distance+'; ';  
+      txt += ' Metric: ' + pi.selected_distance+'; ';
     }else if(viz == 'fhm'){
       txt = 'Frequency Heatmap --> ';
-      txt += ' Metric: ' + pi.selected_distance+'; ';  
+      txt += ' Metric: ' + pi.selected_distance+'; ';
     }else if(viz == 'dend'){
       txt = 'Dendrogram --> ';
-      txt += ' Metric: ' + pi.selected_distance+'; ';  
+      txt += ' Metric: ' + pi.selected_distance+'; ';
     }else if(viz == 'pcoa'){
       txt = 'PCoA 2D --> ';
-      txt += ' Metric: ' + pi.selected_distance+'; ';  
+      txt += ' Metric: ' + pi.selected_distance+'; ';
     }else if(viz == 'pcoa3d'){
       txt = 'PCoA 3D -->';
-      txt += ' Metric: ' + pi.selected_distance+'; ';  
+      txt += ' Metric: ' + pi.selected_distance+'; ';
     }else if(viz == 'ftable'){
       txt = 'Frequency Table --> ';
     }else if(viz == 'mtable'){
@@ -1785,54 +1846,54 @@ function create_header(viz, pi) {
       txt = 'Alpha Diversity --> ';
     }else if(viz == 'phyloseq_bars01'){
       txt = 'Phyloseq Bars --> ';
-      txt += ' Metric: ' + pi.selected_distance+'; ';  
+      txt += ' Metric: ' + pi.selected_distance+'; ';
     }else if(viz == 'phyloseq_hm02'){
       txt = 'Phyloseq Heatmap --> ';
-      txt += ' Metric: ' + pi.selected_distance+'; ';  
+      txt += ' Metric: ' + pi.selected_distance+'; ';
     }else if(viz == 'phyloseq_nw03'){
       txt = 'Phyloseq Network --> ';
-      txt += ' Metric: ' + pi.selected_distance+'; ';  
+      txt += ' Metric: ' + pi.selected_distance+'; ';
     }else if(viz == 'phyloseq_ord04'){
       txt = 'Phyloseq Ordination --> ';
-      txt += ' Metric: ' + pi.selected_distance+'; ';  
+      txt += ' Metric: ' + pi.selected_distance+'; ';
     }else if(viz == 'phyloseq_tree05'){
       txt = 'Phyloseq Tree --> ';
-      txt += ' Metric: ' + pi.selected_distance+'; ';  
+      txt += ' Metric: ' + pi.selected_distance+'; ';
     }else if(viz == 'oligotyping'){
-      txt = 'Oligotyping --> '; 
+      txt = 'Oligotyping --> ';
     }else{
       txt = 'ERROR in fxn create_headers '+viz;
     }
   txt += ' Normalization: ' + pi.normalization+'; ';
   txt += ' Counts Min/Max: ' + pi.min_range+'% -- '+pi.max_range+'%';
-     
+
   return txt;
 }
 
 function download_data(type, download_type, ts) {
     var html = '';
     var args = 'ts='+ts;
-    var xmlhttp = new XMLHttpRequest(); 
-    
+    var xmlhttp = new XMLHttpRequest();
+
     // if(type == 'metadata'){
-    //   target = '/user_data/download_file'  
-    //   args += '&file_type='+type;  
-    //   args += "&download_type="+download_type; 
-    // } else 
+    //   target = '/user_data/download_file'
+    //   args += '&file_type='+type;
+    //   args += "&download_type="+download_type;
+    // } else
     if(type == 'fasta'){
       target = '/user_data/download_file'
       args += '&file_type='+type;
       args += "&download_type="+download_type;
-    }else if(type == 'matrix'){    
+    }else if(type == 'matrix'){
       target = '/user_data/download_file'
       args += '&file_type='+type;
       args += "&download_type="+download_type;
-    
-     // else if(type == 'csv'){    
+
+     // else if(type == 'csv'){
      //  target = '/user_data/download_file'
      //  args += '&file_type='+type;
      //  args += "&download_type="+download_type;
-    } else if(type == 'frequency'){    
+    } else if(type == 'frequency'){
       target = '/user_data/download_file'
       args += '&file_type='+type;
     }
@@ -1840,13 +1901,13 @@ function download_data(type, download_type, ts) {
       target = '/user_data/copy_file_for_download'
       args += '&file_type='+type;
     }
-    
-   
+
+
     xmlhttp.open("POST", target, true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 ) {
-         var filename = xmlhttp.responseText; 
+         var filename = xmlhttp.responseText;
          //html += "<div class='pull-right'>Your file is being compiled and can be downloaded from the"
          //html += "<br><a href='/user_data/file_retrieval'>file retrieval page when ready.</a></div>"
          //document.getElementById('download_confirm_id').innerHTML = html;
@@ -1854,34 +1915,34 @@ function download_data(type, download_type, ts) {
          alert(html)
       }
     };
-    xmlhttp.send(args);   
+    xmlhttp.send(args);
 }
 
 //
 //
 //
 function save_configuration(ds_local, user){
-  
+
   if(user=='guest'){
       alert("The 'guest' user is not permitted to save datasets.");
       return;
     }
   args=''
-  var xmlhttp = new XMLHttpRequest(); 
+  var xmlhttp = new XMLHttpRequest();
   xmlhttp.open("POST", '/visuals/save_config', true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 ) {
-         var response = xmlhttp.responseText; 
+         var response = xmlhttp.responseText;
          document.getElementById('save_config_confirmation').innerHTML = response
-         
+
       }
     };
-    xmlhttp.send(args);   
+    xmlhttp.send(args);
 }
 
 function reload_view_form(){
-  
+
   form = document.getElementById('reload_form_id');
   form.submit();
   return null
@@ -1907,7 +1968,7 @@ function new_window_skeleton(html){
   for(item in pi_local){
     if(item !== 'metadata' && item !== 'ts'){
       txt += "<td align='right' style='padding-left:3px;'>"+item+":</td><td>&nbsp;"+pi_local[item]+"</td>"
-      if( n % cols === (cols - 1) ) {  
+      if( n % cols === (cols - 1) ) {
           txt += "</tr><tr>"
       }
       n += 1;
@@ -1969,7 +2030,7 @@ function save_image_as_json(name,ts){
     return
 
 }
-// Download text as filename -- clent side only 
+// Download text as filename -- clent side only
 function download(filename, text) {
   var element = document.createElement('a');
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));

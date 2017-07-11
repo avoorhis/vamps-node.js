@@ -277,8 +277,9 @@ def go_add(NODE_DATABASE, pids_str):
         write_all_metadata_file(metadata_lookup, rando)
     
         # only write here for default taxonomy: silva119
-        if args.units == 'silva119':
-            write_all_taxcounts_file(counts_lookup, rando)
+        # This file is not used        
+        #if args.units == 'silva119':
+        #    write_all_taxcounts_file(counts_lookup, rando)
     
 
 def write_all_metadata_file(metadata_lookup,rando):

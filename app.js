@@ -96,7 +96,7 @@ var resources = require('./routes/routes_resources');
 var admin     = require('./routes/routes_admin');
 var oligotyping = require('./routes/routes_oligotyping');
 var otus        = require('./routes/routes_otus');
-
+var api        = require('./routes/routes_api');
 var portals   = require('./routes/routes_portals');
 var metadata   = require('./routes/routes_metadata');
 //console.log('test')
@@ -210,6 +210,7 @@ app.use('/portals', portals);
 app.use('/metadata', metadata);
 app.use('/oligotyping', oligotyping);
 app.use('/otus', otus);
+app.use('/api', api);
 
 // for non-routing pages such as heatmap, counts and bar_charts
 app.get('/*', function(req, res, next){
@@ -410,7 +411,7 @@ if(hdf5_is_available){
 }else{
     // If we're here we don't have HDF5
     console.log('Not Running HDF5')
-    
+
     HDF5_MDATA  = ''
     HDF5_TAXDATA = ''
     //var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.json' );
@@ -483,6 +484,11 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     //console.log(MD_PRIMER_SUITE)
     //console.log(MD_SEQUENCING_PLATFORM)
     //console.log(AllMetadata[88])
+		//var mode = 0777 & ~process.umask();
+		//console.log('mode',mode)
+		console.log('process.umask',process.umask())
+		//process.umask(022)
+		//console.log('process.umask',process.umask(0))
   }
 });
 
@@ -495,11 +501,11 @@ all_rdp_taxonomy.get_all_taxa(function(err, results) {
     if(typeof new_rdp_taxonomy === 'object'){
         try{
             console.log('SIZE (rdp-taxonomy object):',sizeof(new_rdp_taxonomy));
-        }catch(e){ 
+        }catch(e){
             new_rdp_taxonomy = {};
-            console.log('Could not get sizeof(new_rdp_taxonomy) in app.js') 
-        } 
-    }  
+            console.log('Could not get sizeof(new_rdp_taxonomy) in app.js')
+        }
+    }
   }
 });
 

@@ -201,7 +201,7 @@ def dendrogram_pdf(args, dm, leafLabels):
         image_file = os.path.join(args.outdir,args.prefix+'_dendrogram.pdf')
 
         plt.savefig(image_file)
-def dendrogram_svg(args, dm):
+def dendrogram_newick(args, dm):
     #print json.dumps(dm)
 
     mycluster = construct_cluster(args, dm)
@@ -214,7 +214,7 @@ def cluster_datasets(args, dm):
 
     new_ds_order =[]
     new_did_order =[]
-    
+
     mycluster = construct_cluster(args, dm)
 
     # newick = mycluster.getNewick(with_distances=True)
@@ -251,13 +251,13 @@ def write_csv_file(args):
 def construct_cluster(args, dm):
         # UPGMA OR
         # neighbor joining:
-        
+
         from cogent.phylo import nj
-        
+
         from cogent.cluster.UPGMA import upgma
         # the following prints to stdout -- controlled in routes_visualizations.js
         mycluster = nj.nj(dm)
-        
+
         #mycluster = upgma(dm)
 
 
@@ -541,8 +541,8 @@ if __name__ == '__main__':
         print(json.dumps(dm2))
         pass
 
-    if args.function == 'dendrogram-svg':
-        newick = dendrogram_svg(args, dm3)
+    if args.function == 'dendrogram-d3':
+        newick = dendrogram_newick(args, dm3)
 
         newick_file = os.path.join(args.outdir,args.prefix+'_newick.tre')
         fp = open(newick_file,'w')
@@ -552,7 +552,7 @@ if __name__ == '__main__':
         # from ete2 import Tree
         # unrooted_tree = Tree( newick )
         # print unrooted_tree
-        # IMPORTANT print for SVG
+        # IMPORTANT print for D3
 
         print('NEWICK='+json.dumps(newick))
 

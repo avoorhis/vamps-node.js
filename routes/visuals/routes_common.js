@@ -21,7 +21,7 @@ module.exports = {
   },
 
   get_selection_markup: function( visual, obj ) {
-    
+
     // obj is visual_post_items
     var html = "<div id='' class='selection_info'>";
     if(visual === 'heatmap' ||visual === 'dendrogram' || visual === 'pcoa' ) {
@@ -63,7 +63,7 @@ module.exports = {
         }else{
           html += "<option value='"+distrows[d].id+"'>"+distrows[d].show+"</option>";
         }
-      } 
+      }
       html += "</select></li>";
       html += '<hr>';
     }
@@ -97,20 +97,20 @@ module.exports = {
     html += '</li>';
     html += '<hr>';
     html += '<li>Limit view based on count percentage: &nbsp;&nbsp;&nbsp;';
-     
+
      html += "MIN <select name='min_range' class='small_font'>";
      for( var n=0;n < CONSTS.PCT_RANGE.length-1;n++ ) {
        if(obj.min_range.toString() === CONSTS.PCT_RANGE[n].toString()) {
          html += "<option value='"+CONSTS.PCT_RANGE[n]+"' selected='selected'>"+CONSTS.PCT_RANGE[n]+" %</option>";
        }else{
          html += "<option value='"+CONSTS.PCT_RANGE[n]+"'>"+CONSTS.PCT_RANGE[n]+" %</option>";
-       }       
+       }
      }
     html += "</select>";
     html += "&nbsp;&nbsp;&nbsp; MAX <select name='max_range' class='small_font'>";
     // TODO: "'n' is already defined."
      for (var n1=1; n1 < CONSTS.PCT_RANGE.length; n1++ ) {
-       
+
        if(obj.max_range.toString() === CONSTS.PCT_RANGE[n1].toString()) {
          html += "<option value='"+CONSTS.PCT_RANGE[n1]+"' selected='selected'>"+CONSTS.PCT_RANGE[n1]+" %</option>";
        }else{
@@ -130,6 +130,27 @@ module.exports = {
   //
   //
   //
+  default_post_items: function() {
+    var post_hash = {
+        unit_choice: 'tax_silva119_simple',
+        no_of_datasets: undefined,
+        normalization: 'none',
+        visuals: undefined,
+        selected_distance: 'morisita_horn',
+        tax_depth: 'phylum',
+        domains: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
+        custom_taxa: [ 'NA' ],
+        include_nas: 'yes',
+        min_range: 0,
+        max_range: 100,
+        metadata: [  ],
+        update_data: false,
+        ts: undefined,
+        max_ds_count: undefined
+    }
+    return post_hash;
+  },
+
   save_post_items: function(req) {
     // GLOBAL Variable
     var post_hash = {};
@@ -140,9 +161,9 @@ module.exports = {
       console.log('VS--DOMAINS',req.body.domains)
       console.log('req.body.ds_order',req.body.ds_order)
     }
-    
+
     if(req.body.ds_order === undefined) {
-          
+
           post_hash.unit_choice                  = req.body.unit_choice;
           //visual_post_items.max_ds_count                 = COMMON.get_max_dataset_count(selection_obj);
           post_hash.no_of_datasets               = chosen_id_name_hash.ids.length;
@@ -150,15 +171,15 @@ module.exports = {
           post_hash.visuals                      = req.body.visuals;
           post_hash.selected_distance            = req.body.selected_distance || 'morisita_horn';
           post_hash.tax_depth                    = req.body.tax_depth    || 'custom';
-          
+
           if(post_hash.unit_choice === 'tax_silva119_simple'){
             post_hash.domains                    = req.body.domains      || ['NA'];
           }else if( post_hash.unit_choice === 'tax_rdp2.6_simple'){
-            post_hash.domains                    = req.body['domains']      || ['NA'];  
+            post_hash.domains                    = req.body['domains']      || ['NA'];
           }else{
             post_hash.domains = ['NA']
           }
-          
+
           if(typeof post_hash.domains == 'string') {
               post_hash.domains = post_hash.domains.split(',');
           }
@@ -175,7 +196,7 @@ module.exports = {
           if(typeof req.body.custom_taxa === 'string'){
             if(req.body.custom_taxa === ''){
               post_hash.custom_taxa   = ['NA'];
-            }else{              
+            }else{
               post_hash.custom_taxa   = req.body.custom_taxa.split(',');
             }
           }
@@ -187,7 +208,7 @@ module.exports = {
           // }else if(post_hash.unit_choice == 'tax_silva108_custom'){
           //   post_hash.custom_taxa                  = req.body.custom_taxa  || ['NA'];
           // }
-          
+
           // in the unusual event that a single custom checkbox is selected --> must change from string to list:
 
           if(typeof post_hash.custom_taxa !== 'object') {post_hash.custom_taxa = [post_hash.custom_taxa]; }
@@ -204,15 +225,16 @@ module.exports = {
           }else{
             post_hash.metadata                     = req.body.selected_metadata  || [];
           }
-          
+
           post_hash.update_data                  = req.body.update_data  || false;  // zer
-          
+
 
     }else {
-        chosen_id_name_hash = this.create_chosen_id_name_hash(req.body.ds_order);   
-        post_hash = visual_post_items;       
+console.log('DEFINING chosen_id_name_hash')
+        chosen_id_name_hash = this.create_chosen_id_name_hash(req.body.ds_order);
+        post_hash = visual_post_items;
     }
-    
+
     return post_hash;
   },
 
@@ -240,9 +262,9 @@ module.exports = {
     var tax;
     txt = '';
     //console.log('rank '+rank)
-    
+
     var header = "\tDomain"
-    for(r = 1; r <= rank_num; r++){  
+    for(r = 1; r <= rank_num; r++){
       rank = CONSTS.RANKS[r]
       if(rank == 'klass'){ rank = 'Class'}
       rank = rank[0].toUpperCase() + rank.slice(1)
@@ -261,7 +283,7 @@ module.exports = {
         //}else{
           txt += "\t"+items[t];
         //}
-        
+
       }
       txt += "\n";
     }
@@ -280,7 +302,7 @@ module.exports = {
   // NORMALIZATION
   //
   normalize_counts: function(norm_type, selection_obj, max_count) {
-    
+
     // get max dataset count
     //var selection_obj = JSON.parse(obj);
     //var max_count = post_items.max_ds_count;
@@ -305,7 +327,7 @@ module.exports = {
       }
       new_counts_obj.push(temp);
     }
-    
+
     return new_counts_obj;
   },
 
@@ -317,11 +339,11 @@ module.exports = {
     var max_count = 0;
     for (var n=0; n < obj.seq_freqs.length; n++) {
       var sum=0;
-      for (var i = 0; i < obj.seq_freqs[n].length; i++) {  
+      for (var i = 0; i < obj.seq_freqs[n].length; i++) {
         sum += parseInt(obj.seq_freqs[n][i]);
         //console.log(obj.seq_freqs[n][i]);
       }
-      
+
       if (sum > max_count) {
         max_count = sum;
       }
@@ -349,7 +371,7 @@ module.exports = {
     var color = Math.abs(hash).toString(16).substring(0, 6);
     return "#" + '000000'.substring(0, 6 - color.length) + color;
   },
-  
+
 
 //
 //
@@ -370,9 +392,9 @@ run_script_cmd: function (req,res, ts, command, visual_name) {
 	            html += "</object></div>";
 	            //var html = "<img alt='alt_freq-heatmap-fig' src='"+image+"' />"
 	            //console.log(html);
-	            res.send(html);  
+	            res.send(html);
 	        }
-		}    
+		}
 
     });
  },
@@ -386,7 +408,6 @@ create_chosen_id_name_hash: function(dataset_ids) {
   if(config.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
-      console.log('cinh1')
       console.log(chosen_id_name_hash );
       console.log(dataset_ids)
   }
@@ -394,9 +415,7 @@ create_chosen_id_name_hash: function(dataset_ids) {
   chosen_id_name_hash.ids    = [];
   chosen_id_name_hash.names  = [];
 
-  console.log('TypeOf',typeof dataset_ids)
-  
-  for (var i in dataset_ids){   
+  for (var i in dataset_ids){
 
       did   = dataset_ids[i];
       dname = DATASET_NAME_BY_DID[did];
@@ -406,15 +425,14 @@ create_chosen_id_name_hash: function(dataset_ids) {
       chosen_id_name_hash.ids.push(did);
       chosen_id_name_hash.names.push(pname+'--'+dname);
   }
-  
+
   return chosen_id_name_hash;
 },
 create_new_chosen_id_name_hash: function(dataset_list) {
-  
+
   if(config.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
-      console.log('cinh2')
       console.log(chosen_id_name_hash );
   }
   var potential_chosen_id_name_hash    = {};
@@ -431,7 +449,7 @@ create_new_chosen_id_name_hash: function(dataset_list) {
       potential_chosen_id_name_hash.ids.push(did);
       potential_chosen_id_name_hash.names.push(pname+'--'+dname);
   }
-  
+
   return potential_chosen_id_name_hash;
 },
 //
@@ -442,12 +460,12 @@ get_metadata_selection: function(dataset_ids, metadata, type) {
     req_metadata = CONSTS.REQ_METADATA_FIELDS;
     //console.log('req_metadata '+req_metadata)
     fields_lookup = {};
-    for (var i in dataset_ids) {      
+    for (var i in dataset_ids) {
       did = dataset_ids[i];
       //console.log('id '+ id)
       if (did in metadata) {
         for (var field in metadata[did]) {
-          
+
           //console.log('field_name '+field)
           // keep *_id in metadata file(s) and show name on GUI
           if(field == 'env_package_id'){
@@ -485,7 +503,7 @@ get_metadata_selection: function(dataset_ids, metadata, type) {
     	              //console.log('PUT IN CUSTOM '+field)
     	              fields_lookup[test] = 1;
     	          }
-    			
+
     			}else{  // REQUIRED
 
       	  		  if (req_metadata.indexOf(test) >= 0 ) {
@@ -493,7 +511,7 @@ get_metadata_selection: function(dataset_ids, metadata, type) {
       	              fields_lookup[test] = 1;
       	          }
     			}
-		  
+
         }
       }
 
@@ -512,25 +530,25 @@ check_initial_status: function(url) {
     min   = 0;
     max   = 100;
     norm  = 'none';
-    dist  = 'morisita_horn';  // default distance    
+    dist  = 'morisita_horn';  // default distance
     values_updated = false;
   } else {
     min   = url.query.min_range  || 0;
     max   = url.query.max_range  || 100;
     norm  = url.query.norm       ||  'none';
-    dist  = url.query.selected_distance || 'morisita_horn';  // default distance    
-    values_updated = true;    
+    dist  = url.query.selected_distance || 'morisita_horn';  // default distance
+    values_updated = true;
   }
 
-  if(Number(max) <= Number(min)) {min=0;max=100;} 
+  if(Number(max) <= Number(min)) {min=0;max=100;}
   visual_post_items.min_range = Number(min);
   visual_post_items.max_range = Number(max);
   visual_post_items.normalization = norm;
   visual_post_items.selected_distance = dist;
-  
+
   //console.log('min '+min.toString()+' max '+max.toString()+' norm '+norm)
   if(Number(min)===0 && Number(max)===100 && norm==='none') {
-    // 
+    //
     values_updated = false;  // return to initial state
   }
   console.log('values_updated: '+values_updated.toString());
@@ -554,7 +572,7 @@ clean_custom_tax: function(custom_tax_ids){
         nodes_to_delete.push(parent_id)
       }
 
-      
+
     }
     //console.log('nodes_to_delete ',nodes_to_delete)
     for(index in custom_tax_ids){
@@ -564,7 +582,7 @@ clean_custom_tax: function(custom_tax_ids){
         cleaned_id_list.push(node_id)
       }
     }
-    
+
     console.log('cleaned_id_list ',cleaned_id_list)
     custom_tax_ids = cleaned_id_list
     return custom_tax_ids
@@ -587,7 +605,3 @@ clean_custom_tax: function(custom_tax_ids){
 //
 //
 };   // end module.exports
-
-
-
-
