@@ -36,31 +36,55 @@ router.post('/', function(req, res){
                 "metadata_table", "fheatmap", "dendrogram01", "dendrogram03",
                 "pcoa", "pcoa3d", "geospatial", "adiversity","testpie"
               ]
+  allowed_file_types = ["fasta","metadata-csv","metadata-table"]
+  image = false
+  file  = false
   if(req.body.hasOwnProperty('image') && allowed_images.indexOf(req.body.image) != -1){
     image = req.body.image
     console.log("Success: Image =",image)
+  }else if(req.body.hasOwnProperty('file') && allowed_file_types.indexOf(req.body.file) != -1){
+    file = req.body.file
+    console.log("Success: File =",file)
   }else{
-    console.log("Error -- Could not find image")
-    res.send("Error -- Could not find image")
+    console.log("Error -- Could not find Image or File")
+    res.send("Error -- Could not find Image or File")
     return
   }
-  switch(image) {
-    case 'dheatmap':
-      IMAGES.dheatmap(req, res)
-      break;
-    case 'barcharts':
-      IMAGES.barcharts(req, res)
-      break;
-    case 'piecharts':
-      IMAGES.piecharts(req, res)
-      break;
-    case 'counts_matrix':
-      IMAGES.counts_matrix(req, res)       
-      break;
-    default:
-      test_piecharts(req,res)
-      console.log(image,'- Not Implemented Yet!')
+  if(image){
+      switch(image) {
+        case 'dheatmap':
+          IMAGES.dheatmap(req, res)
+          break;
+        case 'barcharts':
+          IMAGES.barcharts(req, res)
+          break;
+        case 'piecharts':
+          IMAGES.piecharts(req, res)
+          break;
+        case 'counts_matrix':
+          IMAGES.counts_matrix(req, res)       
+          break;
+        default:
+          test_piecharts(req,res)
+          console.log(image,'- Not Implemented Yet!')
+      }
   }
+ //  if(file){
+//     switch(image) {
+//         case 'fasta':
+//           
+//           break;
+//         case 'metadata-csv':
+//           
+//           break;
+//         case 'metadata-table':
+//           
+//           break;
+//         default:
+//           
+//           console.log(file,'- Not Implemented Yet!')
+//       }
+//   }
 
 });
 
