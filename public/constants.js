@@ -470,10 +470,12 @@ constants.REQ_METADATA_FIELDS = [   "collection_date",  // format?? yyyy-mm-dd
   "target_gene",      // 16s or 18s (from mysql table)
   "latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
   "longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-  "sequencing_platform",
+  "sequencing_meth",
   "adapter_sequence",
   "illumina_index",
   "primer_suite",
+  "forward_primer",
+  "reverse_primer",
   "run"
 ];
 constants.REQ_METADATA_FIELDS_wIDs = ["geo_loc_name",     // name of country or longhurst zone
@@ -484,10 +486,12 @@ constants.REQ_METADATA_FIELDS_wIDs = ["geo_loc_name",     // name of country or 
   "env_material",
   "env_package",      // (from mysql table)
   "target_gene",      // 16s or 18s (from mysql table)
-  "sequencing_platform",
+  "sequencing_meth",
   "adapter_sequence",
   "illumina_index",
   "primer_suite",
+  // "forward_primer",
+  // "reverse_primer",
   "run"
 ];
 // constants.REQ_METADATA_FIELDS = [{  "name":"collection_date",       "units":"date","format":"YYYY-MM-DD"}, // format?? yyyy-mm-dd
@@ -539,8 +543,8 @@ constants.ORDERED_METADATA_NAMES = [
   ["","Enter either volume or mass","", ""],
   ["sample_size_vol","Sample Size (volume)","User supplied", "L"],
   ["sample_size_mass","Sample Size (mass)","User supplied", "g"],
+  ["sample_collection_device","Sample collection device","", ""],
   ["formation_name","Formation name","User supplied", ""],
-  ["access_point_type","Access Point Type","User supplied", ""],
   ["","Sample handling","", ""],
   ["samp_store_dur","Storage duration","User supplied", "days"],
   ["samp_store_temp","Storage temperature","User supplied", "degrees celsius"],
@@ -610,12 +614,12 @@ constants.ORDERED_METADATA_NAMES = [
   ["microbial_biomass_FISH","FISH-based cell counts","", "cells/g"],
   ["FISH_probe_name","Name of FISH probe","",""],
   ["FISH_probe_seq","Sequence of FISH probe","",""],
-  ["microbial_biomass_intactpolarlipid","Intact polar lipid","", "pg/g"],
+  ["intact_polar_lipid","Intact polar lipid","", "pg/g"],
   ["microbial_biomass_qPCR","qPCR and primers used","", "gene copies"],
   // ["microbial_biomass_platecounts","Microbial biomass – plate counts - cell numbers","", ""],
   // ["microbial_biomass_avg_cell_number","Microbial biomass – other","", ""],
-  ["microbial_biomass_wet_weight","Biomass – wet weight","", "g"],
-  ["microbial_biomass_dry_weight","Biomass – dry weight","", "g"],
+  ["biomass_wet_weight","Biomass – wet weight","", "g"],
+  ["biomass_dry_weight","Biomass – dry weight","", "g"],
   ["plate_counts","Plate counts – colony forming ","", "CFU/ml"],
   ["functional_gene_assays","functional gene assays","", ""],
   ["clone_library_results","clone library results","", ""],

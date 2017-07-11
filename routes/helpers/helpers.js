@@ -69,6 +69,36 @@ function check_file_formats(filename) {
   return file_formats.indexOf(file_first_part) !== -1;
 }
 
+function get_user_dirname(dirname) {
+  var dirname_arr = dirname.split('/');
+  return dirname_arr[dirname_arr.length - 1];
+}
+
+function get_sizer_and_filesize(size) {
+  var fileSize = (size).toFixed(1);
+  var sizer = 'Bytes';
+  if (size > 1000) {
+    fileSize = (size / 1000.0).toFixed(1);
+    sizer = 'KB';
+  }
+  if (size > 1000000) {
+    fileSize = (size / 1000000.0).toFixed(1);
+    sizer = 'MB';
+  }
+  if (size > 1000000000) {
+    fileSize = (size / 1000000000.0).toFixed(1);
+    sizer = 'GB';
+  }
+  return [fileSize, sizer];
+}
+
+function format_time(mtime){
+  return mtime.toISOString().replace(/T/,' ').replace(/\..+/, '');
+  // .replace(/T/,' ').replace(/.000Z$/,'');
+  // .toString();
+  // Wed Jul 05 2017 12:15:22 GMT-0400 (EDT)
+}
+
 function walk_recursively(dir, done) {
 // var file_formats = CONSTS.download_file_formats;
   var results = [];
@@ -88,8 +118,16 @@ function walk_recursively(dir, done) {
           });
         } else {
           var filename = path.basename(file);
+
           if (check_file_formats(filename)) {
-            results.push({ 'filename':filename, 'size':stat.size, 'time':stat.mtime});
+            var sizer_and_filesize = get_sizer_and_filesize(stat.size);
+            results.push({'filename': filename,
+                          // 'size': stat.size,
+                          'fileSize': sizer_and_filesize[0],
+                          'sizer':    sizer_and_filesize[1],
+                          'time':     stat.mtime,
+                          'mtime_format': format_time(stat.mtime),
+                          'user_dirname': get_user_dirname(path.dirname(file))});
           }
           if (!--pending) done(null, results);
         }
@@ -148,7 +186,8 @@ module.exports.write_to_file = function(fileName, text)
 };
 module.exports.getRandomInt = function(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+};
+
 module.exports.isInt = function(value)
 {
   return !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value));
@@ -285,12 +324,12 @@ module.exports.get_select_primer_suite_query = function(rows){
   for (var i=0; i < rows.length; i++) {
 
     if( ! MD_PRIMER_SUITE.hasOwnProperty(rows[i].primer_suite_id)){
-      MD_PRIMER_SUITE[rows[i].primer_suite_id] = {}
-      MD_PRIMER_SUITE[rows[i].primer_suite_id].id = rows[i].primer_suite_id
-      MD_PRIMER_SUITE[rows[i].primer_suite_id].name   = rows[i].primer_suite
-      MD_PRIMER_SUITE[rows[i].primer_suite_id].region = rows[i].region
-      MD_PRIMER_SUITE[rows[i].primer_suite_id].domain = rows[i].domain
-      MD_PRIMER_SUITE[rows[i].primer_suite_id].primer = []
+      MD_PRIMER_SUITE[rows[i].primer_suite_id] = {};
+      MD_PRIMER_SUITE[rows[i].primer_suite_id].id = rows[i].primer_suite_id;
+      MD_PRIMER_SUITE[rows[i].primer_suite_id].name   = rows[i].primer_suite;
+      MD_PRIMER_SUITE[rows[i].primer_suite_id].region = rows[i].region;
+      MD_PRIMER_SUITE[rows[i].primer_suite_id].domain = rows[i].domain;
+      MD_PRIMER_SUITE[rows[i].primer_suite_id].primer = [];
     }
     MD_PRIMER_SUITE[rows[i].primer_suite_id].primer.push({
       "primer"    :   rows[i].primer,
@@ -298,7 +337,7 @@ module.exports.get_select_primer_suite_query = function(rows){
       "direction" :   rows[i].direction,
       "sequence"  :   rows[i].sequence
 
-    })
+    });
 
 
   }
@@ -436,7 +475,7 @@ module.exports.get_metadata_from_file = function (){
     console.log(e);
     AllMetadataFromFile = {};
   }
-  return AllMetadataFromFile
+  return AllMetadataFromFile;
 };
 
 // TODO: "This function's cyclomatic complexity is too high. (11)"
@@ -496,20 +535,20 @@ module.exports.sort_json_matrix = function(mtx, fxn_obj) {
   // else original mtx returned
   // sorts MATRIX by tax alpha or counts OF FIRST COLUMN only
   // Does not (yet) sort datasets
-  obj = []
-  for(i in mtx.data){
-    obj.push({tax:mtx.rows[i],cnt:mtx.data[i]})
+  obj = [];
+  for(var i in mtx.data){
+    obj.push({tax:mtx.rows[i],cnt:mtx.data[i]});
   }
   var reorder = false;
   if(fxn_obj.orderby == 'alpha'){
     if(fxn_obj.value == 'a'){
       obj.sort(function sortByAlpha(a, b) {
-        return module.exports.compareStrings_alpha(b.tax.id, a.tax.id)
+        return module.exports.compareStrings_alpha(b.tax.id, a.tax.id);
       });
       reorder = true;
     }else{
       obj.sort(function sortByAlpha(a, b) {
-        return module.exports.compareStrings_alpha(a.tax.id, b.tax.id)
+        return module.exports.compareStrings_alpha(a.tax.id, b.tax.id);
       });
       reorder = true;
     }
@@ -530,15 +569,15 @@ module.exports.sort_json_matrix = function(mtx, fxn_obj) {
   }
 
   if(reorder){
-    mtx.rows = []
-    mtx.data = []
-    for(i in obj){
+    mtx.rows = [];
+    mtx.data = [];
+    for(var i1 in obj){
       //console.log(i,obj[i])
-      mtx.rows.push(obj[i].tax)
-      mtx.data.push(obj[i].cnt)
+      mtx.rows.push(obj[i1].tax);
+      mtx.data.push(obj[i1].cnt);
     }
   }
-  return mtx
+  return mtx;
 
 };
 module.exports.get_portal_projects = function(req, portal) {
@@ -611,13 +650,13 @@ module.exports.get_attributes_from_hdf5_group = function(did, type) {
 
 module.exports.get_PTREE_metadata = function(OBJ, q) {
   projects = [];
-  phash = {}
+  phash = {};
   OBJ.forEach(function(prj) {
-    dids = DATASET_IDS_BY_PID[prj.pid]
-    for(n in dids){
+    dids = DATASET_IDS_BY_PID[prj.pid];
+    for(var n in dids){
 
       if(dids[n] in AllMetadata && AllMetadata[dids[n]].hasOwnProperty(q)){
-        phash[prj.pid] = 1
+        phash[prj.pid] = 1;
       }
     }
   });
@@ -662,20 +701,20 @@ module.exports.make_color_seq = function(seq){
 };    //end of function make_color_seq
 
 module.exports.update_project_information_global_object = function(pid, form, user_obj){
-  console.log('Updating PROJECT_INFORMATION_BY_PID')
+  console.log('Updating PROJECT_INFORMATION_BY_PID');
   if(config.site == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
   }else{
-    console.log(pid)
-    console.log(JSON.stringify(form))
-    console.log(JSON.stringify(user_obj))
+    console.log(pid);
+    console.log(JSON.stringify(form));
+    console.log(JSON.stringify(user_obj));
   }
   if( PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid) == true){
-    console.log('pid already in PROJECT_INFORMATION_BY_PID -- how can that be?')
-    return
+    console.log('pid already in PROJECT_INFORMATION_BY_PID -- how can that be?');
+    return;
   }
-  console.log('Creating new PROJECT_INFORMATION_BY_PID[pid]')
-  PROJECT_INFORMATION_BY_PID[pid] = {}
+  console.log('Creating new PROJECT_INFORMATION_BY_PID[pid]');
+  PROJECT_INFORMATION_BY_PID[pid] = {};
   PROJECT_INFORMATION_BY_PID[pid] = {
     "last" :             user_obj.last_name,
     "first" :            user_obj.first_name,
@@ -693,9 +732,9 @@ module.exports.update_project_information_global_object = function(pid, form, us
     "permissions" :     [user_obj.user_id]
   };
   PROJECT_INFORMATION_BY_PNAME[form.new_project_name] =  PROJECT_INFORMATION_BY_PID[pid];
-  console.log('PROJECT_INFORMATION_BY_PID[pid]')
-  console.log(PROJECT_INFORMATION_BY_PID[pid])
-}
+  console.log('PROJECT_INFORMATION_BY_PID[pid]');
+  console.log(PROJECT_INFORMATION_BY_PID[pid]);
+};
 
 // TODO: Column: 52 "This function's cyclomatic complexity is too high. (20)"
 module.exports.run_select_datasets_query = function(rows){
@@ -730,9 +769,9 @@ module.exports.run_select_datasets_query = function(rows){
     }
 
     if(AllMetadata.hasOwnProperty(did) && AllMetadata[did].hasOwnProperty('env_package_id')){
-      var envpkgid = AllMetadata[did].env_package_id
+      var envpkgid = AllMetadata[did].env_package_id;
     }else{
-      var envpkgid = '1'
+      var envpkgid = '1';
     }
 
 
@@ -1195,10 +1234,7 @@ module.exports.get_qsub_script_text_only = function(req, scriptlog, dir_path, cm
 };
 
 module.exports.isLocal = function (req) {
-  if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
-  {return false;}
-  else
-  {return true;}
+  return !(req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb');
 };
 
 module.exports.deleteFolderRecursive = function(path) {
@@ -1667,3 +1703,10 @@ module.exports.screen_dids_for_permissions = function(req, dids)
   }
   return new_did_list
 };
+
+module.exports.unique_array = function(myArray)
+{
+  var uSet = new Set(myArray);
+  return [...uSet];
+};
+

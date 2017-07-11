@@ -1100,8 +1100,8 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
 router.get('/all_files_retrieval', [helpers.isLoggedIn, helpers.isAdmin], function get_all_files_retrieval(req, res) {
   var export_dir = path.join(config.USER_FILES_BASE);
 
-  console.log("XXX export_dir");
-  console.log(export_dir);
+  // console.log("XXX export_dir");
+  // console.log(export_dir);
 
   helpers.walk(export_dir, function(err, files) {
     if (err) throw err;
@@ -1110,10 +1110,12 @@ router.get('/all_files_retrieval', [helpers.isLoggedIn, helpers.isAdmin], functi
       return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
     });
 
+    // console.log("JJJ JSON.stringify(files)");
+    // console.log(JSON.stringify(files));
+
     res.render('admin/all_files_retrieval', {
       title: 'VAMPS: Users Files',
       user: req.user, hostname: req.CONFIG.hostname,
-      // project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
       finfo: JSON.stringify(files)
 
     });
