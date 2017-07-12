@@ -1090,7 +1090,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
       console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
 
       var pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
-          env:{'PATH':req.CONFIG.PATH},
+          env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
           detached: true,
           stdio: [ 'ignore', null, log ]
           //stdio: 'pipe' // stdin, stdout, stderr
@@ -1202,54 +1202,105 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
                     //console.log(path.join(pwd,'logs','visualization.log'))
                     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
                     //var emperor_process = spawn( options2.scriptPath+'/make_emperor.py', options2.args, {
-                    var exec = require('child_process').exec;
-                    cmd = options2.scriptPath+'/make_emperor_custom.py'
-                    cmdline =  cmd+' '+options2.args.join(' ')
-                    console.log(cmdline);
-                    if(req.CONFIG.hostname.substring(0,6) == 'bpcweb'){
-                      var env = {'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'LAPACK':req.CONFIG.LAPACK};
-                    }else{
-                      var env = process.env;
-                    }
+                    //var exec = require('child_process').exec;
+                    //cmd = options2.scriptPath+'/make_emperor_custom.py'
+                    //cmdline =  cmd+' '+options2.args.join(' ')
+                    //console.log(cmdline);
+                    //if(req.CONFIG.hostname.substring(0,6) == 'bpcweb'){
+                    //  var env = {'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'LAPACK':req.CONFIG.LAPACK};
+                    //}else{
+                    //  var env = process.env;
+                    //}
                     // var env = process.env, envDup = {};
                     // for (someVar in env) {
                     //     envDup[someVar] = env[someVar];
                     // }
-                    child = exec(cmdline, {
-                              //cwd: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-                              env : env
-                            }, function makeEmperorScriptExec(error, stdout, stderr) {
+                    console.log(options2.scriptPath+'make_emperor_custom.py '+options2.args.join(' '));
+                    var emperor_process = spawn( options2.scriptPath+'/make_emperor_custom.py', options2.args, {
+                        env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                        detached: true,
+                        //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+                        stdio: 'pipe' // stdin, stdout, stderr
+                    });
+                    
+                    var output = '';
 
-                      //console.log('stdout-POST: ' + stdout);
-
-                      console.log('stderr-POST: ' + stderr);
-
-                      if (error !== null) {
-
-                        console.log('exec error-POST: ' + error);
-                        var html = stderr
-                        html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
-                        html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
-                        html += "<br>Mapping (metadata) File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
-                        html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
-                        res.send(html);
-                        return;
-
-                      }else{
-
-                        var html = "** <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a> **"
-                        html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
-                        html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
-                        html += "<br>Mapping (metadata) File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
-                        html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
-                        //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
-
-                        res.send(html);
-                        return;
-
-                      }
+                    emperor_process.stdout.on('data', function emperorProcessStdout(data) {
+                          data = data.toString().trim();
+                          console.log(data)
+                          output += data;
 
                     });
+
+                    stderr = '';
+                    emperor_process.stderr.on('data', function emperorProcessStderr(data) {
+                        data = data.toString();
+                        console.log(data)
+                        stderr += data;
+
+                    });
+                    emperor_process.on('close', function emperorProcessOnClose(code) {
+                        console.log('alphadiv_process process exited with code ' + code);
+                        if(code == 0){
+                            var html = "** <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a> **"
+                            html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
+                            html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
+                            html += "<br>Mapping (metadata) File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
+                            html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
+                            //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
+
+                            res.send(html);
+                            return;
+
+                        }else{
+                          console.log('python script error: '+stderr);
+                          var html = stderr
+                            html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
+                            html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
+                            html += "<br>Mapping (metadata) File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
+                            html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
+                            res.send(html);
+                            return;
+                        }
+                    });
+                    
+        
+        
+                   //  child = exec(cmdline, {
+//                               //cwd: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+//                               env : env
+//                             }, function makeEmperorScriptExec(error, stdout, stderr) {
+// 
+//                       //console.log('stdout-POST: ' + stdout);
+// 
+//                       console.log('stderr-POST: ' + stderr);
+// 
+//                       if (error !== null) {
+// 
+//                         console.log('exec error-POST: ' + error);
+//                         var html = stderr
+//                         html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
+//                         html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
+//                         html += "<br>Mapping (metadata) File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
+//                         html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
+//                         res.send(html);
+//                         return;
+// 
+//                       }else{
+// 
+//                         var html = "** <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a> **"
+//                         html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
+//                         html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
+//                         html += "<br>Mapping (metadata) File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
+//                         html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
+//                         //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
+// 
+//                         res.send(html);
+//                         return;
+// 
+//                       }
+// 
+//                     });
 
 
                 }else{
@@ -1581,9 +1632,16 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
     // script will remove data from mysql and datset taxfile
     console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
-    var script_path = options.scriptPath+'alpha_diversity.py '+options.args.join(' ')
-    var exec = require('child_process').exec;
-    var alphadiv_process = exec(script_path);
+    //var script_path = options.scriptPath+'alpha_diversity.py '+options.args.join(' ')
+    //var exec = require('child_process').exec;
+    //var alphadiv_process = exec(script_path);
+    var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
+            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+            detached: true,
+            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            stdio: 'pipe' // stdin, stdout, stderr
+        });
+        
     var output = '';
 
     alphadiv_process.stdout.on('data', function adiversityProcessStdout(data) {

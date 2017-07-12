@@ -32,7 +32,7 @@ router.post('/get_dids_from_project', function(req, res){
 router.post('/', function(req, res){
   console.log('in API')
   console.log(req.body)
-  allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix",
+  allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix","metadata_csv",
                 "metadata_table", "fheatmap", "dendrogram01", "dendrogram03",
                 "pcoa", "pcoa3d", "geospatial", "adiversity","testpie"
               ]
@@ -63,6 +63,9 @@ router.post('/', function(req, res){
           break;
         case 'counts_matrix':
           IMAGES.counts_matrix(req, res)       
+          break;
+        case 'metadata_csv':
+          IMAGES.metadata_csv(req, res)       
           break;
         default:
           test_piecharts(req,res)

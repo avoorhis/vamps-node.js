@@ -605,6 +605,64 @@ barcharts: function(req, res){
 
 },  // end barcharts
 
+metadata_csv: function(req, res){
+    console.log('in metadata_csv')
+    var ts = visual_post_items.ts
+    var ds_order = JSON.parse(req.body.ds_order)
+    console.log(ds_order)
+    var html = 'VAMPS Metadata\n'
+    var item_obj = {}
+    for(var i = 0; i < ds_order.length; i++){
+        did = ds_order[i].toString()
+        dname = DATASET_NAME_BY_DID[did]
+        html += ','+dname 
+        //console.log('did',did)
+        //console.log(AllMetadata[did])
+        for(item in AllMetadata[did]){
+            item_obj[item] = 1
+        }
+    }
+    console.log('1')
+    html += '\n'
+    // sort 
+    item_list = Object.keys(item_obj)
+    
+    item_list.sort()
+    console.log(item_list)
+    // make a csv table
+    for(var i = 0; i < item_list.length; i++){
+        item = item_list[i]
+        html += item 
+        console.log('1x',item)
+        for(var n = 0; n < ds_order.length; n++){
+            did = ds_order[n].toString()
+            if(AllMetadata[did].hasOwnProperty(item)){
+                html += ','+AllMetadata[did][item]
+            }else{
+                html += ','
+            }
+            console.log('1y',n)
+        }
+        html += '\n'
+    }
+    html += '\n'
+    console.log(html)
+    var outfile_name = ts + '-metadata-api.csv'
+    outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+    console.log('outfile_path:',outfile_path)
+    result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
+    console.log(result)
+    data = {}
+    data.html = html
+    data.filename = outfile_name
+    res.json(data)
+
+
+},
+
+
+
+
 };   // end module.exports
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

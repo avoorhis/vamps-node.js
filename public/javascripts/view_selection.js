@@ -992,22 +992,24 @@ function create_pcoa(ts, image_type, new_window) {
 
     }
     var url, info_line, pcoa_div;
-    var args =  "metric="+pi_local.selected_distance;
-    args += "&ts="+ts;
-    args += "&image_type="+image_type;
+    var args = {}
+    args.metric = pi_local.selected_distance;
+    args.ts = ts;
+    args.image_type = image_type;
+    
     if(image_type === '2d'){
         //pcoa_created = true;
         pcoa_div = document.getElementById('pcoa_div');
         info_line = create_header('pcoa', pi_local);
         pcoa_div.style.display = 'block';
-        md1 = document.getElementById('pcoa_md1').value;
-        md2 = document.getElementById('pcoa_md2').value;
+        args.md1 = document.getElementById('pcoa_md1').value;
+        args.md2 = document.getElementById('pcoa_md2').value;
         document.getElementById('pcoa_title').innerHTML = info_line;
         document.getElementById('pcoa_title').style.color = 'white';
         document.getElementById('pcoa_title').style['font-size'] = 'small';
         document.getElementById('pre_pcoa_div').style.display = 'block';
         url = '/visuals/pcoa';
-        args += "&md1="+md1+"&md2="+md2;
+       
     }else if(image_type === '3d'){
         //alert('3d')
         pcoa_created = true;
@@ -1044,7 +1046,7 @@ function create_pcoa(ts, image_type, new_window) {
             }
         }
       };
-      xmlhttp.send(args);
+      xmlhttp.send(JSON.stringify(args));
 
 }
 //
@@ -1433,6 +1435,7 @@ function create_piecharts_group(new_window) {
     piecharts_div.style.display = 'block';
 
     document.getElementById('pre_piecharts_div').style.display = 'block';
+    
     var xmlhttp = new XMLHttpRequest();
 
         var args = {}
@@ -1441,9 +1444,11 @@ function create_piecharts_group(new_window) {
         xmlhttp.open("POST", '/api', true); 
         //         alert(xmlhttp) 
         xmlhttp.setRequestHeader("Content-type","application/json");
-              
+        showDots='';
+        var myWaitVar = setInterval(myWaitFunction,1000,piecharts_div);      
         xmlhttp.onreadystatechange = function(){
             if (xmlhttp.readyState == 4 ) {
+                clearInterval(myWaitVar);
                data = JSON.parse(xmlhttp.response)
                
                //alert(data)          
@@ -1494,9 +1499,11 @@ function create_barcharts_group(new_window) {
     xmlhttp.open("POST", '/api', true); 
     //         alert(xmlhttp) 
     xmlhttp.setRequestHeader("Content-type","application/json");
-          
+    showDots='';
+    var myWaitVar = setInterval(myWaitFunction,1000,barcharts_div);      
     xmlhttp.onreadystatechange = function(){
         if (xmlhttp.readyState == 4 ) {
+           clearInterval(myWaitVar);
            data = JSON.parse(xmlhttp.response)        
            barcharts_div.innerHTML = data.html;
            document.getElementById('barcharts_dnld_btn').disabled = false          
