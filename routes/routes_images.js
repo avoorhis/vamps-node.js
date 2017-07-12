@@ -199,98 +199,90 @@ dheatmap: function(req, res){
     var ts = visual_post_items.ts
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
-    // fs.readFile(matrix_file_path, 'utf8', function(err,data){
-    //   if (err) {
-    //       var msg = 'ERROR Message '+err;
-    //       console.log(msg)
-    //   }else{
-        //BIOM_MATRIX = JSON.parse(data)
+    
+    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
+    //console.log('mtx1')
 
-        //var metric = req.body.metric;
-        //var biom_file_name = ts+'_count_matrix.biom';
-        var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-        //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
-        //console.log('mtx1')
+    var html = '';
+    var title = 'VAMPS';
 
-        var html = '';
-        var title = 'VAMPS';
+    var distmtx_file_name = ts+'_distance.csv';
+    var distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
+    var dist_json_file_path = path.join(config.PROCESS_DIR,'tmp', ts+'_distance.json')
+    var options = {
+     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+       args :       [ '-in', matrix_file_path, '-metric', visual_post_items.selected_distance, '--function', 'dheatmap', '--outdir', path.join(config.PROCESS_DIR,'tmp'), '--prefix', ts],
+     };
 
-        var distmtx_file_name = ts+'_distance.csv';
-        var distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
-        var dist_json_file_path = path.join(config.PROCESS_DIR,'tmp', ts+'_distance.json')
-        var options = {
-         scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-           args :       [ '-in', matrix_file_path, '-metric', visual_post_items.selected_distance, '--function', 'dheatmap', '--outdir', path.join(config.PROCESS_DIR,'tmp'), '--prefix', ts],
-         };
+    var log = fs.openSync(path.join(config.PROCESS_DIR,'logs','visualization.log'), 'a');
 
-        var log = fs.openSync(path.join(config.PROCESS_DIR,'logs','visualization.log'), 'a');
+    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+    var heatmap_process = spawn( options.scriptPath+'/distance.py', options.args, {
+            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+            detached: true,
+            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            stdio: 'pipe' // stdin, stdout, stderr
+        });
 
-        console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-        var heatmap_process = spawn( options.scriptPath+'/distance.py', options.args, {
-                env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-                detached: true,
-                //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
-                stdio: 'pipe' // stdin, stdout, stderr
+
+    var stdout = '';
+    heatmap_process.stdout.on('data', function heatmapProcessStdout(data) {
+        //console.log('stdout: ' + data);
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stdout += data;
+    });
+    var stderr = '';
+    heatmap_process.stderr.on('data', function heatmapProcessStderr(data) {
+
+        console.log('stderr: ' + data);
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stderr += data;
+    });
+
+    heatmap_process.on('close', function heatmapProcessOnClose(code) {
+        console.log('heatmap_process process exited with code ' + code);
+
+        //var last_line = ary[ary.length - 1];
+        if(code === 0){   // SUCCESS
+          try{
+            console.log('dist_json_file_path',dist_json_file_path)
+            fs.readFile(dist_json_file_path, 'utf8', function (err, distance_matrix) {
+                if (err) throw err;
+                //distance_matrix = JSON.parse(data);
+                var html = create_hm_table(req, JSON.parse(distance_matrix))
+                var outfile_name = ts + '-dheatmap-api.html'
+                outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+                console.log('outfile_path:',outfile_path)
+                result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
+                console.log(result)
+                //res.send(outfile_name)
+                data = {}
+                data.html = html
+                data.filename = outfile_name
+                //res.send(outfile_name)
+                res.json(data)
+
             });
-
-
-        var stdout = '';
-        heatmap_process.stdout.on('data', function heatmapProcessStdout(data) {
-            //console.log('stdout: ' + data);
-            //data = data.toString().replace(/^\s+|\s+$/g, '');
-            data = data.toString();
-            stdout += data;
-        });
-        var stderr = '';
-        heatmap_process.stderr.on('data', function heatmapProcessStderr(data) {
-
-            console.log('stderr: ' + data);
-            //data = data.toString().replace(/^\s+|\s+$/g, '');
-            data = data.toString();
-            stderr += data;
-        });
-
-        heatmap_process.on('close', function heatmapProcessOnClose(code) {
-            console.log('heatmap_process process exited with code ' + code);
-
-            //var last_line = ary[ary.length - 1];
-            if(code === 0){   // SUCCESS
-              try{
-                console.log('dist_json_file_path',dist_json_file_path)
-                fs.readFile(dist_json_file_path, 'utf8', function (err, distance_matrix) {
-                    if (err) throw err;
-                    //distance_matrix = JSON.parse(data);
-                    var html = create_hm_table(req, JSON.parse(distance_matrix))
-                    var outfile_name = ts + '-dheatmap-api.html'
-                    outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
-                    console.log('outfile_path:',outfile_path)
-                    result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
-                    console.log(result)
-                    //res.send(outfile_name)
-                    data = {}
-                    data.html = html
-                    data.filename = outfile_name
-                    //res.send(outfile_name)
-                    res.json(data)
-
-                });
-                if(req.CONFIG.site == 'vamps' ){
-                  console.log('VAMPS PRODUCTION -- no print to log');
-                }else{
-                  console.log(stdout)
-                }
-                //distance_matrix = JSON.parse(stdout);
-                distance_matrix = stdout;
-              }
-              catch(err){
-                distance_matrix = JSON.stringify({'ERROR':err});
-              }
-
+            if(req.CONFIG.site == 'vamps' ){
+              console.log('VAMPS PRODUCTION -- no print to log');
             }else{
-              console.log('output: '+stderr);
-              res.send(stderr);
+              console.log(stdout)
             }
-        });
+            //distance_matrix = JSON.parse(stdout);
+            distance_matrix = stdout;
+          }
+          catch(err){
+            distance_matrix = JSON.stringify({'ERROR':err});
+          }
+
+        }else{
+          console.log('output: '+stderr);
+          res.send(stderr);
+        }
+    });
 
 
 },  // end DISTANCE HEATMAP
@@ -472,7 +464,7 @@ piecharts: function(req, res) {
               
               
               var html = window.d3.select('.container').html()
-              var outfile_name = ts + '-piecharts-api.html'
+              var outfile_name = ts + '-piecharts-api.svg'
               outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
               console.log('outfile_path:',outfile_path)
               result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
@@ -585,7 +577,7 @@ barcharts: function(req, res){
           //fs.writeFileSync('test.svg', window.d3.select('.container').html()) //using sync to keep the code simple
           //console.log('inwin2 ',window.d3.select('.container').html())
           var html = window.d3.select('.container').html()
-          var outfile_name = ts + '-barcharts-api.html'
+          var outfile_name = ts + '-barcharts-api.svg'
           outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
           console.log('outfile_path:',outfile_path)
           result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
@@ -611,18 +603,18 @@ metadata_csv: function(req, res){
     console.log(ds_order)
     var html = 'VAMPS Metadata\n'
     var item_obj = {}
+    var sep = '\t'
     for(var i = 0; i < ds_order.length; i++){
         did = ds_order[i].toString()
         dname = DATASET_NAME_BY_DID[did]
-        html += ','+dname 
+        html += sep + dname 
         //console.log('did',did)
         //console.log(AllMetadata[did])
         for(item in AllMetadata[did]){
             item_obj[item] = 1
         }
     }
-    console.log('1')
-    html += '\n'
+    html += '\n\r'
     // sort 
     item_list = Object.keys(item_obj)
     
@@ -632,20 +624,19 @@ metadata_csv: function(req, res){
     for(var i = 0; i < item_list.length; i++){
         item = item_list[i]
         html += item 
-        console.log('1x',item)
         for(var n = 0; n < ds_order.length; n++){
             did = ds_order[n].toString()
             if(AllMetadata[did].hasOwnProperty(item)){
-                html += ','+AllMetadata[did][item]
+                html += sep + AllMetadata[did][item].replace(',',' ')  // replace commas with space
             }else{
-                html += ','
+                html += sep
             }
-            console.log('1y',n)
+            
         }
-        html += '\n'
+        html += '\n\r'
     }
-    html += '\n'
-    console.log(html)
+    
+    //console.log(html)
     var outfile_name = ts + '-metadata-api.csv'
     outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
     console.log('outfile_path:',outfile_path)
@@ -659,6 +650,94 @@ metadata_csv: function(req, res){
 
 },
 
+adiversity: function(req, res){
+    console.log('in adiversity')
+    var ts = visual_post_items.ts
+    matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+    console.log(matrix_file_path)
+    
+    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
+    //console.log('mtx1')
+
+    var html = '';
+    var title = 'VAMPS';
+
+    var options = {
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      args :       [ '-in', matrix_file_path, '--site_base', process.env.PWD, '--prefix', ts],
+    };
+
+    var log = fs.openSync(path.join(config.PROCESS_DIR,'logs','visualization.log'), 'a');
+
+    console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
+    var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
+            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+            detached: true,
+            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            stdio: 'pipe' // stdin, stdout, stderr
+        });
+        
+    var output = '';
+
+    alphadiv_process.stdout.on('data', function adiversityProcessStdout(data) {
+          data = data.toString().trim();
+          console.log(data)
+          output += data;
+
+    });
+
+    stderr = '';
+    alphadiv_process.stderr.on('data', function adiversityProcessStderr(data) {
+        data = data.toString();
+        console.log(data)
+        stderr += data;
+
+    });
+    alphadiv_process.on('close', function adiversityProcessOnClose(code) {
+        console.log('alphadiv_process process exited with code ' + code);
+        if(code == 0){
+            
+           var lines = output.split('\n');
+           //alert(lines[0])
+           var headers = lines.shift();
+           //var line2 = lines.pop();
+           //alert(headers)
+           html = "<table class='table'>";
+           html += '<tr>';
+           //alert(line2)
+           var header_items = headers.split('\t')
+           for(i in header_items){
+             html += '<td>'+header_items[i]+'</td>';
+           }
+           html +=  '</tr>';
+           for(i in lines){
+              html +=  '<tr>';
+              items = lines[i].split('\t');
+              for(j in items){
+                html += '<td>'+items[j]+'</td>';
+              }
+              html +=  '</tr>';
+           }
+           html += '</table>';
+           
+            var outfile_name = ts + '-adiversity-api.csv'
+            outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+            console.log('outfile_path:',outfile_path)
+            result = save_file(output, outfile_path) // this saved file should now be downloadable from jupyter notebook
+            console.log(result)
+            data = {}
+            data.html = html
+            data.filename = outfile_name
+            res.json(data)
+
+        }else{
+          console.log('python script error: '+stderr);
+          res.send(stderr);
+        }
+    });
+
+},
 
 
 
@@ -672,14 +751,14 @@ function create_bars_svg_object(req, svg, props, data, ts) {
       svg.append("g")
           .attr("class", "x axis")
           .style('stroke-width', '2px')
-
           .call(props.xAxis);
+          
       svg.append("text")
           .attr("x", props.plot_width-40)
-          .attr("dy", "10")
-          .style("font-size",  "13px")
-          //.style("text-anchor", "end")
+          .attr("dx", "50")
+          .style("font-size",  "11px")
           .text("Percent");
+          
     if(req.body.source == 'website'){
        var datasetBar = svg.selectAll(".bar")
           .data(data)
@@ -687,7 +766,6 @@ function create_bars_svg_object(req, svg, props, data, ts) {
         .append("g")
           .attr("class", "g")
           .attr("transform", function(d) { return  "translate(0, " + props.y(d.pjds) + ")"; })
-       
           .append("a")
           .attr("xlink:xlink:href",  function(d) { return '/visuals/bar_single?id='+d.pjds+'&ts='+ts+'&order=alphaDown';} )
           .attr("target", '_blank' );
@@ -701,7 +779,7 @@ function create_bars_svg_object(req, svg, props, data, ts) {
        
     }
 
-  var labels = datasetBar.append("text")
+    var labels = datasetBar.append("text")
       .attr("class", "y label")
       .attr("text-anchor", "end")
       .style("font-size",  "13px")
@@ -710,7 +788,7 @@ function create_bars_svg_object(req, svg, props, data, ts) {
       .attr("y", props.bar_height*2)
       .text(function(d) { return d.pjds; })
 
-  var labels = datasetBar.append("text")
+    var labels = datasetBar.append("text")
       .style("text-anchor","start")
       .style("font-size",  "13px")
       .style("font-weight",  "normal" )
@@ -719,7 +797,7 @@ function create_bars_svg_object(req, svg, props, data, ts) {
       .text(function(d) { return 'SumCount: '+d.total; })
 
  if(req.body.source == 'website'){
-  var gnodes = datasetBar.selectAll("rect")
+    var gnodes = datasetBar.selectAll("rect")
           .data(function(d) { return d.unitObj; })
         .enter()
 
@@ -758,7 +836,6 @@ function create_bars_svg_object(req, svg, props, data, ts) {
           .attr("y", 15)  // adjust where first bar starts on x-axis
           .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
           .attr("height",  18)
-         
           .style("fill",   function(d,i) {
             //return get_random_color()
             return string_to_color_code(d.tax);

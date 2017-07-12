@@ -754,109 +754,109 @@ router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
-    //console.log('found routes_test_heatmap')
-    console.log('req.body DISTANCE HEATMAP-->');
-    if(req.CONFIG.site == 'vamps' ){
-        console.log('VAMPS PRODUCTION -- no print to log');
-    }else{
-        console.log(req.body);
-    }
-    console.log('<--req.body hm');
-
-    if(chosen_id_name_hash.ids.length > req.CONFIG.dataset_count_for_visuals_max){
-        res.send('Too many datasets selected; Maximum for the heat map is '+dataset_count_max);
-        return;
-    }
-    var ts = req.body.ts;
-    var metric = req.body.metric;
-    var biom_file_name = ts+'_count_matrix.biom';
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-    var biom_file_path = path.join(pwd,'tmp', biom_file_name);
-    //console.log('mtx1')
-
-    var html = '';
-    var title = 'VAMPS';
-
-    var distmtx_file_name = ts+'_distance.csv';
-    var distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
-    var dist_json_file_path = path.join(pwd,'tmp', ts+'_distance.json')
-    var options = {
-     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-       args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'dheatmap', '--outdir', path.join(pwd,'tmp'), '--prefix', ts],
-     };
-
-    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
-
-    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-    var heatmap_process = spawn( options.scriptPath+'/distance.py', options.args, {
-            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-            detached: true,
-            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
-            stdio: 'pipe' // stdin, stdout, stderr
-        });
-
-
-    var stdout = '';
-    heatmap_process.stdout.on('data', function heatmapProcessStdout(data) {
-        //console.log('stdout: ' + data);
-        //data = data.toString().replace(/^\s+|\s+$/g, '');
-        data = data.toString();
-        stdout += data;
-    });
-    var stderr = '';
-    heatmap_process.stderr.on('data', function heatmapProcessStderr(data) {
-
-        console.log('stderr: ' + data);
-        //data = data.toString().replace(/^\s+|\s+$/g, '');
-        data = data.toString();
-        stderr += data;
-    });
-
-    heatmap_process.on('close', function heatmapProcessOnClose(code) {
-        console.log('heatmap_process process exited with code ' + code);
-
-        //var last_line = ary[ary.length - 1];
-        if(code === 0){   // SUCCESS
-          try{
-            console.log(dist_json_file_path)
-            fs.readFile(dist_json_file_path, 'utf8', function (err, distance_matrix) {
-                if (err) throw err;
-                //distance_matrix = JSON.parse(data);
-                res.render('visuals/partials/create_distance_heatmap',{
-                  dm        : distance_matrix,
-                  hash      : JSON.stringify(chosen_id_name_hash),
-                  constants : JSON.stringify(req.CONSTS),
-                  mt        : metric,
-                  ts        : ts
-                });
-            });
-            if(req.CONFIG.site == 'vamps' ){
-              console.log('VAMPS PRODUCTION -- no print to log');
-            }else{
-              console.log(stdout)
-            }
-            //distance_matrix = JSON.parse(stdout);
-            distance_matrix = stdout;
-          }
-          catch(err){
-            distance_matrix = JSON.stringify({'ERROR':err});
-          }
-            // res.render('visuals/partials/create_distance_heatmap',{
+// router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
+//     //console.log('found routes_test_heatmap')
+//     console.log('req.body DISTANCE HEATMAP-->');
+//     if(req.CONFIG.site == 'vamps' ){
+//         console.log('VAMPS PRODUCTION -- no print to log');
+//     }else{
+//         console.log(req.body);
+//     }
+//     console.log('<--req.body hm');
+// 
+//     if(chosen_id_name_hash.ids.length > req.CONFIG.dataset_count_for_visuals_max){
+//         res.send('Too many datasets selected; Maximum for the heat map is '+dataset_count_max);
+//         return;
+//     }
+//     var ts = req.body.ts;
+//     var metric = req.body.metric;
+//     var biom_file_name = ts+'_count_matrix.biom';
+//     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+//     var biom_file_path = path.join(pwd,'tmp', biom_file_name);
+//     //console.log('mtx1')
+// 
+//     var html = '';
+//     var title = 'VAMPS';
+// 
+//     var distmtx_file_name = ts+'_distance.csv';
+//     var distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
+//     var dist_json_file_path = path.join(pwd,'tmp', ts+'_distance.json')
+//     var options = {
+//      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+//        args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'dheatmap', '--outdir', path.join(pwd,'tmp'), '--prefix', ts],
+//      };
+// 
+//     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+// 
+//     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+//     var heatmap_process = spawn( options.scriptPath+'/distance.py', options.args, {
+//             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+//             detached: true,
+//             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+//             stdio: 'pipe' // stdin, stdout, stderr
+//         });
+// 
+// 
+//     var stdout = '';
+//     heatmap_process.stdout.on('data', function heatmapProcessStdout(data) {
+//         //console.log('stdout: ' + data);
+//         //data = data.toString().replace(/^\s+|\s+$/g, '');
+//         data = data.toString();
+//         stdout += data;
+//     });
+//     var stderr = '';
+//     heatmap_process.stderr.on('data', function heatmapProcessStderr(data) {
+// 
+//         console.log('stderr: ' + data);
+//         //data = data.toString().replace(/^\s+|\s+$/g, '');
+//         data = data.toString();
+//         stderr += data;
+//     });
+// 
+//     heatmap_process.on('close', function heatmapProcessOnClose(code) {
+//         console.log('heatmap_process process exited with code ' + code);
+// 
+//         //var last_line = ary[ary.length - 1];
+//         if(code === 0){   // SUCCESS
+//           try{
+//             console.log(dist_json_file_path)
+//             fs.readFile(dist_json_file_path, 'utf8', function (err, distance_matrix) {
+//                 if (err) throw err;
+//                 //distance_matrix = JSON.parse(data);
+//                 res.render('visuals/partials/create_distance_heatmap',{
 //                   dm        : distance_matrix,
 //                   hash      : JSON.stringify(chosen_id_name_hash),
 //                   constants : JSON.stringify(req.CONSTS),
-//                   mt     : metric,
+//                   mt        : metric,
 //                   ts        : ts
-//               });
-
-        }else{
-          console.log('output: '+stderr);
-          res.send(stderr);
-        }
-    });
-
-});
+//                 });
+//             });
+//             if(req.CONFIG.site == 'vamps' ){
+//               console.log('VAMPS PRODUCTION -- no print to log');
+//             }else{
+//               console.log(stdout)
+//             }
+//             //distance_matrix = JSON.parse(stdout);
+//             distance_matrix = stdout;
+//           }
+//           catch(err){
+//             distance_matrix = JSON.stringify({'ERROR':err});
+//           }
+//             // res.render('visuals/partials/create_distance_heatmap',{
+// //                   dm        : distance_matrix,
+// //                   hash      : JSON.stringify(chosen_id_name_hash),
+// //                   constants : JSON.stringify(req.CONSTS),
+// //                   mt     : metric,
+// //                   ts        : ts
+// //               });
+// 
+//         }else{
+//           console.log('output: '+stderr);
+//           res.send(stderr);
+//         }
+//     });
+// 
+// });
 
 
 //
@@ -1609,67 +1609,67 @@ router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
-    console.log('in alpha div')
-    var ts = req.body.ts;
-    var metric = req.body.metric;
-    var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-
-    var html = '';
-    var title = 'VAMPS';
-
-    //var distmtx_file_name = ts+'_distance.csv';
-    //var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
-
-    var options = {
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-in', biom_file, '--site_base', process.env.PWD, '--prefix', ts],
-    };
-
-
-    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
-    // script will remove data from mysql and datset taxfile
-    console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
-    //var script_path = options.scriptPath+'alpha_diversity.py '+options.args.join(' ')
-    //var exec = require('child_process').exec;
-    //var alphadiv_process = exec(script_path);
-    var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
-            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-            detached: true,
-            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
-            stdio: 'pipe' // stdin, stdout, stderr
-        });
-        
-    var output = '';
-
-    alphadiv_process.stdout.on('data', function adiversityProcessStdout(data) {
-          data = data.toString().trim();
-          console.log(data)
-          output += data;
-
-    });
-
-    stderr = '';
-    alphadiv_process.stderr.on('data', function adiversityProcessStderr(data) {
-        data = data.toString();
-        console.log(data)
-        stderr += data;
-
-    });
-    alphadiv_process.on('close', function adiversityProcessOnClose(code) {
-        console.log('alphadiv_process process exited with code ' + code);
-        if(code == 0){
-            res.send(output);
-        }else{
-          console.log('python script error: '+stderr);
-          res.send(stderr);
-        }
-    });
-
-
-});
+// router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
+//     console.log('in alpha div')
+//     var ts = req.body.ts;
+//     var metric = req.body.metric;
+//     var biom_file_name = ts+'_count_matrix.biom';
+//     var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
+//     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+// 
+//     var html = '';
+//     var title = 'VAMPS';
+// 
+//     //var distmtx_file_name = ts+'_distance.csv';
+//     //var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
+// 
+//     var options = {
+//       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+//       args :       [ '-in', biom_file, '--site_base', process.env.PWD, '--prefix', ts],
+//     };
+// 
+// 
+//     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+//     // script will remove data from mysql and datset taxfile
+//     console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
+//     //var script_path = options.scriptPath+'alpha_diversity.py '+options.args.join(' ')
+//     //var exec = require('child_process').exec;
+//     //var alphadiv_process = exec(script_path);
+//     var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
+//             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+//             detached: true,
+//             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+//             stdio: 'pipe' // stdin, stdout, stderr
+//         });
+//         
+//     var output = '';
+// 
+//     alphadiv_process.stdout.on('data', function adiversityProcessStdout(data) {
+//           data = data.toString().trim();
+//           console.log(data)
+//           output += data;
+// 
+//     });
+// 
+//     stderr = '';
+//     alphadiv_process.stderr.on('data', function adiversityProcessStderr(data) {
+//         data = data.toString();
+//         console.log(data)
+//         stderr += data;
+// 
+//     });
+//     alphadiv_process.on('close', function adiversityProcessOnClose(code) {
+//         console.log('alphadiv_process process exited with code ' + code);
+//         if(code == 0){
+//             res.send(output);
+//         }else{
+//           console.log('python script error: '+stderr);
+//           res.send(stderr);
+//         }
+//     });
+// 
+// 
+// });
 //
 //
 //

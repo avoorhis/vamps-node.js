@@ -31,11 +31,11 @@ router.post('/get_dids_from_project', function(req, res){
 //
 
 router.post('/', function(req, res){
-    console.log('in router.post(/')
+    console.log('ERROR in router.post(/')
     res.send('Function not found')
 })
 router.get('/', function(req, res){
-    console.log('in router.get(/')
+    console.log('ERROR in router.get(/')
     res.send('Function not found')
 })
 router.post('/create_image', function(req, res){
@@ -75,6 +75,9 @@ router.post('/create_image', function(req, res){
           break;
         case 'metadata_csv':
           IMAGES.metadata_csv(req, res)       
+          break;
+        case 'adiversity':
+          IMAGES.adiversity(req, res)       
           break;
         default:
           test_piecharts(req,res)

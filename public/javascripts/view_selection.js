@@ -515,7 +515,7 @@ function create_counts_matrix(new_window, show_nas) {
         var args = {}
         args.image = 'counts_matrix'
         args.source = 'website'
-        xmlhttp.open("POST", '/api', true); 
+        xmlhttp.open("POST", '/api/create_image', true); 
         //         alert(xmlhttp) 
         xmlhttp.setRequestHeader("Content-type","application/json");
               
@@ -1193,7 +1193,7 @@ function create_dheatmap(ts, new_window) {
       document.getElementById('pre_dheatmap_div').style.display = 'block';
        // get distance matrix via AJAX
       var xmlhttp = new XMLHttpRequest();
-      xmlhttp.open("POST", '/api', true);
+      xmlhttp.open("POST", '/api/create_image', true);
       //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       xmlhttp.setRequestHeader("Content-Type", "application/json");
       showDots='';
@@ -1441,7 +1441,7 @@ function create_piecharts_group(new_window) {
         var args = {}
         args.image = 'piecharts'
         args.source = 'website'
-        xmlhttp.open("POST", '/api', true); 
+        xmlhttp.open("POST", '/api/create_image', true); 
         //         alert(xmlhttp) 
         xmlhttp.setRequestHeader("Content-type","application/json");
         showDots='';
@@ -1496,7 +1496,7 @@ function create_barcharts_group(new_window) {
     var args = {}
     args.image = 'barcharts'
     args.source = 'website'
-    xmlhttp.open("POST", '/api', true); 
+    xmlhttp.open("POST", '/api/create_image', true); 
     //         alert(xmlhttp) 
     xmlhttp.setRequestHeader("Content-type","application/json");
     showDots='';
@@ -1594,8 +1594,29 @@ function create_adiversity(ts, new_window){
       document.getElementById('pre_adiversity_div').style.display = 'block';
        // get distance matrix via AJAX
       var xmlhttp = new XMLHttpRequest();
-      xmlhttp.open("POST", '/visuals/alpha_diversity', true);
+      
       //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      var args = {}
+        args.image = 'adiversity'
+        args.source = 'website'
+        xmlhttp.open("POST", '/api/create_image', true); 
+        //         alert(xmlhttp) 
+        xmlhttp.setRequestHeader("Content-type","application/json");
+        showDots='';
+        var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);      
+        xmlhttp.onreadystatechange = function(){
+            if (xmlhttp.readyState == 4 ) {
+               clearInterval(myWaitVar);
+               data = JSON.parse(xmlhttp.response)        
+               adiversity_div.innerHTML = data.html;
+               document.getElementById('adiversity_dnld_btn').disabled = false          
+            }
+         }
+
+        xmlhttp.send(JSON.stringify(args));
+        return
+      
+      
       xmlhttp.setRequestHeader("Content-Type", "application/json");
       showDots='';
       var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);
