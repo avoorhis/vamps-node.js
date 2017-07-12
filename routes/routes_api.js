@@ -29,14 +29,7 @@ router.post('/get_dids_from_project', function(req, res){
 //
 //
 //
-router.post('/:err', function(req, res){
-    console.log('in router.post(/:err')
-    res.send('Function not found')
-})
-router.get('/:err', function(req, res){
-    console.log('in router.get(/:err')
-    res.send('Function not found')
-})
+
 router.post('/', function(req, res){
     console.log('in router.post(/')
     res.send('Function not found')
