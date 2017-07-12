@@ -316,7 +316,6 @@ piecharts: function(req, res) {
       BIOM_MATRIX = JSON.parse(data)
 
 
-
     var unit_list = [];
     for (var n in BIOM_MATRIX.rows){
         unit_list.push(BIOM_MATRIX.rows[n].id);
