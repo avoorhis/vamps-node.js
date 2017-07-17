@@ -156,9 +156,15 @@ router.post('/start_edit',
   function (req, res) {
 
     console.time("TIME: 1) in post /start_edit");
-    get_csv_files(req);
+    var all_files = get_csv_files(req);
+    res.render("metadata/metadata_upload_from_csv_file", {
+      title: "VAMPS: Metadata_upload",
+      user: req.user,
+      hostname: req.CONFIG.hostname,
+      all_files: all_files
+    });
 
-    make_metadata_hash(req, res);
+    // make_metadata_hash(req, res);
 
     console.timeEnd("TIME: 1) in post /start_edit");
   });
@@ -723,6 +729,7 @@ function get_csv_files(req) {
 
 
   console.timeEnd("TIME: get_csv_files");
+  return all_my_files;
 }
 
 function convertArrayOfObjectsToCSV(args) {
