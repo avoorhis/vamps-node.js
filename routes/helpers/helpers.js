@@ -159,11 +159,19 @@ module.exports.walk_sync = function(dir) {
       results = results.concat(walk_sync(file));
     }
     else {
-      results.push(file);
+      var filename = path.basename(file);
+
+      if (check_file_formats(filename)) {
+        results.push({'filename': filename,
+          'size': stat.size,
+          'time': stat.mtime,
+          'mtime_format': format_time(stat.mtime),
+          'user_dirname': get_user_dirname(path.dirname(file))});
+      }
     }
   });
   return results;
-}
+};
 
 module.exports.elapsed_time = function(note){
   var precision = 3; // 3 decimal places

@@ -709,9 +709,16 @@ function get_csv_files(req) {
   console.log("JJJ1 JSON.stringify(all_my_files)");
   console.log(JSON.stringify(all_my_files));
   /*
-  ["/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/.DS_Store",
-"/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_28819.csv",
-"/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_82599.csv"]
+    [{"filename":"metadata-project_DCO_GAI_Bv3v5_28819.csv",
+    "size":5561,
+    "time":"2017-07-17T17:22:07.000Z",
+    "mtime_format":"2017-07-17 17:22:07",
+    "user_dirname":"AnnaSh"},
+    {"filename":"metadata-project_DCO_GAI_Bv3v5_82599.csv",
+    "size":5664,
+    "time":"2017-07-05T16:15:22.000Z",
+    "mtime_format":"2017-07-05 16:15:22",
+    "user_dirname":"AnnaSh"}]
 */
 
 
