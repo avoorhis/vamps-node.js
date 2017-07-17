@@ -149,6 +149,22 @@ module.exports.walk = function(dir, done) {
   walk_recursively(dir, done);
 };
 
+module.exports.walk_sync = function(dir) {
+  var results = [];
+  var list = fs.readdirSync(dir);
+  list.forEach(function(file) {
+    file = path.resolve(dir, file);
+    var stat = fs.statSync(file);
+    if (stat && stat.isDirectory()) {
+      results = results.concat(walk_sync(file));
+    }
+    else {
+      results.push(file);
+    }
+  });
+  return results;
+}
+
 module.exports.elapsed_time = function(note){
   var precision = 3; // 3 decimal places
   var elapsed = process.hrtime(module.exports.start)[1] / 1000000; // divide by a million to get nano to milli
