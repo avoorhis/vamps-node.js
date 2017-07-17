@@ -156,6 +156,7 @@ router.post('/start_edit',
   function (req, res) {
 
     console.time("TIME: 1) in post /start_edit");
+    get_csv_files(req);
 
     make_metadata_hash(req, res);
 
@@ -361,6 +362,7 @@ function editMetadataForm(req, res){
   console.time("TIME: editMetadataForm");
 
   console.log('in editMetadataForm');
+  // get_csv_files(req);
 
   // var edit_metadata_address = "metadata/metadata_upload_from_file";
 
@@ -665,6 +667,55 @@ function make_csv(req) {
   console.log('file ' + out_csv_file_name + ' saved');
 
   console.timeEnd("TIME: make_csv");
+}
+
+function get_csv_files(req) {
+  console.time("TIME: get_csv_files");
+
+  // project = req.form["project"];
+  var user_csv_dir = path.join(config.USER_FILES_BASE, req.user.username);
+  // out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + project + '_' + rando.toString() + ".csv");
+
+  var all_my_files = [];
+  var csvCompare = require("csv-compare");
+  all_my_files = helpers.walk_sync(user_csv_dir);
+  //   , function(err, files) {
+  //   if (err) throw err;
+  //   files.sort(function sortByTime(a, b) {
+  //     //reverse sort: recent-->oldest
+  //     return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
+  //   });
+  //
+  //   console.log("JJJ JSON.stringify(files)");
+  //   console.log(JSON.stringify(files));
+  //   // TODO: "filename":"metadata-project... only
+  //   /*
+  //   [{"filename":"metadata-project_DCO_GAI_Bv3v5_28819.csv",
+  //     "fileSize":"5.6",
+  //     "sizer":"KB",
+  //     "time":"2017-07-17T17:22:07.000Z",
+  //     "mtime_format":"2017-07-17 17:22:07",
+  //     "user_dirname":"AnnaSh"},
+  //     {"filename":"metadata-project_DCO_GAI_Bv3v5_82599.csv",
+  //     "fileSize":"5.7",
+  //     "sizer":"KB",
+  //     "time":"2017-07-05T16:15:22.000Z",
+  //     "mtime_format":"2017-07-05 16:15:22",
+  //     "user_dirname":"AnnaSh"}]
+  //   */
+  //   all_my_files = files;
+  //   return all_my_files;
+  // });
+  console.log("JJJ1 JSON.stringify(all_my_files)");
+  console.log(JSON.stringify(all_my_files));
+  /*
+  ["/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/.DS_Store",
+"/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_28819.csv",
+"/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_82599.csv"]
+*/
+
+
+  console.timeEnd("TIME: get_csv_files");
 }
 
 function convertArrayOfObjectsToCSV(args) {
