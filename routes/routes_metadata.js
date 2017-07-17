@@ -156,15 +156,21 @@ router.post('/start_edit',
   function (req, res) {
 
     console.time("TIME: 1) in post /start_edit");
-    var all_files = get_csv_files(req);
-    res.render("metadata/metadata_upload_from_csv_file", {
-      title: "VAMPS: Metadata_upload",
-      user: req.user,
-      hostname: req.CONFIG.hostname,
-      all_files: all_files
-    });
+    var all_metadata_csv_files = get_csv_files(req);
 
-    // make_metadata_hash(req, res);
+    var csvCompare = require("csv-compare");
+    csvCompare.startCompare("/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_28819.csv", "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_82599.csv")
+    // var init = function(keys,values,storePath,summaryStore){
+
+    //TODO: show csv files menu and diff
+    // res.render("metadata/metadata_upload_from_csv_file", {
+    //   title: "VAMPS: Metadata_upload",
+    //   user: req.user,
+    //   hostname: req.CONFIG.hostname,
+    //   all_files: all_metadata_csv_files
+    // });
+
+    make_metadata_hash(req, res);
 
     console.timeEnd("TIME: 1) in post /start_edit");
   });
@@ -735,42 +741,73 @@ function get_csv_files(req) {
 function convertArrayOfObjectsToCSV(args) {
   console.time("TIME: convertArrayOfObjectsToCSV");
 
-  var result, columnDelimiter, lineDelimiter, data, headers, headers_length;
+  var result, columnDelimiter, lineDelimiter, data, headers, headers_length, cellEscape;
 
-    data = args.data || null;
-    if (data === null) {
-        return null;
-    }
 
-    columnDelimiter = args.columnDelimiter || ',';
-    lineDelimiter = args.lineDelimiter || '\n';
+  data = args.data || null;
 
-    headers = data['dataset'];
-    headers_length = data['dataset'].length;
+  console.log("DDD data");
+  console.log(data);
 
-    // first line = datasets
-    result = ' ';
-    result += columnDelimiter;
-    result += headers.join(columnDelimiter);
-    result += lineDelimiter;
+  //console.log(Object.keys(PROJECT_ID_BY_DID).length)
 
-    // TODO: get keys from an array of what to save (not dataset_id, for example)
-    for (var key in data) {
-        var item = data[key];
+  headers = Object.keys(data);
+  console.log("DDD1 headers = Object.keys(data)");
+  console.log(headers);
 
-        result += key;
-        result += columnDelimiter;
 
-        if (typeof item === "object") {
-            result += item.join(columnDelimiter);
-        } else if (typeof item === "string") {
-            for(var i = 0; i < headers_length; i++) {
-                result += item;
-                result += columnDelimiter;
-            }
-        }
-        result += lineDelimiter;
-    }
+  /* TODO: create csv from form by headers = metadata_names:
+  *   adapter_sequence:
+   [ 'TGTCA',
+     'TGTCA',
+     'TGTCA',
+     'TGTCA',
+     'TGTCA',
+     'TGTCA',
+     'TGTCA',
+     'TGTCA' ],
+  alkalinity: [ '', '', '', '', '', '', '', '' ],
+  * */
+
+  if (data === null) {
+      return null;
+  }
+
+  columnDelimiter = args.columnDelimiter || ',';
+  lineDelimiter = args.lineDelimiter || '\n';
+  cellEscape = args.cellEscape || '"';
+  // TODO: a cell in quotes! (check on primers)
+  //escape: '"'
+
+
+  headers = data['dataset'];
+  headers_length = data['dataset'].length;
+
+  // TODO: use cellEscape
+  // first line = datasets
+  result = ' ';
+  result += columnDelimiter;
+  result += headers.join(columnDelimiter);
+  result += lineDelimiter;
+
+  // TODO: get keys from an array of what to save (not dataset_id, for example)
+  for (var key in data) {
+      var item = data[key];
+
+      result += key;
+      result += columnDelimiter;
+
+      if (typeof item === "object") {
+          //TODO: do JSON.stingify here
+          result += item.join(columnDelimiter);
+      } else if (typeof item === "string") {
+          for(var i = 0; i < headers_length; i++) {
+              result += item;
+              result += columnDelimiter;
+          }
+      }
+      result += lineDelimiter;
+  }
 
     // console.log("CCC3 convertArrayOfObjectsToCSV result");
     // console.log(result);
