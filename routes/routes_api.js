@@ -8,8 +8,13 @@ var IMAGES  = require('./routes_images');
 // API
 router.post('/get_dids_from_project', function(req, res){
     console.log('HERE in routes_api.js --> get_dids_from_project ')
+    if(! helpers.isLoggedInAPI(req, res)){
+        res.send('Failed Authentication')
+        return
+    }
     console.log(req.body)
     project = req.body.project
+    
     if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
       pid = PROJECT_INFORMATION_BY_PNAME[project].pid
       dids = DATASET_IDS_BY_PID[pid]
@@ -24,25 +29,31 @@ router.post('/get_dids_from_project', function(req, res){
     }else{
       res.send('Project Not Found')
     }
+    
 
 });
 //
 //
 //
 
-router.post('/', function(req, res){
+router.post('/', helpers.isLoggedIn, function(req, res){
     console.log('ERROR in router.post(/')
     res.send('Function not found')
 })
-router.get('/', function(req, res){
+router.get('/', helpers.isLoggedIn, function(req, res){
     console.log('ERROR in router.get(/')
     res.send('Function not found')
 })
-router.post('/create_image', function(req, res){
+router.post('/create_image',  function(req, res){
   console.log('in API')
+  if(! helpers.isLoggedInAPI(req, res)){
+        res.send('Failed Authentication')
+        return
+  }
   console.log(req.body)
+  
   allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix","metadata_csv",
-                "metadata_table", "fheatmap", "dendrogram01", "dendrogram03",
+                "metadata_table", "fheatmap", "dendrogram01", "dendrogram03","dendrogram",
                 "pcoa", "pcoa3d", "geospatial", "adiversity","testpie"
               ]
   allowed_file_types = ["fasta","metadata-csv","metadata-table"]
@@ -79,27 +90,15 @@ router.post('/create_image', function(req, res){
         case 'adiversity':
           IMAGES.adiversity(req, res)       
           break;
+        case 'dendrogram':
+          IMAGES.dendrogram(req, res)       
+          break;
         default:
           test_piecharts(req,res)
           console.log(image,'- Not Implemented Yet!')
       }
   }
- //  if(file){
-//     switch(image) {
-//         case 'fasta':
-//           
-//           break;
-//         case 'metadata-csv':
-//           
-//           break;
-//         case 'metadata-table':
-//           
-//           break;
-//         default:
-//           
-//           console.log(file,'- Not Implemented Yet!')
-//       }
-//   }
+ 
 
 });
 

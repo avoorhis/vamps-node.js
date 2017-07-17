@@ -739,7 +739,124 @@ adiversity: function(req, res){
 
 },
 
+dendrogram: function(req, res){
+    console.log('in dendrogram')
+    //d3 = require('d3');
+    //newick = require('newick.js')
+    //eval(require('fs').readFileSync('./public/javascripts/newick.js', 'utf8'));
+    //eval(require('fs').readFileSync('./public/javascripts/d3.phylogram.js', 'utf8'));
+    //phylo_path = path.join(config.PROCESS_DIR,'public','javascripts','d3.phylogram.js')
+    
+    //console.log(phylo_path)
+    //phylo = require(phylo_path)
+    //console.log(phylo)
+    var ts = visual_post_items.ts
+    matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+    console.log(matrix_file_path)
+    
+    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
+    //console.log('mtx1')
+    var image_type = 'd3'
+    var metric = visual_post_items.selected_distance;
+    var html = '';
+    var title = 'VAMPS';
+    var options = {
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      args :       [ '-in', matrix_file_path, '-metric', metric, '--function', 'dendrogram', '--outdir', path.join(pwd,'tmp'), '--prefix', ts ],
+    };
 
+    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+    var dendrogram_process = spawn( options.scriptPath+'/distance.py', options.args, {
+            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+            detached: true,
+            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            stdio: 'pipe'  // stdin, stdout, stderr
+    });
+
+    var stdout = '';
+    dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
+        //
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stdout += data;
+
+    });
+    var stderr = '';
+    dendrogram_process.stderr.on('data', function dendrogramProcessStderr(data) {
+        //console.log('stderr: ' + data);
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stderr += data;
+    });
+
+    dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
+        console.log('dendrogram_process process exited with code ' + code);
+
+        //var last_line = ary[ary.length - 1];
+        if(code === 0){   // SUCCESS
+          if(image_type == 'd3'){
+                   console.log(stdout)
+                   //  if(req.CONFIG.site == 'vamps' ){
+//                       console.log('VAMPS PRODUCTION -- no print to log');
+//                     }else{
+//                         console.log('stdout: ' + stdout);
+//                     }
+                    lines = stdout.split('\n')
+                    for(n in lines){
+                      if(lines[n].substring(0,6) == 'NEWICK' ){
+                        tmp = lines[n].split('=')
+                        continue
+                      }
+                    }
+
+
+                    try{
+                      newick_json = JSON.parse(tmp[1]);
+                      //var newick = Newick.parse(tmp[1]);
+                      if(req.CONFIG.site == 'vamps' ){
+                        console.log('VAMPS PRODUCTION -- no print to log');
+                      }else{
+                        console.log('newick-01',newick_json)
+                      }
+                    }
+                    catch(err){
+                      newick_json = {"ERROR":err};
+                    }
+                    
+                    
+                    //console.log('newick',newick_json)
+                    var outfile_name = ts + '_newick.tre'
+                    //outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+                    //console.log('outfile_path:',outfile_path)
+                    //result = save_file(newick, outfile_path) // this saved file should now be downloadable from jupyter notebook
+                    //console.log(result)
+                    data = {}
+                    data.html = newick_json
+                    data.filename = outfile_name
+                    res.json(data)
+                    return;
+
+          }else{  // 'pdf'
+//                     var viz_width = 1200;
+//                     var viz_height = (visual_post_items.no_of_datasets*12)+100;
+//                     var image = '/'+ts+'_dendrogram.pdf';
+//                     //console.log(image)
+//                     html = "<div id='pdf'>";
+//                     html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
+//                     html += " <p>ERROR in loading pdf file</p>";
+//                     html += "</object></div>";
+//                     res.send(html);
+//                     return;
+          }
+        }else{
+          console.log('stderr: '+stderr);
+          res.send('Script Error');
+        }
+    });
+
+}    
 
 };   // end module.exports
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -955,11 +1072,13 @@ function create_hm_table(req, dm){
             if(x === y){
                 html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
             }else{ 
-
-                html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"
                 if(req.body.source == 'website'){
+                    html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"                
                     html += " onclick=\"window.open('/visuals/bar_double?did1="+ id_order[n] +"&did2="+ id_order[m] +"&ts="+visual_post_items.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
                     html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
+                }else{
+                    var title = x+'&#13;'+y+'&#13;'+ visual_post_items.selected_distance +' -- '+d;
+                    html += "<td title='"+title+"' class='heat_map_td' bgcolor='#"+ colors[sv]+"'"
                 }
                 html += "</td>"
             }
