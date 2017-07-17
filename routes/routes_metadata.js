@@ -780,8 +780,8 @@ function convertArrayOfObjectsToCSV(args) {
   //escape: '"'
 
 
-  headers = data['dataset'];
-  headers_length = data['dataset'].length;
+  // headers = data['dataset'];
+  headers_length = headers.length;
 
   // TODO: use cellEscape
   // first line = datasets
@@ -791,23 +791,23 @@ function convertArrayOfObjectsToCSV(args) {
   result += lineDelimiter;
 
   // TODO: get keys from an array of what to save (not dataset_id, for example)
-  for (var key in data) {
-      var item = data[key];
-
-      result += key;
-      result += columnDelimiter;
-
-      if (typeof item === "object") {
-          //TODO: do JSON.stingify here
-          result += item.join(columnDelimiter);
-      } else if (typeof item === "string") {
-          for(var i = 0; i < headers_length; i++) {
-              result += item;
-              result += columnDelimiter;
-          }
-      }
-      result += lineDelimiter;
-  }
+  // for (var key in data) {
+  //     var item = data[key];
+  //
+  //     result += key;
+  //     result += columnDelimiter;
+  //
+  //     if (typeof item === "object") {
+  //         //TODO: do JSON.stingify here
+  //         result += item.join(columnDelimiter);
+  //     } else if (typeof item === "string") {
+  //         for(var i = 0; i < headers_length; i++) {
+  //             result += item;
+  //             result += columnDelimiter;
+  //         }
+  //     }
+  //     result += lineDelimiter;
+  // }
 
     // console.log("CCC3 convertArrayOfObjectsToCSV result");
     // console.log(result);
