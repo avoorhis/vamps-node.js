@@ -6,7 +6,7 @@ if (typeof reset_order_btn !=="undefined") {
 }
 alphabetize = document.getElementById('alphabetize');
 if (typeof alphabetize !== "undefined" ) {
-  alphabetize.addEventListener('click', function() { 
+  alphabetize.addEventListener('click', function() {
     alphabetize_datasets();
 	});
 }
@@ -38,7 +38,7 @@ function alphabetize_datasets()
       }
     };
     xmlhttp.send(args);
-	
+
 }
 //
 //
@@ -46,14 +46,14 @@ function alphabetize_datasets()
 function reverse_order()
 {
     var args =  "reverse=1";
-    
+
     reorder_ds_div = document.getElementById('reorder_ds_div');
-    table = document.getElementById('drag_table'); 
-    var originalRows = table.tBodies[0].rows; 
+    table = document.getElementById('drag_table');
+    var originalRows = table.tBodies[0].rows;
     dids = []
     for(var i=0; i<=originalRows.length-1; i++) {
     //alert(originalRows[i].cells[0].id)
-    
+
       var items = originalRows[i].cells[0].id.split('--')
       dids.push(items[0])
     }
@@ -73,15 +73,15 @@ function reverse_order()
       }
     };
     xmlhttp.send(args);
-  
+
 }
 function reset_order()
 {
-    
+
     var args =  "reorder=1";
-    
-    reorder_ds_div = document.getElementById('reorder_ds_div'); 
-    var xmlhttp = new XMLHttpRequest();  
+
+    reorder_ds_div = document.getElementById('reorder_ds_div');
+    var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", 'reset_ds_order', true);
     //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange = function() {
@@ -108,8 +108,8 @@ function cluster_order(metric, ts)
     var args =  "metric="+metric;
     args += "&ts="+ts;
     //alert(args)
-    reorder_ds_div = document.getElementById('reorder_ds_div'); 
-    var xmlhttp = new XMLHttpRequest();  
+    reorder_ds_div = document.getElementById('reorder_ds_div');
+    var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", 'cluster_ds_order', true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange = function() {
@@ -117,7 +117,7 @@ function cluster_order(metric, ts)
       if (xmlhttp.readyState == 4 ) {
          var htmlstring = xmlhttp.responseText;
          //alert(htmlstring)
-         parts = htmlstring.split('/////');  
+         parts = htmlstring.split('/////');
          reorder_ds_div.innerHTML = parts[0];
          document.getElementById('ascii_tree_div').innerHTML = parts[1]
       }
@@ -143,12 +143,12 @@ function move_to_the_top(counter,string_id)
   html += "     <a href='#' onclick=\"move_to_the_top('"+string_id+"')\">^</a>";
   html += "  </td>";
   html += "</tr>";
-  reorder_ds_div = document.getElementById('reorder_ds_div'); 
-  table = document.getElementById('drag_table'); 
-  var originalRows = table.tBodies[0].rows;     
+  reorder_ds_div = document.getElementById('reorder_ds_div');
+  table = document.getElementById('drag_table');
+  var originalRows = table.tBodies[0].rows;
   for(var i=0; i<=originalRows.length-1; i++) {
     //alert(originalRows[i].cells[0].id)
-    if( originalRows[i].cells[0].id != string_id){    
+    if( originalRows[i].cells[0].id != string_id){
       var items = originalRows[i].cells[0].id.split('--')
       if(i < counter){
         cnt = parseInt(i)+2
@@ -156,7 +156,7 @@ function move_to_the_top(counter,string_id)
         cnt = parseInt(i)+1
       }
       html += "<tr class='tooltip_row' >";
-      html += "   <td class='dragHandle' id='"+originalRows[i].cells[0].id+"'> ";                  
+      html += "   <td class='dragHandle' id='"+originalRows[i].cells[0].id+"'> ";
       html += "       <input type='hidden' name='ds_order[]' value='"+items[0]+"' > ";
       html += "          "+cnt+" (id:"+items[0]+") - "+items[1]+"--"+items[2];
       html += "   </td>";
@@ -175,7 +175,31 @@ function move_to_the_top(counter,string_id)
 
 
 }
+function cancel_resort(referer)
+{
 
+	var f = document.createElement("form");
+	f.setAttribute('method',"POST");
+	f.setAttribute('action',"/visuals/"+referer);
 
-
-
+	var i = document.createElement("input"); //input element, text
+	i.setAttribute('type',"hidden");
+	i.setAttribute('name','cancel_resort');
+	i.setAttribute('value','1');
+	f.appendChild(i);
+	var i = document.createElement("input"); //input element, text
+	i.setAttribute('type',"hidden");
+	idobj = document.getElementsByName('original_order[]')
+  ids = []
+	for(n in idobj){
+		if(idobj[n].value != undefined){
+			ids.push(idobj[n].value)
+		}
+	}
+	ids = JSON.stringify(ids)
+	i.setAttribute('name','ds_order');
+	i.setAttribute('value',ids);
+	f.appendChild(i);
+	document.getElementsByTagName('body')[0].appendChild(f);
+	f.submit()
+}

@@ -31,7 +31,16 @@ module.exports.isLoggedIn = function(req, res, next) {
   res.redirect('/users/login');
   // return;
 };
-
+module.exports.isLoggedInAPI = function(req, res) {
+  if (req.isAuthenticated()) {
+    console.log("Hurray! API User isLoggedInAPI.req.isAuthenticated:", req.user.username);
+    return true;
+  }else{
+    console.log("Oops! NOT isLoggedIn.req.isAuthenticated");
+    return false;
+  }
+  
+};
 // route middleware to make sure a user is an aministrator
 module.exports.isAdmin = function(req, res, next) {
   if (req.user.security_level === 1) {

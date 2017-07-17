@@ -440,7 +440,8 @@ function get_primers_info(dataset_id) {
   console.time("TIME: get_primers_info");
   var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
   var primer_info = {};
-  if (typeof primer_suite_id === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined' ) {
+
+  if (typeof primer_suite_id === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id] === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined' ) {
     return {};
   }
   else {
@@ -827,4 +828,3 @@ function collect_new_rows(req, all_field_names) {
 }
 
 // ---- metadata_upload end ----
-

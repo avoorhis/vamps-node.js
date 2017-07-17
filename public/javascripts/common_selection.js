@@ -10,10 +10,10 @@ if (save_datasets_btn !== null) {
 
 var reorder_datasets_btn = document.getElementById('reorder_datasets_btn') || null;
 if (reorder_datasets_btn !== null) {
-  
+
   reorder_datasets_btn.addEventListener('click', function () {
     //window.location='reorder_datasets';
-    // form = 
+    // form =
   });
 }
 // var change_datasets_btn = document.getElementById('change_datasets_btn') || null;
@@ -35,9 +35,9 @@ var save_datasets_list = function(ds_local, user)
       return;
     }
     var timestamp = +new Date();  // millisecs since the epoch!
-    
+
     var filename = 'datasets-' + timestamp + '.json';
-    
+
     var args =  "datasets="+JSON.stringify(ds_local);
     args += "&filename="+filename;
     args += "&user="+user;
@@ -58,7 +58,7 @@ var save_datasets_list = function(ds_local, user)
        }
     };
     xmlhttp.send(args);
-  
+
 }
 
 //
@@ -67,12 +67,12 @@ var save_datasets_list = function(ds_local, user)
 function create_piecharts(imagetype, ts, mtx) {
     //alert(imagetype)  // group or single
     //d3.select('svg').remove();
-  
+
   var unit_list = [];
   for (var n in mtx.rows){
       unit_list.push(mtx.rows[n].id);
   }
-    
+
   //colorsX = {}
   var total = 0
   for(n in mtx.rows){
@@ -83,7 +83,7 @@ function create_piecharts(imagetype, ts, mtx) {
       //colorsX[mtx.rows[n].id] = string_to_color_code(mtx.rows[n].id)
     }
   }
-  
+
   var tmp={};
   var tmp_names={};
     for (var d in mtx.columns){
@@ -109,29 +109,29 @@ function create_piecharts(imagetype, ts, mtx) {
       var pies_per_row = 1;
       var m = 20; // margin
       var r = 120; // five pies per row
-      
+
     }else{
       var pies_per_row = 4;
       var m = 20; // margin
       var r = 320/pies_per_row; // five pies per row
-      
+
     }
-    
+
     var image_w = 2*(r+m)*pies_per_row;
     var image_h = Math.ceil(myjson_obj.values.length / 4 ) * ( 2 * ( r + m ) )+ 30;
     var arc = d3.svg.arc()
         .innerRadius(0)
         .outerRadius(r);
     var pie = d3.layout.pie();
-  
+
     var svgContainer = d3.select("#piecharts_div").append("svg")
         .attr("width", image_w)
         .attr("height", image_h)
         .attr("id", 'piecharts_'+ts)
-        .attr("version", "1.1") 
-        .attr("xmlns", "http://www.w3.org/2000/svg") 
+        .attr("version", "1.1")
+        .attr("xmlns", "http://www.w3.org/2000/svg")
         //.attr("xmlns:xlink", "http://www.w3.org/1999/xlink");
-    
+
     var pies = svgContainer.selectAll("svg")
         .data(myjson_obj.values)
         .enter().append("g")
@@ -143,10 +143,10 @@ function create_piecharts(imagetype, ts, mtx) {
             var v_spacer = diam*2*Math.floor(i / pies_per_row);
             return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
         })
-      
+
       .append("a")
           //.attr("xlink:xlink:href", function(d, i) { return 'bar_single?did='+myjson_obj.dids[i]+'&ts='+ts;} )
-          .attr("xlink:xlink:href", function(d, i) { 
+          .attr("xlink:xlink:href", function(d, i) {
             if(imagetype == 'group'){
               return '/visuals/bar_single?id='+myjson_obj.names[i]+'&ts='+ts+'&orderby=alpha&val=z';
             }else{
@@ -154,7 +154,7 @@ function create_piecharts(imagetype, ts, mtx) {
             }
           } )
       .attr("target", '_blank' );
-    
+
   pies.append("text")
         .attr("dx", -(r+m))
         .attr("dy", r+m)
@@ -176,26 +176,26 @@ function create_piecharts(imagetype, ts, mtx) {
             var total = 0;
             for (var k in this.parentNode.__data__){
               total += this.parentNode.__data__[k];
-            }           
-            
+            }
+
             var ds = ''; // PLACEHOLDER for TT
             var pct = (cnt * 100 / total).toFixed(2);
             var id = 'pc/'+unit_list[i]+'/'+cnt.toString()+'/'+pct;
-            return id;           
+            return id;
         })
         .attr("class","tooltip_viz")
         .style("fill", function(d, i) {
-            
+
             //if(=='single'){
               //return colorsX[unit_list[i]]
             //}else{
             return string_to_color_code(unit_list[i])
             //}
-            
-        });
-  
 
-   
+        });
+
+
+
 }
 //
 //  BAR CHARTS
@@ -203,11 +203,11 @@ function create_piecharts(imagetype, ts, mtx) {
 function create_barcharts(imagetype, ts, mtx, new_order) {
         //alert(imagetype)
         //alert(ts)
-       
+
         var barcharts_div = document.getElementById('barcharts_div');
         barcharts_div.innerHTML = ""
         barcharts_div.style.display = 'block';
-        
+
         var unit_list = [];
         for (var n in mtx.rows){
             unit_list.push(mtx.rows[n].id);
@@ -215,12 +215,12 @@ function create_barcharts(imagetype, ts, mtx, new_order) {
         // function is in this file
         var select_random = false
         //var colors = get_colors(unit_list, select_random);
-        
+
 
         data = [];
         //did_by_names ={}
-        for (var p in mtx.columns){  
-          
+        for (var p in mtx.columns){
+
           tmp={};
           tmp.datasetName = mtx.columns[p].id;
           tmp.did = mtx.columns[p].did;
@@ -231,22 +231,22 @@ function create_barcharts(imagetype, ts, mtx, new_order) {
           }
           data.push(tmp);
         }
-        
 
-        var ds_count = mtx.shape[1];      
-        
-        var props = get_image_properties(imagetype, ds_count); 
+
+        var ds_count = mtx.shape[1];
+
+        var props = get_image_properties(imagetype, ds_count);
         //console.log(props)
-        var scaler = d3.scale.ordinal()                  
+        var scaler = d3.scale.ordinal()
           .range( mtx.rows );
 
         scaler.domain(d3.keys(data[0]).filter(function(key) { return key !== "datasetName" && key !== "did"; }));
 
-        
+
         data.forEach(function(d) {
           var x0 = 0;
-          d.unitObj = scaler.domain().map(function(name) { 
-            return { name: name, x0: x0, x1: x0 += +d[name], did: d.did, dsname: d.datasetName, cnt: d[name] }; 
+          d.unitObj = scaler.domain().map(function(name) {
+            return { name: name, x0: x0, x1: x0 += +d[name], did: d.did, dsname: d.datasetName, cnt: d[name] };
           });
           //console.log(d.unitObj);
           d.total = d.unitObj[d.unitObj.length - 1].x1;
@@ -264,9 +264,9 @@ function create_barcharts(imagetype, ts, mtx, new_order) {
               o.x1 = (o.x1*100)/tot;
           });
         });
-      
+
     if(imagetype == 'group'){
-        
+
         if(new_order.orderby == 'alpha'){
           if(new_order.alpha_value == 'a'){
             alpha_name = "Taxa Names <span class=\"glyphicon glyphicon-chevron-up\"></span>"
@@ -282,8 +282,8 @@ function create_barcharts(imagetype, ts, mtx, new_order) {
           }
           alpha_name = "Taxa Names <span class=\"glyphicon glyphicon-chevron-down\"></span>"
         }
-        var buttonNames = [{name:alpha_name,ref:"",orderby:"alpha",val:new_order.alpha_value},                          
-                            {name: count_name,ref:"lnk3",orderby:"count",val:new_order.count_value}]          
+        var buttonNames = [{name:alpha_name,ref:"",orderby:"alpha",val:new_order.alpha_value},
+                            {name: count_name,ref:"lnk3",orderby:"count",val:new_order.count_value}]
         d3.select("#barcharts_div").append("div")
               .attr("class","pull-left")
               .append("text").html("Re-ordering is applied to all the samples.<br>But only the first sample's values are used.<br>")
@@ -293,25 +293,25 @@ function create_barcharts(imagetype, ts, mtx, new_order) {
               .append("a")
               .attr("class","btn btn-xs btn-success")
               .attr("href", '#')
-              .html( function (d){return d.name;})   
+              .html( function (d){return d.name;})
               .on("click", function (data,index){
                 change_matrix_order(data.orderby, data.val)
               })
-    }     
-    
+    }
+
     var svg = d3.select("#barcharts_div").append("svg")
             .attr("width",  props.width)
             .attr("height", props.height)
             .attr("id", 'barcharts_'+ts)
-            .attr("version","1.1") 
-            .attr("xmlns","http://www.w3.org/2000/svg") 
-            //.attr("xmlns:xlink","http://www.w3.org/1999/xlink")            
+            .attr("version","1.1")
+            .attr("xmlns","http://www.w3.org/2000/svg")
+            //.attr("xmlns:xlink","http://www.w3.org/1999/xlink")
           .append("g")
             .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
     // axis legends -- would like to rotate dataset names
     props.y.domain(data.map(function(d) { return d.datasetName; }));
-    props.x.domain([0, 100]); 
-      
+    props.x.domain([0, 100]);
+
     if(imagetype=='single'){
       //alert(filename)
       create_singlebar_svg_object(svg, props, data, ts);
@@ -412,21 +412,21 @@ function create_doublebar_svg_object(svg, props, data, ts) {
           .attr("dy", ".8em")
           .style("text-anchor", "end")
           .text("Percent");
-     
-     
+
+
        var datasetBar = svg.selectAll(".bar")
           .data(data)
         .enter() .append("g")
           .attr("class", "g")
-          .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; }) 
+          .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })
           // .append("a")
-          // .attr("xlink:xlink:href",  function(d) { 
+          // .attr("xlink:xlink:href",  function(d) {
           //   return 'sequences?id='+d.datasetName+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
           // })
 
           // .attr("target", '_blank' );
 
-  
+
     var labels = datasetBar.append("text")
       .attr("class", "y label")
       .attr("text-anchor", "end")
@@ -434,9 +434,9 @@ function create_doublebar_svg_object(svg, props, data, ts) {
       .attr("x", "-2")
       .attr("y", props.bar_height*2)
       .text(function(d) { return d.datasetName; })
-      
+
     var labels = datasetBar.append("text")
-      .style("text-anchor","start") 
+      .style("text-anchor","start")
       .style({"font-size":  "13px","font-weight":  "normal" })
       .attr("x", props.plot_width+10)
       .attr("y", props.bar_height*2)
@@ -452,27 +452,27 @@ function create_doublebar_svg_object(svg, props, data, ts) {
              var filename = user_local+'_'+d.did+'_'+ts+'_sequences.json'
              return 'sequences?id='+d.dsname+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
           }).style("fill",   function(d) { return string_to_color_code(d.name); })
-    
+
         .append("rect")
           .attr("x", function(d) { return props.x(d.x0); })
           .attr("y", 15)  // adjust where first bar starts on x-axis
           .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
           .attr("height",  18)
-          .attr("id",function(d,i) { 
+          .attr("id",function(d,i) {
             //console.log(this.parentNode.__data__);
             var cnt =  d.cnt;  //this.parentNode.__data__[d.name];
             var total = d.total;  //this.parentNode.__data__['total'];
-            
+
             //console.log(this._parentNode.__data__['total']);
             var ds = ''; // PLACEHOLDER for TT
             var pct = (cnt * 100 / total).toFixed(2);
-            var id = 'bc/' + d.name + '/'+ cnt.toString() + '/' + pct; 
-            return id;  
-          }) 
+            var id = 'bc/' + d.name + '/'+ cnt.toString() + '/' + pct;
+            return id;
+          })
 
           .attr("class","tooltip_viz")
-          .style("fill",   function(d,i) { 
-                return string_to_color_code(d.name); 
+          .style("fill",   function(d,i) {
+                return string_to_color_code(d.name);
             });
 }
 //
@@ -489,7 +489,7 @@ function create_singlebar_svg_object(svg, props, data, ts) {
 
 
       var labels = datasetBar.append("text")
-          .style("text-anchor","start") 
+          .style("text-anchor","start")
           .style({"font-size":  "13px","font-weight":  "normal" })
           .attr("x", props.plot_width+10)
           .attr("y", props.bar_height*2)
@@ -515,13 +515,12 @@ function create_singlebar_svg_object(svg, props, data, ts) {
                   var total = d.total;  //mtx_local.total;
                   var pct = (cnt * 100 / total).toFixed(2);
                   var id = 'bc/' + d.name + '/'+ cnt.toString() + '/' + pct;
-                  return id;   
+                  return id;
                 })
           .attr("class","tooltip_viz");
 }
 function create_svg_object(svg, props, data, ts) {
-             
-             
+
       svg.append("g")
           .attr("class", "x axis")
           .style({'stroke-width': '1px'})
@@ -531,18 +530,17 @@ function create_svg_object(svg, props, data, ts) {
           .attr("dy", ".8em")
           .style("text-anchor", "end")
           .text("Percent");
-     
+
        var datasetBar = svg.selectAll(".bar")
           .data(data)
         .enter() .append("g")
           .attr("class", "g")
-          .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; }) 
+          .attr("transform", function(d) { console.log('props.y(d.datasetName)',props.y(d.datasetName));return  "translate(0, " + props.y(d.datasetName) + ")"; })
           .append("a")
           .attr("xlink:xlink:href",  function(d) { return '/visuals/bar_single?id='+d.datasetName+'&ts='+ts+'&order=alphaDown';} )
-
           .attr("target", '_blank' );
 
-  
+
   var labels = datasetBar.append("text")
       .attr("class", "y label")
       .attr("text-anchor", "end")
@@ -550,41 +548,41 @@ function create_svg_object(svg, props, data, ts) {
       .attr("x", "-2")
       .attr("y", props.bar_height*2)
       .text(function(d) { return d.datasetName; })
-  
+
   var labels = datasetBar.append("text")
-      .style("text-anchor","start") 
+      .style("text-anchor","start")
       .style({"font-size":  "13px","font-weight":  "normal" })
       .attr("x", props.plot_width+10)
       .attr("y", props.bar_height*2)
       .text(function(d) { return 'SumCount: '+d.total; })
 
-      
+
   var gnodes = datasetBar.selectAll("rect")
           .data(function(d) { return d.unitObj; })
         .enter()
-        
-    
+
+
     .append("rect")
           .attr("x", function(d) { return props.x(d.x0); })
           .attr("y", 15)  // adjust where first bar starts on x-axis
           .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
           .attr("height",  18)
-          .attr("id",function(d,i) { 
+          .attr("id",function(d,i) {
             //console.log(this.parentNode.__data__);
             var cnt =  this.parentNode.__data__[d.name];
             var total = this.parentNode.__data__['total'];
-            
+
             //console.log(this._parentNode.__data__['total']);
             var ds = ''; // PLACEHOLDER for TT
             var pct = (cnt * 100 / total).toFixed(2);
-            var id = 'bc/' + d.name + '/'+ cnt.toString() + '/' + pct; 
-            return id;   
-          }) 
+            var id = 'bc/' + d.name + '/'+ cnt.toString() + '/' + pct;
+            return id;
+          })
 
           .attr("class","tooltip_viz")
-          .style("fill",   function(d,i) { 
+          .style("fill",   function(d,i) {
           //return get_random_color()
-          return string_to_color_code(d.name); 
+          return string_to_color_code(d.name);
           });
 
 
@@ -596,16 +594,16 @@ function get_image_properties(imagetype, ds_count) {
   var gap = 2;  // gap on each side of bar
   if(imagetype=='single'){
     props.bar_height = 20;
-    props.margin = {top: 20, right: 150, bottom: 20, left: 0};   
+    props.margin = {top: 20, right: 150, bottom: 20, left: 0};
     props.plot_width = 900;
     props.width = props.plot_width + props.margin.left + props.margin.right;
     props.height = (ds_count * (props.bar_height + 2 * gap)) + 125;
-  
+
     props.x = d3.scale.linear().rangeRound([0, props.plot_width]);
-    
+
     props.y = d3.scale.ordinal()
         .rangeBands([0, (props.bar_height + 2 * gap) * ds_count]);
-    
+
 
   }else{
     props.bar_height = 15;
@@ -614,22 +612,22 @@ function get_image_properties(imagetype, ds_count) {
     props.plot_width = 650;
     props.width = props.plot_width + props.margin.left + props.margin.right;
     props.height = (ds_count * (props.bar_height + 2 * gap)) + 125;
-  
+
     props.x = d3.scale.linear().rangeRound([0, props.plot_width]);
-    
+
     props.y = d3.scale.ordinal()
         .rangeBands([0, (props.bar_height + 2 * gap) * ds_count]);
-    
+
     props.xAxis = d3.svg.axis()
             .scale(props.x)
             .orient("top");
-  
+
     props.yAxis = d3.svg.axis()
             .scale(props.y)
             .orient("left");
   }
-  
-  
+
+
   return props;
 }
 // function get_colors(unit_names, random){
@@ -684,10 +682,10 @@ function string_to_color_code(str) {
 //         //console.log(i)
 //         //console.log(str.charCodeAt(i))
 //       }
-      
+
 //       hash = str.charCodeAt(i) + ((hash << 3) - hash);
 //     }
-    
+
 //     var color = Math.abs(hash).toString(16).substring(0, 6);
 //     color = "#" + '000000'.substring(0, 6 - color.length) + color;
 //     console.log('str '+str)

@@ -2,6 +2,8 @@
 *.fa
 *.fna
 *.fasta
+*.svg
+*.png
 .vagrant
 public/scripts/*.pyc
 old_2_new_vamps_by_project.py

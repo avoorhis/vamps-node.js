@@ -78,7 +78,7 @@ my $usage = "
 # Definition statements
 #
 #######################################
-my $db_host = "bpcdb1";
+my $db_host = "newbpcdb2";
 my $db_name = "env454";
 my $tax_table = "tagtax_view";
 my $seq_table = "trimseq_view";

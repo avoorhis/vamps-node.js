@@ -112,7 +112,7 @@ my $terse = 0;
 my $nodup = 0;
 
 # Load into a database variables
-my $db_host = 'bpcdb1';
+my $db_host = 'newbpcdb2';
 my $db_name = 'env454';
 my $mysqlimport_log = "gast.mysqlimport.log";
 my $mysqlimport_cmd = "mysqlimport -C -v -L -h $db_host $db_name ";
