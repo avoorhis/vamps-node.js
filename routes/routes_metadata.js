@@ -779,16 +779,59 @@ function convertArrayOfObjectsToCSV(args) {
   // TODO: a cell in quotes! (check on primers)
   //escape: '"'
 
-
   // headers = data['dataset'];
   headers_length = headers.length;
 
   // TODO: use cellEscape
   // first line = datasets
-  result = ' ';
+  // result = ' ';
+  result = '';
   result += columnDelimiter;
   result += headers.join(columnDelimiter);
   result += lineDelimiter;
+
+  for (var key in data) {
+    var item = data[key];
+
+    console.log("HHH key");
+    console.log(key);
+
+    console.log("HHH data[key]");
+    console.log(item);
+
+    // console.log("HHH typeof item");
+    // console.log(typeof item);
+    // HHH typeof item
+    // object
+
+    if (typeof item === "object") {
+        //TODO: do JSON.stingify here
+        result += item.join(columnDelimiter);
+    }
+
+    console.log("RRR result");
+    console.log(result);
+
+    // if (typeof item === "object") {
+    //     //TODO: do JSON.stingify here
+    //     result += item.join(columnDelimiter);
+    // } else if (typeof item === "string") {
+    //     for(var i = 0; i < headers_length; i++) {
+    //         result += item;
+    //         result += columnDelimiter;
+    //     }
+    // }
+    result += lineDelimiter;
+
+    /*
+    * calcium
+HHH data[key]
+[ '3.50', '3.47', '3.43', '4.74', '3.46', '3.45', '3.42', '3.45' ]
+    * */
+
+    result += key;
+    result += columnDelimiter;
+  }
 
   // TODO: get keys from an array of what to save (not dataset_id, for example)
   // for (var key in data) {
