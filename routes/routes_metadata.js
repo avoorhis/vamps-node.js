@@ -751,11 +751,9 @@ function array_from_object(data) {
     }
 
     value_arr.unshift(key);
-
-
-    data_arr[idx] = value_arr;
-    idx += 1;
-
+    // data_arr[idx] = value_arr;
+    // idx += 1;
+    data_arr.push(value_arr);
   }
 
   console.log("RRR data_arr");
@@ -816,18 +814,6 @@ function convertArrayOfObjectsToCSV(args) {
   // TODO: a cell in quotes! (check on primers)
   //escape: '"'
 
-  // headers = data['dataset'];
-  // headers_length = headers.length;
-  // dataset_length = data.dataset.length;
-  // console.log("LLL dataset_length");
-  // console.log(dataset_length);
-
-
-  // TODO: use cellEscape
-  // first line = datasets
-  // result = ' ';
-  // result += columnDelimiter;
-  // result += headers.join(columnDelimiter);
 
   result = '';
   transposed_data_arr.map(function(row) {
@@ -838,27 +824,12 @@ function convertArrayOfObjectsToCSV(args) {
   });
 
 
-    // TODO: get keys from an array of what to save (not dataset_id, for example)
-  // for (var key in data) {
-  //     var item = data[key];
-  //
-  //     result += key;
-  //     result += columnDelimiter;
-  //
-  //     if (typeof item === "object") {
-  //         //TODO: do JSON.stingify here
-  //         result += item.join(columnDelimiter);
-  //     } else if (typeof item === "string") {
-  //         for(var i = 0; i < headers_length; i++) {
-  //             result += item;
-  //             result += columnDelimiter;
-  //         }
-  //     }
-  //     result += lineDelimiter;
-  // }
+   // TODO: get keys from an array of what to save (not dataset_id, for example)
 
-    console.log("CCC3 convertArrayOfObjectsToCSV result");
-    console.log(result);
+
+  console.log("CCC3 convertArrayOfObjectsToCSV result");
+  console.log(result);
+
   console.timeEnd("TIME: convertArrayOfObjectsToCSV");
 
   return result;
