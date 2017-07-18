@@ -818,21 +818,28 @@ function convertArrayOfObjectsToCSV(args) {
   result += headers.join(columnDelimiter);
   result += lineDelimiter;
   // Object.keys(data).map(function(val) { return [val] });
-  var data_arr = [];
-  var inner_arr = [];
-  data_arr = Object.keys(data).map(function(key, index) {
-    // inner_arr.append(value);
-    // console.log("LLL2 value");
-    // console.log(value);
-    //
-    // console.log("LLL3 index");
-    // console.log(index);
-    // value.key = index; return [value];
-    return [data[key]];
-  });
+  // var data_arr = [];
+  // var inner_arr = [];
+  //
+  //
+  //
+  // data_arr = Object.keys(data).map(function(key, index) {
+  //   inner_arr = data[key];
+  //   inner_arr.unshift(key);
+  //   console.log("LLL2 inner_arr");
+  //   console.log(inner_arr);
+  //   data_arr.append(inner_arr);
+  //   //
+  //   // console.log("LLL3 index");
+  //   // console.log(index);
+  //   // value.key = index; return [value];
+  //   // return [inner_arr];
+  //   // data[key].unshift(key);
+  //   return;
+  // });
 
-  console.log("EEE data_arr");
-  console.log(data_arr);
+  // console.log("EEE data_arr");
+  // console.log(data_arr);
 
   // var array1 = $.map(data, function(key, index) {
   //   return [data[key]];
@@ -842,13 +849,25 @@ function convertArrayOfObjectsToCSV(args) {
   // console.log(array1);
 
 
-
+  var data_arr = new Array();
+  var idx = 0;
   for (var key in data) {
+    var value_arr = [data[key]];
+    value_arr.unshift(key);
+
+    //    inner_arr = data[key];
+
     // var inner_arr = [];
     // var item_arr = data[key];
     //
-    // console.log("HHH key");
-    // console.log(key);
+    console.log("VVV value_arr");
+    console.log(value_arr);
+
+    data_arr[idx] = value_arr;
+    idx += 1;
+
+    console.log("RRR1 idx");
+    console.log(idx);
     //
     // console.log("HHH5 data[key]");
     // console.log(item_arr);
@@ -870,11 +889,11 @@ function convertArrayOfObjectsToCSV(args) {
     // object
 
 
-    if (typeof item_arr === "object") {
-        //TODO: do JSON.stingify here
-        result += item.join(columnDelimiter);
-        // inner_arr.append(item_arr);
-    }
+    // if (typeof item_arr === "object") {
+    //     //TODO: do JSON.stingify here
+    //     result += item.join(columnDelimiter);
+    //     // inner_arr.append(item_arr);
+    // }
 
     // console.log("RRR result");
     // console.log(result);
@@ -901,8 +920,8 @@ HHH data[key]
     // my_hash.append(inner_arr);
   }
 
-  // console.log("RRR my_hash");
-  // console.log(my_hash);
+  console.log("RRR data_arr");
+  console.log(data_arr);
 
   // TODO: get keys from an array of what to save (not dataset_id, for example)
   // for (var key in data) {
