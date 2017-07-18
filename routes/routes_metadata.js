@@ -738,24 +738,49 @@ function get_csv_files(req) {
   return all_my_files;
 }
 
-function transpose_2d_arr(my_hash) {
-  console.time("TIME: transpose_2d_arr");
+function array_from_object(data) {
+  var data_arr = [];
+  var idx = 0;
+  for (var key in data) {
+    var value_arr;
+    if (typeof data[key] === "object") {
+      value_arr = data[key];
+    }
+    else {
+      value_arr = [data[key]];
+    }
 
-  console.log("HHH1 my_hash");
-  console.log(my_hash);
+    value_arr.unshift(key);
 
 
+    data_arr[idx] = value_arr;
+    idx += 1;
 
+  }
 
-  var newArray = my_hash[0].map(function(col, i) {
-    return my_hash.map(function(row) {
-      console.log("HHH2 row");
-      console.log(row);
-      return row[i];
-    });
-  });
-  console.timeEnd("TIME: transpose_2d_arr");
+  console.log("RRR data_arr");
+  console.log(data_arr);
+  return data_arr;
 }
+
+// function transpose_2d_arr(my_hash) {
+//   console.time("TIME: transpose_2d_arr");
+//
+//   console.log("HHH1 my_hash");
+//   console.log(my_hash);
+//
+//
+//
+//
+//   var newArray = my_hash[0].map(function(col, i) {
+//     return my_hash.map(function(row) {
+//       console.log("HHH2 row");
+//       console.log(row);
+//       return row[i];
+//     });
+//   });
+//   console.timeEnd("TIME: transpose_2d_arr");
+// }
 
 function convertArrayOfObjectsToCSV(args) {
   console.time("TIME: convertArrayOfObjectsToCSV");
@@ -764,15 +789,7 @@ function convertArrayOfObjectsToCSV(args) {
 
 
   data = args.data || null;
-
-  console.log("DDD data");
-  console.log(data);
-
-  //console.log(Object.keys(PROJECT_ID_BY_DID).length)
-
   headers = Object.keys(data);
-  console.log("DDD1 headers = Object.keys(data)");
-  console.log(headers);
 
 
   /* TODO: create csv from form by headers = metadata_names:
@@ -792,10 +809,9 @@ function convertArrayOfObjectsToCSV(args) {
       return null;
   }
 
-  // var transposed_data = transpose_2d_arr(data);
-  //
-  // console.log("SSS transposed_data");
-  // console.log(transposed_data);
+  var data_arr = array_from_object(data);
+  console.log("LLL1 data_arr");
+  console.log(data_arr);
 
   columnDelimiter = args.columnDelimiter || ',';
   lineDelimiter = args.lineDelimiter || '\n';
@@ -804,10 +820,10 @@ function convertArrayOfObjectsToCSV(args) {
   //escape: '"'
 
   // headers = data['dataset'];
-  headers_length = headers.length;
-  dataset_length = data.dataset.length;
-  console.log("LLL dataset_length");
-  console.log(dataset_length);
+  // headers_length = headers.length;
+  // dataset_length = data.dataset.length;
+  // console.log("LLL dataset_length");
+  // console.log(dataset_length);
 
 
   // TODO: use cellEscape
@@ -817,119 +833,6 @@ function convertArrayOfObjectsToCSV(args) {
   result += columnDelimiter;
   result += headers.join(columnDelimiter);
   result += lineDelimiter;
-  // Object.keys(data).map(function(val) { return [val] });
-  // var data_arr = [];
-  // var inner_arr = [];
-  //
-  //
-  //
-  // data_arr = Object.keys(data).map(function(key, index) {
-  //   inner_arr = data[key];
-  //   inner_arr.unshift(key);
-  //   console.log("LLL2 inner_arr");
-  //   console.log(inner_arr);
-  //   data_arr.append(inner_arr);
-  //   //
-  //   // console.log("LLL3 index");
-  //   // console.log(index);
-  //   // value.key = index; return [value];
-  //   // return [inner_arr];
-  //   // data[key].unshift(key);
-  //   return;
-  // });
-
-  // console.log("EEE data_arr");
-  // console.log(data_arr);
-
-  // var array1 = $.map(data, function(key, index) {
-  //   return [data[key]];
-  // });
-  //
-  // console.log("LLL4 array1");
-  // console.log(array1);
-
-
-
-  var data_arr = new Array();
-  var idx = 0;
-  for (var key in data) {
-    var value_arr;
-    if (typeof data[key] === "object") {
-      value_arr = data[key];
-    }
-    else {
-      value_arr = [data[key]];
-    }
-
-    value_arr.unshift(key);
-
-    //    inner_arr = data[key];
-
-    // var inner_arr = [];
-    // var item_arr = data[key];
-    //
-    console.log("VVV value_arr");
-    console.log(value_arr);
-
-    data_arr[idx] = value_arr;
-    idx += 1;
-
-    console.log("RRR1 idx");
-    console.log(idx);
-    //
-    // console.log("HHH5 data[key]");
-    // console.log(item_arr);
-    //
-    // console.log("EEE inner_arr");
-    // console.log(inner_arr);
-    //
-    // data.map(function(value, index) {
-    //   return [value];
-    // });
-
-    //   var array = $.map(myObj, function(value, index) {
-    //   return [value];
-    // });
-
-
-    // inner_arr.append(key);
-    // HHH typeof item
-    // object
-
-
-    // if (typeof item_arr === "object") {
-    //     //TODO: do JSON.stingify here
-    //     result += item.join(columnDelimiter);
-    //     // inner_arr.append(item_arr);
-    // }
-
-    // console.log("RRR result");
-    // console.log(result);
-
-    // if (typeof item === "object") {
-    //     //TODO: do JSON.stingify here
-    //     result += item.join(columnDelimiter);
-    // } else if (typeof item === "string") {
-    //     for(var i = 0; i < headers_length; i++) {
-    //         result += item;
-    //         result += columnDelimiter;
-    //     }
-    // }
-    result += lineDelimiter;
-
-    /*
-    * calcium
-HHH data[key]
-[ '3.50', '3.47', '3.43', '4.74', '3.46', '3.45', '3.42', '3.45' ]
-    * */
-
-    result += key;
-    result += columnDelimiter;
-    // my_hash.append(inner_arr);
-  }
-
-  console.log("RRR data_arr");
-  console.log(data_arr);
 
   // TODO: get keys from an array of what to save (not dataset_id, for example)
   // for (var key in data) {
