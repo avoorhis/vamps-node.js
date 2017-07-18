@@ -158,9 +158,48 @@ router.post('/start_edit',
     console.time("TIME: 1) in post /start_edit");
     var all_metadata_csv_files = get_csv_files(req);
 
-    var csvCompare = require("csv-compare");
-    csvCompare.startCompare("/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_28819.csv", "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_82599.csv")
+    // var csvCompare = require("csv-compare");
+    // csvCompare.startCompare("/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_31989.csv",
+    //   "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_63239.csv");
     // var init = function(keys,values,storePath,summaryStore){
+
+    var coopy = require('coopyhx');
+
+    var data1 = String(fs.readFileSync("/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_31989.csv"));
+    var data2 = String(fs.readFileSync("/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_63239.csv"));
+
+    // var a = String(data1);
+    // console.log("AAA0 a");
+    // console.log(a);
+
+
+    var table1 = new coopy.CoopyTableView(data1);
+    var table2 = new coopy.CoopyTableView(data2);
+
+    var alignment = coopy.compareTables(table1,table2).align();
+
+    var data_diff = [];
+    var table_diff = new coopy.CoopyTableView(data_diff);
+    // Using default options for the diff:
+    console.log("AAA1 table_diff");
+    console.log(table_diff);
+
+    var flags = new coopy.CompareFlags();
+    var highlighter = new coopy.TableDiff(alignment,flags);
+    highlighter.hilite(table_diff);
+
+    console.log("AAA2 highlighter");
+    console.log(highlighter);
+
+
+    var diff2html = new coopy.DiffRender();
+    diff2html.render(table_diff);
+    var table_diff_html = diff2html.html();
+
+
+    console.log("AAA3 table_diff_html");
+    console.log(table_diff_html);
+
 
     //TODO: show csv files menu and diff
     // res.render("metadata/metadata_upload_from_csv_file", {
@@ -783,9 +822,6 @@ function convertArrayOfObjectsToCSV(args) {
 
   result = '';
   transposed_data_arr.map(function(row) {
-    console.log("FFF1 row");
-    console.log(row);
-
     // TODO: to a function?
     var r1 = row.map(function(item){
       // Wrap each element of the items array with quotes
