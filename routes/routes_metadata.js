@@ -849,10 +849,18 @@ function convertArrayOfObjectsToCSV(args) {
   // console.log(array1);
 
 
+
   var data_arr = new Array();
   var idx = 0;
   for (var key in data) {
-    var value_arr = [data[key]];
+    var value_arr;
+    if (typeof data[key] === "object") {
+      value_arr = data[key];
+    }
+    else {
+      value_arr = [data[key]];
+    }
+
     value_arr.unshift(key);
 
     //    inner_arr = data[key];
