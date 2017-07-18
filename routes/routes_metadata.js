@@ -740,7 +740,6 @@ function get_csv_files(req) {
 
 function array_from_object(data) {
   var data_arr = [];
-  var idx = 0;
   for (var key in data) {
     var value_arr;
     if (typeof data[key] === "object") {
@@ -749,15 +748,9 @@ function array_from_object(data) {
     else {
       value_arr = [data[key]];
     }
-
     value_arr.unshift(key);
-    // data_arr[idx] = value_arr;
-    // idx += 1;
     data_arr.push(value_arr);
   }
-
-  console.log("RRR data_arr");
-  console.log(data_arr);
   return data_arr;
 }
 
@@ -779,7 +772,7 @@ function convertArrayOfObjectsToCSV(args) {
 
 
   data = args.data || null;
-  headers = Object.keys(data);
+  // headers = Object.keys(data);
 
 
   /* TODO: create csv from form by headers = metadata_names:
@@ -800,13 +793,13 @@ function convertArrayOfObjectsToCSV(args) {
   }
 
   var data_arr = array_from_object(data);
-  console.log("LLL1 data_arr");
-  console.log(data_arr);
+  // console.log("LLL1 data_arr");
+  // console.log(data_arr);
 
   var transposed_data_arr = transpose_2d_arr(data_arr);
 
-  console.log("LLL2 transposed_data_arr");
-  console.log(transposed_data_arr);
+  // console.log("LLL2 transposed_data_arr");
+  // console.log(transposed_data_arr);
 
   columnDelimiter = args.columnDelimiter || ',';
   lineDelimiter = args.lineDelimiter || '\n';
@@ -819,7 +812,13 @@ function convertArrayOfObjectsToCSV(args) {
   transposed_data_arr.map(function(row) {
     console.log("FFF1 row");
     console.log(row);
-    result += row.join(columnDelimiter);
+
+    var r1 = row.map(function(item){
+      // Wrap each element of the dates array with quotes
+      return "'" + item + "'";
+    }).join(",");
+
+    result += r1;
     result += lineDelimiter;
   });
 
