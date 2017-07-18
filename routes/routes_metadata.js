@@ -666,11 +666,9 @@ function make_csv(req) {
     data: req.form
   });
 
-  project = req.form["project"];
-
   var rando = helpers.getRandomInt(10000, 99999);
 
-  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + project + '_' + rando.toString() + ".csv");
+  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + data.project + '_' + rando.toString() + ".csv");
 
   fs.writeFile(out_csv_file_name, csv, function (err) {
     if (err) throw err;
