@@ -768,31 +768,27 @@ function transpose_2d_arr(my_hash) {
 function convertArrayOfObjectsToCSV(args) {
   console.time("TIME: convertArrayOfObjectsToCSV");
 
-  var result, columnDelimiter, lineDelimiter, data, headers, headers_length, cellEscape, dataset_length, my_hash;
-
+  var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr;
 
   data = args.data || null;
   if (data === null) {
-      return null;
+    return null;
   }
 
-  var data_arr = array_from_object(data);
+  data_arr = array_from_object(data);
 
-  var transposed_data_arr = transpose_2d_arr(data_arr);
+  transposed_data_arr = transpose_2d_arr(data_arr);
 
   columnDelimiter = args.columnDelimiter || ',';
   lineDelimiter = args.lineDelimiter || '\n';
   cellEscape = args.cellEscape || '"';
-  // TODO: a cell in quotes! (check on primers)
-  //escape: '"'
-
 
   result = '';
   transposed_data_arr.map(function(row) {
     console.log("FFF1 row");
     console.log(row);
 
-    // TODO: to a function
+    // TODO: to a function?
     var r1 = row.map(function(item){
       // Wrap each element of the items array with quotes
       return cellEscape + item + cellEscape;
@@ -803,11 +799,11 @@ function convertArrayOfObjectsToCSV(args) {
   });
 
 
-   // TODO: get keys from an array of what to save (not dataset_id, for example)
+   // TODO: get keys from an array of what to save (dataset_id, for example)
 
 
-  console.log("CCC3 convertArrayOfObjectsToCSV result");
-  console.log(result);
+  // console.log("CCC3 convertArrayOfObjectsToCSV result");
+  // console.log(result);
 
   console.timeEnd("TIME: convertArrayOfObjectsToCSV");
 
