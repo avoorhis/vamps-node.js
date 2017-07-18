@@ -738,10 +738,29 @@ function get_csv_files(req) {
   return all_my_files;
 }
 
+function transpose_2d_arr(my_hash) {
+  console.time("TIME: transpose_2d_arr");
+
+  console.log("HHH1 my_hash");
+  console.log(my_hash);
+
+
+
+
+  var newArray = my_hash[0].map(function(col, i) {
+    return my_hash.map(function(row) {
+      console.log("HHH2 row");
+      console.log(row);
+      return row[i];
+    });
+  });
+  console.timeEnd("TIME: transpose_2d_arr");
+}
+
 function convertArrayOfObjectsToCSV(args) {
   console.time("TIME: convertArrayOfObjectsToCSV");
 
-  var result, columnDelimiter, lineDelimiter, data, headers, headers_length, cellEscape;
+  var result, columnDelimiter, lineDelimiter, data, headers, headers_length, cellEscape, dataset_length, my_hash;
 
 
   data = args.data || null;
@@ -773,6 +792,11 @@ function convertArrayOfObjectsToCSV(args) {
       return null;
   }
 
+  // var transposed_data = transpose_2d_arr(data);
+  //
+  // console.log("SSS transposed_data");
+  // console.log(transposed_data);
+
   columnDelimiter = args.columnDelimiter || ',';
   lineDelimiter = args.lineDelimiter || '\n';
   cellEscape = args.cellEscape || '"';
@@ -781,6 +805,10 @@ function convertArrayOfObjectsToCSV(args) {
 
   // headers = data['dataset'];
   headers_length = headers.length;
+  dataset_length = data.dataset.length;
+  console.log("LLL dataset_length");
+  console.log(dataset_length);
+
 
   // TODO: use cellEscape
   // first line = datasets
@@ -789,28 +817,67 @@ function convertArrayOfObjectsToCSV(args) {
   result += columnDelimiter;
   result += headers.join(columnDelimiter);
   result += lineDelimiter;
+  // Object.keys(data).map(function(val) { return [val] });
+  var data_arr = [];
+  var inner_arr = [];
+  data_arr = Object.keys(data).map(function(key, index) {
+    // inner_arr.append(value);
+    // console.log("LLL2 value");
+    // console.log(value);
+    //
+    // console.log("LLL3 index");
+    // console.log(index);
+    // value.key = index; return [value];
+    return [data[key]];
+  });
+
+  console.log("EEE data_arr");
+  console.log(data_arr);
+
+  // var array1 = $.map(data, function(key, index) {
+  //   return [data[key]];
+  // });
+  //
+  // console.log("LLL4 array1");
+  // console.log(array1);
+
+
 
   for (var key in data) {
-    var item = data[key];
+    // var inner_arr = [];
+    // var item_arr = data[key];
+    //
+    // console.log("HHH key");
+    // console.log(key);
+    //
+    // console.log("HHH5 data[key]");
+    // console.log(item_arr);
+    //
+    // console.log("EEE inner_arr");
+    // console.log(inner_arr);
+    //
+    // data.map(function(value, index) {
+    //   return [value];
+    // });
 
-    console.log("HHH key");
-    console.log(key);
+    //   var array = $.map(myObj, function(value, index) {
+    //   return [value];
+    // });
 
-    console.log("HHH data[key]");
-    console.log(item);
 
-    // console.log("HHH typeof item");
-    // console.log(typeof item);
+    // inner_arr.append(key);
     // HHH typeof item
     // object
 
-    if (typeof item === "object") {
+
+    if (typeof item_arr === "object") {
         //TODO: do JSON.stingify here
         result += item.join(columnDelimiter);
+        // inner_arr.append(item_arr);
     }
 
-    console.log("RRR result");
-    console.log(result);
+    // console.log("RRR result");
+    // console.log(result);
 
     // if (typeof item === "object") {
     //     //TODO: do JSON.stingify here
@@ -831,7 +898,11 @@ HHH data[key]
 
     result += key;
     result += columnDelimiter;
+    // my_hash.append(inner_arr);
   }
+
+  // console.log("RRR my_hash");
+  // console.log(my_hash);
 
   // TODO: get keys from an array of what to save (not dataset_id, for example)
   // for (var key in data) {
