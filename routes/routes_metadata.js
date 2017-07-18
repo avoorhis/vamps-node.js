@@ -772,34 +772,13 @@ function convertArrayOfObjectsToCSV(args) {
 
 
   data = args.data || null;
-  // headers = Object.keys(data);
-
-
-  /* TODO: create csv from form by headers = metadata_names:
-  *   adapter_sequence:
-   [ 'TGTCA',
-     'TGTCA',
-     'TGTCA',
-     'TGTCA',
-     'TGTCA',
-     'TGTCA',
-     'TGTCA',
-     'TGTCA' ],
-  alkalinity: [ '', '', '', '', '', '', '', '' ],
-  * */
-
   if (data === null) {
       return null;
   }
 
   var data_arr = array_from_object(data);
-  // console.log("LLL1 data_arr");
-  // console.log(data_arr);
 
   var transposed_data_arr = transpose_2d_arr(data_arr);
-
-  // console.log("LLL2 transposed_data_arr");
-  // console.log(transposed_data_arr);
 
   columnDelimiter = args.columnDelimiter || ',';
   lineDelimiter = args.lineDelimiter || '\n';
@@ -816,8 +795,8 @@ function convertArrayOfObjectsToCSV(args) {
     // TODO: to a function
     var r1 = row.map(function(item){
       // Wrap each element of the items array with quotes
-      return "'" + item + "'";
-    }).join(",");
+      return cellEscape + item + cellEscape;
+    }).join(columnDelimiter);
 
     result += r1;
     result += lineDelimiter;
