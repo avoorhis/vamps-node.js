@@ -813,8 +813,9 @@ function convertArrayOfObjectsToCSV(args) {
     console.log("FFF1 row");
     console.log(row);
 
+    // TODO: to a function
     var r1 = row.map(function(item){
-      // Wrap each element of the dates array with quotes
+      // Wrap each element of the items array with quotes
       return "'" + item + "'";
     }).join(",");
 
