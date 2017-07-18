@@ -765,33 +765,11 @@ function array_from_object(data) {
 
 function transpose_2d_arr(my_hash) {
   console.time("TIME: transpose_2d_arr");
-  console.log("MMM1 my_hash[0]");
-  console.log(my_hash[0]);
-
   var newArray = my_hash[0].map(function(col, i) {
     return my_hash.map(function(row) {
       return row[i];
     });
   });
-
-  console.log("MMM1 ");
-  console.log(newArray);
-
-
-  //
-//   console.log("HHH1 my_hash");
-//   console.log(my_hash);
-//
-//
-//
-//
-//   var newArray = my_hash[0].map(function(col, i) {
-//     return my_hash.map(function(row) {
-//       console.log("HHH2 row");
-//       console.log(row);
-//       return row[i];
-//     });
-//   });
   console.timeEnd("TIME: transpose_2d_arr");
   return newArray;
 }
@@ -848,12 +826,19 @@ function convertArrayOfObjectsToCSV(args) {
   // TODO: use cellEscape
   // first line = datasets
   // result = ' ';
-  result = '';
-  result += columnDelimiter;
-  result += headers.join(columnDelimiter);
-  result += lineDelimiter;
+  // result += columnDelimiter;
+  // result += headers.join(columnDelimiter);
 
-  // TODO: get keys from an array of what to save (not dataset_id, for example)
+  result = '';
+  transposed_data_arr.map(function(row) {
+    console.log("FFF1 row");
+    console.log(row);
+    result += row.join(columnDelimiter);
+    result += lineDelimiter;
+  });
+
+
+    // TODO: get keys from an array of what to save (not dataset_id, for example)
   // for (var key in data) {
   //     var item = data[key];
   //
@@ -872,8 +857,8 @@ function convertArrayOfObjectsToCSV(args) {
   //     result += lineDelimiter;
   // }
 
-    // console.log("CCC3 convertArrayOfObjectsToCSV result");
-    // console.log(result);
+    console.log("CCC3 convertArrayOfObjectsToCSV result");
+    console.log(result);
   console.timeEnd("TIME: convertArrayOfObjectsToCSV");
 
   return result;
