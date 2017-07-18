@@ -165,11 +165,27 @@ router.post('/start_edit',
 
     var coopy = require('coopyhx');
 
-    var data1 = String(fs.readFileSync("/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_31989.csv"));
-    var data2 = String(fs.readFileSync("/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_63239.csv"));
+    var inputPath1 = "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_31989.csv";
+    var inputPath2 = "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_63239.csv";
 
+    var data1 = String(fs.readFileSync(inputPath1));
+    var data2 = String(fs.readFileSync(inputPath2));
+    console.log("AAA7 data1");
+    console.log(data1);
+    var parse = require('csv-parse');
+
+    fs.readFile(inputPath1, function (err, data) {
+      console.log("AAA01 data");
+      console.log(data);
+      parse(fileData, {columns: false, trim: true}, function(err, rows) {
+        console.log("AAA03 fileData");
+        console.log(fileData);
+
+        // Your CSV data is in an array of arrys passed to this callback as rows.
+      });
+    });
     // var a = String(data1);
-    // console.log("AAA0 a");
+    // console.log("AAA8 a");
     // console.log(a);
 
 
