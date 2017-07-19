@@ -181,16 +181,63 @@ router.get('/metadata_file_list', function(req, res) {
 //     });
 //   });
 // });
+function findByValueOfObject(arr, key, value) {
+  return arr.filter(function(item) {
+    return (item[key] === value);
+  });
+}
+
 
 function get_file_diff(req) {
   var coopy = require('coopyhx');
-  file_names_array = req.body.compare;
+  var file_names_array = req.body.compare;
+  // console.log("AAA7 inputPath1");
+  // console.log(inputPath1);
+  var f_info = JSON.parse(req.body.file_info);
+
+  var inputPath1 = path.join(config.USER_FILES_BASE, req.user.username, file_names_array[0]);
+  var inputPath2 = path.join(config.USER_FILES_BASE, req.user.username, file_names_array[1]);
+
+  // var output = findByValueOfObject(f_info, "filename", file_names_array[0]);
+  // console.log("AAA8 typeof output");
+  // console.log(typeof output);
+  // console.log("AAA77 output");
+  // console.log(output);
+  // console.log("AAA77 output[0][time]");
+  // console.log(output[0][time]);
+  // [1, 2, 3].includes(2);     // true
+  var files = [];
+
+  f_info.filter(function (el) {
+    if (file_names_array.includes(el.filename)) {
+      files.push(el);
+    }
+  });
+  console.log("GGG0 files");
+  console.log(files);
+  // files.sort(function sortByTime(a, b) {
+  //   //reverse sort: recent-->oldest
+  //   return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
+  // });
+
+  var dir = path.join(config.USER_FILES_BASE, req.user.username);
+  files.sort(function(a, b) {
+    console.log("GGG1 a");
+    console.log(a);
+
+    return fs.statSync(path.join(dir, a.filename)).mtime.getTime() -
+      fs.statSync(path.join(dir, b.filename)).mtime.getTime();
+  });
+
+
+  console.log("GGG files");
+  console.log(files);
+
   // TODO check if only two names
   // TODO: get from dir, not hardcoded
   // var inputPath1 = "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_31989.csv";
   // var inputPath2 = "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_63239.csv";
-  var inputPath1 = path.join(config.USER_FILES_BASE, req.user.username, file_names_array[0]);
-  var inputPath2 = path.join(config.USER_FILES_BASE, req.user.username, file_names_array[1]);
+
   console.log("AAA7 inputPath1");
   console.log(inputPath1);
   var columnDelimiter = ',';
