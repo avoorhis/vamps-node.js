@@ -149,14 +149,14 @@ module.exports.walk = function(dir, done) {
   walk_recursively(dir, done);
 };
 
-module.exports.walk_sync = function(dir) {
+function walk_sync_recursive(dir) {
   var results = [];
   var list = fs.readdirSync(dir);
   list.forEach(function(file) {
     file = path.resolve(dir, file);
     var stat = fs.statSync(file);
     if (stat && stat.isDirectory()) {
-      results = results.concat(walk_sync(file));
+      results = results.concat(walk_sync_recursive(file));
     }
     else {
       var filename = path.basename(file);
@@ -171,6 +171,10 @@ module.exports.walk_sync = function(dir) {
     }
   });
   return results;
+}
+
+module.exports.walk_sync = function(dir) {
+  return walk_sync_recursive(dir);
 };
 
 module.exports.elapsed_time = function(note){
