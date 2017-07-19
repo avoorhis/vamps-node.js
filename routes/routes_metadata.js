@@ -188,28 +188,28 @@ function findByValueOfObject(arr, key, value) {
 }
 
 
-function get_file_diff(req) {
+function get_file_diff(req, files) {
   var coopy = require('coopyhx');
-  var file_names_array = req.body.compare;
-  // console.log("AAA7 inputPath1");
-  // console.log(inputPath1);
-  var f_info = JSON.parse(req.body.file_info);
-
-  var files = [];
-
-  f_info.filter(function (el) {
-    if (file_names_array.includes(el.filename)) {
-      files.push(el);
-    }
-  });
-  console.log("GGG0 files");
-  console.log(files);
-
-  var dir = path.join(config.USER_FILES_BASE, req.user.username);
-  files.sort(function(a, b) {
-    return fs.statSync(path.join(dir, a.filename)).mtime.getTime() -
-      fs.statSync(path.join(dir, b.filename)).mtime.getTime();
-  });
+  // var file_names_array = req.body.compare;
+  // // console.log("AAA7 inputPath1");
+  // // console.log(inputPath1);
+  // var f_info = JSON.parse(req.body.file_info);
+  //
+  // var files = [];
+  //
+  // f_info.filter(function (el) {
+  //   if (file_names_array.includes(el.filename)) {
+  //     files.push(el);
+  //   }
+  // });
+  // console.log("GGG0 files");
+  // console.log(files);
+  //
+  // var dir = path.join(config.USER_FILES_BASE, req.user.username);
+  // files.sort(function(a, b) {
+  //   return fs.statSync(path.join(dir, a.filename)).mtime.getTime() -
+  //     fs.statSync(path.join(dir, b.filename)).mtime.getTime();
+  // });
 
   console.log("PPP0 files0");
   console.log(files[0]["filename"]);
@@ -220,7 +220,7 @@ function get_file_diff(req) {
   console.log("PPP1 inputPath1");
   console.log(inputPath1);
 
-  // TODO check if only two names
+  // TODO: check if only two names
 
   var columnDelimiter = ',';
   var lineDelimiter = '\n';
@@ -266,6 +266,36 @@ function get_file_diff(req) {
 
 }
 
+function sorted_files_by_time(req) {
+  console.time("sorted_files_by_time");
+  var file_names_array = req.body.compare;
+  var f_info = JSON.parse(req.body.file_info);
+  var files = [];
+
+  if (typeof file_names_array === 'undefined' || file_names_array.length === 0) {
+    return null;
+  }
+  f_info.filter(function (el) {
+    if (file_names_array.includes(el.filename)) {
+      files.push(el);
+    }
+  });
+  console.log("GGG0 files");
+  console.log(files);
+
+  var dir = path.join(config.USER_FILES_BASE, req.user.username);
+  files.sort(function(a, b) {
+    return fs.statSync(path.join(dir, a.filename)).mtime.getTime() -
+      fs.statSync(path.join(dir, b.filename)).mtime.getTime();
+  });
+  console.log("GGG01 files");
+  console.log(files);
+
+  console.timeEnd("sorted_files_by_time");
+  return files;
+
+}
+
 router.post('/metadata_files',
   [helpers.isLoggedIn],
   function (req, res) {
@@ -282,9 +312,10 @@ router.post('/metadata_files',
 
     * */
 
-    if (typeof req.body.compare !== 'undefined' && req.body.compare.length !== 0) {
-      table_diff_html = get_file_diff(req);
+    var files = sorted_files_by_time(req);
 
+    if (typeof req.body.compare !== 'undefined' && req.body.compare.length !== 0) {
+      table_diff_html = get_file_diff(req, files);
     }
     if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
       edit_metadata_file = req.body.edit_metadata_file;
@@ -300,7 +331,7 @@ router.post('/metadata_files',
       user: req.user,
       hostname: req.CONFIG.hostname,
       table_diff_html: table_diff_html,
-      finfo: req.body.file_info,
+      finfo: JSON.stringify(files),
       file_names: req.body.compare,
       edit: true
     });

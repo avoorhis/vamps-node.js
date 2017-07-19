@@ -1,6 +1,13 @@
 <% include ../add_ins/begin.ejs %>
 <% if (typeof(finfo) !== 'undefined') { %>
+<%= finfo %>
+<br/>
+<%= typeof(finfo) %>
 	<% var file_info = JSON.parse(finfo) %>
+<br/>
+typeof(file_info):
+<%= typeof(file_info) %>
+
 <% } else { %>
 	<% var file_info = {} %>
 <% } %>
