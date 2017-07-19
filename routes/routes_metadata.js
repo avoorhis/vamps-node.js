@@ -399,24 +399,33 @@ function make_metadata_hash_from_file(req, res, file_name) {
 
     var parse = require('csv-parse');
     var parser = parse({columns: true, trim: true}, function(err, data){
-      var keys_hash = Object.keys(data);
+      // var keys_hash = Object.keys(data);
       for (var idx in data) {
         for (var key in data[idx]) {
-          // console.log("AAA71 key");
-          // console.log(key);
-          // console.log("AAA73 data[key]");
-          // console.log(data[idx][key]);
-          // AAA71 key
-          // adapter_sequence
-          // AAA73 data[key]
-          // TGTCA
           if (!(all_metadata[project_id_to_edit].hasOwnProperty(key))) {
             all_metadata[project_id_to_edit][key] = [];
           }
           all_metadata[project_id_to_edit][key].push(data[idx][key]);
         }
       }
-
+      all_metadata[project_id_to_edit]["project"]     = data[0].project;
+      all_metadata[project_id_to_edit]["project_title"] = data[0].title;
+      all_metadata[project_id_to_edit]["username"]    = data[0].username;
+      all_metadata[project_id_to_edit]["pi_name"]     = data[0].first_name + " " + data[0].last_name;
+      all_metadata[project_id_to_edit]["pi_email"]    = data[0].email;
+      all_metadata[project_id_to_edit]["institution"] = data[0].institution;
+      all_metadata[project_id_to_edit]["first_name"]  = data[0].first_name;
+      all_metadata[project_id_to_edit]["last_name"]   = data[0].last_name;
+      all_metadata[project_id_to_edit]["public"]      = data[0].public;
+      /*
+      * TODO:
+      *   username: undefined,
+        institution: undefined,
+        first_name: undefined,
+        last_name: undefined,
+        public: undefined }
+      * */
+      
       console.log("YYY all_metadata[project_id_to_edit]");
       console.log(all_metadata[project_id_to_edit]);
       // all_metadata[project_id_to_edit]["project"]     = row.project;
