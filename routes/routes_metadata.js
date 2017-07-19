@@ -386,8 +386,87 @@ function make_metadata_hash_from_file(req, res, file_name) {
 
   console.log("EEE1 file_name");
   console.log(file_name);
+  var project_name = get_project_name(file_name);
+  var project_id_to_edit = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
+
+  var all_metadata = {};
+  if (helpers.isInt(project_id_to_edit)) {
+    console.log("EEE2 project_id_to_edit");
+    console.log(project_id_to_edit);
+
+    all_metadata[pid] = {};
+
+    // var parse = require('csv-parse');
+    // var parser = parse({delimiter: columnDelimiter, trim: true}, function(err, data){
+    //   console.log("AAA7 data");
+    //   console.log(data);
+    // });
+    // fs.createReadStream(inputPath1).pipe(parser);
+    
+    // all_metadata[pid]["project"]     = row.project;
+
+    // all_metadata = populate_metadata_hash_from_file(file_name, pid, all_metadata);
+
+    //   connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows, fields) {
+  //     if (err)
+  //     {
+  //       console.log('get_select_datasets_queryPID error: ' + err);
+  //     }
+  //     else
+  //     {
+  //       console.log("in make_metadata_hash");
+  //       all_metadata = populate_metadata_hash(rows, pid, all_metadata);
+  //
+  //       //TODO: do once here and keep with form
+  //       var project = all_metadata[pid]["project"];
+  //       var abstract_data  = get_project_abstract_data(project, req);
+  //       var project_prefix = get_project_prefix(project);
+  //
+  //       // console.log("XXX project_prefix");
+  //       // console.log(project_prefix);
+  //       //DCO_GAI
+  //       //
+  //       // console.log("DDD reverse_primer_seqs");
+  //       // console.log(JSON.stringify(reverse_primer_seqs));
+  //       //
+  //       // DDD forward_primer_seqs
+  //       // "CCTACGGGAGGCAGCAG, CCTACGGG.GGC[AT]GCAG, TCTACGGAAGGCTGCAG"
+  //       // DDD reverse_primer_seqs
+  //       // "GGATTAG.TACCC"
+  //       //
+  //       all_field_names = CONSTS.ORDERED_METADATA_NAMES;
+  //       res.render("metadata/metadata_upload_from_file", {
+  //         title: "VAMPS: Metadata_upload",
+  //         user: req.user,
+  //         hostname: req.CONFIG.hostname,
+  //         abstract_data_pr: abstract_data[project_prefix],
+  //         all_metadata: all_metadata,
+  //         all_field_names: all_field_names,
+  //         dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+  //         dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+  //         dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+  //         biome_primary_options: CONSTS.BIOME_PRIMARY,
+  //         feature_primary_options: CONSTS.FEATURE_PRIMARY,
+  //         material_primary_options: CONSTS.MATERIAL_PRIMARY,
+  //         metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+  //         env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+  //         investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+  //         sample_type_options: CONSTS.SAMPLE_TYPE
+  //       });
+  //
+  //     }
+  //     // end else
+  //   });
+  }
+  else
+  { // end if int
+    console.log('ERROR pid is not an integer: ', project_id_to_edit);
+  }
+
+
   console.timeEnd("TIME: make_metadata_hash_from_file");
 }
+
 
 
 router.post('/start_edit',
