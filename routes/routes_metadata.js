@@ -151,17 +151,44 @@ function get_metadata_hash(md_selected){
 // ---- metadata_upload ----
 // AllMetadata = helpers.get_metadata_from_file()
 
+router.get('/metadata_file_list', function(req, res) {
+  console.log('in metadata_file_list');
+  var user_metadata_csv_files = get_csv_files(req);
+  console.log("JJJ1 JSON.stringify(user_metadata_csv_files)");
+  console.log(JSON.stringify(user_metadata_csv_files));
+
+  res.render('metadata/metadata_file_list', { title: 'VAMPS:Metadata',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    finfo: JSON.stringify(user_metadata_csv_files),
+    table_diff_html: {}
+
+  });
+});
+
+// router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(req, res) {
+//   var export_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+//
+//   helpers.walk(export_dir, function(err, files) {
+//     if (err) throw err;
+//     files.sort(function sortByTime(a, b) {
+//       //reverse sort: recent-->oldest
+//       return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
+//     });
+//     res.render('user_data/file_retrieval', { title: 'VAMPS:Retrieve Data',
+//       user: req.user, hostname: req.CONFIG.hostname,
+//       finfo: JSON.stringify(files)
+//
+//     });
+//   });
+// });
+
 router.post('/start_edit',
   [helpers.isLoggedIn],
   function (req, res) {
 
     console.time("TIME: 1) in post /start_edit");
     var all_metadata_csv_files = get_csv_files(req);
-
-    // var csvCompare = require("csv-compare");
-    // csvCompare.startCompare("/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_31989.csv",
-    //   "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_63239.csv");
-    // var init = function(keys,values,storePath,summaryStore){
 
     var coopy = require('coopyhx');
 
@@ -177,30 +204,18 @@ router.post('/start_edit',
     var data2 = String(fs.readFileSync(inputPath2));
     console.log("AAA7 data1");
     console.log(data1);
+    // todo: async?
     // var parse = require('csv-parse');
-
     // var parser = parse({delimiter: columnDelimiter, trim: true}, function(err, data){
     //   console.log("AAA7 data");
     //   console.log(data);
     // });
-
     // fs.createReadStream(inputPath1).pipe(parser);
 
-    // var input = '"key_1","key_2"\n"value 1","value 2"';
-    // var records1 = parse(data1, {trim: true});
-    // records.should.eql([{ key_1: 'value 1', key_2: 'value 2' }]);
 
     var parse_sync = require('csv-parse/lib/sync');
-    require('should');
-
-    // var input = '"key_1","key_2"\n"value 1","value 2"';
     var records1 = parse_sync(data1, {trim: true});
-    // records.should.eql([{ key_1: 'value 1', key_2: 'value 2' }]);
-
     var records2 = parse_sync(data2, {trim: true});
-
-    console.log("AAA03 records1");
-    console.log(records1);
 
     var table1 = new coopy.CoopyTableView(records1);
     var table2 = new coopy.CoopyTableView(records2);
@@ -209,17 +224,13 @@ router.post('/start_edit',
 
     var data_diff = [];
     var table_diff = new coopy.CoopyTableView(data_diff);
-    // Using default options for the diff:
-    console.log("AAA1 table_diff");
-    console.log(table_diff);
 
     var flags = new coopy.CompareFlags();
-    var highlighter = new coopy.TableDiff(alignment,flags);
+    var highlighter = new coopy.TableDiff(alignment, flags);
     highlighter.hilite(table_diff);
 
-    console.log("AAA2 highlighter");
-    console.log(highlighter);
-
+    // console.log("AAA2 highlighter");
+    // console.log(highlighter);
 
     var diff2html = new coopy.DiffRender();
     diff2html.render(table_diff);
@@ -228,17 +239,18 @@ router.post('/start_edit',
 
     console.log("AAA3 table_diff_html");
     console.log(table_diff_html);
-
+    // TODO show, add form to choose, then go to make_metadata_hash
 
     //TODO: show csv files menu and diff
-    // res.render("metadata/metadata_upload_from_csv_file", {
-    //   title: "VAMPS: Metadata_upload",
-    //   user: req.user,
-    //   hostname: req.CONFIG.hostname,
-    //   all_files: all_metadata_csv_files
-    // });
+    res.render("metadata/metadata_file_list", {
+      title: "VAMPS: Metadata File List",
+      user: req.user,
+      hostname: req.CONFIG.hostname,
+      table_diff_html: table_diff_html,
+      finfo: {}
+    });
 
-    make_metadata_hash(req, res);
+    // make_metadata_hash(req, res);
 
     console.timeEnd("TIME: 1) in post /start_edit");
   });
@@ -784,8 +796,8 @@ function get_csv_files(req) {
   //   all_my_files = files;
   //   return all_my_files;
   // });
-  console.log("JJJ1 JSON.stringify(all_my_files)");
-  console.log(JSON.stringify(all_my_files));
+  // console.log("JJJ1 JSON.stringify(all_my_files)");
+  // console.log(JSON.stringify(all_my_files));
   /*
     [{"filename":"metadata-project_DCO_GAI_Bv3v5_28819.csv",
     "size":5561,
