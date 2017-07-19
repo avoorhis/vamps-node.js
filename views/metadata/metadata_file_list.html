@@ -11,9 +11,6 @@
 <% var table_diff_html = {} %>
 <% } %>
 
-
-<div><a class='btn btn-xs btn-primary' href='/metadata/metadata_file_list'>Reload Page</a></div>
-
 <% if (table_diff_html.length > 0) { %>
 	<% if (typeof(file_names) !== 'undefined' && file_names.length > 0) { %>
 		<h3>Difference between <br/><%= file_names[0] %> & <br/><%= file_names[1] %>:</h3>
@@ -75,7 +72,7 @@
 	<input type='hidden' name='file_info' id='file_info' value='<%= finfo %>' />
 	<% } %>
 
-	<button type="submit">Compare</button>
+	<button type="submit">Submit</button>
 </form>
 
  <!--include ../add_ins/file_retrieval.ejs %>-->
