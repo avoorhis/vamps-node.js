@@ -275,7 +275,7 @@ router.post('/metadata_files',
       file_names: req.body.compare,
       edit: true
     });
-    
+
     console.timeEnd("TIME: in post /metadata_files");
   });
 
@@ -802,7 +802,6 @@ function get_csv_files(req) {
   // out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + project + '_' + rando.toString() + ".csv");
 
   var all_my_files = [];
-  var csvCompare = require("csv-compare");
   all_my_files = helpers.walk_sync(user_csv_dir);
   //   , function(err, files) {
   //   if (err) throw err;
