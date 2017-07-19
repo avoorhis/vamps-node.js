@@ -1,6 +1,6 @@
 <% include ../add_ins/begin.ejs %>
-<% if(file_info) {%>
-<% var file_info = JSON.parse(finfo) %>
+<% if(finfo) {%>
+	<% var file_info = JSON.parse(finfo) %>
 <% } %>
 
 <div><a class='btn btn-xs btn-primary' href='/metadata/metadata_file_list'>Reload Page</a></div>
