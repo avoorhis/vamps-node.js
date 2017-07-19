@@ -268,14 +268,29 @@ function get_file_diff(req, files) {
 
 function sorted_files_by_time(req) {
   console.time("sorted_files_by_time");
-  var file_names_array = req.body.compare;
   var f_info = JSON.parse(req.body.file_info);
+  var dir = path.join(config.USER_FILES_BASE, req.user.username);
+  f_info.sort(function(a, b) {
+    return fs.statSync(path.join(dir, a.filename)).mtime.getTime() -
+      fs.statSync(path.join(dir, b.filename)).mtime.getTime();
+  });
+  console.log("GGG01 f_info");
+  console.log(f_info);
+
+  console.timeEnd("sorted_files_by_time");
+  return f_info;
+}
+
+function sorted_files_to_compare(req, sorted_files) {
+  console.time("sorted_files_to_compare");
+
+  var file_names_array = req.body.compare;
   var files = [];
 
   if (typeof file_names_array === 'undefined' || file_names_array.length === 0) {
     return null;
   }
-  f_info.filter(function (el) {
+  sorted_files.filter(function (el) {
     if (file_names_array.includes(el.filename)) {
       files.push(el);
     }
@@ -283,17 +298,8 @@ function sorted_files_by_time(req) {
   console.log("GGG0 files");
   console.log(files);
 
-  var dir = path.join(config.USER_FILES_BASE, req.user.username);
-  files.sort(function(a, b) {
-    return fs.statSync(path.join(dir, a.filename)).mtime.getTime() -
-      fs.statSync(path.join(dir, b.filename)).mtime.getTime();
-  });
-  console.log("GGG01 files");
-  console.log(files);
-
-  console.timeEnd("sorted_files_by_time");
+  console.timeEnd("sorted_files_to_compare");
   return files;
-
 }
 
 router.post('/metadata_files',
@@ -312,10 +318,11 @@ router.post('/metadata_files',
 
     * */
 
-    var files = sorted_files_by_time(req);
+    var sorted_files = sorted_files_by_time(req);
+    var files_to_compare = sorted_files_to_compare(req, sorted_files);
 
     if (typeof req.body.compare !== 'undefined' && req.body.compare.length !== 0) {
-      table_diff_html = get_file_diff(req, files);
+      table_diff_html = get_file_diff(req, files_to_compare);
     }
     if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
       edit_metadata_file = req.body.edit_metadata_file;
@@ -331,7 +338,8 @@ router.post('/metadata_files',
       user: req.user,
       hostname: req.CONFIG.hostname,
       table_diff_html: table_diff_html,
-      finfo: JSON.stringify(files),
+      finfo: JSON.stringify(sorted_files),
+      files_to_compare: files_to_compare,
       file_names: req.body.compare,
       edit: true
     });
