@@ -175,8 +175,8 @@ router.post('/start_edit',
 
     var data1 = String(fs.readFileSync(inputPath1));
     var data2 = String(fs.readFileSync(inputPath2));
-    // console.log("AAA7 data1");
-    // console.log(data1);
+    console.log("AAA7 data1");
+    console.log(data1);
     // var parse = require('csv-parse');
 
     // var parser = parse({delimiter: columnDelimiter, trim: true}, function(err, data){
@@ -193,12 +193,12 @@ router.post('/start_edit',
     var parse = require('csv-parse/lib/sync');
     require('should');
 
-    var input = '"key_1","key_2"\n"value 1","value 2"';
-    var records = parse(input, {columns: true});
-    records.should.eql([{ key_1: 'value 1', key_2: 'value 2' }]);
+    // var input = '"key_1","key_2"\n"value 1","value 2"';
+    var records = parse(data1, {trim: true});
+    // records.should.eql([{ key_1: 'value 1', key_2: 'value 2' }]);
 
 
-    console.log("AAA7 records");
+    console.log("AAA03 records");
     console.log(records);
 
     var table1 = new coopy.CoopyTableView(data1);
