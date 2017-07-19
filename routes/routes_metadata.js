@@ -324,13 +324,13 @@ router.post('/metadata_files',
     if (typeof req.body.compare !== 'undefined' && req.body.compare.length !== 0) {
       table_diff_html = get_file_diff(req, files_to_compare);
     }
-    if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
+    else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
       edit_metadata_file = req.body.edit_metadata_file;
     //  TODO: call upload to form and edit on this file
     }
 
-    // console.log("AAA3 table_diff_html");
-    // console.log(table_diff_html);
+    console.log("AAA3 edit_metadata_file");
+    console.log(edit_metadata_file);
     // TODO show, add form to choose, then go to make_metadata_hash
 
     res.render("metadata/metadata_file_list", {
@@ -353,19 +353,19 @@ router.post('/start_edit',
 
     console.time("TIME: 1) in post /start_edit");
 
-    make_metadata_hash(req, res);
+    make_metadata_hash(req, res, req.body.project_id);
 
     console.timeEnd("TIME: 1) in post /start_edit");
   });
 
 // TODO: rename
 // todo: if there is req.form (or req.body?) use the result?
-function make_metadata_hash(req, res) {
+function make_metadata_hash(req, res, pid) {
   console.time("TIME: 2) make_metadata_hash");
   // console.log("ALLL1 AllMetadata = ");
   // console.log(AllMetadata);
 
-  var pid = req.body.project_id;
+  // var pid = req.body.project_id;
   var all_metadata = {};
   if (helpers.isInt(pid))
   {
