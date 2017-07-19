@@ -211,8 +211,11 @@ function get_file_diff(req, files) {
   //     fs.statSync(path.join(dir, b.filename)).mtime.getTime();
   // });
 
-  console.log("PPP0 files0");
+  console.log("PPP0 files[0][\"filename\"]");
   console.log(files[0]["filename"]);
+
+  console.log("PPP0 files[1][\"filename\"]");
+  console.log(files[1]["filename"]);
 
   var inputPath1 = path.join(config.USER_FILES_BASE, req.user.username, files[0]["filename"]);
   var inputPath2 = path.join(config.USER_FILES_BASE, req.user.username, files[1]["filename"]);
@@ -302,22 +305,22 @@ function sorted_files_to_compare(req, sorted_files) {
   return files;
 }
 
-function get_project_id(edit_metadata_file) {
-  // TODO: get from req
-  console.log("AAA33 PROJECT_INFORMATION_BY_PNAME");
-  console.log(PROJECT_INFORMATION_BY_PNAME);
-
+function get_project_name(edit_metadata_file) {
+  console.time("TIME: get_project_prefix");
   // var edit_metadata_file = "metadata-project_DCO_GAI_Bv3v5_65982.csv";
   var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
-  console.log("XXX edit_metadata_file_parts");
-  console.log(edit_metadata_file_parts);
+  // console.log("XXX edit_metadata_file_parts");
+  // console.log(edit_metadata_file_parts);
   // [ 'project', 'DCO', 'GAI', 'Bv3v5', '31989.csv' ]
+  var edit_metadata_project = "";
+  if(edit_metadata_file_parts.length >= 4 ) {
 
-  // var project_prefix = project;
-  // if(project_parts.length >= 2 ){
-  //   project_prefix = project_parts[0] + '_' + project_parts[1];
-  // }
+    edit_metadata_project = edit_metadata_file_parts[1] + "_" + edit_metadata_file_parts[2] + "_" + edit_metadata_file_parts[3];
+  }
+
+
   console.timeEnd("TIME: get_project_prefix");
+  return edit_metadata_project;
 }
 
 router.post('/metadata_files',
@@ -343,16 +346,25 @@ router.post('/metadata_files',
       table_diff_html = get_file_diff(req, files_to_compare);
     }
     else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
-      edit_metadata_file = req.body.edit_metadata_file;
-      get_project_id(edit_metadata_file);
-
-      // make_metadata_hash(req, res, req.body.project_id);
+      // edit_metadata_file = req.body.edit_metadata_file;
+      // var project_name = get_project_name(edit_metadata_file);
+      // console.log("XXX1 edit_metadata_project");
+      // console.log(edit_metadata_project);
+      // console.log("XXX2 PROJECT_INFORMATION_BY_PNAME[edit_metadata_project][\"pid\"]");
+      // var project_id_to_edit = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
+      // console.log(project_id_to_edit);
+      // console.log(typeof project_id_to_edit);
+      // 307
+      // number
+      // make_metadata_hash(req, res, String(project_id_to_edit));
+      make_metadata_hash_from_file(req, res, req.body.edit_metadata_file);
+      //TODO: use parts of make_metadata_hash
 
       //  TODO: call upload to form and edit on this file
     }
 
-    console.log("AAA3 edit_metadata_file");
-    console.log(edit_metadata_file);
+    // console.log("AAA3 edit_metadata_file");
+    // console.log(edit_metadata_file);
     // TODO show, add form to choose, then go to make_metadata_hash
 
     res.render("metadata/metadata_file_list", {
@@ -369,11 +381,23 @@ router.post('/metadata_files',
     console.timeEnd("TIME: in post /metadata_files");
   });
 
+function make_metadata_hash_from_file(req, res, file_name) {
+  console.time("TIME: make_metadata_hash_from_file");
+
+  console.log("EEE1 file_name");
+  console.log(file_name);
+  console.timeEnd("TIME: make_metadata_hash_from_file");
+}
+
+
 router.post('/start_edit',
   [helpers.isLoggedIn],
   function (req, res) {
 
     console.time("TIME: 1) in post /start_edit");
+    console.log("YYY typeof req.body.project_id");
+    console.log(typeof req.body.project_id);
+    // string
 
     make_metadata_hash(req, res, req.body.project_id);
 
