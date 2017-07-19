@@ -302,6 +302,24 @@ function sorted_files_to_compare(req, sorted_files) {
   return files;
 }
 
+function get_project_id(edit_metadata_file) {
+  // TODO: get from req
+  console.log("AAA33 PROJECT_INFORMATION_BY_PNAME");
+  console.log(PROJECT_INFORMATION_BY_PNAME);
+
+  // var edit_metadata_file = "metadata-project_DCO_GAI_Bv3v5_65982.csv";
+  var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
+  console.log("XXX edit_metadata_file_parts");
+  console.log(edit_metadata_file_parts);
+  // [ 'project', 'DCO', 'GAI', 'Bv3v5', '31989.csv' ]
+
+  // var project_prefix = project;
+  // if(project_parts.length >= 2 ){
+  //   project_prefix = project_parts[0] + '_' + project_parts[1];
+  // }
+  console.timeEnd("TIME: get_project_prefix");
+}
+
 router.post('/metadata_files',
   [helpers.isLoggedIn],
   function (req, res) {
@@ -326,7 +344,11 @@ router.post('/metadata_files',
     }
     else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
       edit_metadata_file = req.body.edit_metadata_file;
-    //  TODO: call upload to form and edit on this file
+      get_project_id(edit_metadata_file);
+
+      // make_metadata_hash(req, res, req.body.project_id);
+
+      //  TODO: call upload to form and edit on this file
     }
 
     console.log("AAA3 edit_metadata_file");
@@ -385,8 +407,9 @@ function make_metadata_hash(req, res, pid) {
         var abstract_data  = get_project_abstract_data(project, req);
         var project_prefix = get_project_prefix(project);
 
-        // console.log("DDD forward_primer_seqs");
-        // console.log(JSON.stringify(forward_primer_seqs));
+        // console.log("XXX project_prefix");
+        // console.log(project_prefix);
+        //DCO_GAI
         //
         // console.log("DDD reverse_primer_seqs");
         // console.log(JSON.stringify(reverse_primer_seqs));
