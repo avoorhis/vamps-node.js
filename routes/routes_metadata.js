@@ -160,9 +160,7 @@ router.get('/metadata_file_list', function(req, res) {
   res.render('metadata/metadata_file_list', { title: 'VAMPS:Metadata',
     user: req.user,
     hostname: req.CONFIG.hostname,
-    finfo: JSON.stringify(user_metadata_csv_files),
-    table_diff_html: {}
-
+    finfo: JSON.stringify(user_metadata_csv_files)
   });
 });
 
@@ -183,11 +181,12 @@ router.get('/metadata_file_list', function(req, res) {
 //   });
 // });
 
-router.post('/get_files_diff',
+router.post('/metadata_files',
   [helpers.isLoggedIn],
   function (req, res) {
-    console.time("TIME: 1) in post /get_files_diff");
-
+    console.time("TIME: in post /metadata_files");
+    console.log("LLL1 req.body from metadata_files");
+    console.log(req.body);
     var coopy = require('coopyhx');
 
     // TODO: get from dir, not hardcoded
@@ -240,16 +239,16 @@ router.post('/get_files_diff',
     // TODO show, add form to choose, then go to make_metadata_hash
 
     //TODO: show csv files menu and diff
+    // res.send(table_diff_html);
     res.render("metadata/metadata_file_list", {
       title: "VAMPS: Metadata File List",
       user: req.user,
       hostname: req.CONFIG.hostname,
-      table_diff_html: table_diff_html,
-      finfo: {}
+      table_diff_html: table_diff_html
     });
 
 
-    console.timeEnd("TIME: 1) in post /get_files_diff");
+    console.timeEnd("TIME: in post /metadata_files");
   });
 
 router.post('/start_edit',

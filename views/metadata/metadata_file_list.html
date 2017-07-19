@@ -1,7 +1,17 @@
 <% include ../add_ins/begin.ejs %>
-<% if(finfo) {%>
+<% if (typeof(finfo) !== 'undefined') { %>
 	<% var file_info = JSON.parse(finfo) %>
+<% } else { %>
+	<% var file_info = {} %>
 <% } %>
+
+<% if (typeof(table_diff_html) !== 'undefined') { %>
+<% var table_diff_html = table_diff_html %>
+<% } else { %>
+<% var table_diff_html = {} %>
+<% } %>
+
+<%- table_diff_html %>
 
 <div><a class='btn btn-xs btn-primary' href='/metadata/metadata_file_list'>Reload Page</a></div>
 <p class='title'>Metadata Files List</p>
