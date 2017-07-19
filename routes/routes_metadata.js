@@ -233,6 +233,7 @@ router.post('/metadata_files',
     diff2html.render(table_diff);
     var table_diff_html = diff2html.html();
 
+    table_diff_html = "<div class = 'highlighter'>" + table_diff_html + "</div>"
 
     console.log("AAA3 table_diff_html");
     console.log(table_diff_html);

@@ -11,9 +11,16 @@
 <% var table_diff_html = {} %>
 <% } %>
 
-<%- table_diff_html %>
 
 <div><a class='btn btn-xs btn-primary' href='/metadata/metadata_file_list'>Reload Page</a></div>
+
+<% if (table_diff_html.length > 0) { %>
+
+	<p>Difference between ???:</p>
+	<%- table_diff_html %>
+<% } %>
+
+
 <p class='title'>Metadata Files List</p>
 
 <br><strong>Your Downloads</strong> (click header to sort)
