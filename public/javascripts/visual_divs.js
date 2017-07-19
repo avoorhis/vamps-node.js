@@ -419,45 +419,46 @@ if (typeof dendrogram03_open_btn !== "undefined") {
   });
 }
 //
-// DENDROGRAM PDF
+// DENDROGRAM  R SVG Image
 //
-// var dendrogram_pdf_link = document.getElementById('dendrogram_pdf_link_id') || null;
-// var dendrogram_pdf_btn = document.getElementById('dendrogram_pdf_hide_btn');
-// var dendrogram_pdf_div = document.getElementById('dendrogram_pdf_div');
-// //var dendrogram_pdf_download_btn = document.getElementById('dendrogram_pdf_download_btn');
-// var pre_dendrogram_pdf_div = document.getElementById('pre_dendrogram_pdf_div');
-// if (dendrogram_pdf_link !== null) {
-//   dendrogram_pdf_link.addEventListener('click', function () {
-      
-//     if(typeof dendrogram_pdf_created == "undefined"){
-//         create_viz('dendrogram_pdf', pi_local.ts, false);
-//     //dendrogram_pdf_download_btn.disabled = false;
-//       }else{
-//         if(dendrogram_pdf_btn.value == 'hide'){        
-//           //toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
-//         }else{
-//           toggle_visual_element(dendrogram_pdf_div,'hide',dendrogram_pdf_btn);
-//         }
-//       }
-//       $(pre_dendrogram_pdf_div).scrollView();
-//   });
-// }
-// if (typeof dendrogram_pdf_btn !== "undefined") {
-//   dendrogram_pdf_btn.addEventListener('click', function () {
-//       //alert('here in tt')
-//       if(dendrogram_pdf_btn.value == 'hide'){        
-//         toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
-//       }else{
-//         toggle_visual_element(dendrogram_png_div,'hide',dendrogram_pdf_btn);
-//       }      
-//   });
-// }
-// var dendrogram_pdf_open_btn = document.getElementById('dendrogram_pdf_open_btn');
-// if (typeof dendrogram_pdf_open_btn !== "undefined") {
-//   dendrogram_pdf_open_btn.addEventListener('click', function () {
-//       create_viz('dendrogram_pdf', pi_local.ts, true);      
-//   });
-// }
+var dendrogram_link = document.getElementById('dendrogram_link_id') || null;
+var dendrogram_btn = document.getElementById('dendrogram_hide_btn');
+var dendrogram_div = document.getElementById('dendrogram_div');
+
+var pre_dendrogram_div = document.getElementById('pre_dendrogram_div');
+if (dendrogram_link !== null) {
+  dendrogram_link.addEventListener('click', function () {
+     
+    if(typeof dendrogram_created == "undefined"){
+        create_viz('dendrogram', pi_local.ts, false, cts_local);
+    		
+      }else{
+        if(dendrogram_btn.value == 'hide'){        
+          //toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
+        }else{
+          toggle_visual_element(dendrogram_div,'hide',dendrogram3_btn);
+        }
+      }
+    $(pre_dendrogram_div).scrollView();
+  });
+}
+if (typeof dendrogram_btn !== "undefined") {
+  dendrogram_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(dendrogram_btn.value == 'hide'){        
+        toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
+      }else{
+        toggle_visual_element(dendrogram_div,'hide',dendrogram_btn);
+      }      
+  });
+}
+var dendrogram_open_btn = document.getElementById('dendrogram_open_btn');
+if (typeof dendrogram_open_btn !== "undefined") {
+  dendrogram_open_btn.addEventListener('click', function () {
+      create_viz('dendrogram', pi_local.ts, true, cts_local);      
+  });
+}
+
 //
 // PCOA  2D
 //
