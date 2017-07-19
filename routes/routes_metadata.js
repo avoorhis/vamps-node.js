@@ -187,6 +187,16 @@ router.post('/metadata_files',
     console.time("TIME: in post /metadata_files");
     console.log("LLL1 req.body from metadata_files");
     console.log(req.body);
+    /*TODO: process:
+    * { compare:
+   [ 'metadata-project_DCO_GAI_Bv3v5_31989.csv',
+     'metadata-project_DCO_GAI_Bv3v5_63239.csv' ],
+  file_info: '[{"filename":"metadata-project_DCO_GAI_Bv3v5_31989.csv","size":7845,"time":"2017-07-19T14:46:27.000Z","mtime_format":"2017-07-19 14:46:27","user_dirname":"AnnaSh"},{"filename":"metadata-project_DCO_GAI_Bv3v5_63239.csv","size":7748,"time":"2017-07-19T14:46:53.000Z","mtime_format":"2017-07-19 14:46:53","user_dirname":"AnnaSh"}]' }
+{ edit_metadata_file: 'metadata-project_DCO_GAI_Bv3v5_63239.csv',
+
+    * */
+
+
     var coopy = require('coopyhx');
 
     // TODO: get from dir, not hardcoded
@@ -199,8 +209,8 @@ router.post('/metadata_files',
 
     var data1 = String(fs.readFileSync(inputPath1));
     var data2 = String(fs.readFileSync(inputPath2));
-    console.log("AAA7 data1");
-    console.log(data1);
+    // console.log("AAA7 data1");
+    // console.log(data1);
     // todo: async?
     // var parse = require('csv-parse');
     // var parser = parse({delimiter: columnDelimiter, trim: true}, function(err, data){
@@ -235,8 +245,8 @@ router.post('/metadata_files',
 
     table_diff_html = "<div class = 'highlighter'>" + table_diff_html + "</div>"
 
-    console.log("AAA3 table_diff_html");
-    console.log(table_diff_html);
+    // console.log("AAA3 table_diff_html");
+    // console.log(table_diff_html);
     // TODO show, add form to choose, then go to make_metadata_hash
 
     //TODO: show csv files menu and diff
