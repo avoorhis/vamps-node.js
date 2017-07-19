@@ -71,14 +71,14 @@
   <input type="email" id="pi_email" name="pi_email"  value='<%= all_metadata[pid]["pi_email"] %>'/>
   <br />
   <label for="project_abstract">CoDL project abstract:</label>
-    <% if (abstract_data_pr) { %>
+    <% if (typeof(abstract_data_pr) !== 'undefined' && abstract_data_pr.length > 0) { %>
       <div class="white_box">
         <% for (var n in abstract_data_pr.pdfs) { %>
           <a href='/static/abstracts/<%= abstract_data_pr.pdfs[n] %>' target='_blank'><%= abstract_data_pr.pdfs[n] %></a><br/>
         <% } %> <!-- for (var pid in all_metadata)-->
         <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= abstract_data_pr %>'/>
       </div>
-      <% } else { %> <!-- if (abstract_data_pr) -->
+      <% } else { %> <!-- if not (abstract_data_pr) -->
     <textarea class="textarea_long" id="project_abstract" name="project_abstract"></textarea>
     <% } %> <!-- if else (abstract_data_pr) -->
 

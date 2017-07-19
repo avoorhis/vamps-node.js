@@ -344,6 +344,16 @@ router.post('/metadata_files',
 
     if (typeof req.body.compare !== 'undefined' && req.body.compare.length !== 0) {
       table_diff_html = get_file_diff(req, files_to_compare);
+      res.render("metadata/metadata_file_list", {
+        title: "VAMPS: Metadata File List",
+        user: req.user,
+        hostname: req.CONFIG.hostname,
+        table_diff_html: table_diff_html,
+        finfo: JSON.stringify(sorted_files),
+        files_to_compare: files_to_compare,
+        file_names: req.body.compare,
+        edit: true
+      });
     }
     else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
       // edit_metadata_file = req.body.edit_metadata_file;
@@ -357,109 +367,10 @@ router.post('/metadata_files',
       // 307
       // number
       // make_metadata_hash(req, res, String(project_id_to_edit));
-      make_metadata_hash_from_file(req, res, req.body.edit_metadata_file);
+      var all_metadata = make_metadata_hash_from_file(req, res, req.body.edit_metadata_file);
       //TODO: use parts of make_metadata_hash
 
       //  TODO: call upload to form and edit on this file
-    }
-
-    // console.log("AAA3 edit_metadata_file");
-    // console.log(edit_metadata_file);
-    // TODO show, add form to choose, then go to make_metadata_hash
-
-    res.render("metadata/metadata_file_list", {
-      title: "VAMPS: Metadata File List",
-      user: req.user,
-      hostname: req.CONFIG.hostname,
-      table_diff_html: table_diff_html,
-      finfo: JSON.stringify(sorted_files),
-      files_to_compare: files_to_compare,
-      file_names: req.body.compare,
-      edit: true
-    });
-
-    console.timeEnd("TIME: in post /metadata_files");
-  });
-
-function make_metadata_hash_from_file(req, res, file_name) {
-  console.time("TIME: make_metadata_hash_from_file");
-
-  console.log("EEE1 file_name");
-  console.log(file_name);
-  var project_name = get_project_name(file_name);
-  var project_id_to_edit = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
-
-  var all_metadata = {};
-  if (helpers.isInt(project_id_to_edit)) {
-    console.log("EEE2 project_id_to_edit");
-    console.log(project_id_to_edit);
-
-    all_metadata[project_id_to_edit] = {};
-    var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
-
-    var parse = require('csv-parse');
-    var parser = parse({columns: true, trim: true}, function(err, data){
-      // var keys_hash = Object.keys(data);
-      for (var idx in data) {
-        for (var key in data[idx]) {
-          if (!(all_metadata[project_id_to_edit].hasOwnProperty(key))) {
-            all_metadata[project_id_to_edit][key] = [];
-          }
-          all_metadata[project_id_to_edit][key].push(data[idx][key]);
-        }
-      }
-      all_metadata[project_id_to_edit]["first_name"]  = data[0].first_name;
-      all_metadata[project_id_to_edit]["institution"] = data[0].institution;
-      all_metadata[project_id_to_edit]["last_name"]   = data[0].last_name;
-      all_metadata[project_id_to_edit]["pi_email"]    = data[0].email;
-      all_metadata[project_id_to_edit]["pi_name"]     = data[0].first_name + " " + data[0].last_name;
-      all_metadata[project_id_to_edit]["project"]     = data[0].project;
-      all_metadata[project_id_to_edit]["project_title"] = data[0].title;
-      all_metadata[project_id_to_edit]["public"]      = data[0].public;
-      all_metadata[project_id_to_edit]["username"]    = data[0].username;
-
-      /*
-      * TODO: add to csv file
-        first_name: undefined
-        institution: undefined
-        last_name: undefined
-        pi_email: undefined
-        pi_name: 'undefined undefined'
-        project_title: undefined
-        public: undefined
-        username: undefined
-      * */
-      
-      console.log("YYY all_metadata[project_id_to_edit]");
-      console.log(all_metadata[project_id_to_edit]);
-      // all_metadata[project_id_to_edit]["project"]     = row.project;
-
-      /*
-       console.log("AAA7 data");
-      console.log(data);
-      * [ { NPOC: '',
-    access_point_type: 'undefined',
-    adapter_sequence: 'TGTCA',
-    ...
-      console.log(data.length);
-    8
-      * */
-
-      // var abstract_data  = get_project_abstract_data(project_name, req);
-      // var project_prefix = get_project_prefix(project_name);
-
-      // console.log("XXX project_prefix");
-      // console.log(project_prefix);
-      //DCO_GAI
-      //
-      // console.log("DDD reverse_primer_seqs");
-      // console.log(JSON.stringify(reverse_primer_seqs));
-      //
-      // DDD forward_primer_seqs
-      // "CCTACGGGAGGCAGCAG, CCTACGGG.GGC[AT]GCAG, TCTACGGAAGGCTGCAG"
-      // DDD reverse_primer_seqs
-      // "GGATTAG.TACCC"
-      //
       var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
       res.render("metadata/metadata_upload_from_file", {
         title: "VAMPS: Metadata_upload",
@@ -479,69 +390,73 @@ function make_metadata_hash_from_file(req, res, file_name) {
         investigation_type_options: CONSTS.INVESTIGATION_TYPE,
         sample_type_options: CONSTS.SAMPLE_TYPE
       });
-    });
-    fs.createReadStream(inputPath).pipe(parser);
+    }
 
-    // all_metadata[pid]["project"]     = row.project;
+    // console.log("AAA3 edit_metadata_file");
+    // console.log(edit_metadata_file);
+    // TODO show, add form to choose, then go to make_metadata_hash
 
-    // all_metadata = populate_metadata_hash_from_file(file_name, pid, all_metadata);
 
-    //   connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows, fields) {
-  //     if (err)
-  //     {
-  //       console.log('get_select_datasets_queryPID error: ' + err);
-  //     }
-  //     else
-  //     {
-  //       console.log("in make_metadata_hash");
-  //       all_metadata = populate_metadata_hash(rows, pid, all_metadata);
-  //
-  //       //TODO: do once here and keep with form
-  //       var project = all_metadata[pid]["project"];
-  //       var abstract_data  = get_project_abstract_data(project, req);
-  //       var project_prefix = get_project_prefix(project);
-  //
-  //       // console.log("XXX project_prefix");
-  //       // console.log(project_prefix);
-  //       //DCO_GAI
-  //       //
-  //       // console.log("DDD reverse_primer_seqs");
-  //       // console.log(JSON.stringify(reverse_primer_seqs));
-  //       //
-  //       // DDD forward_primer_seqs
-  //       // "CCTACGGGAGGCAGCAG, CCTACGGG.GGC[AT]GCAG, TCTACGGAAGGCTGCAG"
-  //       // DDD reverse_primer_seqs
-  //       // "GGATTAG.TACCC"
-  //       //
-  //       all_field_names = CONSTS.ORDERED_METADATA_NAMES;
-  //       res.render("metadata/metadata_upload_from_file", {
-  //         title: "VAMPS: Metadata_upload",
-  //         user: req.user,
-  //         hostname: req.CONFIG.hostname,
-  //         abstract_data_pr: abstract_data[project_prefix],
-  //         all_metadata: all_metadata,
-  //         all_field_names: all_field_names,
-  //         dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-  //         dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-  //         dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-  //         biome_primary_options: CONSTS.BIOME_PRIMARY,
-  //         feature_primary_options: CONSTS.FEATURE_PRIMARY,
-  //         material_primary_options: CONSTS.MATERIAL_PRIMARY,
-  //         metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-  //         env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-  //         investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-  //         sample_type_options: CONSTS.SAMPLE_TYPE
-  //       });
-  //
-  //     }
-  //     // end else
-  //   });
+
+    console.timeEnd("TIME: in post /metadata_files");
+  });
+function add_data_to_all_metadata(){
+//  TODO: DRY with populate_metadata_hash
+
+}
+
+function make_metadata_hash_from_file(req, res, file_name) {
+  console.time("TIME: make_metadata_hash_from_file");
+  //  TODO: DRY with make_metadata_hash
+
+
+  console.log("EEE1 file_name");
+  console.log(file_name);
+  var project_name = get_project_name(file_name);
+  var project_id_to_edit = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
+
+  var all_metadata = {};
+  if (helpers.isInt(project_id_to_edit)) {
+    // console.log("EEE2 project_id_to_edit");
+    // console.log(project_id_to_edit);
+
+    // add_data_to_all_metadata(req);
+
+    all_metadata[project_id_to_edit] = {};
+    var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
+
+    var file_content = fs.readFileSync(inputPath);
+    var parse_sync = require('csv-parse/lib/sync');
+    var data = parse_sync(file_content, {columns: true, trim: true});
+    console.log("AAA7 data");
+    console.log(data);
+
+    for (var idx in data) {
+      for (var key in data[idx]) {
+        if (!(all_metadata[project_id_to_edit].hasOwnProperty(key))) {
+          all_metadata[project_id_to_edit][key] = [];
+        }
+        all_metadata[project_id_to_edit][key].push(data[idx][key]);
+      }
+    }
+    all_metadata[project_id_to_edit]["first_name"]  = data[0].first_name;
+    all_metadata[project_id_to_edit]["institution"] = data[0].institution;
+    all_metadata[project_id_to_edit]["last_name"]   = data[0].last_name;
+    all_metadata[project_id_to_edit]["pi_email"]    = data[0].email;
+    all_metadata[project_id_to_edit]["pi_name"]     = data[0].first_name + " " + data[0].last_name;
+    all_metadata[project_id_to_edit]["project"]     = data[0].project;
+    all_metadata[project_id_to_edit]["project_title"] = data[0].title;
+    all_metadata[project_id_to_edit]["public"]      = data[0].public;
+    all_metadata[project_id_to_edit]["username"]    = data[0].username;
+    //TODO: get!
+    all_metadata[project_id_to_edit]["abstract_data_pr"] = [];
+
+    return all_metadata;
   }
   else
   { // end if int
     console.log('ERROR pid is not an integer: ', project_id_to_edit);
   }
-
 
   console.timeEnd("TIME: make_metadata_hash_from_file");
 }
