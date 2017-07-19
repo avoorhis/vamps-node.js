@@ -887,7 +887,7 @@ function create_dendrogram(ts, image_type, script, new_window) {
         //dendrogram1_created = true;
         var url = '/visuals/dendrogram'
         xmlhttp.open("POST", url, true);  // gets newick
-        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xmlhttp.setRequestHeader("Content-type","application/json");
         var dend_div = document.getElementById('dendrogram01_div');
         document.getElementById('pre_dendrogram01_div').style.display = 'block';
         dend_div.style.display = 'block';
@@ -900,7 +900,7 @@ function create_dendrogram(ts, image_type, script, new_window) {
         //dendrogram3_created = true;
         var url = '/visuals/dendrogram'
         xmlhttp.open("POST", url, true);  // gets newick
-        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xmlhttp.setRequestHeader("Content-type","application/json");
         var dend_div = document.getElementById('dendrogram03_div');
         document.getElementById('pre_dendrogram03_div').style.display = 'block';
         dend_div.style.display = 'block';
