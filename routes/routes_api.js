@@ -44,6 +44,9 @@ router.get('/', helpers.isLoggedIn, function(req, res){
     console.log('ERROR in router.get(/')
     res.send('Function not found')
 })
+//
+// CREATE IMAGE
+//
 router.post('/create_image',  function(req, res){
   console.log('in API')
   if(! helpers.isLoggedInAPI(req, res)){

@@ -646,7 +646,10 @@
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-R',<%= pi.ts %>')">Distance File</button></li>
               <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('phyloseq_tree05','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'cytoscape') { %>
-            <% }else if(prefix == 'dendrogram0') { %>
+            <% }else if(prefix == 'dendrogram') { %>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-py','<%= pi.ts %>')">Distance File</button></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('dendrogram','<%= pi.ts %>')">JSON Image Config File</button></li>
+              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('tree-py','<%= pi.ts %>')">Tree File (newick)</button></li>
             <% } %>
             </ul>
         </li>

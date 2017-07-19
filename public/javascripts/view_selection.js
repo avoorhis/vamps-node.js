@@ -392,6 +392,8 @@ function create_viz(visual, ts, new_window, cts_local) {
       create_barcharts_group(new_window);
     }else if(visual === 'dheatmap'){
       create_dheatmap(ts, new_window);
+    }else if(visual === 'dendrogram'){
+      create_dendrogram(ts,'svg','R', new_window);
     }else if(visual === 'dendrogram01'){
       create_dendrogram(ts,'d3','phylogram', new_window);
     //}
@@ -855,6 +857,8 @@ function create_dendrogram(ts, image_type, script, new_window) {
         //  var htmlstring = document.getElementById('dendrogram2_div').innerHTML;
         }else if(script == 'radial'){
           var htmlstring = document.getElementById('dendrogram03_div').innerHTML;
+        }else if(script == 'R'){
+          var htmlstring = document.getElementById('dendrogram_div').innerHTML;
         }
 
         function openindex()
@@ -872,97 +876,120 @@ function create_dendrogram(ts, image_type, script, new_window) {
     }
       var info_line = create_header('dend', pi_local);
       var dend_div;
+      
+      var html = '';
+      var args =  {}
+      args.metric = pi_local.selected_distance;
+      args.ts = ts;
+      var xmlhttp = new XMLHttpRequest();
+      
       if(script == 'phylogram'){  // d3
         //dendrogram1_created = true;
+        var url = '/visuals/dendrogram'
+        xmlhttp.open("POST", url, true);  // gets newick
+        xmlhttp.setRequestHeader("Content-type","application/json");
         var dend_div = document.getElementById('dendrogram01_div');
         document.getElementById('pre_dendrogram01_div').style.display = 'block';
         dend_div.style.display = 'block';
         document.getElementById('dendrogram01_title').innerHTML = info_line;
         document.getElementById('dendrogram01_title').style.color = 'white';
         document.getElementById('dendrogram01_title').style['font-size'] = 'small';
-
+        args.image_type = image_type;
+        args.script = script;
       }else if(script == 'radial'){  // d3
         //dendrogram3_created = true;
+        var url = '/visuals/dendrogram'
+        xmlhttp.open("POST", url, true);  // gets newick
+        xmlhttp.setRequestHeader("Content-type","application/json");
         var dend_div = document.getElementById('dendrogram03_div');
         document.getElementById('pre_dendrogram03_div').style.display = 'block';
         dend_div.style.display = 'block';
         document.getElementById('dendrogram03_title').innerHTML = info_line;
         document.getElementById('dendrogram03_title').style.color = 'white';
         document.getElementById('dendrogram03_title').style['font-size'] = 'small';
+        args.image_type = image_type;
+        args.script = script;
+      }else if(script == 'R'){  // R
+        //dendrogram3_created = true;
+        var url = '/api/create_image'
+        xmlhttp.open("POST", url, true);  // gets newick
+        xmlhttp.setRequestHeader("Content-type","application/json");
+        var dend_div = document.getElementById('dendrogram_div');
+        document.getElementById('pre_dendrogram_div').style.display = 'block';
+        dend_div.style.display = 'block';
+        document.getElementById('dendrogram_title').innerHTML = info_line;
+        document.getElementById('dendrogram_title').style.color = 'white';
+        document.getElementById('dendrogram_title').style['font-size'] = 'small';
+        
+        args.image = 'dendrogram';
+      
       }else{
         return;
       }
       dend_div.innerHTML = '';
-
+      
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
 
-
-
-      var html = '';
-      var args =  "metric="+pi_local.selected_distance;
-      args += "&ts="+ts;
-      args += "&image_type="+image_type;
-      args += "&script="+script;
-
-      var xmlhttp = new XMLHttpRequest();
-      xmlhttp.open("POST", '/visuals/dendrogram', true);  // gets newick
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       showDots='';
       var myWaitVar = setInterval(myWaitFunction,1000,dend_div);
       xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
           clearInterval(myWaitVar);
-          var htmlstring = xmlhttp.responseText;
+          if(script == 'R'){
+            data = JSON.parse(xmlhttp.response)
+            dendrogram_div.innerHTML = data.html;
+            document.getElementById('dendrogram_dnld_btn').disabled = false  
+            return 
+          }else{
+                  var htmlstring = xmlhttp.responseText;
 
-          //htmlstring ="('ICM_LCY_Bv6--LCY_0007_2003_05_04':0.090874090613,('ICM_LCY_Bv6--LCY_0001_2003_05_11':0.00863121477239,('ICM_LCY_Bv6--LCY_0005_2003_05_16':0.00382350678165,'ICM_LCY_Bv6--LCY_0003_2003_05_04':0.00382350678165)))"
-          var newick = Newick.parse(htmlstring);
+                  //htmlstring ="('ICM_LCY_Bv6--LCY_0007_2003_05_04':0.090874090613,('ICM_LCY_Bv6--LCY_0001_2003_05_11':0.00863121477239,('ICM_LCY_Bv6--LCY_0005_2003_05_16':0.00382350678165,'ICM_LCY_Bv6--LCY_0003_2003_05_04':0.00382350678165)))"
+                  var newick = Newick.parse(htmlstring);
 
-          //alert(JSON.stringify(newick, null, 4))
-          //var newick = JSON.parse(newick);
-          var newickNodes = []
-          function buildNewickNodes(node, callback) {
-            newickNodes.push(node)
-            if (node.branchset) {
-              for (var i=0; i < node.branchset.length; i++) {
-                buildNewickNodes(node.branchset[i])
-              }
-            }
-          }
-          buildNewickNodes(newick)
-          var w = 1100;
-          var h = 900;
-          if(ds_local.ids.length > 50){
-            h = 1200;
-          }
-          if(script == 'phylogram'){
-              document.getElementById('dendrogram01_div').innerHTML = '';
-              document.getElementById('dendrogram01_dnld_btn').disabled = false
-              d3.phylogram.build('#dendrogram01_div', newick, {
-                width: w,
-                height: h,
-                skipBranchLengthScaling: true  //Make a dendrogram instead of a phylogram. (right justified tree)
-              });
+                  //alert(JSON.stringify(newick, null, 4))
+                  //var newick = JSON.parse(newick);
+                  var newickNodes = []
+                  function buildNewickNodes(node, callback) {
+                    newickNodes.push(node)
+                    if (node.branchset) {
+                      for (var i=0; i < node.branchset.length; i++) {
+                        buildNewickNodes(node.branchset[i])
+                      }
+                    }
+                  }
+                  buildNewickNodes(newick)
+                  var w = 1100;
+                  var h = 900;
+                  if(ds_local.ids.length > 50){
+                    h = 1200;
+                  }
+                  if(script == 'phylogram'){
+                      document.getElementById('dendrogram01_div').innerHTML = '';
+                      document.getElementById('dendrogram01_dnld_btn').disabled = false
+                      d3.phylogram.build('#dendrogram01_div', newick, {
+                        width: w,
+                        height: h,
+                        skipBranchLengthScaling: true  //Make a dendrogram instead of a phylogram. (right justified tree)
+                      });
 
-          }else if(script == 'radial') {
+                  }else if(script == 'radial') {
 
-              document.getElementById('dendrogram03_div').innerHTML = '';
-              document.getElementById('dendrogram03_dnld_btn').disabled = false
-              d3.phylogram.buildRadial('#dendrogram03_div', newick, {
-                width: w,
-                height: h
-              });
+                      document.getElementById('dendrogram03_div').innerHTML = '';
+                      document.getElementById('dendrogram03_dnld_btn').disabled = false
+                      d3.phylogram.buildRadial('#dendrogram03_div', newick, {
+                        width: w,
+                        height: h
+                      });
+                  }
 
-
-          }
-
-
+          } // end else script == 'R'
 
 
         }  // end if xmlhttp.readyState
 
 
       };
-      xmlhttp.send(args);
+      xmlhttp.send(JSON.stringify(args));
 
 }
 
