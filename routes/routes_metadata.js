@@ -177,30 +177,29 @@ router.post('/start_edit',
     var data2 = String(fs.readFileSync(inputPath2));
     // console.log("AAA7 data1");
     // console.log(data1);
-    var parse = require('csv-parse');
+    // var parse = require('csv-parse');
 
-    var parser = parse({delimiter: columnDelimiter, columns: true, trim: true}, function(err, data){
-      console.log("AAA7 data");
-      console.log(data);
-    });
-
-    fs.createReadStream(inputPath1).pipe(parser);
-
-    // fs.readFile(inputPath1, function (err, data) {
-    //   console.log("AAA01 data");
+    // var parser = parse({delimiter: columnDelimiter, trim: true}, function(err, data){
+    //   console.log("AAA7 data");
     //   console.log(data);
-    //   var records = parse(string(data), {columns: true, trim: true});
-    //   // parse(data, {columns: true, trim: true}, function(err, rows) {
-    //   console.log("AAA03 records");
-    //   console.log(records);
-    //   //
-    //   //   // Your CSV data is in an array of arrys passed to this callback as rows.
-    //   // });
     // });
-    // var a = String(data1);
-    // console.log("AAA8 a");
-    // console.log(a);
 
+    // fs.createReadStream(inputPath1).pipe(parser);
+
+    // var input = '"key_1","key_2"\n"value 1","value 2"';
+    // var records1 = parse(data1, {trim: true});
+    // records.should.eql([{ key_1: 'value 1', key_2: 'value 2' }]);
+
+    var parse = require('csv-parse/lib/sync');
+    require('should');
+
+    var input = '"key_1","key_2"\n"value 1","value 2"';
+    var records = parse(input, {columns: true});
+    records.should.eql([{ key_1: 'value 1', key_2: 'value 2' }]);
+
+
+    console.log("AAA7 records");
+    console.log(records);
 
     var table1 = new coopy.CoopyTableView(data1);
     var table2 = new coopy.CoopyTableView(data2);
