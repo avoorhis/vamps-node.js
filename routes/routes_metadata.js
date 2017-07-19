@@ -160,7 +160,8 @@ router.get('/metadata_file_list', function(req, res) {
   res.render('metadata/metadata_file_list', { title: 'VAMPS:Metadata',
     user: req.user,
     hostname: req.CONFIG.hostname,
-    finfo: JSON.stringify(user_metadata_csv_files)
+    finfo: JSON.stringify(user_metadata_csv_files),
+    edit: true
   });
 });
 
@@ -181,6 +182,57 @@ router.get('/metadata_file_list', function(req, res) {
 //   });
 // });
 
+function get_file_diff(req) {
+  var coopy = require('coopyhx');
+
+  // TODO: get from dir, not hardcoded
+  var inputPath1 = "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_31989.csv";
+  var inputPath2 = "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_63239.csv";
+
+  var columnDelimiter = ',';
+  var lineDelimiter = '\n';
+  var cellEscape = '"';
+
+  var data1 = String(fs.readFileSync(inputPath1));
+  var data2 = String(fs.readFileSync(inputPath2));
+  // console.log("AAA7 data1");
+  // console.log(data1);
+  // todo: async?
+  // var parse = require('csv-parse');
+  // var parser = parse({delimiter: columnDelimiter, trim: true}, function(err, data){
+  //   console.log("AAA7 data");
+  //   console.log(data);
+  // });
+  // fs.createReadStream(inputPath1).pipe(parser);
+
+
+  var parse_sync = require('csv-parse/lib/sync');
+  var records1 = parse_sync(data1, {trim: true});
+  var records2 = parse_sync(data2, {trim: true});
+
+  var table1 = new coopy.CoopyTableView(records1);
+  var table2 = new coopy.CoopyTableView(records2);
+
+  var alignment = coopy.compareTables(table1,table2).align();
+
+  var data_diff = [];
+  var table_diff = new coopy.CoopyTableView(data_diff);
+
+  var flags = new coopy.CompareFlags();
+  var highlighter = new coopy.TableDiff(alignment, flags);
+  highlighter.hilite(table_diff);
+
+  // console.log("AAA2 highlighter");
+  // console.log(highlighter);
+
+  var diff2html = new coopy.DiffRender();
+  diff2html.render(table_diff);
+  var table_diff_html = diff2html.html();
+
+  return "<div class = 'highlighter'>" + table_diff_html + "</div>"
+
+}
+
 router.post('/metadata_files',
   [helpers.isLoggedIn],
   function (req, res) {
@@ -196,54 +248,7 @@ router.post('/metadata_files',
 
     * */
 
-
-    var coopy = require('coopyhx');
-
-    // TODO: get from dir, not hardcoded
-    var inputPath1 = "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_31989.csv";
-    var inputPath2 = "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_63239.csv";
-
-    var columnDelimiter = ',';
-    var lineDelimiter = '\n';
-    var cellEscape = '"';
-
-    var data1 = String(fs.readFileSync(inputPath1));
-    var data2 = String(fs.readFileSync(inputPath2));
-    // console.log("AAA7 data1");
-    // console.log(data1);
-    // todo: async?
-    // var parse = require('csv-parse');
-    // var parser = parse({delimiter: columnDelimiter, trim: true}, function(err, data){
-    //   console.log("AAA7 data");
-    //   console.log(data);
-    // });
-    // fs.createReadStream(inputPath1).pipe(parser);
-
-
-    var parse_sync = require('csv-parse/lib/sync');
-    var records1 = parse_sync(data1, {trim: true});
-    var records2 = parse_sync(data2, {trim: true});
-
-    var table1 = new coopy.CoopyTableView(records1);
-    var table2 = new coopy.CoopyTableView(records2);
-
-    var alignment = coopy.compareTables(table1,table2).align();
-
-    var data_diff = [];
-    var table_diff = new coopy.CoopyTableView(data_diff);
-
-    var flags = new coopy.CompareFlags();
-    var highlighter = new coopy.TableDiff(alignment, flags);
-    highlighter.hilite(table_diff);
-
-    // console.log("AAA2 highlighter");
-    // console.log(highlighter);
-
-    var diff2html = new coopy.DiffRender();
-    diff2html.render(table_diff);
-    var table_diff_html = diff2html.html();
-
-    table_diff_html = "<div class = 'highlighter'>" + table_diff_html + "</div>"
+    var table_diff_html = get_file_diff(req);
 
     // console.log("AAA3 table_diff_html");
     // console.log(table_diff_html);
@@ -255,7 +260,8 @@ router.post('/metadata_files',
       title: "VAMPS: Metadata File List",
       user: req.user,
       hostname: req.CONFIG.hostname,
-      table_diff_html: table_diff_html
+      table_diff_html: table_diff_html,
+      edit: true
     });
 
 

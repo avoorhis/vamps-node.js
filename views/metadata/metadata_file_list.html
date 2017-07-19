@@ -34,7 +34,9 @@
 			<th>Download</th>
 			<th>Creation Time</th>
 			<th>Compare</th>
+			<% if(edit) { %>
 			<th>Edit</th>
+			<% } %>
 			<th>Delete</th>
 		</tr>
 		</thead>
@@ -54,9 +56,11 @@
 				<input type="checkbox" id="compare" name="compare" value="<%= filename %>">
 				<label for="compare">Compare 2 files</label>
 			</td>
+			<% if(edit) { %>
 			<td>
 				<input type="radio" name="edit_metadata_file" value="<%= filename %>" />
 			</td>
+			<% } %>
 			<td>
 				<a href='file_utils?fxn=delete&user=<%= file_info[t].user_dirname %>&filename=<%= filename %>' >delete from the server</a>
 			</td>
