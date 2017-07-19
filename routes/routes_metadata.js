@@ -241,6 +241,7 @@ router.post('/metadata_files',
   [helpers.isLoggedIn],
   function (req, res) {
     console.time("TIME: in post /metadata_files");
+    var table_diff_html, edit_metadata_file;
     console.log("LLL1 req.body from metadata_files");
     console.log(req.body);
     /*TODO: process:
@@ -253,11 +254,11 @@ router.post('/metadata_files',
     * */
 
     if (typeof req.body.compare !== 'undefined' && req.body.compare.length !== 0) {
-      var table_diff_html = get_file_diff(req);
+      table_diff_html = get_file_diff(req);
 
     }
     if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
-      var edit_metadata_file = req.body.edit_metadata_file;
+      edit_metadata_file = req.body.edit_metadata_file;
     //  TODO: call upload to form and edit on this file
     }
 
@@ -265,8 +266,6 @@ router.post('/metadata_files',
     // console.log(table_diff_html);
     // TODO show, add form to choose, then go to make_metadata_hash
 
-    //TODO: show csv files menu and diff
-    // res.send(table_diff_html);
     res.render("metadata/metadata_file_list", {
       title: "VAMPS: Metadata File List",
       user: req.user,
@@ -276,8 +275,7 @@ router.post('/metadata_files',
       file_names: req.body.compare,
       edit: true
     });
-
-
+    
     console.timeEnd("TIME: in post /metadata_files");
   });
 
