@@ -256,10 +256,10 @@ router.post('/metadata_files',
       var table_diff_html = get_file_diff(req);
 
     }
-    console.log("LLL2 req.body.compare from metadata_files");
-    console.log(req.body.compare);
-
-
+    if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
+      var edit_metadata_file = req.body.edit_metadata_file;
+    //  TODO: call upload to form and edit on this file
+    }
 
     // console.log("AAA3 table_diff_html");
     // console.log(table_diff_html);
@@ -272,6 +272,8 @@ router.post('/metadata_files',
       user: req.user,
       hostname: req.CONFIG.hostname,
       table_diff_html: table_diff_html,
+      finfo: req.body.file_info,
+      file_names: req.body.compare,
       edit: true
     });
 
