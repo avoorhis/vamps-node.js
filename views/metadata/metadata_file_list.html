@@ -19,8 +19,8 @@ typeof(file_info):
 <% } %>
 
 <% if (table_diff_html.length > 0) { %>
-	<% if (typeof(file_names) !== 'undefined' && file_names.length > 0) { %>
-		<h3>Difference between <br/><%= file_names[0] %> & <br/><%= file_names[1] %>:</h3>
+	<% if (typeof(files_to_compare) !== 'undefined' && files_to_compare.length > 0) { %>
+		<h3>Difference between <br/><%= files_to_compare[0].filename %> & <br/><%= files_to_compare[1].filename %>:</h3>
 	<% } %>
 	<%- table_diff_html %>
 <% } %>
