@@ -184,11 +184,15 @@ router.get('/metadata_file_list', function(req, res) {
 
 function get_file_diff(req) {
   var coopy = require('coopyhx');
-
+  file_names_array = req.body.compare;
+  // TODO check if only two names
   // TODO: get from dir, not hardcoded
-  var inputPath1 = "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_31989.csv";
-  var inputPath2 = "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_63239.csv";
-
+  // var inputPath1 = "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_31989.csv";
+  // var inputPath2 = "/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/AnnaSh/metadata-project_DCO_GAI_Bv3v5_63239.csv";
+  var inputPath1 = path.join(config.USER_FILES_BASE, req.user.username, file_names_array[0]);
+  var inputPath2 = path.join(config.USER_FILES_BASE, req.user.username, file_names_array[1]);
+  console.log("AAA7 inputPath1");
+  console.log(inputPath1);
   var columnDelimiter = ',';
   var lineDelimiter = '\n';
   var cellEscape = '"';
@@ -229,7 +233,7 @@ function get_file_diff(req) {
   diff2html.render(table_diff);
   var table_diff_html = diff2html.html();
 
-  return "<div class = 'highlighter'>" + table_diff_html + "</div>"
+  return "<div class = 'highlighter'>" + table_diff_html + "</div>";
 
 }
 
@@ -248,7 +252,14 @@ router.post('/metadata_files',
 
     * */
 
-    var table_diff_html = get_file_diff(req);
+    if (typeof req.body.compare !== 'undefined' && req.body.compare.length !== 0) {
+      var table_diff_html = get_file_diff(req);
+
+    }
+    console.log("LLL2 req.body.compare from metadata_files");
+    console.log(req.body.compare);
+
+
 
     // console.log("AAA3 table_diff_html");
     // console.log(table_diff_html);
