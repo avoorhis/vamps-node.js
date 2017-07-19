@@ -190,19 +190,20 @@ router.post('/start_edit',
     // var records1 = parse(data1, {trim: true});
     // records.should.eql([{ key_1: 'value 1', key_2: 'value 2' }]);
 
-    var parse = require('csv-parse/lib/sync');
+    var parse_sync = require('csv-parse/lib/sync');
     require('should');
 
     // var input = '"key_1","key_2"\n"value 1","value 2"';
-    var records = parse(data1, {trim: true});
+    var records1 = parse_sync(data1, {trim: true});
     // records.should.eql([{ key_1: 'value 1', key_2: 'value 2' }]);
 
+    var records2 = parse_sync(data2, {trim: true});
 
-    console.log("AAA03 records");
-    console.log(records);
+    console.log("AAA03 records1");
+    console.log(records1);
 
-    var table1 = new coopy.CoopyTableView(data1);
-    var table2 = new coopy.CoopyTableView(data2);
+    var table1 = new coopy.CoopyTableView(records1);
+    var table2 = new coopy.CoopyTableView(records2);
 
     var alignment = coopy.compareTables(table1,table2).align();
 
