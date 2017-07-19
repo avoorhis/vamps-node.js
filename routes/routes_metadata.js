@@ -394,15 +394,46 @@ function make_metadata_hash_from_file(req, res, file_name) {
     console.log("EEE2 project_id_to_edit");
     console.log(project_id_to_edit);
 
-    all_metadata[pid] = {};
+    all_metadata[project_id_to_edit] = {};
+    var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
 
-    // var parse = require('csv-parse');
-    // var parser = parse({delimiter: columnDelimiter, trim: true}, function(err, data){
-    //   console.log("AAA7 data");
-    //   console.log(data);
-    // });
-    // fs.createReadStream(inputPath1).pipe(parser);
-    
+    var parse = require('csv-parse');
+    var parser = parse({columns: true, trim: true}, function(err, data){
+      var keys_hash = Object.keys(data);
+      for (var idx in data) {
+        for (var key in data[idx]) {
+          // console.log("AAA71 key");
+          // console.log(key);
+          // console.log("AAA73 data[key]");
+          // console.log(data[idx][key]);
+          // AAA71 key
+          // adapter_sequence
+          // AAA73 data[key]
+          // TGTCA
+          if (!(all_metadata[project_id_to_edit].hasOwnProperty(key))) {
+            all_metadata[project_id_to_edit][key] = [];
+          }
+          all_metadata[project_id_to_edit][key].push(data[idx][key]);
+        }
+      }
+
+      console.log("YYY all_metadata[project_id_to_edit]");
+      console.log(all_metadata[project_id_to_edit]);
+      // all_metadata[project_id_to_edit]["project"]     = row.project;
+
+      /*
+       console.log("AAA7 data");
+      console.log(data);
+      * [ { NPOC: '',
+    access_point_type: 'undefined',
+    adapter_sequence: 'TGTCA',
+    ...
+      console.log(data.length);
+    8
+      * */
+    });
+    fs.createReadStream(inputPath).pipe(parser);
+
     // all_metadata[pid]["project"]     = row.project;
 
     // all_metadata = populate_metadata_hash_from_file(file_name, pid, all_metadata);
@@ -474,10 +505,6 @@ router.post('/start_edit',
   function (req, res) {
 
     console.time("TIME: 1) in post /start_edit");
-    console.log("YYY typeof req.body.project_id");
-    console.log(typeof req.body.project_id);
-    // string
-
     make_metadata_hash(req, res, req.body.project_id);
 
     console.timeEnd("TIME: 1) in post /start_edit");
