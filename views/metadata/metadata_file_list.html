@@ -1,15 +1,52 @@
 <% include ../add_ins/begin.ejs %>
 <% var file_info = JSON.parse(finfo) %>
-<div><a class='btn btn-xs btn-primary' href='/user_data/file_retrieval'>Reload Page</a></div>
+<div><a class='btn btn-xs btn-primary' href='/metadata/metadata_file_list'>Reload Page</a></div>
 <p class='title'>Metadata Files List</p>
 
 <br><strong>Your Downloads</strong> (click header to sort)
 
 <% if(table_diff_html) {%>
-<%= table_diff_html %>
+<%= JSON.stringify(file_info) %>
 <% } %>
 
-form!!!
+<form name='metadata_files' method='POST' action='/metadata/metadata_files'>
+	<table class='table sortable'>
+		<thead>
+		<tr>
+			<th></th>
+			<th>Download</th>
+			<th>Creation Time</th>
+			<th>Compare</th>
+			<th>Delete</th>
+		</tr>
+		</thead>
+		<tbody>
+		<% for(t in file_info){ %>
+		<% var filename = file_info[t].filename %>
+
+		<tr>
+			<td><%= parseInt(t)+1 %></td>
+			<td>
+				<a href='file_utils?fxn=download&user=<%= file_info[t].user_dirname %>&type=fasta&filename=<%= filename %>' ><%= filename %></a>
+			</td>
+			<td>
+				<%= file_info[t].mtime_format %>
+			</td>
+			<td>
+				<input type="checkbox" id="compare" name="compare" value="compare">
+				<label for="compare">Compare 2 files</label>
+			</td>
+			<td>
+				<a href='file_utils?fxn=delete&user=<%= file_info[t].user_dirname %>&filename=<%= filename %>' >delete from the server</a>
+			</td>
+		</tr>
+
+		<% } %>
+		</tbody>
+	</table>
+	<button type="submit">Compare</button>
+</form>
+
  <!--include ../add_ins/file_retrieval.ejs %>-->
 <% include ../add_ins/end.ejs %>
 <script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>

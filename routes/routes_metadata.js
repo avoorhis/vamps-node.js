@@ -183,12 +183,10 @@ router.get('/metadata_file_list', function(req, res) {
 //   });
 // });
 
-router.post('/start_edit',
+router.post('/get_files_diff',
   [helpers.isLoggedIn],
   function (req, res) {
-
-    console.time("TIME: 1) in post /start_edit");
-    var all_metadata_csv_files = get_csv_files(req);
+    console.time("TIME: 1) in post /get_files_diff");
 
     var coopy = require('coopyhx');
 
@@ -250,7 +248,17 @@ router.post('/start_edit',
       finfo: {}
     });
 
-    // make_metadata_hash(req, res);
+
+    console.timeEnd("TIME: 1) in post /get_files_diff");
+  });
+
+router.post('/start_edit',
+  [helpers.isLoggedIn],
+  function (req, res) {
+
+    console.time("TIME: 1) in post /start_edit");
+
+    make_metadata_hash(req, res);
 
     console.timeEnd("TIME: 1) in post /start_edit");
   });
