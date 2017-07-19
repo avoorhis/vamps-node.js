@@ -408,22 +408,26 @@ function make_metadata_hash_from_file(req, res, file_name) {
           all_metadata[project_id_to_edit][key].push(data[idx][key]);
         }
       }
+      all_metadata[project_id_to_edit]["first_name"]  = data[0].first_name;
+      all_metadata[project_id_to_edit]["institution"] = data[0].institution;
+      all_metadata[project_id_to_edit]["last_name"]   = data[0].last_name;
+      all_metadata[project_id_to_edit]["pi_email"]    = data[0].email;
+      all_metadata[project_id_to_edit]["pi_name"]     = data[0].first_name + " " + data[0].last_name;
       all_metadata[project_id_to_edit]["project"]     = data[0].project;
       all_metadata[project_id_to_edit]["project_title"] = data[0].title;
-      all_metadata[project_id_to_edit]["username"]    = data[0].username;
-      all_metadata[project_id_to_edit]["pi_name"]     = data[0].first_name + " " + data[0].last_name;
-      all_metadata[project_id_to_edit]["pi_email"]    = data[0].email;
-      all_metadata[project_id_to_edit]["institution"] = data[0].institution;
-      all_metadata[project_id_to_edit]["first_name"]  = data[0].first_name;
-      all_metadata[project_id_to_edit]["last_name"]   = data[0].last_name;
       all_metadata[project_id_to_edit]["public"]      = data[0].public;
+      all_metadata[project_id_to_edit]["username"]    = data[0].username;
+
       /*
-      * TODO:
-      *   username: undefined,
-        institution: undefined,
-        first_name: undefined,
-        last_name: undefined,
-        public: undefined }
+      * TODO: add to csv file
+        first_name: undefined
+        institution: undefined
+        last_name: undefined
+        pi_email: undefined
+        pi_name: 'undefined undefined'
+        project_title: undefined
+        public: undefined
+        username: undefined
       * */
       
       console.log("YYY all_metadata[project_id_to_edit]");
@@ -440,6 +444,41 @@ function make_metadata_hash_from_file(req, res, file_name) {
       console.log(data.length);
     8
       * */
+
+      // var abstract_data  = get_project_abstract_data(project_name, req);
+      // var project_prefix = get_project_prefix(project_name);
+
+      // console.log("XXX project_prefix");
+      // console.log(project_prefix);
+      //DCO_GAI
+      //
+      // console.log("DDD reverse_primer_seqs");
+      // console.log(JSON.stringify(reverse_primer_seqs));
+      //
+      // DDD forward_primer_seqs
+      // "CCTACGGGAGGCAGCAG, CCTACGGG.GGC[AT]GCAG, TCTACGGAAGGCTGCAG"
+      // DDD reverse_primer_seqs
+      // "GGATTAG.TACCC"
+      //
+      var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
+      res.render("metadata/metadata_upload_from_file", {
+        title: "VAMPS: Metadata_upload",
+        user: req.user,
+        hostname: req.CONFIG.hostname,
+        // abstract_data_pr: abstract_data[project_prefix],
+        all_metadata: all_metadata,
+        all_field_names: all_field_names,
+        dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+        dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+        dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+        biome_primary_options: CONSTS.BIOME_PRIMARY,
+        feature_primary_options: CONSTS.FEATURE_PRIMARY,
+        material_primary_options: CONSTS.MATERIAL_PRIMARY,
+        metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+        env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+        investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+        sample_type_options: CONSTS.SAMPLE_TYPE
+      });
     });
     fs.createReadStream(inputPath).pipe(parser);
 
