@@ -445,7 +445,7 @@ function make_metadata_hash_from_file(req, res, file_name) {
     all_metadata[project_id_to_edit]["pi_email"]    = data[0].pi_email;
     all_metadata[project_id_to_edit]["pi_name"]     = data[0].first_name + " " + data[0].last_name;
     all_metadata[project_id_to_edit]["project"]     = data[0].project;
-    all_metadata[project_id_to_edit]["project_title"] = data[0].title;
+    all_metadata[project_id_to_edit]["project_title"] = data[0].project_title;
     all_metadata[project_id_to_edit]["public"]      = data[0].public;
     all_metadata[project_id_to_edit]["username"]    = data[0].username;
     //TODO: get!
