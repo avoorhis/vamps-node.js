@@ -151,36 +151,7 @@ function get_metadata_hash(md_selected){
 // ---- metadata_upload ----
 // AllMetadata = helpers.get_metadata_from_file()
 
-router.get('/metadata_file_list', function(req, res) {
-  console.log('in metadata_file_list');
-  var user_metadata_csv_files = get_csv_files(req);
-  console.log("JJJ1 JSON.stringify(user_metadata_csv_files)");
-  console.log(JSON.stringify(user_metadata_csv_files));
 
-  res.render('metadata/metadata_file_list', { title: 'VAMPS:Metadata',
-    user: req.user,
-    hostname: req.CONFIG.hostname,
-    finfo: JSON.stringify(user_metadata_csv_files),
-    edit: true
-  });
-});
-
-// router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(req, res) {
-//   var export_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-//
-//   helpers.walk(export_dir, function(err, files) {
-//     if (err) throw err;
-//     files.sort(function sortByTime(a, b) {
-//       //reverse sort: recent-->oldest
-//       return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
-//     });
-//     res.render('user_data/file_retrieval', { title: 'VAMPS:Retrieve Data',
-//       user: req.user, hostname: req.CONFIG.hostname,
-//       finfo: JSON.stringify(files)
-//
-//     });
-//   });
-// });
 function findByValueOfObject(arr, key, value) {
   return arr.filter(function(item) {
     return (item[key] === value);
@@ -673,12 +644,6 @@ function editMetadataForm(req, res){
   console.time("TIME: editMetadataForm");
 
   console.log('in editMetadataForm');
-  // get_csv_files(req);
-
-  // var edit_metadata_address = "metadata/metadata_upload_from_file";
-
-  // console.log("FFF2 req.body");
-  // console.log(req.body);
 
   all_field_names = collect_new_rows(req, all_field_names);
 
@@ -983,62 +948,6 @@ function make_csv(req) {
   console.timeEnd("TIME: make_csv");
 }
 
-function get_csv_files(req) {
-  console.time("TIME: get_csv_files");
-
-  // project = req.form["project"];
-  var user_csv_dir = path.join(config.USER_FILES_BASE, req.user.username);
-  // out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + project + '_' + rando.toString() + ".csv");
-
-  var all_my_files = [];
-  all_my_files = helpers.walk_sync(user_csv_dir);
-  //   , function(err, files) {
-  //   if (err) throw err;
-  //   files.sort(function sortByTime(a, b) {
-  //     //reverse sort: recent-->oldest
-  //     return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
-  //   });
-  //
-  //   console.log("JJJ JSON.stringify(files)");
-  //   console.log(JSON.stringify(files));
-  //   // TODO: "filename":"metadata-project... only
-  //   /*
-  //   [{"filename":"metadata-project_DCO_GAI_Bv3v5_28819.csv",
-  //     "fileSize":"5.6",
-  //     "sizer":"KB",
-  //     "time":"2017-07-17T17:22:07.000Z",
-  //     "mtime_format":"2017-07-17 17:22:07",
-  //     "user_dirname":"AnnaSh"},
-  //     {"filename":"metadata-project_DCO_GAI_Bv3v5_82599.csv",
-  //     "fileSize":"5.7",
-  //     "sizer":"KB",
-  //     "time":"2017-07-05T16:15:22.000Z",
-  //     "mtime_format":"2017-07-05 16:15:22",
-  //     "user_dirname":"AnnaSh"}]
-  //   */
-  //   all_my_files = files;
-  //   return all_my_files;
-  // });
-  // console.log("JJJ1 JSON.stringify(all_my_files)");
-  // console.log(JSON.stringify(all_my_files));
-  /*
-    [{"filename":"metadata-project_DCO_GAI_Bv3v5_28819.csv",
-    "size":5561,
-    "time":"2017-07-17T17:22:07.000Z",
-    "mtime_format":"2017-07-17 17:22:07",
-    "user_dirname":"AnnaSh"},
-    {"filename":"metadata-project_DCO_GAI_Bv3v5_82599.csv",
-    "size":5664,
-    "time":"2017-07-05T16:15:22.000Z",
-    "mtime_format":"2017-07-05 16:15:22",
-    "user_dirname":"AnnaSh"}]
-*/
-
-
-  console.timeEnd("TIME: get_csv_files");
-  return all_my_files;
-}
-
 function array_from_object(data) {
   var data_arr = [];
   for (var key in data) {
@@ -1279,6 +1188,39 @@ function collect_new_rows(req, all_field_names) {
 
   return all_field_names;
 
+}
+// ---- metadata_upload 1 ----
+// render new form
+// render edit form
+// create form from db
+// create form from req.form
+// create form from a csv file
+// from form to a csv file
+// from form to req form
+// from a csv file to db
+// from form to db ??
+
+// if csv files: show a list and compare
+router.get('/metadata_file_list', function(req, res) {
+  console.log('in metadata_file_list');
+  var user_metadata_csv_files = get_csv_files(req);
+
+  res.render('metadata/metadata_file_list', { title: 'VAMPS:Metadata',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    finfo: JSON.stringify(user_metadata_csv_files),
+    edit: true
+  });
+});
+
+function get_csv_files(req) {
+  console.time("TIME: get_csv_files");
+
+  var user_csv_dir = path.join(config.USER_FILES_BASE, req.user.username);
+  var all_my_files = helpers.walk_sync(user_csv_dir);
+
+  console.timeEnd("TIME: get_csv_files");
+  return all_my_files;
 }
 
 // ---- metadata_upload end ----
