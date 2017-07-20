@@ -1085,8 +1085,7 @@ function convertArrayOfObjectsToCSV(args) {
   console.log(data);
 
   project_info = PROJECT_INFORMATION_BY_PNAME[data.project[0]];
-  console.log("PPP project");
-  console.log(project);
+
   project = project_info.project;
   first_name = project_info.first;
   institution = project_info.institution;
@@ -1096,42 +1095,6 @@ function convertArrayOfObjectsToCSV(args) {
   project_title = project_info.title;
   public = project_info.public;
   username = project_info.username;
-
-  /*
-  data:
-    pi_email: 'gaidos@hawaii.edu',
-    pi_name: 'Eric Gaidos',
-    project: [ 'DCO_GAI_Bv3v5' ],
-    project_abstract: '',
-    project_title: 'Icelandic Volcanic Lake',
-
-    req.user =
-    TextRow {
-  user_id: 39,
-  username: 'AnnaSh',
-  email: 'ashipunova@mbl.edu',
-  institution: 'MBL',
-  first_name: 'Anna',
-  last_name: 'Shipunova',
-  active: 1,
-  security_level: 1,
-  encrypted_password: 'wt2pXEm8ZUdapsB8x33EqQ==',
-  sign_in_count: 1271,
-  current_sign_in_at: 2017-07-19T23:16:28.000Z,
-  last_sign_in_at: 2017-07-19T23:15:18.000Z }
-
-
-    ***
-    first_name: undefined (req.user)
-    institution: undefined (req.user)
-    last_name: undefined (req.user)
-    pi_email: undefined: AAA7 data [ { NPOC: '',
-    pi_name: 'undefined undefined'  AAA7 data [ { NPOC: '',
-    project_title: undefined  AAA7 data [ { NPOC: '',
-    public: undefined ?
-    username: undefined (req.user)
-
-  * */
 
   data_arr = array_from_object(data);
 
@@ -1157,8 +1120,9 @@ function convertArrayOfObjectsToCSV(args) {
    // TODO: get keys from an array of what to save (dataset_id, for example)
 
 
-  // console.log("CCC3 convertArrayOfObjectsToCSV result");
-  // console.log(result);
+  console.log("CCC3 convertArrayOfObjectsToCSV result");
+  console.log(result);
+  //"NPOC","access_point_type","adapter_sequence",
 
   console.timeEnd("TIME: convertArrayOfObjectsToCSV");
 
