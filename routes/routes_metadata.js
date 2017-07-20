@@ -554,10 +554,10 @@ function collect_new_rows(req, all_field_names) {
   create form from a csv file
   from form to a csv file
   from form to req form
-  from a csv file to db
-  from form to db ??
-
+  save from a csv file to db
+  save from form to db ??
   if csv files: show a list and compare
+  common functions
 */
 
 // render new form
@@ -622,18 +622,18 @@ function make_metadata_hash(req, res, pid) {
         all_metadata = populate_metadata_hash(rows, pid, all_metadata);
 
         //TODO: do once here and keep with form
-        // TODO: add to all_metadata
-        var project = all_metadata[pid]["project"];
-
-        // TODO: add to all_metadata
-        var abstract_data  = get_project_abstract_data(project, req);
-        var project_prefix = get_project_prefix(project);
+        // // TODO: add to all_metadata
+        // var project = all_metadata[pid]["project"];
+        //
+        // // TODO: add to all_metadata
+        // var abstract_data  = get_project_abstract_data(project, req);
+        // var project_prefix = get_project_prefix(project);
 
         // console.log("XXX project_prefix");
         // console.log(project_prefix);
         //DCO_GAI
 
-        render_edit_form(req, res, abstract_data[project_prefix], all_metadata, CONSTS.ORDERED_METADATA_NAMES);
+        render_edit_form(req, res, get_abstract_data(all_metadata[pid]["project"], req), all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
       }
       // end else
