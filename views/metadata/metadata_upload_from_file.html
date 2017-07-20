@@ -71,16 +71,16 @@
   <input type="email" id="pi_email" name="pi_email"  value='<%= all_metadata[pid]["pi_email"] %>'/>
   <br />
   <label for="project_abstract">CoDL project abstract:</label>
-    <% if (typeof(abstract_pdfs) !== 'undefined') { %>
+    <% if (typeof(all_metadata[pid]["project_abstract"]) !== 'undefined') { %>
       <div class="white_box">
-        <% for (var n in abstract_pdfs) { %>
-          <a href='/static/abstracts/<%= abstract_pdfs[n] %>' target='_blank'><%= abstract_pdfs[n] %></a><br/>
+        <% for (var n in all_metadata[pid]["project_abstract"]) { %>
+          <a href='/static/abstracts/<%= all_metadata[pid]["project_abstract"][n] %>' target='_blank'><%= all_metadata[pid]["project_abstract"][n] %></a><br/>
         <% } %> <!-- for (var pid in all_metadata)-->
-        <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= abstract_pdfs %>'/>
+        <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= all_metadata[pid]["project_abstract"] %>'/>
       </div>
-      <% } else { %> <!-- if not (abstract_pdfs) -->
+      <% } else { %> <!-- if not (all_metadata[pid]["project_abstract"]) -->
     <textarea class="textarea_long" id="project_abstract" name="project_abstract"></textarea>
-    <% } %> <!-- if else (abstract_pdfs) -->
+    <% } %> <!-- if else (all_metadata[pid]["project_abstract"]) -->
 
     <br />
   <label for="references">References for selected manuscripts published that describe the location:</label>

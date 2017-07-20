@@ -622,6 +622,19 @@ constants.ORDERED_METADATA_NAMES = [
 
 ];
 
+constants.METADATA_NAMES_ONCE_PER_PROJECT = [
+  "first_name",
+  "institution",
+  "last_name",
+  "pi_email",
+  "pi_name",
+  "project",
+  "project_abstract",
+  "project_title",
+  "public",
+  "username"
+];
+
 constants.ORDERED_METADATA_DIVIDERS = ["Biological",
   "Enter depth values in one or more categories",
   "Enter either volume or mass",

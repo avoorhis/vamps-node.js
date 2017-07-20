@@ -202,13 +202,14 @@ function editMetadataForm(req, res){
 
   all_metadata[pid] = req.form;
   all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
+  var project = all_metadata[pid]["project"][0];
+  var abstract_data = get_abstract_data(project, req);
+  all_metadata[pid]["project_abstract"] = abstract_data.pdfs;
 
   // TODO: move to "add to all_metadata"
-  var project = all_metadata[pid]["project"][0];
   // var abstract_data  = get_project_abstract_data(project, req);
   // var project_prefix = get_project_prefix(project);
-  var abstract_data = get_abstract_data(data.project, req);
-  render_edit_form(req, res, abstract_data.pdfs, all_metadata, all_field_names_with_new);
+  render_edit_form(req, res, all_metadata, all_field_names_with_new);
 
   console.timeEnd("TIME: editMetadataForm");
 }
@@ -331,6 +332,7 @@ function populate_metadata_hash(rows, pid, all_metadata) {
     all_metadata[pid]["dataset_id"].push(row.did);
     all_metadata[pid]["dataset"].push(row.dataset);
     all_metadata[pid]["dataset_description"].push(row.dataset_description);
+
 
     var primers_info_by_dataset_id = get_primers_info(row.did);
 
@@ -577,12 +579,17 @@ router.post('/start_edit',
   });
 
 // TODO: abstract_data_project add to all_metadata
-function render_edit_form(req, res, abstract_data_pr, all_metadata, all_field_names) {
+function render_edit_form(req, res, all_metadata, all_field_names) {
+  console.log("MMM1 all_field_names");
+  console.log(JSON.stringify(all_field_names));
+  // {"307":{..."project_abstract":["DCO_GAI_CoDL_Gaidos_15_06_01.pdf","DCO_GAI_Gaidos_CoDL_11_03_03.pdf"]}}
+  // abstract_data_pr = all_metadata
+
   res.render("metadata/metadata_upload_from_file", {
     title: "VAMPS: Metadata_upload",
     user: req.user,
     hostname: req.CONFIG.hostname,
-    abstract_pdfs: abstract_data_pr,
+    abstract_pdfs: {},
     all_metadata: all_metadata,
     all_field_names: all_field_names,
     dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
@@ -634,8 +641,9 @@ function make_metadata_hash(req, res, pid) {
         //DCO_GAI
 
         var abstract_data = get_abstract_data(all_metadata[pid]["project"], req);
+        all_metadata[pid]["project_abstract"] = abstract_data.pdfs;
 
-        render_edit_form(req, res, abstract_data.pdfs, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
+        render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
       }
       // end else
@@ -824,7 +832,7 @@ function make_metadata_hash_from_file(req, res, file_name) {
     //TODO: get!
     var abstract_data = get_abstract_data(data[0].project, req);
 
-    all_metadata[project_id_to_edit]["abstract_data_pr"] = abstract_data.pdfs;
+    all_metadata[project_id_to_edit]["project_abstract"] = abstract_data.pdfs;
 
     return all_metadata;
   }
