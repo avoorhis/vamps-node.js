@@ -71,16 +71,16 @@
   <input type="email" id="pi_email" name="pi_email"  value='<%= all_metadata[pid]["pi_email"] %>'/>
   <br />
   <label for="project_abstract">CoDL project abstract:</label>
-    <% if (typeof(abstract_data_pr) !== 'undefined') { %>
+    <% if (typeof(abstract_pdfs) !== 'undefined') { %>
       <div class="white_box">
-        <% for (var n in abstract_data_pr.pdfs) { %>
-          <a href='/static/abstracts/<%= abstract_data_pr.pdfs[n] %>' target='_blank'><%= abstract_data_pr.pdfs[n] %></a><br/>
+        <% for (var n in abstract_pdfs) { %>
+          <a href='/static/abstracts/<%= abstract_pdfs[n] %>' target='_blank'><%= abstract_pdfs[n] %></a><br/>
         <% } %> <!-- for (var pid in all_metadata)-->
-        <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= abstract_data_pr %>'/>
+        <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= abstract_pdfs %>'/>
       </div>
-      <% } else { %> <!-- if not (abstract_data_pr) -->
+      <% } else { %> <!-- if not (abstract_pdfs) -->
     <textarea class="textarea_long" id="project_abstract" name="project_abstract"></textarea>
-    <% } %> <!-- if else (abstract_data_pr) -->
+    <% } %> <!-- if else (abstract_pdfs) -->
 
     <br />
   <label for="references">References for selected manuscripts published that describe the location:</label>

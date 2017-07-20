@@ -207,8 +207,8 @@ function editMetadataForm(req, res){
   var project = all_metadata[pid]["project"][0];
   // var abstract_data  = get_project_abstract_data(project, req);
   // var project_prefix = get_project_prefix(project);
-
-  render_edit_form(req, res, get_abstract_data(data.project, req), all_metadata, all_field_names_with_new);
+  var abstract_data = get_abstract_data(data.project, req);
+  render_edit_form(req, res, abstract_data.pdfs, all_metadata, all_field_names_with_new);
 
   console.timeEnd("TIME: editMetadataForm");
 }
@@ -582,7 +582,7 @@ function render_edit_form(req, res, abstract_data_pr, all_metadata, all_field_na
     title: "VAMPS: Metadata_upload",
     user: req.user,
     hostname: req.CONFIG.hostname,
-    abstract_data_pr: abstract_data_pr,
+    abstract_pdfs: abstract_data_pr,
     all_metadata: all_metadata,
     all_field_names: all_field_names,
     dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
@@ -633,7 +633,9 @@ function make_metadata_hash(req, res, pid) {
         // console.log(project_prefix);
         //DCO_GAI
 
-        render_edit_form(req, res, get_abstract_data(all_metadata[pid]["project"], req), all_metadata, CONSTS.ORDERED_METADATA_NAMES);
+        var abstract_data = get_abstract_data(all_metadata[pid]["project"], req);
+
+        render_edit_form(req, res, abstract_data.pdfs, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
       }
       // end else
@@ -820,7 +822,9 @@ function make_metadata_hash_from_file(req, res, file_name) {
     all_metadata[project_id_to_edit]["public"]      = data[0].public;
     all_metadata[project_id_to_edit]["username"]    = data[0].username;
     //TODO: get!
-    all_metadata[project_id_to_edit]["abstract_data_pr"] = [];
+    var abstract_data = get_abstract_data(data[0].project, req);
+
+    all_metadata[project_id_to_edit]["abstract_data_pr"] = abstract_data.pdfs;
 
     return all_metadata;
   }
@@ -841,11 +845,16 @@ function make_csv(req) {
   console.time("TIME: make_csv");
 
   //TODO: check where it is called from
+  var abstract_data = get_abstract_data(data.project, req);
+  console.log("DDD1 abstract_data");
+  console.log(abstract_data);
 
+  console.log("DDD2 abstract_data.pdfs");
+  console.log(abstract_data.pdfs);
   var csv = convertArrayOfObjectsToCSV({
     data: req.form,
     user_info: req.user,
-    abstract_data: get_abstract_data(data.project, req)
+    abstract_data: abstract_data.pdfs
   });
 
   var rando = helpers.getRandomInt(10000, 99999);
