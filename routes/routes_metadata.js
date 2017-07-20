@@ -1111,20 +1111,17 @@ function convertArrayOfObjectsToCSV(args) {
   var dataset_length = data.dataset.length;
 
   for (var key in project_info_hash){
-    // var arr = Array(dataset_length).fill("BOO");
-    //
-    // console.log("DDD1 arr");
-    // console.log(arr);
 
     var arr_temp = Array(dataset_length - 1);
     arr_temp.unshift(key);
-    // console.log("DDD71 arr_temp");
-    // console.log(arr_temp);
+
     arr_temp.fill(project_info_hash[key], 1, dataset_length);
-    console.log("DDD7 arr_temp");
-    console.log(arr_temp);
-    console.log("DDD72 arr_temp.length === dataset_length");
-    console.log(arr_temp.length === dataset_length);
+    // console.log("DDD7 arr_temp");
+    // console.log(arr_temp);
+    // console.log("DDD72 arr_temp.length === dataset_length");
+    // console.log(arr_temp.length === dataset_length);
+
+    data_arr.push(arr_temp);
   }
   /*
   * [ [ 'NPOC', '', '', '', '', '', '', '', '' ],
@@ -1132,9 +1129,12 @@ function convertArrayOfObjectsToCSV(args) {
   *
   * */
 
+  console.log("CCC11 convertArrayOfObjectsToCSV again data_arr");
+  console.log(JSON.stringify(data_arr));
+
   transposed_data_arr = transpose_2d_arr(data_arr);
-  console.log("CCC2 convertArrayOfObjectsToCSV transposed_data_arr");
-  console.log(transposed_data_arr);
+  // console.log("CCC2 convertArrayOfObjectsToCSV transposed_data_arr");
+  // console.log(transposed_data_arr);
 
   columnDelimiter = args.columnDelimiter || ',';
   lineDelimiter = args.lineDelimiter || '\n';
