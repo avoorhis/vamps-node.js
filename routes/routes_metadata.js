@@ -1108,19 +1108,24 @@ function convertArrayOfObjectsToCSV(args) {
   console.log("CCC1 convertArrayOfObjectsToCSV data_arr");
   console.log(data_arr);
 
-  var dataset_length = data.dataset.length - 1;
-  console.log("DDD1 dataset_length");
-  console.log(dataset_length);
+  var dataset_length = data.dataset.length;
 
-  // var arr = [];
-  // arr.fill("BOO", 0, 8);
-  var arr = Array(8).fill("BOO");
+  for (var key in project_info_hash){
+    // var arr = Array(dataset_length).fill("BOO");
+    //
+    // console.log("DDD1 arr");
+    // console.log(arr);
 
-  console.log("DDD1 arr");
-  console.log(arr);
-  // for (var key in project_info_hash){
-  //
-  // }
+    var arr_temp = Array(dataset_length - 1);
+    arr_temp.unshift(key);
+    // console.log("DDD71 arr_temp");
+    // console.log(arr_temp);
+    arr_temp.fill(project_info_hash[key], 1, dataset_length);
+    console.log("DDD7 arr_temp");
+    console.log(arr_temp);
+    console.log("DDD72 arr_temp.length === dataset_length");
+    console.log(arr_temp.length === dataset_length);
+  }
   /*
   * [ [ 'NPOC', '', '', '', '', '', '', '', '' ],
   [ 'access_point_type' ],
