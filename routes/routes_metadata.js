@@ -1066,6 +1066,25 @@ function transpose_2d_arr(my_hash) {
   return newArray;
 }
 
+function get_project_info(project_name) {
+  var project_info = PROJECT_INFORMATION_BY_PNAME[project_name];
+  // console.log("DDD4 project_info");
+  // console.log(project_info);
+
+  return {
+    project: project_info.project,
+    first_name: project_info.first,
+    institution: project_info.institution,
+    last_name: project_info.last,
+    pi_email: project_info.email,
+    pi_name: project_info.first + " " + project_info.last,
+    project_title: project_info.title,
+    public: project_info.public,
+    username: project_info.username
+  };
+
+}
+
 function convertArrayOfObjectsToCSV(args) {
   console.time("TIME: convertArrayOfObjectsToCSV");
 
@@ -1080,21 +1099,12 @@ function convertArrayOfObjectsToCSV(args) {
   if (user_info === null) {
     return null;
   }
+  console.log("DDD1 data.project[0]");
+  console.log(data.project[0]);
 
-  console.log("DDD data");
-  console.log(data);
-
-  project_info = PROJECT_INFORMATION_BY_PNAME[data.project[0]];
-
-  project = project_info.project;
-  first_name = project_info.first;
-  institution = project_info.institution;
-  last_name = project_info.last;
-  pi_email = project_info.email;
-  pi_name = first_name + " " + last_name;
-  project_title = project_info.title;
-  public = project_info.public;
-  username = project_info.username;
+  var project_info_hash = get_project_info(data.project[0]);
+  console.log("DDD project_info_hash");
+  console.log(project_info_hash);
 
   data_arr = array_from_object(data);
 
