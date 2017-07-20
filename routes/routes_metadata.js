@@ -442,7 +442,7 @@ function make_metadata_hash_from_file(req, res, file_name) {
     all_metadata[project_id_to_edit]["first_name"]  = data[0].first_name;
     all_metadata[project_id_to_edit]["institution"] = data[0].institution;
     all_metadata[project_id_to_edit]["last_name"]   = data[0].last_name;
-    all_metadata[project_id_to_edit]["pi_email"]    = data[0].email;
+    all_metadata[project_id_to_edit]["pi_email"]    = data[0].pi_email;
     all_metadata[project_id_to_edit]["pi_name"]     = data[0].first_name + " " + data[0].last_name;
     all_metadata[project_id_to_edit]["project"]     = data[0].project;
     all_metadata[project_id_to_edit]["project_title"] = data[0].title;
@@ -959,10 +959,15 @@ function make_csv(req) {
   console.time("TIME: make_csv");
 
   //TODO: check where it is called from
-  // console.log("MMM make_csv: form_values");
+  // console.log("MMM make_csv: PROJECT_INFORMATION_BY_PID");
+  // console.log(PROJECT_INFORMATION_BY_PID);
+  // console.log("MMM1 make_csv: PROJECT_INFORMATION_BY_PNAME");
+  // console.log(PROJECT_INFORMATION_BY_PNAME);
+
 
   var csv = convertArrayOfObjectsToCSV({
-    data: req.form
+    data: req.form,
+    user_info: req.user
   });
 
   var rando = helpers.getRandomInt(10000, 99999);
@@ -1064,12 +1069,69 @@ function transpose_2d_arr(my_hash) {
 function convertArrayOfObjectsToCSV(args) {
   console.time("TIME: convertArrayOfObjectsToCSV");
 
-  var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr;
+  var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_info;
 
   data = args.data || null;
   if (data === null) {
     return null;
   }
+
+  user_info = args.user_info || null;
+  if (user_info === null) {
+    return null;
+  }
+
+  console.log("DDD data");
+  console.log(data);
+
+  project_info = PROJECT_INFORMATION_BY_PNAME[data.project[0]];
+  console.log("PPP project");
+  console.log(project);
+  project = project_info.project;
+  first_name = project_info.first;
+  institution = project_info.institution;
+  last_name = project_info.last;
+  pi_email = project_info.email;
+  pi_name = first_name + " " + last_name;
+  project_title = project_info.title;
+  public = project_info.public;
+  username = project_info.username;
+
+  /*
+  data:
+    pi_email: 'gaidos@hawaii.edu',
+    pi_name: 'Eric Gaidos',
+    project: [ 'DCO_GAI_Bv3v5' ],
+    project_abstract: '',
+    project_title: 'Icelandic Volcanic Lake',
+
+    req.user =
+    TextRow {
+  user_id: 39,
+  username: 'AnnaSh',
+  email: 'ashipunova@mbl.edu',
+  institution: 'MBL',
+  first_name: 'Anna',
+  last_name: 'Shipunova',
+  active: 1,
+  security_level: 1,
+  encrypted_password: 'wt2pXEm8ZUdapsB8x33EqQ==',
+  sign_in_count: 1271,
+  current_sign_in_at: 2017-07-19T23:16:28.000Z,
+  last_sign_in_at: 2017-07-19T23:15:18.000Z }
+
+
+    ***
+    first_name: undefined (req.user)
+    institution: undefined (req.user)
+    last_name: undefined (req.user)
+    pi_email: undefined: AAA7 data [ { NPOC: '',
+    pi_name: 'undefined undefined'  AAA7 data [ { NPOC: '',
+    project_title: undefined  AAA7 data [ { NPOC: '',
+    public: undefined ?
+    username: undefined (req.user)
+
+  * */
 
   data_arr = array_from_object(data);
 
