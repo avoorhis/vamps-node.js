@@ -275,16 +275,6 @@ function make_metadata_hash(req, res, pid) {
         var abstract_data  = get_project_abstract_data(project, req);
         var project_prefix = get_project_prefix(project);
 
-        console.log("ALLL1 abstract_data = ");
-        console.log(abstract_data);
-
-        console.log("ALLL2 project_prefix = ");
-        console.log(project_prefix);
-
-        console.log("ALLL3 abstract_data[project_prefix] = ");
-        console.log(abstract_data[project_prefix]);
-
-
         // console.log("XXX project_prefix");
         // console.log(project_prefix);
         //DCO_GAI
@@ -962,10 +952,6 @@ function collect_new_rows(req, all_field_names) {
 // render edit form
 // TODO: abstract_data_project add to all_metadata
 function render_edit_form(req, res, abstract_data_pr, all_metadata, all_field_names) {
-  // abstract_data[project_prefix]
-  console.log("XXX abstract_data_pr");
-  console.log(abstract_data_pr);
-
   res.render("metadata/metadata_upload_from_file", {
     title: "VAMPS: Metadata_upload",
     user: req.user,
