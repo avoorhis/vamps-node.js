@@ -152,129 +152,13 @@ function get_metadata_hash(md_selected){
 // AllMetadata = helpers.get_metadata_from_file()
 
 
-function findByValueOfObject(arr, key, value) {
-  return arr.filter(function(item) {
-    return (item[key] === value);
-  });
-}
+// function findByValueOfObject(arr, key, value) {
+//   return arr.filter(function(item) {
+//     return (item[key] === value);
+//   });
+// }
 
 
-function get_file_diff(req, files) {
-  var coopy = require('coopyhx');
-  // var file_names_array = req.body.compare;
-  // // console.log("AAA7 inputPath1");
-  // // console.log(inputPath1);
-  // var f_info = JSON.parse(req.body.file_info);
-  //
-  // var files = [];
-  //
-  // f_info.filter(function (el) {
-  //   if (file_names_array.includes(el.filename)) {
-  //     files.push(el);
-  //   }
-  // });
-  // console.log("GGG0 files");
-  // console.log(files);
-  //
-  // var dir = path.join(config.USER_FILES_BASE, req.user.username);
-  // files.sort(function(a, b) {
-  //   return fs.statSync(path.join(dir, a.filename)).mtime.getTime() -
-  //     fs.statSync(path.join(dir, b.filename)).mtime.getTime();
-  // });
-
-  console.log("PPP0 files[0][\"filename\"]");
-  console.log(files[0]["filename"]);
-
-  console.log("PPP0 files[1][\"filename\"]");
-  console.log(files[1]["filename"]);
-
-  var inputPath1 = path.join(config.USER_FILES_BASE, req.user.username, files[0]["filename"]);
-  var inputPath2 = path.join(config.USER_FILES_BASE, req.user.username, files[1]["filename"]);
-
-  console.log("PPP1 inputPath1");
-  console.log(inputPath1);
-
-  // TODO: check if only two names
-
-  var columnDelimiter = ',';
-  var lineDelimiter = '\n';
-  var cellEscape = '"';
-
-  var data1 = String(fs.readFileSync(inputPath1));
-  var data2 = String(fs.readFileSync(inputPath2));
-  // console.log("AAA7 data1");
-  // console.log(data1);
-  // todo: async?
-  // var parse = require('csv-parse');
-  // var parser = parse({delimiter: columnDelimiter, trim: true}, function(err, data){
-  //   console.log("AAA7 data");
-  //   console.log(data);
-  // });
-  // fs.createReadStream(inputPath1).pipe(parser);
-
-
-  var parse_sync = require('csv-parse/lib/sync');
-  var records1 = parse_sync(data1, {trim: true});
-  var records2 = parse_sync(data2, {trim: true});
-
-  var table1 = new coopy.CoopyTableView(records1);
-  var table2 = new coopy.CoopyTableView(records2);
-
-  var alignment = coopy.compareTables(table1,table2).align();
-
-  var data_diff = [];
-  var table_diff = new coopy.CoopyTableView(data_diff);
-
-  var flags = new coopy.CompareFlags();
-  var highlighter = new coopy.TableDiff(alignment, flags);
-  highlighter.hilite(table_diff);
-
-  // console.log("AAA2 highlighter");
-  // console.log(highlighter);
-
-  var diff2html = new coopy.DiffRender();
-  diff2html.render(table_diff);
-  var table_diff_html = diff2html.html();
-
-  return "<div class = 'highlighter'>" + table_diff_html + "</div>";
-
-}
-
-function sorted_files_by_time(req) {
-  console.time("sorted_files_by_time");
-  var f_info = JSON.parse(req.body.file_info);
-  var dir = path.join(config.USER_FILES_BASE, req.user.username);
-  f_info.sort(function(a, b) {
-    return fs.statSync(path.join(dir, a.filename)).mtime.getTime() -
-      fs.statSync(path.join(dir, b.filename)).mtime.getTime();
-  });
-  console.log("GGG01 f_info");
-  console.log(f_info);
-
-  console.timeEnd("sorted_files_by_time");
-  return f_info;
-}
-
-function sorted_files_to_compare(req, sorted_files) {
-  console.time("sorted_files_to_compare");
-
-  var file_names_array = req.body.compare;
-  var files = [];
-
-  if (typeof file_names_array === 'undefined' || file_names_array.length === 0) {
-    return null;
-  }
-  sorted_files.filter(function (el) {
-    if (file_names_array.includes(el.filename)) {
-      files.push(el);
-    }
-  });
-  console.log("GGG0 files");
-  console.log(files);
-
-  console.timeEnd("sorted_files_to_compare");
-  return files;
-}
 
 function get_project_name(edit_metadata_file) {
   console.time("TIME: get_project_prefix");
@@ -294,83 +178,7 @@ function get_project_name(edit_metadata_file) {
   return edit_metadata_project;
 }
 
-router.post('/metadata_files',
-  [helpers.isLoggedIn],
-  function (req, res) {
-    console.time("TIME: in post /metadata_files");
-    var table_diff_html, edit_metadata_file;
-    console.log("LLL1 req.body from metadata_files");
-    console.log(req.body);
-    /*TODO: process:
-    * { compare:
-   [ 'metadata-project_DCO_GAI_Bv3v5_31989.csv',
-     'metadata-project_DCO_GAI_Bv3v5_63239.csv' ],
-  file_info: '[{"filename":"metadata-project_DCO_GAI_Bv3v5_31989.csv","size":7845,"time":"2017-07-19T14:46:27.000Z","mtime_format":"2017-07-19 14:46:27","user_dirname":"AnnaSh"},{"filename":"metadata-project_DCO_GAI_Bv3v5_63239.csv","size":7748,"time":"2017-07-19T14:46:53.000Z","mtime_format":"2017-07-19 14:46:53","user_dirname":"AnnaSh"}]' }
-{ edit_metadata_file: 'metadata-project_DCO_GAI_Bv3v5_63239.csv',
 
-    * */
-
-    var sorted_files = sorted_files_by_time(req);
-    var files_to_compare = sorted_files_to_compare(req, sorted_files);
-
-    if (typeof req.body.compare !== 'undefined' && req.body.compare.length !== 0) {
-      table_diff_html = get_file_diff(req, files_to_compare);
-      res.render("metadata/metadata_file_list", {
-        title: "VAMPS: Metadata File List",
-        user: req.user,
-        hostname: req.CONFIG.hostname,
-        table_diff_html: table_diff_html,
-        finfo: JSON.stringify(sorted_files),
-        files_to_compare: files_to_compare,
-        file_names: req.body.compare,
-        edit: true
-      });
-    }
-    else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
-      // edit_metadata_file = req.body.edit_metadata_file;
-      // var project_name = get_project_name(edit_metadata_file);
-      // console.log("XXX1 edit_metadata_project");
-      // console.log(edit_metadata_project);
-      // console.log("XXX2 PROJECT_INFORMATION_BY_PNAME[edit_metadata_project][\"pid\"]");
-      // var project_id_to_edit = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
-      // console.log(project_id_to_edit);
-      // console.log(typeof project_id_to_edit);
-      // 307
-      // number
-      // make_metadata_hash(req, res, String(project_id_to_edit));
-      var all_metadata = make_metadata_hash_from_file(req, res, req.body.edit_metadata_file);
-      //TODO: use parts of make_metadata_hash
-
-      //  TODO: call upload to form and edit on this file
-      var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
-      res.render("metadata/metadata_upload_from_file", {
-        title: "VAMPS: Metadata_upload",
-        user: req.user,
-        hostname: req.CONFIG.hostname,
-        // abstract_data_pr: abstract_data[project_prefix],
-        all_metadata: all_metadata,
-        all_field_names: all_field_names,
-        dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-        dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-        dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-        biome_primary_options: CONSTS.BIOME_PRIMARY,
-        feature_primary_options: CONSTS.FEATURE_PRIMARY,
-        material_primary_options: CONSTS.MATERIAL_PRIMARY,
-        metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-        env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-        investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-        sample_type_options: CONSTS.SAMPLE_TYPE
-      });
-    }
-
-    // console.log("AAA3 edit_metadata_file");
-    // console.log(edit_metadata_file);
-    // TODO show, add form to choose, then go to make_metadata_hash
-
-
-
-    console.timeEnd("TIME: in post /metadata_files");
-  });
 function add_data_to_all_metadata(){
 //  TODO: DRY with populate_metadata_hash
 
@@ -1192,6 +1000,28 @@ function collect_new_rows(req, all_field_names) {
 // ---- metadata_upload 1 ----
 // render new form
 // render edit form
+function render_edit_form(req, res, abstract_data_pr, all_metadata) {
+  var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
+  res.render("metadata/metadata_upload_from_file", {
+    title: "VAMPS: Metadata_upload",
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    abstract_data_pr: abstract_data_pr,
+    all_metadata: all_metadata,
+    all_field_names: all_field_names,
+    dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+    dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+    dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+    biome_primary_options: CONSTS.BIOME_PRIMARY,
+    feature_primary_options: CONSTS.FEATURE_PRIMARY,
+    material_primary_options: CONSTS.MATERIAL_PRIMARY,
+    metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+    env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+    investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+    sample_type_options: CONSTS.SAMPLE_TYPE
+  });
+}
+
 // create form from db
 // create form from req.form
 // create form from a csv file
@@ -1202,6 +1032,7 @@ function collect_new_rows(req, all_field_names) {
 
 // if csv files: show a list and compare
 router.get('/metadata_file_list', function(req, res) {
+  console.time("TIME: get metadata_file_list");
   console.log('in metadata_file_list');
   var user_metadata_csv_files = get_csv_files(req);
 
@@ -1211,6 +1042,8 @@ router.get('/metadata_file_list', function(req, res) {
     finfo: JSON.stringify(user_metadata_csv_files),
     edit: true
   });
+  console.timeEnd("TIME: get metadata_file_list");
+
 });
 
 function get_csv_files(req) {
@@ -1222,5 +1055,147 @@ function get_csv_files(req) {
   console.timeEnd("TIME: get_csv_files");
   return all_my_files;
 }
+
+router.post('/metadata_files',
+  [helpers.isLoggedIn],
+  function (req, res) {
+    console.time("TIME: in post /metadata_files");
+    var table_diff_html, sorted_files, files_to_compare;
+    sorted_files = sorted_files_by_time(req);
+    files_to_compare = sorted_files_to_compare(req, sorted_files);
+
+    if (typeof req.body.compare !== 'undefined' && req.body.compare.length !== 0) {
+      // TODO: check that there are exactly 2 files to compare
+      table_diff_html = get_file_diff(req, files_to_compare);
+      res.render("metadata/metadata_file_list", {
+        title: "VAMPS: Metadata File List",
+        user: req.user,
+        hostname: req.CONFIG.hostname,
+        table_diff_html: table_diff_html,
+        finfo: JSON.stringify(sorted_files),
+        files_to_compare: files_to_compare,
+        file_names: req.body.compare,
+        edit: true
+      });
+    }
+    else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
+
+      var all_metadata = make_metadata_hash_from_file(req, res, req.body.edit_metadata_file);
+      //TODO: use parts of make_metadata_hash
+
+      render_edit_form(req, res, {}, all_metadata);
+      // call an original unified render from here
+      // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
+      // res.render("metadata/metadata_upload_from_file", {
+      //   title: "VAMPS: Metadata_upload",
+      //   user: req.user,
+      //   hostname: req.CONFIG.hostname,
+      //   // abstract_data_pr: abstract_data[project_prefix],
+      //   all_metadata: all_metadata,
+      //   all_field_names: all_field_names,
+      //   dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+      //   dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+      //   dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+      //   biome_primary_options: CONSTS.BIOME_PRIMARY,
+      //   feature_primary_options: CONSTS.FEATURE_PRIMARY,
+      //   material_primary_options: CONSTS.MATERIAL_PRIMARY,
+      //   metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+      //   env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+      //   investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+      //   sample_type_options: CONSTS.SAMPLE_TYPE
+      // });
+    }
+
+    // console.log("AAA3 edit_metadata_file");
+    // console.log(edit_metadata_file);
+    // TODO show, add form to choose, then go to make_metadata_hash
+
+
+
+    console.timeEnd("TIME: in post /metadata_files");
+  });
+
+function sorted_files_by_time(req) {
+  console.time("sorted_files_by_time");
+  var f_info = JSON.parse(req.body.file_info);
+  var dir = path.join(config.USER_FILES_BASE, req.user.username);
+  f_info.sort(function(a, b) {
+    return fs.statSync(path.join(dir, a.filename)).mtime.getTime() -
+      fs.statSync(path.join(dir, b.filename)).mtime.getTime();
+  });
+
+  console.timeEnd("sorted_files_by_time");
+  return f_info;
+}
+
+function sorted_files_to_compare(req, sorted_files) {
+  console.time("sorted_files_to_compare");
+
+  var file_names_array = req.body.compare;
+  var files = [];
+
+  if (typeof file_names_array === 'undefined' || file_names_array.length === 0) {
+    return null;
+  }
+  sorted_files.filter(function (el) {
+    if (file_names_array.includes(el.filename)) {
+      files.push(el);
+    }
+  });
+  console.timeEnd("sorted_files_to_compare");
+  return files;
+}
+
+function get_file_diff(req, files) {
+  var coopy = require('coopyhx');
+  var inputPath1 = path.join(config.USER_FILES_BASE, req.user.username, files[0]["filename"]);
+  var inputPath2 = path.join(config.USER_FILES_BASE, req.user.username, files[1]["filename"]);
+
+  console.log("PPP1 inputPath1");
+  console.log(inputPath1);
+
+  // TODO: check if exactly two names
+
+  var columnDelimiter = ',';
+  var lineDelimiter = '\n';
+  var cellEscape = '"';
+
+  var data1 = String(fs.readFileSync(inputPath1));
+  var data2 = String(fs.readFileSync(inputPath2));
+  // console.log("AAA7 data1");
+  // console.log(data1);
+  // todo: async?
+  // var parse = require('csv-parse');
+  // var parser = parse({delimiter: columnDelimiter, trim: true}, function(err, data){
+  //   console.log("AAA7 data");
+  //   console.log(data);
+  // });
+  // fs.createReadStream(inputPath1).pipe(parser);
+
+
+  var parse_sync = require('csv-parse/lib/sync');
+  var records1 = parse_sync(data1, {trim: true});
+  var records2 = parse_sync(data2, {trim: true});
+
+  var table1 = new coopy.CoopyTableView(records1);
+  var table2 = new coopy.CoopyTableView(records2);
+
+  var alignment = coopy.compareTables(table1,table2).align();
+
+  var data_diff = [];
+  var table_diff = new coopy.CoopyTableView(data_diff);
+
+  var flags = new coopy.CompareFlags();
+  var highlighter = new coopy.TableDiff(alignment, flags);
+  highlighter.hilite(table_diff);
+
+  var diff2html = new coopy.DiffRender();
+  diff2html.render(table_diff);
+  var table_diff_html = diff2html.html();
+
+  return "<div class = 'highlighter'>" + table_diff_html + "</div>";
+
+}
+
 
 // ---- metadata_upload end ----
