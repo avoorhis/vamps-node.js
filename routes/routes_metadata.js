@@ -1068,8 +1068,6 @@ function transpose_2d_arr(my_hash) {
 
 function get_project_info(project_name) {
   var project_info = PROJECT_INFORMATION_BY_PNAME[project_name];
-  // console.log("DDD4 project_info");
-  // console.log(project_info);
 
   return {
     project: project_info.project,
@@ -1099,16 +1097,39 @@ function convertArrayOfObjectsToCSV(args) {
   if (user_info === null) {
     return null;
   }
-  console.log("DDD1 data.project[0]");
-  console.log(data.project[0]);
+  // console.log("DDD1 data.project[0]");
+  // console.log(data.project[0]);
 
   var project_info_hash = get_project_info(data.project[0]);
   console.log("DDD project_info_hash");
   console.log(project_info_hash);
 
   data_arr = array_from_object(data);
+  console.log("CCC1 convertArrayOfObjectsToCSV data_arr");
+  console.log(data_arr);
+
+  var dataset_length = data.dataset.length - 1;
+  console.log("DDD1 dataset_length");
+  console.log(dataset_length);
+
+  // var arr = [];
+  // arr.fill("BOO", 0, 8);
+  var arr = Array(8).fill("BOO");
+
+  console.log("DDD1 arr");
+  console.log(arr);
+  // for (var key in project_info_hash){
+  //
+  // }
+  /*
+  * [ [ 'NPOC', '', '', '', '', '', '', '', '' ],
+  [ 'access_point_type' ],
+  *
+  * */
 
   transposed_data_arr = transpose_2d_arr(data_arr);
+  console.log("CCC2 convertArrayOfObjectsToCSV transposed_data_arr");
+  console.log(transposed_data_arr);
 
   columnDelimiter = args.columnDelimiter || ',';
   lineDelimiter = args.lineDelimiter || '\n';
@@ -1126,6 +1147,9 @@ function convertArrayOfObjectsToCSV(args) {
     result += lineDelimiter;
   });
 
+  // for (var key in project_info_hash) {
+  //   cellEscape + item + cellEscape
+  // }
 
    // TODO: get keys from an array of what to save (dataset_id, for example)
 
