@@ -5,6 +5,7 @@ var extend = require('util')._extend;
 var spawn = require('child_process').spawn;
 var CONSTS = require('../public/constants');
 var config  = require(app_root + '/config/config');
+var helpers = require('./helpers/helpers');
 
 module.exports = {
 
@@ -286,6 +287,62 @@ dheatmap: function(req, res){
 
 
 },  // end DISTANCE HEATMAP
+//
+//
+//
+fheatmap: function(req, res){
+    console.log('In function: images/fheatmap')
+    var ts = visual_post_items.ts
+    matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+    console.log(matrix_file_path)
+    
+    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    var options = {
+        scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+        args :       [ pwd, visual_post_items.selected_distance, ts, visual_post_items.tax_depth],
+    };
+    console.log(options.scriptPath+'/fheatmap2.R '+options.args.join(' '));
+    var fheatmap_process = spawn( options.scriptPath+'/fheatmap2.R', options.args, {
+          env:{'PATH':req.CONFIG.PATH},
+          detached: true,
+          //stdio: [ 'ignore', null, log ]
+          stdio: 'pipe'  // stdin, stdout, stderr
+    });
+    stdout = '';
+    fheatmap_process.stdout.on('data', function fheatmapProcessStdout(data) {
+          stdout += data;
+    });
+    stderr = '';
+    fheatmap_process.stderr.on('data', function fheatmapProcessStderr(data) {
+          stderr += data;
+    });
+    
+    fheatmap_process.on('close', function fheatmapProcessOnClose(code) {
+        console.log('fheatmap_process process exited with code ' + code);
+        //distance_matrix = JSON.parse(output);
+        //var last_line = ary[ary.length - 1];
+        if(code === 0){   // SUCCESS
+            var svgfile_name  = ts + '_fheatmap.svg'  // must match file name written in R script: dendrogram.R
+            svgfile_path = path.join(config.PROCESS_DIR,'tmp', svgfile_name);  // file name save to user_location
+            fs.readFile(svgfile_path, 'utf8', function(err, contents){
+                if(err){ res.send('ERROR reading file')}
+                
+                //console.log(contents)
+                var data = {}
+                data.html = contents
+                data.filename = svgfile_name   // returns data and local file_name to be written to 
+                res.json(data) 
+                return        
+            
+            })
+
+
+        }else{
+          console.log('ERROR');
+          res.send('Frequency Heatmap R Script Error:'+stderr);
+        }
+  });
+},
 //
 //   PIE CHARTS
 //
@@ -600,6 +657,7 @@ metadata_csv: function(req, res){
     console.log('in metadata_csv')
     var ts = visual_post_items.ts
     var ds_order = JSON.parse(req.body.ds_order)
+    mdobj = helpers.get_metadata_obj_from_dids(ds_order)
     console.log(ds_order)
     var html = 'VAMPS Metadata\n'
     var item_obj = {}
@@ -610,12 +668,14 @@ metadata_csv: function(req, res){
         html += sep + dname 
         //console.log('did',did)
         //console.log(AllMetadata[did])
-        for(item in AllMetadata[did]){
+        for(item in mdobj[did]){
             item_obj[item] = 1
         }
     }
     html += '\n\r'
     // sort 
+    console.log('item_obj',item_obj)
+    
     item_list = Object.keys(item_obj)
     
     item_list.sort()
@@ -626,8 +686,9 @@ metadata_csv: function(req, res){
         html += item 
         for(var n = 0; n < ds_order.length; n++){
             did = ds_order[n].toString()
-            if(AllMetadata[did].hasOwnProperty(item)){
-                html += sep + AllMetadata[did][item].replace(',',' ')  // replace commas with space
+            
+            if(mdobj[did].hasOwnProperty(item)){
+                html += sep + mdobj[did][item].replace(',',' ')  // replace commas with space
             }else{
                 html += sep
             }
@@ -792,7 +853,7 @@ dendrogram: function(req, res){
             var svgfile_name  = ts + '_dendrogram.svg'  // must match file name written in R script: dendrogram.R
             svgfile_path = path.join(config.PROCESS_DIR,'tmp', svgfile_name);  // file name save to user_location
             fs.readFile(svgfile_path, 'utf8', function(err, contents){
-                if(err){ res.send('ERROR reading file')}
+                if(err){ res.send('ERROR reading file');return}
                 
                 //console.log(contents)
                 var data = {}
@@ -814,7 +875,65 @@ dendrogram: function(req, res){
         }
     });
 
-}, 
+},
+//
+//
+//
+phyloseq: function(req,res){
+    console.log('in phyloseq')
+    var ts = visual_post_items.ts
+    //var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
+    var metric = visual_post_items.selected_distance
+    var tax_depth = visual_post_items.tax_depth
+    var options = {
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      args :       [ req.CONFIG.PROCESS_DIR, metric, ts, tax_depth ],
+    };
+    console.log(options.scriptPath+'/phyloseq_test.R'+' '+options.args.join(' '));
+    var phyloseq_process = spawn( options.scriptPath+'/phyloseq_test.R', options.args, {
+            env:{'PATH':req.CONFIG.PATH},
+            detached: true,
+            //stdio: [ 'ignore', null, log ]
+            stdio: 'pipe'  // stdin, stdout, stderr
+    });
+    stdout = '';
+    phyloseq_process.stdout.on('data', function phyloseqProcessStdout(data) {
+        data = data.toString();
+        stdout += data;
+    });
+    stderr = '';
+    phyloseq_process.stderr.on('data', function phyloseqProcessStderr(data) {
+        stderr += data;
+    });
+    phyloseq_process.on('close', function phyloseqProcessOnClose(code) {
+          console.log('phyloseq_process process exited with code ' + code);
+          //distance_matrix = JSON.parse(output);
+          //var last_line = ary[ary.length - 1];
+          if(code === 0){   // SUCCESS
+            
+                var svgfile_name  = ts + '_phyloseq_test.svg'  // must match file name written in R script: dendrogram.R
+                svgfile_path = path.join(config.PROCESS_DIR,'tmp', svgfile_name);  // file name save to user_location
+                fs.readFile(svgfile_path, 'utf8', function(err, contents){
+                    if(err){ res.send('ERROR reading file');return}
+                
+                    //console.log(contents)
+                    var data = {}
+                    data.html = contents
+                    data.filename = svgfile_name   // returns data and local file_name to be written to 
+                    res.json(data) 
+                    return         
+            
+                })
+           
+
+          }else{
+            console.log('ERROR-2');
+            html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's"
+          }
+         
+
+    });
+},
 // dendrogram: function(req, res){
 //     console.log('in dendrogram')
 //     //d3 = require('d3');
