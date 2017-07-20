@@ -250,8 +250,7 @@ router.post('/start_edit',
 // todo: if there is req.form (or req.body?) use the result?
 function make_metadata_hash(req, res, pid) {
   console.time("TIME: 2) make_metadata_hash");
-  // console.log("ALLL1 AllMetadata = ");
-  // console.log(AllMetadata);
+
 
   // var pid = req.body.project_id;
   var all_metadata = {};
@@ -274,13 +273,23 @@ function make_metadata_hash(req, res, pid) {
 
         // TODO: add to all_metadata
         var abstract_data  = get_project_abstract_data(project, req);
-        // var project_prefix = get_project_prefix(project);
+        var project_prefix = get_project_prefix(project);
+
+        console.log("ALLL1 abstract_data = ");
+        console.log(abstract_data);
+
+        console.log("ALLL2 project_prefix = ");
+        console.log(project_prefix);
+
+        console.log("ALLL3 abstract_data[project_prefix] = ");
+        console.log(abstract_data[project_prefix]);
+
 
         // console.log("XXX project_prefix");
         // console.log(project_prefix);
         //DCO_GAI
 
-        render_edit_form(req, res, abstract_data, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
+        render_edit_form(req, res, abstract_data[project_prefix], all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
       }
       // end else
@@ -953,6 +962,10 @@ function collect_new_rows(req, all_field_names) {
 // render edit form
 // TODO: abstract_data_project add to all_metadata
 function render_edit_form(req, res, abstract_data_pr, all_metadata, all_field_names) {
+  // abstract_data[project_prefix]
+  console.log("XXX abstract_data_pr");
+  console.log(abstract_data_pr);
+
   res.render("metadata/metadata_upload_from_file", {
     title: "VAMPS: Metadata_upload",
     user: req.user,
@@ -1033,11 +1046,6 @@ router.post('/metadata_files',
 
       var all_metadata = make_metadata_hash_from_file(req, res, req.body.edit_metadata_file);
       //TODO: DRY: use parts of make_metadata_hash
-      // console.log("AAA0 req.body.edit_metadata_file");
-      // console.log(req.body.edit_metadata_file);
-      //
-      // console.log("AAA all_metadata");
-      // console.log(all_metadata);
 
       render_edit_form(req, res, {}, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
