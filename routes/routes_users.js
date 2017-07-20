@@ -69,13 +69,27 @@ router.post('/login',  passport.authenticate('local-login', {
   // successRedirect: '/users/profile',
   failureRedirect: 'login',
   failureFlash: true }), function (req, res) {  
-    var url = req.body.return_to_url || '/';
-    console.log("=====: req.body.return_to_url");
-    console.log(url);
-    res.redirect(url);    
-    delete req.session.returnTo;
-    req.body.return_to_url = "";
-	}
+    var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username)
+    fs.ensureDir(data_dir, function (err) {
+        if(err) {console.log(err);} // => null
+        else{
+            console.log('Checking USER_FILES_BASE: '+data_dir+' Exists - yes')
+            fs.chmod(data_dir, 0775, function (err) {
+                if(err) {console.log(err);} // ug+rwx
+                else{
+                    console.log('Setting USER_FILES_BASE permissions to 0775')
+                    var url = req.body.return_to_url || '/';
+                    console.log("=====: req.body.return_to_url");
+                    console.log(url);
+                    res.redirect(url);    
+                    delete req.session.returnTo;
+                    req.body.return_to_url = "";
+                }
+            })
+        }
+    })
+    
+  }
 );
 
 
@@ -110,25 +124,12 @@ router.post('/signup', passport.authenticate('local-signup', {
 // we will want this protected so you have to be logged in to visit
 // we will use route middleware to verify this (the isLoggedIn function)
 router.get('/profile', helpers.isLoggedIn, function(req, res) {
-    var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username)
-console.log('PROFILE')
-    fs.ensureDir(data_dir, function (err) {
-        if(err) {console.log(err);} // => null
-        else{
-            fs.chmod(data_dir, 0775, function (err) {
-                if(err) {console.log(err);} // ug+rwx
-                else{
-                  res.render('user_admin/profile', {
-                      title:'VAMPS:profile',
-                      user : req.user,hostname: req.CONFIG.hostname // get the user out of session and pass to template
-                  });
-                }
-            });
-        }       
+    console.log('PROFILE')    
+    res.render('user_admin/profile', {
+          title:'VAMPS:profile',
+          user : req.user,hostname: req.CONFIG.hostname // get the user out of session and pass to template
+    });        
 
-    });
-
-    
 });
 
 // =====================================

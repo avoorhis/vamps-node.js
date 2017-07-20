@@ -181,57 +181,6 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
       }
 
 });
-// $("body").delegate(".tooltip_units", "mouseover mouseout mousemove", function (event) {
-//     var link = this,
-//     html = '';
-//     $link = $(this);
-//     if (event.type == 'mouseover') {
-//         tip.id = link.id;
-//         //alert(tip.title)
-//         link.id = '';
-//         if(tip.id==''){
-//           return;  // no need to show if nothing there
-//         }
-
-//         var wikipedia_link  = 'https://en.wikipedia.org/wiki/'
-//         var eol_link        = "http://www.eol.org/search?q="
-//         var ncbi_link       = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name="
-
-//         html = "<table>";
-//         html += '<tr><td>External "'+tip.id+'" Links</td></tr>';
-//         html += "<tr><td><a href='"+wikipedia_link+tip.id+"' target='_blank'>Wikipedia</a></td></tr>";
-//         html += "<tr><td><a href='"+eol_link+tip.id+"' target='_blank'>EOL</a></td></tr>";
-//         html += "<tr><td><a href='"+ncbi_link+tip.id+"' target='_blank'>NCBI</a></td></tr>";
-//         html += "<table>";
-
-
-//         showTip = setTimeout(function() {
-
-//           $link.data('tipActive', true);
-
-//           tip.position(event);
-
-//           $liveTip
-//           .html( html)
-//           .fadeOut(200)
-//           .fadeIn(50);
-
-//         }, tip.delay);
-//     }
-//       if (event.type == 'mouseout') {
-//         link.id = tip.id || link.id;
-//         if ($link.data('tipActive')) {
-//           $link.removeData('tipActive');
-//           $liveTip.hide();
-//         } else {
-//           clearTimeout(showTip);
-//         }
-//       }
-
-//       // if (event.type == 'mousemove' && $link.data('tipActive')) {
-//       //   //tip.position(event);
-//       // }
-// });
 
 var showDots='';
 
@@ -1228,7 +1177,7 @@ function create_dheatmap(ts, new_window) {
       xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
             clearInterval(myWaitVar);
-            data = JSON.parse(xmlhttp.response)
+            var data = JSON.parse(xmlhttp.response)
             dhm_div.innerHTML = data.html;
             document.getElementById('dheatmap_dnld_btn').disabled = false
         }
@@ -1272,11 +1221,12 @@ function create_fheatmap(ts, new_window) {
       document.getElementById('fheatmap_title').style['font-size'] = 'small';
 
       var html = '';
-      //var args =  "metric="+pi_local.selected_distance;
-      //args += "&ts="+ts;
+      var args = {}
+      args.image = 'fheatmap'
+      args.source = 'website'
       document.getElementById('pre_fheatmap_div').style.display = 'block';
       var xmlhttp = new XMLHttpRequest();
-      xmlhttp.open("POST", '/visuals/frequency_heatmap', true);
+      xmlhttp.open("POST", '/api/create_image', true);
       //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       xmlhttp.setRequestHeader("Content-Type", "application/json");
       showDots='';
@@ -1284,13 +1234,13 @@ function create_fheatmap(ts, new_window) {
       xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
             clearInterval(myWaitVar);
-            var htmlstring = xmlhttp.responseText;
-            fhm_div.innerHTML = htmlstring;
+            
+            var data = JSON.parse(xmlhttp.response)
+            fhm_div.innerHTML = data.html;
             document.getElementById('fheatmap_dnld_btn').disabled = false
         }
       };
-      args = JSON.stringify({"metric":pi_local.selected_distance,"ts":ts})
-      xmlhttp.send(args);
+      xmlhttp.send(JSON.stringify(args));
 
 }
 //

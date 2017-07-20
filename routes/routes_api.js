@@ -4,8 +4,9 @@ var helpers = require('./helpers/helpers');
 var path = require('path');
 var fs   = require('fs-extra');
 var IMAGES  = require('./routes_images');
-
+//
 // API
+//
 router.post('/get_dids_from_project', function(req, res){
     console.log('HERE in routes_api.js --> get_dids_from_project ')
     if(! helpers.isLoggedInAPI(req, res)){
@@ -29,8 +30,59 @@ router.post('/get_dids_from_project', function(req, res){
     }else{
       res.send('Project Not Found')
     }
+});
+//
+// API METADATA
+//
+router.post('/get_metadata_from_project', function(req, res){
+    console.log('HERE in routes_api.js --> get_metadata_from_project ')
+    if(! helpers.isLoggedInAPI(req, res)){
+        res.send('Failed Authentication')
+        return
+    }
+    //console.log(req.body)
+    project = req.body.project
     
-
+    if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
+      pid = PROJECT_INFORMATION_BY_PNAME[project].pid
+      dids = DATASET_IDS_BY_PID[pid]
+      var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
+      if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
+        console.log('No Datasets Found')
+        res.send('No Datasets Found - (do you have permissions to access this data?)')
+      }else{
+          mdobj = helpers.get_metadata_obj_from_dids(new_dataset_ids)
+          
+          res.send(JSON.stringify(mdobj))
+      }
+    }else{
+      res.send('Project Not Found')
+    }
+});
+router.post('/get_project_information', function(req, res){
+    console.log('HERE in routes_api.js --> get_project_information ')
+    if(! helpers.isLoggedInAPI(req, res)){
+        res.send('Failed Authentication')
+        return
+    }
+    //console.log(req.body)
+    project = req.body.project
+    
+    if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
+      pid = PROJECT_INFORMATION_BY_PNAME[project].pid
+      dids = DATASET_IDS_BY_PID[pid]
+      var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
+      if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
+        console.log('No Datasets Found')
+        res.send('No Datasets Found - (do you have permissions to access this data?)')
+      }else{
+          pjobj = PROJECT_INFORMATION_BY_PNAME[project]
+          pjobj.env_package = MD_ENV_PACKAGE[pjobj.env_package_id]          
+          res.send(JSON.stringify(pjobj))
+      }
+    }else{
+      res.send('Project Not Found')
+    }
 });
 //
 //
@@ -57,11 +109,14 @@ router.post('/create_image',  function(req, res){
   
   allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix","metadata_csv",
                 "metadata_table", "fheatmap", "dendrogram01", "dendrogram03","dendrogram",
-                "pcoa", "pcoa3d", "geospatial", "adiversity","testpie"
+                "pcoa", "pcoa3d", "geospatial", "adiversity", "testpie", "phyloseq"
               ]
   allowed_file_types = ["fasta","metadata-csv","metadata-table"]
   image = false
   file  = false
+  
+  //metadata = get_metadata(JSON.parse(req.body.ds_order))
+  
   if(req.body.hasOwnProperty('image') && allowed_images.indexOf(req.body.image) != -1){
     image = req.body.image
     console.log("Success: Image =",image)
@@ -75,8 +130,11 @@ router.post('/create_image',  function(req, res){
   }
   if(image){
       switch(image) {
-        case 'dheatmap':
+        case 'dheatmap':            // Distance Heatmap
           IMAGES.dheatmap(req, res)
+          break;
+        case 'fheatmap':            // Frequency Heatmap
+          IMAGES.fheatmap(req, res)
           break;
         case 'barcharts':
           IMAGES.barcharts(req, res)
@@ -90,11 +148,14 @@ router.post('/create_image',  function(req, res){
         case 'metadata_csv':
           IMAGES.metadata_csv(req, res)       
           break;
-        case 'adiversity':
+        case 'adiversity':          // Alpha Diversity
           IMAGES.adiversity(req, res)       
           break;
         case 'dendrogram':
           IMAGES.dendrogram(req, res)       
+          break;
+        case 'phyloseq':
+          IMAGES.phyloseq(req, res)       
           break;
         default:
           test_piecharts(req,res)
@@ -105,7 +166,9 @@ router.post('/create_image',  function(req, res){
 
 });
 
-
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
 
 
 

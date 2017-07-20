@@ -822,7 +822,7 @@ module.exports.run_select_datasets_query = function(rows){
         "username" :        rows[i].username,
         "oid" :             owner_id,
         "email" :           rows[i].email,
-        "env_package_id" :  envpkgid,  // mostly used here for the filter function on dataset selection page
+        "env_package_id" :  envpkgid,  // FROM AllMetadata: mostly used here for the filter function on dataset selection page
         "institution" :     rows[i].institution,
         "project" :         project,
         "pid" :             pid,
@@ -1714,6 +1714,22 @@ module.exports.required_metadata_names_from_ids = function(selection_obj, name_i
   return {"name":real_name,"value":value}
 
 };
+//
+//
+//
+module.exports.get_metadata_obj_from_dids = function(dids){
+    var metadata = {}
+    for(n in dids){
+        metadata[dids[n]] = {}
+        mdobj = AllMetadata[dids[n].toString()]
+        for(key in mdobj){
+           md = helpers.required_metadata_names_from_ids(mdobj, key)
+           metadata[dids[n]][md.name] = md.value
+        }
+    }
+    //console.log(metadata)
+    return metadata
+}
 //
 //
 module.exports.screen_dids_for_permissions = function(req, dids)
