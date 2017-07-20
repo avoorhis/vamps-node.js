@@ -454,24 +454,7 @@ function editMetadataForm(req, res){
   var project_prefix = get_project_prefix(project);
 
   render_edit_form(req, res, abstract_data[project_prefix], all_metadata, all_field_names_with_new);
-  // res.render('metadata/metadata_upload_from_file', {
-  //   title: 'VAMPS: Metadata_upload',
-  //   user: req.user,
-  //   hostname: req.CONFIG.hostname,
-  //   abstract_data_pr: abstract_data[project_prefix],
-  //   all_metadata: all_metadata,
-  //   all_field_names: all_field_names_with_new,
-  //   dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-  //   dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-  //   dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-  //   biome_primary_options: CONSTS.BIOME_PRIMARY,
-  //   feature_primary_options: CONSTS.FEATURE_PRIMARY,
-  //   material_primary_options: CONSTS.MATERIAL_PRIMARY,
-  //   metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-  //   env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-  //   investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-  //   sample_type_options: CONSTS.SAMPLE_TYPE
-  // });
+
   console.timeEnd("TIME: editMetadataForm");
 }
 
@@ -949,6 +932,8 @@ function collect_new_rows(req, all_field_names) {
 }
 // ---- metadata_upload 1 ----
 // render new form
+// ?? render_edit_form(req, res, {}, {}, all_field_names)
+
 // render edit form
 // TODO: abstract_data_project add to all_metadata
 function render_edit_form(req, res, abstract_data_pr, all_metadata, all_field_names) {
