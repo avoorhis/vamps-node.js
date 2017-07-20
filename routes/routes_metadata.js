@@ -275,7 +275,10 @@ function make_metadata_hash(req, res, pid) {
         all_metadata = populate_metadata_hash(rows, pid, all_metadata);
 
         //TODO: do once here and keep with form
+        // TODO: add to all_metadata
         var project = all_metadata[pid]["project"];
+
+        // TODO: add to all_metadata
         var abstract_data  = get_project_abstract_data(project, req);
         var project_prefix = get_project_prefix(project);
 
@@ -291,25 +294,27 @@ function make_metadata_hash(req, res, pid) {
         // DDD reverse_primer_seqs
         // "GGATTAG.TACCC"
         //
-        all_field_names = CONSTS.ORDERED_METADATA_NAMES;
-        res.render("metadata/metadata_upload_from_file", {
-          title: "VAMPS: Metadata_upload",
-          user: req.user,
-          hostname: req.CONFIG.hostname,
-          abstract_data_pr: abstract_data[project_prefix],
-          all_metadata: all_metadata,
-          all_field_names: all_field_names,
-          dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-          dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-          dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-          biome_primary_options: CONSTS.BIOME_PRIMARY,
-          feature_primary_options: CONSTS.FEATURE_PRIMARY,
-          material_primary_options: CONSTS.MATERIAL_PRIMARY,
-          metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-          env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-          investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-          sample_type_options: CONSTS.SAMPLE_TYPE
-        });
+
+        render_edit_form(req, res, abstract_data, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
+        // all_field_names = CONSTS.ORDERED_METADATA_NAMES;
+        // res.render("metadata/metadata_upload_from_file", {
+        //   title: "VAMPS: Metadata_upload",
+        //   user: req.user,
+        //   hostname: req.CONFIG.hostname,
+        //   abstract_data_pr: abstract_data[project_prefix],
+        //   all_metadata: all_metadata,
+        //   all_field_names: all_field_names,
+        //   dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+        //   dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+        //   dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+        //   biome_primary_options: CONSTS.BIOME_PRIMARY,
+        //   feature_primary_options: CONSTS.FEATURE_PRIMARY,
+        //   material_primary_options: CONSTS.MATERIAL_PRIMARY,
+        //   metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+        //   env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+        //   investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+        //   sample_type_options: CONSTS.SAMPLE_TYPE
+        // });
 
       }
       // end else
@@ -453,7 +458,7 @@ function editMetadataForm(req, res){
 
   console.log('in editMetadataForm');
 
-  all_field_names = collect_new_rows(req, all_field_names);
+  all_field_names = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
 
   var all_field_names_first_column = get_first_column(all_field_names, 0);
 
@@ -955,9 +960,6 @@ function isUnique(all_clean_field_names_arr, column_name) {
   return (all_clean_field_names_arr.indexOf(column_name) < 0);
 }
 
-// var array = [new Array(20), new Array(20), new Array(20)]; //..your 3x20 array
-// get_first_column(array, 0); //Get first column
-
 function collect_new_rows(req, all_field_names) {
   console.time("TIME: collect_new_rows");
   // var new_rows_hash = {};
@@ -1000,8 +1002,8 @@ function collect_new_rows(req, all_field_names) {
 // ---- metadata_upload 1 ----
 // render new form
 // render edit form
-function render_edit_form(req, res, abstract_data_pr, all_metadata) {
-  var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
+// TODO: abstract_data_project add to all_metadata
+function render_edit_form(req, res, abstract_data_pr, all_metadata, all_field_names) {
   res.render("metadata/metadata_upload_from_file", {
     title: "VAMPS: Metadata_upload",
     user: req.user,
@@ -1081,36 +1083,10 @@ router.post('/metadata_files',
     else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
 
       var all_metadata = make_metadata_hash_from_file(req, res, req.body.edit_metadata_file);
-      //TODO: use parts of make_metadata_hash
+      //TODO: DRY: use parts of make_metadata_hash
 
       render_edit_form(req, res, {}, all_metadata);
-      // call an original unified render from here
-      // var all_field_names = CONSTS.ORDERED_METADATA_NAMES;
-      // res.render("metadata/metadata_upload_from_file", {
-      //   title: "VAMPS: Metadata_upload",
-      //   user: req.user,
-      //   hostname: req.CONFIG.hostname,
-      //   // abstract_data_pr: abstract_data[project_prefix],
-      //   all_metadata: all_metadata,
-      //   all_field_names: all_field_names,
-      //   dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-      //   dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-      //   dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-      //   biome_primary_options: CONSTS.BIOME_PRIMARY,
-      //   feature_primary_options: CONSTS.FEATURE_PRIMARY,
-      //   material_primary_options: CONSTS.MATERIAL_PRIMARY,
-      //   metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-      //   env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-      //   investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-      //   sample_type_options: CONSTS.SAMPLE_TYPE
-      // });
     }
-
-    // console.log("AAA3 edit_metadata_file");
-    // console.log(edit_metadata_file);
-    // TODO show, add form to choose, then go to make_metadata_hash
-
-
 
     console.timeEnd("TIME: in post /metadata_files");
   });
