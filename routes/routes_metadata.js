@@ -964,15 +964,29 @@ function convertArrayOfObjectsToCSV(args) {
 
   // TODO move to a function (make_project_info_hash), use for all forms, not just csv
   var dataset_length = data.dataset.length;
+  var data_arr1 = fill_out_arr(project_info_hash, dataset_length);
 
-  for (var key in project_info_hash){
+  data_arr = data_arr.concat(data_arr1);
 
-    var arr_temp = Array(dataset_length - 1);
-    arr_temp.unshift(key);
+  console.log("CCC2 convertArrayOfObjectsToCSV data_arr1");
+  console.log(data_arr1);
 
-    arr_temp.fill(project_info_hash[key], 1, dataset_length);
-    data_arr.push(arr_temp);
-  }
+  console.log("CCC3 convertArrayOfObjectsToCSV data_arr");
+  console.log(data_arr);
+
+  // CCC1 convertArrayOfObjectsToCSV data_arr1
+  //   [ [ 'project',
+  //   'DCO_GAI_Bv3v5',
+  //   'DCO_GAI_Bv3v5',
+
+  // for (var key in project_info_hash){
+  //
+  //   var arr_temp = Array(dataset_length - 1);
+  //   arr_temp.unshift(key);
+  //
+  //   arr_temp.fill(project_info_hash[key], 1, dataset_length);
+  //   data_arr.push(arr_temp);
+  // }
   /*
   * [ [ 'NPOC', '', '', '', '', '', '', '', '' ],
   [ 'access_point_type' ],
@@ -1200,6 +1214,19 @@ function get_field_names(dataset_ids){
     field_names_arr.sort();
   }
   return field_names_arr;
+}
+
+function fill_out_arr(project_info_hash, dataset_length) {
+  var data_arr = [];
+  for (var key in project_info_hash){
+
+    var arr_temp = Array(dataset_length - 1);
+    arr_temp.unshift(key);
+
+    arr_temp.fill(project_info_hash[key], 1, dataset_length);
+    data_arr.push(arr_temp);
+  }
+  return data_arr;
 }
 
 // ---- metadata_upload end ----
