@@ -314,7 +314,12 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   console.log("MMM1 all_metadata");
   console.log(all_metadata);
 
-  var field_names_arr = get_field_names();
+  var dataset_ids = [];
+  for (var i = 0; i < rows.length; i++) {
+    dataset_ids.push(rows[i].did);
+  }
+
+  var field_names_arr = get_field_names(dataset_ids);
 
   // var field_names_arr =
   // prepare_metadata_object(pid, field_names_arr, all_metadata);
@@ -1170,20 +1175,46 @@ function prepare_metadata_object(pid, field_names_arr, all_metadata) {
   return all_metadata;
 }
 
-function get_field_names(){
+function get_field_names(dataset_ids){
   var field_names_arr = [];
   field_names_arr = field_names_arr.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+  field_names_arr = field_names_arr.concat(CONSTS.METADATA_NAMES_ONCE_PER_PROJECT);
+
+  console.log("MMM00 CONSTS.METADATA_NAMES_ONCE_PER_PROJECT.length");
+  console.log(CONSTS.METADATA_NAMES_ONCE_PER_PROJECT.length);
 
   console.log("MMM0 CONSTS.REQ_METADATA_FIELDS_wIDs.length");
   console.log(CONSTS.REQ_METADATA_FIELDS_wIDs.length);
   // [ 'geo_loc_name',
   //   'dna_region',
 
+  console.log("MMM02 field_names_arr.length");
+  console.log(field_names_arr.length);
+
   console.log("MMM01 field_names_arr");
   console.log(field_names_arr);
 
-  console.log("MMM02 field_names_arr.length");
-  console.log(field_names_arr.length);
+  for (var i = 0; i < dataset_ids.length; i++) {
+    var dataset_id = dataset_ids[i];
+
+    console.log("DDD dataset_id");
+    console.log(dataset_id);
+
+    console.log("DDD1 Object.keys(AllMetadata[dataset_id]");
+    console.log(Object.keys(AllMetadata[dataset_id]));
+    field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
+
+    field_names_arr = helpers.unique_array(field_names_arr);
+    // myArray_fail.sort();
+
+    console.log("DDD2 field_names_arr.length");
+    console.log(field_names_arr.length);
+  }
+
+
+
+  console.log("DDD3 field_names_arr");
+  console.log(field_names_arr);
 
   // console.log("MMM3 Object.keys(AllMetadata[dataset_id]");
   // console.log(Object.keys(AllMetadata[rows[0]["did"]]));
