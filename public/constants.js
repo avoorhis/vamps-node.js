@@ -633,7 +633,6 @@ constants.METADATA_NAMES_ADD = [
   "pi_name",
   "project",
   "project_abstract",
-  "project_id",
   "project_title",
   "public",
   "username"
