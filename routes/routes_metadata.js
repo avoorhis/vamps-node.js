@@ -547,11 +547,10 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
   // {"307":{..."project_abstract":["DCO_GAI_CoDL_Gaidos_15_06_01.pdf","DCO_GAI_Gaidos_CoDL_11_03_03.pdf"]}}
   // abstract_data_pr = all_metadata
 
-  res.render("metadata/metadata_upload_from_file", {
+  res.render("metadata/metadata_edit_form", {
     title: "VAMPS: Metadata_upload",
     user: req.user,
     hostname: req.CONFIG.hostname,
-    abstract_pdfs: {},
     all_metadata: all_metadata,
     all_field_names: all_field_names,
     dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
@@ -601,12 +600,6 @@ function make_metadata_hash(req, res, pid) {
         // console.log("XXX project_prefix");
         // console.log(project_prefix);
         //DCO_GAI
-
-        var project = PROJECT_INFORMATION_BY_PID[pid].project;
-        var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
-        var abstract_data = get_abstract_data(project, path_to_static);
-        all_metadata[pid]["project_abstract"] = abstract_data.pdfs;
-
         render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
       }
@@ -641,12 +634,20 @@ function populate_metadata_hash_from_db(rows, pid, all_metadata, req) {
   console.log("MMM2 all_metadata");
   console.log(all_metadata);
 
+  var abstract_data = get_abstract_data(PROJECT_INFORMATION_BY_PID[pid].project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
+
+  // var project = PROJECT_INFORMATION_BY_PID[pid].project;
+  // var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
+  // var abstract_data = get_abstract_data(project, path_to_static);
+  // all_metadata[pid]["project_abstract"] = abstract_data.pdfs;
+
   for (var i = 0; i < rows.length; i++) {
     var row = rows[i];
 
     var dataset_id = row.did;
 
     //TODO: use get_project_info(project_name) if not in row
+    // TODO do that once outside
     all_metadata[pid]["project"].push(row.project);
     all_metadata[pid]["project_title"].push(row.title);
     all_metadata[pid]["username"].push(row.username);
@@ -659,6 +660,9 @@ function populate_metadata_hash_from_db(rows, pid, all_metadata, req) {
     all_metadata[pid]["dataset_id"].push(row.did);
     all_metadata[pid]["dataset"].push(row.dataset);
     all_metadata[pid]["dataset_description"].push(row.dataset_description);
+    all_metadata[pid]["project_abstract"].push(abstract_data.pdfs);
+    //TODO: get references
+    all_metadata[pid]["references"].push("");
 
     var primers_info_by_dataset_id = get_primers_info(row.did);
 
@@ -673,12 +677,6 @@ function populate_metadata_hash_from_db(rows, pid, all_metadata, req) {
     all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
 
     all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, ids_data, all_metadata[pid]);
-
-    // var project = PROJECT_INFORMATION_BY_PID[pid].project;
-    var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
-
-    var abstract_data = get_abstract_data(row.project, path_to_static);
-    all_metadata[pid]["project_abstract"] = abstract_data.pdfs;
 
 
   }

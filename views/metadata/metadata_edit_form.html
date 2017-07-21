@@ -47,15 +47,15 @@
       <!-- dataset_id project title username email institution first_name last_name public -->
 
       <label for="project_title">Title of Project:</label>
-      <input type="text" id="project_title" name="project_title" value='<%= all_metadata[pid].project_title %>'/>
+      <input type="text" id="project_title" name="project_title" value='<%= all_metadata[pid]["project_title"][0] %>'/>
 
       <br />
       <label for="project">VAMPS project name (MBL Supplied)</label>
-      <input type="text" id="project" readonly name="project" placeholder="DCO_GAI_Bv3v5" value='<%= all_metadata[pid].project %>'/>
+      <input type="text" id="project" readonly name="project" placeholder="DCO_GAI_Bv3v5" value='<%= all_metadata[pid]["project"][0] %>'/>
 
       <br />
       <label for="pi_name">PI Name:</label>
-      <input type="text" id="pi_name" name="pi_name"  value='<%= all_metadata[pid]["pi_name"] %>'/>
+      <input type="text" id="pi_name" name="pi_name"  value='<%= all_metadata[pid]["pi_name"][0] %>'/>
 
       <% for (var did in all_metadata[pid]["dataset_id"]) { %>
         <input type='hidden' name='dataset_id' value='<%= all_metadata[pid]["dataset_id"][did] %>' />
@@ -68,15 +68,15 @@
   <%}%>
   <br />
   <label for="pi_email">PI's email address:</label>
-  <input type="email" id="pi_email" name="pi_email"  value='<%= all_metadata[pid]["pi_email"] %>'/>
+  <input type="email" id="pi_email" name="pi_email"  value='<%= all_metadata[pid]["pi_email"][0] %>'/>
   <br />
   <label for="project_abstract">CoDL project abstract:</label>
     <% if (typeof(all_metadata[pid]["project_abstract"]) !== 'undefined') { %>
       <div class="white_box">
-        <% for (var n in all_metadata[pid]["project_abstract"]) { %>
-          <a href='/static/abstracts/<%= all_metadata[pid]["project_abstract"][n] %>' target='_blank'><%= all_metadata[pid]["project_abstract"][n] %></a><br/>
+        <% for (var n in all_metadata[pid]["project_abstract"][0]) { %>
+          <a href='/static/abstracts/<%= all_metadata[pid]["project_abstract"][0][n] %>' target='_blank'><%= all_metadata[pid]["project_abstract"][0][n] %></a><br/>
         <% } %> <!-- for (var pid in all_metadata)-->
-        <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= all_metadata[pid]["project_abstract"] %>'/>
+        <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= all_metadata[pid]["project_abstract"][0] %>'/>
       </div>
       <% } else { %> <!-- if not (all_metadata[pid]["project_abstract"]) -->
     <textarea class="textarea_long" id="project_abstract" name="project_abstract"></textarea>
@@ -84,7 +84,7 @@
 
     <br />
   <label for="references">References for selected manuscripts published that describe the location:</label>
-  <textarea class="textarea_long" id="references" name="references"  placeholder='<%= all_metadata[pid].references %>'></textarea>
+    <textarea class="textarea_long" id="references" name="references"  placeholder='<%= all_metadata[pid]["references"][0] %>'></textarea>
   <br />
   </fieldset>
   <fieldset id="parameters">
