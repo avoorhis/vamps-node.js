@@ -311,9 +311,24 @@ function saveMetadata(req, res){
 function populate_metadata_hash(rows, pid, all_metadata) {
   console.time("TIME: 3) populate_metadata_hash");
 
+  console.log("MMM1 all_metadata");
+  console.log(all_metadata);
+
+  var field_names_arr = get_field_names();
+
+  // var field_names_arr =
+  // prepare_metadata_object(pid, field_names_arr, all_metadata);
+
+  // console.log("LLL1 rows.length");
+  // console.log(rows.length);
+
   all_metadata[pid]["dataset_id"] = [];
   all_metadata[pid]["dataset"] = [];
   all_metadata[pid]["dataset_description"] = [];
+
+  // console.log("LLL1 rows.length");
+  // console.log(rows.length);
+  // 8
 
   for (var i = 0; i < rows.length; i++) {
     var row = rows[i];
@@ -580,7 +595,10 @@ router.post('/start_edit',
 
 // TODO: abstract_data_project add to all_metadata
 function render_edit_form(req, res, all_metadata, all_field_names) {
-  console.log("MMM1 all_field_names");
+  console.log("JJJ1 all_metadata");
+  console.log(JSON.stringify(all_metadata));
+
+  console.log("JJJ2 all_field_names");
   console.log(JSON.stringify(all_field_names));
   // {"307":{..."project_abstract":["DCO_GAI_CoDL_Gaidos_15_06_01.pdf","DCO_GAI_Gaidos_CoDL_11_03_03.pdf"]}}
   // abstract_data_pr = all_metadata
@@ -1132,6 +1150,48 @@ function get_abstract_data(project, req) {
   var abstract_data  = get_project_abstract_data(project, req);
   var project_prefix = get_project_prefix(project);
   return abstract_data[project_prefix];
+}
+
+function prepare_metadata_object(pid, field_names_arr, all_metadata) {
+  console.time("TIME: make_metadata_object");
+  all_metadata = all_metadata || {};
+  if (!(all_metadata.hasOwnProperty(pid))) {
+    all_metadata[pid] = {};
+  }
+
+  for (var i = 0; i < field_names_arr.length; i++) {
+    var field_name = field_names_arr[i];
+    if (!(all_metadata[pid].hasOwnProperty(field_name))) {
+      all_metadata[pid][field_name] = [];
+    }
+  }
+
+  console.timeEnd("TIME: make_metadata_object");
+  return all_metadata;
+}
+
+function get_field_names(){
+  var field_names_arr = [];
+  field_names_arr = field_names_arr.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+
+  console.log("MMM0 CONSTS.REQ_METADATA_FIELDS_wIDs.length");
+  console.log(CONSTS.REQ_METADATA_FIELDS_wIDs.length);
+  // [ 'geo_loc_name',
+  //   'dna_region',
+
+  console.log("MMM01 field_names_arr");
+  console.log(field_names_arr);
+
+  console.log("MMM02 field_names_arr.length");
+  console.log(field_names_arr.length);
+
+  // console.log("MMM3 Object.keys(AllMetadata[dataset_id]");
+  // console.log(Object.keys(AllMetadata[rows[0]["did"]]));
+  // [ 'geo_loc_name_id',
+  //   'gold',
+  //   'cobalt',
+  //   'germanium',
+  return field_names_arr;
 }
 
 // ---- metadata_upload end ----
