@@ -622,7 +622,10 @@ constants.ORDERED_METADATA_NAMES = [
 
 ];
 
-constants.METADATA_NAMES_ONCE_PER_PROJECT = [
+constants.METADATA_NAMES_ADD = [
+  "dataset",
+  "dataset_description",
+  "dataset_id",
   "first_name",
   "institution",
   "last_name",
@@ -630,6 +633,7 @@ constants.METADATA_NAMES_ONCE_PER_PROJECT = [
   "pi_name",
   "project",
   "project_abstract",
+  "project_id",
   "project_title",
   "public",
   "username"

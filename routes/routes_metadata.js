@@ -315,25 +315,25 @@ function populate_metadata_hash(rows, pid, all_metadata) {
   console.log(all_metadata);
 
   var dataset_ids = [];
-  for (var i = 0; i < rows.length; i++) {
-    dataset_ids.push(rows[i].did);
+  for (var i1 = 0; i1 < rows.length; i1++) {
+    dataset_ids.push(rows[i1].did);
   }
 
   var field_names_arr = get_field_names(dataset_ids);
   console.log("DDD field_names_arr");
   console.log(field_names_arr);
 
-  var all_metadata1 = prepare_metadata_object(pid, field_names_arr, all_metadata);
+  all_metadata = prepare_metadata_object(pid, field_names_arr, all_metadata);
 
-  console.log("MMM2 all_metadata1");
-  console.log(all_metadata1);
+  console.log("MMM2 all_metadata");
+  console.log(all_metadata);
 
   // console.log("LLL1 rows.length");
   // console.log(rows.length);
 
-  all_metadata[pid]["dataset_id"] = [];
-  all_metadata[pid]["dataset"] = [];
-  all_metadata[pid]["dataset_description"] = [];
+  // all_metadata[pid]["dataset_id"] = [];
+  // all_metadata[pid]["dataset"] = [];
+  // all_metadata[pid]["dataset_description"] = [];
 
   // console.log("LLL1 rows.length");
   // console.log(rows.length);
@@ -344,19 +344,19 @@ function populate_metadata_hash(rows, pid, all_metadata) {
 
     var dataset_id = row.did;
 
-    all_metadata[pid]["project"]     = row.project;
-    all_metadata[pid]["project_title"] = row.title;
-    all_metadata[pid]["username"]    = row.username;
-    all_metadata[pid]["pi_name"]     = row.first_name + " " + row.last_name;
-    all_metadata[pid]["pi_email"]    = row.email;
-    all_metadata[pid]["institution"] = row.institution;
-    all_metadata[pid]["first_name"]  = row.first_name;
-    all_metadata[pid]["last_name"]   = row.last_name;
-    all_metadata[pid]["public"]      = row.public;
+    //TODO: use get_project_info(project_name) if not in row
+    all_metadata[pid]["project"].push(row.project);
+    all_metadata[pid]["project_title"].push(row.title);
+    all_metadata[pid]["username"].push(row.username);
+    all_metadata[pid]["pi_name"].push(row.first_name + " " + row.last_name);
+    all_metadata[pid]["pi_email"].push(row.email);
+    all_metadata[pid]["institution"].push(row.institution);
+    all_metadata[pid]["first_name"].push(row.first_name);
+    all_metadata[pid]["last_name"].push(row.last_name);
+    all_metadata[pid]["public"].push(row.public);
     all_metadata[pid]["dataset_id"].push(row.did);
     all_metadata[pid]["dataset"].push(row.dataset);
     all_metadata[pid]["dataset_description"].push(row.dataset_description);
-
 
     var primers_info_by_dataset_id = get_primers_info(row.did);
 
@@ -416,6 +416,10 @@ function add_all_val_by_key(my_key_hash, my_val_hash, all_metadata_pid) {
 function get_project_abstract_data(project, req)
 {
   console.time("TIME: get_project_abstract_data");
+  console.log("PPP1 project");
+  console.log(project);
+
+
   var info_file = '';
   var abstract_data = {};
   if (project.substring(0,3) === 'DCO'){
@@ -667,7 +671,9 @@ function make_metadata_hash(req, res, pid) {
         // console.log(project_prefix);
         //DCO_GAI
 
-        var abstract_data = get_abstract_data(all_metadata[pid]["project"], req);
+        var project = PROJECT_INFORMATION_BY_PID[pid].project;
+
+        var abstract_data = get_abstract_data(project, req);
         all_metadata[pid]["project_abstract"] = abstract_data.pdfs;
 
         render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
@@ -1182,7 +1188,7 @@ function prepare_metadata_object(pid, field_names_arr, all_metadata) {
 function get_field_names(dataset_ids){
   var field_names_arr = [];
   field_names_arr = field_names_arr.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  field_names_arr = field_names_arr.concat(CONSTS.METADATA_NAMES_ONCE_PER_PROJECT);
+  field_names_arr = field_names_arr.concat(CONSTS.METADATA_NAMES_ADD);
 
   for (var i = 0; i < dataset_ids.length; i++) {
     var dataset_id = dataset_ids[i];
