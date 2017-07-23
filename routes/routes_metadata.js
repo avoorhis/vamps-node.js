@@ -1289,19 +1289,18 @@ function make_metadata_object(req, res, all_metadata, pid) {
   // console.log("MMM1 all_metadata");
   // console.log(all_metadata);
 
-  dataset_ids = DATASET_IDS_BY_PID[pid];
-  console.log("HHH1 DATASET_IDS_BY_PID[pid]");
-  console.log(DATASET_IDS_BY_PID[pid]);
+  var dataset_ids = DATASET_IDS_BY_PID[pid];
 
-
-  var all_metadata_keys_hash = Object.keys(AllMetadata[DATASET_IDS_BY_PID[pid][0]]);
-  console.log("HHH2 all_metadata_keys_hash 1");
-  console.log(JSON.stringify(all_metadata_keys_hash));
-
+  // 0) get field_names
   var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
+
 
   console.log("HHH3 all_field_names");
   console.log(JSON.stringify(all_field_names));
+
+  all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
+  console.log("MMM2 all_metadata");
+  console.log(all_metadata);
   /*
   *
 "adapter_sequence",
@@ -1329,10 +1328,7 @@ function make_metadata_object(req, res, all_metadata, pid) {
 "username",
 */
 
-  // var required_field_names =
-  // [ 4312, 4313, 4314, 4315, 4316, 4317, 4318, 4319 ]
 
-  // 0) get field_names
   // field names from datasets, METADATA_NAMES_ADD, METADATA_FORM_REQUIRED_FIELDS
   // var field_names_arr =
   // 1) function prepare_empty_metadata_object(pid, field_names_arr, all_metadata) {
