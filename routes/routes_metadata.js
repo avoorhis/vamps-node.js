@@ -274,8 +274,14 @@ function env_items_validation(value) {
   }
 }
 
-function get_project_info(project_name) {
-  var project_info = PROJECT_INFORMATION_BY_PNAME[project_name];
+function get_project_info(project_name_or_pid) {
+  var project_info;
+  if (helpers.isInt(project_name_or_pid)) {
+    project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
+  }
+  else {
+    project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
+  }
 
   return {
     project: project_info.project,
@@ -505,8 +511,8 @@ function populate_metadata_hash_from_db(rows, pid, all_metadata, req, res) {
   // console.log("MMM1 all_metadata");
   // console.log(all_metadata);
 
-  console.log('1 from db) make_metadata_object(req, res, all_metadata, pid)');
-  make_metadata_object(req, res, all_metadata, pid);
+  console.log('1 from db) make_metadata_object(req, res, all_metadata, pid, info)');
+  make_metadata_object(req, res, all_metadata, pid, rows);
 
   var dataset_ids = [];
   for (var i1 = 0; i1 < rows.length; i1++) {
@@ -519,8 +525,6 @@ function populate_metadata_hash_from_db(rows, pid, all_metadata, req, res) {
 
   all_metadata = prepare_empty_metadata_object(pid, field_names_arr, all_metadata);
 
-  console.log("MMM2 all_metadata");
-  console.log(all_metadata);
 
   project = PROJECT_INFORMATION_BY_PID[pid].project;
   var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
@@ -557,6 +561,8 @@ function populate_metadata_hash_from_db(rows, pid, all_metadata, req, res) {
 
     var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
     var ids_data = get_all_req_metadata(dataset_id);
+    console.log("MMM2 AllMetadata[dataset_id]");
+    console.log(AllMetadata[dataset_id]);
 
 
     all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
@@ -706,8 +712,8 @@ function editMetadataForm(req, res){
   var all_metadata = {};
   var pid = req.body.project_id;
 
-  console.log('2 from form) make_metadata_object(req, res, all_metadata, pid)');
-  make_metadata_object(req, res, all_metadata, pid);
+  console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
+  all_metadata = make_metadata_object(req, res, all_metadata, pid, req.form);
 
   var all_field_names_with_new = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
 
@@ -722,21 +728,20 @@ function editMetadataForm(req, res){
   req.flash("fail", myArray_fail);
 
 
-  var repeat_times = req.body.dataset_id.length;
-  req.form.pi_name = fill_out_arr_doubles("pi_name", PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last, repeat_times);
-  req.form.pi_email = fill_out_arr_doubles(PROJECT_INFORMATION_BY_PID[pid].email, repeat_times);
-  req.form.project_title = fill_out_arr_doubles(PROJECT_INFORMATION_BY_PID[pid].title, repeat_times);
-
+  // var repeat_times = req.body.dataset_id.length;
+  // req.form.pi_name = fill_out_arr_doubles("pi_name", PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last, repeat_times);
+  // req.form.pi_email = fill_out_arr_doubles(PROJECT_INFORMATION_BY_PID[pid].email, repeat_times);
+  // req.form.project_title = fill_out_arr_doubles(PROJECT_INFORMATION_BY_PID[pid].title, repeat_times);
 
   var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
 
-  all_metadata[pid] = req.form;
+  // all_metadata[pid] = req.form;
   all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
-  var project = all_metadata[pid]["project"][0];
-  var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
-  var abstract_data = get_project_abstract_data(project, path_to_static)[get_project_prefix(project)];
-
-  all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
+  // var project = all_metadata[pid]["project"][0];
+  // var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
+  // var abstract_data = get_project_abstract_data(project, path_to_static)[get_project_prefix(project)];
+  //
+  // all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
 
   // TODO: move to "add to all_metadata"
 
@@ -778,8 +783,6 @@ function make_metadata_hash_from_file(req, res, file_name) {
   var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
 
   var all_metadata = {};
-  console.log('3 from file) make_metadata_object(req, res, all_metadata, pid)');
-  make_metadata_object(req, res, all_metadata, pid);
 
 
   if (helpers.isInt(pid)) {
@@ -796,6 +799,9 @@ function make_metadata_hash_from_file(req, res, file_name) {
     var data = parse_sync(file_content, {columns: true, trim: true});
     console.log("AAA7 data");
     console.log(data);
+    var info_from_file = data
+    console.log('3 from file) make_metadata_object(req, res, all_metadata, pid, info_from_file)');
+    make_metadata_object(req, res, all_metadata, pid, info_from_file);
 
     for (var idx in data) {
       for (var key in data[idx]) {
@@ -1284,24 +1290,78 @@ function fill_out_arr_doubles(value, repeat_times) {
   return arr_temp;
 }
 
-function make_metadata_object(req, res, all_metadata, pid) {
+function make_metadata_object(req, res, all_metadata, pid, info) {
   console.time("TIME: make_metadata_object");
-  // console.log("MMM1 all_metadata");
-  // console.log(all_metadata);
+  console.log("GGG info");
+  console.log(info);
 
-  var dataset_ids = DATASET_IDS_BY_PID[pid];
+  var dataset_ids  = DATASET_IDS_BY_PID[pid];
+  var project      = PROJECT_INFORMATION_BY_PID[pid].project;
+  var repeat_times = dataset_ids.length;
+
 
   // 0) get field_names
   var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
 
+  // console.log("HHH3 all_field_names");
+  // console.log(JSON.stringify(all_field_names));
 
-  console.log("HHH3 all_field_names");
-  console.log(JSON.stringify(all_field_names));
-
+  // 1)
   all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
-  console.log("MMM2 all_metadata");
+  // console.log("MMM2 all_metadata");
+  // console.log(all_metadata);
+
+  //2) all
+  all_metadata[pid] = info;
+
+  //3) special
+  var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
+
+  var project_info = get_project_info(pid);
+  console.log("NNN1 project_info");
+  console.log(project_info);
+  all_metadata[pid]["first_name"] = fill_out_arr_doubles(project_info.first_name, repeat_times);
+  all_metadata[pid]["institution"] = fill_out_arr_doubles(project_info.institution, repeat_times);
+  all_metadata[pid]["last_name"] = fill_out_arr_doubles(project_info.last_name, repeat_times);
+  all_metadata[pid]["pi_email"] = fill_out_arr_doubles(project_info.pi_email, repeat_times);
+  all_metadata[pid]["pi_name"] = fill_out_arr_doubles(project_info.pi_name, repeat_times);
+  all_metadata[pid]["project"] = fill_out_arr_doubles(project_info.project, repeat_times);
+  all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
+  all_metadata[pid]["project_title"] = fill_out_arr_doubles(project_info.project_title, repeat_times);
+  all_metadata[pid]["public"] = fill_out_arr_doubles(project_info.public, repeat_times);
+  all_metadata[pid]["references"] = fill_out_arr_doubles(project_info.references, repeat_times);
+  all_metadata[pid]["run"] = fill_out_arr_doubles(project_info.run, repeat_times);
+  all_metadata[pid]["username"] = fill_out_arr_doubles(project_info.username, repeat_times);
+
+
+  console.log("MMM3 all_metadata");
   console.log(all_metadata);
-  /*
+
+  // var special_case_names = ["adapter_sequence",
+  //   "dataset",
+  //   "dataset_description",
+  //   "dataset_id",
+  //   "dna_region",
+  //   "domain",
+  //   "env_material",
+  //   "env_package",
+  //   "first_name",
+  //   "illumina_index",
+  //   "institution",
+  //   "last_name",
+  //   "pi_email",
+  //   "pi_name",
+  //   "primer_suite",
+  //   "project",
+  //   "project_abstract",
+  //   "project_title",
+  //   "public",
+  //   "references",
+  //   "run",
+  //   "sequencing_meth",
+  //   "username"];
+
+  /* special
   *
 "adapter_sequence",
 "dataset",
@@ -1327,11 +1387,6 @@ function make_metadata_object(req, res, all_metadata, pid) {
 "sequencing_meth",
 "username",
 */
-
-
-  // field names from datasets, METADATA_NAMES_ADD, METADATA_FORM_REQUIRED_FIELDS
-  // var field_names_arr =
-  // 1) function prepare_empty_metadata_object(pid, field_names_arr, all_metadata) {
 
 
   // *) get_most_of_the_data (from db, form or file)
@@ -1376,7 +1431,7 @@ or
   * */
 
   console.timeEnd("TIME: make_metadata_object");
-
+  return all_metadata;
 }
 
 
