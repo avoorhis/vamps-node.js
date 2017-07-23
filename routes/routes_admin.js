@@ -1378,14 +1378,14 @@ function get_name_ordered_projects_list(){
     return project_order
 }
 
-// TODO: mv to helpers and refactor
+// TODO: mv to helpers and refactor (see also in metadata & user_data
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 
   console.log('in file_utils');
   var user = req.query.user;
 
-  console.log("file from file_utils: ");
-  console.log(file);
+  // console.log("file from file_utils: ");
+  // console.log(file);
   //// DOWNLOAD //////
   if (req.query.fxn == 'download' && req.query.template == '1') {
     var file = path.join(process.env.PWD, req.query.filename);
@@ -1402,8 +1402,8 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
     res.download(file); // Set disposition and send it.
     ///// DELETE /////
   } else if (req.query.fxn == 'delete') {
-    console.log("UUU req.query");
-    console.log(req.query);
+    // console.log("UUU req.query");
+    // console.log(req.query);
 
 
     var file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);

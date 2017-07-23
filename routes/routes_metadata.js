@@ -989,7 +989,12 @@ function convertArrayOfObjectsToCSV(args) {
   // }
   /*
   * [ [ 'NPOC', '', '', '', '', '', '', '', '' ],
+  * TODO: fix
   [ 'access_point_type' ],
+  * TODO: fix (should be one field)
+  [ 'project_abstract',
+    'DCO_GAI_CoDL_Gaidos_15_06_01.pdf',
+    'DCO_GAI_Gaidos_CoDL_11_03_03.pdf' ],
   *
   * */
 
@@ -1032,6 +1037,72 @@ function convertArrayOfObjectsToCSV(args) {
 
 // from form to req form
 // from a csv file to db
+
+// TODO: mv to helpers and refactor (see also in admin & user_data
+router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
+
+  console.log("QQQ1 req.query");
+  console.log(req.query);
+
+  console.log('in file_utils');
+  var user = req.query.user;
+
+  console.log("file from file_utils: ");
+  console.log(file);
+  //// DOWNLOAD //////
+  var file;
+  if (req.query.fxn == 'download' && req.query.template == '1') {
+    file = path.join(process.env.PWD, req.query.filename);
+    res.setHeader('Content-Type', 'text');
+    res.download(file); // Set disposition and send it.
+  } else if (req.query.fxn == 'download' &&  req.query.type=='pcoa') {
+    file = path.join(process.env.PWD, 'tmp', req.query.filename);
+    res.setHeader('Content-Type', 'text');
+    res.download(file); // Set disposition and send it.
+  } else if (req.query.fxn == 'download') {
+    file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
+    console.log("FFF1 file path");
+    console.log(file);
+
+    res.setHeader('Content-Type', 'text');
+    res.download(file); // Set disposition and send it.
+    ///// DELETE /////
+  } else if (req.query.fxn == 'delete') {
+    console.log("UUU req.query");
+    console.log(req.query);
+
+
+    var file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
+
+    if (req.query.type == 'elements') {
+      fs.unlink(file, function deleteFile(err) {
+        if (err) {
+          console.log("err 8: ");
+          console.log(err);
+          req.flash('fail', err);
+        } else {
+          req.flash('success', 'Deleted: '+req.query.filename);
+          res.redirect("/visuals/saved_elements");
+        }
+      }); //
+    } else {
+      fs.unlink(file, function deleteFile(err) {
+        if (err) {
+          req.flash('fail', err);
+          console.log("err 9: ");
+          console.log(err);
+        } else {
+          req.flash('success', 'Deleted: '+req.query.filename);
+          res.redirect("/metadata/metadata_file_list");
+        }
+      });
+    }
+
+  }
+
+});
+
+
 // from form to db ??
 
 // if csv files: show a list and compare
@@ -1087,7 +1158,7 @@ router.post('/metadata_files',
       var all_metadata = make_metadata_hash_from_file(req, res, req.body.edit_metadata_file);
       //TODO: DRY: use parts of make_metadata_hash
 
-      render_edit_form(req, res, {}, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
+      render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
     }
 
