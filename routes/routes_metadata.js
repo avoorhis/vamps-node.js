@@ -1330,7 +1330,6 @@ function make_metadata_object(req, res, all_metadata, pid, info) {
   all_metadata[pid]["project_title"] = fill_out_arr_doubles(project_info.project_title, repeat_times);
   all_metadata[pid]["public"] = fill_out_arr_doubles(project_info.public, repeat_times);
   all_metadata[pid]["references"] = fill_out_arr_doubles(project_info.references, repeat_times);
-  all_metadata[pid]["run"] = fill_out_arr_doubles(project_info.run, repeat_times);
   all_metadata[pid]["username"] = fill_out_arr_doubles(project_info.username, repeat_times);
 
 
