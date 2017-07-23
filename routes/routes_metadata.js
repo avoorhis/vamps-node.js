@@ -1041,10 +1041,7 @@ function convertArrayOfObjectsToCSV(args) {
 // TODO: mv to helpers and refactor (see also in admin & user_data
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 
-  console.log("QQQ1 req.query");
-  console.log(req.query);
-
-  console.log('in file_utils');
+  console.time('file_utils');
   var user = req.query.user;
 
   console.log("file from file_utils: ");
@@ -1061,18 +1058,13 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
     res.download(file); // Set disposition and send it.
   } else if (req.query.fxn == 'download') {
     file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
-    console.log("FFF1 file path");
-    console.log(file);
 
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
     ///// DELETE /////
   } else if (req.query.fxn == 'delete') {
-    console.log("UUU req.query");
-    console.log(req.query);
 
-
-    var file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
+    file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
 
     if (req.query.type == 'elements') {
       fs.unlink(file, function deleteFile(err) {
@@ -1099,6 +1091,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
     }
 
   }
+  console.timeEnd('file_utils');
 
 });
 
