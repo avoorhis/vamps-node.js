@@ -206,16 +206,10 @@ function editMetadataForm(req, res){
   var project = all_metadata[pid]["project"][0];
   var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
   var abstract_data = get_project_abstract_data(project, path_to_static)[get_project_prefix(project)];
-  // var abstract_data = get_abstract_data(project, path_to_static);
-  // var abstract_data  = get_project_abstract_data(project, path_to_static);
-  // var project_prefix = get_project_prefix(project);
-  // return abstract_data[project_prefix];
 
   all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
 
   // TODO: move to "add to all_metadata"
-  // var abstract_data  = get_project_abstract_data(project, req);
-  // var project_prefix = get_project_prefix(project);
 
   console.log("WWW2 all_field_names_with_new");
   console.log(JSON.stringify(all_field_names_with_new));
@@ -551,13 +545,6 @@ function make_metadata_hash(req, res, pid) {
         all_metadata = populate_metadata_hash_from_db(rows, pid, all_metadata, req);
 
         //TODO: do once here and keep with form
-        // // TODO: add to all_metadata
-        // var project = all_metadata[pid]["project"];
-        //
-        // // TODO: add to all_metadata
-        // var abstract_data  = get_project_abstract_data(project, req);
-        // var project_prefix = get_project_prefix(project);
-
         // console.log("XXX project_prefix");
         // console.log(project_prefix);
         //DCO_GAI
@@ -595,15 +582,9 @@ function populate_metadata_hash_from_db(rows, pid, all_metadata, req) {
   console.log("MMM2 all_metadata");
   console.log(all_metadata);
 
-  // var abstract_data = get_abstract_data(PROJECT_INFORMATION_BY_PID[pid].project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
   project = PROJECT_INFORMATION_BY_PID[pid].project;
   var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
 
-
-  // var project = PROJECT_INFORMATION_BY_PID[pid].project;
-  // var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
-  // var abstract_data = get_abstract_data(project, path_to_static);
-  // all_metadata[pid]["project_abstract"] = abstract_data.pdfs;
 
   for (var i = 0; i < rows.length; i++) {
     var row = rows[i];
@@ -823,10 +804,7 @@ function make_metadata_hash_from_file(req, res, file_name) {
     all_metadata[project_id_to_edit]["project_title"] = data[0].project_title;
     all_metadata[project_id_to_edit]["public"]      = data[0].public;
     all_metadata[project_id_to_edit]["username"]    = data[0].username;
-    //TODO: get!
-    // var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
 
-    // var abstract_data = get_abstract_data(data[0].project, path_to_static);
     var abstract_data = get_project_abstract_data(data[0].project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(data[0].project)];
 
     all_metadata[project_id_to_edit]["project_abstract"] = abstract_data.pdfs;
@@ -850,16 +828,9 @@ function make_csv(req) {
   console.time("TIME: make_csv");
 
   //TODO: check where it is called from
-  // var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
   var abstract_data = get_project_abstract_data(data.project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(data.project)];
 
 
-  // var abstract_data = get_abstract_data(data.project, path_to_static);
-  // console.log("DDD1 abstract_data");
-  // console.log(abstract_data);
-  //
-  // console.log("DDD2 abstract_data.pdfs");
-  // console.log(abstract_data.pdfs);
   var csv = convertArrayOfObjectsToCSV({
     data: req.form,
     user_info: req.user,
@@ -1207,11 +1178,6 @@ function get_file_diff(req, files) {
 
 }
 // common functions
-// function get_abstract_data(project, path_to_static) {
-//   var abstract_data  = get_project_abstract_data(project, path_to_static);
-//   var project_prefix = get_project_prefix(project);
-//   return abstract_data[project_prefix];
-// }
 
 function get_project_abstract_data(project, path_to_static)
 {
