@@ -192,7 +192,11 @@ function editMetadataForm(req, res){
 
   var pid = req.body.project_id;
 
-  req.form.pi_name = PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last;
+  repeat_times = 8;
+  req.form.pi_name = fill_out_arr_doubles("pi_name", PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last, repeat_times);
+    // PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last;
+  console.log("III1 req.form.pi_name");
+  console.log(req.form.pi_name);
   req.form.pi_email = PROJECT_INFORMATION_BY_PID[pid].email;
   req.form.project_title = PROJECT_INFORMATION_BY_PID[pid].title;
 
@@ -760,15 +764,15 @@ router.post('/metadata_upload',
     form.field("pH", get_second("pH")).trim().entityEncode().array().required(),
     form.field("part_org_carbon_del13C", get_second("part_org_carbon_del13C")).trim().entityEncode().array(),
     form.field("phosphate", get_second("phosphate")).trim().entityEncode().array(),
-    form.field("pi_email", get_second("pi_email")).trim().isEmail().required().entityEncode(),
-    form.field("pi_name", get_second("pi_name")).trim().required().entityEncode().is(/^[a-zA-Z- ]+$/),
+    form.field("pi_email", get_second("pi_email")).trim().isEmail().required().entityEncode().array(),
+    form.field("pi_name", get_second("pi_name")).trim().required().entityEncode().is(/^[a-zA-Z- ]+$/).array(),
     form.field("plate_counts", get_second("plate_counts")).trim().entityEncode().array(),
     form.field("porosity", get_second("porosity")).trim().entityEncode().array(),
     form.field("potassium", get_second("potassium")).trim().entityEncode().array(),
     form.field("pressure", get_second("pressure")).trim().entityEncode().array(),
     form.field("project", get_second("project")).trim().entityEncode().array().required(),
-    form.field("project_abstract", get_second("project_abstract")).trim().required().entityEncode(),
-    form.field("project_title", get_second("project_title")).trim().required().entityEncode().is(/^[a-zA-Z0-9,_ -]+$/),
+    form.field("project_abstract", get_second("project_abstract")).trim().required().entityEncode().array(),
+    form.field("project_title", get_second("project_title")).trim().required().entityEncode().is(/^[a-zA-Z0-9,_ -]+$/).array(),
     form.field("redox_potential", get_second("redox_potential")).trim().entityEncode().array(),
     form.field("redox_state", get_second("redox_state")).trim().entityEncode().array().required(),
     form.field("references", get_second("references")).trim().entityEncode().array(),
@@ -1283,6 +1287,8 @@ function get_field_names(dataset_ids){
 function fill_out_arr(project_info_hash, dataset_length) {
   var data_arr = [];
   for (var key in project_info_hash){
+    console.log("YYY key");
+    console.log(key);
 
     var arr_temp = Array(dataset_length - 1);
     arr_temp.unshift(key);
@@ -1291,6 +1297,23 @@ function fill_out_arr(project_info_hash, dataset_length) {
     data_arr.push(arr_temp);
   }
   return data_arr;
+}
+
+function fill_out_arr_doubles(key, value, repeat_times) {
+  console.log("YYY1 key");
+  console.log(key);
+
+  console.log("YYY2 value");
+  console.log(value);
+
+  // var arr_temp = Array(repeat_times - 1);
+  // arr_temp.unshift(key);
+
+  var arr_temp = Array(repeat_times);
+  arr_temp.fill(value, 0, repeat_times);
+
+  // arr_temp.fill(value, 1, repeat_times);
+  return arr_temp;
 }
 
 // ---- metadata_upload end ----
