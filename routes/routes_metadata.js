@@ -182,8 +182,8 @@ function editMetadataForm(req, res){
 
   var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
 
-  // console.log("WWW1 all_field_names_first_column");
-  // console.log(JSON.stringify(all_field_names_first_column));
+  console.log("WWW1 all_field_names_first_column");
+  console.log(JSON.stringify(all_field_names_first_column));
 
   var myArray_fail = helpers.unique_array(req.form.errors);
   myArray_fail.sort();
@@ -205,12 +205,20 @@ function editMetadataForm(req, res){
   all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
   var project = all_metadata[pid]["project"][0];
   var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
-  var abstract_data = get_abstract_data(project, path_to_static);
+  var abstract_data = get_project_abstract_data(project, path_to_static)[get_project_prefix(project)];
+  // var abstract_data = get_abstract_data(project, path_to_static);
+  // var abstract_data  = get_project_abstract_data(project, path_to_static);
+  // var project_prefix = get_project_prefix(project);
+  // return abstract_data[project_prefix];
+
   all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
 
   // TODO: move to "add to all_metadata"
   // var abstract_data  = get_project_abstract_data(project, req);
   // var project_prefix = get_project_prefix(project);
+
+  console.log("WWW2 all_field_names_with_new");
+  console.log(JSON.stringify(all_field_names_with_new));
   render_edit_form(req, res, all_metadata, all_field_names_with_new);
 
   console.timeEnd("TIME: editMetadataForm");
@@ -324,54 +332,6 @@ function get_all_req_metadata(dataset_id) {
   console.time("TIME: 5) get_all_req_metadata");
 
   return data;
-}
-
-
-function add_all_val_by_key(my_key_hash, my_val_hash, all_metadata_pid) {
-  console.time("TIME: 6) add_all_val_by_key");
-
-  for (var i1 = 0, len1 = my_key_hash.length; i1 < len1; i1++) {
-    var key = my_key_hash[i1];
-    var val = my_val_hash[key];
-    
-    if (!(all_metadata_pid.hasOwnProperty(key))) {
-      all_metadata_pid[key] = [];
-    }
-    all_metadata_pid[key].push(val);
-
-  }
-  console.timeEnd("TIME: 6) add_all_val_by_key");
-  return all_metadata_pid;
-}
-
-
-function get_project_abstract_data(project, path_to_static)
-{
-  console.time("TIME: get_project_abstract_data");
-  console.log("PPP1 project");
-  console.log(project);
-
-
-  var info_file = '';
-  var abstract_data = {};
-  if (project.substring(0,3) === 'DCO'){
-    info_file = path.join(path_to_static, 'abstracts', 'DCO_info.json');
-    abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
-  }
-  console.timeEnd("TIME: get_project_abstract_data");
-  return abstract_data;
-}
-
-// TODO: move to helpers, use here and for project_profile
-function get_project_prefix(project) {
-  console.time("TIME: get_project_prefix");
-  var project_parts = project.split('_');
-  var project_prefix = project;
-  if(project_parts.length >= 2 ){
-    project_prefix = project_parts[0] + '_' + project_parts[1];
-  }
-  console.timeEnd("TIME: get_project_prefix");
-  return project_prefix;
 }
 
 function env_items_validation(value) {
@@ -635,7 +595,10 @@ function populate_metadata_hash_from_db(rows, pid, all_metadata, req) {
   console.log("MMM2 all_metadata");
   console.log(all_metadata);
 
-  var abstract_data = get_abstract_data(PROJECT_INFORMATION_BY_PID[pid].project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
+  // var abstract_data = get_abstract_data(PROJECT_INFORMATION_BY_PID[pid].project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
+  project = PROJECT_INFORMATION_BY_PID[pid].project;
+  var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
+
 
   // var project = PROJECT_INFORMATION_BY_PID[pid].project;
   // var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
@@ -861,9 +824,10 @@ function make_metadata_hash_from_file(req, res, file_name) {
     all_metadata[project_id_to_edit]["public"]      = data[0].public;
     all_metadata[project_id_to_edit]["username"]    = data[0].username;
     //TODO: get!
-    var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
+    // var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
 
-    var abstract_data = get_abstract_data(data[0].project, path_to_static);
+    // var abstract_data = get_abstract_data(data[0].project, path_to_static);
+    var abstract_data = get_project_abstract_data(data[0].project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(data[0].project)];
 
     all_metadata[project_id_to_edit]["project_abstract"] = abstract_data.pdfs;
 
@@ -886,14 +850,16 @@ function make_csv(req) {
   console.time("TIME: make_csv");
 
   //TODO: check where it is called from
-  var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
+  // var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
+  var abstract_data = get_project_abstract_data(data.project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(data.project)];
 
-  var abstract_data = get_abstract_data(data.project, path_to_static);
-  console.log("DDD1 abstract_data");
-  console.log(abstract_data);
 
-  console.log("DDD2 abstract_data.pdfs");
-  console.log(abstract_data.pdfs);
+  // var abstract_data = get_abstract_data(data.project, path_to_static);
+  // console.log("DDD1 abstract_data");
+  // console.log(abstract_data);
+  //
+  // console.log("DDD2 abstract_data.pdfs");
+  // console.log(abstract_data.pdfs);
   var csv = convertArrayOfObjectsToCSV({
     data: req.form,
     user_info: req.user,
@@ -1241,11 +1207,55 @@ function get_file_diff(req, files) {
 
 }
 // common functions
-function get_abstract_data(project, path_to_static) {
-  var abstract_data  = get_project_abstract_data(project, path_to_static);
-  var project_prefix = get_project_prefix(project);
-  return abstract_data[project_prefix];
+// function get_abstract_data(project, path_to_static) {
+//   var abstract_data  = get_project_abstract_data(project, path_to_static);
+//   var project_prefix = get_project_prefix(project);
+//   return abstract_data[project_prefix];
+// }
+
+function get_project_abstract_data(project, path_to_static)
+{
+  console.time("TIME: get_project_abstract_data");
+
+  var info_file = '';
+  var abstract_data = {};
+  if (project.substring(0,3) === 'DCO'){
+    info_file = path.join(path_to_static, 'abstracts', 'DCO_info.json');
+    abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+  }
+  console.timeEnd("TIME: get_project_abstract_data");
+  return abstract_data;
 }
+
+// TODO: move to helpers, use here and for project_profile
+function get_project_prefix(project) {
+  console.time("TIME: get_project_prefix");
+  var project_parts = project.split('_');
+  var project_prefix = project;
+  if(project_parts.length >= 2 ){
+    project_prefix = project_parts[0] + '_' + project_parts[1];
+  }
+  console.timeEnd("TIME: get_project_prefix");
+  return project_prefix;
+}
+
+function add_all_val_by_key(my_key_hash, my_val_hash, all_metadata_pid) {
+  console.time("TIME: 6) add_all_val_by_key");
+
+  for (var i1 = 0, len1 = my_key_hash.length; i1 < len1; i1++) {
+    var key = my_key_hash[i1];
+    var val = my_val_hash[key];
+
+    if (!(all_metadata_pid.hasOwnProperty(key))) {
+      all_metadata_pid[key] = [];
+    }
+    all_metadata_pid[key].push(val);
+
+  }
+  console.timeEnd("TIME: 6) add_all_val_by_key");
+  return all_metadata_pid;
+}
+
 
 function prepare_metadata_object(pid, field_names_arr, all_metadata) {
   console.time("TIME: make_metadata_object");
@@ -1302,5 +1312,55 @@ function fill_out_arr_doubles(value, repeat_times) {
   arr_temp.fill(value, 0, repeat_times);
   return arr_temp;
 }
+
+function make_metadata_object(req, res, all_metadata) {
+  console.time("TIME: make_metadata_object");
+  console.log("MMM1 all_metadata");
+  console.log(all_metadata);
+
+  // *) get_most_of_the_data (from db, form or file)
+  /*
+  for (var idx in data) {
+    for (var key in data[idx]) {
+      if (!(all_metadata[project_id_to_edit].hasOwnProperty(key))) {
+        all_metadata[project_id_to_edit][key] = [];
+      }
+      all_metadata[project_id_to_edit][key].push(data[idx][key]);
+    }
+  }
+  or
+  all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
+
+  all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, ids_data, all_metadata[pid]);
+  */
+  // *) get additional_data
+  /*
+  *   var abstract_data = get_abstract_data(PROJECT_INFORMATION_BY_PID[pid].project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
+or
+    var abstract_data = get_abstract_data(data[0].project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
+
+    all_metadata[project_id_to_edit]["project_abstract"] = abstract_data.pdfs;
+    all_metadata[pid]["project"].push(row.project);
+    all_metadata[pid]["project_title"].push(row.title);
+    all_metadata[pid]["username"].push(row.username);
+    all_metadata[pid]["pi_name"].push(row.first_name + " " + row.last_name);
+    all_metadata[pid]["pi_email"].push(row.email);
+    all_metadata[pid]["institution"].push(row.institution);
+    all_metadata[pid]["first_name"].push(row.first_name);
+    all_metadata[pid]["last_name"].push(row.last_name);
+    all_metadata[pid]["public"].push(row.public);
+    all_metadata[pid]["dataset_id"].push(row.did);
+    all_metadata[pid]["dataset"].push(row.dataset);
+    all_metadata[pid]["dataset_description"].push(row.dataset_description);
+    all_metadata[pid]["project_abstract"].push(abstract_data.pdfs);
+    //TODO: get references
+    all_metadata[pid]["references"].push("");
+
+  * */
+
+  console.timeEnd("TIME: make_metadata_object");
+
+}
+
 
 // ---- metadata_upload end ----
