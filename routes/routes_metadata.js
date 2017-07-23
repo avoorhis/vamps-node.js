@@ -192,13 +192,10 @@ function editMetadataForm(req, res){
 
   var pid = req.body.project_id;
 
-  repeat_times = 8;
+  var repeat_times = req.body.dataset_id.length;
   req.form.pi_name = fill_out_arr_doubles("pi_name", PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last, repeat_times);
-    // PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last;
-  console.log("III1 req.form.pi_name");
-  console.log(req.form.pi_name);
-  req.form.pi_email = PROJECT_INFORMATION_BY_PID[pid].email;
-  req.form.project_title = PROJECT_INFORMATION_BY_PID[pid].title;
+  req.form.pi_email = fill_out_arr_doubles(PROJECT_INFORMATION_BY_PID[pid].email, repeat_times);
+  req.form.project_title = fill_out_arr_doubles(PROJECT_INFORMATION_BY_PID[pid].title, repeat_times);
 
   var all_metadata = {};
 
@@ -209,7 +206,7 @@ function editMetadataForm(req, res){
   var project = all_metadata[pid]["project"][0];
   var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
   var abstract_data = get_abstract_data(project, path_to_static);
-  all_metadata[pid]["project_abstract"] = abstract_data.pdfs;
+  all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
 
   // TODO: move to "add to all_metadata"
   // var abstract_data  = get_project_abstract_data(project, req);
@@ -1284,6 +1281,7 @@ function get_field_names(dataset_ids){
   return field_names_arr;
 }
 
+//???
 function fill_out_arr(project_info_hash, dataset_length) {
   var data_arr = [];
   for (var key in project_info_hash){
@@ -1299,20 +1297,9 @@ function fill_out_arr(project_info_hash, dataset_length) {
   return data_arr;
 }
 
-function fill_out_arr_doubles(key, value, repeat_times) {
-  console.log("YYY1 key");
-  console.log(key);
-
-  console.log("YYY2 value");
-  console.log(value);
-
-  // var arr_temp = Array(repeat_times - 1);
-  // arr_temp.unshift(key);
-
+function fill_out_arr_doubles(value, repeat_times) {
   var arr_temp = Array(repeat_times);
   arr_temp.fill(value, 0, repeat_times);
-
-  // arr_temp.fill(value, 1, repeat_times);
   return arr_temp;
 }
 
