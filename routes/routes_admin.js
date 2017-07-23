@@ -1427,7 +1427,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
           console.log(err);
         } else {
           req.flash('success', 'Deleted: '+req.query.filename);
-          res.redirect("/user_data/file_retrieval");
+          res.redirect("/admin/all_files_retrieval");
         }
       });
     }
