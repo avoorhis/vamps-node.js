@@ -693,7 +693,6 @@ router.post('/metadata_upload',
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
       editMetadataForm(req, res);
-      //TODO: remove make_csv from here, use only if valid. ??
       make_csv(req, res);
     }
     else {
@@ -826,11 +825,15 @@ function make_csv(req) {
     user_info: req.user
   });
 
+  time_stamp = new Date().getTime();
+  // console.log("dddddd");
+  // console.log(dd);
 
+  // 1500928398648
 
-  var rando = helpers.getRandomInt(10000, 99999);
+  // var rando = helpers.getRandomInt(10000, 99999);
 
-  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + data.project + '_' + rando.toString() + ".csv");
+  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + data.project + '_' + time_stamp + ".csv");
 
   fs.writeFile(out_csv_file_name, csv, function (err) {
     if (err) throw err;
@@ -1081,7 +1084,6 @@ router.post('/metadata_files',
       //TODO: DRY: use parts of make_metadata_hash
 
       render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
-
     }
     else {
       req.flash("fail", "Please choose two files to compare or one to edit");
