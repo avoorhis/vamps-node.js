@@ -1062,12 +1062,6 @@ router.post('/metadata_files',
     files_to_compare = sorted_files_to_compare(req, sorted_files);
 
     if (typeof req.body.compare !== 'undefined' && req.body.compare.length === 2) {
-      // TODO: check that there are exactly 2 files to compare
-
-      console.log("QQQ req.body");
-      console.log(req.body);
-      console.log("req.body.compare.length");
-      console.log(req.body.compare.length);
 
       table_diff_html = get_file_diff(req, files_to_compare);
       res.render("metadata/metadata_file_list", {
@@ -1081,7 +1075,7 @@ router.post('/metadata_files',
         edit: true
       });
     }
-    else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
+    else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length === 1) {
 
       var all_metadata = make_metadata_hash_from_file(req, res, req.body.edit_metadata_file);
       //TODO: DRY: use parts of make_metadata_hash
