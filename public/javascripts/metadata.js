@@ -755,26 +755,26 @@ addCopyFirst = function () {
 //   });
 // };
 
-CopyColumn = function() {
-  $(".cp_clmn").click(function(){
-    var columnNo = $(this).closest('td').index();
-    var this_tbl = $('table#fixed_table_base');
-    var $tdsInColumnCurrent = this_tbl
-      .find("tr td:nth-child(" + (columnNo + 1) + ")");
-
-    $tdsInColumnCurrent.each(function () {
-      var current_val = $(this).children( ':input' ).val();
-      $(this).siblings().not('.readonly_td').eq(columnNo)
-        .children( ':input' ).val(current_val).change();
-    });
-  });
-};
+// CopyColumn = function() {
+//   $(".cp_clmn").click(function(){
+//     var columnNo = $(this).closest('td').index();
+//     var this_tbl = $('table#fixed_table_base');
+//     var $tdsInColumnCurrent = this_tbl
+//       .find("tr td:nth-child(" + (columnNo + 1) + ")");
+//
+//     $tdsInColumnCurrent.each(function () {
+//       var current_val = $(this).children( ':input' ).val();
+//       $(this).siblings().not('.readonly_td').eq(columnNo)
+//         .children( ':input' ).val(current_val).change();
+//     });
+//   });
+// };
 
 // ---
 
 $(document).ready(function(){
   // addCopyBtns();
-  CopyColumn();
+  // CopyColumn();
   addCopyFirst();
   copyFirst();
   fnAdjustTable();

@@ -639,6 +639,18 @@ constants.METADATA_NAMES_ADD = [
   "username"
 ];
 
+constants.METADATA_DROPDOWN_FIELDS = ["biome_secondary",
+  "dna_extraction_meth",
+  "env_biome",
+  "env_feature",
+  "env_material",
+  "env_package",
+  "feature_secondary",
+  "investigation_type",
+  "material_secondary",
+  "sample_type"
+];
+
 constants.ORDERED_METADATA_DIVIDERS = ["Biological",
   "Enter depth values in one or more categories",
   "Enter either volume or mass",
