@@ -21,6 +21,20 @@
 
 <p class='title'>Metadata Files List (click header to sort)</p>
 
+<% if(messages.success){ %>
+<div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+<div class="alert_flash_message_fail" >
+	<ul>
+		<% messages.fail.forEach(function(value){ %>
+		<li>
+			<%= value %>
+		</li>
+		<% }) %>
+	</ul>
+</div>
+<% }%>
+<br>
 <!--<br><strong>Your Downloads</strong> -->
 <!--(click header to sort)-->
 

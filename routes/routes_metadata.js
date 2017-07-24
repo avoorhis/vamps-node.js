@@ -1090,7 +1090,7 @@ router.post('/metadata_files',
 
     }
     else {
-      req.flash("fail", "Please choose two files to compare or the one to edit");
+      req.flash("fail", "Please choose two files to compare or one to edit");
       res.redirect("/metadata/metadata_file_list");
     }
 
