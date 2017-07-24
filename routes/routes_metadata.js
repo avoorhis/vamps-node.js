@@ -826,14 +826,8 @@ function make_csv(req) {
   });
 
   time_stamp = new Date().getTime();
-  // console.log("dddddd");
-  // console.log(dd);
 
-  // 1500928398648
-
-  // var rando = helpers.getRandomInt(10000, 99999);
-
-  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + data.project + '_' + time_stamp + ".csv");
+  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + data.project + '_' + req.user.username + '_' + time_stamp + ".csv");
 
   fs.writeFile(out_csv_file_name, csv, function (err) {
     if (err) throw err;
@@ -1078,8 +1072,7 @@ router.post('/metadata_files',
         edit: true
       });
     }
-    else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length === 1) {
-
+    else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
       var all_metadata = make_metadata_hash_from_file(req, res, req.body.edit_metadata_file);
       //TODO: DRY: use parts of make_metadata_hash
 
