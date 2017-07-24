@@ -5,6 +5,7 @@
 <% active_class_search  = '' %>
 <% active_class_contact = '' %>
 <% active_class_admin   = '' %>
+<% active_class_dco     = '' %>
 <% active_class_links   = '' %>
 
 <% if(typeof menu_section != 'undefined'){  %>
@@ -24,6 +25,8 @@
 <%    active_class_admin = 'active' %>
 <%  }else if(menu_section=='LINKS') { %>
 <%    active_class_links = 'active' %>
+<%  }else if(menu_section=='DCO') { %>
+<%    active_class_dco = 'active' %>
 <%  } %>
 <% } %>
     <nav class="navbar navbar-custom navbar-fixed-top  ">
@@ -58,6 +61,8 @@
                     (<span class='color_red '>Admin User</span>)
                   <% }else if(user.security_level === 10){ %>
                     (<span class='color_blue'>MBL Power User</span>)
+                  <% }else if(user.security_level === 45){ %>
+                    (<span class='color_blue'>DCO Editor</span>)
                   <% } %>
                   | <a href='/users/logout'> logout</a>
               <% } %>
@@ -85,6 +90,8 @@
             <li class='<%= active_class_contact %>'><a href="/help/contact">Contact Us</a></li>
           <% if (user !== undefined && user.security_level === 1) { %>
               <li class='<%= active_class_admin %>'><a href="/admin/admin_index">Admin</a></li>
+          <% }else if(user !== undefined && user.security_level === 45){ %>
+            <li class='<%= active_class_dco %>'><a href="/user_data/dco_metadata">DCO Editor</a></li>
           <% } %>
             <li class="<%= active_class_links %> dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Links<span class="caret"></span></a>
