@@ -784,25 +784,17 @@ function make_metadata_hash_from_file(req, res, file_name) {
 
   var all_metadata = {};
 
-
   if (helpers.isInt(pid)) {
-    // console.log("EEE2 pid");
-    // console.log(pid);
-
-    // add_data_to_all_metadata(req);
-
     all_metadata[pid] = {};
     var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
 
     var file_content = fs.readFileSync(inputPath);
     var parse_sync = require('csv-parse/lib/sync');
     var data = parse_sync(file_content, {columns: true, trim: true});
-    // var info_from_file = parse_sync(file_content, {trim: true});
     var info_from_file = {};
     for (var idx in data) {
       for (var key in data[idx]) {
         if (!(info_from_file.hasOwnProperty(key))) {
-        // * { NPOC: [ '', '', '', '', '', '', '', '' ],
           info_from_file[key] = [];
         }
         info_from_file[key].push(data[idx][key]);
@@ -810,88 +802,8 @@ function make_metadata_hash_from_file(req, res, file_name) {
     }
     console.log("AAA7 info_from_file");
     console.log(info_from_file);
-    // var info_from_file = data;
-
-    /*
-    * convert from
-    * [ { NPOC: '',
-    access_point_type: 'undefined',
-    adapter_sequence: 'TGTCA',
-    alkalinity: '',
-    ammonium: '',
-    bicarbonate: '',
-    env_biome: 'marine',
-    biome_secondary: 'abyssal',
-    calcium: '3.50',
-    calcium_carbonate: '',
-    chloride: '12.28',
-    clone_library_results: '',
-    collection_date: '2007-06-01',
-    conductivity: '',
-    dataset: 'S1',
-    dataset_id: '4312',
-    del18O_water: '',
-    depth_in_core: 'undefined',
-    depth_subseafloor: '1',
-    depth_subterrestrial: '5',
-    diss_hydrogen: '',
-    diss_inorg_carb: '',
-    diss_inorg_carbon_del13C: '',
-    diss_org_carb: '',
-    diss_oxygen: '',
-    or
-    AAA7 info_from_file
-[ [ 'NPOC',
-    'access_point_type',
-    'adapter_sequence',
-    'alkalinity',
-    'ammonium',
-    'bicarbonate',
-    'env_biome',
-    'biome_secondary',
-    'calcium',
-
-    to
-    *
-    * { NPOC: [ '', '', '', '', '', '', '', '' ],
-  access_point_type: [],
-  adapter_sequence:
-   [ 'TGTCA',
-     'TGTCA',
-     'TGTCA',
-     'TGTCA',
-     'TGTCA',
-     'TGTCA',
-     'TGTCA',
-     'TGTCA' ],
-    * */
-
     console.log('3 from file) make_metadata_object(req, res, all_metadata, pid, info_from_file)');
-    all_metadata = make_metadata_object(req, res, all_metadata, pid, info_from_file);
-
-    // for (var idx in data) {
-    //   for (var key in data[idx]) {
-    //     if (!(all_metadata[pid].hasOwnProperty(key))) {
-    //       all_metadata[pid][key] = [];
-    //     }
-    //     all_metadata[pid][key].push(data[idx][key]);
-    //   }
-    // }
-    // all_metadata[pid]["first_name"]  = data[0].first_name;
-    // all_metadata[pid]["institution"] = data[0].institution;
-    // all_metadata[pid]["last_name"]   = data[0].last_name;
-    // all_metadata[pid]["pi_email"]    = data[0].pi_email;
-    // all_metadata[pid]["pi_name"]     = data[0].first_name + " " + data[0].last_name;
-    // all_metadata[pid]["project"]     = data[0].project;
-    // all_metadata[pid]["project_title"] = data[0].project_title;
-    // all_metadata[pid]["public"]      = data[0].public;
-    // all_metadata[pid]["username"]    = data[0].username;
-    //
-    // var abstract_data = get_project_abstract_data(data[0].project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(data[0].project)];
-    //
-    // all_metadata[pid]["project_abstract"] = abstract_data.pdfs;
-
-    return all_metadata;
+    return make_metadata_object(req, res, all_metadata, pid, info_from_file);
   }
   else
   { // end if int
