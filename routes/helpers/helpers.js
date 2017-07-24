@@ -102,22 +102,12 @@ function get_sizer_and_filesize(size) {
 }
 
 function format_time(mtime){
-  console.log("GGG mtime.toString().split(' ')");
-  console.log(mtime.toString().split(" "));
-  // [ 'Mon', 'Jul', '24', '2017', '16:43:56', 'GMT-0400', '(EDT)' ]
-  a = mtime.toString().split(" ").slice(1, 5).join(" ");
-  // return str.split("").reverse().join("");
-  //
-  // var dids_str = JSON.stringify(dids.join(', '));
-  console.log(a);
-
-  return a;
+  return mtime.toString().split(" ").slice(1, 5).join(" ");
   // mtime.toString().split();
     //Mon Jul 24 2017 16:43:56 GMT-0400 (EDT)
     // .toISOString().replace(/T/,' ').replace(/\..+/, '');
   // .replace(/T/,' ').replace(/.000Z$/,'');
   // .toString();
-  // Wed Jul 05 2017 12:15:22 GMT-0400 (EDT)
 }
 
 function walk_recursively(dir, done) {
