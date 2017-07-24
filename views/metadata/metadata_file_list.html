@@ -30,7 +30,7 @@
 		<thead>
 		<tr>
 			<th></th>
-			<th>Download</th>
+			<th>File name</th>
 			<th>Creation Time</th>
 			<th>Compare</th>
 			<% if(edit) { %>
@@ -46,7 +46,8 @@
 		<tr>
 			<td><%= parseInt(t)+1 %></td>
 			<td>
-				<a href='file_utils?fxn=download&user=<%= file_info[t].user_dirname %>&type=fasta&filename=<%= filename %>' ><%= filename %></a>
+				<!--<a href='file_utils?fxn=download&user=<%= file_info[t].user_dirname %>&type=fasta&filename=<%= filename %>' ><%= filename %></a>-->
+				<%= filename %>
 			</td>
 			<td>
 				<%= file_info[t].mtime_format %>
