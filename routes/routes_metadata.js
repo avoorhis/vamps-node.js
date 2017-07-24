@@ -826,6 +826,8 @@ function make_csv(req) {
     user_info: req.user
   });
 
+
+
   var rando = helpers.getRandomInt(10000, 99999);
 
   out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + data.project + '_' + rando.toString() + ".csv");
@@ -881,19 +883,19 @@ function convertArrayOfObjectsToCSV(args) {
     return null;
   }
 
-  var project_info_hash = get_project_info(data.project[0]);
-  console.log("DDD project_info_hash");
-  console.log(project_info_hash);
+  // var project_info_hash = get_project_info(data.project[0]);
+  // console.log("DDD project_info_hash");
+  // console.log(project_info_hash);
 
   data_arr = array_from_object(data);
-  // console.log("CCC1 convertArrayOfObjectsToCSV data_arr");
-  // console.log(data_arr);
+  console.log("CCC1 convertArrayOfObjectsToCSV data_arr");
+  console.log(JSON.stringify(data_arr));
 
   // TODO move to a function (make_project_info_hash), use for all forms, not just csv
-  var dataset_length = data.dataset.length;
-  var data_arr1 = fill_out_arr(project_info_hash, dataset_length);
-
-  data_arr = data_arr.concat(data_arr1);
+  // var dataset_length = data.dataset.length;
+  // var data_arr1 = fill_out_arr(project_info_hash, dataset_length);
+  //
+  // data_arr = data_arr.concat(data_arr1);
 
   // console.log("CCC2 convertArrayOfObjectsToCSV data_arr1");
   // console.log(data_arr1);
