@@ -1061,8 +1061,14 @@ router.post('/metadata_files',
     sorted_files = sorted_files_by_time(req);
     files_to_compare = sorted_files_to_compare(req, sorted_files);
 
-    if (typeof req.body.compare !== 'undefined' && req.body.compare.length !== 0) {
+    if (typeof req.body.compare !== 'undefined' && req.body.compare.length === 2) {
       // TODO: check that there are exactly 2 files to compare
+
+      console.log("QQQ req.body");
+      console.log(req.body);
+      console.log("req.body.compare.length");
+      console.log(req.body.compare.length);
+
       table_diff_html = get_file_diff(req, files_to_compare);
       res.render("metadata/metadata_file_list", {
         title: "VAMPS: Metadata File List",
@@ -1082,6 +1088,10 @@ router.post('/metadata_files',
 
       render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
+    }
+    else {
+      req.flash("fail", "Please choose two files to compare or the one to edit");
+      res.redirect("/metadata/metadata_file_list");
     }
 
     console.timeEnd("TIME: in post /metadata_files");
