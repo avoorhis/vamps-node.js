@@ -749,11 +749,11 @@ addCopyFirst = function () {
   });
 };
 
-addCopyBtns = function() {
-  $('table#fixed_table_base').find('tr').eq(1).find('td').each(function() {
-    $(this).append('<input type="button" value="Copy to next" class="cp_clmn"/>');
-  });
-};
+// addCopyBtns = function() {
+//   $('table#fixed_table_base').find('tr').eq(1).find('td').each(function() {
+//     $(this).append('<input type="button" value="Copy to next" class="cp_clmn"/>');
+//   });
+// };
 
 CopyColumn = function() {
   $(".cp_clmn").click(function(){
@@ -773,7 +773,7 @@ CopyColumn = function() {
 // ---
 
 $(document).ready(function(){
-  addCopyBtns();
+  // addCopyBtns();
   CopyColumn();
   addCopyFirst();
   copyFirst();
