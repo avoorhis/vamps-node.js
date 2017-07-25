@@ -729,25 +729,66 @@ $('#table_div').scroll(function(){
   fnScroll();
 });
 
+var metadata_dropdown_fields = ["biome_secondary",
+  "dna_extraction_meth",
+  "env_biome",
+  "env_feature",
+  "env_material",
+  "env_package",
+  "feature_secondary",
+  "investigation_type",
+  "material_secondary",
+  "sample_type"
+];
+
 addCopyFirst = function () {
   var columnNo = 0;
   var this_tbl = $('table#first_col_table');
+
   var $tdsInColumnCurrent = this_tbl
     .find("tr td:nth-child(" + (columnNo + 1) + "):not('.header_divider')");
+  var $label = $("label[for='investigation_type']");
+  alert($label.text());
+  // metadata_dropdown_fields.each(function () {
+  //   // var label = $("label[for='"+$(this)+"']");
+  //   var $label = $("label[for='"+this.id+"']")
+  //   alert($label.text());
+  //
+  // });
 
-
-  $tdsInColumnCurrent.each(function () {
-    var next_text = $(this).parent().find('td').eq(columnNo + 1).text();
-
-    if (next_text !== "MBL Supplied") {
-      // $(this).css('background-color','Aqua');
-
-      $(this).wrapInner('<span class="makeLeft"></span>')
-        .append('<span class="makeRight"><a href="#" class="td_clone_add">Copy 1st</a></span>');
-    }
-
-  });
+  //
+  // $tdsInColumnCurrent.each(function () {
+  //   var next_text = $(this).parent().find('td').eq(columnNo + 1).text();
+  //
+  //   if (next_text !== "MBL Supplied") {
+  //     // $(this).css('background-color','Aqua');
+  //
+  //     $(this).wrapInner('<span class="makeLeft"></span>')
+  //       .append('<span class="makeRight"><a href="#" class="td_clone_add">Copy 1st</a></span>');
+  //   }
+  //
+  // });
 };
+
+// addCopyFirst = function () {
+//   var columnNo = 0;
+//   var this_tbl = $('table#first_col_table');
+//   var $tdsInColumnCurrent = this_tbl
+//     .find("tr td:nth-child(" + (columnNo + 1) + "):not('.header_divider')");
+//
+//
+//   $tdsInColumnCurrent.each(function () {
+//     var next_text = $(this).parent().find('td').eq(columnNo + 1).text();
+//
+//     if (next_text !== "MBL Supplied") {
+//       // $(this).css('background-color','Aqua');
+//
+//       $(this).wrapInner('<span class="makeLeft"></span>')
+//         .append('<span class="makeRight"><a href="#" class="td_clone_add">Copy 1st</a></span>');
+//     }
+//
+//   });
+// };
 
 // addCopyBtns = function() {
 //   $('table#fixed_table_base').find('tr').eq(1).find('td').each(function() {
