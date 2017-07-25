@@ -747,8 +747,11 @@ addCopyFirst = function () {
 
   var $tdsInColumnCurrent = this_tbl
     .find("tr td:nth-child(" + (columnNo + 1) + "):not('.header_divider')");
-  var $label = $("label[for='investigation_type']");
-  alert($label.text());
+  $tdsInColumnCurrent.each(function () {
+    var $label = $(this).find("label");
+    alert($label.text());
+
+  });
   // metadata_dropdown_fields.each(function () {
   //   // var label = $("label[for='"+$(this)+"']");
   //   var $label = $("label[for='"+this.id+"']")
