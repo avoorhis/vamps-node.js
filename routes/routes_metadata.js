@@ -172,8 +172,15 @@ router.post('/show_metadata_form',
     // make_metadata_hash(req, res, req.body.project_id);
     console.log("MMM show_metadata_form with db data");
     // populate all_metadata from db and show form
+    var all_metadata = {};
+    var all_field_names = {};
+    render_edit_form(req, res, all_metadata, all_field_names);
+
     console.timeEnd("TIME: 1) in post /show_metadata_form");
   });
+
+
+
 
 // if csv files: show a list and compare
 router.get('/metadata_file_list', function(req, res) {
@@ -454,6 +461,31 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 
 });
 
+// common functions
+function render_edit_form(req, res, all_metadata, all_field_names) {
+  console.log("JJJ1 all_metadata");
+  console.log(JSON.stringify(all_metadata));
 
+  console.log("JJJ2 all_field_names");
+  console.log(JSON.stringify(all_field_names));
+
+  res.render("metadata/metadata_edit_form", {
+    title: "VAMPS: Metadata_upload",
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    all_metadata: all_metadata,
+    all_field_names: all_field_names,
+    dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+    dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+    dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+    biome_primary_options: CONSTS.BIOME_PRIMARY,
+    feature_primary_options: CONSTS.FEATURE_PRIMARY,
+    material_primary_options: CONSTS.MATERIAL_PRIMARY,
+    metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+    env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+    investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+    sample_type_options: CONSTS.SAMPLE_TYPE
+  });
+}
 
 // ---- metadata_upload end ----
