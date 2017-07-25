@@ -764,16 +764,6 @@ addCopyFirst = function () {
   }, function() {
     $(this).css('cursor','auto');
   });
-  //replicate 1st cell
-  //
-  // $("#myId").hover(function() {
-  //   $(this).css('cursor','pointer').attr('title', 'This is a hover text.');
-  // }, function() {
-  //   $(this).css('cursor','auto');
-  // });
-
-
-
 
 
   //
@@ -810,32 +800,37 @@ addCopyFirst = function () {
 //   });
 // };
 
-// addCopyBtns = function() {
-//   $('table#fixed_table_base').find('tr').eq(1).find('td').each(function() {
-//     $(this).append('<input type="button" value="Copy to next" class="cp_clmn"/>');
-//   });
-// };
+addCopyBtns = function() {
+  $('table#fixed_table_base').find('tr').eq(1).find('td').each(function() {
+    $(this).append('<input type="button" value="Copy to next" class="cp_clmn"/>');
+  });
+  $(".cp_clmn").hover(function(){
+    $(this).css('cursor','pointer').attr('title', 'Copies a content of each cell only to the empty cells in the next column.');
+  }, function() {
+    $(this).css('cursor','auto');
+  });
+};
 
-// CopyColumn = function() {
-//   $(".cp_clmn").click(function(){
-//     var columnNo = $(this).closest('td').index();
-//     var this_tbl = $('table#fixed_table_base');
-//     var $tdsInColumnCurrent = this_tbl
-//       .find("tr td:nth-child(" + (columnNo + 1) + ")");
-//
-//     $tdsInColumnCurrent.each(function () {
-//       var current_val = $(this).children( ':input' ).val();
-//       $(this).siblings().not('.readonly_td').eq(columnNo)
-//         .children( ':input' ).val(current_val).change();
-//     });
-//   });
-// };
+CopyColumn = function() {
+  $(".cp_clmn").click(function(){
+    var columnNo = $(this).closest('td').index();
+    var this_tbl = $('table#fixed_table_base');
+    var $tdsInColumnCurrent = this_tbl
+      .find("tr td:nth-child(" + (columnNo + 1) + ")");
+
+    $tdsInColumnCurrent.each(function () {
+      var current_val = $(this).children( ':input' ).val();
+      $(this).siblings().not('.readonly_td').eq(columnNo)
+        .children( ':input' ).val(current_val).change();
+    });
+  });
+};
 
 // ---
 
 $(document).ready(function(){
-  // addCopyBtns();
-  // CopyColumn();
+  addCopyBtns();
+  CopyColumn();
   addCopyFirst();
   copyFirst();
   fnAdjustTable();
