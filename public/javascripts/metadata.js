@@ -747,11 +747,47 @@ addCopyFirst = function () {
 
   var $tdsInColumnCurrent = this_tbl
     .find("tr td:nth-child(" + (columnNo + 1) + "):not('.header_divider')");
+
+  // var labels = $tdsInColumnCurrent.find("label");
+  $('label[for]').each(function() {
+    var $forAttr = $(this).attr('for');
+    alert($forAttr);
+    // work with for here...
+  });
+
+
+  // var $labels = $tdsInColumnCurrent.find("label");
+  //
+  // $labels.css('background-color','Aqua');
+
+  // for (var i = 0; i < labels.length; i++) {
+  //   if (labels[i].htmlFor !== '') {
+  //     var elem = document.getElementById(labels[i].htmlFor);
+  //     alert(labels[i].innerHTML);
+  //     // if (elem)
+  //     //   elem.label = labels[i];
+  //   }
+  // }
+
+
+  //       document.getElementsByTagName('LABEL');
+  // for (var i = 0; i < labels.length; i++) {
+  //   if (labels[i].htmlFor != '') {
+  //     var elem = document.getElementById(labels[i].htmlFor);
+  //     if (elem)
+  //       elem.label = labels[i];
+  //   }
+  // }
+
+
   $tdsInColumnCurrent.each(function () {
     var $label = $(this).find("label");
     alert($label.text());
+    // var $label = $(this).find("label");
+    // alert($label);
 
   });
+  // .htmlFor
   // metadata_dropdown_fields.each(function () {
   //   // var label = $("label[for='"+$(this)+"']");
   //   var $label = $("label[for='"+this.id+"']")
