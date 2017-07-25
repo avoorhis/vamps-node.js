@@ -164,7 +164,7 @@ function get_metadata_hash(md_selected){
   common functions
 */
 
-router.post('/show_metadata_form',
+router.post('/show_metadata_form_from_db',
   [helpers.isLoggedIn],
   function (req, res) {
 
@@ -172,14 +172,34 @@ router.post('/show_metadata_form',
     // make_metadata_hash(req, res, req.body.project_id);
     console.log("MMM show_metadata_form with db data");
     // populate all_metadata from db and show form
-    var all_metadata = {};
-    var all_field_names = {};
-    render_edit_form(req, res, all_metadata, all_field_names);
+    pid = req.body.project_id;
+    dataset_ids = DATASET_IDS_BY_PID[pid];
 
+    //TODO:
+    for (var idx in dataset_ids) {
+      var dataset_id = dataset_ids[idx];
+      // var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
+      // var ids_data = get_all_req_metadata(dataset_id);
+      // console.log("MMM2 ids_data");
+      // console.log(ids_data);
+      var primers_info_by_dataset_id = get_primers_info(dataset_id);
+
+      AllMetadata[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
+      AllMetadata[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
+    }
+
+    console.log("RRR AllMetadata");
+    console.log(AllMetadata);
+
+    var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
+
+    console.log("HHH3 all_field_names");
+    console.log(JSON.stringify(all_field_names));
+
+    var all_metadata    = make_metadata_object(req, res, {}, pid, AllMetadata, all_field_names);
+    render_edit_form(req, res, all_metadata, all_field_names);
     console.timeEnd("TIME: 1) in post /show_metadata_form");
   });
-
-
 
 
 // if csv files: show a list and compare
@@ -487,5 +507,114 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
     sample_type_options: CONSTS.SAMPLE_TYPE
   });
 }
+
+
+function make_metadata_object(req, res, all_metadata, pid, info, all_field_names) {
+  console.time("TIME: make_metadata_object");
+  console.log("GGG info");
+  console.log(info);
+
+  var dataset_ids  = DATASET_IDS_BY_PID[pid];
+  var project      = PROJECT_INFORMATION_BY_PID[pid].project;
+  var repeat_times = dataset_ids.length;
+
+
+  // 0) get field_names
+  // var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
+
+  // console.log("HHH3 all_field_names");
+  // console.log(JSON.stringify(all_field_names));
+
+  // 1)
+  all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
+  // console.log("MMM2 all_metadata");
+  // console.log(all_metadata);
+
+  //2) all
+  all_metadata[pid] = info;
+
+  //3) special
+  var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
+
+  var project_info = get_project_info(pid);
+  console.log("NNN1 project_info");
+  console.log(project_info);
+  all_metadata[pid]["first_name"] = fill_out_arr_doubles(project_info.first, repeat_times);
+  all_metadata[pid]["institution"] = fill_out_arr_doubles(project_info.institution, repeat_times);
+  all_metadata[pid]["last_name"] = fill_out_arr_doubles(project_info.last, repeat_times);
+  all_metadata[pid]["pi_email"] = fill_out_arr_doubles(project_info.email, repeat_times);
+  all_metadata[pid]["pi_name"] = fill_out_arr_doubles(project_info.pi_name, repeat_times);
+  all_metadata[pid]["project"] = fill_out_arr_doubles(project_info.project, repeat_times);
+  all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
+  all_metadata[pid]["project_title"] = fill_out_arr_doubles(project_info.title, repeat_times);
+  all_metadata[pid]["public"] = fill_out_arr_doubles(project_info.public, repeat_times);
+  all_metadata[pid]["references"] = fill_out_arr_doubles(project_info.references, repeat_times);
+  all_metadata[pid]["username"] = fill_out_arr_doubles(project_info.username, repeat_times);
+
+
+  console.log("MMM3 all_metadata");
+  console.log(all_metadata);
+
+  console.timeEnd("TIME: make_metadata_object");
+  return all_metadata;
+}
+
+
+function get_project_info(project_name_or_pid) {
+  var project_info;
+  if (helpers.isInt(project_name_or_pid)) {
+    project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
+  }
+  else {
+    project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
+  }
+  project_info.pi_name = project_info.first + " " + project_info.last;
+
+  return project_info;
+
+}
+
+function fill_out_arr_doubles(value, repeat_times) {
+  var arr_temp = Array(repeat_times);
+  arr_temp.fill(value, 0, repeat_times);
+  return arr_temp;
+}
+
+
+function get_primers_info(dataset_id) {
+  console.time("TIME: get_primers_info");
+  var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
+  var primer_info = {};
+
+  if (typeof primer_suite_id === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id] === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined' ) {
+    return {};
+  }
+  else {
+    try {
+      for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
+
+        var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
+
+        if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
+          primer_info[curr_direction] = [];
+        }
+
+        primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
+      }
+    } catch (err) {
+      // Handle the error here.
+      return {};
+    }
+
+  }
+  // console.log("DDD primer_info");
+  // console.log(JSON.stringify(primer_info));
+  // {"F":["CCTACGGGAGGCAGCAG","CCTACGGG.GGC[AT]GCAG","TCTACGGAAGGCTGCAG"],"R":["GGATTAG.TACCC"]}
+
+  console.timeEnd("TIME: get_primers_info");
+  return primer_info;
+}
+
+
 
 // ---- metadata_upload end ----
