@@ -729,16 +729,16 @@ $('#table_div').scroll(function(){
   fnScroll();
 });
 
-var metadata_dropdown_fields = ["biome_secondary",
-  "dna_extraction_meth",
-  "env_biome",
-  "env_feature",
-  "env_material",
-  "env_package",
-  "feature_secondary",
-  "investigation_type",
-  "material_secondary",
-  "sample_type"
+var metadata_dropdown_fields = ["biome_secondary/",
+  "dna_extraction_meth/",
+  "env_biome/",
+  "env_feature/",
+  "env_material/",
+  "env_package/",
+  "feature_secondary/",
+  "investigation_type/",
+  "material_secondary/",
+  "sample_type/"
 ];
 
 addCopyFirst = function () {
@@ -748,10 +748,23 @@ addCopyFirst = function () {
   var $tdsInColumnCurrent = this_tbl
     .find("tr td:nth-child(" + (columnNo + 1) + "):not('.header_divider')");
 
+  $tdsInColumnCurrent.each(function () {
+    var $label = $(this).find("label[for]");
   // var labels = $tdsInColumnCurrent.find("label");
-  $('label[for]').each(function() {
-    var $forAttr = $(this).attr('for');
-    alert($forAttr);
+  // $('label[for]').each(function() {
+    var $forAttr = $label.attr('for');
+    // alert($forAttr);
+
+    if(jQuery.inArray($forAttr, metadata_dropdown_fields) !== -1)
+    {
+      alert($forAttr);
+      // alert("III");
+        $(this).wrapInner('<span class="makeLeft"></span>')
+          .append('<span class="makeRight"><a href="#" class="td_clone_add">Copy 1st</a></span>');
+      // }
+    }
+
+    //sample_type/
     // work with for here...
   });
 
@@ -780,13 +793,13 @@ addCopyFirst = function () {
   // }
 
 
-  $tdsInColumnCurrent.each(function () {
-    var $label = $(this).find("label");
-    alert($label.text());
-    // var $label = $(this).find("label");
-    // alert($label);
-
-  });
+  // $tdsInColumnCurrent.each(function () {
+  //   var $label = $(this).find("label");
+  //   alert($label.text());
+  //   // var $label = $(this).find("label");
+  //   // alert($label);
+  //
+  // });
   // .htmlFor
   // metadata_dropdown_fields.each(function () {
   //   // var label = $("label[for='"+$(this)+"']");
