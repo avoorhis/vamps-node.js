@@ -750,63 +750,15 @@ addCopyFirst = function () {
 
   $tdsInColumnCurrent.each(function () {
     var $label = $(this).find("label[for]");
-  // var labels = $tdsInColumnCurrent.find("label");
-  // $('label[for]').each(function() {
     var $forAttr = $label.attr('for');
-    // alert($forAttr);
-
-    if(jQuery.inArray($forAttr, metadata_dropdown_fields) !== -1)
+    if (jQuery.inArray($forAttr, metadata_dropdown_fields) !== -1)
     {
-      alert($forAttr);
-      // alert("III");
-        $(this).wrapInner('<span class="makeLeft"></span>')
-          .append('<span class="makeRight"><a href="#" class="td_clone_add">Copy 1st</a></span>');
-      // }
+      // alert($forAttr);
+      $(this).wrapInner('<span class="makeLeft"></span>')
+        .append('<span class="makeRight"><a href="#" class="td_clone_add">Copy 1st</a></span>');
     }
-
-    //sample_type/
-    // work with for here...
   });
 
-
-  // var $labels = $tdsInColumnCurrent.find("label");
-  //
-  // $labels.css('background-color','Aqua');
-
-  // for (var i = 0; i < labels.length; i++) {
-  //   if (labels[i].htmlFor !== '') {
-  //     var elem = document.getElementById(labels[i].htmlFor);
-  //     alert(labels[i].innerHTML);
-  //     // if (elem)
-  //     //   elem.label = labels[i];
-  //   }
-  // }
-
-
-  //       document.getElementsByTagName('LABEL');
-  // for (var i = 0; i < labels.length; i++) {
-  //   if (labels[i].htmlFor != '') {
-  //     var elem = document.getElementById(labels[i].htmlFor);
-  //     if (elem)
-  //       elem.label = labels[i];
-  //   }
-  // }
-
-
-  // $tdsInColumnCurrent.each(function () {
-  //   var $label = $(this).find("label");
-  //   alert($label.text());
-  //   // var $label = $(this).find("label");
-  //   // alert($label);
-  //
-  // });
-  // .htmlFor
-  // metadata_dropdown_fields.each(function () {
-  //   // var label = $("label[for='"+$(this)+"']");
-  //   var $label = $("label[for='"+this.id+"']")
-  //   alert($label.text());
-  //
-  // });
 
   //
   // $tdsInColumnCurrent.each(function () {
