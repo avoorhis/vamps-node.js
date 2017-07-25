@@ -178,10 +178,11 @@ router.post('/show_metadata_form_from_db',
     //TODO:
     for (var idx in dataset_ids) {
       var dataset_id = dataset_ids[idx];
+      AllMetadata[dataset_id]["dataset_id"] = dataset_id;
       // var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
-      // var ids_data = get_all_req_metadata(dataset_id);
-      // console.log("MMM2 ids_data");
-      // console.log(ids_data);
+      var ids_data = get_all_req_metadata(dataset_id);
+      console.log("MMM2 ids_data");
+      console.log(ids_data);
       var primers_info_by_dataset_id = get_primers_info(dataset_id);
 
       AllMetadata[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
@@ -190,13 +191,78 @@ router.post('/show_metadata_form_from_db',
 
     console.log("RRR AllMetadata");
     console.log(AllMetadata);
+    /*
+    * RRR AllMetadata
+{ '4285':
+   { adapter_sequence_id: '195',
+     geo_loc_name_id: '6191',
+     run_id: '47',
+     dna_region_id: '13',
+     sulfate: '3510',
+     nitrite: '',
+     sulfide: '0.72',
+     env_package_id: '19',
+     sample_id: 'KA2198A_Prov_1',
+     sample_volume: '150',
+     pH: '7.5',
+     domain_id: '3',
+     target_gene: '16S',
+     conductivity: '9.58',
+     env_feature: 'metamorphic rock aquifer',
+     sequencing_meth: 'pyrosequencing on a Roche GS-FLX with Roche Titanium protocol',
+     samp_store_temp: '4',
+     redox_state: 'reducing',
+     collection_date: '2008-02-01',
+     env_biome: 'terrestrial',
+     target_gene_id: '1',
+     env_feature_id: '6191',
+     geo_loc_name: 'sweden',
+     latitude: '57.4344',
+     sequencing_platform_id: '5',
+     primer_suite_id: '9',
+     chloride: '87000',
+     quality_method: 'Picogreen',
+     dna_extraction_meth: 'MoBioPowerWater',
+     potassium: '1082',
+     iron_II: '27.6',
+     illumina_index_id: '83',
+     temp: '12',
+     pressure: '1.5',
+     env_material_id: '6191',
+     sodium: '5.713829928E-007',
+     isol_growth_cond: 'MoBioPowerWater',
+     longitude: '16.66',
+     calcium: '6708',
+     depth: '297',
+     env_biome_id: '6191',
+     env_matter: 'groundwater',
+     methane: '' },*/
 
     var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
 
-    console.log("HHH3 all_field_names");
-    console.log(JSON.stringify(all_field_names));
+    // console.log("HHH3 all_field_names");
+    // console.log(JSON.stringify(all_field_names));
 
-    var all_metadata    = make_metadata_object(req, res, {}, pid, AllMetadata, all_field_names);
+    // "pi_name":["Eric Gaidos","Eric Gaidos","Eric Gaidos","Eric Gaidos","Eric Gaidos","Eric Gaidos","Eric Gaidos","Eric Gaidos"],
+
+    var info_from_db = {};
+
+    for (var did in AllMetadata) {
+      for (var key in AllMetadata[did]) {
+        if (!(info_from_db.hasOwnProperty(key))) {
+          info_from_db[key] = [];
+        }
+        info_from_db[key].push(AllMetadata[did][key]);
+      }
+    }
+
+    console.log("HHH3 info_from_db");
+    console.log(JSON.stringify(info_from_db));
+
+    var all_metadata = make_metadata_object(req, res, {}, pid, info_from_db, all_field_names);
+    console.log("HHH3 all_metadata");
+    console.log(JSON.stringify(all_metadata));
+
     render_edit_form(req, res, all_metadata, all_field_names);
     console.timeEnd("TIME: 1) in post /show_metadata_form");
   });
@@ -615,6 +681,22 @@ function get_primers_info(dataset_id) {
   return primer_info;
 }
 
+
+function get_all_req_metadata(dataset_id) {
+  console.time("TIME: 5) get_all_req_metadata");
+
+  var data = {};
+  for (var idx = 0; idx < CONSTS.REQ_METADATA_FIELDS_wIDs.length; idx++) {
+    var key  = CONSTS.REQ_METADATA_FIELDS_wIDs[idx];
+    data[key] = [];
+    var val_hash = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
+
+    data[key].push(val_hash.value);
+  }
+  console.time("TIME: 5) get_all_req_metadata");
+
+  return data;
+}
 
 
 // ---- metadata_upload end ----
