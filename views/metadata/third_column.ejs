@@ -176,7 +176,7 @@
 
 <% if (all_field_names[idx][2] === "MBL Supplied") { %>
 <td class = "readonly_td">
-    <%= selected_val %>
+    <div class="short"> <%= selected_val %> </div>
     <input type='hidden' type="text" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= selected_val %>"/>
     <% } else { %>
 <td>

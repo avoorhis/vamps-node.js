@@ -441,6 +441,19 @@ td.left_justify {
     padding-left: 4px;
 }
 
+/*readonly_td*/
+.short {
+    width: 25em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.short:hover {
+    width : initial;
+}
+
+
 .textarea_long {
     width: 30em;
     padding: 3px;
@@ -469,6 +482,9 @@ td.left_justify {
     display: inline-block;
     padding-right: 0.5em;
 }
+
+
+
 /*FROM https://www.npmjs.com/package/coopyhx*/
 .highlighter .add {
     background-color: #7fff7f;
