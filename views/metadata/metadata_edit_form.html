@@ -61,23 +61,22 @@
 <!-- <form action="" method="post" enctype="multipart/form-data"> -->
   <fieldset id="general" class="required_fields" >
   <legend id="general-legend">General sample description</legend>
-      <!-- dataset_id project title username email institution first_name last_name public -->
+  <!-- dataset_id project title username email institution first_name last_name public -->
 
-      <label for="project_title">Title of Project:</label>
-      <input type="text" id="project_title" name="project_title" value='<%= project_title %>'/>
+  <label for="project_title">Title of Project:</label>
+  <input type="text" id="project_title" name="project_title" value='<%= project_title %>'/>
 
-      <br />
-      <label for="project">VAMPS project name (MBL Supplied)</label>
-      <input type="text" id="project" readonly name="project" placeholder="DCO_GAI_Bv3v5" value='<%= project %>'/>
+  <br />
+  <label for="project">VAMPS project name (MBL Supplied)</label>
+  <input type="text" id="project" readonly name="project" placeholder="DCO_GAI_Bv3v5" value='<%= project %>'/>
 
-      <br />
-      <label for="pi_name">PI Name:</label>
-      <input type="text" id="pi_name" name="pi_name"  value='<%= pi_name %>'/>
+  <br />
+  <label for="pi_name">PI Name:</label>
+  <input type="text" id="pi_name" name="pi_name"  value='<%= pi_name %>'/>
 
-      <% for (var did in dataset_ids) { %>
-        <input type='hidden' name='dataset_id' value='<%= dataset_ids[did] %>' />
-      <% } %>
-
+  <% for (var did in dataset_ids) { %>
+    <input type='hidden' name='dataset_id' value='<%= dataset_ids[did] %>' />
+  <% } %>
 
   <br />
   <label for="pi_email">PI's email address:</label>
