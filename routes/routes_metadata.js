@@ -191,68 +191,37 @@ router.post('/show_metadata_form_from_db',
 
     console.log("RRR AllMetadata");
     console.log(AllMetadata);
-    /*
-    * RRR AllMetadata
-{ '4285':
-   { adapter_sequence_id: '195',
-     geo_loc_name_id: '6191',
-     run_id: '47',
-     dna_region_id: '13',
-     sulfate: '3510',
-     nitrite: '',
-     sulfide: '0.72',
-     env_package_id: '19',
-     sample_id: 'KA2198A_Prov_1',
-     sample_volume: '150',
-     pH: '7.5',
-     domain_id: '3',
-     target_gene: '16S',
-     conductivity: '9.58',
-     env_feature: 'metamorphic rock aquifer',
-     sequencing_meth: 'pyrosequencing on a Roche GS-FLX with Roche Titanium protocol',
-     samp_store_temp: '4',
-     redox_state: 'reducing',
-     collection_date: '2008-02-01',
-     env_biome: 'terrestrial',
-     target_gene_id: '1',
-     env_feature_id: '6191',
-     geo_loc_name: 'sweden',
-     latitude: '57.4344',
-     sequencing_platform_id: '5',
-     primer_suite_id: '9',
-     chloride: '87000',
-     quality_method: 'Picogreen',
-     dna_extraction_meth: 'MoBioPowerWater',
-     potassium: '1082',
-     iron_II: '27.6',
-     illumina_index_id: '83',
-     temp: '12',
-     pressure: '1.5',
-     env_material_id: '6191',
-     sodium: '5.713829928E-007',
-     isol_growth_cond: 'MoBioPowerWater',
-     longitude: '16.66',
-     calcium: '6708',
-     depth: '297',
-     env_biome_id: '6191',
-     env_matter: 'groundwater',
-     methane: '' },*/
+
 
     var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
 
-    // console.log("HHH3 all_field_names");
-    // console.log(JSON.stringify(all_field_names));
+    console.log("DDD dataset_ids");
+    console.log(JSON.stringify(dataset_ids));
 
     // "pi_name":["Eric Gaidos","Eric Gaidos","Eric Gaidos","Eric Gaidos","Eric Gaidos","Eric Gaidos","Eric Gaidos","Eric Gaidos"],
 
     var info_from_db = {};
 
-    for (var did in AllMetadata) {
+    // TODO: combine with the one from csv file, slice AllMetadata first
+    //https://stackoverflow.com/questions/34658867/slice-specific-keys-in-javascript-object
+    for (var i in dataset_ids) {
+      var did = dataset_ids[i];
+      console.log("DDD1 did");
+      console.log(JSON.stringify(did));
+      console.log("DDD2 AllMetadata[did]");
+      console.log(JSON.stringify(AllMetadata[did]));
       for (var key in AllMetadata[did]) {
+        console.log("DDD3 key");
+        console.log(JSON.stringify(key));
+        //"geo_loc_name_id"
+
+        var val = AllMetadata[did][key];
+        console.log("DDD4 val");
+        console.log(JSON.stringify(val));
         if (!(info_from_db.hasOwnProperty(key))) {
           info_from_db[key] = [];
         }
-        info_from_db[key].push(AllMetadata[did][key]);
+        info_from_db[key].push(val);
       }
     }
 
@@ -552,8 +521,8 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
   console.log("JJJ1 all_metadata");
   console.log(JSON.stringify(all_metadata));
 
-  console.log("JJJ2 all_field_names");
-  console.log(JSON.stringify(all_field_names));
+  // console.log("JJJ2 all_field_names");
+  // console.log(JSON.stringify(all_field_names));
 
   res.render("metadata/metadata_edit_form", {
     title: "VAMPS: Metadata_upload",
@@ -579,6 +548,15 @@ function make_metadata_object(req, res, all_metadata, pid, info, all_field_names
   console.time("TIME: make_metadata_object");
   console.log("GGG info");
   console.log(info);
+
+  console.log("GGG1 typeof pid");
+  console.log(typeof pid);
+
+  pid = Number(pid);
+
+  console.log("GGG2 typeof pid");
+  console.log(typeof pid);
+
 
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
