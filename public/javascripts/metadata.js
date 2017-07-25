@@ -731,6 +731,7 @@ $('#table_div').scroll(function(){
 
 var metadata_dropdown_fields = ["biome_secondary/",
   "dna_extraction_meth/",
+  "dna_quantitation/",
   "env_biome/",
   "env_feature/",
   "env_material/",
