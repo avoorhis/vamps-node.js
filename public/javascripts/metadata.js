@@ -811,17 +811,34 @@ addCopyBtns = function() {
   });
 };
 
+$not_exist = ["None", "none", "undefined", "Please choose one", ""];
+
 CopyColumn = function() {
   $(".cp_clmn").click(function(){
-    var columnNo = $(this).closest('td').index();
-    var this_tbl = $('table#fixed_table_base');
-    var $tdsInColumnCurrent = this_tbl
-      .find("tr td:nth-child(" + (columnNo + 1) + ")");
+    var $columnNo = $(this).closest('td').index();
+    var $this_tbl = $('table#fixed_table_base');
+    var $tdsInColumnCurrent = $this_tbl
+      .find("tr td:nth-child(" + ($columnNo + 1) + ")");
 
     $tdsInColumnCurrent.each(function () {
-      var current_val = $(this).children( ':input' ).val();
-      $(this).siblings().not('.readonly_td').eq(columnNo)
-        .children( ':input' ).val(current_val).change();
+      var $current_val = $(this).children( ':input' ).val();
+      var $next_cell = $(this).siblings().not('.readonly_td').eq($columnNo)
+        .children( ':input' );
+      // var $next_cell_val = $(this).siblings().not('.readonly_td').eq($columnNo)
+      //   .children( ':input' ).val();
+
+      // if (next_cell_val.length > 0 && next_cell_val !== "none")
+      // if (($next_cell_val.length <= 0) || (jQuery.inArray($next_cell_val, $not_exist) === -1))
+      // alert(jQuery.inArray($next_cell_val, $not_exist));
+      if (($current_val) && (jQuery.inArray($next_cell.val(), $not_exist) !== -1)) {
+        // alert("current_val = " + $current_val);
+        // alert("next_cell_val = " + $next_cell_val);
+        $next_cell.val($current_val).change();
+      }
+
+
+      // $(this).siblings().not('.readonly_td').eq(columnNo)
+      //   .children( ':input' ).val(current_val).change();
     });
   });
 };
