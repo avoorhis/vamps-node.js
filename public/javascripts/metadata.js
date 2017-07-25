@@ -759,6 +759,22 @@ addCopyFirst = function () {
     }
   });
 
+  $(".makeRight").hover(function(){
+    $(this).css('cursor','pointer').attr('title', 'Replicate the 1st cell.');
+  }, function() {
+    $(this).css('cursor','auto');
+  });
+  //replicate 1st cell
+  //
+  // $("#myId").hover(function() {
+  //   $(this).css('cursor','pointer').attr('title', 'This is a hover text.');
+  // }, function() {
+  //   $(this).css('cursor','auto');
+  // });
+
+
+
+
 
   //
   // $tdsInColumnCurrent.each(function () {
