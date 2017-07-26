@@ -862,9 +862,9 @@ function make_metadata_object_from_db(req, res) {
   }
 
 
-  qq = from_obj_to_obj_of_arr(AllMetadata_picked);
-  console.log("DDD1 qq");
-  console.log(qq);
+  var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata_picked);
+  console.log("DDD1 data_in_obj_of_arr");
+  console.log(data_in_obj_of_arr);
 
 
   // for (var d in dataset_ids) {
@@ -886,6 +886,8 @@ function make_metadata_object_from_db(req, res) {
   // AllMetadata[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
 
   // var all_metadata = make_metadata_object(req, res, {}, pid, data_in_obj_of_arr);
+  // console.log("EEE1 all_metadata");
+  // console.log(all_metadata);
   // render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
   console.timeEnd("TIME: make_metadata_object_from_db");
