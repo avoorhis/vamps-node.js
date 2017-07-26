@@ -1129,43 +1129,6 @@ router.post('/metadata_files',
     else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
       make_metadata_object_from_csv(req, res);
     }
-    // {
-    //   file_name = req.body.edit_metadata_file
-    //   console.log("EEE1 file_name");
-    //   console.log(file_name);
-    //   var project_name = get_project_name(file_name);
-    //   var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
-    //
-    //   var all_metadata = {};
-    //
-    //   if (helpers.isInt(pid)) {
-    //     all_metadata[pid] = {};
-    //     var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
-    //
-    //     var file_content = fs.readFileSync(inputPath);
-    //     var parse_sync = require('csv-parse/lib/sync');
-    //     var data = parse_sync(file_content, {columns: true, trim: true});
-    //     var info_from_file = {};
-    //     for (var idx in data) {
-    //       for (var key in data[idx]) {
-    //         if (!(info_from_file.hasOwnProperty(key))) {
-    //           info_from_file[key] = [];
-    //         }
-    //         info_from_file[key].push(data[idx][key]);
-    //       }
-    //     }
-    //     console.log("AAA7 info_from_file");
-    //     console.log(info_from_file);
-    //     console.log('3 from file) make_metadata_object(req, res, all_metadata, pid, info_from_file)');
-    //     all_metadata = make_metadata_object(req, res, all_metadata, pid, info_from_file);
-    //   }
-    //
-    //   // var all_metadata =
-    //         // make_metadata_hash_from_file(req, res, req.body.edit_metadata_file);
-    //   //TODO: DRY: use parts of make_metadata_hash
-    //
-    //   render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
-    // }
     else {
       req.flash("fail", "Please choose two files to compare or one to edit");
       res.redirect("/metadata/metadata_file_list");
