@@ -835,9 +835,34 @@ function make_metadata_object_from_db(req, res) {
   console.log("FFF2 AllMetadata picked");
   console.log(AllMetadata_picked);
 
+  for (var d in dataset_ids) {
+    var ids_data = get_all_req_metadata(dataset_ids[d]);
+    console.log("GGG0 dataset_ids[d]");
+    console.log(dataset_ids[d]);
+
+    console.log("GGG ids_data");
+    console.log(ids_data);
+
+    console.log("GGG3 AllMetadata_picked[dataset_ids[d]]");
+    console.log(AllMetadata_picked[dataset_ids[d]]);
+
+    dd = Object.assign(AllMetadata_picked[dataset_ids[d]], ids_data);
+
+
+    console.log("GGG5 dd");
+    console.log(dd);
+
+    // { geo_loc_name: [ 'unknown' ],
+    //   dna_region: [ 'v3v5' ],
+    //   domain: [ 'Bacteria' ],
+  }
+
+
   qq = from_obj_to_obj_of_arr(AllMetadata_picked);
   console.log("DDD1 qq");
   console.log(qq);
+
+
   // for (var d in dataset_ids) {
   //   console.log("DDD1 d");
   //   console.log(d);
