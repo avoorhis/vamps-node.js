@@ -7,27 +7,9 @@
 <% if (all_metadata) { %>
 <%
 } else {
-  var all_metadata = {};
-  var pid = "";
+  var all_metadata = {}
 } %>
 
-
-<% if (typeof(all_metadata[pid]) !== 'undefined') { %>
-  <% pi_email = all_metadata[pid]["pi_email"][0] %>
-  <% references = all_metadata[pid]["references"][0] %>
-  <% project_title = all_metadata[pid]["project_title"][0] %>
-  <% project = all_metadata[pid]["project"][0] %>
-  <% pi_name = all_metadata[pid]["pi_name"][0] %>
-  <% dataset_ids = all_metadata[pid]["dataset_ids"] %>
-
-<% } else { %> <!-- if (all_metadata[pid]["pi_email"])-->
-  <% pi_email = "";
-  references = "";
-  project_title = "";
-  project = "";
-  pi_name = "";
-  dataset_ids = [];
-} %>
 
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
@@ -61,36 +43,56 @@
 <!-- <form action="" method="post" enctype="multipart/form-data"> -->
   <fieldset id="general" class="required_fields" >
   <legend id="general-legend">General sample description</legend>
-  <!-- dataset_id project title username email institution first_name last_name public -->
+    <% for (var pid in all_metadata) { %>
+      <% if (typeof(all_metadata[pid]) !== 'undefined') { %>
+        <% pi_email = all_metadata[pid]["pi_email"][0] %>
+        <% references = all_metadata[pid]["references"][0] %>
+        <% project_title = all_metadata[pid]["project_title"][0] %>
+        <% project = all_metadata[pid]["project"][0] %>
+        <% pi_name = all_metadata[pid]["pi_name"][0] %>
+        <% dataset_ids = all_metadata[pid]["dataset_id"] %>
+        <% project_abstracts = all_metadata[pid]["project_abstract"] %>
 
-  <label for="project_title">Title of Project:</label>
-  <input type="text" id="project_title" name="project_title" value='<%= project_title %>'/>
+      <% } else { %> <!-- if (all_metadata[pid]["pi_email"])-->
+        <% pi_email = "";
+        references = "";
+        project_title = "";
+        project = "";
+        pi_name = "";
+        dataset_ids = [];
+        project_abstracts = [];
+      } %>
 
-  <br />
-  <label for="project">VAMPS project name (MBL Supplied)</label>
-  <input type="text" id="project" readonly name="project" placeholder="DCO_GAI_Bv3v5" value='<%= project %>'/>
+    <!-- dataset_id project title username email institution first_name last_name public -->
 
-  <br />
-  <label for="pi_name">PI Name:</label>
-  <input type="text" id="pi_name" name="pi_name"  value='<%= pi_name %>'/>
+      <label for="project_title">Title of Project:</label>
+      <input type="text" id="project_title" name="project_title" value='<%= project_title %>'/>
 
-  <% for (var did in dataset_ids) { %>
-    <input type='hidden' name='dataset_id' value='<%= dataset_ids[did] %>' />
-  <% } %>
+      <br />
+      <label for="project">VAMPS project name (MBL Supplied)</label>
+      <input type="text" id="project" readonly name="project" placeholder="DCO_GAI_Bv3v5" value='<%= project %>'/>
 
+      <br />
+      <label for="pi_name">PI Name:</label>
+      <input type="text" id="pi_name" name="pi_name"  value='<%= pi_name %>'/>
+
+      <% for (var did in dataset_ids) { %>
+        <input type='hidden' name='dataset_id' value='<%= dataset_ids[did] %>' />
+      <% } %>
+
+    <% } %>
 
   <br />
   <label for="pi_email">PI's email address:</label>
-    <input type="email" id="pi_email" name="pi_email"  value='<%= pi_email %>'/>
-
-    <br />
+  <input type="email" id="pi_email" name="pi_email"  value='<%= pi_email %>'/>
+  <br />
   <label for="project_abstract">CoDL project abstract:</label>
-    <% if ((typeof(all_metadata[pid]) !== 'undefined') && (typeof(all_metadata[pid]["project_abstract"]) !== 'undefined')) { %>
+    <% if (project_abstracts.length > 0) { %>
       <div class="white_box">
-        <% for (var n in all_metadata[pid]["project_abstract"][0]) { %>
-          <a href='/static/abstracts/<%= all_metadata[pid]["project_abstract"][0][n] %>' target='_blank'><%= all_metadata[pid]["project_abstract"][0][n] %></a><br/>
+        <% for (var n in project_abstracts[0]) { %>
+          <a href='/static/abstracts/<%= project_abstracts[0][n] %>' target='_blank'><%= project_abstracts[0][n] %></a><br/>
         <% } %> <!-- for (var pid in all_metadata)-->
-        <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= all_metadata[pid]["project_abstract"][0] %>'/>
+        <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= project_abstracts[0] %>'/>
       </div>
       <% } else { %> <!-- if not (all_metadata[pid]["project_abstract"]) -->
     <textarea class="textarea_long" id="project_abstract" name="project_abstract"></textarea>
