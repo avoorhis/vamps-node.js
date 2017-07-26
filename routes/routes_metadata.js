@@ -812,6 +812,19 @@ function make_metadata_hash_from_file(req, res, file_name) {
   console.timeEnd("TIME: make_metadata_hash_from_file");
 }
 
+function from_obj_to_obj_of_arr(data) {
+  var info_from_file = {};
+
+  for (var idx in data) {
+    for (var key in data[idx]) {
+      if (!(info_from_file.hasOwnProperty(key))) {
+        info_from_file[key] = [];
+      }
+      info_from_file[key].push(data[idx][key]);
+    }
+  }
+  return info_from_file;
+}
 
 // from form to a csv file
 
@@ -1315,98 +1328,6 @@ function make_metadata_object(req, res, all_metadata, pid, info) {
   console.log("MMM3 all_metadata");
   console.log(all_metadata);
 
-  // var special_case_names = ["adapter_sequence",
-  //   "dataset",
-  //   "dataset_description",
-  //   "dataset_id",
-  //   "dna_region",
-  //   "domain",
-  //   "env_material",
-  //   "env_package",
-  //   "first_name",
-  //   "illumina_index",
-  //   "institution",
-  //   "last_name",
-  //   "pi_email",
-  //   "pi_name",
-  //   "primer_suite",
-  //   "project",
-  //   "project_abstract",
-  //   "project_title",
-  //   "public",
-  //   "references",
-  //   "run",
-  //   "sequencing_meth",
-  //   "username"];
-
-  /* special
-  *
-"adapter_sequence",
-"dataset",
-"dataset_description",
-"dataset_id",
-"dna_region",
-"domain",
-"env_material",
-"env_package",
-"first_name",
-"illumina_index",
-"institution",
-"last_name",
-"pi_email",
-"pi_name",
-"primer_suite",
-"project",
-"project_abstract",
-"project_title",
-"public",
-"references",
-"run",
-"sequencing_meth",
-"username",
-*/
-
-
-  // *) get_most_of_the_data (from db, form or file)
-  /*
-  for (var idx in data) {
-    for (var key in data[idx]) {
-      if (!(all_metadata[project_id_to_edit].hasOwnProperty(key))) {
-        all_metadata[project_id_to_edit][key] = [];
-      }
-      all_metadata[project_id_to_edit][key].push(data[idx][key]);
-    }
-  }
-  or
-  all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
-
-  all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, ids_data, all_metadata[pid]);
-  */
-  // *) get additional_data
-  /*
-  *   var abstract_data = get_abstract_data(PROJECT_INFORMATION_BY_PID[pid].project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
-or
-    var abstract_data = get_abstract_data(data[0].project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
-
-    all_metadata[project_id_to_edit]["project_abstract"] = abstract_data.pdfs;
-
-    all_metadata[pid]["project"].push(row.project);
-    all_metadata[pid]["project_title"].push(row.title);
-    all_metadata[pid]["username"].push(row.username);
-    all_metadata[pid]["pi_name"].push(row.first_name + " " + row.last_name);
-    all_metadata[pid]["pi_email"].push(row.email);
-    all_metadata[pid]["institution"].push(row.institution);
-    all_metadata[pid]["first_name"].push(row.first_name);
-    all_metadata[pid]["last_name"].push(row.last_name);
-    all_metadata[pid]["public"].push(row.public);
-    all_metadata[pid]["dataset_id"].push(row.did);
-    all_metadata[pid]["dataset"].push(row.dataset);
-    all_metadata[pid]["dataset_description"].push(row.dataset_description);
-    all_metadata[pid]["project_abstract"].push(abstract_data.pdfs);
-    //TODO: get references
-    all_metadata[pid]["references"].push("");
-
-  * */
 
   console.timeEnd("TIME: make_metadata_object");
   return all_metadata;
