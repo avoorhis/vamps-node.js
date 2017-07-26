@@ -836,18 +836,22 @@ function make_metadata_object_from_db(req, res) {
   console.log(AllMetadata_picked);
 
   for (var d in dataset_ids) {
-    var ids_data = get_all_req_metadata(dataset_ids[d]);
-    console.log("GGG0 dataset_ids[d]");
-    console.log(dataset_ids[d]);
+    var dataset_id = dataset_ids[d];
+    var ids_data = get_all_req_metadata(dataset_id);
+    console.log("GGG0 dataset_id");
+    console.log(dataset_id);
 
     console.log("GGG ids_data");
     console.log(ids_data);
 
-    console.log("GGG3 AllMetadata_picked[dataset_ids[d]]");
-    console.log(AllMetadata_picked[dataset_ids[d]]);
+    console.log("GGG3 AllMetadata_picked[dataset_id]");
+    console.log(AllMetadata_picked[dataset_id]);
 
-    dd = Object.assign(AllMetadata_picked[dataset_ids[d]], ids_data);
+    dd = Object.assign(AllMetadata_picked[dataset_id], ids_data);
+    var primers_info_by_dataset_id = get_primers_info(dataset_id);
 
+    AllMetadata_picked[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
+    AllMetadata_picked[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
 
     console.log("GGG5 dd");
     console.log(dd);
