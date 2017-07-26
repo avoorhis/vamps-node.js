@@ -692,7 +692,8 @@ router.post('/metadata_upload',
     console.time("TIME: post metadata_upload");
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
-      editMetadataForm(req, res);
+      // editMetadataForm(req, res);
+      make_metadata_object_from_form(req, res);
       make_csv(req, res);
     }
     else {
@@ -790,15 +791,7 @@ function make_metadata_hash_from_file(req, res, file_name) {
     var file_content = fs.readFileSync(inputPath);
     var parse_sync = require('csv-parse/lib/sync');
     var data = parse_sync(file_content, {columns: true, trim: true});
-    var info_from_file = {};
-    for (var idx in data) {
-      for (var key in data[idx]) {
-        if (!(info_from_file.hasOwnProperty(key))) {
-          info_from_file[key] = [];
-        }
-        info_from_file[key].push(data[idx][key]);
-      }
-    }
+    var info_from_file = from_obj_to_obj_of_arr(data);
     console.log("AAA7 info_from_file");
     console.log(info_from_file);
     console.log('3 from file) make_metadata_object(req, res, all_metadata, pid, info_from_file)');
@@ -810,6 +803,41 @@ function make_metadata_hash_from_file(req, res, file_name) {
   }
 
   console.timeEnd("TIME: make_metadata_hash_from_file");
+}
+
+function make_metadata_object_from_db(req, res) {
+  console.time("TIME: make_metadata_object_from_db");
+  console.timeEnd("TIME: make_metadata_object_from_db");
+
+}
+
+function make_metadata_object_from_form(req, res) {
+  console.time("TIME: make_metadata_object_from_form");
+  var pid = req.body.project_id;
+
+  console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
+  var all_metadata = make_metadata_object(req, res, {}, pid, req.form);
+
+  //add_new
+  var all_field_names_with_new = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
+  var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
+  var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
+  all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
+
+  //collect errors
+  var myArray_fail = helpers.unique_array(req.form.errors);
+  myArray_fail.sort();
+  req.flash("fail", myArray_fail);
+
+  render_edit_form(req, res, all_metadata, all_field_names_with_new);
+
+  console.timeEnd("TIME: make_metadata_object_from_form");
+}
+
+function make_metadata_object_from_csv(req, res) {
+  console.time("TIME: make_metadata_object_from_csv");
+  console.timeEnd("TIME: make_metadata_object_from_csv");
+
 }
 
 function from_obj_to_obj_of_arr(data) {
