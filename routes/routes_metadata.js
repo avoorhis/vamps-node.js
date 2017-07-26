@@ -512,8 +512,8 @@ function populate_metadata_hash_from_db(rows, pid, all_metadata, req, res) {
   // console.log(all_metadata);
 
   console.log('1 from db) make_metadata_object(req, res, all_metadata, pid, info)');
-  make_metadata_object(req, res, all_metadata, pid, rows);
-
+  // make_metadata_object(req, res, all_metadata, pid, rows);
+  make_metadata_object_from_db(req, res);
   var dataset_ids = [];
   for (var i1 = 0; i1 < rows.length; i1++) {
     dataset_ids.push(rows[i1].did);
@@ -805,10 +805,66 @@ function make_metadata_hash_from_file(req, res, file_name) {
   console.timeEnd("TIME: make_metadata_hash_from_file");
 }
 
+function slice_object(object, slice_keys) {
+  console.log("TTT1 slice_keys");
+  console.log(slice_keys);
+  for(var i=0; i<slice_keys.length;i++) slice_keys[i] = String(slice_keys[i]);
+  console.log("TTT2 slice_keys");
+  console.log(slice_keys);
+
+
+  return Object.keys(object)
+    .filter(function (key) {
+      return slice_keys.indexOf(key) >= 0;
+    })
+    .reduce(function (acc, key) {
+      acc[key] = object[key];
+      return acc;
+    }, {});
+}
+
 function make_metadata_object_from_db(req, res) {
   console.time("TIME: make_metadata_object_from_db");
-  console.timeEnd("TIME: make_metadata_object_from_db");
+  var pid          = req.body.project_id;
+  //repeated!
+  var dataset_ids  = DATASET_IDS_BY_PID[pid];
+  var project      = PROJECT_INFORMATION_BY_PID[pid].project;
 
+  console.log("FFF0 Object.keys(AllMetadata)");
+  console.log(Object.keys(AllMetadata));
+  // FFF0 Object.keys(AllMetadata)
+  //   [ '4285',
+  //   '4286',
+  //   '4287',
+  //   '4288',
+  //   '4289',
+  //   '4290',
+  //   '4291',
+  //   '4292',
+  //   '4293',
+  //   '4294',
+  //   '4295',
+
+
+  console.log("FFF1 AllMetadata");
+  console.log(AllMetadata);
+  picked = slice_object(AllMetadata, dataset_ids);
+  console.log("FFF2 AllMetadata picked");
+  console.log(picked);
+
+  // // get_db_data
+  // var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata);
+  // console.log("FFF data_in_obj_of_arr");
+  // console.log(data_in_obj_of_arr);
+  // var primers_info_by_dataset_id = get_primers_info(row.did);
+
+  // AllMetadata[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
+  // AllMetadata[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
+
+  // var all_metadata = make_metadata_object(req, res, {}, pid, data_in_obj_of_arr);
+  // render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
+
+  console.timeEnd("TIME: make_metadata_object_from_db");
 }
 
 function make_metadata_object_from_form(req, res) {
@@ -816,6 +872,7 @@ function make_metadata_object_from_form(req, res) {
   var pid = req.body.project_id;
 
   console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
+
   var all_metadata = make_metadata_object(req, res, {}, pid, req.form);
 
   //add_new
