@@ -704,54 +704,54 @@ router.post('/metadata_upload',
     console.timeEnd("TIME: post metadata_upload");
 
   });
-
-function editMetadataForm(req, res){
-  console.time("TIME: editMetadataForm");
-
-  console.log('in editMetadataForm');
-  var all_metadata = {};
-  var pid = req.body.project_id;
-
-  console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
-  all_metadata = make_metadata_object(req, res, all_metadata, pid, req.form);
-
-  var all_field_names_with_new = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
-
-  var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
-
-  console.log("WWW1 all_field_names_first_column");
-  console.log(JSON.stringify(all_field_names_first_column));
-
-  var myArray_fail = helpers.unique_array(req.form.errors);
-  myArray_fail.sort();
-
-  req.flash("fail", myArray_fail);
-
-
-  // var repeat_times = req.body.dataset_id.length;
-  // req.form.pi_name = fill_out_arr_doubles("pi_name", PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last, repeat_times);
-  // req.form.pi_email = fill_out_arr_doubles(PROJECT_INFORMATION_BY_PID[pid].email, repeat_times);
-  // req.form.project_title = fill_out_arr_doubles(PROJECT_INFORMATION_BY_PID[pid].title, repeat_times);
-
-  var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
-
-  // all_metadata[pid] = req.form;
-  all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
-  // var project = all_metadata[pid]["project"][0];
-  // var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
-  // var abstract_data = get_project_abstract_data(project, path_to_static)[get_project_prefix(project)];
-  //
-  // all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
-
-  // TODO: move to "add to all_metadata"
-
-  console.log("WWW2 all_field_names_with_new");
-  console.log(JSON.stringify(all_field_names_with_new));
-  render_edit_form(req, res, all_metadata, all_field_names_with_new);
-
-  console.timeEnd("TIME: editMetadataForm");
-}
-
+//
+// function editMetadataForm(req, res){
+//   console.time("TIME: editMetadataForm");
+//
+//   console.log('in editMetadataForm');
+//   var all_metadata = {};
+//   var pid = req.body.project_id;
+//
+//   console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
+//   all_metadata = make_metadata_object(req, res, all_metadata, pid, req.form);
+//
+//   var all_field_names_with_new = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
+//
+//   var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
+//
+//   console.log("WWW1 all_field_names_first_column");
+//   console.log(JSON.stringify(all_field_names_first_column));
+//
+//   var myArray_fail = helpers.unique_array(req.form.errors);
+//   myArray_fail.sort();
+//
+//   req.flash("fail", myArray_fail);
+//
+//
+//   // var repeat_times = req.body.dataset_id.length;
+//   // req.form.pi_name = fill_out_arr_doubles("pi_name", PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last, repeat_times);
+//   // req.form.pi_email = fill_out_arr_doubles(PROJECT_INFORMATION_BY_PID[pid].email, repeat_times);
+//   // req.form.project_title = fill_out_arr_doubles(PROJECT_INFORMATION_BY_PID[pid].title, repeat_times);
+//
+//   var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
+//
+//   // all_metadata[pid] = req.form;
+//   all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
+//   // var project = all_metadata[pid]["project"][0];
+//   // var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
+//   // var abstract_data = get_project_abstract_data(project, path_to_static)[get_project_prefix(project)];
+//   //
+//   // all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
+//
+//   // TODO: move to "add to all_metadata"
+//
+//   console.log("WWW2 all_field_names_with_new");
+//   console.log(JSON.stringify(all_field_names_with_new));
+//   render_edit_form(req, res, all_metadata, all_field_names_with_new);
+//
+//   console.timeEnd("TIME: editMetadataForm");
+// }
+//
 
 
 function get_new_val(req, all_metadata_pid, all_new_names) {
@@ -836,8 +836,9 @@ function make_metadata_object_from_form(req, res) {
 
 function make_metadata_object_from_csv(req, res) {
   console.time("TIME: make_metadata_object_from_csv");
+  console.log('3 from file) make_metadata_object(req, res, all_metadata, pid, info_from_file)');
+  return make_metadata_object(req, res, all_metadata, pid, info_from_file);
   console.timeEnd("TIME: make_metadata_object_from_csv");
-
 }
 
 function from_obj_to_obj_of_arr(data) {
@@ -1114,7 +1115,38 @@ router.post('/metadata_files',
       });
     }
     else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
-      var all_metadata = make_metadata_hash_from_file(req, res, req.body.edit_metadata_file);
+      file_name = req.body.edit_metadata_file
+      console.log("EEE1 file_name");
+      console.log(file_name);
+      var project_name = get_project_name(file_name);
+      var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
+
+      var all_metadata = {};
+
+      if (helpers.isInt(pid)) {
+        all_metadata[pid] = {};
+        var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
+
+        var file_content = fs.readFileSync(inputPath);
+        var parse_sync = require('csv-parse/lib/sync');
+        var data = parse_sync(file_content, {columns: true, trim: true});
+        var info_from_file = {};
+        for (var idx in data) {
+          for (var key in data[idx]) {
+            if (!(info_from_file.hasOwnProperty(key))) {
+              info_from_file[key] = [];
+            }
+            info_from_file[key].push(data[idx][key]);
+          }
+        }
+        console.log("AAA7 info_from_file");
+        console.log(info_from_file);
+        console.log('3 from file) make_metadata_object(req, res, all_metadata, pid, info_from_file)');
+        all_metadata = make_metadata_object(req, res, all_metadata, pid, info_from_file);
+      }
+
+      // var all_metadata =
+            // make_metadata_hash_from_file(req, res, req.body.edit_metadata_file);
       //TODO: DRY: use parts of make_metadata_hash
 
       render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
