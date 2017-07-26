@@ -11,13 +11,6 @@
 } %>
 
 
-<br/>
-all_metadata:
-<%= JSON.stringify(all_metadata) %>
-<br/>
-
-
-
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
 <% }else if(messages.fail){ %>
