@@ -806,12 +806,9 @@ function make_metadata_hash_from_file(req, res, file_name) {
 }
 
 function slice_object(object, slice_keys) {
-  console.log("TTT1 slice_keys");
-  console.log(slice_keys);
+  console.time("TIME: convert to string");
   for(var i=0; i<slice_keys.length;i++) slice_keys[i] = String(slice_keys[i]);
-  console.log("TTT2 slice_keys");
-  console.log(slice_keys);
-
+  console.timeEnd("TIME: convert to string");
 
   return Object.keys(object)
     .filter(function (key) {
@@ -821,6 +818,7 @@ function slice_object(object, slice_keys) {
       acc[key] = object[key];
       return acc;
     }, {});
+
 }
 
 function make_metadata_object_from_db(req, res) {
@@ -830,27 +828,24 @@ function make_metadata_object_from_db(req, res) {
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
 
-  console.log("FFF0 Object.keys(AllMetadata)");
-  console.log(Object.keys(AllMetadata));
-  // FFF0 Object.keys(AllMetadata)
-  //   [ '4285',
-  //   '4286',
-  //   '4287',
-  //   '4288',
-  //   '4289',
-  //   '4290',
-  //   '4291',
-  //   '4292',
-  //   '4293',
-  //   '4294',
-  //   '4295',
+  console.time("TIME: slice_object");
+  var AllMetadata_picked = slice_object(AllMetadata, dataset_ids);
+  console.timeEnd("TIME: slice_object");
 
-
-  console.log("FFF1 AllMetadata");
-  console.log(AllMetadata);
-  picked = slice_object(AllMetadata, dataset_ids);
   console.log("FFF2 AllMetadata picked");
-  console.log(picked);
+  console.log(AllMetadata_picked);
+
+  qq = from_obj_to_obj_of_arr(AllMetadata_picked);
+  console.log("DDD1 qq");
+  console.log(qq);
+  // for (var d in dataset_ids) {
+  //   console.log("DDD1 d");
+  //   console.log(d);
+  //
+  //   console.log("DDD2 dataset_ids[d]");
+  //   console.log(dataset_ids[d]);
+  //
+  // }
 
   // // get_db_data
   // var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata);
