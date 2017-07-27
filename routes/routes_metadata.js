@@ -832,6 +832,7 @@ function make_metadata_object_from_db(req, res) {
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
 
+  // get_db_data
   console.time("TIME: slice_object");
   var AllMetadata_picked = slice_object(AllMetadata, dataset_ids);
   console.timeEnd("TIME: slice_object");
@@ -842,56 +843,70 @@ function make_metadata_object_from_db(req, res) {
   for (var d in dataset_ids) {
     var dataset_id = dataset_ids[d];
     var ids_data = get_all_req_metadata(dataset_id);
-    console.log("GGG0 dataset_id");
-    console.log(dataset_id);
 
-    console.log("GGG ids_data");
-    console.log(ids_data);
-
-    console.log("GGG3 AllMetadata_picked[dataset_id]");
-    console.log(AllMetadata_picked[dataset_id]);
-
-    dd = Object.assign(AllMetadata_picked[dataset_id], ids_data);
+    Object.assign(AllMetadata_picked[dataset_id], ids_data);
     var primers_info_by_dataset_id = get_primers_info(dataset_id);
 
     AllMetadata_picked[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
     AllMetadata_picked[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
 
-    console.log("GGG5 dd");
-    console.log(dd);
+    AllMetadata_picked[dataset_id]["dataset"] = DatasetsWithLatLong[dataset_id];
 
-    // { geo_loc_name: [ 'unknown' ],
-    //   dna_region: [ 'v3v5' ],
-    //   domain: [ 'Bacteria' ],
   }
 
-
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata_picked);
-  console.log("DDD1 data_in_obj_of_arr");
+  data_in_obj_of_arr['dataset_id'] = dataset_ids;
+
+  console.log("FFF data_in_obj_of_arr");
   console.log(data_in_obj_of_arr);
+  // { geo_loc_name_id: [ '6191', '6191', '6191', '6191', '6191', '6191', '6191', '6191' ],
+  // samp_store_temp: [ '4', '4', '4', '4', '4', '4', '4', 'None' ],
+
+  // var arrayFound = ALL_DATASETS.projects.filter(function(item) {
+  //   return item.pid === pid;
+  // });
+
+  for(var i in ALL_DATASETS.projects){
+    var item = ALL_DATASETS.projects[i];
+    console.log('item 111 ' + JSON.stringify(item.datasets));
+    console.log('item 222 ' + JSON.stringify(item.pid));
+    console.log('item 333 ' + typeof item.pid);
+    console.log('item 444 ' + typeof pid);
+
+    // {"name":"142","pid":105,"title":"Title","datasets":[{"did":496,"dname":"142_ds","ddesc":"142_ds_description"}]
+    if(String(item.pid) === String(pid)){
+      var dataset_objs = item.datasets;
+      break;
+    }
+
+  }
+
+  console.log("OOO11 dataset_objs");
+  console.log(JSON.stringify(dataset_objs));
+  //[{"did":4312,"dname":"S1","ddesc":"NULL"},{"did":4313,"dname":"S2","ddesc":"NULL"},{"did":4314,"dname":"S3","ddesc":"NULL"},{"did":4315,"dname":"S4","ddesc":"NULL"},{"did":4316,"dname":"S5","ddesc":"NULL"},{"did":4317,"dname":"S6","ddesc":"NULL"},{"did":4318,"dname":"S7","ddesc":"NULL"},{"did":4319,"dname":"Sk_hlaup","ddesc":"NULL"}]
 
 
-  // for (var d in dataset_ids) {
-  //   console.log("DDD1 d");
-  //   console.log(d);
-  //
-  //   console.log("DDD2 dataset_ids[d]");
-  //   console.log(dataset_ids[d]);
-  //
-  // }
+  console.log("OOO1 ALL_DATASETS");
+  console.log(JSON.stringify(ALL_DATASETS));
+  //{"projects":[{"name":"DCO_GAI_Bv3v5","pid":307,"title":"Icelandic Volcanic Lake","datasets":[{"did":4312,"dname":"S1","ddesc":"NULL"},
+  console.log("OOO2 DatasetsWithLatLong");
+  console.log(JSON.stringify(DatasetsWithLatLong));
+  // {"4285":{"proj_dset":"DCO_PED_Bv6v4--KA2198A_Prov_1","pid":45,"latitude":57.4344,"longitude":16.66},
+  console.log("OOO3 PROJECT_INFORMATION_BY_PID");
+  console.log(JSON.stringify(PROJECT_INFORMATION_BY_PID));
+  console.log("OOO4 DATASET_NAME_BY_DID");
+  console.log(JSON.stringify(DATASET_NAME_BY_DID));
+  //{"4285":"KA2198A_Prov_1",
+  /*PROJECT_INFORMATION_BY_PID
+ INITIALIZING PROJECT_INFORMATION_BY_PNAME
+ INITIALIZING DATASET_IDS_BY_PID
+ INITIALIZING DATASET_NAME_BY_DID
+ DatasetsWithLatLong
+ */
 
-  // // get_db_data
-  // var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata);
-  // console.log("FFF data_in_obj_of_arr");
-  // console.log(data_in_obj_of_arr);
-  // var primers_info_by_dataset_id = get_primers_info(row.did);
-
-  // AllMetadata[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
-  // AllMetadata[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
-
-  // var all_metadata = make_metadata_object(req, res, {}, pid, data_in_obj_of_arr);
-  // console.log("EEE1 all_metadata");
-  // console.log(all_metadata);
+  var all_metadata1 = make_metadata_object(req, res, {}, pid, data_in_obj_of_arr);
+  console.log("EEEMMM all_metadata1");
+  console.log(JSON.stringify(all_metadata1));
   // render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
   console.timeEnd("TIME: make_metadata_object_from_db");
