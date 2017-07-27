@@ -1170,20 +1170,20 @@ function get_field_names(dataset_ids){
 }
 
 //???
-function fill_out_arr(project_info_hash, dataset_length) {
-  var data_arr = [];
-  for (var key in project_info_hash){
-    console.log("YYY key");
-    console.log(key);
-
-    var arr_temp = Array(dataset_length - 1);
-    arr_temp.unshift(key);
-
-    arr_temp.fill(project_info_hash[key], 1, dataset_length);
-    data_arr.push(arr_temp);
-  }
-  return data_arr;
-}
+// function fill_out_arr(project_info_hash, dataset_length) {
+//   var data_arr = [];
+//   for (var key in project_info_hash){
+//     console.log("YYY key");
+//     console.log(key);
+//
+//     var arr_temp = Array(dataset_length - 1);
+//     arr_temp.unshift(key);
+//
+//     arr_temp.fill(project_info_hash[key], 1, dataset_length);
+//     data_arr.push(arr_temp);
+//   }
+//   return data_arr;
+// }
 
 function fill_out_arr_doubles(value, repeat_times) {
   var arr_temp = Array(repeat_times);
