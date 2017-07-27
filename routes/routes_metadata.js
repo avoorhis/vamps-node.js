@@ -433,8 +433,8 @@ router.post('/start_edit',
   function (req, res) {
 
     console.time("TIME: 1) in post /start_edit");
-    make_metadata_hash(req, res, req.body.project_id);
-
+    // make_metadata_hash(req, res, req.body.project_id);
+    make_metadata_object_from_db(req, res);
     console.timeEnd("TIME: 1) in post /start_edit");
   });
 
@@ -513,7 +513,7 @@ function populate_metadata_hash_from_db(rows, pid, all_metadata, req, res) {
 
   console.log('1 from db) make_metadata_object(req, res, all_metadata, pid, info)');
   // make_metadata_object(req, res, all_metadata, pid, rows);
-  make_metadata_object_from_db(req, res);
+  // make_metadata_object_from_db(req, res);
   var dataset_ids = [];
   for (var i1 = 0; i1 < rows.length; i1++) {
     dataset_ids.push(rows[i1].did);
@@ -837,8 +837,8 @@ function make_metadata_object_from_db(req, res) {
   var AllMetadata_picked = slice_object(AllMetadata, dataset_ids);
   console.timeEnd("TIME: slice_object");
 
-  console.log("FFF2 AllMetadata picked");
-  console.log(AllMetadata_picked);
+  console.time("TIME: dataset_info");
+  // get dataset_info
 
   var dataset_info;
   for(var i in ALL_DATASETS.projects){
@@ -853,14 +853,10 @@ function make_metadata_object_from_db(req, res) {
   for (var idx in dataset_info) {
     dataset_info_by_did[dataset_info[idx]["did"]] = dataset_info[idx];
   }
+  console.timeEnd("TIME: dataset_info");
 
-  console.log("SSS5 dataset_info_by_did");
-  console.log(dataset_info_by_did);
-
-
-  //[{"did":4312,"dname":"S1","ddesc":"NULL"},{"did":4313,"dname":"S2","ddesc":"NULL"},{"did":4314,"dname":"S3","ddesc":"NULL"},{"did":4315,"dname":"S4","ddesc":"NULL"},{"did":4316,"dname":"S5","ddesc":"NULL"},{"did":4317,"dname":"S6","ddesc":"NULL"},{"did":4318,"dname":"S7","ddesc":"NULL"},{"did":4319,"dname":"Sk_hlaup","ddesc":"NULL"}]
-
-
+  // add missing info to AllMetadata_picked
+  console.time("TIME: add missing info to AllMetadata_picked");
   for (var d in dataset_ids) {
     var dataset_id = dataset_ids[d];
     var ids_data = get_all_req_metadata(dataset_id);
@@ -874,38 +870,15 @@ function make_metadata_object_from_db(req, res) {
     AllMetadata_picked[dataset_id]["dataset"] = dataset_info_by_did[dataset_id]["dname"];
     AllMetadata_picked[dataset_id]["dataset_description"] = dataset_info_by_did[dataset_id]["ddesc"];
   }
+  console.timeEnd("TIME: add missing info to AllMetadata_picked");
 
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata_picked);
   data_in_obj_of_arr['dataset_id'] = dataset_ids;
 
-  console.log("FFF data_in_obj_of_arr");
-  console.log(data_in_obj_of_arr);
-  // { geo_loc_name_id: [ '6191', '6191', '6191', '6191', '6191', '6191', '6191', '6191' ],
-  // samp_store_temp: [ '4', '4', '4', '4', '4', '4', '4', 'None' ],
-
-
-  console.log("OOO1 ALL_DATASETS");
-  console.log(JSON.stringify(ALL_DATASETS));
-  //{"projects":[{"name":"DCO_GAI_Bv3v5","pid":307,"title":"Icelandic Volcanic Lake","datasets":[{"did":4312,"dname":"S1","ddesc":"NULL"},
-  console.log("OOO2 DatasetsWithLatLong");
-  console.log(JSON.stringify(DatasetsWithLatLong));
-  // {"4285":{"proj_dset":"DCO_PED_Bv6v4--KA2198A_Prov_1","pid":45,"latitude":57.4344,"longitude":16.66},
-  console.log("OOO3 PROJECT_INFORMATION_BY_PID");
-  console.log(JSON.stringify(PROJECT_INFORMATION_BY_PID));
-  console.log("OOO4 DATASET_NAME_BY_DID");
-  console.log(JSON.stringify(DATASET_NAME_BY_DID));
-  //{"4285":"KA2198A_Prov_1",
-  /*PROJECT_INFORMATION_BY_PID
- INITIALIZING PROJECT_INFORMATION_BY_PNAME
- INITIALIZING DATASET_IDS_BY_PID
- INITIALIZING DATASET_NAME_BY_DID
- DatasetsWithLatLong
- */
-
-  var all_metadata1 = make_metadata_object(req, res, {}, pid, data_in_obj_of_arr);
-  console.log("EEEMMM all_metadata1");
-  console.log(JSON.stringify(all_metadata1));
-  // render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
+  var all_metadata = make_metadata_object(req, res, {}, pid, data_in_obj_of_arr);
+  // console.log("EEEMMM all_metadata");
+  // console.log(JSON.stringify(all_metadata));
+  render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
   console.timeEnd("TIME: make_metadata_object_from_db");
 }
@@ -954,6 +927,7 @@ function make_metadata_object_from_csv(req, res) {
 }
 
 function from_obj_to_obj_of_arr(data) {
+  console.time("TIME: from_obj_to_obj_of_arr");
   var obj_of_arr = {};
 
   for (var idx in data) {
@@ -964,6 +938,7 @@ function from_obj_to_obj_of_arr(data) {
       obj_of_arr[key].push(data[idx][key]);
     }
   }
+  console.timeEnd("TIME: from_obj_to_obj_of_arr");
   return obj_of_arr;
 }
 
