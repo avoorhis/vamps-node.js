@@ -1140,31 +1140,112 @@ function make_metadata_object(req, res, all_metadata, pid, info) {
   //2) all
   all_metadata[pid] = info;
 
+  console.log("JJJ1 all_metadata[pid]");
+  console.log(all_metadata[pid]);
+
   //3) special
+
+  var project_info = get_project_info(pid);
+
+  for (var idx in CONSTS.METADATA_NAMES_ADD) {
+    var field_name = CONSTS.METADATA_NAMES_ADD[idx];
+    console.log("CCC1 field_name");
+    console.log(field_name);
+
+    console.log("CCC2 typeof all_metadata[pid][field_name]");
+    console.log(typeof all_metadata[pid][field_name]);
+
+    console.log("CCC3 all_metadata[pid][field_name]");
+    console.log(all_metadata[pid][field_name]);
+
+    console.log("CCC4 project_info[field_name]");
+    console.log(project_info[field_name]);
+
+
+    //todo: split if, if length == dataset_ids.length - just use as is
+    if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length === 1) {
+      all_metadata[pid][field_name] = fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
+    }
+    else {
+      all_metadata[pid][field_name] = fill_out_arr_doubles(project_info[field_name], repeat_times);
+    }
+
+    console.log("CCC5 all_metadata[pid][field_name]");
+    console.log(all_metadata[pid][field_name]);
+
+  }
+
+  // all_metadata[pid]["first_name"] = fill_out_arr_doubles(project_info.first_name, repeat_times);
+  // all_metadata[pid]["institution"] = fill_out_arr_doubles(project_info.institution, repeat_times);
+  // all_metadata[pid]["last_name"] = fill_out_arr_doubles(project_info.last_name, repeat_times);
+  // all_metadata[pid]["pi_email"] = fill_out_arr_doubles(project_info.pi_email, repeat_times);
+  // all_metadata[pid]["pi_name"] = fill_out_arr_doubles(project_info.pi_name, repeat_times);
+  // all_metadata[pid]["project"] = fill_out_arr_doubles(project_info.project, repeat_times);
+  // all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
+  // all_metadata[pid]["project_title"] = fill_out_arr_doubles(project_info.project_title, repeat_times);
+  // all_metadata[pid]["public"] = fill_out_arr_doubles(project_info.public, repeat_times);
+  // all_metadata[pid]["references"] = fill_out_arr_doubles(project_info.references, repeat_times);
+  // all_metadata[pid]["username"] = fill_out_arr_doubles(project_info.username, repeat_times);
+  //
   var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
   if (typeof abstract_data === 'undefined') {
     abstract_data = {};
     abstract_data.pdfs = [];
   }
 
-  var project_info = get_project_info(pid);
-  // console.log("NNN1 project_info");
-  // console.log(project_info);
-  all_metadata[pid]["first_name"] = fill_out_arr_doubles(project_info.first_name, repeat_times);
-  all_metadata[pid]["institution"] = fill_out_arr_doubles(project_info.institution, repeat_times);
-  all_metadata[pid]["last_name"] = fill_out_arr_doubles(project_info.last_name, repeat_times);
-  all_metadata[pid]["pi_email"] = fill_out_arr_doubles(project_info.pi_email, repeat_times);
-  all_metadata[pid]["pi_name"] = fill_out_arr_doubles(project_info.pi_name, repeat_times);
-  all_metadata[pid]["project"] = fill_out_arr_doubles(project_info.project, repeat_times);
-  all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
-  all_metadata[pid]["project_title"] = fill_out_arr_doubles(project_info.project_title, repeat_times);
-  all_metadata[pid]["public"] = fill_out_arr_doubles(project_info.public, repeat_times);
-  all_metadata[pid]["references"] = fill_out_arr_doubles(project_info.references, repeat_times);
-  all_metadata[pid]["username"] = fill_out_arr_doubles(project_info.username, repeat_times);
+  if (typeof all_metadata[pid]["project_abstract"] !== 'undefined') {
+    console.log("CCC6 all_metadata[pid][\"project_abstract\"].length");
+    console.log(all_metadata[pid]["project_abstract"].length);
 
+  }
 
-  // console.log("MMM3 all_metadata");
-  // console.log(all_metadata);
+  if (typeof all_metadata[pid]["project_abstract"] !== 'undefined' && all_metadata[pid]["project_abstract"].length === 1) {
+    all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(Array(all_metadata[pid]["project_abstract"]), repeat_times);
+  }
+  else {
+    all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
+  }
+
+  //TODO:
+  /* after add_row
+  * project: [ 'DCO_GAI_Bv3v5' ],
+  project_abstract: [ 'DCO_GAI_CoDL_Gaidos_15_06_01.pdf,DCO_GAI_Gaidos_CoDL_11_03_03.pdf' ],
+  project_title: [ 'Icelandic Volcanic Lake' ],
+
+  1)
+
+ccc7 all_metadata[pid]["project_abstract"]
+[ [ 'DCO_GAI_CoDL_Gaidos_15_06_01.pdf',
+    'DCO_GAI_Gaidos_CoDL_11_03_03.pdf' ],
+  [ 'DCO_GAI_CoDL_Gaidos_15_06_01.pdf',
+
+2)
+CCC6 all_metadata[pid]["project_abstract"].length
+1
+ccc7 all_metadata[pid]["project_abstract"]
+[ [ [ 'DCO_GAI_CoDL_Gaidos_15_06_01.pdf,DCO_GAI_Gaidos_CoDL_11_03_03.pdf' ] ],
+  [ [ 'DCO_GAI_CoDL_Gaidos_15_06_01.pdf,DCO_GAI_Gaidos_CoDL_11_03_03.pdf' ] ],
+
+JJJ1 all_metadata[pid]
+  project: [ 'DCO_GAI_Bv3v5' ],
+  project_abstract: [ 'DCO_GAI_CoDL_Gaidos_15_06_01.pdf,DCO_GAI_Gaidos_CoDL_11_03_03.pdf' ],
+  project_title: [ 'Icelandic Volcanic Lake' ],
+
+MMM3 all_metadata
+project_abstract":[[["DCO_GAI_CoDL_Gaidos_15_06_01.pdf,DCO_GAI_Gaidos_CoDL_11_03_03.pdf"]],
+
+3) from file
+CCC6 all_metadata[pid]["project_abstract"].length
+8
+
+"pi_name":[["Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co"],["Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co"],
+  * */
+
+  console.log("ccc7 all_metadata[pid][\"project_abstract\"]");
+  console.log(all_metadata[pid]["project_abstract"]);
+
+  console.log("MMM3 all_metadata");
+  console.log(JSON.stringify(all_metadata));
 
 
   console.timeEnd("TIME: make_metadata_object");

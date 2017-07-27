@@ -740,16 +740,16 @@ constants.ORDERED_METADATA_NAMES = [
 // ];
 
 constants.METADATA_NAMES_ADD = [
-  "dataset",
-  "dataset_description",
-  "dataset_id",
+  // "dataset",
+  // "dataset_description",
+  // "dataset_id",
   "first_name",
   "institution",
   "last_name",
   "pi_email",
   "pi_name",
   "project",
-  "project_abstract",
+  // "project_abstract",
   "project_title",
   "public",
   "references",
