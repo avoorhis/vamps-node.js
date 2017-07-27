@@ -862,24 +862,29 @@ function make_metadata_object_from_db(req, res) {
   // { geo_loc_name_id: [ '6191', '6191', '6191', '6191', '6191', '6191', '6191', '6191' ],
   // samp_store_temp: [ '4', '4', '4', '4', '4', '4', '4', 'None' ],
 
-  // var arrayFound = ALL_DATASETS.projects.filter(function(item) {
-  //   return item.pid === pid;
-  // });
+  console.time("TIME: arrayFound");
+  var arrayFound = ALL_DATASETS.projects.filter(function(item) {
+    // str_item_pid = String(item.pid);
+    return item.pid === Number(pid);
+  });
+  console.timeEnd("TIME: arrayFound");
+  // TIME: arrayFound: 0.128ms
 
+
+  console.log("UUU arrayFound");
+  console.log(JSON.stringify(arrayFound[0]["datasets"]));
+
+  console.time("TIME: dataset_objs");
+  var dataset_objs;
   for(var i in ALL_DATASETS.projects){
     var item = ALL_DATASETS.projects[i];
-    console.log('item 111 ' + JSON.stringify(item.datasets));
-    console.log('item 222 ' + JSON.stringify(item.pid));
-    console.log('item 333 ' + typeof item.pid);
-    console.log('item 444 ' + typeof pid);
-
-    // {"name":"142","pid":105,"title":"Title","datasets":[{"did":496,"dname":"142_ds","ddesc":"142_ds_description"}]
     if(String(item.pid) === String(pid)){
-      var dataset_objs = item.datasets;
+      dataset_objs = item.datasets;
       break;
     }
-
   }
+  console.timeEnd("TIME: dataset_objs");
+  // TIME: dataset_objs: 0.022ms
 
   console.log("OOO11 dataset_objs");
   console.log(JSON.stringify(dataset_objs));
