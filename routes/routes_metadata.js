@@ -433,7 +433,6 @@ router.post('/metadata_edit_form',
   function (req, res) {
 
     console.time("TIME: 1) in post /metadata_edit_form");
-    // make_metadata_hash(req, res, req.body.project_id);
     make_metadata_object_from_db(req, res);
     console.timeEnd("TIME: 1) in post /metadata_edit_form");
   });
@@ -463,123 +462,6 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
     sample_type_options: CONSTS.SAMPLE_TYPE
   });
 }
-
-// create form from db
-
-// TODO: rename
-// todo: if there is req.form (or req.body?) use the result?
-function make_metadata_hash(req, res, pid) {
-  console.time("TIME: 2) make_metadata_hash");
-
-
-  // var pid = req.body.project_id;
-  var all_metadata = {};
-  if (helpers.isInt(pid))
-  {
-    all_metadata[pid] = {};
-    connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows, fields) {
-      if (err)
-      {
-        console.log('get_select_datasets_queryPID error: ' + err);
-      }
-      else
-      {
-        console.log("in make_metadata_hash");
-        all_metadata = populate_metadata_hash_from_db(rows, pid, all_metadata, req, res);
-
-        //TODO: do once here and keep with form
-        // console.log("XXX project_prefix");
-        // console.log(project_prefix);
-        //DCO_GAI
-        render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
-
-      }
-      // end else
-    });
-  }
-  else
-  { // end if int
-    console.log('ERROR pid is not an integer: ', pid);
-  }
-  console.timeEnd("TIME: 2) make_metadata_hash");
-}
-
-
-function populate_metadata_hash_from_db(rows, pid, all_metadata, req, res) {
-  console.time("TIME: 3) populate_metadata_hash_from_db");
-
-  // console.log("MMM1 all_metadata");
-  // console.log(all_metadata);
-
-  console.log('1 from db) make_metadata_object(req, res, all_metadata, pid, info)');
-  // make_metadata_object(req, res, all_metadata, pid, rows);
-  // make_metadata_object_from_db(req, res);
-  var dataset_ids = [];
-  for (var i1 = 0; i1 < rows.length; i1++) {
-    dataset_ids.push(rows[i1].did);
-  }
-
-  var field_names_arr = get_field_names(dataset_ids);
-  console.log("DDD field_names_arr");
-  console.log(field_names_arr);
-
-  all_metadata = prepare_empty_metadata_object(pid, field_names_arr, all_metadata);
-
-
-  project = PROJECT_INFORMATION_BY_PID[pid].project;
-  var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
-
-  if (typeof abstract_data === 'undefined') {
-    abstract_data = {};
-    abstract_data.pdfs = [];
-  }
-
-  for (var i = 0; i < rows.length; i++) {
-    var row = rows[i];
-
-    var dataset_id = row.did;
-
-    //TODO: use get_project_info(project_name) if not in row
-    // TODO do that once outside
-    all_metadata[pid]["project"].push(row.project);
-    all_metadata[pid]["project_title"].push(row.title);
-    all_metadata[pid]["username"].push(row.username);
-    all_metadata[pid]["pi_name"].push(row.first_name + " " + row.last_name);
-    all_metadata[pid]["pi_email"].push(row.email);
-    all_metadata[pid]["institution"].push(row.institution);
-    all_metadata[pid]["first_name"].push(row.first_name);
-    all_metadata[pid]["last_name"].push(row.last_name);
-    all_metadata[pid]["public"].push(row.public);
-    all_metadata[pid]["dataset_id"].push(row.did);
-    all_metadata[pid]["dataset"].push(row.dataset);
-    all_metadata[pid]["dataset_description"].push(row.dataset_description);
-    all_metadata[pid]["project_abstract"].push(abstract_data.pdfs);
-    //TODO: get references
-    all_metadata[pid]["references"].push("");
-
-    var primers_info_by_dataset_id = get_primers_info(row.did);
-
-    AllMetadata[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
-    AllMetadata[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
-
-
-    var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
-    var ids_data = get_all_req_metadata(dataset_id);
-    console.log("MMM2 AllMetadata[dataset_id]");
-    console.log(AllMetadata[dataset_id]);
-
-
-    all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
-
-    all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, ids_data, all_metadata[pid]);
-
-
-  }
-  console.timeEnd("TIME: 3) populate_metadata_hash_from_db");
-  return all_metadata;
-}
-
-
 
 // create form from req.form
 
@@ -825,6 +707,7 @@ function slice_object(object, slice_keys) {
 
 }
 
+// create form from db
 function make_metadata_object_from_db(req, res) {
   console.time("TIME: make_metadata_object_from_db");
   var pid          = req.body.project_id;
