@@ -159,54 +159,71 @@ function get_metadata_hash(md_selected){
 // }
 
 
+// http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
 
-function get_project_name(edit_metadata_file) {
-  console.time("TIME: get_project_prefix");
-  // var edit_metadata_file = "metadata-project_DCO_GAI_Bv3v5_65982.csv";
-  var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
-  var edit_metadata_project = "";
-  if(edit_metadata_file_parts.length >= 4 ) {
 
-    edit_metadata_project = edit_metadata_file_parts[1] + "_" + edit_metadata_file_parts[2] + "_" + edit_metadata_file_parts[3];
-  }
-  console.timeEnd("TIME: get_project_prefix");
-  return edit_metadata_project;
+// function NewMetadata(req, res, id){ /* fetch or create logic, storing as req.model or req.metadata */}
+
+
+// function loadMetadata(req, res, id){ /* fetch or create logic, storing as req.model or req.metadata */}
+
+// function editMetadataFromFile(req, res){ /* render logic */ }
+
+/*
+  TOC:
+  render new form
+  render edit form
+  create form from db
+  create form from req.form
+  create form from a csv file
+  from form to a csv file
+  from form to req form
+  save from a csv file to db
+  save from form to db ??
+  if csv files: show a list and compare
+  common functions
+*/
+
+// render new form
+// ?? render_edit_form(req, res, {}, {}, all_field_names)
+
+// render edit form
+router.post('/metadata_edit_form',
+  [helpers.isLoggedIn],
+  function (req, res) {
+
+    console.time("TIME: 1) in post /metadata_edit_form");
+    make_metadata_object_from_db(req, res);
+    console.timeEnd("TIME: 1) in post /metadata_edit_form");
+  });
+
+function render_edit_form(req, res, all_metadata, all_field_names) {
+  console.log("JJJ1 all_metadata");
+  console.log(JSON.stringify(all_metadata));
+
+  console.log("JJJ2 all_field_names");
+  console.log(JSON.stringify(all_field_names));
+
+  res.render("metadata/metadata_edit_form", {
+    title: "VAMPS: Metadata_upload",
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    all_metadata: all_metadata,
+    all_field_names: all_field_names,
+    dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+    dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+    dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+    biome_primary_options: CONSTS.BIOME_PRIMARY,
+    feature_primary_options: CONSTS.FEATURE_PRIMARY,
+    material_primary_options: CONSTS.MATERIAL_PRIMARY,
+    metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+    env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+    investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+    sample_type_options: CONSTS.SAMPLE_TYPE
+  });
 }
 
-function get_primers_info(dataset_id) {
-  console.time("TIME: get_primers_info");
-  var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
-  var primer_info = {};
-
-  if (typeof primer_suite_id === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id] === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined' ) {
-    return {};
-  }
-  else {
-    try {
-      for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
-
-        var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
-
-        if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
-          primer_info[curr_direction] = [];
-        }
-
-        primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
-      }
-    } catch (err) {
-      // Handle the error here.
-      return {};
-    }
-
-  }
-  // console.log("DDD primer_info");
-  // console.log(JSON.stringify(primer_info));
-  // {"F":["CCTACGGGAGGCAGCAG","CCTACGGG.GGC[AT]GCAG","TCTACGGAAGGCTGCAG"],"R":["GGATTAG.TACCC"]}
-
-  console.timeEnd("TIME: get_primers_info");
-  return primer_info;
-}
-
+// create form from req.form
 //TODO: benchmark
 function get_second(element) {
   console.time("TIME: get_second");
@@ -224,77 +241,10 @@ function get_second(element) {
 
 }
 
-
-// http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
-
-
-// function NewMetadata(req, res, id){ /* fetch or create logic, storing as req.model or req.metadata */}
-
-
-// function loadMetadata(req, res, id){ /* fetch or create logic, storing as req.model or req.metadata */}
-
-// function editMetadataFromFile(req, res){ /* render logic */ }
-
-function saveMetadata(req, res){
-  console.time("TIME: saveMetadata");
-
-  if(!req.form.isValid){
-        // TODO: remove here, should be after validation only
-        make_csv(req, res);
-        editMetadata(req, res);
-    }else{
-        make_csv(req, res);
-        saveToDb(req.metadata);
-        // TODO: change
-        res.redirect("/metadata"+req.metadata.id+"/edit");
-    }
-  console.timeEnd("TIME: saveMetadata");
-
-}
-
-function get_all_req_metadata(dataset_id) {
-  console.time("TIME: 5) get_all_req_metadata");
-
-  var data = {};
-  for (var idx = 0; idx < CONSTS.REQ_METADATA_FIELDS_wIDs.length; idx++) {
-    var key  = CONSTS.REQ_METADATA_FIELDS_wIDs[idx];
-    data[key] = [];
-    var val_hash = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
-
-    data[key].push(val_hash.value);
-  }
-  console.time("TIME: 5) get_all_req_metadata");
-
-  return data;
-}
-
 function env_items_validation(value) {
   if (value === "Please choose one") {
-      throw new Error("%s is required. Please choose one value from the dropdown menu");
+    throw new Error("%s is required. Please choose one value from the dropdown menu");
   }
-}
-
-function get_project_info(project_name_or_pid) {
-  var project_info;
-  if (helpers.isInt(project_name_or_pid)) {
-    project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
-  }
-  else {
-    project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
-  }
-
-  return {
-    project: project_info.project,
-    first_name: project_info.first,
-    institution: project_info.institution,
-    last_name: project_info.last,
-    pi_email: project_info.email,
-    pi_name: project_info.first + " " + project_info.last,
-    project_title: project_info.title,
-    public: project_info.public,
-    username: project_info.username
-  };
-
 }
 
 function new_row_field_validation(req, field_name) {
@@ -333,38 +283,6 @@ function get_column_name(row_idx, req) {
     return [users_column_name, units_field_name];
   }
   console.timeEnd("TIME: get_column_name");
-}
-
-function get_cell_val_by_row(row_idx, req) {
-  console.time("TIME: get_cell_val_by_row");
-  var new_row_length = req.body.new_row_length;
-  var new_row_val = [];
-
-  for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
-    var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
-    var clean_val = validator.escape(req.body[cell_name] + "");
-    clean_val = validator.trim(clean_val + "");
-
-    new_row_val.push(clean_val);
-  }
-  console.timeEnd("TIME: get_cell_val_by_row");
-
-  return new_row_val;
-}
-
-function get_first_column(matrix, col) {
-  console.time("TIME: get_first_column");
-  var column = [];
-  for (var i=0; i < matrix.length; i++) {
-    column.push(matrix[i][col]);
-  }
-  console.timeEnd("TIME: get_first_column");
-
-  return column;
-}
-
-function isUnique(all_clean_field_names_arr, column_name) {
-  return (all_clean_field_names_arr.indexOf(column_name) < 0);
 }
 
 function collect_new_rows(req, all_field_names) {
@@ -406,182 +324,34 @@ function collect_new_rows(req, all_field_names) {
   return all_field_names;
 
 }
-// ---- metadata_upload 1 ----
-/*
-  TOC:
-  render new form
-  render edit form
-  create form from db
-  create form from req.form
-  create form from a csv file
-  from form to a csv file
-  from form to req form
-  save from a csv file to db
-  save from form to db ??
-  if csv files: show a list and compare
-  common functions
-*/
 
-// render new form
-// ?? render_edit_form(req, res, {}, {}, all_field_names)
+function get_cell_val_by_row(row_idx, req) {
+  console.time("TIME: get_cell_val_by_row");
+  var new_row_length = req.body.new_row_length;
+  var new_row_val = [];
 
-// render edit form
+  for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
+    var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
+    var clean_val = validator.escape(req.body[cell_name] + "");
+    clean_val = validator.trim(clean_val + "");
 
-// TODO: combine posts
-router.post('/start_edit',
-  [helpers.isLoggedIn],
-  function (req, res) {
+    new_row_val.push(clean_val);
+  }
+  console.timeEnd("TIME: get_cell_val_by_row");
 
-    console.time("TIME: 1) in post /start_edit");
-    make_metadata_hash(req, res, req.body.project_id);
-
-    console.timeEnd("TIME: 1) in post /start_edit");
-  });
-
-function render_edit_form(req, res, all_metadata, all_field_names) {
-  console.log("JJJ1 all_metadata");
-  console.log(JSON.stringify(all_metadata));
-
-  console.log("JJJ2 all_field_names");
-  console.log(JSON.stringify(all_field_names));
-
-  res.render("metadata/metadata_edit_form", {
-    title: "VAMPS: Metadata_upload",
-    user: req.user,
-    hostname: req.CONFIG.hostname,
-    all_metadata: all_metadata,
-    all_field_names: all_field_names,
-    dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-    dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-    dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-    biome_primary_options: CONSTS.BIOME_PRIMARY,
-    feature_primary_options: CONSTS.FEATURE_PRIMARY,
-    material_primary_options: CONSTS.MATERIAL_PRIMARY,
-    metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-    env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-    investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-    sample_type_options: CONSTS.SAMPLE_TYPE
-  });
+  return new_row_val;
 }
 
-// create form from db
-
-// TODO: rename
-// todo: if there is req.form (or req.body?) use the result?
-function make_metadata_hash(req, res, pid) {
-  console.time("TIME: 2) make_metadata_hash");
-
-
-  // var pid = req.body.project_id;
-  var all_metadata = {};
-  if (helpers.isInt(pid))
-  {
-    all_metadata[pid] = {};
-    connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows, fields) {
-      if (err)
-      {
-        console.log('get_select_datasets_queryPID error: ' + err);
-      }
-      else
-      {
-        console.log("in make_metadata_hash");
-        all_metadata = populate_metadata_hash_from_db(rows, pid, all_metadata, req, res);
-
-        //TODO: do once here and keep with form
-        // console.log("XXX project_prefix");
-        // console.log(project_prefix);
-        //DCO_GAI
-        render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
-
-      }
-      // end else
-    });
+function get_first_column(matrix, col) {
+  console.time("TIME: get_first_column");
+  var column = [];
+  for (var i=0; i < matrix.length; i++) {
+    column.push(matrix[i][col]);
   }
-  else
-  { // end if int
-    console.log('ERROR pid is not an integer: ', pid);
-  }
-  console.timeEnd("TIME: 2) make_metadata_hash");
+  console.timeEnd("TIME: get_first_column");
+
+  return column;
 }
-
-
-function populate_metadata_hash_from_db(rows, pid, all_metadata, req, res) {
-  console.time("TIME: 3) populate_metadata_hash_from_db");
-
-  // console.log("MMM1 all_metadata");
-  // console.log(all_metadata);
-
-  console.log('1 from db) make_metadata_object(req, res, all_metadata, pid, info)');
-  make_metadata_object(req, res, all_metadata, pid, rows);
-
-  var dataset_ids = [];
-  for (var i1 = 0; i1 < rows.length; i1++) {
-    dataset_ids.push(rows[i1].did);
-  }
-
-  var field_names_arr = get_field_names(dataset_ids);
-  console.log("DDD field_names_arr");
-  console.log(field_names_arr);
-
-  all_metadata = prepare_empty_metadata_object(pid, field_names_arr, all_metadata);
-
-
-  project = PROJECT_INFORMATION_BY_PID[pid].project;
-  var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
-
-  if (typeof abstract_data === 'undefined') {
-    abstract_data = {};
-    abstract_data.pdfs = [];
-  }
-
-  for (var i = 0; i < rows.length; i++) {
-    var row = rows[i];
-
-    var dataset_id = row.did;
-
-    //TODO: use get_project_info(project_name) if not in row
-    // TODO do that once outside
-    all_metadata[pid]["project"].push(row.project);
-    all_metadata[pid]["project_title"].push(row.title);
-    all_metadata[pid]["username"].push(row.username);
-    all_metadata[pid]["pi_name"].push(row.first_name + " " + row.last_name);
-    all_metadata[pid]["pi_email"].push(row.email);
-    all_metadata[pid]["institution"].push(row.institution);
-    all_metadata[pid]["first_name"].push(row.first_name);
-    all_metadata[pid]["last_name"].push(row.last_name);
-    all_metadata[pid]["public"].push(row.public);
-    all_metadata[pid]["dataset_id"].push(row.did);
-    all_metadata[pid]["dataset"].push(row.dataset);
-    all_metadata[pid]["dataset_description"].push(row.dataset_description);
-    all_metadata[pid]["project_abstract"].push(abstract_data.pdfs);
-    //TODO: get references
-    all_metadata[pid]["references"].push("");
-
-    var primers_info_by_dataset_id = get_primers_info(row.did);
-
-    AllMetadata[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
-    AllMetadata[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
-
-
-    var all_metadata_keys_hash = Object.keys(AllMetadata[dataset_id]);
-    var ids_data = get_all_req_metadata(dataset_id);
-    console.log("MMM2 AllMetadata[dataset_id]");
-    console.log(AllMetadata[dataset_id]);
-
-
-    all_metadata[pid] = add_all_val_by_key(all_metadata_keys_hash, AllMetadata[dataset_id], all_metadata[pid]);
-
-    all_metadata[pid] = add_all_val_by_key(CONSTS.REQ_METADATA_FIELDS_wIDs, ids_data, all_metadata[pid]);
-
-
-  }
-  console.timeEnd("TIME: 3) populate_metadata_hash_from_db");
-  return all_metadata;
-}
-
-
-
-// create form from req.form
 
 // TODO: update field names from https://docs.google.com/spreadsheets/d/1adAtGc9DdY2QBQZfd1oaRdWBzjOv4t-PF1hBfO8mAoA/edit#gid=1223926458
 router.post('/metadata_upload',
@@ -696,8 +466,8 @@ router.post('/metadata_upload',
     console.time("TIME: post metadata_upload");
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
-      // editMetadataForm(req, res);
       make_metadata_object_from_form(req, res);
+      // trade places if always create a csv
       make_csv(req, res);
     }
     else {
@@ -706,57 +476,7 @@ router.post('/metadata_upload',
       res.redirect("/user_data/your_projects");
     }
     console.timeEnd("TIME: post metadata_upload");
-
   });
-//
-// function editMetadataForm(req, res){
-//   console.time("TIME: editMetadataForm");
-//
-//   console.log('in editMetadataForm');
-//   var all_metadata = {};
-//   var pid = req.body.project_id;
-//
-//   console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
-//   all_metadata = make_metadata_object(req, res, all_metadata, pid, req.form);
-//
-//   var all_field_names_with_new = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
-//
-//   var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
-//
-//   console.log("WWW1 all_field_names_first_column");
-//   console.log(JSON.stringify(all_field_names_first_column));
-//
-//   var myArray_fail = helpers.unique_array(req.form.errors);
-//   myArray_fail.sort();
-//
-//   req.flash("fail", myArray_fail);
-//
-//
-//   // var repeat_times = req.body.dataset_id.length;
-//   // req.form.pi_name = fill_out_arr_doubles("pi_name", PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last, repeat_times);
-//   // req.form.pi_email = fill_out_arr_doubles(PROJECT_INFORMATION_BY_PID[pid].email, repeat_times);
-//   // req.form.project_title = fill_out_arr_doubles(PROJECT_INFORMATION_BY_PID[pid].title, repeat_times);
-//
-//   var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
-//
-//   // all_metadata[pid] = req.form;
-//   all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
-//   // var project = all_metadata[pid]["project"][0];
-//   // var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
-//   // var abstract_data = get_project_abstract_data(project, path_to_static)[get_project_prefix(project)];
-//   //
-//   // all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
-//
-//   // TODO: move to "add to all_metadata"
-//
-//   console.log("WWW2 all_field_names_with_new");
-//   console.log(JSON.stringify(all_field_names_with_new));
-//   render_edit_form(req, res, all_metadata, all_field_names_with_new);
-//
-//   console.timeEnd("TIME: editMetadataForm");
-// }
-//
-
 
 function get_new_val(req, all_metadata_pid, all_new_names) {
   var new_val = [];
@@ -776,50 +496,151 @@ function get_new_val(req, all_metadata_pid, all_new_names) {
 
 // create form from a csv file
 
-function make_metadata_hash_from_file(req, res, file_name) {
-  console.time("TIME: make_metadata_hash_from_file");
-  //  TODO: DRY with make_metadata_hash
+function slice_object(object, slice_keys) {
+  console.time("TIME: convert to string");
+  for(var i=0; i<slice_keys.length;i++) slice_keys[i] = String(slice_keys[i]);
+  console.timeEnd("TIME: convert to string");
 
+  return Object.keys(object)
+    .filter(function (key) {
+      return slice_keys.indexOf(key) >= 0;
+    })
+    .reduce(function (acc, key) {
+      acc[key] = object[key];
+      return acc;
+    }, {});
 
-  console.log("EEE1 file_name");
-  console.log(file_name);
-  var project_name = get_project_name(file_name);
-  var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
+}
 
-  var all_metadata = {};
+function get_project_name(edit_metadata_file) {
+  console.time("TIME: get_project_prefix");
+  // var edit_metadata_file = "metadata-project_DCO_GAI_Bv3v5_65982.csv";
+  var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
+  var edit_metadata_project = "";
+  if(edit_metadata_file_parts.length >= 4 ) {
 
-  if (helpers.isInt(pid)) {
-    all_metadata[pid] = {};
-    var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
-
-    var file_content = fs.readFileSync(inputPath);
-    var parse_sync = require('csv-parse/lib/sync');
-    var data = parse_sync(file_content, {columns: true, trim: true});
-    var info_from_file = from_obj_to_obj_of_arr(data);
-    console.log("AAA7 info_from_file");
-    console.log(info_from_file);
-    console.log('3 from file) make_metadata_object(req, res, all_metadata, pid, info_from_file)');
-    return make_metadata_object(req, res, all_metadata, pid, info_from_file);
+    edit_metadata_project = edit_metadata_file_parts[1] + "_" + edit_metadata_file_parts[2] + "_" + edit_metadata_file_parts[3];
   }
-  else
-  { // end if int
-    console.log('ERROR pid is not an integer: ', pid);
-  }
+  console.timeEnd("TIME: get_project_prefix");
+  return edit_metadata_project;
+}
 
-  console.timeEnd("TIME: make_metadata_hash_from_file");
+// create form from db
+
+function get_primers_info(dataset_id) {
+  console.time("TIME: get_primers_info");
+  var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
+  var primer_info = {};
+
+  if (typeof primer_suite_id === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id] === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined' ) {
+    return {};
+  }
+  else {
+    try {
+      for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
+
+        var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
+
+        if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
+          primer_info[curr_direction] = [];
+        }
+
+        primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
+      }
+    } catch (err) {
+      // Handle the error here.
+      return {};
+    }
+
+  }
+  // console.log("DDD primer_info");
+  // console.log(JSON.stringify(primer_info));
+  // {"F":["CCTACGGGAGGCAGCAG","CCTACGGG.GGC[AT]GCAG","TCTACGGAAGGCTGCAG"],"R":["GGATTAG.TACCC"]}
+
+  console.timeEnd("TIME: get_primers_info");
+  return primer_info;
+}
+
+function get_all_req_metadata(dataset_id) {
+  console.time("TIME: 5) get_all_req_metadata");
+
+  var data = {};
+  for (var idx = 0; idx < CONSTS.REQ_METADATA_FIELDS_wIDs.length; idx++) {
+    var key  = CONSTS.REQ_METADATA_FIELDS_wIDs[idx];
+    // data[key] = [];
+    var val_hash = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
+
+    data[key] = val_hash.value;
+  }
+  console.time("TIME: 5) get_all_req_metadata");
+
+  return data;
 }
 
 function make_metadata_object_from_db(req, res) {
   console.time("TIME: make_metadata_object_from_db");
-  console.timeEnd("TIME: make_metadata_object_from_db");
+  var pid          = req.body.project_id;
+  //repeated!
+  var dataset_ids  = DATASET_IDS_BY_PID[pid];
+  var project      = PROJECT_INFORMATION_BY_PID[pid].project;
 
+  // get_db_data
+  console.time("TIME: slice_object");
+  var AllMetadata_picked = slice_object(AllMetadata, dataset_ids);
+  console.timeEnd("TIME: slice_object");
+
+  console.time("TIME: dataset_info");
+  // get dataset_info
+
+  var dataset_info;
+  for(var i in ALL_DATASETS.projects){
+    var item = ALL_DATASETS.projects[i];
+    if(String(item.pid) === String(pid)){
+      dataset_info = item.datasets;
+      break;
+    }
+  }
+
+  var dataset_info_by_did = {};
+  for (var idx in dataset_info) {
+    dataset_info_by_did[dataset_info[idx]["did"]] = dataset_info[idx];
+  }
+  console.timeEnd("TIME: dataset_info");
+
+  // add missing info to AllMetadata_picked
+  console.time("TIME: add missing info to AllMetadata_picked");
+  for (var d in dataset_ids) {
+    var dataset_id = dataset_ids[d];
+    var ids_data = get_all_req_metadata(dataset_id);
+
+    Object.assign(AllMetadata_picked[dataset_id], ids_data);
+    var primers_info_by_dataset_id = get_primers_info(dataset_id);
+
+    AllMetadata_picked[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
+    AllMetadata_picked[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
+
+    AllMetadata_picked[dataset_id]["dataset"] = dataset_info_by_did[dataset_id]["dname"];
+    AllMetadata_picked[dataset_id]["dataset_description"] = dataset_info_by_did[dataset_id]["ddesc"];
+  }
+  console.timeEnd("TIME: add missing info to AllMetadata_picked");
+
+  var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata_picked);
+  data_in_obj_of_arr['dataset_id'] = dataset_ids;
+
+  var all_metadata = make_metadata_object(req, res, {}, pid, data_in_obj_of_arr);
+  // console.log("EEEMMM all_metadata");
+  // console.log(JSON.stringify(all_metadata));
+  render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
+
+  console.timeEnd("TIME: make_metadata_object_from_db");
 }
 
 function make_metadata_object_from_form(req, res) {
   console.time("TIME: make_metadata_object_from_form");
   var pid = req.body.project_id;
 
-  console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
+  // console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
+
   var all_metadata = make_metadata_object(req, res, {}, pid, req.form);
 
   //add_new
@@ -858,6 +679,7 @@ function make_metadata_object_from_csv(req, res) {
 }
 
 function from_obj_to_obj_of_arr(data) {
+  console.time("TIME: from_obj_to_obj_of_arr");
   var obj_of_arr = {};
 
   for (var idx in data) {
@@ -868,6 +690,7 @@ function from_obj_to_obj_of_arr(data) {
       obj_of_arr[key].push(data[idx][key]);
     }
   }
+  console.timeEnd("TIME: from_obj_to_obj_of_arr");
   return obj_of_arr;
 }
 
@@ -1080,7 +903,25 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 });
 
 
-// from form to db ??
+// save from form to db ??
+
+function saveMetadata(req, res){
+  console.time("TIME: saveMetadata");
+
+  if(!req.form.isValid){
+    // TODO: remove here, should be after validation only
+    make_csv(req, res);
+    editMetadata(req, res);
+  }else{
+    make_csv(req, res);
+    saveToDb(req.metadata);
+    // TODO: change
+    res.redirect("/metadata"+req.metadata.id+"/edit");
+  }
+  console.timeEnd("TIME: saveMetadata");
+
+}
+
 
 // if csv files: show a list and compare
 router.get('/metadata_file_list', function(req, res) {
@@ -1223,6 +1064,32 @@ function get_file_diff(req, files) {
 
 }
 // common functions
+function isUnique(all_clean_field_names_arr, column_name) {
+  return (all_clean_field_names_arr.indexOf(column_name) < 0);
+}
+
+function get_project_info(project_name_or_pid) {
+  var project_info;
+  if (helpers.isInt(project_name_or_pid)) {
+    project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
+  }
+  else {
+    project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
+  }
+
+  return {
+    project: project_info.project,
+    first_name: project_info.first,
+    institution: project_info.institution,
+    last_name: project_info.last,
+    pi_email: project_info.email,
+    pi_name: project_info.first + " " + project_info.last,
+    project_title: project_info.title,
+    public: project_info.public,
+    username: project_info.username
+  };
+
+}
 
 function get_project_abstract_data(project, path_to_static)
 {
@@ -1356,8 +1223,8 @@ function make_metadata_object(req, res, all_metadata, pid, info) {
   }
 
   var project_info = get_project_info(pid);
-  console.log("NNN1 project_info");
-  console.log(project_info);
+  // console.log("NNN1 project_info");
+  // console.log(project_info);
   all_metadata[pid]["first_name"] = fill_out_arr_doubles(project_info.first_name, repeat_times);
   all_metadata[pid]["institution"] = fill_out_arr_doubles(project_info.institution, repeat_times);
   all_metadata[pid]["last_name"] = fill_out_arr_doubles(project_info.last_name, repeat_times);
@@ -1371,8 +1238,8 @@ function make_metadata_object(req, res, all_metadata, pid, info) {
   all_metadata[pid]["username"] = fill_out_arr_doubles(project_info.username, repeat_times);
 
 
-  console.log("MMM3 all_metadata");
-  console.log(all_metadata);
+  // console.log("MMM3 all_metadata");
+  // console.log(all_metadata);
 
 
   console.timeEnd("TIME: make_metadata_object");
