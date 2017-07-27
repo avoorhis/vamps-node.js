@@ -90,8 +90,6 @@
             <li class='<%= active_class_contact %>'><a href="/help/contact">Contact Us</a></li>
           <% if (user !== undefined && user.security_level === 1) { %>
               <li class='<%= active_class_admin %>'><a href="/admin/admin_index">Admin</a></li>
-          <% }else if(user !== undefined && user.security_level === 45){ %>
-            <li class='<%= active_class_dco %>'><a href="/user_data/dco_metadata">DCO Editor</a></li>
           <% } %>
             <li class="<%= active_class_links %> dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Links<span class="caret"></span></a>
