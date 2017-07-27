@@ -198,11 +198,11 @@ router.post('/metadata_edit_form',
   });
 
 function render_edit_form(req, res, all_metadata, all_field_names) {
-  console.log("JJJ1 all_metadata");
-  console.log(JSON.stringify(all_metadata));
-
-  console.log("JJJ2 all_field_names");
-  console.log(JSON.stringify(all_field_names));
+  // console.log("JJJ1 all_metadata");
+  // console.log(JSON.stringify(all_metadata));
+  //
+  // console.log("JJJ2 all_field_names");
+  // console.log(JSON.stringify(all_field_names));
 
   res.render("metadata/metadata_edit_form", {
     title: "VAMPS: Metadata_upload",
@@ -959,8 +959,8 @@ function get_file_diff(req, files) {
   var inputPath1 = path.join(config.USER_FILES_BASE, req.user.username, files[0]["filename"]);
   var inputPath2 = path.join(config.USER_FILES_BASE, req.user.username, files[1]["filename"]);
 
-  console.log("PPP1 inputPath1");
-  console.log(inputPath1);
+  // console.log("PPP1 inputPath1");
+  // console.log(inputPath1);
 
   // TODO: check if exactly two names
 
@@ -1118,8 +1118,8 @@ function fill_out_arr_doubles(value, repeat_times) {
 
 function make_metadata_object(req, res, all_metadata, pid, info) {
   console.time("TIME: make_metadata_object");
-  console.log("GGG info");
-  console.log(info);
+  // console.log("GGG info");
+  // console.log(info);
 
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
