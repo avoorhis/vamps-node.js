@@ -80,7 +80,7 @@
 	    <% if(edit_metadata == true) { %>
 	    <li>
            
-            <form id='viz_select_form_id' method='POST' action='/metadata/start_edit'>
+            <form id='viz_select_form_id' method='POST' action='/metadata/metadata_edit_form'>
 		  	  <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Edit Metadata</button>
 		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
 		  	  <input type='hidden' name='project' value='<%= data.project %>' />

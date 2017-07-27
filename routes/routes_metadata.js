@@ -428,14 +428,14 @@ function collect_new_rows(req, all_field_names) {
 // render edit form
 
 // TODO: combine posts
-router.post('/start_edit',
+router.post('/metadata_edit_form',
   [helpers.isLoggedIn],
   function (req, res) {
 
-    console.time("TIME: 1) in post /start_edit");
+    console.time("TIME: 1) in post /metadata_edit_form");
     // make_metadata_hash(req, res, req.body.project_id);
     make_metadata_object_from_db(req, res);
-    console.timeEnd("TIME: 1) in post /start_edit");
+    console.timeEnd("TIME: 1) in post /metadata_edit_form");
   });
 
 function render_edit_form(req, res, all_metadata, all_field_names) {
