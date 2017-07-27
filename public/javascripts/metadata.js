@@ -729,46 +729,109 @@ $('#table_div').scroll(function(){
   fnScroll();
 });
 
+var metadata_dropdown_fields = ["biome_secondary/",
+  "dna_extraction_meth/",
+  "dna_quantitation/",
+  "env_biome/",
+  "env_feature/",
+  "env_material/",
+  "env_package/",
+  "feature_secondary/",
+  "investigation_type/",
+  "material_secondary/",
+  "sample_type/"
+];
+
 addCopyFirst = function () {
   var columnNo = 0;
   var this_tbl = $('table#first_col_table');
+
   var $tdsInColumnCurrent = this_tbl
     .find("tr td:nth-child(" + (columnNo + 1) + "):not('.header_divider')");
 
-
   $tdsInColumnCurrent.each(function () {
-    var next_text = $(this).parent().find('td').eq(columnNo + 1).text();
-
-    if (next_text !== "MBL Supplied") {
-      // $(this).css('background-color','Aqua');
-
+    var $label = $(this).find("label[for]");
+    var $forAttr = $label.attr('for');
+    if (jQuery.inArray($forAttr, metadata_dropdown_fields) !== -1)
+    {
       $(this).wrapInner('<span class="makeLeft"></span>')
         .append('<span class="makeRight"><a href="#" class="td_clone_add">Copy 1st</a></span>');
     }
-
   });
+
+  $(".makeRight").hover(function(){
+    $(this).css('cursor','pointer').attr('title', 'Replicate the 1st cell.');
+  }, function() {
+    $(this).css('cursor','auto');
+  });
+
+
+  //
+  // $tdsInColumnCurrent.each(function () {
+  //   var next_text = $(this).parent().find('td').eq(columnNo + 1).text();
+  //
+  //   if (next_text !== "MBL Supplied") {
+  //     // $(this).css('background-color','Aqua');
+  //
+  //     $(this).wrapInner('<span class="makeLeft"></span>')
+  //       .append('<span class="makeRight"><a href="#" class="td_clone_add">Copy 1st</a></span>');
+  //   }
+  //
+  // });
 };
+
+// addCopyFirst = function () {
+//   var columnNo = 0;
+//   var this_tbl = $('table#first_col_table');
+//   var $tdsInColumnCurrent = this_tbl
+//     .find("tr td:nth-child(" + (columnNo + 1) + "):not('.header_divider')");
+//
+//
+//   $tdsInColumnCurrent.each(function () {
+//     var next_text = $(this).parent().find('td').eq(columnNo + 1).text();
+//
+//     if (next_text !== "MBL Supplied") {
+//       // $(this).css('background-color','Aqua');
+//
+//       $(this).wrapInner('<span class="makeLeft"></span>')
+//         .append('<span class="makeRight"><a href="#" class="td_clone_add">Copy 1st</a></span>');
+//     }
+//
+//   });
+// };
 
 addCopyBtns = function() {
   $('table#fixed_table_base').find('tr').eq(1).find('td').each(function() {
     $(this).append('<input type="button" value="Copy to next" class="cp_clmn"/>');
   });
+  $(".cp_clmn").hover(function(){
+    $(this).css('cursor','pointer').attr('title', 'Copies a content of each cell only to the empty cells in the next column.');
+  }, function() {
+    $(this).css('cursor','auto');
+  });
 };
+
+$not_exist = ["None", "none", "undefined", "Please choose one", ""];
 
 CopyColumn = function() {
   $(".cp_clmn").click(function(){
-    var columnNo = $(this).closest('td').index();
-    var this_tbl = $('table#fixed_table_base');
-    var $tdsInColumnCurrent = this_tbl
-      .find("tr td:nth-child(" + (columnNo + 1) + ")");
+    var $columnNo = $(this).closest('td').index();
+    var $this_tbl = $('table#fixed_table_base');
+    var $tdsInColumnCurrent = $this_tbl
+      .find("tr td:nth-child(" + ($columnNo + 1) + ")");
 
     $tdsInColumnCurrent.each(function () {
-      var current_val = $(this).children( ':input' ).val();
-      $(this).siblings().not('.readonly_td').eq(columnNo)
-        .children( ':input' ).val(current_val).change();
+      var $current_val = $(this).children( ':input' ).val();
+      var $next_cell = $(this).siblings().not('.readonly_td').eq($columnNo).children( ':input' );
+      if (($current_val) && (jQuery.inArray($next_cell.val(), $not_exist) !== -1)) {
+        // alert("current_val = " + $current_val);
+        // alert("next_cell_val = " + $next_cell_val);
+        $next_cell.val($current_val).change();
+      }
     });
   });
 };
+
 
 // ---
 
@@ -778,6 +841,5 @@ $(document).ready(function(){
   addCopyFirst();
   copyFirst();
   fnAdjustTable();
-
 
 });

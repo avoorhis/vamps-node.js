@@ -102,10 +102,12 @@ function get_sizer_and_filesize(size) {
 }
 
 function format_time(mtime){
-  return mtime.toISOString().replace(/T/,' ').replace(/\..+/, '');
+  return mtime.toString().split(" ").slice(1, 5).join(" ");
+  // mtime.toString().split();
+    //Mon Jul 24 2017 16:43:56 GMT-0400 (EDT)
+    // .toISOString().replace(/T/,' ').replace(/\..+/, '');
   // .replace(/T/,' ').replace(/.000Z$/,'');
   // .toString();
-  // Wed Jul 05 2017 12:15:22 GMT-0400 (EDT)
 }
 
 function walk_recursively(dir, done) {
@@ -147,6 +149,34 @@ function walk_recursively(dir, done) {
 
 module.exports.walk = function(dir, done) {
   walk_recursively(dir, done);
+};
+
+function walk_sync_recursive(dir) {
+  var results = [];
+  var list = fs.readdirSync(dir);
+  list.forEach(function(file) {
+    file = path.resolve(dir, file);
+    var stat = fs.statSync(file);
+    if (stat && stat.isDirectory()) {
+      results = results.concat(walk_sync_recursive(file));
+    }
+    else {
+      var filename = path.basename(file);
+
+      if (check_file_formats(filename)) {
+        results.push({'filename': filename,
+          'size': stat.size,
+          'time': stat.mtime,
+          'mtime_format': format_time(stat.mtime),
+          'user_dirname': get_user_dirname(path.dirname(file))});
+      }
+    }
+  });
+  return results;
+}
+
+module.exports.walk_sync = function(dir) {
+  return walk_sync_recursive(dir);
 };
 
 module.exports.elapsed_time = function(note){

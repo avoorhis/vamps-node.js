@@ -1,0 +1,99 @@
+<% include ../add_ins/begin.ejs %>
+<% if (typeof(finfo) !== 'undefined') { %>
+	<% var file_info = JSON.parse(finfo) %>
+<% } else { %>
+	<% var file_info = {} %>
+<% } %>
+
+<% if (typeof(table_diff_html) !== 'undefined') { %>
+<% var table_diff_html = table_diff_html %>
+<% } else { %>
+<% var table_diff_html = {} %>
+<% } %>
+
+<% if (table_diff_html.length > 0) { %>
+	<% if (typeof(files_to_compare) !== 'undefined' && files_to_compare.length > 0) { %>
+		<h3>Difference between <br/><%= files_to_compare[0].filename %> & <br/><%= files_to_compare[1].filename %>:</h3>
+	<% } %>
+	<%- table_diff_html %>
+<% } %>
+<div><a class='btn btn-xs btn-primary' href='/metadata/metadata_file_list'>Reload Page</a></div>
+
+
+<p class='title'>Metadata Files List (click header to sort)</p>
+
+<% if(messages.success){ %>
+<div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+<div class="alert_flash_message_fail" >
+	<ul>
+		<% messages.fail.forEach(function(value){ %>
+		<li>
+			<%= value %>
+		</li>
+		<% }) %>
+	</ul>
+</div>
+<% }%>
+<br>
+<!--<br><strong>Your Downloads</strong> -->
+<!--(click header to sort)-->
+
+
+<form name='metadata_files' method='POST' action='/metadata/metadata_files'>
+	<table class='table sortable'>
+		<thead>
+		<tr>
+			<th></th>
+			<th>File name</th>
+			<th>Creation Time</th>
+			<th>Compare</th>
+			<% if(edit) { %>
+			<th>Edit</th>
+			<% } %>
+			<th>Delete</th>
+		</tr>
+		</thead>
+		<tbody>
+		<% for(t in file_info){ %>
+		<% var filename = file_info[t].filename %>
+
+		<tr>
+			<td><%= parseInt(t)+1 %></td>
+			<td>
+				<!--<a href='file_utils?fxn=download&user=<%= file_info[t].user_dirname %>&type=fasta&filename=<%= filename %>' ><%= filename %></a>-->
+				<%= filename %>
+			</td>
+			<td>
+				<%= file_info[t].mtime_format %>
+			</td>
+			<td>
+				<input type="checkbox" id="compare" name="compare" value="<%= filename %>">
+				<label for="compare">Compare 2 files</label>
+			</td>
+			<% if(edit) { %>
+			<td>
+				<input type="radio" name="edit_metadata_file" value="<%= filename %>" />
+			</td>
+			<% } %>
+			<td>
+				<a href='file_utils?fxn=delete&user=<%= file_info[t].user_dirname %>&filename=<%= filename %>' >delete from the server</a>
+			</td>
+		</tr>
+
+		<% } %>
+		</tbody>
+	</table>
+
+	<% if (typeof(finfo) !== 'undefined') { %>
+	<input type='hidden' name='file_info' id='file_info' value='<%= finfo %>' />
+	<% } %>
+
+	<button type="submit">Submit</button>
+</form>
+
+ <!--include ../add_ins/file_retrieval.ejs %>-->
+<% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
+</body>
+</html>

@@ -1,6 +1,8 @@
 <% include ../add_ins/begin.ejs %>
 <% var file_info = JSON.parse(finfo) %>
+
 <div><a class='btn btn-xs btn-primary' href='/user_data/file_retrieval'>Reload Page</a></div>
+
 <p class='title'>Download your Data Files</p>
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
