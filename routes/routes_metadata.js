@@ -160,19 +160,6 @@ function get_metadata_hash(md_selected){
 
 
 
-function get_project_name(edit_metadata_file) {
-  console.time("TIME: get_project_prefix");
-  // var edit_metadata_file = "metadata-project_DCO_GAI_Bv3v5_65982.csv";
-  var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
-  var edit_metadata_project = "";
-  if(edit_metadata_file_parts.length >= 4 ) {
-
-    edit_metadata_project = edit_metadata_file_parts[1] + "_" + edit_metadata_file_parts[2] + "_" + edit_metadata_file_parts[3];
-  }
-  console.timeEnd("TIME: get_project_prefix");
-  return edit_metadata_project;
-}
-
 function get_primers_info(dataset_id) {
   console.time("TIME: get_primers_info");
   var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
@@ -590,55 +577,6 @@ router.post('/metadata_upload',
     console.timeEnd("TIME: post metadata_upload");
 
   });
-//
-// function editMetadataForm(req, res){
-//   console.time("TIME: editMetadataForm");
-//
-//   console.log('in editMetadataForm');
-//   var all_metadata = {};
-//   var pid = req.body.project_id;
-//
-//   console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
-//   all_metadata = make_metadata_object(req, res, all_metadata, pid, req.form);
-//
-//   var all_field_names_with_new = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
-//
-//   var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
-//
-//   console.log("WWW1 all_field_names_first_column");
-//   console.log(JSON.stringify(all_field_names_first_column));
-//
-//   var myArray_fail = helpers.unique_array(req.form.errors);
-//   myArray_fail.sort();
-//
-//   req.flash("fail", myArray_fail);
-//
-//
-//   // var repeat_times = req.body.dataset_id.length;
-//   // req.form.pi_name = fill_out_arr_doubles("pi_name", PROJECT_INFORMATION_BY_PID[pid].first + " " + PROJECT_INFORMATION_BY_PID[pid].last, repeat_times);
-//   // req.form.pi_email = fill_out_arr_doubles(PROJECT_INFORMATION_BY_PID[pid].email, repeat_times);
-//   // req.form.project_title = fill_out_arr_doubles(PROJECT_INFORMATION_BY_PID[pid].title, repeat_times);
-//
-//   var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
-//
-//   // all_metadata[pid] = req.form;
-//   all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
-//   // var project = all_metadata[pid]["project"][0];
-//   // var path_to_static = req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
-//   // var abstract_data = get_project_abstract_data(project, path_to_static)[get_project_prefix(project)];
-//   //
-//   // all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
-//
-//   // TODO: move to "add to all_metadata"
-//
-//   console.log("WWW2 all_field_names_with_new");
-//   console.log(JSON.stringify(all_field_names_with_new));
-//   render_edit_form(req, res, all_metadata, all_field_names_with_new);
-//
-//   console.timeEnd("TIME: editMetadataForm");
-// }
-//
-
 
 function get_new_val(req, all_metadata_pid, all_new_names) {
   var new_val = [];
@@ -658,39 +596,6 @@ function get_new_val(req, all_metadata_pid, all_new_names) {
 
 // create form from a csv file
 
-function make_metadata_hash_from_file(req, res, file_name) {
-  console.time("TIME: make_metadata_hash_from_file");
-  //  TODO: DRY with make_metadata_hash
-
-
-  console.log("EEE1 file_name");
-  console.log(file_name);
-  var project_name = get_project_name(file_name);
-  var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
-
-  var all_metadata = {};
-
-  if (helpers.isInt(pid)) {
-    all_metadata[pid] = {};
-    var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
-
-    var file_content = fs.readFileSync(inputPath);
-    var parse_sync = require('csv-parse/lib/sync');
-    var data = parse_sync(file_content, {columns: true, trim: true});
-    var info_from_file = from_obj_to_obj_of_arr(data);
-    console.log("AAA7 info_from_file");
-    console.log(info_from_file);
-    console.log('3 from file) make_metadata_object(req, res, all_metadata, pid, info_from_file)');
-    return make_metadata_object(req, res, all_metadata, pid, info_from_file);
-  }
-  else
-  { // end if int
-    console.log('ERROR pid is not an integer: ', pid);
-  }
-
-  console.timeEnd("TIME: make_metadata_hash_from_file");
-}
-
 function slice_object(object, slice_keys) {
   console.time("TIME: convert to string");
   for(var i=0; i<slice_keys.length;i++) slice_keys[i] = String(slice_keys[i]);
@@ -706,6 +611,21 @@ function slice_object(object, slice_keys) {
     }, {});
 
 }
+
+
+function get_project_name(edit_metadata_file) {
+  console.time("TIME: get_project_prefix");
+  // var edit_metadata_file = "metadata-project_DCO_GAI_Bv3v5_65982.csv";
+  var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
+  var edit_metadata_project = "";
+  if(edit_metadata_file_parts.length >= 4 ) {
+
+    edit_metadata_project = edit_metadata_file_parts[1] + "_" + edit_metadata_file_parts[2] + "_" + edit_metadata_file_parts[3];
+  }
+  console.timeEnd("TIME: get_project_prefix");
+  return edit_metadata_project;
+}
+
 
 // create form from db
 function make_metadata_object_from_db(req, res) {
