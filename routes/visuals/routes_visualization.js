@@ -146,7 +146,16 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     dataset_ids = JSON.parse(req.body.ds_order);
     visual_post_items.no_of_datasets = dataset_ids.length
     chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);
-
+    // for API select ALL metadata with these datasets
+    var md = {} // hash lookup unique
+    for(n in dataset_ids){
+        var did = dataset_ids[n]
+        for(item in AllMetadata[did]){
+            md[item] =1
+        }
+    }
+    visual_post_items.metadata = Object.keys(md)
+    
   }else if(req.body.restore_image === '1'){
     console.log('in view_selection RESTORE IMAGE')
   }else if(req.body.cancel_resort === '1'){
@@ -229,6 +238,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   distance_matrix = {};
   BIOM_MATRIX = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
   visual_post_items.max_ds_count = BIOM_MATRIX.max_dataset_count;
+  
   var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
 
   console.log('VS--visual_post_items and id-hash:>>');

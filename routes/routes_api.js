@@ -5,7 +5,17 @@ var path = require('path');
 var fs   = require('fs-extra');
 var IMAGES  = require('./routes_images');
 //
-// API
+// API LOGIN
+//  {'username':conn['user'], 'password':conn['passwd']}
+//  https://vamps2.mbl.edu/users/login
+//   Once logged in you can access the functions below
+//
+
+
+//
+// API: GET DIDS FROM PROJECT NAME
+//          Must be logged in through API!
+//      'project': Gets dataset IDs from the projects that the user has permissions to access.
 //
 router.post('/get_dids_from_project', function(req, res){
     console.log('HERE in routes_api.js --> get_dids_from_project ')
@@ -32,7 +42,7 @@ router.post('/get_dids_from_project', function(req, res){
     }
 });
 //
-// API METADATA
+// API: GET METADATA FROM PROJECT NAME
 //
 router.post('/get_metadata_from_project', function(req, res){
     console.log('HERE in routes_api.js --> get_metadata_from_project ')
@@ -59,6 +69,9 @@ router.post('/get_metadata_from_project', function(req, res){
       res.send('Project Not Found')
     }
 });
+//
+// API: GET PROJECT INFORMATION
+//
 router.post('/get_project_information', function(req, res){
     console.log('HERE in routes_api.js --> get_project_information ')
     if(! helpers.isLoggedInAPI(req, res)){
@@ -85,9 +98,8 @@ router.post('/get_project_information', function(req, res){
     }
 });
 //
+// API ERROR
 //
-//
-
 router.post('/', helpers.isLoggedIn, function(req, res){
     console.log('ERROR in router.post(/')
     res.send('Function not found')
@@ -97,10 +109,10 @@ router.get('/', helpers.isLoggedIn, function(req, res){
     res.send('Function not found')
 })
 //
-// CREATE IMAGE
+// API: CREATE IMAGE
 //
 router.post('/create_image',  function(req, res){
-  console.log('in API')
+  console.log('in API/create_image')
   if(! helpers.isLoggedInAPI(req, res)){
         res.send('Failed Authentication')
         return
@@ -111,7 +123,7 @@ router.post('/create_image',  function(req, res){
                 "metadata_table", "fheatmap", "dendrogram01", "dendrogram03","dendrogram",
                 "pcoa", "pcoa3d", "geospatial", "adiversity", "testpie", "phyloseq"
               ]
-  allowed_file_types = ["fasta","metadata-csv","metadata-table"]
+  allowed_file_types = ["fasta", "metadata-csv", "metadata-table"]
   image = false
   file  = false
   
@@ -165,25 +177,65 @@ router.post('/create_image',  function(req, res){
  
 
 });
+//
+//  API: FIND USER PROJECTS
+//          Must be logged in through API!
+//      'search_string': Enter a string to find projects containing that string,
+//                       Or enter an empty string to get all projects that the user
+//                       has permissions to access.
+//       'include_info': If present the project information will be included for each project                   
+//
+router.post('/find_user_projects',  function(req, res){
+    console.log('in find_user_projects')
+    if(! helpers.isLoggedInAPI(req, res)){
+        res.send('Failed Authentication')
+        return
+    }
+    console.log(req.body)
+    if(req.body.hasOwnProperty('search_string')){
+        str = (req.body.search_string).toUpperCase()
+    }else{
+        // get all projects (a potentially long list)
+        str = ''
+    }
+    var availible_projects = {}
+    //console.log(PROJECT_INFORMATION_BY_PNAME)
+    //console.log(str)
+    //PROJECT_INFORMATION_BY_PNAME.foreach()
+    for(pname in PROJECT_INFORMATION_BY_PNAME){
+        pinfo = PROJECT_INFORMATION_BY_PNAME[pname]
+        if(str == ''){
+            // Get all available projects
+            if(pinfo.public == 1 || pinfo.public == '1'){
+                availible_projects[pname] = PROJECT_INFORMATION_BY_PNAME[pname]
+            }else if(req.user.user_id == pinfo.oid || req.user.security_level <= 10 || pinfo.permissions.indexOf(req.user.user_id) != -1 ){
+                availible_projects[pname] = PROJECT_INFORMATION_BY_PNAME[pname]
+            }
+        }else if((pname.toUpperCase()).indexOf(str) !== -1 ){
+            // Screened for str substring in pname
+            if(pinfo.public == 1 || pinfo.public == '1'){
+                availible_projects[pname] = PROJECT_INFORMATION_BY_PNAME[pname]
+            }else if(req.user.user_id == pinfo.oid || req.user.security_level <= 10 || pinfo.permissions.indexOf(req.user.user_id) != -1 ){
+                availible_projects[pname] = PROJECT_INFORMATION_BY_PNAME[pname]
+            }
+        }
+    }
+    if( req.body.hasOwnProperty('include_info') ){
+        availible_projects = Object.keys(availible_projects)
+    }
+    res.send(JSON.stringify(availible_projects))
+    
+    
+    
 
+});
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
 //
 //
 //
-
-
-
-//
-//
-//
-
 
 function test_piecharts(req, res){
   console.log('In function: api/barcharts')

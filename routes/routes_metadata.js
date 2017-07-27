@@ -529,6 +529,10 @@ function populate_metadata_hash_from_db(rows, pid, all_metadata, req, res) {
   project = PROJECT_INFORMATION_BY_PID[pid].project;
   var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
 
+  if (typeof abstract_data === 'undefined') {
+    abstract_data = {};
+    abstract_data.pdfs = [];
+  }
 
   for (var i = 0; i < rows.length; i++) {
     var row = rows[i];
@@ -1346,6 +1350,10 @@ function make_metadata_object(req, res, all_metadata, pid, info) {
 
   //3) special
   var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
+  if (typeof abstract_data === 'undefined') {
+    abstract_data = {};
+    abstract_data.pdfs = [];
+  }
 
   var project_info = get_project_info(pid);
   console.log("NNN1 project_info");
