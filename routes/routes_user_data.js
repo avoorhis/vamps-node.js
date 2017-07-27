@@ -3771,6 +3771,7 @@ router.get('/get_template', function (req, res) {
     var template_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,template)
     console.log(template_path)
 });
+
 //
 //  FUNCTIONS 
 //
