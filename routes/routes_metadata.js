@@ -840,6 +840,27 @@ function make_metadata_object_from_db(req, res) {
   console.log("FFF2 AllMetadata picked");
   console.log(AllMetadata_picked);
 
+  var dataset_info;
+  for(var i in ALL_DATASETS.projects){
+    var item = ALL_DATASETS.projects[i];
+    if(String(item.pid) === String(pid)){
+      dataset_info = item.datasets;
+      break;
+    }
+  }
+
+  var dataset_info_by_did = {};
+  for (var idx in dataset_info) {
+    dataset_info_by_did[dataset_info[idx]["did"]] = dataset_info[idx];
+  }
+
+  console.log("SSS5 dataset_info_by_did");
+  console.log(dataset_info_by_did);
+
+
+  //[{"did":4312,"dname":"S1","ddesc":"NULL"},{"did":4313,"dname":"S2","ddesc":"NULL"},{"did":4314,"dname":"S3","ddesc":"NULL"},{"did":4315,"dname":"S4","ddesc":"NULL"},{"did":4316,"dname":"S5","ddesc":"NULL"},{"did":4317,"dname":"S6","ddesc":"NULL"},{"did":4318,"dname":"S7","ddesc":"NULL"},{"did":4319,"dname":"Sk_hlaup","ddesc":"NULL"}]
+
+
   for (var d in dataset_ids) {
     var dataset_id = dataset_ids[d];
     var ids_data = get_all_req_metadata(dataset_id);
@@ -850,8 +871,8 @@ function make_metadata_object_from_db(req, res) {
     AllMetadata_picked[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
     AllMetadata_picked[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
 
-    AllMetadata_picked[dataset_id]["dataset"] = DatasetsWithLatLong[dataset_id];
-
+    AllMetadata_picked[dataset_id]["dataset"] = dataset_info_by_did[dataset_id]["dname"];
+    AllMetadata_picked[dataset_id]["dataset_description"] = dataset_info_by_did[dataset_id]["ddesc"];
   }
 
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata_picked);
@@ -861,34 +882,6 @@ function make_metadata_object_from_db(req, res) {
   console.log(data_in_obj_of_arr);
   // { geo_loc_name_id: [ '6191', '6191', '6191', '6191', '6191', '6191', '6191', '6191' ],
   // samp_store_temp: [ '4', '4', '4', '4', '4', '4', '4', 'None' ],
-
-  console.time("TIME: arrayFound");
-  var arrayFound = ALL_DATASETS.projects.filter(function(item) {
-    // str_item_pid = String(item.pid);
-    return item.pid === Number(pid);
-  });
-  console.timeEnd("TIME: arrayFound");
-  // TIME: arrayFound: 0.128ms
-
-
-  console.log("UUU arrayFound");
-  console.log(JSON.stringify(arrayFound[0]["datasets"]));
-
-  console.time("TIME: dataset_objs");
-  var dataset_objs;
-  for(var i in ALL_DATASETS.projects){
-    var item = ALL_DATASETS.projects[i];
-    if(String(item.pid) === String(pid)){
-      dataset_objs = item.datasets;
-      break;
-    }
-  }
-  console.timeEnd("TIME: dataset_objs");
-  // TIME: dataset_objs: 0.022ms
-
-  console.log("OOO11 dataset_objs");
-  console.log(JSON.stringify(dataset_objs));
-  //[{"did":4312,"dname":"S1","ddesc":"NULL"},{"did":4313,"dname":"S2","ddesc":"NULL"},{"did":4314,"dname":"S3","ddesc":"NULL"},{"did":4315,"dname":"S4","ddesc":"NULL"},{"did":4316,"dname":"S5","ddesc":"NULL"},{"did":4317,"dname":"S6","ddesc":"NULL"},{"did":4318,"dname":"S7","ddesc":"NULL"},{"did":4319,"dname":"Sk_hlaup","ddesc":"NULL"}]
 
 
   console.log("OOO1 ALL_DATASETS");
