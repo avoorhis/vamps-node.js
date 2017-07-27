@@ -493,6 +493,29 @@ function get_new_val(req, all_metadata_pid, all_new_names) {
   return all_metadata_pid;
 }
 
+function make_metadata_object_from_form(req, res) {
+  console.time("TIME: make_metadata_object_from_form");
+  var pid = req.body.project_id;
+
+  // console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
+
+  var all_metadata = make_metadata_object(req, res, {}, pid, req.form);
+
+  //add_new
+  var all_field_names_with_new = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
+  var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
+  var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
+  all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
+
+  //collect errors
+  var myArray_fail = helpers.unique_array(req.form.errors);
+  myArray_fail.sort();
+  req.flash("fail", myArray_fail);
+
+  render_edit_form(req, res, all_metadata, all_field_names_with_new);
+
+  console.timeEnd("TIME: make_metadata_object_from_form");
+}
 
 // create form from a csv file
 
@@ -523,6 +546,25 @@ function get_project_name(edit_metadata_file) {
   }
   console.timeEnd("TIME: get_project_prefix");
   return edit_metadata_project;
+}
+
+function make_metadata_object_from_csv(req, res) {
+  console.time("TIME: make_metadata_object_from_csv");
+  var file_name = req.body.edit_metadata_file
+  var project_name = get_project_name(file_name);
+  var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
+
+  //data from file
+  var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
+  var file_content = fs.readFileSync(inputPath);
+  var parse_sync = require('csv-parse/lib/sync');
+  var data = parse_sync(file_content, {columns: true, trim: true});
+  var data_in_obj_of_arr = from_obj_to_obj_of_arr(data);
+  var all_metadata = make_metadata_object(req, res, {}, pid, data_in_obj_of_arr);
+
+  render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
+
+  console.timeEnd("TIME: make_metadata_object_from_csv");
 }
 
 // create form from db
@@ -635,49 +677,6 @@ function make_metadata_object_from_db(req, res) {
   console.timeEnd("TIME: make_metadata_object_from_db");
 }
 
-function make_metadata_object_from_form(req, res) {
-  console.time("TIME: make_metadata_object_from_form");
-  var pid = req.body.project_id;
-
-  // console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
-
-  var all_metadata = make_metadata_object(req, res, {}, pid, req.form);
-
-  //add_new
-  var all_field_names_with_new = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
-  var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
-  var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
-  all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
-
-  //collect errors
-  var myArray_fail = helpers.unique_array(req.form.errors);
-  myArray_fail.sort();
-  req.flash("fail", myArray_fail);
-
-  render_edit_form(req, res, all_metadata, all_field_names_with_new);
-
-  console.timeEnd("TIME: make_metadata_object_from_form");
-}
-
-function make_metadata_object_from_csv(req, res) {
-  console.time("TIME: make_metadata_object_from_csv");
-  var file_name = req.body.edit_metadata_file
-  var project_name = get_project_name(file_name);
-  var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
-
-  //data from file
-  var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
-  var file_content = fs.readFileSync(inputPath);
-  var parse_sync = require('csv-parse/lib/sync');
-  var data = parse_sync(file_content, {columns: true, trim: true});
-  var data_in_obj_of_arr = from_obj_to_obj_of_arr(data);
-  var all_metadata = make_metadata_object(req, res, {}, pid, data_in_obj_of_arr);
-
-  render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
-
-  console.timeEnd("TIME: make_metadata_object_from_csv");
-}
-
 function from_obj_to_obj_of_arr(data) {
   console.time("TIME: from_obj_to_obj_of_arr");
   var obj_of_arr = {};
@@ -695,7 +694,6 @@ function from_obj_to_obj_of_arr(data) {
 }
 
 // from form to a csv file
-
 
 function make_csv(req) {
   var out_csv_file_name;
@@ -761,52 +759,7 @@ function convertArrayOfObjectsToCSV(args) {
     return null;
   }
 
-  // var project_info_hash = get_project_info(data.project[0]);
-  // console.log("DDD project_info_hash");
-  // console.log(project_info_hash);
-
   data_arr = array_from_object(data);
-  console.log("CCC1 convertArrayOfObjectsToCSV data_arr");
-  console.log(JSON.stringify(data_arr));
-
-  // TODO move to a function (make_project_info_hash), use for all forms, not just csv
-  // var dataset_length = data.dataset.length;
-  // var data_arr1 = fill_out_arr(project_info_hash, dataset_length);
-  //
-  // data_arr = data_arr.concat(data_arr1);
-
-  // console.log("CCC2 convertArrayOfObjectsToCSV data_arr1");
-  // console.log(data_arr1);
-  //
-  // console.log("CCC3 convertArrayOfObjectsToCSV data_arr");
-  // console.log(data_arr);
-
-  // CCC1 convertArrayOfObjectsToCSV data_arr1
-  //   [ [ 'project',
-  //   'DCO_GAI_Bv3v5',
-  //   'DCO_GAI_Bv3v5',
-
-  // for (var key in project_info_hash){
-  //
-  //   var arr_temp = Array(dataset_length - 1);
-  //   arr_temp.unshift(key);
-  //
-  //   arr_temp.fill(project_info_hash[key], 1, dataset_length);
-  //   data_arr.push(arr_temp);
-  // }
-  /*
-  * [ [ 'NPOC', '', '', '', '', '', '', '', '' ],
-  * TODO: fix
-  [ 'access_point_type' ],
-  * TODO: fix (should be one field)
-  [ 'project_abstract',
-    'DCO_GAI_CoDL_Gaidos_15_06_01.pdf',
-    'DCO_GAI_Gaidos_CoDL_11_03_03.pdf' ],
-  *
-  * */
-
-  console.log("CCC11 convertArrayOfObjectsToCSV again data_arr");
-  console.log(JSON.stringify(data_arr));
 
   transposed_data_arr = transpose_2d_arr(data_arr);
 
@@ -826,24 +779,14 @@ function convertArrayOfObjectsToCSV(args) {
     result += lineDelimiter;
   });
 
-  // for (var key in project_info_hash) {
-  //   cellEscape + item + cellEscape
-  // }
-
-  // TODO: get keys from an array of what to save (dataset_id, for example)
-
-
-  console.log("CCC3 convertArrayOfObjectsToCSV result");
-  console.log(result);
-  //"NPOC","access_point_type","adapter_sequence",
-
   console.timeEnd("TIME: convertArrayOfObjectsToCSV");
 
   return result;
 }
 
-// from form to req form
 // from a csv file to db
+
+// ??
 
 // TODO: mv to helpers and refactor (see also in admin & user_data
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
@@ -902,7 +845,6 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 
 });
 
-
 // save from form to db ??
 
 function saveMetadata(req, res){
@@ -921,7 +863,6 @@ function saveMetadata(req, res){
   console.timeEnd("TIME: saveMetadata");
 
 }
-
 
 // if csv files: show a list and compare
 router.get('/metadata_file_list', function(req, res) {
@@ -1168,22 +1109,6 @@ function get_field_names(dataset_ids){
   }
   return field_names_arr;
 }
-
-//???
-// function fill_out_arr(project_info_hash, dataset_length) {
-//   var data_arr = [];
-//   for (var key in project_info_hash){
-//     console.log("YYY key");
-//     console.log(key);
-//
-//     var arr_temp = Array(dataset_length - 1);
-//     arr_temp.unshift(key);
-//
-//     arr_temp.fill(project_info_hash[key], 1, dataset_length);
-//     data_arr.push(arr_temp);
-//   }
-//   return data_arr;
-// }
 
 function fill_out_arr_doubles(value, repeat_times) {
   var arr_temp = Array(repeat_times);
