@@ -160,58 +160,6 @@ function get_metadata_hash(md_selected){
 
 
 
-function get_primers_info(dataset_id) {
-  console.time("TIME: get_primers_info");
-  var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
-  var primer_info = {};
-
-  if (typeof primer_suite_id === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id] === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined' ) {
-    return {};
-  }
-  else {
-    try {
-      for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
-
-        var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
-
-        if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
-          primer_info[curr_direction] = [];
-        }
-
-        primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
-      }
-    } catch (err) {
-      // Handle the error here.
-      return {};
-    }
-
-  }
-  // console.log("DDD primer_info");
-  // console.log(JSON.stringify(primer_info));
-  // {"F":["CCTACGGGAGGCAGCAG","CCTACGGG.GGC[AT]GCAG","TCTACGGAAGGCTGCAG"],"R":["GGATTAG.TACCC"]}
-
-  console.timeEnd("TIME: get_primers_info");
-  return primer_info;
-}
-
-//TODO: benchmark
-function get_second(element) {
-  console.time("TIME: get_second");
-
-  for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES)
-  {
-    if (CONSTS.ORDERED_METADATA_NAMES[met_names_row].includes(element))
-    {
-      // console.log("ETET met_names_row[1]");
-      // console.log(CONSTS.ORDERED_METADATA_NAMES[met_names_row][1]);
-      return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
-    }
-  }
-  console.timeEnd("TIME: get_second");
-
-}
-
-
 // http://stackoverflow.com/questions/10706588/how-do-i-repopulate-form-fields-after-validation-errors-with-express-form
 
 
@@ -221,23 +169,6 @@ function get_second(element) {
 // function loadMetadata(req, res, id){ /* fetch or create logic, storing as req.model or req.metadata */}
 
 // function editMetadataFromFile(req, res){ /* render logic */ }
-
-function saveMetadata(req, res){
-  console.time("TIME: saveMetadata");
-
-  if(!req.form.isValid){
-        // TODO: remove here, should be after validation only
-        make_csv(req, res);
-        editMetadata(req, res);
-    }else{
-        make_csv(req, res);
-        saveToDb(req.metadata);
-        // TODO: change
-        res.redirect("/metadata"+req.metadata.id+"/edit");
-    }
-  console.timeEnd("TIME: saveMetadata");
-
-}
 
 function get_all_req_metadata(dataset_id) {
   console.time("TIME: 5) get_all_req_metadata");
@@ -451,6 +382,23 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 }
 
 // create form from req.form
+//TODO: benchmark
+function get_second(element) {
+  console.time("TIME: get_second");
+
+  for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES)
+  {
+    if (CONSTS.ORDERED_METADATA_NAMES[met_names_row].includes(element))
+    {
+      // console.log("ETET met_names_row[1]");
+      // console.log(CONSTS.ORDERED_METADATA_NAMES[met_names_row][1]);
+      return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
+    }
+  }
+  console.timeEnd("TIME: get_second");
+
+}
+
 
 // TODO: update field names from https://docs.google.com/spreadsheets/d/1adAtGc9DdY2QBQZfd1oaRdWBzjOv4t-PF1hBfO8mAoA/edit#gid=1223926458
 router.post('/metadata_upload',
@@ -628,6 +576,41 @@ function get_project_name(edit_metadata_file) {
 
 
 // create form from db
+
+function get_primers_info(dataset_id) {
+  console.time("TIME: get_primers_info");
+  var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
+  var primer_info = {};
+
+  if (typeof primer_suite_id === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id] === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined' ) {
+    return {};
+  }
+  else {
+    try {
+      for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
+
+        var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
+
+        if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
+          primer_info[curr_direction] = [];
+        }
+
+        primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
+      }
+    } catch (err) {
+      // Handle the error here.
+      return {};
+    }
+
+  }
+  // console.log("DDD primer_info");
+  // console.log(JSON.stringify(primer_info));
+  // {"F":["CCTACGGGAGGCAGCAG","CCTACGGG.GGC[AT]GCAG","TCTACGGAAGGCTGCAG"],"R":["GGATTAG.TACCC"]}
+
+  console.timeEnd("TIME: get_primers_info");
+  return primer_info;
+}
+
 function make_metadata_object_from_db(req, res) {
   console.time("TIME: make_metadata_object_from_db");
   var pid          = req.body.project_id;
@@ -954,7 +937,25 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 });
 
 
-// from form to db ??
+// save from form to db ??
+
+function saveMetadata(req, res){
+  console.time("TIME: saveMetadata");
+
+  if(!req.form.isValid){
+    // TODO: remove here, should be after validation only
+    make_csv(req, res);
+    editMetadata(req, res);
+  }else{
+    make_csv(req, res);
+    saveToDb(req.metadata);
+    // TODO: change
+    res.redirect("/metadata"+req.metadata.id+"/edit");
+  }
+  console.timeEnd("TIME: saveMetadata");
+
+}
+
 
 // if csv files: show a list and compare
 router.get('/metadata_file_list', function(req, res) {
