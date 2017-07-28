@@ -215,12 +215,14 @@ router.post('/find_user_projects',  function(req, res){
             // Screened for str substring in pname
             if(pinfo.public == 1 || pinfo.public == '1'){
                 availible_projects[pname] = PROJECT_INFORMATION_BY_PNAME[pname]
+                availible_projects[pname].env_package = MD_ENV_PACKAGE[availible_projects[pname].env_package_id]
             }else if(req.user.user_id == pinfo.oid || req.user.security_level <= 10 || pinfo.permissions.indexOf(req.user.user_id) != -1 ){
                 availible_projects[pname] = PROJECT_INFORMATION_BY_PNAME[pname]
+                availible_projects[pname].env_package = MD_ENV_PACKAGE[availible_projects[pname].env_package_id]
             }
         }
     }
-    if( req.body.hasOwnProperty('include_info') ){
+    if( ! req.body.hasOwnProperty('include_info') ){
         availible_projects = Object.keys(availible_projects)
     }
     res.send(JSON.stringify(availible_projects))

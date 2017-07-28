@@ -61,7 +61,7 @@ def format_pcoa_to_js(header, coords, eigvals, pct_var, custom_axes=[],
     declarations.
     """
     js_pcoa_string = ''
-
+    print ('pct_var',pct_var)
     # validating that the number of coords in coords
     if number_of_axes>len(coords[0]):
         number_of_axes = len(coords[0])

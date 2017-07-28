@@ -1040,6 +1040,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
                     // }
                     console.log(options2.scriptPath+'make_emperor_custom.py '+options2.args.join(' '));
                     var emperor_process = spawn( options2.scriptPath+'/make_emperor_custom.py', options2.args, {
+                    //var emperor_process = spawn( 'make_emperor.py', options2.args, {
                         env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
                         detached: true,
                         //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
@@ -1063,7 +1064,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
                     });
                     emperor_process.on('close', function emperorProcessOnClose(code) {
-                        console.log('alphadiv_process process exited with code ' + code);
+                        console.log('emperor_process process exited with code ' + code);
                         if(code == 0){
                             var html = "** <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a> **"
                             html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
