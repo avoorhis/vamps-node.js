@@ -257,7 +257,48 @@ def keep_columns_from_mapping_file(data, headers, columns, negate=False):
     data = [keep_elements(row, indices_of_interest) for row in data]
 
     return data, headers
+def guess_coordinates_files(dir_path):
+    """Given a directory return the file paths that can contain coordinates
 
+    Parameters
+    ----------
+    dir_path : str
+        path to the directory where coordinate files are contained
+
+    Returns
+    -------
+    list of str
+        list of filepaths pointing to the coordinates files
+
+    Notes
+    -----
+    If a path inside dir_path meets any of the following criteria, it will be
+    ignored:
+    - Is a hidden file
+    - Is named `Icon?`.
+    - Is folder
+    - Is part of the procrustes results from QIIME, see
+      transform_coordinate_matrices.py
+    """
+    coord_fps = []
+
+    for filepath in listdir(dir_path):
+        if filepath.startswith('.'):
+            continue
+        if filepath.startswith('Icon?'):
+            continue
+
+        # we need the full path for the next check
+        filepath = join(abspath(dir_path), filepath)
+
+        if isdir(filepath):
+            continue
+        if filepath.endswith('procrustes_results.txt'):
+            continue
+
+        coord_fps.append(filepath)
+
+    return coord_fps
 def preprocess_coords_file(coords_header, coords_data, coords_eigenvals,
                         coords_pct, mapping_header, mapping_data,
                         custom_axes=None, jackknifing_method=None,

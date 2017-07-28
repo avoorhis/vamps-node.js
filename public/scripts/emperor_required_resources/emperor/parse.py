@@ -14,6 +14,7 @@ __status__ = "Release"
 from StringIO import StringIO
 
 from skbio.stats.ordination import OrdinationResults
+#from skbio import OrdinationResults
 from skbio.io import FileFormatError
 
 from emperor.qiime_backports.parse import parse_coords as qiime_parse_coords
@@ -35,14 +36,17 @@ def parse_coords(lines):
     Strategy: read the file using skbio's parser and return the objects
               we want
     """
+    #for line in lines:
+    #    print line
+    
     try:
         pcoa_results = OrdinationResults.read(lines)
         return (pcoa_results.site_ids, pcoa_results.site, pcoa_results.eigvals,
-                pcoa_results.proportion_explained)
+            pcoa_results.proportion_explained)
     except FileFormatError:
         try:
             lines.seek(0)
         except AttributeError:
-            # looks like we have a list of lines, not a file-like object
+            print('looks like we have a list of lines, not a file-like object')
             pass
         return qiime_parse_coords(lines)

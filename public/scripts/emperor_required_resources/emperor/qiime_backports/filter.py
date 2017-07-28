@@ -29,8 +29,7 @@ def sample_ids_from_metadata_description(mapping_f,valid_states_str):
     sample_ids = get_sample_ids(map_data, map_header, valid_states)
 
     if len(sample_ids)<1:
-        raise ValueError,"All samples have been filtered out for the criteria"+\
-            " described in the valid states"
+        raise ValueError("All samples have been filtered out for the criteria described in the valid states")
 
     return sample_ids
 
@@ -100,7 +99,7 @@ def filter_mapping_file(map_data, map_header, good_sample_ids,
         for i,l in enumerate(to_keep[1:-1]):
             if i==column_rename_ids:
                 if len(set(l))!=len(result[0]):
-                     raise ValueError, "The column to rename the samples is not unique."
+                     raise ValueError("The column to rename the samples is not unique.")
                 result.append(result[0])
                 result[0] = l
                 headers.append('SampleID_was_' + map_header[i+1])
