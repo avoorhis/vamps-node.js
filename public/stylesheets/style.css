@@ -442,8 +442,10 @@ td.left_justify {
 }
 
 .readonly {
+  background-color: #E0E0E0;
+  
     /*color: #D3D3D3;*/
-    background: lightgrey none repeat scroll 0 0;
+/*    background: lightgrey none repeat scroll 0 0;*/
 }
 
 .short {
