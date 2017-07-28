@@ -1263,9 +1263,28 @@ CCC6 all_metadata[pid]["project_abstract"].length
 
 "pi_name":[["Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co"],["Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co"],
   * */
+  console.log("ccc7 Array.isArray(all_metadata[pid][\"project_abstract\"][0])");
+  console.log(Array.isArray(all_metadata[pid]["project_abstract"][0]));
 
-  console.log("ccc7 all_metadata[pid][\"project_abstract\"]");
+  console.log("ccc8 all_metadata[pid][\"project_abstract\"]");
   console.log(all_metadata[pid]["project_abstract"]);
+
+  console.log("ccc all_metadata[pid][\"project_abstract\"].length");
+  console.log(all_metadata[pid]["project_abstract"].length);
+
+
+  if (! Array.isArray(all_metadata[pid]["project_abstract"][0])) {
+    var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]["project_abstract"]);
+
+    console.log("ccc9 project_abstract_correct_form.split(\",\")");
+    console.log(project_abstract_correct_form[0].split(","));
+
+    all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(project_abstract_correct_form[0].split(","), repeat_times);
+  }
+
+  //["DCO_GAI_CoDL_Gaidos_15_06_01.pdf,DCO_GAI_Gaidos_CoDL_11_03_03.pdf"],
+  //vs.
+  //[ 'DCO_GAI_CoDL_Gaidos_15_06_01.pdf','DCO_GAI_Gaidos_CoDL_11_03_03.pdf' ],
 
   console.log("MMM3 all_metadata");
   console.log(JSON.stringify(all_metadata));
