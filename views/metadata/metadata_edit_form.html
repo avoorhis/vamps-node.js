@@ -51,21 +51,8 @@
         <% project = all_metadata[pid]["project"][0] %>
         <% pi_name = all_metadata[pid]["pi_name"][0] %>
         <% dataset_ids = all_metadata[pid]["dataset_id"] %>
-        <% if (typeof(all_metadata[pid]["project_abstract"]) !== 'undefined') { %>
-          <% project_abstracts = all_metadata[pid]["project_abstract"] %>
-        <% } else {
-          project_abstracts = [];
-          project_abstracts[0] = "";
-        } %>
-
-    <% } else { %> <!-- if (all_metadata[pid]["pi_email"])-->
-        <% pi_email = "";
-        references = "";
-        project_title = "";
-        project = "";
-        pi_name = "";
-        dataset_ids = [];
-      } %>
+        <% project_abstracts = all_metadata[pid]["project_abstract"] %>
+    <% } %>
 
     <!-- dataset_id project title username email institution first_name last_name public -->
 
