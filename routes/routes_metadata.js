@@ -1156,6 +1156,7 @@ function make_metadata_object(req, res, pid, info) {
   // console.log(JSON.stringify(all_field_names));
 
   // 1)
+  // TODO: don't send all_metadata?
   all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
   // console.log("MMM2 all_metadata");
   // console.log(all_metadata);
@@ -1168,22 +1169,11 @@ function make_metadata_object(req, res, pid, info) {
 
   //3) special
 
+  // TODO: move to db creation?
   var project_info = get_project_info(pid);
 
   for (var idx in CONSTS.METADATA_NAMES_ADD) {
     var field_name = CONSTS.METADATA_NAMES_ADD[idx];
-    console.log("CCC1 field_name");
-    console.log(field_name);
-
-    console.log("CCC2 typeof all_metadata[pid][field_name]");
-    console.log(typeof all_metadata[pid][field_name]);
-
-    console.log("CCC3 all_metadata[pid][field_name]");
-    console.log(all_metadata[pid][field_name]);
-
-    console.log("CCC4 project_info[field_name]");
-    console.log(project_info[field_name]);
-
 
     //todo: split if, if length == dataset_ids.length - just use as is
     if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length === 1) {
@@ -1192,92 +1182,10 @@ function make_metadata_object(req, res, pid, info) {
     else {
       all_metadata[pid][field_name] = fill_out_arr_doubles(project_info[field_name], repeat_times);
     }
-
-    console.log("CCC5 all_metadata[pid][field_name]");
-    console.log(all_metadata[pid][field_name]);
-
   }
-
-  // all_metadata[pid]["first_name"] = fill_out_arr_doubles(project_info.first_name, repeat_times);
-  // all_metadata[pid]["institution"] = fill_out_arr_doubles(project_info.institution, repeat_times);
-  // all_metadata[pid]["last_name"] = fill_out_arr_doubles(project_info.last_name, repeat_times);
-  // all_metadata[pid]["pi_email"] = fill_out_arr_doubles(project_info.pi_email, repeat_times);
-  // all_metadata[pid]["pi_name"] = fill_out_arr_doubles(project_info.pi_name, repeat_times);
-  // all_metadata[pid]["project"] = fill_out_arr_doubles(project_info.project, repeat_times);
-  // all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
-  // all_metadata[pid]["project_title"] = fill_out_arr_doubles(project_info.project_title, repeat_times);
-  // all_metadata[pid]["public"] = fill_out_arr_doubles(project_info.public, repeat_times);
-  // all_metadata[pid]["references"] = fill_out_arr_doubles(project_info.references, repeat_times);
-  // all_metadata[pid]["username"] = fill_out_arr_doubles(project_info.username, repeat_times);
-  //
-  // var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
-  // if (typeof abstract_data === 'undefined') {
-  //   abstract_data = {};
-  //   abstract_data.pdfs = [];
-  // }
-  //
-  // if (typeof all_metadata[pid]["project_abstract"] !== 'undefined') {
-  //   console.log("CCC6 all_metadata[pid][\"project_abstract\"].length");
-  //   console.log(all_metadata[pid]["project_abstract"].length);
-  //
-  // }
-  //
-  // if (typeof all_metadata[pid]["project_abstract"] !== 'undefined' && all_metadata[pid]["project_abstract"].length === 1) {
-  //   all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(Array(all_metadata[pid]["project_abstract"]), repeat_times);
-  // }
-  // else {
-  //   all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
-  // }
-
-  //TODO:
-  /* after add_row
-  * project: [ 'DCO_GAI_Bv3v5' ],
-  project_abstract: [ 'DCO_GAI_CoDL_Gaidos_15_06_01.pdf,DCO_GAI_Gaidos_CoDL_11_03_03.pdf' ],
-  project_title: [ 'Icelandic Volcanic Lake' ],
-
-  1)
-
-ccc7 all_metadata[pid]["project_abstract"]
-[ [ 'DCO_GAI_CoDL_Gaidos_15_06_01.pdf',
-    'DCO_GAI_Gaidos_CoDL_11_03_03.pdf' ],
-  [ 'DCO_GAI_CoDL_Gaidos_15_06_01.pdf',
-
-2)
-CCC6 all_metadata[pid]["project_abstract"].length
-1
-ccc7 all_metadata[pid]["project_abstract"]
-[ [ [ 'DCO_GAI_CoDL_Gaidos_15_06_01.pdf,DCO_GAI_Gaidos_CoDL_11_03_03.pdf' ] ],
-  [ [ 'DCO_GAI_CoDL_Gaidos_15_06_01.pdf,DCO_GAI_Gaidos_CoDL_11_03_03.pdf' ] ],
-
-JJJ1 all_metadata[pid]
-  project: [ 'DCO_GAI_Bv3v5' ],
-  project_abstract: [ 'DCO_GAI_CoDL_Gaidos_15_06_01.pdf,DCO_GAI_Gaidos_CoDL_11_03_03.pdf' ],
-  project_title: [ 'Icelandic Volcanic Lake' ],
-
-MMM3 all_metadata
-project_abstract":[[["DCO_GAI_CoDL_Gaidos_15_06_01.pdf,DCO_GAI_Gaidos_CoDL_11_03_03.pdf"]],
-
-3) from file
-CCC6 all_metadata[pid]["project_abstract"].length
-8
-
-"pi_name":[["Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co"],["Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co","Eric Gaidos and Co"],
-  * */
-  console.log("ccc7 Array.isArray(all_metadata[pid][\"project_abstract\"][0])");
-  console.log(Array.isArray(all_metadata[pid]["project_abstract"][0]));
-
-  console.log("ccc8 all_metadata[pid][\"project_abstract\"]");
-  console.log(all_metadata[pid]["project_abstract"]);
-
-  console.log("ccc all_metadata[pid][\"project_abstract\"].length");
-  console.log(all_metadata[pid]["project_abstract"].length);
-
 
   if (! Array.isArray(all_metadata[pid]["project_abstract"][0]) ) {
     var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]["project_abstract"]);
-
-    // console.log("ccc9 project_abstract_correct_form.split(\",\")");
-    // console.log(project_abstract_correct_form[0].split(","));
 
     if ( typeof project_abstract_correct_form[0] !== 'undefined' ) {
       all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(project_abstract_correct_form[0].split(","), repeat_times);
@@ -1286,10 +1194,6 @@ CCC6 all_metadata[pid]["project_abstract"].length
       all_metadata[pid]["project_abstract"] = fill_out_arr_doubles("", repeat_times);
     }
   }
-
-  //["DCO_GAI_CoDL_Gaidos_15_06_01.pdf,DCO_GAI_Gaidos_CoDL_11_03_03.pdf"],
-  //vs.
-  //[ 'DCO_GAI_CoDL_Gaidos_15_06_01.pdf','DCO_GAI_Gaidos_CoDL_11_03_03.pdf' ],
 
   console.log("MMM3 all_metadata");
   console.log(JSON.stringify(all_metadata));
