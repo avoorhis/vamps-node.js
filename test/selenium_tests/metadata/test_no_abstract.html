@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:3000/" />
+<title>test_no_abstract</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">test_no_abstract</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/visuals/visuals_index</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@name='']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//div[@id='projects_select_div']/div/table/tbody/tr[6]/td[2]/table/tbody/tr/td[4]/span/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Options</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//button[@id='viz_select_form_btn'])[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=project_abstract</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=project_title</td>
+	<td>Lost City, Archaeal</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=pi_email</td>
+	<td>jbaross@u.washon.edu</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=references</td>
+	<td>11, 22, 33</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=pi_name</td>
+	<td>John</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//button[@type='submit'])[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=project_abstract</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=pi_name</td>
+	<td>John</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=project_title</td>
+	<td>Lost City, Archaeal</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=project</td>
+	<td>ICM_LCY_Bv6</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=pi_email</td>
+	<td>jbaross@u.washon.edu</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=project_abstract</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=references</td>
+	<td>11, 22, 33</td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

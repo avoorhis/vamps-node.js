@@ -1273,13 +1273,18 @@ CCC6 all_metadata[pid]["project_abstract"].length
   console.log(all_metadata[pid]["project_abstract"].length);
 
 
-  if (! Array.isArray(all_metadata[pid]["project_abstract"][0])) {
+  if (! Array.isArray(all_metadata[pid]["project_abstract"][0]) ) {
     var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]["project_abstract"]);
 
-    console.log("ccc9 project_abstract_correct_form.split(\",\")");
-    console.log(project_abstract_correct_form[0].split(","));
+    // console.log("ccc9 project_abstract_correct_form.split(\",\")");
+    // console.log(project_abstract_correct_form[0].split(","));
 
-    all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(project_abstract_correct_form[0].split(","), repeat_times);
+    if ( typeof project_abstract_correct_form[0] !== 'undefined' ) {
+      all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(project_abstract_correct_form[0].split(","), repeat_times);
+    }
+    else {
+      all_metadata[pid]["project_abstract"] = fill_out_arr_doubles("", repeat_times);
+    }
   }
 
   //["DCO_GAI_CoDL_Gaidos_15_06_01.pdf,DCO_GAI_Gaidos_CoDL_11_03_03.pdf"],
