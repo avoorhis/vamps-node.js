@@ -502,7 +502,7 @@ function make_metadata_object_from_form(req, res) {
   console.log("BBB req.form (make_metadata_object_from_form)");
   console.log(req.form);
 
-  var all_metadata = make_metadata_object(req, res, {}, pid, req.form);
+  var all_metadata = make_metadata_object(req, res, pid, req.form);
 
   //add_new
   var all_field_names_with_new = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
@@ -553,7 +553,7 @@ function get_project_name(edit_metadata_file) {
 
 function make_metadata_object_from_csv(req, res) {
   console.time("TIME: make_metadata_object_from_csv");
-  var file_name = req.body.edit_metadata_file
+  var file_name = req.body.edit_metadata_file;
   var project_name = get_project_name(file_name);
   var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
 
@@ -567,7 +567,7 @@ function make_metadata_object_from_csv(req, res) {
   console.log("BBB1 data_in_obj_of_arr (make_metadata_object_from_csv)");
   console.log(data_in_obj_of_arr);
 
-  var all_metadata = make_metadata_object(req, res, {}, pid, data_in_obj_of_arr);
+  var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
   render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
@@ -692,7 +692,7 @@ function make_metadata_object_from_db(req, res) {
   console.log("BBB2 data_in_obj_of_arr (make_metadata_object_from_db)");
   console.log(data_in_obj_of_arr);
 
-  var all_metadata = make_metadata_object(req, res, {}, pid, data_in_obj_of_arr);
+  var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
   render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
@@ -1138,11 +1138,12 @@ function fill_out_arr_doubles(value, repeat_times) {
   return arr_temp;
 }
 
-function make_metadata_object(req, res, all_metadata, pid, info) {
+function make_metadata_object(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
   // console.log("GGG info");
   // console.log(info);
 
+  var all_metadata = {};
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
   var repeat_times = dataset_ids.length;
