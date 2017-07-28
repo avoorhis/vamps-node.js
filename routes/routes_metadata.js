@@ -499,6 +499,9 @@ function make_metadata_object_from_form(req, res) {
 
   // console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
 
+  console.log("BBB req.form (make_metadata_object_from_form)");
+  console.log(req.form);
+
   var all_metadata = make_metadata_object(req, res, {}, pid, req.form);
 
   //add_new
@@ -560,6 +563,10 @@ function make_metadata_object_from_csv(req, res) {
   var parse_sync = require('csv-parse/lib/sync');
   var data = parse_sync(file_content, {columns: true, trim: true});
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(data);
+
+  console.log("BBB1 data_in_obj_of_arr (make_metadata_object_from_csv)");
+  console.log(data_in_obj_of_arr);
+
   var all_metadata = make_metadata_object(req, res, {}, pid, data_in_obj_of_arr);
 
   render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
@@ -669,9 +676,24 @@ function make_metadata_object_from_db(req, res) {
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata_picked);
   data_in_obj_of_arr['dataset_id'] = dataset_ids;
 
+  // add abstract_data
+  var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
+  if (typeof abstract_data === 'undefined') {
+    abstract_data = {};
+    abstract_data.pdfs = [];
+  }
+  else {
+    console.log("CCC6 abstract_data");
+    console.log(JSON.stringify(abstract_data));
+  }
+
+  data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
+
+  console.log("BBB2 data_in_obj_of_arr (make_metadata_object_from_db)");
+  console.log(data_in_obj_of_arr);
+
   var all_metadata = make_metadata_object(req, res, {}, pid, data_in_obj_of_arr);
-  // console.log("EEEMMM all_metadata");
-  // console.log(JSON.stringify(all_metadata));
+
   render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
   console.timeEnd("TIME: make_metadata_object_from_db");
@@ -1187,24 +1209,24 @@ function make_metadata_object(req, res, all_metadata, pid, info) {
   // all_metadata[pid]["references"] = fill_out_arr_doubles(project_info.references, repeat_times);
   // all_metadata[pid]["username"] = fill_out_arr_doubles(project_info.username, repeat_times);
   //
-  var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
-  if (typeof abstract_data === 'undefined') {
-    abstract_data = {};
-    abstract_data.pdfs = [];
-  }
-
-  if (typeof all_metadata[pid]["project_abstract"] !== 'undefined') {
-    console.log("CCC6 all_metadata[pid][\"project_abstract\"].length");
-    console.log(all_metadata[pid]["project_abstract"].length);
-
-  }
-
-  if (typeof all_metadata[pid]["project_abstract"] !== 'undefined' && all_metadata[pid]["project_abstract"].length === 1) {
-    all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(Array(all_metadata[pid]["project_abstract"]), repeat_times);
-  }
-  else {
-    all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
-  }
+  // var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
+  // if (typeof abstract_data === 'undefined') {
+  //   abstract_data = {};
+  //   abstract_data.pdfs = [];
+  // }
+  //
+  // if (typeof all_metadata[pid]["project_abstract"] !== 'undefined') {
+  //   console.log("CCC6 all_metadata[pid][\"project_abstract\"].length");
+  //   console.log(all_metadata[pid]["project_abstract"].length);
+  //
+  // }
+  //
+  // if (typeof all_metadata[pid]["project_abstract"] !== 'undefined' && all_metadata[pid]["project_abstract"].length === 1) {
+  //   all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(Array(all_metadata[pid]["project_abstract"]), repeat_times);
+  // }
+  // else {
+  //   all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, repeat_times);
+  // }
 
   //TODO:
   /* after add_row
