@@ -1,4 +1,4 @@
-#!/Users/avoorhis/anaconda2/bin/python
+#!/usr/bin/env python
 # ----------------------------------------------------------------------------
 # Copyright (c) 2013--, emperor development team.
 #
