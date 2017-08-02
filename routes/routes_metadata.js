@@ -1203,5 +1203,4 @@ function make_metadata_object(req, res, pid, info) {
   return all_metadata;
 }
 
-
 // ---- metadata_upload end ----
