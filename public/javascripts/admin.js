@@ -314,27 +314,43 @@ function change_admin(uid)
 {
   var info_div = document.getElementById('msg_div_'+uid);
   var form = document.getElementById('admin_form_'+uid);
-  radio_name = 'admin_radio_'+uid
-  admin_status    = form[radio_name][0]
+  var inactivate_name = 'inactivate_radio_'+uid
+  if(form[inactivate_name].checked){
+        
+        var args = 'inactivate=1&uid='+uid;
+        url = '/admin/inactivate_user'
+  }else{
+      url = '/admin/admin_update'
+      var radio_name = 'admin_radio_'+uid
+      var admin_status_radios    = form[radio_name]
 
-   if(admin_status.checked){
-        status = '1'
-   }else{
-        status = '50' 
-   }
+       if(admin_status_radios[0].checked){
+            status = '1'
+       }else if(admin_status_radios[1].checked){
+            status = '10' 
+       }else if(admin_status_radios[2].checked){
+            status = '45' 
+       }else{
+            status = '50' 
+       }
+       
+    }
    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("POST", '/admin/admin_update', true);
+    xmlhttp.open("POST", url, true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.setRequestHeader("data-type","html");
     var args = 'status='+status+'&uid='+uid;
     xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 ) {
           var response = xmlhttp.responseText;
-          info_div.innerHTML = response;
+          //if(! form[inactivate_name].checked){
+            info_div.innerHTML = response;
+          //}
 
       }
     };
     xmlhttp.send(args);
+    
 }
 //
 //

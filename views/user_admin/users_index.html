@@ -9,6 +9,7 @@
   <% } %>
   
   <% user_rows = rows %>
+  <div style='height:500px'>
   <center>
   <table id='user_list_div' class='sortable' border='1'>
    <thead><tr><th>user_id</th><th>Name <small>(sortable)</small></th><th>username</th></tr></thead>
@@ -21,12 +22,13 @@
           <button type='submit' class='btn btn-sm btn-link'><%= user_rows[i].last_name %>, <%= user_rows[i].first_name %></button>
         </form>
        </td>
-       <td align='center'><%= user_rows[i].username %></td>
+       <td align='left'>&nbsp;<%= user_rows[i].username %></td>
       </tr>
     <% } %>
     </tbody>
   </table>
   </center>
+  </div>
 
 <% include ../add_ins/end.ejs %>
 <script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
