@@ -11,7 +11,19 @@ var IMAGES  = require('./routes_images');
 //   Once logged in you can access the functions below
 //
 
-
+router.post('/logmein', function(req, res){
+    console.log('in log-me-in')
+    console.log(req.body)
+    res.redirect(307, '/users/login')
+});
+router.post('/validate_login', function(req, res){
+    console.log('in validate_login')
+    if(req.isAuthenticated()){
+        res.send('Login Success')
+    }else{
+        res.send('Failed Authentication')
+    }
+});
 //
 // API: GET DIDS FROM PROJECT NAME
 //          Must be logged in through API!
@@ -19,8 +31,8 @@ var IMAGES  = require('./routes_images');
 //
 router.post('/get_dids_from_project', function(req, res){
     console.log('HERE in routes_api.js --> get_dids_from_project ')
-    if(! helpers.isLoggedInAPI(req, res)){
-        res.send('Failed Authentication')
+    if( ! req.isAuthenticated() ){
+        res.send('Failed Authentication -- Please login first')
         return
     }
     console.log(req.body)
@@ -46,8 +58,8 @@ router.post('/get_dids_from_project', function(req, res){
 //
 router.post('/get_metadata_from_project', function(req, res){
     console.log('HERE in routes_api.js --> get_metadata_from_project ')
-    if(! helpers.isLoggedInAPI(req, res)){
-        res.send('Failed Authentication')
+    if( ! req.isAuthenticated() ){
+        res.send('Failed Authentication -- Please login first')
         return
     }
     //console.log(req.body)
@@ -74,8 +86,8 @@ router.post('/get_metadata_from_project', function(req, res){
 //
 router.post('/get_project_information', function(req, res){
     console.log('HERE in routes_api.js --> get_project_information ')
-    if(! helpers.isLoggedInAPI(req, res)){
-        res.send('Failed Authentication')
+    if( ! req.isAuthenticated() ){
+        res.send('Failed Authentication -- Please login first')
         return
     }
     //console.log(req.body)
@@ -113,8 +125,8 @@ router.get('/', helpers.isLoggedIn, function(req, res){
 //
 router.post('/create_image',  function(req, res){
   console.log('in API/create_image')
-  if(! helpers.isLoggedInAPI(req, res)){
-        res.send('Failed Authentication')
+  if( ! req.isAuthenticated() ){
+        res.send('Failed Authentication -- Please login first')
         return
   }
   console.log(req.body)
@@ -187,8 +199,8 @@ router.post('/create_image',  function(req, res){
 //
 router.post('/find_user_projects',  function(req, res){
     console.log('in find_user_projects')
-    if(! helpers.isLoggedInAPI(req, res)){
-        res.send('Failed Authentication')
+    if( ! req.isAuthenticated() ){
+        res.send('Failed Authentication -- Please login first')
         return
     }
     console.log(req.body)
@@ -198,38 +210,93 @@ router.post('/find_user_projects',  function(req, res){
         // get all projects (a potentially long list)
         str = ''
     }
-    var availible_projects = {}
-    //console.log(PROJECT_INFORMATION_BY_PNAME)
-    //console.log(str)
-    //PROJECT_INFORMATION_BY_PNAME.foreach()
-    for(pname in PROJECT_INFORMATION_BY_PNAME){
-        pinfo = PROJECT_INFORMATION_BY_PNAME[pname]
+    var availible_projects = []
+    // all pid list == 
+    var all_pids = Object.keys(PROJECT_INFORMATION_BY_PID)
+    var new_pid_list = helpers.screen_pids_for_permissions(req, all_pids)
+    for(n in new_pid_list){
+        pname = PROJECT_INFORMATION_BY_PID[new_pid_list[n]].project
         if(str == ''){
-            // Get all available projects
-            if(pinfo.public == 1 || pinfo.public == '1'){
-                availible_projects[pname] = PROJECT_INFORMATION_BY_PNAME[pname]
-            }else if(req.user.user_id == pinfo.oid || req.user.security_level <= 10 || pinfo.permissions.indexOf(req.user.user_id) != -1 ){
-                availible_projects[pname] = PROJECT_INFORMATION_BY_PNAME[pname]
-            }
-        }else if((pname.toUpperCase()).indexOf(str) !== -1 ){
-            // Screened for str substring in pname
-            if(pinfo.public == 1 || pinfo.public == '1'){
-                availible_projects[pname] = PROJECT_INFORMATION_BY_PNAME[pname]
-                availible_projects[pname].env_package = MD_ENV_PACKAGE[availible_projects[pname].env_package_id]
-            }else if(req.user.user_id == pinfo.oid || req.user.security_level <= 10 || pinfo.permissions.indexOf(req.user.user_id) != -1 ){
-                availible_projects[pname] = PROJECT_INFORMATION_BY_PNAME[pname]
-                availible_projects[pname].env_package = MD_ENV_PACKAGE[availible_projects[pname].env_package_id]
-            }
+            availible_projects.push(pname)
+        }else if((pname.toUpperCase()).indexOf(str) !== -1){
+            availible_projects.push(pname)
         }
     }
-    if( ! req.body.hasOwnProperty('include_info') ){
-        availible_projects = Object.keys(availible_projects)
-    }
-    res.send(JSON.stringify(availible_projects))
-    
-    
-    
 
+    res.send(JSON.stringify(availible_projects))
+
+});
+//
+//  API: FIND PROJECTS in GEOGRAPHIC AREA
+//          Must be logged in through API!
+//      'nw_lat': REQ:: Decimal latitude    range: -90 <-> 90
+//      'nw_lon': REQ:: Decimal longitude   range -180 <-> 180
+//      'se_lat': REQ: Decimal latitude     range: -90 <-> 90
+//      'se_lon': REQ: Decimal longitude    range -180 <-> 180
+//     ie:   {'nw_lat':'','nw_lon':'','se_lat':'','se_lon':''}
+//       'include_info': If present the project information will be included for each project                   
+//
+router.post('/find_projects_in_geo_area',  function(req, res){
+    console.log('in find_projects_in_geo_area')
+    if( ! req.isAuthenticated() ){
+        res.send(JSON.stringify('Failed Authentication -- Please login first'))
+        return
+    }
+    console.log(req.body)
+    // validation
+    if(! req.body.hasOwnProperty('nw_lat') || ! req.body.hasOwnProperty('nw_lon') || ! req.body.hasOwnProperty('se_lat') || ! req.body.hasOwnProperty('se_lon')){
+        res.send(JSON.stringify('You must include four data items: nw_lat, nw_lon, se_lat, se_lon. All in decimal degrees.'))
+        return
+    }
+    var nw_lat = parseInt(req.body.nw_lat) || 0  // if empty string convert to zero
+    var nw_lon = parseInt(req.body.nw_lon) || 0
+    var se_lat = parseInt(req.body.se_lat) || 0
+    var se_lon = parseInt(req.body.se_lon) || 0
+    var tmp
+    if(nw_lat < se_lat){
+        tmp = nw_lat
+        nw_lat = se_lat
+        se_lat = tmp
+    }
+    if(nw_lon > se_lon){
+        tmp = nw_lon
+        nw_lon = se_lon
+        se_lon = tmp
+    }
+    
+    if(nw_lat < -90 || nw_lat > 90 || se_lat < -90 || se_lat > 90){
+        res.send(JSON.stringify('Latitude must be between -90 and 90'))
+        return    
+    }
+    if(nw_lon < -180 || nw_lon > 180 || se_lon < -180 || se_lon > 180){
+        res.send(JSON.stringify('Longitude must be between -180 and 180'))
+        return    
+    }
+    var dids = []
+    var project_list = {}
+    console.log(DatasetsWithLatLong)
+    //console.log(parseInt(nw_lat),parseInt(nw_lon),parseInt(se_lat),parseInt(se_lon))
+    console.log(nw_lat,nw_lon,se_lat,se_lon)
+    for(did in DatasetsWithLatLong){
+    // helpers.screen_dids_for_permissions(req, dids)
+        if(DatasetsWithLatLong[did].latitude <= nw_lat
+            &&  DatasetsWithLatLong[did].latitude >= se_lat
+            &&  DatasetsWithLatLong[did].longitude >= nw_lon
+            &&  DatasetsWithLatLong[did].longitude <= se_lon
+        )
+        {
+            dids.push(did)
+        }
+    }
+    var new_did_list =  helpers.screen_dids_for_permissions(req, dids)
+    for(n in new_did_list){
+        console.log('did',new_did_list[n])
+        console.log('PROJECT_ID_BY_DID[new_did_list[n]]',PROJECT_ID_BY_DID[new_did_list[n]])
+        console.log('PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[new_did_list[n]]]',PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[new_did_list[n]]])
+        project_list[PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[new_did_list[n]]].project] = 1
+    
+    }
+    res.send(JSON.stringify(Object.keys(project_list)))
 });
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +305,6 @@ router.post('/find_user_projects',  function(req, res){
 //
 //
 //
-
 function test_piecharts(req, res){
   console.log('In function: api/barcharts')
   var d3 = require('d3');
