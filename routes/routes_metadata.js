@@ -302,7 +302,7 @@ function collect_new_rows(req, all_field_names) {
       var units_field_name  = column_n_unit_names[1];
       var column_name = users_column_name + ' (' + units_field_name + ')';
       var re = / /g;
-      var clean_column_name = users_column_name.toLowerCase().replace(re, '_') + '_' + units_field_name.toLowerCase().replace(re, '_');
+      var clean_column_name = users_column_name.toLowerCase().replace(re, '_') + '--UNITS--' + units_field_name.toLowerCase().replace(re, '_');
 
 
       if (column_name && isUnique(all_clean_field_names_arr, clean_column_name)) {
