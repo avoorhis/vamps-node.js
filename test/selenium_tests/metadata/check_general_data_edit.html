@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:3000/" />
+<title>check_general_data_edit</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">check_general_data_edit</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/user_data/your_data</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@name='']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=span.glyphicon.glyphicon-question-sign</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Options</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//button[@id='viz_select_form_btn'])[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=project_title</td>
+	<td>Icelandic Volcanic Lake</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=project</td>
+	<td>DCO_GAI_Bv3v5</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=pi_name</td>
+	<td>Eric Gaidos</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=pi_email</td>
+	<td>gaidos@hawaii.edu</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>css=div.white_box</td>
+	<td>DCO_GAI_CoDL_Gaidos_15_06_01.pdf<br /> DCO_GAI_Gaidos_CoDL_11_03_03.pdf</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=project_title</td>
+	<td>Icelandic Volcanic Lake and very long enddddddddd</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=pi_name</td>
+	<td>Eric Gaidos and Co</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=pi_email</td>
+	<td>gaidos@hawaii.edu.net</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=references</td>
+	<td>1, 2, 3</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//button[@type='submit'])[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=project_title</td>
+	<td>Icelandic Volcanic Lake and very long enddddddddd</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=project</td>
+	<td>DCO_GAI_Bv3v5</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=pi_name</td>
+	<td>Eric Gaidos and Co</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=pi_email</td>
+	<td>gaidos@hawaii.edu.net</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>css=div.white_box</td>
+	<td>DCO_GAI_CoDL_Gaidos_15_06_01.pdf<br /> DCO_GAI_Gaidos_CoDL_11_03_03.pdf</td>
+</tr>
+</tbody></table>
+</body>
+</html>

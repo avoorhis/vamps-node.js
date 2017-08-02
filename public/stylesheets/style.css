@@ -441,7 +441,13 @@ td.left_justify {
     padding-left: 4px;
 }
 
-/*readonly_td*/
+.readonly {
+  background-color: #E0E0E0;
+  
+    /*color: #D3D3D3;*/
+/*    background: lightgrey none repeat scroll 0 0;*/
+}
+
 .short {
     width: 25em;
     white-space: nowrap;
@@ -464,8 +470,7 @@ td.left_justify {
     border: 3px;
     width: 30em;
     padding: 3px;
-    background-color: white;
-
+    /*background-color: white;*/
 }
 
 .makeLeft {
@@ -483,7 +488,10 @@ td.left_justify {
     padding-right: 0.5em;
 }
 
-
+.long_input {
+    /*size: 35;*/
+    width: 20em;
+}
 
 /*FROM https://www.npmjs.com/package/coopyhx*/
 .highlighter .add {

@@ -760,7 +760,7 @@ addCopyFirst = function () {
   });
 
   $(".makeRight").hover(function(){
-    $(this).css('cursor','pointer').attr('title', 'Replicate the 1st cell.');
+    $(this).css('cursor','pointer').attr('title', 'Copy the first column value to all the following columns in this row.');
   }, function() {
     $(this).css('cursor','auto');
   });
@@ -805,7 +805,7 @@ addCopyBtns = function() {
     $(this).append('<input type="button" value="Copy to next" class="cp_clmn"/>');
   });
   $(".cp_clmn").hover(function(){
-    $(this).css('cursor','pointer').attr('title', 'Copies a content of each cell only to the empty cells in the next column.');
+    $(this).css('cursor','pointer').attr('title', 'Copies the values from this column to the next column only if the next column is empty.');
   }, function() {
     $(this).css('cursor','auto');
   });
