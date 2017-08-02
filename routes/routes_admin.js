@@ -1439,9 +1439,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 router.get('/users_index', helpers.isLoggedIn, function(req, res) {
     
 	console.log('in indexusers')
-	console.log(req.user)
-	console.log(ALL_USERS_BY_UID)
-	
+	console.log(req.user)	
 	var rows = []
     if(req.user.security_level <= 10){
         // for(uid in ALL_USERS_BY_UID){
@@ -1457,11 +1455,10 @@ router.get('/users_index', helpers.isLoggedIn, function(req, res) {
   			    helpers.render_error_page(req,res,msg);
 		   } else {
               rows.sort(function(a, b){
-                console.log(rows)
                 // sort by last name
                 return helpers.compareStrings_alpha(a.last_name, b.last_name);
               });
-
+console.log((new Date(rows[0].last_sign_in_at)).getFullYear())
               res.render('admin/users_index', { 
                   title: 'VAMPS:users', 
                   rows : rows, 
