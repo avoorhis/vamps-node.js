@@ -12,41 +12,6 @@ var path = require('path');
 //var LocalStrategy = require('passport-local').Strategy;
 new_user = {}
 /* GET User List (index) page. */
-router.get('/users_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
-    
-	console.log('in indexusers')
-	console.log(req.user)
-    if(req.user.security_level <= 10){
-		var qSelect = "SELECT * from user";
-	    var collection = req.db.query(qSelect, function (err, rows, fields){
-	      if (err)  {
-  			 msg = 'ERROR Message '+err;
-  			 helpers.render_error_page(req,res,msg);
-		   } else {
-          rows.sort(function(a, b){
-            // sort by last name
-            return helpers.compareStrings_alpha(a.last_name, b.last_name);
-          });
-          res.render('user_admin/users_index', { 
-                  title: 'VAMPS:users', 
-                  rows : rows, 
-                  user: req.user,hostname: req.CONFIG.hostname  
-				  });
-
-		   }
-	    });
-	}else{
-	    req.flash('fail', 'Permission Denied')
-        res.render('denied', { 
-                title: 'VAMPS:users', 
-                user: req.user,
-                hostname: req.CONFIG.hostname,
-		    });
-
-          
-	}
-
-});
 
 
 // =====================================

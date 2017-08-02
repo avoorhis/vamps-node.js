@@ -1433,6 +1433,56 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   }
 
 });
+//
+//
+//
+router.get('/users_index', helpers.isLoggedIn, function(req, res) {
+    
+	console.log('in indexusers')
+	console.log(req.user)
+	console.log(ALL_USERS_BY_UID)
+	
+	var rows = []
+    if(req.user.security_level <= 10){
+        // for(uid in ALL_USERS_BY_UID){
+// 	        rows.push({uid:uid,fullname:ALL_USERS_BY_UID[uid].last_name+', '+ALL_USERS_BY_UID[uid].first_name,username:ALL_USERS_BY_UID[uid].username})
+// 	    }
+// 	    rows.sort(function(a, b){
+// 	        return helpers.compareStrings_alpha(a.fullname, b.fullname);
+// 	    });
+		var qSelect = "SELECT * from user where active='1'";
+	    var collection = req.db.query(qSelect, function (err, rows, fields){
+	      if (err)  {
+  			    msg = 'ERROR Message '+err;
+  			    helpers.render_error_page(req,res,msg);
+		   } else {
+              rows.sort(function(a, b){
+                console.log(rows)
+                // sort by last name
+                return helpers.compareStrings_alpha(a.last_name, b.last_name);
+              });
+
+              res.render('admin/users_index', { 
+                  title: 'VAMPS:users', 
+                  rows : rows, 
+                  user: req.user,hostname: req.CONFIG.hostname  
+			  });
+
+ 		   } // end else
+ 	    });
+	}else{
+	    req.flash('fail', 'Permission Denied')
+        res.render('denied', { 
+                title: 'VAMPS:users', 
+                user: req.user,
+                hostname: req.CONFIG.hostname,
+		    });
+
+          
+	}
+
+});
+
 
 //
 //
