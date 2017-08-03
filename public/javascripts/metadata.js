@@ -5,7 +5,6 @@ if (toggle_metadata !== null) {
   });
 }
 
-
 //
 // TOGGLE_METADATA_VIEW
 //
@@ -189,54 +188,59 @@ function bindInfoWindow(marker, map, infowindow, html) {
 
 var biome_seq_options = {
     "marine": ["none",
-        "abyssal",
+        "abyssal zone",
         "bathyal",
         "benthic",
         "continental margin",
         "endolithic",
         "estuarine",
-        "hadal",
-        "neritic",
+        "hadal zone",
+        "marine aquatic",
+        "neritic zone",
         "pelagic",
-        "polar"
+        "polar",
+        "subseafloor aquatic",
+        "subseafloor"
     ],
 
     "terrestrial": ["none",
-        "aquatic",
-        "polar",
-        "endolithic",
         "desert",
-        "grassland",
-        "tundra",
-        "forest",
-        "montane",
-        "tropical",
-        "temperate",
-        "permafrost"],
-
-    "subterrestrial": ["none",
-        "aquatic",
-        "polar",
         "endolithic",
-        "desert",
-        "grassland",
-        "tundra",
         "forest",
+        "grassland",
         "montane",
-        "tropical",
-        "temperate",
-        "permafrost"],
-
-    "subseafloor": ["none",
-        "benthic",
-        "bathyal",
-        "abyssal",
-        "hadal",
-        "neritic",
-        "continental margin",
-        "estuarine",
+        "permafrost",
         "polar",
-        "endolithic"]
+        "subterrestrial aquatic",
+        "subterrestrial",
+        "temperate",
+        "terrestrial aquatic",
+        "tropical",
+        "tundra"]
+
+    // "subterrestrial": ["none",
+    //     "aquatic",
+    //     "polar",
+    //     "endolithic",
+    //     "desert",
+    //     "grassland",
+    //     "tundra",
+    //     "forest",
+    //     "montane",
+    //     "tropical",
+    //     "temperate",
+    //     "permafrost"],
+    //
+    // "subseafloor": ["none",
+    //     "benthic",
+    //     "bathyal",
+    //     "abyssal",
+    //     "hadal",
+    //     "neritic",
+    //     "continental margin",
+    //     "estuarine",
+    //     "polar",
+    //     "endolithic"]
   };
 
   var feature_seq_options = {
@@ -246,11 +250,12 @@ var biome_seq_options = {
 
     "aquifer": ["none",
         "confined",
-        "fracture - geological",
-        "fracture - micro",
-        "fracture - shear",
+        "geological fracture",
+        "microfracture",
+        "shear fracture",
         "spring",
-        "sub-continental",
+        "sub-continental aquifer",
+        "sub-seafloor aquifer",
         "unconfined",
         "water well"],
 
@@ -258,18 +263,18 @@ var biome_seq_options = {
         "CORK",
         "casing",
         "oil well",
-        "research borehole/well",
+        "research borehole",
         "water well",
         "wellhead"],
 
-  "cave": ["none",
-      "erosional cave",
-      "fault cave",
-      "fissure cave",
-      "fracture - geological",
-      "glacier cave",
-      "karst cave",
-      "wall"],
+    "cave": ["none",
+        "cave wall",
+        "erosional cave",
+        "fault cave",
+        "fissure cave",
+        "glacier cave",
+        "joint-plane cave",
+        "karst cave"],
 
   "seep": ["none",
       "brine pool",
@@ -278,9 +283,9 @@ var biome_seq_options = {
       "mound",
       "mud volcano",
       "oil seep",
-      "seafloor",
+      "sea floor",
       "seamount",
-      "vent-field associated",
+      "vent-field associated seep",
       "warm seep"],
 
   "enrichment": ["none",
@@ -293,42 +298,41 @@ var biome_seq_options = {
       "microcosm",
       "organic matter fall",
       "whale fall"],
-
+    
   "fracture": ["none",
       "active geological fault",
       "aquifer",
-      "fracture - geological",
-      "fracture - micro",
-      "fracture - shear",
+      "geological joint",
       "intrusion",
-      "trench"],
+      "microfracture",
+      "ocean trench",
+      "shear fracture"],
 
   "geyser": ["none",
-    "hydrothermal",
-    "mineral deposit"],
+      "hydrothermal",
+      "mineral deposit"],
 
   "spring": ["none",
-      "acidic hot",
-      "alkaline hot",
-      "hydrothermal",
+      "acid hot spring",
+      "alkaline hot spring",
+      "hot spring",
       "mineral deposit",
       "mineral spring"],
 
   "vent": ["none",
-      "flank",
-      "hydrothermal",
-      "magma driven (black smoker)",
+      "black smoker",
+      "marine hydrothermal plume",
+      "marine hydrothermal vent",
+      "marine hydrothermal vent chimney",
+      "mid-ocean ridge",
       "mineral deposit",
-      "ridge",
-      "serpentinization driven (white smoker)",
-      "vent chimney",
-      "vent plume"],
+      "white smoker"],
 
   "mine": ["none",
       "cave",
       "mine drainage",
       "mine tailing",
-      "wall"],
+      "mine wall"],
 
   "lake": ["none",
       "acidic hot",
@@ -343,13 +347,13 @@ var biome_seq_options = {
 
   "volcano": ["none",
       "caldera",
-      "crater",
       "crater floor",
       "crater wall",
       "mud volcano",
       "ridge",
       "seamount",
-      "seep"],
+      "volcanic crater",
+      "volcanic seep"],
 
   "reservoir": ["none",
       "aquifer",
@@ -359,53 +363,68 @@ var biome_seq_options = {
       "subsurface",
       "unconfined"]
   };
+  
+
 
   var material_seq_options = {
     "sediment": ["none",
-        "anaerobic",
-        "biogeneous (ex. forams, diatoms)",
-        "carbon dioxide-reducing",
-        "chemical precip. (ex. carbonate ooids)",
+        "anaerobic ",
+        "biogenous",
+        "carbon dioxide-reducing ",
         "clay",
-        "colloidal",
-        "contaminated",
-        "granular",
-        "hydrogenous (ex. metal sulfide, evaporites)",
-        "hyperthermophilic (changed from hyperthermal)",
-        "inorganically contaminated",
-        "iron-reducing",
-        "manganese-reducing",
-        "mesophilic (changed from mesothermal)",
-        "nitrate-reducing",
+        "colloidal ",
+        "contaminated ",
+        "granular ",
+        "hydrogenous",
+        "hyperthermophilic",
+        "inorganically contaminated ",
+        "iron-reducing  ",
+        "manganese-reducing ",
+        "mesophilic",
+        "nitrate-reducing ",
         "organically contaminated",
-        "petroleum contaminated",
+        "petroleum contaminated ",
         "radioactive",
         "saline lake sediment",
         "silt",
-        "sulfate-reducing",
-        "terrigeneous (ex. sand, silt, gravel)"],
+        "sulphate-reducing",
+        "terrigenous"],
 
     "water": ["none",
         "acidic water",
         "alkaline water",
-        "anoxic",
+        "anoxic water",
         "brackish water",
+        "fresh groundwater",
         "fresh water",
-        "ground water",
+        "groundwater",
         "hypersaline water",
-        "saline deep groundwater",
+        "saline groundwater",
         "saline water",
         "sea water"],
 
+
+
     "fluid": ["none",
-        "borehole water",
+        "drilling bore water",
         "drilling fluid",
-        "ground water",
         "hydrothermal fluid",
         "meltwater",
         "oil",
         "pore fluid",
+        "seep fluid",
+        "underground water",
+        "vent fluid",
         "waste material"],
+
+// algae
+// archaea
+// bacteria
+// fungi
+// glacial biofilm
+// protozoa
+// thermophilic biofilm
+
 
     "biofilm": ["none",
         "algae",
@@ -419,65 +438,104 @@ var biome_seq_options = {
     "microbial mat material": ["none",
         "archaea",
         "bacteria",
-        "biofilm-groundwater flowcell",
+        "groundwater flowcell biofilm",
         "hypersaline",
         "submerged",
         "terrestrial",
         "tidal"],
+    
+// andesite
+// basalt
+// biogeneous sedimentary rock
+// clastic sedimentary rock
+// dolomite
+// granite
+// igneous rock
+// limestone
+// metamorphic rock
+// plutonic rock
+// pumice
+// sandstone
+// sedimentary rock
+// shale
+// volcanic rock
 
     "rock": ["none",
         "andesite",
-        "conglomerate",
+        "basalt",
+        "biogeneous sedimentary",
+        "clastic sedimentary",
         "dolomite",
         "granite",
         "igneous",
-        "igneous - plutonic",
         "limestone",
         "metamorphic",
+        "plutonic",
         "pumice",
         "sandstone",
         "sedimentary",
-        "sedimentary - biogeneous (ex. limestone)",
-        "sedimentary - clastic",
-        "sedimentary - precipitated (ex. chert)",
         "shale",
-        "volcanic",
-        "volcanic - basalt"],
+        "volcanic"],
+
+// "anaerobic mud",
+// "colloidal sediment",
+// "estuarine mud",
+// "glacial mud",
+// "hyperthermophilic mud",
+// "lake bottom mud",
+// "marine mud",
+// "mesothermophilic mud",
+// "soil",
+
 
     "mud": ["none",
-        "anaerobic ",
-        "colloidal (sediment)",
+        "anaerobic",
+        "colloidal sediment",
         "estuarine",
         "glacial",
-        "hyperthermal ",
-        "lake bottom mud (changed from deep lacustrine)",
-        "marine (changed from sea floor)",
-        "mesothermal",
-        "soil",
-        "turbidite"],
+        "hyperthermophilic",
+        "lake bottom",
+        "marine",
+        "mesothermophilic",
+        "soil"],
+    
+// clay soil
+// colloidal soil
+// permafrost
+// contaminated soil
+// muddy soil
 
     "soil": ["none",
         "clay",
-        "colloidal ",
+        "colloidal",
         "contaminated",
-        "mud",
+        "muddy",
         "permafrost"],
 
     "oil": ["none",
-    "asphalt",
-    "petroleum contamination",
-    "seep",
-    "spill",
-    "tar",
-    "well"],
+        // "asphalt",
+        // "petroleum contamination",
+        // "seep",
+        // "spill",
+        "tar"],
+    // ,
+    //     "well"],
+
+// quartz sand
+// calcium carbonate sand
+// basaltic sand
+// desert sand
+// beach sand
+// sea sand
+
 
     "sand": ["none",
         "basaltic",
-        "beach sand",
+        "beach",
         "calcium carbonate",
-        "desert sand",
+        "desert",
         "quartz",
-        "sea sand"]
+        "sea"]
 
   };
 

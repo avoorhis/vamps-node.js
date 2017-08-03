@@ -517,7 +517,8 @@ constants.ORDERED_METADATA_NAMES = [
   ["domain","Domain","MBL Supplied", ""],
   ["target_gene","Target gene name","MBL Supplied", "16S rRNA, mcrA, etc"],
   ["dna_region","DNA region","MBL Supplied", ""],
-  ["sequencing_meth","Sequencing method","MBL Supplied", ""],
+  // was sequencing_meth
+  ["sequencing_platform","Sequencing method","MBL Supplied", ""],
   ["forward_primer","Forward PCR Primer","MBL Supplied", ""],
   ["reverse_primer","Reverse PCR Primer","MBL Supplied", ""],
   ["illumina_index","Index sequence (for Illumina)","MBL Supplied", ""],
@@ -782,7 +783,7 @@ constants.ORDERED_METADATA_DIVIDERS = ["Biological",
 ];
 
 constants.MY_DNA_EXTRACTION_METH_OPTIONS = ["Please choose one",
-  "CTAB phenol–chloroform",
+  "CTAB phenol-chloroform",
   "Hot alkaline extraction",
   "MP Biomedical Fast DNA",
   "MP Biomedical Fast DNA Spin Kit for Soil",
@@ -806,8 +807,8 @@ constants.DNA_QUANTITATION_OPTIONS = ["Please choose one",
 
 constants.BIOME_PRIMARY = ["Please choose one",
   "marine",
-  "subseafloor",
-  "subterrestrial",
+  // "subseafloor",
+  // "subterrestrial",
   "terrestrial"];
 
 constants.FEATURE_PRIMARY = ["Please choose one",
@@ -867,6 +868,8 @@ constants.METADATA_FORM_REQUIRED_FIELDS = ["project",
   "pH",
   "temperature",
   "conductivity"];
+
+// "misc natural or artificial environment" = miscellaneous_natural_or_artificial_environment
 
 constants.DCO_ENVIRONMENTAL_PACKAGES = ["Please choose one",
   "misc environment",
