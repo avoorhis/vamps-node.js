@@ -54,8 +54,6 @@ router.get('/users_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
 // =====================================
 // show the login form
 router.get('/login', function(req, res) {
-    
-    console.log('login', req.body)
     res.render('user_admin/login', { 
                       title: 'VAMPS:login',
                       user: req.user, 
@@ -63,13 +61,13 @@ router.get('/login', function(req, res) {
                       return_to_url: req.session.returnTo });
 });
 
-// var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/users/profile';
 
 router.post('/login',  passport.authenticate('local-login', { 
   // successRedirect: '/users/profile',
-  failureRedirect: 'login',
+  failureRedirect: 'login',   // on fail GET:login (empty form)
   failureFlash: true }), function (req, res) {  
     var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username)
+    
     fs.ensureDir(data_dir, function (err) {
         if(err) {console.log(err);} // => null
         else{
@@ -88,6 +86,7 @@ router.post('/login',  passport.authenticate('local-login', {
             })
         }
     })
+    
     
   }
 );

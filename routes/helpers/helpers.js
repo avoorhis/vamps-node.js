@@ -31,16 +31,16 @@ module.exports.isLoggedIn = function(req, res, next) {
   res.redirect('/users/login');
   // return;
 };
-module.exports.isLoggedInAPI = function(req, res) {
-  if (req.isAuthenticated()) {
-    console.log("Hurray! API User isLoggedInAPI.req.isAuthenticated:", req.user.username);
-    return true;
-  }else{
-    console.log("Oops! NOT isLoggedIn.req.isAuthenticated");
-    return false;
-  }
-  
-};
+// module.exports.isLoggedInAPI = function(req, res) {
+//   if (req.isAuthenticated()) {
+//     console.log("Hurray! API User isLoggedInAPI.req.isAuthenticated:", req.user.username);
+//     return true;
+//   }else{
+//     console.log("Oops! NOT isLoggedIn.req.isAuthenticated");
+//     return false;
+//   }
+//   
+// };
 // route middleware to make sure a user is an aministrator
 module.exports.isAdmin = function(req, res, next) {
   if (req.user.security_level === 1) {
@@ -1758,7 +1758,26 @@ module.exports.screen_dids_for_permissions = function(req, dids)
   }
   return new_did_list
 };
-
+module.exports.screen_pids_for_permissions = function(req, pids)
+{
+  // This is called from unit_select and view_select (others?)  to catch and remove dids that
+  // are found through searches such as geo_search and go to unit_select directly
+  // bypassing the usual tree filter 'filter_project_tree_for_permissions' (fxn above)
+  // permissions are in PROJECT_INFORMATION_BY_PID
+  var new_pid_list = []
+  for(i in pids){
+        pinfo = PROJECT_INFORMATION_BY_PID[pids[i]]
+        // allow if user is owner (should have uid in permissions but check anyway)
+        // allow if user is admin
+        // allow if user is in pinfo.permission
+        if(pinfo.public == 1 || pinfo.public == '1'){
+            new_pid_list.push(pids[i])
+        }else if(req.user.user_id == pinfo.oid || req.user.security_level <= 10 || pinfo.permissions.indexOf(req.user.user_id) != -1 ){
+            new_pid_list.push(pids[i])
+        }
+    }
+  return new_pid_list
+};
 module.exports.unique_array = function(myArray)
 {
   var uSet = new Set(myArray);
