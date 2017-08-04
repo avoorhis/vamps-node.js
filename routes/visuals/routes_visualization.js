@@ -2547,9 +2547,17 @@ function filter_project_tree_for_permissions(req, obj){
       pid = obj[i].pid;
       node = PROJECT_INFORMATION_BY_PID[pid];
       //console.log(node)
-      if(node.public || req.user.security_level <= 10 || node.permissions.length === 0 || node.permissions.indexOf(req.user.user_id) !== -1 ) {
+      if(
+        node.public 
+        || req.user.security_level <= 10                    // admin user ==1
+        || node.permissions.length === 0                    // ??
+        || node.permissions.indexOf(req.user.user_id) !== -1 // owner is user
+        || (req.user.security_level == 45 && (node.project).substring(0,3) == 'DCO') // DCO Editor all DCO* projects
+        ) {
         //console.log(node)
+        
         new_project_tree_pids.push(pid)
+        
       }
   }
   //console.log(obj)

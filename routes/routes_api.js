@@ -245,13 +245,13 @@ router.post('/find_projects_in_geo_area',  function(req, res){
     console.log(req.body)
     // validation
     if(! req.body.hasOwnProperty('nw_lat') || ! req.body.hasOwnProperty('nw_lon') || ! req.body.hasOwnProperty('se_lat') || ! req.body.hasOwnProperty('se_lon')){
-        res.send(JSON.stringify('You must include four data items: nw_lat, nw_lon, se_lat, se_lon. All in decimal degrees.'))
+        res.send(JSON.stringify('You must include two geo map points specified by these four data items: nw_lat, nw_lon, se_lat and se_lon. All in decimal degrees.'))
         return
     }
-    var nw_lat = parseInt(req.body.nw_lat) || 0  // if empty string convert to zero
-    var nw_lon = parseInt(req.body.nw_lon) || 0
-    var se_lat = parseInt(req.body.se_lat) || 0
-    var se_lon = parseInt(req.body.se_lon) || 0
+    var nw_lat = parseFloat(req.body.nw_lat) || 0.0  // if empty string convert to zero
+    var nw_lon = parseFloat(req.body.nw_lon) || 0.0
+    var se_lat = parseFloat(req.body.se_lat) || 0.0
+    var se_lon = parseFloat(req.body.se_lon) || 0.0
     var tmp
     if(nw_lat < se_lat){
         tmp = nw_lat
@@ -264,12 +264,12 @@ router.post('/find_projects_in_geo_area',  function(req, res){
         se_lon = tmp
     }
     
-    if(nw_lat < -90 || nw_lat > 90 || se_lat < -90 || se_lat > 90){
-        res.send(JSON.stringify('Latitude must be between -90 and 90'))
+    if(nw_lat < -90.0 || nw_lat > 90.0 || se_lat < -90.0 || se_lat > 90.0){
+        res.send(JSON.stringify('Latitude must be decimal between -90.0 and 90.0'))
         return    
     }
-    if(nw_lon < -180 || nw_lon > 180 || se_lon < -180 || se_lon > 180){
-        res.send(JSON.stringify('Longitude must be between -180 and 180'))
+    if(nw_lon < -180.0 || nw_lon > 180.0 || se_lon < -180.0 || se_lon > 180.0){
+        res.send(JSON.stringify('Longitude must be decimal between -180.0 and 180.0'))
         return    
     }
     var dids = []
@@ -290,10 +290,11 @@ router.post('/find_projects_in_geo_area',  function(req, res){
     }
     var new_did_list =  helpers.screen_dids_for_permissions(req, dids)
     for(n in new_did_list){
-        console.log('did',new_did_list[n])
-        console.log('PROJECT_ID_BY_DID[new_did_list[n]]',PROJECT_ID_BY_DID[new_did_list[n]])
-        console.log('PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[new_did_list[n]]]',PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[new_did_list[n]]])
-        project_list[PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[new_did_list[n]]].project] = 1
+        pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[new_did_list[n]]].project
+        //console.log('did',new_did_list[n])
+        //console.log('PROJECT_ID_BY_DID[new_did_list[n]]',PROJECT_ID_BY_DID[new_did_list[n]])
+        //console.log('PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[new_did_list[n]]]',PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[new_did_list[n]]])
+        project_list[pname] = 1
     
     }
     res.send(JSON.stringify(Object.keys(project_list)))

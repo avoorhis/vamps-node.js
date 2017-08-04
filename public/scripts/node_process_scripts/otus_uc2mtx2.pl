@@ -165,9 +165,16 @@ my %similarity_lookup;
 # because reads can map to more than one OTU,
 # we have to map all reads to a single OTU before we can tally by dataset
 # READ UC FILE
+#                 L      Library seed (generated only if a match is found to this seed).
+#                 S      New seed.
+#                 H     Hit, also known as an accept; i.e. a successful match.
+#                 D     Library cluster.
+#                 C     New cluster.
+#                 N     Not matched (a sequence that didn't match library with --libonly specified).
+#                 R     Reject (generated only if --output_rejects is specified).
 while (my $line = <IN>)
 {
-
+    
     #
     # Parse the line
     # 0 = H hit or N nonhit, 3 = pct identity, 8 = read id, 9 = OTU or Chimera name
@@ -178,20 +185,20 @@ while (my $line = <IN>)
     if ($line !~ /^H/ && $line !~ /^N/ && $line !~ /^C/) {next;}
     # Grab the read id and OTU#
     my $read_id='';
-
+    
     my $otu_size = 1;
     my $otu = $line_data[9];
-    if ($line_data[0] eq "N") {
+    if ($line_data[0] eq "N") {    
         $otu = "Unclustered";
         $read_id = $line_data[8];
-        $read_id =~ s/\|.*$//;
+        #$read_id =~ s/\|.*$//;
         $otu_lookup{$read_id} = $otu;
         $similarity_lookup{$read_id} = $line_data[3];
-    } elsif ($line_data[0] eq "H") {
+    } elsif ($line_data[0] eq "H") {   # HIT
         $otu = $line_data[9];
         $otu =~ s/;.*//;
         $read_id = $line_data[8];
-        $read_id =~ s/\|.*$//;
+        #$read_id =~ s/\|.*$//;
         $otu_lookup{$read_id} = $otu;
         $similarity_lookup{$read_id} = $line_data[3];
         
@@ -201,15 +208,7 @@ while (my $line = <IN>)
         $otu =~ s/;.*//;
         $otu_sizes{$otu} = $otu_size;
     }
-    #    $read_id =~ s/^QiimeExactMatch\.//;
-    #$read_id =~ s/\|.*$//;
-    #    if ($otu =~ /Cluster1021/) {warn "$line\n";}
-
-   # my $otu_size = $line_data[9];
-   # $otu_size =~ s/^.*;size=//;
-    #my $similarity = $line_data[3];
-
-
+  
 }
 foreach my $read_id (keys %otu_lookup){
     #print "$read_id\n";
@@ -239,35 +238,6 @@ foreach my $read_id (keys %otu_lookup){
         $best_similarity{$read_id} = $similarity;
     }
 }
-# print "read_id ".$read_id."\n";
-#     # Need to account for parallel mapping of reads to multiple OTUs,
-#     # Map each read to the closest OTU, in case of ties, map it to the purported largest otu
-#     #use Scalar::Util qw(looks_like_number);
-#     if (exists $best_similarity{$read_id})
-#     {
-#         #Argument "*" isn't numeric in numeric gt (>) at /xraid2-2/vampsweb/vamps/apps/uclust2mtx_vamps line 275, <IN> line 38303046.
-#         if ($similarity =~ /^[+-]?\d+$/ ) {  # check for numeric $similarity
-#             if ( $similarity > $best_similarity{$read_id})
-#             {
-#                 $closest_otu{$read_id} = $otu;
-#                 $closest_otu_size{$read_id} = $otu_size;
-#                 $best_similarity{$read_id} = $similarity;
-#             } elsif ($similarity == $best_similarity{$read_id}) {
-#                 if ($otu_size > $closest_otu_size{$read_id})
-#                 {
-#                     $closest_otu{$read_id} = $otu;
-#                     $closest_otu_size{$read_id} = $otu_size;
-#                 }
-#             }
-#         }
-#     } else {
-#         $closest_otu{$read_id} = $otu;
-#         $closest_otu_size{$read_id} = $otu_size;
-#         $best_similarity{$read_id} = $similarity;
-#     }
-# 
-# 
-# }
 
 #
 # Close the files, release the hashes
@@ -277,6 +247,7 @@ undef %best_similarity; #not needed anymore, can be quite large
 undef %closest_otu_size;
 
 my @pjdsid;
+my @tmp;
 my $project_dataset;
 my %dataset_names;
 #print "In uclust2mtx_vamps\n";
@@ -285,18 +256,20 @@ my %dataset_names;
 # Tally the OTU Counts by Dataset
 #
 #######################################
+
 foreach my $read_id (keys %closest_otu)
 {
     my $otu = $closest_otu{$read_id};
 
-
+    #print "readid $read_id\n";
     #
     # look up project and dataset for each read
     #  NO: get the project and dataset FROM the read_id
 
     if($read_id){
-        @pjdsid = split(/--/,$read_id);
-
+        @tmp = split(/\|/,$read_id);
+        #print "tmp @tmp\n";
+        @pjdsid = split(/--/,$tmp[1]);
         $project_dataset = $pjdsid[0] . "--" . $pjdsid[1];
 
         $otu_counts{$otu}{total}++;
@@ -316,13 +289,10 @@ if ($verbose) {exit;}
 
 # Print out the header
 print join("\t", "Cluster ID", sort keys %dataset_names) . "\n";
+my $count=1;
 foreach my $o (sort keys %otu_counts)
 {
-
-    #my $count_of_datasets = (scalar keys %{$otu_counts{$o}} ) - 1;
-
-    #print join("\t", $o, $otu_counts{$o}{total}, $count_of_datasets);
-    print $o;
+    print "OTU$count";
 
     foreach my $pd (sort keys %dataset_names)
     {
@@ -334,9 +304,8 @@ foreach my $o (sort keys %otu_counts)
         }
     }
     print "\n";
+    $count++;
 
-
-    #print join("\t", $o, $otu_counts{$o}{total}, $count_of_datasets);
 }
 
 # print 'Cluster9953 '.$otu_tcount{'Cluster9953'};

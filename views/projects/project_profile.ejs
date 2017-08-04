@@ -7,7 +7,7 @@
 <% var reveal_all = false %>
 <% var edit_metadata = false %>
 <!-- Public OR User Permission OR Admin OR MBL Power User -->
-<% if(data.public || data.permissions.indexOf(user.user_id) != -1 || user.security_level <= 10){ %>
+<% if(data.public || data.permissions.indexOf(user.user_id) != -1 || user.security_level <= 10 || (user.security_level == 45 && (data.project).substring(0,3) == 'DCO')  ){ %>
 <%  reveal_all = true %>
 <% } %>
 <!-- DCO only - AND (owner or admin) can see/edit ALSO MBL power users (Mitch) and DCO_metadata_editors(45)-->

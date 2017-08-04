@@ -1,15 +1,15 @@
 
 selection_btn_visuals = document.getElementById('selection_btn_visuals') || null;
-var clear_filters_btn_id = document.getElementById('clear_filters_btn_id');
-if (typeof clear_filters_btn_id !== 'undefined') {
+var clear_filters_btn_id = document.getElementById('clear_filters_btn_id') || null;
+if (clear_filters_btn_id !== null) {
   clear_filters_btn_id.addEventListener('click', function () {
       clear_filters();
   });
 }
 
 
-var target_select = document.getElementById('target_select');
-if (typeof target_select !== 'undefined') {
+var target_select = document.getElementById('target_select') || null;
+if (target_select !== null) {
   target_select.addEventListener('change', function () {
       filter_by_target()
   });
