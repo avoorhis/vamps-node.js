@@ -1140,8 +1140,8 @@ function fill_out_arr_doubles(value, repeat_times) {
 
 function make_metadata_object(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
-  // console.log("GGG info");
-  // console.log(info);
+  console.log("GGG info");
+  console.log(info);
 
   var all_metadata = {};
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
