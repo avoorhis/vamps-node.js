@@ -692,8 +692,8 @@ constants.DNA_QUANTITATION_OPTIONS = ["Please choose one",
   // "subterrestrial",
 
 constants.BIOME_PRIMARY = ["Please choose one",
-  "marine",
-  "terrestrial"];
+  "marine biome",
+  "terrestrial biome"];
 
 constants.FEATURE_PRIMARY = ["Please choose one",
   "aquifer",
