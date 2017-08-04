@@ -28,7 +28,7 @@
 	
 <div style='width:70%;height:500px;overflow:auto'>
 <table border='1' class='admin_table table sortable'>
-		<tr><thead><th>Last, First (userID)<small>(sortable)</small></th><th>Username <small>(sortable)</small></th><th data-defaultsort='disabled'>User Status</th><th data-defaultsort='disabled'></th><th data-defaultsort='disabled'>Msg</th></thead></tr>
+		<tr><thead><th>Last, First (userID)<small>(sortable)</small></th><th>Username <small>(sortable)</small></th><th data-defaultsort='disabled'>User Status</th><th data-defaultsort='disabled'>Inactivate</th><th data-defaultsort='disabled'></th><th data-defaultsort='disabled'>Msg</th></thead></tr>
 		<tbody>
 		<% for(i in uinfo) { %>
 		
@@ -40,12 +40,32 @@
 
 		<% 		if(uinfo[i].status === 1) { %>
 							<input checked type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='1'> Admin&nbsp;&nbsp;
-							<input         type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='50'> Unprivileged
+							<input      type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='10'> MBL Power User&nbsp;&nbsp;
+							<br><input  type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='45'> DCO Editor&nbsp;&nbsp;
+							<input      type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='50'> Unprivileged
+		<% 		}else if(uinfo[i].status === 10){ %>
+							<input      type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='1'> Admin&nbsp;&nbsp;
+							<input  checked type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='10'> MBL Power User&nbsp;&nbsp;
+							<br><input  type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='45'> DCO Editor&nbsp;&nbsp;
+							<input      type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='50'> Unprivileged
+		<% 		}else if(uinfo[i].status === 45){ %>
+							<input      type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='1'> Admin&nbsp;&nbsp;
+							<input      type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='10'> MBL Power User&nbsp;&nbsp;
+							<br><input  checked type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='45'> DCO Editor&nbsp;&nbsp;
+							<input      type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='50'> Unprivileged
 		<% 		}else{ %>
-							<input         type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='1'> Admin&nbsp;&nbsp;
+							<input      type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='1'> Admin&nbsp;&nbsp;
+							<input      type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='10'> MBL Power User&nbsp;&nbsp;
+							<br><input  type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='45'> DCO Editor&nbsp;&nbsp;
 							<input checked type='radio' name='admin_radio_<%= uinfo[i].uid %>' value='50'> Unprivileged
 		<% 		} %>
 					</td>
+					<td>
+					<center><input type='checkbox' name='inactivate_radio_<%= uinfo[i].uid %>' value='50'></center> 
+					</td>
+					
+					
+					
 					<td>
 						<a href='#' onclick="change_admin('<%= uinfo[i].uid %>')">update</a>
 					</td>

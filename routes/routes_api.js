@@ -32,7 +32,7 @@ router.post('/validate_login', function(req, res){
 router.post('/get_dids_from_project', function(req, res){
     console.log('HERE in routes_api.js --> get_dids_from_project ')
     if( ! req.isAuthenticated() ){
-        res.send('Failed Authentication -- Please login first')
+        res.send(JSON.stringify('Failed Authentication -- Please login first'))
         return
     }
     console.log(req.body)
@@ -44,13 +44,13 @@ router.post('/get_dids_from_project', function(req, res){
       var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
       if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
         console.log('No Datasets Found')
-        res.send('No Datasets Found - (do you have permissions to access this data?)')
+        res.send(JSON.stringify('No Datasets Found - (do you have permissions to access this data?)'))
       }else{
           console.log(new_dataset_ids)
           res.send(JSON.stringify(new_dataset_ids))
       }
     }else{
-      res.send('Project Not Found')
+      res.send(JSON.stringify('Project Not Found'))
     }
 });
 //
@@ -59,7 +59,7 @@ router.post('/get_dids_from_project', function(req, res){
 router.post('/get_metadata_from_project', function(req, res){
     console.log('HERE in routes_api.js --> get_metadata_from_project ')
     if( ! req.isAuthenticated() ){
-        res.send('Failed Authentication -- Please login first')
+        res.send(JSON.stringify('Failed Authentication -- Please login first'))
         return
     }
     //console.log(req.body)
@@ -71,14 +71,14 @@ router.post('/get_metadata_from_project', function(req, res){
       var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
       if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
         console.log('No Datasets Found')
-        res.send('No Datasets Found - (do you have permissions to access this data?)')
+        res.send(JSON.stringify('No Datasets Found - (do you have permissions to access this data?)'))
       }else{
           mdobj = helpers.get_metadata_obj_from_dids(new_dataset_ids)
           
           res.send(JSON.stringify(mdobj))
       }
     }else{
-      res.send('Project Not Found')
+      res.send(JSON.stringify('Project Not Found'))
     }
 });
 //
@@ -87,7 +87,7 @@ router.post('/get_metadata_from_project', function(req, res){
 router.post('/get_project_information', function(req, res){
     console.log('HERE in routes_api.js --> get_project_information ')
     if( ! req.isAuthenticated() ){
-        res.send('Failed Authentication -- Please login first')
+        res.send(JSON.stringify('Failed Authentication -- Please login first'))
         return
     }
     //console.log(req.body)
@@ -99,14 +99,14 @@ router.post('/get_project_information', function(req, res){
       var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
       if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
         console.log('No Datasets Found')
-        res.send('No Datasets Found - (do you have permissions to access this data?)')
+        res.send(JSON.stringify('No Datasets Found - (do you have permissions to access this data?)'))
       }else{
           pjobj = PROJECT_INFORMATION_BY_PNAME[project]
           pjobj.env_package = MD_ENV_PACKAGE[pjobj.env_package_id]          
           res.send(JSON.stringify(pjobj))
       }
     }else{
-      res.send('Project Not Found')
+      res.send(JSON.stringify('Project Not Found'))
     }
 });
 //
@@ -114,11 +114,11 @@ router.post('/get_project_information', function(req, res){
 //
 router.post('/', helpers.isLoggedIn, function(req, res){
     console.log('ERROR in router.post(/')
-    res.send('Function not found')
+    res.send(JSON.stringify('Function not found'))
 })
 router.get('/', helpers.isLoggedIn, function(req, res){
     console.log('ERROR in router.get(/')
-    res.send('Function not found')
+    res.send(('Function not found'))
 })
 //
 // API: CREATE IMAGE
@@ -126,7 +126,7 @@ router.get('/', helpers.isLoggedIn, function(req, res){
 router.post('/create_image',  function(req, res){
   console.log('in API/create_image')
   if( ! req.isAuthenticated() ){
-        res.send('Failed Authentication -- Please login first')
+        res.send(JSON.stringify('Failed Authentication -- Please login first'))
         return
   }
   console.log(req.body)
@@ -149,7 +149,7 @@ router.post('/create_image',  function(req, res){
     console.log("Success: File =",file)
   }else{
     console.log("Error -- Could not find Image or File")
-    res.send("Error -- Could not find Image or File")
+    res.sendJSON.stringify(("Error -- Could not find Image or File"))
     return
   }
   if(image){
@@ -200,7 +200,7 @@ router.post('/create_image',  function(req, res){
 router.post('/find_user_projects',  function(req, res){
     console.log('in find_user_projects')
     if( ! req.isAuthenticated() ){
-        res.send('Failed Authentication -- Please login first')
+        res.send(JSON.stringify('Failed Authentication -- Please login first'))
         return
     }
     console.log(req.body)

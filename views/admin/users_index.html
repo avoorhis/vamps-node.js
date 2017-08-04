@@ -1,6 +1,6 @@
 <% include ../add_ins/begin.ejs %>
 
-  <div class='title center'>User List</div>
+  <div class='title center'>Active User List</div>
   <div class='subtitle'></div>
   <% if (messages.success) { %>
   	<div class="alert_flash_message_success"><%= messages.success %></div>
@@ -10,8 +10,9 @@
   
   <% user_rows = rows %>
   <center>
+  <div style='height:500px;overflow:auto;'>
   <table id='user_list_div' class='sortable' border='1'>
-   <thead><tr><th>user_id</th><th>Name <small>(sortable)</small></th><th>username</th></tr></thead>
+   <thead><tr><th>User ID</th><th>Name <small>(sortable)</small></th><th>Username</th><th>Log in Count</th><th>Last Sign-in</th></tr></thead>
     <tbody>
     <% for (i=0; i < user_rows.length; i++) { %>
       <tr>
@@ -21,11 +22,15 @@
           <button type='submit' class='btn btn-sm btn-link'><%= user_rows[i].last_name %>, <%= user_rows[i].first_name %></button>
         </form>
        </td>
-       <td align='center'><%= user_rows[i].username %></td>
+       <td align='left'>&nbsp;<%= user_rows[i].username %></td>
+       <td align='left'>&nbsp;<%= user_rows[i].sign_in_count %></td>
+       <% // present_date = %>
+       <td nowrap align='left' data-value="<%= Date.parse(user_rows[i].last_sign_in_at) %>">&nbsp;<%= (user_rows[i].last_sign_in_at).toDateString() %></td>
       </tr>
     <% } %>
     </tbody>
   </table>
+  </div>
   </center>
 
 <% include ../add_ins/end.ejs %>

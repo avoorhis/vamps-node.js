@@ -122,7 +122,7 @@ router.get('/admin_status', [helpers.isLoggedIn, helpers.isAdmin], function(req,
     console.log('in admin_status');
   
     user_order = get_name_ordered_users_list()
-    //console.log(user_order)
+    console.log(ALL_USERS_BY_UID)
     res.render('admin/admin_status', {
               title     :'VAMPS Site Administration',
               user: req.user,
@@ -137,25 +137,23 @@ router.post('/admin_update', [helpers.isLoggedIn, helpers.isAdmin], function(req
    console.log('in admin_update');
    //console.log(ALL_USERS_BY_UID);
    //console.log(PROJECT_INFORMATION_BY_PID);
-   selected_uid = req.body.uid ;
+   var selected_uid = req.body.uid ;
    new_status = parseInt(req.body.status);
    //console.log(selected_pid,' ',new_public)
-   response = 'no'
+   var response = 'no'
    if(new_status !== ALL_USERS_BY_UID[selected_uid].status){
       q = queries.alter_security_level(new_status, selected_uid)  //"UPDATE user set security_level='"+new_status+"' WHERE user_id='"+selected_uid+"'";
 
-      if(new_status === 1){     // Admin user
-            ALL_USERS_BY_UID[selected_uid].status = 1;
+      if(new_status === 1){   
+            ALL_USERS_BY_UID[selected_uid].status = 1;  // Admin
       }else if(new_status === 10){
             ALL_USERS_BY_UID[selected_uid].status = 10;  // MBL user
+      }else if(new_status === 45){
+            ALL_USERS_BY_UID[selected_uid].status = 45;  // DCO Editor
       }else{
-            // give owner sole permissions
-            ALL_USERS_BY_UID[selected_uid].status = 50;
-            //ALL_USERS_BY_UID[selected_uid].permissions = [ALL_USERS_BY_UID[selected_uid].oid];
-            
+            ALL_USERS_BY_UID[selected_uid].status = 50; // Lowly User
       }
       connection.query(q, function(err, rows, fields){
-            //console.log(qSequenceCounts)
                 if (err)  {
                   console.log('Query error: ' + err);
                   response = 'Query error: ' + err;
@@ -171,13 +169,13 @@ router.post('/admin_update', [helpers.isLoggedIn, helpers.isAdmin], function(req
 router.post('/show_user_info', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
 
   console.log('in show_user_info');
-  selected_uid = req.body.uid;
+  var selected_uid = req.body.uid;
       if(selected_uid in ALL_USERS_BY_UID){
         info = ALL_USERS_BY_UID[selected_uid];
       }else{
 
       }
-      html = '<hr>';
+      var html = '<hr>';
       html += '<table>';
       html += '<tr>';
       html += '<td>Last</td><td>'+info.last_name+'</td>';
@@ -208,9 +206,9 @@ router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], function(re
      //ERROR
      return
     }else{
-    var pid = url_parts.query.pid;
+        var pid = url_parts.query.pid;
     }
-
+    var myjson;
     ALL_DATASETS.projects.forEach(function(prj) {
       if(prj.pid == pid){
         myjson = prj;
@@ -240,13 +238,13 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req
    var pid;
 
    if(url_parts.query.pid === undefined){
-    proj_to_open = 0;
+    var proj_to_open = 0;
    }else{
-    proj_to_open = PROJECT_INFORMATION_BY_PID[url_parts.query.pid];
+    var proj_to_open = PROJECT_INFORMATION_BY_PID[url_parts.query.pid];
    }
    console.log(PROJECT_INFORMATION_BY_PID);
    console.log(ALL_USERS_BY_UID);
-   project_list = get_name_ordered_projects_list()
+   var project_list = get_name_ordered_projects_list()
    res.render('admin/alter_project', {
               title       : 'VAMPS Site Administration',
               user        : req.user,
@@ -265,13 +263,13 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
     console.log('in show_user_info');
     //console.log(PROJECT_INFORMATION_BY_PID);
 
-    selected_pid = req.body.pid;
+    var selected_pid = req.body.pid;
       if(selected_pid in PROJECT_INFORMATION_BY_PID){
         info = PROJECT_INFORMATION_BY_PID[selected_pid];
       }else{
 
       }
-      html = '';
+      var html = '';
 
       html += "<table class='admin_table' border='1'>";
 
@@ -474,8 +472,8 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], funct
 router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
 
       console.log('in grant_access');
-      selected_uid = req.body.uid;
-      selected_pid = req.body.pid;
+      var selected_uid = req.body.uid;
+      var selected_pid = req.body.pid;
       var html = 'Successfully Updated';
       // 1-add to PROJECT_INFORMATION_BY_PID[selected_pid]
 
@@ -523,7 +521,7 @@ router.get('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function(r
     // set active to 0 in user table
     // results on login attempt:  That account is inactive -- send email to vamps.mbl.edu to request re-activation.
     // also delete from ALL_USERS_BY_UID
-    user_order = get_name_ordered_users_list()
+    var user_order = get_name_ordered_users_list()
     res.render('admin/inactivate_user', {
               title     :'VAMPS Inactivate User',
               user: req.user,
@@ -536,34 +534,34 @@ router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function(
     // set active to 0 in user table
     // results on login attempt:  That account is inactive -- send email to vamps.mbl.edu to request re-activation.
     // also delete from ALL_USERS_BY_UID
-    uid_to_delete = req.body.user_id;
-            
-    var finish = function(){
-      res.render('admin/inactivate_user', {
-              title     :'VAMPS Inactivate User',
-              user: req.user,
-              user_info: JSON.stringify(ALL_USERS_BY_UID),
-              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
-            });
-
-    };
+    var uid_to_delete = req.body.uid;
+    var response;        
+    // var finish = function(){
+//       res.render('admin/inactivate_user', {
+//               title     :'VAMPS Inactivate User',
+//               user: req.user,
+//               user_info: JSON.stringify(ALL_USERS_BY_UID),
+//               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+//             });
+// 
+//     };
     if(uid_to_delete == 0){
-        req.flash('fail', 'FAILED: Got a UID of zero!');
+        res.send('FAILED: Got a UID of zero!');
     }else if(uid_to_delete == req.user.user_id){ 
-        req.flash('fail', 'FAILED: You cannot inactivate yourself!');
+        res.send('FAILED: You cannot inactivate yourself!');
     }else{       
         delete ALL_USERS_BY_UID[uid_to_delete]
         req.db.query(queries.inactivate_user(uid_to_delete), function(err, rows){
           if (err) {
-              req.flash('fail', 'FAILED: sql error '+err);
+              response = 'FAILED: sql error '+err
           }else{
-              req.flash('success', 'Inactivate Success ( uid: '+uid+' )');
+              response = 'Inactivate Success ( uid: '+uid_to_delete+' )'
           }
-            finish();
+            res.send(response);
         });
         return;
     }
-    finish();
+    
 });
 //
 //
@@ -690,7 +688,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
 //
 router.get('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
     console.log('in reset_user_password');
-    user_order = get_name_ordered_users_list()
+    var user_order = get_name_ordered_users_list()
     res.render('admin/new_password', {
               title     :'VAMPS Reset User Password',
               user: req.user,
@@ -750,15 +748,15 @@ router.get('/update_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
 router.post('/show_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
   console.log('In POST show_metadata');
   console.log(req.body)
-  pid = req.body.pid
+  var pid = req.body.pid
   //console.log(pid)
   //console.log(PROJECT_INFORMATION_BY_PID[pid].project)
-  html_json = {};
+  var html_json = {};
   html_json.data = {};
-  req_metadata = req.CONSTS.REQ_METADATA_FIELDS
+  var req_metadata = req.CONSTS.REQ_METADATA_FIELDS
 
-  mdata = {}
-  dids = DATASET_IDS_BY_PID[pid]
+  var mdata = {}
+  var dids = DATASET_IDS_BY_PID[pid]
   for(n in dids){
     mdata[dids[n]] = AllMetadata[dids[n]]
   }
@@ -829,8 +827,8 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
   var filename = req.body.filename
   var file_path = path.join(process.env.PWD,'tmp',filename)
   var dids = DATASET_IDS_BY_PID[selected_pid]
-  new_required_metadata = {}
-  new_custom_metadata = {}
+  var new_required_metadata = {}
+  var new_custom_metadata = {}
   mdata = {}
   for(name in req.body){
     //console.log('name in req.body '+name)
@@ -1435,6 +1433,53 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   }
 
 });
+//
+//
+//
+router.get('/users_index', helpers.isLoggedIn, function(req, res) {
+    
+	console.log('in indexusers')
+	console.log(req.user)	
+	var rows = []
+    if(req.user.security_level <= 10){
+        // for(uid in ALL_USERS_BY_UID){
+// 	        rows.push({uid:uid,fullname:ALL_USERS_BY_UID[uid].last_name+', '+ALL_USERS_BY_UID[uid].first_name,username:ALL_USERS_BY_UID[uid].username})
+// 	    }
+// 	    rows.sort(function(a, b){
+// 	        return helpers.compareStrings_alpha(a.fullname, b.fullname);
+// 	    });
+		var qSelect = "SELECT * from user where active='1'";
+	    var collection = req.db.query(qSelect, function (err, rows, fields){
+	      if (err)  {
+  			    msg = 'ERROR Message '+err;
+  			    helpers.render_error_page(req,res,msg);
+		   } else {
+              rows.sort(function(a, b){
+                // sort by last name
+                return helpers.compareStrings_alpha(a.last_name, b.last_name);
+              });
+console.log((new Date(rows[0].last_sign_in_at)).getFullYear())
+              res.render('admin/users_index', { 
+                  title: 'VAMPS:users', 
+                  rows : rows, 
+                  user: req.user,hostname: req.CONFIG.hostname  
+			  });
+
+ 		   } // end else
+ 	    });
+	}else{
+	    req.flash('fail', 'Permission Denied')
+        res.render('denied', { 
+                title: 'VAMPS:users', 
+                user: req.user,
+                hostname: req.CONFIG.hostname,
+		    });
+
+          
+	}
+
+});
+
 
 //
 //
