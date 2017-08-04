@@ -187,7 +187,7 @@ function bindInfoWindow(marker, map, infowindow, html) {
 //   });
 
 var biome_seq_options = {
-    "marine": ["none",
+    "marine biome": ["none",
         "abyssal zone",
         "bathyal",
         "benthic",
@@ -203,7 +203,7 @@ var biome_seq_options = {
         "subseafloor"
     ],
 
-    "terrestrial": ["none",
+    "terrestrial biome": ["none",
         "desert",
         "endolithic",
         "forest",
