@@ -319,7 +319,7 @@ var biome_seq_options = {
       "mineral deposit",
       "mineral spring"],
 
-  "vent": ["none",
+  "hydrothermal vent": ["none",
       "black smoker",
       "marine hydrothermal plume",
       "marine hydrothermal vent",
