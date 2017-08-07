@@ -231,7 +231,11 @@ function afterCall(){
 //   substring for project name filter
 //  FILTER #1
 //
-function showLiveProjectNames(str) {
+function showLiveProjectNames(e,str) {
+  if(e.shiftKey){
+    // fixes problem with double projects when 'shift' 'undescore' is typed
+    return
+  }
   var filtering = 1;
   var datasets_local = {};
   if (str.length==0) {
