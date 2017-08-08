@@ -890,10 +890,41 @@ CopyColumn = function() {
   });
 };
 
+//var lastScrollLeft = 0;
+// $(window).scroll(function() {
+//   var documentScrollLeft = $(document).scrollLeft();
+//   if (lastScrollLeft != documentScrollLeft) {
+//     console.log('scroll x');
+//     lastScrollLeft = documentScrollLeft;
+//   }
+// });
+
+// jQuery(document).on('scroll', function() {
+//   if(jQuery(this).scrollLeft() >= 500) {
+//     mysuperduperfunction();
+//   }});
+
+
+
+
 showDatasets = function() {
   $('#table_div').on('scroll', function () {
-    $('#table_div_header').scrollTop($(this).scrollTop());
+    // alert($('#table_div').scrollLeft());
+    $('#table_div_header').scrollLeft($('#table_div').scrollLeft());
+
+
   });
+  // $('#table_div_header').on('scroll', function () {
+    // alert($(this).scrollLeft(300));
+  // });
+  // $('#table_div_header').scrollLeft(300);
+  //   $('#table_div_header').scrollLeft($('#table_div').scrollLeft());
+  // $('#table_div_header').scrollLeft(300);
+
+  // $('#table_div').on('scroll', function () {
+  //   alert($(this).scrollTop());
+  //   $('#table_div_header').scrollTop($(this).scrollTop());
+  // });
 };
   // var counter = 0;
 
@@ -942,11 +973,11 @@ showDatasets = function() {
 // ---
 
 $(document).ready(function(){
+  showDatasets();
   addCopyBtns();
   CopyColumn();
   addCopyFirst();
   copyFirst();
   fnAdjustTable();
-  showDatasets();
 
 });
