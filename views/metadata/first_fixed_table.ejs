@@ -9,14 +9,10 @@
             <div id="table_div_header" >
                 <table id="dataset_headers" >
                     <tbody>
-
-                    <!-- cellspacing="0" cellpadding="0" border="1"  onscroll="fnScroll()"-->
                     <tr>
                         <% for (var idx in all_metadata[pid]["dataset"]) { %>
                             <td ><div class="header_td"><%= all_metadata[pid]["dataset"][idx]%></div></td>
                         <% } %>
-                        <!--<td><div class="tableHeader short"></div></td>-->
-                        <!--<td><div class="tableHeader short"></div></td>-->
                     </tr>
                     </tbody>
 
@@ -51,7 +47,6 @@
             </div>
         </td>
         <td valign="top">
-            <!--<div id="table_div" onscroll="fnScroll()" >-->
             <div id="table_div">
 
             <table id="fixed_table_base" >
