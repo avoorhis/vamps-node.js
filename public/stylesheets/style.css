@@ -428,7 +428,7 @@ td.left_justify {
     border: 1px;
 }
 
-#first_col_table td, #fixed_table_base td {
+#first_col_table td, #fixed_table_base td, #firstTd {
     min-height: 0.3em;
     height: 2.8em;
     white-space: nowrap;
@@ -439,19 +439,12 @@ td.left_justify {
 
 #firstTd {
     font-weight: bold;
+    border-bottom-style: dashed;
+    vertical-align: top;
+    color: #C0C0C0;
 }
 
-/*#dataset_headers td*/
-/*{*/
-    /*background-color: #00B7FF;*/
-    /*border: 1px;*/
-    /*border-color: black;*/
-    /*border-style: solid;*/
-    /*min-height: 0.3em;*/
-    /*height: 2.8em;*/
-/*}*/
-
-.header_td {
+.header_th_div {
     width: 25.43em;
     /*!important;*/
     /*white-space: nowrap;*/
@@ -462,6 +455,12 @@ td.left_justify {
     min-height: 0.3em;
     height: 2.8em;
     padding-left: 4px;
+    border-bottom-style: dashed;
+
+}
+
+.header_th {
+    color: #A9A9A9;
 }
 
 
