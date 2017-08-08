@@ -562,7 +562,7 @@ constants.ORDERED_METADATA_NAMES = [
   ["resistivity","Resistivity","", "ohm-meter"],
   ["salinity","Salinity","", "PSS-78"],
   //It is measured in unit of PSU (Practical Salinity Unit), which is a unit based on the properties of sea water conductivity. It is equivalent to per thousand or (o/00) or to  g/kg.
-  ["pressure","Pressure","", "decibar"],
+  ["pressure","Pressure","", "bar"],
   ["redox_state","Redox state","", ""],
   ["redox_potential","Redox potential","", "millivolt"],
   ["diss_oxygen","Dissolved oxygen","", "µmol/kg"],

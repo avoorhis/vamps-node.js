@@ -6,12 +6,21 @@
         <td id="firstTd">
         </td>
         <td>
-            <div id="divHeader" style="overflow:hidden; width: 30em; ">
-                <!--<table cellspacing="0" cellpadding="0" border="1" >-->
-                    <!--<tr>-->
-                        <!--<td ><div class="tableHeader">Title1</div></td><td><div class="tableHeader">Title2</div></td><td><div class="tableHeader">Title3</div></td><td><div class="tableHeader">Title4</div></td><td><div class="tableHeader">Title5</div></td>-->
-                    <!--</tr>-->
-                <!--</table>-->
+            <div id="divHeader" >
+                <table id="dataset_headers" >
+                    <tbody>
+
+                    <!-- cellspacing="0" cellpadding="0" border="1"  onscroll="fnScroll()"-->
+                    <tr>
+                        <% for (var idx in all_metadata[pid]["dataset"]) { %>
+                            <td ><div class="tableHeader short"><%= all_metadata[pid]["dataset"][idx]%></div></td>
+                        <% } %>
+                        <!--<td><div class="tableHeader short"></div></td>-->
+                        <!--<td><div class="tableHeader short"></div></td>-->
+                    </tr>
+                    </tbody>
+
+                </table>
             </div>
         </td>
     </tr>

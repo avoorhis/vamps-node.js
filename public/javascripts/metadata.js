@@ -891,57 +891,65 @@ CopyColumn = function() {
 };
 
 showDatasets = function() {
+  $('#table_div').on('scroll', function () {
+    alert("SCROLL");
+    // $(this).find('tr').css('background-color','blue');
+
+    // $('#dataset_headers').scrollTop($(this).scrollTop());
+  });
+};
   // var counter = 0;
 
-  //get first column block
-  // var first_column_block = $('table#first_col_table td.header_divider:first');
-  // var first_column_block_clone = first_column_block.clone();
-  // first_column_block_clone.width(first_column_block.width());
-  // $(".NewHeader").append(first_column_block);
-  // $(first_column_block_clone).children().text('');
-  // $(first_column_block_clone).css('display', 'inline-block');
-  var first_column_block = $( "<td></td>" ).css('display', 'inline-block');
-  first_column_block.width($('table#first_col_table').width() + 22);
-
-  var target = $('table#fixed_table_base').find('input[name=dataset]').parent().parent();
-  var target_children = target.children();
-
-  var clone = target.clone();
-
-  clone.children().width(function(i,val) {
-    return target_children.eq(i).width();
-  });
-
-  $(first_column_block).prependTo(clone);
-
-
-  $(".NewHeader").append(clone);
-  // $('table#NewHeader')
-
-  // .appendTo('body');
-
-
-  // $('table#fixed_table_base').find('input[name=dataset]').parent().find('div').each(function() {
-  //   $current_dataset = $(this).text();
-  //
-  //   var $width1 = $('table#fixed_table_base').find('.header_divider').width();
-  //   // alert($width1);
-  //   var $width = $('table#fixed_table_base tr:last td:eq(' + counter + ')').width();
-  //   $(".NewHeader tr").after("<td class='datasets'>" + $current_dataset + "</td>");
-  //     // .append($current_dataset);
-  //   // this.width = width;
-  //   counter++;
-  //
-  // });
-};
+//   //get first column block
+//   // var first_column_block = $('table#first_col_table td.header_divider:first');
+//   // var first_column_block_clone = first_column_block.clone();
+//   // first_column_block_clone.width(first_column_block.width());
+//   // $(".NewHeader").append(first_column_block);
+//   // $(first_column_block_clone).children().text('');
+//   // $(first_column_block_clone).css('display', 'inline-block');
+//   var first_column_block = $( "<td></td>" ).css('display', 'inline-block');
+//   first_column_block.width($('table#first_col_table').width() + 22);
+//
+//   var target = $('table#fixed_table_base').find('input[name=dataset]').parent().parent();
+//   var target_children = target.children();
+//
+//   var clone = target.clone();
+//
+//   clone.children().width(function(i,val) {
+//     return target_children.eq(i).width();
+//   });
+//
+//   $(first_column_block).prependTo(clone);
+//
+//
+//   $(".NewHeader").append(clone);
+//   // $('table#NewHeader')
+//
+//   // .appendTo('body');
+//
+//
+//   // $('table#fixed_table_base').find('input[name=dataset]').parent().find('div').each(function() {
+//   //   $current_dataset = $(this).text();
+//   //
+//   //   var $width1 = $('table#fixed_table_base').find('.header_divider').width();
+//   //   // alert($width1);
+//   //   var $width = $('table#fixed_table_base tr:last td:eq(' + counter + ')').width();
+//   //   $(".NewHeader tr").after("<td class='datasets'>" + $current_dataset + "</td>");
+//   //     // .append($current_dataset);
+//   //   // this.width = width;
+//   //   counter++;
+//   //
+//   // });
+// };
 
 // ---
 
 $(document).ready(function(){
-  showDatasets();
   addCopyBtns();
   CopyColumn();
   addCopyFirst();
   copyFirst();
   fnAdjustTable();
+  showDatasets();
+
 });

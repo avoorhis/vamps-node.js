@@ -406,7 +406,7 @@ td.left_justify {
     position: relative;
 }
 
-#fixed_table_base {
+#fixed_table_base, #dataset_header {
     /*width: 800px;*/
     width: 70%;
     max-width: 200ex;
@@ -416,13 +416,17 @@ td.left_justify {
     border: 1px;
 }
 
-#first_col_table td, #fixed_table_base td {
+#first_col_table td, #fixed_table_base td, #dataset_headers td {
     min-height: 0.3em;
     height: 2.8em;
     white-space: nowrap;
     border: 1px;
     border-color: black;
     border-style: solid;
+}
+
+#divHeader {
+    overflow : hidden;
 }
 
 /*#fixed_table_base select {*/
@@ -448,7 +452,12 @@ td.left_justify {
 /*    background: lightgrey none repeat scroll 0 0;*/
 }
 
-.short {
+/*#divHeader {*/
+    /*overflow:hidden;*/
+    /*width: 30em*/
+/*}*/
+
+.short, .tableHeader {
     width: 25em;
     white-space: nowrap;
     overflow: hidden;
@@ -457,6 +466,11 @@ td.left_justify {
 
 .short:hover {
     width : initial;
+}
+
+#dataset_headers td
+{
+    width: 30em;
 }
 
 
@@ -550,3 +564,4 @@ td.left_justify {
 .highlighter td {
     empty-cells: show;
 }
+
