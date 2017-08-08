@@ -406,7 +406,16 @@ td.left_justify {
     position: relative;
 }
 
-#fixed_table_base, #dataset_header {
+#table_div_header {
+    overflow: scroll;
+    width: 60%;
+    max-width: 200ex;
+    /*width: 700px;*/
+    /*height: 820px;*/
+    position: relative;
+}
+
+#fixed_table_base, #dataset_headers {
     /*width: 800px;*/
     width: 70%;
     max-width: 200ex;
@@ -416,7 +425,7 @@ td.left_justify {
     border: 1px;
 }
 
-#first_col_table td, #fixed_table_base td, #dataset_headers td {
+#first_col_table td, #fixed_table_base td {
     min-height: 0.3em;
     height: 2.8em;
     white-space: nowrap;
@@ -425,9 +434,33 @@ td.left_justify {
     border-style: solid;
 }
 
-#divHeader {
-    overflow : hidden;
+/*#dataset_headers td*/
+/*{*/
+    /*background-color: #00B7FF;*/
+    /*border: 1px;*/
+    /*border-color: black;*/
+    /*border-style: solid;*/
+    /*min-height: 0.3em;*/
+    /*height: 2.8em;*/
+/*}*/
+
+.normal_td {
+    width: 25.5em;
+    /*!important;*/
+    white-space: nowrap;
+    overflow: hidden;
+    border: 1px;
+    border-color: black;
+    border-style: solid;
+    min-height: 0.3em;
+    height: 2.8em;
 }
+
+
+/*#divHeader {*/
+    /*overflow:hidden;*/
+    /*width: 70%*/
+/*}*/
 
 /*#fixed_table_base select {*/
     /*border: 1px solid #ccc;*/
@@ -452,12 +485,9 @@ td.left_justify {
 /*    background: lightgrey none repeat scroll 0 0;*/
 }
 
-/*#divHeader {*/
-    /*overflow:hidden;*/
-    /*width: 30em*/
-/*}*/
 
-.short, .tableHeader {
+
+.short {
     width: 25em;
     white-space: nowrap;
     overflow: hidden;
@@ -467,12 +497,6 @@ td.left_justify {
 .short:hover {
     width : initial;
 }
-
-#dataset_headers td
-{
-    width: 30em;
-}
-
 
 .textarea_long {
     width: 30em;

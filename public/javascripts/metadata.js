@@ -892,10 +892,7 @@ CopyColumn = function() {
 
 showDatasets = function() {
   $('#table_div').on('scroll', function () {
-    alert("SCROLL");
-    // $(this).find('tr').css('background-color','blue');
-
-    // $('#dataset_headers').scrollTop($(this).scrollTop());
+    $('#table_div_header').scrollTop($(this).scrollTop());
   });
 };
   // var counter = 0;

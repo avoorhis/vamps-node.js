@@ -6,14 +6,14 @@
         <td id="firstTd">
         </td>
         <td>
-            <div id="divHeader" >
+            <div id="table_div_header" >
                 <table id="dataset_headers" >
                     <tbody>
 
                     <!-- cellspacing="0" cellpadding="0" border="1"  onscroll="fnScroll()"-->
                     <tr>
                         <% for (var idx in all_metadata[pid]["dataset"]) { %>
-                            <td ><div class="tableHeader short"><%= all_metadata[pid]["dataset"][idx]%></div></td>
+                            <td ><div class="normal_td"><%= all_metadata[pid]["dataset"][idx]%></div></td>
                         <% } %>
                         <!--<td><div class="tableHeader short"></div></td>-->
                         <!--<td><div class="tableHeader short"></div></td>-->
