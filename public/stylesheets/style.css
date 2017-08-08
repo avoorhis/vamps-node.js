@@ -410,7 +410,8 @@ td.left_justify {
     /*overflow: scroll;*/
     overflow: hidden;
 
-    width: 60%;
+    width: 59%;
+            /*60%;*/
     max-width: 200ex;
     /*width: 700px;*/
     /*height: 820px;*/
