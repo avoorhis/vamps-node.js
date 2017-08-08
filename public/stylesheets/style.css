@@ -437,6 +437,10 @@ td.left_justify {
     border-style: solid;
 }
 
+#firstTd {
+    font-weight: bold;
+}
+
 /*#dataset_headers td*/
 /*{*/
     /*background-color: #00B7FF;*/
