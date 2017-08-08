@@ -407,7 +407,9 @@ td.left_justify {
 }
 
 #table_div_header {
-    overflow: scroll;
+    /*overflow: scroll;*/
+    overflow: hidden;
+
     width: 60%;
     max-width: 200ex;
     /*width: 700px;*/

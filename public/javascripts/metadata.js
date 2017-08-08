@@ -892,7 +892,6 @@ CopyColumn = function() {
 
 showDatasets = function() {
   $('#table_div').on('scroll', function () {
-    // alert($('#table_div').scrollLeft());
     $('#table_div_header').scrollLeft($('#table_div').scrollLeft());
   });
 };
