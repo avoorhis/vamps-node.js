@@ -891,8 +891,16 @@ CopyColumn = function() {
 };
 
 showDatasets = function() {
+  $('#table_div_header').hide();
   $('#table_div').on('scroll', function () {
+    if ($('#table_div').scrollTop() > 0) {
+      $('#table_div_header').show();
+    }
     $('#table_div_header').scrollLeft($('#table_div').scrollLeft());
+    if ($('#table_div').scrollTop() === 0) {
+      $('#table_div_header').hide();
+    }
+
   });
 };
 
