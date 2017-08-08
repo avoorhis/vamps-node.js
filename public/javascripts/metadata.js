@@ -890,14 +890,45 @@ CopyColumn = function() {
   });
 };
 
+showDatasets = function() {
+  var counter = 0;
+
+
+  // $(".fixed_table_base th").each(function(){
+  //   var width = $('.MyTable tr:last td:eq(' + counter + ')').width();
+  //   $(".NewHeader tr").append(this);
+  //   this.width = width;
+  //   counter++;
+  // });
+
+  // $('table#fixed_table_base').find('input[name=dataset]').each(function() {
+  //   $(this).parent().css('background-color','blue');
+  //   $(this).parent().find('div').text('FF');
+  //   // alert(this.value());
+  //
+  // });
+
+  $('table#fixed_table_base').find('input[name=dataset]').parent().find('div').each(function() {
+    $current_dataset = $(this).text();
+
+    var $width1 = $('table#fixed_table_base').find('.header_divider').width();
+    alert($width1);
+    var $width = $('table#fixed_table_base tr:last td:eq(' + counter + ')').width();
+    $(".NewHeader tr").after("<td class='datasets'>" + $current_dataset + "</td>");
+      // .append($current_dataset);
+    // this.width = width;
+    counter++;
+
+  });
+};
 
 // ---
 
 $(document).ready(function(){
+  showDatasets();
   addCopyBtns();
   CopyColumn();
   addCopyFirst();
   copyFirst();
   fnAdjustTable();
-
 });
