@@ -446,16 +446,17 @@ td.left_justify {
     /*height: 2.8em;*/
 /*}*/
 
-.normal_td {
-    width: 25.5em;
+.header_td {
+    width: 25.43em;
     /*!important;*/
-    white-space: nowrap;
+    /*white-space: nowrap;*/
     overflow: hidden;
     border: 1px;
     border-color: black;
     border-style: solid;
     min-height: 0.3em;
     height: 2.8em;
+    padding-left: 4px;
 }
 
 
