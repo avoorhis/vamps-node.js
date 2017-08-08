@@ -890,85 +890,12 @@ CopyColumn = function() {
   });
 };
 
-//var lastScrollLeft = 0;
-// $(window).scroll(function() {
-//   var documentScrollLeft = $(document).scrollLeft();
-//   if (lastScrollLeft != documentScrollLeft) {
-//     console.log('scroll x');
-//     lastScrollLeft = documentScrollLeft;
-//   }
-// });
-
-// jQuery(document).on('scroll', function() {
-//   if(jQuery(this).scrollLeft() >= 500) {
-//     mysuperduperfunction();
-//   }});
-
-
-
-
 showDatasets = function() {
   $('#table_div').on('scroll', function () {
     // alert($('#table_div').scrollLeft());
     $('#table_div_header').scrollLeft($('#table_div').scrollLeft());
-
-
   });
-  // $('#table_div_header').on('scroll', function () {
-    // alert($(this).scrollLeft(300));
-  // });
-  // $('#table_div_header').scrollLeft(300);
-  //   $('#table_div_header').scrollLeft($('#table_div').scrollLeft());
-  // $('#table_div_header').scrollLeft(300);
-
-  // $('#table_div').on('scroll', function () {
-  //   alert($(this).scrollTop());
-  //   $('#table_div_header').scrollTop($(this).scrollTop());
-  // });
 };
-  // var counter = 0;
-
-//   //get first column block
-//   // var first_column_block = $('table#first_col_table td.header_divider:first');
-//   // var first_column_block_clone = first_column_block.clone();
-//   // first_column_block_clone.width(first_column_block.width());
-//   // $(".NewHeader").append(first_column_block);
-//   // $(first_column_block_clone).children().text('');
-//   // $(first_column_block_clone).css('display', 'inline-block');
-//   var first_column_block = $( "<td></td>" ).css('display', 'inline-block');
-//   first_column_block.width($('table#first_col_table').width() + 22);
-//
-//   var target = $('table#fixed_table_base').find('input[name=dataset]').parent().parent();
-//   var target_children = target.children();
-//
-//   var clone = target.clone();
-//
-//   clone.children().width(function(i,val) {
-//     return target_children.eq(i).width();
-//   });
-//
-//   $(first_column_block).prependTo(clone);
-//
-//
-//   $(".NewHeader").append(clone);
-//   // $('table#NewHeader')
-//
-//   // .appendTo('body');
-//
-//
-//   // $('table#fixed_table_base').find('input[name=dataset]').parent().find('div').each(function() {
-//   //   $current_dataset = $(this).text();
-//   //
-//   //   var $width1 = $('table#fixed_table_base').find('.header_divider').width();
-//   //   // alert($width1);
-//   //   var $width = $('table#fixed_table_base tr:last td:eq(' + counter + ')').width();
-//   //   $(".NewHeader tr").after("<td class='datasets'>" + $current_dataset + "</td>");
-//   //     // .append($current_dataset);
-//   //   // this.width = width;
-//   //   counter++;
-//   //
-//   // });
-// };
 
 // ---
 
