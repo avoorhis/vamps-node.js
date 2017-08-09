@@ -781,9 +781,15 @@ function convertArrayOfObjectsToCSV(args) {
     return null;
   }
 
+  console.log("DDD1 data");
+  console.log(data);
   data_arr = array_from_object(data);
 
+  console.log("DDD2 data_arr");
+  console.log(data_arr);
   transposed_data_arr = transpose_2d_arr(data_arr);
+  console.log("DDD3 transposed_data_arr");
+  console.log(transposed_data_arr);
 
   columnDelimiter = args.columnDelimiter || ',';
   lineDelimiter = args.lineDelimiter || '\n';
@@ -801,6 +807,8 @@ function convertArrayOfObjectsToCSV(args) {
     result += lineDelimiter;
   });
 
+  console.log("DDD4 result");
+  console.log(result);
   console.timeEnd("TIME: convertArrayOfObjectsToCSV");
 
   return result;
