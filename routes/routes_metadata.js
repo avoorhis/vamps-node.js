@@ -634,14 +634,9 @@ function make_metadata_object_from_db(req, res) {
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
 
   // get_db_data
-  console.log("MMM1 AllMetadata");
-  console.log(AllMetadata);
-
   console.time("TIME: slice_object");
   var AllMetadata_picked = slice_object(AllMetadata, dataset_ids);
   console.timeEnd("TIME: slice_object");
-  console.log("MMM2 AllMetadata_picked");
-  console.log(AllMetadata_picked);
 
   console.time("TIME: dataset_info");
   // get dataset_info
@@ -655,22 +650,11 @@ function make_metadata_object_from_db(req, res) {
     }
   }
 
-  console.log("FOFO dataset_info");
-  console.log(dataset_info);
-
-
   var dataset_info_by_did = {};
   for (var idx in dataset_info) {
     dataset_info_by_did[dataset_info[idx]["did"]] = dataset_info[idx];
   }
-  console.log("FOFO1 dataset_info_by_did");
-  console.log(dataset_info_by_did);
-
-
   console.timeEnd("TIME: dataset_info");
-
-  console.log("FOFO2 AllMetadata_picked");
-  console.log(AllMetadata_picked);
 
   // add missing info to AllMetadata_picked
   console.time("TIME: add missing info to AllMetadata_picked");
@@ -686,11 +670,24 @@ function make_metadata_object_from_db(req, res) {
 
     AllMetadata_picked[dataset_id]["dataset"] = dataset_info_by_did[dataset_id]["dname"];
     AllMetadata_picked[dataset_id]["dataset_description"] = dataset_info_by_did[dataset_id]["ddesc"];
+
+    AllMetadata_picked[dataset_id]["dataset_id"] = dataset_info_by_did[dataset_id][dataset_id];
+
   }
   console.timeEnd("TIME: add missing info to AllMetadata_picked");
 
+  console.log("AMAM1 AllMetadata_picked");
+  console.log(AllMetadata_picked);
+
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata_picked);
-  data_in_obj_of_arr['dataset_id'] = dataset_ids;
+
+  console.log("AMAM2 data_in_obj_of_arr");
+  console.log(data_in_obj_of_arr);
+
+  // data_in_obj_of_arr['dataset_id'] = dataset_ids;
+  //
+  // console.log("AMAM3 data_in_obj_of_arr w dataset_ids");
+  // console.log(data_in_obj_of_arr);
 
   // add abstract_data
   var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
@@ -705,7 +702,7 @@ function make_metadata_object_from_db(req, res) {
 
   data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 
-  console.log("BBB2 data_in_obj_of_arr (make_metadata_object_from_db)");
+  console.log("AMAM4 data_in_obj_of_arr w project_abstract (make_metadata_object_from_db)");
   console.log(data_in_obj_of_arr);
 
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
