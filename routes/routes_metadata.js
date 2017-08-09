@@ -634,9 +634,14 @@ function make_metadata_object_from_db(req, res) {
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
 
   // get_db_data
+  console.log("MMM1 AllMetadataNames");
+  console.log(AllMetadataNames);
+
   console.time("TIME: slice_object");
   var AllMetadata_picked = slice_object(AllMetadata, dataset_ids);
   console.timeEnd("TIME: slice_object");
+  console.log("MMM1 AllMetadata_picked");
+  console.log(AllMetadata_picked);
 
   console.time("TIME: dataset_info");
   // get dataset_info
