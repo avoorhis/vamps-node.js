@@ -671,7 +671,7 @@ function make_metadata_object_from_db(req, res) {
     AllMetadata_picked[dataset_id]["dataset"] = dataset_info_by_did[dataset_id]["dname"];
     AllMetadata_picked[dataset_id]["dataset_description"] = dataset_info_by_did[dataset_id]["ddesc"];
 
-    AllMetadata_picked[dataset_id]["dataset_id"] = dataset_info_by_did[dataset_id][dataset_id];
+    AllMetadata_picked[dataset_id]["dataset_id"] = dataset_id;
 
   }
   console.timeEnd("TIME: add missing info to AllMetadata_picked");
