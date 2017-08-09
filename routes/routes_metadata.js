@@ -655,11 +655,22 @@ function make_metadata_object_from_db(req, res) {
     }
   }
 
+  console.log("FOFO dataset_info");
+  console.log(dataset_info);
+
+
   var dataset_info_by_did = {};
   for (var idx in dataset_info) {
     dataset_info_by_did[dataset_info[idx]["did"]] = dataset_info[idx];
   }
+  console.log("FOFO1 dataset_info_by_did");
+  console.log(dataset_info_by_did);
+
+
   console.timeEnd("TIME: dataset_info");
+
+  console.log("FOFO2 AllMetadata_picked");
+  console.log(AllMetadata_picked);
 
   // add missing info to AllMetadata_picked
   console.time("TIME: add missing info to AllMetadata_picked");
