@@ -512,18 +512,11 @@ function make_metadata_object_from_form(req, res) {
 
   //collect errors
   var myArray_fail = helpers.unique_array(req.form.errors);
-  console.log("FFF1 myArray_fail");
-  console.log(myArray_fail);
 
-  var is_sample_name_has_duplicates = helpers.has_duplicates(req.form.sample_name);
-  if (is_sample_name_has_duplicates)
+  if (helpers.has_duplicates(req.form.sample_name))
   {
     myArray_fail.push('Sample ID (user sample name) should be unique.');
   }
-
-  console.log("FFF2 myArray_fail");
-  console.log(myArray_fail);
-
 
   myArray_fail.sort();
   req.flash("fail", myArray_fail);
