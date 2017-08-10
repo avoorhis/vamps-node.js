@@ -499,8 +499,8 @@ function make_metadata_object_from_form(req, res) {
 
   // console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
 
-  console.log("BBB req.form (make_metadata_object_from_form)");
-  console.log(req.form);
+  // console.log("BBB req.form (make_metadata_object_from_form)");
+  // console.log(req.form);
 
   var all_metadata = make_metadata_object(req, res, pid, req.form);
 
@@ -564,8 +564,8 @@ function make_metadata_object_from_csv(req, res) {
   var data = parse_sync(file_content, {columns: true, trim: true});
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(data);
 
-  console.log("BBB1 data_in_obj_of_arr (make_metadata_object_from_csv)");
-  console.log(data_in_obj_of_arr);
+  // console.log("BBB1 data_in_obj_of_arr (make_metadata_object_from_csv)");
+  // console.log(data_in_obj_of_arr);
 
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
@@ -670,11 +670,12 @@ function make_metadata_object_from_db(req, res) {
 
     AllMetadata_picked[dataset_id]["dataset"] = dataset_info_by_did[dataset_id]["dname"];
     AllMetadata_picked[dataset_id]["dataset_description"] = dataset_info_by_did[dataset_id]["ddesc"];
+
+    AllMetadata_picked[dataset_id]["dataset_id"] = dataset_id;
   }
   console.timeEnd("TIME: add missing info to AllMetadata_picked");
 
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata_picked);
-  data_in_obj_of_arr['dataset_id'] = dataset_ids;
 
   // add abstract_data
   var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
@@ -689,8 +690,7 @@ function make_metadata_object_from_db(req, res) {
 
   data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 
-  console.log("BBB2 data_in_obj_of_arr (make_metadata_object_from_db)");
-  console.log(data_in_obj_of_arr);
+  // console.log(data_in_obj_of_arr);
 
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
@@ -1140,8 +1140,8 @@ function fill_out_arr_doubles(value, repeat_times) {
 
 function make_metadata_object(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
-  console.log("GGG info");
-  console.log(info);
+  // console.log("GGG info");
+  // console.log(info);
 
   var all_metadata = {};
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
@@ -1164,8 +1164,8 @@ function make_metadata_object(req, res, pid, info) {
   //2) all
   all_metadata[pid] = info;
 
-  console.log("JJJ1 all_metadata[pid]");
-  console.log(all_metadata[pid]);
+  // console.log("JJJ1 all_metadata[pid]");
+  // console.log(all_metadata[pid]);
 
   //3) special
 
@@ -1195,8 +1195,8 @@ function make_metadata_object(req, res, pid, info) {
     }
   }
 
-  console.log("MMM3 all_metadata");
-  console.log(JSON.stringify(all_metadata));
+  // console.log("MMM3 all_metadata");
+  // console.log(JSON.stringify(all_metadata));
 
 
   console.timeEnd("TIME: make_metadata_object");
