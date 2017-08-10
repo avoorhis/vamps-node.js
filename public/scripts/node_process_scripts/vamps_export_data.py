@@ -406,23 +406,26 @@ def run_metadata(args, file_form):
         sql3  = "SELECT * from "+custom_table+"\n "
         #print 'args.dataset_name_collector'
         #print args.dataset_name_collector
-        cursor.execute(sql3)
-        rows = cursor.fetchall()
-        for row in rows:
-            did = row['dataset_id']
-            if did in args.dataset_name_collector:
-                pjds = args.dataset_name_collector[did]
-            else:
-                pjds = 'unknown'
-            #print pjds
-            if str(did) in args.dids:
-                for key in row:
-                    print('key',key)  ## key is mditem
-                    if key != custom_table+'_id':
+        try:
+            cursor.execute(sql3)
+            rows = cursor.fetchall()
+            for row in rows:
+                did = row['dataset_id']
+                if did in args.dataset_name_collector:
+                    pjds = args.dataset_name_collector[did]
+                else:
+                    pjds = 'unknown'
+                #print pjds
+                if str(did) in args.dids:
+                    for key in row:
+                        #print('key',key)  ## key is mditem
+                        if key != custom_table+'_id':
 
-                        #print 'row[key]',row[key]
-                        data[pjds][key]= row[key]
-                        headers_collector[key] = 1
+                            #print 'row[key]',row[key]
+                            data[pjds][key]= row[key]
+                            headers_collector[key] = 1
+        except:
+            print('Could not find/query custom metadata table:',custom_table)
 
     headers_collector_keys = sorted(headers_collector.keys())
     ds_sorted = sorted(data.keys())
@@ -761,13 +764,13 @@ if __name__ == '__main__':
     args.today = str(datetime.date.today())
 
     if args.site == 'vamps':
-        #db_host = 'vampsdb'
-        db_host = 'bpcweb8'
+        db_host = 'vampsdb'
+        #db_host = 'bpcweb8'
         args.NODE_DATABASE = 'vamps2'
         db_home = '/groups/vampsweb/vamps/'
     elif args.site == 'vampsdev':
-        #db_host = 'vampsdev'
-        db_host = 'bpcweb7'
+        db_host = 'vampsdev'
+        #db_host = 'bpcweb7'
         args.NODE_DATABASE = 'vamps2'
         db_home = '/groups/vampsweb/vampsdev/'
     else:
