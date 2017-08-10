@@ -1779,9 +1779,14 @@ module.exports.screen_pids_for_permissions = function(req, pids)
     }
   return new_pid_list
 };
+
 module.exports.unique_array = function(myArray)
 {
   var uSet = new Set(myArray);
   return [...uSet];
 };
 
+module.exports.has_duplicates = function(myArray)
+{
+  return ((parseInt(new Set(myArray).size)) !== parseInt(myArray.length));
+};
