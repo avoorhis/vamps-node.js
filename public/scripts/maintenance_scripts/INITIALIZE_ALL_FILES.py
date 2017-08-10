@@ -340,7 +340,8 @@ def go_metadata():
     for pid in pid_collection:
         table = 'custom_metadata_'+ pid
         fields = ['dataset_id']+pid_collection[pid]
-        q = "SELECT * FROM information_schema.tables WHERE table_schema = 'vamps2' AND table_name = '"+table+"' LIMIT 1;"
+        q = "SELECT * FROM information_schema.tables WHERE table_schema = '"+args.NODE_DATABASE+"' AND table_name = '"+table+"' LIMIT 1;"
+        print(q)
         cur.execute(q)
         if cur.rowcount > 0:
             cust_dquery = "SELECT `" + '`,`'.join(fields) + "` from " + table
@@ -436,7 +437,7 @@ if __name__ == '__main__':
     if args.dbhost == 'vampsdev':
         args.json_file_path = os.path.join('/','groups','vampsweb','vampsdev_node_data','json')
         args.NODE_DATABASE = 'vamps2'
-    elif args.dbhost == 'vampsdb':
+    elif args.dbhost == 'vampsdb' or args.dbhost == 'vamps':
         args.json_file_path = os.path.join('/','groups','vampsweb','vamps_node_data','json')
         args.NODE_DATABASE = 'vamps2'
     if not args.json_file_path:

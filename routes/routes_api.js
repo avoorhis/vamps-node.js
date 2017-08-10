@@ -36,11 +36,11 @@ router.post('/get_dids_from_project', function(req, res){
         return
     }
     console.log(req.body)
-    project = req.body.project
+    var project = req.body.project
     
     if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
-      pid = PROJECT_INFORMATION_BY_PNAME[project].pid
-      dids = DATASET_IDS_BY_PID[pid]
+      var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
+      var dids = DATASET_IDS_BY_PID[pid]
       var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
       if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
         console.log('No Datasets Found')
@@ -63,19 +63,29 @@ router.post('/get_metadata_from_project', function(req, res){
         return
     }
     //console.log(req.body)
-    project = req.body.project
-    
+    var project = req.body.project
+    // if((req.body).hasOwnProperty(return_type) && ['csv','json'].indexOf(req.body.return_type) != -1){
+//         var rtype = req.body.return_type
+//     }else{
+//         var rtype = 'csv'
+//     }
     if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
-      pid = PROJECT_INFORMATION_BY_PNAME[project].pid
-      dids = DATASET_IDS_BY_PID[pid]
+      var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
+      var dids = DATASET_IDS_BY_PID[pid]
       var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
       if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
         console.log('No Datasets Found')
         res.send(JSON.stringify('No Datasets Found - (do you have permissions to access this data?)'))
       }else{
-          mdobj = helpers.get_metadata_obj_from_dids(new_dataset_ids)
+          mdobj = helpers.get_metadata_obj_from_dids(new_dataset_ids)          
+          var item_obj = {}
+          for(did in mdobj){
+            var ds = DATASET_NAME_BY_DID[did]
+            console.log(ds)
+            item_obj[ds] = mdobj[did]
+          }
+          res.send(JSON.stringify(item_obj))
           
-          res.send(JSON.stringify(mdobj))
       }
     }else{
       res.send(JSON.stringify('Project Not Found'))
@@ -91,18 +101,19 @@ router.post('/get_project_information', function(req, res){
         return
     }
     //console.log(req.body)
-    project = req.body.project
+    var project = req.body.project
     
     if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
-      pid = PROJECT_INFORMATION_BY_PNAME[project].pid
-      dids = DATASET_IDS_BY_PID[pid]
+      var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
+      var dids = DATASET_IDS_BY_PID[pid]
       var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
       if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
         console.log('No Datasets Found')
         res.send(JSON.stringify('No Datasets Found - (do you have permissions to access this data?)'))
       }else{
           pjobj = PROJECT_INFORMATION_BY_PNAME[project]
-          pjobj.env_package = MD_ENV_PACKAGE[pjobj.env_package_id]          
+          pjobj.env_package = MD_ENV_PACKAGE[pjobj.env_package_id]  
+          pjobj.owner = ALL_USERS_BY_UID[pjobj.oid]        
           res.send(JSON.stringify(pjobj))
       }
     }else{
@@ -131,13 +142,13 @@ router.post('/create_image',  function(req, res){
   }
   console.log(req.body)
   
-  allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix","metadata_csv",
+  var allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix","metadata_csv",
                 "metadata_table", "fheatmap", "dendrogram01", "dendrogram03","dendrogram",
                 "pcoa", "pcoa3d", "geospatial", "adiversity", "testpie", "phyloseq"
               ]
-  allowed_file_types = ["fasta", "metadata-csv", "metadata-table"]
-  image = false
-  file  = false
+  var allowed_file_types = ["fasta", "metadata-csv", "metadata-table"]
+  var image = false
+  var file  = false
   
   //metadata = get_metadata(JSON.parse(req.body.ds_order))
   
@@ -290,22 +301,78 @@ router.post('/find_projects_in_geo_area',  function(req, res){
     }
     var new_did_list =  helpers.screen_dids_for_permissions(req, dids)
     for(n in new_did_list){
-        pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[new_did_list[n]]].project
+        did = PROJECT_ID_BY_DID[new_did_list[n]]
+        console.log('did',did)
+        pname = PROJECT_INFORMATION_BY_PID[did].project
+        console.log('pname',pname)
         //console.log('did',new_did_list[n])
         //console.log('PROJECT_ID_BY_DID[new_did_list[n]]',PROJECT_ID_BY_DID[new_did_list[n]])
         //console.log('PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[new_did_list[n]]]',PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[new_did_list[n]]])
-        project_list[pname] = 1
+        //project_list[pname] = 1
+        console.log('pname2',str(DatasetsWithLatLong[did].latitude))
+        project_list[pname] = {"latitude":DatasetsWithLatLong[did].latitude, "longitude":DatasetsWithLatLong[did].longitude}
     
     }
-    res.send(JSON.stringify(Object.keys(project_list)))
+    console.log(JSON.stringify(project_list))
+    //res.send(JSON.stringify(Object.keys(project_list)))
+    res.send(JSON.stringify(project_list))
+    
+});
+//
+//  API:: FIND PROJECTS BY METADATA STRING
+//   Finds project/datasets that have a certain metadata item name
+//   
+//
+router.post('/find_projects_by_metadata_str',  function(req, res){
+    console.log('in find_projects_by_metadata_str')
+    if( ! req.isAuthenticated() ){
+        res.send(JSON.stringify('Failed Authentication -- Please login first'))
+        return
+    }
+    console.log(req.body)
+    //console.log(AllMetadata)
+    
+    var str = req.body.substring
+    var return_projects = {};
+    var new_dids = {}
+    for(pid in PROJECT_INFORMATION_BY_PID){
+      
+      var dids = DATASET_IDS_BY_PID[pid]
+      console.log('dids',dids)
+      for(n in dids){
+        var did = dids[n]
+        var mdobj = AllMetadata[did]
+        for(mditem in mdobj){
+           console.log('mditem',mditem,str)
+           if(mditem.includes(str)){
+             console.log('    GOTONE',mditem)
+             new_dids[did] = 1  // lookup
+           }
+        }
+      } 
+    }
+    console.log(Object.keys(new_dids))
+    var new_dataset_ids = helpers.screen_dids_for_permissions(req, Object.keys(new_dids))
+    if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
+         console.log('No Datasets Found')
+         res.send(JSON.stringify('No Datasets Found - (do you have permissions to access this data?)'))
+         return
+    }else{
+        for(n in new_dataset_ids){
+            var pid = PROJECT_ID_BY_DID[new_dataset_ids[n]]
+            var p = PROJECT_INFORMATION_BY_PID[pid].project
+            return_projects[p] = 1
+        }
+    }
+    console.log(return_projects)
+    res.send(JSON.stringify(return_projects))
+    
 });
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-//
-//
-//
+
 function test_piecharts(req, res){
   console.log('In function: api/barcharts')
   var d3 = require('d3');

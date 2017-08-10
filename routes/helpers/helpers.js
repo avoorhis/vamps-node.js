@@ -1721,6 +1721,7 @@ module.exports.required_metadata_names_from_ids = function(selection_obj, name_i
 //
 module.exports.get_metadata_obj_from_dids = function(dids){
     var metadata = {}
+    var mdobj;
     for(n in dids){
         metadata[dids[n]] = {}
         mdobj = AllMetadata[dids[n].toString()]
