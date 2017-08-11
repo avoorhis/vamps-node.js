@@ -512,6 +512,12 @@ function make_metadata_object_from_form(req, res) {
 
   //collect errors
   var myArray_fail = helpers.unique_array(req.form.errors);
+
+  if (helpers.has_duplicates(req.form.sample_name))
+  {
+    myArray_fail.push('Sample ID (user sample name) should be unique.');
+  }
+
   myArray_fail.sort();
   req.flash("fail", myArray_fail);
 
@@ -690,6 +696,7 @@ function make_metadata_object_from_db(req, res) {
 
   data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 
+  // console.log("DDD data_in_obj_of_arr");
   // console.log(data_in_obj_of_arr);
 
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
