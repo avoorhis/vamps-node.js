@@ -879,6 +879,8 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 function saveMetadata(req, res){
   console.time("TIME: saveMetadata");
   make_csv(req, res);
+  res.redirect("/metadata/metadata_file_list");
+
   // editMetadata(req, res);
   // if(!req.form.isValid){
   //   // TODO: remove here, should be after validation only
