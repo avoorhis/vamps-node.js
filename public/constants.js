@@ -67,7 +67,7 @@ constants.UNITSELECT = { units: [
   {id : 'otus',               file: 'unit_selectors/otus.html',                 name : "TODO-OTUs",             subtext: 'SLP'},
   {id : 'med_nodes',          file: 'unit_selectors/med_nodes.html',            name : "TODO-MED Nodes",        subtext: ''}
 ]};
-constants.UNIT_ASSIGNMENT_CHOICES = {
+constants.UNIT_ASSIGNMENT_CHOICES2 = {
   'refRDP_2.12-16S': { taxonomy_curator:'RDP (2.12) 16S-rRNA', method:'RDP',  reference_db:'Default (no training)', availability:'available',     refdb:'2.12' },
   'refRDP_2.12-ITS': { taxonomy_curator:'RDP (2.12) ITS-UNITE', method:'RDP',  reference_db:'Default (no training)', availability:'available',     refdb:'2.12' },
   'refssu':   { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'refssu (full-length)',  availability:'available',     refdb:'refssu' },
@@ -88,8 +88,14 @@ constants.UNIT_ASSIGNMENT_CHOICES = {
   'refv9':    { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Ev9 (Eukaryal)',        availability:'available', refdb:'refv9' },
   'refits1':  { taxonomy_curator:'UNITE', method:'GAST', reference_db:'ITS1',                         availability:'available', refdb:'refits1' },
   'refGG_MAY2013': { taxonomy_curator:'GreenGenes (May2013)', method:'GAST', reference_db:'refssu',        availability:'not available', refdb:'GG_MAY2013' }
-
-
+};
+constants.UNIT_ASSIGNMENT_CHOICES = {
+  'RDP':  { ref_db:['2.12-16S','2.12-ITS'] },
+  'GAST': { ref_db:['refssu',  'refv1v3','refv3a', 'refv3',  'refv3v5','refv3v6','refv4','refv4v5a','refv4v5',
+                    'refv4v6a','refv4v6','refv5',  'refv5v6','refv6a', 'refv6',  'refv9','refits1']
+            },
+  'SPINGO':   { ref_db:['TBD'] },
+  
 };
 
 constants.REF_SUFFIX = { "unique.nonchimeric.fa": ['v1v3', 'v1v3a', 'v3v5', 'v4v5', 'v4v6', 'v6v4', 'v4v6a', 'v6v4a', 'its1'],

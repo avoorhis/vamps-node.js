@@ -5,8 +5,10 @@ $( document ).ready(function() {
     //show_dataset_tree = false; // true/false on intial load show projects only
     //load_projects_only_tree()
 
-    initialize_dhtmlx_project_tree()
-    clear_filters()
+    //initialize_dhtmlx_project_tree()
+    //clear_filters()
+    
+    
     //document.getElementById('projects_select_div').style.display = 'none'
     //document.getElementById('projects_only_select_div').style.display = 'inline'
     //initialize_form()
@@ -51,7 +53,26 @@ if (validate_fasta_submit_btn !== null) {
   	  form.submit();
 	});
 }
-
+function show_go_btn(project, classifier, ref_db){
+    //alert(classifier)
+    //alert(item)
+    var html = "<a href='/user_data/start_assignment/"+project+"/"+classifier+"/"+ref_db+"' class='btn btn-xs btn-success' name='assignment_choice' >Start</a>"
+    document.getElementById('start_btn_id').innerHTML = html;
+}
+//
+//
+//
+function get_ref_dbs(project, classifier){
+    var html = 'Choose Ref_DB: '
+    //alert(choices_local[item].ref_db)
+    html += "<select onchange=\"show_go_btn('"+project+"','"+classifier+"',this.value)\">"
+    html += '<option>choose</option>'
+    for(x in choices_local[classifier].ref_db){
+    html += '<option>'+choices_local[classifier].ref_db[x]+'</option>'
+    }
+    html += '</select>'
+    document.getElementById('refdb_id').innerHTML = html;
+}
 // function change_tree(tree){
 //   //document.getElementById('projects_select_div').innerHTML=''
 //   if(tree == 'projects'){

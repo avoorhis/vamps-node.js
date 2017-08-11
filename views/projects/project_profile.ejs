@@ -11,7 +11,13 @@
 <%  reveal_all = true %>
 <% } %>
 <!-- DCO only - AND (owner or admin) can see/edit ALSO MBL power users (Mitch) and DCO_metadata_editors(45)-->
-<% if(user.user_id == data.oid  || user.security_level <= 10 || user.security_level == 45){ %>
+<%  console.log('xxx') %>
+<!-- if user == owner or if admin or DCO-Editor  -->
+<% if(user.user_id == data.oid  || user.security_level <= 10 || user.security_level == 45 ){ %>
+<%  edit_metadata = true %>
+<% } %>
+<!-- if user has access AND project is DCO-project  -->
+<% if(data.permissions.indexOf(user.user_id) != -1 && (data.project).substring(0,3) == 'DCO'){ %>
 <%  edit_metadata = true %>
 <% } %>
 <img src='/images/dna01.jpg' alt="Helix Cartoon"  height='80' />

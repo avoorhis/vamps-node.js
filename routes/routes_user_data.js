@@ -1070,24 +1070,25 @@ router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, function (req, res)
 // TODO: split!!!
 // !!! NOW FROM HERE !!!
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
-router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, function (req, res) {
+router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
   var cmd_list = [];
   console.log('in start_assignment--->');
   console.log("req.params: ");
   console.log(req.params);
   console.log('<--- in start_assignment');
   var project = req.params.project;
-  var classifier_id = req.params.classifier_id;
+  var classifier = req.params.classifier;  // GAST, RDP  or SPINGO
+  var ref_db = req.params.ref_db
   // /GAST/SILVA108_FULL_LENGTH">Assign Taxonomy - GAST (Silva108)</a></li>
   // /GAST/GG_MAY2013">Assign Taxonomy - GAST (GreenGenes May2013)</a></li>
   // /RDP/2.10.1">Assign Taxonomy - RDP (2.10.1)</a></li>
   // /RDP/GG_MAY2013">Assign Taxonomy - RDP (GreenGenes May2013)</a></li>
   // /RDP/ITS1"
 
-  var classifier = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].method;
+  //var classifier = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].method;
   //var ref_db_dir = req.params.ref_db;
-  var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
-  console.log('start: ' + project + ' - ' + classifier + ' - ' + ref_db_dir);
+  //var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
+  console.log('start: ' + project + ' - ' + classifier + ' - ' + ref_db);
   status_params = {'type': 'update', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
   var data_dir  = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
   //TODO: check if needed:
@@ -1115,20 +1116,25 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   var options = {
     scriptPath : qsub_script_path,
     gast_run_args : [ '-c', config_file, '-process_dir', process.env.PWD,
-    '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir, '-site', req.CONFIG.site ],
+    '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db, '-site', req.CONFIG.site ],
     rdp_run_args :  [ '-c', config_file, '-process_dir', process.env.PWD, '-site', req.CONFIG.site,
-    '-project_dir', data_dir, '-ref_db', ref_db_dir, '-path_to_classifier', req.CONFIG.PATH_TO_CLASSIFIER ],
-    database_loader_args : [ '-class', classifier, '-host', req.CONFIG.dbhost, '-process_dir', process.env.PWD, '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir],
+    '-project_dir', data_dir, '-ref_db', ref_db, '-path_to_classifier', req.CONFIG.PATH_TO_CLASSIFIER ],
+    database_loader_args : [ '-class', classifier, '-host', req.CONFIG.dbhost, '-process_dir', process.env.PWD, '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db],
     upload_metadata_args : [ '-project_dir', data_dir, '-host', req.CONFIG.dbhost, '-db', NODE_DATABASE ],
     create_json_args : [ '-process_dir', process.env.PWD, '-host', req.CONFIG.dbhost, '-project_dir', data_dir, '-db', NODE_DATABASE ]
  };
 
-  if (classifier.toUpperCase() == 'GAST')
+  if (classifier == 'SPINGO')
   {
     // calls helpers.make_gast_script_txt
-    cmd_list = gastTax(req, project_config, options, classifier_id);
+    cmd_list = gastTax(req, project_config, options, ref_db);
   }
-  else if (classifier.toUpperCase() == 'RDP' )
+  else if (classifier == 'GAST')
+  {
+    // calls helpers.make_gast_script_txt
+    cmd_list = gastTax(req, project_config, options, ref_db);
+  }
+  else if (classifier == 'RDP' )
   {
     // TODO: move to a separate function!
     // These are from the RDP README
@@ -1137,7 +1143,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
     {
       gene = 'fungalits_unite';
     }
-    var path2classifier = req.CONFIG.PATH_TO_CLASSIFIER + '_' + ref_db_dir;
+    var path2classifier = req.CONFIG.PATH_TO_CLASSIFIER + '_' + ref_db;
     rdp_cmd1 = options.scriptPath + '/vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene;
     rdp_cmd2 = options.scriptPath + '/vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP';
     rdp_cmd3 = options.scriptPath + '/vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site;
@@ -1175,7 +1181,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   // --- end test
   var script_path     = path.join(data_dir, script_name);
   var nodelog         = fs.openSync(path.join(data_dir, 'assignment.log'), 'a', 0664);
-  var ok_code_options = [classifier, status_params, res, ref_db_dir];
+  var ok_code_options = [classifier, status_params, res, ref_db];
 
   // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
   
@@ -1214,7 +1220,7 @@ function checkPid(check_pid_options, last_line)
   // last_line     = check_pid_options[1];
   status_params = check_pid_options[1];
   res           = check_pid_options[2];
-  ref_db_dir    = check_pid_options[3];
+  ref_db    = check_pid_options[3];
   console.log(' classifier CLCLCL: ' + classifier);
   console.log(' last_line CLCLCL: ' + last_line);
   console.log(' classifier CLCLCL: ');
@@ -1251,7 +1257,7 @@ function checkPid(check_pid_options, last_line)
           helpers.update_status(status_params);
 
 
-          ALL_CLASSIFIERS_BY_PID[pid] = classifier + '_' + ref_db_dir;
+          ALL_CLASSIFIERS_BY_PID[pid] = classifier + '_' + ref_db;
           console.log('FROM func. ALL_CLASSIFIERS_BY_PID: ' + ALL_CLASSIFIERS_BY_PID);
           console.log('FROM func. ALL_CLASSIFIERS_BY_PID[pid]: ' + ALL_CLASSIFIERS_BY_PID[pid]);
 
@@ -1269,8 +1275,9 @@ function checkPid(check_pid_options, last_line)
   }
 }
 
-function gastTax(req, project_config, options, classifier_id)
+function gastTax(req, project_config, options, ref_db)
 {
+  console.log('in routes_user_data::gastTax')
   var project  = project_config.GENERAL.project;
   var data_dir = project_config.GENERAL.baseoutputdir;
   script_name = 'gast_script.sh';
@@ -1278,10 +1285,10 @@ function gastTax(req, project_config, options, classifier_id)
   // var oldmask = process.umask(0);
   // fs.closeSync(fs.openSync(`${data_dir}/clust_gast_ill_${project}.sh`, 'w', 0777));
   // process.umask(oldmask);
-  
+  full_option = '';
   file_suffix      = ".fa" + getSuffix(project_config.GENERAL.dna_region);
-  ref_db_name      = chooseRefFile(classifier_id);
-  full_option      = getFullOption(classifier_id);
+  //ref_db_name      = chooseRefFile(classifier_id);
+  //full_option      = getFullOption(classifier_id);
   gast_db_path     = config.GAST_DB_PATH;
   gast_script_path = config.GAST_SCRIPT_PATH;
   

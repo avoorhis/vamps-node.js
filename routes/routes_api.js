@@ -9,6 +9,7 @@ var IMAGES  = require('./routes_images');
 //  {'username':conn['user'], 'password':conn['passwd']}
 //  https://vamps2.mbl.edu/users/login
 //   Once logged in you can access the functions below
+//   <<add link here to github jupyter notebook>>
 //
 
 router.post('/logmein', function(req, res){

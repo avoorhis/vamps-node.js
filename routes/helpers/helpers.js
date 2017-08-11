@@ -407,7 +407,7 @@ module.exports.run_permissions_query = function(rows){
     if(pid in PROJECT_INFORMATION_BY_PID ){
       var project = PROJECT_INFORMATION_BY_PID[pid].project;
       PROJECT_INFORMATION_BY_PNAME[project] =  PROJECT_INFORMATION_BY_PID[pid];
-      if(PROJECT_INFORMATION_BY_PID[pid].public === 1 || PROJECT_INFORMATION_BY_PID[pid].username === 'guest'){
+      if( PROJECT_INFORMATION_BY_PID[pid].username === 'guest'){
         PROJECT_INFORMATION_BY_PID[pid].permissions = [];
       }else{
         // TODO: "Blocks are nested too deeply. (4)"
