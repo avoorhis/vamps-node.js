@@ -879,7 +879,11 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 function saveMetadata(req, res){
   console.time("TIME: saveMetadata");
   make_csv(req, res);
-  res.redirect("/metadata/metadata_file_list");
+  // var pid = req.body.project_id;
+  req.flash("success", "Success with the metadata submit!");
+
+  res.redirect("/projects/" + req.body.project_id);
+  // res.redirect("/metadata/metadata_file_list");
 
   // editMetadata(req, res);
   // if(!req.form.isValid){
