@@ -884,6 +884,16 @@ function saveMetadata(req, res){
 
   res.redirect("/projects/" + req.body.project_id);
   // res.redirect("/metadata/metadata_file_list");
+  // /help/contact
+
+  // res.render('help/contact', {
+  //
+  //   title: 'VAMPS:Contact Us',
+  //   choices : req.CONSTS.CONTACT_US_SUBJECTS,
+  //   user: req.user,
+  //
+  //   hostname: req.CONFIG.hostname
+  // });
 
   // editMetadata(req, res);
   // if(!req.form.isValid){
