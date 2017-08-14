@@ -222,20 +222,34 @@ router.post('/find_user_projects',  function(req, res){
         // get all projects (a potentially long list)
         str = ''
     }
-    var availible_projects = []
+    var availible_projects = {}
     // all pid list == 
+    console.log(PROJECT_INFORMATION_BY_PID)
     var all_pids = Object.keys(PROJECT_INFORMATION_BY_PID)
     var new_pid_list = helpers.screen_pids_for_permissions(req, all_pids)
     for(n in new_pid_list){
         pname = PROJECT_INFORMATION_BY_PID[new_pid_list[n]].project
+        title = PROJECT_INFORMATION_BY_PID[new_pid_list[n]].title
+        desc = PROJECT_INFORMATION_BY_PID[new_pid_list[n]].description
         if(str == ''){
-            availible_projects.push(pname)
-        }else if((pname.toUpperCase()).indexOf(str) !== -1){
-            availible_projects.push(pname)
+            availible_projects[pname] = PROJECT_INFORMATION_BY_PID[new_pid_list[n]]
+        }else{
+            if((pname.toUpperCase()).indexOf(str) !== -1){
+                availible_projects[pname] = PROJECT_INFORMATION_BY_PID[new_pid_list[n]]
+            }
+            if((title.toUpperCase()).indexOf(str) !== -1){
+                availible_projects[pname] = PROJECT_INFORMATION_BY_PID[new_pid_list[n]]
+            }
+            if((desc.toUpperCase()).indexOf(str) !== -1){
+                availible_projects[pname] = PROJECT_INFORMATION_BY_PID[new_pid_list[n]]
+            }
         }
     }
-
-    res.send(JSON.stringify(availible_projects))
+    if(req.body.hasOwnProperty('include_info')){
+        res.send(JSON.stringify(availible_projects))
+    }else{
+        res.send(JSON.stringify(Object.keys(availible_projects)))
+    }
 
 });
 //
