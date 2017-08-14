@@ -1188,8 +1188,8 @@ function make_metadata_object(req, res, pid, info) {
   //2) all
   all_metadata[pid] = info;
 
-  // console.log("JJJ1 all_metadata[pid]");
-  // console.log(all_metadata[pid]);
+  console.log("JJJ1 all_metadata[pid]");
+  console.log(all_metadata[pid]);
 
   //3) special
 
