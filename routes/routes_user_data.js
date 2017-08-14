@@ -1088,7 +1088,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
   //var classifier = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].method;
   //var ref_db_dir = req.params.ref_db;
   //var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
-  console.log('start: ' + project + ' - ' + classifier + ' - ' + ref_db);
+  console.log('start: Project: ' + project + ' - Classifier: ' + classifier + ' - RefDatabase: ' + ref_db);
   status_params = {'type': 'update', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
   var data_dir  = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
   //TODO: check if needed:
@@ -1127,7 +1127,14 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
   if (classifier == 'SPINGO')
   {
     // calls helpers.make_gast_script_txt
-    cmd_list = gastTax(req, project_config, options, ref_db);
+    var script_name = 'spingo_script.sh';
+    var cmd_list = spingoTax(req, project_config, options, ref_db);
+    console.log(cmd_list)
+    status_params.statusOK = 'OK-SPINGO';
+    status_params.statusSUCCESS = 'SPINGO-SUCCESS';
+    status_params.msgOK = 'Finished SPINGO';
+    status_params.msgSUCCESS = 'SPINGO -Tax assignments';
+    
   }
   else if (classifier == 'GAST')
   {
@@ -1274,7 +1281,23 @@ function checkPid(check_pid_options, last_line)
     console.log('ERROR pid is not an integer: ', pid);
   }
 }
-
+function spingoTax(req, project_config, options, ref_db)
+{
+  console.log('in routes_user_data::spingoTax')
+  var cmd_list = []
+  var project  = project_config.GENERAL.project;
+  var data_dir = project_config.GENERAL.baseoutputdir;
+  var ref_db_path = req.CONFIG.PATH_TO_SPINGO+'/database/'+ref_db+'.species.fa'
+  
+  for(ds in project_config.DATASETS){
+    var inFasta = project_config.GENERAL.baseoutputdir+'/'+ds+'.fa'
+    var out_file = project_config.GENERAL.baseoutputdir+'/'+ds+'.spingo.out'
+    cmd = req.CONFIG.PATH_TO_SPINGO+'/spingo -i '+  inFasta +' -d '+ref_db_path +' > '+out_file
+    cmd_list.push(cmd)
+  }
+  return cmd_list
+  
+}
 function gastTax(req, project_config, options, ref_db)
 {
   console.log('in routes_user_data::gastTax')
@@ -2328,8 +2351,9 @@ function GetScriptVars(req, data_repository, cmd_list, cmd_name)
 {
   if (helpers.isLocal(req))
   {
+    console.log('FOUND LOCAL')
     scriptlog   = path.join(data_repository, 'script.log');
-    script_text = helpers.get_local_script_text(scriptlog, 'local', cmd_name, cmd_list);
+    script_text = helpers.get_local_script_text(scriptlog, cmd_name, cmd_list);
   }
   else
   {

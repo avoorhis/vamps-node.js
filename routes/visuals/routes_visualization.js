@@ -140,10 +140,33 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     visual_post_items.include_nas = req.body.include_nas              || "yes"
     visual_post_items.min_range = req.body.min_range                  || '0'
     visual_post_items.max_range = req.body.max_range                  || '100'
-    visual_post_items.ds_order = req.body.ds_order
+    if((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length != 0){
+        console.log('Found api dids ',req.body.ds_order)
+        try{
+            var dataset_ids = JSON.parse(req.body.ds_order)
+        }catch(e){
+            var dataset_ids = req.body.ds_order
+        }
+        var new_dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids)
+        dataset_ids = new_dataset_ids
+        visual_post_items.ds_order = dataset_ids  // should screen these again
+    }else if( (req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project) ){
+        console.log('Found api project ',req.body.project)
+        var pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid
+        var new_dataset_ids = helpers.screen_dids_for_permissions(req, DATASET_IDS_BY_PID[pid.toString()])
+        visual_post_items.ds_order = new_dataset_ids
+        console.log(PROJECT_INFORMATION_BY_PNAME[req.body.project])
+        console.log(visual_post_items.ds_order)
+        dataset_ids = visual_post_items.ds_order;
+        console.log('dids',dataset_ids)
+    }else{
+        console.log('API ALERT - no dids or project')
+        return;
+    }
+    
     visual_post_items.update_data = req.body.update_data              || '1'   // fires changes
 
-    dataset_ids = JSON.parse(req.body.ds_order);
+    
     visual_post_items.no_of_datasets = dataset_ids.length
     chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);
     // for API select ALL metadata with these datasets

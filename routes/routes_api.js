@@ -45,7 +45,7 @@ router.post('/get_dids_from_project', function(req, res){
       var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
       if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
         console.log('No Datasets Found')
-        res.send(JSON.stringify('No Datasets Found - (do you have permissions to access this data?)'))
+        res.send(JSON.stringify('No Datasets Found - (do you have the correct access permissions?)'))
       }else{
           console.log(new_dataset_ids)
           res.send(JSON.stringify(new_dataset_ids))

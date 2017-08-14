@@ -94,7 +94,7 @@ constants.UNIT_ASSIGNMENT_CHOICES = {
   'GAST': { ref_db:['refssu',  'refv1v3','refv3a', 'refv3',  'refv3v5','refv3v6','refv4','refv4v5a','refv4v5',
                     'refv4v6a','refv4v6','refv5',  'refv5v6','refv6a', 'refv6',  'refv9','refits1']
             },
-  'SPINGO':   { ref_db:['TBD'] },
+  'SPINGO':   { ref_db:['RDP_11.2'] },
   
 };
 

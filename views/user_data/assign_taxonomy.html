@@ -40,8 +40,8 @@ GAST vs RDP
 
 </div>
 <br>
-<div class="row">  
-    <div class="col-lg-4">
+<div class="row"> 
+    <div class="col-lg-4"> Start Here:
         <p>Choose Classifier Method:
         <select onchange='get_ref_dbs("<%= project %>",this.value)'  >
         <option>choose</option>
@@ -56,32 +56,11 @@ GAST vs RDP
     <div class="col-lg-4">      
         <div id='start_btn_id'></div>
     </div>
-    
-
 </div>  
 
 
 
 
-<table class='table' >
-<tr><th>Database (Version)</th><th>Method</th><th>Reference DB</th><th></th></tr>
-<% for(id in choices){ %>
-	<% if(choices[id].availability == 'available'){ %>
-			<tr>
-					<td><%= choices[id].taxonomy_curator %></td><td><%= choices[id].method %></td><td><%= choices[id].reference_db %></td>
-					<td>
-						<a href='/user_data/start_assignment/<%= project %>/<%= id %>' class='btn btn-xs btn-success' name='assignment_choice' >Start</a>
-					</td>
-			</tr>
-	<% }else{ %>
-			<tr>
-					<td><%= choices[id].taxonomy_curator %></td><td><%= choices[id].method %></td><td><%= choices[id].reference_db %></td><td><%= choices[id].availability %></td>
-					
-			</tr>
-	<% } %>
-<% } %>
-
-</table>
 
 
 
