@@ -878,17 +878,34 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 
 function saveMetadata(req, res){
   console.time("TIME: saveMetadata");
+  make_csv(req, res);
+  // var pid = req.body.project_id;
+  req.flash("success", "Success with the metadata submit!");
 
-  if(!req.form.isValid){
-    // TODO: remove here, should be after validation only
-    make_csv(req, res);
-    editMetadata(req, res);
-  }else{
-    make_csv(req, res);
-    saveToDb(req.metadata);
-    // TODO: change
-    res.redirect("/metadata"+req.metadata.id+"/edit");
-  }
+  res.redirect("/projects/" + req.body.project_id);
+  // res.redirect("/metadata/metadata_file_list");
+  // /help/contact
+
+  // res.render('help/contact', {
+  //
+  //   title: 'VAMPS:Contact Us',
+  //   choices : req.CONSTS.CONTACT_US_SUBJECTS,
+  //   user: req.user,
+  //
+  //   hostname: req.CONFIG.hostname
+  // });
+
+  // editMetadata(req, res);
+  // if(!req.form.isValid){
+  //   // TODO: remove here, should be after validation only
+  //   make_csv(req, res);
+  //   editMetadata(req, res);
+  // }else{
+  //   make_csv(req, res);
+  //   saveToDb(req.metadata);
+  //   // TODO: change
+  //   res.redirect("/metadata"+req.metadata.id+"/edit");
+  // }
   console.timeEnd("TIME: saveMetadata");
 
 }
