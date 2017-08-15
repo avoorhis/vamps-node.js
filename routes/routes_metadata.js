@@ -689,10 +689,10 @@ function make_metadata_object_from_db(req, res) {
     abstract_data = {};
     abstract_data.pdfs = [];
   }
-  else {
-    console.log("CCC6 abstract_data");
-    console.log(JSON.stringify(abstract_data));
-  }
+  // else {
+  //   console.log("CCC6 abstract_data");
+  //   console.log(JSON.stringify(abstract_data));
+  // }
 
   data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 
@@ -713,30 +713,10 @@ function from_obj_to_obj_of_arr(data, pid) {
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
   var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
 
-  console.log("DDD0 dataset_ids = ");
-  console.log(dataset_ids); //arr
-  console.log("DDD01 all_field_names = ");
-  console.log(all_field_names); //arr
-
-
-
-
   for (var did_idx in dataset_ids) {
-  //  { geo_loc_name_id: [ '6191', '6191', '6191', '6191', '6191', '6191', '6191', '6191' ],
-  //   gold: [ null, null, null, null, null, null, '1.3' ],
-
     var did = dataset_ids[did_idx];
-    console.log("DDD03 did = ");
-    console.log(did);
-
     for (var field_name_idx in all_field_names) {
       var field_name = all_field_names[field_name_idx];
-      console.log("DDD0 all_field_names[field_name_idx] = ");
-      console.log(field_name);
-
-
-      console.log("DDD1 data[field_name][did] = ");
-      console.log(data[did][field_name]);
       if (!(obj_of_arr.hasOwnProperty(field_name))) {
         obj_of_arr[field_name] = [];
       }
@@ -745,14 +725,6 @@ function from_obj_to_obj_of_arr(data, pid) {
 
   }
 
-  // for (var idx in data) {
-  //   for (var key in data[idx]) {
-  //     if (!(obj_of_arr.hasOwnProperty(key))) {
-  //       obj_of_arr[key] = [];
-  //     }
-  //     obj_of_arr[key].push(data[idx][key]);
-  //   }
-  // }
   console.timeEnd("TIME: from_obj_to_obj_of_arr");
   return obj_of_arr;
 }
@@ -1223,8 +1195,8 @@ function make_metadata_object(req, res, pid, info) {
   //2) all
   all_metadata[pid] = info;
 
-  console.log("JJJ1 all_metadata[pid]");
-  console.log(all_metadata[pid]);
+  // console.log("JJJ1 all_metadata[pid]");
+  // console.log(all_metadata[pid]);
 
   //3) special
 
