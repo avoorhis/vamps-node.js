@@ -681,7 +681,7 @@ function make_metadata_object_from_db(req, res) {
   }
   console.timeEnd("TIME: add missing info to AllMetadata_picked");
 
-  var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata_picked);
+  var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata_picked, pid);
 
   // add abstract_data
   var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
@@ -706,18 +706,53 @@ function make_metadata_object_from_db(req, res) {
   console.timeEnd("TIME: make_metadata_object_from_db");
 }
 
-function from_obj_to_obj_of_arr(data) {
+function from_obj_to_obj_of_arr(data, pid) {
   console.time("TIME: from_obj_to_obj_of_arr");
   var obj_of_arr = {};
 
-  for (var idx in data) {
-    for (var key in data[idx]) {
-      if (!(obj_of_arr.hasOwnProperty(key))) {
-        obj_of_arr[key] = [];
+  var dataset_ids  = DATASET_IDS_BY_PID[pid];
+  var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
+
+  console.log("DDD0 dataset_ids = ");
+  console.log(dataset_ids); //arr
+  console.log("DDD01 all_field_names = ");
+  console.log(all_field_names); //arr
+
+
+
+
+  for (var did_idx in dataset_ids) {
+  //  { geo_loc_name_id: [ '6191', '6191', '6191', '6191', '6191', '6191', '6191', '6191' ],
+  //   gold: [ null, null, null, null, null, null, '1.3' ],
+
+    var did = dataset_ids[did_idx];
+    console.log("DDD03 did = ");
+    console.log(did);
+
+    for (var field_name_idx in all_field_names) {
+      var field_name = all_field_names[field_name_idx];
+      console.log("DDD0 all_field_names[field_name_idx] = ");
+      console.log(field_name);
+
+
+      console.log("DDD1 data[field_name][did] = ");
+      console.log(data[did][field_name]);
+      if (!(obj_of_arr.hasOwnProperty(field_name))) {
+        obj_of_arr[field_name] = [];
       }
-      obj_of_arr[key].push(data[idx][key]);
+      obj_of_arr[field_name].push(data[did][field_name]);
     }
+
   }
+
+  // for (var idx in data) {
+  //   for (var key in data[idx]) {
+  //     if (!(obj_of_arr.hasOwnProperty(key))) {
+  //       obj_of_arr[key] = [];
+  //     }
+  //     obj_of_arr[key].push(data[idx][key]);
+  //   }
+  // }
   console.timeEnd("TIME: from_obj_to_obj_of_arr");
   return obj_of_arr;
 }
