@@ -140,10 +140,33 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     visual_post_items.include_nas = req.body.include_nas              || "yes"
     visual_post_items.min_range = req.body.min_range                  || '0'
     visual_post_items.max_range = req.body.max_range                  || '100'
-    visual_post_items.ds_order = req.body.ds_order
+    if((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length != 0){
+        console.log('Found api dids ',req.body.ds_order)
+        try{
+            var dataset_ids = JSON.parse(req.body.ds_order)
+        }catch(e){
+            var dataset_ids = req.body.ds_order
+        }
+        var new_dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids)
+        dataset_ids = new_dataset_ids
+        visual_post_items.ds_order = dataset_ids  // should screen these again
+    }else if( (req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project) ){
+        console.log('Found api project ',req.body.project)
+        var pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid
+        var new_dataset_ids = helpers.screen_dids_for_permissions(req, DATASET_IDS_BY_PID[pid.toString()])
+        visual_post_items.ds_order = new_dataset_ids
+        console.log(PROJECT_INFORMATION_BY_PNAME[req.body.project])
+        console.log(visual_post_items.ds_order)
+        dataset_ids = visual_post_items.ds_order;
+        console.log('dids',dataset_ids)
+    }else{
+        console.log('API ALERT - no dids or project')
+        return;
+    }
+    
     visual_post_items.update_data = req.body.update_data              || '1'   // fires changes
 
-    dataset_ids = JSON.parse(req.body.ds_order);
+    
     visual_post_items.no_of_datasets = dataset_ids.length
     chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);
     // for API select ALL metadata with these datasets
@@ -2547,9 +2570,17 @@ function filter_project_tree_for_permissions(req, obj){
       pid = obj[i].pid;
       node = PROJECT_INFORMATION_BY_PID[pid];
       //console.log(node)
-      if(node.public || req.user.security_level <= 10 || node.permissions.length === 0 || node.permissions.indexOf(req.user.user_id) !== -1 ) {
+      if(
+        node.public 
+        || req.user.security_level <= 10                    // admin user ==1
+        || node.permissions.length === 0                    // ??
+        || node.permissions.indexOf(req.user.user_id) !== -1 // owner is user
+        || (req.user.security_level == 45 && (node.project).substring(0,3) == 'DCO') // DCO Editor all DCO* projects
+        ) {
         //console.log(node)
+        
         new_project_tree_pids.push(pid)
+        
       }
   }
   //console.log(obj)
@@ -2854,7 +2885,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     json.item = []
     //PROJECT_TREE_OBJ = []
     //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
-
+    var itemtext;
     if(id==0){
 
         for( i=0;i<PROJECT_TREE_PIDS.length;i++ ){
@@ -2869,7 +2900,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
               tt_pj_id += '/private';
             }
             var pid_str = pid.toString()
-            var itemtext = "<span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>"+node.project+"</span>";
+            itemtext = "<span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>"+node.project+"</span>";
             itemtext    += " <a href='/projects/"+pid_str+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
             if(node.public) {
                 itemtext += "<small> <i>(public)</i></small>"
@@ -2922,7 +2953,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
             var dname = this_project.datasets[n].dname
             var ddesc = this_project.datasets[n].ddesc
             var tt_ds_id  = 'dataset/'+pname+'/'+dname+'/'+ddesc;
-            var itemtext = "<span id='"+ tt_ds_id +"' class='tooltip_pjds_list'>"+dname+"</span>";
+            itemtext = "<span id='"+ tt_ds_id +"' class='tooltip_pjds_list'>"+dname+"</span>";
             if(all_checked_dids.indexOf(parseInt(did)) === -1){
               json.item.push({id:did, text:itemtext, child:0})
             }else{

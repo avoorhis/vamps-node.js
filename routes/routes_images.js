@@ -656,7 +656,11 @@ barcharts: function(req, res){
 metadata_csv: function(req, res){
     console.log('in metadata_csv')
     var ts = visual_post_items.ts
-    var ds_order = JSON.parse(req.body.ds_order)
+    try{
+        var ds_order = JSON.parse(req.body.ds_order)
+    }catch(e){
+        var ds_order = req.body.ds_order
+    }
     mdobj = helpers.get_metadata_obj_from_dids(ds_order)
     console.log(ds_order)
     var html = 'VAMPS Metadata\n'

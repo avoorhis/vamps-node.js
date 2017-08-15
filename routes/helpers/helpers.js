@@ -407,7 +407,7 @@ module.exports.run_permissions_query = function(rows){
     if(pid in PROJECT_INFORMATION_BY_PID ){
       var project = PROJECT_INFORMATION_BY_PID[pid].project;
       PROJECT_INFORMATION_BY_PNAME[project] =  PROJECT_INFORMATION_BY_PID[pid];
-      if(PROJECT_INFORMATION_BY_PID[pid].public === 1 || PROJECT_INFORMATION_BY_PID[pid].username === 'guest'){
+      if( PROJECT_INFORMATION_BY_PID[pid].username === 'guest'){
         PROJECT_INFORMATION_BY_PID[pid].permissions = [];
       }else{
         // TODO: "Blocks are nested too deeply. (4)"
@@ -1149,7 +1149,7 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
 
 };
 
-module.exports.get_local_script_text = function(code, cmd_list) {
+module.exports.get_local_script_text = function(scriptlog, cmd_name, cmd_list) {
   script_text = "#!/bin/sh\n\n";
   script_text += "# CODE:\t$code\n\n";
   script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
@@ -1721,6 +1721,7 @@ module.exports.required_metadata_names_from_ids = function(selection_obj, name_i
 //
 module.exports.get_metadata_obj_from_dids = function(dids){
     var metadata = {}
+    var mdobj;
     for(n in dids){
         metadata[dids[n]] = {}
         mdobj = AllMetadata[dids[n].toString()]
@@ -1778,9 +1779,14 @@ module.exports.screen_pids_for_permissions = function(req, pids)
     }
   return new_pid_list
 };
+
 module.exports.unique_array = function(myArray)
 {
   var uSet = new Set(myArray);
   return [...uSet];
 };
 
+module.exports.has_duplicates = function(myArray)
+{
+  return ((parseInt(new Set(myArray).size)) !== parseInt(myArray.length));
+};

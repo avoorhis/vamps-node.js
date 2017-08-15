@@ -67,7 +67,7 @@ constants.UNITSELECT = { units: [
   {id : 'otus',               file: 'unit_selectors/otus.html',                 name : "TODO-OTUs",             subtext: 'SLP'},
   {id : 'med_nodes',          file: 'unit_selectors/med_nodes.html',            name : "TODO-MED Nodes",        subtext: ''}
 ]};
-constants.UNIT_ASSIGNMENT_CHOICES = {
+constants.UNIT_ASSIGNMENT_CHOICES2 = {
   'refRDP_2.12-16S': { taxonomy_curator:'RDP (2.12) 16S-rRNA', method:'RDP',  reference_db:'Default (no training)', availability:'available',     refdb:'2.12' },
   'refRDP_2.12-ITS': { taxonomy_curator:'RDP (2.12) ITS-UNITE', method:'RDP',  reference_db:'Default (no training)', availability:'available',     refdb:'2.12' },
   'refssu':   { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'refssu (full-length)',  availability:'available',     refdb:'refssu' },
@@ -88,8 +88,14 @@ constants.UNIT_ASSIGNMENT_CHOICES = {
   'refv9':    { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Ev9 (Eukaryal)',        availability:'available', refdb:'refv9' },
   'refits1':  { taxonomy_curator:'UNITE', method:'GAST', reference_db:'ITS1',                         availability:'available', refdb:'refits1' },
   'refGG_MAY2013': { taxonomy_curator:'GreenGenes (May2013)', method:'GAST', reference_db:'refssu',        availability:'not available', refdb:'GG_MAY2013' }
-
-
+};
+constants.UNIT_ASSIGNMENT_CHOICES = {
+  'RDP':  { ref_db:['2.12-16S','2.12-ITS'] },
+  'GAST': { ref_db:['refssu',  'refv1v3','refv3a', 'refv3',  'refv3v5','refv3v6','refv4','refv4v5a','refv4v5',
+                    'refv4v6a','refv4v6','refv5',  'refv5v6','refv6a', 'refv6',  'refv9','refits1']
+            },
+  'SPINGO':   { ref_db:['RDP_11.2'] },
+  
 };
 
 constants.REF_SUFFIX = { "unique.nonchimeric.fa": ['v1v3', 'v1v3a', 'v3v5', 'v4v5', 'v4v6', 'v6v4', 'v4v6a', 'v6v4a', 'its1'],
@@ -511,8 +517,8 @@ constants.ORDERED_METADATA_NAMES = [
   ["","General","", ""],
   // ["project","VAMPS project name","MBL Supplied", ""],
   ["dataset","VAMPS dataset name","MBL Supplied", ""],
-  ["geo_loc_name_continental","Country","MBL Supplied", ""],
-  ["geo_loc_name_marine","Longhurst Zone","MBL Supplied", ""],
+  ["geo_loc_name_continental","Country","User Supplied", ""],
+  ["geo_loc_name_marine","Longhurst Zone","User Supplied", ""],
   ["","MBL generated laboratory metadata","", ""],
   ["domain","Domain","MBL Supplied", ""],
   ["target_gene","Target gene name","MBL Supplied", "16S rRNA, mcrA, etc"],
@@ -562,7 +568,7 @@ constants.ORDERED_METADATA_NAMES = [
   ["resistivity","Resistivity","", "ohm-meter"],
   ["salinity","Salinity","", "PSS-78"],
   //It is measured in unit of PSU (Practical Salinity Unit), which is a unit based on the properties of sea water conductivity. It is equivalent to per thousand or (o/00) or to  g/kg.
-  ["pressure","Pressure","", "decibar"],
+  ["pressure","Pressure","", "bar"],
   ["redox_state","Redox state","", ""],
   ["redox_potential","Redox potential","", "millivolt"],
   ["diss_oxygen","Dissolved oxygen","", "µmol/kg"],
@@ -605,18 +611,18 @@ constants.ORDERED_METADATA_NAMES = [
   ["rock_age","Sediment or rock age","", "millions of years (Ma)"],
   ["water_age","Water age","", "thousands of years (ka)"],
   ["","Biological","", ""],
-  ["microbial_biomass_microscopic","Microbial biomass – total cell counts","", "cells/g"],
+  ["microbial_biomass_microscopic","Microbial biomass - total cell counts","", "cells/g"],
   ["n_acid_for_cell_cnt","NA dyes used for total cell counts","",""],
   ["microbial_biomass_FISH","FISH-based cell counts","", "cells/g"],
   ["FISH_probe_name","Name of FISH probe","",""],
   ["FISH_probe_seq","Sequence of FISH probe","",""],
   ["intact_polar_lipid","Intact polar lipid","", "pg/g"],
   ["microbial_biomass_qPCR","qPCR and primers used","", "gene copies"],
-  // ["microbial_biomass_platecounts","Microbial biomass – plate counts - cell numbers","", ""],
-  // ["microbial_biomass_avg_cell_number","Microbial biomass – other","", ""],
-  ["biomass_wet_weight","Biomass – wet weight","", "gram"],
-  ["biomass_dry_weight","Biomass – dry weight","", "gram"],
-  ["plate_counts","Plate counts – colony forming ","", "CFU/ml"],
+  // ["microbial_biomass_platecounts","Microbial biomass - plate counts - cell numbers","", ""],
+  // ["microbial_biomass_avg_cell_number","Microbial biomass - other","", ""],
+  ["biomass_wet_weight","Biomass - wet weight","", "gram"],
+  ["biomass_dry_weight","Biomass - dry weight","", "gram"],
+  ["plate_counts","Plate counts - colony forming ","", "CFU/ml"],
   ["functional_gene_assays","functional gene assays","", ""],
   ["clone_library_results","clone library results","", ""],
   ["enzyme_activities","enzyme activities","", ""],
@@ -676,9 +682,9 @@ constants.MY_DNA_EXTRACTION_METH_OPTIONS = ["Please choose one",
   "Mo Bio/Qiagen PowerWater",
   "Mo Bio/Qiagen UltraClean Microbial",
   "Other",
-  "Phenol–chloroform",
+  "Phenol-chloroform",
   "Qiagen Genomic DNA lysis buffer",
-  "SDS Phenol–chloroform"];
+  "SDS Phenol-chloroform"];
 
 constants.DNA_QUANTITATION_OPTIONS = ["Please choose one",
   "Fluorescent Microspheres",
@@ -692,8 +698,8 @@ constants.DNA_QUANTITATION_OPTIONS = ["Please choose one",
   // "subterrestrial",
 
 constants.BIOME_PRIMARY = ["Please choose one",
-  "marine",
-  "terrestrial"];
+  "marine biome",
+  "terrestrial biome"];
 
 constants.FEATURE_PRIMARY = ["Please choose one",
   "aquifer",
@@ -702,12 +708,12 @@ constants.FEATURE_PRIMARY = ["Please choose one",
   "enrichment",
   "fracture",
   "geyser",
+  "hydrothermal vent",
   "lake",
   "mine",
   "reservoir",
   "seep",
   "spring",
-  "vent",
   "volcano",
   "well"];
 

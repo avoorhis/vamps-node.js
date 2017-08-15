@@ -271,13 +271,15 @@ def go_add(NODE_DATABASE, pids_str):
              else:
                  print 'WARNING -- no metadata for did:',did
     else:
+        
+        
         write_json_files(prefix, all_dids, metadata_lookup, counts_lookup)
     
         rando = randrange(10000,99999)
         write_all_metadata_file(metadata_lookup, rando)
     
         # only write here for default taxonomy: silva119
-        # This file is not used        
+        # discovered this file is not used
         #if args.units == 'silva119':
         #    write_all_taxcounts_file(counts_lookup, rando)
     
@@ -303,7 +305,12 @@ def write_all_metadata_file(metadata_lookup,rando):
         
     
     with io.open(md_file, 'w', encoding='utf-8') as f:
-        f.write(json.dumps(original_metadata_lookup, ensure_ascii=False))    
+        try:
+            f.write(json.dumps(original_metadata_lookup)) 
+        except:
+           f.write(json.dumps(original_metadata_lookup, ensure_ascii=False)) 
+        finally:
+            pass
     print 'writing new metadata file'
     #f.write(json_str.encode('utf-8').strip()+"\n")
     f.close() 
@@ -398,8 +405,6 @@ def get_required_metadata_fields(args):
     return md_fields
         
 def go_custom_metadata(did_list, pid, metadata_lookup):
-    
-    
     
     custom_table = 'custom_metadata_'+ pid
     q = "show tables like '"+custom_table+"'"
@@ -551,6 +556,7 @@ if __name__ == '__main__':
     parser.add_argument("-units", "--tax_units",    
                 required=False,  action='store', choices=['silva119','rdp2.6'], dest = "units",  default='silva119',
                 help="Default: 'silva119'; only other choice available is 'rdp2.6'")                       
+    
     if len(sys.argv[1:]) == 0:
         print myusage
         sys.exit() 
@@ -568,7 +574,7 @@ if __name__ == '__main__':
         dbhost = 'bpcweb7'
     else:
         dbhost = 'localhost'
-        args.NODE_DATABASE = 'vamps_development'
+        args.NODE_DATABASE = 'vamps2'
     if args.units == 'silva119':
         args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_silva119")
     elif args.units == 'rdp2.6':

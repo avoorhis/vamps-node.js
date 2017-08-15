@@ -122,19 +122,26 @@ def get_taxbyseq_sql(args, dids):
 def get_req_metadata_sql(args, dids, req_headersA, req_headersB):
 
     sql  = "SELECT project, dataset, dataset_id, "+','.join(req_headersA)
-    sql += ', t1.term_name as '+ req_headersB[0] + ', t2.term_name as '+ req_headersB[1] + ', t3.term_name as '+ req_headersB[2] +"\n"
+    sql += ', t1.term_name as '+ req_headersB[0]
+    sql += ', t2.term_name as '+ req_headersB[1]
+    sql += ', t3.term_name as '+ req_headersB[2]
+    sql += ', t4.term_name as '+ req_headersB[3] +"\n"
     sql += " from required_metadata_info\n "
     sql += " JOIN dataset using (dataset_id)\n"
     sql += " JOIN project using (project_id)\n"
-    sql += " JOIN country using (country_id)\n"
+    sql += " JOIN run using(run_id)\n"
     sql += " JOIN dna_region using (dna_region_id)\n"
     sql += " JOIN domain using (domain_id)\n"
     sql += " JOIN env_package using (env_package_id)\n"
-    sql += " JOIN fragment_name using (fragment_name_id)\n"
+    sql += " JOIN target_gene using (target_gene_id)\n"
+    sql += " JOIN run_key on (adapter_sequence_id=run_key_id)\n"
+    sql += " JOIN illumina_index using(illumina_index_id)\n"
+    sql += " JOIN primer_suite using(primer_suite_id)\n"
     sql += " JOIN sequencing_platform using (sequencing_platform_id)\n"
     sql += " JOIN term as t1 on (env_biome_id=t1.term_id)\n"
     sql += " JOIN term as t2 on (env_feature_id=t2.term_id)\n"
     sql += " JOIN term as t3 on (env_material_id=t3.term_id)\n"
+    sql += " JOIN term as t4 on (geo_loc_name_id=t4.term_id)\n"
     sql += " where dataset_id in ('" + dids + "')\n"
     return sql
 
@@ -352,22 +359,25 @@ def run_biom(args):
     write_file_txt(args, out_file, file_txt)
 
 
-def run_metadata(args):
+def run_metadata(args, file_form):
     print 'running metadata --->>>'
     # args.datasets is a list of p--d pairs
-    out_file = os.path.join(args.base,'metadata-'+args.runcode+'.csv')
+    
     cursor = args.obj.cursor()
     dids = "','".join(args.dids)
     pids = "','".join(args.pids)
 
     # REQUIRED METADATA
 
-    required_headersA = ["altitude", "assigned_from_geo", "collection_date",
-                                "common_name", "country", "depth", "description",
-                                "dna_region", "domain", "elevation", "env_package",
-                                "fragment_name", "latitude", "longitude",
-                                "sequencing_platform", "taxon_id"]
-    required_headersB = [  "env_biome",  "env_feature", "env_material" ]      # these have to be matched with term table
+    required_headersA = ["collection_date",
+                               "run_key", "illumina_index","primer_suite",
+                                "dna_region", "domain", "env_package",
+                                "target_gene", "latitude", "longitude",
+                                "sequencing_platform", "run"]
+    required_headersB = [  "env_biome",  "env_feature", "env_material", "geo_loc_name" ]      # these have to be matched with term table
+    
+    
+ 
     sql = get_req_metadata_sql(args, dids, required_headersA, required_headersB)
     print sql
     cursor.execute(sql)
@@ -396,43 +406,66 @@ def run_metadata(args):
         sql3  = "SELECT * from "+custom_table+"\n "
         #print 'args.dataset_name_collector'
         #print args.dataset_name_collector
-        cursor.execute(sql3)
-        rows = cursor.fetchall()
-        for row in rows:
-            did = row['dataset_id']
-            if did in args.dataset_name_collector:
-                pjds = args.dataset_name_collector[did]
-            else:
-                pjds = 'unknown'
-            #print pjds
-            if str(did) in args.dids:
-                for key in row:
-                    if key != custom_table+'_id':
+        try:
+            cursor.execute(sql3)
+            rows = cursor.fetchall()
+            for row in rows:
+                did = row['dataset_id']
+                if did in args.dataset_name_collector:
+                    pjds = args.dataset_name_collector[did]
+                else:
+                    pjds = 'unknown'
+                #print pjds
+                if str(did) in args.dids:
+                    for key in row:
+                        #print('key',key)  ## key is mditem
+                        if key != custom_table+'_id':
 
-                        #print 'row[key]',row[key]
-                        data[pjds][key]= row[key]
-                        headers_collector[key] = 1
+                            #print 'row[key]',row[key]
+                            data[pjds][key]= row[key]
+                            headers_collector[key] = 1
+        except:
+            print('Could not find/query custom metadata table:',custom_table)
 
-
-    # convert to a list and sort
     headers_collector_keys = sorted(headers_collector.keys())
+    ds_sorted = sorted(data.keys())
     file_txt = ''
     file_txt += "VAMPS Metadata\n"
-    file_txt += 'dataset'
-    for header in headers_collector_keys:
-        file_txt += '\t'+header
-    file_txt += '\n'
-    for pjds in data:
-        file_txt += pjds
+    # convert to a list and sort
+    if file_form == 'datasets_as_rows':
+        out_file = os.path.join(args.base,'metadata-'+args.runcode+'-1.csv')
+        
+        
+        file_txt += 'dataset'
         for header in headers_collector_keys:
-            #if header not in ['custom_metadata_273_id','custom_metadata_517_id']:
+            file_txt += '\t'+header
+        file_txt += '\n'
+        for pjds in ds_sorted:
+            file_txt += pjds
+            for mditem in headers_collector_keys:
+                #if header not in ['custom_metadata_273_id','custom_metadata_517_id']:
 
-                if header in data[pjds]:
-                    file_txt += '\t'+str(data[pjds][header])
+                    if mditem in data[pjds]:
+                        file_txt += '\t'+str(data[pjds][mditem])
+                    else:
+                        file_txt += '\t'
+            file_txt += '\n'
+        file_txt += '\n'
+    else:
+        out_file = os.path.join(args.base,'metadata-'+args.runcode+'-2.csv')
+        file_txt += 'metadata'
+        for pjds in ds_sorted:
+            file_txt += '\t'+pjds
+        file_txt += '\n'   
+        for mditem in headers_collector_keys:
+            file_txt += mditem
+            for pjds in ds_sorted:
+                if mditem in data[pjds]:
+                    file_txt += '\t'+str(data[pjds][mditem])
                 else:
                     file_txt += '\t'
+            file_txt += '\n'
         file_txt += '\n'
-    file_txt += '\n'
     write_file_txt(args, out_file, file_txt)
 
 def run_taxbytax(args):
@@ -702,8 +735,10 @@ if __name__ == '__main__':
                                                     help="")
     parser.add_argument("-fasta_file", "--fasta_file",        required=False,  action="store_true",   dest = "fasta", default=False,
                                                     help="")
-    parser.add_argument("-metadata_file", "--metadata_file",   required=False,  action="store_true",   dest = "metadata", default=False,
-                                                    help="")
+    parser.add_argument("-metadata_file1", "--metadata_file1",   required=False,  action="store_true",   dest = "metadata1", default=False,
+                                                    help="Datasets as rows/Metadata as columns")
+    parser.add_argument("-metadata_file2", "--metadata_file2",   required=False,  action="store_true",   dest = "metadata2", default=False,
+                                                    help="Metadata as Rows/Datasets as columns")                                                
     parser.add_argument("-biom_file", "--biom_file",           required=False,  action="store_true",   dest = "biom", default=False,
                                                     help="")
     parser.add_argument("-matrix_file", "--matrix_file",           required=False,  action="store_true",   dest = "matrix", default=False,
@@ -729,13 +764,13 @@ if __name__ == '__main__':
     args.today = str(datetime.date.today())
 
     if args.site == 'vamps':
-        #db_host = 'vampsdb'
-        db_host = 'bpcweb8'
+        db_host = 'vampsdb'
+        #db_host = 'bpcweb8'
         args.NODE_DATABASE = 'vamps2'
         db_home = '/groups/vampsweb/vamps/'
     elif args.site == 'vampsdev':
-        #db_host = 'vampsdev'
-        db_host = 'bpcweb7'
+        db_host = 'vampsdev'
+        #db_host = 'bpcweb7'
         args.NODE_DATABASE = 'vamps2'
         db_home = '/groups/vampsweb/vampsdev/'
     else:
@@ -778,8 +813,10 @@ if __name__ == '__main__':
 #         args.seqs_sql_rows = get_seqs_result_from_db(args)
     #sys.exit()
 
-    if args.metadata:
-        run_metadata(args)
+    if args.metadata1:
+        run_metadata(args, 'datasets_as_rows')
+    if args.metadata2:
+        run_metadata(args, 'metadata_as_rows')
     if args.fasta:
         run_fasta(args)
     if args.taxbytax:

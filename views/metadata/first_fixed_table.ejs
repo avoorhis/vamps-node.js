@@ -3,15 +3,20 @@
 <table #fixed_col_wrap>
     <tbody>
     <tr>
-        <td id="firstTd">
-        </td>
+        <th id="firstTd">
+        </th>
         <td>
-            <div id="divHeader" style="overflow:hidden; width: 30em; ">
-                <!--<table cellspacing="0" cellpadding="0" border="1" >-->
-                    <!--<tr>-->
-                        <!--<td ><div class="tableHeader">Title1</div></td><td><div class="tableHeader">Title2</div></td><td><div class="tableHeader">Title3</div></td><td><div class="tableHeader">Title4</div></td><td><div class="tableHeader">Title5</div></td>-->
-                    <!--</tr>-->
-                <!--</table>-->
+            <div id="table_div_header" >
+                <table id="dataset_headers" >
+                    <tbody>
+                    <tr>
+                        <% for (var idx in all_metadata[pid]["dataset"]) { %>
+                            <td class="header_th"><div class="header_th_div"><%= all_metadata[pid]["dataset"][idx]%></div></td>
+                        <% } %>
+                    </tr>
+                    </tbody>
+
+                </table>
             </div>
         </td>
     </tr>
@@ -42,7 +47,6 @@
             </div>
         </td>
         <td valign="top">
-            <!--<div id="table_div" onscroll="fnScroll()" >-->
             <div id="table_div">
 
             <table id="fixed_table_base" >

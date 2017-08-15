@@ -406,7 +406,19 @@ td.left_justify {
     position: relative;
 }
 
-#fixed_table_base {
+#table_div_header {
+    /*overflow: scroll;*/
+    overflow: hidden;
+
+    width: 59%;
+            /*60%;*/
+    max-width: 200ex;
+    /*width: 700px;*/
+    /*height: 820px;*/
+    position: relative;
+}
+
+#fixed_table_base, #dataset_headers {
     /*width: 800px;*/
     width: 70%;
     max-width: 200ex;
@@ -416,7 +428,7 @@ td.left_justify {
     border: 1px;
 }
 
-#first_col_table td, #fixed_table_base td {
+#first_col_table td, #fixed_table_base td, #firstTd {
     min-height: 0.3em;
     height: 2.8em;
     white-space: nowrap;
@@ -424,6 +436,38 @@ td.left_justify {
     border-color: black;
     border-style: solid;
 }
+
+#firstTd {
+    font-weight: bold;
+    border-bottom-style: dashed;
+    vertical-align: top;
+    color: #C0C0C0;
+}
+
+.header_th_div {
+    width: 25.43em;
+    /*!important;*/
+    /*white-space: nowrap;*/
+    overflow: hidden;
+    border: 1px;
+    border-color: black;
+    border-style: solid;
+    min-height: 0.3em;
+    height: 2.8em;
+    padding-left: 4px;
+    border-bottom-style: dashed;
+
+}
+
+.header_th {
+    color: #A9A9A9;
+}
+
+
+/*#divHeader {*/
+    /*overflow:hidden;*/
+    /*width: 70%*/
+/*}*/
 
 /*#fixed_table_base select {*/
     /*border: 1px solid #ccc;*/
@@ -448,6 +492,8 @@ td.left_justify {
 /*    background: lightgrey none repeat scroll 0 0;*/
 }
 
+
+
 .short {
     width: 25em;
     white-space: nowrap;
@@ -458,7 +504,6 @@ td.left_justify {
 .short:hover {
     width : initial;
 }
-
 
 .textarea_long {
     width: 30em;
@@ -550,3 +595,4 @@ td.left_justify {
 .highlighter td {
     empty-cells: show;
 }
+

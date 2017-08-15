@@ -135,22 +135,22 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                   abstract_data = {}
                 }
         }
-                    //console.log(obj_data)
-                    res.render('projects/profile', {
-                                                  title  : 'VAMPS Project',
-                                                  info: JSON.stringify(info),
-                                                  project_prefix : project_prefix,
-                                                  dsinfo: dsinfo,
-                                                  dscounts: JSON.stringify(dscounts),
-                                                  pid: req.params.id,
-                                                  mdata: JSON.stringify(mdata),
-                                                  pcount: project_count, 
-                                                  portal :    JSON.stringify(member_of_portal),                                    
-                                                  //abstracts: JSON.stringify(abstracts[project_prefix]),
-                                                  abstract_info : JSON.stringify(abstract_data),
-                                                  user   : req.user,
-                                                  hostname: req.CONFIG.hostname,
-                                                });
+        //console.log(info)
+        res.render('projects/profile', {
+                                      title  : 'VAMPS Project',
+                                      info: JSON.stringify(info),
+                                      project_prefix : project_prefix,
+                                      dsinfo: dsinfo,
+                                      dscounts: JSON.stringify(dscounts),
+                                      pid: req.params.id,
+                                      mdata: JSON.stringify(mdata),
+                                      pcount: project_count, 
+                                      portal :    JSON.stringify(member_of_portal),                                    
+                                      //abstracts: JSON.stringify(abstracts[project_prefix]),
+                                      abstract_info : JSON.stringify(abstract_data),
+                                      user   : req.user,
+                                      hostname: req.CONFIG.hostname,
+                                    });
                 
                    
         

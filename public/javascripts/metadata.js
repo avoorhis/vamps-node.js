@@ -187,7 +187,7 @@ function bindInfoWindow(marker, map, infowindow, html) {
 //   });
 
 var biome_seq_options = {
-    "marine": ["none",
+    "marine biome": ["none",
         "abyssal zone",
         "bathyal",
         "benthic",
@@ -203,7 +203,7 @@ var biome_seq_options = {
         "subseafloor"
     ],
 
-    "terrestrial": ["none",
+    "terrestrial biome": ["none",
         "desert",
         "endolithic",
         "forest",
@@ -319,7 +319,7 @@ var biome_seq_options = {
       "mineral deposit",
       "mineral spring"],
 
-  "vent": ["none",
+  "hydrothermal vent": ["none",
       "black smoker",
       "marine hydrothermal plume",
       "marine hydrothermal vent",
@@ -890,10 +890,28 @@ CopyColumn = function() {
   });
 };
 
+showDatasets = function() {
+  $('#table_div_header').hide();
+  $('#firstTd').hide();
+
+  $('#table_div').on('scroll', function () {
+    if ($('#table_div').scrollTop() > 0) {
+      $('#table_div_header').show();
+      $('#firstTd').html('VAMPS dataset name').show();
+    }
+    $('#table_div_header').scrollLeft($('#table_div').scrollLeft());
+    if ($('#table_div').scrollTop() === 0) {
+      $('#table_div_header').hide();
+      $('#firstTd').hide();
+    }
+
+  });
+};
 
 // ---
 
 $(document).ready(function(){
+  showDatasets();
   addCopyBtns();
   CopyColumn();
   addCopyFirst();

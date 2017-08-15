@@ -1,6 +1,8 @@
 <% include ../add_ins/begin.ejs %>
 <% choices = JSON.parse(tax_choices); %>
-
+<script>
+  var choices_local  = JSON.parse('<%- tax_choices %>');
+</script>
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
 <% }else if(messages.fail){ %>
@@ -17,15 +19,15 @@
   <div class="row">  
       <div class="col-lg-4">
 				<h4>1 - GAST vs RDP (are there others?)</h4> 
-			</div>
-			<div class="col-lg-4">
-				<h4>2 - </h4> 
-				<h4>if GAST: Choose full-length(refssu)(slow) or specific region(faster but primers may not mesh)</h4> 
-				<h4>if RDP: Choose Silva, Greengenes or ITS</h4>
-			</div>
-			<div class="col-lg-4">
-				<h4>3 There are two essential elements to VAMPS:</h4> 
-			</div>
+		</div>
+        <div class="col-lg-4">
+            <h4>2 - </h4> 
+            <h4>if GAST: Choose full-length(refssu)(slow) or specific region(faster but primers may not mesh)</h4> 
+            <h4>if RDP: Choose Silva, Greengenes or ITS</h4>
+        </div>
+        <div class="col-lg-4">
+            <h4>3 There are two essential elements to VAMPS:</h4> 
+        </div>
 	</div>
 
 Region: v1,v3 v4 v5 v6  full-length(refssu)
@@ -36,29 +38,29 @@ Silva, Greengenes
 <br>
 GAST vs RDP
 
-
-
 </div>
+<br>
+<div class="row"> 
+    <div class="col-lg-4"> Start Here:
+        <p>Choose Classifier Method:
+        <select onchange='get_ref_dbs("<%= project %>",this.value)'  >
+        <option>choose</option>
+        <% for(classifier in choices){ %>
+            <option><%=  classifier %></option>
+        <% } %>
+        </select>
+    </div>
+    <div class="col-lg-4">      
+        <div id='refdb_id'></div>
+    </div>
+    <div class="col-lg-4">      
+        <div id='start_btn_id'></div>
+    </div>
+</div>  
 
-<table class='table' >
-<tr><th>Database (Version)</th><th>Method</th><th>Reference DB</th><th></th></tr>
-<% for(id in choices){ %>
-	<% if(choices[id].availability == 'available'){ %>
-			<tr>
-					<td><%= choices[id].taxonomy_curator %></td><td><%= choices[id].method %></td><td><%= choices[id].reference_db %></td>
-					<td>
-						<a href='/user_data/start_assignment/<%= project %>/<%= id %>' class='btn btn-xs btn-success' name='assignment_choice' >Start</a>
-					</td>
-			</tr>
-	<% }else{ %>
-			<tr>
-					<td><%= choices[id].taxonomy_curator %></td><td><%= choices[id].method %></td><td><%= choices[id].reference_db %></td><td><%= choices[id].availability %></td>
-					
-			</tr>
-	<% } %>
-<% } %>
 
-</table>
+
+
 
 
 
