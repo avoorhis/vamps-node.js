@@ -893,19 +893,16 @@ CopyColumn = function() {
 showDatasets = function() {
   $('#table_div_header').hide();
   $('#firstTd').hide();
-    // .html('');
 
   $('#table_div').on('scroll', function () {
     if ($('#table_div').scrollTop() > 0) {
       $('#table_div_header').show();
       $('#firstTd').html('VAMPS dataset name').show();
-        // .html('VAMPS dataset name');
     }
     $('#table_div_header').scrollLeft($('#table_div').scrollLeft());
     if ($('#table_div').scrollTop() === 0) {
       $('#table_div_header').hide();
       $('#firstTd').hide();
-        // .html('');
     }
 
   });
