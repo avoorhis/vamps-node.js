@@ -285,11 +285,21 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (r
         }
     }
     console.log('owned_projects',owned_projects)
-    
+    console.log('MD_PRIMER_SUITE',MD_PRIMER_SUITE)
     res.render('user_data/add_metadata_to_project', {
           title: 'VAMPS:Add Metadata To Project',
           project: project,
           owned_projects : owned_projects,
+          target_gene : JSON.stringify(MD_TARGET_GENE),
+          domain : JSON.stringify(MD_DOMAIN),
+          term : JSON.stringify(MD_ENV_TERM),
+          env_package : JSON.stringify(MD_ENV_PACKAGE),
+          adapter_sequence : JSON.stringify(MD_ADAPTER_SEQUENCE),
+          sequencing_platform : JSON.stringify(MD_SEQUENCING_PLATFORM),
+          dna_region : JSON.stringify(MD_DNA_REGION),
+          run : JSON.stringify(MD_RUN),
+          primer_suite : JSON.stringify(MD_PRIMER_SUITE),
+          illumina_index : JSON.stringify(MD_ILLUMINA_INDEX),
           user: req.user, hostname: req.CONFIG.hostname
           });
           
@@ -321,39 +331,30 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
     var metadata = {}   // metadata[dname][mditem] = value
     var metadata_by_mditem = {}   // metadata[mditem][dname] = value
     var dids = DATASET_IDS_BY_PID[pid]
-    console.log('dids',dids)
+    //console.log('dids',dids)
     for(n in dids){
         dname = DATASET_NAME_BY_DID[dids[n]]
-        //console.log('dname',dname)
         metadata[dname] = AllMetadata[dids[n]]
     }
-    console.log('1')
     for(i in req.CONSTS.REQ_METADATA_FIELDS){
         reqmdname = req.CONSTS.REQ_METADATA_FIELDS[i]    // ie "target_gene"
         metadata_by_mditem[reqmdname] = {}
         for(n in dids){
             dname = DATASET_NAME_BY_DID[dids[n]]
-            console.log('1a',dname)
             if(AllMetadata.hasOwnProperty(dids[n])){
                 if(AllMetadata[dids[n]].hasOwnProperty(reqmdname+'_id')){
-                    console.log('1b',dname)
                     return_obj = helpers.required_metadata_names_from_ids(AllMetadata[dids[n]],reqmdname+'_id')
                     metadata_by_mditem[return_obj.name][dname] = return_obj.value
-                
                 }else if(AllMetadata[dids[n]].hasOwnProperty(reqmdname)){
-                    console.log('1c',dname)
                     metadata_by_mditem[reqmdname][dname] = AllMetadata[dids[n]][reqmdname]
                 }else{
-                    console.log('1d',dname)
                     metadata_by_mditem[reqmdname][dname] = 'unknown'
                 }
             }else{
-                console.log('1e',dname)
                 metadata_by_mditem[reqmdname][dname] = 'unknown'
             }
         }
     }
-    console.log('2')
     // adding custom metadata
     console.log(Object.keys(metadata_by_mditem))
     for(n in dids){
@@ -365,7 +366,6 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
             }
         }
     }
-    console.log('3')
     for(mdname in metadata_by_mditem){
         for(n in dids){
             dname = DATASET_NAME_BY_DID[dids[n]]
@@ -374,7 +374,6 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
             }
         }
     }
-    console.log('4')
     console.log(Object.keys(metadata_by_mditem))
     console.log(metadata_by_mditem)
 

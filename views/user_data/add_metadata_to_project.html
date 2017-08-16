@@ -1,6 +1,18 @@
 <% include ../add_ins/begin.ejs %>
 
-
+<script>
+    var tg = JSON.parse('<%- target_gene %>');
+    //alert(tg)
+    var dom = JSON.parse('<%- domain %>');
+    //var term = JSON.parse('<%- term %>');
+    var env_pack = JSON.parse('<%- env_package %>');
+    var adap = JSON.parse('<%- adapter_sequence %>');
+    var seqplat = JSON.parse('<%- sequencing_platform %>');
+    var dnareg = JSON.parse('<%- dna_region %>');
+    var run = JSON.parse('<%- run %>');
+    var ps = JSON.parse('<%- primer_suite %>');
+    var ii = JSON.parse('<%- illumina_index %>');
+</script>
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
 <% }else if(messages.fail){ %>
@@ -10,17 +22,21 @@
 	
 <div class="container">
 <br>
-	<div class="hero-unit">
+	<div class="pull-left">
 	    <% if(project){ %>
 	        <h3>Metadata for project: <%=  project %></h3>
 	    <% }else{ %>
-	        <select onchange='get_metadata(this.value)'>
+	        <select id='project_select_id' onchange='get_metadata(this.value)'>
 	        <option>Select Project</option>
 	        <% for(n in owned_projects){ %>
 	            <option><%= owned_projects[n] %></option>
 	        <% } %>	
 	        <select>
 	    <% } %>				        
+	</div>
+	<div class='pull-right'>
+	    <input type='button' onclick="edit_form()" Value='Edit'>
+	
 	</div>
 	<div id='metadata_table'></div>
 </div>
