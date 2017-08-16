@@ -270,8 +270,129 @@ router.post('/export_selection', helpers.isLoggedIn, function (req, res) {
 //                 user: req.user, hostname: req.CONFIG.hostname
 //           });
 // });
+// AAV add metadata to established project Aug 14 2017
+router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (req, res) {
+    console.log('in GET import_choices/add_metadata_to_pr');
+    console.log(req.query)
+    var project = req.query.project || ''
+    console.log(PROJECT_INFORMATION_BY_PID)
+    owned_projects = [] 
+    if(! project){
+        for(pid in PROJECT_INFORMATION_BY_PID){
+            if(PROJECT_INFORMATION_BY_PID[pid].oid == req.user.user_id){
+                owned_projects.push(PROJECT_INFORMATION_BY_PID[pid].project)
+            }
+        }
+    }
+    console.log('owned_projects',owned_projects)
+    
+    res.render('user_data/add_metadata_to_project', {
+          title: 'VAMPS:Add Metadata To Project',
+          project: project,
+          owned_projects : owned_projects,
+          user: req.user, hostname: req.CONFIG.hostname
+          });
+          
+          //  res.render('user_data/add_metadata_to_project', {
+//             title: 'VAMPS:Add Metadata To Project',
+//             user: req.user,
+//             hostname: req.CONFIG.hostname,
+//             all_metadata: all_metadata,
+//             all_field_names: all_field_names,
+//             dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+//             dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+//             dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+//             biome_primary_options: CONSTS.BIOME_PRIMARY,
+//             feature_primary_options: CONSTS.FEATURE_PRIMARY,
+//             material_primary_options: CONSTS.MATERIAL_PRIMARY,
+//             metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+//             env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+//             investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+//             sample_type_options: CONSTS.SAMPLE_TYPE
+//           });
+});
+router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
+    console.log('in retrieve_metadata')
+    console.log(req.body)
+    var project = req.body.project;
+    console.log(project)
+    var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
+    console.log('pid',pid)
+    var metadata = {}   // metadata[dname][mditem] = value
+    var metadata_by_mditem = {}   // metadata[mditem][dname] = value
+    var dids = DATASET_IDS_BY_PID[pid]
+    console.log('dids',dids)
+    for(n in dids){
+        dname = DATASET_NAME_BY_DID[dids[n]]
+        //console.log('dname',dname)
+        metadata[dname] = AllMetadata[dids[n]]
+    }
+    console.log('1')
+    for(i in req.CONSTS.REQ_METADATA_FIELDS){
+        reqmdname = req.CONSTS.REQ_METADATA_FIELDS[i]    // ie "target_gene"
+        metadata_by_mditem[reqmdname] = {}
+        for(n in dids){
+            dname = DATASET_NAME_BY_DID[dids[n]]
+            console.log('1a',dname)
+            if(AllMetadata.hasOwnProperty(dids[n])){
+                if(AllMetadata[dids[n]].hasOwnProperty(reqmdname+'_id')){
+                    console.log('1b',dname)
+                    return_obj = helpers.required_metadata_names_from_ids(AllMetadata[dids[n]],reqmdname+'_id')
+                    metadata_by_mditem[return_obj.name][dname] = return_obj.value
+                
+                }else if(AllMetadata[dids[n]].hasOwnProperty(reqmdname)){
+                    console.log('1c',dname)
+                    metadata_by_mditem[reqmdname][dname] = AllMetadata[dids[n]][reqmdname]
+                }else{
+                    console.log('1d',dname)
+                    metadata_by_mditem[reqmdname][dname] = 'unknown'
+                }
+            }else{
+                console.log('1e',dname)
+                metadata_by_mditem[reqmdname][dname] = 'unknown'
+            }
+        }
+    }
+    console.log('2')
+    // adding custom metadata
+    console.log(Object.keys(metadata_by_mditem))
+    for(n in dids){
+        dname = DATASET_NAME_BY_DID[dids[n]]
+        for(nm in AllMetadata[dids[n]]){
+            if(! metadata_by_mditem.hasOwnProperty(nm) && ! metadata_by_mditem.hasOwnProperty(nm.substring(0,nm.length - 3))){
+                metadata_by_mditem[nm] ={}
+                metadata_by_mditem[nm][dname] = AllMetadata[dids[n]][nm]
+            }
+        }
+    }
+    console.log('3')
+    for(mdname in metadata_by_mditem){
+        for(n in dids){
+            dname = DATASET_NAME_BY_DID[dids[n]]
+            if( ! metadata_by_mditem[mdname].hasOwnProperty(dname) ){
+                 metadata_by_mditem[mdname][dname] = 'unknown'
+            }
+        }
+    }
+    console.log('4')
+    console.log(Object.keys(metadata_by_mditem))
+    console.log(metadata_by_mditem)
 
+    res.json(metadata_by_mditem)
+// reqmdname3 geo_loc_name_id
+// reqmdname3 dna_region_id
+// reqmdname3 domain_id
+// reqmdname3 env_biome_id
+// reqmdname3 env_feature_id
+// reqmdname3 env_material_id
+// reqmdname3 env_package_id
+// reqmdname3 target_gene_id
+// reqmdname3 adapter_sequence_id
+// reqmdname3 illumina_index_id
+// reqmdname3 primer_suite_id
+// reqmdname3 run_id
 
+});
 //
 // IMPORT_CHOICES
 //

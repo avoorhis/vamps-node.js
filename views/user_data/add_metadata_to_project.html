@@ -1,0 +1,32 @@
+<% include ../add_ins/begin.ejs %>
+
+
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail" ><%- messages.fail %> </div>
+<% } %>
+	
+	
+<div class="container">
+<br>
+	<div class="hero-unit">
+	    <% if(project){ %>
+	        <h3>Metadata for project: <%=  project %></h3>
+	    <% }else{ %>
+	        <select onchange='get_metadata(this.value)'>
+	        <option>Select Project</option>
+	        <% for(n in owned_projects){ %>
+	            <option><%= owned_projects[n] %></option>
+	        <% } %>	
+	        <select>
+	    <% } %>				        
+	</div>
+	<div id='metadata_table'></div>
+</div>
+<% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/metadata_add_to_project.js"></script>
+<script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
+   
+ </body>
+ </html>

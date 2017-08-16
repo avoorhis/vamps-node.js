@@ -17,9 +17,9 @@ function view_datasets_ajax( filename, user, fxn ){
 		//var btn = document.getElementById(filename+'_open_btn_id')
 		//value = btn.value
 		
-    xmlhttp.open("POST", "/visuals/view_saved_datasets", true);
+      xmlhttp.open("POST", "/visuals/view_saved_datasets", true);
 	  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xmlhttp.onreadystatechange = function() {
+      xmlhttp.onreadystatechange = function() {
 
 		    if (xmlhttp.readyState == 4 ) {
 					var data = xmlhttp.responseText;
