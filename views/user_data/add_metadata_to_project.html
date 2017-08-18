@@ -4,7 +4,7 @@
     var tg = JSON.parse('<%- target_gene %>');
     //alert(tg)
     var dom = JSON.parse('<%- domain %>');
-    //var term = JSON.parse('<%- term %>');
+    var term = JSON.parse('<%- term %>');
     var env_pack = JSON.parse('<%- env_package %>');
     var adap = JSON.parse('<%- adapter_sequence %>');
     var seqplat = JSON.parse('<%- sequencing_platform %>');
@@ -12,6 +12,7 @@
     var run = JSON.parse('<%- run %>');
     var ps = JSON.parse('<%- primer_suite %>');
     var ii = JSON.parse('<%- illumina_index %>');
+    var reqfields = JSON.parse('<%- req_md_fields %>');
 </script>
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
@@ -34,9 +35,11 @@
 	        <select>
 	    <% } %>				        
 	</div>
-	<div class='pull-right'>
-	    <input type='button' onclick="edit_form()" Value='Edit'>
-	
+	<div class='pull-left' >
+	    <input type='button' id='edit_btn' disabled onclick="edit_form()" Value='Edit' style='visibility:hidden;'>
+	</div>
+	<div class='pull-left' >
+	    <input type='button' id='save_btn' disabled onclick="save_form()" Value='Save' style='visibility:hidden;'>
 	</div>
 	<div id='metadata_table'></div>
 </div>
