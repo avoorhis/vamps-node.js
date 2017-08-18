@@ -285,7 +285,7 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (r
         }
     }
     console.log('owned_projects',owned_projects)
-    console.log('MD_PRIMER_SUITE',MD_PRIMER_SUITE)
+    //console.log('MD_ENV_TERM',MD_ENV_TERM)
     res.render('user_data/add_metadata_to_project', {
           title: 'VAMPS:Add Metadata To Project',
           project: project,
@@ -300,6 +300,7 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (r
           run : JSON.stringify(MD_RUN),
           primer_suite : JSON.stringify(MD_PRIMER_SUITE),
           illumina_index : JSON.stringify(MD_ILLUMINA_INDEX),
+          req_md_fields : JSON.stringify(req.CONSTS.REQ_METADATA_FIELDS),
           user: req.user, hostname: req.CONFIG.hostname
           });
           

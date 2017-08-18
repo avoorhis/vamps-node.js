@@ -148,10 +148,8 @@
 		              <div class="panel-heading">
 		                <% if(user.username == 'guest'){ %>
 		                    <a disabled class="btn btn-sm btn-primary" href='/metadata/metadata_file_list'>Update Metadata</a>
-		                <% }else if(user && user.security_level == 1 || hostname.substring(0,7) !== "bpcweb8" || user.security_level == 45 ){ %>
-		                    <a class="btn btn-sm btn-primary" href='/metadata/metadata_file_list'>Update Metadata</a>
 		                <% }else{ %>
-		                    <a disabled class="btn btn-sm btn-primary" href='/metadata/metadata_file_list'>Update Metadata</a>
+		                    <a class="btn btn-sm btn-primary" href='/metadata/metadata_file_list'>Update Metadata</a>
 		                <% } %>
 		                
 		                    
