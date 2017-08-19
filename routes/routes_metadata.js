@@ -760,9 +760,15 @@ function make_csv(req) {
   var out_csv_file_name;
   console.time("TIME: make_csv");
 
+  // var csv = convertArrayOfObjectsToCSV({
+  //   data: req.form,
+  //   user_info: req.user
+  // });
+
   var csv = convertArrayOfObjectsToCSV({
     data: req.form,
-    user_info: req.user
+    user_info: req.user,
+    project_id: req.body.project_id
   });
 
   time_stamp = new Date().getTime();
@@ -808,7 +814,7 @@ function transpose_2d_arr(my_hash) {
 function convertArrayOfObjectsToCSV(args) {
   console.time("TIME: convertArrayOfObjectsToCSV");
 
-  var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_info;
+  var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_id;
 
   data = args.data || null;
   if (data === null) {
@@ -817,6 +823,11 @@ function convertArrayOfObjectsToCSV(args) {
 
   user_info = args.user_info || null;
   if (user_info === null) {
+    return null;
+  }
+
+  project_id = args.project_id || null;
+  if (project_id === null) {
     return null;
   }
 
