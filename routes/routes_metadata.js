@@ -800,10 +800,15 @@ function array_from_object(data) {
   return data_arr;
 }
 
-function transpose_2d_arr(my_hash) {
+function transpose_2d_arr(data_arr, project_id) {
   console.time("TIME: transpose_2d_arr");
-  var newArray = my_hash[0].map(function(col, i) {
-    return my_hash.map(function(row) {
+
+  var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
+  console.log("SSS1 matrix_length");
+  console.log(matrix_length);
+
+  var newArray = data_arr[0].map(function(col, i) {
+    return data_arr.map(function(row) {
       return row[i];
     });
   });
@@ -833,7 +838,7 @@ function convertArrayOfObjectsToCSV(args) {
 
   data_arr = array_from_object(data);
 
-  transposed_data_arr = transpose_2d_arr(data_arr);
+  transposed_data_arr = transpose_2d_arr(data_arr, project_id);
 
   columnDelimiter = args.columnDelimiter || ',';
   lineDelimiter = args.lineDelimiter || '\n';
