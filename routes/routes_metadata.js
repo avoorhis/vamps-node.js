@@ -803,33 +803,18 @@ function array_from_object(data) {
 function transpose_2d_arr(data_arr, project_id) {
   console.time("TIME: transpose_2d_arr");
 
+  //make an array with proper length, even if the first one is empty
   var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
-  console.log("SSS1 matrix_length");
-  console.log(matrix_length);
-
-  console.log("SSS2 data_arr[0].length");
-  console.log(data_arr[0].length);
-
   var length_array = data_arr[0];
-
-  console.log("SSS3 length_array");
-  console.log(length_array);
-
   if (data_arr[0].length < matrix_length ) {
     length_array = fill_out_arr_doubles('', matrix_length);
   }
-  console.log("SSS4 length_array");
-  console.log(length_array);
 
   var newArray = length_array.map(function(col, i) {
-    console.log("SSS55 i");
-    console.log(i);
     return data_arr.map(function(row) {
       return row[i];
     });
   });
-  console.log("SSS5 newArray");
-  console.log(newArray);
   console.timeEnd("TIME: transpose_2d_arr");
   return newArray;
 }
