@@ -807,11 +807,29 @@ function transpose_2d_arr(data_arr, project_id) {
   console.log("SSS1 matrix_length");
   console.log(matrix_length);
 
-  var newArray = data_arr[0].map(function(col, i) {
+  console.log("SSS2 data_arr[0].length");
+  console.log(data_arr[0].length);
+
+  var length_array = data_arr[0];
+
+  console.log("SSS3 length_array");
+  console.log(length_array);
+
+  if (data_arr[0].length < matrix_length ) {
+    length_array = fill_out_arr_doubles('', matrix_length);
+  }
+  console.log("SSS4 length_array");
+  console.log(length_array);
+
+  var newArray = length_array.map(function(col, i) {
+    console.log("SSS55 i");
+    console.log(i);
     return data_arr.map(function(row) {
       return row[i];
     });
   });
+  console.log("SSS5 newArray");
+  console.log(newArray);
   console.timeEnd("TIME: transpose_2d_arr");
   return newArray;
 }
