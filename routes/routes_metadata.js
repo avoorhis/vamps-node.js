@@ -570,7 +570,36 @@ function make_metadata_object_from_csv(req, res) {
   var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
   var file_content = fs.readFileSync(inputPath);
   var parse_sync = require('csv-parse/lib/sync');
-  var data = parse_sync(file_content, {columns: true, trim: true});
+  var data_arr = parse_sync(file_content, {columns: true, trim: true});
+
+  var data = {};
+  for (var dict_idx in data_arr)
+  {
+    // console.log("BBB1 dict_idx");
+    // console.log(dict_idx);
+    //
+    // console.log("BBB2 data_arr[dict_idx]");
+    // console.log(data_arr[dict_idx]);
+
+    console.log("BBB3 data_arr[dict_idx]['dataset_id']");
+    console.log(data_arr[dict_idx]['dataset_id']);
+    var dataset_id = data_arr[dict_idx]['dataset_id'];
+    data[dataset_id] = data_arr[dict_idx];
+  }
+
+  console.log("BBB0 data (make_metadata_object_from_csv)");
+  console.log(data);
+
+  // [ { NPOC: '',
+  //   access_point_type: 'undefined',
+  //   adapter_sequence: 'TGTCA',
+  //   alkalinity: '',
+  //   ammonium: '',
+
+  //data - should have did!
+  // { '4312':
+  //   { geo_loc_name_id: '6191',
+  //     gold: 'None',
 
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(data, pid);
 
