@@ -751,7 +751,9 @@ function make_csv(req) {
 
   time_stamp = new Date().getTime();
 
-  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + data.project + '_' + req.user.username + '_' + time_stamp + ".csv");
+  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + req.body.project + '_' + req.user.username + '_' + time_stamp + ".csv");
+
+  //TODO: more robust project!
 
   fs.writeFile(out_csv_file_name, csv, function (err) {
     if (err) throw err;
@@ -1036,8 +1038,6 @@ function get_file_diff(req, files) {
 
   // console.log("PPP1 inputPath1");
   // console.log(inputPath1);
-
-  // TODO: check if exactly two names
 
   var columnDelimiter = ',';
   var lineDelimiter = '\n';
