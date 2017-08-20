@@ -545,15 +545,23 @@ function slice_object(object, slice_keys) {
 }
 
 function get_project_name(edit_metadata_file) {
-  console.time("TIME: get_project_prefix");
+  console.time("TIME: get_project_name");
   // var edit_metadata_file = "metadata-project_DCO_GAI_Bv3v5_65982.csv";
   var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
   var edit_metadata_project = "";
+
+  console.log("EEE1 edit_metadata_file_parts");
+  console.log(edit_metadata_file_parts);
+
   if(edit_metadata_file_parts.length >= 4 ) {
 
     edit_metadata_project = edit_metadata_file_parts[1] + "_" + edit_metadata_file_parts[2] + "_" + edit_metadata_file_parts[3];
   }
-  console.timeEnd("TIME: get_project_prefix");
+
+  console.log("EEE1 edit_metadata_project");
+  console.log(edit_metadata_project);
+
+  console.timeEnd("TIME: get_project_name");
   return edit_metadata_project;
 }
 
@@ -697,6 +705,9 @@ function make_metadata_object_from_db(req, res) {
   //   console.log(JSON.stringify(abstract_data));
   // }
 
+
+  console.log("CCC6 dataset_ids");
+  console.log(JSON.stringify(dataset_ids));
   data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
@@ -1133,6 +1144,10 @@ function get_project_prefix(project) {
   console.time("TIME: get_project_prefix");
   var project_parts = project.split('_');
   var project_prefix = project;
+
+  console.log("PPP1 project_parts");
+  console.log(project_parts);
+
   if(project_parts.length >= 2 ){
     project_prefix = project_parts[0] + '_' + project_parts[1];
   }
