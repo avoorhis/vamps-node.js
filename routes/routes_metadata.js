@@ -550,16 +550,10 @@ function get_project_name(edit_metadata_file) {
   var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
   var edit_metadata_project = "";
 
-  console.log("EEE1 edit_metadata_file_parts");
-  console.log(edit_metadata_file_parts);
-
   if(edit_metadata_file_parts.length >= 4 ) {
 
     edit_metadata_project = edit_metadata_file_parts[1] + "_" + edit_metadata_file_parts[2] + "_" + edit_metadata_file_parts[3];
   }
-
-  console.log("EEE2 edit_metadata_project");
-  console.log(edit_metadata_project);
 
   console.timeEnd("TIME: get_project_name");
   return edit_metadata_project;
@@ -577,16 +571,13 @@ function make_metadata_object_from_csv(req, res) {
   var file_content = fs.readFileSync(inputPath);
   var parse_sync = require('csv-parse/lib/sync');
   var data = parse_sync(file_content, {columns: true, trim: true});
-  console.log("HHH1 Here");
 
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(data, pid);
-  console.log("HHH2 Here");
 
   // console.log("BBB1 data_in_obj_of_arr (make_metadata_object_from_csv)");
   // console.log(data_in_obj_of_arr);
 
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
-  console.log("HHH3 Here");
 
   render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
