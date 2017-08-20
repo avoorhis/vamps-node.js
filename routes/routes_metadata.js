@@ -947,6 +947,12 @@ router.get('/metadata_file_list', function(req, res) {
   console.log('in metadata_file_list');
   var user_metadata_csv_files = get_csv_files(req);
 
+  user_metadata_csv_files.sort(function sortByTime(a, b) {
+    //reverse sort: recent-->oldest
+    return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
+  });
+
+
   res.render('metadata/metadata_file_list', { title: 'VAMPS:Metadata',
     user: req.user,
     hostname: req.CONFIG.hostname,
