@@ -575,31 +575,9 @@ function make_metadata_object_from_csv(req, res) {
   var data = {};
   for (var dict_idx in data_arr)
   {
-    // console.log("BBB1 dict_idx");
-    // console.log(dict_idx);
-    //
-    // console.log("BBB2 data_arr[dict_idx]");
-    // console.log(data_arr[dict_idx]);
-
-    console.log("BBB3 data_arr[dict_idx]['dataset_id']");
-    console.log(data_arr[dict_idx]['dataset_id']);
     var dataset_id = data_arr[dict_idx]['dataset_id'];
     data[dataset_id] = data_arr[dict_idx];
   }
-
-  console.log("BBB0 data (make_metadata_object_from_csv)");
-  console.log(data);
-
-  // [ { NPOC: '',
-  //   access_point_type: 'undefined',
-  //   adapter_sequence: 'TGTCA',
-  //   alkalinity: '',
-  //   ammonium: '',
-
-  //data - should have did!
-  // { '4312':
-  //   { geo_loc_name_id: '6191',
-  //     gold: 'None',
 
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(data, pid);
 
@@ -730,8 +708,8 @@ function make_metadata_object_from_db(req, res) {
   // }
 
 
-  console.log("CCC6 dataset_ids");
-  console.log(JSON.stringify(dataset_ids));
+  // console.log("CCC6 dataset_ids");
+  // console.log(JSON.stringify(dataset_ids));
   data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
@@ -747,55 +725,21 @@ function from_obj_to_obj_of_arr(data, pid) {
   console.time("TIME: from_obj_to_obj_of_arr");
   var obj_of_arr = {};
 
-  console.log("SSS00 data");
-  console.log(data);
-  // should be
-  // SSS00 data
-  // { '4312':
-  //   { geo_loc_name_id: '6191',
-  //     gold: 'None',
-  //
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
-  console.log("DDD1 Here");
 
   var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
-  console.log("DDD2 Here");
 
   for (var did_idx in dataset_ids) {
     var did = dataset_ids[did_idx];
-
-    console.log("SSS21 did");
-    console.log(did);
-
     for (var field_name_idx in all_field_names) {
 
       var field_name = all_field_names[field_name_idx];
-
-      console.log("SSS23 field_name");
-      console.log(field_name);
-
       if (!(obj_of_arr.hasOwnProperty(field_name))) {
         obj_of_arr[field_name] = [];
       }
-      // console.log("SSS24 obj_of_arr");
-      // console.log(obj_of_arr);
-      //
-      console.log("SSS241 obj_of_arr[field_name]");
-      console.log(obj_of_arr[field_name]);
-
-      console.log("SSS25 data[did]");
-      console.log(data[did]);
-      undefined
-
-      // console.log("SSS26 data[did][field_name]");
-      // console.log(data[did][field_name]);
-
-
       obj_of_arr[field_name].push(data[did][field_name]);
     }
-
   }
-  console.log("DDD3 Here");
 
   console.timeEnd("TIME: from_obj_to_obj_of_arr");
   return obj_of_arr;
@@ -1203,9 +1147,6 @@ function get_project_prefix(project) {
   var project_parts = project.split('_');
   var project_prefix = project;
 
-  console.log("PPP1 project_parts");
-  console.log(project_parts);
-
   if(project_parts.length >= 2 ){
     project_prefix = project_parts[0] + '_' + project_parts[1];
   }
@@ -1253,10 +1194,6 @@ function get_field_names(dataset_ids){
   var field_names_arr = [];
   field_names_arr = field_names_arr.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
   field_names_arr = field_names_arr.concat(CONSTS.METADATA_NAMES_ADD);
-
-  console.log("SSS1 dataset_ids");
-  console.log("dataset_ids");
-
 
   for (var i = 0; i < dataset_ids.length; i++) {
     var dataset_id = dataset_ids[i];
