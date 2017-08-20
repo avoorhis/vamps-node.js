@@ -559,8 +559,7 @@ function get_project_name(edit_metadata_file) {
 
 function make_metadata_object_from_csv(req, res) {
   console.time("TIME: make_metadata_object_from_csv");
-  console.log("RRR1 req.body");
-  console.log(req.body);
+
   var file_name = req.body.edit_metadata_file;
   var project_name = get_project_name(file_name);
   var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
@@ -640,16 +639,13 @@ function make_metadata_object_from_db(req, res) {
   //repeated!
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
-  console.log("MMM0 project");
-  console.log(project);
+  // console.log("MMM0 project");
+  // console.log(project);
 
   // get_db_data
   console.time("TIME: slice_object");
   var AllMetadata_picked = slice_object(AllMetadata, dataset_ids);
   console.timeEnd("TIME: slice_object");
-
-  console.log("MMM1 AllMetadata_picked");
-  console.log(AllMetadata_picked);
 
   console.time("TIME: dataset_info");
   // get dataset_info
@@ -688,12 +684,8 @@ function make_metadata_object_from_db(req, res) {
   }
   console.timeEnd("TIME: add missing info to AllMetadata_picked");
 
-  console.log("MMM21 AllMetadata_picked");
-  console.log(AllMetadata_picked);
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata_picked, pid);
 
-  console.log("MMM11 data_in_obj_of_arr");
-  console.log(data_in_obj_of_arr);
   // add abstract_data
   var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
   if (typeof abstract_data === 'undefined') {
@@ -707,13 +699,10 @@ function make_metadata_object_from_db(req, res) {
 
   data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 
-  console.log("DDD data_in_obj_of_arr");
-  console.log(data_in_obj_of_arr);
-
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
-  console.log("DDD2 all_metadata");
-  console.log(JSON.stringify(all_metadata));
+  // console.log("DDD2 all_metadata");
+  // console.log(JSON.stringify(all_metadata));
   render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
   console.timeEnd("TIME: make_metadata_object_from_db");
@@ -723,20 +712,9 @@ function from_obj_to_obj_of_arr(data, pid) {
   console.time("TIME: from_obj_to_obj_of_arr");
   var obj_of_arr = {};
 
-  console.log("TTT1 data");
-  console.log(JSON.stringify(data));
-
-
-  console.log("TTT2 pid");
-  console.log(JSON.stringify(pid));
-
 
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
   var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
-
-  console.log("TTT3 all_field_names");
-  console.log(JSON.stringify(all_field_names));
-
 
   for (var did_idx in dataset_ids) {
     var did = dataset_ids[did_idx];
@@ -1109,9 +1087,6 @@ function isUnique(all_clean_field_names_arr, column_name) {
 function get_project_info(project_name_or_pid) {
   var project_info;
 
-  console.log("JJJ13 project_name_or_pid");
-  console.log(project_name_or_pid);
-
   if (helpers.isInt(project_name_or_pid)) {
     project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
   }
@@ -1214,34 +1189,18 @@ function get_field_names(dataset_ids){
 function fill_out_arr_doubles(value, repeat_times) {
   var arr_temp = Array(repeat_times);
 
-  console.log("GGG1 value");
-  console.log(value);
-
-  console.log("GGG2 arr_temp");
-  console.log(arr_temp);
-
-  console.log("GGG3 repeat_times");
-  console.log(repeat_times);
-
   arr_temp.fill(value, 0, repeat_times);
 
-  console.log("GGG4 arr_temp");
-  console.log(arr_temp);
   return arr_temp;
 }
 
 function make_metadata_object(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
-  console.log("GGG info");
-  console.log(info);
 
   var all_metadata = {};
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
   var repeat_times = dataset_ids.length;
-
-  console.log("DDD2 project");
-  console.log(JSON.stringify(project));
 
   // 0) get field_names
   var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
@@ -1252,58 +1211,28 @@ function make_metadata_object(req, res, pid, info) {
   // 1)
   // TODO: don't send all_metadata?
   all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
-  console.log("MMM2 all_metadata");
-  console.log(all_metadata);
+  // console.log("MMM2 all_metadata");
+  // console.log(all_metadata);
 
   //2) all
   all_metadata[pid] = info;
 
-  console.log("LLL1 pid");
-  console.log(JSON.stringify(pid));
-
-  console.log("LLL2 info");
-  console.log(JSON.stringify(info));
-
-  console.log("LLL3 all_metadata[pid]");
-  console.log(JSON.stringify(all_metadata[pid]));
   //3) special
 
   // TODO: move to db creation?
   var project_info = get_project_info(pid);
 
-  console.log("JJJ11 project_info");
-  console.log(project_info);
-
-  console.log("MMM33 all_metadata[pid]");
-  console.log(JSON.stringify(all_metadata[pid]));
+  // console.log("MMM33 all_metadata[pid]");
+  // console.log(JSON.stringify(all_metadata[pid]));
 
   for (var idx in CONSTS.METADATA_NAMES_ADD) {
     var field_name = CONSTS.METADATA_NAMES_ADD[idx];
 
     //todo: split if, if length == dataset_ids.length - just use as is
     if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
-      console.log("PPP1 all_metadata[pid]");
-      console.log(JSON.stringify(all_metadata[pid]));
-
-      console.log("PPP2 field_name");
-      console.log(JSON.stringify(field_name));
-
-      console.log("PPP3 repeat_times");
-      console.log(JSON.stringify(repeat_times));
-
       all_metadata[pid][field_name] = fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
     }
     else {
-      console.log("PPP4 project_info[field_name]");
-      console.log(JSON.stringify(project_info[field_name]));
-
-      console.log("PPP5 field_name");
-      console.log(JSON.stringify(field_name));
-
-      console.log("PPP6 repeat_times");
-      console.log(JSON.stringify(repeat_times));
-
-
       all_metadata[pid][field_name] = fill_out_arr_doubles(project_info[field_name], repeat_times);
     }
   }
@@ -1319,8 +1248,8 @@ function make_metadata_object(req, res, pid, info) {
     }
   }
 
-  console.log("MMM9 all_metadata");
-  console.log(JSON.stringify(all_metadata));
+  // console.log("MMM9 all_metadata");
+  // console.log(JSON.stringify(all_metadata));
 
 
   console.timeEnd("TIME: make_metadata_object");
