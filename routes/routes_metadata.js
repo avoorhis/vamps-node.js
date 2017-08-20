@@ -1227,20 +1227,26 @@ function make_metadata_object(req, res, pid, info) {
 
   // console.log("HHH3 all_field_names");
   // console.log(JSON.stringify(all_field_names));
+  console.log("HHH1 HERE");
 
   // 1)
   // TODO: don't send all_metadata?
   all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
   // console.log("MMM2 all_metadata");
   // console.log(all_metadata);
+  console.log("HHH2 HERE");
+
 
   //2) all
   all_metadata[pid] = info;
+
+  console.log("HHH3 HERE");
 
   //3) special
 
   // TODO: move to db creation?
   var project_info = get_project_info(pid);
+  console.log("HHH4 HERE");
 
   // console.log("MMM33 all_metadata[pid]");
   // console.log(JSON.stringify(all_metadata[pid]));
@@ -1257,16 +1263,43 @@ function make_metadata_object(req, res, pid, info) {
     }
   }
 
-  if (! Array.isArray(all_metadata[pid]["project_abstract"][0]) ) {
-    var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]["project_abstract"]);
+  console.log("HHH5 HERE");
 
-    if ( typeof project_abstract_correct_form[0] !== 'undefined' ) {
-      all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(project_abstract_correct_form[0].split(","), repeat_times);
-    }
-    else {
-      all_metadata[pid]["project_abstract"] = fill_out_arr_doubles("", repeat_times);
+  console.log("LLL0 pid");
+  console.log(pid);
+
+  console.log("LLL1 all_metadata[pid]");
+  console.log(all_metadata[pid]);
+
+  console.log("LLL2 all_metadata[pid].hasOwnProperty([\"project_abstract\"])");
+  console.log(all_metadata[pid].hasOwnProperty(["project_abstract"]));
+  // false
+  if ((all_metadata[pid]["project_abstract"] === 'undefined') || (! all_metadata[pid].hasOwnProperty(["project_abstract"])))
+  {
+    console.log("HHH51 HERE");
+
+    all_metadata[pid]["project_abstract"] = fill_out_arr_doubles("", repeat_times);
+  }
+  else {
+
+    console.log("HHH52 HERE");
+
+    if ((all_metadata[pid]["project_abstract"][0] !== 'undefined') && (! Array.isArray(all_metadata[pid]["project_abstract"][0]) )) {
+      console.log("HHH53 HERE");
+
+      var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]["project_abstract"]);
+      console.log("HHH54 HERE");
+
+      if ( typeof project_abstract_correct_form[0] !== 'undefined' ) {
+        console.log("HHH55 HERE");
+
+        all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(project_abstract_correct_form[0].split(","), repeat_times);
+        console.log("HHH56 HERE");
+
+      }
     }
   }
+  console.log("HHH6 HERE");
 
   // console.log("MMM9 all_metadata");
   // console.log(JSON.stringify(all_metadata));
