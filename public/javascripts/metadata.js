@@ -391,17 +391,19 @@ var biome_seq_options = {
         "terrigenous"],
 
     "water": ["none",
-        "acidic water",
-        "alkaline water",
-        "anoxic water",
-        "brackish water",
-        "fresh groundwater",
-        "fresh water",
-        "groundwater",
-        "hypersaline water",
-        "saline groundwater",
-        "saline water",
-        "sea water"],
+      "acidic water",
+      "alkaline water",
+      "anoxic water",
+      "brackish water",
+      "fresh groundwater",
+      "fresh water",
+      "groundwater",
+      "hypersaline water",
+      "saline groundwater",
+      "saline water",
+      "sea water",
+      "underground water"
+    ],
 
 
 
@@ -413,7 +415,6 @@ var biome_seq_options = {
         "oil",
         "pore fluid",
         "seep fluid",
-        "underground water",
         "vent fluid",
         "waste material"],
 
