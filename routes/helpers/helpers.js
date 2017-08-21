@@ -20,6 +20,7 @@ module.exports.isLoggedIn = function(req, res, next) {
   // if user is authenticated in the session, carry on
 
   if (req.isAuthenticated()) {
+    console.log(helpers.log_timestamp());
     console.log("Hurray! isLoggedIn.req.isAuthenticated:", req.user.username);
     return next();
   }
