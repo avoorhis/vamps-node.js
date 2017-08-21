@@ -36,6 +36,7 @@ router.post('/login',  passport.authenticate('local-login', {
     fs.ensureDir(data_dir, function (err) {
         if(err) {console.log(err);} // => null
         else{
+          console.log(helpers.log_timestamp());
             console.log('Checking USER_FILES_BASE: '+data_dir+' Exists - yes')
             fs.chmod(data_dir, 0775, function (err) {
                 if(err) {console.log(err);} // ug+rwx

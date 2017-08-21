@@ -1790,3 +1790,14 @@ module.exports.has_duplicates = function(myArray)
 {
   return ((parseInt(new Set(myArray).size)) !== parseInt(myArray.length));
 };
+
+module.exports.log_timestamp = function()
+{
+  var date = new Date();
+  // console.log("date.toDateString():");
+  // console.log(date.toDateString());
+  var day = date.toLocaleDateString();
+  var time = date.toLocaleTimeString();
+  return day + " " + time;
+};
+
