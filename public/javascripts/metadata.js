@@ -909,14 +909,32 @@ showDatasets = function() {
   });
 };
 
+showSubmitMessage = function() {
+
+  $('#add_project_form_submit_btn').click(function () {
+    alert('Your information was saved in a csv file, please notify the Site administration if you have finished editing.');
+    $('#add_project_form').submit();
+  });
+};
+//  console.log("RRR1 req");
+// console.log(req);
+// req.flash("success", 'file ' + out_csv_file_name + ' saved.');
+// console.log('file ' + out_csv_file_name + ' saved');
+// var msg = 'file ' + out_csv_file_name + ' saved, please notify the Site administration if you have finished editing.';
+// req.flash("success", 'file  saved.');
+// console.log("RRR2 req");
+// console.log(req);
+// req.flash("fail", msg);
+
 // ---
 
 $(document).ready(function(){
+  showSubmitMessage();
+
   showDatasets();
   addCopyBtns();
   CopyColumn();
   addCopyFirst();
   copyFirst();
   fnAdjustTable();
-
 });
