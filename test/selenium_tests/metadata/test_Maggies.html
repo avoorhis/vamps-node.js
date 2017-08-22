@@ -3,14 +3,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="selenium.base" href="https://vamps2.mbl.edu/" />
-<title>run_submit_after_filter</title>
+<link rel="selenium.base" href="http://localhost:3000/" />
+<title>test_Maggies</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">run_submit_after_filter</td></tr>
+<tr><td rowspan="1" colspan="3">test_Maggies</td></tr>
 </thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/projects/815</td>
+	<td></td>
+</tr>
 <tr>
 	<td>click</td>
 	<td>link=Options</td>
@@ -22,8 +27,18 @@
 	<td></td>
 </tr>
 <tr>
+	<td>select</td>
+	<td>id=env_package0</td>
+	<td>label=misc environment</td>
+</tr>
+<tr>
 	<td>clickAndWait</td>
 	<td>xpath=(//button[@type='submit'])[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@name='']</td>
 	<td></td>
 </tr>
 <tr>
@@ -36,6 +51,7 @@
 	<td>link=Update Metadata</td>
 	<td></td>
 </tr>
+
 </tbody></table>
 </body>
 </html>

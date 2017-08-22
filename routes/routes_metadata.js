@@ -545,20 +545,23 @@ function slice_object(object, slice_keys) {
 }
 
 function get_project_name(edit_metadata_file) {
-  console.time("TIME: get_project_prefix");
+  console.time("TIME: get_project_name");
   // var edit_metadata_file = "metadata-project_DCO_GAI_Bv3v5_65982.csv";
   var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
   var edit_metadata_project = "";
+
   if(edit_metadata_file_parts.length >= 4 ) {
 
     edit_metadata_project = edit_metadata_file_parts[1] + "_" + edit_metadata_file_parts[2] + "_" + edit_metadata_file_parts[3];
   }
-  console.timeEnd("TIME: get_project_prefix");
+
+  console.timeEnd("TIME: get_project_name");
   return edit_metadata_project;
 }
 
 function make_metadata_object_from_csv(req, res) {
   console.time("TIME: make_metadata_object_from_csv");
+
   var file_name = req.body.edit_metadata_file;
   var project_name = get_project_name(file_name);
   var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
@@ -567,8 +570,16 @@ function make_metadata_object_from_csv(req, res) {
   var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
   var file_content = fs.readFileSync(inputPath);
   var parse_sync = require('csv-parse/lib/sync');
-  var data = parse_sync(file_content, {columns: true, trim: true});
-  var data_in_obj_of_arr = from_obj_to_obj_of_arr(data);
+  var data_arr = parse_sync(file_content, {columns: true, trim: true});
+
+  var data = {};
+  for (var dict_idx in data_arr)
+  {
+    var dataset_id = data_arr[dict_idx]['dataset_id'];
+    data[dataset_id] = data_arr[dict_idx];
+  }
+
+  var data_in_obj_of_arr = from_obj_to_obj_of_arr(data, pid);
 
   // console.log("BBB1 data_in_obj_of_arr (make_metadata_object_from_csv)");
   // console.log(data_in_obj_of_arr);
@@ -638,6 +649,8 @@ function make_metadata_object_from_db(req, res) {
   //repeated!
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
+  // console.log("MMM0 project");
+  // console.log(project);
 
   // get_db_data
   console.time("TIME: slice_object");
@@ -694,13 +707,15 @@ function make_metadata_object_from_db(req, res) {
   //   console.log(JSON.stringify(abstract_data));
   // }
 
-  data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 
-  // console.log("DDD data_in_obj_of_arr");
-  // console.log(data_in_obj_of_arr);
+  // console.log("CCC6 dataset_ids");
+  // console.log(JSON.stringify(dataset_ids));
+  data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
+  // console.log("DDD2 all_metadata");
+  // console.log(JSON.stringify(all_metadata));
   render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
 
   console.timeEnd("TIME: make_metadata_object_from_db");
@@ -711,18 +726,19 @@ function from_obj_to_obj_of_arr(data, pid) {
   var obj_of_arr = {};
 
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
+
   var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
 
   for (var did_idx in dataset_ids) {
     var did = dataset_ids[did_idx];
     for (var field_name_idx in all_field_names) {
+
       var field_name = all_field_names[field_name_idx];
       if (!(obj_of_arr.hasOwnProperty(field_name))) {
         obj_of_arr[field_name] = [];
       }
       obj_of_arr[field_name].push(data[did][field_name]);
     }
-
   }
 
   console.timeEnd("TIME: from_obj_to_obj_of_arr");
@@ -735,14 +751,22 @@ function make_csv(req) {
   var out_csv_file_name;
   console.time("TIME: make_csv");
 
+  // var csv = convertArrayOfObjectsToCSV({
+  //   data: req.form,
+  //   user_info: req.user
+  // });
+
   var csv = convertArrayOfObjectsToCSV({
     data: req.form,
-    user_info: req.user
+    user_info: req.user,
+    project_id: req.body.project_id
   });
 
   time_stamp = new Date().getTime();
 
-  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + data.project + '_' + req.user.username + '_' + time_stamp + ".csv");
+  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + req.body.project + '_' + req.user.username + '_' + time_stamp + ".csv");
+
+  //TODO: more robust project!
 
   fs.writeFile(out_csv_file_name, csv, function (err) {
     if (err) throw err;
@@ -769,10 +793,18 @@ function array_from_object(data) {
   return data_arr;
 }
 
-function transpose_2d_arr(my_hash) {
+function transpose_2d_arr(data_arr, project_id) {
   console.time("TIME: transpose_2d_arr");
-  var newArray = my_hash[0].map(function(col, i) {
-    return my_hash.map(function(row) {
+
+  //make an array with proper length, even if the first one is empty
+  var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
+  var length_array = data_arr[0];
+  if (data_arr[0].length < matrix_length ) {
+    length_array = fill_out_arr_doubles('', matrix_length);
+  }
+
+  var newArray = length_array.map(function(col, i) {
+    return data_arr.map(function(row) {
       return row[i];
     });
   });
@@ -783,7 +815,7 @@ function transpose_2d_arr(my_hash) {
 function convertArrayOfObjectsToCSV(args) {
   console.time("TIME: convertArrayOfObjectsToCSV");
 
-  var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_info;
+  var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_id;
 
   data = args.data || null;
   if (data === null) {
@@ -795,9 +827,14 @@ function convertArrayOfObjectsToCSV(args) {
     return null;
   }
 
+  project_id = args.project_id || null;
+  if (project_id === null) {
+    return null;
+  }
+
   data_arr = array_from_object(data);
 
-  transposed_data_arr = transpose_2d_arr(data_arr);
+  transposed_data_arr = transpose_2d_arr(data_arr, project_id);
 
   columnDelimiter = args.columnDelimiter || ',';
   lineDelimiter = args.lineDelimiter || '\n';
@@ -923,6 +960,12 @@ router.get('/metadata_file_list', function(req, res) {
   console.log('in metadata_file_list');
   var user_metadata_csv_files = get_csv_files(req);
 
+  user_metadata_csv_files.sort(function sortByTime(a, b) {
+    //reverse sort: recent-->oldest
+    return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
+  });
+
+
   res.render('metadata/metadata_file_list', { title: 'VAMPS:Metadata',
     user: req.user,
     hostname: req.CONFIG.hostname,
@@ -1015,8 +1058,6 @@ function get_file_diff(req, files) {
   // console.log("PPP1 inputPath1");
   // console.log(inputPath1);
 
-  // TODO: check if exactly two names
-
   var columnDelimiter = ',';
   var lineDelimiter = '\n';
   var cellEscape = '"';
@@ -1064,6 +1105,7 @@ function isUnique(all_clean_field_names_arr, column_name) {
 
 function get_project_info(project_name_or_pid) {
   var project_info;
+
   if (helpers.isInt(project_name_or_pid)) {
     project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
   }
@@ -1104,6 +1146,7 @@ function get_project_prefix(project) {
   console.time("TIME: get_project_prefix");
   var project_parts = project.split('_');
   var project_prefix = project;
+
   if(project_parts.length >= 2 ){
     project_prefix = project_parts[0] + '_' + project_parts[1];
   }
@@ -1165,20 +1208,19 @@ function get_field_names(dataset_ids){
 
 function fill_out_arr_doubles(value, repeat_times) {
   var arr_temp = Array(repeat_times);
+
   arr_temp.fill(value, 0, repeat_times);
+
   return arr_temp;
 }
 
 function make_metadata_object(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
-  // console.log("GGG info");
-  // console.log(info);
 
   var all_metadata = {};
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
   var repeat_times = dataset_ids.length;
-
 
   // 0) get field_names
   var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
@@ -1195,19 +1237,18 @@ function make_metadata_object(req, res, pid, info) {
   //2) all
   all_metadata[pid] = info;
 
-  // console.log("JJJ1 all_metadata[pid]");
-  // console.log(all_metadata[pid]);
-
   //3) special
 
   // TODO: move to db creation?
   var project_info = get_project_info(pid);
+  // console.log("MMM33 all_metadata[pid]");
+  // console.log(JSON.stringify(all_metadata[pid]));
 
   for (var idx in CONSTS.METADATA_NAMES_ADD) {
     var field_name = CONSTS.METADATA_NAMES_ADD[idx];
 
     //todo: split if, if length == dataset_ids.length - just use as is
-    if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length === 1) {
+    if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
       all_metadata[pid][field_name] = fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
     }
     else {
@@ -1215,18 +1256,25 @@ function make_metadata_object(req, res, pid, info) {
     }
   }
 
-  if (! Array.isArray(all_metadata[pid]["project_abstract"][0]) ) {
-    var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]["project_abstract"]);
+  if ((all_metadata[pid]["project_abstract"] === 'undefined') || (! all_metadata[pid].hasOwnProperty(["project_abstract"])))
+  {
+    all_metadata[pid]["project_abstract"] = fill_out_arr_doubles("", repeat_times);
+  }
+  else {
 
-    if ( typeof project_abstract_correct_form[0] !== 'undefined' ) {
-      all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(project_abstract_correct_form[0].split(","), repeat_times);
-    }
-    else {
-      all_metadata[pid]["project_abstract"] = fill_out_arr_doubles("", repeat_times);
+    if ((all_metadata[pid]["project_abstract"][0] !== 'undefined') && (! Array.isArray(all_metadata[pid]["project_abstract"][0]) )) {
+
+      var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]["project_abstract"]);
+
+      if ( typeof project_abstract_correct_form[0] !== 'undefined' ) {
+
+        all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(project_abstract_correct_form[0].split(","), repeat_times);
+
+      }
     }
   }
 
-  // console.log("MMM3 all_metadata");
+  // console.log("MMM9 all_metadata");
   // console.log(JSON.stringify(all_metadata));
 
 
