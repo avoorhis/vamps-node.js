@@ -314,19 +314,22 @@ router.post('/find_projects_in_geo_area',  function(req, res){
             dids.push(did)
         }
     }
+    //console.log('old dids',dids)
     var new_did_list =  helpers.screen_dids_for_permissions(req, dids)
+    //console.log('new dids',new_did_list)
     for(n in new_did_list){
-        did = PROJECT_ID_BY_DID[new_did_list[n]]
-        //console.log('did',did)
-        pname = PROJECT_INFORMATION_BY_PID[did].project
+        var did = new_did_list[n]
+        var pid = PROJECT_ID_BY_DID[did]
+        //console.log('pid',pid)
+        var pname = PROJECT_INFORMATION_BY_PID[pid].project
         //console.log('pname',pname)
         //console.log('pname2',DatasetsWithLatLong[did].latitude)
         
         project_list[pname] = {"latitude":DatasetsWithLatLong[did].latitude, "longitude":DatasetsWithLatLong[did].longitude}
     
     }
-    console.log('project_list')
-    console.log(JSON.stringify(project_list))
+    //console.log('project_list')
+    //console.log(JSON.stringify(project_list))
     //console.log('two')
     //res.send(JSON.stringify(Object.keys(project_list)))
     res.send(JSON.stringify(project_list))
