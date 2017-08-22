@@ -20,6 +20,7 @@ module.exports.isLoggedIn = function(req, res, next) {
   // if user is authenticated in the session, carry on
 
   if (req.isAuthenticated()) {
+    console.log(helpers.log_timestamp());
     console.log("Hurray! isLoggedIn.req.isAuthenticated:", req.user.username);
     return next();
   }
@@ -1796,4 +1797,14 @@ module.exports.unique_array = function(myArray)
 module.exports.has_duplicates = function(myArray)
 {
   return ((parseInt(new Set(myArray).size)) !== parseInt(myArray.length));
+};
+
+module.exports.log_timestamp = function()
+{
+  var date = new Date();
+  // console.log("date.toDateString():");
+  // console.log(date.toDateString());
+  var day = date.toLocaleDateString();
+  var time = date.toLocaleTimeString();
+  return day + " " + time;
 };
