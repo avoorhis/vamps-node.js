@@ -89,15 +89,17 @@ function get_metadata(project){
 //
 //
 function edit_form(){
+    //alert(loc['8840'])
+    //alert('8840')
     project = document.getElementById('project_select_id').value;
     table_data = response
     document.getElementById('save_btn').disabled = false;
     document.getElementById('save_btn').style.visibility = 'visible';
+    document.getElementById('edit_btn').disabled = true;
+    document.getElementById('edit_btn').style.visibility = 'hidden';
     var html = ''
             
- 
             html += "<table border='1'>"
-            
             //alert(response)
             if(response.hasOwnProperty('latitude')){
                 datasets = Object.keys(response.latitude)
@@ -105,11 +107,10 @@ function edit_form(){
                 alert('No required metadata')
                 return
             }
-            
             sorted_datasets = datasets.sort()
             sorted_keys = Object.keys(response).sort() 
             //alert(datasets)
-            html += "<tr><th></th>"
+            html += "<tr><th></th><th></th>"
             for(j in sorted_datasets){
                 html += "<th>"+sorted_datasets[j]+"</th>"
             }
@@ -117,10 +118,12 @@ function edit_form(){
             n=0
             for(i in sorted_keys){
                 mditem = sorted_keys[i]
+                html += "<tr><td style='padding:0 2px;'>"
                 if(reqfields.indexOf(mditem) == -1){ 
-                    html += "<tr><td>"+mditem+"</td>"
+                    html += "<input type='checkbox' id='' >"
+                    html += "</td><td>"+mditem+"</td>"
                 }else{
-                    html += "<tr><td>"+mditem+"*</td>"
+                    html += "<input disabled type='checkbox'></td><td>"+mditem+"*</td>"
                 }
                 for(j in sorted_datasets){
                     ds = sorted_datasets[j]
@@ -129,36 +132,36 @@ function edit_form(){
                     html += "<td style=''>"
                     if(mditem == 'geo_loc_name'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"  
-                        for(id in term){
-                            line = "<option value='"+id+"'>"+term[id]+'</option>'
-                            if(term[id] == value){                               line = "<option selected value='"+id+"'>"+term[id]+'</option>'                            }
-                            tmp += line
-                        }
+                        // for(id in loc){
+//                             line = "<option value='"+id+"'>"+loc[id]+'</option>'
+//                             if(loc[id] == value){                               line = "<option selected value='"+id+"'>"+loc[id]+'</option>'                            }
+//                             tmp += line
+//                         }
                         tmp += "</select>"
                         html += tmp
                     }else if(mditem == 'env_material'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"  
-                        for(id in term){
-                            line = "<option value='"+id+"'>"+term[id]+'</option>'
-                            if(term[id] == value){                               line = "<option selected value='"+id+"'>"+term[id]+'</option>'                            }
+                        for(id in mat){
+                            line = "<option value='"+id+"'>"+mat[id]+'</option>'
+                            if(mat[id] == value){                               line = "<option selected value='"+id+"'>"+mat[id]+'</option>'                            }
                             tmp += line
                         }
                         tmp += "</select>"
                         html += tmp
                     }else if(mditem == 'env_feature'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"  
-                        for(id in term){
-                            line = "<option value='"+id+"'>"+term[id]+'</option>'
-                            if(term[id] == value){                               line = "<option selected value='"+id+"'>"+term[id]+'</option>'                            }
+                        for(id in feat){
+                            line = "<option value='"+id+"'>"+feat[id]+'</option>'
+                            if(feat[id] == value){                               line = "<option selected value='"+id+"'>"+feat[id]+'</option>'                            }
                             tmp += line
                         }
                         tmp += "</select>"
                         html += tmp
                     }else if(mditem == 'env_biome'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"
-                        for(id in term){
-                           line = "<option value='"+id+"'>"+term[id]+'</option>'
-                           if(term[id] == value){                               line = "<option selected value='"+id+"'>"+term[id]+'</option>'                           }
+                        for(id in biom){
+                           line = "<option value='"+id+"'>"+biom[id]+'</option>'
+                           if(biom[id] == value){                               line = "<option selected value='"+id+"'>"+biom[id]+'</option>'                           }
                            tmp += line
                         }
                         tmp += "</select>"
@@ -261,6 +264,7 @@ function edit_form(){
 //
 //
 function save_form(){
-    project = document.getElementById('project_select_id').value;
     
+    project = document.getElementById('project_select_id').value;
+    alert('not yet')
 }

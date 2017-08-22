@@ -300,7 +300,7 @@ router.post('/find_projects_in_geo_area',  function(req, res){
     }
     var dids = []
     var project_list = {}
-    console.log(DatasetsWithLatLong)
+    //console.log(DatasetsWithLatLong)
     //console.log(parseInt(nw_lat),parseInt(nw_lon),parseInt(se_lat),parseInt(se_lon))
     console.log(nw_lat,nw_lon,se_lat,se_lon)
     for(did in DatasetsWithLatLong){
@@ -317,18 +317,17 @@ router.post('/find_projects_in_geo_area',  function(req, res){
     var new_did_list =  helpers.screen_dids_for_permissions(req, dids)
     for(n in new_did_list){
         did = PROJECT_ID_BY_DID[new_did_list[n]]
-        console.log('did',did)
+        //console.log('did',did)
         pname = PROJECT_INFORMATION_BY_PID[did].project
-        console.log('pname',pname)
-        //console.log('did',new_did_list[n])
-        //console.log('PROJECT_ID_BY_DID[new_did_list[n]]',PROJECT_ID_BY_DID[new_did_list[n]])
-        //console.log('PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[new_did_list[n]]]',PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[new_did_list[n]]])
-        //project_list[pname] = 1
-        console.log('pname2',str(DatasetsWithLatLong[did].latitude))
+        //console.log('pname',pname)
+        //console.log('pname2',DatasetsWithLatLong[did].latitude)
+        
         project_list[pname] = {"latitude":DatasetsWithLatLong[did].latitude, "longitude":DatasetsWithLatLong[did].longitude}
     
     }
+    console.log('project_list')
     console.log(JSON.stringify(project_list))
+    //console.log('two')
     //res.send(JSON.stringify(Object.keys(project_list)))
     res.send(JSON.stringify(project_list))
     

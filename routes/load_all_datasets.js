@@ -27,6 +27,7 @@ module.exports.get_datasets = function(callback){
   ALL_CLASSIFIERS_BY_PID      = {}; 
   // Metadata ids and values lookups
   MD_ENV_TERM                 = {};
+  MD_ENV_LOC                  = {};
   MD_ENV_PACKAGE              = {};
   MD_DOMAIN                   = {};
   MD_DNA_REGION               = {};
@@ -107,6 +108,7 @@ module.exports.get_datasets = function(callback){
         helpers.get_select_env_term_query(rows);          
       }
       console.log(' INITIALIZING MD_ENV_TERM');
+      console.log(' INITIALIZING MD_ENV_LOC');
   });
   
   

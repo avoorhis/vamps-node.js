@@ -64,7 +64,9 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //  MD_ILLUMINA_INDEX
 //  MD_PRIMER_SUITE
 //  MD_RUN
-//  MD_ENV_TERM    
+//  MD_ENV_TERM 
+//  MD_ENV_LOC
+ 
     //console.log(req.user)
 	if(req.params.id in PROJECT_INFORMATION_BY_PID){
       var info = PROJECT_INFORMATION_BY_PID[req.params.id]

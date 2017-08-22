@@ -319,7 +319,14 @@ module.exports.run_ranks_query = function(rank,rows){
 
 module.exports.get_select_env_term_query = function(rows){
   for (var i=0; i < rows.length; i++) {
-    MD_ENV_TERM[rows[i].term_id] = rows[i].term_name;
+    var ont = rows[i].ont
+    if(ont == 'ENVO'){
+        MD_ENV_TERM[rows[i].term_id] = rows[i].term_name;
+    }else if(ont == 'CTY' || ont == 'LZC'){
+        MD_ENV_LOC[rows[i].term_id] = rows[i].term_name;
+    }
+    
+    
   }
 };
 module.exports.get_select_env_package_query = function(rows){
@@ -1623,7 +1630,7 @@ module.exports.required_metadata_ids_from_names = function(selection_obj, mdname
     value = MD_ENV_TERM[selection_obj[idname]]
   }else if(mdname == 'geo_loc_name'){
     idname = 'geo_loc_name_id'
-    value = MD_ENV_TERM[selection_obj[idname]]
+    value = MD_ENV_LOC[selection_obj[idname]]
   }else if(mdname == 'sequencing_platform'){
     idname = 'sequencing_platform_id'
     value = MD_SEQUENCING_PLATFORM[selection_obj[idname]]
@@ -1675,7 +1682,7 @@ module.exports.required_metadata_names_from_ids = function(selection_obj, name_i
     value = MD_DOMAIN[id];
   }else if(name_id == 'geo_loc_name_id'){
     real_name = 'geo_loc_name';
-    value = MD_ENV_TERM[id];
+    value = MD_ENV_LOC[id];
   }else if(name_id == 'sequencing_platform_id'){
     real_name = 'sequencing_platform';
     value = MD_SEQUENCING_PLATFORM[id];

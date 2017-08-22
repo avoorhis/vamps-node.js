@@ -1,10 +1,16 @@
 <% include ../add_ins/begin.ejs %>
-
+<% var feat = JSON.parse(feature) %>
+<% var mat = JSON.parse(material) %>
+<% var biom = JSON.parse(biome) %>
+<% //var loc = JSON.parse(location) %>
 <script>
     var tg = JSON.parse('<%- target_gene %>');
     //alert(tg)
     var dom = JSON.parse('<%- domain %>');
-    var term = JSON.parse('<%- term %>');
+    //var loc = JSON.parse('<%- location %>');
+    var feat = JSON.parse('<%- feature %>');
+    var mat = JSON.parse('<%- material %>');
+    var biom = JSON.parse('<%- biome %>');
     var env_pack = JSON.parse('<%- env_package %>');
     var adap = JSON.parse('<%- adapter_sequence %>');
     var seqplat = JSON.parse('<%- sequencing_platform %>');

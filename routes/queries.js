@@ -360,8 +360,9 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
   },
 
   get_select_env_term_query: function() {      
-      var q = "SELECT term_id, term_name\n"
+      var q = "SELECT term_id, fullname as ont, term_name\n"
       q += " FROM `term`\n"
+      q += " JOIN ontology using(ontology_id)"
       //console.log(q)
       return q;
   },

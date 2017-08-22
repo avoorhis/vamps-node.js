@@ -285,14 +285,19 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (r
         }
     }
     console.log('owned_projects',owned_projects)
-    //console.log('MD_ENV_TERM',MD_ENV_TERM)
+    console.log('MD_ENV_LOC',Object.keys(MD_ENV_LOC).length)
+    console.log('MD_ENV_TERM',Object.keys(MD_ENV_TERM).length)
     res.render('user_data/add_metadata_to_project', {
           title: 'VAMPS:Add Metadata To Project',
           project: project,
           owned_projects : owned_projects,
           target_gene : JSON.stringify(MD_TARGET_GENE),
           domain : JSON.stringify(MD_DOMAIN),
-          term : JSON.stringify(MD_ENV_TERM),
+          feature : JSON.stringify(req.CONSTS.FEATURE_PRIMARY),
+          material : JSON.stringify(req.CONSTS.MATERIAL_PRIMARY),
+          biome : JSON.stringify(req.CONSTS.BIOME_PRIMARY),
+          //term : JSON.stringify(MD_ENV_TERM),
+          location : JSON.stringify(MD_ENV_LOC),
           env_package : JSON.stringify(MD_ENV_PACKAGE),
           adapter_sequence : JSON.stringify(MD_ADAPTER_SEQUENCE),
           sequencing_platform : JSON.stringify(MD_SEQUENCING_PLATFORM),
@@ -3401,7 +3406,8 @@ router.get('/required_metadata_options', helpers.isLoggedIn, function(req, res) 
               title     :'VAMPS Validate Metadata',
               user: req.user,
               md_env_pkg:           JSON.stringify(MD_ENV_PACKAGE),
-            md_env_term:            JSON.stringify(MD_ENV_TERM),        
+            md_env_term:            JSON.stringify(MD_ENV_TERM),
+            md_env_loc:             JSON.stringify(MD_ENV_LOC),        
             md_sequencing_platform: JSON.stringify(MD_SEQUENCING_PLATFORM),
             md_target_gene:         JSON.stringify(MD_TARGET_GENE),
             md_domain:              JSON.stringify(MD_DOMAIN),

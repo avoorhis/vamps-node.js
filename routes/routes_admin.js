@@ -1153,8 +1153,8 @@ function get_domain_index(val){
 }
 function get_geo_loc_name_index(val){
   var idx = -1
-  for(key in MD_ENV_TERM){
-    if(val != '' && MD_ENV_TERM[key] == val.toLowerCase()){
+  for(key in MD_ENV_LOC){
+    if(val != '' && MD_ENV_LOC[key] == val.toLowerCase()){
         idx = key;
     }
   }
@@ -1187,6 +1187,7 @@ function get_env_term_index(val){
   }
   return idx
 }
+
 function get_adapter_sequence_index(val){
   var idx = -1
   for(key in MD_ADAPTER_SEQUENCE){
