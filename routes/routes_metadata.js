@@ -467,8 +467,9 @@ router.post('/metadata_upload',
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
 
-      make_csv(req, res);
       make_metadata_object_from_form(req, res);
+      make_csv(req, res);
+
     }
     else {
       console.log('in post /metadata_upload');
@@ -1239,6 +1240,9 @@ function make_metadata_object(req, res, pid, info) {
   // console.log(all_metadata);
 
   //2) all
+  console.log("HHH info object in make_metadata_object");
+  console.log(JSON.stringify(info));
+
   all_metadata[pid] = info;
 
   //3) special
