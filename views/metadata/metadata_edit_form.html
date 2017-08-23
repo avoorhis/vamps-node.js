@@ -10,10 +10,13 @@
   var all_metadata = {}
 } %>
 
+<div id="postresult">
+</div>
+
 
 <% if(messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
-<% }else if(messages.fail){ %>
+<% } if(messages.fail) { %>
 <div class="alert_flash_message_fail" >
   <ul>
   <% messages.fail.forEach(function(value){ %>
@@ -117,7 +120,7 @@
   <input type='hidden' name='project_id' value='<%= pid %>' />
   <input type='hidden' name='from_where' value='metadata_upload_from_file' />
 
-  <button class='btn btn-sm btn-primary' type='submit'>Submit</button>
+  <button id='add_project_form_submit_btn' class='btn btn-sm btn-primary' type='submit'>Submit</button>
 
 </form>
 
