@@ -31,26 +31,36 @@ router.post('/login',  passport.authenticate('local-login', {
   // successRedirect: '/users/profile',
   failureRedirect: 'login',   // on fail GET:login (empty form)
   failureFlash: true }), function (req, res) {  
-    var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username)
-    
+    var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
+    //str.startsWith('/metadata/file_utils')
+    var redirect_to_home = [
+      '/metadata/metadata_edit_form',
+      '/metadata/metadata_file_list',
+      '/metadata/metadata_files',
+      '/metadata/metadata_upload'
+    ];
+    var url = req.body.return_to_url || '/';
+    if (redirect_to_home.indexOf(req.body.return_to_url) !== -1) {
+      url = '/';
+    }
+
     fs.ensureDir(data_dir, function (err) {
         if(err) {console.log(err);} // => null
         else{
-            console.log('Checking USER_FILES_BASE: '+data_dir+' Exists - yes')
+            console.log('Checking USER_FILES_BASE: '+data_dir+' Exists - yes');
             fs.chmod(data_dir, 0775, function (err) {
                 if(err) {console.log(err);} // ug+rwx
                 else{
-                    console.log('Setting USER_FILES_BASE permissions to 0775')
-                    var url = req.body.return_to_url || '/';
-                    console.log("=====: req.body.return_to_url");
+                    console.log('Setting USER_FILES_BASE permissions to 0775');
+                    console.log('=== url ===: req.body.return_to_url');
                     console.log(url);
                     res.redirect(url);    
                     delete req.session.returnTo;
-                    req.body.return_to_url = "";
+                    req.body.return_to_url = '';
                 }
-            })
+            });
         }
-    })
+    });
     
     
   }
