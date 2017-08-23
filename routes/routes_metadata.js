@@ -503,7 +503,36 @@ function make_metadata_object_from_form(req, res) {
   // console.log("BBB req.form (make_metadata_object_from_form)");
   // console.log(req.form);
 
-  var all_metadata = make_metadata_object(req, res, pid, req.form);
+
+  var data = req.form;
+  console.log("TTT0 data['dataset']");
+  console.log(data['dataset']);
+  console.log("TTT01 data['dataset'].length");
+  console.log(data['dataset'].length);
+  var normal_length = data['dataset'].length
+  for (var a in data)
+  {
+    console.log("TTT data[a]");
+    console.log(data[a]);
+    if (data[a].length < normal_length && (typeof data[a][0] !== 'undefined'))
+    {
+      data[a] = fill_out_arr_doubles(data[a][0], normal_length);
+    }
+    console.log("TTT2 data[a]");
+    console.log(data[a]);
+
+  }
+
+  // var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
+  // if (typeof abstract_data === 'undefined') {
+  //   abstract_data = {};
+  //   abstract_data.pdfs = [];
+  // }
+  //
+  // data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
+
+
+  var all_metadata = make_metadata_object(req, res, pid, data);
 
   //add_new
   var all_field_names_with_new = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
