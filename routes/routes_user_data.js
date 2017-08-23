@@ -287,6 +287,13 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (r
     console.log('owned_projects',owned_projects)
     console.log('MD_ENV_LOC',Object.keys(MD_ENV_LOC).length)
     console.log('MD_ENV_TERM',Object.keys(MD_ENV_TERM).length)
+    //var sorted_loc = 
+    //console.log('MD_ENV_TERM2',MD_ENV_TERM)
+    var loc_array = []
+    for(id in MD_ENV_LOC){
+        loc_array.push([MD_ENV_LOC[id],id])
+    }
+    var locSortedByValue = loc_array.sort()
     res.render('user_data/add_metadata_to_project', {
           title: 'VAMPS:Add Metadata To Project',
           project: project,
@@ -297,7 +304,7 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (r
           material : JSON.stringify(req.CONSTS.MATERIAL_PRIMARY),
           biome : JSON.stringify(req.CONSTS.BIOME_PRIMARY),
           //term : JSON.stringify(MD_ENV_TERM),
-          location : JSON.stringify(MD_ENV_LOC),
+          location : JSON.stringify(locSortedByValue),
           env_package : JSON.stringify(MD_ENV_PACKAGE),
           adapter_sequence : JSON.stringify(MD_ADAPTER_SEQUENCE),
           sequencing_platform : JSON.stringify(MD_SEQUENCING_PLATFORM),

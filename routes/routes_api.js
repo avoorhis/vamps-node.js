@@ -145,7 +145,8 @@ router.post('/create_image',  function(req, res){
   
   var allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix","metadata_csv",
                 "metadata_table", "fheatmap", "dendrogram01", "dendrogram03","dendrogram",
-                "pcoa", "pcoa3d", "geospatial", "adiversity", "testpie", "phyloseq"
+                "pcoa", "pcoa3d", "geospatial", "adiversity", "testpie", "phyloseq",
+                "taxon_color_legend"
               ]
   var allowed_file_types = ["fasta", "metadata-csv", "metadata-table"]
   var image = false
@@ -192,6 +193,9 @@ router.post('/create_image',  function(req, res){
           break;
         case 'phyloseq':
           IMAGES.phyloseq(req, res)       
+          break;
+        case 'taxon_color_legend':
+          IMAGES.taxon_color_legend(req, res)       
           break;
         default:
           test_piecharts(req,res)

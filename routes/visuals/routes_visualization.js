@@ -136,10 +136,11 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     visual_post_items.normalization = req.body.normalization          || "none"
     visual_post_items.selected_distance = req.body.selected_distance  || "morisita_horn"
     visual_post_items.tax_depth = req.body.tax_depth                  || "phylum"
-    visual_post_items.domains = req.body.domains
+    visual_post_items.domains = req.body.domains                      || ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
     visual_post_items.include_nas = req.body.include_nas              || "yes"
     visual_post_items.min_range = req.body.min_range                  || '0'
     visual_post_items.max_range = req.body.max_range                  || '100'
+    
     if((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length != 0){
         console.log('Found api dids ',req.body.ds_order)
         try{
@@ -149,7 +150,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         }
         var new_dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids)
         dataset_ids = new_dataset_ids
-        visual_post_items.ds_order = dataset_ids  // should screen these again
+        visual_post_items.ds_order = dataset_ids
     }else if( (req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project) ){
         console.log('Found api project ',req.body.project)
         var pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid

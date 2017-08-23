@@ -8,7 +8,47 @@ var config  = require(app_root + '/config/config');
 var helpers = require('./helpers/helpers');
 
 module.exports = {
-
+taxon_color_legend: function(req, res) {
+    console.log('In function: images/taxon_color_legend')
+    var ts = visual_post_items.ts
+    matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+    fs.readFile(matrix_file_path, 'utf8', function(err, data){
+      if (err) {
+          var msg = 'ERROR Message '+err;
+          console.log(msg)
+      }else{
+        BIOM_MATRIX = JSON.parse(data)
+        html = '<table>'
+        for (var i in BIOM_MATRIX.rows){
+            n = parseInt(i)+1;
+            longtax = BIOM_MATRIX.rows[i].id
+            
+            color = string_to_color_code(longtax)
+            html += '<tr>'    
+            
+            html += "<td style=''>"+longtax+"</td>"
+            html += "<td width='30' style='background:"+color+";width:30px;'>"+color+"</td>"
+            html += '</tr>' 
+            
+        } 
+        html += '</table>'  
+        var outfile_name = ts + '-color_legend-api.html'
+        outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+        console.log('outfile_path:',outfile_path)
+        result = save_file(html, outfile_path) 
+        console.log('result',result)
+        data = {}
+        data.html = html
+        data.filename = outfile_name
+        console.log('data.filename',data.filename)
+        //return data
+        res.json(data)   
+      }
+      
+    });
+    
+    
+}, // end color_legend
 counts_matrix: function(req, res) {
     console.log('In function: images/counts_matrix')
     var ts = visual_post_items.ts
@@ -68,13 +108,17 @@ counts_matrix: function(req, res) {
       html += "</tr>";
       // END OF TITLE ROW
       for (var i in BIOM_MATRIX.rows){
-        count = parseInt(i)+1;
-        taxitems = BIOM_MATRIX.rows[i].id.split(';');
+        n = parseInt(i)+1;
+        longtax = BIOM_MATRIX.rows[i].id
+        taxitems = longtax.split(';');
         html += "<tr class='chart_row'>"
         if(req.body.source == 'website'){
-            html += "<td><a href='taxa_piechart?tax="+BIOM_MATRIX.rows[i].id+"' title='Link to Taxa PieChart' target='_blank'>"+count.toString()+"</a></td>";
+            html += "<td><a href='taxa_piechart?tax="+longtax+"' title='Link to Taxa PieChart' target='_blank'>"+n.toString()+"</a></td>";
         }else{
-             html += "<td>"+count.toString()+"</td>"
+            color = string_to_color_code(longtax)
+            console.log('color',color)
+            html += "<td style='background:"+color+"'>"+n.toString()+"</td>"
+             
         }
         for (t = 0; t < maxrank; t++) {
           ttip = ''
@@ -113,7 +157,7 @@ counts_matrix: function(req, res) {
             counts_string=JSON.stringify(BIOM_MATRIX.data[i])
             graph_link_id = 'flot_graph_link'+i.toString()
             html += "<td align='center' style='cursor:pointer;'>"
-            html += "<img width='25' id='"+graph_link_id+"' src='/images/visuals/graph.png' onclick=\"graph_counts('"+i.toString()+"','"+BIOM_MATRIX.rows[i].id+"','"+counts_string+"')\">"
+            html += "<img width='25' id='"+graph_link_id+"' src='/images/visuals/graph.png' onclick=\"graph_counts('"+i.toString()+"','"+longtax+"','"+counts_string+"')\">"
             html += "</td>";
         }
 
@@ -170,7 +214,7 @@ counts_matrix: function(req, res) {
       html += "<td></td><td></td><td></td><td></td><td></td>"
       html += "</tr>";
       html += "</table>";
-      console.log(html)
+      //console.log(html)
 
 
 

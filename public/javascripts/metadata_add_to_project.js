@@ -132,11 +132,11 @@ function edit_form(){
                     html += "<td style=''>"
                     if(mditem == 'geo_loc_name'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"  
-                        // for(id in loc){
-//                             line = "<option value='"+id+"'>"+loc[id]+'</option>'
-//                             if(loc[id] == value){                               line = "<option selected value='"+id+"'>"+loc[id]+'</option>'                            }
-//                             tmp += line
-//                         }
+                        for(id in loc){
+                            line = "<option value='"+id+"'>"+id+' -- '+loc[id]+'</option>'
+                            if(loc[id] == value){                               line = "<option selected value='"+id+"'>"+loc[id]+'</option>'                            }
+                            tmp += line
+                        }
                         tmp += "</select>"
                         html += tmp
                     }else if(mditem == 'env_material'){
