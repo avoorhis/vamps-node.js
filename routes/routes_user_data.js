@@ -412,7 +412,7 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
 router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
   console.log('in import_choices');
   var project = req.query.project || '' // url should always be like: /user_data/import_choices?project=andy003 
-  if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
+  if(req.user.security_level > 1){
       req.flash('fail','Not coded yet')
       res.render('user_data/your_data', {
         title: 'VAMPS:Data Administration',
