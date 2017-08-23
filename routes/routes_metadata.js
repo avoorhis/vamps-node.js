@@ -466,9 +466,9 @@ router.post('/metadata_upload',
     console.time("TIME: post metadata_upload");
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
-      make_metadata_object_from_form(req, res);
-      // trade places if always create a csv
+
       make_csv(req, res);
+      make_metadata_object_from_form(req, res);
     }
     else {
       console.log('in post /metadata_upload');
@@ -764,7 +764,8 @@ function make_csv(req) {
 
   time_stamp = new Date().getTime();
 
-  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + req.body.project + '_' + req.user.username + '_' + time_stamp + ".csv");
+  var base_name = "metadata-project" + '_' + req.body.project + '_' + req.user.username + '_' + time_stamp + ".csv";
+  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
 
   //TODO: more robust project!
 
@@ -773,6 +774,9 @@ function make_csv(req) {
   });
 
   console.log('file ' + out_csv_file_name + ' saved');
+
+  var msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.';
+  req.flash("success", msg);
 
   console.timeEnd("TIME: make_csv");
 }

@@ -202,7 +202,7 @@ td.left_justify {
 	color: green;
 	padding:5px;
 	background:white;
-    position: absolute;
+    /*position: absolute;*/
     left: 3em;
     /* top:65px; */
     
