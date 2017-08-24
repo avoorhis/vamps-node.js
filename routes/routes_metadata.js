@@ -743,7 +743,11 @@ function from_obj_to_obj_of_arr(data, pid) {
 
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
 
-  var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
+  // var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
+  //TODO: make field_names collection a separate function
+  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
+  all_field_names.push("project_abstract");
+  all_field_names = helpers.unique_array(all_field_names);
 
   for (var did_idx in dataset_ids) {
     var did = dataset_ids[did_idx];
@@ -1243,6 +1247,7 @@ function make_metadata_object(req, res, pid, info) {
   var repeat_times = dataset_ids.length;
 
   // 0) get field_names
+  //TODO: DRY
   var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
 
   // console.log("HHH3 all_field_names");
@@ -1255,8 +1260,8 @@ function make_metadata_object(req, res, pid, info) {
   // console.log(all_metadata);
 
   //2) all
-  console.log("HHH info object in make_metadata_object");
-  console.log(JSON.stringify(info));
+  // console.log("HHH info object in make_metadata_object");
+  // console.log(JSON.stringify(info));
 
   all_metadata[pid] = info;
 
