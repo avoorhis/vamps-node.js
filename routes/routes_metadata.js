@@ -466,9 +466,10 @@ router.post('/metadata_upload',
     console.time("TIME: post metadata_upload");
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
+
       make_metadata_object_from_form(req, res);
-      // trade places if always create a csv
       make_csv(req, res);
+
     }
     else {
       console.log('in post /metadata_upload');
@@ -502,7 +503,22 @@ function make_metadata_object_from_form(req, res) {
   // console.log("BBB req.form (make_metadata_object_from_form)");
   // console.log(req.form);
 
-  var all_metadata = make_metadata_object(req, res, pid, req.form);
+
+  var data = req.form;
+
+  //add project_abstract etc.
+  //TODO: DRY with other such places.
+  var normal_length = data['dataset'].length;
+  for (var a in data)
+  {
+    if (data[a].length < normal_length && (typeof data[a][0] !== 'undefined'))
+    {
+      data[a] = fill_out_arr_doubles(data[a][0], normal_length);
+    }
+  }
+
+
+  var all_metadata = make_metadata_object(req, res, pid, data);
 
   //add_new
   var all_field_names_with_new = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
@@ -727,7 +743,11 @@ function from_obj_to_obj_of_arr(data, pid) {
 
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
 
-  var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
+  // var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
+  //TODO: make field_names collection a separate function
+  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
+  all_field_names.push("project_abstract");
+  all_field_names = helpers.unique_array(all_field_names);
 
   for (var did_idx in dataset_ids) {
     var did = dataset_ids[did_idx];
@@ -764,7 +784,8 @@ function make_csv(req) {
 
   time_stamp = new Date().getTime();
 
-  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, "metadata-project" + '_' + req.body.project + '_' + req.user.username + '_' + time_stamp + ".csv");
+  var base_name = "metadata-project" + '_' + req.body.project + '_' + req.user.username + '_' + time_stamp + ".csv";
+  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
 
   //TODO: more robust project!
 
@@ -773,6 +794,9 @@ function make_csv(req) {
   });
 
   console.log('file ' + out_csv_file_name + ' saved');
+
+  var msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.';
+  req.flash("success", msg);
 
   console.timeEnd("TIME: make_csv");
 }
@@ -1223,6 +1247,7 @@ function make_metadata_object(req, res, pid, info) {
   var repeat_times = dataset_ids.length;
 
   // 0) get field_names
+  //TODO: DRY
   var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
 
   // console.log("HHH3 all_field_names");
@@ -1235,6 +1260,9 @@ function make_metadata_object(req, res, pid, info) {
   // console.log(all_metadata);
 
   //2) all
+  // console.log("HHH info object in make_metadata_object");
+  // console.log(JSON.stringify(info));
+
   all_metadata[pid] = info;
 
   //3) special

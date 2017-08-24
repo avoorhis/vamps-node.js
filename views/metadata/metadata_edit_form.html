@@ -81,7 +81,7 @@
   <input type="email" id="pi_email" name="pi_email"  value='<%= pi_email %>'/>
   <br />
   <label for="project_abstract">CoDL project abstract:</label>
-    <% if (project_abstracts[0].length > 0) { %>
+    <% if ((typeof(project_abstracts[0]) !== 'undefined') && (project_abstracts[0].length > 0)) { %>
       <div class="white_box readonly">
         <% for (var n in project_abstracts[0]) { %>
           <a href='/static/abstracts/<%= project_abstracts[0][n] %>' target='_blank'><%= project_abstracts[0][n] %></a><br/>
