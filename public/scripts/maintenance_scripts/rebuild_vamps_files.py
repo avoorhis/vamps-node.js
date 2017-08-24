@@ -492,7 +492,7 @@ def read_original_metadata():
     
 def get_dataset_ids(pid):
     q = "SELECT dataset_id from dataset where project_id='"+str(pid)+"'"  
-    #print q
+    print q
     cur.execute(q)
     dids = []
     numrows = cur.rowcount
@@ -574,7 +574,7 @@ if __name__ == '__main__':
         dbhost = 'bpcweb7'
     else:
         dbhost = 'localhost'
-        args.NODE_DATABASE = 'vamps2'
+        args.NODE_DATABASE = 'vamps_development'
     if args.units == 'silva119':
         args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_silva119")
     elif args.units == 'rdp2.6':
@@ -582,6 +582,7 @@ if __name__ == '__main__':
     else:
         sys.exit('UNITS ERROR: '+args.units)
     print "\nARGS: dbhost  =",dbhost
+    print "\nARGS: NODE_DATABASE  =",args.NODE_DATABASE
     print "ARGS: json_file_path =",args.json_file_path     
     if os.path.exists(args.json_file_path):
         print '** Validated json_file_path **'

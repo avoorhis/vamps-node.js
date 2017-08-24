@@ -291,9 +291,12 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (r
     //console.log('MD_ENV_TERM2',MD_ENV_TERM)
     var loc_array = []
     for(id in MD_ENV_LOC){
-        loc_array.push([MD_ENV_LOC[id],id])
+        loc_array.push({"name":MD_ENV_LOC[id],"id":id})
     }
-    var locSortedByValue = loc_array.sort()
+    loc_array.sort(function sortByName(a, b) {
+                return helpers.compareStrings_alpha(a.name, b.name);
+    });
+    
     res.render('user_data/add_metadata_to_project', {
           title: 'VAMPS:Add Metadata To Project',
           project: project,
@@ -303,8 +306,7 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (r
           feature : JSON.stringify(req.CONSTS.FEATURE_PRIMARY),
           material : JSON.stringify(req.CONSTS.MATERIAL_PRIMARY),
           biome : JSON.stringify(req.CONSTS.BIOME_PRIMARY),
-          //term : JSON.stringify(MD_ENV_TERM),
-          location : JSON.stringify(locSortedByValue),
+          location : JSON.stringify(loc_array),
           env_package : JSON.stringify(MD_ENV_PACKAGE),
           adapter_sequence : JSON.stringify(MD_ADAPTER_SEQUENCE),
           sequencing_platform : JSON.stringify(MD_SEQUENCING_PLATFORM),
@@ -412,7 +414,7 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
 router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
   console.log('in import_choices');
   var project = req.query.project || '' // url should always be like: /user_data/import_choices?project=andy003 
-  if(req.user.security_level > 1){
+  if(req.user.security_level > 1 && req.CONFIG.hostname == 'bpcweb8'){
       req.flash('fail','Not coded yet')
       res.render('user_data/your_data', {
         title: 'VAMPS:Data Administration',

@@ -2,11 +2,11 @@
 <% include ../add_ins/begin.ejs %>
 <% user_info = JSON.parse(user_info) %>
 
-  <% if (messages.success) { %>
+<% if (messages.success) { %>
   	<div class="alert_flash_message_success"><%= messages.success %></div>
-  <% }else if(messages.fail){ %>
+<% }else if(messages.fail){ %>
     <div class="alert_flash_message_fail"><%= messages.fail %></div>
-  <% } %>
+<% } %>
 
 <p class='title center'>Investigator Profile</p>
 <div class="row">
