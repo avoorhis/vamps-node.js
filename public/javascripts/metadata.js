@@ -933,8 +933,8 @@ $(document).ready(function(){
   showSubmitMessage();
 
   showDatasets();
-  addCopyBtns();
-  CopyColumn();
+  // addCopyBtns();
+  // CopyColumn();
   addCopyFirst();
   copyFirst();
   fnAdjustTable();
