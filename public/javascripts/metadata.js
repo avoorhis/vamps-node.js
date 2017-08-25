@@ -398,6 +398,7 @@ var material_seq_options = {
     "fresh groundwater",
     "fresh water",
     "groundwater",
+    "groundwater flowcell biofilm",
     "hypersaline water",
     "saline groundwater",
     "saline water",
