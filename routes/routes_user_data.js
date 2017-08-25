@@ -28,7 +28,7 @@ var META    = require('./visuals/routes_visuals_metadata');
 var MTX     = require('./visuals/routes_counts_matrix');
 //var progress = require('progress-stream');
 var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
-
+GLOBAL_METADATA = {}
 var infile_fa = "infile.fna";
 // router.use(multer({ dest: 'tmp',
 // rename: function (fieldname, filename) {
@@ -344,55 +344,73 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
     var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
     console.log('pid',pid)
     var metadata = {}   // metadata[dname][mditem] = value
-    var metadata_by_mditem = {}   // metadata[mditem][dname] = value
+    metadata.by_mditem = {}   // metadata[mditem][dname] = value
     var dids = DATASET_IDS_BY_PID[pid]
+    metadata.did_lookup = {}
+    metadata.dname_lookup = {}
     //console.log('dids',dids)
     for(n in dids){
+        
         dname = DATASET_NAME_BY_DID[dids[n]]
-        metadata[dname] = AllMetadata[dids[n]]
+        //metadata[dname] = AllMetadata[dids[n]]
+        
+        metadata.did_lookup[dname] = dids[n]
+        metadata.dname_lookup[dids[n]] = dname
     }
+    
     for(i in req.CONSTS.REQ_METADATA_FIELDS){
         reqmdname = req.CONSTS.REQ_METADATA_FIELDS[i]    // ie "target_gene"
-        metadata_by_mditem[reqmdname] = {}
+        metadata.by_mditem[reqmdname] = {}
         for(n in dids){
-            dname = DATASET_NAME_BY_DID[dids[n]]
-            if(AllMetadata.hasOwnProperty(dids[n])){
-                if(AllMetadata[dids[n]].hasOwnProperty(reqmdname+'_id')){
-                    return_obj = helpers.required_metadata_names_from_ids(AllMetadata[dids[n]],reqmdname+'_id')
-                    metadata_by_mditem[return_obj.name][dname] = return_obj.value
-                }else if(AllMetadata[dids[n]].hasOwnProperty(reqmdname)){
-                    metadata_by_mditem[reqmdname][dname] = AllMetadata[dids[n]][reqmdname]
+            did = dids[n]
+            console.log('did',did)
+            dname = DATASET_NAME_BY_DID[did]
+            
+            if(AllMetadata.hasOwnProperty(did)){
+                //console.log('Got ONE')
+                if(AllMetadata[did].hasOwnProperty(reqmdname+'_id')){
+                    return_obj = helpers.required_metadata_names_from_ids(AllMetadata[did],reqmdname+'_id')
+                    metadata.by_mditem[return_obj.name][did] = return_obj.value
+                }else if(AllMetadata[did].hasOwnProperty(reqmdname)){
+                    metadata.by_mditem[reqmdname][did] = AllMetadata[did][reqmdname]
                 }else{
-                    metadata_by_mditem[reqmdname][dname] = 'unknown'
+                    metadata.by_mditem[reqmdname][did] = 'unknown'
                 }
             }else{
-                metadata_by_mditem[reqmdname][dname] = 'unknown'
+                metadata.by_mditem[reqmdname][did] = 'unknownX'
             }
         }
     }
     // adding custom metadata
-    console.log(Object.keys(metadata_by_mditem))
+    console.log(Object.keys(metadata.by_mditem))
     for(n in dids){
-        dname = DATASET_NAME_BY_DID[dids[n]]
-        for(nm in AllMetadata[dids[n]]){
-            if(! metadata_by_mditem.hasOwnProperty(nm) && ! metadata_by_mditem.hasOwnProperty(nm.substring(0,nm.length - 3))){
-                metadata_by_mditem[nm] ={}
-                metadata_by_mditem[nm][dname] = AllMetadata[dids[n]][nm]
+        did = dids[n]
+        dname = DATASET_NAME_BY_DID[did]
+        for(mdname in AllMetadata[did]){
+            if(! metadata.by_mditem.hasOwnProperty(mdname) && ! metadata.by_mditem.hasOwnProperty(mdname.substring(0,mdname.length - 3))){
+                metadata.by_mditem[mdname] = {}
+                metadata.by_mditem[mdname][did] = AllMetadata[did][mdname]
             }
         }
     }
-    for(mdname in metadata_by_mditem){
-        for(n in dids){
-            dname = DATASET_NAME_BY_DID[dids[n]]
-            if( ! metadata_by_mditem[mdname].hasOwnProperty(dname) ){
-                 metadata_by_mditem[mdname][dname] = 'unknown'
-            }
-        }
-    }
-    console.log(Object.keys(metadata_by_mditem))
-    console.log(metadata_by_mditem)
-
-    res.json(metadata_by_mditem)
+    // what is this for?
+    // for(mdname in metadata.by_mditem){
+//         for(n in dids){
+//             did = dids[n]
+//             dname = DATASET_NAME_BY_DID[did]
+//             if( ! metadata.by_mditem[mdname].hasOwnProperty(did) ){
+//                  metadata.by_mditem[mdname][did] = 'unknownY'
+//             }
+//         }
+//     }
+    console.log('end of retr data')
+    //console.log(Object.keys(metadata.by_mditem))
+    console.log(metadata)
+    //if(GLOBAL_METADATA.hasOwnProperty('project') &&  GLOBAL_METADATA.project == project){
+    //    res.json(GLOBAL_METADATA.data)
+    //}else{
+        res.json(metadata)
+    //}
 // reqmdname3 geo_loc_name_id
 // reqmdname3 dna_region_id
 // reqmdname3 domain_id
@@ -406,6 +424,33 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
 // reqmdname3 primer_suite_id
 // reqmdname3 run_id
 
+});
+router.post('/save_metadata', helpers.isLoggedIn, function (req, res) {
+    console.log('in save metadata')
+    console.log(req.body)
+    // validate_metadata()
+    // save_metadata()
+    // update_files()
+    GLOBAL_METADATA = {}
+    GLOBAL_METADATA.project = req.body.project
+    // GLOBAL_METADATA.data[metadata_item][ds_name] = value (not id)
+    GLOBAL_METADATA.data = req.body.data
+    console.log('GLOBAL_METADATA')
+    console.log(GLOBAL_METADATA)
+    var mditems_w_ids = ['env_package','env_biome','env_feature','env_material','target_gene','run','primer_suite','adapter_sequence','dna_region','domain','geo_loc_name','illumina_index','sequencing_platform']
+    var pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid
+    to_save_metadata = {}
+    for(mdname in GLOBAL_METADATA.data){
+        if(mditems_w_ids.indexOf(mdname) == -1){
+            //to_save_metadata
+        }else{
+        
+        }
+    }
+   
+    res.json({"Rmd":"Done"})
+  
+  
 });
 //
 // IMPORT_CHOICES

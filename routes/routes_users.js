@@ -142,24 +142,32 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
    console.log(ALL_USERS_BY_UID[uid]);
    console.log('in indexusers:id')
    //console.log(req.user)
-
-   var qSelect = "SELECT * from project where owner_user_id='"+uid+"'";
-   console.log(qSelect)
-   var collection = req.db.query(qSelect, function (err, rows, fields){
-    if (err)  {
-      msg = 'ERROR Message '+err;
-      helpers.render_error_page(req,res,msg);
-    } else {
-        res.render('users/profile', {
-          title     :'VAMPS:profile',
-          projects  : rows,
-          user_info : JSON.stringify(ALL_USERS_BY_UID[uid]),
-          user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
-        });  
+   if(ALL_USERS_BY_UID[uid] == undefined ){
+    res.render('index', {
+        title: 'VAMPS:Home',
+        user: req.user, 
+        hostname: req.CONFIG.hostname 
+     });
+     return;  
+   }else{
+           var qSelect = "SELECT * from project where owner_user_id='"+uid+"'";
+           console.log(qSelect)
+           var collection = req.db.query(qSelect, function (err, rows, fields){
+            if (err)  {
+              msg = 'ERROR Message '+err;
+              helpers.render_error_page(req,res,msg);
+            } else {
+                res.render('users/profile', {
+                  title     :'VAMPS:profile',
+                  projects  : rows,
+                  user_info : JSON.stringify(ALL_USERS_BY_UID[uid]),
+                  user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
+                });  
      
 
+            }
+          });
     }
-  });
 
 });
 

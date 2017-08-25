@@ -28,6 +28,9 @@ function get_metadata(project){
             //alert(txt)
             //GLOBAL
             response = JSON.parse(txt);
+            dname_lookup = response.dname_lookup  // dname_lookup[did] = dname
+            did_lookup = response.did_lookup     // did_lookup[dname] = did
+            md_obj = response.by_mditem     // md_obj[mditem][dname] = value
             var html = '<br>'
             
            //  html += "<select>"
@@ -39,8 +42,8 @@ function get_metadata(project){
             html += "<table border='1'>"
             
             //alert(response)
-            if(response.hasOwnProperty('latitude')){
-                datasets = Object.keys(response.latitude)
+            if(md_obj.hasOwnProperty('latitude')){
+                dids = Object.keys(md_obj.latitude)
             }else{
                 alert('No required metadata')
                 return
@@ -53,8 +56,8 @@ function get_metadata(project){
 //                     continue
 //                 }
 //             }
-            sorted_datasets = datasets.sort()
-            sorted_keys = Object.keys(response).sort() 
+            sorted_datasets = Object.keys(did_lookup).sort()
+            sorted_keys = Object.keys(md_obj).sort()   // md items
             //alert(datasets)
             html += "<tr><th></th>"
             for(j in sorted_datasets){
@@ -64,6 +67,7 @@ function get_metadata(project){
             n=0
             for(i in sorted_keys){
                 mditem = sorted_keys[i]
+                console.log(mditem)
                 if(reqfields.indexOf(mditem) == -1){ 
                     html += "<tr><td>"+mditem+"</td>"
                 }else{
@@ -71,7 +75,7 @@ function get_metadata(project){
                 }
                 for(j in sorted_datasets){
                     ds = sorted_datasets[j]
-                    value = response[mditem][ds]
+                    value = md_obj[mditem][ds]
                     html += "<td style='padding:0 2px;'>"+value+"</td>"
                 }
                 html += "</tr>"
@@ -89,30 +93,35 @@ function get_metadata(project){
 //
 //
 function edit_form(){
-    //alert(loc['8840'])
-    //alert('8840')
+   
     project = document.getElementById('project_select_id').value;
-    table_data = response
+    table_data = md_obj
+    //dname_lookup = response.dname_lookup  // dname_lookup[did] = dname
+    //did_lookup = response.did_lookup     // did_lookup[dname] = did
+    //alert(dset_lookup)
     document.getElementById('save_btn').disabled = false;
     document.getElementById('save_btn').style.visibility = 'visible';
     document.getElementById('edit_btn').disabled = true;
     document.getElementById('edit_btn').style.visibility = 'hidden';
+    
     var html = ''
             html += " <input type='button' id='dlt_btn' onclick='delete_checked()' Value='Delete Checked' >"
             html += "<br><table id='md_table' border='1'>"
             //alert(response)
-            if(response.hasOwnProperty('latitude')){
-                datasets = Object.keys(response.latitude)
+            if(table_data.hasOwnProperty('latitude')){
+                datasets = Object.keys(table_data.latitude)
             }else{
                 alert('No required metadata')
                 return
             }
             sorted_datasets = datasets.sort()
-            sorted_keys = Object.keys(response).sort() 
+            sorted_keys = Object.keys(table_data).sort() 
             //alert(datasets)
             html += "<tr><th></th><th></th>"
+            alert(sorted_datasets[0])
+            alert(dset_lookup[sorted_datasets[0]])
             for(j in sorted_datasets){
-                html += "<th id='"+sorted_datasets[j]+"'>"+sorted_datasets[j]+"</th>"
+                html += "<th id='"+did_lookup[sorted_datasets[j]]+"'>"+sorted_datasets[j]+"</th>"
             }
             html += "</tr>"
             n=0
@@ -128,16 +137,16 @@ function edit_form(){
                 }
                 for(j in sorted_datasets){
                     ds = sorted_datasets[j]
-                    value = response[mditem][ds]
+                    value = table_data[mditem][ds]
                     
                     selid = mditem+'_id_'+ds
                     html += "<td style=''>"
                     if(mditem == 'geo_loc_name'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"  
                         for(i in loc){
-                            line = "<option value='"+loc[i].id+"'>"+loc[i].name+'</option>'
+                            line = "<option value='"+loc[i].name+"'>"+loc[i].name+'</option>'
                             if(loc[i].name == value){                               
-                              line = "<option selected value='"+loc[i].id+"'>"+loc[i].name+'</option>'                           
+                              line = "<option selected value='"+loc[i].name+"'>"+loc[i].name+'</option>'                           
                              }
                             tmp += line
                         }
@@ -146,8 +155,8 @@ function edit_form(){
                     }else if(mditem == 'env_material'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"  
                         for(id in mat){
-                            line = "<option value='"+id+"'>"+mat[id]+'</option>'
-                            if(mat[id] == value){                               line = "<option selected value='"+id+"'>"+mat[id]+'</option>'                            }
+                            line = "<option value='"+mat[id]+"'>"+mat[id]+'</option>'
+                            if(mat[id] == value){                               line = "<option selected value='"+mat[id]+"'>"+mat[id]+'</option>'                            }
                             tmp += line
                         }
                         tmp += "</select>"
@@ -155,8 +164,8 @@ function edit_form(){
                     }else if(mditem == 'env_feature'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"  
                         for(id in feat){
-                            line = "<option value='"+id+"'>"+feat[id]+'</option>'
-                            if(feat[id] == value){                               line = "<option selected value='"+id+"'>"+feat[id]+'</option>'                            }
+                            line = "<option value='"+feat[id]+"'>"+feat[id]+'</option>'
+                            if(feat[id] == value){                               line = "<option selected value='"+feat[id]+"'>"+feat[id]+'</option>'                            }
                             tmp += line
                         }
                         tmp += "</select>"
@@ -164,8 +173,8 @@ function edit_form(){
                     }else if(mditem == 'env_biome'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"
                         for(id in biom){
-                           line = "<option value='"+id+"'>"+biom[id]+'</option>'
-                           if(biom[id] == value){                               line = "<option selected value='"+id+"'>"+biom[id]+'</option>'                           }
+                           line = "<option value='"+biom[id]+"'>"+biom[id]+'</option>'
+                           if(biom[id] == value){                               line = "<option selected value='"+biom[id]+"'>"+biom[id]+'</option>'                           }
                            tmp += line
                         }
                         tmp += "</select>"
@@ -173,8 +182,8 @@ function edit_form(){
                     }else if(mditem == 'target_gene'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"  
                         for(id in tg){
-                            line = "<option value='"+id+"'>"+tg[id]+'</option>'
-                            if(tg[id] == value){                               line = "<option selected value='"+id+"'>"+tg[id]+'</option>'                            }
+                            line = "<option value='"+tg[id]+"'>"+tg[id]+'</option>'
+                            if(tg[id] == value){                               line = "<option selected value='"+tg[id]+"'>"+tg[id]+'</option>'                            }
                             tmp += line
                         }
                         tmp += "</select>"
@@ -182,8 +191,8 @@ function edit_form(){
                     }else if(mditem == 'domain'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"
                         for(id in dom){
-                           line = "<option value='"+id+"'>"+dom[id]+'</option>'
-                           if(dom[id] == value){                               line = "<option selected value='"+id+"'>"+dom[id]+'</option>'                           }
+                           line = "<option value='"+dom[id]+"'>"+dom[id]+'</option>'
+                           if(dom[id] == value){                               line = "<option selected value='"+dom[id]+"'>"+dom[id]+'</option>'                           }
                            tmp += line
                         }
                         tmp += "</select>"
@@ -191,8 +200,8 @@ function edit_form(){
                     }else if(mditem == 'dna_region'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"
                         for(id in dnareg){
-                            line = "<option value='"+id+"'>"+dnareg[id]+'</option>'
-                            if(dnareg[id] == value){                               line = "<option selected value='"+id+"'>"+dnareg[id]+'</option>'                            }
+                            line = "<option value='"+dnareg[id]+"'>"+dnareg[id]+'</option>'
+                            if(dnareg[id] == value){                               line = "<option selected value='"+dnareg[id]+"'>"+dnareg[id]+'</option>'                            }
                             tmp += line
                         }
                         tmp += "</select>"
@@ -200,8 +209,8 @@ function edit_form(){
                     }else if(mditem == 'adapter_sequence'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"
                         for(id in adap){
-                            line = "<option value='"+id+"'>"+adap[id]+'</option>'
-                            if(adap[id] == value){                               line = "<option selected value='"+id+"'>"+adap[id]+'</option>'                            }
+                            line = "<option value='"+adap[id]+"'>"+adap[id]+'</option>'
+                            if(adap[id] == value){                               line = "<option selected value='"+adap[id]+"'>"+adap[id]+'</option>'                            }
                             tmp += line
                         }
                         tmp += "</select>"
@@ -209,8 +218,8 @@ function edit_form(){
                     }else if(mditem == 'illumina_index'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"
                         for(id in ii){
-                            line = "<option value='"+id+"'>"+ii[id]+'</option>'
-                            if(ii[id] == value){ line = "<option selected value='"+id+"'>"+ii[id]+'</option>'                           }
+                            line = "<option value='"+ii[id]+"'>"+ii[id]+'</option>'
+                            if(ii[id] == value){ line = "<option selected value='"+ii[id]+"'>"+ii[id]+'</option>'                           }
                             tmp += line
                         }
                         tmp += "</select>"
@@ -218,8 +227,8 @@ function edit_form(){
                     }else if(mditem == 'sequencing_platform'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"
                         for(id in seqplat){
-                            line = "<option value='"+id+"'>"+seqplat[id]+'</option>'
-                            if(seqplat[id] == value){                               line = "<option selected value='"+id+"'>"+seqplat[id]+'</option>'                            }
+                            line = "<option value='"+seqplat[id]+"'>"+seqplat[id]+'</option>'
+                            if(seqplat[id] == value){                               line = "<option selected value='"+seqplat[id]+"'>"+seqplat[id]+'</option>'                            }
                             tmp += line
                         }
                         tmp += "</select>"
@@ -227,8 +236,8 @@ function edit_form(){
                     }else if(mditem == 'run'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"
                         for(id in run){
-                            line = "<option value='"+id+"'>"+run[id]+'</option>'
-                            if(run[id] == value){                                   line = "<option selected value='"+id+"'>"+run[id]+'</option>'                            }
+                            line = "<option value='"+run[id]+"'>"+run[id]+'</option>'
+                            if(run[id] == value){                                   line = "<option selected value='"+run[id]+"'>"+run[id]+'</option>'                            }
                             tmp += line
                         }
                         tmp += "</select>"
@@ -236,8 +245,8 @@ function edit_form(){
                     }else if(mditem == 'primer_suite'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"
                         for(id in ps){
-                            line = "<option value='"+id+"'>"+ps[id].name+'</option>'
-                            if(ps[id].name == value){                               line = "<option selected value='"+id+"'>"+ps[id].name+'</option>'                            }
+                            line = "<option value='"+ps[id].name+"'>"+ps[id].name+'</option>'
+                            if(ps[id].name == value){                               line = "<option selected value='"+ps[id].name+"'>"+ps[id].name+'</option>'                            }
                             tmp += line
                         }
                         tmp += "</select>"
@@ -246,8 +255,8 @@ function edit_form(){
                         
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"
                         for(id in env_pack){
-                            line = "<option value='"+id+"'>"+env_pack[id]+'</option>'
-                            if(env_pack[id] == value){                               line = "<option selected value='"+id+"'>"+env_pack[id]+'</option>'                            }
+                            line = "<option value='"+env_pack[id]+"'>"+env_pack[id]+'</option>'
+                            if(env_pack[id] == value){                               line = "<option selected value='"+env_pack[id]+"'>"+env_pack[id]+'</option>'                            }
                             tmp += line
                         }
                         tmp += "</select>"
@@ -273,27 +282,52 @@ function save_form(){
     var table = document.getElementById("md_table");
     //alert('not yet: '+project)
     var collector = {}
+    collector.project = project
+    collector.data = {}
+    var mditems_w_ids = ['env_package','env_biome','env_feature','env_material','target_gene','run','primer_suite','adapter_sequence','dna_region','domain','geo_loc_name','illumina_index','sequencing_platform']
     var dataset_row = table.rows[0]
-    var datasets = [] // two placeholders!!
+    var dataset_order = [] // two placeholders!!
     for (var j = 0, col; col = dataset_row.cells[j]; j++) {
         if(col.innerHTML != ''){
-            datasets.push(col.id)
+            dataset_order.push(col.id)
+            //collector.data[col.id] = {}
         }
     }
-    console.log(datasets)
+    //console.log(datasets)
     for(var i = 1, row; row = table.rows[i]; i++){  // skip row zero
-        collector[row.id] = {}
+        if(mditems_w_ids.indexOf(row.id) == -1){
+            row_id = row.id
+        }else{
+            //row_id = row.id + '_id'
+            row_id = row.id
+        }
         
+        collector.data[row_id] = {}
         for (var j = 2, col; col = row.cells[j]; j++) { // skip col zero and one
             ds_index = j - 2
-            console.log(row.col)
-            collector[row.id][datasets[ds_index]] = 1
+            
+            if(col.getElementsByTagName("input")[0] == undefined){
+                value = col.getElementsByTagName("select")[0].value
+            }else{
+                value = col.getElementsByTagName("input")[0].value
+            }
+            collector.data[row_id][dataset_order[ds_index]] = value
         }
-        //console.log(row.cells[1].innerHTML)
-        //console.log(row.id)
-        //alert(row[i].id)
     }
+    console.log('collector:')
     console.log(collector)
+    
+    var xmlhttp = new XMLHttpRequest();	
+    xmlhttp.open("POST", "/user_data/save_metadata", true);
+	xmlhttp.setRequestHeader("Content-type","application/json");
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 ) {
+             response = xmlhttp.responseText
+             //console.log(response)
+             alert('Saved!')
+        }
+    }
+    xmlhttp.send(JSON.stringify(collector));
 }
 //
 //
