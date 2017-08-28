@@ -673,7 +673,7 @@ constants.ORDERED_METADATA_DIVIDERS = ["Biological",
 ];
 
 constants.MY_DNA_EXTRACTION_METH_OPTIONS = ["Please choose one",
-  "CTAB phenol-chloroform",
+  "CTAB Phenol-chloroform",
   "Hot alkaline extraction",
   "MP Biomedical Fast DNA",
   "MP Biomedical Fast DNA Spin Kit for Soil",
