@@ -262,65 +262,9 @@ function checkArray(my_arr){
 }
 
 function geo_loc_name_validation(value, source) {
-  // console.log("FFF source");
-  // console.log(source);
-
-  var geo_loc_name_arr = ["geo_loc_name_marine", "geo_loc_name_continental"];
-  var index = geo_loc_name_arr.indexOf(value);
-
-  console.log("XXX index");
-  console.log(index);
-
-  if (index > -1) {
-    geo_loc_name_arr.splice(index, 1);
-  }
-
-  console.log("GGG1 value");
-  console.log(value);
-
-  console.log("GGG2 source.value");
-  console.log(source.value);
-
-  console.log("GGG3 source.geo_loc_name_marine");
-  console.log(source.geo_loc_name_marine);
-
-  console.log("GGG4 source.geo_loc_name_continental");
-  console.log(source.geo_loc_name_continental);
-
-  console.log("GGG5 checkArray(source.geo_loc_name_marine)");
-  console.log(checkArray(source.geo_loc_name_marine));
-
-  console.log("GGG6 checkArray(source.geo_loc_name_continental)");
-  console.log(checkArray(source.geo_loc_name_continental));
-
-
-
   if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
       throw new Error("Either 'Country' or 'Longhurst Zone' are required");
   }
-
-  // var array = [2, 5, 9];
-  // var index = array.indexOf(5);
-  // Note: browser support for indexOf is limited; it is not supported in Internet Explorer 7 and 8.
-  //
-  // Then remove it with splice:
-  //
-  // if (index > -1) {
-  //   array.splice(index, 1);
-  // }
-
-  // console.log("BBB req.body");
-  //
-  // console.log(req.body);
-  //
-  //
-  // console.log("RRR req.body[geo_loc_name_continental]");
-  // console.log(req.body['geo_loc_name_continental']);
-  // console.log("RRR1 req.body[geo_loc_name_marine]");
-  // console.log(req.body['geo_loc_name_marine']);
-  // if (value === "Please choose one") {
-  //   throw new Error("%s is required. Please choose one value from the dropdown menu");
-  // }
 }
 
 function new_row_field_validation(req, field_name) {
