@@ -789,17 +789,17 @@ $('#table_div').scroll(function(){
   fnScroll();
 });
 
-var metadata_dropdown_fields = ["biome_secondary/",
-  "dna_extraction_meth/",
-  "dna_quantitation/",
-  "env_biome/",
-  "env_feature/",
-  "env_material/",
-  "env_package/",
-  "feature_secondary/",
-  "investigation_type/",
-  "material_secondary/",
-  "sample_type/"
+var metadata_dropdown_fields = ["biome_secondary",
+  "dna_extraction_meth",
+  "dna_quantitation",
+  "env_biome",
+  "env_feature",
+  "env_material",
+  "env_package",
+  "feature_secondary",
+  "investigation_type",
+  "material_secondary",
+  "sample_type"
 ];
 
 addCopyFirst = function () {
@@ -811,7 +811,7 @@ addCopyFirst = function () {
 
   $tdsInColumnCurrent.each(function () {
     var $label = $(this).find("label[for]");
-    var $forAttr = $label.attr('for');
+    var $forAttr = $label.attr('for').slice(0,-1);
     if (jQuery.inArray($forAttr, metadata_dropdown_fields) !== -1)
     {
       $(this).wrapInner('<span class="makeLeft"></span>')
