@@ -930,10 +930,12 @@ showSubmitMessage = function() {
 showUnits = function() {
   var this_tbl = $('table#first_col_table');
 
-  this_tbl.find("label[for]").hover(function () {
-    $(this).css('cursor', 'pointer').attr('title', 'UNITS');
-  }, function () {
-    $(this).css('cursor', 'auto');
+  this_tbl.find("label[for]").each(function () {
+    $(this).hover(function () {
+      $(this).css('cursor', 'pointer').attr('title', 'UUU');
+    }, function () {
+      $(this).css('cursor', 'auto');
+    });
   });
 
 };
