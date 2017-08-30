@@ -927,11 +927,21 @@ showSubmitMessage = function() {
 // console.log(req);
 // req.flash("fail", msg);
 
+showUnits = function() {
+  var this_tbl = $('table#first_col_table');
+
+  this_tbl.find("label[for]").hover(function () {
+    $(this).css('cursor', 'pointer').attr('title', 'UNITS');
+  }, function () {
+    $(this).css('cursor', 'auto');
+  });
+
+};
 // ---
 
 $(document).ready(function(){
   showSubmitMessage();
-
+  showUnits();
   showDatasets();
   // addCopyBtns();
   // CopyColumn();
