@@ -412,21 +412,10 @@ router.post('/metadata_upload',
     form.field("env_feature", get_second("env_feature")).trim().required().entityEncode().custom(env_items_validation).array(),
     form.field("feature_secondary", get_second("feature_secondary")).trim().entityEncode().array(),
     form.field("formation_name", get_second("formation_name")).trim().entityEncode().array(),
-    form.field("forward_primer", get_second("forward_primer")).trim().entityEncode().array(,
+    form.field("forward_primer", get_second("forward_primer")).trim().entityEncode().array(),
     form.field("functional_gene_assays", get_second("functional_gene_assays")).trim().entityEncode().array(),
     form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().entityEncode().array().custom(geo_loc_name_validation),
     form.field("geo_loc_name_marine", get_second("geo_loc_name_marine")).trim().entityEncode().array().custom(geo_loc_name_validation),
-
-    // form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().entityEncode().array().custom(function(value, source) {
-    //   console.log("FFF source");
-    //   console.log(source);
-    //
-    //   // if (!source.country) {
-    //     //   throw new Error('unable to validate %s');
-    //
-    //     }),
-
-
     form.field("illumina_index", get_second("illumina_index")).trim().entityEncode().array(),
     // Index sequence (required for Illumina)
     form.field("investigation_type", get_second("investigation_type")).trim().entityEncode().array().required(),
