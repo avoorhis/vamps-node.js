@@ -28,11 +28,6 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>id=geo_loc_name_continental0</td>
-	<td>United States of America</td>
-</tr>
-<tr>
-	<td>type</td>
 	<td>id=geo_loc_name_continental1</td>
 	<td>United States of America</td>
 </tr>
@@ -70,6 +65,26 @@
 	<td>clickAndWait</td>
 	<td>xpath=(//button[@type='submit'])[3]</td>
 	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div[4]/ul/li[4]</td>
+	<td>Either 'Country' or 'Longhurst Zone' are required</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=geo_loc_name_continental0</td>
+	<td>United States of America</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=add_project_form_submit_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyNotText</td>
+	<td>//div[4]/ul/li[4]</td>
+	<td>Either 'Country' or 'Longhurst Zone' are required</td>
 </tr>
 
 </tbody></table>

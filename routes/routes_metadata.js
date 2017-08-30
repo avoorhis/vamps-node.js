@@ -247,12 +247,6 @@ function env_items_validation(value) {
   }
 }
 
-// field("sport", "favorite sport").custom(function(value, source) {
-//   if (!source.country) {
-//     throw new Error('unable to validate %s');
-//   }
-
-
 function checkArray(my_arr){
   for (var i = 0; my_arr.length > i; i++) {
   if (my_arr[i] === "")
