@@ -247,6 +247,14 @@ function env_items_validation(value) {
   }
 }
 
+function geo_loc_name_validation(value) {
+  if (value === "Please choose one") {
+    throw new Error("%s is required. Please choose one value from the dropdown menu");
+  }
+}
+
+
+
 function new_row_field_validation(req, field_name) {
   console.time("TIME: new_row_field_validation");
   var err_msg = '';
@@ -394,8 +402,8 @@ router.post('/metadata_upload',
     form.field("formation_name", get_second("formation_name")).trim().entityEncode().array(),
     form.field("forward_primer", get_second("forward_primer")).trim().entityEncode().array().required(),
     form.field("functional_gene_assays", get_second("functional_gene_assays")).trim().entityEncode().array(),
-    form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().entityEncode().array().required(),
-    form.field("geo_loc_name_marine", get_second("geo_loc_name_marine")).trim().entityEncode().array().required(),
+    form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().entityEncode().array().custom(geo_loc_name_validation),
+    form.field("geo_loc_name_marine", get_second("geo_loc_name_marine")).trim().entityEncode().array().custom(geo_loc_name_validation),
     form.field("illumina_index", get_second("illumina_index")).trim().entityEncode().array(),
     // Index sequence (required for Illumina)
     form.field("investigation_type", get_second("investigation_type")).trim().entityEncode().array().required(),
