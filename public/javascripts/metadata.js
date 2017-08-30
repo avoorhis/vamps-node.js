@@ -1057,7 +1057,16 @@ showUnits = function() {
     $(this).hover(function () {
       $forAttr = $(this).attr('for').slice(0,-1);
 
-      $(this).css('cursor', 'pointer').attr('title', $forAttr);
+      for( var i = 0, len = ORDERED_METADATA_NAMES.length; i < len; i++ ) {
+        if( ORDERED_METADATA_NAMES[i][0] === $forAttr ) {
+          result = ORDERED_METADATA_NAMES[i];
+          break;
+        }
+      }
+
+      // alert(result[3]);
+
+      $(this).css('cursor', 'pointer').attr('title', result[3]);
     }, function () {
       $(this).css('cursor', 'auto');
     });
