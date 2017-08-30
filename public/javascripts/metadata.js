@@ -1047,31 +1047,20 @@ ORDERED_METADATA_NAMES = [
 ];
 
 showUnits = function() {
-  var this_tbl = $('table#first_col_table');
-
-  this_tbl.find("label[for]").each(function () {
-    // alert($forAttr);
-    // ORDERED_METADATA_NAMES
-
-
-    $(this).hover(function () {
+    $('label').hover(function () {
       $forAttr = $(this).attr('for').slice(0,-1);
 
       for( var i = 0, len = ORDERED_METADATA_NAMES.length; i < len; i++ ) {
         if( ORDERED_METADATA_NAMES[i][0] === $forAttr ) {
-          result = ORDERED_METADATA_NAMES[i];
+          result = ORDERED_METADATA_NAMES[i][3];
           break;
         }
       }
 
-      // alert(result[3]);
-
-      $(this).css('cursor', 'pointer').attr('title', result[3]);
+      $(this).css('cursor', 'pointer').attr('title', result);
     }, function () {
       $(this).css('cursor', 'auto');
     });
-  });
-
 };
 // ---
 
