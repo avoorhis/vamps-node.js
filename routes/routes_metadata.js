@@ -261,17 +261,6 @@ function geo_loc_name_validation(value, source) {
   }
 }
 
-function geo_loc_name_continental_validation(value, source) {
-  // console.log("DDD MD_ENV_CNTRY");
-  // console.log(MD_ENV_CNTRY);
-  console.log("VVV1 value geo_loc_name_continental_validation");
-  console.log(value);
-
-  // if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
-  //   throw new Error("Either 'Country' or 'Longhurst Zone' are required");
-  // }
-}
-
 function get_object_vals(object_name) {
 
   return Object.keys(object_name).map(function (key) {
@@ -280,31 +269,21 @@ function get_object_vals(object_name) {
 
 }
 
-
 function geo_loc_name_marine_validation(value, source) {
-  // console.log("MMM MD_ENV_LZC");
-  // console.log(MD_ENV_LZC);
-  // MMM MD_ENV_LZC
-  // { '668032': 'ALSK',
-  //   '668033': 'ANTA',
-  //   '668034': 'APLR',
-  //   '668035': 'ARAB',
-
   var vals = get_object_vals(MD_ENV_LZC);
-  console.log("MMM MD_ENV_LZC vals");
-  console.log(vals);
-  if(typeof vals[value] === 'undefined') {
+  if(typeof vals[value] === 'undefined' && (value !== '')) {
     throw new Error("There is no Longhurst Zone like '" + value + "'");
   }
+}
 
-  // if (!(value in Object.values(MD_ENV_LZC))) {
-  //     throw new Error("There is no 'Longhurst Zone' " + value);
-  // }
-  console.log("VVV2 value geo_loc_name_marine_validation");
-  console.log(value);
-  // if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
-  //   throw new Error("Either 'Country' or 'Longhurst Zone' are required");
-  // }
+function geo_loc_name_continental_validation(value, source) {
+  var vals = get_object_vals(MD_ENV_CNTRY);
+  console.log("VVV1 vals geo_loc_name_continental_validation");
+  console.log(vals);
+
+  if(typeof vals[value] === 'undefined' && (value !== '')) {
+    throw new Error("There is no Country like '" + value + "'");
+  }
 }
 
 function new_row_field_validation(req, field_name) {
