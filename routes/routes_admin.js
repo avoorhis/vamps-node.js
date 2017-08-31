@@ -1153,10 +1153,17 @@ function get_domain_index(val){
 }
 function get_geo_loc_name_index(val){
   var idx = -1
-  for(key in MD_ENV_LOC){
-    if(val != '' && MD_ENV_LOC[key] == val.toLowerCase()){
+  for(key in MD_ENV_CNTRY){
+    if(val != '' && MD_ENV_CNTRY[key] == val.toLowerCase()){
         idx = key;
     }
+  }
+  if(idx == -1){
+      for(key in MD_ENV_LZC){
+        if(val != '' && MD_ENV_LZC[key] == val.toLowerCase()){
+            idx = key;
+        }
+      }
   }
   return idx
 }
@@ -1180,8 +1187,8 @@ function get_dna_region_index(val){
 }
 function get_env_term_index(val){
   var idx = -1
-  for(key in MD_ENV_TERM){
-    if(val != '' && MD_ENV_TERM[key] == val.toLowerCase()){
+  for(key in MD_ENV_ENVO){
+    if(val != '' && MD_ENV_ENVO[key] == val.toLowerCase()){
         idx = key;
     }
   }

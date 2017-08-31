@@ -285,13 +285,16 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (r
         }
     }
     console.log('owned_projects',owned_projects)
-    console.log('MD_ENV_LOC',Object.keys(MD_ENV_LOC).length)
-    console.log('MD_ENV_TERM',Object.keys(MD_ENV_TERM).length)
-    //var sorted_loc = 
-    //console.log('MD_ENV_TERM2',MD_ENV_TERM)
+    console.log('MD_ENV_CNTRY',Object.keys(MD_ENV_CNTRY).length)
+    console.log('MD_ENV_LZC',Object.keys(MD_ENV_LZC).length)
+    console.log('MD_ENV_ENVO',Object.keys(MD_ENV_ENVO).length)
+    //console.log('MD_ENV_ENVO')
     var loc_array = []
-    for(id in MD_ENV_LOC){
-        loc_array.push({"name":MD_ENV_LOC[id],"id":id})
+    for(id in MD_ENV_CNTRY){
+        loc_array.push({"name":MD_ENV_CNTRY[id],"id":id})
+    }
+    for(id in MD_ENV_LZC){
+        loc_array.push({"name":MD_ENV_LZC[id],"id":id})
     }
     loc_array.sort(function sortByName(a, b) {
                 return helpers.compareStrings_alpha(a.name, b.name);
@@ -350,10 +353,8 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
     metadata.dname_lookup = {}
     //console.log('dids',dids)
     for(n in dids){
-        
         dname = DATASET_NAME_BY_DID[dids[n]]
         //metadata[dname] = AllMetadata[dids[n]]
-        
         metadata.did_lookup[dname] = dids[n]
         metadata.dname_lookup[dids[n]] = dname
     }
@@ -363,7 +364,7 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
         metadata.by_mditem[reqmdname] = {}
         for(n in dids){
             did = dids[n]
-            console.log('did',did)
+            //console.log('did',did)
             dname = DATASET_NAME_BY_DID[did]
             
             if(AllMetadata.hasOwnProperty(did)){
@@ -381,77 +382,171 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
             }
         }
     }
-    // adding custom metadata
+    console.log('geo_loc_name')
+    console.log(metadata.by_mditem['geo_loc_name'])
+    // adding custom metadata keys
+    console.log('keys1')
     console.log(Object.keys(metadata.by_mditem))
     for(n in dids){
         did = dids[n]
         dname = DATASET_NAME_BY_DID[did]
         for(mdname in AllMetadata[did]){
-            if(! metadata.by_mditem.hasOwnProperty(mdname) && ! metadata.by_mditem.hasOwnProperty(mdname.substring(0,mdname.length - 3))){
-                metadata.by_mditem[mdname] = {}
+            if( ! metadata.by_mditem.hasOwnProperty(mdname) && ! metadata.by_mditem.hasOwnProperty(mdname.substring(0,mdname.length-3))){
+                metadata.by_mditem[mdname] = {}                
+            }
+        }        
+    }
+    console.log('keys2')
+    console.log(Object.keys(metadata.by_mditem))
+    // what is this for? Fill in custom metadata and unknowns
+    for(mdname in metadata.by_mditem){
+        for(n in dids){
+            did = dids[n]
+            dname = DATASET_NAME_BY_DID[did]
+            if( AllMetadata.hasOwnProperty(did) && AllMetadata[did].hasOwnProperty(mdname) ){
                 metadata.by_mditem[mdname][did] = AllMetadata[did][mdname]
+            }else{
+            
             }
         }
     }
-    // what is this for?
-    // for(mdname in metadata.by_mditem){
-//         for(n in dids){
-//             did = dids[n]
-//             dname = DATASET_NAME_BY_DID[did]
-//             if( ! metadata.by_mditem[mdname].hasOwnProperty(did) ){
-//                  metadata.by_mditem[mdname][did] = 'unknownY'
-//             }
-//         }
-//     }
     console.log('end of retr data')
     //console.log(Object.keys(metadata.by_mditem))
-    console.log(metadata)
-    //if(GLOBAL_METADATA.hasOwnProperty('project') &&  GLOBAL_METADATA.project == project){
-    //    res.json(GLOBAL_METADATA.data)
-    //}else{
+    //console.log(metadata.by_mditem)
+    console.log(metadata.by_mditem)
+    //console.log(AllMetadata['73'])
+    if(GLOBAL_METADATA.hasOwnProperty('project') &&  GLOBAL_METADATA.project == project){
+       res.json(GLOBAL_METADATA)
+    }else{
         res.json(metadata)
-    //}
-// reqmdname3 geo_loc_name_id
-// reqmdname3 dna_region_id
-// reqmdname3 domain_id
-// reqmdname3 env_biome_id
-// reqmdname3 env_feature_id
-// reqmdname3 env_material_id
-// reqmdname3 env_package_id
-// reqmdname3 target_gene_id
-// reqmdname3 adapter_sequence_id
-// reqmdname3 illumina_index_id
-// reqmdname3 primer_suite_id
-// reqmdname3 run_id
-
+    }
+//
+//
+//
 });
+//
+//  
+//
 router.post('/save_metadata', helpers.isLoggedIn, function (req, res) {
     console.log('in save metadata')
     console.log(req.body)
-    // validate_metadata()
-    // save_metadata()
-    // update_files()
+    
     GLOBAL_METADATA = {}
     GLOBAL_METADATA.project = req.body.project
-    // GLOBAL_METADATA.data[metadata_item][ds_name] = value (not id)
-    GLOBAL_METADATA.data = req.body.data
-    console.log('GLOBAL_METADATA')
-    console.log(GLOBAL_METADATA)
-    var mditems_w_ids = ['env_package','env_biome','env_feature','env_material','target_gene','run','primer_suite','adapter_sequence','dna_region','domain','geo_loc_name','illumina_index','sequencing_platform']
+    GLOBAL_METADATA.by_mditem = req.body.data
+    var pid = PROJECT_INFORMATION_BY_PNAME[GLOBAL_METADATA.project].pid
+    var dids = DATASET_IDS_BY_PID[pid]
+    GLOBAL_METADATA.did_lookup = {}
+    GLOBAL_METADATA.dname_lookup = {}
+    //console.log('dids',dids)
+    for(n in dids){
+        dname = DATASET_NAME_BY_DID[dids[n]]
+        GLOBAL_METADATA.did_lookup[dname] = dids[n]
+        GLOBAL_METADATA.dname_lookup[dids[n]] = dname
+    }
+    
+    var reqmditems_w_ids = ['env_package','env_biome','env_feature','env_material','target_gene','run','primer_suite','adapter_sequence','dna_region','domain','geo_loc_name','illumina_index','sequencing_platform']
+    var reqmditems_wo_ids = ['latitude','longitude','collection_date']
     var pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid
-    to_save_metadata = {}
-    for(mdname in GLOBAL_METADATA.data){
-        if(mditems_w_ids.indexOf(mdname) == -1){
-            //to_save_metadata
-        }else{
-        
+    //to_save_metadata = {}
+    var obj = {}
+    // want obj[did][mditem] = val
+    for(i in dids){
+        obj[dids[i]] = {}
+    }
+    for(i in dids){
+        did = dids[i]
+        for(mdname in GLOBAL_METADATA.by_mditem){
+            console.log('mdname01 - '+mdname)
+            val = GLOBAL_METADATA.by_mditem[mdname][did]
+            ret = save_av_metadata('id', mdname, val )
+            obj[did][ret.name] = ret.value
+            if(AllMetadata.hasOwnProperty(did)){
+                AllMetadata[did][ret.name] = ret.value
+            }else{
+                AllMetadata[did] = {}
+                AllMetadata[did][ret.name] = ret.value
+            }
         }
     }
-   
-    res.json({"Rmd":"Done"})
+    console.log(MD_PRIMER_SUITE)
+    console.log(AllMetadata['71'])
+    console.log(obj['71'])    
+    // validate_metadata()
+    // save_metadata()  // save to AllMetadata[did]
+    // update_files()
+    res.json({"resp":"Saved!"})
   
   
 });
+function save_av_metadata(type, mdname, data){
+    console.log('type '+type+' item: '+mdname)
+    var md = {}    
+    if(data == ''){
+        data = 'unknown'
+    }
+    if(mdname == 'adapter_sequence'){
+        // get id asoc w/ env_package 
+        idname = mdname+'_id'               
+        value = helpers.get_key_from_value(MD_ADAPTER_SEQUENCE, data)                
+    }else if(mdname == 'dna_region'){  
+        idname = mdname+'_id'            
+        value = helpers.get_key_from_value(MD_DNA_REGION, data)                
+    }else if(mdname == 'domain'){     
+        idname = mdname+'_id'         
+        value = helpers.get_key_from_value(MD_DOMAIN, data)                
+    }else if(mdname == 'env_biome'){  
+        idname = mdname+'_id'              
+        value = helpers.get_key_from_value(MD_ENV_ENVO, data)                
+    }else if(mdname == 'env_feature'){
+        idname = mdname+'_id'              
+        value = helpers.get_key_from_value(MD_ENV_ENVO, data)                
+    }else if(mdname == 'env_material'){
+        idname = mdname+'_id'             
+        value = helpers.get_key_from_value(MD_ENV_ENVO, data)                
+    }else if(mdname == 'env_package'){
+        idname = mdname+'_id'              
+        value = helpers.get_key_from_value(MD_ENV_PACKAGE, data)                
+    }else if(mdname == 'geo_loc_name'){
+        idname = mdname+'_id'             
+        value = helpers.get_key_from_value(MD_ENV_CNTRY, data) 
+        if(! value ){
+            value = helpers.get_key_from_value(MD_ENV_LZC, data) 
+        }               
+    }else if(mdname == 'primer_suite'){
+        idname = mdname+'_id' 
+        var p_obj = {}
+        for(id in MD_PRIMER_SUITE){
+            p_obj[id] = MD_PRIMER_SUITE[id].name
+        }          
+        value = helpers.get_key_from_value(p_obj, data)                
+    }else if(mdname == 'run'){        
+        idname = mdname+'_id'      
+        value = helpers.get_key_from_value(MD_RUN, data)                
+    }else if(mdname == 'target_gene'){
+        idname = mdname+'_id'              
+        value = helpers.get_key_from_value(MD_TARGET_GENE, data)                
+    }else if(mdname == 'illumina_index'){
+        idname = mdname+'_id'              
+        value = helpers.get_key_from_value(MD_ILLUMINA_INDEX, data)                
+    }else if(mdname == 'sequencing_platform'){ 
+        idname = mdname+'_id'             
+        value = helpers.get_key_from_value(MD_SEQUENCING_PLATFORM, data)                
+    }else{ 
+        idname =  mdname          
+        value = data              
+    }
+    console.log('2 '+idname+' -- '+value)
+    md = { "name":idname, "value": value }
+        //console.log('did '+did+' - '+mdname+' - '+data[did]+' key: '+value)
+    return md    
+}
+function save_cust_metadata(pid, mdname, data){
+    //console.log('type cust - item: '+mdname)
+    for(did in data){
+        //console.log(did+' - '+data[did])
+    }
+}
 //
 // IMPORT_CHOICES
 //
@@ -3460,8 +3555,9 @@ router.get('/required_metadata_options', helpers.isLoggedIn, function(req, res) 
               title     :'VAMPS Validate Metadata',
               user: req.user,
               md_env_pkg:           JSON.stringify(MD_ENV_PACKAGE),
-            md_env_term:            JSON.stringify(MD_ENV_TERM),
-            md_env_loc:             JSON.stringify(MD_ENV_LOC),        
+            md_env_term:            JSON.stringify(MD_ENV_ENVO),
+            md_env_cntry:           JSON.stringify(MD_ENV_CNTRY),   
+            md_env_lzc:             JSON.stringify(MD_ENV_LZC),     
             md_sequencing_platform: JSON.stringify(MD_SEQUENCING_PLATFORM),
             md_target_gene:         JSON.stringify(MD_TARGET_GENE),
             md_domain:              JSON.stringify(MD_DOMAIN),

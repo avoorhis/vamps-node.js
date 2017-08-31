@@ -64,8 +64,9 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //  MD_ILLUMINA_INDEX
 //  MD_PRIMER_SUITE
 //  MD_RUN
-//  MD_ENV_TERM 
-//  MD_ENV_LOC
+//  MD_ENV_ENVO    environmental
+//  MD_ENV_CNTRY   country
+//  MD_ENV_LZC     longhurst zone code
  
     //console.log(req.user)
 	if(req.params.id in PROJECT_INFORMATION_BY_PID){

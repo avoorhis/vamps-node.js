@@ -26,8 +26,9 @@ module.exports.get_datasets = function(callback){
   ALL_PCOUNTS_BY_PID          = {};    // GLOBAL 
   ALL_CLASSIFIERS_BY_PID      = {}; 
   // Metadata ids and values lookups
-  MD_ENV_TERM                 = {};
-  MD_ENV_LOC                  = {};
+  MD_ENV_ENVO                 = {};
+  MD_ENV_CNTRY                = {};
+  MD_ENV_LZC                  = {};
   MD_ENV_PACKAGE              = {};
   MD_DOMAIN                   = {};
   MD_DNA_REGION               = {};
@@ -107,8 +108,9 @@ module.exports.get_datasets = function(callback){
       } else {
         helpers.get_select_env_term_query(rows);          
       }
-      console.log(' INITIALIZING MD_ENV_TERM');
-      console.log(' INITIALIZING MD_ENV_LOC');
+      console.log(' INITIALIZING MD_ENV_ENVO');
+      console.log(' INITIALIZING MD_ENV_CNTRY');
+      console.log(' INITIALIZING MD_ENV_LZC');
   });
   
   

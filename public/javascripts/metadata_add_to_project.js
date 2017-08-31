@@ -42,12 +42,12 @@ function get_metadata(project){
             html += "<table border='1'>"
             
             //alert(response)
-            if(md_obj.hasOwnProperty('latitude')){
-                dids = Object.keys(md_obj.latitude)
-            }else{
-                alert('No required metadata')
-                return
-            }
+            // if(md_obj.hasOwnProperty('latitude')){
+//                 dids = Object.keys(md_obj.latitude)
+//             }else{
+//                 alert('No required metadata')
+//                 return
+//             }
             // n=0
 //             for(mditem in response){
 //                 datasets = Object.keys(response[mditem])
@@ -58,16 +58,16 @@ function get_metadata(project){
 //             }
             sorted_datasets = Object.keys(did_lookup).sort()
             sorted_keys = Object.keys(md_obj).sort()   // md items
-            //alert(datasets)
+            //alert(sorted_keys)
             html += "<tr><th></th>"
             for(j in sorted_datasets){
-                html += "<th>"+sorted_datasets[j]+"</th>"
+                html += "<th title='did="+did_lookup[sorted_datasets[j]]+"'>"+sorted_datasets[j]+"</th>"
             }
             html += "</tr>"
             n=0
             for(i in sorted_keys){
                 mditem = sorted_keys[i]
-                console.log(mditem)
+                //console.log(mditem)
                 if(reqfields.indexOf(mditem) == -1){ 
                     html += "<tr><td>"+mditem+"</td>"
                 }else{
@@ -75,7 +75,8 @@ function get_metadata(project){
                 }
                 for(j in sorted_datasets){
                     ds = sorted_datasets[j]
-                    value = md_obj[mditem][ds]
+                    did = did_lookup[sorted_datasets[j]]
+                    value = md_obj[mditem][did]
                     html += "<td style='padding:0 2px;'>"+value+"</td>"
                 }
                 html += "</tr>"
@@ -108,20 +109,22 @@ function edit_form(){
             html += " <input type='button' id='dlt_btn' onclick='delete_checked()' Value='Delete Checked' >"
             html += "<br><table id='md_table' border='1'>"
             //alert(response)
-            if(table_data.hasOwnProperty('latitude')){
-                datasets = Object.keys(table_data.latitude)
-            }else{
-                alert('No required metadata')
-                return
-            }
-            sorted_datasets = datasets.sort()
-            sorted_keys = Object.keys(table_data).sort() 
+           //  if(table_data.hasOwnProperty('latitude')){
+//                 //datasets = Object.keys(table_data.latitude)
+//             }else{
+//                 alert('No required metadata')
+//                 return
+//             }
+            //sorted_datasets = Object.keys(did_lookup).sort()
+            //sorted_keys = Object.keys(md_obj).sort()   // md items
+            //sorted_datasets = datasets.sort()
+            //sorted_keys = Object.keys(table_data).sort() 
             //alert(datasets)
             html += "<tr><th></th><th></th>"
-            alert(sorted_datasets[0])
-            alert(dset_lookup[sorted_datasets[0]])
+            //alert(sorted_datasets[0])
+            //alert(dset_lookup[sorted_datasets[0]])
             for(j in sorted_datasets){
-                html += "<th id='"+did_lookup[sorted_datasets[j]]+"'>"+sorted_datasets[j]+"</th>"
+                html += "<th title='did="+did_lookup[sorted_datasets[j]]+"' id='"+did_lookup[sorted_datasets[j]]+"'>"+sorted_datasets[j]+"</th>"
             }
             html += "</tr>"
             n=0
@@ -137,17 +140,18 @@ function edit_form(){
                 }
                 for(j in sorted_datasets){
                     ds = sorted_datasets[j]
-                    value = table_data[mditem][ds]
+                    did = did_lookup[sorted_datasets[j]]
+                    value = table_data[mditem][did]
                     
-                    selid = mditem+'_id_'+ds
+                    selid = mditem+'_id_'+did
                     html += "<td style=''>"
                     if(mditem == 'geo_loc_name'){
                         tmp = "<select id='"+selid+"' width='150' style='width: 150px;'>"  
                         for(i in loc){
                             line = "<option value='"+loc[i].name+"'>"+loc[i].name+'</option>'
                             if(loc[i].name == value){                               
-                              line = "<option selected value='"+loc[i].name+"'>"+loc[i].name+'</option>'                           
-                             }
+                                line = "<option selected value='"+loc[i].name+"'>"+loc[i].name+'</option>'                           
+                            }
                             tmp += line
                         }
                         tmp += "</select>"
@@ -314,17 +318,17 @@ function save_form(){
             collector.data[row_id][dataset_order[ds_index]] = value
         }
     }
-    console.log('collector:')
-    console.log(collector)
+    //console.log('collector:')
+    //console.log(collector)
     
     var xmlhttp = new XMLHttpRequest();	
     xmlhttp.open("POST", "/user_data/save_metadata", true);
 	xmlhttp.setRequestHeader("Content-type","application/json");
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
-             response = xmlhttp.responseText
+             response = JSON.parse(xmlhttp.responseText)
              //console.log(response)
-             alert('Saved!')
+             alert(response.resp)
         }
     }
     xmlhttp.send(JSON.stringify(collector));

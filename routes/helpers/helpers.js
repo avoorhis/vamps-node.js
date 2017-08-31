@@ -322,9 +322,11 @@ module.exports.get_select_env_term_query = function(rows){
   for (var i=0; i < rows.length; i++) {
     var ont = rows[i].ont
     if(ont == 'ENVO'){
-        MD_ENV_TERM[rows[i].term_id] = rows[i].term_name;
-    }else if(ont == 'CTY' || ont == 'LZC'){
-        MD_ENV_LOC[rows[i].term_id] = rows[i].term_name;
+        MD_ENV_ENVO[rows[i].term_id] = rows[i].term_name;
+    }else if(ont == 'CTY' ){
+        MD_ENV_CNTRY[rows[i].term_id] = rows[i].term_name;
+    }else if(ont == 'LZC'){
+        MD_ENV_LZC[rows[i].term_id] = rows[i].term_name;
     }
     
     
@@ -1622,16 +1624,20 @@ module.exports.required_metadata_ids_from_names = function(selection_obj, mdname
     value = MD_ENV_PACKAGE[selection_obj[idname]]
   }else if(mdname == 'env_biome'){
     idname = 'env_biome_id'
-    value = MD_ENV_TERM[selection_obj[idname]]
+    value = MD_ENV_ENVO[selection_obj[idname]]
   }else if(mdname == 'env_feature'){
     idname = 'env_feature_id'
-    value = MD_ENV_TERM[selection_obj[idname]]
+    value = MD_ENV_ENVO[selection_obj[idname]]
   }else if(mdname == 'env_material'){
     idname = 'env_material_id'
-    value = MD_ENV_TERM[selection_obj[idname]]
+    value = MD_ENV_ENVO[selection_obj[idname]]
   }else if(mdname == 'geo_loc_name'){
     idname = 'geo_loc_name_id'
-    value = MD_ENV_LOC[selection_obj[idname]]
+    if(MD_ENV_CNTRY.hasOwnProperty(selection_obj[idname])){
+        value = MD_ENV_CNTRY[selection_obj[idname]]
+    }else{
+        value = MD_ENV_LZC[selection_obj[idname]]
+    }
   }else if(mdname == 'sequencing_platform'){
     idname = 'sequencing_platform_id'
     value = MD_SEQUENCING_PLATFORM[selection_obj[idname]]
@@ -1683,7 +1689,11 @@ module.exports.required_metadata_names_from_ids = function(selection_obj, name_i
     value = MD_DOMAIN[id];
   }else if(name_id == 'geo_loc_name_id'){
     real_name = 'geo_loc_name';
-    value = MD_ENV_LOC[id];
+    if(MD_ENV_CNTRY.hasOwnProperty(id)){
+        value = MD_ENV_CNTRY[id];
+    }else{
+        value = MD_ENV_LZC[id];
+    }
   }else if(name_id == 'sequencing_platform_id'){
     real_name = 'sequencing_platform';
     value = MD_SEQUENCING_PLATFORM[id];
@@ -1692,13 +1702,13 @@ module.exports.required_metadata_names_from_ids = function(selection_obj, name_i
     value = MD_DNA_REGION[id];
   }else if(name_id == 'env_material_id'){
     real_name = 'env_material';
-    value = MD_ENV_TERM[id];
+    value = MD_ENV_ENVO[id];
   }else if(name_id == 'env_biome_id'){
     real_name = 'env_biome';
-    value = MD_ENV_TERM[id]
+    value = MD_ENV_ENVO[id]
   }else if(name_id == 'env_feature_id'){
     real_name = 'env_feature';
-    value = MD_ENV_TERM[id];
+    value = MD_ENV_ENVO[id];
   }else if(name_id == 'adapter_sequence_id'){
     real_name = 'adapter_sequence';
     value = MD_ADAPTER_SEQUENCE[id];
@@ -1807,4 +1817,18 @@ module.exports.log_timestamp = function()
   var day = date.toLocaleDateString();
   var time = date.toLocaleTimeString();
   return day + " " + time;
+};
+module.exports.get_key_from_value = function(obj, value)
+{
+  // returns the key first found object only 
+  console.log('3 -in get_key from val - '+value)
+  found_key = null
+  for(key in obj){
+    if(obj[key] == value){
+        found_key = key
+        break
+    }
+  }
+  console.log('4 -key - '+found_key)
+  return found_key
 };
