@@ -10,6 +10,7 @@ var config  = require(app_root + '/config/config');
 var validator = require('validator');
 // var expressValidator = require('express-validator');
 
+
 /* GET metadata page. */
  router.get('/metadata', function(req, res) {
       console.log('in metadata');
@@ -204,6 +205,9 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
   // console.log("JJJ2 all_field_names");
   // console.log(JSON.stringify(all_field_names));
 
+  MD_ENV_CNTRY_vals = get_object_vals(MD_ENV_CNTRY);
+  MD_ENV_LZC_vals   = get_object_vals(MD_ENV_LZC);
+
   res.render("metadata/metadata_edit_form", {
     title: "VAMPS: Metadata_upload",
     user: req.user,
@@ -269,20 +273,15 @@ function get_object_vals(object_name) {
 
 }
 
-function geo_loc_name_marine_validation(value, source) {
-  var vals = get_object_vals(MD_ENV_LZC);
-  if(typeof vals[value] === 'undefined' && (value !== '')) {
-    throw new Error("There is no Longhurst Zone like '" + value + "'");
+function geo_loc_name_marine_validation(value) {
+  if(MD_ENV_LZC_vals.indexOf(value) < 0 && (value !== '')) {
+    throw new Error("There is no Longhurst Zone '" + value + "', please check the spelling");
   }
 }
 
-function geo_loc_name_continental_validation(value, source) {
-  var vals = get_object_vals(MD_ENV_CNTRY);
-  console.log("VVV1 vals geo_loc_name_continental_validation");
-  console.log(vals);
-
-  if(typeof vals[value] === 'undefined' && (value !== '')) {
-    throw new Error("There is no Country like '" + value + "'");
+function geo_loc_name_continental_validation(value) {
+  if(MD_ENV_CNTRY_vals.indexOf(value) < 0 && (value !== '')) {
+    throw new Error("There is no Country '" + value + "', please check the spelling");
   }
 }
 
