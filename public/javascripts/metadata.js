@@ -760,6 +760,7 @@ $('.env_biome').change(function(){
 
 });
 
+
 $('.env_feature').change(function(){
   populate_secondary_select.call(this, ['feature', feature_seq_options]);
 }).each(function(){
@@ -769,6 +770,7 @@ $('.env_feature').change(function(){
   }
 
 });
+
 $('.env_material').change(function(){
   // alert("On change");
   populate_secondary_select.call(this, ['material', material_seq_options]);
