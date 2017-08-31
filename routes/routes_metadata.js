@@ -247,6 +247,20 @@ function env_items_validation(value) {
   }
 }
 
+function checkArray(my_arr){
+  for (var i = 0; my_arr.length > i; i++) {
+  if (my_arr[i] === "")
+    return false;
+}
+  return true;
+}
+
+function geo_loc_name_validation(value, source) {
+  if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
+      throw new Error("Either 'Country' or 'Longhurst Zone' are required");
+  }
+}
+
 function new_row_field_validation(req, field_name) {
   console.time("TIME: new_row_field_validation");
   var err_msg = '';
@@ -366,7 +380,7 @@ router.post('/metadata_upload',
     form.field("env_biome", get_second("env_biome")).trim().required().entityEncode().custom(env_items_validation).array(),
     form.field("biome_secondary", get_second("biome_secondary")).trim().entityEncode().array(),
     form.field("calcium", get_second("calcium")).trim().entityEncode().array(),
-    form.field("calcium_carbonate", get_second("calcium_carbonate")).trim().entityEncode().array(),
+    form.field("carbonate", get_second("carbonate")).trim().entityEncode().array(),
     form.field("chloride", get_second("chloride")).trim().entityEncode().array(),
     form.field("clone_library_results", get_second("clone_library_results")).trim().entityEncode().array(),
     form.field("collection_date", get_second("collection_date")).trim().required().entityEncode().isDate("Sample collection date format: YYYY-MM-DD").array(),
@@ -392,10 +406,10 @@ router.post('/metadata_upload',
     form.field("env_feature", get_second("env_feature")).trim().required().entityEncode().custom(env_items_validation).array(),
     form.field("feature_secondary", get_second("feature_secondary")).trim().entityEncode().array(),
     form.field("formation_name", get_second("formation_name")).trim().entityEncode().array(),
-    form.field("forward_primer", get_second("forward_primer")).trim().entityEncode().array().required(),
+    form.field("forward_primer", get_second("forward_primer")).trim().entityEncode().array(),
     form.field("functional_gene_assays", get_second("functional_gene_assays")).trim().entityEncode().array(),
-    form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().entityEncode().array().required(),
-    form.field("geo_loc_name_marine", get_second("geo_loc_name_marine")).trim().entityEncode().array().required(),
+    form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().entityEncode().array().custom(geo_loc_name_validation),
+    form.field("geo_loc_name_marine", get_second("geo_loc_name_marine")).trim().entityEncode().array().custom(geo_loc_name_validation),
     form.field("illumina_index", get_second("illumina_index")).trim().entityEncode().array(),
     // Index sequence (required for Illumina)
     form.field("investigation_type", get_second("investigation_type")).trim().entityEncode().array().required(),
@@ -438,7 +452,7 @@ router.post('/metadata_upload',
     form.field("redox_state", get_second("redox_state")).trim().entityEncode().array(),
     form.field("references", get_second("references")).trim().entityEncode().array(),
     form.field("resistivity", get_second("resistivity")).trim().entityEncode().array(),
-    form.field("reverse_primer", get_second("reverse_primer")).trim().entityEncode().array().required(),
+    form.field("reverse_primer", get_second("reverse_primer")).trim().entityEncode().array(),
     form.field("rock_age", get_second("rock_age")).trim().entityEncode().array(),
     form.field("run", get_second("run")).trim().entityEncode().array().required(),
     form.field("salinity", get_second("salinity")).trim().entityEncode().array(),
@@ -449,6 +463,7 @@ router.post('/metadata_upload',
     form.field("sample_size_vol", get_second("sample_size_vol")).trim().entityEncode().array(),
     form.field("sample_type", get_second("sample_type")).trim().entityEncode().array().required().custom(env_items_validation),
     form.field("sequencing_meth", get_second("sequencing_meth")).trim().entityEncode().array().required(),
+    form.field("silicate", get_second("silicate")).trim().entityEncode().array(),
     form.field("sodium", get_second("sodium")).trim().entityEncode().array(),
     form.field("sulfate", get_second("sulfate")).trim().entityEncode().array(),
     form.field("sulfide", get_second("sulfide")).trim().entityEncode().array(),
