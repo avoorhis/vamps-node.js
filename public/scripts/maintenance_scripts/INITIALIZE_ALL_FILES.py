@@ -303,11 +303,11 @@ def go_metadata():
     for row in cur.fetchall():
         did = row[0]
         for i,name in enumerate(args.req_metadata_fields):
-            print("enumerate(required_metadata_fields): SSS")
-            print(i,did,name,row[i+1])
+            # print("enumerate(required_metadata_fields): SSS")
+            # print(i,did,name,row[i+1])
 
-            logging.debug("enumerate(required_metadata_fields): SSS")
-            logging.debug(str(i)+' '+str(did)+' '+name+' '+str(row[i+1]))
+            # logging.debug("enumerate(required_metadata_fields): SSS")
+            # logging.debug(str(i)+' '+str(did)+' '+name+' '+str(row[i+1]))
 
             value = row[i+1]
             if value == '':

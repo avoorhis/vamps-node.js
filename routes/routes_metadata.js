@@ -261,6 +261,52 @@ function geo_loc_name_validation(value, source) {
   }
 }
 
+function geo_loc_name_continental_validation(value, source) {
+  // console.log("DDD MD_ENV_CNTRY");
+  // console.log(MD_ENV_CNTRY);
+  console.log("VVV1 value geo_loc_name_continental_validation");
+  console.log(value);
+
+  // if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
+  //   throw new Error("Either 'Country' or 'Longhurst Zone' are required");
+  // }
+}
+
+function get_object_vals(object_name) {
+
+  return Object.keys(object_name).map(function (key) {
+    return object_name[key];
+  });
+
+}
+
+
+function geo_loc_name_marine_validation(value, source) {
+  // console.log("MMM MD_ENV_LZC");
+  // console.log(MD_ENV_LZC);
+  // MMM MD_ENV_LZC
+  // { '668032': 'ALSK',
+  //   '668033': 'ANTA',
+  //   '668034': 'APLR',
+  //   '668035': 'ARAB',
+
+  var vals = get_object_vals(MD_ENV_LZC);
+  console.log("MMM MD_ENV_LZC vals");
+  console.log(vals);
+  if(typeof vals[value] === 'undefined') {
+    throw new Error("There is no Longhurst Zone like '" + value + "'");
+  }
+
+  // if (!(value in Object.values(MD_ENV_LZC))) {
+  //     throw new Error("There is no 'Longhurst Zone' " + value);
+  // }
+  console.log("VVV2 value geo_loc_name_marine_validation");
+  console.log(value);
+  // if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
+  //   throw new Error("Either 'Country' or 'Longhurst Zone' are required");
+  // }
+}
+
 function new_row_field_validation(req, field_name) {
   console.time("TIME: new_row_field_validation");
   var err_msg = '';
@@ -408,8 +454,8 @@ router.post('/metadata_upload',
     form.field("formation_name", get_second("formation_name")).trim().entityEncode().array(),
     form.field("forward_primer", get_second("forward_primer")).trim().entityEncode().array(),
     form.field("functional_gene_assays", get_second("functional_gene_assays")).trim().entityEncode().array(),
-    form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().entityEncode().array().custom(geo_loc_name_validation),
-    form.field("geo_loc_name_marine", get_second("geo_loc_name_marine")).trim().entityEncode().array().custom(geo_loc_name_validation),
+    form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().entityEncode().array().custom(geo_loc_name_validation).custom(geo_loc_name_continental_validation),
+    form.field("geo_loc_name_marine", get_second("geo_loc_name_marine")).trim().entityEncode().array().custom(geo_loc_name_validation).custom(geo_loc_name_marine_validation),
     form.field("illumina_index", get_second("illumina_index")).trim().entityEncode().array(),
     // Index sequence (required for Illumina)
     form.field("investigation_type", get_second("investigation_type")).trim().entityEncode().array().required(),
