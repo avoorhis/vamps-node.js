@@ -20,11 +20,11 @@ alter_security_level: function( status, uid ){
     return qAlterSecLevel;      
 },
 reset_user_password_by_uid: function(pass, uid){
-    var updateQuery = "UPDATE user set encrypted_password='"+helpers.generateHash(pass)+"' where user_id='"+uid+"'";
+    var updateQuery = "UPDATE user set encrypted_password='"+helpers.generateHash(pass)+"', active='1' where user_id='"+uid+"'";
     return updateQuery
 },
 reset_user_password_by_uname: function(pass, uname){
-    var updateQuery = "UPDATE user set encrypted_password='"+helpers.generateHash(pass)+"' where username='"+uname+"'";
+    var updateQuery = "UPDATE user set encrypted_password='"+helpers.generateHash(pass)+"', active='1' where username='"+uname+"'";
     return updateQuery
 },
 reset_user_signin: function(new_count, old_date, uid){

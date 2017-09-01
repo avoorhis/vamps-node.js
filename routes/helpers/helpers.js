@@ -527,6 +527,25 @@ module.exports.get_metadata_from_file = function (){
   return AllMetadataFromFile;
 };
 
+module.exports.write_metadata_to_files = function (did){
+  var dataset_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--datasets_silva119',did+'.json');
+ 
+  
+  fs.readFile(dataset_file, 'utf8', function (err, data) {
+        if (err) throw err;
+        //Do your processing, MD5, send a satellite to the moon, etc.
+        //console.log('predata',data)
+        data.metadata = AllMetadata[did]
+        //console.log('postdata',data)
+        fs.writeFile (dataset_file, data, function(err) {
+            if (err) throw err;
+            console.log('done writing '+did+'.json');
+        });
+  });
+        
+        
+};
+
 // TODO: "This function's cyclomatic complexity is too high. (11)"
 module.exports.mysql_real_escape_string = function (str) {
   return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
@@ -1823,11 +1842,20 @@ module.exports.get_key_from_value = function(obj, value)
   // returns the key first found object only 
   console.log('3 -in get_key from val - '+value)
   found_key = null
+  unknown_key = null
   for(key in obj){
     if(obj[key] == value){
         found_key = key
-        break
     }
+    if(obj[key] == 'unknown'){
+        unknown_key = key
+    }
+  }
+  if( ! found_key){
+    found_key = unknown_key
+  }
+  if( ! found_key){
+    found_key = null
   }
   console.log('4 -key - '+found_key)
   return found_key

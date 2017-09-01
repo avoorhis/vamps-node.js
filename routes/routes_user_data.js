@@ -28,7 +28,7 @@ var META    = require('./visuals/routes_visuals_metadata');
 var MTX     = require('./visuals/routes_counts_matrix');
 //var progress = require('progress-stream');
 var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
-GLOBAL_METADATA = {}
+GLOBAL_EDIT_METADATA = {}
 var infile_fa = "infile.fna";
 // router.use(multer({ dest: 'tmp',
 // rename: function (fieldname, filename) {
@@ -284,10 +284,10 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (r
             }
         }
     }
-    console.log('owned_projects',owned_projects)
-    console.log('MD_ENV_CNTRY',Object.keys(MD_ENV_CNTRY).length)
-    console.log('MD_ENV_LZC',Object.keys(MD_ENV_LZC).length)
-    console.log('MD_ENV_ENVO',Object.keys(MD_ENV_ENVO).length)
+    //console.log('owned_projects',owned_projects)
+    console.log('MD_ENV_CNTRY size',Object.keys(MD_ENV_CNTRY).length)
+    console.log('MD_ENV_LZC size',Object.keys(MD_ENV_LZC).length)
+    console.log('MD_ENV_ENVO size',Object.keys(MD_ENV_ENVO).length)
     //console.log('MD_ENV_ENVO')
     var loc_array = []
     for(id in MD_ENV_CNTRY){
@@ -415,8 +415,8 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
     //console.log(metadata.by_mditem)
     console.log(metadata.by_mditem)
     //console.log(AllMetadata['73'])
-    if(GLOBAL_METADATA.hasOwnProperty('project') &&  GLOBAL_METADATA.project == project){
-       res.json(GLOBAL_METADATA)
+    if(GLOBAL_EDIT_METADATA.hasOwnProperty('project') &&  GLOBAL_EDIT_METADATA.project == project){
+       res.json(GLOBAL_EDIT_METADATA)
     }else{
         res.json(metadata)
     }
@@ -431,18 +431,18 @@ router.post('/save_metadata', helpers.isLoggedIn, function (req, res) {
     console.log('in save metadata')
     console.log(req.body)
     
-    GLOBAL_METADATA = {}
-    GLOBAL_METADATA.project = req.body.project
-    GLOBAL_METADATA.by_mditem = req.body.data
-    var pid = PROJECT_INFORMATION_BY_PNAME[GLOBAL_METADATA.project].pid
+    GLOBAL_EDIT_METADATA = {}
+    GLOBAL_EDIT_METADATA.project = req.body.project
+    GLOBAL_EDIT_METADATA.by_mditem = req.body.data
+    var pid = PROJECT_INFORMATION_BY_PNAME[GLOBAL_EDIT_METADATA.project].pid
     var dids = DATASET_IDS_BY_PID[pid]
-    GLOBAL_METADATA.did_lookup = {}
-    GLOBAL_METADATA.dname_lookup = {}
+    GLOBAL_EDIT_METADATA.did_lookup = {}
+    GLOBAL_EDIT_METADATA.dname_lookup = {}
     //console.log('dids',dids)
     for(n in dids){
         dname = DATASET_NAME_BY_DID[dids[n]]
-        GLOBAL_METADATA.did_lookup[dname] = dids[n]
-        GLOBAL_METADATA.dname_lookup[dids[n]] = dname
+        GLOBAL_EDIT_METADATA.did_lookup[dname] = dids[n]
+        GLOBAL_EDIT_METADATA.dname_lookup[dids[n]] = dname
     }
     
     var reqmditems_w_ids = ['env_package','env_biome','env_feature','env_material','target_gene','run','primer_suite','adapter_sequence','dna_region','domain','geo_loc_name','illumina_index','sequencing_platform']
@@ -454,11 +454,17 @@ router.post('/save_metadata', helpers.isLoggedIn, function (req, res) {
     for(i in dids){
         obj[dids[i]] = {}
     }
+    // validate_metadata()
+    // save to AllMetadata[did]
+    req_data = {}
+    cust_data= {}
     for(i in dids){
         did = dids[i]
-        for(mdname in GLOBAL_METADATA.by_mditem){
+        req_data[did] = {}
+        cust_data[did] = {}
+        for(mdname in GLOBAL_EDIT_METADATA.by_mditem){
             console.log('mdname01 - '+mdname)
-            val = GLOBAL_METADATA.by_mditem[mdname][did]
+            val = GLOBAL_EDIT_METADATA.by_mditem[mdname][did]
             ret = save_av_metadata('id', mdname, val )
             obj[did][ret.name] = ret.value
             if(AllMetadata.hasOwnProperty(did)){
@@ -467,13 +473,46 @@ router.post('/save_metadata', helpers.isLoggedIn, function (req, res) {
                 AllMetadata[did] = {}
                 AllMetadata[did][ret.name] = ret.value
             }
+            if( reqmditems_w_ids.indexOf(mdname) != -1 || reqmditems_wo_ids.indexOf(mdname) != -1){
+                req_data[did][ret.name] = ret.value
+            }else{
+                cust_data[did][ret.name] = ret.value
+            }
         }
+        console.log('WRITING',did)
+        
+        helpers.write_metadata_to_files(did)
     }
-    console.log(MD_PRIMER_SUITE)
-    console.log(AllMetadata['71'])
-    console.log(obj['71'])    
-    // validate_metadata()
-    // save_metadata()  // save to AllMetadata[did]
+   
+    // REQ METADATA
+    var req_sql_fields = Array.from(reqmditems_wo_ids) // copies array not point to it
+    var same_sql_fields = Array.from(reqmditems_wo_ids)
+  
+    for(n in reqmditems_w_ids){
+        req_sql_fields.push(reqmditems_w_ids[n]+'_id')
+        same_sql_fields.push(reqmditems_w_ids[n])
+    }
+   
+    for(did in req_data){
+        console.log(req_data[did])
+        q = "UPDATE required_metadata_info set "
+        for(n in req_sql_fields){
+            q += req_sql_fields[n]+"='"+req_data[did][req_sql_fields[n]]+"',"
+        }
+        q = q.substring(0,q.length-1)
+        q += " where dataset_id='"+did+"'"
+        console.log(q)
+        connection.query(q, function update_req_metadata(err, rows, fields) {
+           if (err) {
+             console.log('ERROR-in req metadata update: '+err);
+           } else {
+             //console.log('OK- project req metadata updated -did: '+did);
+           }
+        });
+    }
+    // CUST METADATA  
+    
+    
     // update_files()
     res.json({"resp":"Saved!"})
   
@@ -497,7 +536,12 @@ function save_av_metadata(type, mdname, data){
         value = helpers.get_key_from_value(MD_DOMAIN, data)                
     }else if(mdname == 'env_biome'){  
         idname = mdname+'_id'              
-        value = helpers.get_key_from_value(MD_ENV_ENVO, data)                
+        value = helpers.get_key_from_value(MD_ENV_ENVO, data)
+        console.log('BIOME1 '+value)
+       //  if( ! value){
+//             value = helpers.get_key_from_value(MD_ENV_ENVO, 'unknown')
+//         }
+        console.log('BIOME2 '+value)               
     }else if(mdname == 'env_feature'){
         idname = mdname+'_id'              
         value = helpers.get_key_from_value(MD_ENV_ENVO, data)                
