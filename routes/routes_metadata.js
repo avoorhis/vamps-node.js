@@ -286,6 +286,7 @@ function geo_loc_name_continental_validation(value) {
 }
 
 function numbers_n_period(value) {
+  // var regex = /^[0-9.]+$/;
   var regex = /[^0-9.]/;
   var result = value.match(regex);
 
@@ -295,17 +296,14 @@ function numbers_n_period(value) {
   console.log("AAA2 result !== null ");
   console.log(result !== null);
 
-  // if (result && !(value === "" || result.index >= 0)) {
-  //   console.log("AAA0 result");
-  //   console.log(result);
-  //   throw new Error("Only numbers and periods are allowed in %s");
-  // }
-  // result !== null &&
-  if (result !== null && value !== "") {
+  // if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
+
+  // if (value !== "" && result === null) {
+  if (value !== "" && result !== null) {
   console.log("AAA3 result");
   console.log(result);
 
-  throw new Error("Only numbers and periods are allowed in %s");
+  throw new Error("'" + value + "' is not allowed in '%s', please use only numbers and periods.");
 }
 
 }
