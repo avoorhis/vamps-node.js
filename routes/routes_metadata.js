@@ -286,7 +286,7 @@ function geo_loc_name_continental_validation(value) {
 }
 
 function numbers_n_period(value) {
-  var regex = /^[^0-9.]+$/;
+  var regex = /[^0-9.]/;
   var result = value.match(regex);
 
   console.log("AAA1 result");
