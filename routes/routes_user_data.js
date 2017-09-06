@@ -484,7 +484,7 @@ router.post('/save_metadata', helpers.isLoggedIn, function (req, res) {
         helpers.write_metadata_to_files(did)
     }
    
-    // REQ METADATA
+    // REQUIRED METADATA
     var req_sql_fields = Array.from(reqmditems_wo_ids) // copies array not point to it
     var same_sql_fields = Array.from(reqmditems_wo_ids)
   
@@ -506,12 +506,18 @@ router.post('/save_metadata', helpers.isLoggedIn, function (req, res) {
            if (err) {
              console.log('ERROR-in req metadata update: '+err);
            } else {
-             //console.log('OK- project req metadata updated -did: '+did);
+             console.log('OK- Still needs Re-build files and server restart');
            }
         });
+        
     }
-    // CUST METADATA  
-    
+    req.flash('success', "Your data has been saved")
+    // CUSTOM METADATA  
+    // two tables involved: custom_metadata_<pid> and custom_metadata_fields
+    // need to either delete/recreate *pid table or delete/add fields to existing table
+    // Not sure the best way????
+    // maybe write the entire json object into a file and send the administartor (me) an alert.
+    // who should then run a script to install the metadata; rebuild the files and re-start the server
     
     // update_files()
     res.json({"resp":"Saved!"})

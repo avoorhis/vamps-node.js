@@ -9,8 +9,9 @@ function get_metadata(project){
     //alert(project)
     document.getElementById('save_btn').disabled = true;
     document.getElementById('save_btn').style.visibility = 'hidden';
-    if(project == 'Select Project'){
+    if(! project || project == 'Select Project'){
         document.getElementById('metadata_table').innerHTML = '';
+        document.getElementById('project_select_id').value = 'Select Project';
         document.getElementById('edit_btn').disabled = true;
         document.getElementById('edit_btn').style.visibility = 'hidden';
         return
@@ -328,7 +329,9 @@ function save_form(){
         if (xmlhttp.readyState == 4 ) {
              response = JSON.parse(xmlhttp.responseText)
              //console.log(response)
-             alert(response.resp)
+             
+             get_metadata(project)
+             //alert(response.resp)
         }
     }
     xmlhttp.send(JSON.stringify(collector));
