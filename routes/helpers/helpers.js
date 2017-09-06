@@ -1255,6 +1255,7 @@ module.exports.get_qsub_script_text = function(log, pwd, site, name, cmd_list) {
   script_text += "#$ -j y\n";
   script_text += "#$ -o "+log+"\n";
   script_text += "#$ -N "+name+"\n";
+  script_text += "#$ -p 100\n";
   script_text += "#$ -cwd\n";
   script_text += "#$ -V\n";
   script_text += 'echo -n "Hostname: "'+"\n";
