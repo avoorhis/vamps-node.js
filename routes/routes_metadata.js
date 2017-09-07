@@ -310,6 +310,28 @@ function numbers_n_period_n_minus(value) {
   check_regexp(reg_exp, value, err_msg);
 }
 
+// function region_valid(value, region_low, region_high) {
+//
+// }
+
+function longitude_valid(value) {
+  console.log("GGG parseInt(value)");
+  console.log(parseInt(value));
+
+  if((parseInt(value) < -180 || parseInt(value) > 180) && (value !== '')) {
+    throw new Error("'" + value + "'is not correct, %s should be between -180 and 180");
+  }
+}
+
+function latitude_valid(value) {
+  console.log("GGG parseInt(value)");
+  console.log(parseInt(value));
+
+  if((parseInt(value) < -90 || parseInt(value) > 90) && (value !== '')) {
+    throw new Error("'" + value + "'is not correct, %s should be between -90 and 90");
+  }
+}
+
 function new_row_field_validation(req, field_name) {
   console.time("TIME: new_row_field_validation");
   var err_msg = '';
@@ -467,8 +489,8 @@ router.post('/metadata_upload',
     form.field("iron_II", get_second("iron_II")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("iron_III", get_second("iron_III")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("isol_growth_cond", get_second("isol_growth_cond")).trim().entityEncode().array(),
-    form.field("latitude", get_second("latitude")).trim().custom(numbers_n_period_n_minus).required().entityEncode().array(),
-    form.field("longitude", get_second("longitude")).trim().custom(numbers_n_period_n_minus).required().entityEncode().array(),
+    form.field("latitude", get_second("latitude")).trim().custom(latitude_valid).custom(numbers_n_period_n_minus).required().entityEncode().array(),
+    form.field("longitude", get_second("longitude")).trim().custom(longitude_valid).custom(numbers_n_period_n_minus).required().entityEncode().array(),
     form.field("magnesium", get_second("magnesium")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("manganese", get_second("manganese")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("env_material", get_second("env_material")).trim().required().entityEncode().custom(env_items_validation).array(),
@@ -499,14 +521,14 @@ router.post('/metadata_upload',
     form.field("project_abstract", get_second("project_abstract")).trim().required().entityEncode().array(),
     form.field("project_title", get_second("project_title")).trim().required().entityEncode().is(/^[a-zA-Z0-9,_ -]+$/).array(),
     form.field("redox_potential", get_second("redox_potential")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("redox_state", get_second("redox_state")).trim().entityEncode().array(),
+    form.field("redox_state", get_second("redox_state")).trim().entityEncode().is(/^[a-zA-Z ]+$/).array(),
     form.field("references", get_second("references")).trim().entityEncode().array(),
     form.field("resistivity", get_second("resistivity")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("reverse_primer", get_second("reverse_primer")).trim().entityEncode().array(),
     form.field("rock_age", get_second("rock_age")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("run", get_second("run")).trim().entityEncode().array().required(),
     form.field("salinity", get_second("salinity")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("samp_store_dur", get_second("samp_store_dur")).trim().entityEncode().array(),
+    form.field("samp_store_dur", get_second("samp_store_dur")).trim().entityEncode().is(/^[0-9a-zA-Z ]+$/).array(),
     form.field("samp_store_temp", get_second("samp_store_temp")).trim().custom(numbers_n_period_n_minus).entityEncode().array(),
     form.field("sample_name", get_second("sample_name")).trim().entityEncode().array().required(),
     form.field("sample_size_mass", get_second("sample_size_mass")).trim().custom(numbers_n_period).entityEncode().array(),
