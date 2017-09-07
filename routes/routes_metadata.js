@@ -324,6 +324,15 @@ function latitude_valid(value) {
   region_valid(value, -90, 90);
 }
 
+function ph_valid(value) {
+  region_valid(value, 0, 14);
+}
+
+function porosity_valid(value) {
+  region_valid(value, 0, 100);
+}
+
+
 function new_row_field_validation(req, field_name) {
   console.time("TIME: new_row_field_validation");
   var err_msg = '';
@@ -500,13 +509,13 @@ router.post('/metadata_upload',
     form.field("nitrogen_tot", get_second("nitrogen_tot")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("noble_gas_chemistry", get_second("noble_gas_chemistry")).trim().entityEncode().array(),
     form.field("org_carb_nitro_ratio", get_second("org_carb_nitro_ratio")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("pH", get_second("pH")).trim().custom(numbers_n_period).entityEncode().array().required(),
+    form.field("pH", get_second("pH")).trim().custom(numbers_n_period).custom(ph_valid).entityEncode().array().required(),
     form.field("part_org_carbon_del13C", get_second("part_org_carbon_del13C")).trim().custom(numbers_n_period_n_minus).entityEncode().array(),
     form.field("phosphate", get_second("phosphate")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("pi_email", get_second("pi_email")).trim().isEmail().required().entityEncode().array(),
     form.field("pi_name", get_second("pi_name")).trim().required().entityEncode().is(/^[a-zA-Z- ]+$/).array(),
     form.field("plate_counts", get_second("plate_counts")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("porosity", get_second("porosity")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("porosity", get_second("porosity")).trim().custom(numbers_n_period).custom(porosity_valid).entityEncode().array(),
     form.field("potassium", get_second("potassium")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("pressure", get_second("pressure")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("project", get_second("project")).trim().entityEncode().array().required(),
