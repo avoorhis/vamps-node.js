@@ -311,9 +311,9 @@ function numbers_n_period_n_minus(value) {
 }
 
 function region_valid(value, region_low, region_high) {
-  if((parseInt(value) < parseInt(region_low) || parseInt(value) > parseInt(region_high)) && (value !== '')) {
-    throw new Error("'" + value + "' is not valid, %s should be between " + region_low + " and " + region_high);
-  }
+  if ((value !== '') && (parseInt(value) < parseInt(region_low) || parseInt(value) > parseInt(region_high))) {
+  throw new Error("'" + value + "' is not valid, %s should be between " + region_low + " and " + region_high);
+}
 }
 
 function longitude_valid(value) {
@@ -332,6 +332,11 @@ function porosity_valid(value) {
   region_valid(value, 0, 100);
 }
 
+function positive(value) {
+  if (value !== '' && parseInt(value) < 0) {
+    throw new Error("'" + value + "' is not valid, %s should be greater then 0.");
+  }
+}
 
 function new_row_field_validation(req, field_name) {
   console.time("TIME: new_row_field_validation");
@@ -532,8 +537,8 @@ router.post('/metadata_upload',
     form.field("samp_store_dur", get_second("samp_store_dur")).trim().entityEncode().is(/^[0-9a-zA-Z ]+$/).array(),
     form.field("samp_store_temp", get_second("samp_store_temp")).trim().custom(numbers_n_period_n_minus).entityEncode().array(),
     form.field("sample_name", get_second("sample_name")).trim().entityEncode().array().required(),
-    form.field("sample_size_mass", get_second("sample_size_mass")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("sample_size_vol", get_second("sample_size_vol")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("sample_size_mass", get_second("sample_size_mass")).trim().custom(numbers_n_period).entityEncode().custom(positive).array(),
+    form.field("sample_size_vol", get_second("sample_size_vol")).trim().custom(numbers_n_period).entityEncode().custom(positive).array(),
     form.field("sample_type", get_second("sample_type")).trim().entityEncode().array().required().custom(env_items_validation),
     form.field("sequencing_meth", get_second("sequencing_meth")).trim().entityEncode().array().required(),
     form.field("silicate", get_second("silicate")).trim().custom(numbers_n_period).entityEncode().array(),
