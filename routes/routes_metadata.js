@@ -317,23 +317,11 @@ function region_valid(value, region_low, region_high) {
 }
 
 function longitude_valid(value) {
-  console.log("GGG parseInt(value)");
-  console.log(parseInt(value));
-
   region_valid(value, -180, 180);
-
 }
 
 function latitude_valid(value) {
-  console.log("GGG2 parseInt(value)");
-  console.log(parseInt(value));
-
   region_valid(value, -90, 90);
-
-
-  // if((parseInt(value) < -90 || parseInt(value) > 90) && (value !== '')) {
-  //   throw new Error("'" + value + "'is not correct, %s should be between -90 and 90");
-  // }
 }
 
 function new_row_field_validation(req, field_name) {
