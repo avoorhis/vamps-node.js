@@ -285,16 +285,21 @@ function geo_loc_name_continental_validation(value) {
   }
 }
 
-function numbers_n_period(value) {
-  // var regex = /^[0-9.]+$/;
-  //[^0-9.] faster
-  var regex = /[^0-9.]/;
-  var result = value.match(regex);
+function check_regexp(reg_exp, value, err_msg) {
+  var result = value.match(reg_exp);
 
   // if (value !== "" && result === null) {
   if (value !== "" && result !== null) {
-    throw new Error("'" + value + "' is not allowed in '%s', please use only numbers and periods.");
+    throw new Error("'" + value + "' is not allowed in '%s'" + err_msg);
   }
+}
+
+function numbers_n_period(value) {
+  // var regex = /^[0-9.]+$/;
+  //[^0-9.] faster
+  var reg_exp = /[^0-9.]/;
+  var err_msg = ", please use only numbers and periods.";
+  check_regexp(reg_exp, value, err_msg);
 }
 
 function new_row_field_validation(req, field_name) {
