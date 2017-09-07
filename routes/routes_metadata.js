@@ -302,6 +302,14 @@ function numbers_n_period(value) {
   check_regexp(reg_exp, value, err_msg);
 }
 
+function numbers_n_period_n_minus(value) {
+  // var regex = /^[0-9.]+$/;
+  //[^0-9.] faster
+  var reg_exp = /[^0-9.-]/;
+  var err_msg = ", please use only numbers, periods and minus.";
+  check_regexp(reg_exp, value, err_msg);
+}
+
 function new_row_field_validation(req, field_name) {
   console.time("TIME: new_row_field_validation");
   var err_msg = '';
@@ -428,12 +436,12 @@ router.post('/metadata_upload',
     form.field("conductivity", get_second("conductivity")).trim().custom(numbers_n_period).entityEncode().array().required(),
     form.field("dataset", get_second("dataset")).trim().entityEncode().array().required(),
     form.field("dataset_id", "").trim().required().entityEncode().isInt().array(),
-    form.field("del18O_water", get_second("del18O_water")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("del18O_water", get_second("del18O_water")).trim().custom(numbers_n_period_n_minus).entityEncode().array(),
     form.field("depth_in_core", get_second("depth_in_core")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("depth_subseafloor", get_second("depth_subseafloor")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("depth_subterrestrial", get_second("depth_subterrestrial")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("diss_hydrogen", get_second("diss_hydrogen")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("diss_inorg_carb", get_second("diss_inorg_carb")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("diss_inorg_carb", get_second("diss_inorg_carb")).trim().custom(numbers_n_period_n_minus).entityEncode().array(),
     form.field("diss_inorg_carbon_del13C", get_second("diss_inorg_carbon_del13C")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("diss_org_carb", get_second("diss_org_carb")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("diss_oxygen", get_second("diss_oxygen")).trim().custom(numbers_n_period).entityEncode().array(),
@@ -459,14 +467,14 @@ router.post('/metadata_upload',
     form.field("iron_II", get_second("iron_II")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("iron_III", get_second("iron_III")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("isol_growth_cond", get_second("isol_growth_cond")).trim().entityEncode().array(),
-    form.field("latitude", get_second("latitude")).trim().custom(numbers_n_period).required().entityEncode().array(),
-    form.field("longitude", get_second("longitude")).trim().custom(numbers_n_period).required().entityEncode().array(),
+    form.field("latitude", get_second("latitude")).trim().custom(numbers_n_period_n_minus).required().entityEncode().array(),
+    form.field("longitude", get_second("longitude")).trim().custom(numbers_n_period_n_minus).required().entityEncode().array(),
     form.field("magnesium", get_second("magnesium")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("manganese", get_second("manganese")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("env_material", get_second("env_material")).trim().required().entityEncode().custom(env_items_validation).array(),
     form.field("material_secondary", get_second("material_secondary")).trim().entityEncode().array(),
     form.field("methane", get_second("methane")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("methane_del13C", get_second("methane_del13C")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("methane_del13C", get_second("methane_del13C")).trim().custom(numbers_n_period_n_minus).entityEncode().array(),
     form.field("microbial_biomass_FISH", get_second("microbial_biomass_FISH")).trim().custom(numbers_n_period).entityEncode().array(),
     // form.field("microbial_biomass_avg_cell_number", get_second("microbial_biomass_avg_cell_number")).trim().entityEncode().array(),
     // form.field("microbial_biomass_intactpolarlipid", get_second("microbial_biomass_intactpolarlipid")).trim().entityEncode().array(),
@@ -479,7 +487,7 @@ router.post('/metadata_upload',
     form.field("noble_gas_chemistry", get_second("noble_gas_chemistry")).trim().entityEncode().array(),
     form.field("org_carb_nitro_ratio", get_second("org_carb_nitro_ratio")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("pH", get_second("pH")).trim().custom(numbers_n_period).entityEncode().array().required(),
-    form.field("part_org_carbon_del13C", get_second("part_org_carbon_del13C")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("part_org_carbon_del13C", get_second("part_org_carbon_del13C")).trim().custom(numbers_n_period_n_minus).entityEncode().array(),
     form.field("phosphate", get_second("phosphate")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("pi_email", get_second("pi_email")).trim().isEmail().required().entityEncode().array(),
     form.field("pi_name", get_second("pi_name")).trim().required().entityEncode().is(/^[a-zA-Z- ]+$/).array(),
@@ -499,7 +507,7 @@ router.post('/metadata_upload',
     form.field("run", get_second("run")).trim().entityEncode().array().required(),
     form.field("salinity", get_second("salinity")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("samp_store_dur", get_second("samp_store_dur")).trim().entityEncode().array(),
-    form.field("samp_store_temp", get_second("samp_store_temp")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("samp_store_temp", get_second("samp_store_temp")).trim().custom(numbers_n_period_n_minus).entityEncode().array(),
     form.field("sample_name", get_second("sample_name")).trim().entityEncode().array().required(),
     form.field("sample_size_mass", get_second("sample_size_mass")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("sample_size_vol", get_second("sample_size_vol")).trim().custom(numbers_n_period).entityEncode().array(),
@@ -511,7 +519,7 @@ router.post('/metadata_upload',
     form.field("sulfide", get_second("sulfide")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("sulfur_tot", get_second("sulfur_tot")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("target_gene", get_second("target_gene")).trim().entityEncode().array().required(),
-    form.field("temperature", get_second("temperature")).trim().custom(numbers_n_period).entityEncode().array().required(),
+    form.field("temperature", get_second("temperature")).trim().custom(numbers_n_period_n_minus).entityEncode().array().required(),
     form.field("tot_carb", get_second("tot_carb")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("tot_depth_water_col", get_second("tot_depth_water_col")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("tot_inorg_carb", get_second("tot_inorg_carb")).trim().custom(numbers_n_period).entityEncode().array(),
