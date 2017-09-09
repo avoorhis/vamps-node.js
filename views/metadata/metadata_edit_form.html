@@ -49,7 +49,9 @@
     <% for (var pid in all_metadata) { %>
       <% if (typeof(all_metadata[pid]) !== 'undefined') { %>
         <% pi_email = all_metadata[pid]["pi_email"][0] %>
-        <% reference = all_metadata[pid]["reference"][0] %>
+        <% if (typeof(all_metadata[pid]["reference"]) !== 'undefined') { %>
+          <% reference = all_metadata[pid]["reference"][0] %>
+        <% } %>
         <% project_title = all_metadata[pid]["project_title"][0] %>
         <% project = all_metadata[pid]["project"][0] %>
         <% pi_name = all_metadata[pid]["pi_name"][0] %>
