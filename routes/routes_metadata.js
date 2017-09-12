@@ -857,13 +857,7 @@ function make_metadata_object_from_db(req, res) {
 
   console.timeEnd("TIME: ORDERED_METADATA_NAMES_only");
 
-  function filterItems(arr, query) {
-    return arr.filter(function(el) {
-      return el.toLowerCase().indexOf(query.toLowerCase()) < 0;
-    });
-  }
-
-  var filtered1 = filterItems(structured_field_names0, 'reference');
+  var filtered1 = structured_field_names0.filter(function(x) { return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0; });
 
   var filtered = filtered1.filter(function(item){
     return /^((?!_id).)*$/.test(item);
@@ -923,6 +917,12 @@ function make_metadata_object_from_db(req, res) {
   render_edit_form(req, res, all_metadata, all_field_names);
 
   console.timeEnd("TIME: make_metadata_object_from_db");
+}
+
+function filterItems(arr, query) {
+  return arr.filter(function(el) {
+    return el.toLowerCase().indexOf(query.toLowerCase()) < 0;
+  });
 }
 
 function from_obj_to_obj_of_arr(data, pid) {

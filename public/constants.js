@@ -648,15 +648,13 @@ constants.PROJECT_INFO_FIELDS = [
   "username"
 ];
 
-constants.METADATA_NAMES_ADD = [
-  "dataset",
-  "dataset_description",
-  "dataset_id",
-  "project_abstract",
-  "reference"
-];
+// constants.METADATA_NAMES_ADD = [
+//   "dataset",
+//   "dataset_id"
+// ];
 
 constants.METADATA_NAMES_SUBSTRACT = [
+  "dataset_description",
   "primer_suite",
   "project_abstract",
   "reference"
