@@ -12,6 +12,7 @@ import MySQLdb
 import json
 import shutil
 import datetime
+import socket
 
 today     = str(datetime.date.today())
 
@@ -208,9 +209,12 @@ if __name__ == '__main__':
         args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
         args.NODE_DATABASE = 'vamps2'
         dbhost = 'bpcweb7'
-    else:
+    elif args.dbhost == 'localhost' and socket.gethostname() == 'Annas-MacBook.local':
+        args.NODE_DATABASE = 'vamps2'
         dbhost = 'localhost'
+    else:
         args.NODE_DATABASE = 'vamps_development'
+        dbhost = 'localhost'
     args.units = 'silva119'
     if args.units == 'silva119':
         args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_silva119")
