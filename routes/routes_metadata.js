@@ -860,11 +860,13 @@ function make_metadata_object_from_db(req, res) {
 
 
   console.timeEnd("TIME: ORDERED_METADATA_NAMES_only");
+
+  console.time("TIME: ORDERED_METADATA_NAMES_only 2");
+
   var ORDERED_METADATA_NAMES_only2 = [];
   const arrayColumn = (arr, n) => arr.map(x => x[n]);
   ORDERED_METADATA_NAMES_only2 = arrayColumn(CONSTS.ORDERED_METADATA_NAMES, 0);
 
-  console.time("TIME: ORDERED_METADATA_NAMES_only 2");
   console.timeEnd("TIME: ORDERED_METADATA_NAMES_only 2");
 
   console.log("ORDERED_METADATA_NAMES_only2");
