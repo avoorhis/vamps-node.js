@@ -927,7 +927,7 @@ function from_obj_to_obj_of_arr(data, pid) {
   //TODO: make field_names collection a separate function
   var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
   all_field_names = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  all_field_names = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
+  all_field_names = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
   all_field_names = helpers.unique_array(all_field_names);
 
   all_field_names.push("project_abstract");
@@ -1407,7 +1407,7 @@ function prepare_empty_metadata_object(pid, field_names_arr, all_metadata) {
 function get_field_names(dataset_ids){
   var field_names_arr = [];
   // field_names_arr = field_names_arr.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  // field_names_arr = field_names_arr.concat(CONSTS.METADATA_NAMES_ADD);
+  // field_names_arr = field_names_arr.concat(CONSTS.PROJECT_INFO_FIELDS);
 
   for (var i = 0; i < dataset_ids.length; i++) {
     var dataset_id = dataset_ids[i];
@@ -1447,7 +1447,7 @@ function make_metadata_object(req, res, pid, info) {
   //TODO: DRY
   var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
   all_field_names = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  all_field_names = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
+  all_field_names = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
   all_field_names = helpers.unique_array(all_field_names);
 
   // console.log("HHH3 all_field_names");
@@ -1486,8 +1486,8 @@ function make_metadata_object(req, res, pid, info) {
   console.log(JSON.stringify(all_metadata[pid]["reference"]));
 
 
-  for (var idx in CONSTS.METADATA_NAMES_ADD) {
-    var field_name = CONSTS.METADATA_NAMES_ADD[idx];
+  for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
+    var field_name = CONSTS.PROJECT_INFO_FIELDS[idx];
 
     //todo: split if, if length == dataset_ids.length - just use as is
     if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {

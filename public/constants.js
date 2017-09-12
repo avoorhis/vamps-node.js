@@ -631,7 +631,7 @@ constants.ORDERED_METADATA_NAMES = [
   ["","User-added","", ""]
 ];
 
-constants.METADATA_NAMES_ADD = [
+constants.PROJECT_INFO_FIELDS = [
   // "dataset",
   // "dataset_description",
   // "dataset_id",
@@ -646,6 +646,14 @@ constants.METADATA_NAMES_ADD = [
   "public",
   // "reference",
   "username"
+];
+
+constants.METADATA_NAMES_ADD = [
+  "dataset",
+  "dataset_description",
+  "dataset_id",
+  "project_abstract",
+  "reference"
 ];
 
 // see metadata.js
