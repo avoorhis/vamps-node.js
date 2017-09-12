@@ -847,6 +847,7 @@ function make_metadata_object_from_db(req, res) {
     // ["NPOC",..."sample_storage_temp2","sample_type","sequencing_platform","sequencing_platform_id","silicate","sodium","sulfate","sulfate_red_depth","sulfate_red_rate","sulfide","sulfur_tot","target_gene","target_gene_id","temperature","tot_carb","tot_depth_water_col","tot_inorg_carb","tot_org_carb","trace_element_geochem","username","water_age"]
 
 
+  //TODO: clean up
   console.time("TIME: ORDERED_METADATA_NAMES_only");
 
   var ORDERED_METADATA_NAMES_only = [];
@@ -856,18 +857,25 @@ function make_metadata_object_from_db(req, res) {
 
   console.timeEnd("TIME: ORDERED_METADATA_NAMES_only");
 
-  var filtered = structured_field_names0.filter(function(item){
+  function filterItems(arr, query) {
+    return arr.filter(function(el) {
+      return el.toLowerCase().indexOf(query.toLowerCase()) < 0;
+    });
+  }
+
+  var filtered1 = filterItems(structured_field_names0, 'reference');
+
+  var filtered = filtered1.filter(function(item){
     return /^((?!_id).)*$/.test(item);
   });
-
-  filtered.join();
-  console.log("DDD8 filtered.join()");
-  console.log(filtered.join());
+  //
+  // console.log("DDD8 filtered.join()");
+  // console.log(filtered.join());
 
   console.log("ORDERED_METADATA_NAMES_only");
   console.log(ORDERED_METADATA_NAMES_only);
 
-  diff_names = filtered.filter(function(x) { return ORDERED_METADATA_NAMES_only.indexOf(x) < 0; });
+  var diff_names = filtered.filter(function(x) { return ORDERED_METADATA_NAMES_only.indexOf(x) < 0; });
 
   console.log("DDD7 diff_names");
   console.log(diff_names);
