@@ -644,7 +644,7 @@ constants.METADATA_NAMES_ADD = [
   // "project_abstract",
   "project_title",
   "public",
-  "reference",
+  // "reference",
   "username"
 ];
 
