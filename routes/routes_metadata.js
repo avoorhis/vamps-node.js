@@ -846,32 +846,23 @@ function make_metadata_object_from_db(req, res) {
 
     // ["NPOC",..."sample_storage_temp2","sample_type","sequencing_platform","sequencing_platform_id","silicate","sodium","sulfate","sulfate_red_depth","sulfate_red_rate","sulfide","sulfur_tot","target_gene","target_gene_id","temperature","tot_carb","tot_depth_water_col","tot_inorg_carb","tot_org_carb","trace_element_geochem","username","water_age"]
 
+
   console.time("TIME: ORDERED_METADATA_NAMES_only");
 
   var ORDERED_METADATA_NAMES_only = [];
-  for (var name_idx in CONSTS.ORDERED_METADATA_NAMES) {
-    console.log("DDD5 CONSTS.ORDERED_METADATA_NAMES[name_idx][0]");
-    console.log(JSON.stringify(CONSTS.ORDERED_METADATA_NAMES[name_idx][0]));
-    ORDERED_METADATA_NAMES_only.push(CONSTS.ORDERED_METADATA_NAMES[name_idx][0]);
-  }
+  const arrayColumn = (arr, n) => arr.map(x => x[n]);
+  // ORDERED_METADATA_NAMES_only = arrayColumn(CONSTS.ORDERED_METADATA_NAMES, 0);
+  ORDERED_METADATA_NAMES_only = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(arrayColumn(CONSTS.ORDERED_METADATA_NAMES, 0));
+
+  console.timeEnd("TIME: ORDERED_METADATA_NAMES_only");
 
   console.log("ORDERED_METADATA_NAMES_only");
   console.log(ORDERED_METADATA_NAMES_only);
 
+  diff_names = structured_field_names0.filter(function(x) { return ORDERED_METADATA_NAMES_only.indexOf(x) < 0; });
 
-  console.timeEnd("TIME: ORDERED_METADATA_NAMES_only");
-
-  console.time("TIME: ORDERED_METADATA_NAMES_only 2");
-
-  var ORDERED_METADATA_NAMES_only2 = [];
-  const arrayColumn = (arr, n) => arr.map(x => x[n]);
-  ORDERED_METADATA_NAMES_only2 = arrayColumn(CONSTS.ORDERED_METADATA_NAMES, 0);
-
-  console.timeEnd("TIME: ORDERED_METADATA_NAMES_only 2");
-
-  console.log("ORDERED_METADATA_NAMES_only2");
-  console.log(ORDERED_METADATA_NAMES_only2);
-
+  console.log("DDD7 diff_names");
+  console.log(diff_names);
 
   var all_field_names = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(structured_field_names0));
 
@@ -1386,11 +1377,11 @@ function get_field_names(dataset_ids){
     field_names_arr.sort();
   }
 
-  console.log("MMM0 AllMetadataNames");
-  console.log(JSON.stringify(AllMetadataNames));
-
-  console.log("MMM1 field_names_arr");
-  console.log(JSON.stringify(field_names_arr));
+  // console.log("MMM0 AllMetadataNames");
+  // console.log(JSON.stringify(AllMetadataNames));
+  //
+  // console.log("MMM1 field_names_arr");
+  // console.log(JSON.stringify(field_names_arr));
 
   return field_names_arr;
 }
