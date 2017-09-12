@@ -856,13 +856,41 @@ function make_metadata_object_from_db(req, res) {
 
   console.timeEnd("TIME: ORDERED_METADATA_NAMES_only");
 
+  var filtered = structured_field_names0.filter(function(item){
+    return /^((?!_id).)*$/.test(item);
+  });
+
+  filtered.join();
+  console.log("DDD8 filtered.join()");
+  console.log(filtered.join());
+
   console.log("ORDERED_METADATA_NAMES_only");
   console.log(ORDERED_METADATA_NAMES_only);
 
-  diff_names = structured_field_names0.filter(function(x) { return ORDERED_METADATA_NAMES_only.indexOf(x) < 0; });
+  diff_names = filtered.filter(function(x) { return ORDERED_METADATA_NAMES_only.indexOf(x) < 0; });
 
   console.log("DDD7 diff_names");
   console.log(diff_names);
+  //DDD7 diff_names
+  // [ 'access_point_type',
+  //   'data_source',
+  //   'dataset_description',
+  //   'depth_in_core',
+  //   'geo_loc_name',
+  //   'habitat_description',
+  //   'lat_lon',
+  //   'location',
+  //   'methane_ox_depth',
+  //   'methane_ox_rate',
+  //   'microbial_biomass_avg_cell_number',
+  //   'microbial_biomass_intactpolarlipid',
+  //   'microbial_biomass_platecounts',
+  //   'primer_suite',
+  //   'project_abstract',
+  //   'reference',
+  //   'sample_storage_temp2',
+  //   'sulfate_red_depth',
+  //   'sulfate_red_rate' ]
 
   var all_field_names = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(structured_field_names0));
 
@@ -889,14 +917,18 @@ function from_obj_to_obj_of_arr(data, pid) {
   // var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
   //TODO: make field_names collection a separate function
   var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
+  all_field_names = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+  all_field_names = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
+  all_field_names = helpers.unique_array(all_field_names);
+
   all_field_names.push("project_abstract");
   all_field_names = helpers.unique_array(all_field_names);
 
-  console.log("HHH0 AllMetadataNames");
-  console.log(JSON.stringify(AllMetadataNames));
-
-  console.log("HHH2 all_field_names");
-  console.log(JSON.stringify(all_field_names));
+  // console.log("HHH0 AllMetadataNames");
+  // console.log(JSON.stringify(AllMetadataNames));
+  //
+  // console.log("HHH2 all_field_names");
+  // console.log(JSON.stringify(all_field_names));
 
   for (var did_idx in dataset_ids) {
     var did = dataset_ids[did_idx];
@@ -1365,8 +1397,8 @@ function prepare_empty_metadata_object(pid, field_names_arr, all_metadata) {
 
 function get_field_names(dataset_ids){
   var field_names_arr = [];
-  field_names_arr = field_names_arr.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  field_names_arr = field_names_arr.concat(CONSTS.METADATA_NAMES_ADD);
+  // field_names_arr = field_names_arr.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+  // field_names_arr = field_names_arr.concat(CONSTS.METADATA_NAMES_ADD);
 
   for (var i = 0; i < dataset_ids.length; i++) {
     var dataset_id = dataset_ids[i];
@@ -1404,17 +1436,20 @@ function make_metadata_object(req, res, pid, info) {
 
   // 0) get field_names
   //TODO: DRY
-  var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
+  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
+  all_field_names = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+  all_field_names = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
+  all_field_names = helpers.unique_array(all_field_names);
 
   // console.log("HHH3 all_field_names");
   // console.log(JSON.stringify(all_field_names));
 
 
-  console.log("QQQ0 AllMetadataNames");
-  console.log(JSON.stringify(AllMetadataNames));
-
-  console.log("QQQ1 all_field_names");
-  console.log(JSON.stringify(all_field_names));
+  // console.log("QQQ0 AllMetadataNames");
+  // console.log(JSON.stringify(AllMetadataNames));
+  //
+  // console.log("QQQ1 all_field_names");
+  // console.log(JSON.stringify(all_field_names));
 
 
 
