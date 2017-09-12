@@ -634,6 +634,18 @@ function make_metadata_object_from_form(req, res) {
   myArray_fail.sort();
   req.flash("fail", myArray_fail);
 
+  console.log("BBB0 AllMetadataNames");
+  console.log(JSON.stringify(AllMetadataNames));
+
+
+  console.log("BBB1 all_field_names_first_column");
+  console.log(JSON.stringify(all_field_names_first_column));
+
+
+  console.log("BBB2 all_field_names_first_column");
+  console.log(JSON.stringify(all_field_names_with_new));
+
+
   render_edit_form(req, res, all_metadata, all_field_names_with_new);
 
   console.timeEnd("TIME: make_metadata_object_from_form");
@@ -827,9 +839,32 @@ function make_metadata_object_from_db(req, res) {
 
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
+
+  var structured_field_names0 = get_field_names(dataset_ids);
+  console.log("DDD2 structured_field_names0");
+  console.log(JSON.stringify(structured_field_names0));
+
+    // ["NPOC",..."sample_storage_temp2","sample_type","sequencing_platform","sequencing_platform_id","silicate","sodium","sulfate","sulfate_red_depth","sulfate_red_rate","sulfide","sulfur_tot","target_gene","target_gene_id","temperature","tot_carb","tot_depth_water_col","tot_inorg_carb","tot_org_carb","trace_element_geochem","username","water_age"]
+
+  for (var name_idx in CONSTS.ORDERED_METADATA_NAMES) {
+    console.log("DDD5 name_idx");
+    console.log(JSON.stringify(name_idx));
+
+  }
+
+
+    var all_field_names = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(structured_field_names0));
+
   // console.log("DDD2 all_metadata");
   // console.log(JSON.stringify(all_metadata));
-  render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
+
+  console.log("DDD2 all_field_names");
+  console.log(JSON.stringify(all_field_names));
+
+
+
+
+  render_edit_form(req, res, all_metadata, all_field_names);
 
   console.timeEnd("TIME: make_metadata_object_from_db");
 }
@@ -845,6 +880,12 @@ function from_obj_to_obj_of_arr(data, pid) {
   var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
   all_field_names.push("project_abstract");
   all_field_names = helpers.unique_array(all_field_names);
+
+  console.log("HHH0 AllMetadataNames");
+  console.log(JSON.stringify(AllMetadataNames));
+
+  console.log("HHH2 all_field_names");
+  console.log(JSON.stringify(all_field_names));
 
   for (var did_idx in dataset_ids) {
     var did = dataset_ids[did_idx];
@@ -1324,6 +1365,13 @@ function get_field_names(dataset_ids){
     field_names_arr = helpers.unique_array(field_names_arr);
     field_names_arr.sort();
   }
+
+  console.log("MMM0 AllMetadataNames");
+  console.log(JSON.stringify(AllMetadataNames));
+
+  console.log("MMM1 field_names_arr");
+  console.log(JSON.stringify(field_names_arr));
+
   return field_names_arr;
 }
 
@@ -1349,6 +1397,15 @@ function make_metadata_object(req, res, pid, info) {
 
   // console.log("HHH3 all_field_names");
   // console.log(JSON.stringify(all_field_names));
+
+
+  console.log("QQQ0 AllMetadataNames");
+  console.log(JSON.stringify(AllMetadataNames));
+
+  console.log("QQQ1 all_field_names");
+  console.log(JSON.stringify(all_field_names));
+
+
 
   // 1)
   // TODO: don't send all_metadata?
