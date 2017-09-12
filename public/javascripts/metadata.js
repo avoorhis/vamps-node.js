@@ -299,7 +299,7 @@ var feature_seq_options = {
     "organic matter fall",
     "whale fall"],
 
-  "fracture": ["none",
+  "geological fracture": ["none",
     "active geological fault",
     "aquifer",
     "geological joint",
