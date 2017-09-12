@@ -892,7 +892,16 @@ function make_metadata_object_from_db(req, res) {
   //   'sulfate_red_depth',
   //   'sulfate_red_rate' ]
 
-  var all_field_names = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(structured_field_names0));
+  var big_arr_diff_names = [];
+  for (var i2 = 0; i2 < diff_names.length; i2++) {
+    var temp_arr = [diff_names[i2], diff_names[i2], "", ""];
+    big_arr_diff_names.push(temp_arr);
+  }
+
+  console.log("DDD9 big_arr_diff_names");
+  console.log(big_arr_diff_names);
+
+    var all_field_names = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
 
   // console.log("DDD2 all_metadata");
   // console.log(JSON.stringify(all_metadata));
