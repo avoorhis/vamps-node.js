@@ -1481,11 +1481,6 @@ function make_metadata_object(req, res, pid, info) {
   // console.log("MMM33 all_metadata[pid]");
   // console.log(JSON.stringify(all_metadata[pid]));
 
-  var reference = all_metadata[pid]["reference"];
-  console.log("MMM33 all_metadata[pid][\"reference\"]");
-  console.log(JSON.stringify(all_metadata[pid]["reference"]));
-
-
   for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
     var field_name = CONSTS.PROJECT_INFO_FIELDS[idx];
 
@@ -1497,17 +1492,6 @@ function make_metadata_object(req, res, pid, info) {
       all_metadata[pid][field_name] = fill_out_arr_doubles(project_info[field_name], repeat_times);
     }
   }
-
-  all_metadata[pid]["reference"] = reference;
-  // MMM33 all_metadata[pid]["reference"]
-  //   ["DSDSD","DSDSD","DSDSD","DSDSD","DSDSD","DSDSD","DSDSD","DSDSD","DSDSD","DSDSD","DSDSD","DSDSD","DSDSD","DSDSD","DSDSD","DSDSD"]
-  // MMM99 all_metadata[pid]["reference"]
-  //   [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
-
-
-  console.log("MMM99 all_metadata[pid][\"reference\"]");
-  console.log(JSON.stringify(all_metadata[pid]["reference"]));
-
 
   if ((all_metadata[pid]["project_abstract"] === 'undefined') || (! all_metadata[pid].hasOwnProperty(["project_abstract"])))
   {

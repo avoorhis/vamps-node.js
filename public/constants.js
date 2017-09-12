@@ -656,6 +656,12 @@ constants.METADATA_NAMES_ADD = [
   "reference"
 ];
 
+constants.METADATA_NAMES_SUBSTRACT = [
+  "primer_suite",
+  "project_abstract",
+  "reference"
+];
+
 // see metadata.js
 // constants.METADATA_DROPDOWN_FIELDS = ["biome_secondary",
 //   "dna_extraction_meth",
