@@ -846,19 +846,37 @@ function make_metadata_object_from_db(req, res) {
 
     // ["NPOC",..."sample_storage_temp2","sample_type","sequencing_platform","sequencing_platform_id","silicate","sodium","sulfate","sulfate_red_depth","sulfate_red_rate","sulfide","sulfur_tot","target_gene","target_gene_id","temperature","tot_carb","tot_depth_water_col","tot_inorg_carb","tot_org_carb","trace_element_geochem","username","water_age"]
 
-  for (var name_idx in CONSTS.ORDERED_METADATA_NAMES) {
-    console.log("DDD5 name_idx");
-    console.log(JSON.stringify(name_idx));
+  console.time("TIME: ORDERED_METADATA_NAMES_only");
 
+  var ORDERED_METADATA_NAMES_only = [];
+  for (var name_idx in CONSTS.ORDERED_METADATA_NAMES) {
+    console.log("DDD5 CONSTS.ORDERED_METADATA_NAMES[name_idx][0]");
+    console.log(JSON.stringify(CONSTS.ORDERED_METADATA_NAMES[name_idx][0]));
+    ORDERED_METADATA_NAMES_only.push(CONSTS.ORDERED_METADATA_NAMES[name_idx][0]);
   }
 
+  console.log("ORDERED_METADATA_NAMES_only");
+  console.log(ORDERED_METADATA_NAMES_only);
 
-    var all_field_names = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(structured_field_names0));
+
+  console.timeEnd("TIME: ORDERED_METADATA_NAMES_only");
+  var ORDERED_METADATA_NAMES_only2 = [];
+  const arrayColumn = (arr, n) => arr.map(x => x[n]);
+  ORDERED_METADATA_NAMES_only2 = arrayColumn(CONSTS.ORDERED_METADATA_NAMES, 0);
+
+  console.time("TIME: ORDERED_METADATA_NAMES_only 2");
+  console.timeEnd("TIME: ORDERED_METADATA_NAMES_only 2");
+
+  console.log("ORDERED_METADATA_NAMES_only2");
+  console.log(ORDERED_METADATA_NAMES_only2);
+
+
+  var all_field_names = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(structured_field_names0));
 
   // console.log("DDD2 all_metadata");
   // console.log(JSON.stringify(all_metadata));
 
-  console.log("DDD2 all_field_names");
+  console.log("DDD3 all_field_names");
   console.log(JSON.stringify(all_field_names));
 
 
