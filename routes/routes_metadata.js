@@ -827,41 +827,18 @@ function make_metadata_object_from_db(req, res) {
     abstract_data = {};
     abstract_data.pdfs = [];
   }
-  // else {
-  //   console.log("CCC6 abstract_data");
-  //   console.log(JSON.stringify(abstract_data));
-  // }
 
-
-  // console.log("CCC6 dataset_ids");
-  // console.log(JSON.stringify(dataset_ids));
   data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
+  // field names
   var structured_field_names0 = get_field_names(dataset_ids);
-  // console.log("DDD2 structured_field_names0");
-  // console.log(JSON.stringify(structured_field_names0));
-
-    // ["NPOC",..."sample_storage_temp2","sample_type","sequencing_platform","sequencing_platform_id","silicate","sodium","sulfate","sulfate_red_depth","sulfate_red_rate","sulfide","sulfur_tot","target_gene","target_gene_id","temperature","tot_carb","tot_depth_water_col","tot_inorg_carb","tot_org_carb","trace_element_geochem","username","water_age"]
-
   var ordered_metadata_names_only = get_names_from_ordered_const();
+  var diff_names = structured_field_names0.filter(function(x) { return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0; });
 
-  //TODO: clean up
-
-  var filtered1 = structured_field_names0.filter(function(x) { return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0; });
-
-  var filtered = filtered1.filter(function(item){
-    return /^((?!_id).)*$/.test(item);
-  });
-  //
-  // console.log("DDD8 filtered.join()");
-  // console.log(filtered.join());
-
-  // console.log("ordered_metadata_names_only");
-  // console.log(ordered_metadata_names_only);
-
-  var diff_names = filtered.filter(function(x) { return ordered_metadata_names_only.indexOf(x) < 0; });
+  diff_names = diff_names.filter(function(item) { return /^((?!_id).)*$/.test(item); });
+  diff_names = diff_names.filter(function(x) { return ordered_metadata_names_only.indexOf(x) < 0; });
 
   //TODO: clean up
   var big_arr_diff_names = [];
@@ -870,7 +847,7 @@ function make_metadata_object_from_db(req, res) {
     big_arr_diff_names.push(temp_arr);
   }
 
-    var all_field_names = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
+  var all_field_names = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
 
   // console.log("DDD2 all_metadata");
   // console.log(JSON.stringify(all_metadata));
@@ -879,6 +856,120 @@ function make_metadata_object_from_db(req, res) {
 
   console.timeEnd("TIME: make_metadata_object_from_db");
 }
+
+
+//
+// function make_metadata_object_from_db(req, res) {
+//   console.time("TIME: make_metadata_object_from_db");
+//   var pid          = req.body.project_id;
+//   //repeated!
+//   var dataset_ids  = DATASET_IDS_BY_PID[pid];
+//   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
+//   // console.log("MMM0 project");
+//   // console.log(project);
+//
+//   // get_db_data
+//   console.time("TIME: slice_object");
+//   var AllMetadata_picked = slice_object(AllMetadata, dataset_ids);
+//   console.timeEnd("TIME: slice_object");
+//
+//   console.time("TIME: dataset_info");
+//   // get dataset_info
+//
+//   var dataset_info;
+//   for(var i in ALL_DATASETS.projects){
+//     var item = ALL_DATASETS.projects[i];
+//     if(String(item.pid) === String(pid)){
+//       dataset_info = item.datasets;
+//       break;
+//     }
+//   }
+//
+//   var dataset_info_by_did = {};
+//   for (var idx in dataset_info) {
+//     dataset_info_by_did[dataset_info[idx]["did"]] = dataset_info[idx];
+//   }
+//   console.timeEnd("TIME: dataset_info");
+//
+//   // add missing info to AllMetadata_picked
+//   console.time("TIME: add missing info to AllMetadata_picked");
+//   for (var d in dataset_ids) {
+//     var dataset_id = dataset_ids[d];
+//     var ids_data = get_all_req_metadata(dataset_id);
+//
+//     Object.assign(AllMetadata_picked[dataset_id], ids_data);
+//     var primers_info_by_dataset_id = get_primers_info(dataset_id);
+//
+//     AllMetadata_picked[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
+//     AllMetadata_picked[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
+//
+//     AllMetadata_picked[dataset_id]["dataset"] = dataset_info_by_did[dataset_id]["dname"];
+//     AllMetadata_picked[dataset_id]["dataset_description"] = dataset_info_by_did[dataset_id]["ddesc"];
+//
+//     AllMetadata_picked[dataset_id]["dataset_id"] = dataset_id;
+//   }
+//   console.timeEnd("TIME: add missing info to AllMetadata_picked");
+//
+//   var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata_picked, pid);
+//
+//   // add abstract_data
+//   var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
+//   if (typeof abstract_data === 'undefined') {
+//     abstract_data = {};
+//     abstract_data.pdfs = [];
+//   }
+//   // else {
+//   //   console.log("CCC6 abstract_data");
+//   //   console.log(JSON.stringify(abstract_data));
+//   // }
+//
+//
+//   // console.log("CCC6 dataset_ids");
+//   // console.log(JSON.stringify(dataset_ids));
+//   data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
+//
+//   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
+//
+//   var structured_field_names0 = get_field_names(dataset_ids);
+//   // console.log("DDD2 structured_field_names0");
+//   // console.log(JSON.stringify(structured_field_names0));
+//
+//     // ["NPOC",..."sample_storage_temp2","sample_type","sequencing_platform","sequencing_platform_id","silicate","sodium","sulfate","sulfate_red_depth","sulfate_red_rate","sulfide","sulfur_tot","target_gene","target_gene_id","temperature","tot_carb","tot_depth_water_col","tot_inorg_carb","tot_org_carb","trace_element_geochem","username","water_age"]
+//
+//   var ordered_metadata_names_only = get_names_from_ordered_const();
+//
+//   //TODO: clean up
+//
+//   var filtered1 = structured_field_names0.filter(function(x) { return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0; });
+//
+//   var filtered = filtered1.filter(function(item){
+//     return /^((?!_id).)*$/.test(item);
+//   });
+//   //
+//   // console.log("DDD8 filtered.join()");
+//   // console.log(filtered.join());
+//
+//   // console.log("ordered_metadata_names_only");
+//   // console.log(ordered_metadata_names_only);
+//
+//   var diff_names = filtered.filter(function(x) { return ordered_metadata_names_only.indexOf(x) < 0; });
+//
+//   //TODO: clean up
+//   var big_arr_diff_names = [];
+//   for (var i2 = 0; i2 < diff_names.length; i2++) {
+//     var temp_arr = [diff_names[i2], diff_names[i2], "", ""];
+//     big_arr_diff_names.push(temp_arr);
+//   }
+//
+//     var all_field_names = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
+//
+//   // console.log("DDD2 all_metadata");
+//   // console.log(JSON.stringify(all_metadata));
+//
+//   render_edit_form(req, res, all_metadata, all_field_names);
+//
+//   console.timeEnd("TIME: make_metadata_object_from_db");
+// }
 
 function filterItems(arr, query) {
   return arr.filter(function(el) {
