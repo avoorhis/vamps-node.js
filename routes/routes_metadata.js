@@ -839,23 +839,24 @@ function make_metadata_object_from_db(req, res) {
 
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
-
   var structured_field_names0 = get_field_names(dataset_ids);
-  console.log("DDD2 structured_field_names0");
-  console.log(JSON.stringify(structured_field_names0));
+  // console.log("DDD2 structured_field_names0");
+  // console.log(JSON.stringify(structured_field_names0));
 
     // ["NPOC",..."sample_storage_temp2","sample_type","sequencing_platform","sequencing_platform_id","silicate","sodium","sulfate","sulfate_red_depth","sulfate_red_rate","sulfide","sulfur_tot","target_gene","target_gene_id","temperature","tot_carb","tot_depth_water_col","tot_inorg_carb","tot_org_carb","trace_element_geochem","username","water_age"]
 
+  var ordered_metadata_names_only = get_names_from_ordered_const();
 
   //TODO: clean up
-  console.time("TIME: ORDERED_METADATA_NAMES_only");
+  // console.time("TIME: ordered_metadata_names_only");
+  //
+  // var ordered_metadata_names_only = [];
+  // const arrayColumn = (arr, n) => arr.map(x => x[n]);
+  // // ordered_metadata_names_only = arrayColumn(CONSTS.ORDERED_METADATA_NAMES, 0);
+  // ordered_metadata_names_only = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(arrayColumn(CONSTS.ORDERED_METADATA_NAMES, 0));
+  //
+  // console.timeEnd("TIME: ordered_metadata_names_only");
 
-  var ORDERED_METADATA_NAMES_only = [];
-  const arrayColumn = (arr, n) => arr.map(x => x[n]);
-  // ORDERED_METADATA_NAMES_only = arrayColumn(CONSTS.ORDERED_METADATA_NAMES, 0);
-  ORDERED_METADATA_NAMES_only = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(arrayColumn(CONSTS.ORDERED_METADATA_NAMES, 0));
-
-  console.timeEnd("TIME: ORDERED_METADATA_NAMES_only");
 
   var filtered1 = structured_field_names0.filter(function(x) { return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0; });
 
@@ -866,53 +867,22 @@ function make_metadata_object_from_db(req, res) {
   // console.log("DDD8 filtered.join()");
   // console.log(filtered.join());
 
-  console.log("ORDERED_METADATA_NAMES_only");
-  console.log(ORDERED_METADATA_NAMES_only);
+  // console.log("ordered_metadata_names_only");
+  // console.log(ordered_metadata_names_only);
 
-  var diff_names = filtered.filter(function(x) { return ORDERED_METADATA_NAMES_only.indexOf(x) < 0; });
+  var diff_names = filtered.filter(function(x) { return ordered_metadata_names_only.indexOf(x) < 0; });
 
-  console.log("DDD7 diff_names");
-  console.log(diff_names);
-  //DDD7 diff_names
-  // [ 'access_point_type',
-  //   'data_source',
-  //   'dataset_description',
-  //   'depth_in_core',
-  //   'geo_loc_name',
-  //   'habitat_description',
-  //   'lat_lon',
-  //   'location',
-  //   'methane_ox_depth',
-  //   'methane_ox_rate',
-  //   'microbial_biomass_avg_cell_number',
-  //   'microbial_biomass_intactpolarlipid',
-  //   'microbial_biomass_platecounts',
-  //   'primer_suite',
-  //   'project_abstract',
-  //   'reference',
-  //   'sample_storage_temp2',
-  //   'sulfate_red_depth',
-  //   'sulfate_red_rate' ]
-
+  //TODO: clean up
   var big_arr_diff_names = [];
   for (var i2 = 0; i2 < diff_names.length; i2++) {
     var temp_arr = [diff_names[i2], diff_names[i2], "", ""];
     big_arr_diff_names.push(temp_arr);
   }
 
-  console.log("DDD9 big_arr_diff_names");
-  console.log(big_arr_diff_names);
-
     var all_field_names = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
 
   // console.log("DDD2 all_metadata");
   // console.log(JSON.stringify(all_metadata));
-
-  console.log("DDD3 all_field_names");
-  console.log(JSON.stringify(all_field_names));
-
-
-
 
   render_edit_form(req, res, all_metadata, all_field_names);
 
@@ -1433,6 +1403,16 @@ function get_field_names(dataset_ids){
   // console.log(JSON.stringify(field_names_arr));
 
   return field_names_arr;
+}
+
+function get_names_from_ordered_const() {
+  console.time("time: ordered_metadata_names_only");
+
+  const arraycolumn = (arr, n) => arr.map(x => x[n]);
+  // var ordered_metadata_names_only = consts.metadata_form_required_fields.concat(arraycolumn(consts.ordered_metadata_names, 0));
+
+  console.timeEnd("time: ordered_metadata_names_only");
+  return CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0));
 }
 
 function fill_out_arr_doubles(value, repeat_times) {
