@@ -833,28 +833,51 @@ function make_metadata_object_from_db(req, res) {
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
   // field names
-  var structured_field_names0 = get_field_names(dataset_ids);
-  var ordered_metadata_names_only = get_names_from_ordered_const();
-  var diff_names = structured_field_names0.filter(function(x) { return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0; });
+  // var structured_field_names0 = get_field_names(dataset_ids);
+  // var ordered_metadata_names_only = get_names_from_ordered_const();
+  // var diff_names = structured_field_names0.filter(function(x) { return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0; });
+  //
+  // diff_names = diff_names.filter(function(item) { return /^((?!_id).)*$/.test(item); });
+  // diff_names = diff_names.filter(function(x) { return ordered_metadata_names_only.indexOf(x) < 0; });
+  //
+  // //TODO: clean up
+  // var big_arr_diff_names = [];
+  // for (var i2 = 0; i2 < diff_names.length; i2++) {
+  //   var temp_arr = [diff_names[i2], diff_names[i2], "", ""];
+  //   big_arr_diff_names.push(temp_arr);
+  // }
+  //
+  // var all_field_names = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
+  var all_field_names = make_all_field_names(dataset_ids);
 
-  diff_names = diff_names.filter(function(item) { return /^((?!_id).)*$/.test(item); });
-  diff_names = diff_names.filter(function(x) { return ordered_metadata_names_only.indexOf(x) < 0; });
-
-  //TODO: clean up
-  var big_arr_diff_names = [];
-  for (var i2 = 0; i2 < diff_names.length; i2++) {
-    var temp_arr = [diff_names[i2], diff_names[i2], "", ""];
-    big_arr_diff_names.push(temp_arr);
-  }
-
-  var all_field_names = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
-
+  console.log("DDD2 all_field_names");
+  console.log(JSON.stringify(all_field_names));
   // console.log("DDD2 all_metadata");
   // console.log(JSON.stringify(all_metadata));
 
   render_edit_form(req, res, all_metadata, all_field_names);
 
   console.timeEnd("TIME: make_metadata_object_from_db");
+}
+
+function make_all_field_names(dataset_ids) {
+  var ordered_metadata_names_only = get_names_from_ordered_const();
+
+  var structured_field_names0 = get_field_names(dataset_ids);
+  var diff_names = structured_field_names0.filter(function(x) { return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0; });
+      diff_names = diff_names.filter(function(item) { return /^((?!_id).)*$/.test(item); });
+      diff_names = diff_names.filter(function(x) { return ordered_metadata_names_only.indexOf(x) < 0; });
+
+  // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES
+  // TODO: add units from db
+  var big_arr_diff_names = [];
+  for (var i2 = 0; i2 < diff_names.length; i2++) {
+    var temp_arr = [diff_names[i2], diff_names[i2], "", ""];
+    big_arr_diff_names.push(temp_arr);
+  }
+
+  return helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
+
 }
 
 
