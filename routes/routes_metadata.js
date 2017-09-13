@@ -596,11 +596,13 @@ function make_metadata_object_from_form(req, res) {
   var pid = req.body.project_id;
   var data = req.form;
 
+
+  console.log("DDD9 req.form");
+  console.log(JSON.stringify(req.form));
+
+
   //add project_abstract etc.
   //TODO: DRY with other such places.
-
-  console.log("YYY0 req.form'");
-  console.log(JSON.stringify(req.form));
 
   var normal_length = data['dataset'].length;
   for (var a in data)
@@ -613,10 +615,77 @@ function make_metadata_object_from_form(req, res) {
 
   var all_metadata = make_metadata_object(req, res, pid, data);
 
+  console.log("YYY0 data[dataset_id]'");
+  console.log(JSON.stringify(data['dataset_id']));
+
+  var dataset_ids = data['dataset_id'];
+  console.log("YYY1 dataset_ids'");
+  console.log(JSON.stringify(dataset_ids));
+
   //add_new
   var all_field_names_with_new = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
 
   console.log("YYY1 all_field_names_with_new");
+  console.log(JSON.stringify(all_field_names_with_new));
+
+  var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
+  var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
+  all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
+
+  //collect errors
+  var myArray_fail = helpers.unique_array(req.form.errors);
+
+  if (helpers.has_duplicates(req.form.sample_name))
+  {
+    myArray_fail.push('Sample ID (user sample name) should be unique.');
+  }
+
+  myArray_fail.sort();
+  req.flash("fail", myArray_fail);
+
+  render_edit_form(req, res, all_metadata, all_field_names_with_new);
+
+  console.timeEnd("TIME: make_metadata_object_from_form");
+}
+
+function make_metadata_object_from_form(req, res) {
+  console.time("TIME: make_metadata_object_from_form");
+  var pid = req.body.project_id;
+  var data = req.form;
+
+
+  console.log("DDD9 req.form");
+  console.log(JSON.stringify(req.form));
+
+
+  //add project_abstract etc.
+  //TODO: DRY with other such places.
+
+  var normal_length = data['dataset'].length;
+  for (var a in data)
+  {
+    if (data[a].length < normal_length && (typeof data[a][0] !== 'undefined'))
+    {
+      data[a] = fill_out_arr_doubles(data[a][0], normal_length);
+    }
+  }
+
+  var all_metadata = make_metadata_object(req, res, pid, data);
+
+  var dataset_ids = data['dataset_id'];
+  console.log("YYY1 dataset_ids'");
+  console.log(JSON.stringify(dataset_ids));
+
+  var fields0 = make_all_field_names(dataset_ids);
+
+  console.log("YYY2 fields0'");
+  console.log(JSON.stringify(fields0));
+
+
+  //add_new
+  var all_field_names_with_new = collect_new_rows(req, fields0);
+
+  console.log("YYY3 all_field_names_with_new");
   console.log(JSON.stringify(all_field_names_with_new));
 
   var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
