@@ -698,11 +698,16 @@ function make_metadata_object_from_csv(req, res) {
   var data_arr = parse_sync(file_content, {columns: true, trim: true});
 
   var data = {};
+  var dataset_ids = [];
   for (var dict_idx in data_arr)
   {
     var dataset_id = data_arr[dict_idx]['dataset_id'];
     data[dataset_id] = data_arr[dict_idx];
+    dataset_ids.push(dataset_id);
   }
+
+  console.log("MMM0 dataset_ids");
+  console.log(dataset_ids);
 
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(data, pid);
 
@@ -710,11 +715,48 @@ function make_metadata_object_from_csv(req, res) {
   // console.log(data_in_obj_of_arr);
 
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
+  var all_field_names = make_all_field_names(dataset_ids);
 
-  render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
+  console.log("DDD3 all_field_names from make_metadata_object_from_csv");
+  console.log(JSON.stringify(all_field_names));
+
+  render_edit_form(req, res, all_metadata, all_field_names);
 
   console.timeEnd("TIME: make_metadata_object_from_csv");
 }
+
+
+// function make_metadata_object_from_csv(req, res) {
+//   console.time("TIME: make_metadata_object_from_csv");
+//
+//   var file_name = req.body.edit_metadata_file;
+//   var project_name = get_project_name(file_name);
+//   var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
+//
+//   //data from file
+//   var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
+//   var file_content = fs.readFileSync(inputPath);
+//   var parse_sync = require('csv-parse/lib/sync');
+//   var data_arr = parse_sync(file_content, {columns: true, trim: true});
+//
+//   var data = {};
+//   for (var dict_idx in data_arr)
+//   {
+//     var dataset_id = data_arr[dict_idx]['dataset_id'];
+//     data[dataset_id] = data_arr[dict_idx];
+//   }
+//
+//   var data_in_obj_of_arr = from_obj_to_obj_of_arr(data, pid);
+//
+//   // console.log("BBB1 data_in_obj_of_arr (make_metadata_object_from_csv)");
+//   // console.log(data_in_obj_of_arr);
+//
+//   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
+//
+//   render_edit_form(req, res, all_metadata, CONSTS.ORDERED_METADATA_NAMES);
+//
+//   console.timeEnd("TIME: make_metadata_object_from_csv");
+// }
 
 // create form from db
 
@@ -832,22 +874,6 @@ function make_metadata_object_from_db(req, res) {
 
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
-  // field names
-  // var structured_field_names0 = get_field_names(dataset_ids);
-  // var ordered_metadata_names_only = get_names_from_ordered_const();
-  // var diff_names = structured_field_names0.filter(function(x) { return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0; });
-  //
-  // diff_names = diff_names.filter(function(item) { return /^((?!_id).)*$/.test(item); });
-  // diff_names = diff_names.filter(function(x) { return ordered_metadata_names_only.indexOf(x) < 0; });
-  //
-  // //TODO: clean up
-  // var big_arr_diff_names = [];
-  // for (var i2 = 0; i2 < diff_names.length; i2++) {
-  //   var temp_arr = [diff_names[i2], diff_names[i2], "", ""];
-  //   big_arr_diff_names.push(temp_arr);
-  // }
-  //
-  // var all_field_names = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
   var all_field_names = make_all_field_names(dataset_ids);
 
   console.log("DDD2 all_field_names");
