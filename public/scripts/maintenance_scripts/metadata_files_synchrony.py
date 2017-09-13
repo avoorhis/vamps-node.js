@@ -209,7 +209,7 @@ if __name__ == '__main__':
         args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
         args.NODE_DATABASE = 'vamps2'
         dbhost = 'bpcweb7'
-    elif args.dbhost == 'localhost' and socket.gethostname() == 'Annas-MacBook.local':
+    elif args.dbhost == 'localhost' and (socket.gethostname() == 'Annas-MacBook.local' or socket.gethostname() == 'Annas-MacBook-new.local'):
         args.NODE_DATABASE = 'vamps2'
         dbhost = 'localhost'
     else:
