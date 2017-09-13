@@ -594,17 +594,14 @@ function get_new_val(req, all_metadata_pid, all_new_names) {
 function make_metadata_object_from_form(req, res) {
   console.time("TIME: make_metadata_object_from_form");
   var pid = req.body.project_id;
-
-  // console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
-
-  // console.log("BBB req.form (make_metadata_object_from_form)");
-  // console.log(req.form);
-
-
   var data = req.form;
 
   //add project_abstract etc.
   //TODO: DRY with other such places.
+
+  console.log("YYY0 req.form'");
+  console.log(JSON.stringify(req.form));
+
   var normal_length = data['dataset'].length;
   for (var a in data)
   {
@@ -614,11 +611,14 @@ function make_metadata_object_from_form(req, res) {
     }
   }
 
-
   var all_metadata = make_metadata_object(req, res, pid, data);
 
   //add_new
   var all_field_names_with_new = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
+
+  console.log("YYY1 all_field_names_with_new");
+  console.log(JSON.stringify(all_field_names_with_new));
+
   var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
   var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
   all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
@@ -634,22 +634,71 @@ function make_metadata_object_from_form(req, res) {
   myArray_fail.sort();
   req.flash("fail", myArray_fail);
 
-  console.log("BBB0 AllMetadataNames");
-  console.log(JSON.stringify(AllMetadataNames));
-
-
-  console.log("BBB1 all_field_names_first_column");
-  console.log(JSON.stringify(all_field_names_first_column));
-
-
-  console.log("BBB2 all_field_names_first_column");
-  console.log(JSON.stringify(all_field_names_with_new));
-
-
   render_edit_form(req, res, all_metadata, all_field_names_with_new);
 
   console.timeEnd("TIME: make_metadata_object_from_form");
 }
+
+
+// function make_metadata_object_from_form(req, res) {
+//   console.time("TIME: make_metadata_object_from_form");
+//   var pid = req.body.project_id;
+//
+//   // console.log('2 from form) make_metadata_object(req, res, all_metadata, pid, req.form)');
+//
+//   // console.log("BBB req.form (make_metadata_object_from_form)");
+//   // console.log(req.form);
+//
+//
+//   var data = req.form;
+//
+//   //add project_abstract etc.
+//   //TODO: DRY with other such places.
+//   var normal_length = data['dataset'].length;
+//   for (var a in data)
+//   {
+//     if (data[a].length < normal_length && (typeof data[a][0] !== 'undefined'))
+//     {
+//       data[a] = fill_out_arr_doubles(data[a][0], normal_length);
+//     }
+//   }
+//
+//
+//   var all_metadata = make_metadata_object(req, res, pid, data);
+//
+//   //add_new
+//   var all_field_names_with_new = collect_new_rows(req, CONSTS.ORDERED_METADATA_NAMES);
+//   var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
+//   var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
+//   all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
+//
+//   //collect errors
+//   var myArray_fail = helpers.unique_array(req.form.errors);
+//
+//   if (helpers.has_duplicates(req.form.sample_name))
+//   {
+//     myArray_fail.push('Sample ID (user sample name) should be unique.');
+//   }
+//
+//   myArray_fail.sort();
+//   req.flash("fail", myArray_fail);
+//
+//   console.log("BBB0 AllMetadataNames");
+//   console.log(JSON.stringify(AllMetadataNames));
+//
+//
+//   console.log("BBB1 all_field_names_first_column");
+//   console.log(JSON.stringify(all_field_names_first_column));
+//
+//
+//   console.log("BBB2 all_field_names_first_column");
+//   console.log(JSON.stringify(all_field_names_with_new));
+//
+//
+//   render_edit_form(req, res, all_metadata, all_field_names_with_new);
+//
+//   console.timeEnd("TIME: make_metadata_object_from_form");
+// }
 
 // create form from a csv file
 
