@@ -498,6 +498,7 @@ var material_seq_options = {
     "hyperthermophilic",
     "lake bottom",
     "marine",
+    "mesophilic",
     "mesothermophilic",
     "soil"],
 
