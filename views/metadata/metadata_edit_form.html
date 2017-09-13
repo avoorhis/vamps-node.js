@@ -51,7 +51,10 @@
         <% pi_email = all_metadata[pid]["pi_email"][0] %>
         <% if (typeof(all_metadata[pid]["reference"]) !== 'undefined') { %>
           <% reference = all_metadata[pid]["reference"][0] %>
+        <% } else { %>
+        <% reference = ""%>
         <% } %>
+
         <% project_title = all_metadata[pid]["project_title"][0] %>
         <% project = all_metadata[pid]["project"][0] %>
         <% pi_name = all_metadata[pid]["pi_name"][0] %>

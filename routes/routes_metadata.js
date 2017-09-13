@@ -1403,7 +1403,7 @@ function get_names_from_ordered_const() {
   // var ordered_metadata_names_only = consts.metadata_form_required_fields.concat(arraycolumn(consts.ordered_metadata_names, 0));
 
   console.timeEnd("time: ordered_metadata_names_only");
-  return CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0));
+  return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
 }
 
 function fill_out_arr_doubles(value, repeat_times) {
