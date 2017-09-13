@@ -848,15 +848,6 @@ function make_metadata_object_from_db(req, res) {
   var ordered_metadata_names_only = get_names_from_ordered_const();
 
   //TODO: clean up
-  // console.time("TIME: ordered_metadata_names_only");
-  //
-  // var ordered_metadata_names_only = [];
-  // const arrayColumn = (arr, n) => arr.map(x => x[n]);
-  // // ordered_metadata_names_only = arrayColumn(CONSTS.ORDERED_METADATA_NAMES, 0);
-  // ordered_metadata_names_only = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(arrayColumn(CONSTS.ORDERED_METADATA_NAMES, 0));
-  //
-  // console.timeEnd("TIME: ordered_metadata_names_only");
-
 
   var filtered1 = structured_field_names0.filter(function(x) { return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0; });
 
