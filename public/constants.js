@@ -624,7 +624,7 @@ constants.ORDERED_METADATA_NAMES = [
   // ["microbial_biomass_avg_cell_number","Microbial biomass - other","", ""],
   ["biomass_wet_weight","Biomass - wet weight","", "gram"],
   ["biomass_dry_weight","Biomass - dry weight","", "gram"],
-  ["plate_counts","Plate counts - colony forming ","", "CFU/ml"],
+  ["plate_counts","Plate counts - colony forming", "", "CFU/ml"],
   ["functional_gene_assays","functional gene assays","", ""],
   ["clone_library_results","clone library results","", ""],
   ["enzyme_activities","enzyme activities","", ""],
