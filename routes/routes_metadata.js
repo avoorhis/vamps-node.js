@@ -671,22 +671,13 @@ function make_metadata_object_from_form(req, res) {
   }
 
   var all_metadata = make_metadata_object(req, res, pid, data);
-
-  var dataset_ids = data['dataset_id'];
-  console.log("YYY1 dataset_ids'");
-  console.log(JSON.stringify(dataset_ids));
-
-  var fields0 = make_all_field_names(dataset_ids);
-
-  console.log("YYY2 fields0'");
-  console.log(JSON.stringify(fields0));
-
+  var all_field_names_orig = make_all_field_names(data['dataset_id']);
 
   //add_new
-  var all_field_names_with_new = collect_new_rows(req, fields0);
+  var all_field_names_with_new = collect_new_rows(req, all_field_names_orig);
 
-  console.log("YYY3 all_field_names_with_new");
-  console.log(JSON.stringify(all_field_names_with_new));
+  // console.log("YYY3 all_field_names_with_new");
+  // console.log(JSON.stringify(all_field_names_with_new));
 
   var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
   var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
