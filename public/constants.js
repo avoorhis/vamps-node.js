@@ -513,6 +513,7 @@ constants.REQ_METADATA_FIELDS_wIDs = ["geo_loc_name",     // name of country or 
 //                                 ];
 constants.CONTACT_US_SUBJECTS = ["Account Request", "Report a Problem", "Announce a Publication", "Other"];
 
+// duplicate in metadta.js!
 constants.ORDERED_METADATA_NAMES = [
   ["structured comment name","Parameter","", ""], //MBL Supplied or Optional
   ["","General","", ""],
@@ -556,7 +557,7 @@ constants.ORDERED_METADATA_NAMES = [
   ["","Enter either volume or mass","", ""],
   ["sample_size_vol","Sample Size (volume)","User supplied", "liter"],
   ["sample_size_mass","Sample Size (mass)","User supplied", "gram"],
-  ["sample_collection_device","Sample collection device","", ""],
+  ["sample_collection_device", "Sample collection device", "User supplied", ""],
   ["formation_name","Formation name","User supplied", ""],
   ["","Sample handling","", ""],
   ["samp_store_dur","Storage duration","User supplied", "days"],

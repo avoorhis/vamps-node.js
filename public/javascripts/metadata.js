@@ -974,7 +974,7 @@ ORDERED_METADATA_NAMES = [
   ["","Enter either volume or mass","", ""],
   ["sample_size_vol","Sample Size (volume)","User supplied", "liter"],
   ["sample_size_mass","Sample Size (mass)","User supplied", "gram"],
-  ["sample_collection_device","Sample collection device","", ""],
+  ["sample_collection_device", "Sample collection device", "User supplied", ""],
   ["formation_name","Formation name","User supplied", ""],
   ["","Sample handling","", ""],
   ["samp_store_dur","Storage duration","User supplied", "days"],
