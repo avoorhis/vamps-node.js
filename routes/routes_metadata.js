@@ -328,7 +328,7 @@ function ph_valid(value) {
   region_valid(value, 0, 14);
 }
 
-function porosity_valid(value) {
+function percent_valid(value) {
   region_valid(value, 0, 100);
 }
 
@@ -524,7 +524,7 @@ router.post('/metadata_upload',
     form.field("pi_email", get_second("pi_email")).trim().isEmail().required().entityEncode().array(),
     form.field("pi_name", get_second("pi_name")).trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
     form.field("plate_counts", get_second("plate_counts")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("porosity", get_second("porosity")).trim().custom(numbers_n_period).custom(porosity_valid).entityEncode().array(),
+    form.field("porosity", get_second("porosity")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
     form.field("potassium", get_second("potassium")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("pressure", get_second("pressure")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("project", get_second("project")).trim().required().entityEncode().array(),
@@ -553,10 +553,10 @@ router.post('/metadata_upload',
     form.field("sulfur_tot", get_second("sulfur_tot")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("target_gene", get_second("target_gene")).trim().required().entityEncode().array(),
     form.field("temperature", get_second("temperature")).trim().is(/^$|^[0-9.-]+$/).required().entityEncode().array(),
-    form.field("tot_carb", get_second("tot_carb")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("tot_carb", get_second("tot_carb")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
     form.field("tot_depth_water_col", get_second("tot_depth_water_col")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("tot_inorg_carb", get_second("tot_inorg_carb")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("tot_org_carb", get_second("tot_org_carb")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("tot_inorg_carb", get_second("tot_inorg_carb")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
+    form.field("tot_org_carb", get_second("tot_org_carb")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
     form.field("trace_element_geochem", get_second("trace_element_geochem")).trim().entityEncode().array(),
     form.field("water_age", get_second("water_age")).trim().custom(numbers_n_period).entityEncode().array()
   ),
