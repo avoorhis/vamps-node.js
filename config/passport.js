@@ -206,12 +206,16 @@ function signup_user(req, username, password, done, db){
     new_user.lastname = req.body.userlastname;
     new_user.institution = req.body.userinstitution;
     new_user.password = password;
+    var confirm_password = req.body.password_confirm;
     new_user.username = username;
     //console.log('XXXXXX')
+    if(new_user.password != confirm_password){
+        return done(null, false, req.flash('fail', 'Passwords do not match!.'));
+    }
     if(new_user.password.length < 3 || new_user.password.length > 12){
         return done(null, false, req.flash('fail', 'Password must be between 3 and 20 characters.'));
     }
-
+    
     if(helpers.checkUserName(new_user.username)){
         return done(null, false, req.flash('fail', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only."));
     }
