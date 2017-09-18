@@ -49,7 +49,12 @@
     <% for (var pid in all_metadata) { %>
       <% if (typeof(all_metadata[pid]) !== 'undefined') { %>
         <% pi_email = all_metadata[pid]["pi_email"][0] %>
-        <% references = all_metadata[pid]["references"][0] %>
+        <% if (typeof(all_metadata[pid]["reference"]) !== 'undefined') { %>
+          <% reference = all_metadata[pid]["reference"][0] %>
+        <% } else { %>
+        <% reference = ""%>
+        <% } %>
+
         <% project_title = all_metadata[pid]["project_title"][0] %>
         <% project = all_metadata[pid]["project"][0] %>
         <% pi_name = all_metadata[pid]["pi_name"][0] %>
@@ -93,8 +98,8 @@
     <% } %> <!-- if else (all_metadata[pid]["project_abstract"]) -->
 
     <br />
-  <label for="references">References for selected manuscripts published that describe the location:</label>
-    <textarea class="textarea_long" id="references" name="references"  placeholder='<%= references %>'><%= references %></textarea>
+  <label for="reference">References for selected manuscripts published that describe the location:</label>
+    <textarea class="textarea_long" id="reference" name="reference"  placeholder='<%= reference %>'><%= reference %></textarea>
   <br />
   </fieldset>
   <fieldset id="parameters">
