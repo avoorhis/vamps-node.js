@@ -3648,9 +3648,9 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
       project = PROJECT_INFORMATION_BY_PID[pid].project
     }
     if(orientation == 'cols'){
-    	file_name = 'metadata-samples_in_cols'+timestamp+'_'+project+'.csv.gz';
+    	file_name = 'metadata-samples_in_cols'+timestamp+'_'+project+'.tsv.gz';
     }else{
-    	file_name = 'metadata-samples_in_rows'+timestamp+'_'+project+'.csv.gz';
+    	file_name = 'metadata-samples_in_rows'+timestamp+'_'+project+'.tsv.gz';
     }
     //file_name = 'metadata-'+timestamp+'_'+project+'.csv';
     out_file_path = path.join(user_dir, file_name);
@@ -4103,7 +4103,7 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
       new_file_name = file_type+'-'+timestamp+'.pdf';
     }else if (file_type == 'metadata') {
       old_file_name = old_ts+'_metadata.txt';
-      new_file_name = file_type+'-'+timestamp+'.csv';
+      new_file_name = file_type+'-'+timestamp+'.tsv';
     }else{
       console.log("In routes_user_data/copy_file_for_download and couldn't find file_type: ", file_type);
     }
