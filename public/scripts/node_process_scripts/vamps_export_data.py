@@ -194,7 +194,7 @@ def run_matrix(args):
     print '''running matrix --->>>'''
     # file name could have date,include_nas,tax-depth,units,domains, normalization
     # or this data could go inside file?
-    out_file = os.path.join(args.base,'matrix-'+args.runcode+'.csv')
+    out_file = os.path.join(args.base,'matrix-'+args.runcode+'.tsv')
     cursor = args.obj.cursor()
     dids = "','".join(args.dids)
 
@@ -433,7 +433,7 @@ def run_metadata(args, file_form):
     file_txt += "VAMPS Metadata\n"
     # convert to a list and sort
     if file_form == 'datasets_as_rows':
-        out_file = os.path.join(args.base,'metadata-'+args.runcode+'-1.csv')
+        out_file = os.path.join(args.base,'metadata-'+args.runcode+'-1.tsv')
         
         
         file_txt += 'dataset'
@@ -452,7 +452,7 @@ def run_metadata(args, file_form):
             file_txt += '\n'
         file_txt += '\n'
     else:
-        out_file = os.path.join(args.base,'metadata-'+args.runcode+'-2.csv')
+        out_file = os.path.join(args.base,'metadata-'+args.runcode+'-2.tsv')
         file_txt += 'metadata'
         for pjds in ds_sorted:
             file_txt += '\t'+pjds
@@ -528,7 +528,7 @@ def run_taxbytax(args):
     tax_order = sorted(tax_array.keys())
     #write_taxbytax_file(args, tax_array, tax_order, sample_order)
 
-    out_file = os.path.join(args.base,'taxbytax-'+args.runcode+'.csv')
+    out_file = os.path.join(args.base,'taxbytax-'+args.runcode+'.tsv')
     ranks = ('domain','phylum','class','order','family','genus','species','strain')
     file_txt = 'VAMPS TaxByTax\tNormalization: '+args.normalization+'\n'
     for d in sample_order:
@@ -605,7 +605,7 @@ def run_taxbyseq(args):
     #tax_order = sorted(collector.keys())
     #write_taxbyseq_file(args, seqs_array, seqs_tax_array, seqs_refhvrs_array, seqs_dist_array)
     #write_taxbyseq_file(args, seqs_array, seqs_tax_array, seqs_dist_array,sample_order)
-    out_file = os.path.join(args.base,'taxbyseq-'+args.runcode+'.csv')
+    out_file = os.path.join(args.base,'taxbyseq-'+args.runcode+'.tsv')
     ranks = ('domain','phylum','class','order','family','genus','species','strain')
     file_txt = 'VAMPS TaxBySeq\tNormalization: '+args.normalization+'\n\t'
 
