@@ -778,8 +778,8 @@ constants.METADATA_FORM_REQUIRED_FIELDS = ["project",
 
 constants.DCO_ENVIRONMENTAL_PACKAGES = ["Please choose one",
   "misc environment",
-  "microbial mat/biofilm",
-  "plant-associated",
+  "microbial_mat/biofilm",
+  "plant_associated",
   "sediment",
   "soil",
   "water"];
