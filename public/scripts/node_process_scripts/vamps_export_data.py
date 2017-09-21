@@ -17,20 +17,19 @@
 import os
 #from stat import * # ST_SIZE etc
 import sys
-
 import ConfigParser
 from time import sleep
-sys.path.append( '/groups/vampsweb/vampsdev' )
-import MySQLdb
-import MySQLdb.cursors
 from os.path import expanduser
-#from apps.ConDictMySQL import Conn
 import datetime
 import subprocess as subp
 import gzip, csv, json
+import MySQLdb
+import MySQLdb.cursors
+#from apps.ConDictMySQL import Conn
+sys.path.append('/groups/vampsweb/vampsdev')
 
 # GLOBALS
-allowed_ranks = ('domain','phylum','klass','order','family','genus','species','strain')
+allowed_ranks = ('domain', 'phylum', 'klass', 'order', 'family', 'genus', 'species', 'strain')
 
 class GZipWriter(object):
 
@@ -43,9 +42,9 @@ class GZipWriter(object):
         self.proc = subp.Popen(['gzip'], stdin=subp.PIPE, stdout=self.fp)
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, my_type, value, traceback):
         self.close()
-        if type:
+        if my_type:
             os.remove(self.filename)
 
     def close(self):
@@ -56,12 +55,12 @@ class GZipWriter(object):
     def write(self, data):
         self.proc.stdin.write(data)
 
-def get_fasta_sql(args, dids):
-    sql = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n";
-    sql += " JOIN sequence using (sequence_id)\n";
-    sql += " JOIN dataset using (dataset_id)\n";
-    sql += " JOIN project using (project_id)\n";
-    sql += " where dataset_id in ('"+dids+"')";
+def get_fasta_sql(dids):
+    sql = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n"
+    sql += " JOIN sequence using (sequence_id)\n"
+    sql += " JOIN dataset using (dataset_id)\n"
+    sql += " JOIN project using (project_id)\n"
+    sql += " where dataset_id in ('"+dids+"');"
     return sql
 
 def get_matrix_biom_taxbytax_sql(args, dids):
@@ -89,8 +88,8 @@ def get_matrix_biom_taxbytax_sql(args, dids):
     sql += " ORDER BY taxonomy\n"
     return sql
 
-def get_taxbyseq_sql(args, dids):
-    sql = "SELECT project,dataset,seq_count, gast_distance,UNCOMPRESS(sequence_comp) as sequence,concat_ws(';',\n"
+def get_taxbyseq_sql(dids):
+    sql = "SELECT project, dataset, seq_count, gast_distance, UNCOMPRESS(sequence_comp) as sequence, concat_ws(';', \n"
     sql += " IF(LENGTH(`domain`),`domain`,NULL),\n"
     sql += " IF(LENGTH(`phylum`),`phylum`,NULL),\n"
     sql += " IF(LENGTH(`klass`),`klass`,NULL),\n"
@@ -119,7 +118,7 @@ def get_taxbyseq_sql(args, dids):
     sql += " ORDER BY taxonomy\n"
     return sql
 
-def get_req_metadata_sql(args, dids, req_headersA, req_headersB):
+def get_req_metadata_sql(dids, req_headersA, req_headersB):
 
     sql  = "SELECT project, dataset, dataset_id, "+','.join(req_headersA)
     sql += ', t1.term_name as '+ req_headersB[0]
@@ -165,7 +164,7 @@ def run_fasta(args):
         out_file = os.path.join(args.base,'fasta-'+args.runcode+'.fasta')
     cursor = args.obj.cursor()
     dids = "','".join(args.dids)
-    sql = get_fasta_sql(args,dids)
+    sql = get_fasta_sql(dids)
 
     print sql
     cursor.execute(sql)
@@ -181,8 +180,8 @@ def run_fasta(args):
 #                 id = row['project']+'--'+row['dataset']+'--'+str(row['sequence_id'])+'_'+str(n)+'_'+str(seq_count)
 #                 file_txt += '>'+str(id)+'\n'+str(seq)+'\n'
 #         else:
-        id = str(row['sequence_id'])+'|'+row['project']+'--'+row['dataset']+'|'+str(seq_count)
-        file_txt += '>'+str(id)+'\n'+str(seq)+'\n'
+        my_id = str(row['sequence_id'])+'|'+row['project']+'--'+row['dataset']+'|'+str(seq_count)
+        file_txt += '>'+str(my_id)+'\n'+str(seq)+'\n'
 
 
     file_txt += "\n"
@@ -229,7 +228,7 @@ def run_matrix(args):
             else:
                 count = knt  # should never get here
 
-        tax   = row['taxonomy']
+        tax = row['taxonomy']
         taxa = tax.split(';')
         dom = taxa[0]
         if dom in args.domains:
@@ -274,7 +273,6 @@ def run_biom(args):
     cursor.execute(sql)
     rows = cursor.fetchall()
 
-    tax_array = {}
     boilerplate_text = "{\n"
     boilerplate_text += '"id":null,'+"\n"
     boilerplate_text += '"format": "Biological Observation Matrix 1.0.0",'+"\n"
@@ -287,7 +285,7 @@ def run_biom(args):
     sample_order_dict = {}
     for row in rows:
         samp = row['project']+'--'+row['dataset']
-        sample_order_dict[samp]=1
+        sample_order_dict[samp] = 1
         knt = row['knt']
 
         if args.normalization == 'not_normalized':
@@ -304,7 +302,7 @@ def run_biom(args):
             else:
                 count = knt  # should never get here
 
-        tax   = row['taxonomy']
+        tax  = row['taxonomy']
         taxa = tax.split(';')
         dom = taxa[0]
         if dom in args.domains:
@@ -378,7 +376,7 @@ def run_metadata(args, file_form):
     
     
  
-    sql = get_req_metadata_sql(args, dids, required_headersA, required_headersB)
+    sql = get_req_metadata_sql(dids, required_headersA, required_headersB)
     print sql
     cursor.execute(sql)
     result_count = cursor.rowcount
@@ -493,7 +491,7 @@ def run_taxbytax(args):
             count = knt
         else:
             if args.dataset_counts[pjds] <= 0:
-                dataset_count = 1;
+                dataset_count = 1
             else:
                 dataset_count = args.dataset_counts[pjds]
             if args.normalization == 'normalized_by_percent':
@@ -533,7 +531,7 @@ def run_taxbytax(args):
     file_txt = 'VAMPS TaxByTax\tNormalization: '+args.normalization+'\n'
     for d in sample_order:
         file_txt += d+'\t'
-    file_txt += "Rank\tTaxonomy\n";
+    file_txt += "Rank\tTaxonomy\n"
 
 
     for tax in tax_order:
@@ -554,7 +552,7 @@ def run_taxbyseq(args):
     print 'running taxbyseq --->>>'
     cursor = args.obj.cursor()
     dids = "','".join(args.dids)
-    sql = get_taxbyseq_sql(args, dids)
+    sql = get_taxbyseq_sql(dids)
 
     print sql
     cursor.execute(sql)
@@ -590,9 +588,9 @@ def run_taxbyseq(args):
                 count = seq_count  # should never get here
 
 
-        seqs_dist_array[seq]    = distance
+        seqs_dist_array[seq] = distance
         #seqs_refhvrs_array[seq] = refhvr_ids
-        seqs_tax_array[seq]     = taxonomy
+        seqs_tax_array[seq] = taxonomy
         if seq in seqs_array:
             if pjds in seqs_array[seq]:
                 seqs_array[seq][pjds] += count
@@ -661,7 +659,7 @@ def get_dataset_counts(args):
     print sql
     cursor.execute(sql)
     rows = cursor.fetchall()
-    max=0;
+    max_val = 0;
     pd_counter = {}
     dataset_name_collector = {}
 
@@ -670,10 +668,10 @@ def get_dataset_counts(args):
         ds_count = row['dataset_count']
         pd_counter[pjds] = ds_count
         dataset_name_collector[row['dataset_id']] = pjds
-        if ds_count > max:
-            max = ds_count
+        if ds_count > max_val:
+            max_val = ds_count
 
-    return (max, pd_counter, dataset_name_collector)
+    return (max_val, pd_counter, dataset_name_collector)
 
 
 if __name__ == '__main__':
@@ -697,7 +695,7 @@ if __name__ == '__main__':
             --compress          Compress files in gzip format
 
             --rank              used only for taxbytax, biom and matrix  [ DEFAULT:phylum ]
-            --domains           [ DEFAULT:"Archaea,Bacteria,Eukarya,Organelle,Unknown" ]
+            --domains           [ DEFAULT:"Archaea, Bacteria, Eukarya, Organelle, Unknown" ]
 
             --taxbytax_file     if present will create TaxByTax file
             --taxbyref_file     if present will create TaxByRef file  NOT YET WORKING
@@ -709,7 +707,7 @@ if __name__ == '__main__':
 
 
     """
-    parser = argparse.ArgumentParser(description="" ,usage=myusage)
+    parser = argparse.ArgumentParser(description = "", usage = myusage)
 
 
 
@@ -738,7 +736,7 @@ if __name__ == '__main__':
     parser.add_argument("-metadata_file1", "--metadata_file1",   required=False,  action="store_true",   dest = "metadata1", default=False,
                                                     help="Datasets as rows/Metadata as columns")
     parser.add_argument("-metadata_file2", "--metadata_file2",   required=False,  action="store_true",   dest = "metadata2", default=False,
-                                                    help="Metadata as Rows/Datasets as columns")                                                
+                                                    help="Metadata as Rows/Datasets as columns")
     parser.add_argument("-biom_file", "--biom_file",           required=False,  action="store_true",   dest = "biom", default=False,
                                                     help="")
     parser.add_argument("-matrix_file", "--matrix_file",           required=False,  action="store_true",   dest = "matrix", default=False,
@@ -779,7 +777,7 @@ if __name__ == '__main__':
     db_name = args.NODE_DATABASE
 
 
-    print db_host,db_name
+    print db_host, db_name
 
     home = expanduser("~")
     print(home)
@@ -797,8 +795,8 @@ if __name__ == '__main__':
 
     (args.max, args.dataset_counts, args.dataset_name_collector) = get_dataset_counts(args)
     args.datasets = args.dataset_counts.keys()
-    print 'max',args.max
-    print 'max2',args.dataset_counts
+    print 'max', args.max
+    print 'max2', args.dataset_counts
     #sys.exit()
 
 
