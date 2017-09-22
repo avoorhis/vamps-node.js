@@ -535,7 +535,7 @@ module.exports.write_metadata_to_files = function (did){
         if (err) throw err;
         //Do your processing, MD5, send a satellite to the moon, etc.
         //console.log('predata',data)
-        data.metadata = AllMetadata[did]
+        data.metadata = AllMetadata[did];
         //console.log('postdata',data)
         fs.writeFile (dataset_file, data, function(err) {
             if (err) throw err;

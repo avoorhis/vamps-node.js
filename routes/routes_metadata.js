@@ -702,14 +702,19 @@ function make_metadata_object_from_csv(req, res) {
 
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(data, pid);
 
-  // console.log("BBB1 data_in_obj_of_arr (make_metadata_object_from_csv)");
-  // console.log(data_in_obj_of_arr);
+  console.log("BBB1 data_in_obj_of_arr (make_metadata_object_from_csv)");
+  console.log(data_in_obj_of_arr);
 
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
   var all_field_names = make_all_field_names(dataset_ids);
 
-  // console.log("DDD3 all_field_names from make_metadata_object_from_csv");
-  // console.log(JSON.stringify(all_field_names));
+  console.log("DDD3 all_field_names from make_metadata_object_from_csv");
+  console.log(JSON.stringify(all_field_names));
+
+
+  console.log("DDD4 all_field_names from make_metadata_object_from_csv");
+  console.log(JSON.stringify(all_field_names));
+
 
   render_edit_form(req, res, all_metadata, all_field_names);
 
