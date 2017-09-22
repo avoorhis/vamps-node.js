@@ -393,8 +393,9 @@ def run_metadata(args, file_form):
             project_dataset = row['project']+'--'+row['dataset']
 
             for key in row:
-                data[project_dataset][key]= row[key]
-                headers_collector[key] = 1
+                if project_dataset in data:
+                    data[project_dataset][key]= row[key]
+                    headers_collector[key] = 1
 
     #print 'headers_collector',headers_collector
     # CUSTOM METADATA
