@@ -663,8 +663,8 @@ function slice_object(object, slice_keys) {
 function get_project_name(edit_metadata_file) {
   console.time("TIME: get_project_name");
 
-  console.log("GGG edit_metadata_file from get_project_name");
-  console.log(edit_metadata_file);
+  // console.log("GGG edit_metadata_file from get_project_name");
+  // console.log(edit_metadata_file);
   // var edit_metadata_file = "metadata-project_DCO_GAI_Bv3v5_65982.csv";
   var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
   var edit_metadata_project = "";
@@ -681,16 +681,16 @@ function get_project_name(edit_metadata_file) {
 function make_metadata_object_from_csv(req, res) {
   console.time("TIME: make_metadata_object_from_csv");
 
-  console.log("MMM req.body from make_metadata_object_from_csv");
-  console.log(req.body);
+  // console.log("MMM req.body from make_metadata_object_from_csv");
+  // console.log(req.body);
 
   var file_name = req.body.edit_metadata_file;
   var project_name = get_project_name(file_name);
   var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
 
 
-  console.log("GGG1 project_name from get_project_name");
-  console.log(project_name);
+  // console.log("GGG1 project_name from get_project_name");
+  // console.log(project_name);
   //data from file
   var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
   var file_content = fs.readFileSync(inputPath);
@@ -706,24 +706,20 @@ function make_metadata_object_from_csv(req, res) {
     dataset_ids.push(dataset_id);
   }
 
-  console.log("MMM0 dataset_ids");
-  console.log(dataset_ids);
+  // console.log("MMM0 dataset_ids");
+  // console.log(dataset_ids);
 
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(data, pid);
 
-  console.log("BBB1 data_in_obj_of_arr (make_metadata_object_from_csv)");
-  console.log(data_in_obj_of_arr);
-  console.log("BBB2 pid");
-  console.log(pid);
   // all_metadata
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
   var all_field_names = make_all_field_names(dataset_ids);
 
-  console.log("DDD3 all_field_names from make_metadata_object_from_csv");
-  console.log(JSON.stringify(all_field_names));
-
-  console.log("DDD4 all_metadata from make_metadata_object_from_csv");
-  console.log(JSON.stringify(all_metadata));
+  // console.log("DDD3 all_field_names from make_metadata_object_from_csv");
+  // console.log(JSON.stringify(all_field_names));
+  //
+  // console.log("DDD4 all_metadata from make_metadata_object_from_csv");
+  // console.log(JSON.stringify(all_metadata));
   render_edit_form(req, res, all_metadata, all_field_names);
 
   console.timeEnd("TIME: make_metadata_object_from_csv");
@@ -898,16 +894,11 @@ function from_obj_to_obj_of_arr(data, pid) {
 
   all_field_names = helpers.unique_array(all_field_names);
 
-  // all_field_names.push("dataset_id");
-  // all_field_names.push("project_abstract");
-
-  all_field_names = helpers.unique_array(all_field_names);
-
-  console.log("HHH0 AllMetadataNames");
-  console.log(JSON.stringify(AllMetadataNames));
-
-  console.log("HHH2 all_field_names");
-  console.log(JSON.stringify(all_field_names));
+  // console.log("HHH0 AllMetadataNames");
+  // console.log(JSON.stringify(AllMetadataNames));
+  //
+  // console.log("HHH2 all_field_names");
+  // console.log(JSON.stringify(all_field_names));
 
   for (var did_idx in dataset_ids) {
     var did = dataset_ids[did_idx];
@@ -921,8 +912,8 @@ function from_obj_to_obj_of_arr(data, pid) {
     }
   }
 
-  console.log("HHH3 obj_of_arr from from_obj_to_obj_of_arr");
-  console.log(JSON.stringify(obj_of_arr));
+  // console.log("HHH3 obj_of_arr from from_obj_to_obj_of_arr");
+  // console.log(JSON.stringify(obj_of_arr));
 
   console.timeEnd("TIME: from_obj_to_obj_of_arr");
   return obj_of_arr;
@@ -1177,8 +1168,6 @@ router.post('/metadata_files',
   [helpers.isLoggedIn],
   function (req, res) {
 
-    console.log("BBB in post req.body");
-    console.log(req.body);
     console.time("TIME: in post /metadata_files");
     var table_diff_html, sorted_files, files_to_compare;
     sorted_files = sorted_files_by_time(req);
@@ -1199,7 +1188,6 @@ router.post('/metadata_files',
       });
     }
     else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
-      console.log("HHH Here");
       make_metadata_object_from_csv(req, res);
     }
     else {
