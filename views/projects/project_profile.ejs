@@ -98,13 +98,14 @@
                         <input type='hidden' name='project' value='<%= data.project %>' />
                     </form>
                 </li>
-                <% if (typeof(finfo) !== 'undefined') { %>
+                <% if (typeof(finfo) !== 'undefined' && finfo.length > 2) { %>
+                finfo.length: <%= JSON.stringify(finfo.length)%>
+                <%= JSON.stringify(finfo)%>
 
                 <li>
-                    <p class='btn btn-sm'> Edit metadata currently in VAMPS </p>
+                    <p class='btn btn-sm'> Edit metadata from a previous user file </p>
                     <form id='metadata_files_form' method='POST' action='/metadata/metadata_files'>
                         <div role="tabpanel" class="tab-pane" id="users_metadata_csv">
-                            <div id='profile_users_metadata_csv_list' >
                                 <ol>
                                     <% for(var t in file_info){ %>
                                     <li>
@@ -113,7 +114,6 @@
                                     </li>
                                     <% } %>
                                 </ol>
-                            </div>
                         </div>
                         <input type='hidden' name='project_id' value='<%= pid %>' />
                         <input type='hidden' name='project' value='<%= data.project %>' />
