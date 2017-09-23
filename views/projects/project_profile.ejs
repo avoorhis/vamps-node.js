@@ -103,15 +103,12 @@
                 <%= file_info %>
 
                 <li>
-                    <p class='btn btn-sm'> Edit metadata from a previous user file </p>
+                    <p class='btn btn-sm'> Edit metadata from a previous user file: </p>
                     <form id='metadata_files_form' method='POST' action='/metadata/metadata_files'>
                         <div role="tabpanel" class="tab-pane" id="users_metadata_csv">
                                 <ol>
                                     <% for(var t in file_info){ %>
-                                    <li>
-                                        File from <%= file_info[t].mtime_format %>: <input type="submit" class='btn btn-sm btn-link' name="edit_metadata_file" value="<%= file_info[t].filename %>" id='metadata_files_form_btn'+<%= parseInt(t)+1 %> />
-
-                                    </li>
+                                    <button type="submit" class='btn btn-sm btn-link' name="edit_metadata_file" value="<%= file_info[t].filename %>" id='metadata_files_form_btn'+<%= parseInt(t)+1 %> > File from <%= file_info[t].mtime_format %> </button>
                                     <% } %>
                                 </ol>
                         </div>
