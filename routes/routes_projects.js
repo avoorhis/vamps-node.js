@@ -22,7 +22,7 @@ router.get('/projects_index', function(req, res) {
     //keys.sort();
     //var project_list = helpers.get_public_projects(req)
     project_list = [];
-    for( pid in PROJECT_INFORMATION_BY_PID){
+    for(var pid in PROJECT_INFORMATION_BY_PID){
       if(DATASET_IDS_BY_PID[pid].length > 0){
         project_list.push(PROJECT_INFORMATION_BY_PID[pid]);
       }
@@ -75,15 +75,15 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
 
       dataset_counts = {};
-      for(n in ALL_DATASETS.projects){
-        if(ALL_DATASETS.projects[n].pid == req.params.id){
-          dsinfo = ALL_DATASETS.projects[n].datasets;
+      for(var n0 in ALL_DATASETS.projects){
+        if(ALL_DATASETS.projects[n0].pid == req.params.id){
+          dsinfo = ALL_DATASETS.projects[n0].datasets;
         }
       }
-      for(n in dsinfo){
+      for(var n in dsinfo){
         var did = dsinfo[n].did;
         dscounts[did] = ALL_DCOUNTS_BY_DID[did];
-        mdata[dsinfo[n].dname] = {}
+        mdata[dsinfo[n].dname] = {};
         if(HDF5_MDATA == ''){
 
             for (var name in AllMetadata[did]){
@@ -94,7 +94,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
             }
         }else{
           var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-          mdgroup.refresh()
+          mdgroup.refresh();
 
           Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
               if(mdname != 'id'){
