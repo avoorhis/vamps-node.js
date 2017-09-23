@@ -92,35 +92,38 @@
                 <% if(edit_metadata == true) { %>
                 <li>
 
-                    <form id='viz_select_form_id' method='POST' action='/metadata/metadata_edit_form'>
-                        <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Edit metadata currently in VAMPS</button>
+                    <form id='metadata_edit_form' method='POST' action='/metadata/metadata_edit_form'>
+                        <button id='metadata_edit_form_btn' class='btn btn-sm btn-link' >Edit metadata currently in VAMPS</button>
                         <input type='hidden' name='project_id' value='<%= pid %>' />
                         <input type='hidden' name='project' value='<%= data.project %>' />
                     </form>
                 </li>
+                <% if (typeof(finfo) !== 'undefined') { %>
+
                 <li>
-                    <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Edit metadata from a previous user file</button>
+                    <p class='btn btn-sm'> Edit metadata currently in VAMPS </p>
+                    <form id='metadata_files_form' method='POST' action='/metadata/metadata_files'>
+                        <div role="tabpanel" class="tab-pane" id="users_metadata_csv">
+                            <div id='profile_users_metadata_csv_list' >
+                                <ol>
+                                    <% for(var t in file_info){ %>
+                                    <li>
+                                        <input type="submit" class='btn btn-sm btn-link' name="edit_metadata_file" value="<%= file_info[t].filename %>" id='metadata_files_form_btn'+<%= parseInt(t)+1 %>  File from <%= file_info[t].mtime_format %>/>
 
-                    <div role="tabpanel" class="tab-pane" id="users_metadata_csv">
-                        <div id='profile_users_metadata_csv_list' >
-                            <ol>
-                                <% for(var t in file_info){ %>
-                                <% var filename = file_info[t].filename %>
-                                <li>
-                                    File from <%= file_info[t].mtime_format %>
-                                </li>
-                                <% } %>
-                            </ol>
+                                    </li>
+                                    <% } %>
+                                </ol>
+                            </div>
                         </div>
-                    </div> <!-- End datasets div -->
-
-                    <form id='viz_select_form_id' method='POST' action='/metadata/metadata_edit_list_for_project'>
-                        <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Edit metadata from a previous user file</button>
                         <input type='hidden' name='project_id' value='<%= pid %>' />
                         <input type='hidden' name='project' value='<%= data.project %>' />
+                        <input type='hidden' name='file_info' id='file_info' value='<%= finfo %>' />
                     </form>
+
                 </li>
                 <% } %>
+                <% } %>
+
             </ul>
         </li> <!-- End dropdown -->
         <% } %>
