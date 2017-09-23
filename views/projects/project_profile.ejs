@@ -104,22 +104,11 @@
                     <div role="tabpanel" class="tab-pane" id="users_metadata_csv">
                         <div id='profile_users_metadata_csv_list' >
                             <ol>
-                                <li>
-                                    qq
-                                </li>
-                                <table>
-                                    <tbody>
                                 <% for(var t in file_info){ %>
-                                <% var filename = file_info[t].filename %>
-                                <tr>
-                                    <td><%= parseInt(t)+1 %>) </td>
-                                    <td>
-                                        File from <%= file_info[t].mtime_format %>
-                                    </td>
-                                </tr>
+                                <li>
+                                    File from <%= file_info[t].mtime_format %>
+                                </li>
                                 <% } %>
-                                    </tbody>
-                                </table>
                             </ol>
                         </div>
                     </div> <!-- End datasets div -->
