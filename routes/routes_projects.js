@@ -142,6 +142,11 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         console.log(project_file_names);
 
 
+        project_file_names.sort(function sortByTime(a, b) {
+          //reverse sort: recent-->oldest
+          return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
+        });
+
         //console.log(info)
         res.render('projects/profile', {
                                       title  : 'VAMPS Project',
@@ -155,6 +160,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                                       portal :    JSON.stringify(member_of_portal),
                                       //abstracts: JSON.stringify(abstracts[project_prefix]),
                                       abstract_info : JSON.stringify(abstract_data),
+                                      finfo: JSON.stringify(project_file_names),
                                       user   : req.user,
                                       hostname: req.CONFIG.hostname
                                     });
@@ -165,6 +171,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
           //return
       }
 });
+
 
 function make_mdata(mdname) {
   if(mdname !== 'id'){
@@ -186,12 +193,10 @@ function filter_csv_files_by_project(file_names, project_name) {
   console.time("TIME: filter_csv_files_by_project");
 
   var project_file_names = [];
-  var filename = "";
 
   for (var i0 in file_names) {
-    filename = file_names[i0].filename;
-    if (filename.indexOf(project_name) > -1) {
-      project_file_names.push(filename);
+    if (file_names[i0].filename.indexOf(project_name) > -1) {
+      project_file_names.push(file_names[i0]);
     }
   }
   console.timeEnd("TIME: filter_csv_files_by_project");

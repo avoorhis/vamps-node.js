@@ -98,6 +98,8 @@
                     <div role="tabpanel" class="tab-pane" id="users_metadata_csv">
                         <div id='profile_users_metadata_csv_list' >
                             <ol>
+                                <%= JSON.stringify(finfo)%>
+
                                 <% for (var n in dsinfo){ %>
                                 <% if (dsinfo[n].ddesc == dsinfo[n].dname) { %>
                                 <li><%= dsinfo[n].dname %> (<%= dscounts[dsinfo[n].did] %>)</li>
