@@ -688,6 +688,9 @@ function make_metadata_object_from_csv(req, res) {
   var project_name = get_project_name(file_name);
   var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
 
+
+  console.log("GGG1 project_name from get_project_name");
+  console.log(project_name);
   //data from file
   var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
   var file_content = fs.readFileSync(inputPath);
@@ -703,20 +706,24 @@ function make_metadata_object_from_csv(req, res) {
     dataset_ids.push(dataset_id);
   }
 
-  // console.log("MMM0 dataset_ids");
-  // console.log(dataset_ids);
+  console.log("MMM0 dataset_ids");
+  console.log(dataset_ids);
 
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(data, pid);
 
-  // console.log("BBB1 data_in_obj_of_arr (make_metadata_object_from_csv)");
-  // console.log(data_in_obj_of_arr);
-
+  console.log("BBB1 data_in_obj_of_arr (make_metadata_object_from_csv)");
+  console.log(data_in_obj_of_arr);
+  console.log("BBB2 pid");
+  console.log(pid);
+  // all_metadata
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
   var all_field_names = make_all_field_names(dataset_ids);
 
-  // console.log("DDD3 all_field_names from make_metadata_object_from_csv");
-  // console.log(JSON.stringify(all_field_names));
+  console.log("DDD3 all_field_names from make_metadata_object_from_csv");
+  console.log(JSON.stringify(all_field_names));
 
+  console.log("DDD4 all_metadata from make_metadata_object_from_csv");
+  console.log(JSON.stringify(all_metadata));
   render_edit_form(req, res, all_metadata, all_field_names);
 
   console.timeEnd("TIME: make_metadata_object_from_csv");
@@ -889,14 +896,15 @@ function from_obj_to_obj_of_arr(data, pid) {
   all_field_names = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
   all_field_names = helpers.unique_array(all_field_names);
 
+  all_field_names.push("dataset_id");
   all_field_names.push("project_abstract");
   all_field_names = helpers.unique_array(all_field_names);
 
-  // console.log("HHH0 AllMetadataNames");
-  // console.log(JSON.stringify(AllMetadataNames));
-  //
-  // console.log("HHH2 all_field_names");
-  // console.log(JSON.stringify(all_field_names));
+  console.log("HHH0 AllMetadataNames");
+  console.log(JSON.stringify(AllMetadataNames));
+
+  console.log("HHH2 all_field_names");
+  console.log(JSON.stringify(all_field_names));
 
   for (var did_idx in dataset_ids) {
     var did = dataset_ids[did_idx];
@@ -909,6 +917,9 @@ function from_obj_to_obj_of_arr(data, pid) {
       obj_of_arr[field_name].push(data[did][field_name]);
     }
   }
+
+  console.log("HHH3 obj_of_arr from from_obj_to_obj_of_arr");
+  console.log(JSON.stringify(obj_of_arr));
 
   console.timeEnd("TIME: from_obj_to_obj_of_arr");
   return obj_of_arr;
@@ -1185,6 +1196,7 @@ router.post('/metadata_files',
       });
     }
     else if (typeof req.body.edit_metadata_file !== 'undefined' && req.body.edit_metadata_file.length !== 0) {
+      console.log("HHH Here");
       make_metadata_object_from_csv(req, res);
     }
     else {
