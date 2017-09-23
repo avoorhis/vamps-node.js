@@ -84,7 +84,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         var did = dsinfo[n].did;
         dscounts[did] = ALL_DCOUNTS_BY_DID[did];
         mdata[dsinfo[n].dname] = {};
-        if(HDF5_MDATA == ''){
+        if(HDF5_MDATA === ''){
 
             for (var name in AllMetadata[did]){
 
@@ -111,9 +111,9 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         var member_of_portal = {};
         for(var p in req.CONSTS.PORTALS){
             //console.log(p +' -- '+project_parts[0])
-            if(req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) != -1
-                    || req.CONSTS.PORTALS[p].projects.indexOf(info.project) != -1
-                    || req.CONSTS.PORTALS[p].suffixes.indexOf(project_parts[project_parts.length - 1]) != -1
+            if(req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) !== -1 ||
+              req.CONSTS.PORTALS[p].projects.indexOf(info.project) !== -1 ||
+              req.CONSTS.PORTALS[p].suffixes.indexOf(project_parts[project_parts.length - 1]) !== -1
                 ){
                 //console.log(req.CONSTS.PORTALS[p])
                 member_of_portal[p] = {};
@@ -126,7 +126,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //console.log(member_of_portal)
         var info_file = '';
         var abstract_data = {};
-        if(info.project.substring(0,3) == 'DCO'){
+        if(info.project.substring(0,3) === 'DCO'){
                 try{
                   info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','DCO_info.json');
                   abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
@@ -166,7 +166,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 });
 
 function make_mdata(mdname) {
-  if(mdname != 'id'){
+  if(mdname !== 'id'){
     mdata[dsinfo[n].dname][mdname] = mdgroup[mdname];
   }
 }
