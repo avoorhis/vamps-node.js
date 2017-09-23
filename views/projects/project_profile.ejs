@@ -27,160 +27,168 @@
 
 <div role="tabpanel" >
 
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#project" aria-controls="project" role="tab" data-toggle="tab">Project</a></li>
-<% if(reveal_all) { %>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#project" aria-controls="project" role="tab" data-toggle="tab">Project</a></li>
+        <% if(reveal_all) { %>
 
-		<li role="presentation" >              <a href="#datasets" aria-controls="datasets" role="tab" data-toggle="tab">Datasets</a></li>
+        <li role="presentation" >              <a href="#datasets" aria-controls="datasets" role="tab" data-toggle="tab">Datasets</a></li>
 
-		<li role="presentation" >              <a href="#metadata" aria-controls="metadata" role="tab" data-toggle="tab">Metadata</a></li>
+        <li role="presentation" >              <a href="#metadata" aria-controls="metadata" role="tab" data-toggle="tab">Metadata</a></li>
 
-	<li role="presentation" class="dropdown" >
-		<a  class="dropdown-toggle" data-toggle="dropdown" href="#">Options<span class="caret"></span></a>
-		<ul class="dropdown-menu">
-	    <li>
-				<form id='viz_select_form_id' method='POST' action='/visuals/visuals_index'>
-		  	  <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Open in Dataset Selection</button>
-		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
-		  	  <input type='hidden' name='project' value='<%= data.project %>' />
-		    </form>
-	    </li>
-		  <li>
-		    <form id='download_project_fasta_form_id' method='POST' action=''>
-		  	  <!-- This form should run in the background and place the seqs file
-		  	  			in a 'downloads' directory where it can be retrieved.
-		  	  			The user should get an email when its ready.
-		  	   -->
-		  	  <button type='button' class='btn btn-sm btn-link' id='download_project_fasta_form_id' >Create Fasta File</button>
-		  	  <input type='hidden' name='download_type' value='whole_project' />
-		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
-		  	  <input type='hidden' name='project' value='<%= data.project %>' />
-			  	<input type='hidden' name='referer' value='/projects/project_profile' />
-		    </form>
-		  </li>
-	    <% if(Object.getOwnPropertyNames(metadata).length > 0){ %>
-		  <li>
-		  	<form id='download_project_metadata_form1' method='POST' action=''>
-		  	  <!-- This form should run in the background and place the seqs file
-		  	  			in a 'downloads' directory where it can be retrieved.
-		  	  			The user should get an email when its ready.
-		  	   -->
-		  	  <button type='button' class='btn btn-sm btn-link' id='download_project_metadata_form_btn1' >Create Metadata File (Samples as columns)</button>
-		  	  <input type='hidden' name='download_type' value='whole_project' />
-		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
-		  	  <input type='hidden' name='sample_orientation' value='cols' />
-		  	  <input type='hidden' name='project' value='<%= data.project %>' />
-			  	<input type='hidden' name='referer' value='/projects/project_profile' />
-		    </form>
-		    <form id='download_project_metadata_form2' method='POST' action=''>
-		  	  <button type='button' class='btn btn-sm btn-link' id='download_project_metadata_form_btn2' >Create Metadata File (Samples as rows)</button>
-		  	  <input type='hidden' name='download_type' value='whole_project' />
-		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
-		  	  <input type='hidden' name='sample_orientation' value='rows' />
-		  	  <input type='hidden' name='project' value='<%= data.project %>' />
-			  	<input type='hidden' name='referer' value='/projects/project_profile' />
-		    </form>
-		  </li>
-		  <% } %>
-	    <% if(edit_metadata == true) { %>
-	    <li>
-           
-            <form id='viz_select_form_id' method='POST' action='/metadata/metadata_edit_form'>
-		  	  <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Edit Metadata</button>
-		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
-		  	  <input type='hidden' name='project' value='<%= data.project %>' />
-		    </form>
-	    </li>
-	    <% } %>
-		 </ul>
-	</li> <!-- End dropdown -->
-<% } %>
-	<div id='download_confirm_id'></div>
-	<li><span  class='alert_flash_message' id='download_metadata_response' ></span><span  class='alert_flash_message' id='download_fasta_response' style='' ></span></li>
-  </ul>
+        <li role="presentation" class="dropdown" >
+            <a  class="dropdown-toggle" data-toggle="dropdown" href="#">Options<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li>
+                    <form id='viz_select_form_id' method='POST' action='/visuals/visuals_index'>
+                        <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Open in Dataset Selection</button>
+                        <input type='hidden' name='project_id' value='<%= pid %>' />
+                        <input type='hidden' name='project' value='<%= data.project %>' />
+                    </form>
+                </li>
+                <li>
+                    <form id='download_project_fasta_form_id' method='POST' action=''>
+                        <!-- This form should run in the background and place the seqs file
+                                    in a 'downloads' directory where it can be retrieved.
+                                    The user should get an email when its ready.
+                         -->
+                        <button type='button' class='btn btn-sm btn-link' id='download_project_fasta_form_id' >Create Fasta File</button>
+                        <input type='hidden' name='download_type' value='whole_project' />
+                        <input type='hidden' name='project_id' value='<%= pid %>' />
+                        <input type='hidden' name='project' value='<%= data.project %>' />
+                        <input type='hidden' name='referer' value='/projects/project_profile' />
+                    </form>
+                </li>
+                <% if(Object.getOwnPropertyNames(metadata).length > 0){ %>
+                <li>
+                    <form id='download_project_metadata_form1' method='POST' action=''>
+                        <!-- This form should run in the background and place the seqs file
+                                    in a 'downloads' directory where it can be retrieved.
+                                    The user should get an email when its ready.
+                         -->
+                        <button type='button' class='btn btn-sm btn-link' id='download_project_metadata_form_btn1' >Create Metadata File (Samples as columns)</button>
+                        <input type='hidden' name='download_type' value='whole_project' />
+                        <input type='hidden' name='project_id' value='<%= pid %>' />
+                        <input type='hidden' name='sample_orientation' value='cols' />
+                        <input type='hidden' name='project' value='<%= data.project %>' />
+                        <input type='hidden' name='referer' value='/projects/project_profile' />
+                    </form>
+                    <form id='download_project_metadata_form2' method='POST' action=''>
+                        <button type='button' class='btn btn-sm btn-link' id='download_project_metadata_form_btn2' >Create Metadata File (Samples as rows)</button>
+                        <input type='hidden' name='download_type' value='whole_project' />
+                        <input type='hidden' name='project_id' value='<%= pid %>' />
+                        <input type='hidden' name='sample_orientation' value='rows' />
+                        <input type='hidden' name='project' value='<%= data.project %>' />
+                        <input type='hidden' name='referer' value='/projects/project_profile' />
+                    </form>
+                </li>
+                <% } %>
+                <% if(edit_metadata == true) { %>
+                <li>
 
-  <!-- Tab panes -->
-  <div class="tab-content">
+                    <form id='viz_select_form_id' method='POST' action='/metadata/metadata_edit_form'>
+                        <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Edit metadata currently in VAMPS</button>
+                        <input type='hidden' name='project_id' value='<%= pid %>' />
+                        <input type='hidden' name='project' value='<%= data.project %>' />
+                    </form>
+                </li>
+                <li>
 
-  	<!-- PROJECT -->
-  	<div role="tabpanel" class="list_style_none tab-pane active" id="project">
-		  <table class="table table-striped">
-		  <tr><td>Project Name: </td><td><%= data.project %></td></tr>
-		  <tr><td>Project_id:</td><td> <%= pid %></td></tr>
-		  <% if(project_prefix.substring(0,3) == 'DCO' ){ %>
-		    <% if(abstract_data.hasOwnProperty('project_prefix') && abstract_data[project_prefix].id != '') { %>
+                    <form id='viz_select_form_id' method='POST' action='/metadata/metadata_edit_form'>
+                        <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Edit metadata from a previous user file</button>
+                        <input type='hidden' name='project_id' value='<%= pid %>' />
+                        <input type='hidden' name='project' value='<%= data.project %>' />
+                    </form>
+                </li>
+                <% } %>
+            </ul>
+        </li> <!-- End dropdown -->
+        <% } %>
+        <div id='download_confirm_id'></div>
+        <li><span  class='alert_flash_message' id='download_metadata_response' ></span><span  class='alert_flash_message' id='download_fasta_response' style='' ></span></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+
+        <!-- PROJECT -->
+        <div role="tabpanel" class="list_style_none tab-pane active" id="project">
+            <table class="table table-striped">
+                <tr><td>Project Name: </td><td><%= data.project %></td></tr>
+                <tr><td>Project_id:</td><td> <%= pid %></td></tr>
+                <% if(project_prefix.substring(0,3) == 'DCO' ){ %>
+                <% if(abstract_data.hasOwnProperty('project_prefix') && abstract_data[project_prefix].id != '') { %>
                 <tr><td>DCO id (Link to DeepCarbon.net site)</td>
                     <td><a href='<%= abstract_data[project_prefix].url %>' target='_blank'> <%= abstract_data[project_prefix].id %></td>
                 </tr>
-              <% } %>
-		  <% } %>
-		  <tr><td>Title:</td><td> <%= data.title %></td></tr>
-		  <tr><td>Description:</td><td> <%= data.description %></td></tr>
+                <% } %>
+                <% } %>
+                <tr><td>Title:</td><td> <%= data.title %></td></tr>
+                <tr><td>Description:</td><td> <%= data.description %></td></tr>
 
-		  <% if(data.public) { %>
-		    <tr><td>Status:</td><td> Public</td></tr>
-		  <% } else { %>
-		    <tr><td>Status:</td><td> Private</td></tr>
-		  <% } %>
-		  <tr><td>Primary Investigator:</td><td> <%= data.first %> <%= data.last %> (<%= data.email %>)</td></tr>
-		  <tr><td>Institution:</td><td> <%= data.institution %></li>
-          <tr><td>Date (processed or uploaded):</td><td></td></tr>
-          <% if(data.public || data.permissions.indexOf(user.user_id) != -1) { %>
-              <tr><td>Project Sequence Count:</td><td> <%= pcount %></td></tr>
-              <!-- <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr> -->
-              <tr><td>Number of samples (datasets):</td><td> <%= dsinfo.length %></td></tr>
-          <% } %>
+                <% if(data.public) { %>
+                <tr><td>Status:</td><td> Public</td></tr>
+                <% } else { %>
+                <tr><td>Status:</td><td> Private</td></tr>
+                <% } %>
+                <tr><td>Primary Investigator:</td><td> <%= data.first %> <%= data.last %> (<%= data.email %>)</td></tr>
+                <tr><td>Institution:</td><td> <%= data.institution %></li>
+                <tr><td>Date (processed or uploaded):</td><td></td></tr>
+                <% if(data.public || data.permissions.indexOf(user.user_id) != -1) { %>
+                <tr><td>Project Sequence Count:</td><td> <%= pcount %></td></tr>
+                <!-- <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr> -->
+                <tr><td>Number of samples (datasets):</td><td> <%= dsinfo.length %></td></tr>
+                <% } %>
 
-          <!-- ABSTRACT --> 
-		  	  <% if(abstract_data.hasOwnProperty(project_prefix)){ %>
-		  		 <tr><td>Abstract</td><td>
-		  		<% for(n in abstract_data[project_prefix].pdfs){ %>		  		
-		  		   <a href='/static/abstracts/<%= abstract_data[project_prefix].pdfs[n] %>' target='_blank'>
-		  		    <%= abstract_data[project_prefix].pdfs[n] %></a>
-		  		  <br>
-		  	  <% } %>
-		  	    </td></tr>
-		  	<% } %>		  	
-		
-		  </table>
-  	</div> <!-- End project div -->
-<% if(reveal_all) { %>
-		
-		<!-- DATASETS -->
-  	<div role="tabpanel" class="tab-pane" id="datasets">
-		  <div id='profile_dataset_list' >
-			  <ol>
-			  <% for(n in dsinfo){ %>
-			  	<% if(dsinfo[n].ddesc == dsinfo[n].dname) { %>
-			  		<li><%= dsinfo[n].dname %> (<%= dscounts[dsinfo[n].did] %>)</li>
-			  	<% }else{ %>
-			  		<li><%= dsinfo[n].dname %> (seq_count: <%= dscounts[dsinfo[n].did] %>) (description: <%= dsinfo[n].ddesc %>) </li>
-			  	<% } %>
-			  <% } %>
-			  </ol>
-		  </div>
-  	</div> <!-- End datasets div -->
+                <!-- ABSTRACT -->
+                <% if(abstract_data.hasOwnProperty(project_prefix)){ %>
+                <tr><td>Abstract</td><td>
+                        <% for(n in abstract_data[project_prefix].pdfs){ %>
+                        <a href='/static/abstracts/<%= abstract_data[project_prefix].pdfs[n] %>' target='_blank'>
+                            <%= abstract_data[project_prefix].pdfs[n] %></a>
+                        <br>
+                        <% } %>
+                    </td></tr>
+                <% } %>
 
-  	<!-- METADATA -->
-  	<div role="tabpanel" class="tab-pane" id="metadata">
+            </table>
+        </div> <!-- End project div -->
+        <% if(reveal_all) { %>
 
-		    <table class='table sortable'>
-		    	<thead><tr><th>dataset</th><th>name</th><th>value</th></tr></thead>
-		    	<tbody>
-		    	<% if(Object.getOwnPropertyNames(metadata).length == 0){ %>
-		    		<tr><td>None Found</td></tr>
-		    	<% } else { %>
-				    <% for(n in metadata){ %>
-				    	<% for(i in metadata[n]){ %>
-				    		<tr><td><%= n %></td><td><%= i %></td><td><%= metadata[n][i] %></td></tr>
-				    	<% } %>
-				    <% } %>
-		    <% } %>
-		    </tbody>
-		    </table>
-<% } %>
-		</div> <!-- End metadata div -->
+        <!-- DATASETS -->
+        <div role="tabpanel" class="tab-pane" id="datasets">
+            <div id='profile_dataset_list' >
+                <ol>
+                    <% for(n in dsinfo){ %>
+                    <% if(dsinfo[n].ddesc == dsinfo[n].dname) { %>
+                    <li><%= dsinfo[n].dname %> (<%= dscounts[dsinfo[n].did] %>)</li>
+                    <% }else{ %>
+                    <li><%= dsinfo[n].dname %> (seq_count: <%= dscounts[dsinfo[n].did] %>) (description: <%= dsinfo[n].ddesc %>) </li>
+                    <% } %>
+                    <% } %>
+                </ol>
+            </div>
+        </div> <!-- End datasets div -->
 
-  </div> <!-- End tab-content div -->
+        <!-- METADATA -->
+        <div role="tabpanel" class="tab-pane" id="metadata">
+
+            <table class='table sortable'>
+                <thead><tr><th>dataset</th><th>name</th><th>value</th></tr></thead>
+                <tbody>
+                <% if(Object.getOwnPropertyNames(metadata).length == 0){ %>
+                <tr><td>None Found</td></tr>
+                <% } else { %>
+                <% for(n in metadata){ %>
+                <% for(i in metadata[n]){ %>
+                <tr><td><%= n %></td><td><%= i %></td><td><%= metadata[n][i] %></td></tr>
+                <% } %>
+                <% } %>
+                <% } %>
+                </tbody>
+            </table>
+            <% } %>
+        </div> <!-- End metadata div -->
+
+    </div> <!-- End tab-content div -->
 </div> <!-- End tabpanel -->
