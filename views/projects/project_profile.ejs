@@ -105,6 +105,7 @@
                         <div id='profile_users_metadata_csv_list' >
                             <ol>
                                 <% for(var t in file_info){ %>
+                                <% var filename = file_info[t].filename %>
                                 <li>
                                     File from <%= file_info[t].mtime_format %>
                                 </li>
