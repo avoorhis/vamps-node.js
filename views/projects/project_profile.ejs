@@ -98,7 +98,10 @@
                         <input type='hidden' name='project' value='<%= data.project %>' />
                     </form>
                 </li>
-                <% if (typeof(file_info) !== 'undefined' && file_info.length > 0) { %>
+                <% if (typeof(finfo) !== 'undefined' && file_info.length > 0) { %>
+                finfo.length: <%= file_info.length%>
+                <%= file_info %>
+
                 <li>
                     <p class='btn btn-sm'> Edit metadata from a previous user file </p>
                     <form id='metadata_files_form' method='POST' action='/metadata/metadata_files'>
@@ -106,7 +109,7 @@
                                 <ol>
                                     <% for(var t in file_info){ %>
                                     <li>
-                                        <input type="submit" class='btn btn-sm btn-link' name="edit_metadata_file" value="<%= file_info[t].filename %>" id='metadata_files_form_btn'+<%= parseInt(t)+1 %>  File from <%= file_info[t].mtime_format %>/>
+                                        File from <%= file_info[t].mtime_format %>: <input type="submit" class='btn btn-sm btn-link' name="edit_metadata_file" value="<%= file_info[t].filename %>" id='metadata_files_form_btn'+<%= parseInt(t)+1 %> />
 
                                     </li>
                                     <% } %>
