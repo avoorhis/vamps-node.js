@@ -894,10 +894,13 @@ function from_obj_to_obj_of_arr(data, pid) {
   var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
   all_field_names = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
   all_field_names = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
+  all_field_names = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
+
   all_field_names = helpers.unique_array(all_field_names);
 
-  all_field_names.push("dataset_id");
-  all_field_names.push("project_abstract");
+  // all_field_names.push("dataset_id");
+  // all_field_names.push("project_abstract");
+
   all_field_names = helpers.unique_array(all_field_names);
 
   console.log("HHH0 AllMetadataNames");
