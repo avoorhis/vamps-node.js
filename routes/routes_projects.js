@@ -22,7 +22,7 @@ router.get('/projects_index', function(req, res) {
     //keys.sort();
     //var project_list = helpers.get_public_projects(req)
     project_list = [];
-    for( pid in PROJECT_INFORMATION_BY_PID){
+    for( for pid in PROJECT_INFORMATION_BY_PID){
       if(DATASET_IDS_BY_PID[pid].length > 0){
         project_list.push(PROJECT_INFORMATION_BY_PID[pid]);
       }
@@ -39,7 +39,7 @@ router.get('/projects_index', function(req, res) {
     project_list.sort(function(a, b){
           return helpers.compareStrings_alpha(a.project, b.project);
     });
-    console.log(project_list)
+    console.log(project_list);
     res.render('projects/projects_index', {
                         title          : 'VAMPS Projects',
                         projects  : JSON.stringify(project_list),
@@ -52,7 +52,7 @@ router.get('/projects_index', function(req, res) {
 router.get('/:id', helpers.isLoggedIn, function(req, res) {
     var db = req.db;
     var dsinfo = [];
-    var mdata = {}
+    var mdata = {};
     var dscounts = {};
     console.log('in PJ:id');
 //  MD_ENV_PACKAGE
@@ -70,26 +70,26 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
  
     //console.log(req.user)
 	if(req.params.id in PROJECT_INFORMATION_BY_PID){
-      var info = PROJECT_INFORMATION_BY_PID[req.params.id]
-      var project_count = ALL_PCOUNTS_BY_PID[req.params.id]
+      var info = PROJECT_INFORMATION_BY_PID[req.params.id];
+      var project_count = ALL_PCOUNTS_BY_PID[req.params.id];
 
 
       dataset_counts = {};
-      for(n in ALL_DATASETS.projects){
-        if(ALL_DATASETS.projects[n].pid == req.params.id){
+      for(for n in ALL_DATASETS.projects){
+        if(ALL_DATASETS.projects[n].pid === req.params.id){
           dsinfo = ALL_DATASETS.projects[n].datasets;
         }
       }
-      for(n in dsinfo){
+      for(for n in dsinfo){
         var did = dsinfo[n].did;
         dscounts[did] = ALL_DCOUNTS_BY_DID[did];
-        mdata[dsinfo[n].dname] = {}
-        if(HDF5_MDATA == ''){
+        mdata[dsinfo[n].dname] = {};
+        if(HDF5_MDATA === ''){
 
             for (var name in AllMetadata[did]){
             
-                var data = helpers.required_metadata_names_from_ids(AllMetadata[did], name)
-                mdata[dsinfo[n].dname][data.name] = data.value
+                var data = helpers.required_metadata_names_from_ids(AllMetadata[did], name);
+                mdata[dsinfo[n].dname][data.name] = data.value;
                     
             }
         }else{
@@ -97,8 +97,8 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
           mdgroup.refresh()
 
           Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-              if(mdname != 'id'){
-                mdata[dsinfo[n].dname][mdname] = mdgroup[mdname]
+              if(mdname !== 'id'){
+                mdata[dsinfo[n].dname][mdname] = mdgroup[mdname];
               }
           });
         }
@@ -168,6 +168,8 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       }
 
 });
+
+
 
 // router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
