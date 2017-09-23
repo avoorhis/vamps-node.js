@@ -93,8 +93,23 @@
                     </form>
                 </li>
                 <li>
+                    <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Edit metadata from a previous user file</button>
 
-                    <form id='viz_select_form_id' method='POST' action='/metadata/metadata_edit_form'>
+                    <div role="tabpanel" class="tab-pane" id="datasets">
+                        <div id='profile_dataset_list' >
+                            <ol>
+                                <% for(n in dsinfo){ %>
+                                <% if(dsinfo[n].ddesc == dsinfo[n].dname) { %>
+                                <li><%= dsinfo[n].dname %> (<%= dscounts[dsinfo[n].did] %>)</li>
+                                <% }else{ %>
+                                <li><%= dsinfo[n].dname %> (seq_count: <%= dscounts[dsinfo[n].did] %>) (description: <%= dsinfo[n].ddesc %>) </li>
+                                <% } %>
+                                <% } %>
+                            </ol>
+                        </div>
+                    </div> <!-- End datasets div -->
+
+                    <form id='viz_select_form_id' method='POST' action='/metadata/metadata_edit_list_for_project'>
                         <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Edit metadata from a previous user file</button>
                         <input type='hidden' name='project_id' value='<%= pid %>' />
                         <input type='hidden' name='project' value='<%= data.project %>' />
