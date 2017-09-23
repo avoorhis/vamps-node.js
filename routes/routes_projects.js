@@ -7,6 +7,7 @@ var zlib = require('zlib');
 var Readable = require('stream').Readable;
 var helpers = require('./helpers/helpers');
 var path = require('path');
+var config  = require(app_root + '/config/config');
 //var crypto = require('crypto');
 // These are all under /projects
 /* GET New User page. */
@@ -134,7 +135,12 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                   abstract_data = {};
                 }
         }
-        //console.log(info)
+
+        var user_metadata_csv_files = get_csv_files(req);
+        console.log("UUU user_metadata_csv_files: ");
+        console.log(user_metadata_csv_files);
+
+    //console.log(info)
         res.render('projects/profile', {
                                       title  : 'VAMPS Project',
                                       info: JSON.stringify(info),
@@ -143,32 +149,35 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                                       dscounts: JSON.stringify(dscounts),
                                       pid: req.params.id,
                                       mdata: JSON.stringify(mdata),
-                                      pcount: project_count, 
-                                      portal :    JSON.stringify(member_of_portal),                                    
+                                      pcount: project_count,
+                                      portal :    JSON.stringify(member_of_portal),
                                       //abstracts: JSON.stringify(abstracts[project_prefix]),
                                       abstract_info : JSON.stringify(abstract_data),
                                       user   : req.user,
                                       hostname: req.CONFIG.hostname
                                     });
-                
-                   
-        
-        
-      
-      
-      
+
       }else{
           req.flash('fail','not found');
           res.redirect(req.get('referer'));
           //return
       }
-
 });
 
 function make_mdata(mdname) {
   if(mdname !== 'id'){
     mdata[dsinfo[n].dname][mdname] = mdgroup[mdname];
   }
+}
+
+function get_csv_files(req) {
+  console.time("TIME: get_csv_files");
+
+  var user_csv_dir = path.join(config.USER_FILES_BASE, req.user.username);
+  var all_my_files = helpers.walk_sync(user_csv_dir);
+
+  console.timeEnd("TIME: get_csv_files");
+  return all_my_files;
 }
 
 // router.get('/:id', helpers.isLoggedIn, function(req, res) {
