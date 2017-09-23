@@ -21,7 +21,7 @@ router.get('/projects_index', function(req, res) {
     //var keys = Object.keys(PROJECT_INFORMATION_BY_PNAME);
     //keys.sort();
     //var project_list = helpers.get_public_projects(req)
-    project_list = [];
+    var project_list = [];
     for(var pid in PROJECT_INFORMATION_BY_PID){
       if(DATASET_IDS_BY_PID[pid].length > 0){
         project_list.push(PROJECT_INFORMATION_BY_PID[pid]);
@@ -67,14 +67,14 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //  MD_ENV_ENVO    environmental
 //  MD_ENV_CNTRY   country
 //  MD_ENV_LZC     longhurst zone code
- 
+
     //console.log(req.user)
 	if(req.params.id in PROJECT_INFORMATION_BY_PID){
       var info = PROJECT_INFORMATION_BY_PID[req.params.id];
       var project_count = ALL_PCOUNTS_BY_PID[req.params.id];
 
 
-      dataset_counts = {};
+      var dataset_counts = {};
       for(var n0 in ALL_DATASETS.projects){
         if(ALL_DATASETS.projects[n0].pid == req.params.id){
           dsinfo = ALL_DATASETS.projects[n0].datasets;
@@ -87,33 +87,29 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         if(HDF5_MDATA == ''){
 
             for (var name in AllMetadata[did]){
-            
+
                 var data = helpers.required_metadata_names_from_ids(AllMetadata[did], name);
                 mdata[dsinfo[n].dname][data.name] = data.value;
-                    
+
             }
         }else{
           var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
           mdgroup.refresh();
 
-          Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-              if(mdname != 'id'){
-                mdata[dsinfo[n].dname][mdname] = mdgroup[mdname];
-              }
-          });
+          Object.getOwnPropertyNames(mdgroup).forEach(make_mdata(mdname));
         }
 
       }
-      
-        
-        
+
+
+
         var project_parts = info.project.split('_');
         var project_prefix = info.project;
         if(project_parts.length >= 2 ){
             project_prefix = project_parts[0]+'_'+project_parts[1];
         }
         var member_of_portal = {};
-        for(p in req.CONSTS.PORTALS){
+        for(var p in req.CONSTS.PORTALS){
             //console.log(p +' -- '+project_parts[0])
             if(req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) != -1
                     || req.CONSTS.PORTALS[p].projects.indexOf(info.project) != -1
@@ -125,8 +121,8 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                 member_of_portal[p].portal = p;
             }
         }
-       
-        
+
+
 //console.log(member_of_portal)
         var info_file = '';
         var abstract_data = {};
@@ -169,7 +165,11 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
 });
 
-
+function make_mdata(mdname) {
+  if(mdname != 'id'){
+    mdata[dsinfo[n].dname][mdname] = mdgroup[mdname];
+  }
+}
 
 // router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
