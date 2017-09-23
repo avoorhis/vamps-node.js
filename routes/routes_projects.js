@@ -137,15 +137,12 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         }
 
         var user_metadata_csv_files = get_csv_files(req);
-
-        // console.log(user_metadata_csv_files.find(filter_csv_files_by_project(user_metadata_csv_files, info.project)));
-
-    var project_file_names = filter_csv_files_by_project(user_metadata_csv_files, info.project);
-    console.log("UUU project_file_names: ");
-    console.log(project_file_names);
+        var project_file_names = filter_csv_files_by_project(user_metadata_csv_files, info.project);
+        console.log("UUU project_file_names: ");
+        console.log(project_file_names);
 
 
-    //console.log(info)
+        //console.log(info)
         res.render('projects/profile', {
                                       title  : 'VAMPS Project',
                                       info: JSON.stringify(info),
@@ -185,31 +182,18 @@ function get_csv_files(req) {
   return all_my_files;
 }
 
-// function findCherries(fruit) {
-//   return fruit.name === 'cherries';
-// }
-
 function filter_csv_files_by_project(file_names, project_name) {
   console.time("TIME: filter_csv_files_by_project");
 
   var project_file_names = [];
   var filename = "";
 
-  // console.log("FFF file_names");
-  // console.log(file_names);
-
-  console.log("PPP project_name");
-  console.log(project_name);
-
   for (var i0 in file_names) {
     filename = file_names[i0].filename;
-    // console.log("PPP1 file_names.filename");
-    // console.log(file_names[i0].filename);
     if (filename.indexOf(project_name) > -1) {
       project_file_names.push(filename);
     }
   }
-  // return file_names.filename.indexOf(project_name) > -1;
   console.timeEnd("TIME: filter_csv_files_by_project");
 
   return project_file_names;
