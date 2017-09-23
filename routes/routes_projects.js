@@ -22,7 +22,7 @@ router.get('/projects_index', function(req, res) {
     //keys.sort();
     //var project_list = helpers.get_public_projects(req)
     project_list = [];
-    for( for pid in PROJECT_INFORMATION_BY_PID){
+    for(var pid in PROJECT_INFORMATION_BY_PID){
       if(DATASET_IDS_BY_PID[pid].length > 0){
         project_list.push(PROJECT_INFORMATION_BY_PID[pid]);
       }
@@ -75,12 +75,12 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
 
       dataset_counts = {};
-      for(for n in ALL_DATASETS.projects){
+      for(var n in ALL_DATASETS.projects){
         if(ALL_DATASETS.projects[n].pid === req.params.id){
           dsinfo = ALL_DATASETS.projects[n].datasets;
         }
       }
-      for(for n in dsinfo){
+      for(var n in dsinfo){
         var did = dsinfo[n].did;
         dscounts[did] = ALL_DCOUNTS_BY_DID[did];
         mdata[dsinfo[n].dname] = {};
@@ -94,7 +94,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
             }
         }else{
           var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-          mdgroup.refresh()
+          mdgroup.refresh();
 
           Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
               if(mdname !== 'id'){
@@ -107,30 +107,30 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       
         
         
-        var project_parts = info.project.split('_')
-        var project_prefix = info.project
+        var project_parts = info.project.split('_');
+        var project_prefix = info.project;
         if(project_parts.length >= 2 ){
-            project_prefix = project_parts[0]+'_'+project_parts[1]
+            project_prefix = project_parts[0]+'_'+project_parts[1];
         }
-        var member_of_portal = {}
-        for(p in req.CONSTS.PORTALS){
+        var member_of_portal = {};
+        for(var p in req.CONSTS.PORTALS){
             //console.log(p +' -- '+project_parts[0])
-            if(req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) != -1 
-                    || req.CONSTS.PORTALS[p].projects.indexOf(info.project) != -1
-                    || req.CONSTS.PORTALS[p].suffixes.indexOf(project_parts[project_parts.length - 1]) != -1
+            if(req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) !== -1
+                    || req.CONSTS.PORTALS[p].projects.indexOf(info.project) !== -1
+                    || req.CONSTS.PORTALS[p].suffixes.indexOf(project_parts[project_parts.length - 1]) !== -1
                 ){
                 //console.log(req.CONSTS.PORTALS[p])
-                member_of_portal[p] = {}
-                member_of_portal[p].title = req.CONSTS.PORTALS[p].maintitle
-                member_of_portal[p].portal = p
+                member_of_portal[p] = {};
+                member_of_portal[p].title = req.CONSTS.PORTALS[p].maintitle;
+                member_of_portal[p].portal = p;
             }
         }
        
         
 //console.log(member_of_portal)
-        var info_file = ''
-        var abstract_data = {}
-        if(info.project.substring(0,3) == 'DCO'){
+        var info_file = '';
+        var abstract_data = {};
+        if(info.project.substring(0,3) === 'DCO'){
                 try{
                   info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','DCO_info.json')
                   abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
