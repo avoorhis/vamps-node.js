@@ -98,10 +98,7 @@
                         <input type='hidden' name='project' value='<%= data.project %>' />
                     </form>
                 </li>
-                <% if (typeof(finfo) !== 'undefined' && finfo.length > 2) { %>
-                finfo.length: <%= JSON.stringify(finfo.length)%>
-                <%= JSON.stringify(finfo)%>
-
+                <% if (typeof(file_info) !== 'undefined' && file_info.length > 0) { %>
                 <li>
                     <p class='btn btn-sm'> Edit metadata from a previous user file </p>
                     <form id='metadata_files_form' method='POST' action='/metadata/metadata_files'>

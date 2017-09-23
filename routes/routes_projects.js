@@ -138,9 +138,6 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
         var user_metadata_csv_files = get_csv_files(req);
         var project_file_names = filter_csv_files_by_project(user_metadata_csv_files, info.project);
-        // console.log("UUU project_file_names: ");
-        // console.log(project_file_names);
-
 
         project_file_names.sort(function sortByTime(a, b) {
           //reverse sort: recent-->oldest
