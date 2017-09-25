@@ -180,7 +180,19 @@ function get_csv_files(req) {
   console.time("TIME: get_csv_files");
 
   var user_csv_dir = path.join(config.USER_FILES_BASE, req.user.username);
+  console.log("UUU config.USER_FILES_BASE");
+  console.log(config.USER_FILES_BASE);
+
+
+  console.log("UUU1 req.user.username");
+  console.log(req.user.username);
+
+
   var all_my_files = helpers.walk_sync(user_csv_dir);
+
+  console.log("UUU2 all_my_files");
+  console.log(all_my_files);
+
 
   console.timeEnd("TIME: get_csv_files");
   return all_my_files;

@@ -29,7 +29,7 @@ router.get('/metadata_list', helpers.isLoggedIn, function(req, res) {
       for(var n in AllMetadataNames){
         md_selected = AllMetadataNames[n];
         mdata_w_latlon[md_selected] = 0;
-        
+
         //console.log(md_selected)
         for(var did in DatasetsWithLatLong){
         //console.log(AllMetadata[did])
@@ -37,11 +37,11 @@ router.get('/metadata_list', helpers.isLoggedIn, function(req, res) {
             //console.log('found1',did)
             //var mdata = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected)
             mdata = AllMetadata[did];   // has ids
-            
+
             pid = PROJECT_ID_BY_DID[did];
             //console.log('pid',pid)
             pname = PROJECT_INFORMATION_BY_PID[pid].project;
-            
+
             if(mdata.hasOwnProperty(md_selected)){
                     mdata_w_latlon[md_selected] = 1;
             }
@@ -73,17 +73,17 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, function(req, res) {
         }else if(AllMetadata[did].hasOwnProperty(md_selected)){
              mdvalues[did] = AllMetadata[did][md_selected];
              md_selected_show = md_selected;
-             
+
         }
        }
-      }      
+      }
       res.render('metadata/list_result', { title: 'VAMPS:Metadata List Result',
             user:           req.user,hostname: req.CONFIG.hostname,
             vals:     		JSON.stringify(mdvalues),
             names_by_did:   JSON.stringify(DATASET_NAME_BY_DID),
             pid_by_did:     JSON.stringify(PROJECT_ID_BY_DID),
-            pinfo_by_pid:   JSON.stringify(PROJECT_INFORMATION_BY_PID),       
-            item:           md_selected_show	  				
+            pinfo_by_pid:   JSON.stringify(PROJECT_INFORMATION_BY_PID),
+            item:           md_selected_show
         });
   });
 
@@ -101,7 +101,7 @@ router.get('/geomap/:item', helpers.isLoggedIn, function(req, res) {
             user    : req.user,hostname: req.CONFIG.hostname,
             md_item : md_item_show,
             mdinfo  : JSON.stringify(metadata_info),
-            gekey   : req.CONFIG.GOOGLE_EARTH_KEY,           
+            gekey   : req.CONFIG.GOOGLE_EARTH_KEY,
         });
   });
 
@@ -117,7 +117,7 @@ function get_metadata_hash(md_selected){
     //console.log(PROJECT_ID_BY_DID)
     //console.log(Object.keys(PROJECT_ID_BY_DID).length)
     for(var did in PROJECT_ID_BY_DID){
-        
+
         if(AllMetadata.hasOwnProperty(did)){
             //console.log('found1',did)
             var mdata = AllMetadata[did];
@@ -139,10 +139,10 @@ function get_metadata_hash(md_selected){
                 }
 
             }
-        }else{            
+        }else{
             //console.log('did '+did+' not found in PROJECT_ID_BY_DID')
-        }        
-        
+        }
+
     }
 
     return md_info;
