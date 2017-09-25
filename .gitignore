@@ -5,6 +5,7 @@
 *.svg
 *.png
 .vagrant
+
 public/scripts/*.pyc
 old_2_new_vamps_by_project.py
 rebuild_vamps_files.py
@@ -16,6 +17,7 @@ export_project.sh
 !db_schema_w_test_data.sql
 !db_schema_w_test_data.sql.gz
 *.csv.gz
+*.tsv.gz
 *.csv
 newrelic.js
 bin/versions.sh
