@@ -3720,12 +3720,12 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
             } 
         }
         file_name = 'dco_all_metadata_'+today+'.tsv.gz'
-        out_file_path = path.join(req.CONFIG.PATH_TO_DCO_DOWNLOADS, file_name)
+        out_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, file_name)
         //out_file_path = path.join('../vamps_data_downloads', file_name)
         header = 'Project: DCO'+"\n\t";
     
   
-
+   console.log('out_file_path '+out_file_path)
     var gzip = zlib.createGzip();
     var myrows = {}; // myrows[mdname] == [] list of values
 
@@ -3819,7 +3819,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
       .on('finish', function readableStreamOnFinish() {  // finished
         console.log('done compressing and writing file: metadata');
       });
-      console.log(path.join(__dirname +'/../' + out_file_path))
+      console.log(path.join(out_file_path))
       //res.download(path.join(__dirname  +'/../' +  out_file_path))
     
       res.send(file_name);
