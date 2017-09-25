@@ -128,6 +128,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         var info_file = ''
         var abstract_data = {}
         var best_file_path = ''
+        var best_file = ''
         if(info.project.substring(0,3) == 'DCO'){
 
                 try{
@@ -138,7 +139,6 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                 }
                 var dco_all_metadata_file =''
               best_date = Date.parse('2000-01-01')
-              best_file = ''
       
               fs.readdirSync(req.CONFIG.PATH_TO_STATIC_DOWNLOADS).forEach(file => {
                 if(file.substring(0,16) == 'dco_all_metadata'){
