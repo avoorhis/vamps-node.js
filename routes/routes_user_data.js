@@ -3821,7 +3821,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
       });
       console.log(out_file_path)
       //res.download(path.join(__dirname  +'/../' +  out_file_path))
-      
+      fs.chmodSync(out_file_path, 0775)
       res.send(file_name);
    }
 });
