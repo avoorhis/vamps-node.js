@@ -3725,7 +3725,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
         header = 'Project: DCO'+"\n\t";
     
   
-   console.log('out_file_path '+out_file_path)
+   console.log('out_file_path: '+out_file_path)
     var gzip = zlib.createGzip();
     var myrows = {}; // myrows[mdname] == [] list of values
 
@@ -3819,7 +3819,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
       .on('finish', function readableStreamOnFinish() {  // finished
         console.log('done compressing and writing file: metadata');
       });
-      console.log(path.join(out_file_path))
+      console.log(out_file_path)
       //res.download(path.join(__dirname  +'/../' +  out_file_path))
       
       res.send(file_name);

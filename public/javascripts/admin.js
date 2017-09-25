@@ -495,3 +495,19 @@ function show_metadata(){
     };
     xmlhttp.send(args);
 }
+function create_dco_file(){
+    var args = {}
+    args.download_type = 'all_dco'
+    args.orientation = 'rows'
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", '/user_data/download_selected_metadata', true);
+    xmlhttp.setRequestHeader("Content-type","application/json");
+   
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+          var response = xmlhttp.responseText;
+          alert('Saved: '+response)
+      }
+    }
+    xmlhttp.send(JSON.stringify(args));
+}
