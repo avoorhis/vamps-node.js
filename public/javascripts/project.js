@@ -84,6 +84,23 @@ function download_data(type, pid, project, download_type, orientation) {
     };
     xmlhttp.send(args);   
 }
+
+// function download_dco_metadata(file){
+//     //alert('in download_dco_metadata '+file )
+//     var xmlhttp = new XMLHttpRequest(); 
+//     var args = {'file':file}
+//     xmlhttp.open("POST", '/projects/download_dco_metadata_file', true);
+//     xmlhttp.setRequestHeader("Content-type","application/json");
+//     xmlhttp.onreadystatechange = function() {
+//       if (xmlhttp.readyState == 4 ) {
+//         //  var filename = xmlhttp.responseText; 
+// //          html += "<div class='pull-right'>Your file is being compiled.<br>The filename is: "+filename;
+// //          html += "<br>When ready your file can be downloaded from the <a href='/user_data/file_retrieval'>file retrieval page.</a></div>"
+// //          document.getElementById('download_confirm_id').innerHTML = html;
+//       }
+//     };
+//     xmlhttp.send(JSON.stringify(args));   
+// }
 // var download_data = function(type)
 // {
 	

@@ -1877,39 +1877,35 @@ function create_header(viz, pi) {
 
 function download_data(type, download_type, ts) {
     var html = '';
-    var args = 'ts='+ts;
+    var args = {}
+    args.ts = ts;
+    args.file_type = type;
     var xmlhttp = new XMLHttpRequest();
 
-    // if(type == 'metadata'){
-    //   target = '/user_data/download_file'
-    //   args += '&file_type='+type;
-    //   args += "&download_type="+download_type;
-    // } else
     if(type == 'fasta'){
       target = '/user_data/download_file'
-      args += '&file_type='+type;
-      args += "&download_type="+download_type;
+      args.download_type = download_type;
     }else if(type == 'matrix'){
       target = '/user_data/download_file'
-      args += '&file_type='+type;
-      args += "&download_type="+download_type;
+      args.download_type = download_type;
 
-     // else if(type == 'csv'){
-     //  target = '/user_data/download_file'
-     //  args += '&file_type='+type;
-     //  args += "&download_type="+download_type;
     } else if(type == 'frequency'){
       target = '/user_data/download_file'
-      args += '&file_type='+type;
-    }
-    else{
+    } else if(type == 'metadata'){
+      target = '/user_data/download_selected_metadata'
+      args.domains = pi_local.domains
+      args.tax_depth = pi_local.tax_depth
+      args.normalization = pi_local.normalization
+      args.dids = ds_local.ids
+      args.download_type= 'partial_project'
+      args.orientation = 'rows'
+    }else{
       target = '/user_data/copy_file_for_download'
-      args += '&file_type='+type;
     }
 
 
     xmlhttp.open("POST", target, true);
-    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.setRequestHeader("Content-type","application/json");
     xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 ) {
          var filename = xmlhttp.responseText;
@@ -1920,7 +1916,7 @@ function download_data(type, download_type, ts) {
          alert(html)
       }
     };
-    xmlhttp.send(args);
+    xmlhttp.send(JSON.stringify(args));
 }
 
 //

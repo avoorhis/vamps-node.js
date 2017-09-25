@@ -354,6 +354,9 @@ def go_metadata():
             for row in cur.fetchall():
                 print(row)
                 did = row[0]
+                if did not in metadata_lookup:
+                    metadata_lookup[did] = {}
+                #metadata_lookup[did]['primer_id'] = []
                 n = 1
                 for field in pid_collection[pid]:
                     #print did,n,field,row[n]
@@ -361,12 +364,18 @@ def go_metadata():
                     value = str(row[n])
                     if value == '':
                         warnings.append('WARNING -- dataset'+str(did)+'is missing value for metadata CUSTOM field "'+name+'"')
-
-                    if did in metadata_lookup:
-                        metadata_lookup[did][name] = value
-                    else:
-                        metadata_lookup[did] = {}
-                        metadata_lookup[did][name] = value
+                    metadata_lookup[did][name] = value
+                    # if name == 'primer_suite_id' and value:
+#                         primer_query = "SELECT primer_id FROM ref_primer_suite_primer"
+#                         primer_query += " JOIN primer_suite USING(primer_suite_id)"
+#                         primer_query += " JOIN primer USING(primer_id)"
+#                         primer_query += " WHERE primer_suite_id='%s'"
+#                         query = primer_query % (value)
+#                         cur.execute(query)
+#                         rows = cur.fetchall()
+#                         for row in rows:
+#                             metadata_lookup[did]['primer_id'].append(row[0])
+                    
                     n += 1
         else:
             print('No "'+table+'" table found')

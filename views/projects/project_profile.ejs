@@ -23,7 +23,29 @@
 <img src='/images/dna01.jpg' alt="Helix Cartoon"  height='80' />
 
 
-
+<% // if((data.project).substring(0,3) == 'DCO' && (user.security_level == 1 || user.security_level == 45)) { %>
+<% if((data.project).substring(0,3) == 'DCO' && (user.security_level == 1)) { %>
+       <div class='pull-right'>
+       <!-- <button class='btn' onclick="download_dco_metadata('<%= dco_file %>')"><%= dco_file %></button> -->
+       <form method='POST' action='/projects/download_dco_metadata_file'>
+       <input type='hidden' name='dco_file' value='<%= dco_file %>'>
+       <input type='submit' value='Download All DCO Metadata'>
+       </form>
+       <!-- 
+<form id='download_project_fasta_form_id' method='POST' action=''>
+		  	  <!~~ 
+		  	   ~~>
+		  	   <%= dco_file %>
+		  	  <button type='button' class='btn btn-sm btn-link' id='download_project_fasta_form_id' >Download Full DCO Metadata</button>
+		  	  <input type='hidden' name='download_type' value='whole_project' />
+		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
+		  	  <input type='hidden' name='project' value='<%= data.project %>' />
+			  <input type='hidden' name='referer' value='/projects/project_profile' />
+		    </form>
+ -->
+		</div>    
+<% } %>
+    
 
 <div role="tabpanel" >
 

@@ -136,6 +136,8 @@ def get_req_metadata_sql(dids, req_headersA, req_headersB):
     sql += " JOIN run_key on (adapter_sequence_id=run_key_id)\n"
     sql += " JOIN illumina_index using(illumina_index_id)\n"
     sql += " JOIN primer_suite using(primer_suite_id)\n"
+    #sql += " join ref_primer_suite_primer using(primer_suite_id)\n"
+    #sql += " join primer using(primer_id)\n"
     sql += " JOIN sequencing_platform using (sequencing_platform_id)\n"
     sql += " JOIN term as t1 on (env_biome_id=t1.term_id)\n"
     sql += " JOIN term as t2 on (env_feature_id=t2.term_id)\n"
@@ -356,7 +358,14 @@ def run_biom(args):
 
     write_file_txt(args, out_file, file_txt)
 
-
+def run_metadata_from_files(args, file_form):
+    print 'in file metadata'
+    for did in args.dids:
+        print 'did',did
+        json_data=open(os.path.join(args.files_home, did+'.json')).read()
+        mdata = (json.loads(json_data))['metadata']
+        print(mdata)
+        
 def run_metadata(args, file_form):
     print 'running metadata --->>>'
     # args.datasets is a list of p--d pairs
@@ -369,7 +378,7 @@ def run_metadata(args, file_form):
 
     required_headersA = ["collection_date",
                                "run_key", "illumina_index","primer_suite",
-                                "dna_region", "domain", "env_package",
+                                "dna_region", "domain.domain", "env_package",
                                 "target_gene", "latitude", "longitude",
                                 "sequencing_platform", "run"]
     required_headersB = [  "env_biome",  "env_feature", "env_material", "geo_loc_name" ]      # these have to be matched with term table
@@ -767,14 +776,17 @@ if __name__ == '__main__':
         #db_host = 'bpcweb8'
         args.NODE_DATABASE = 'vamps2'
         db_home = '/groups/vampsweb/vamps/'
+        args.files_home ='/groups/vampsweb/vamps_node_data/json/vamps2--datasets_silva119/'
     elif args.site == 'vampsdev':
         db_host = 'vampsdev'
         #db_host = 'bpcweb7'
         args.NODE_DATABASE = 'vamps2'
         db_home = '/groups/vampsweb/vampsdev/'
+        args.files_home ='/groups/vampsweb/vampsdev_node_data/json/vamps2--datasets_silva119/'
     else:
         db_host = 'localhost'
         db_home = '~/'
+        args.files_home ='public/json/vamps_development--datasets_silva119/'
     db_name = args.NODE_DATABASE
 
 

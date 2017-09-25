@@ -3629,7 +3629,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
   // here from project info page
   console.log(req.body);
   var timestamp = +new Date();  // millisecs since the epoch!
-
+    
   var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
   helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
   helpers.mkdirSync(user_dir);  // create dir if not exists
@@ -3638,38 +3638,93 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
   var project;
   var file_name;
   var out_file_path;
+  var file_tag;
 
   if (req.body.download_type == 'whole_project') {
-    var pid  = req.body.pid;
-    dids = DATASET_IDS_BY_PID[pid];
-    if(req.body.hasOwnProperty('project')){
-      project = req.body.project;
-    }else{
-      project = PROJECT_INFORMATION_BY_PID[pid].project
-    }
-    if(orientation == 'cols'){
-    	file_name = 'metadata-samples_in_cols'+timestamp+'_'+project+'.tsv.gz';
-    }else{
-    	file_name = 'metadata-samples_in_rows'+timestamp+'_'+project+'.tsv.gz';
-    }
-    //file_name = 'metadata-'+timestamp+'_'+project+'.csv';
-    out_file_path = path.join(user_dir, file_name);
-    header = "Project: "+project+"\n\t";
-  } else {   // partial projects
-    dids = chosen_id_name_hash.ids;
-    if(orientation == 'cols'){
-    	file_name = 'metadata-samples_in_cols'+timestamp+'.csv.gz';
-    }else{
-    	file_name = 'metadata-samples_in_rows'+timestamp+'.csv.gz';
-    }
-    //out_file_path = path.join(user_dir, file_name);
-    out_file_path = path.join('tmp', file_name);
-    header = 'Project: various'+"\n\t";
-  }
-    console.log('dids');
-    console.log(dids);
-	console.log('user_dir')
-	console.log(user_dir)
+        var pid  = req.body.pid;
+        dids = DATASET_IDS_BY_PID[pid];
+        if(req.body.hasOwnProperty('project')){
+          project = req.body.project;
+        }else{
+          project = PROJECT_INFORMATION_BY_PID[pid].project
+        }
+        if(orientation == 'cols'){
+            file_name = 'metadata-'+timestamp+'-2.tsv.gz';
+            file_tag = ['--metadata_file2']
+        }else{
+            file_name = 'metadata-'+timestamp+'-1.tsv.gz';
+            file_tag = ['--metadata_file1']
+        }
+        //file_name = 'metadata-'+timestamp+'_'+project+'.csv';
+        out_file_path = path.join(user_dir, file_name);
+        header = "Project: "+project+"\n\t";
+         helpers.create_export_files(req, 
+            user_dir, 
+            timestamp, 
+            dids, 
+            file_tag, 
+            'none',     // normalization 
+            'phylum',      // tax depth --doesn't matter here for metadata 
+            ['Bacteria'],     // domains --doesn't matter here for metadata
+            'yes',     // yes or no --doesn't matter here for metadata
+            true);
+        res.send(file_name);
+        return;
+  } else if (req.body.download_type == 'partial_project'){
+        dids = chosen_id_name_hash.ids;
+        if(orientation == 'cols'){
+            //file_name = 'metadata-samples_in_cols'+timestamp+'.csv.gz';
+            file_name = 'metadata-'+timestamp+'-2.tsv.gz';
+            file_tag = ['--metadata_file2']
+        }else{
+            //file_name = 'metadata-samples_in_rows'+timestamp+'.csv.gz';
+            file_name = 'metadata-'+timestamp+'-1.tsv.gz';
+            file_tag = ['--metadata_file1']
+        }
+        
+        //out_file_path = path.join(user_dir, file_name);
+        out_file_path = path.join('tmp', file_name);
+        header = 'Project: various'+"\n\t";
+         helpers.create_export_files(req, 
+            user_dir, 
+            timestamp, 
+            dids, 
+            file_tag, 
+            'none',     // normalization 
+            'phylum',      // tax depth --doesn't matter here for metadata 
+            ['Bacteria'],     // domains --doesn't matter here for metadata
+            'yes',     // yes or no --doesn't matter here for metadata
+            true);
+        res.send(file_name);
+        return;
+        
+  } else if (req.body.download_type == 'all_dco'){
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        if(dd<10) {
+        dd = '0'+dd
+        } 
+        if(mm<10) {
+            mm = '0'+mm
+        } 
+        today = yyyy +'-'+ mm + '-' + dd;
+        var dids = new Array()
+        for(pid in PROJECT_INFORMATION_BY_PID){
+            project = PROJECT_INFORMATION_BY_PID[pid].project
+            if(project.substring(0,3)=='DCO'){
+                console.log(PROJECT_INFORMATION_BY_PID[pid])
+                dids_list = DATASET_IDS_BY_PID[pid]
+                dids = dids.concat(dids_list)
+            } 
+        }
+        file_name = 'dco_all_metadata_'+today+'.tsv.gz'
+        out_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, file_name)
+        //out_file_path = path.join('../vamps_data_downloads', file_name)
+        header = 'Project: DCO'+"\n\t";
+    
+  
 
     var gzip = zlib.createGzip();
     var myrows = {}; // myrows[mdname] == [] list of values
@@ -3681,39 +3736,38 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
 	var dataset_name_list = []
     for (var i in dids) {
         did = dids[i];
-        dname = DATASET_NAME_BY_DID[did];        
+        dname = DATASET_NAME_BY_DID[did];     
+        console.log('dname '+dname)   
         pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
         pjds = pname+'--'+dname
         dataset_name_list.push(pjds)
-        if(HDF5_MDATA === ''){
-            for (var mdname in AllMetadata[did]){
-              //console.log(mdname)
-              var data = helpers.required_metadata_names_from_ids(AllMetadata[did], mdname)
-               
-              if( mditems_list.indexOf(data.name) == -1){
-              	mditems_list.push(data.name)
-              }
-              
-			  if(orientation == 'cols'){
-				  if(data.name in myrows){					
-					myrows[data.name][pjds] = data.value;
-				  }else{
-					myrows[data.name] = {};
-					myrows[data.name][pjds] = data.value;
-				  }
-              
+        
+        for (var mdname in AllMetadata[did]){
+          //console.log(mdname)
+          var data = helpers.required_metadata_names_from_ids(AllMetadata[did], mdname)
+           
+          if( mditems_list.indexOf(data.name) == -1){
+            mditems_list.push(data.name)
+          }
+          
+          if(orientation == 'cols'){
+              if(data.name in myrows){					
+                myrows[data.name][pjds] = data.value;
               }else{
-              	  if(pjds in myrows){
-					myrows[pjds][data.name] = data.value;
-				  }else{
-					myrows[pjds] = [];
-					myrows[pjds][data.name] = data.value;
-				  }              
+                myrows[data.name] = {};
+                myrows[data.name][pjds] = data.value;
               }
-            }
-        }else{
- 			// here if using HDF5 
+          
+          }else{
+              if(pjds in myrows){
+                myrows[pjds][data.name] = data.value;
+              }else{
+                myrows[pjds] = [];
+                myrows[pjds][data.name] = data.value;
+              }              
+          }
         }
+        
 
     }
 	var header = '\t';
@@ -3755,16 +3809,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
       	
       }
       
-     //  Object.keys(myrows).sort().forEach(function(key) {
-//         filetxt = key;  // restart sting
-//         for (i in myrows[key]) {
-//           filetxt += "\t"+myrows[key][i];
-//         }
-//         filetxt += "\n";
-//         
-//         rs.push(filetxt);
-//       });
-      
+     
       
     }
     rs.push(null);
@@ -3778,6 +3823,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
       //res.download(path.join(__dirname  +'/../' +  out_file_path))
     
       res.send(file_name);
+   }
 });
 //
 //

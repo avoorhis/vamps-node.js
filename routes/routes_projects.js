@@ -103,8 +103,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
           });
         }
 
-      }
-      
+      }   
         
         
         var project_parts = info.project.split('_')
@@ -130,6 +129,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //console.log(member_of_portal)
         var info_file = ''
         var abstract_data = {}
+        var best_file_path = ''
         if(info.project.substring(0,3) == 'DCO'){
                 try{
                   info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','DCO_info.json')
@@ -137,6 +137,26 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                 }catch(e){
                   abstract_data = {}
                 }
+                var dco_all_metadata_file =''
+              best_date = Date.parse('2000-01-01')
+              best_file = ''
+      
+              fs.readdirSync(req.CONFIG.PATH_TO_STATIC_DOWNLOADS).forEach(file => {
+                if(file.substring(0,16) == 'dco_all_metadata'){
+                    //console.log('file '+file)
+                    file_date = file.substring(17,file.length - 7)
+                    //console.log('file_date: '+file_date)
+                    d = Date.parse(file_date)
+                    if(d > best_date){
+                        best_file = file
+                    }
+                }
+              })
+              //best_file =  'dco_all_metadata_'+yyyy+'-'+mm+'-'+dd+'.tsv.gz'
+              //console.log('best_file '+best_file)
+              best_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,best_file)
+               
+                
         }
         //console.log(info)
         res.render('projects/profile', {
@@ -151,6 +171,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                                       portal :    JSON.stringify(member_of_portal),                                    
                                       //abstracts: JSON.stringify(abstracts[project_prefix]),
                                       abstract_info : JSON.stringify(abstract_data),
+                                      dco_file: best_file,
                                       user   : req.user,
                                       hostname: req.CONFIG.hostname,
                                     });
@@ -168,7 +189,32 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       }
 
 });
-
+router.post('/download_dco_metadata_file', helpers.isLoggedIn, function(req, res) {
+    console.log('in POST download_dco_metadata_file')
+    console.log(req.body)
+    var file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, req.body.dco_file);
+    //var file_path = path.join('../vamps_data_downloads', req.body.file);
+    console.log('file_path '+file_path)
+    // res.setHeader('Content-Type', 'application/gzip');
+//     res.setHeader('Content-disposition', 'attachment; filename='+req.body.file);
+//      var filestream = fs.createReadStream(file_path);
+//   filestream.pipe(res);
+    if(fs.existsSync(file_path)){
+        console.log('Found file');
+        res.download(file_path, function(err){
+          if (err) {
+            // Handle error, but keep in mind the response may be partially-sent
+            // so check res.headersSent
+            console.log(err)
+          } else {
+            // decrement a download credit, etc.
+            console.log('okay')
+          }
+          })
+    }else{
+        console.log('no file found')
+    }      
+});
 // router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
 // router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],

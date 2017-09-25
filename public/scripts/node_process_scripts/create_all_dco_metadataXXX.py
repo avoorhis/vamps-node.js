@@ -381,25 +381,26 @@ def go_required_metadata(did_sql, metadata_lookup):
     cur.execute(query)
     for row in cur.fetchall():
         did = str(row[0])
-        if did not in metadata_lookup:              
-            metadata_lookup[did] = {}
-        #metadata_lookup[did]['primer_id'] = []
         for i,f in enumerate(required_metadata_fields):
             #print i,did,name,row[i+1]
+            
             value = row[i+1]
-            metadata_lookup[did][f] = str(value)
-            # if f == 'primer_suite_id' and value:
-#                 primer_query = "SELECT primer_id FROM ref_primer_suite_primer"
-#                 primer_query += " JOIN primer_suite USING(primer_suite_id)"
-#                 primer_query += " JOIN primer USING(primer_id)"
-#                 primer_query += " WHERE primer_suite_id='%s'"
-#                 query = primer_query % (value)
-#                 cur.execute(query)
-#                 rows = cur.fetchall()
-#                 for row in rows:
-#                     metadata_lookup[did]['primer_id'].append(row[0])     
-            
-            
+            if f == 'primer_suite_id' and value:
+                primer_query = "SELECT primer_id FROM ref_primer_suite_primer"
+                primer_query += " JOIN primer_suite USING(primer_suite_id)"
+                primer_query += " JOIN primer USING(primer_id)"
+                primer_query += " WHERE primer_suite_id='%s'"
+                query = primer_query % (value)
+                cur.execute(query)
+                primer_id = cur.fetchone()[0]
+                metadata_lookup[did]['primer_id'] = str(primer_id)
+            if did in metadata_lookup:              
+                    metadata_lookup[did][f] = str(value)
+            else:
+                metadata_lookup[did] = {}
+                metadata_lookup[did][f] = str(value)
+                
+    
     return metadata_lookup
 
     
@@ -516,6 +517,39 @@ def get_dataset_ids(pid):
 #
 #
 #
+def go_dco(args):
+    # 1 get all dco pids and dids   MySQL
+    # 2 
+    
+    query = "SELECT project,project_id,dataset,dataset_id,collection_date,latitude,longitude,dna_region,sequencing_platform,domain,t1.term_name as geo_loc_name,run_key as adapter_sequence,illumina_index,primer_suite,run,target_gene,env_package,t4.term_name as env_biome,t3.term_name as env_feature,t2.term_name as env_material"
+    query += " FROM required_metadata_info"
+    query += " JOIN target_gene using(target_gene_id)"
+    query += " JOIN dna_region using(dna_region_id)"
+    query += " JOIN sequencing_platform using(sequencing_platform_id)"
+    query += " JOIN domain using(domain_id)"
+    query += " JOIN term t1 on(geo_loc_name_id=t1.term_id)"
+    query += " JOIN run_key on(adapter_sequence_id=run_key_id)"
+    query += " JOIN illumina_index using(illumina_index_id)"
+    query += " JOIN primer_suite using(primer_suite_id)"
+    query += " JOIN env_package using(env_package_id)"
+    query += " JOIN term t2 on(env_material_id=t2.term_id)"
+    query += " JOIN term t3 on(env_feature_id=t3.term_id)"
+    query += " JOIN term t4 on(env_biome_id=t4.term_id)"
+    query += " JOIN run using(run_id)"
+    query += " JOIN dataset using(dataset_id)"
+    query += " JOIN project using(project_id)"
+    query += " WHERE project_id in ("+args.pids_str+")"
+
+    print query
+    cur.execute(query)
+    rows = cur.fetchall()
+    fp = open(args.outfile,'w') 
+    for row in rows:
+        print row
+        fp.write(str(row)+'\n')    
+    fp.close()  
+        
+
 if __name__ == '__main__':
 
     myusage = """
@@ -540,20 +574,20 @@ if __name__ == '__main__':
          use py_mbl_sequencing_pipeline custom scripts
 
     """
-    parser.add_argument("-pids","--pids",                   
-                required=False,  action="store",   dest = "pids_str", default='',
-                help="""ProjectID (used with -add) no response if -list also included""") 
-        
     
+    parser.add_argument("-pids","--pids",                   
+                required=True,  action="store",   dest = "pids_str",
+                help="""""")      
+    parser.add_argument("-outfile","--outfile",                   
+                required=True,  action="store",   dest = "outfile",
+                help="""""") 
     parser.add_argument("-no_backup","--no_backup",                   
                 required=False,  action="store_true",   dest = "no_backup", default=False,
                 help="""no_backup of group files: taxcounts and metadata""")  
     parser.add_argument("-metadata_warning_only","--metadata_warning_only",                   
                 required=False,  action="store_true",   dest = "metadata_warning_only", default=False,
                 help="""warns of datasets with no metadata""")           
-    parser.add_argument("-list","--list",                   
-                required=False,  action="store_true",   dest = "list", default='',
-                help="""list IDs, projects grouped for missing from taxcounts file, metadata file or individual json files""")
+    
   
     parser.add_argument("-json_file_path", "--json_file_path",        
                 required=False,  action='store', dest = "json_file_path",  default='../../json', 
@@ -562,9 +596,7 @@ if __name__ == '__main__':
     parser.add_argument("-host", "--host",    
                 required=False,  action='store', dest = "dbhost",  default='localhost',
                 help="choices=['vampsdb','vampsdev','localhost']") 
-    parser.add_argument("-units", "--tax_units",    
-                required=False,  action='store', choices=['silva119','rdp2.6'], dest = "units",  default='silva119',
-                help="Default: 'silva119'; only other choice available is 'rdp2.6'")                       
+                 
     
     if len(sys.argv[1:]) == 0:
         print myusage
@@ -587,28 +619,25 @@ if __name__ == '__main__':
     else:
         dbhost = 'localhost'
         args.NODE_DATABASE = 'vamps_development'
-    if args.units == 'silva119':
-        args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_silva119")
-    elif args.units == 'rdp2.6':
-         args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_rdp2.6")
-    else:
-        sys.exit('UNITS ERROR: '+args.units)
+    
+    args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_silva119")
+    
     print "\nARGS: dbhost  =",dbhost
     print "\nARGS: NODE_DATABASE  =",args.NODE_DATABASE
     print "ARGS: json_file_path =",args.json_file_path     
     if os.path.exists(args.json_file_path):
         print '** Validated json_file_path **'
     else:
-        print usage
+        print myusage
         print "Could not find json directory: '",args.json_file_path,"'-Exiting"
         sys.exit(-1)
-    print "ARGS: units =",args.units   
+      
     
     db = MySQLdb.connect(host=dbhost, # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
     cur = db.cursor()
     if args.NODE_DATABASE:
-        NODE_DATABASE = args.NODE_DATABASE
+        pass
     else:
         cur.execute("SHOW databases like 'vamps%'")
         dbs = []
@@ -620,24 +649,22 @@ if __name__ == '__main__':
         print db_str
         db_no = input("\nchoose database number: ")
         if int(db_no) < len(dbs):
-            NODE_DATABASE = dbs[db_no]
+            args.NODE_DATABASE = dbs[db_no]
         else:
             sys.exit("unrecognized number -- Exiting")
         
     print
-    cur.execute("USE "+NODE_DATABASE)
+    cur.execute("USE "+args.NODE_DATABASE)
     
     #out_file = "tax_counts--"+NODE_DATABASE+".json"
     #in_file  = "../json/tax_counts--"+NODE_DATABASE+".json"
     
-    print 'DATABASE:',NODE_DATABASE
+    print 'DATABASE:',args.NODE_DATABASE
     
     
          
-    if args.list:
-        go_list(args)
-    elif args.pids_str:
-        go_add(NODE_DATABASE, args.pids_str)
+    if args.pids_str:
+        go_dco(args)
     else:
         print myusage 
         sys.exit('need command line parameter(s)')
