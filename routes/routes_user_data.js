@@ -3720,7 +3720,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
             } 
         }
         file_name = 'dco_all_metadata_'+today+'.tsv.gz'
-        out_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, file_name)
+        out_file_path = path.join(req.CONFIG.PATH_TO_DCO_DOWNLOADS, file_name)
         //out_file_path = path.join('../vamps_data_downloads', file_name)
         header = 'Project: DCO'+"\n\t";
     
@@ -3821,7 +3821,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
       });
       console.log(path.join(out_file_path))
       //res.download(path.join(__dirname  +'/../' +  out_file_path))
-    
+      
       res.send(file_name);
    }
 });

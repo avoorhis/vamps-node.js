@@ -198,7 +198,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 router.post('/download_dco_metadata_file', helpers.isLoggedIn, function(req, res) {
     console.log('in POST download_dco_metadata_file')
     console.log(req.body)
-    var file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, req.body.dco_file);
+    var file_path = path.join(req.CONFIG.PATH_TO_DCO_DOWNLOADS, req.body.dco_file);
     //var file_path = path.join('../vamps_data_downloads', req.body.file);
     console.log('file_path '+file_path)
     // res.setHeader('Content-Type', 'application/gzip');
