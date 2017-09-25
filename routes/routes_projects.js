@@ -137,7 +137,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         }
 
         var user_metadata_csv_files = get_csv_files(req);
-        var project_file_names = filter_csv_files_by_project(user_metadata_csv_files, info.project);
+        var project_file_names = filter_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
 
         project_file_names.sort(function sortByTime(a, b) {
           //reverse sort: recent-->oldest
@@ -180,31 +180,20 @@ function get_csv_files(req) {
   console.time("TIME: get_csv_files");
 
   var user_csv_dir = path.join(config.USER_FILES_BASE, req.user.username);
-  console.log("UUU config.USER_FILES_BASE");
-  console.log(config.USER_FILES_BASE);
-
-
-  console.log("UUU1 req.user.username");
-  console.log(req.user.username);
-
-
   var all_my_files = helpers.walk_sync(user_csv_dir);
-
-  console.log("UUU2 all_my_files");
-  console.log(all_my_files);
-
 
   console.timeEnd("TIME: get_csv_files");
   return all_my_files;
 }
 
-function filter_csv_files_by_project(file_names, project_name) {
+function filter_csv_files_by_project(file_names, project_name, username) {
   console.time("TIME: filter_csv_files_by_project");
 
+  file_name_template = "metadata-project_" + project_name + "_" + username;
   var project_file_names = [];
 
   for (var i0 in file_names) {
-    if (file_names[i0].filename.indexOf(project_name) > -1) {
+    if (file_names[i0].filename.indexOf(file_name_template) > -1) {
       project_file_names.push(file_names[i0]);
     }
   }
