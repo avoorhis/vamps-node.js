@@ -206,7 +206,7 @@ router.post('/download_dco_metadata_file', helpers.isLoggedIn, function(req, res
 //      var filestream = fs.createReadStream(file_path);
 //   filestream.pipe(res);
     if(fs.existsSync(file_path)){
-        console.log('Found file');
+        console.log('Found file: '+file_path);
         res.download(file_path, function(err){
           if (err) {
             // Handle error, but keep in mind the response may be partially-sent
