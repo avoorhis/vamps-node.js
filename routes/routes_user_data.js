@@ -3714,13 +3714,13 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
         for(pid in PROJECT_INFORMATION_BY_PID){
             project = PROJECT_INFORMATION_BY_PID[pid].project
             if(project.substring(0,3)=='DCO'){
-                console.log(PROJECT_INFORMATION_BY_PID[pid])
+                //console.log(PROJECT_INFORMATION_BY_PID[pid])
                 dids_list = DATASET_IDS_BY_PID[pid]
                 dids = dids.concat(dids_list)
             } 
         }
         file_name = 'dco_all_metadata_'+today+'.tsv.gz'
-        out_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, file_name)
+        out_file_path = path.join(req.CONFIG.PATH_TO_DCO_DOWNLOADS, file_name)
         //out_file_path = path.join('../vamps_data_downloads', file_name)
         header = 'Project: DCO'+"\n\t";
     
@@ -3737,7 +3737,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
     for (var i in dids) {
         did = dids[i];
         dname = DATASET_NAME_BY_DID[did];     
-        console.log('dname '+dname)   
+        //console.log('dname '+dname)   
         pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
         pjds = pname+'--'+dname
         dataset_name_list.push(pjds)
