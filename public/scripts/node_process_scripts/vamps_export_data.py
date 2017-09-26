@@ -423,7 +423,8 @@ def run_metadata(args, file_form, dco_bulk=False):
     for pid in args.pids:
         custom_table = 'custom_metadata_'+pid
         #print 'pid',pid
-        sql3  = "SELECT * from "+custom_table+"\n "
+        sql3  = "SELECT * from "+custom_table
+        print sql3
         #print 'args.dataset_name_collector'
         #print args.dataset_name_collector
         try:
