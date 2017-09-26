@@ -140,7 +140,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       var dco_all_metadata_file =''
       best_date = Date.parse('2000-01-01')
 
-      fs.readdirSync(req.CONFIG.PATH_TO_STATIC_DOWNLOADS).forEach(file => {
+      fs.readdirSync(req.CONFIG.PATH_TO_DCO_DOWNLOADS).forEach(file => {
         if(file.substring(0,16) == 'dco_all_metadata'){
         //console.log('file '+file)
         file_date = file.substring(17,file.length - 7)
