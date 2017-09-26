@@ -413,7 +413,7 @@ def run_metadata(args, file_form, dco_bulk=False):
             for key in row:
                 if project_dataset in data:
                     if type(row[key]) == str:
-                        data[project_dataset][key] = row[key].replace(","," ")
+                        data[project_dataset][key] = row[key].replace(","," ").replace("\r"," ")
                     else:
                         data[project_dataset][key] = row[key]
                     headers_collector[key] = 1
@@ -430,26 +430,31 @@ def run_metadata(args, file_form, dco_bulk=False):
         try:
             cursor.execute(sql3)
             rows = cursor.fetchall()
-            for row in rows:
-                did = row['dataset_id']
-                if did in args.dataset_name_collector:
-                    pjds = args.dataset_name_collector[did]
-                else:
-                    pjds = 'unknown'
-                #print pjds
-                if str(did) in args.dids:
-                    for key in row:
-                        #print('key',key)  ## key is mditem
-                        if key != custom_table+'_id':
-
-                            #print 'row[key]',row[key]
-                            if type(row[key]) == str:
-                                data[pjds][key]= row[key].replace(","," ")
-                            else:
-                                data[pjds][key]= row[key]
-                            headers_collector[key] = 1
         except:
             print('Could not find/query custom metadata table:',custom_table)
+        for row in rows:
+            did = row['dataset_id']
+            #print did
+            if did in args.dataset_name_collector:
+                pjds = args.dataset_name_collector[did]
+            else:
+                pjds = 'unknown'
+            #print pjds
+            #if str(did) in args.dids:
+            try:
+                for key in row:
+                    #print('key',key)  ## key is mditem
+                    if key != custom_table+'_id':
+
+                        #print 'row[key]',row[key]
+                        if type(row[key]) == str:
+                            data[pjds][key]= row[key].replace(","," ").replace("\r"," ")
+                        else:
+                            data[pjds][key]= row[key]
+                        headers_collector[key] = 1
+            except:
+                print('vamps_export data error: Custom Metadata')
+        
 
     headers_collector_keys = sorted(headers_collector.keys())
     ds_sorted = sorted(data.keys())
