@@ -3723,7 +3723,20 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
         out_file_path = path.join(req.CONFIG.PATH_TO_DCO_DOWNLOADS, file_name)
         //out_file_path = path.join('../vamps_data_downloads', file_name)
         header = 'Project: DCO'+"\n\t";
-    
+        helpers.create_export_files(req, 
+            req.CONFIG.PATH_TO_DCO_DOWNLOADS, 
+            timestamp, 
+            [''],  // empty did list for dco_bulk 
+            ['--dco_metadata_file'], 
+            'none',     // normalization 
+            'phylum',      // tax depth --doesn't matter here for metadata 
+            ['Bacteria'],     // domains --doesn't matter here for metadata
+            'yes',     // yes or no --doesn't matter here for metadata
+            true);
+         res.send(file_name);
+        return;    
+            
+            
   
    console.log('out_file_path: '+out_file_path)
     var gzip = zlib.createGzip();

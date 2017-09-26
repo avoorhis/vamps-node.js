@@ -35,10 +35,14 @@
     <% if((data.project).substring(0,3) == 'DCO' && (user.security_level == 1 || user.security_level == 10 || user.security_level == 45)) { %>
     <% //if((data.project).substring(0,3) == 'DCO' && (user.security_level == 1)) { %>
         <div class='pull-right'>
-            <form method='POST' action='/projects/download_dco_metadata_file'>
-                <input type='hidden' name='dco_file' value='<%= dco_file %>'>
-                <input type='submit' value='Download All DCO Metadata: <%= dco_file %>'>
-            </form>
+            <% if(dco_file == ''){ %>
+                NO CoDL Bulk File Available
+            <% }else{ %>
+                <form method='POST' action='/projects/download_dco_metadata_file'>
+                    <input type='hidden' name='dco_file' value='<%= dco_file %>'>
+                    <input type='submit' value='Download All CoDL Metadata: <%= dco_file %>'>
+                </form>
+            <% } %>
         </div>
     <% } %>
 

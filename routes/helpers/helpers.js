@@ -1068,6 +1068,7 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
   var site = req.CONFIG.site;
   var code = 'NVexport';
   var pid_lookup = {};
+  var pids_str;
   //console.log('dids', dids);
   export_cmd = 'vamps_export_data.py';
   for (n=0; n<dids.length; n++) {
@@ -1076,8 +1077,18 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
   }
 
   var dids_str = JSON.stringify(dids.join(', '));
-  var pids_str = JSON.stringify((Object.keys(pid_lookup)).join(', '));
-
+  
+  if(file_tags[0] == '--dco_metadata_file'){
+        pid_list = []
+        for(pname in PROJECT_INFORMATION_BY_PNAME){
+            if(pname.substring(0,3) == 'DCO'){
+                pid_list.push(PROJECT_INFORMATION_BY_PNAME[pname].pid)
+            }
+        }
+        pids_str = JSON.stringify(pid_list.join(', '));
+  }else{
+        pids_str = JSON.stringify((Object.keys(pid_lookup)).join(', '));
+  }
   //console.log('pids', pids_str);
   //var file_tags = file_tags.join(' ')
 
