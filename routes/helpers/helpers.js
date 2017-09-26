@@ -1076,7 +1076,7 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
     pid_lookup[PROJECT_ID_BY_DID[dids[n]]] = 1;
   }
 
-  var dids_str = JSON.stringify(dids.join(', '));
+  var dids_str = JSON.stringify(dids.join(','));
   
   if(file_tags[0] == '--dco_metadata_file'){
         pid_list = []
@@ -1085,9 +1085,9 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
                 pid_list.push(PROJECT_INFORMATION_BY_PNAME[pname].pid)
             }
         }
-        pids_str = JSON.stringify(pid_list.join(', '));
+        pids_str = JSON.stringify(pid_list.join(','));
   }else{
-        pids_str = JSON.stringify((Object.keys(pid_lookup)).join(', '));
+        pids_str = JSON.stringify((Object.keys(pid_lookup)).join(','));
   }
   //console.log('pids', pids_str);
   //var file_tags = file_tags.join(' ')

@@ -412,7 +412,7 @@ def run_metadata(args, file_form, dco_bulk=False):
 
             for key in row:
                 if project_dataset in data:
-                    data[project_dataset][key]= row[key]
+                    data[project_dataset][key]= row[key].replace(","," ")
                     headers_collector[key] = 1
 
     #print 'headers_collector',headers_collector
@@ -439,7 +439,7 @@ def run_metadata(args, file_form, dco_bulk=False):
                         if key != custom_table+'_id':
 
                             #print 'row[key]',row[key]
-                            data[pjds][key]= row[key]
+                            data[pjds][key]= row[key].replace(","," ")
                             headers_collector[key] = 1
         except:
             print('Could not find/query custom metadata table:',custom_table)
