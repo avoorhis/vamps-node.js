@@ -9,6 +9,7 @@ var path = require("path");
 var config  = require(app_root + '/config/config');
 var validator = require('validator');
 // var expressValidator = require('express-validator');
+var nodeMailer = require('nodemailer');
 
 
 /* GET metadata page. */
@@ -1411,47 +1412,46 @@ function fill_out_arr_doubles(value, repeat_times) {
   return arr_temp;
 }
 
-function send_email(req, res) {
+router.get('/send_email', function (req, res) {
+  res.render('new_contact');
+});
 
-  console.log("RRR in send mail = ");
-  // console.log(response);
+router.post('/send_email', function (req, res) {
+  console.log("FROM send_email");
 
-
-  //Validate captcha
-  sweetcaptcha.api('check', {sckey: req.body["sckey"], scvalue: req.body["scvalue"]}, function(err, response){
-    if (err) return console.log(err);
-
-    console.log("RRR response = ");
-    console.log(response);
-
-    if (response === 'true') {
-      // valid captcha
-
-      // setup e-mail data with unicode symbols
-      var info = {
-        to: 'ashipunova@mbl.edu',
-        from: 'vamps@mbl.edu',
-        subject: 'New email from your website contact form', // Subject line
-        text: req.body["contact-form-message"] + "\n\nYou may contact this sender at: " + req.body["contact-form-mail"] // plaintext body
-      };
-      send_mail(info);
-
-      //Success
-      res.send("Thanks! We have sent your message.");
-
-      console.log("RRR1 res.send = ");
-      console.log(res.send);
-
-    }
-    if (response === 'false'){
-      // invalid captcha
-      console.log("Invalid Captcha");
-      res.send("Try again");
+  let transporter = nodeMailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
 
     }
   });
 
-}
+  console.log("FFF FROM send_email");
+
+
+  let mailOptions = {
+    from: '"Krunal Lathiya" <xx@gmail.com>', // sender address
+    to: req.body.to, // list of receivers
+    subject: req.body.subject, // Subject line
+    text: req.body.body, // plain text body
+    html: '<b>NodeJS Email Tutorial</b>' // html body
+  };
+
+  console.log("FFF1 FROM send_email");
+
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.log(error);
+    }
+    console.log('Message %s sent: %s', info.messageId, info.response);
+  res.render('index');
+});
+});
+
+
 
 function make_metadata_object(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
