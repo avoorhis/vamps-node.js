@@ -62,6 +62,7 @@
     "python-shell": "",
     "readable-stream": "^2.0.1",
     "serve-favicon": "",
+    "sweetcaptcha": "0.0.2-1",
     "tree-model": "",
     "uid-safe": "",
     "underscore": "",

@@ -567,6 +567,7 @@ router.post('/metadata_upload',
 
       make_metadata_object_from_form(req, res);
       make_csv(req, res);
+      send_email(req, res);
 
     }
     else {
@@ -1408,6 +1409,48 @@ function fill_out_arr_doubles(value, repeat_times) {
   arr_temp.fill(value, 0, repeat_times);
 
   return arr_temp;
+}
+
+function send_email(req, res) {
+
+  console.log("RRR in send mail = ");
+  // console.log(response);
+
+
+  //Validate captcha
+  sweetcaptcha.api('check', {sckey: req.body["sckey"], scvalue: req.body["scvalue"]}, function(err, response){
+    if (err) return console.log(err);
+
+    console.log("RRR response = ");
+    console.log(response);
+
+    if (response === 'true') {
+      // valid captcha
+
+      // setup e-mail data with unicode symbols
+      var info = {
+        to: 'ashipunova@mbl.edu',
+        from: 'vamps@mbl.edu',
+        subject: 'New email from your website contact form', // Subject line
+        text: req.body["contact-form-message"] + "\n\nYou may contact this sender at: " + req.body["contact-form-mail"] // plaintext body
+      };
+      send_mail(info);
+
+      //Success
+      res.send("Thanks! We have sent your message.");
+
+      console.log("RRR1 res.send = ");
+      console.log(res.send);
+
+    }
+    if (response === 'false'){
+      // invalid captcha
+      console.log("Invalid Captcha");
+      res.send("Try again");
+
+    }
+  });
+
 }
 
 function make_metadata_object(req, res, pid, info) {

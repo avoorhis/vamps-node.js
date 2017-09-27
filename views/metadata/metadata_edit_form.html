@@ -129,6 +129,41 @@
 
 </form>
 
+RRR
+<div class="well">
+  <form  name="contact-form" id="contact-form" method='POST' target="contact">
+
+    <div class="form-group">
+      <label for="contact-form-name">Your Name</label>
+      <input type="text" class="form-control" name='name' id="contact-form-name" placeholder="enter name">
+    </div>
+
+    <div class="form-group">
+      <label for="contact-form-mail">Email address</label>
+      <input type="email" class="form-control" name='email' id="exampleInputEmail1" placeholder="enter email">
+    </div>
+    <div class="form-group">
+      <label for="contact-form-subject">Subject</label>
+      <input type="text" class="form-control" name='name' id="contact-form-subject" placeholder="enter subject">
+      </select>
+
+    </div>
+    <div class="form-group">
+      <label for="contact-form-message">Your message</label>
+      <textarea name="message"  id="contact-form-message" rows="5" cols="50"></textarea>
+
+    </div>
+
+    <div id="captchaHolder">
+
+    </div>
+
+    <button type="submit" class="btn btn-default">Submit</button>
+  </form>
+
+
+</div>
+
 
 <% include ../add_ins/end.ejs %>
 <script type='text/javascript' src='/javascripts/global.js'></script>
