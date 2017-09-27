@@ -1424,7 +1424,8 @@ router.post('/send_email', function (req, res) {
     port: 465,
     secure: true,
     auth: {
-
+      user: config.vamps_email,
+      pass: config.vamps_email_pass
     }
   });
 
@@ -1432,9 +1433,11 @@ router.post('/send_email', function (req, res) {
 
 
   let mailOptions = {
-    from: '"AAA" <tetya-loshad@yandex.ru>', // sender address
-    to: req.body.to, // list of receivers
-    subject: req.body.subject, // Subject line
+    from: '"AAA" <' + config.vamps_email + '>', // sender address
+    // to: req.body.to, // list of receivers
+    // subject: req.body.subject, // Subject line
+    to: config.CONTACT_EMAIL,
+    subject: "SEND an email",
     text: req.body.body, // plain text body
     html: '<b>NodeJS Email Tutorial</b>' // html body
   };
