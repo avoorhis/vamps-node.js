@@ -568,7 +568,7 @@ router.post('/metadata_upload',
 
       make_metadata_object_from_form(req, res);
       make_csv(req, res);
-      send_email(req, res);
+      send_mail_function(req, res);
 
     }
     else {
@@ -1436,7 +1436,7 @@ router.post('/send_email', function (req, res) {
     from: '"AAA" <' + config.vamps_email + '>', // sender address
     // to: req.body.to, // list of receivers
     // subject: req.body.subject, // Subject line
-    to: config.CONTACT_EMAIL,
+    to: [config.CONTACT_EMAIL, "tetya-loshad@yandex.ru"],
     subject: "SEND an email",
     text: req.body.body, // plain text body
     html: '<b>NodeJS Email Tutorial</b>' // html body
@@ -1454,6 +1454,45 @@ router.post('/send_email', function (req, res) {
 });
 });
 
+
+function send_mail_function(req, res) {
+  console.log("FROM send_email");
+
+  let transporter = nodeMailer.createTransport({
+    host: 'smtp.yandex.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: config.vamps_email,
+      pass: config.vamps_email_pass
+    }
+  });
+
+  console.log("FFF FROM send_email");
+
+
+  let mailOptions = {
+    from: '"AAA" <' + config.vamps_email + '>', // sender address
+    // to: req.body.to, // list of receivers
+    // subject: req.body.subject, // Subject line
+    to: [config.CONTACT_EMAIL, "tetya-loshad@yandex.ru"],
+    subject: "SEND an email",
+    text: "Hurray!",
+    // text: req.body.body, // plain text body
+    html: '<b>NodeJS Email Tutorial</b>' // html body
+  };
+
+  console.log("FFF1 FROM send_email");
+
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.log(error);
+    }
+    console.log('Message %s sent: %s', info.messageId, info.response);
+  res.render('index');
+});
+}
 
 
 function make_metadata_object(req, res, pid, info) {
