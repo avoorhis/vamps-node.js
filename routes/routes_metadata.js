@@ -568,7 +568,15 @@ router.post('/metadata_upload',
 
       make_metadata_object_from_form(req, res);
       make_csv(req, res);
-      send_mail_function(req, res);
+
+      console.log("MMM in metadata_edit_form, req.body");
+      console.log(req.body.done_editing);
+
+      if (req.body.done_editing === "done_editing"){
+        send_mail_function(req, res);
+      }
+
+      // done_editing: 'not_done_editing' }
 
     }
     else {
