@@ -1704,7 +1704,7 @@ module.exports.required_metadata_ids_from_names = function(selection_obj, mdname
       for(n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer){
         val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence)
       }
-      value = val.join(', ')
+      value = val.join(' ')
     }else{
       value = 'unknown'
     }
@@ -1775,7 +1775,7 @@ module.exports.required_metadata_names_from_ids = function(selection_obj, name_i
       for(n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer){
         val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence)
       }
-      value = val.join(', ')
+      value = val.join(' ')
     }else{
       value = 'unknown'
     }
