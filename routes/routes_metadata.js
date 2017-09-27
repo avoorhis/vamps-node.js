@@ -1420,7 +1420,7 @@ router.post('/send_email', function (req, res) {
   console.log("FROM send_email");
 
   let transporter = nodeMailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: 'smtp.yandex.com',
     port: 465,
     secure: true,
     auth: {
@@ -1432,7 +1432,7 @@ router.post('/send_email', function (req, res) {
 
 
   let mailOptions = {
-    from: '"Krunal Lathiya" <xx@gmail.com>', // sender address
+    from: '"AAA" <tetya-loshad@yandex.ru>', // sender address
     to: req.body.to, // list of receivers
     subject: req.body.subject, // Subject line
     text: req.body.body, // plain text body
