@@ -569,9 +569,6 @@ router.post('/metadata_upload',
       make_metadata_object_from_form(req, res);
       make_csv(req, res);
 
-      console.log("MMM in metadata_edit_form, req.body");
-      console.log(req.body.done_editing);
-
       if (req.body.done_editing === "done_editing"){
         send_mail_finished(req, res);
       }
@@ -1433,15 +1430,20 @@ function send_mail_finished(req, res) {
     }
   });
 
+  var d = new Date();
+  var timeReadable = d.toDateString();
+
+  var text_msg = req.user.first_name + " " + req.user.last_name + " (" + req.user.email + ")" + " finished submitting available metadata to " + req.body.project + " on " + timeReadable + ".";
+
   let mailOptions = {
-    from: '"AAA" <' + config.vamps_email + '>', // sender address
+    from: '"VAMPS2" <' + config.vamps_email + '>', // sender address
     // to: req.body.to, // list of receivers
     // subject: req.body.subject, // Subject line
     to: [config.CONTACT_EMAIL, "tetya-loshad@yandex.ru"],
-    subject: "SEND an email",
-    text: "Hurray!",
+    subject: "Metadata edited",
+    text: text_msg
     // text: req.body.body, // plain text body
-    html: '<b>NodeJS Email Tutorial</b>' // html body
+    // html: '<b>NodeJS Email Tutorial</b>' // html body
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
