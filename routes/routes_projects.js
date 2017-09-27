@@ -88,8 +88,12 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       if(HDF5_MDATA === ''){
 
         for (var name in AllMetadata[did]){
-
-          var data = helpers.required_metadata_names_from_ids(AllMetadata[did], name);
+          var data
+          if(name == 'primer_suite_id'){
+            data = helpers.required_metadata_names_from_ids(AllMetadata[did], 'primer_ids');
+            mdata[dsinfo[n].dname][data.name] = data.value;
+          }
+          data = helpers.required_metadata_names_from_ids(AllMetadata[did], name);
           mdata[dsinfo[n].dname][data.name] = data.value;
 
         }

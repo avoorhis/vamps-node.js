@@ -1697,6 +1697,17 @@ module.exports.required_metadata_ids_from_names = function(selection_obj, mdname
     }else{
       value = 'unknown'
     }
+  }else if(mdname == 'primers'){
+    idname = 'primer_ids'
+    if(MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])){
+      val = []
+      for(n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer){
+        val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence)
+      }
+      value = val.join(', ')
+    }else{
+      value = 'unknown'
+    }
   }else{
     idname = mdname
     value = selection_obj[mdname];
@@ -1756,6 +1767,17 @@ module.exports.required_metadata_names_from_ids = function(selection_obj, name_i
       value = MD_PRIMER_SUITE[id].name;
     }else{
       value = 'unknown';
+    }
+  }else if(name_id == 'primer_ids'){
+    real_name = 'primers'
+    if(MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])){
+      val = []
+      for(n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer){
+        val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence)
+      }
+      value = val.join(', ')
+    }else{
+      value = 'unknown'
     }
   }else{
     real_name = name_id;
