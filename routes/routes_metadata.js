@@ -573,7 +573,7 @@ router.post('/metadata_upload',
       console.log(req.body.done_editing);
 
       if (req.body.done_editing === "done_editing"){
-        send_mail_function(req, res);
+        send_mail_finished(req, res);
       }
 
       // done_editing: 'not_done_editing' }
@@ -1420,8 +1420,8 @@ function fill_out_arr_doubles(value, repeat_times) {
   return arr_temp;
 }
 
-function send_mail_function(req, res) {
-  console.log("FROM send_email");
+function send_mail_finished(req, res) {
+  console.time("TIME: send_mail_finished");
 
   let transporter = nodeMailer.createTransport({
     host: 'smtp.yandex.com',
@@ -1432,8 +1432,6 @@ function send_mail_function(req, res) {
       pass: config.vamps_email_pass
     }
   });
-
-  console.log("FFF FROM send_email");
 
   let mailOptions = {
     from: '"AAA" <' + config.vamps_email + '>', // sender address
@@ -1446,9 +1444,6 @@ function send_mail_function(req, res) {
     html: '<b>NodeJS Email Tutorial</b>' // html body
   };
 
-  console.log("FFF1 FROM send_email");
-
-
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       return console.log(error);
@@ -1456,6 +1451,8 @@ function send_mail_function(req, res) {
     console.log('Message %s sent: %s', info.messageId, info.response);
   // res.render('index');
   });
+
+  console.timeEnd("TIME: send_mail_finished");
 }
 
 
