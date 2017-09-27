@@ -1458,7 +1458,7 @@ router.post('/send_email', function (req, res) {
       return console.log(error);
     }
     console.log('Message %s sent: %s', info.messageId, info.response);
-  res.render('index');
+  // res.render('index');
 });
 });
 
@@ -1498,7 +1498,7 @@ function send_mail_function(req, res) {
       return console.log(error);
     }
     console.log('Message %s sent: %s', info.messageId, info.response);
-  res.render('index');
+  // res.render('index');
 });
 }
 
