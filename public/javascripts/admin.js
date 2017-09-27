@@ -506,7 +506,7 @@ function create_dco_file(){
     xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 ) {
           var response = xmlhttp.responseText;
-          alert('Saved: '+response)
+          alert('Saving: '+response)
       }
     }
     xmlhttp.send(JSON.stringify(args));

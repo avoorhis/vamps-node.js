@@ -413,7 +413,10 @@ def run_metadata(args, file_form, dco_bulk=False):
             for key in row:
                 if project_dataset in data:
                     if type(row[key]) == str:
-                        data[project_dataset][key] = row[key].replace(","," ").replace("\r"," ")
+                        if key == 'primer_suite':
+                            data[project_dataset][key] = row['primer_suite']+' ('+row['sequencing_platform']+')'
+                        else:
+                            data[project_dataset][key] = row[key]
                     else:
                         data[project_dataset][key] = row[key]
                     headers_collector[key] = 1
@@ -696,17 +699,42 @@ def get_dataset_counts(args):
     rows = cursor.fetchall()
     max_val = 0;
     pd_counter = {}
-    dataset_name_collector = {}
 
     for row in rows:
-        pjds = row['project']+'--'+row['dataset']
         ds_count = row['dataset_count']
-        pd_counter[pjds] = ds_count
-        dataset_name_collector[row['dataset_id']] = pjds
+        pd_counter[row['project']+'--'+row['dataset']] = ds_count
         if ds_count > max_val:
             max_val = ds_count
 
-    return (max_val, pd_counter, dataset_name_collector)
+    return (max_val, pd_counter)
+    
+def get_dataset_names(args):
+    print '''getting dataset_names --->>>'''
+    cursor = args.obj.cursor()
+    dids = "','".join(args.dids)
+    pids = "','".join(args.pids)
+    #pd = "') OR\n(project='".join(["' and dataset='".join(p.split('--')) for p in args.datasets])
+    #sql = "SELECT distinct project, dataset, dataset_count from "+pd_table+" WHERE\n(project='" + pd + "')\n"
+    sql = "SELECT dataset_id, project, dataset"
+    sql += " from sequence_pdr_info as i"
+    sql += " join dataset as D using(dataset_id)"
+    sql += " join project as P using(project_id)"
+    if dids:
+        sql += " where dataset_id in ('"+dids+"')"
+    elif pids:
+        sql += " where project_id in ('"+pids+"')"
+    else:
+        sys.exit('no pids or dids from command line -- exiting')
+    
+    print sql
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    dataset_name_collector = {}
+
+    for row in rows:
+        dataset_name_collector[row['dataset_id']] = row['project']+'--'+row['dataset']
+
+    return dataset_name_collector
 
 
 if __name__ == '__main__':
@@ -832,17 +860,17 @@ if __name__ == '__main__':
     args.domains = [x.strip() for x in args.domains]
     args.dids = [x.strip() for x in args.dids]
     args.pids = [x.strip() for x in args.pids]
-
-    (args.max, args.dataset_counts, args.dataset_name_collector) = get_dataset_counts(args)
-    args.datasets = args.dataset_counts.keys()
-    print 'max', args.max
-    print 'max2', args.dataset_counts
-    #sys.exit()
-
-
-    #args.compress = True
-
-
+    if args.dco_metadata or args.metadata1 or args.metadata2:
+        args.dataset_name_collector = get_dataset_names(args)
+        print 'args.dataset_name_collector'
+        print args.dataset_name_collector
+    else:
+        (args.max, args.dataset_counts) = get_dataset_counts(args)
+        args.datasets = args.dataset_counts.keys()
+        print 'max', args.max
+        print 'max2', args.dataset_counts
+    
+    
 #     args.dc_sql_rows   = []
 #     args.seqs_sql_rows = []
 #     if args.taxbytax:
