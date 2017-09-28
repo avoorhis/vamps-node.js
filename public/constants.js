@@ -803,9 +803,6 @@ constants.SAMPLE_TYPE = ["Please choose one",
   "environmental sample",
   "isolate"];
 
-constants.GAZ_US = ["USA",
-  "United States of America",
-  "United States"
-];
+constants.GAZ_US = {"United States": ["USA", "United States of America"]};
 
 module.exports = constants;
