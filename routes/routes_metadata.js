@@ -1420,13 +1420,18 @@ function fill_out_arr_doubles(value, repeat_times) {
 function send_mail_finished(req, res) {
   console.time("TIME: send_mail_finished");
 
+  var vamps_email_host = config.vamps_email_host !== undefined ? config.vamps_email_host : "";
+  var vamps_email_port = config.vamps_email_port !== undefined ? config.vamps_email_port : "";
+  var vamps_email = config.vamps_email !== undefined ? config.vamps_email : "";
+  var vamps_email_pass = config.vamps_email_pass !== undefined ? config.vamps_email_pass : "";
+
   let transporter = nodeMailer.createTransport({
-    host: config.vamps_email_host,
-    port: config.vamps_email_port,
+    host: vamps_email_host,
+    port: vamps_email_port,
     secure: true,
     auth: {
-      user: config.vamps_email,
-      pass: config.vamps_email_pass
+      user: vamps_email,
+      pass: vamps_email_pass
     }
   });
 
