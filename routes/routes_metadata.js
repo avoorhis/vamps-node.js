@@ -265,17 +265,38 @@ function geo_loc_name_validation(value, source) {
   }
 }
 
-//add for
+// function geo_loc_name_continental_filter(value) {
+//   console.time("geo_loc_name_continental_filter");
+//   for (var key in CONSTS.GAZ_SPELLING) {
+//     if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
+//       var curr = CONSTS.GAZ_SPELLING[key];
+//       if (curr.indexOf(value.toLowerCase()) > -1) {
+//         return key;
+//       }
+//     }
+//   }
+//   console.timeEnd("geo_loc_name_continental_filter");
+// }
+
+
 function geo_loc_name_continental_filter(value) {
   console.time("geo_loc_name_continental_filter");
-  for (var key in CONSTS.GAZ_SPELLING) {
-    if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
-      var curr = CONSTS.GAZ_SPELLING[key];
-      if (curr.indexOf(value.toLowerCase()) > -1) {
-        return key;
-      }
+
+  Object.keys(CONSTS.GAZ_SPELLING).map(function (key) {
+    var curr = CONSTS.GAZ_SPELLING[key];
+    if (curr.indexOf(value.toLowerCase()) > -1) {
+      return key;
     }
-  }
+  });
+
+  // for (var key in CONSTS.GAZ_SPELLING) {
+  //   if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
+  //     var curr = CONSTS.GAZ_SPELLING[key];
+  //     if (curr.indexOf(value.toLowerCase()) > -1) {
+  //       return key;
+  //     }
+  //   }
+  // }
   console.timeEnd("geo_loc_name_continental_filter");
 }
 
