@@ -305,8 +305,13 @@ var feature_seq_options = {
     "geological joint",
     "intrusion",
     "microfracture",
-    "ocean trench",
     "shear fracture"],
+
+  "ocean trench": ["none",
+    "accretionary",
+    "inner trench wall",
+    "non-accretionary",
+    "outer trench wall"],
 
   "geyser": ["none",
     "hydrothermal",
