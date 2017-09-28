@@ -267,15 +267,19 @@ function geo_loc_name_validation(value, source) {
 
 //add for
 function geo_loc_name_continental_filter(value) {
-  var us = CONSTS.GAZ_SPELLING["United States"];
-
-  if (us.indexOf(value.toLowerCase()) > -1) {
-    return "United States";
+  console.time("geo_loc_name_continental_filter");
+  for (var key in CONSTS.GAZ_SPELLING) {
+    if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
+      var curr = CONSTS.GAZ_SPELLING[key];
+      if (curr.indexOf(value.toLowerCase()) > -1) {
+        return key;
+      }
+    }
   }
+  console.timeEnd("geo_loc_name_continental_filter");
 }
 
 function get_object_vals(object_name) {
-
   return Object.keys(object_name).map(function (key) {
     return object_name[key];
   });
