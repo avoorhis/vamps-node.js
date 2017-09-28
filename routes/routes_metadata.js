@@ -1421,8 +1421,8 @@ function send_mail_finished(req, res) {
   console.time("TIME: send_mail_finished");
 
   let transporter = nodeMailer.createTransport({
-    host: 'smtp.yandex.com',
-    port: 465,
+    host: config.vamps_email_host,
+    port: config.vamps_email_port,
     secure: true,
     auth: {
       user: config.vamps_email,
