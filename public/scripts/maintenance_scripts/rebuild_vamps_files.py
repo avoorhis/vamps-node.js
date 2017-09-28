@@ -375,7 +375,6 @@ def go_required_metadata(did_sql, metadata_lookup):
     
     required_metadata_fields = get_required_metadata_fields(args)
     req_query = "SELECT dataset_id, "+','.join(required_metadata_fields)+" from required_metadata_info WHERE dataset_id in ('%s')"
-    
     query = req_query % (did_sql)
     print(query)
     cur.execute(query)
@@ -387,17 +386,20 @@ def go_required_metadata(did_sql, metadata_lookup):
         for i,f in enumerate(required_metadata_fields):
             #print i,did,name,row[i+1]
             value = row[i+1]
-            metadata_lookup[did][f] = str(value)
-            # if f == 'primer_suite_id' and value:
-#                 primer_query = "SELECT primer_id FROM ref_primer_suite_primer"
-#                 primer_query += " JOIN primer_suite USING(primer_suite_id)"
-#                 primer_query += " JOIN primer USING(primer_id)"
+# DO not put primers or primer_ids into files
+#             if f == 'primer_suite_id':
+#                 primer_query = "SELECT primer_id from primer"
+#                 primer_query += " join ref_primer_suite_primer using(primer_id)"
 #                 primer_query += " WHERE primer_suite_id='%s'"
-#                 query = primer_query % (value)
-#                 cur.execute(query)
-#                 rows = cur.fetchall()
-#                 for row in rows:
-#                     metadata_lookup[did]['primer_id'].append(row[0])     
+#                 pquery = primer_query % (value)
+#                 #print(pquery)
+#                 cur.execute(pquery)
+#                 metadata_lookup[did]['primer_ids'] = []
+#                 for primer_row in cur.fetchall():
+#                     metadata_lookup[did]['primer_ids'].append(str(primer_row[0]))
+                    
+            metadata_lookup[did][f] = str(value)
+
             
             
     return metadata_lookup

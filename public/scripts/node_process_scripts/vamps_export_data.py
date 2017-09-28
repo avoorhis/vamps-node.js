@@ -146,7 +146,24 @@ def get_req_metadata_sql(dids, req_headersA, req_headersB):
     #sql += " where dataset_id in ('" + dids + "')\n"
     return sql
 
-
+def get_primers(args):
+    primer_lookup = {}
+    cursor = args.obj.cursor()
+    sql = "SELECT sequence, primer_suite from primer"
+    sql += " JOIN ref_primer_suite_primer using(primer_id)"
+    sql += " JOIN primer_suite using(primer_suite_id)"
+    cursor.execute(sql)
+    primer_rows = cursor.fetchall()
+    for primer_row in primer_rows:
+        suite = primer_row['primer_suite']
+        p = primer_row['sequence']
+        if suite in primer_lookup:
+            primer_lookup[suite] += ' '+p
+        else:
+            primer_lookup[suite] = p 
+    
+    return primer_lookup
+    
 def write_file_txt(args, out_file, file_txt):
 
     print(out_file)
@@ -375,7 +392,7 @@ def run_metadata(args, file_form, dco_bulk=False):
     pids = "','".join(args.pids)
 
     # REQUIRED METADATA
-
+    primers_lookup = get_primers(args)  # primers_lookup[primer_suite] = primers-string
     required_headersA = ["collection_date",
                                "run_key", "illumina_index","primer_suite",
                                 "dna_region", "domain.domain", "env_package",
@@ -409,18 +426,47 @@ def run_metadata(args, file_form, dco_bulk=False):
         for row in rows:
             #print 'req',row
             project_dataset = row['project']+'--'+row['dataset']
-
+            data[project_dataset]['primers'] = ''
+            headers_collector['primers'] = 1 
             for key in row:
                 if project_dataset in data:
                     if type(row[key]) == str:
                         if key == 'primer_suite':
-                            data[project_dataset][key] = row['primer_suite']+' ('+row['sequencing_platform']+')'
+                            #data[project_dataset][key] = row['primer_suite']+' ('+row['sequencing_platform']+')'  
+                            data[project_dataset][key] = row['primer_suite'] 
+                            data[project_dataset]['primers'] = primers_lookup[row['primer_suite']] 
+                                                     
                         else:
                             data[project_dataset][key] = row[key]
+                        
                     else:
                         data[project_dataset][key] = row[key]
                     headers_collector[key] = 1
-
+    args.obj.commit()
+    print data
+    # PRIMERS (from primer_suite_id)
+    # for pjds in data:
+#         for key in data[pjds]:
+#             if key == 'primer_suite':
+#                 data[pjds]['primers'] = 'unknown'
+#                 headers_collector['primers'] = 1
+#                 temp = []
+#                 primers_query = "SELECT sequence from primer"
+#                 primers_query += " JOIN ref_primer_suite_primer using(primer_id)"
+#                 primers_query += " JOIN primer_suite using(primer_suite_id)"
+#                 primers_query += " WHERE primer_suite='%s'"
+#                 #pquery = primers_query % (row[key])
+#                 pquery = primers_query % (data[pjds][key])
+#                 print pquery
+#                 cursor.execute(pquery)
+#                 primer_rows = cursor.fetchall()
+#                 #print 'p00',primer_rows
+#                 for primer_row in primer_rows:
+#                     #print 'p0',primer_row['sequence']
+#                     temp.append(primer_row['sequence'])
+#                 data[pjds]['primers'] = " ".join(temp)
+#                 args.obj.commit() 
+    #args.obj.commit()                
     #print 'headers_collector',headers_collector
     # CUSTOM METADATA
     for pid in args.pids:
@@ -862,8 +908,8 @@ if __name__ == '__main__':
     args.pids = [x.strip() for x in args.pids]
     if args.dco_metadata or args.metadata1 or args.metadata2:
         args.dataset_name_collector = get_dataset_names(args)
-        print 'args.dataset_name_collector'
-        print args.dataset_name_collector
+        #print 'args.dataset_name_collector'
+        #print args.dataset_name_collector
     else:
         (args.max, args.dataset_counts) = get_dataset_counts(args)
         args.datasets = args.dataset_counts.keys()
