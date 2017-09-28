@@ -265,38 +265,16 @@ function geo_loc_name_validation(value, source) {
   }
 }
 
-// function geo_loc_name_continental_filter(value) {
-//   console.time("geo_loc_name_continental_filter");
-//   for (var key in CONSTS.GAZ_SPELLING) {
-//     if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
-//       var curr = CONSTS.GAZ_SPELLING[key];
-//       if (curr.indexOf(value.toLowerCase()) > -1) {
-//         return key;
-//       }
-//     }
-//   }
-//   console.timeEnd("geo_loc_name_continental_filter");
-// }
-
-
 function geo_loc_name_continental_filter(value) {
   console.time("geo_loc_name_continental_filter");
-
-  Object.keys(CONSTS.GAZ_SPELLING).map(function (key) {
-    var curr = CONSTS.GAZ_SPELLING[key];
-    if (curr.indexOf(value.toLowerCase()) > -1) {
-      return key;
+  for (var key in CONSTS.GAZ_SPELLING) {
+    if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
+      var curr = CONSTS.GAZ_SPELLING[key];
+      if (curr.indexOf(value.toLowerCase()) > -1) {
+        return key;
+      }
     }
-  });
-
-  // for (var key in CONSTS.GAZ_SPELLING) {
-  //   if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
-  //     var curr = CONSTS.GAZ_SPELLING[key];
-  //     if (curr.indexOf(value.toLowerCase()) > -1) {
-  //       return key;
-  //     }
-  //   }
-  // }
+  }
   console.timeEnd("geo_loc_name_continental_filter");
 }
 
@@ -304,7 +282,6 @@ function get_object_vals(object_name) {
   return Object.keys(object_name).map(function (key) {
     return object_name[key];
   });
-
 }
 
 function geo_loc_name_marine_validation(value) {
