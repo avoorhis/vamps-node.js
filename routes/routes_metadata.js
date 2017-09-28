@@ -1444,7 +1444,7 @@ function send_mail_finished(req, res) {
     from: '"VAMPS2" <' + config.vamps_email + '>', // sender address
     // to: req.body.to, // list of receivers
     // subject: req.body.subject, // Subject line
-    to: [config.CONTACT_EMAIL, "tetya-loshad@yandex.ru"],
+    to: ["ashipunova@mbl.edu"],
     subject: "Metadata edited",
     text: text_msg
     // text: req.body.body, // plain text body
