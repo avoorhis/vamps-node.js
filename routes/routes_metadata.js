@@ -1462,7 +1462,6 @@ function send_mail_finished(req, res) {
   console.timeEnd("TIME: send_mail_finished");
 }
 
-
 function make_metadata_object(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
 
