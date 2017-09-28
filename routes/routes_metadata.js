@@ -265,6 +265,13 @@ function geo_loc_name_validation(value, source) {
   }
 }
 
+// {filter("name")custom(geo_loc_name_continental_filter
+function geo_loc_name_continental_filter(value) {
+  console.log("VVV geo_loc_name_continental_filter: value");
+  console.log(value);
+  return value.replace(/USA/g, "United States");
+}
+
 function get_object_vals(object_name) {
 
   return Object.keys(object_name).map(function (key) {
@@ -489,7 +496,7 @@ router.post('/metadata_upload',
     form.field("formation_name", get_second("formation_name")).trim().entityEncode().array(),
     form.field("forward_primer", get_second("forward_primer")).trim().entityEncode().array(),
     form.field("functional_gene_assays", get_second("functional_gene_assays")).trim().entityEncode().array(),
-    form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().custom(geo_loc_name_validation).custom(geo_loc_name_continental_validation).entityEncode().array(),
+    form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().custom(geo_loc_name_continental_filter).custom(geo_loc_name_validation).custom(geo_loc_name_continental_validation).entityEncode().array(),
     form.field("geo_loc_name_marine", get_second("geo_loc_name_marine")).trim().custom(geo_loc_name_validation).custom(geo_loc_name_marine_validation).entityEncode().array(),
     form.field("illumina_index", get_second("illumina_index")).trim().entityEncode().array(),
     // Index sequence (required for Illumina)
