@@ -265,32 +265,13 @@ function geo_loc_name_validation(value, source) {
   }
 }
 
-// {filter("name")custom(geo_loc_name_continental_filter
+//add for
 function geo_loc_name_continental_filter(value) {
-  // console.log("VVV geo_loc_name_continental_filter: value");
-  // console.log(value);
-  //
-  // console.log("VVV010 geo_loc_name_continental_filter: CONSTS.GAZ_US");
-  // console.log(CONSTS.GAZ_US);
-  //
-  // console.log("VVV011 geo_loc_name_continental_filter: CONSTS.GAZ_US[\"United States\"]");
-  // console.log(CONSTS.GAZ_US["United States"]);
+  var us = CONSTS.GAZ_SPELLING["United States"];
 
-  var us = CONSTS.GAZ_US["United States"];
-  var us1 = us.indexOf(value);
-
-  if (us.indexOf(value) > -1) {
+  if (us.indexOf(value.toLowerCase()) > -1) {
     return "United States";
   }
-// .toLowerCase()
-//   console.log("VVV0 geo_loc_name_continental_filter: us");
-//   console.log(us);
-//
-//
-//   console.log("VVV1 geo_loc_name_continental_filter: us1");
-//   console.log(us1);
-//
-//   return value.replace(/USA/g, "United States");
 }
 
 function get_object_vals(object_name) {
