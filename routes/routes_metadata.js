@@ -208,6 +208,7 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 
   MD_ENV_CNTRY_vals = get_object_vals(MD_ENV_CNTRY);
   MD_ENV_LZC_vals   = get_object_vals(MD_ENV_LZC);
+  var all_field_units = get_all_field_units(req);
 
   res.render("metadata/metadata_edit_form", {
     title: "VAMPS: Metadata_upload",
@@ -215,6 +216,7 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
     hostname: req.CONFIG.hostname,
     all_metadata: all_metadata,
     all_field_names: all_field_names,
+    // all_field_units: all_field_units,
     dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
     dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
     dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
@@ -226,6 +228,43 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
     investigation_type_options: CONSTS.INVESTIGATION_TYPE,
     sample_type_options: CONSTS.SAMPLE_TYPE
   });
+}
+
+function get_all_field_units(req){
+  // function get_object_vals(object_name) {
+  //   return Object.keys(object_name).map(function (key) {
+  //     return object_name[key];
+  //   });
+  // }
+  // MD_CUSTOM_UNITS
+
+  for(var pr_id in MD_CUSTOM_UNITS){
+    var units = MD_CUSTOM_UNITS[pr_id];
+    var curr_pr_id = req.body.project_id;
+
+    console.log("PPP curr_pr_id");
+    console.log(curr_pr_id);
+
+    console.log("PPP1 pr_id");
+    console.log(pr_id);
+
+    console.log("PPP2 units");
+    console.log(units);
+    // if(String(item.pid) === String(pid)){
+    //   dataset_info = item.datasets;
+    //   break;
+    // }
+
+    // PPP curr_pr_id
+    // 428
+    // PPP1 pr_id
+    // 428
+    // PPP2 units
+    // { pressure: 'bar',
+    //   microbial_biomass_avg_cell_number: 'cells_per_gram',
+    //   sulfate_red_rate: 'nmol/ml1/d1',
+
+    }
 }
 
 // create form from req.form
