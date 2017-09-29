@@ -551,7 +551,7 @@ constants.ORDERED_METADATA_NAMES = [
   ["depth_subterrestrial","Depth below terrestrial surface","User supplied", "meter"],
   // ["depth_in_core","Depth within core","User supplied", "cm"],
   ["tot_depth_water_col","Water column depth","User supplied", "meter"],
-  ["elevation","Elevation","User supplied", "meter"],
+  ["elevation","Elevation (if terrestrial)","User supplied", "meter"],
   ["dna_extraction_meth","DNA Extraction","User supplied", ""],
   ["dna_quantitation","DNA Quantitation","User supplied", ""],
   ["","Enter either volume or mass","", ""],
