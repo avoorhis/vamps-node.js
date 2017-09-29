@@ -38,8 +38,7 @@ module.exports.get_datasets = function(callback){
   MD_ILLUMINA_INDEX           = {};
   MD_PRIMER_SUITE             = {};
   MD_RUN                      = {};
-  MD_CUSTOM_UNITS             = {};
-
+  
   connection.query(queries.get_select_datasets_query(), function(err, rows, fields){
       if (err)  {
 		    console.log('Query error: ' + err);
@@ -228,19 +227,8 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING ALL_PCOUNTS_BY_PID');
       console.log(' INITIALIZING ALL_CLASSIFIERS_BY_PID');
   });
-
-
-  connection.query(queries.get_select_custom_units_query(), function(err, rows, fields){
-    if (err)  {
-      console.log('Query error: ' + err);
-      console.log(err.stack);
-      process.exit(1);
-    } else {
-      helpers.get_select_custom_units_query(rows);
-    }
-    console.log(' INITIALIZING MD_CUSTOM_UNITS');
-  });
-
+  
+  
   
   
 };

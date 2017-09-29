@@ -535,7 +535,7 @@ module.exports.write_metadata_to_files = function (did){
         if (err) throw err;
         //Do your processing, MD5, send a satellite to the moon, etc.
         //console.log('predata',data)
-        data.metadata = AllMetadata[did];
+        data.metadata = AllMetadata[did]
         //console.log('postdata',data)
         fs.writeFile (dataset_file, data, function(err) {
             if (err) throw err;
@@ -1068,6 +1068,7 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
   var site = req.CONFIG.site;
   var code = 'NVexport';
   var pid_lookup = {};
+  var pids_str;
   //console.log('dids', dids);
   export_cmd = 'vamps_export_data.py';
   for (n=0; n<dids.length; n++) {
@@ -1075,9 +1076,19 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
     pid_lookup[PROJECT_ID_BY_DID[dids[n]]] = 1;
   }
 
-  var dids_str = JSON.stringify(dids.join(', '));
-  var pids_str = JSON.stringify((Object.keys(pid_lookup)).join(', '));
-
+  var dids_str = JSON.stringify(dids.join(','));
+  
+  if(file_tags[0] == '--dco_metadata_file'){
+        pid_list = []
+        for(pname in PROJECT_INFORMATION_BY_PNAME){
+            if(pname.substring(0,3) == 'DCO'){
+                pid_list.push(PROJECT_INFORMATION_BY_PNAME[pname].pid)
+            }
+        }
+        pids_str = JSON.stringify(pid_list.join(','));
+  }else{
+        pids_str = JSON.stringify((Object.keys(pid_lookup)).join(','));
+  }
   //console.log('pids', pids_str);
   //var file_tags = file_tags.join(' ')
 
@@ -1686,6 +1697,17 @@ module.exports.required_metadata_ids_from_names = function(selection_obj, mdname
     }else{
       value = 'unknown'
     }
+  }else if(mdname == 'primers'){
+    idname = 'primer_ids'
+    if(MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])){
+      val = []
+      for(n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer){
+        val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence)
+      }
+      value = val.join(' ')
+    }else{
+      value = 'unknown'
+    }
   }else{
     idname = mdname
     value = selection_obj[mdname];
@@ -1745,6 +1767,17 @@ module.exports.required_metadata_names_from_ids = function(selection_obj, name_i
       value = MD_PRIMER_SUITE[id].name;
     }else{
       value = 'unknown';
+    }
+  }else if(name_id == 'primer_ids'){
+    real_name = 'primers'
+    if(MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])){
+      val = []
+      for(n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer){
+        val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence)
+      }
+      value = val.join(' ')
+    }else{
+      value = 'unknown'
     }
   }else{
     real_name = name_id;

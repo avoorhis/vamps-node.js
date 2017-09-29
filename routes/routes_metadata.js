@@ -9,6 +9,7 @@ var path = require("path");
 var config  = require(app_root + '/config/config');
 var validator = require('validator');
 // var expressValidator = require('express-validator');
+var nodeMailer = require('nodemailer');
 
 
 /* GET metadata page. */
@@ -29,7 +30,7 @@ router.get('/metadata_list', helpers.isLoggedIn, function(req, res) {
       for(var n in AllMetadataNames){
         md_selected = AllMetadataNames[n];
         mdata_w_latlon[md_selected] = 0;
-        
+
         //console.log(md_selected)
         for(var did in DatasetsWithLatLong){
         //console.log(AllMetadata[did])
@@ -37,11 +38,11 @@ router.get('/metadata_list', helpers.isLoggedIn, function(req, res) {
             //console.log('found1',did)
             //var mdata = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected)
             mdata = AllMetadata[did];   // has ids
-            
+
             pid = PROJECT_ID_BY_DID[did];
             //console.log('pid',pid)
             pname = PROJECT_INFORMATION_BY_PID[pid].project;
-            
+
             if(mdata.hasOwnProperty(md_selected)){
                     mdata_w_latlon[md_selected] = 1;
             }
@@ -73,17 +74,17 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, function(req, res) {
         }else if(AllMetadata[did].hasOwnProperty(md_selected)){
              mdvalues[did] = AllMetadata[did][md_selected];
              md_selected_show = md_selected;
-             
+
         }
        }
-      }      
+      }
       res.render('metadata/list_result', { title: 'VAMPS:Metadata List Result',
             user:           req.user,hostname: req.CONFIG.hostname,
             vals:     		JSON.stringify(mdvalues),
             names_by_did:   JSON.stringify(DATASET_NAME_BY_DID),
             pid_by_did:     JSON.stringify(PROJECT_ID_BY_DID),
-            pinfo_by_pid:   JSON.stringify(PROJECT_INFORMATION_BY_PID),       
-            item:           md_selected_show	  				
+            pinfo_by_pid:   JSON.stringify(PROJECT_INFORMATION_BY_PID),
+            item:           md_selected_show
         });
   });
 
@@ -101,7 +102,7 @@ router.get('/geomap/:item', helpers.isLoggedIn, function(req, res) {
             user    : req.user,hostname: req.CONFIG.hostname,
             md_item : md_item_show,
             mdinfo  : JSON.stringify(metadata_info),
-            gekey   : req.CONFIG.GOOGLE_EARTH_KEY,           
+            gekey   : req.CONFIG.GOOGLE_EARTH_KEY,
         });
   });
 
@@ -117,7 +118,7 @@ function get_metadata_hash(md_selected){
     //console.log(PROJECT_ID_BY_DID)
     //console.log(Object.keys(PROJECT_ID_BY_DID).length)
     for(var did in PROJECT_ID_BY_DID){
-        
+
         if(AllMetadata.hasOwnProperty(did)){
             //console.log('found1',did)
             var mdata = AllMetadata[did];
@@ -139,10 +140,10 @@ function get_metadata_hash(md_selected){
                 }
 
             }
-        }else{            
+        }else{
             //console.log('did '+did+' not found in PROJECT_ID_BY_DID')
-        }        
-        
+        }
+
     }
 
     return md_info;
@@ -265,12 +266,23 @@ function geo_loc_name_validation(value, source) {
   }
 }
 
-function get_object_vals(object_name) {
+function geo_loc_name_continental_filter(value) {
+  console.time("geo_loc_name_continental_filter");
+  for (var key in CONSTS.GAZ_SPELLING) {
+    if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
+      var curr = CONSTS.GAZ_SPELLING[key];
+      if (curr.indexOf(value.toLowerCase()) > -1) {
+        return key;
+      }
+    }
+  }
+  console.timeEnd("geo_loc_name_continental_filter");
+}
 
+function get_object_vals(object_name) {
   return Object.keys(object_name).map(function (key) {
     return object_name[key];
   });
-
 }
 
 function geo_loc_name_marine_validation(value) {
@@ -479,7 +491,7 @@ router.post('/metadata_upload',
     form.field("dna_quantitation", get_second("dna_quantitation")).trim().required().custom(env_items_validation).entityEncode().array(),
     form.field("dna_region", get_second("dna_region")).trim().required().entityEncode().array(),
     form.field("domain", get_second("domain")).trim().required().entityEncode().array(),
-    form.field("elevation", get_second("elevation")).trim().custom(numbers_n_period).required().entityEncode().array(),
+    form.field("elevation", get_second("elevation")).trim().required("", "Elevation is required (for terrestrial only)").custom(numbers_n_period_n_minus).entityEncode().array(),
     form.field("env_package", get_second("env_package")).trim().required().custom(env_items_validation).entityEncode().array(),
     form.field("enzyme_activities", get_second("enzyme_activities")).trim().entityEncode().array(),
     form.field("env_feature", get_second("env_feature")).trim().required().custom(env_items_validation).entityEncode().array(),
@@ -489,7 +501,7 @@ router.post('/metadata_upload',
     form.field("formation_name", get_second("formation_name")).trim().entityEncode().array(),
     form.field("forward_primer", get_second("forward_primer")).trim().entityEncode().array(),
     form.field("functional_gene_assays", get_second("functional_gene_assays")).trim().entityEncode().array(),
-    form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().custom(geo_loc_name_validation).custom(geo_loc_name_continental_validation).entityEncode().array(),
+    form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().custom(geo_loc_name_continental_filter).custom(geo_loc_name_validation).custom(geo_loc_name_continental_validation).entityEncode().array(),
     form.field("geo_loc_name_marine", get_second("geo_loc_name_marine")).trim().custom(geo_loc_name_validation).custom(geo_loc_name_marine_validation).entityEncode().array(),
     form.field("illumina_index", get_second("illumina_index")).trim().entityEncode().array(),
     // Index sequence (required for Illumina)
@@ -567,6 +579,12 @@ router.post('/metadata_upload',
 
       make_metadata_object_from_form(req, res);
       make_csv(req, res);
+
+      if (req.body.done_editing === "done_editing"){
+        send_mail_finished(req, res);
+      }
+
+      // done_editing: 'not_done_editing' }
 
     }
     else {
@@ -662,6 +680,9 @@ function slice_object(object, slice_keys) {
 
 function get_project_name(edit_metadata_file) {
   console.time("TIME: get_project_name");
+
+  // console.log("GGG edit_metadata_file from get_project_name");
+  // console.log(edit_metadata_file);
   // var edit_metadata_file = "metadata-project_DCO_GAI_Bv3v5_65982.csv";
   var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
   var edit_metadata_project = "";
@@ -678,10 +699,16 @@ function get_project_name(edit_metadata_file) {
 function make_metadata_object_from_csv(req, res) {
   console.time("TIME: make_metadata_object_from_csv");
 
+  // console.log("MMM req.body from make_metadata_object_from_csv");
+  // console.log(req.body);
+
   var file_name = req.body.edit_metadata_file;
   var project_name = get_project_name(file_name);
   var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
 
+
+  // console.log("GGG1 project_name from get_project_name");
+  // console.log(project_name);
   //data from file
   var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
   var file_content = fs.readFileSync(inputPath);
@@ -702,20 +729,15 @@ function make_metadata_object_from_csv(req, res) {
 
   var data_in_obj_of_arr = from_obj_to_obj_of_arr(data, pid);
 
-  console.log("BBB1 data_in_obj_of_arr (make_metadata_object_from_csv)");
-  console.log(data_in_obj_of_arr);
-
+  // all_metadata
   var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
   var all_field_names = make_all_field_names(dataset_ids);
 
-  console.log("DDD3 all_field_names from make_metadata_object_from_csv");
-  console.log(JSON.stringify(all_field_names));
-
-
-  console.log("DDD4 all_field_names from make_metadata_object_from_csv");
-  console.log(JSON.stringify(all_field_names));
-
-
+  // console.log("DDD3 all_field_names from make_metadata_object_from_csv");
+  // console.log(JSON.stringify(all_field_names));
+  //
+  // console.log("DDD4 all_metadata from make_metadata_object_from_csv");
+  // console.log(JSON.stringify(all_metadata));
   render_edit_form(req, res, all_metadata, all_field_names);
 
   console.timeEnd("TIME: make_metadata_object_from_csv");
@@ -886,9 +908,8 @@ function from_obj_to_obj_of_arr(data, pid) {
   var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
   all_field_names = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
   all_field_names = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
-  all_field_names = helpers.unique_array(all_field_names);
+  all_field_names = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
 
-  all_field_names.push("project_abstract");
   all_field_names = helpers.unique_array(all_field_names);
 
   // console.log("HHH0 AllMetadataNames");
@@ -908,6 +929,9 @@ function from_obj_to_obj_of_arr(data, pid) {
       obj_of_arr[field_name].push(data[did][field_name]);
     }
   }
+
+  // console.log("HHH3 obj_of_arr from from_obj_to_obj_of_arr");
+  // console.log(JSON.stringify(obj_of_arr));
 
   console.timeEnd("TIME: from_obj_to_obj_of_arr");
   return obj_of_arr;
@@ -1161,6 +1185,7 @@ function get_csv_files(req) {
 router.post('/metadata_files',
   [helpers.isLoggedIn],
   function (req, res) {
+
     console.time("TIME: in post /metadata_files");
     var table_diff_html, sorted_files, files_to_compare;
     sorted_files = sorted_files_by_time(req);
@@ -1401,6 +1426,38 @@ function fill_out_arr_doubles(value, repeat_times) {
   arr_temp.fill(value, 0, repeat_times);
 
   return arr_temp;
+}
+
+function send_mail_finished(req, res) {
+  console.time("TIME: send_mail_finished");
+
+  let transporter = nodeMailer.createTransport(config.smtp_connection_obj);
+
+  var d = new Date();
+  var timeReadable = d.toDateString();
+
+  var text_msg = req.user.first_name + " " + req.user.last_name + " (" + req.user.email + ")" + " finished submitting available metadata to " + req.body.project + " on " + timeReadable + ".";
+
+  let mailOptions = {
+    from: '"VAMPS2" <' + config.vamps_email + '>', // sender address
+    // to: req.body.to, // list of receivers
+    // subject: req.body.subject, // Subject line
+    to: ["hlizarralde@mbl.edu"],
+    subject: "Metadata edited",
+    text: text_msg
+    // text: req.body.body, // plain text body
+    // html: '<b>NodeJS Email Tutorial</b>' // html body
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.log(error);
+    }
+    console.log('Message %s sent: %s', info.messageId, info.response);
+  // res.render('index');
+  });
+
+  console.timeEnd("TIME: send_mail_finished");
 }
 
 function make_metadata_object(req, res, pid, info) {
