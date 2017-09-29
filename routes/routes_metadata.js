@@ -9,6 +9,7 @@ var path = require("path");
 var config  = require(app_root + '/config/config');
 var validator = require('validator');
 // var expressValidator = require('express-validator');
+var nodeMailer = require('nodemailer');
 
 
 /* GET metadata page. */
@@ -265,12 +266,23 @@ function geo_loc_name_validation(value, source) {
   }
 }
 
-function get_object_vals(object_name) {
+function geo_loc_name_continental_filter(value) {
+  console.time("geo_loc_name_continental_filter");
+  for (var key in CONSTS.GAZ_SPELLING) {
+    if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
+      var curr = CONSTS.GAZ_SPELLING[key];
+      if (curr.indexOf(value.toLowerCase()) > -1) {
+        return key;
+      }
+    }
+  }
+  console.timeEnd("geo_loc_name_continental_filter");
+}
 
+function get_object_vals(object_name) {
   return Object.keys(object_name).map(function (key) {
     return object_name[key];
   });
-
 }
 
 function geo_loc_name_marine_validation(value) {
@@ -489,7 +501,7 @@ router.post('/metadata_upload',
     form.field("formation_name", get_second("formation_name")).trim().entityEncode().array(),
     form.field("forward_primer", get_second("forward_primer")).trim().entityEncode().array(),
     form.field("functional_gene_assays", get_second("functional_gene_assays")).trim().entityEncode().array(),
-    form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().custom(geo_loc_name_validation).custom(geo_loc_name_continental_validation).entityEncode().array(),
+    form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().custom(geo_loc_name_continental_filter).custom(geo_loc_name_validation).custom(geo_loc_name_continental_validation).entityEncode().array(),
     form.field("geo_loc_name_marine", get_second("geo_loc_name_marine")).trim().custom(geo_loc_name_validation).custom(geo_loc_name_marine_validation).entityEncode().array(),
     form.field("illumina_index", get_second("illumina_index")).trim().entityEncode().array(),
     // Index sequence (required for Illumina)
@@ -567,6 +579,12 @@ router.post('/metadata_upload',
 
       make_metadata_object_from_form(req, res);
       make_csv(req, res);
+
+      if (req.body.done_editing === "done_editing"){
+        send_mail_finished(req, res);
+      }
+
+      // done_editing: 'not_done_editing' }
 
     }
     else {
@@ -1408,6 +1426,38 @@ function fill_out_arr_doubles(value, repeat_times) {
   arr_temp.fill(value, 0, repeat_times);
 
   return arr_temp;
+}
+
+function send_mail_finished(req, res) {
+  console.time("TIME: send_mail_finished");
+
+  let transporter = nodeMailer.createTransport(config.smtp_connection_obj);
+
+  var d = new Date();
+  var timeReadable = d.toDateString();
+
+  var text_msg = req.user.first_name + " " + req.user.last_name + " (" + req.user.email + ")" + " finished submitting available metadata to " + req.body.project + " on " + timeReadable + ".";
+
+  let mailOptions = {
+    from: '"VAMPS2" <' + config.vamps_email + '>', // sender address
+    // to: req.body.to, // list of receivers
+    // subject: req.body.subject, // Subject line
+    to: ["ashipunova@mbl.edu"],
+    subject: "Metadata edited",
+    text: text_msg
+    // text: req.body.body, // plain text body
+    // html: '<b>NodeJS Email Tutorial</b>' // html body
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.log(error);
+    }
+    console.log('Message %s sent: %s', info.messageId, info.response);
+  // res.render('index');
+  });
+
+  console.timeEnd("TIME: send_mail_finished");
 }
 
 function make_metadata_object(req, res, pid, info) {

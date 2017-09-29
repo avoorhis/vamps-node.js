@@ -727,6 +727,7 @@ constants.FEATURE_PRIMARY = ["Please choose one",
   "hydrothermal vent",
   "lake",
   "mine",
+  "ocean trench",
   "reservoir",
   "seep",
   "spring",
@@ -802,5 +803,7 @@ constants.SAMPLE_TYPE = ["Please choose one",
   "enrichment",
   "environmental sample",
   "isolate"];
+
+constants.GAZ_SPELLING = {"United States": ["usa", "united states of america"]};
 
 module.exports = constants;

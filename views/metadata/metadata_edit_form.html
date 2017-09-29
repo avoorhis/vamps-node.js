@@ -41,6 +41,9 @@
 <li class="message">
  A range is not permitted for any value.
 </li>
+  <li>
+    <a href='/metadata/FormTutorial_083117.pdf' target='_blank'>For further questions see the Tutorial.</a>
+  </li>
 </ol>
 <form name='add_project_form' method='POST' action='/metadata/metadata_upload'>
 <!-- <form action="" method="post" enctype="multipart/form-data"> -->
@@ -124,6 +127,15 @@
 
   <input type='hidden' name='project_id' value='<%= pid %>' />
   <input type='hidden' name='from_where' value='metadata_upload_from_file' />
+
+
+  <p>
+    <label for="done_editing">Notify the website management that I finished submitting available metadata to this project.</label>
+
+    Yes <input type="radio" id="done_editing"     name="done_editing" value="done_editing">
+    No <input type="radio"  id="not_done_editing" name="done_editing" value="not_done_editing" checked="checked">
+
+  </p>
 
   <button id='add_project_form_submit_btn' class='btn btn-sm btn-primary' type='submit'>Submit</button>
 

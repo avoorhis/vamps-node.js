@@ -397,11 +397,10 @@ def go_required_metadata(did_sql, metadata_lookup):
 #                 metadata_lookup[did]['primer_ids'] = []
 #                 for primer_row in cur.fetchall():
 #                     metadata_lookup[did]['primer_ids'].append(str(primer_row[0]))
-                    
+                     
             metadata_lookup[did][f] = str(value)
-
-            
-            
+                
+    
     return metadata_lookup
 
     
