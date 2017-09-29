@@ -291,13 +291,7 @@ module.exports.send_mail = function(mail_info) {
 //
 
 module.exports.get_select_custom_units_query = function(rows){
-  // console.log("RRR helpers get_select_custom_units_query rows");
-  // console.log(rows);
-  // MD_CUSTOM_UNITS
-  // TextRow {
-  //   project_id: 307,
-  //     field_name: 'gadolinium',
-  //     field_units: 'nanogram_per_liter' },
+  console.time("TIME: get_select_custom_units_query");
   for (var i=0; i < rows.length; i++) {
     var project_id  = rows[i]["project_id"];
     var field_name  = rows[i]["field_name"];
@@ -309,20 +303,8 @@ module.exports.get_select_custom_units_query = function(rows){
     else {
       MD_CUSTOM_UNITS[project_id] = {};
     }
-
-    // console.log("RRR helpers get_select_custom_units_query");
-    //
-    // console.log("MD_CUSTOM_UNITS");
-    // console.log(MD_CUSTOM_UNITS);
-    //
-    // console.log("MD_CUSTOM_UNITS[project_id]");
-    // console.log(MD_CUSTOM_UNITS[project_id]);
-    //
-
-    // MD_CUSTOM_UNITS[project_id][field_name] = field_units;
-    // console.log("MD_CUSTOM_UNITS[project_id][field_name]");
-    // console.log(MD_CUSTOM_UNITS[project_id][field_name]);
   }
+  console.timeEnd("TIME: get_select_custom_units_query");
 };
 
 module.exports.get_select_seq_counts_query = function(rows){
