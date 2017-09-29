@@ -801,8 +801,8 @@ function make_metadata_object_from_db(req, res) {
   //repeated!
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
-  // console.log("MMM0 project");
-  // console.log(project);
+  console.log("MMM0 MD_CUSTOM_UNITS");
+  console.log(MD_CUSTOM_UNITS);
 
   // get_db_data
   console.time("TIME: slice_object");
