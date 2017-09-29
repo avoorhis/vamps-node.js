@@ -1285,6 +1285,7 @@ function create_geospatial(new_window) {
       var latlon;
 
       for (var ds in md_local) {
+        
           var lat = '';
           var lon = '';
           for (var k in md_local[ds]) {
@@ -1318,9 +1319,16 @@ function create_geospatial(new_window) {
         z+=1;
 
       }
-//alert(ds)
-      if (loc_data.length === 0){
-          geospatial_div.innerHTML='No Lat/Lon Data Found/Selected';
+      // find if all are empty::
+      var found_bad_data_counter = 0;
+      for (var i = 0; i < loc_data.length; i++) {
+        if(isNaN(loc_data[i][1]) || isNaN(loc_data[i][2])){
+            found_bad_data_counter += 1;
+        }
+      }
+//alert(JSON.stringify(loc_data))
+      if (loc_data.length === 0 || found_bad_data_counter == loc_data.length){
+          geospatial_div.innerHTML='No Lat/Lon Data Found (or Selected)';
       }else{
         var center = new google.maps.LatLng(loc_data[0][1],loc_data[0][2]);
         var mapCanvas = document.getElementById('geospatial_div');
@@ -1334,7 +1342,7 @@ function create_geospatial(new_window) {
         var infowindow =  new google.maps.InfoWindow({
           content: ''
         });
-
+        
         setMarkers(map, loc_data, infowindow);
         document.getElementById('geospatial_dnld_btn').disabled = false
       }
