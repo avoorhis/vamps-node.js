@@ -236,6 +236,15 @@ module.exports.get_datasets = function(callback){
       console.log(err.stack);
       process.exit(1);
     } else {
+      console.log("DDD load_all_datasets rows");
+      console.log(rows);
+      // TextRow {
+      //   project_id: 306,
+      //     field_name: 'samp_store_temp',
+      //     field_units: 'celsius' },
+      //
+      // console.log("DDD1 load_all_datasets");
+
       helpers.get_select_custom_units_query(rows);
     }
     console.log(' INITIALIZING MD_CUSTOM_UNITS');

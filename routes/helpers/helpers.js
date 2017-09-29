@@ -289,6 +289,18 @@ module.exports.send_mail = function(mail_info) {
 //
 //
 //
+
+module.exports.get_select_custom_units_query = function(rows){
+  console.log("RRR helpers get_select_custom_units_query rows");
+  console.log(rows);
+  // MD_CUSTOM_UNITS
+  // TextRow {
+  //   project_id: 307,
+  //     field_name: 'gadolinium',
+  //     field_units: 'nanogram_per_liter' },
+
+};
+
 module.exports.get_select_seq_counts_query = function(rows){
   for (var i=0; i < rows.length; i++) {
     //console.log('rows[i].project_id in run_select_sequences_query');
