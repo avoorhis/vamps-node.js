@@ -191,11 +191,11 @@ th.rotate > div > span {
   padding: 5px 10px;
   text-decoration:none
 }
-th.rotate > div > span  a:link, a:visited {
+th.rotate > div > span a:link, th.rotate > div > span a:visited {
   color:black;
   text-decoration:none;
 }
-th.rotate > div > span  a:hover, a:active {
+th.rotate > div > span a:hover, th.rotate > div > span a:active {
   color:orange;
   text-decoration:none;
 }
@@ -577,7 +577,7 @@ i.icon-minus-sign {
     list-style-type: none;
     text-align:center;    
 }
-.taxa_tooltip a:link,  a:visited, a:hover, a:active {    
+.taxa_tooltip a:link, .taxa_tooltip a:visited, .taxa_tooltip a:hover, .taxa_tooltip a:active {
     color:black;
        
 }
