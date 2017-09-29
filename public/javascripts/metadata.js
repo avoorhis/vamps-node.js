@@ -305,8 +305,13 @@ var feature_seq_options = {
     "geological joint",
     "intrusion",
     "microfracture",
-    "ocean trench",
     "shear fracture"],
+
+  "ocean trench": ["none",
+    "accretionary",
+    "inner trench wall",
+    "non-accretionary",
+    "outer trench wall"],
 
   "geyser": ["none",
     "hydrothermal",
@@ -594,7 +599,7 @@ function populate_secondary_select(args) {
 fnAdjustTable = function(){
 
   var colCount = $('#firstTr').find('td').length; //get total number of column
-
+  // var colCount = $('#fixed_table_base').find('tr:first').find('td.header_divider').length; //get total number of column
   var m = 0;
   var n = 0;
   var brow = 'mozilla';
@@ -936,8 +941,10 @@ ORDERED_METADATA_NAMES = [
   ["","General","", ""],
   // ["project","VAMPS project name","MBL Supplied", ""],
   ["dataset","VAMPS dataset name","MBL Supplied", ""],
-  ["geo_loc_name_continental","Country","User Supplied", ""],
-  ["geo_loc_name_marine","Longhurst Zone","User Supplied", ""],
+  // ["geo_loc_name_continental","Country","User Supplied", ""],
+  // ["geo_loc_name_marine","Longhurst Zone","User Supplied", ""],
+  ["geo_loc_name_continental","Country (if not international waters)","User Supplied", ""],
+  ["geo_loc_name_marine","Longhurst Zone (if marine)","User Supplied", ""],
   ["","MBL generated laboratory metadata","", ""],
   ["domain","Domain","MBL Supplied", ""],
   ["target_gene","Target gene name","MBL Supplied", "16S rRNA, mcrA, etc"],
@@ -985,7 +992,7 @@ ORDERED_METADATA_NAMES = [
   ["temperature","Temperature","User supplied", "degrees celsius"],
   ["conductivity","Conductivity","User supplied", "mS/cm"],
   ["resistivity","Resistivity","", "ohm-meter"],
-  ["salinity","Salinity","", "PSS-78"],
+  ["salinity","Salinity","", "PSU"],
   //It is measured in unit of PSU (Practical Salinity Unit), which is a unit based on the properties of sea water conductivity. It is equivalent to per thousand or (o/00) or to  g/kg.
   ["pressure","Pressure","", "bar"],
   ["redox_state","Redox state","", ""],

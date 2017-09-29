@@ -375,21 +375,30 @@ def go_required_metadata(did_sql, metadata_lookup):
     
     required_metadata_fields = get_required_metadata_fields(args)
     req_query = "SELECT dataset_id, "+','.join(required_metadata_fields)+" from required_metadata_info WHERE dataset_id in ('%s')"
-    
     query = req_query % (did_sql)
     print(query)
     cur.execute(query)
     for row in cur.fetchall():
         did = str(row[0])
+        if did not in metadata_lookup:              
+            metadata_lookup[did] = {}
+        #metadata_lookup[did]['primer_id'] = []
         for i,f in enumerate(required_metadata_fields):
             #print i,did,name,row[i+1]
             value = row[i+1]
-            
-            if did in metadata_lookup:              
-                    metadata_lookup[did][f] = str(value)
-            else:
-                metadata_lookup[did] = {}
-                metadata_lookup[did][f] = str(value)
+# DO not put primers or primer_ids into files
+#             if f == 'primer_suite_id':
+#                 primer_query = "SELECT primer_id from primer"
+#                 primer_query += " join ref_primer_suite_primer using(primer_id)"
+#                 primer_query += " WHERE primer_suite_id='%s'"
+#                 pquery = primer_query % (value)
+#                 #print(pquery)
+#                 cur.execute(pquery)
+#                 metadata_lookup[did]['primer_ids'] = []
+#                 for primer_row in cur.fetchall():
+#                     metadata_lookup[did]['primer_ids'].append(str(primer_row[0]))
+                     
+            metadata_lookup[did][f] = str(value)
                 
     
     return metadata_lookup
@@ -422,7 +431,7 @@ def go_custom_metadata(did_list, pid, metadata_lookup):
         pid = str(row[0])
         field = row[1]
         if field != 'dataset_id':
-            field_collection.append(field)
+            field_collection.append(field.strip())
         
     
     #print 'did_list',did_list
@@ -493,7 +502,7 @@ def read_original_metadata():
     
 def get_dataset_ids(pid):
     q = "SELECT dataset_id from dataset where project_id='"+str(pid)+"'"  
-    print q
+    #print q
     cur.execute(q)
     dids = []
     numrows = cur.rowcount

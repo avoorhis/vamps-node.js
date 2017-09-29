@@ -42,45 +42,7 @@ BIOM_MATRIX = {};
 // // init_node var node_class =
 // var CustomTaxa  = require('./custom_taxa_class');
 
-/*
- * GET visualization page from uploaded IMAGE or CONFIGURATION FILE
- */
-// router.get('/view_selection/:filename/:from_configuration_file', helpers.isLoggedIn, function(req, res) {
-//     console.log('From Configuration File-GET')
-//     console.log(req.user.username+' req.body: view_selectionGET::prefix-->>');
-//     if(req.CONFIG.site == 'vamps' ){
-//       console.log('VAMPS PRODUCTION -- no print to log');
-//     }else{
-//       console.log(req.body);
-//       console.log(req.params);
-//     }
-//     console.log('req.body: view_selectionGET>>prefix');
-//     TAXCOUNTS = {};
-//     METADATA  = {};
-//     var image_to_open = load_configuration_file(req, req.params.filename)
-//
-//
-//     console.log('VS--visual_post_items and id-hash:>>');
-//     if(req.CONFIG.site == 'vamps' ){
-//       console.log('VAMPS PRODUCTION -- no print to log');
-//     }else{
-//       console.log('visual_post_items:');
-//       console.log(visual_post_items);
-//       console.log('chosen_id_name_hash:');
-//       console.log(chosen_id_name_hash);
-//     }
-//     console.log('<<VS--visual_post_items');
-//     console.log('image to open',image_to_open);
-//
-//     distance_matrix = {};
-//     BIOM_MATRIX = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
-//     var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
-//
-//     // function see below
-//     render_view_selection(res, req, metadata, image_to_open)
-//
-//
-// });
+
 //
 //  V I E W  S E L E C T I O N
 //
@@ -262,7 +224,9 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   distance_matrix = {};
   BIOM_MATRIX = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
   visual_post_items.max_ds_count = BIOM_MATRIX.max_dataset_count;
-  
+  if(visual_post_items.metadata.indexOf('primer_suite') != -1){
+      visual_post_items.metadata.push('primers')
+  }
   var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
 
   console.log('VS--visual_post_items and id-hash:>>');
@@ -2223,10 +2187,7 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
   console.log('req.body: save_config');
   var timestamp = +new Date();  // millisecs since the epoch!
   var filename = 'configuration-' + timestamp + '.json';
-  // datasets/metadata...
-  // metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
-  //console.log(METADATA)
-  //console.log(chosen_id_name_hash)
+  
   var json_obj = {}
   json_obj.source = 'VAMPS';
   json_obj.post_items = visual_post_items

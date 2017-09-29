@@ -136,15 +136,34 @@ def get_req_metadata_sql(dids, req_headersA, req_headersB):
     sql += " JOIN run_key on (adapter_sequence_id=run_key_id)\n"
     sql += " JOIN illumina_index using(illumina_index_id)\n"
     sql += " JOIN primer_suite using(primer_suite_id)\n"
+    #sql += " join ref_primer_suite_primer using(primer_suite_id)\n"
+    #sql += " join primer using(primer_id)\n"
     sql += " JOIN sequencing_platform using (sequencing_platform_id)\n"
     sql += " JOIN term as t1 on (env_biome_id=t1.term_id)\n"
     sql += " JOIN term as t2 on (env_feature_id=t2.term_id)\n"
     sql += " JOIN term as t3 on (env_material_id=t3.term_id)\n"
     sql += " JOIN term as t4 on (geo_loc_name_id=t4.term_id)\n"
-    sql += " where dataset_id in ('" + dids + "')\n"
+    #sql += " where dataset_id in ('" + dids + "')\n"
     return sql
 
-
+def get_primers(args):
+    primer_lookup = {}
+    cursor = args.obj.cursor()
+    sql = "SELECT sequence, primer_suite from primer"
+    sql += " JOIN ref_primer_suite_primer using(primer_id)"
+    sql += " JOIN primer_suite using(primer_suite_id)"
+    cursor.execute(sql)
+    primer_rows = cursor.fetchall()
+    for primer_row in primer_rows:
+        suite = primer_row['primer_suite']
+        p = primer_row['sequence']
+        if suite in primer_lookup:
+            primer_lookup[suite] += ' '+p
+        else:
+            primer_lookup[suite] = p 
+    
+    return primer_lookup
+    
 def write_file_txt(args, out_file, file_txt):
 
     print(out_file)
@@ -356,28 +375,44 @@ def run_biom(args):
 
     write_file_txt(args, out_file, file_txt)
 
-
-def run_metadata(args, file_form):
+def run_metadata_from_files(args, file_form):
+    print 'in file metadata'
+    for did in args.dids:
+        print 'did',did
+        json_data=open(os.path.join(args.files_home, did+'.json')).read()
+        mdata = (json.loads(json_data))['metadata']
+        print(mdata)
+        
+def run_metadata(args, file_form, dco_bulk=False):
     print 'running metadata --->>>'
     # args.datasets is a list of p--d pairs
     
     cursor = args.obj.cursor()
-    dids = "','".join(args.dids)
+    dids = "','".join(args.dids)        
     pids = "','".join(args.pids)
 
     # REQUIRED METADATA
-
+    primers_lookup = get_primers(args)  # primers_lookup[primer_suite] = primers-string
     required_headersA = ["collection_date",
                                "run_key", "illumina_index","primer_suite",
-                                "dna_region", "domain", "env_package",
+                                "dna_region", "domain.domain", "env_package",
                                 "target_gene", "latitude", "longitude",
                                 "sequencing_platform", "run"]
     required_headersB = [  "env_biome",  "env_feature", "env_material", "geo_loc_name" ]      # these have to be matched with term table
     
     
- 
     sql = get_req_metadata_sql(dids, required_headersA, required_headersB)
+    if dco_bulk:
+        sql += " where project_id in ('" + pids + "')\n"
+        out_file = os.path.join(args.base,'dco_all_metadata_'+args.today+'.tsv') 
+    else:
+        sql += " where dataset_id in ('" + dids + "')\n"
+        if file_form == 'datasets_as_rows':
+            out_file = os.path.join(args.base,'metadata-'+args.runcode+'-1.tsv') 
+        else:
+            out_file = os.path.join(args.base,'metadata-'+args.runcode+'-2.tsv')
     print sql
+    
     cursor.execute(sql)
     result_count = cursor.rowcount
     data= {}
@@ -385,46 +420,90 @@ def run_metadata(args, file_form):
     headers_collector = {}
     for project_dataset in args.dataset_name_collector.values():
         data[project_dataset] = {}
-
+        #print project_dataset
     if result_count:
         rows = cursor.fetchall()
         for row in rows:
             #print 'req',row
             project_dataset = row['project']+'--'+row['dataset']
-
+            data[project_dataset]['primers'] = ''
+            headers_collector['primers'] = 1 
             for key in row:
                 if project_dataset in data:
-                    data[project_dataset][key]= row[key]
+                    if type(row[key]) == str:
+                        if key == 'primer_suite':
+                            #data[project_dataset][key] = row['primer_suite']+' ('+row['sequencing_platform']+')'  
+                            data[project_dataset][key] = row['primer_suite'] 
+                            data[project_dataset]['primers'] = primers_lookup[row['primer_suite']] 
+                                                     
+                        else:
+                            data[project_dataset][key] = row[key]
+                        
+                    else:
+                        data[project_dataset][key] = row[key]
                     headers_collector[key] = 1
-
+    args.obj.commit()
+    print data
+    # PRIMERS (from primer_suite_id)
+    # for pjds in data:
+#         for key in data[pjds]:
+#             if key == 'primer_suite':
+#                 data[pjds]['primers'] = 'unknown'
+#                 headers_collector['primers'] = 1
+#                 temp = []
+#                 primers_query = "SELECT sequence from primer"
+#                 primers_query += " JOIN ref_primer_suite_primer using(primer_id)"
+#                 primers_query += " JOIN primer_suite using(primer_suite_id)"
+#                 primers_query += " WHERE primer_suite='%s'"
+#                 #pquery = primers_query % (row[key])
+#                 pquery = primers_query % (data[pjds][key])
+#                 print pquery
+#                 cursor.execute(pquery)
+#                 primer_rows = cursor.fetchall()
+#                 #print 'p00',primer_rows
+#                 for primer_row in primer_rows:
+#                     #print 'p0',primer_row['sequence']
+#                     temp.append(primer_row['sequence'])
+#                 data[pjds]['primers'] = " ".join(temp)
+#                 args.obj.commit() 
+    #args.obj.commit()                
     #print 'headers_collector',headers_collector
     # CUSTOM METADATA
     for pid in args.pids:
         custom_table = 'custom_metadata_'+pid
-
-        sql3  = "SELECT * from "+custom_table+"\n "
+        #print 'pid',pid
+        sql3  = "SELECT * from "+custom_table
+        print sql3
         #print 'args.dataset_name_collector'
         #print args.dataset_name_collector
         try:
             cursor.execute(sql3)
             rows = cursor.fetchall()
-            for row in rows:
-                did = row['dataset_id']
-                if did in args.dataset_name_collector:
-                    pjds = args.dataset_name_collector[did]
-                else:
-                    pjds = 'unknown'
-                #print pjds
-                if str(did) in args.dids:
-                    for key in row:
-                        #print('key',key)  ## key is mditem
-                        if key != custom_table+'_id':
-
-                            #print 'row[key]',row[key]
-                            data[pjds][key]= row[key]
-                            headers_collector[key] = 1
         except:
             print('Could not find/query custom metadata table:',custom_table)
+        for row in rows:
+            did = row['dataset_id']
+            #print did
+            if did in args.dataset_name_collector:
+                pjds = args.dataset_name_collector[did]
+            else:
+                pjds = 'unknown'
+            #print pjds
+            #if str(did) in args.dids:
+            try:
+                for key in row:
+                    #print('key',key)  ## key is mditem
+                    if key != custom_table+'_id':
+
+                        #print 'row[key]',row[key]
+                        if type(row[key]) == str:
+                            data[pjds][key]= row[key].replace(","," ").replace("\r"," ")
+                        else:
+                            data[pjds][key]= row[key]
+                        headers_collector[key] = 1
+            except:
+                print('vamps_export data error: Custom Metadata')
+        
 
     headers_collector_keys = sorted(headers_collector.keys())
     ds_sorted = sorted(data.keys())
@@ -432,9 +511,6 @@ def run_metadata(args, file_form):
     file_txt += "VAMPS Metadata\n"
     # convert to a list and sort
     if file_form == 'datasets_as_rows':
-        out_file = os.path.join(args.base,'metadata-'+args.runcode+'-1.tsv')
-        
-        
         file_txt += 'dataset'
         for header in headers_collector_keys:
             file_txt += '\t'+header
@@ -451,7 +527,6 @@ def run_metadata(args, file_form):
             file_txt += '\n'
         file_txt += '\n'
     else:
-        out_file = os.path.join(args.base,'metadata-'+args.runcode+'-2.tsv')
         file_txt += 'metadata'
         for pjds in ds_sorted:
             file_txt += '\t'+pjds
@@ -465,6 +540,7 @@ def run_metadata(args, file_form):
                     file_txt += '\t'
             file_txt += '\n'
         file_txt += '\n'
+    #print(out_file, file_txt)
     write_file_txt(args, out_file, file_txt)
 
 def run_taxbytax(args):
@@ -649,30 +725,62 @@ def get_dataset_counts(args):
     print '''getting dataset_counts --->>>'''
     cursor = args.obj.cursor()
     dids = "','".join(args.dids)
+    pids = "','".join(args.pids)
     #pd = "') OR\n(project='".join(["' and dataset='".join(p.split('--')) for p in args.datasets])
     #sql = "SELECT distinct project, dataset, dataset_count from "+pd_table+" WHERE\n(project='" + pd + "')\n"
     sql = "SELECT dataset_id, project, dataset, sum(seq_count) as dataset_count"
     sql += " from sequence_pdr_info as i"
     sql += " join dataset as D using(dataset_id)"
     sql += " join project as P using(project_id)"
-    sql += " where dataset_id in ('"+dids+"')"
+    if dids:
+        sql += " where dataset_id in ('"+dids+"')"
+    elif pids:
+        sql += " where project_id in ('"+pids+"')"
+    else:
+        sys.exit('no pids or dids from command line -- exiting')
     sql += " group by dataset"
+    
     print sql
     cursor.execute(sql)
     rows = cursor.fetchall()
     max_val = 0;
     pd_counter = {}
-    dataset_name_collector = {}
 
     for row in rows:
-        pjds = row['project']+'--'+row['dataset']
         ds_count = row['dataset_count']
-        pd_counter[pjds] = ds_count
-        dataset_name_collector[row['dataset_id']] = pjds
+        pd_counter[row['project']+'--'+row['dataset']] = ds_count
         if ds_count > max_val:
             max_val = ds_count
 
-    return (max_val, pd_counter, dataset_name_collector)
+    return (max_val, pd_counter)
+    
+def get_dataset_names(args):
+    print '''getting dataset_names --->>>'''
+    cursor = args.obj.cursor()
+    dids = "','".join(args.dids)
+    pids = "','".join(args.pids)
+    #pd = "') OR\n(project='".join(["' and dataset='".join(p.split('--')) for p in args.datasets])
+    #sql = "SELECT distinct project, dataset, dataset_count from "+pd_table+" WHERE\n(project='" + pd + "')\n"
+    sql = "SELECT dataset_id, project, dataset"
+    sql += " from sequence_pdr_info as i"
+    sql += " join dataset as D using(dataset_id)"
+    sql += " join project as P using(project_id)"
+    if dids:
+        sql += " where dataset_id in ('"+dids+"')"
+    elif pids:
+        sql += " where project_id in ('"+pids+"')"
+    else:
+        sys.exit('no pids or dids from command line -- exiting')
+    
+    print sql
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    dataset_name_collector = {}
+
+    for row in rows:
+        dataset_name_collector[row['dataset_id']] = row['project']+'--'+row['dataset']
+
+    return dataset_name_collector
 
 
 if __name__ == '__main__':
@@ -713,13 +821,13 @@ if __name__ == '__main__':
 
 
     parser.add_argument("-s", "--site",               required=True,  action="store",   dest = "site",
-                                                    help="""database hostname: vamps or vampsdev
+                                                    help="""database hostname: vamps or vampsdev or local(host)
                                                         [default: vampsdev]""")
     parser.add_argument("-r", "--runcode",      required=True,  action="store",   dest = "runcode",
                                                     help="like 12345678")
     parser.add_argument("-u", "--user",         required=True,  action="store",   dest = "user",
                                                     help="VAMPS user name")
-    parser.add_argument("-dids", "--dids",         required=True,  action="store",   dest = "dids",
+    parser.add_argument("-dids", "--dids",         required=False,  action="store",   dest = "dids",default = '',
                                                     help="dataset_ids")
     parser.add_argument("-pids", "--pids",         required=False,  action="store",   dest = "pids", default = '',
                                                     help="project_ids")
@@ -738,6 +846,8 @@ if __name__ == '__main__':
                                                     help="Datasets as rows/Metadata as columns")
     parser.add_argument("-metadata_file2", "--metadata_file2",   required=False,  action="store_true",   dest = "metadata2", default=False,
                                                     help="Metadata as Rows/Datasets as columns")
+    parser.add_argument("-dco_metadata_file", "--dco_metadata_file",   required=False,  action="store_true",   dest = "dco_metadata", default=False,
+                                                    help="Samples as Rows/Metadata as columns")                                                
     parser.add_argument("-biom_file", "--biom_file",           required=False,  action="store_true",   dest = "biom", default=False,
                                                     help="")
     parser.add_argument("-matrix_file", "--matrix_file",           required=False,  action="store_true",   dest = "matrix", default=False,
@@ -767,14 +877,17 @@ if __name__ == '__main__':
         #db_host = 'bpcweb8'
         args.NODE_DATABASE = 'vamps2'
         db_home = '/groups/vampsweb/vamps/'
+        args.files_home ='/groups/vampsweb/vamps_node_data/json/vamps2--datasets_silva119/'
     elif args.site == 'vampsdev':
         db_host = 'vampsdev'
         #db_host = 'bpcweb7'
         args.NODE_DATABASE = 'vamps2'
         db_home = '/groups/vampsweb/vampsdev/'
+        args.files_home ='/groups/vampsweb/vampsdev_node_data/json/vamps2--datasets_silva119/'
     else:
         db_host = 'localhost'
         db_home = '~/'
+        args.files_home ='public/json/vamps_development--datasets_silva119/'
     db_name = args.NODE_DATABASE
 
 
@@ -786,24 +899,24 @@ if __name__ == '__main__':
 
     output_dir = args.base
 
-    print args.normalization
+    
     args.dids = args.dids.strip('"').split(',')
     args.pids = args.pids.strip('"').split(',')
     args.domains = args.domains.strip('"').split(',')
     args.domains = [x.strip() for x in args.domains]
     args.dids = [x.strip() for x in args.dids]
     args.pids = [x.strip() for x in args.pids]
-
-    (args.max, args.dataset_counts, args.dataset_name_collector) = get_dataset_counts(args)
-    args.datasets = args.dataset_counts.keys()
-    print 'max', args.max
-    print 'max2', args.dataset_counts
-    #sys.exit()
-
-
-    #args.compress = True
-
-
+    if args.dco_metadata or args.metadata1 or args.metadata2:
+        args.dataset_name_collector = get_dataset_names(args)
+        #print 'args.dataset_name_collector'
+        #print args.dataset_name_collector
+    else:
+        (args.max, args.dataset_counts) = get_dataset_counts(args)
+        args.datasets = args.dataset_counts.keys()
+        print 'max', args.max
+        print 'max2', args.dataset_counts
+    
+    
 #     args.dc_sql_rows   = []
 #     args.seqs_sql_rows = []
 #     if args.taxbytax:
@@ -811,23 +924,25 @@ if __name__ == '__main__':
 #     if args.taxbyref or args.taxbyseq:
 #         args.seqs_sql_rows = get_seqs_result_from_db(args)
     #sys.exit()
-
-    if args.metadata1:
-        run_metadata(args, 'datasets_as_rows')
-    if args.metadata2:
-        run_metadata(args, 'metadata_as_rows')
-    if args.fasta:
-        run_fasta(args)
-    if args.taxbytax:
-        run_taxbytax(args)
-    if args.taxbyref:
-        #run_taxbyref(args)
-        pass
-    if args.taxbyseq:
-        run_taxbyseq(args)
-    if args.biom:
-        run_biom(args)
-    if args.matrix:
-        run_matrix(args)
+    if args.dco_metadata:
+        run_metadata(args, 'datasets_as_rows', 'dco_bulk')
+    else:
+        if args.metadata1:
+            run_metadata(args, 'datasets_as_rows')
+        if args.metadata2:
+            run_metadata(args, 'metadata_as_rows')
+        if args.fasta:
+            run_fasta(args)
+        if args.taxbytax:
+            run_taxbytax(args)
+        if args.taxbyref:
+            #run_taxbyref(args)
+            pass
+        if args.taxbyseq:
+            run_taxbyseq(args)
+        if args.biom:
+            run_biom(args)
+        if args.matrix:
+            run_matrix(args)
 
     print 'Finished'

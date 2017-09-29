@@ -1285,6 +1285,7 @@ function create_geospatial(new_window) {
       var latlon;
 
       for (var ds in md_local) {
+        
           var lat = '';
           var lon = '';
           for (var k in md_local[ds]) {
@@ -1318,9 +1319,16 @@ function create_geospatial(new_window) {
         z+=1;
 
       }
-//alert(ds)
-      if (loc_data.length === 0){
-          geospatial_div.innerHTML='No Lat/Lon Data Found/Selected';
+      // find if all are empty::
+      var found_bad_data_counter = 0;
+      for (var i = 0; i < loc_data.length; i++) {
+        if(isNaN(loc_data[i][1]) || isNaN(loc_data[i][2])){
+            found_bad_data_counter += 1;
+        }
+      }
+//alert(JSON.stringify(loc_data))
+      if (loc_data.length === 0 || found_bad_data_counter == loc_data.length){
+          geospatial_div.innerHTML='No Lat/Lon Data Found (or Selected)';
       }else{
         var center = new google.maps.LatLng(loc_data[0][1],loc_data[0][2]);
         var mapCanvas = document.getElementById('geospatial_div');
@@ -1334,7 +1342,7 @@ function create_geospatial(new_window) {
         var infowindow =  new google.maps.InfoWindow({
           content: ''
         });
-
+        
         setMarkers(map, loc_data, infowindow);
         document.getElementById('geospatial_dnld_btn').disabled = false
       }
@@ -1877,39 +1885,35 @@ function create_header(viz, pi) {
 
 function download_data(type, download_type, ts) {
     var html = '';
-    var args = 'ts='+ts;
+    var args = {}
+    args.ts = ts;
+    args.file_type = type;
     var xmlhttp = new XMLHttpRequest();
 
-    // if(type == 'metadata'){
-    //   target = '/user_data/download_file'
-    //   args += '&file_type='+type;
-    //   args += "&download_type="+download_type;
-    // } else
     if(type == 'fasta'){
       target = '/user_data/download_file'
-      args += '&file_type='+type;
-      args += "&download_type="+download_type;
+      args.download_type = download_type;
     }else if(type == 'matrix'){
       target = '/user_data/download_file'
-      args += '&file_type='+type;
-      args += "&download_type="+download_type;
+      args.download_type = download_type;
 
-     // else if(type == 'csv'){
-     //  target = '/user_data/download_file'
-     //  args += '&file_type='+type;
-     //  args += "&download_type="+download_type;
     } else if(type == 'frequency'){
       target = '/user_data/download_file'
-      args += '&file_type='+type;
-    }
-    else{
+    } else if(type == 'metadata'){
+      target = '/user_data/download_selected_metadata'
+      args.domains = pi_local.domains
+      args.tax_depth = pi_local.tax_depth
+      args.normalization = pi_local.normalization
+      args.dids = ds_local.ids
+      args.download_type= 'partial_project'
+      args.orientation = 'rows'
+    }else{
       target = '/user_data/copy_file_for_download'
-      args += '&file_type='+type;
     }
 
 
     xmlhttp.open("POST", target, true);
-    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.setRequestHeader("Content-type","application/json");
     xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 ) {
          var filename = xmlhttp.responseText;
@@ -1920,7 +1924,7 @@ function download_data(type, download_type, ts) {
          alert(html)
       }
     };
-    xmlhttp.send(args);
+    xmlhttp.send(JSON.stringify(args));
 }
 
 //

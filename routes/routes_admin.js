@@ -1120,7 +1120,65 @@ router.get('/all_files_retrieval', [helpers.isLoggedIn, helpers.isAdmin], functi
   });
 });
 
+router.get('/create_dco_metadata_fileXX', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+  console.log('in create_dco_metadata_file')
+  var timestamp = +new Date();
+  var out_file = 'dco_all_'+timestamp+'.tsv'
+  var outfile_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,out_file)
+  var pids_list = []
+  for(pid in PROJECT_INFORMATION_BY_PID){
+    project = PROJECT_INFORMATION_BY_PID[pid].project
+    if(project.substring(0,3)=='DCO'){
+        pids_list.push(pid)
+    }
+  }
+  var pids_str = '"'+pids_list.join(',')+'"'
+  var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
+                  args : [ '-host', req.CONFIG.dbhost, '-pids', pids_str,'-outfile',outfile_path  ]
+              };
+              
+              
+  var script_name = 'create_all_dco_metadata.py'
+  var script_path = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,script_name)
+  var full_script_path = script_path + ' ' + options.args.join(' ')
+  console.log(full_script_path)
+  return;
+  
+  var dco_metadata_process = spawn( options.scriptPath + '/vamps_script_update_metadata.py', options.args, {
+                        env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                        detached: true, stdio: 'pipe'
+                    });  // stdin, stdout, stderr
+  
 
+  console.log(full_script_path)
+  
+  var output = '';
+
+  dco_metadata_process.stdout.on('data', function UpdateMetadata(data) {
+        data = data.toString().trim();
+        console.log('stdout: ' + data);
+        output += data;
+  });
+  dco_metadata_process.stderr.on('data', function(data) {
+      console.log('stderr: ' + data);
+      req.flash('fail', 'Metadata Update Failed');
+  });
+  dco_metadata_process.on('close', function checkExitCode(code) {
+     console.log('From apply_metadata process exited with code ' + code);
+     if(req.CONFIG.site == 'vamps' ){
+        console.log('VAMPS PRODUCTION -- no print to log');
+     }else{
+        console.log('OUTPUT:\n'+output )
+     }
+     req.flash('success', 'Success in updating metadata');
+     res.render('admin/validate_metadata', {
+              title     :'VAMPS Validate Metadata',
+              user: req.user,
+              project_info: JSON.stringify(PROJECT_INFORMATION_BY_PNAME),
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+    });
+  });
+});
 
 
 //

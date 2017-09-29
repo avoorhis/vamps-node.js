@@ -98,7 +98,8 @@ module.exports = {
                     //console.log(METADATA[did])
                     //console.log(mdname)
                     var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname)
-                    //console.log(data)
+                    console.log('data')
+                     console.log(data)
 
 					if(did in METADATA) {
 						ds_row[mdname] = data.value;
@@ -126,6 +127,7 @@ module.exports = {
 				metadata.push(ds_row);
 				
 			}
+			console.log(MD_PRIMER_SUITE)
 			COMMON.write_file(metadata_filename, txt);
 			return metadata2;
 		},

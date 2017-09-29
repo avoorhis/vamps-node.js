@@ -519,8 +519,8 @@ constants.ORDERED_METADATA_NAMES = [
   ["","General","", ""],
   // ["project","VAMPS project name","MBL Supplied", ""],
   ["dataset","VAMPS dataset name","MBL Supplied", ""],
-  ["geo_loc_name_continental","Country","User Supplied", ""],
-  ["geo_loc_name_marine","Longhurst Zone","User Supplied", ""],
+  ["geo_loc_name_continental","Country (if not international waters)","User Supplied", ""],
+  ["geo_loc_name_marine","Longhurst Zone (if marine)","User Supplied", ""],
   ["","MBL generated laboratory metadata","", ""],
   ["domain","Domain","MBL Supplied", ""],
   ["target_gene","Target gene name","MBL Supplied", "16S rRNA, mcrA, etc"],
@@ -551,7 +551,7 @@ constants.ORDERED_METADATA_NAMES = [
   ["depth_subterrestrial","Depth below terrestrial surface","User supplied", "meter"],
   // ["depth_in_core","Depth within core","User supplied", "cm"],
   ["tot_depth_water_col","Water column depth","User supplied", "meter"],
-  ["elevation","Elevation","User supplied", "meter"],
+  ["elevation","Elevation (if terrestrial)","User supplied", "meter"],
   ["dna_extraction_meth","DNA Extraction","User supplied", ""],
   ["dna_quantitation","DNA Quantitation","User supplied", ""],
   ["","Enter either volume or mass","", ""],
@@ -568,7 +568,7 @@ constants.ORDERED_METADATA_NAMES = [
   ["temperature","Temperature","User supplied", "degrees celsius"],
   ["conductivity","Conductivity","User supplied", "mS/cm"],
   ["resistivity","Resistivity","", "ohm-meter"],
-  ["salinity","Salinity","", "PSS-78"],
+  ["salinity","Salinity","", "PSU"],
   //It is measured in unit of PSU (Practical Salinity Unit), which is a unit based on the properties of sea water conductivity. It is equivalent to per thousand or (o/00) or to  g/kg.
   ["pressure","Pressure","", "bar"],
   ["redox_state","Redox state","", ""],
@@ -649,10 +649,11 @@ constants.PROJECT_INFO_FIELDS = [
   "username"
 ];
 
-// constants.METADATA_NAMES_ADD = [
-//   "dataset",
-//   "dataset_id"
-// ];
+constants.METADATA_NAMES_ADD = [
+  // "dataset",
+  "dataset_id",
+  "project_abstract"
+];
 
 constants.METADATA_NAMES_SUBSTRACT = [
   "dataset_description",
@@ -726,6 +727,7 @@ constants.FEATURE_PRIMARY = ["Please choose one",
   "hydrothermal vent",
   "lake",
   "mine",
+  "ocean trench",
   "reservoir",
   "seep",
   "spring",
@@ -801,5 +803,7 @@ constants.SAMPLE_TYPE = ["Please choose one",
   "enrichment",
   "environmental sample",
   "isolate"];
+
+constants.GAZ_SPELLING = {"United States": ["usa", "united states of america"]};
 
 module.exports = constants;

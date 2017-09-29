@@ -93,7 +93,7 @@ def go_list(args):
                                 mismatch_data[pid] = project_lookup[pid]
                             clean_project = False
                     else:
-                         print( project_lookup[pid]+' -- ' +did+' -- '+item+'item not found in metadata file')                         
+                         print( str(pid) +'--'+project_lookup[pid]+' -- ' +did+' -- '+item+' item not found in metadata file')                         
                          if pid not in other_problem:
                             other_problem[pid] = project_lookup[pid]
                          clean_project = False
