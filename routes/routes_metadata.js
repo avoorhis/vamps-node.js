@@ -208,7 +208,6 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 
   MD_ENV_CNTRY_vals = get_object_vals(MD_ENV_CNTRY);
   MD_ENV_LZC_vals   = get_object_vals(MD_ENV_LZC);
-  var all_field_units = get_all_field_units(req);
 
   res.render("metadata/metadata_edit_form", {
     title: "VAMPS: Metadata_upload",
@@ -216,7 +215,7 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
     hostname: req.CONFIG.hostname,
     all_metadata: all_metadata,
     all_field_names: all_field_names,
-    // all_field_units: all_field_units,
+    all_field_units: MD_CUSTOM_UNITS[req.body.project_id],
     dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
     dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
     dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
@@ -238,33 +237,43 @@ function get_all_field_units(req){
   // }
   // MD_CUSTOM_UNITS
 
-  for(var pr_id in MD_CUSTOM_UNITS){
-    var units = MD_CUSTOM_UNITS[pr_id];
-    var curr_pr_id = req.body.project_id;
+  var current_field_units = MD_CUSTOM_UNITS[req.body.project_id];
+  console.log("PPP current_field_units");
+  console.log(current_field_units);
 
-    console.log("PPP curr_pr_id");
-    console.log(curr_pr_id);
+  // { pressure: 'bar',
+  //   microbial_biomass_avg_cell_number: 'cells_per_gram',
+  //   sulfate_red_rate: 'nmol/ml1/d1',
+  //   nitrite: 'micromole_per_kilogram',
+  //   sulfate_red_depth: 'mmol/m2/d1',
 
-    console.log("PPP1 pr_id");
-    console.log(pr_id);
-
-    console.log("PPP2 units");
-    console.log(units);
-    // if(String(item.pid) === String(pid)){
-    //   dataset_info = item.datasets;
-    //   break;
-    // }
-
-    // PPP curr_pr_id
-    // 428
-    // PPP1 pr_id
-    // 428
-    // PPP2 units
-    // { pressure: 'bar',
-    //   microbial_biomass_avg_cell_number: 'cells_per_gram',
-    //   sulfate_red_rate: 'nmol/ml1/d1',
-
-    }
+  // for(var pr_id in MD_CUSTOM_UNITS){
+  //   var units = MD_CUSTOM_UNITS[pr_id];
+  //   var curr_pr_id = req.body.project_id;
+  //
+  //   console.log("PPP curr_pr_id");
+  //   console.log(curr_pr_id);
+  //
+  //   console.log("PPP1 pr_id");
+  //   console.log(pr_id);
+  //
+  //   console.log("PPP2 units");
+  //   console.log(units);
+  //   // if(String(item.pid) === String(pid)){
+  //   //   dataset_info = item.datasets;
+  //   //   break;
+  //   // }
+  //
+  //   // PPP curr_pr_id
+  //   // 428
+  //   // PPP1 pr_id
+  //   // 428
+  //   // PPP2 units
+  //   // { pressure: 'bar',
+  //   //   microbial_biomass_avg_cell_number: 'cells_per_gram',
+  //   //   sulfate_red_rate: 'nmol/ml1/d1',
+  //
+  //   }
 }
 
 // create form from req.form
@@ -840,8 +849,6 @@ function make_metadata_object_from_db(req, res) {
   //repeated!
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
-  console.log("MMM0 MD_CUSTOM_UNITS");
-  console.log(MD_CUSTOM_UNITS);
 
   // get_db_data
   console.time("TIME: slice_object");
