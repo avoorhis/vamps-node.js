@@ -920,8 +920,6 @@ showDatasets = function() {
 
 showSubmitMessage = function() {
   $('#add_project_form_submit_btn').click(function () {
-    alert(JSON.stringify(all_field_units_js));
-
     alert('Your information was saved in a csv file, please notify the Site administration if you have finished editing.');
     $('#add_project_form').submit();
   });
@@ -1061,9 +1059,18 @@ showUnits = function() {
     $('label').hover(function () {
       $forAttr = $(this).attr('for').slice(0,-1);
 
+    // <% field_unit = all_field_names[idx][3] %>
+    //     <% if (typeof(all_field_units[field_name]) !== 'undefined') { %>
+    //   <% field_unit = all_field_units[field_name] %>
+    //       <% } %>
+      alert($forAttr);
+
       for( var i = 0, len = ORDERED_METADATA_NAMES.length; i < len; i++ ) {
         if( ORDERED_METADATA_NAMES[i][0] === $forAttr ) {
           result = ORDERED_METADATA_NAMES[i][3];
+          if (all_field_units_js[$forAttr]) {
+            result = all_field_units_js[$forAttr];
+          }
           break;
         }
       }
