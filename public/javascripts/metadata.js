@@ -1059,32 +1059,13 @@ showUnits = function() {
     $('label').hover(function () {
       $field_name = $(this).attr('for').slice(0,-1);
 
-    // <% field_unit = all_field_names[idx][3] %>
-    //     <% if (typeof(all_field_units[field_name]) !== 'undefined') { %>
-    //   <% field_unit = all_field_units[field_name] %>
-    //       <% } %>
-
       $unit = all_field_units_js[$field_name];
       if ($unit) {
         result = $unit;
       }
-      // else {
-      //
-      // }
-
-      alert(JSON.stringify(all_field_names_obj_js));
-      result = JSON.stringify(all_field_names_js);
-      // var $forAttr = $field_name;
-      //
-      // for( var i = 0, len = ORDERED_METADATA_NAMES.length; i < len; i++ ) {
-      //   if( ORDERED_METADATA_NAMES[i][0] === $forAttr ) {
-      //     result = ORDERED_METADATA_NAMES[i][3];
-      //     if (all_field_units_js[$forAttr]) {
-      //       result = all_field_units_js[$forAttr];
-      //     }
-      //     break;
-      //   }
-      // }
+      else {
+        result = ordered_field_names_obj_js[$field_name][1][3];
+      }
 
       $(this).css('cursor', 'pointer').attr('title', result);
     }, function () {
