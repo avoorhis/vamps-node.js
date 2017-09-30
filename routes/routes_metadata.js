@@ -210,12 +210,6 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
   MD_ENV_LZC_vals   = get_object_vals(MD_ENV_LZC);
   var ordered_field_names_obj = make_ordered_field_names_obj();
 
-  console.log("JJJ2 req.body.project_id");
-  console.log(JSON.stringify(req.body.project_id));
-
-
-  var all_field_units = MD_CUSTOM_UNITS[req.body.project_id];
-
   res.render("metadata/metadata_edit_form", {
     title: "VAMPS: Metadata_upload",
     user: req.user,
