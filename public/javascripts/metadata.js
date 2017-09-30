@@ -919,8 +919,9 @@ showDatasets = function() {
 };
 
 showSubmitMessage = function() {
-
   $('#add_project_form_submit_btn').click(function () {
+    alert(JSON.stringify(all_field_units_js));
+
     alert('Your information was saved in a csv file, please notify the Site administration if you have finished editing.');
     $('#add_project_form').submit();
   });
