@@ -1057,13 +1057,16 @@ ORDERED_METADATA_NAMES = [
 
 showUnits = function() {
     $('label').hover(function () {
-      $forAttr = $(this).attr('for').slice(0,-1);
+      $field_name = $(this).attr('for').slice(0,-1);
 
     // <% field_unit = all_field_names[idx][3] %>
     //     <% if (typeof(all_field_units[field_name]) !== 'undefined') { %>
     //   <% field_unit = all_field_units[field_name] %>
     //       <% } %>
-      alert($forAttr);
+
+      $unit = all_field_units_js[$field_name];
+      alert($unit);
+      var $forAttr = $field_name;
 
       for( var i = 0, len = ORDERED_METADATA_NAMES.length; i < len; i++ ) {
         if( ORDERED_METADATA_NAMES[i][0] === $forAttr ) {
