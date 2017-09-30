@@ -208,6 +208,7 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 
   MD_ENV_CNTRY_vals = get_object_vals(MD_ENV_CNTRY);
   MD_ENV_LZC_vals   = get_object_vals(MD_ENV_LZC);
+  var all_field_names_obj = make_all_field_names_obj();
 
   res.render("metadata/metadata_edit_form", {
     title: "VAMPS: Metadata_upload",
@@ -215,6 +216,7 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
     hostname: req.CONFIG.hostname,
     all_metadata: all_metadata,
     all_field_names: all_field_names,
+    all_field_names_obj: all_field_names_obj,
     all_field_units: MD_CUSTOM_UNITS[req.body.project_id],
     dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
     dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
@@ -230,50 +232,7 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 }
 
 function get_all_field_units(req){
-  // function get_object_vals(object_name) {
-  //   return Object.keys(object_name).map(function (key) {
-  //     return object_name[key];
-  //   });
-  // }
-  // MD_CUSTOM_UNITS
-
   var current_field_units = MD_CUSTOM_UNITS[req.body.project_id];
-  console.log("PPP current_field_units");
-  console.log(current_field_units);
-
-  // { pressure: 'bar',
-  //   microbial_biomass_avg_cell_number: 'cells_per_gram',
-  //   sulfate_red_rate: 'nmol/ml1/d1',
-  //   nitrite: 'micromole_per_kilogram',
-  //   sulfate_red_depth: 'mmol/m2/d1',
-
-  // for(var pr_id in MD_CUSTOM_UNITS){
-  //   var units = MD_CUSTOM_UNITS[pr_id];
-  //   var curr_pr_id = req.body.project_id;
-  //
-  //   console.log("PPP curr_pr_id");
-  //   console.log(curr_pr_id);
-  //
-  //   console.log("PPP1 pr_id");
-  //   console.log(pr_id);
-  //
-  //   console.log("PPP2 units");
-  //   console.log(units);
-  //   // if(String(item.pid) === String(pid)){
-  //   //   dataset_info = item.datasets;
-  //   //   break;
-  //   // }
-  //
-  //   // PPP curr_pr_id
-  //   // 428
-  //   // PPP1 pr_id
-  //   // 428
-  //   // PPP2 units
-  //   // { pressure: 'bar',
-  //   //   microbial_biomass_avg_cell_number: 'cells_per_gram',
-  //   //   sulfate_red_rate: 'nmol/ml1/d1',
-  //
-  //   }
 }
 
 // create form from req.form
@@ -1472,6 +1431,28 @@ function fill_out_arr_doubles(value, repeat_times) {
   arr_temp.fill(value, 0, repeat_times);
 
   return arr_temp;
+}
+
+function make_all_field_names_obj() {
+  console.time("TIME: make_all_field_names_obj");
+  var all_field_names_obj = {};
+
+  for (var i in CONSTS.ORDERED_METADATA_NAMES) {
+    // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
+    var temp_arr = [i];
+    temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
+    all_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
+  }
+  console.log("CCC all_field_names_obj");
+  console.log(all_field_names_obj);
+
+  console.log("CCC1 CONSTS.ORDERED_METADATA_NAMES");
+  console.log(CONSTS.ORDERED_METADATA_NAMES);
+
+
+  // biomass_wet_weight: [ '102', 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ],
+  console.timeEnd("TIME: make_all_field_names_obj");
+  return all_field_names_obj;
 }
 
 function send_mail_finished(req, res) {

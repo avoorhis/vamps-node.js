@@ -1065,18 +1065,26 @@ showUnits = function() {
     //       <% } %>
 
       $unit = all_field_units_js[$field_name];
-      alert($unit);
-      var $forAttr = $field_name;
-
-      for( var i = 0, len = ORDERED_METADATA_NAMES.length; i < len; i++ ) {
-        if( ORDERED_METADATA_NAMES[i][0] === $forAttr ) {
-          result = ORDERED_METADATA_NAMES[i][3];
-          if (all_field_units_js[$forAttr]) {
-            result = all_field_units_js[$forAttr];
-          }
-          break;
-        }
+      if ($unit) {
+        result = $unit;
       }
+      // else {
+      //
+      // }
+
+      alert(JSON.stringify(all_field_names_obj_js));
+      result = JSON.stringify(all_field_names_js);
+      // var $forAttr = $field_name;
+      //
+      // for( var i = 0, len = ORDERED_METADATA_NAMES.length; i < len; i++ ) {
+      //   if( ORDERED_METADATA_NAMES[i][0] === $forAttr ) {
+      //     result = ORDERED_METADATA_NAMES[i][3];
+      //     if (all_field_units_js[$forAttr]) {
+      //       result = all_field_units_js[$forAttr];
+      //     }
+      //     break;
+      //   }
+      // }
 
       $(this).css('cursor', 'pointer').attr('title', result);
     }, function () {
