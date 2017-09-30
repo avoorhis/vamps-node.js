@@ -180,10 +180,25 @@
     <input type='hidden' type="text" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= selected_val %>"/>
     <% } else { %>
 <td>
-    <% field_unit = all_field_names[idx][3] %>
-    <% if (typeof(all_field_units[field_name]) !== 'undefined') { %>
-    <% field_unit = all_field_units[field_name] %>
+    all_field_units: <%= all_field_units %>
+    <br/>
+    field_name: <%= field_name %>
+    <br/>
+
+    <% if (all_field_units && typeof(all_field_units[field_name]) !== 'undefined') { %>
+        <% field_unit = all_field_units[field_name] %>
+    <% } else if (all_field_names && typeof(all_field_names[idx][3]) !== 'undefined') { %>
+        <% field_unit = all_field_names[idx][3] %>
+    <% } else { %>
+        <% field_unit = "" %>
     <% } %>
+
+    <br/>
+
+    field_unit: <%= field_unit %>
+    <br/>
+
+
     <input type="text" placeholder="<%= field_unit %>" id="<%= field_name %><%- did%>" name="<%= field_name %>" value="<%= selected_val %>"/>
     <% } %> <!-- end else if MBL Supplied -->
 </td>
