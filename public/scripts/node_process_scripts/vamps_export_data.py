@@ -501,7 +501,7 @@ def run_metadata(args, file_form, dco_bulk=False):
 
                         #print 'row[key]',row[key]
                         if type(row[key]) == str:
-                            data[pjds][key]= row[key].replace(","," ").replace("\r"," ")
+                            data[pjds][key]= row[key].replace(",",";").replace("\r",";")
                         else:
                             data[pjds][key]= row[key]
                         headers_collector[key] = 1
@@ -521,7 +521,7 @@ def run_metadata(args, file_form, dco_bulk=False):
             project_id = project_id_items[0] + '_' + project_id_items[1]
             for mditem in headers_collector_keys:                 
                 if mditem in data[pjds]:
-                    value = str(data[pjds][mditem]) 
+                    value = (str(data[pjds][mditem])).replace(',',';').replace("\r",";") 
                     if value == '' or value == 'None':
                         value = 'null' 
                 else:
