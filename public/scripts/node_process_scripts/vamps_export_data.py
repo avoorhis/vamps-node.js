@@ -383,13 +383,7 @@ def run_metadata_from_files(args, file_form):
         mdata = (json.loads(json_data))['metadata']
         print(mdata)
         
-def run_dco_metadata(args):
-    print 'running DCO metadata --->>>'
-    cursor = args.obj.cursor()
-    dids = "','".join(args.dids)        
-    pids = "','".join(args.pids)
-    print 'dids',dids
-    print 'pids',pids
+
             
 def run_metadata(args, file_form, dco_bulk=False):
     print 'running metadata --->>>'
@@ -525,10 +519,13 @@ def run_metadata(args, file_form, dco_bulk=False):
         for pjds in ds_sorted:
             project_id_items = pjds.split('_')
             project_id = project_id_items[0] + '_' + project_id_items[1]
-            for mditem in headers_collector_keys:
-                value = 'null'
+            for mditem in headers_collector_keys:                 
                 if mditem in data[pjds]:
-                    value = str(data[pjds][mditem])                    
+                    value = str(data[pjds][mditem]) 
+                    if value == '' or value == 'None':
+                        value = 'null' 
+                else:
+                    value = 'null'                   
                 file_txt += project_id+','+pjds+','+mditem+','+value+'\n'
     elif file_form == 'datasets_as_rows':
         file_txt += 'dataset'
