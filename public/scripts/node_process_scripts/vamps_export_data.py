@@ -383,6 +383,14 @@ def run_metadata_from_files(args, file_form):
         mdata = (json.loads(json_data))['metadata']
         print(mdata)
         
+def run_dco_metadata(args):
+    print 'running DCO metadata --->>>'
+    cursor = args.obj.cursor()
+    dids = "','".join(args.dids)        
+    pids = "','".join(args.pids)
+    print 'dids',dids
+    print 'pids',pids
+            
 def run_metadata(args, file_form, dco_bulk=False):
     print 'running metadata --->>>'
     # args.datasets is a list of p--d pairs
@@ -404,7 +412,7 @@ def run_metadata(args, file_form, dco_bulk=False):
     sql = get_req_metadata_sql(dids, required_headersA, required_headersB)
     if dco_bulk:
         sql += " where project_id in ('" + pids + "')\n"
-        out_file = os.path.join(args.base,'dco_all_metadata_'+args.today+'.tsv') 
+        out_file = os.path.join(args.base,'dco_all_metadata_'+args.today+'.csv') 
     else:
         sql += " where dataset_id in ('" + dids + "')\n"
         if file_form == 'datasets_as_rows':
@@ -425,7 +433,9 @@ def run_metadata(args, file_form, dco_bulk=False):
         rows = cursor.fetchall()
         for row in rows:
             #print 'req',row
-            project_dataset = row['project']+'--'+row['dataset']
+            project = row['project']
+            dataset = row['dataset']
+            project_dataset = project+'--'+dataset
             data[project_dataset]['primers'] = ''
             headers_collector['primers'] = 1 
             for key in row:
@@ -510,7 +520,17 @@ def run_metadata(args, file_form, dco_bulk=False):
     file_txt = ''
     file_txt += "VAMPS Metadata\n"
     # convert to a list and sort
-    if file_form == 'datasets_as_rows':
+    if dco_bulk:
+        file_txt = 'PROJECT_ID,SAMPLE_ID,VARIABLE,VALUE\n'
+        for pjds in ds_sorted:
+            project_id_items = pjds.split('_')
+            project_id = project_id_items[0] + '_' + project_id_items[1]
+            for mditem in headers_collector_keys:
+                value = 'null'
+                if mditem in data[pjds]:
+                    value = str(data[pjds][mditem])                    
+                file_txt += project_id+','+pjds+','+mditem+','+value+'\n'
+    elif file_form == 'datasets_as_rows':
         file_txt += 'dataset'
         for header in headers_collector_keys:
             file_txt += '\t'+header
@@ -519,7 +539,6 @@ def run_metadata(args, file_form, dco_bulk=False):
             file_txt += pjds
             for mditem in headers_collector_keys:
                 #if header not in ['custom_metadata_273_id','custom_metadata_517_id']:
-
                     if mditem in data[pjds]:
                         file_txt += '\t'+str(data[pjds][mditem])
                     else:
@@ -926,6 +945,7 @@ if __name__ == '__main__':
     #sys.exit()
     if args.dco_metadata:
         run_metadata(args, 'datasets_as_rows', 'dco_bulk')
+        #run_dco_metadata(args)
     else:
         if args.metadata1:
             run_metadata(args, 'datasets_as_rows')
