@@ -208,6 +208,7 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 
   MD_ENV_CNTRY_vals = get_object_vals(MD_ENV_CNTRY);
   MD_ENV_LZC_vals   = get_object_vals(MD_ENV_LZC);
+  var ordered_field_names_obj = make_ordered_field_names_obj();
 
   res.render("metadata/metadata_edit_form", {
     title: "VAMPS: Metadata_upload",
@@ -215,6 +216,8 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
     hostname: req.CONFIG.hostname,
     all_metadata: all_metadata,
     all_field_names: all_field_names,
+    ordered_field_names_obj: ordered_field_names_obj,
+    all_field_units: MD_CUSTOM_UNITS[req.body.project_id],
     dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
     dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
     dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
@@ -226,6 +229,10 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
     investigation_type_options: CONSTS.INVESTIGATION_TYPE,
     sample_type_options: CONSTS.SAMPLE_TYPE
   });
+}
+
+function get_all_field_units(req){
+  var current_field_units = MD_CUSTOM_UNITS[req.body.project_id];
 }
 
 // create form from req.form
@@ -491,7 +498,7 @@ router.post('/metadata_upload',
     form.field("dna_quantitation", get_second("dna_quantitation")).trim().required().custom(env_items_validation).entityEncode().array(),
     form.field("dna_region", get_second("dna_region")).trim().required().entityEncode().array(),
     form.field("domain", get_second("domain")).trim().required().entityEncode().array(),
-    form.field("elevation", get_second("elevation")).trim().custom(numbers_n_period_n_minus).required("Elevation is required (for terrestrial only)").entityEncode().array(),
+    form.field("elevation", get_second("elevation")).trim().required("", "Elevation is required (for terrestrial only)").custom(numbers_n_period_n_minus).entityEncode().array(),
     form.field("env_package", get_second("env_package")).trim().required().custom(env_items_validation).entityEncode().array(),
     form.field("enzyme_activities", get_second("enzyme_activities")).trim().entityEncode().array(),
     form.field("env_feature", get_second("env_feature")).trim().required().custom(env_items_validation).entityEncode().array(),
@@ -738,6 +745,7 @@ function make_metadata_object_from_csv(req, res) {
   //
   // console.log("DDD4 all_metadata from make_metadata_object_from_csv");
   // console.log(JSON.stringify(all_metadata));
+  req.body.project_id = pid;
   render_edit_form(req, res, all_metadata, all_field_names);
 
   console.timeEnd("TIME: make_metadata_object_from_csv");
@@ -801,8 +809,6 @@ function make_metadata_object_from_db(req, res) {
   //repeated!
   var dataset_ids  = DATASET_IDS_BY_PID[pid];
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
-  // console.log("MMM0 project");
-  // console.log(project);
 
   // get_db_data
   console.time("TIME: slice_object");
@@ -1428,6 +1434,20 @@ function fill_out_arr_doubles(value, repeat_times) {
   return arr_temp;
 }
 
+function make_ordered_field_names_obj() {
+  console.time("TIME: make_ordered_field_names_obj");
+  var ordered_field_names_obj = {};
+
+  for (var i in CONSTS.ORDERED_METADATA_NAMES) {
+    // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
+    var temp_arr = [i];
+    temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
+    ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
+  }
+  console.timeEnd("TIME: make_ordered_field_names_obj");
+  return ordered_field_names_obj;
+}
+
 function send_mail_finished(req, res) {
   console.time("TIME: send_mail_finished");
 
@@ -1442,7 +1462,7 @@ function send_mail_finished(req, res) {
     from: '"VAMPS2" <' + config.vamps_email + '>', // sender address
     // to: req.body.to, // list of receivers
     // subject: req.body.subject, // Subject line
-    to: ["ashipunova@mbl.edu"],
+    to: ["hlizarralde@mbl.edu"],
     subject: "Metadata edited",
     text: text_msg
     // text: req.body.body, // plain text body

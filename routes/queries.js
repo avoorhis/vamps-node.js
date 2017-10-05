@@ -27,6 +27,14 @@ get_select_datasets_query: function(){
     return qSelectDatasets;
 	
 },
+get_select_custom_units_query: function(){
+  var qSelectCustomUnits = "SELECT project_id, field_name, field_units FROM `custom_metadata_fields` WHERE field_units <> 'Alphanumeric' AND field_units <> 'unknown'";
+  console.log("qSelectCustomUnits:");
+  console.log(qSelectCustomUnits);
+
+  return qSelectCustomUnits;
+},
+
 
 get_select_datasets_queryPID: function(pid){
     var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution,";
