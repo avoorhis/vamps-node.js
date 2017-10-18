@@ -136,11 +136,12 @@
             </li>
             <br>
             <li>
-              <% if(hostname.substring(0,6) == 'bpcweb'){ %>                
-                    <a href='/otus/otus_index' class='btn btn-sm btn-default btn-link'>Pre-Compiled OTUs (Admins only for now)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              
+              <% if(user.security_level == '1'){ %>                
+                    <a href='/otus/otus_index' class='btn btn-sm btn-default btn-link'>Pre-Compiled OTUs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></a>
               <% }else{ %>
-                    <a href='/otus/otus_index' class='btn btn-sm btn-default btn-link'>Pre-Compiled OTUs (Admins only for now)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href='/otus/otus_index' disabled class='btn btn-sm btn-default btn-link'>Pre-Compiled OTUs (Admins only for now)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></a>
               <% } %>
                 - Work with OTU and matrix count data.
