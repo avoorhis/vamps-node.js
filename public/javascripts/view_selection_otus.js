@@ -256,7 +256,7 @@ if (tax_counts_link !== null) {
               toggle_visual_element(tax_counts_div,'hide',tax_counts_btn);
             }
         }
-    		
+    	$(pre_counts_matrix_div).scrollView();	
   });
 }
 if (typeof tax_counts_btn !=="undefined") {
@@ -697,6 +697,7 @@ function create_counts_matrix() {
       tax_counts_div.innerHTML = html; 
       document.getElementById('counts_matrix_dnld_btn').disabled = false
       
+    document.getElementById('pre_counts_matrix_div').style.display = 'block';
       
 }
 
@@ -833,25 +834,26 @@ function create_dheatmap() {
       document.getElementById('dheatmap_title').style.color = 'white';
       document.getElementById('dheatmap_title').style['font-size'] = 'small';
       var html = '';
-      var args =  "metric="+pi_local.selected_distance;
-      args += "&ts="+pi_local.ts;
       document.getElementById('pre_dheatmap_div').style.display = 'block';
        // get distance matrix via AJAX
       var xmlhttp = new XMLHttpRequest();  
-      xmlhttp.open("POST", '/visuals/heatmap', true);
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      //xmlhttp.open("POST", '/visuals/heatmap', true);
+      var args = {}
+      args.image = 'dheatmap'
+      args.source = 'website'
+      xmlhttp.open("POST", '/api/create_image', true);
+      xmlhttp.setRequestHeader("Content-type","application/json");
       showDots='';
       var myWaitVar = setInterval(myWaitFunction,1000,dhm_div);
       xmlhttp.onreadystatechange = function() {        
         if (xmlhttp.readyState == 4 ) {
             clearInterval(myWaitVar);
-            var htmlstring = xmlhttp.responseText;             
-            dhm_div.innerHTML = htmlstring;
-            document.getElementById('dheatmap_dnld_btn').disabled = false
-            
+            var data = JSON.parse(xmlhttp.response)
+            dhm_div.innerHTML = data.html;
+            document.getElementById('dheatmap_dnld_btn').disabled = false            
         }
       };
-      xmlhttp.send(args);      
+      xmlhttp.send(JSON.stringify(args));      
 }
 //
 //  CREATE FREQUENCY HEATMAP
@@ -869,24 +871,24 @@ function create_fheatmap() {
       document.getElementById('fheatmap_title').style.color = 'white';
       document.getElementById('fheatmap_title').style['font-size'] = 'small';
       
-      var html = '';
-      var args =  "metric="+pi_local.selected_distance;
-      args += "&ts="+pi_local.ts;
+      var args = {}
+      args.image = 'fheatmap'
+      args.source = 'website'
       document.getElementById('pre_fheatmap_div').style.display = 'block';
       var xmlhttp = new XMLHttpRequest();  
-      xmlhttp.open("POST", '/visuals/frequency_heatmap', true);
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.open("POST", '/api/create_image', true);
+      xmlhttp.setRequestHeader("Content-type","application/json");
       showDots='';
       var myWaitVar = setInterval(myWaitFunction,1000,fhm_div);
       xmlhttp.onreadystatechange = function() {        
         if (xmlhttp.readyState == 4 ) {
             clearInterval(myWaitVar);
-            var htmlstring = xmlhttp.responseText;           
-            fhm_div.innerHTML = htmlstring;
+            var data = JSON.parse(xmlhttp.response)
+            fhm_div.innerHTML = data.html;
             document.getElementById('fheatmap_dnld_btn').disabled = false
         }
       };
-      xmlhttp.send(args);   
+      xmlhttp.send(JSON.stringify(args));   
       
 }
 //
@@ -897,20 +899,39 @@ function create_piecharts_group() {
     piecharts_created = true;
     //var init = {"selected_distance":"morisita_horn","normalization":"none","min_range":"0","max_range":"100"}
     var info_line = create_header('pies', pi_local);
-    
     document.getElementById('piecharts_title').innerHTML = info_line;
     var piecharts_div = document.getElementById('piecharts_div');
     document.getElementById('piecharts_title').style.color = 'white';
     document.getElementById('piecharts_title').style['font-size'] = 'small';
     piecharts_div.innerHTML = '';
     piecharts_div.style.display = 'block';
-    
     document.getElementById('pre_piecharts_div').style.display = 'block';
      
     // this fxn is in common_selection.js
-    create_piecharts('group', pi_local.ts, mtx_local);
-    
-    document.getElementById('piecharts_dnld_btn').disabled = false
+    //create_piecharts('group', pi_local.ts, mtx_local);
+    var xmlhttp = new XMLHttpRequest();
+
+        var args = {}
+        args.image = 'piecharts'
+        args.source = 'website'
+        xmlhttp.open("POST", '/api/create_image', true); 
+        //         alert(xmlhttp) 
+        xmlhttp.setRequestHeader("Content-type","application/json");
+        showDots='';
+        var myWaitVar = setInterval(myWaitFunction,1000,piecharts_div);      
+        xmlhttp.onreadystatechange = function(){
+            if (xmlhttp.readyState == 4 ) {
+                clearInterval(myWaitVar);
+               data = JSON.parse(xmlhttp.response)
+               
+               //alert(data)          
+               piecharts_div.innerHTML = data.html;
+                document.getElementById('piecharts_dnld_btn').disabled = false          
+            }
+         }
+
+        xmlhttp.send(JSON.stringify(args));
+     return
 
 }
 
@@ -922,20 +943,39 @@ function create_barcharts_group() {
       
     
     barcharts_created = true;
-    //var init = {"selected_distance":"morisita_horn","normalization":"none","min_range":"0","max_range":"100"}
     var info_line = create_header('bars', pi_local);
     document.getElementById('barcharts_title').innerHTML = info_line;
+    var barcharts_div = document.getElementById('barcharts_div');
     document.getElementById('barcharts_title').style.color = 'white';
     document.getElementById('barcharts_title').style['font-size'] = 'small';
-    document.getElementById('barcharts_div').innerHTML = '';
+    barcharts_div.innerHTML = '';
+    barcharts_div.style.display = 'block';
 //    barcharts_div.style.display = 'block';
          
     document.getElementById('pre_barcharts_div').style.display = 'block';
      
-         // this fxn is in common_selection.js
-    create_barcharts('group', pi_local.ts, mtx_local, {alpha_value:'z',count_value:"min"});
-    document.getElementById('barcharts_dnld_btn').disabled = false
+    // this fxn is in common_selection.js
+    //create_barcharts('group', pi_local.ts, mtx_local, {alpha_value:'z',count_value:"min"});
+    var xmlhttp = new XMLHttpRequest();
 
+    var args = {}
+    args.image = 'barcharts'
+    args.source = 'website'
+    xmlhttp.open("POST", '/api/create_image', true); 
+    //         alert(xmlhttp) 
+    xmlhttp.setRequestHeader("Content-type","application/json");
+    showDots='';
+    var myWaitVar = setInterval(myWaitFunction,1000,barcharts_div);      
+    xmlhttp.onreadystatechange = function(){
+        if (xmlhttp.readyState == 4 ) {
+           clearInterval(myWaitVar);
+           data = JSON.parse(xmlhttp.response)        
+           barcharts_div.innerHTML = data.html;
+           document.getElementById('barcharts_dnld_btn').disabled = false          
+        }
+     }
+    xmlhttp.send(JSON.stringify(args));
+    return
 }
 
 //

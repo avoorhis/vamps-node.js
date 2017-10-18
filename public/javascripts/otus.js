@@ -47,7 +47,8 @@ if (selection_btn_visuals !== null) {
                 selected_id = radios[r].id
             }
         }
-        if(selected_id > 0){
+        
+        if(selected_id){
             
           var f = document.createElement("form");
           f.setAttribute('method',"post");
@@ -199,15 +200,15 @@ function create_otu_table_from_otu_project(obj){
 
     html = ''
     html += "<table border='1' class='table'>"
-    html += "<tr><td></td><td>OTU Project Name</td><td>DS Count</td><td>OTU Count</td><td>OTU Size</td><td>Method</td></tr>"
-    for(prj in obj){
+    html += "<tr><td></td><td>OTU Project Name</td><td>Domain</td><td>Method</td><td>OTU Size</td></tr>"
+    for(file in obj){
         html += "<tr>"
-        html += "<td><input type='radio' id='"+ obj[prj].opid +"' name='otu'></td>"
-        html += "<td>"+prj+"</td>"
-        html += "<td>"+obj[prj].ds_count+"</td>"
-        html += "<td>"+obj[prj].otu_count+"</td>"
-        html += "<td>"+obj[prj].size+"</td>"
-        html += "<td>"+obj[prj].method+"</td>"
+        html += "<td><input type='radio' id='"+ file +"' name='otu'></td>"
+        html += "<td>"+obj[file].opid+"</td>"
+        html += "<td>"+obj[file].domain+"</td>"
+        html += "<td>"+obj[file].method+"</td>"
+        html += "<td>"+obj[file].size+"%</td>"
+        
         html += "</tr>"
     }
     html += "</table>"

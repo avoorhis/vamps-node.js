@@ -1219,8 +1219,6 @@ function create_fheatmap(ts, new_window) {
       document.getElementById('fheatmap_title').innerHTML = info_line;
       document.getElementById('fheatmap_title').style.color = 'white';
       document.getElementById('fheatmap_title').style['font-size'] = 'small';
-
-      var html = '';
       var args = {}
       args.image = 'fheatmap'
       args.source = 'website'

@@ -524,6 +524,7 @@ def run_metadata(args, file_form, dco_bulk=False):
                     value = (str(data[pjds][mditem])).replace(',',';').replace("\r",";") 
                     if value == '' or value == 'None':
                         value = 'null' 
+                    #file_txt += project_id+','+pjds+','+mditem+','+value+'\n'
                 else:
                     value = 'null'                   
                 file_txt += project_id+','+pjds+','+mditem+','+value+'\n'

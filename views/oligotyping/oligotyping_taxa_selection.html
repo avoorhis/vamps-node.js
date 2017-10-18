@@ -1,11 +1,13 @@
 <% include ../add_ins/begin.ejs %>
 
 <%  var items  = JSON.parse(chosen_id_name_hash); %>
+
 <% if (messages.success) { %>
   	<div class="alert_flash_message_success"><%= messages.success %></div>
 <% }else if(messages.fail){ %>
     <div class="alert_flash_message_fail"><%= messages.fail %></div>
 <% } %>
+
 <script>
   var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
   var user_local  = '<%= user.username %>';
@@ -74,9 +76,9 @@
 									<button id='fasta_start_btn' disabled class='btn btn-xs ' type='button' value='Go' onclick='get_oligotype_seqs()'>Search for Sequences</button>
 								<!-- <button id='fasta_start_btn' disabled class='btn btn-xs ' type='submit' value='Go' >Go To Next Step</button> -->
 						</form>			
-						<% if(messages){ %>
-  									<div id='oligo_genus_err_msg' class="" style='color:orange;padding:3px;'><%- message %> </div>
-						<% } %>		<br>
+						
+  						<div id='oligo_genus_err_msg' class="" style='color:orange;padding:3px;'> </div>
+						
 				</div>
 
 

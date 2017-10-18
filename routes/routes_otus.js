@@ -129,81 +129,154 @@ router.post('/method_selection', helpers.isLoggedIn, function (req, res) {
  
     
 //});
-
 router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
+    console.log('in GET OTU view_selection')
+    const zlib     = require('zlib');
+    const readline = require('readline');
+    console.log(req.body);
+    console.log('<<--in OTU view_selection')
+    opid= req.body.otu_id  // filename
+    prj = req.body.otu_id  // filename
+    var timestamp = +new Date();
+    timestamp = req.user.username+'-'+timestamp
+    visual_post_items = get_post_items(req)
+    visual_post_items.ts = timestamp;
+    chosen_id_name_hash = {}  // GLOBAL
+    chosen_id_name_hash.ids = []
+    chosen_id_name_hash.names = []
+    
+    //console.log(chosen_id_name_hash)
+    visual_post_items.no_of_datasets = chosen_id_name_hash.ids.length;
+    
+    var parse = require('csv-parse');
+    
+    var file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'clusters',opid)
+    
+    datasets = []
+    otudata = []
+    let lineReader = readline.createInterface({
+      input: fs.createReadStream(file_path).pipe(zlib.createGunzip())
+    });
+
+    let n = 0;
+    lineReader.on('line', (line) => {
+      n += 1
+      line_ary = line.split('\t')
+      if(n == 1){
+        headers = line_ary
+        for(n=7;n<=headers.length-1;n++){
+            datasets.push(headers[n].split(';')[1])
+        }
+      }else{
+      ///console.log("line: " + n);
+      //console.log(line);
+        
+        otudata[line_ary[0]] = {
+            "taxonomy":line_ary[1],
+            "rank":line_ary[2],
+            "min_gdist":line_ary[3],
+            "avg_gdist":line_ary[4],
+            "total":line_ary[5],
+            "counts":{}
+        } 
+        for(n=7;n<=line_ary.length-1;n++){
+            if(parseInt(line_ary[n]) > 0){
+                otudata[line_ary[0]].counts[headers[n].split(';')[1]] = line_ary[n]
+            }
+        }
+      }
+    
+    }).on('close', function() {
+    datasets.sort()
+    console.log("datasets: ");
+    console.log(datasets);
+    console.log("otudata: ");
+    console.log(otudata);
+      BIOM_MATRIX = get_otu_matrix(otudata, datasets, visual_post_items);
+      visual_post_items.max_ds_count   = BIOM_MATRIX.max_ds_count;
+      res.render('otus/visuals/view_selection', {
+                    title           : 'VAMPS: OTU Visuals', 
+                    referer         : 'otu_index',                                
+                    matrix          : JSON.stringify(BIOM_MATRIX), 
+                    project         : prj,
+                    pid             : opid,  
+                    post_items      : JSON.stringify(visual_post_items), 
+                    chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),                                                
+                    constants       : JSON.stringify(req.CONSTS),                                
+                    user            : req.user,
+                    hostname        : req.CONFIG.hostname 
+            });
+    });
+   
+     
+    
+});
+router.post('/view_selection2', helpers.isLoggedIn, function(req, res) {
     console.log('in GET OTU view_selection')
     console.log(req.body);
     console.log('<<--in OTU view_selection')
-    opid= req.body.otu_id
+    opid= req.body.otu_id  // filename
+    prj = req.body.otu_id  // filename
     var timestamp = +new Date();
     timestamp = req.user.username+'-'+timestamp
+    visual_post_items = get_post_items(req)
+    visual_post_items.ts = timestamp;
     chosen_id_name_hash = {}  // GLOBAL
+    chosen_id_name_hash.ids = []
+    chosen_id_name_hash.names = []
     
-
- 
+    //console.log(chosen_id_name_hash)
+    visual_post_items.no_of_datasets = chosen_id_name_hash.ids.length;
+    
+    var parse = require('csv-parse');
+    
+    var file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'clusters',opid)
+    var csvData=[];
+    var row_count = 0
     var otudata = {}
-    //visual_post_items = COMMON.save_post_items(req);
-    //console.log(visual_post_items)
-    var q = "SELECT otu_project.otu_project, otu_dataset.otu_dataset, otu_dataset.otu_dataset_id, otu_pdr_info.otu_label, otu_pdr_info.count,\n"
-    q += " (\n"
-    q += "   CASE\n"
-	q += "      WHEN otu_taxonomy_id IS NULL\n"
-	q += "      THEN ''\n"
-	q += "      ELSE concat_ws(';', domain, phylum, klass, `order`, family, genus, species)\n"
-    q += "   END\n"
-    q += " ) as taxonomy\n"
-    q += " FROM otu_pdr_info\n" 
-    q += " JOIN otu_dataset using(otu_dataset_id)\n" 
-    q += " JOIN otu_project using(otu_project_id)\n"
-    q += " LEFT JOIN otu_taxonomy  using(otu_taxonomy_id)\n"
-    q += " LEFT  JOIN domain using(domain_id)\n" 
-    q += " LEFT JOIN phylum using(phylum_id)\n" 
-    q += " LEFT JOIN klass using(klass_id)\n" 
-    q += " LEFT JOIN `order` using(order_id)\n" 
-    q += " LEFT JOIN family using(family_id)\n" 
-    q += " LEFT JOIN genus using(genus_id)\n"
-    q += " LEFT JOIN species using(species_id)\n"    
-    q += " WHERE otu_project_id='"+opid+"'" 
-    //console.log(q)
-    connection.query(q, function otu_data(err, rows, fields){
-        if(err){
-            console.log(err)
-        }else{
-            
-            prj = rows[0]['otu_project']
-            
-            visual_post_items = get_post_items(req)
-            visual_post_items.ts = timestamp;
-            
-            
-            //console.log('otu post items:')
-            //console.log(visual_post_items)
-            
-            
-			chosen_id_name_hash.ids = []
-			chosen_id_name_hash.names = []
-		
-            //BIOM_MATRIX = get_otu_matrix(req, rows);
-            //BIOM_MATRIX2 = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
-            BIOM_MATRIX = get_otu_matrix(rows, visual_post_items);
-            
-            //console.log(chosen_id_name_hash)
-            visual_post_items.no_of_datasets = chosen_id_name_hash.ids.length;
-            visual_post_items.max_ds_count   = BIOM_MATRIX.max_ds_count;
-            // console.log('chosen_id_name_hash')
-//             console.log(chosen_id_name_hash)
-//             console.log('visual_post_items')
-//             console.log(visual_post_items)
-//             console.log('BIOM_MATRIX')
-//             console.log(BIOM_MATRIX)
-            //console.log('BIOM_MATRIX2')
-            //console.log(BIOM_MATRIX2)
-            
-            
- 
-            
-            
-            res.render('otus/visuals/view_selection', {
+    var rows = []
+    datasets = []
+    otudata = []
+    fs.createReadStream(file_path)
+        .pipe(parse({delimiter: '\t'}))
+        .on('data', function(csvrow) {
+            row_count += 1
+            if(row_count == 1){
+                headers = csvrow
+                for(n=7;n<=headers.length-1;n++){
+                    datasets.push(headers[n].split(';')[1])
+                }
+                
+            }else{
+                //console.log(csvrow);
+                //do something with csvrow
+                //csvData.push(csvrow);  
+                //rows.push(csvrow)
+                otudata[csvrow[0]] = {}
+                otudata[csvrow[0]].taxonomy = csvrow[1]
+                otudata[csvrow[0]].rank = csvrow[2]
+                otudata[csvrow[0]].min_gdist = csvrow[3]
+                otudata[csvrow[0]].avg_gdist = csvrow[4]
+                otudata[csvrow[0]].total = csvrow[5]
+                otudata[csvrow[0]].counts = {}
+                //console.log('start')
+                for(n=7;n<=csvrow.length-1;n++){
+                    //console.log(headers[n])
+                    if(parseInt(csvrow[n]) > 0){
+                        otudata[csvrow[0]].counts[headers[n].split(';')[1]] = csvrow[n]
+                    }
+                }
+                
+            }      
+        })
+        .on('end',function() {
+          //do something wiht csvData
+          //console.log(JSON.stringify(otudata));
+          datasets.sort()
+          console.log(datasets);
+          BIOM_MATRIX = get_otu_matrix(otudata, datasets, visual_post_items);
+          visual_post_items.max_ds_count   = BIOM_MATRIX.max_ds_count;
+          res.render('otus/visuals/view_selection', {
                                 title           : 'VAMPS: OTU Visuals', 
                                 referer         : 'otu_index',                                
                                 matrix          : JSON.stringify(BIOM_MATRIX), 
@@ -215,10 +288,105 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                 user            : req.user,
                                 hostname        : req.CONFIG.hostname 
             });
-        }
-    });        
-
+        });
+    //fs.readFile(file_path, 'utf8', function (err, content) {
+        
+    
+    
+    
+        
+            
+    //})        
 });
+// router.post('/view_selectionDELETEME', helpers.isLoggedIn, function(req, res) {
+//     console.log('in GET OTU view_selection')
+//     console.log(req.body);
+//     console.log('<<--in OTU view_selection')
+//     opid= req.body.otu_id
+//     var timestamp = +new Date();
+//     timestamp = req.user.username+'-'+timestamp
+//     chosen_id_name_hash = {}  // GLOBAL
+//     
+// 
+//  
+//     var otudata = {}
+//     //visual_post_items = COMMON.save_post_items(req);
+//     //console.log(visual_post_items)
+//     var q = "SELECT otu_project.otu_project, otu_dataset.otu_dataset, otu_dataset.otu_dataset_id, otu_pdr_info.otu_label, otu_pdr_info.count,\n"
+//     q += " (\n"
+//     q += "   CASE\n"
+// 	q += "      WHEN otu_taxonomy_id IS NULL\n"
+// 	q += "      THEN ''\n"
+// 	q += "      ELSE concat_ws(';', domain, phylum, klass, `order`, family, genus, species)\n"
+//     q += "   END\n"
+//     q += " ) as taxonomy\n"
+//     q += " FROM otu_pdr_info\n" 
+//     q += " JOIN otu_dataset using(otu_dataset_id)\n" 
+//     q += " JOIN otu_project using(otu_project_id)\n"
+//     q += " LEFT JOIN otu_taxonomy  using(otu_taxonomy_id)\n"
+//     q += " LEFT JOIN domain using(domain_id)\n" 
+//     q += " LEFT JOIN phylum using(phylum_id)\n" 
+//     q += " LEFT JOIN klass using(klass_id)\n" 
+//     q += " LEFT JOIN `order` using(order_id)\n" 
+//     q += " LEFT JOIN family using(family_id)\n" 
+//     q += " LEFT JOIN genus using(genus_id)\n"
+//     q += " LEFT JOIN species using(species_id)\n"    
+//     q += " WHERE otu_project_id='"+opid+"'" 
+//     //console.log(q)
+//     connection.query(q, function otu_data(err, rows, fields){
+//         if(err){
+//             console.log(err)
+//         }else{
+//             
+//             prj = rows[0]['otu_project']
+//             
+//             visual_post_items = get_post_items(req)
+//             visual_post_items.ts = timestamp;
+//             
+//             
+//             //console.log('otu post items:')
+//             //console.log(visual_post_items)
+//             
+//             
+// 			chosen_id_name_hash.ids = []
+// 			chosen_id_name_hash.names = []
+// 		
+//             //BIOM_MATRIX = get_otu_matrix(req, rows);
+//             //BIOM_MATRIX2 = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
+//             BIOM_MATRIX = get_otu_matrix(rows, visual_post_items);
+//             
+//             //console.log(chosen_id_name_hash)
+//             visual_post_items.no_of_datasets = chosen_id_name_hash.ids.length;
+//             visual_post_items.max_ds_count   = BIOM_MATRIX.max_ds_count;
+//             // console.log('chosen_id_name_hash')
+// //             console.log(chosen_id_name_hash)
+// //             console.log('visual_post_items')
+// //             console.log(visual_post_items)
+// //             console.log('BIOM_MATRIX')
+// //             console.log(BIOM_MATRIX)
+//             //console.log('BIOM_MATRIX2')
+//             //console.log(BIOM_MATRIX2)
+//             
+//             
+//  
+//             
+//             
+//             res.render('otus/visuals/view_selection', {
+//                                 title           : 'VAMPS: OTU Visuals', 
+//                                 referer         : 'otu_index',                                
+//                                 matrix          : JSON.stringify(BIOM_MATRIX), 
+//                                 project         : prj,
+//                                 pid             : opid,  
+//                                 post_items      : JSON.stringify(visual_post_items), 
+//                                 chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),                                                
+//                                 constants       : JSON.stringify(req.CONSTS),                                
+//                                 user            : req.user,
+//                                 hostname        : req.CONFIG.hostname 
+//             });
+//         }
+//     });        
+// 
+// });
 function get_post_items(req){
     var post_items = {
         "unit_choice"       : "OTUs",
@@ -241,95 +409,99 @@ function get_post_items(req){
      }
      return post_items   
 }
-function get_otu_matrix(rows, post_items){
+function get_otu_matrix(otudata, datasets, post_items){
         console.log('get_otu_matrix')
+        //console.log(otudata)
         var date = new Date();
         var otu_matrix = {}
-        var ds_order = {}
-        var otu_tax = {}
-        var otudata = {}
-        ds_totals = {}
+        //var ds_order = {}
+        //var otu_tax = {}
+       
+        //ds_totals = {}
         var did,rank,db_tax_id,node_id,cnt,matrix_file;
+        //console.log('otu_label-0')
         otu_matrix = {
-                id: post_items.ts,
-                format: "Biological Observation Matrix 0.9.1-dev",
-                format_url:"http://biom-format.org/documentation/format_versions/biom-1.0.html",
-                type: "OTU table",
-                units: post_items.unit_choice,
-                generated_by:"VAMPS-NodeJS Version 2.0",
-                date: date.toISOString(),
-                rows:[],												// taxonomy (or OTUs, MED nodes) names
-                columns:[],											// ORDERED dataset names
-                column_totals:[],								// ORDERED datasets count sums
-                matrix_type: 'dense',
+            id: post_items.ts,
+            format: "Biological Observation Matrix 0.9.1-dev",
+            format_url:"http://biom-format.org/documentation/format_versions/biom-1.0.html",
+            type: "OTU table",
+            units: post_items.unit_choice,
+            generated_by:"VAMPS-NodeJS Version 2.0",
+            date: date.toISOString(),
+            rows:[],												// taxonomy (or OTUs, MED nodes) names
+            columns:[],											// ORDERED dataset names
+            column_totals:[],								// ORDERED datasets count sums
+            matrix_type: 'dense',
             matrix_element_type: 'int',
             shape: [],									// [row_count, col_count]
-            data:  []										// ORDERED list of lists of counts: [ [],[],[] ... ]
+            data:  []									// ORDERED list of lists of counts: [ [],[],[] ... ]
             };
-        //GLOBAL.boim_matrix;
-        var ukeys = [];
-        var unit_name_lookup = {};
-        var unit_name_lookup_per_dataset = {};
-        var unit_name_counts = {};
-
-		db_tax_id_list = {};
-		
-		for (var n in rows) { // has correct order
-			ds = rows[n]['otu_dataset']
-            did = rows[n]['otu_dataset_id']
-            otu = rows[n]['otu_label']
-            cnt = rows[n]['count']
-            tax = rows[n]['taxonomy']
-            //console.log('oldtax')
-            //console.log(tax)
-            tax = clean_tax_string(tax)
-            //console.log('newtax')
-            //console.log(tax)
-            ds_order[ds] = did
-			if(tax == '' || tax == 'n/a' || tax == 'none'){
-                otu_tax[otu] = ''
-                otu_matrix.taxonomy = 0
-            }else{
-                otu_tax[otu] = tax  // lookup
-                otu_matrix.taxonomy = 1
-            }
         
-            if(ds_totals.hasOwnProperty(ds)){
-                ds_totals[ds] += cnt
-            }else{
-                ds_totals[ds] = cnt
-            }
-            if(otudata.hasOwnProperty(otu)){
-                otudata[otu][ds] = cnt
-            }else{
-                otudata[otu] = {}
-                otudata[otu][ds] = cnt                    
-            }	  
-
-				  
-				  		
-
-					
+        //GLOBAL.boim_matrix;
+        //console.log('otu_label-1')
+        //var ukeys = [];
+        //var unit_name_lookup = {};
+        //var unit_name_lookup_per_dataset = {};
+        //var unit_name_counts = {};
+		//db_tax_id_list = {};
+		// console.log('rows')
+// 		console.log(rows)
+        
+        
+  //        WS1_10_220: { taxonomy: 'Bacteria;WS1',
+//     rank: 'phylum',
+//     min_gdist: '0.127',
+//     avg_gdist: '0.1371',
+//     total: '1',
+//     counts: { DAO_0009_2007_08_15: '1' } },
+console.log('otudata')
+console.log(otudata)
+       
+        for(n in datasets){
+			otu_matrix.columns.push({"did":n,"id":datasets[n],"metadata":null})	
+			chosen_id_name_hash.ids.push(n)
+            chosen_id_name_hash.names.push(datasets[n])		
 		}
-		otu_matrix.shape[0] = Object.keys(otu_tax).length
-        otu_matrix.shape[1] = Object.keys(ds_order).length
-    
-        for(ds in ds_order){
-            otu_matrix.columns.push({"did":ds_order[ds],"id":ds,"metadata":null})
-            otu_matrix.column_totals.push(ds_totals[ds])
-            chosen_id_name_hash.ids.push(ds_order[ds])
-            chosen_id_name_hash.names.push(ds)
+		otu_matrix.taxonomy = 0
+		for(otu_label in otudata) { //"taxonomy"
+			console.log(otu_label)
+			console.log(otudata[otu_label])
+		
+			if(otudata[otu_label].hasOwnProperty('taxonomy')){
+			    otu_matrix.rows.push({"id":otu_label,"metadata":{"taxonomy":otudata[otu_label].taxonomy}}) 
+			    otu_matrix.taxonomy = 1 
+			}else{
+			    otu_matrix.rows.push({"id":otu_label,"metadata":null}) 
+			    otu_matrix.taxonomy = 0
+			}     
+			var temp = []
+			col_tot = 0 
+			for(n in datasets){
+			    ds= datasets[n]
+			    if(otudata[otu_label].counts.hasOwnProperty(ds)){
+			        temp.push(parseInt(otudata[otu_label].counts[ds]))
+			    }else{
+			        temp.push(0)
+			    }
+			    
+			}
+			
+			otu_matrix.data.push(temp)	  
+				  			
+		}
+        
+		otu_matrix.shape[0] = Object.keys(otu_matrix.rows).length
+        otu_matrix.shape[1] = Object.keys(otu_matrix.columns).length
+        
+        for(n in datasets){
+            var temp = 0
+            for(m in otu_matrix.data){
+                temp += otu_matrix.data[m][n]
+            }
+            otu_matrix.column_totals.push(temp)
         }
         otu_matrix.max_ds_count = Math.max.apply(null, otu_matrix.column_totals)
-        n=0
-        for(otu in otu_tax){
-            otu_matrix.rows.push({"id":otu,"metadata":{"taxonomy":otu_tax[otu]}})   
-            otu_matrix.data[n] = []
-            for(ds in ds_order){            
-                otu_matrix.data[n].push(otudata[otu][ds])
-            }
-            n += 1
-        }
+       
         
 		if(post_items.update_data === true || post_items.update_data === 1 || post_items.update_data === '1'){
                 
@@ -340,7 +512,8 @@ function get_otu_matrix(rows, post_items){
 		}
 
 			
-            
+console.log('otu_matrix')
+console.log(otu_matrix)		    
         matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
         //COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
         COMMON.write_file( matrix_file, JSON.stringify(otu_matrix,null,2) );
@@ -615,39 +788,75 @@ function get_custom_biom_matrix( post_items, mtx) {
 //
 router.get('/load_otu_list', helpers.isLoggedIn, function (req, res) {
     console.log('in load_otu_list')
-    var q = 'SELECT otu_project, otu_project_id, title, otu_size, method, project_description, owner_user_id, ds_count, otu_count'
-    q += ' from  otu_project'
-    //q += ' JOIN otu_dataset using(otu_project_id)' 
-    //q += ' group by otu_project_id'
-    q += ' order by otu_project'
-    otu_project_list = {}
-    connection.query(q, function otu_projects(err, rows, fields){
+    var otu_project_list = {}
+    var indir = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'clusters')
+    fs.readdir(indir, function (err, list) {
         if(err){
             console.log(err)
         }else{
-            for(n in rows){
-                //console.log(rows[n])
-                
-                opid = rows[n]['otu_project_id'].toString()
-                prj = rows[n]['otu_project']
-                title =  rows[n]['title']
-                size  =  rows[n]['otu_size']
-                method = rows[n]['method'] 
-                desc =  rows[n]['project_description']
-                oid =  rows[n]['owner_user_id']
-                ds_count = rows[n]['ds_count'].toString()
-                otu_count = rows[n]['otu_count'].toString()
-                otu_project_list[prj] = {"ds_count":ds_count,"title":title,"opid":opid,"otu_count":otu_count,"method":method,"size":size}
-                
-            }
-            
+            list.forEach(function (file) {
+                 //var pth = path.join(indir, file);
+                 
+                 var file_items = file.split('.')
+                 var project = file_items[0]
+                 otu_project_list[file] = {"opid":project}  
+                 if(file_items[1] == undefined){
+                    otu_project_list[file].domain = 'unknown'
+                 }else{
+                    otu_project_list[file].domain = file_items[1]
+                 }
+                 if(file_items[2] == undefined){
+                    otu_project_list[file].method = 'unknown'
+                 }else{
+                    otu_project_list[file].method = file_items[2].toUpperCase()
+                 }
+                 if(file_items[4] == undefined){
+                    otu_project_list[file].size = 'unknown'
+                 }else{
+                    otu_project_list[file].size = parseInt(file_items[4],10) // base 10   
+                 }
+                          
+             });
+             //console.log(otu_project_list)
+             res.json(otu_project_list)
         }
-        //console.log('json')
-        //console.log(json)
-        res.json(otu_project_list)
     })
-    
 });
+// router.get('/load_otu_listDELETEME', helpers.isLoggedIn, function (req, res) {
+//     console.log('in load_otu_list')
+//     var q = 'SELECT otu_project, otu_project_id, title, otu_size, method, project_description, owner_user_id, ds_count, otu_count'
+//     q += ' from  otu_project'
+//     //q += ' JOIN otu_dataset using(otu_project_id)' 
+//     //q += ' group by otu_project_id'
+//     q += ' order by otu_project'
+//     otu_project_list = {}
+//     connection.query(q, function otu_projects(err, rows, fields){
+//         if(err){
+//             console.log(err)
+//         }else{
+//             for(n in rows){
+//                 //console.log(rows[n])
+//                 
+//                 opid = rows[n]['otu_project_id'].toString()
+//                 prj = rows[n]['otu_project']
+//                 title =  rows[n]['title']
+//                 size  =  rows[n]['otu_size']
+//                 method = rows[n]['method'] 
+//                 desc =  rows[n]['project_description']
+//                 oid =  rows[n]['owner_user_id']
+//                 ds_count = rows[n]['ds_count'].toString()
+//                 otu_count = rows[n]['otu_count'].toString()
+//                 otu_project_list[prj] = {"ds_count":ds_count,"title":title,"opid":opid,"otu_count":otu_count,"method":method,"size":size}
+//                 
+//             }
+//             
+//         }
+//         //console.log('json')
+//         //console.log(json)
+//         res.json(otu_project_list)
+//     })
+//     
+// });
 //
 //
 // router.get('/create_otus_fasta', helpers.isLoggedIn, function (req, res) {

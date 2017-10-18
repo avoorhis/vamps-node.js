@@ -136,9 +136,7 @@
             </li>
             <br>
             <li>
-              <% if(hostname.substring(0,7) == 'bpcweb8'){ %>                
-                    <a href='/otus/otus_index' disabled class='btn btn-sm btn-default btn-link'>Pre-Compiled OTUs (In Development)</a>
-              <% }else if(hostname.substring(0,7) == 'bpcweb7'){ %>
+              <% if(hostname.substring(0,6) == 'bpcweb'){ %>                
                     <a href='/otus/otus_index' class='btn btn-sm btn-default btn-link'>Pre-Compiled OTUs (Admins only for now)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></a>
               <% }else{ %>
