@@ -1388,7 +1388,7 @@ function save_file(data, file_path){
 //   })
 }
 function thin_out_data_for_display(mtx){
-    console.log('in thin_out_data_for_display')
+    console.log('in thin_out_data_for_display- OTUs only')
     var new_mtx = {}
     new_mtx.columns = mtx.columns
     new_mtx.data = []
@@ -1404,7 +1404,7 @@ function thin_out_data_for_display(mtx){
             //console.log(cnt)
             //console.log(pct)
             got_one_above_limit = false
-            if((cnt/dstot)*100 > 0.2){
+            if((cnt/dstot)*100 > 1.0){
                 //console.log('greater than 1%')
                 got_one_above_limit = true
             }
