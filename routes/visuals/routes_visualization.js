@@ -1692,7 +1692,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     //new_matrix.dids = [chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)]];
     new_matrix.data = []
     new_matrix.total = 0
-    console.log('in bar_single01')
+    
     new_matrix.shape = [BIOM_MATRIX.shape[0],1]
     var idx = -1;
 
@@ -1710,7 +1710,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
       new_matrix.data.push([BIOM_MATRIX.data[n][d]])
       new_matrix.total += BIOM_MATRIX.data[n][d]
     }
-    console.log(JSON.stringify(new_matrix))
+    //console.log(JSON.stringify(new_matrix))
 
     new_matrix = helpers.sort_json_matrix(new_matrix, order)
     var new_order = {}
