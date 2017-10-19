@@ -406,34 +406,43 @@ piecharts: function(req, res) {
         console.log(msg)
     }else{
 
+      // parse data remove data less than 1%
+      
       BIOM_MATRIX = JSON.parse(data)
-
+      matrix = BIOM_MATRIX
+      // parse data remove data less than 1%
+      if(req.body.hasOwnProperty('type') && req.body.type == 'otus'){
+          //if(BIOM_MATRIX.rows.length > 100){
+            console.log('calling thin_out_data_for_display: length= '+BIOM_MATRIX.rows.length.toString())
+            matrix = thin_out_data_for_display(BIOM_MATRIX)
+          //}
+      }
 
     var unit_list = [];
-    for (var n in BIOM_MATRIX.rows){
-        unit_list.push(BIOM_MATRIX.rows[n].id);
+    for (var n in matrix.rows){
+        unit_list.push(matrix.rows[n].id);
     }
 
     //colorsX = {}
     var total = 0
-    for(n in BIOM_MATRIX.rows){
+    for(n in matrix.rows){
       if(imagetype == 'single'){
         //colorsX[mtx.rows[n].id] = get_random_color()
-        total +=  parseInt(BIOM_MATRIX.data[n])
+        total +=  parseInt(matrix.data[n])
       }else{
         //colorsX[mtx.rows[n].id] = string_to_color_code(mtx.rows[n].id)
       }
     }
-    var ds_count = BIOM_MATRIX.shape[1];
+    var ds_count = matrix.shape[1];
     var tmp={};
     var tmp_names={};
-      for (var d in BIOM_MATRIX.columns){
-        tmp[BIOM_MATRIX.columns[d].id]=[]; // data
-        //tmp_names[BIOM_MATRIX.columns[d].id]=mtx_local.columns[d].id; // datasets
+      for (var d in matrix.columns){
+        tmp[matrix.columns[d].id]=[]; // data
+        //tmp_names[matrix.columns[d].id]=mtx_local.columns[d].id; // datasets
       }
-      for (var x in BIOM_MATRIX.data){
-        for (var y in BIOM_MATRIX.columns){
-          tmp[BIOM_MATRIX.columns[y].id].push(BIOM_MATRIX.data[x][y]);
+      for (var x in matrix.data){
+        for (var y in matrix.columns){
+          tmp[matrix.columns[y].id].push(matrix.data[x][y]);
         }
       }
       var mtxdata={};
@@ -475,6 +484,7 @@ piecharts: function(req, res) {
             .append('div').attr('class','container')
             .append('svg')
                 .attr("xmlns", 'http://www.w3.org/2000/svg')
+                .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
                 .attr("width", image_w)
                 .attr("height", image_h)
             .append('g')
@@ -495,7 +505,7 @@ piecharts: function(req, res) {
               })
             .append("a")
             .attr("xlink:xlink:href", function(d, i) {
-              return '/visuals/bar_single?id='+BIOM_MATRIX.columns[i].id+'&ts='+ts+'&orderby=alpha&val=z';
+              return '/visuals/bar_single?id='+matrix.columns[i].id+'&ts='+ts+'&orderby=alpha&val=z';
             })
             .attr("target", '_blank' );
         }else{
@@ -521,7 +531,7 @@ piecharts: function(req, res) {
                         if(imagetype == 'single'){
                           return 'SumCount: '+total.toString()
                         }else{
-                          return BIOM_MATRIX.columns[i].id;
+                          return matrix.columns[i].id;
                         }
                     });
         if(req.body.source == 'website'){
@@ -605,24 +615,31 @@ barcharts: function(req, res){
         console.log(msg)
     }else{
 
-      BIOM_MATRIX = JSON.parse(data)
-      //console.log(BIOM_MATRIX)
-      var ds_count = BIOM_MATRIX.shape[1];
+     BIOM_MATRIX = JSON.parse(data)
+     matrix = BIOM_MATRIX
+     if(req.body.hasOwnProperty('type') && req.body.type == 'otus'){
+          //if(BIOM_MATRIX.rows.length > 100){
+            console.log('calling thin_out_data_for_display: length= '+BIOM_MATRIX.rows.length.toString())
+            matrix = thin_out_data_for_display(BIOM_MATRIX)
+          //}
+      }
+
+      var ds_count = matrix.shape[1];
       var props = get_image_properties(imagetype, ds_count);
       mtxdata = [];
-      for (var p in BIOM_MATRIX.columns){
+      for (var p in matrix.columns){
         tmp={};
-        tmp.pjds = BIOM_MATRIX.columns[p].id;
-        tmp.did = BIOM_MATRIX.columns[p].did;
+        tmp.pjds = matrix.columns[p].id;
+        tmp.did = matrix.columns[p].did;
         //did_by_names[tmp.pjds]=mtx_local.columns[p].did;
-        for (var t in BIOM_MATRIX.rows){
-          tmp[BIOM_MATRIX.rows[t].id] = BIOM_MATRIX.data[t][p];
+        for (var t in matrix.rows){
+          tmp[matrix.rows[t].id] = matrix.data[t][p];
           //tmp[mtx_local.rows[t].id] = mtx_local.data[p][t];
         }
         mtxdata.push(tmp);
       }
       var scaler = d3.scaleOrdinal()
-        .range( BIOM_MATRIX.rows );
+        .range( matrix.rows );
       scaler.domain(d3.keys(mtxdata[0]).filter(function(key) { return key !== "pjds" && key !== "did"; }));
       mtxdata.forEach(function(d) {
         var x0 = 0;
@@ -657,6 +674,7 @@ barcharts: function(req, res){
             .append('div').attr('class','container')
             .append('svg')
                 .attr("xmlns", 'http://www.w3.org/2000/svg')
+                .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
                 .attr("width", props.width)
                 .attr("height", props.height)
             .append('g')
@@ -670,24 +688,31 @@ barcharts: function(req, res){
           }else if(imagetype=='double'){
             create_doublebar_svg_object(req, svg, props, mtxdata, ts);
           }else{  // group
-            create_bars_svg_object(req, svg, props, mtxdata, ts);
+            try{
+                create_bars_svg_object(req, svg, props, mtxdata, ts);
+            }catch(err){
+                console.log('Error in create_bars_svg_object() '+err.toString())
+            }
           }
 
 
-
+console.log('images/barcharts-6') 
           //fs.writeFileSync('test.svg', window.d3.select('.container').html()) //using sync to keep the code simple
           //console.log('inwin2 ',window.d3.select('.container').html())
           var html = window.d3.select('.container').html()
           var outfile_name = ts + '-barcharts-api.svg'
           outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
           console.log('outfile_path:',outfile_path)
+console.log('images/barcharts-7') 
           result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
-          console.log(result)
+          //console.log(result)
           data = {}
           data.html = html
           data.filename = outfile_name
           //res.send(outfile_name)
+console.log('images/barcharts-8') 
           res.json(data)
+          window.close()
 
         }
       })
@@ -1118,7 +1143,7 @@ function create_bars_svg_object(req, svg, props, data, ts) {
           .attr("dx", "50")
           .style("font-size",  "11px")
           .text("Percent");
-          
+console.log('svg-1')      
     if(req.body.source == 'website'){
        var datasetBar = svg.selectAll(".bar")
           .data(data)
@@ -1138,7 +1163,7 @@ function create_bars_svg_object(req, svg, props, data, ts) {
           .attr("transform", function(d) { return  "translate(0, " + props.y(d.pjds) + ")"; })
        
     }
-
+console.log('svg-2') 
     var labels = datasetBar.append("text")
       .attr("class", "y label")
       .attr("text-anchor", "end")
@@ -1147,7 +1172,7 @@ function create_bars_svg_object(req, svg, props, data, ts) {
       .attr("x", "-2")
       .attr("y", props.bar_height*2)
       .text(function(d) { return d.pjds; })
-
+console.log('svg-3') 
     var labels = datasetBar.append("text")
       .style("text-anchor","start")
       .style("font-size",  "13px")
@@ -1155,58 +1180,59 @@ function create_bars_svg_object(req, svg, props, data, ts) {
       .attr("x", props.plot_width+10)
       .attr("y", props.bar_height*2)
       .text(function(d) { return 'SumCount: '+d.total; })
+console.log('svg-4') 
+     if(req.body.source == 'website'){
+        console.log('svg-4a') 
+        var gnodes = datasetBar.selectAll("rect")
+              .data(function(d) { return d.unitObj; })
+            .enter()
 
- if(req.body.source == 'website'){
-    var gnodes = datasetBar.selectAll("rect")
-          .data(function(d) { return d.unitObj; })
-        .enter()
 
-
-    .append("rect")
-          .attr("x", function(d) { return props.x(d.x0); })
-          .attr("y", 15)  // adjust where first bar starts on x-axis
-          .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
-          .attr("height",  18)         
-         // .attr("title",function(d){
-         //     return d.tax
-          //})
-         .attr("id",function(d,i) {
-            //var cnt =  d.tax;
-            //var total = d.total;
+        .append("rect")
+              .attr("x", function(d) { return props.x(d.x0); })
+              .attr("y", 15)  // adjust where first bar starts on x-axis
+              .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
+              .attr("height",  18)         
+             // .attr("title",function(d){
+             //     return d.tax
+              //})
+             .attr("id",function(d,i) {
+                //var cnt =  d.tax;
+                //var total = d.total;
           
-            //console.log(this._parentNode.__data__['total']);
-            var ds = ''; // PLACEHOLDER for TT
-            var pct = (d.cnt * 100 / d.total).toFixed(2);
-            var id = 'bc/' + d.tax + '/'+ d.cnt.toString() + '/' + pct;
-            return id;
-          })
+                //console.log(this._parentNode.__data__['total']);
+                var ds = ''; // PLACEHOLDER for TT
+                var pct = (d.cnt * 100 / d.total).toFixed(2);
+                var id = 'bc/' + d.tax + '/'+ d.cnt.toString() + '/' + pct;
+                return id;
+              })
           
-          .attr("class","tooltip_viz")
-          .style("fill",   function(d,i) {
-            //return get_random_color()
-            return string_to_color_code(d.tax);
-          });
-}else{
-    var gnodes = datasetBar.selectAll("rect")
-          .data(function(d) { return d.unitObj; })
-        .enter()
+              .attr("class","tooltip_viz")
+              .style("fill",   function(d,i) {
+                //return get_random_color()
+                return string_to_color_code(d.tax);
+              });
+      }else{
+        var gnodes = datasetBar.selectAll("rect")
+              .data(function(d) { return d.unitObj; })
+            .enter()
 
-    .append("rect")
-          .attr("x", function(d) { return props.x(d.x0); })
-          .attr("y", 15)  // adjust where first bar starts on x-axis
-          .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
-          .attr("height",  18)
-          .style("fill",   function(d,i) {
-            //return get_random_color()
-            return string_to_color_code(d.tax);
-          })
-    .append("title")
-     .text(function(d) {
-       //console.log('this.parentNode.__data__',d.cnt)
-       return d.tax+' -- '+d.cnt
-     })
-}
-
+        .append("rect")
+              .attr("x", function(d) { return props.x(d.x0); })
+              .attr("y", 15)  // adjust where first bar starts on x-axis
+              .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
+              .attr("height",  18)
+              .style("fill",   function(d,i) {
+                //return get_random_color()
+                return string_to_color_code(d.tax);
+              })
+        .append("title")
+         .text(function(d) {
+           //console.log('this.parentNode.__data__',d.cnt)
+           return d.tax+' -- '+d.cnt
+         })
+      }
+console.log('svg-5') 
 }
 //
 //
@@ -1419,4 +1445,49 @@ function save_file(data, file_path){
 //       return 'Success'
 //     }
 //   })
+}
+function thin_out_data_for_display(mtx){
+    console.log('in thin_out_data_for_display')
+    var new_mtx = {}
+    new_mtx.columns = mtx.columns
+    new_mtx.data = []
+    new_mtx.rows = []
+     console.log('olddata')
+     console.log(JSON.stringify(mtx.data.length))
+    console.log(JSON.stringify(mtx.data))
+    for(m in mtx.data){
+        
+        for(n in mtx.data[m]){
+            cnt = mtx.data[m][n]
+            dstot = mtx.column_totals[n]
+            pct = (cnt/dstot)*100
+            //console.log('pct->')
+            //console.log(cnt)
+            //console.log(pct)
+            got_one_above_limit = false
+            if((cnt/dstot)*100 > 0.2){
+                //console.log('greater than 1%')
+                got_one_above_limit = true
+            }
+            if(got_one_above_limit){
+                new_mtx.data.push(mtx.data[m])
+                new_mtx.rows.push(mtx.rows[m])            
+            }
+            
+        }
+    }
+    new_mtx.shape = [new_mtx.rows.length, new_mtx.columns.length]
+    new_mtx.matrix_type = "dense"
+    new_mtx.max_dataset_count = mtx.max_dataset_count
+    new_mtx.column_totals = mtx.column_totals
+    new_mtx.date = mtx.date
+    new_mtx.generated_by = mtx.generated_by
+    new_mtx.units = mtx.units
+    new_mtx.type = mtx.type
+    new_mtx.format_url = mtx.format_url
+    new_mtx.format = mtx.format
+    new_mtx.id = mtx.id
+
+    return new_mtx
+    
 }

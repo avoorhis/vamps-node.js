@@ -247,7 +247,7 @@ if (tax_counts_link !== null) {
     
         if(typeof tax_table_created == "undefined"){
         
-            create_viz('counts_matrix');
+            create_viz('counts_matrix', false);
             
         }else{
             if(tax_counts_btn.value == 'hide'){
@@ -268,7 +268,13 @@ if (typeof tax_counts_btn !=="undefined") {
       }
   });
 }
-
+var counts_matrix_open_btn = document.getElementById('counts_matrix_open_btn') || null;
+if (counts_matrix_open_btn !== null) {
+  counts_matrix_open_btn.addEventListener('click', function () {
+      
+      create_viz('counts_matrix', true);      
+  });
+}
 
 //
 // BARCHARTS
@@ -281,7 +287,7 @@ if (barchart_link !== null) {
   barchart_link.addEventListener('click', function () {
       
     if(typeof barcharts_created == "undefined"){
-        create_viz('barcharts');
+        create_viz('barcharts', false);
         
       }else{
         if(barcharts_btn.value == 'hide', false){        
@@ -304,6 +310,12 @@ if (typeof barcharts_btn !=="undefined") {
       
   });
 }
+var barcharts_open_btn = document.getElementById('barcharts_open_btn');
+if (typeof barcharts_open_btn !== "undefined") {
+  barcharts_open_btn.addEventListener('click', function () {
+      create_viz('barcharts', pi_local.ts, true, cts_local);      
+  });
+}
 //
 // PIECHARTS
 //
@@ -316,7 +328,7 @@ if (piecharts_link !== null) {
   piecharts_link.addEventListener('click', function () {
       
     if(typeof piecharts_created == "undefined"){
-        create_viz('piecharts');
+        create_viz('piecharts', false);
     		
       }else{
         if(piecharts_btn.value == 'hide'){
@@ -339,7 +351,12 @@ if (typeof piecharts_btn !=="undefined") {
       
   });
 }
-
+var piecharts_open_btn = document.getElementById('piecharts_open_btn');
+if (typeof piecharts_open_btn !== "undefined") {
+  piecharts_open_btn.addEventListener('click', function () {
+      create_viz('piecharts', pi_local.ts, true, cts_local);      
+  });
+}
 //
 // DISTANCE HEATMAP
 //
@@ -351,7 +368,7 @@ if (dheatmap_link !== null) {
   dheatmap_link.addEventListener('click', function () {
       
     if(typeof dheatmap_created == "undefined"){
-        create_viz('dheatmap');
+        create_viz('dheatmap', false);
         
       }else{
         if(dheatmap_hide_btn.value == 'hide'){        
@@ -374,7 +391,12 @@ if (typeof dheatmap_hide_btn !== "undefined") {
       
   });
 }
-
+var dheatmap_open_btn = document.getElementById('dheatmap_open_btn');
+if (typeof dheatmap_open_btn !== "undefined") {
+  dheatmap_open_btn.addEventListener('click', function () {
+      create_viz('dheatmap', pi_local.ts, true, cts_local);      
+  });
+}
 //
 // FREQUENCY HEATMAP
 //
@@ -387,7 +409,7 @@ if (fheatmap_link !== null) {
   fheatmap_link.addEventListener('click', function () {
       
     if(typeof fheatmap_created == "undefined"){
-        create_viz('fheatmap');
+        create_viz('fheatmap', false);
     		
       }else{
         if(fheatmap_btn.value == 'hide'){        
@@ -410,6 +432,12 @@ if (typeof fheatmap_btn !== "undefined") {
       
   });
 }
+var fheatmap_open_btn = document.getElementById('fheatmap_open_btn');
+if (typeof fheatmap_open_btn !== "undefined") {
+  fheatmap_open_btn.addEventListener('click', function () {
+      create_viz('fheatmap', pi_local.ts, true, cts_local);      
+  });
+}
 //
 // DENDROGRAM1  D3 Phylogram
 //
@@ -422,7 +450,7 @@ if (dendrogram01_link !== null) {
   dendrogram01_link.addEventListener('click', function () {
       
     if(typeof dendrogram01_created == "undefined"){
-        create_viz('dendrogram01');
+        create_viz('dendrogram01', false);
     		
       }else{
         if(dendrogram01_btn.value == 'hide'){        
@@ -444,7 +472,12 @@ if (typeof dendrogram01_btn !== "undefined") {
       }      
   });
 }
-
+var dendrogram01_open_btn = document.getElementById('dendrogram01_open_btn');
+if (typeof dendrogram01_open_btn !== "undefined") {
+  dendrogram01_open_btn.addEventListener('click', function () {
+      create_viz('dendrogram01', pi_local.ts, true, cts_local);      
+  });
+}
 
 //
 // DENDROGRAM3  D3 Radial
@@ -458,7 +491,7 @@ if (dendrogram03_link !== null) {
   dendrogram03_link.addEventListener('click', function () {
       
     if(typeof dendrogram03_created == "undefined"){
-        create_viz('dendrogram03');
+        create_viz('dendrogram03', false);
     		
       }else{
         if(dendrogram03_btn.value == 'hide'){        
@@ -480,6 +513,18 @@ if (typeof dendrogram03_btn !== "undefined") {
       }      
   });
 }
+var dendrogram03_open_btn = document.getElementById('dendrogram03_open_btn');
+if (typeof dendrogram03_open_btn !== "undefined") {
+  dendrogram03_open_btn.addEventListener('click', function () {
+      create_viz('dendrogram03', pi_local.ts, true, cts_local);      
+  });
+}
+var adiversity_open_btn = document.getElementById('adiversity_open_btn');
+if (typeof adiversity_open_btn !== "undefined") {
+  adiversity_open_btn.addEventListener('click', function () {
+      create_viz('adiversity', pi_local.ts, true, cts_local);      
+  });
+}
 //
 // ALPHA DIVERSITY
 //
@@ -493,7 +538,7 @@ if (adiversity_link !== null) {
   adiversity_link.addEventListener('click', function () {
       
     if(typeof adiversity_created == "undefined"){
-        create_viz('adiversity');
+        create_viz('adiversity', false);
         
       }else{
         if(adiversity_btn.value == 'hide'){        
@@ -617,24 +662,24 @@ function toggle_visual_element(table_div, tog, btn){
 }
 
 
-function create_viz(visual) {
+function create_viz(visual, new_window) {
    
     if(visual === 'counts_matrix'){
-      create_counts_matrix();      
+      create_counts_matrix(new_window);      
     }else if(visual === 'piecharts'){
-      create_piecharts_group();
+      create_piecharts_group(new_window);
     }else if(visual === 'barcharts'){
-      create_barcharts_group();
+      create_barcharts_group(new_window);
     }else if(visual === 'dheatmap'){
-      create_dheatmap();
+      create_dheatmap(new_window);
     }else if(visual === 'fheatmap'){
-      create_fheatmap();
+      create_fheatmap(new_window);
     }else if(visual === 'dendrogram01'){
-      create_dendrogram('svg','phylogram');
+      create_dendrogram('svg','phylogram', new_window);
     }else if(visual === 'dendrogram03'){
-      create_dendrogram('svg','radial');
+      create_dendrogram('svg','radial', new_window);
     }else if(visual === 'adiversity'){
-      create_adiversity();
+      create_adiversity(new_window);
     }else{
 
     }
@@ -645,15 +690,26 @@ function create_viz(visual) {
 //
 // TAX TABLE
 //
-function create_counts_matrix() {
+function create_counts_matrix(new_window) {
             
-      
+      if(new_window){
+            var htmlstring = document.getElementById('counts_matrix_div').innerHTML;
+            function openindex()
+                {
+                      rando = Math.floor(Math.random() * 20);
+                      OpenWindow=window.open("", "counts_matrix"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+                      OpenWindow.document.write(new_window_skeleton(htmlstring))
+                      OpenWindow.document.close()
+                      self.name="main"
+                }
+            openindex()
+            return
+      }
       tax_table_created = true;
       //var init = {"selected_distance":"horn","normalization":"none","min_range":"0","max_range":"100"}
       var info_line = create_header('ftable', pi_local);
       
       document.getElementById('counts_matrix_title').innerHTML = info_line;
-      
       document.getElementById('pre_counts_matrix_div').style.display = 'block';
       document.getElementById('counts_matrix_title').style.color = 'white';
       document.getElementById('counts_matrix_title').style['font-size'] = 'small';
@@ -822,8 +878,22 @@ function average(data){
 //
 //
 //
-function create_dheatmap() {      
-      
+function create_dheatmap(new_window) {      
+      if(new_window){
+        var htmlstring = document.getElementById('dheatmap_div').innerHTML;
+        function openindex()
+            {
+              rando = Math.floor(Math.random() * 20);
+              OpenWindow=window.open("", "heatmap"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+              OpenWindow.document.write(new_window_skeleton(htmlstring))
+              OpenWindow.document.close()
+              self.name="main"
+            }
+
+        openindex()
+        return
+
+      }
       var dhm_div = document.getElementById('dheatmap_div');
       dhm_div.innerHTML = '';
       dhm_div.style.display = 'block';
@@ -858,9 +928,27 @@ function create_dheatmap() {
 //
 //  CREATE FREQUENCY HEATMAP
 //
-function create_fheatmap() {
+function create_fheatmap(new_window) {
       //alert('im HM')
-      
+      if(new_window){
+
+          var htmlstring = document.getElementById('fheatmap_div').innerHTML;
+
+
+          function openindex()
+            {
+              rando = Math.floor(Math.random() * 20);
+              OpenWindow=window.open("", "fheatmap"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+              OpenWindow.document.write(new_window_skeleton(htmlstring))
+              OpenWindow.document.close()
+              self.name="main"
+            }
+
+          openindex()
+          return
+
+
+     }
       var fhm_div = document.getElementById('fheatmap_div');
       
       fhm_div.innerHTML = '';
@@ -894,8 +982,24 @@ function create_fheatmap() {
 //
 //  CREATE PIECHARTS
 //
-function create_piecharts_group() {
-    
+function create_piecharts_group(new_window) {
+    if(new_window){
+
+          var htmlstring = document.getElementById('piecharts_div').innerHTML;
+
+
+          function openindex()
+            {
+              rando = Math.floor(Math.random() * 20);
+              OpenWindow=window.open("", "piecharts"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+              OpenWindow.document.write(new_window_skeleton(htmlstring))
+              OpenWindow.document.close()
+              self.name="main"
+            }
+
+          openindex()
+          return
+    }
     piecharts_created = true;
     //var init = {"selected_distance":"morisita_horn","normalization":"none","min_range":"0","max_range":"100"}
     var info_line = create_header('pies', pi_local);
@@ -914,6 +1018,7 @@ function create_piecharts_group() {
         var args = {}
         args.image = 'piecharts'
         args.source = 'website'
+        args.type = 'otus'
         xmlhttp.open("POST", '/api/create_image', true); 
         //         alert(xmlhttp) 
         xmlhttp.setRequestHeader("Content-type","application/json");
@@ -939,9 +1044,21 @@ function create_piecharts_group() {
 //
 //  CREATE BARCHARTS
 //
-function create_barcharts_group() {
+function create_barcharts_group(new_window) {
       
-    
+    if(new_window){
+          var htmlstring = document.getElementById('barcharts_div').innerHTML;
+          function openindex()
+            {
+              rando = Math.floor(Math.random() * 20);
+              OpenWindow=window.open("", "barcharts"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+              OpenWindow.document.write(new_window_skeleton(htmlstring))
+              OpenWindow.document.close()
+              self.name="main"
+            }
+          openindex()
+          return
+    }
     barcharts_created = true;
     var info_line = create_header('bars', pi_local);
     document.getElementById('barcharts_title').innerHTML = info_line;
@@ -961,6 +1078,7 @@ function create_barcharts_group() {
     var args = {}
     args.image = 'barcharts'
     args.source = 'website'
+    args.type = 'otus'
     xmlhttp.open("POST", '/api/create_image', true); 
     //         alert(xmlhttp) 
     xmlhttp.setRequestHeader("Content-type","application/json");
@@ -981,9 +1099,28 @@ function create_barcharts_group() {
 //
 //
 //
-function create_dendrogram(image_type, script) {
+function create_dendrogram(image_type, script, new_window) {
       //alert('im DEND')
-    
+     if(new_window){
+        if(script == 'phylogram'){
+          var htmlstring = document.getElementById('dendrogram01_div').innerHTML;
+        }else if(script == 'radial'){
+          var htmlstring = document.getElementById('dendrogram03_div').innerHTML;
+        }
+
+        function openindex()
+            {
+                  rando = Math.floor(Math.random() * 20);
+                  OpenWindow=window.open("", "dendrogram"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+                  OpenWindow.document.write(new_window_skeleton(htmlstring))
+                  OpenWindow.document.close()
+                  self.name="main"
+            }
+
+        openindex()
+        return
+
+    }
       var info_line = create_header('dendrogram', pi_local);
       var dend_div;
       if(script == 'phylogram'){  // svg
@@ -1079,8 +1216,25 @@ function create_dendrogram(image_type, script) {
  
 }
 
-function create_adiversity(){
-    
+function create_adiversity(new_window){
+    if(new_window){
+
+          var htmlstring = document.getElementById('adiversity_div').innerHTML;
+
+          function openindex()
+            {
+              rando = Math.floor(Math.random() * 20);
+              OpenWindow=window.open("", "adiversity"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
+              OpenWindow.document.write(new_window_skeleton(htmlstring))
+              OpenWindow.document.close()
+              self.name="main"
+            }
+
+          openindex()
+          return
+
+
+    }
     adiversity_created = true;
     var info_line = create_header('adiversity', pi_local);
     document.getElementById('adiversity_title').innerHTML = info_line;
@@ -1192,7 +1346,63 @@ function create_header(viz, pi) {
   return txt;
 }
 
+function new_window_skeleton(html){
 
+  txt = '<html lang="en">'+"\n"
+  txt += "<HEAD>"+"\n"
+  txt +="<title>VAMPS: Visuals Select</title>"+"\n"
+  txt +='<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">'+"\n"
+  txt +='<link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">'+"\n"
+  txt +='<link rel="stylesheet" href="/stylesheets/bootstrap.min.css" >'+"\n"
+  txt +='<link rel="stylesheet" href="/stylesheets/bootstrap-theme.min.css">'+"\n"
+  txt +='<link href="/stylesheets/bootstrap-responsive.css" rel="stylesheet" \>'+"\n"
+  txt +="</HEAD>"+"\n"
+  txt +="<BODY>"+"\n"
+  txt +="<div style='border:1px solid grey;padding:5px;background:lightgreen;'>"
+  txt +="<table border='0'>"
+  var n = 0;
+  var cols = 2;
+  for(item in pi_local){
+    if(item !== 'metadata' && item !== 'ts'){
+      txt += "<td align='right' style='padding-left:3px;'>"+item+":</td><td>&nbsp;"+pi_local[item]+"</td>"
+      if( n % cols === (cols - 1) ) {
+          txt += "</tr><tr>"
+      }
+      n += 1;
+    }
+  }
+  txt +="</table>" +"\n";
+  txt +="</div>" +"\n";
+  txt +=html+"\n"
+  txt +="<div id='counts_tooltip_div' class=''></div>" +"\n";
+  txt +="<div id='piebarcharts_tooltip_div' class=''></div>" +"\n";
+  txt +="<script type='text/javascript' src='/javascripts/jquery-2.1.1.min.js'></script>" +"\n";
+  txt +="<script type='text/javascript' src='/javascripts/jquery-ui.min.js'></script>"+"\n"
+  txt +="<script type='text/javascript' src='/javascripts/bootstrap.min.js'></script>"+"\n"
+  txt +='<script type="text/javascript" src="/javascripts/tablesort.min.js"></script>'+"\n"
+  txt +='<script type="text/javascript" src="/javascripts/jquery.scrollTo.min.js"></script>'+"\n"
+  txt +='<script type="text/javascript" src="/javascripts/jquery.tablednd.js"></script>'+"\n"
+  txt +='<script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>'+"\n"
+  txt +='<script type="text/javascript" src="/javascripts/d3pie.min.js" charset="utf-8"></script>'+"\n"
+  txt +='<script type="text/javascript" src="/javascripts/d3.phylogram.js" charset="utf-8"></script>'+"\n"
+  txt +='<script type="text/javascript" src="/javascripts/d3.phylonator.js" charset="utf-8"></script>'+"\n"
+  txt +='<script type="text/javascript" src="/javascripts/newick.js" charset="utf-8"></script>'+"\n"
+  txt +='<script type="text/javascript" src="/javascripts/drag_rows.js"></script>'+"\n"
+  txt +='<script type="text/javascript" src="/javascripts/global.js"></script>'+"\n"
+  txt +='<script type="text/javascript" src="/javascripts/common_selection.js"></script>'+"\n"
+  txt +='<script type="text/javascript" src="/javascripts/view_selection.js"></script>'+"\n"
+  txt +='<script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>'+"\n"
+  txt +='<script type="text/javascript" src="/javascripts/jquery.flot.min.js"></script>'+"\n"
+  txt +="</BODY>"+"\n"
+  txt +="</HTML>"+"\n"
+  // code for tooltips
+  txt +="<script>"
+  txt +="var $liveTip = $('<div id='livetip_chart'></div>').hide().appendTo('body'),$win = $(window),showTip;"+"\n"
+  txt +="var tip = {title: '', offset: 12,delay: 50,position: function(event) {var positions = {x: event.pageX, y: event.pageY};var dimensions = {x: [$win.width(),$liveTip.outerWidth()], y: [$win.scrollTop() + $win.height(),$liveTip.outerHeight()]};for ( var axis in dimensions ) {if (dimensions[axis][0] <dimensions[axis][1] + positions[axis] + this.offset) {positions[axis] -= dimensions[axis][1] + this.offset;} else {positions[axis] += this.offset;}}$liveTip.css({top: positions.y,left: positions.x});}};"+"\n"
+  txt +="$('body').delegate('.tooltip_viz', 'mouseover mouseout mousemove', function (event) {var link = this,html = '';$link = $(this);if (event.type == 'mouseover') {tip.id = link.id;link.id = '';id_items = tip.id.split('/');html = '<table><tr>';if(id_items[0] == 'dheatmap') {html += '<td>'+id_items[1]+'</td>';html += '</tr><tr>';html += '<td>'+id_items[2]+'</td>';html += '</tr><tr>';html += '<td>Distance: '+id_items[3]+'</td>';}else if(id_items[0] == 'frequencies'){html += '<td>'+id_items[1]+'</td>';html += '</tr><tr>';html += '<td>'+id_items[2]+'</td>';html += '</tr><tr>';html += '<td>Count: '+id_items[3]+' ('+id_items[4]+'%)</td>';}else{ html += '<td>'+id_items[1]+'</td>';    html += '</tr><tr>';html += '<td>Count: '+id_items[2]+' ('+id_items[3]+'%)</td>';}html += '</tr><table>';showTip = setTimeout(function() {$link.data('tipActive', true);tip.position(event);$liveTip.html('<div>' + html  + '</div>').fadeOut(0).fadeIn(200);}, tip.delay);}if (event.type == 'mouseout') {link.id = tip.id || link.id;if ($link.data('tipActive')) {$link.removeData('tipActive');$liveTip.hide();} else {clearTimeout(showTip); }}if (event.type == 'mousemove' && $link.data('tipActive')) { tip.position(event);}});"+"\n"
+  txt +="</script>"
+  return txt
+}
 
 
 

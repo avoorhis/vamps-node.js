@@ -132,21 +132,10 @@
                     <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
                 </button>
               <% } %>
-                - Create OTUs from VAMPS sequence data.
+                - Create OTUs from VAMPS sequence data. (<a href='/otus/otus_index' >Explore Precompiled OTUs here.</a>) 
             </li>
             <br>
-            <li>
-              
-              <% if(user.security_level == '1'){ %>                
-                    <a href='/otus/otus_index' class='btn btn-sm btn-default btn-link'>Pre-Compiled OTUs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></a>
-              <% }else{ %>
-                    <a href='/otus/otus_index' disabled class='btn btn-sm btn-default btn-link'>Pre-Compiled OTUs (Admins only for now)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></a>
-              <% } %>
-                - Work with OTU and matrix count data.
-            </li>
-            <br>
+            
 
             <br>
             <li>- The projects to the left include all the public projects, your private projects, and any others that you have permissions to access.</li>

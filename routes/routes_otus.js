@@ -188,10 +188,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     
     }).on('close', function() {
     datasets.sort()
-    console.log("datasets: ");
-    console.log(datasets);
-    console.log("otudata: ");
-    console.log(otudata);
+    
       BIOM_MATRIX = get_otu_matrix(otudata, datasets, visual_post_items);
       visual_post_items.max_ds_count   = BIOM_MATRIX.max_ds_count;
       res.render('otus/visuals/view_selection', {
@@ -454,8 +451,8 @@ function get_otu_matrix(otudata, datasets, post_items){
 //     avg_gdist: '0.1371',
 //     total: '1',
 //     counts: { DAO_0009_2007_08_15: '1' } },
-console.log('otudata')
-console.log(otudata)
+//console.log('otudata')
+//console.log(otudata)
        
         for(n in datasets){
 			otu_matrix.columns.push({"did":n,"id":datasets[n],"metadata":null})	
@@ -464,8 +461,8 @@ console.log(otudata)
 		}
 		otu_matrix.taxonomy = 0
 		for(otu_label in otudata) { //"taxonomy"
-			console.log(otu_label)
-			console.log(otudata[otu_label])
+			//console.log(otu_label)
+			//console.log(otudata[otu_label])
 		
 			if(otudata[otu_label].hasOwnProperty('taxonomy')){
 			    otu_matrix.rows.push({"id":otu_label,"metadata":{"taxonomy":otudata[otu_label].taxonomy}}) 
@@ -512,8 +509,8 @@ console.log(otudata)
 		}
 
 			
-console.log('otu_matrix')
-console.log(otu_matrix)		    
+//console.log('otu_matrix')
+//console.log(otu_matrix)		    
         matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
         //COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
         COMMON.write_file( matrix_file, JSON.stringify(otu_matrix,null,2) );
