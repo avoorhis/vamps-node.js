@@ -116,6 +116,9 @@
             </li>
             <br>
             <li>
+            <table>
+            <tr>
+            <td>
               <% if(user.username == 'guest'  || hostname.substring(0,7) == 'bpcweb8'){ %>
                 <button type="button" disabled class="btn btn-sm btn-success" name='Next' id="selection_btn_otus">
                     &nbsp;OTU Creation (In Development)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -132,7 +135,14 @@
                     <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
                 </button>
               <% } %>
-                - Create OTUs from VAMPS sequence data. (<a href='/otus/otus_index' >Explore Precompiled OTUs here.</a>) 
+              </td>
+              <td>
+                
+                - Create OTUs from VAMPS sequence data.<br>
+                 (<a href='/otus/otus_index' ><small>Explore Precompiled OTUs here.</small></a>)
+                </td>
+                </tr>
+               </table> 
             </li>
             <br>
             

@@ -579,7 +579,6 @@ piecharts: function(req, res) {
               outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
               console.log('outfile_path:',outfile_path)
               result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
-              console.log(result)
               data = {}
               data.html = html
               data.filename = outfile_name
@@ -606,7 +605,6 @@ barcharts: function(req, res){
   var ts = visual_post_items.ts
 
   var imagetype = 'group'
-
 
   matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
   fs.readFile(matrix_file_path, 'utf8', function(err, data){
@@ -696,21 +694,18 @@ barcharts: function(req, res){
           }
 
 
-console.log('images/barcharts-6') 
           //fs.writeFileSync('test.svg', window.d3.select('.container').html()) //using sync to keep the code simple
           //console.log('inwin2 ',window.d3.select('.container').html())
           var html = window.d3.select('.container').html()
           var outfile_name = ts + '-barcharts-api.svg'
           outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
           console.log('outfile_path:',outfile_path)
-console.log('images/barcharts-7') 
           result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
           //console.log(result)
           data = {}
           data.html = html
           data.filename = outfile_name
           //res.send(outfile_name)
-console.log('images/barcharts-8') 
           res.json(data)
           window.close()
 
@@ -1142,8 +1137,7 @@ function create_bars_svg_object(req, svg, props, data, ts) {
           .attr("x", props.plot_width-40)
           .attr("dx", "50")
           .style("font-size",  "11px")
-          .text("Percent");
-console.log('svg-1')      
+          .text("Percent");      
     if(req.body.source == 'website'){
        var datasetBar = svg.selectAll(".bar")
           .data(data)
@@ -1163,7 +1157,6 @@ console.log('svg-1')
           .attr("transform", function(d) { return  "translate(0, " + props.y(d.pjds) + ")"; })
        
     }
-console.log('svg-2') 
     var labels = datasetBar.append("text")
       .attr("class", "y label")
       .attr("text-anchor", "end")
@@ -1171,8 +1164,7 @@ console.log('svg-2')
       .style("font-weight",  "normal")
       .attr("x", "-2")
       .attr("y", props.bar_height*2)
-      .text(function(d) { return d.pjds; })
-console.log('svg-3') 
+      .text(function(d) { return d.pjds; }) 
     var labels = datasetBar.append("text")
       .style("text-anchor","start")
       .style("font-size",  "13px")
@@ -1180,9 +1172,7 @@ console.log('svg-3')
       .attr("x", props.plot_width+10)
       .attr("y", props.bar_height*2)
       .text(function(d) { return 'SumCount: '+d.total; })
-console.log('svg-4') 
-     if(req.body.source == 'website'){
-        console.log('svg-4a') 
+     if(req.body.source == 'website'){ 
         var gnodes = datasetBar.selectAll("rect")
               .data(function(d) { return d.unitObj; })
             .enter()
@@ -1232,7 +1222,6 @@ console.log('svg-4')
            return d.tax+' -- '+d.cnt
          })
       }
-console.log('svg-5') 
 }
 //
 //
@@ -1364,55 +1353,7 @@ function create_hm_table(req, dm){
 /////////////////////
   return html
   
-  
-  
-  
-  
-//   html += '<center>'
-//   //html = "<div id='distance_matrix' style='visibility:hidden'>"+ dm +"</div>"
-// 
-//   html += "<table border='1' id='drag_table' class='heatmap_table center_table' style='border-collapse: collapse;' >"
-//   	html += "<tr class='nodrag nodrop' ><td></td>"
-//   	   html += '<td>'
-//   		  html += "<div id='ds_save_order_div'>"
-//             html += "<span class='label blue' bgcolor='blue'>Similar (blue-0.0)</span> <span class='label red' bgcolor='red'>Dissimilar (red-1.0)</span>"
-//   			  html += "<imput type='hidden' id='' name='resorted' value='1' >"
-//   		  html += '</div>'
-//   	   html += '</td>'
-//   		for(i=1; i<=no.length; i++) {
-//   	          html += "<td><div class='cell'></div></td>"
-//   		}
-//   	  html += '</tr>'
-//   		 k=1
-//   		 for(var n in no) {
-//   		  	  var x = no[n]
-//   	        html += "<tr id='"+ x +"'>"
-//   	        html += "<td  id='"+ x +"' class='dragHandle ds_cell'>"+ k +"</td>"
-//   	        html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+ id_order[n]+"' >"+ x +"</td>"
-//   		      for(var m in no) {
-//   		          var y = no[m]
-//                 //console.log('x',x,'y',y)
-//   		 			    if(dm.hasOwnProperty(x) && dm[x].hasOwnProperty(y)){
-//   							      var d = dm[x][y].toFixed(5);
-//   		      		      var sv = Math.round( dm[x][y] * 15 );
-//   		 			    }else{
-//   		                var d = 1
-//   		                var sv = 1 * 15
-//   					    }
-//   		     	    var id = '';
-//   		          if(x === y){
-//   		        	    	html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
-//   		          }else{
-//   	                  html += "<td id='"+id+"' title='Distance: "+d+"' class='heat_map_td tooltip_viz' bgcolor='#"+colors[sv]+"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>"
-//   		          }
-//   		  	}
-//   		  	k++
-//   	html += '</tr>'
-// 
-//   }
-//   html += '</table>'
-//   html += '</center>'
-//   return html
+
 }
 function standardDeviation(values){
   var avg = average(values);
@@ -1452,9 +1393,7 @@ function thin_out_data_for_display(mtx){
     new_mtx.columns = mtx.columns
     new_mtx.data = []
     new_mtx.rows = []
-     console.log('olddata')
-     console.log(JSON.stringify(mtx.data.length))
-    console.log(JSON.stringify(mtx.data))
+   
     for(m in mtx.data){
         
         for(n in mtx.data[m]){
