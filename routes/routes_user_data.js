@@ -74,13 +74,14 @@ router.get('/your_data', helpers.isLoggedIn, function get_your_data(req, res) {
 /* GET Export Data page. */
 router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(req, res) {
   var export_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-
+  
   helpers.walk(export_dir, function(err, files) {
     if (err) throw err;
     files.sort(function sortByTime(a, b) {
       //reverse sort: recent-->oldest
       return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
     });
+    console.log(JSON.stringify(files))
     res.render('user_data/file_retrieval', { title: 'VAMPS:Retrieve Data',
       user: req.user, hostname: req.CONFIG.hostname,
       finfo: JSON.stringify(files)
@@ -4138,36 +4139,54 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
     file_type = req.body.file_type;
     var timestamp = +new Date();
     var old_file_name;
+    var new_file_name;
+    var old_file_path
     var new_file_name = file_type+'-'+timestamp+'.txt';
     if (file_type == 'phyloseq-biom') {
       old_file_name = old_ts+'_count_matrix.biom';
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.biom';
-    } else if (file_type == 'phyloseq-tax') {
+    }else if (file_type == 'phyloseq-tax') {
       old_file_name = old_ts+'_taxonomy.txt';
-    } else if (file_type == 'phyloseq-tree') {
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+    }else if (file_type == 'phyloseq-tree') {
       old_file_name = old_ts+'_outtree.tre';
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.tre';
     }else if (file_type == 'distance-R') {
       old_file_name = old_ts+'_distance.R';
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
     }else if (file_type == 'distance-py') {
       old_file_name = old_ts+'_distance.json';
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.json';
     }else if (file_type == 'emperor-pc') {
       old_file_name = old_ts+'.pc';
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
     }else if (file_type == 'pdf-fheatmap') {
       old_file_name = old_ts+'_fheatmap.pdf';
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.pdf';
     }else if (file_type == 'pdf-pcoa') {
       old_file_name = old_ts+'_pcoa.pdf';
+       old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.pdf';
     }else if (file_type == 'metadata') {
       old_file_name = old_ts+'_metadata.txt';
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.tsv';
+    }else if (file_type == 'slp_otus') {
+      old_file_name = old_ts
+       old_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'clusters', old_file_name);
+       console.log(old_file_path)
+      new_file_name = 'otus-'+old_ts;
     }else{
       console.log("In routes_user_data/copy_file_for_download and couldn't find file_type: ", file_type);
     }
-    var old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+    
+    
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+    
     helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
     helpers.mkdirSync(user_dir);  // create dir if not exists
     var destination = path.join( user_dir, new_file_name );

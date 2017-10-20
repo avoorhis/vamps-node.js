@@ -17,7 +17,7 @@ constants.dataset_count_for_visuals_max     = 1100
 constants.dataset_count_for_visuals_cutoff  = 500
 constants.show_nas   = {"raw":false,"string":"--"};  // if raw==true will show class_NA, genus_NA etc; else show string (tax table only; not biom file)
 constants.blast_db   = 'ALL_SEQS';
-constants.download_file_formats = ['metadata','fasta','taxbytax','taxbyref','taxbyseq','biom','matrix','phyloseq','distance','emperor','pdf','tree','heatmap'];
+constants.download_file_formats = ['metadata','fasta','taxbytax','taxbyref','taxbyseq','biom','matrix','phyloseq','distance','emperor','pdf','tree','heatmap','otus'];
 // constants.ENV_SOURCE = {
 //         10: "air",
 //          20: "extreme habitat",

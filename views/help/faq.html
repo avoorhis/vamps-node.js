@@ -41,7 +41,31 @@
         <div class="col-lg-12">
           <h4><center>Clustering and Diversity</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
 
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+          <strong><a name="clust">How are SLP clusters created?</a></strong> 
+        <br />
+        <br />
+        A combination of ESPRIT, SLP and mothur computes taxonomic independent clusters (Operational Taxonomic Units - OTUs) <br />
+        using the total collection of available V6 sequences in VAMPS. The sequences were binned into separate datasets for the <br />
+        Archaeal or Eukaryal domains, and into Bacterial phylum- or Proteobacterial class-level datasets.  For each bin, the unique.seqs <br />
+        function in mothur, eliminated duplicate sequences but retained information about observed frequencies for each unique read. <br />
+        The kmerdist module of ESPRIT (with default values) identified all sequence pairs within each bin that are predicted to be at<br /> 
+        least 90% similar.  The needledist module in ESPRIT generated a sparse matrix of pairwise distances by performing a Needleman-Wunsch <br />
+        alignment on the sequence pairs and calculating pairwise distances using quickdist. The algorithm SLP uses the pairwise distances<br /> 
+        to perform a modified single-linkage preclustering at 2% to reduce noise in the sequence data.  Initially SLP orders sequences <br />
+        according to their rank abundance and then steps through the ordered sequences assigning them to clusters.  The most abundant<br /> 
+        sequence defines the first cluster.   Each subsequent sequence is tested against the growing list of clusters using the <br />
+        single-linkage algorithm.  If the sequence has a pairwise distance less than 0.02 (equivalent to a single difference in the V6 region)<br /> 
+        to any of the sequences already in the cluster, the new sequence will be added to the cluster and not tested against subsequent clusters.<br />  
+        If the sequence is not within a distance of 0.02 from any read in any of the existing clusters, it will establish a new cluster. <br />
+        Once all sequences have been assigned to clusters, sequences in the low abundance clusters (< 10 tags) are tested against <br />
+        the larger clusters and added to those clusters if possible.  For each precluster, SLP uses the sequence with the highest <br />
+        frequency and the count of all tags in the precluster for average linkage clustering by mothur. Taxonomy for each cluster <br />
+        relies upon on a two-thirds majority of the taxonomy for each cluster member; CATCHALL estimates the estimate richness. 
+<br><br>Citation:
+<pre>
+  Huse, S.M., D. Mark Welch, H.G Morrison, and M.L. Sogin. (2010) <a href='http://www3.interscience.wiley.com/cgi-bin/fulltext/123320293/HTMLSTART' target='_blank'>
+  Ironing out the wrinkles in the rare biosphere</a>. <i>Environmental Microbiology</i> early view.
+</pre>
         </div>
       </div>
 

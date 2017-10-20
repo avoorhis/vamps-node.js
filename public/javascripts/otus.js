@@ -1,5 +1,5 @@
 
-selection_btn_visuals = document.getElementById('selection_btn_visuals') || null;
+
 var clear_filters_btn_id = document.getElementById('clear_filters_btn_id') || null;
 if (clear_filters_btn_id !== null) {
   clear_filters_btn_id.addEventListener('click', function () {
@@ -17,13 +17,13 @@ if (target_select !== null) {
 var otu_size_btns = document.getElementsByName('otu_size') || null;
 if (typeof otu_size_btns[0] !== 'undefined') {
     otu_size_btns[0].addEventListener('click', function () {
-      filter_by_otu_size('.03')
+      filter_by_otu_size(otu_size_btns[0].value)
   });
   otu_size_btns[1].addEventListener('click', function () {
-      filter_by_otu_size('.06')
+      filter_by_otu_size(otu_size_btns[1].value)
   });
   otu_size_btns[2].addEventListener('click', function () {
-      filter_by_otu_size('.10')
+      filter_by_otu_size(otu_size_btns[2].value)
   });
 }
 var pub_priv = document.getElementsByName('pub_priv');
@@ -35,7 +35,7 @@ if (typeof pub_priv[0] !== 'undefined') {
       filter_by_status(0)
   });
 }
-
+selection_btn_visuals = document.getElementById('selection_btn_visuals') || null;
 if (selection_btn_visuals !== null) {
   selection_btn_visuals.addEventListener('click', function () {
         
@@ -77,7 +77,25 @@ if (selection_btn_visuals !== null) {
         
   });
 }
-
+selection_btn_exports = document.getElementById('selection_btn_exports') || null;
+if (selection_btn_exports !== null) {
+  selection_btn_exports.addEventListener('click', function () {
+    radios = document.getElementsByName('otu')
+    file_name = ''
+    for(r in radios){
+        if(radios[r].checked == true){
+            file_name = radios[r].id
+        }
+    }
+    
+    if(!file_name){
+        alert('You must select a project')
+        return
+    }
+    
+    download_data('slp_otus', file_name)
+  });
+}
 function delete_project(method,code){
 	var resp = confirm('are you sure?')
 	if(resp){
@@ -204,7 +222,11 @@ function create_otu_table_from_otu_project(obj){
     for(file in obj){
         html += "<tr>"
         html += "<td><input type='radio' id='"+ file +"' name='otu'></td>"
-        html += "<td>"+obj[file].opid+"</td>"
+        if(obj[file].pid == ''){
+            html += "<td>"+obj[file].opid+"</td>"
+        }else{
+            html += "<td>"+obj[file].opid+" <a href='/projects/"+obj[file].pid+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a></td>"
+        }
         html += "<td>"+obj[file].domain+"</td>"
         html += "<td>"+obj[file].method+"</td>"
         html += "<td>"+obj[file].size+"%</td>"
@@ -375,4 +397,50 @@ function update_gui_elements(result){
 
 
 
+}
+//
+//
+//
+function download_data(type, ts) {
+    var html = '';
+    var args = {}
+    args.ts = ts;
+    args.file_type = type;
+    var xmlhttp = new XMLHttpRequest();
+
+    // if(type == 'fasta'){
+//       target = '/user_data/download_file'
+//       args.download_type = download_type;
+//     }else if(type == 'matrix'){
+//       target = '/user_data/download_file'
+//       args.download_type = download_type;
+// 
+//     } else if(type == 'frequency'){
+//       target = '/user_data/download_file'
+//     } else if(type == 'metadata'){
+//       target = '/user_data/download_selected_metadata'
+//       args.domains = pi_local.domains
+//       args.tax_depth = pi_local.tax_depth
+//       args.normalization = pi_local.normalization
+//       args.dids = ds_local.ids
+//       args.download_type= 'partial_project'
+//       args.orientation = 'rows'
+//     }else{
+      target = '/user_data/copy_file_for_download'
+    //}
+
+
+    xmlhttp.open("POST", target, true);
+    xmlhttp.setRequestHeader("Content-type","application/json");
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+         var filename = xmlhttp.responseText;
+         //html += "<div class='pull-right'>Your file is being compiled and can be downloaded from the"
+         //html += "<br><a href='/user_data/file_retrieval'>file retrieval page when ready.</a></div>"
+         //document.getElementById('download_confirm_id').innerHTML = html;
+         html = 'Saved!\n\n(File available from the "File Retrieval" button on the "Your Data" page)'
+         alert(html)
+      }
+    };
+    xmlhttp.send(JSON.stringify(args));
 }

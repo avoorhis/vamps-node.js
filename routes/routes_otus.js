@@ -785,7 +785,7 @@ function get_custom_biom_matrix( post_items, mtx) {
 //
 router.get('/load_otu_list', helpers.isLoggedIn, function (req, res) {
     console.log('in load_otu_list')
-    var otu_project_list = {}
+    otu_project_list = {}
     var indir = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'clusters')
     fs.readdir(indir, function (err, list) {
         if(err){
@@ -812,7 +812,11 @@ router.get('/load_otu_list', helpers.isLoggedIn, function (req, res) {
                  }else{
                     otu_project_list[file].size = parseInt(file_items[4],10) // base 10   
                  }
-                          
+                 if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
+                    otu_project_list[file].pid = PROJECT_INFORMATION_BY_PNAME[project].pid
+                 }else{
+                    otu_project_list[file].pid = ''
+                 }         
              });
              //console.log(otu_project_list)
              res.json(otu_project_list)
@@ -1336,9 +1340,10 @@ router.get('/livesearch_projects/:substring', function(req, res) {
     substring = ''
   }
   var filtered_otu_project_list = {}
-  for(prj in otu_project_list){    
+  for(file in otu_project_list){    
+    prj = otu_project_list[file].opid
     if(prj.toUpperCase().indexOf(substring) != -1){
-        filtered_otu_project_list[prj] = otu_project_list[prj]  
+        filtered_otu_project_list[file] = otu_project_list[file]  
     }
   }
   res.json(filtered_otu_project_list);
@@ -1355,9 +1360,10 @@ router.get('/livesearch_target/:gene_target', function(req, res) {
     //otu_project_list.forEach(function(prj) {
     console.log(gene_target)
     var filtered_otu_project_list = {}
-    for(prj in otu_project_list){
+    for(file in otu_project_list){    
+        prj = otu_project_list[file].opid
         if(prj.toUpperCase().indexOf(gene_target) != -1){
-            filtered_otu_project_list[prj] = otu_project_list[prj]
+            filtered_otu_project_list[file] = otu_project_list[file]
         }
     }
     res.json(filtered_otu_project_list);
@@ -1377,14 +1383,12 @@ router.get('/livesearch_otu_size/:q', function(req, res) {
   var size = req.params.q;   // 3, 6 or 10 percent
   var myurl = url.parse(req.url, true);
   var filtered_otu_project_list = {}
-  for(prj in otu_project_list){
-        if(prj.indexOf(size) != -1){
-          filtered_otu_project_list[prj] = otu_project_list[prj]
+  for(file in otu_project_list){    
+        prjsize = otu_project_list[file].size  
+        if(prjsize == size){
+          filtered_otu_project_list[file] = otu_project_list[file]
         }
-    
     }
     res.json(filtered_otu_project_list);
-  
-
 });
 module.exports = router;
