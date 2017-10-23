@@ -21,7 +21,14 @@ if (use_original_names !== null) {
 
 
 
-
+function choose_fasta_style(style)
+{
+    if(style == 'single'){
+        document.getElementById('dataset_input').style.display = 'block'
+    }else{
+        document.getElementById('dataset_input').style.display = 'none'
+    }   
+}
 
 // function import_submit(page) {
 //   var form = document.getElementById('import_form_id');

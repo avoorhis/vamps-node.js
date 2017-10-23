@@ -1,0 +1,85 @@
+<% include ../../add_ins/begin.ejs %>
+
+
+<p class="title">Import Data</p>
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail" ><%- messages.fail %> </div>
+<% } %>
+<br>
+
+
+<!-- ========== SIMPLE / SINGLE FASTA ============================================================================================== 
+    Todo later: raw data processing (illumina -hiseq -miseq -newseq; 454)
+    -->	
+ 
+ <a href="/user_data/import_choices" >&lt;&lt;--back</a>
+    
+  <form class="form-horizontal" role="form" method="POST" action="fasta" enctype="multipart/form-data">
+    
+	<h4>Import Fasta Form: <small>(All fields are required unless indicated)</small></h4>
+
+	
+	<div class="form-group">
+      <label class="control-label col-sm-3" for="project">Project Name:</label>
+	  <div class="col-sm-3">          
+        <input type="text" name="project" class="form-control" id="project" placeholder="Enter a Project Name" value="">
+      </div>    
+    </div>
+    
+<div id='dataset_input' class="form-group" style='display:none'>
+      <label class="control-label col-sm-3" for="dataset">Dataset Name:</label>
+	  <div class="col-sm-3">          
+        <input type="text" name="dataset" class="form-control" id="dataset" placeholder="Enter a Dataset(sample) Name" value="">
+      </div> 
+    
+    </div>
+	<div class="form-group">
+      <label class="control-label col-sm-3" for="fasta">Fasta File <small>(required)</small>:</label>
+      <div class="col-sm-3 btn">
+
+        <input type="file" name="upload_files" class="" id="fasta">
+
+      </div>Format: fasta (gzipped or plain text) 
+	       <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
+    
+    </div>
+    
+    <div class="form-group">
+      <label class="control-label col-sm-3" for="fasta">Choose fasta header format:</label>
+      <div class="col-sm-3 btn">
+        <input type="radio" name="fasta_format" class="" value="single_ds" onclick="choose_fasta_style('single')"> Single Sample&nbsp;&nbsp;&nbsp;
+        <input type="radio" checked name="fasta_format" class="" value="multi_ds" onclick="choose_fasta_style('multi')"> Multiple Samples
+        <br><br>
+        single dataset example defline:&emsp;&emsp;<small>&gt;uniqueID&lt;--tab or pipe'|'--&gt;"+/-other information (not-used)"</small>
+        <br>
+        multiple sample example defline:&emsp;<small>&gt;sampleName&lt;--tab or pipe'|'--&gt;uniqueID&lt;--tab or pipe'|'--&gt;"+/-other information (not-used)"</small>
+      
+      </div>
+	  <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
+    </div>
+	
+
+    <br><br><br>
+    
+    <div class="form-group">        
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-default">Submit & Validate</button>
+      </div>
+    </div>
+	<input type="hidden" name="type" value="">
+
+</form>
+
+	
+<% include ../../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/import.js"></script>
+<script type='text/javascript' src='/javascripts/bootstrap-select.js'></script>
+<script>
+  $(document).ready(function(){
+    $('.selectpicker').selectpicker({showSubtext:true, tickIcon: '',});
+  });
+</script>
+ </body>
+ </html>

@@ -626,114 +626,243 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
   }
 });
 
-
+router.get('/import_choices/fasta', [helpers.isLoggedIn], function (req, res) {
+    console.log('in import_choices/fasta')
+    
+    res.render('user_data/import_choices/fasta', {
+          title: 'VAMPS:Import Choices',
+         
+          user: req.user, hostname: req.CONFIG.hostname
+          });
+          
+});
+router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_files', 12)],
+   
+  form(
+    form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
+  ),
+  function (req, res)
+  {
+    //     file { fieldname: 'upload_files',
+    //   originalname: 'simple.fa',
+    //   encoding: '7bit',
+    //   mimetype: 'application/octet-stream',
+    //   destination: '/tmp/',
+    //   filename: 'b04c587004798dce0bd0f7224ae6d43d',
+    //   path: '/tmp/b04c587004798dce0bd0f7224ae6d43d',
+    //   size: 3452 }
+    var error_fxn = function(msg){
+        req.flash('fail',msg)
+        res.render('user_data/import_choices/fasta', {
+          title: 'VAMPS:Import Choices',
+          user: req.user, hostname: req.CONFIG.hostname
+          });
+        return
+    }
+    console.log('form',req.form)
+    if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project)){
+        error_fxn('That project name is not availible.')
+    }
+    if(req.body.fasta_format == 'single_ds' && req.body.dataset == ''){
+        error_fxn('You need to enter a Dataset (sample) name.')
+    }
+    console.log('In POST /import_choices/fasta')
+    console.log('file',req.file)
+    
+      console.log(req.body)
+      console.log('success')
+       // project name is already vetted: not in current database and correct format
+    // determine if simple or multi:
+    // if ids are unique --> single dataset
+    // otherwise --> multi-dataset 
+     // uploadDataAV(req, res);
+     // open and read file (req.file.path)
+     //try{
+     //read gzip file
+     //}
+     var lineReader = require('readline').createInterface({
+          input: require('fs').createReadStream(req.file.path)
+        });
+    var seq_count = 0
+    var ds_counts = {}
+    var sample_defline;
+    lineReader.on('line', function (line) {
+      
+      if(line[0] == '>'){
+        console.log('Line from file:', line);
+        sample_defline = line
+        seq_count += 1
+        line_items = line.split(/\s+/)
+        first_item = line_items[0].substring(1,line_items[0].length)
+        // now this is common M9Akey217.141086_98 last digits are 'count'
+        // need to be removed
+        first_item = first_item.split('_')[0]
+        console.log('First Item from file:', first_item);
+        if(ds_counts.hasOwnProperty(first_item)){
+            ds_counts[first_item] += 1
+        }else{
+            ds_counts[first_item] = 1
+        }
+        
+      }
+    });
+    lineReader.on('close', function (line) {
+      console.log('done');
+      console.log('seq_count');
+      console.log(seq_count);
+      
+      var info = {}
+      
+      num_of_unique_keys = Object.keys(ds_counts).length
+      
+      info.total_seq_count = seq_count
+      info.project_name = req.body.project
+      info.dataset = {}
+      if(num_of_unique_keys == seq_count){
+        // looks like single
+        console.log(num_of_unique_keys);
+        console.log('This looks like a single dataset fasta - am I right?')
+        if(req.body.fasta_format == 'multi_ds'){
+             error_fxn('Error - This looks like a SINGLE Dataset Fasta file.<br>Please check the format of this sample defline: '+sample_defline)
+        }else{
+            // save file to new directory
+            info.fasta_type = 'single_ds'
+            info.num_of_datasets = 1
+            info.dataset[req.body.dataset] = seq_count
+        }
+      }else{
+        // looks like multi
+        console.log(ds_counts);
+        console.log(num_of_unique_keys);
+        console.log('This looks like a multi dataset fasta')
+        if(req.body.fasta_format == 'single_ds'){
+             error_fxn('Error - This looks like a Multiple Dataset Fasta file.<br>Please check the format of this sample defline: '+sample_defline)
+        }else{
+            // save file to new directory
+            info.fasta_type = 'multi_ds'
+            info.num_of_datasets = num_of_unique_keys
+            for(ds in ds_counts){
+                info.dataset[ds] = ds_counts[ds]
+            }
+        }
+        
+      }
+      console.log(info)
+      
+    });
+  
+   
+});
+//
+//
+//
 // AShipunova Aug 2016
 // AAV Oct 2016
-router.get('/import_choices/*_fasta', [helpers.isLoggedIn], function (req, res) {
-  var url_parts = url.parse(req.url);
-  var project = req.query.project || ''
-  var import_type = url_parts.pathname.split("/").slice(-1)[0];
-  console.log('in import_choices/*_fasta; project='+project)
-  //console.log(url_parts);
-  //console.log('in GET /import_choices/*_fasta')
-  console.log('import_type',import_type)
-  //'/import_choices/multi_fasta', 'multi_fasta'
-  user_project_info = {}
-  //console.log(PROJECT_INFORMATION_BY_PID)
- // PROJECT_INFORMATION_BY_PID.forEach(function(prj) {
-  // for(pid in PROJECT_INFORMATION_BY_PID){
-//     
-//     if(PROJECT_INFORMATION_BY_PID[pid].username == req.user.username){
-//           user_project_info[pid] = PROJECT_INFORMATION_BY_PID[pid] 
-//           console.log('pid',pid)
-//     }       
-//   }
-	var q = queries.get_projects_queryUID(req.user.user_id)
-	console.log(q)
-  connection.query(queries.get_projects_queryUID(req.user.user_id), function (err, rows, fields) {
-      if (err)
-      {
-        console.log(err);
-      }
-      else
-      {
-          for(n in rows){
-            pid = rows[n]['project_id']
-            p   = rows[n]['project']
-            user_project_info[pid] = {'project':p}            
-          }
-          res.render(path.join('user_data',url_parts.pathname), {
-            title:       'Import Data',
-            user:        req.user,
-            hostname:    req.CONFIG.hostname,
-            pinfo:       JSON.stringify(user_project_info),
-            project: project,
-            import_type: import_type,
-          });
-     }
-  });
-});
+// router.get('/import_choices/*_fasta', [helpers.isLoggedIn], function (req, res) {
+//   var url_parts = url.parse(req.url);
+//   var project = req.query.project || ''
+//   var import_type = url_parts.pathname.split("/").slice(-1)[0];
+//   console.log('in import_choices/*_fasta; project='+project)
+//   //console.log(url_parts);
+//   //console.log('in GET /import_choices/*_fasta')
+//   console.log('import_type',import_type)
+//   //'/import_choices/multi_fasta', 'multi_fasta'
+//   user_project_info = {}
+//   //console.log(PROJECT_INFORMATION_BY_PID)
+//  // PROJECT_INFORMATION_BY_PID.forEach(function(prj) {
+//   // for(pid in PROJECT_INFORMATION_BY_PID){
+// //     
+// //     if(PROJECT_INFORMATION_BY_PID[pid].username == req.user.username){
+// //           user_project_info[pid] = PROJECT_INFORMATION_BY_PID[pid] 
+// //           console.log('pid',pid)
+// //     }       
+// //   }
+// 	var q = queries.get_projects_queryUID(req.user.user_id)
+// 	console.log(q)
+//   connection.query(queries.get_projects_queryUID(req.user.user_id), function (err, rows, fields) {
+//       if (err)
+//       {
+//         console.log(err);
+//       }
+//       else
+//       {
+//           for(n in rows){
+//             pid = rows[n]['project_id']
+//             p   = rows[n]['project']
+//             user_project_info[pid] = {'project':p}            
+//           }
+//           res.render(path.join('user_data',url_parts.pathname), {
+//             title:       'Import Data',
+//             user:        req.user,
+//             hostname:    req.CONFIG.hostname,
+//             pinfo:       JSON.stringify(user_project_info),
+//             project: project,
+//             import_type: import_type,
+//           });
+//      }
+//   });
+// });
 
 // TODO: check editUploadData and uploadData for simple_fasta vs. multi_fasta etc.
-router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],
-  form(
-    form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
-    form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s (no spaces)").maxLength(64).entityEncode()
-  ),
-  function (req, res)
-  {
-    console.log("QQQ1 in router.post('import_choices/simple_fasta'");
-    if (!req.form.isValid) {
-      req.flash('fail', req.form.errors);
-      editUploadData(req, res);
-      //TODO: check if the project name is in db, if not - redirect to add_project
-      return;
-    }
-    else
-    {
-      uploadData(req, res);
-    }
-  }
-);
+// router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],
+//   form(
+//     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
+//     form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s (no spaces)").maxLength(64).entityEncode()
+//   ),
+//   function (req, res)
+//   {
+//     console.log("QQQ1 in router.post('import_choices/simple_fasta'");
+//     if (!req.form.isValid) {
+//       req.flash('fail', req.form.errors);
+//       editUploadData(req, res);
+//       //TODO: check if the project name is in db, if not - redirect to add_project
+//       return;
+//     }
+//     else
+//     {
+//       uploadData(req, res);
+//     }
+//   }
+// );
 
-router.post('/import_choices/multi_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],
-  form(
-    form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
-  ),
-  function (req, res)
-  {
-    console.log("QQQ12 in router.post('import_choices/multi_fasta'");
-    if (!req.form.isValid) {
-      req.flash('fail', req.form.errors);
-      editUploadData(req, res);
-      //TODO: check if the project name is in db, if not - redirect to add_project
-      return;
-    }
-    else
-    {
-      uploadData(req, res);
-    }
-  }
-);
-router.post('/import_choices/add_metadata_to_pr', [helpers.isLoggedIn, upload.array('upload_files', 12)],
-  form(
-    form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
-  ),
-  function (req, res)
-  {
-    console.log("QQQ12 in router.post('import_choices/multi_fasta'");
-    if (!req.form.isValid) {
-      req.flash('fail', req.form.errors);
-      editUploadData(req, res);
-      //TODO: check if the project name is in db, if not - redirect to add_project
-      return;
-    }
-    else
-    {
-      uploadData(req, res);
-    }
-  }
-);
+// router.post('/import_choices/multi_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],
+//   form(
+//     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
+//   ),
+//   function (req, res)
+//   {
+//     console.log("QQQ12 in router.post('import_choices/multi_fasta'");
+//     if (!req.form.isValid) {
+//       req.flash('fail', req.form.errors);
+//       editUploadData(req, res);
+//       //TODO: check if the project name is in db, if not - redirect to add_project
+//       return;
+//     }
+//     else
+//     {
+//       uploadData(req, res);
+//     }
+//   }
+// );
+// router.post('/import_choices/add_metadata_to_pr', [helpers.isLoggedIn, upload.array('upload_files', 12)],
+//   form(
+//     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
+//   ),
+//   function (req, res)
+//   {
+//     console.log("QQQ12 in router.post('import_choices/multi_fasta'");
+//     if (!req.form.isValid) {
+//       req.flash('fail', req.form.errors);
+//       editUploadData(req, res);
+//       //TODO: check if the project name is in db, if not - redirect to add_project
+//       return;
+//     }
+//     else
+//     {
+//       uploadData(req, res);
+//     }
+//   }
+// );
 router.get('/upload_configuration', [helpers.isLoggedIn], function (req, res) {
   console.log('in upload_configuration')
 
@@ -2994,6 +3123,10 @@ function validate_metadata(req, res, options)
   }
 
 }
+//
+//
+//
+
 function uploadData(req, res)  // from line 406
 {
   console.log("QQQ2 in uploadData");
