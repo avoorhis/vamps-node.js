@@ -8,7 +8,7 @@
 
 import sys,os,io
 import argparse
-import MySQLdb
+import pymysql as MySQLdb
 from IlluminaUtils.lib import fastalib
 import json
 

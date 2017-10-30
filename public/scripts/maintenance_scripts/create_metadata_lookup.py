@@ -9,7 +9,7 @@
 import sys,os
 import argparse
 import random
-import MySQLdb
+import pymysql as MySQLdb
 import json
 
 

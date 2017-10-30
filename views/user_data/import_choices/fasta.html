@@ -41,20 +41,24 @@
 
         <input type="file" name="upload_files" class="" id="fasta">
 
-      </div>Format: fasta (gzipped or plain text) 
+      </div>Format: fasta (gzipped or plain text) -NOT Uniqued 
 	       <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
     
     </div>
     
     <div class="form-group">
-      <label class="control-label col-sm-3" for="fasta">Choose fasta header format:</label>
+      <label class="control-label col-sm-3" for="fasta">Choose fasta format:</label>
       <div class="col-sm-3 btn">
-        <input type="radio" name="fasta_format" class="" value="single_ds" onclick="choose_fasta_style('single')"> Single Sample&nbsp;&nbsp;&nbsp;
-        <input type="radio" checked name="fasta_format" class="" value="multi_ds" onclick="choose_fasta_style('multi')"> Multiple Samples
-        <br><br>
-        single dataset example defline:&emsp;&emsp;<small>&gt;uniqueID&lt;--tab or pipe'|'--&gt;"+/-other information (not-used)"</small>
+        <input type="radio" name="fasta_format" class="" value="single_ds" onclick="choose_fasta_style('single')">
+        Demultiplexed (One Sample in fasta file)&nbsp;&nbsp;&nbsp;
         <br>
-        multiple sample example defline:&emsp;<small>&gt;sampleName&lt;--tab or pipe'|'--&gt;uniqueID&lt;--tab or pipe'|'--&gt;"+/-other information (not-used)"</small>
+        <input type="radio" checked name="fasta_format" class="" value="multi_ds" onclick="choose_fasta_style('multi')"> Not Demultiplexed (Multiple Samples in fasta file)
+        <br><br>
+        IMPORTANT Defline Differences:
+        <br>
+        single dataset example defline:&emsp;&emsp;<small>&gt;uniqueID&lt;--tab or pipe'|'--&gt; +/-other information (not-used)</small>
+        <br>
+        multiple sample example defline:&emsp;<small>&gt;sampleName&lt;--tab or pipe'|'--&gt;uniqueID&lt;--tab or pipe'|'--&gt; +/-other information (not-used)</small>
       
       </div>
 	  <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>

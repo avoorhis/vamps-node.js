@@ -28,7 +28,7 @@ import datetime
 import logging
 today = str(datetime.date.today())
 import subprocess
-import MySQLdb
+import pymysql as MySQLdb
 import unicodedata
 import pprint
 pp = pprint.PrettyPrinter(indent=4)

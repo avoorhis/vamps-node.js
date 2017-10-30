@@ -22,8 +22,6 @@ import types
 #import csv
 from time import sleep
 
-#import MySQLdb
-
 import datetime
 
 

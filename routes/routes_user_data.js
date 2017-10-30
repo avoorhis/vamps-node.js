@@ -662,9 +662,11 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
     console.log('form',req.form)
     if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project)){
         error_fxn('That project name is not availible.')
+        return
     }
     if(req.body.fasta_format == 'single_ds' && req.body.dataset == ''){
         error_fxn('You need to enter a Dataset (sample) name.')
+        return
     }
     console.log('In POST /import_choices/fasta')
     console.log('file',req.file)
@@ -689,7 +691,7 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
     lineReader.on('line', function (line) {
       
       if(line[0] == '>'){
-        console.log('Line from file:', line);
+        //console.log('Line from file:', line);
         sample_defline = line
         seq_count += 1
         line_items = line.split(/\s+/)
@@ -697,7 +699,7 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
         // now this is common M9Akey217.141086_98 last digits are 'count'
         // need to be removed
         first_item = first_item.split('_')[0]
-        console.log('First Item from file:', first_item);
+        //console.log('First Item from file:', first_item);
         if(ds_counts.hasOwnProperty(first_item)){
             ds_counts[first_item] += 1
         }else{
@@ -710,44 +712,115 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
       console.log('done');
       console.log('seq_count');
       console.log(seq_count);
-      
-      var info = {}
-      
       num_of_unique_keys = Object.keys(ds_counts).length
       
-      info.total_seq_count = seq_count
+      var info = {}
       info.project_name = req.body.project
+      info.max_dataset_count = 0
+      info.num_of_datasets = 0
+      info.fasta_type = ''
+      info.num_of_datasets = 0
       info.dataset = {}
+      
       if(num_of_unique_keys == seq_count){
         // looks like single
         console.log(num_of_unique_keys);
         console.log('This looks like a single dataset fasta - am I right?')
+        console.log('number of keys(ids): '+num_of_unique_keys.toString())
+        console.log('number of Sequences: '+seq_count.toString())
         if(req.body.fasta_format == 'multi_ds'){
-             error_fxn('Error - This looks like a SINGLE Dataset Fasta file.<br>Please check the format of this sample defline: '+sample_defline)
+             error_fxn('Error - You selected "Multi" but this looks like a SINGLE Dataset formatted Fasta file.<br>Here is the format of a sample defline: '+sample_defline)
         }else{
             // save file to new directory
             info.fasta_type = 'single_ds'
             info.num_of_datasets = 1
             info.dataset[req.body.dataset] = seq_count
+            info.max_dataset_count = seq_count
+            
         }
       }else{
         // looks like multi
         console.log(ds_counts);
         console.log(num_of_unique_keys);
         console.log('This looks like a multi dataset fasta')
+        console.log('number of keys(ds): '+num_of_unique_keys.toString())
+        console.log('number of Sequences: '+seq_count.toString())
         if(req.body.fasta_format == 'single_ds'){
-             error_fxn('Error - This looks like a Multiple Dataset Fasta file.<br>Please check the format of this sample defline: '+sample_defline)
+             error_fxn('Error - You selected "Single" but this looks like a Multiple Dataset formatted Fasta file.<br>Here is the format of a sample defline: '+sample_defline)
         }else{
             // save file to new directory
             info.fasta_type = 'multi_ds'
             info.num_of_datasets = num_of_unique_keys
             for(ds in ds_counts){
                 info.dataset[ds] = ds_counts[ds]
+                if(ds_counts[ds] > info.max_dataset_count){
+                    info.max_dataset_count = ds_counts[ds]
+                }
             }
         }
         
       }
-      console.log(info)
+      
+      // here all is ok and we can create user project directory
+      var project_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+req.body.project);
+      //console.log(project_base_dir)
+      var new_fasta_filename_path = path.join(project_base_dir, 'SEQFILE.fna')
+      var new_info_filename_path = path.join(project_base_dir, 'INFO.json')
+      //console.log(new_filename_path)
+      fs.ensureDir(project_base_dir, function ensureProjectsDir(err) {
+            if(err){return console.log(err);} // => null
+            // dir has now been created, including the directory it is to be placed in
+            console.log('1-moving fa file to '+new_fasta_filename_path)
+            fs.move(req.file.path, new_fasta_filename_path, function(err){
+                if (err) return console.log(err)
+                // create dir: analysis
+                if(req.body.fasta_format == 'single_ds'){
+                    var ds_dir = path.join(project_base_dir, 'analysis', req.body.dataset)
+                    console.log('1-creating directory '+ds_dir)
+                    fs.ensureDir(ds_dir, function ensureDSDir(err) {
+                        var out_fasta = path.join(ds_dir,'seqfile.unique.fa')
+                        var out_name = path.join(ds_dir,'seqfile.unique.name')
+                        var fastaunique_params = ['-o', out_fasta, '-n', out_name, new_fasta_filename_path]
+                        var proc = spawn('fastaunique', fastaunique_params)
+                    });
+                // create dir analysis/'dataset'
+                // fataunique new_fasta_filename_path into dir
+                }else{  // multi
+                    var demultiplex_params = ['-i',new_fasta_filename_path,'-d',project_base_dir]
+                    console.log('running: '+req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+ (demultiplex_params).join(' '))
+                    var proc = spawn(req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py', demultiplex_params, {
+                        env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                        detached: true, stdio: 'pipe'
+                    });  // stdin, stdout, stderr)
+                    var output = '';
+                    proc.stdout.on('data', function (data) {
+                      //console.log('stdout: ' + data);
+                      data = data.toString().replace(/^\s+|\s+$/g, '');
+                      
+                      output += data;
+
+
+                    });
+                    proc.on('close', function (code) {
+                        console.log('proc exited with code ' + code);
+                        console.log("output: ");
+                        console.log(output);
+                    });
+                    
+                    
+                }
+                
+               
+            });
+            fs.writeFile(new_info_filename_path, JSON.stringify(info, null, 2),  function writeConfigFile01(err) {
+                if (err) return console.error(err)                
+                console.log('write new info file success');               
+                
+            });
+      });
+      // create json info file 
+      // single: mv fasta file to new dir 
+      // multi: demultiplex file 
       
     });
   

@@ -7,7 +7,7 @@
 ########################################
 import sys,os
 import argparse
-import MySQLdb
+import pymysql as MySQLdb
 import json
 
 

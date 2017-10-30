@@ -29,7 +29,7 @@ import datetime
 import logging
 today = str(datetime.date.today())
 import subprocess
-import MySQLdb
+import pymysql as MySQLdb
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 print 'sys.path'

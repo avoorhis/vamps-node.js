@@ -133,35 +133,35 @@ module.exports = {
 										if(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length) != '_NA'){
 											//console.log('ADDING '+tax_long_name)
 											// SCREEN DOMAINS
-											if( domain == 'Bacteria'
-													&& (post_items.domains.indexOf('Organelle') == -1) // Organelle has been de-selected
-													&& tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast'  // tax name starts with string
-
-													){
-														console.log('Excluding',tax_long_name)
-											}else{
+											// if( domain == 'Bacteria'
+// 													&& (post_items.domains.indexOf('Organelle') == -1) // Organelle has been de-selected
+// 													&& tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast'  // tax name starts with string
+// 
+// 													){
+// 														console.log('Excluding',tax_long_name)
+// 											}else{
 													if(post_items.domains.indexOf(domain) != -1){
 														unit_name_lookup[tax_long_name] = 1;
 														unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
 													}
-											}
+											//}
 
 										}
 
 									}else{
 										// SCREEN DOMAINS
-										if( domain == 'Bacteria'
-													&& (post_items.domains.indexOf('Organelle') == -1) // Organelle has been de-selected
-													&& tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast'  // tax name starts with string
-
-													){
-														console.log('Excluding',tax_long_name)
-											}else{
+										// if( domain == 'Bacteria'
+// 													&& (post_items.domains.indexOf('Organelle') == -1) // Organelle has been de-selected
+// 													&& tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast'  // tax name starts with string
+// 
+// 													){
+// 														console.log('Excluding',tax_long_name)
+// 											}else{
 													if(post_items.domains.indexOf(domain) != -1){
 															unit_name_lookup[tax_long_name] = 1;
 															unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
 													}
-											}
+											//}
 									}
 
 

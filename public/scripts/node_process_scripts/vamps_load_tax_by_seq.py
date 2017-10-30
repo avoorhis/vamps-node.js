@@ -23,7 +23,7 @@ import time
 import random
 import csv
 import logging
-import MySQLdb
+import pymysql as MySQLdb
 from time import sleep
 import gzip
 import ConfigParser

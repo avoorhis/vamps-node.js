@@ -27,7 +27,7 @@ from IlluminaUtils.lib import fastalib
 import datetime
 import logging
 import subprocess
-import MySQLdb
+import pymysql as MySQLdb
 import unicodedata
 import pprint
 

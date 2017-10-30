@@ -103,30 +103,7 @@ if (get_graphics_btn !== null)
     }
   });
 }
-//
-// TOGGLE_SIMPLE_TAXA
-//
-function toggle_simple_taxa(ckbxclass,togglebtn)
-{
-  // page: unit_selection
-  // units: taxonomy
-  // toggles domain checkboxes on/off
-  
-  var boxes = document.getElementsByClassName(ckbxclass);
-  var i;
-  //alert(boxes)
-  if (boxes[0].checked === false) {
-      for (i = 0; i < boxes.length; i++) {
-          boxes[i].checked = true;
-          togglebtn.checked = true;
-      }
-  } else {
-      for (i = 0; i < boxes.length; i++) {
-          boxes[i].checked = false;
-          togglebtn.checked = false;
-    }
-  }
-}
+
 //
 // TOGGLE_REQUIRED_METADATA
 //

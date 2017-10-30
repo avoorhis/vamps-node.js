@@ -23,7 +23,7 @@ from os.path import expanduser
 import datetime
 import subprocess as subp
 import gzip, csv, json
-import MySQLdb
+import pymysql as MySQLdb
 import MySQLdb.cursors
 #from apps.ConDictMySQL import Conn
 sys.path.append('/groups/vampsweb/vampsdev')
@@ -699,7 +699,7 @@ def run_taxbyseq(args):
     #write_taxbyseq_file(args, seqs_array, seqs_tax_array, seqs_dist_array,sample_order)
     out_file = os.path.join(args.base,'taxbyseq-'+args.runcode+'.tsv')
     ranks = ('domain','phylum','class','order','family','genus','species','strain')
-    file_txt = 'VAMPS TaxBySeq\tNormalization: '+args.normalization+'\n\t'
+    file_txt = 'VAMPS TaxBySeq\tNormalization: '+args.normalization+'\n'
 
     for d in sample_order:
         file_txt += d+'\t'

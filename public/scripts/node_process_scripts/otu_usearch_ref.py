@@ -24,8 +24,6 @@ import time
 #import csv
 #import json
 from time import sleep
-#import MySQLdb
-#import ConMySQL
 import datetime
 import subprocess
 import copy

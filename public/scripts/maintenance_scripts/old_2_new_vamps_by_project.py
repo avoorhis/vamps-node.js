@@ -73,7 +73,7 @@ custom_metadata_#
 
 """
 import csv
-import MySQLdb
+import pymysql as MySQLdb
 import logging
 import sys
 import os

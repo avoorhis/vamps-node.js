@@ -8,7 +8,7 @@
 
 import sys,os,shutil
 import argparse
-import MySQLdb
+import pymysql as MySQLdb
 import json
 import logging
 import datetime

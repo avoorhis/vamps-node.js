@@ -24,7 +24,36 @@ if (reorder_datasets_btn !== null) {
 //     window.location=document.referrer;
 //   });
 // }
-
+//
+// TOGGLE_SIMPLE_TAXA
+//
+toggle_taxa_btn = document.getElementById('toggle_taxa_btn') || null;
+if (toggle_taxa_btn !== null) {
+  toggle_taxa_btn.addEventListener('click', function () {
+      toggle_simple_taxa('simple_taxa_ckbx',toggle_taxa_btn);
+  });
+} 
+function toggle_simple_taxa(ckbxclass, togglebtn)
+{
+  // page: unit_selection
+  // units: taxonomy
+  // toggles domain checkboxes on/off
+  
+  var boxes = document.getElementsByClassName(ckbxclass);
+  var i;
+  //alert(boxes)
+  if (boxes[0].checked === false) {
+      for (i = 0; i < boxes.length; i++) {
+          boxes[i].checked = true;
+          togglebtn.checked = true;
+      }
+  } else {
+      for (i = 0; i < boxes.length; i++) {
+          boxes[i].checked = false;
+          togglebtn.checked = false;
+    }
+  }
+}
 //
 // SAVE DATASET LIST
 //

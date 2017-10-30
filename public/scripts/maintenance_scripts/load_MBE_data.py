@@ -26,7 +26,7 @@ import random
 import csv
 from time import sleep
 import ConfigParser
-import MySQLdb
+import pymysql as MySQLdb
 #sys.path.append( '/bioware/python/lib/python2.7/site-packages/' )
 script_path = './'
 from IlluminaUtils.lib import fastalib

@@ -28,7 +28,7 @@ import rdp.rdp as rdp
 import datetime
 today = str(datetime.date.today())
 import subprocess
-import MySQLdb
+import pymysql as MySQLdb
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
