@@ -835,6 +835,14 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
 //                 console.log('write new info file success');               
 //                 
 //             });
+            
+                req.flash('success', 'see here!');
+                res.render('user_data/import_choices/fasta', {
+                      title: 'VAMPS:Import Choices',         
+                      user: req.user, hostname: req.CONFIG.hostname
+                });
+          
+
       });
       // create json info file 
       // single: mv fasta file to new dir 
