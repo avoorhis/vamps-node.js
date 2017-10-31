@@ -785,38 +785,56 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
                     });
                 // create dir analysis/'dataset'
                 // fataunique new_fasta_filename_path into dir
-                }else{  // multi
-                    var demultiplex_params = ['-i',new_fasta_filename_path,'-d',project_base_dir]
-                    console.log('running: '+req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+ (demultiplex_params).join(' '))
-                    var proc = spawn(req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py', demultiplex_params, {
-                        env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-                        detached: true, stdio: 'pipe'
-                    });  // stdin, stdout, stderr)
-                    var output = '';
-                    proc.stdout.on('data', function (data) {
-                      //console.log('stdout: ' + data);
-                      data = data.toString().replace(/^\s+|\s+$/g, '');
-                      
-                      output += data;
-
-
-                    });
-                    proc.on('close', function (code) {
-                        console.log('proc exited with code ' + code);
-                        console.log("output: ");
-                        console.log(output);
-                    });
+                
+                }else{  // MULTI - create shell script demultiplex.sh
+                    
+                    demultiplex_script_path =  path.join(project_base_dir,'demultiplex.sh');
+                    demultiplex_script_text = '#!/bin/sh\n\n'
+                    fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
+                    var demultiplex_params = ['-i',new_fasta_filename_path,'-d',project_base_dir,'-f',fastaunique_cmd]
+                    //console.log('running: '+req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+ (demultiplex_params).join(' '))
+                    demultiplex_script_text += req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+demultiplex_params.join(' ')+'\n'
                     
                     
+                    fs.writeFile(demultiplex_script_path, demultiplex_script_text, { mode: '777' }, function(err){
+                        if(err){ console.log(err); }
+                        console.log('DONE')
+                        
+                    
+                    
+                        //this_proc = '/bin/sh '+demultiplex_script_path
+                        //console.log(this_proc)
+                        var proc = spawn(req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py', demultiplex_params)
+                       //  var proc = spawn(demultiplex_script_path, {
+//                             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+//                             detached: true, stdio: 'pipe'
+//                         });  // stdin, stdout, stderr)
+//                         var output = '';
+//                         proc.stdout.on('data', function (data) {
+//                           //console.log('stdout: ' + data);
+//                           data = data.toString().replace(/^\s+|\s+$/g, '');
+//                       
+//                           output += data;
+// 
+// 
+//                         });
+//                         proc.on('close', function (code) {
+//                             console.log('proc exited with code ' + code);
+//                             console.log("output: ");
+//                             console.log(output);
+//                         });
+                    
+                    });
                 }
                 
                
             });
-            fs.writeFile(new_info_filename_path, JSON.stringify(info, null, 2),  function writeConfigFile01(err) {
-                if (err) return console.error(err)                
-                console.log('write new info file success');               
-                
-            });
+            fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'section' }))
+            // fs.writeFile(new_info_filename_path, JSON.stringify(info, null, 2),  function writeConfigFile01(err) {
+//                 if (err) return console.error(err)                
+//                 console.log('write new info file success');               
+//                 
+//             });
       });
       // create json info file 
       // single: mv fasta file to new dir 
