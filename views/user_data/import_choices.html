@@ -10,7 +10,13 @@
 
 <div id="import_choices">
   <div class="row">
-      <div class="col-sm-3"><a href="/user_data/import_choices/fasta">Fasta File</a></div>
+      <% if(user.security_level == 1){ %>
+        <div class="col-sm-3"><a href="/user_data/import_choices/fasta">Fasta File</a></div>
+      <% }else{ %>
+        Fasta File (In Development)
+        <br>Taxonomy Matrix File (In Development)
+        <br>Biom File  (In Development)
+      <% } %>
   </div>
 <!-- 
 

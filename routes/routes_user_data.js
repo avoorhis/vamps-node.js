@@ -804,25 +804,25 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
                     
                         //this_proc = '/bin/sh '+demultiplex_script_path
                         //console.log(this_proc)
-                        var proc = spawn(req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py', demultiplex_params)
+                        var proc = spawn(req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py', demultiplex_params, {
                        //  var proc = spawn(demultiplex_script_path, {
-//                             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-//                             detached: true, stdio: 'pipe'
-//                         });  // stdin, stdout, stderr)
-//                         var output = '';
-//                         proc.stdout.on('data', function (data) {
-//                           //console.log('stdout: ' + data);
-//                           data = data.toString().replace(/^\s+|\s+$/g, '');
-//                       
-//                           output += data;
-// 
-// 
-//                         });
-//                         proc.on('close', function (code) {
-//                             console.log('proc exited with code ' + code);
-//                             console.log("output: ");
-//                             console.log(output);
-//                         });
+                            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                            detached: true, stdio: 'pipe'
+                        });  // stdin, stdout, stderr)
+                        var output = '';
+                        proc.stdout.on('data', function (data) {
+                          console.log('stdout: ' + data);
+                          data = data.toString().replace(/^\s+|\s+$/g, '');
+                      
+                          output += data;
+
+
+                        });
+                        proc.on('close', function (code) {
+                            console.log('close: proc exited with code ' + code);
+                            console.log("output: ");
+                            console.log(output);
+                        });
                     
                     });
                 }
