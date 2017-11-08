@@ -779,7 +779,7 @@ constants.METADATA_FORM_REQUIRED_FIELDS = ["project",
 // "misc natural or artificial environment" = miscellaneous_natural_or_artificial_environment
 
 constants.DCO_ENVIRONMENTAL_PACKAGES = ["Please choose one",
-  "misc environment",
+  "miscellaneous_natural_or_artificial_environment",
   "microbial_mat/biofilm",
   "plant_associated",
   "sediment",

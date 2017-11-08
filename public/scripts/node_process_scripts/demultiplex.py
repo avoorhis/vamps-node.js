@@ -59,7 +59,7 @@ class Demultiplex:
   def get_args(self, argv):
   
     try:
-      opts, args = getopt.getopt(argv, "hid:", ["ifile="])
+      opts, args = getopt.getopt(argv, "hi:d:f:", ["ifile="])
       print "opts = %s, args = %s" % (opts, args)
     except getopt.GetoptError:
       sys.exit(2)
@@ -72,7 +72,9 @@ class Demultiplex:
       elif opt in ("-i", "--ifile"):
         self.inputfile = arg
       elif opt in ("-d", "--dir"):
-        self.project_path = arg            
+        self.project_path = arg
+      elif opt in ("-f", "--faunique"):
+        self.fastaunique_cmd = arg                
     return (self.inputfile)
       
       
@@ -108,11 +110,11 @@ class Demultiplex:
     self.get_out_file_names()
     for sample in self.sample_names:
       file_name = sample+'.fa'
-      #file_path = os.path.join('analysis',sample, file_name)
-      self.out_files[file_name] = open(file_name, "a")
+      file_path = os.path.join(self.project_path,file_name)
+      self.out_files[file_name] = open(file_path, "a")
 
-  def close_sample_files(self, out_files):
-      [o_file[1].close() for o_file in out_files.items()] 
+  def close_sample_files(self):
+      [o_file[1].close() for o_file in self.out_files.items()] 
       return
       
   def make_file_name(self, id):
@@ -133,13 +135,15 @@ class Demultiplex:
       id = f_input.id
       
       f_out_name = self.make_file_name(f_input.id)
+      
       f_output   = self.out_files[f_out_name]
       self.write_id(f_output, id)
       self.write_seq(f_output, f_input.seq)
       if (i % 100000 == 0 or i == 1):
         sys.stderr.write('\r[demultiplex] Writing entries into files: %s\n' % (i))
         sys.stderr.flush()
-        
+    self.close_sample_files()
+    
   def create_directories(self):
     analysis_dir = os.path.join(self.project_path,'analysis')
     if (os.path.exists(analysis_dir)):
@@ -153,17 +157,20 @@ class Demultiplex:
     analysis_dir = os.path.join(self.project_path,'analysis')
     import subprocess
     for sample in self.sample_names:
+        infile = os.path.join(self.project_path,sample+'.fa')
         sample_dir = os.path.join(analysis_dir,sample)
         out_fasta = os.path.join(sample_dir,'seqfile.unique.fa')
         out_name = os.path.join(sample_dir,'seqfile.unique.name')
-        fastaunique_cmd_list = [ 'fastaunique','-o', out_fasta, '-n', out_name, sample+'.fa']
+        fastaunique_cmd_list = [ self.fastaunique_cmd,'-o', out_fasta, '-n', out_name, infile]
+        
         print ' '.join(fastaunique_cmd_list)
-        #os.system(fastaunique_cmd)
-        subprocess.call(fastaunique_cmd_list)
+        os.system(' '.join(fastaunique_cmd_list))
+        #subprocess.call(fastaunique_cmd_list, shell=True)
         
   def cleanup(self):
      for sample in self.sample_names:
-        os.remove(sample+'.fa')   
+        os.remove(sample+'.fa') 
+          
 if __name__ == "__main__":
     
     usage = """
@@ -182,7 +189,7 @@ if __name__ == "__main__":
     demult.demultiplex_input(inputfile)
     demult.create_directories()
     demult.unique_files()
-    demult.cleanup()
+    #demult.cleanup()
     
     
 
