@@ -125,7 +125,7 @@ def go_add(args):
     mysql_conn = MySQLdb.connect(db = args.NODE_DATABASE, host=hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     cur = mysql_conn.cursor()
 
-    get_config_data(args.project_dir)
+    get_config_data(args)
     
     pid = CONFIG_ITEMS['project_id']
     
@@ -379,19 +379,19 @@ def read_original_metadata(args):
 #     
 #     return dids
 
-def get_config_data(indir):
+def get_config_data(args):
     global mysql_conn, cur
-    config_infile =   os.path.join(indir,'config.ini') 
-    print config_infile
-    logging.info(config_infile)
+    config_path = os.path.join(args.project_dir, args.config_file)
+    print config_path
+    logging.info(config_path)
     config = ConfigParser.ConfigParser()
     config.optionxform=str
-    config.read(config_infile)    
-    for name, value in  config.items('GENERAL'):
+    config.read(config_path)    
+    for name, value in  config.items('MAIN'):
         #print '  %s = %s' % (name, value)  
         CONFIG_ITEMS[name] = value
     CONFIG_ITEMS['datasets'] = []
-    for dsname, count in  config.items('DATASETS'):        
+    for dsname, count in  config.items('MAIN.dataset'):        
         CONFIG_ITEMS['datasets'].append(dsname)   
     #print 'project',CONFIG_ITEMS['project']
     q = "SELECT project_id FROM project"

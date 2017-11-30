@@ -45,23 +45,23 @@ def start_rdp(args):
     
     datasets = {}
     
-    config_infile =   os.path.join(args.project_dir,'config.ini')
-    if not os.path.isfile(config_infile):
-        print( "Could not find config file ("+config_infile+") **Exiting**")
+    config_path = os.path.join(args.project_dir, args.config_file)
+    if not os.path.isfile(config_path):
+        print( "Could not find config file ("+config_path+") **Exiting**")
         sys.exit()
    
     config = ConfigParser.ConfigParser()
     config.optionxform=str
-    config.read(config_infile)
+    config.read(config_path)
     general_config_items = {}
     # CL take precedence for domain and dna_region
     
-    for name, value in  config.items('GENERAL'):
+    for name, value in  config.items('MAIN'):
         #print '  %s = %s' % (name, value)  
         general_config_items[name] = value
-    #print     config.items('DATASETS')
+    #print     config.items('MAIN.dataset')
     file_prefix = 'testing-fp'
-    dir_prefix  = general_config_items['baseoutputdir']
+    dir_prefix  = general_config_items['project_directory']
             
     
     #global_gast_dir = os.path.join(args.basedir,'analysis','gast')
@@ -70,11 +70,11 @@ def start_rdp(args):
         os.makedirs(rdp_dir)
         
     total_uniques = 0
-    for dataset_item in config.items('DATASETS'):
+    for dataset_item in config.items('MAIN.dataset'):
             dataset = dataset_item[0]
             dscount = dataset_item[1]  # raw count
             print "\nDS KNT",dataset,dscount
-            unique_file = os.path.join(args.project_dir, dataset+'.fa.unique')
+            unique_file = os.path.join(args.project_dir, 'analysis', dataset,'seqfile.unique.fa')
          
             rdp_out_file = os.path.join(rdp_dir, dataset+'.rdp') # to be created
 
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     
     parser.add_argument("-project_dir", "--project_dir",    
                 required=True,  action="store",   dest = "project_dir", 
-                help = '')
+                help = 'project directory')
     parser.add_argument("-p", "--project",        
                 required=True,  action='store', dest = "project", 
                 help="Project Name")
@@ -117,9 +117,11 @@ if __name__ == '__main__':
                  help = 'See RDP README: 16srrna, fungallsu, fungalits_warcup, fungalits_unite') 
                  
     parser.add_argument("-path_to_classifier", "--path_to_classifier",    
-                required=False,  action="store",   dest = "path_to_classifier", default='/Users/avoorhis/programming/rdp_classifier',
-                help = '') 
-    
+                required=False,  action="store",   dest = "path_to_classifier", default='/Users/avoorhis/programming/rdp_classifier/classifier.jar',
+                help = 'rdp classifier with full path') 
+    parser.add_argument("-config", "--config",    
+                required=True,  action="store",   dest = "config_file", 
+                help = 'config file name') 
     args = parser.parse_args() 
 
     start_rdp(args)

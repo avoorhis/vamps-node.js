@@ -685,15 +685,14 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
      var lineReader = require('readline').createInterface({
           input: require('fs').createReadStream(req.file.path)
         });
-    var seq_count = 0
+    var total_seq_count = 0
     var ds_counts = {}
     var sample_defline;
-    lineReader.on('line', function (line) {
-      
+    lineReader.on('line', function (line) {      
       if(line[0] == '>'){
         //console.log('Line from file:', line);
         sample_defline = line
-        seq_count += 1
+        total_seq_count += 1    // total sequences IF fasta is not uniqued 
         line_items = line.split(/\s+/)
         first_item = line_items[0].substring(1,line_items[0].length)
         // now this is common M9Akey217.141086_98 last digits are 'count'
@@ -710,32 +709,37 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
     });
     lineReader.on('close', function (line) {
       console.log('done');
-      console.log('seq_count');
-      console.log(seq_count);
+      console.log('total_seq_count');
+      console.log(total_seq_count);
       num_of_unique_keys = Object.keys(ds_counts).length
       
       var info = {}
       info.project_name = req.body.project
+      info.project_directory = ''
+      info.total_seq_count = total_seq_count;
+      info.owner = req.user.username
+      info.unique_seq_count = 0
       info.max_dataset_count = 0
       info.num_of_datasets = 0
       info.fasta_type = ''
+      info.public = 1  // set true
       info.num_of_datasets = 0
       info.dataset = {}
       
-      if(num_of_unique_keys == seq_count){
+      if(num_of_unique_keys == total_seq_count){
         // looks like single
         console.log(num_of_unique_keys);
         console.log('This looks like a single dataset fasta - am I right?')
         console.log('number of keys(ids): '+num_of_unique_keys.toString())
-        console.log('number of Sequences: '+seq_count.toString())
+        console.log('number of Sequences: '+total_seq_count.toString())
         if(req.body.fasta_format == 'multi_ds'){
              error_fxn('Error - You selected "Multi" but this looks like a SINGLE Dataset formatted Fasta file.<br>Here is the format of a sample defline: '+sample_defline)
         }else{
             // save file to new directory
             info.fasta_type = 'single_ds'
             info.num_of_datasets = 1
-            info.dataset[req.body.dataset] = seq_count
-            info.max_dataset_count = seq_count
+            info.dataset[req.body.dataset] = total_seq_count
+            info.max_dataset_count = total_seq_count  // only one ds here
             
         }
       }else{
@@ -744,7 +748,7 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
         console.log(num_of_unique_keys);
         console.log('This looks like a multi dataset fasta')
         console.log('number of keys(ds): '+num_of_unique_keys.toString())
-        console.log('number of Sequences: '+seq_count.toString())
+        console.log('Total number of Sequences: '+total_seq_count.toString())
         if(req.body.fasta_format == 'single_ds'){
              error_fxn('Error - You selected "Single" but this looks like a Multiple Dataset formatted Fasta file.<br>Here is the format of a sample defline: '+sample_defline)
         }else{
@@ -763,9 +767,10 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
       
       // here all is ok and we can create user project directory
       var project_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+req.body.project);
+      info.project_directory = project_base_dir
       //console.log(project_base_dir)
       var new_fasta_filename_path = path.join(project_base_dir, 'SEQFILE.fna')
-      var new_info_filename_path = path.join(project_base_dir, 'INFO.json')
+      var new_info_filename_path = path.join(project_base_dir, req.CONSTS.CONFIG_FILE)
       //console.log(new_filename_path)
       fs.ensureDir(project_base_dir, function ensureProjectsDir(err) {
             if(err){return console.log(err);} // => null
@@ -780,77 +785,114 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
                     fs.ensureDir(ds_dir, function ensureDSDir(err) {
                         var out_fasta = path.join(ds_dir,'seqfile.unique.fa')
                         var out_name = path.join(ds_dir,'seqfile.unique.name')
+                        fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
                         var fastaunique_params = ['-o', out_fasta, '-n', out_name, new_fasta_filename_path]
-                        var proc = spawn('fastaunique', fastaunique_params)
-                    });
+                        console.log('running fastaunique')
+                        console.log(fastaunique_cmd + ' ' + fastaunique_params.join(' '))
+                        var proc = spawn(fastaunique_cmd, fastaunique_params)
+                        var output = '';
+                        proc.stdout.on('data', function (data) {
+                          data = data.toString().replace(/^\s+|\s+$/g, '');                      
+                          output += data;
+                        });
+                        proc.on('close', function (code) {
+                            console.log('close: fastaunique proc exited with code ' + code);
+                            console.log("output: ");
+                            console.log(output);
+                            info.unique_seq_count = output
+                            fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
+                            req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+                            res.render('user_data/import_choices/fasta', {
+                                  title: 'VAMPS:Import Choices',         
+                                  user: req.user, hostname: req.CONFIG.hostname
+                            });
+                        });
+                    });   
+                   
                 // create dir analysis/'dataset'
                 // fataunique new_fasta_filename_path into dir
                 
                 }else{  // MULTI - create shell script demultiplex.sh
                     
-                    demultiplex_script_path =  path.join(project_base_dir,'demultiplex.sh');
-                    demultiplex_script_text = '#!/bin/sh\n\n'
+                    //demultiplex_script_path =  path.join(project_base_dir,'demultiplex.sh');
+                    //demultiplex_script_text = '#!/bin/sh\n\n'
                     fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
+                    demultiplex_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py')
                     var demultiplex_params = ['-i',new_fasta_filename_path,'-d',project_base_dir,'-f',fastaunique_cmd]
                     //console.log('running: '+req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+ (demultiplex_params).join(' '))
-                    demultiplex_script_text += req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+demultiplex_params.join(' ')+'\n'
+                    //demultiplex_script_text += req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+demultiplex_params.join(' ')+'\n'
                     
-                    
-                    fs.writeFile(demultiplex_script_path, demultiplex_script_text, { mode: '777' }, function(err){
-                        if(err){ console.log(err); }
-                        console.log('DONE')
-                        
-                    
-                    
-                        //this_proc = '/bin/sh '+demultiplex_script_path
-                        //console.log(this_proc)
-                        var proc = spawn(req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py', demultiplex_params, {
-                       //  var proc = spawn(demultiplex_script_path, {
-                            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-                            detached: true, stdio: 'pipe'
-                        });  // stdin, stdout, stderr)
-                        var output = '';
+                    console.log(demultiplex_cmd + ' ' + demultiplex_params.join(' '))
+                    var proc = spawn(demultiplex_cmd, demultiplex_params)
+                    var output = '';
                         proc.stdout.on('data', function (data) {
-                          console.log('stdout: ' + data);
-                          data = data.toString().replace(/^\s+|\s+$/g, '');
-                      
-                          output += data;
-
-
+                          //data = data.toString().replace(/^\s+|\s+$/g, '');  
+                          console.log('data1')  
+                          console.log(data)   
+                        //data = JSON.parse(data) 
+                          //console.log('data2')  
+                          //console.log(data)                 
+                          //output += data['unique_count'];
+                          output += parseInt(data)
                         });
                         proc.on('close', function (code) {
-                            console.log('close: proc exited with code ' + code);
+                            console.log('close: demultiplex/fastaunique proc exited with code ' + code);
                             console.log("output: ");
                             console.log(output);
+                            if(helpers.isInt(output)){
+                                info.unique_seq_count = output
+                            }else{
+                                console.log('seq_count Error: Check demultiplex.py script for print commands.')
+                                info.unique_seq_count = 'ERROR'
+                            }
+                            fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
+                            req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+                            res.render('user_data/import_choices/fasta', {
+                                  title: 'VAMPS:Import Choices',         
+                                  user: req.user, hostname: req.CONFIG.hostname
+                            });
                         });
-                    
-                    });
-                }
-                
+                   //  fs.writeFile(demultiplex_script_path, demultiplex_script_text, { mode: '777' }, function(err){
+//                         if(err){ console.log(err); return; }
+//                         console.log('DONE Writing demultiplex shell script')              
+//                     
+//                     
+//                         //this_proc = '/bin/sh '+demultiplex_script_path
+//                         //console.log(this_proc)
+//                         var proc = spawn(req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py', demultiplex_params, {
+//                        //  var proc = spawn(demultiplex_script_path, {
+//                             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+//                             detached: true, stdio: 'pipe'
+//                         });  // stdin, stdout, stderr)
+//                         var output = '';
+//                         proc.stdout.on('data', function (data) {
+//                           data = data.toString().replace(/^\s+|\s+$/g, '');                      
+//                           output += data;
+//                         });
+//                         proc.on('close', function (code) {
+//                             console.log('close: demultiplex proc exited with code ' + code);
+//                             //console.log("output: ");
+//                             //console.log(output);
+//                             fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
+//                             req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+//                             res.render('user_data/import_choices/fasta', {
+//                                       title: 'VAMPS:Import Choices',         
+//                                       user: req.user, hostname: req.CONFIG.hostname
+//                             });
+//                         });
+//                     });                    
+                   
+                }   
                
             });
-            fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'section' }))
-            // fs.writeFile(new_info_filename_path, JSON.stringify(info, null, 2),  function writeConfigFile01(err) {
-//                 if (err) return console.error(err)                
-//                 console.log('write new info file success');               
-//                 
-//             });
             
-                req.flash('success', 'see here!');
-                res.render('user_data/import_choices/fasta', {
-                      title: 'VAMPS:Import Choices',         
-                      user: req.user, hostname: req.CONFIG.hostname
-                });
-          
-
-      });
       // create json info file 
       // single: mv fasta file to new dir 
       // multi: demultiplex file 
       
     });
   
-   
+   });
 });
 //
 //
@@ -1291,7 +1333,7 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
   console.log("req.params.id 1: ");
   console.log(req.params.id);
   var project = req.params.id;
-  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, 'config.ini');
+  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, req.CONSTS.CONFIG_FILE);
 
   var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
   console.log("config: ");
@@ -1369,7 +1411,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function (req, res)
   console.log("req.params.id 2: ");
   console.log(req.params.id);
   var project = req.params.id;
-  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, 'config.ini');
+  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, req.CONSTS.CONFIG_FILE);
 
   stats = fs.statSync(config_file);
   if (stats.isFile()) {
@@ -1423,7 +1465,7 @@ router.get('/user_project_validation/:id', helpers.isLoggedIn, function (req, re
         // check that sequence file(s) are present
         // check config variables
         // grep Traceback project-*/cluster.log
-        var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, 'config.ini');
+        var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, req.CONSTS.CONFIG_FILE);
         var metadata_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, 'metadata_clean.csv');
 
         stats = fs.statSync(config_file);
@@ -1581,13 +1623,13 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn, function (req, res
       } else {
         // need to change config file of new project to include new name:
         console.log('duplicate copy success!');
-        var config_file = path.join(new_data_dir, 'config.ini');
+        var config_file = path.join(new_data_dir, req.CONSTS.CONFIG_FILE);
         var project_info = {};
         project_info.config = iniparser.parseSync(config_file);
         var config_info = project_info.config.GENERAL;
         config_info.project = project+'_dupe';
         config_info.baseoutputdir = new_data_dir;
-        config_info.configPath = path.join(new_data_dir, 'config.ini');
+        config_info.configPath = path.join(new_data_dir, req.CONSTS.CONFIG_FILE);
         config_info.fasta_file = path.join(new_data_dir, infile_fa);
         config_info.datasets = [];
         for (var ds in project_info.config.DATASETS) {
@@ -1606,7 +1648,7 @@ router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, function (req, res)
     var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
 
 
-    var config_file = path.join(data_dir, 'config.ini');
+    var config_file = path.join(data_dir, req.CONSTS.CONFIG_FILE);
 
     res.render('user_data/assign_taxonomy', {
       project : project,
@@ -1648,14 +1690,14 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
   //TODO: check if needed:
   var qsub_script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
 
-  var config_file = path.join(data_dir, 'config.ini');
+  var config_file = path.join(data_dir, req.CONSTS.CONFIG_FILE);
   try
   {
     //var stat_config = fs.statSync(config_file);
     // console.log('1 ', config_file)
     project_config = iniparser.parseSync(config_file);
-    console.log('project_config', project_config);
-    console.log('project_config2', project_config.GENERAL.fasta_type);
+    //console.log('project_config', project_config);
+    //console.log('project_config2', project_config.MAIN.fasta_type);
     // TODO: project_config is wrong (not updated) in
       // project_title: '',
       // project_description: '',
@@ -1700,15 +1742,15 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
     // TODO: move to a separate function!
     // These are from the RDP README
     var gene = '16srrna'; // default
-    if (classifier_id == 'refRDP_2.12-ITS')
+    if (ref_db == '2.12-ITS')
     {
       gene = 'fungalits_unite';
     }
-    var path2classifier = req.CONFIG.PATH_TO_CLASSIFIER + '_' + ref_db;
-    rdp_cmd1 = options.scriptPath + '/vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene;
-    rdp_cmd2 = options.scriptPath + '/vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP';
-    rdp_cmd3 = options.scriptPath + '/vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site;
-    rdp_cmd4 = options.scriptPath + '/vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE;
+    var path2classifier = path.join(req.CONFIG.PATH_TO_CLASSIFIER,'classifier.jar')  // + '_' + ref_db;
+    rdp_cmd1 = options.scriptPath + '/vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene +  ' --config '+ req.CONSTS.CONFIG_FILE
+    rdp_cmd2 = options.scriptPath + '/vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP' + ' --config '+ req.CONSTS.CONFIG_FILE
+    rdp_cmd3 = options.scriptPath + '/vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --config '+ req.CONSTS.CONFIG_FILE
+    rdp_cmd4 = options.scriptPath + '/vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE + ' --config '+ req.CONSTS.CONFIG_FILE
 
     script_name = 'rdp_script.sh';
     status_params.statusOK = 'OK-RDP';
@@ -2028,6 +2070,10 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
   //console.log(PROJECT_INFORMATION_BY_PID)
   project_info = {};
   pnames = [];
+  
+  
+  
+  // get user projects in database
   for(pid in PROJECT_INFORMATION_BY_PID){
     if(PROJECT_INFORMATION_BY_PID[pid].oid == req.user.user_id){
         // this data trumps directory_data.config
@@ -2036,25 +2082,26 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
         project_info[p].pid = pid; 
         project_info[p].validation = {};
         project_info[p].public = PROJECT_INFORMATION_BY_PID[pid].public;
+        
         project_info[p].classified_by = ALL_CLASSIFIERS_BY_PID[PROJECT_INFORMATION_BY_PNAME[p].pid];
+        
         project_info[p].env_source_id = PROJECT_INFORMATION_BY_PID[pid].env_source_id;
-        project_info[p].status = {
-                'in_global_obj':'true',
-                'empty_dir':'unknown',
-                'ds_count':DATASET_IDS_BY_PID[pid].length               
-        };
+        project_info[p].in_global_obj = true
+        //project_info[p].empty_dir = 'unknown'
+        project_info[p].vamps_status = 'ON_VAMPS'
+        project_info[p].num_of_datasets = DATASET_IDS_BY_PID[pid].length 
         if(DATASET_IDS_BY_PID[pid].length == 0){
-            project_info[p].status.taxonomy = 'No Datasets (NOT on VAMPS)'
-            project_info[p].status.seq_count = 0
+            project_info[p].taxonomy = 'No Datasets (NOT on VAMPS)'
+            project_info[p].seq_count = 0
         }else{
-            project_info[p].status.taxonomy = 'Taxonomic Data Available (project on VAMPS)'
-            project_info[p].status.seq_count = ALL_PCOUNTS_BY_PID[pid]
+            project_info[p].taxonomy = 'Taxonomic Data Available (project on VAMPS)'
+            project_info[p].seq_count = ALL_PCOUNTS_BY_PID[pid]
         }
         pnames.push(p);
     }
   }
   
-  
+  // get user projects in file system
     fs.readdir(user_projects_base_dir, function readProjectsDir(err, items) {
     if (err) {
 
@@ -2067,10 +2114,11 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
 
     } else {
         for (var d in items) {
-                var pts = items[d].split('-');
+                var pts = items[d].split('-');  // ALL items in this dir should have this '-' to separate on
                 if (pts[0] === 'project') {
 
           var project_name = pts[1];
+          
           console.log('dir',items[d])
           if( ! project_info.hasOwnProperty(project_name)){
             // these projects are either empty (NoDataYet) or orphans (dir w/o DB presence)
@@ -2078,8 +2126,9 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
             project_info[project_name] = {};
             project_info[project_name].pid = '0';
             project_info[project_name].validation = {};
-            //project_info[project_name].empty_project = true;
-            project_info[project_name].status = {'in_global_obj':'false','empty_dir':'true','ds_count':'', 'seq_count':'','taxonomy':'No Datasets'};
+            project_info[project_name].vamps_status = 'NOT_ON_VAMPS';
+            project_info[project_name].classified_by = 'none'
+            project_info[project_name].in_global_obj = false
             pnames.push(project_name);
           }
           
@@ -2090,40 +2139,20 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
 
             // need to read config file
             // check status?? dir strcture: analisis/gast/<ds>
-            var config_file = path.join(user_projects_base_dir, items[d], 'config.ini');
+            var config_file = path.join(user_projects_base_dir, items[d], req.CONSTS.CONFIG_FILE);
 
             try {  // to read config file
               //var stat_config = fs.statSync(config_file);
-              // console.log('1 ', config_file)
-              var config = iniparser.parseSync(config_file);
-              var list_of_datasets = Object.keys(config.DATASETS);
+              //console.log('1 ', config_file)
+              //var config = iniparser.parseSync(config_file);
+              var config = ini.parse(fs.readFileSync(config_file, 'utf-8'))
+              console.log('2 ', config)
+              var list_of_datasets = Object.keys(config.MAIN.dataset);
+              //console.log('2 ', list_of_datasets)
               
-              
-              
-
-              //new_status = helpers.get_status(req.user.username, project_name);
-              //console.log(new_status); // Async only -- doesn't work
-              //console.log(ALL_CLASSIFIERS_BY_PID);
-              // console.log('2 ', config_file)
-              
-              if ( project_info[project_name].status.in_global_obj == 'false') {
-                      
-                  var metadata_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project_name, 'metadata_clean.csv');
-                  var fasta_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project_name, 'metadata_clean.csv');
-                  //console.log('config.DATASETS', config.DATASETS)
-                  project_info[project_name].validation['metadata_clean.csv'] = helpers.fileExists(metadata_file);  // true or false
-                  project_info[project_name].status.ds_count = config.GENERAL.number_of_datasets;
-                  project_info[project_name].status.seq_count = config.GENERAL.project_sequence_count;
-                  for (var i in list_of_datasets) {
-                      var dsname = list_of_datasets[i];
-                      var unique_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project_name, dsname+'.fa.unique');
-                      project_info[project_name].validation[dsname+'.fa.unique'] = helpers.fileExists(unique_file);  // true or false
-                  }
-                  project_info[project_name].pid = 0;
-                  project_info[project_name].status.taxonomy = 'No Taxonomic Assignments Yet (NOT on VAMPS)';
-                  project_info[project_name].classified_by = 'none';
-              }
-              project_info[project_name].status.empty_dir = 'false'
+              //project_info[project_name].empty_dir = 'false'
+              project_info[project_name].num_of_datasets = config.MAIN.num_of_datasets
+              project_info[project_name].seq_count = config.MAIN.unique_seq_count
               //project_info[project_name].config = config;
               project_info[project_name].directory = items[d];
               //project_info[project_name].mtime = stat_dir.mtime;
@@ -2132,21 +2161,15 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
               //project_info[project_name].project_sequence_count = config.GENERAL.project_sequence_count;
               //project_info[project_name].public = config.GENERAL.public;
               //project_info[project_name].env_source_id = config.GENERAL.env_source_id;
-              project_info[project_name].DATASETS = config.DATASETS;
+              project_info[project_name].DATASETS = config.MAIN.dataset;
             }
             catch (err) {
               // these will be projects in the database; with or without datasets; with empty directories
+                console.log('Lost Project: '+project_name)
+                console.log('NO CONFIG: '+project_name)
               
-              if(project_name in PROJECT_INFORMATION_BY_PNAME){
-                  //project_info[project_name].status.taxonomy = 'Unknown'
-                  //pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid
-                  //project_info[project_name].number_of_datasets = DATASET_IDS_BY_PID[pid].length
-                  //project_info[project_name].project_sequence_count = ALL_PCOUNTS_BY_PID[pid]
-              }else{
-                console.log('Lost Project',project_name)
-              }
             }
-
+            
           }
 
         }
@@ -2179,7 +2202,7 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function (req, res) {
   var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
 
 
-  var config_file = path.join(user_projects_base_dir, 'project-'+project_name, 'config.ini');
+  var config_file = path.join(user_projects_base_dir, 'project-'+project_name, req.CONSTS.CONFIG_FILE);
 
   var project_info = {};
     //var stat_config = fs.statSync(config_file);
@@ -2359,7 +2382,7 @@ router.post('/edit_project', helpers.isLoggedIn, function (req, res) {
   var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
 
   var project_dir = path.join(user_projects_base_dir, 'project-'+project_name);
-  var config_file = path.join(project_dir, 'config.ini');
+  var config_file = path.join(project_dir, req.CONSTS.CONFIG_FILE);
   var timestamp = +new Date();  // millisecs since the epoch!
   var config_file_bu = path.join(project_dir, 'config'+timestamp+'.ini');
   fs.copy(config_file, config_file_bu, function copyConfigFile(err) {
@@ -2390,7 +2413,7 @@ router.post('/edit_project', helpers.isLoggedIn, function (req, res) {
     config_info.project = new_project_name;
     project_info.config.GENERAL.project=new_project_name;
     new_base_dir = path.join(user_projects_base_dir, 'project-'+new_project_name);
-    new_config_file = path.join(new_base_dir, 'config.ini');
+    new_config_file = path.join(new_base_dir, req.CONSTS.CONFIG_FILE);
     new_fasta_file = path.join(new_base_dir, infile_fa);
     config_info.baseoutputdir = new_base_dir;
     config_info.configPath = new_config_file;

@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+# grep '>' test.fa |wc -l  == 882068
+import subprocess
+import sys, os
+
+class FastaReader:
+    def __init__(self,file_name=None):
+        self.file_name = file_name
+        self.h = open(self.file_name)
+        self.seq = ''
+        self.id = None
+    def next(self):
+        def read_id():
+            return self.h.readline().strip()[1:]
+        def read_seq():
+            ret = ''
+            while True:
+                line = self.h.readline()
+                while len(line) and not len(line.strip()):
+                    # found empty line(s)
+                    line = self.h.readline()
+
+                if not len(line):
+                    # EOF
+                    break
+                if line.startswith('>'):
+                    # found new defline: move back to the start
+                    self.h.seek(-len(line), os.SEEK_CUR)
+                    break
+                else:
+                    ret += line.strip()
+            return ret
+        self.id = read_id()
+        self.seq = read_seq()
+
+        if self.id:
+            return True
+def get_count_reader(file):
+    f = FastaReader(file)
+    cnt = 0
+    while f.next():
+        cnt += 1
+    return cnt
+
+def get_count(file):
+    #  grep '>' test.fa |wc -l
+    grep_cmd_list = ['grep',"'>'",file,'|','wc','-l']
+    grep_cmd = ' '.join(grep_cmd_list)
+    #print grep_cmd
+    res = subprocess.Popen(grep_cmd, stdout=subprocess.PIPE, shell=True)
+    return res.communicate()[0].strip()
+
+if __name__ == '__main__':
+    usage = """
+
+    usage: facount fasta.fa
+
+    returns the number of sequences
+
+    facount -h(--help): this message
+
+    """
+
+    try:
+        if sys.argv[1] == '-h' or sys.argv[1] == '--help':
+            print usage
+        else:
+            count = get_count(sys.argv[1])
+            print count
+    except:
+        print usage
+        sys.exit()
+    sys.exit()
+

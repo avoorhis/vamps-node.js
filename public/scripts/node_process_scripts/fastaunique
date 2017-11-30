@@ -57,8 +57,9 @@ def main(args):
                 output.store(input)
         names.write('%s\t%s\n' % (input.id, ','.join(input.ids)))
         seqcount += 1
-    print seqcount
+    
     output.close()
+    return seqcount
 
 if __name__ == '__main__':
     import argparse
@@ -76,4 +77,8 @@ if __name__ == '__main__':
                             help = 'When present, sequence frequencies would not appear in the defline')
 
     args = parser.parse_args()
-    main(args)
+    unique_seq_count = main(args)
+    #print 'unique_seq_count',unique_seq_count
+    
+    ##  **** THIS CAN BE THE ONLY OUTPUT ****
+    print unique_seq_count

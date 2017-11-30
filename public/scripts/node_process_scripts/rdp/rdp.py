@@ -27,7 +27,7 @@ import subprocess
 
 
 #def run_rdp(infile, outfile, process_dir, rdp_script_dir, ref_db_dir='2.10.1'):
-def run_rdp(uniquefile, outfile, classifier_dir, gene, site):	
+def run_rdp(uniquefile, outfile, classifier, gene, site):	
 	
     
     #PATH_2_JAVA = "/usr/bin/java"
@@ -38,9 +38,9 @@ def run_rdp(uniquefile, outfile, classifier_dir, gene, site):
     #properties_file = os.path.join(classifier_dir,"train","rRNAClassifier.properties")
 
     # the classifier must be kept with its directory structure
-    classifier_jar_cmd = os.path.join(classifier_dir,'dist','classifier.jar')
     
-    rdp_cmd = PATH_2_JAVA + " -Xmx4000M -jar "+classifier_jar_cmd+" -g "+gene+" -o "+outfile+" -f fixrank "+ uniquefile
+    
+    rdp_cmd = PATH_2_JAVA + " -Xmx4000M -jar "+classifier+" -g "+gene+" -o "+outfile+" -f fixrank "+ uniquefile
     try:
         #rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+classifier_cmd+" -q "+infile+" -o "+outfile+" -t "+properties_file+" -f fixrank"
         # use non-trained as default:

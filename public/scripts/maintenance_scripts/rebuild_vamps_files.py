@@ -519,7 +519,7 @@ def get_dataset_ids(pid):
 #
 if __name__ == '__main__':
 
-    myusage = """
+    usage = """
         -pids/--pids  [list of comma separated pids]
         
                         
@@ -585,6 +585,10 @@ if __name__ == '__main__':
     elif args.dbhost == 'localhost' and (socket.gethostname() == 'Annas-MacBook.local' or socket.gethostname() == 'Annas-MacBook-new.local'):
         args.NODE_DATABASE = 'vamps2'
         dbhost = 'localhost'        
+    elif args.dbhost[:5] == 'local' and socket.gethostname() == 'Andrews-Mac-Pro.local':
+        args.NODE_DATABASE = 'vamps_development'
+        dbhost = 'localhost' 
+        args.json_file_path = '/Users/avoorhis/programming/vamps-node.js/public/json'  
     else:
         dbhost = 'localhost'
         args.NODE_DATABASE = 'vamps_development'

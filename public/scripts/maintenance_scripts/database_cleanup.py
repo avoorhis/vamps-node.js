@@ -250,7 +250,7 @@ if __name__ == '__main__':
                 required=False,  action='store_true', dest = "metadata_only",  default=False,
                 help=" ") 
     parser.add_argument("-host", "--host",    
-                required=False,  action='store', choices=['vampsdb','vampsdev','localhost'], dest = "dbhost",  default='localhost',
+                required=False,  action='store', dest = "dbhost",  default='localhost',
                 help="")
     parser.add_argument("-db", "--db",    
                 required=False,  action='store',  dest = "db",  default='vamps_development',
@@ -266,14 +266,14 @@ if __name__ == '__main__':
     args.datetime     = str(datetime.date.today()) 
        
     print "ARGS: dbhost  =",args.dbhost
-    if args.dbhost == 'vampsdb' or args.dbhost == 'vampsdb':
+    if args.dbhost == 'vamps' or args.dbhost == 'vampsdb':
         args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
         args.NODE_DATABASE = 'vamps2'
     elif args.dbhost == 'vampsdev':
         args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
         args.NODE_DATABASE = 'vamps2'
     else:
-        args.json_file_path = '../../json'
+        args.json_file_path = '/Users/avoorhis/programming/vamps-node.js/public/json'
         args.NODE_DATABASE = args.db
     
     if os.path.exists(args.json_file_path):

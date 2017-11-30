@@ -22,19 +22,13 @@
 
 	
 	<div class="form-group">
-      <label class="control-label col-sm-3" for="project">Project Name:</label>
+      <label class="control-label col-sm-3" for="project">Project Name (required):</label>
 	  <div class="col-sm-3">          
         <input type="text" name="project" class="form-control" id="project" placeholder="Enter a Project Name" value="">
       </div>    
     </div>
     
-<div id='dataset_input' class="form-group" style='display:none'>
-      <label class="control-label col-sm-3" for="dataset">Dataset Name:</label>
-	  <div class="col-sm-3">          
-        <input type="text" name="dataset" class="form-control" id="dataset" placeholder="Enter a Dataset(sample) Name" value="">
-      </div> 
-    
-    </div>
+
 	<div class="form-group">
       <label class="control-label col-sm-3" for="fasta">Fasta File <small>(required)</small>:</label>
       <div class="col-sm-3 btn">
@@ -63,7 +57,13 @@
       </div>
 	  <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
-	
+<div id='dataset_input' class="form-group" style='display:none'>
+      <label class="control-label col-sm-3" for="dataset">Dataset Name (required):</label>
+	  <div class="col-sm-3">          
+        <input type="text" name="dataset" class="form-control" id="dataset" placeholder="Enter a Dataset(sample) Name" value="">
+      </div> 
+    
+</div>	
 
     <br><br><br>
     

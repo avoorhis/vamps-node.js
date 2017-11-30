@@ -123,7 +123,7 @@ def start(args):
     
     logging.info("running get_config_data")
     print "running get_config_data"
-    get_config_data(args.project_dir)
+    get_config_data(args)
     
     logging.info("checking user")
     print "checking user"
@@ -135,15 +135,15 @@ def start(args):
     
     if res[0]=='ERROR':
         print "1ERROR res[0] -- Exiting (project name is already in use)"
-        #sys.exit(res[1])
+        sys.exit(res[1])
     
     logging.info("recreating ranks")
     print "recreating ranks"
     recreate_ranks()
 
-    logging.info("env sources")
-    print "env sources"
-    create_env_source()
+    # logging.info("env sources")
+#     print "env sources"
+#     create_env_package()
 
     logging.info("classifier")
     print "classifier"
@@ -206,18 +206,21 @@ def check_project():
     """
     global CONFIG_ITEMS
     global mysql_conn, cur
-    proj = CONFIG_ITEMS['project']
-    q = "SELECT project from project WHERE project='%s'" % (proj)
+    print 'checking project'
+    proj = CONFIG_ITEMS['project_name']
+    q = "SELECT project, project_id from project WHERE project='%s'" % (proj)
     cur.execute(q)
     if cur.rowcount > 0:
-        return ('ERROR','Duplicate project name1 '+q)
+        row = cur.fetchone()
+        
+        return ('ERROR','Duplicate project name1: '+CONFIG_ITEMS['project_name']+' PID:'+str(row[1]))
     return ('OK','')
            
-def create_env_source():
-    global mysql_conn, cur
-    q = "INSERT IGNORE INTO env_sample_source VALUES (0,''),(10,'air'),(20,'extreme habitat'),(30,'host associated'),(40,'human associated'),(45,'human-amniotic-fluid'),(47,'human-blood'),(43,'human-gut'),(42,'human-oral'),(41,'human-skin'),(46,'human-urine'),(44,'human-vaginal'),(140,'indoor'),(50,'microbial mat/biofilm'),(60,'miscellaneous_natural_or_artificial_environment'),(70,'plant associated'),(80,'sediment'),(90,'soil/sand'),(100,'unknown'),(110,'wastewater/sludge'),(120,'water-freshwater'),(130,'water-marine')"
-    cur.execute(q)
-    mysql_conn.commit()
+# def create_env_package():
+#     global mysql_conn, cur
+#     q = "INSERT IGNORE INTO env_package VALUES (0,''),(10,'air'),(20,'extreme habitat'),(30,'host associated'),(40,'human associated'),(45,'human-amniotic-fluid'),(47,'human-blood'),(43,'human-gut'),(42,'human-oral'),(41,'human-skin'),(46,'human-urine'),(44,'human-vaginal'),(140,'indoor'),(50,'microbial mat/biofilm'),(60,'miscellaneous_natural_or_artificial_environment'),(70,'plant associated'),(80,'sediment'),(90,'soil/sand'),(100,'unknown'),(110,'wastewater/sludge'),(120,'water-freshwater'),(130,'water-marine')"
+#     cur.execute(q)
+#     mysql_conn.commit()
 
 def create_classifier():
     global mysql_conn, cur
@@ -256,8 +259,8 @@ def push_project():
     global mysql_conn, cur
     desc = "Project Description"
     title = "Title"
-    proj = CONFIG_ITEMS['project']
-    rev = CONFIG_ITEMS['project'][::-1]
+    proj = CONFIG_ITEMS['project_name']
+    rev = CONFIG_ITEMS['project_name'][::-1]
     fund = "Unknown"
     id = CONFIG_ITEMS['owner_id']
     pub = 0 if CONFIG_ITEMS['public'] else 1
@@ -265,20 +268,23 @@ def push_project():
     q = "INSERT into project ("+(',').join(fields)+")"
     q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
     q = q % (proj,title,desc,rev,fund,id,pub)
-    #print q
+    print q
     logging.info(q)
     #print cur.lastrowid
-    try:
-        cur.execute(q)
-        CONFIG_ITEMS['project_id'] = cur.lastrowid
-        logging.info("PID="+str(CONFIG_ITEMS['project_id']))
-        print "PID="+str(CONFIG_ITEMS['project_id'])
-        mysql_conn.commit()
+    ## should have already checked 
+    cur.execute(q)
+    CONFIG_ITEMS['project_id'] = cur.lastrowid
+    logging.info("PID="+str(CONFIG_ITEMS['project_id']))
+    print "PID="+str(CONFIG_ITEMS['project_id'])
+    mysql_conn.commit()
+    
+    
         #print cur.lastrowid
-    except:
-        #print('ERROR: MySQL Integrity ERROR -- duplicate project name: '+proj)
-        #sys.exit('ERROR: MySQL Integrity ERROR -- duplicate dataset: '+proj)
-        return ('ERROR: Duplicate Project Name2: '+q)
+    # except:
+#         print('ERROR: MySQL Integrity ERROR -- duplicate project name: '+proj)
+#         #sys.exit('ERROR: MySQL Integrity ERROR -- duplicate dataset: '+proj)
+#         return ('ERROR: Duplicate Project Name2: '+q)
+        
     
     return 0
         
@@ -286,14 +292,14 @@ def push_dataset():
     global CONFIG_ITEMS    
     global DATASET_ID_BY_NAME
     global mysql_conn, cur
-    fields = ['dataset','dataset_description','env_sample_source_id','project_id']
+    fields = ['dataset','dataset_description','project_id']
     q = "INSERT into dataset ("+(',').join(fields)+")"
-    q += " VALUES('%s','%s','%s','%s')"
+    q += " VALUES('%s','%s','%s')"
 
     for ds in CONFIG_ITEMS['datasets']:
         desc = ds+'_description'
         #print ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id']
-        q4 = q % (ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id'])
+        q4 = q % (ds,desc,CONFIG_ITEMS['project_id'])
         logging.info(q4)
         print q4
         #try:
@@ -383,18 +389,20 @@ def push_sequences(args):
                 q += " (sequence_id,silva_taxonomy_id,refssu_id,rank_id)"
                 q += " VALUES ('%s','%s','0','%s')" % (str(seqid), silva_tax_id, rank_id)
             logging.info(q)
-            #print q
+            print q
             cur.execute(q)
             mysql_conn.commit()
             silva_tax_seq_id = cur.lastrowid
+            print 'seqid',seqid
             if silva_tax_seq_id == 0:
                 q3 = "select silva_taxonomy_info_per_seq_id from silva_taxonomy_info_per_seq"
-                q3 += " where sequence_id = '"+seqid+"'"
+                q3 += " where sequence_id = '"+str(seqid)+"'"
                 q3 += " and silva_taxonomy_id = '"+silva_tax_id+"'"
                 if args.classifier == 'GAST':
                     q3 += " and gast_distance = '"+distance+"'"
                 q3 += " and rank_id = '"+rank_id+"'"
                 #print 'DUP silva_tax_seq'
+                print q3
                 cur.execute(q3)
                 mysql_conn.commit() 
                 row = cur.fetchone()
@@ -434,7 +442,7 @@ def push_taxonomy(args):
         
         SEQ_COLLECTOR[ds] = {}
         data_file = os.path.join(data_dir, ds+ext)
-        unique_file = os.path.join(args.project_dir,ds+'.fa.unique')
+        unique_file = os.path.join(args.project_dir,'analysis',ds,'seqfile.unique.fa')
         if os.path.exists(data_file):
             if args.classifier == 'GAST':
                 run_gast_tax_file(args, ds, data_file)
@@ -508,11 +516,16 @@ def run_rdp_tax_file(args,ds, tax_file, seq_file):
     print 'reading seqfile',seq_file
     f = fastalib.SequenceSource(seq_file)
     tmp_seqs = {}
+    tmp_freqs = {}
     #print tax_file
     #print seq_file
     while f.next():
-        id = f.id.split('|')[0]  # may have |frequency
-        #print 'id1',id
+        items =  f.id.split('|')  # WILL have |frequency
+        id = f.id.split()[0]
+        freq = f.id.split('|')[1].split(':')[1]
+        print 'id',id
+        print 'freq',freq
+        tmp_freqs[id] = freq
         tmp_seqs[id]= f.seq
     f.close()
         
@@ -524,13 +537,12 @@ def run_rdp_tax_file(args,ds, tax_file, seq_file):
             
             # ['21|frequency:1', '', 'Bacteria', 'domain', '1.0', '"Firmicutes"', 'phylum', '1.0', '"Clostridia"', 'class', '1.0', 'Clostridiales', 'order', '1.0', '"Ruminococcaceae"', 'family', '1.0', 'Faecalibacterium', 'genus', '1.0']
             # if boot_value > minboot add to tax_string
-            tmp = items[0].split('|')
-            seq_id = tmp[0]
-            seq_count = tmp[1].split(':')[1]
+            seq_id = items[0]
+            
+            seq_count = tmp_freqs[seq_id]
             #seq_count =1
             tax_line = items[2:]
-            print 'id',seq_id
-            print 'cnt',seq_count
+            
             print tax_line
             for i in range(0,len(tax_line),3):
                   #print i,tax_line[i]
@@ -695,7 +707,7 @@ def finish_tax(ds,refhvr_ids, rank, distance, seq, seq_count, tax_items):
             
 
              
-def get_config_data(indir):
+def get_config_data(args):
     # convert a vamps user upload config file: use INFO-TAX.config
     # change vamps_user to owner <and use one that is already in db >
     # owner_id and project_id gathered automatically 
@@ -705,23 +717,20 @@ def get_config_data(indir):
     config.optionxform=str
     
     
-    config_infile =  os.path.join(indir,'config.ini')
+    config_path =  os.path.join(args.project_dir,args.config_file)
        
         
-    config.read(config_infile)
-    try:
-        for name, value in  config.items('GENERAL'):  
-            CONFIG_ITEMS[name] = value
-    except:
-        for name, value in  config.items('MAIN'): 
-            CONFIG_ITEMS[name] = value
+    config.read(config_path)
+    
+    for name, value in  config.items('MAIN'): 
+         CONFIG_ITEMS[name] = value
     datasets = {}
-    for dsname, count in  config.items('DATASETS'):
+    for dsname, count in  config.items('MAIN.dataset'):
         #print '  %s = %s' % (name, value) 
         ds = dsname 
         datasets[ds] = count
     CONFIG_ITEMS['datasets'] = datasets    
-    #print CONFIG_ITEMS 
+    print CONFIG_ITEMS 
        
 
 if __name__ == '__main__':
@@ -777,7 +786,9 @@ if __name__ == '__main__':
     parser.add_argument("-site", "--site",    
                 required=False,  action="store",   dest = "site", default='local',
                 help = '')
-    
+    parser.add_argument("-config", "--config",    
+                required=True,  action="store",   dest = "config_file", 
+                help = 'config file name') 
     args = parser.parse_args() 
     
     if args.site == 'vamps':
@@ -786,4 +797,6 @@ if __name__ == '__main__':
         args.hostname = 'vampsdev'
     else:
         args.hostname = 'localhost'
+        args.NODE_DATABASE = 'vamps_development'
+    print 'db host',args.hostname,'db name',args.NODE_DATABASE
     start(args)

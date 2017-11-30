@@ -95,9 +95,8 @@ constants.UNIT_ASSIGNMENT_CHOICES = {
                     'refv4v6a','refv4v6','refv5',  'refv5v6','refv6a', 'refv6',  'refv9','refits1']
             },
   'SPINGO':   { ref_db:['RDP_11.2'] },
-  
 };
-
+constants.CONFIG_FILE = 'INFO.config';
 constants.REF_SUFFIX = { "unique.nonchimeric.fa": ['v1v3', 'v1v3a', 'v3v5', 'v4v5', 'v4v6', 'v6v4', 'v4v6a', 'v6v4a', 'its1'],
   "unique": ['v3', 'v3a', 'v4', 'v5', 'v6', 'v6a', 'v9']
 };

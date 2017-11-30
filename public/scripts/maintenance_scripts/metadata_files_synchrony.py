@@ -177,7 +177,7 @@ def get_project_lookup(args):
 #
 if __name__ == '__main__':
 
-    myusage = """
+    usage = """
         
         -host/--host        vampsdb, vampsdev    dbhost:  [Default: localhost]
         
@@ -199,7 +199,6 @@ if __name__ == '__main__':
         sys.exit() 
     args = parser.parse_args()
     
-    
     if args.dbhost == 'vamps' or args.dbhost == 'vampsdb':
         args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
         dbhost = 'vampsdb'
@@ -212,6 +211,10 @@ if __name__ == '__main__':
     elif args.dbhost == 'localhost' and (socket.gethostname() == 'Annas-MacBook.local' or socket.gethostname() == 'Annas-MacBook-new.local'):
         args.NODE_DATABASE = 'vamps2'
         dbhost = 'localhost'
+    elif args.dbhost[:5] == 'local' and socket.gethostname() == 'Andrews-Mac-Pro.local' :
+        args.NODE_DATABASE = 'vamps_development'
+        dbhost = 'localhost'
+        args.json_file_path = '/Users/avoorhis/programming/vamps-node.js/public/json'
     else:
         args.NODE_DATABASE = 'vamps_development'
         dbhost = 'localhost'
@@ -220,6 +223,7 @@ if __name__ == '__main__':
         args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_silva119")
     elif args.units == 'rdp2.6':
          args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_rdp2.6")
+    
     else:
         sys.exit('UNITS ERROR: '+args.units)
     

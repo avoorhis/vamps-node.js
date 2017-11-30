@@ -24,8 +24,7 @@ import datetime
 import subprocess as subp
 import gzip, csv, json
 import pymysql as MySQLdb
-import MySQLdb.cursors
-#from apps.ConDictMySQL import Conn
+
 sys.path.append('/groups/vampsweb/vampsdev')
 
 # GLOBALS
@@ -384,7 +383,23 @@ def run_metadata_from_files(args, file_form):
         print(mdata)
         
 
-            
+def get_dco_excludes(args):
+    import urllib2
+    exclude_list = []
+    url = 'https://raw.githubusercontent.com/jladau/CoDL/master/metadata/formatted_metadata/metadata-blanks-controls-list.csv'
+    try:
+        response = urllib2.urlopen(url)
+        reader = csv.reader(response)
+    #     file = os.path.join(args.base,'dco_excluded_datasets.csv')
+    #     ifile = open(file, "rU")
+    #     reader = csv.reader(ifile, delimiter=",")  
+        index_of_pjds = 1
+        for row in reader:
+            exclude_list.append(row[index_of_pjds])  
+    except:
+        pass
+    return exclude_list
+               
 def run_metadata(args, file_form, dco_bulk=False):
     print 'running metadata --->>>'
     # args.datasets is a list of p--d pairs
@@ -406,7 +421,8 @@ def run_metadata(args, file_form, dco_bulk=False):
     sql = get_req_metadata_sql(dids, required_headersA, required_headersB)
     if dco_bulk:
         sql += " where project_id in ('" + pids + "')\n"
-        out_file = os.path.join(args.base,'dco_all_metadata_'+args.today+'.csv') 
+        out_file = os.path.join(args.base,'dco_all_metadata_'+args.today+'.csv')
+        dco_exclude_data = get_dco_excludes(args) 
     else:
         sql += " where dataset_id in ('" + dids + "')\n"
         if file_form == 'datasets_as_rows':
@@ -438,7 +454,10 @@ def run_metadata(args, file_form, dco_bulk=False):
                         if key == 'primer_suite':
                             #data[project_dataset][key] = row['primer_suite']+' ('+row['sequencing_platform']+')'  
                             data[project_dataset][key] = row['primer_suite'] 
-                            data[project_dataset]['primers'] = primers_lookup[row['primer_suite']] 
+                            if row['primer_suite'] in primers_lookup:
+                                data[project_dataset]['primers'] = primers_lookup[row['primer_suite']] 
+                            else:
+                                data[project_dataset]['primers'] = ''
                                                      
                         else:
                             data[project_dataset][key] = row[key]
@@ -472,6 +491,7 @@ def run_metadata(args, file_form, dco_bulk=False):
 #                 args.obj.commit() 
     #args.obj.commit()                
     #print 'headers_collector',headers_collector
+    
     # CUSTOM METADATA
     for pid in args.pids:
         custom_table = 'custom_metadata_'+pid
@@ -501,7 +521,7 @@ def run_metadata(args, file_form, dco_bulk=False):
 
                         #print 'row[key]',row[key]
                         if type(row[key]) == str:
-                            data[pjds][key]= row[key].replace(",",";").replace("\r",";")
+                            data[pjds][key]= row[key].replace(",",";").replace("\r",";").replace("\n",";")
                         else:
                             data[pjds][key]= row[key]
                         headers_collector[key] = 1
@@ -517,17 +537,21 @@ def run_metadata(args, file_form, dco_bulk=False):
     if dco_bulk:
         file_txt = 'PROJECT_ID,SAMPLE_ID,VARIABLE,VALUE\n'
         for pjds in ds_sorted:
-            project_id_items = pjds.split('_')
-            project_id = project_id_items[0] + '_' + project_id_items[1]
-            for mditem in headers_collector_keys:                 
-                if mditem in data[pjds]:
-                    value = (str(data[pjds][mditem])).replace(',',';').replace("\r",";") 
-                    if value == '' or value == 'None':
-                        value = 'null' 
-                    #file_txt += project_id+','+pjds+','+mditem+','+value+'\n'
-                else:
-                    value = 'null'                   
-                file_txt += project_id+','+pjds+','+mditem+','+value+'\n'
+            if pjds in dco_exclude_data:
+                #print "  excluding "+pjds+ " (It's in exclude file)"
+                pass
+            else:
+                #print "retaining "+pjds
+                project_id_items = pjds.split('_')
+                project_id = project_id_items[0] + '_' + project_id_items[1]
+                for mditem in headers_collector_keys:                 
+                    if mditem in data[pjds]:
+                        value = (str(data[pjds][mditem])).replace(',',';').replace("\r",";") 
+                        if value == '' or value == 'None':
+                            value = 'null' 
+                    else:
+                        value = 'null'                   
+                    file_txt += project_id+','+pjds+','+mditem+','+value+'\n'
     elif file_form == 'datasets_as_rows':
         file_txt += 'dataset'
         for header in headers_collector_keys:

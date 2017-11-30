@@ -24,7 +24,7 @@ import logging
 import csv
 from time import sleep
 import ConfigParser
-#sys.path.append( '/bioware/python/lib/python2.7/site-packages/' )
+sys.path.append( '/Users/avoorhis/programming/vamps-node.js/public/scripts/maintenance_scripts' )
 
 import datetime
 today = str(datetime.date.today())
@@ -42,12 +42,22 @@ DATASET_ID_BY_NAME = {}
 REQ_METADATA_ITEMS = {}
 CUST_METADATA_ITEMS = {}
 
-required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_material", "latitude", "longitude", "public","taxon_id","description","common_name"];
+required_metadata_fields = [  "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_material", "latitude", "longitude", "public","taxon_id","description","common_name"];
 req_first_col = ['#SampleID','sample_name','dataset_name']
 #test = ('434','0','y','1/27/14','0','GAZ:Canada','167.5926056','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y',
 #'408170','human gut metagenome','American Gut Project Stool sample')
 #test7 = ('434','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y')
-
+id_queries = [
+    {"table":"term","query": "SELECT term_id FROM term WHERE term_name = 'unknown'"},
+    {"table":"dna_region","query": "SELECT dna_region_id FROM dna_region WHERE dna_region = 'unknown'"},
+    {"table":"adaptor_sequence","query": "SELECT run_key_id FROM run_key WHERE run_key = 'unknown'"},   # adapter_sequence
+    {"table":"sequencing_platform","query": "SELECT sequencing_platform_id FROM sequencing_platform WHERE sequencing_platform = 'unknown'"},
+    {"table":"target_gene","query": "SELECT target_gene_id FROM target_gene WHERE target_gene = 'unknown'"},
+    {"table":"domain","query": "SELECT domain_id FROM domain WHERE domain = 'unknown'"},
+    {"table":"illumina_index","query": "SELECT illumina_index_id FROM illumina_index WHERE illumina_index = 'unknown'"},
+    {"table":"primer_suite","query": "SELECT primer_suite_id FROM primer_suite WHERE primer_suite = 'unknown'"},
+    {"table":"run","query": "SELECT run_id FROM run WHERE run = 'unknown'"}
+]
 
 
 def start_metadata_load_from_file(args):
@@ -61,26 +71,45 @@ def start_metadata_load_from_file(args):
         hostname = 'vampsdev'
     else:
         hostname = 'localhost'
-    
+        args.NODE_DATABASE = 'vamps_development'
     
     mysql_conn = MySQLdb.connect(db = args.NODE_DATABASE, host=hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     cur = mysql_conn.cursor()
     
     csv_infile =   os.path.join(args.project_dir,'metadata_clean.csv')
+    get_config_data(args)  
     if os.path.isfile(csv_infile):
         cur.execute("USE "+args.NODE_DATABASE)    
-        get_config_data(args.project_dir)    
+          
         get_metadata(args.project_dir,csv_infile)
         put_required_metadata()
         put_custom_metadata()
     else:
         print "Could not find csv_file:",csv_infile
-        #print CONFIG_ITEMS
-    print REQ_METADATA_ITEMS
-    print
-    print CUST_METADATA_ITEMS
+        # no metadata -- should enter defaults
+        defaults = get_null_ids()
+        # must get dids
+        print DATASET_ID_BY_NAME.values()
+        print defaults
+        
+        "INSERT IGNORE into req_metadata_info (dataset_id,) VALUES"
+        for did in DATASET_ID_BY_NAME.values():
+            " ("++")"
+    
 
-
+def get_null_ids():
+    global mysql_conn, cur
+    unknowns = {}
+        
+    for q in id_queries:
+        cur.execute(q['query'])
+        mysql_conn.commit()
+        row = cur.fetchone()
+        unknowns[q['table']] = row[0]
+    
+    print 'unknown IDs',unknowns
+    return unknowns
+    
 def put_required_metadata():
     global mysql_conn, cur
     q = "INSERT IGNORE into required_metadata_info (dataset_id,"+','.join(required_metadata_fields)+")"
@@ -97,8 +126,8 @@ def put_required_metadata():
         q2 = q + vals[:-1] + ")"  
         print q2
         logging.info(q2)
-        cur.execute(q2)
-    mysql_conn.commit()
+        #cur.execute(q2)
+    #mysql_conn.commit()
             
             
 def put_custom_metadata():
@@ -255,23 +284,23 @@ def get_metadata(indir,csv_infile):
     if 'dataset_id' not in CUST_METADATA_ITEMS:
         CUST_METADATA_ITEMS['dataset_id'] = []
             
-def get_config_data(indir):
+def get_config_data(args):
     global mysql_conn, cur
-    config_infile =   os.path.join(indir,'config.ini') 
-    print config_infile
-    logging.info(config_infile)
+    config_path = os.path.join(args.project_dir, args.config_file)
+    print config_path
+    logging.info(config_path)
     config = ConfigParser.ConfigParser()
     config.optionxform=str
-    config.read(config_infile)    
-    for name, value in  config.items('GENERAL'):
+    config.read(config_path)    
+    for name, value in  config.items('MAIN'):
         #print '  %s = %s' % (name, value)  
         CONFIG_ITEMS[name] = value
     CONFIG_ITEMS['datasets'] = []
-    for dsname, count in  config.items('DATASETS'):        
+    for dsname, count in  config.items('MAIN.dataset'):        
         CONFIG_ITEMS['datasets'].append(dsname)   
     #print 'project',CONFIG_ITEMS['project']
     q = "SELECT project_id FROM project"
-    q += " WHERE project = '"+CONFIG_ITEMS['project']+"'" 
+    q += " WHERE project = '"+CONFIG_ITEMS['project_name']+"'" 
     logging.info(q)
     cur.execute(q)
     
@@ -328,7 +357,9 @@ if __name__ == '__main__':
     parser.add_argument("-site", "--site",    
                 required=False,  action="store",   dest = "site", default='local',
                 help = '')
-    
+    parser.add_argument("-config", "--config",    
+                required=True,  action="store",   dest = "config_file", 
+                help = 'config file name') 
     args = parser.parse_args()    
    
     args.datetime     = str(datetime.date.today())    

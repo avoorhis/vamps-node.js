@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys, os, getopt
 import shutil
+import json
 #import IlluminaUtils.lib.fastalib as fastalib
 
 class FastaReader:
@@ -60,12 +61,11 @@ class Demultiplex:
   
     try:
       opts, args = getopt.getopt(argv, "hi:d:f:", ["ifile="])
-      print "opts = %s, args = %s" % (opts, args)
+      #print "opts = %s, args = %s" % (opts, args)
     except getopt.GetoptError:
       sys.exit(2)
     
     for opt, arg in opts:
-      print 'got',opt,arg
       if opt == '-h':
         self.usage()
         sys.exit()
@@ -85,7 +85,7 @@ class Demultiplex:
     output_file_obj.write('%s\n' % seq)
       
   def get_out_file_names(self):
-    print "get_out_file_names"
+    #print "get_out_file_names"
     n = 0
     #f_input  = fastalib.SequenceSource(inputfile)
     f_input = FastaReader(inputfile)
@@ -106,7 +106,7 @@ class Demultiplex:
   # real  0m16.198s
     
   def open_out_sample_files(self):
-    print "open_out_sample_files"
+    #print "open_out_sample_files"
     self.get_out_file_names()
     for sample in self.sample_names:
       file_name = sample+'.fa'
@@ -126,7 +126,7 @@ class Demultiplex:
     return fileName
   
   def demultiplex_input(self, inputfile):
-    print "demultiplex_input"
+    #print "demultiplex_input"
     #f_input  = fastalib.SequenceSource(inputfile)
     f_input = FastaReader(inputfile)
     i = 0
@@ -156,20 +156,30 @@ class Demultiplex:
   def unique_files(self):
     analysis_dir = os.path.join(self.project_path,'analysis')
     import subprocess
-    for sample in self.sample_names:
+    sum_unique_seq_count = 0
+    for i,sample in enumerate(self.sample_names):
         infile = os.path.join(self.project_path,sample+'.fa')
         sample_dir = os.path.join(analysis_dir,sample)
         out_fasta = os.path.join(sample_dir,'seqfile.unique.fa')
         out_name = os.path.join(sample_dir,'seqfile.unique.name')
-        fastaunique_cmd_list = [ self.fastaunique_cmd,'-o', out_fasta, '-n', out_name, infile]
-        
-        print ' '.join(fastaunique_cmd_list)
-        os.system(' '.join(fastaunique_cmd_list))
-        #subprocess.call(fastaunique_cmd_list, shell=True)
+        fastaunique_cmd_list = [ self.fastaunique_cmd,'-o', out_fasta, '-n', out_name, infile]        
+        #print ' '.join(fastaunique_cmd_list)
+        #os.system(' '.join(fastaunique_cmd_list))
+        result = subprocess.check_output(' '.join(fastaunique_cmd_list), shell=True)
+        #print json.dumps({"unique_count":result.strip()})
+        sum_unique_seq_count += int(result.strip())
+        #print sample,i,sum_unique_seq_count,result.strip()
+    return sum_unique_seq_count
+    
         
   def cleanup(self):
      for sample in self.sample_names:
-        os.remove(sample+'.fa') 
+        file_name = sample+'.fa'
+        file_path = os.path.join(self.project_path,file_name)
+        try:
+            os.remove(file_path)
+        except:
+            pass
           
 if __name__ == "__main__":
     
@@ -179,7 +189,7 @@ if __name__ == "__main__":
     """
     demult = Demultiplex()
     (inputfile) = demult.get_args(sys.argv[1:])
-    print 'Input file is "%s"' % inputfile
+    #print 'Input file is "%s"' % inputfile
     if inputfile == '':
         print usage
         sys.exit()
@@ -188,8 +198,9 @@ if __name__ == "__main__":
     demult.open_out_sample_files()
     demult.demultiplex_input(inputfile)
     demult.create_directories()
-    demult.unique_files()
-    #demult.cleanup()
+    sum_unique_seq_count = demult.unique_files()
+    print sum_unique_seq_count
+    demult.cleanup()
     
     
 

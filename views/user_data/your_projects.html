@@ -28,7 +28,7 @@
 
     <table class='table table-striped'>
     		    <thead>
-    		    <tr><th>Name</th><th>Status</th><th>Dataset Count</th><th>Sequence Count</th><th>Options</th></tr>
+    		    <tr><th>Name</th><th>Status</th><th>Number of Samples</th><th>Unique Sequence Count</th><th>Options</th></tr>
     		    </thead>
     		    <tbody>
     		    
@@ -38,13 +38,13 @@
 		<% var pass_fail = 'pass' %>
 		<% var project = p %>
 		
-		<% var number_of_datasets = project_info[p].status.ds_count %>
-		<% var total_number_of_sequences = project_info[p].status.seq_count %>
+		<% var number_of_datasets = project_info[p].num_of_datasets %>
+		<% var total_number_of_sequences = project_info[p].seq_count %>
 		<% var public = project_info[p].public %>
 		<% var env_source_id = project_info[p].env_source_id %>
 		
 		<% var datasets = project_info[p].DATASETS %>
-		<% var status = project_info[p].status.taxonomy %>
+		<% var status = project_info[p].vamps_status %>
 		<% var classified_by = project_info[p].classified_by %>
 		<% var validation_codes = project_info[p].validation %>
 	    
@@ -65,7 +65,7 @@
         <td><%= status %></td>
         <td><%= number_of_datasets %></td>
         <td><%= total_number_of_sequences %></td>
-        <% if(project_info[p].status.empty_dir == 'true') { %>
+        <% if(project_info[p].vamps_status == 'ON_VAMPS') { %>
             
             <td>
                 <div class="dropdown">
@@ -84,7 +84,7 @@
             </td>
             
         <% }else{ %>
-        
+        <!-- NOT_ON_VAMPS -->
             <% if(pass_fail == 'fail') { %>
                     <td>
                         <div class="dropdown">
@@ -119,7 +119,7 @@
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_metadata/<%= project %>">View Metadata</a></li>
                         <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_validation/<%= project %>">Validate Project</a></li> -->
                         <li role="presentation" class="divider"></li>                               
-                        <% if(classified_by == 'none'){ %>
+                        <% if(classified_by){ %>
                             <li role="presentation">
                                 <a role="menuitem" tabindex="-1" href="assign_taxonomy/<%= project %>">Assign Taxonomy</a></li>
                             <li role="presentation" class="divider"></li>
