@@ -58,13 +58,18 @@ def clean(args):
         did = str(row[0])
         dids.append(did)
         pid = row[1]
-        did_file = os.path.join(args.json_file_path, NODE_DATABASE+'--datasets',did+'.json')
-        print did_file
+        did_file1 = os.path.join(args.json_file_path, NODE_DATABASE+'--datasets_silva119',did+'.json')
+        did_file2 = os.path.join(args.json_file_path, NODE_DATABASE+'--datasets_rdp2.6',did+'.json')
+        print did_file1
         try:
-            os.remove(did_file)
+            os.remove(did_file1)
         except OSError:
-            print "File Not Found: "+did_file
-        
+            print "File Not Found: "+did_file1
+        print did_file2
+        try:
+            os.remove(did_file2)
+        except OSError:
+            print "File Not Found: "+did_file2
     
     q = "DELETE from required_metadata_info"
     q += " WHERE dataset_id in ('"+ "','".join(dids) + "')"
@@ -81,15 +86,70 @@ def clean(args):
     print q
     cur.execute(q)
     
-    
+    db.commit()    
     
     q = "DELETE from sequence_pdr_info"
     q += " WHERE dataset_id in ('"+ "','".join(dids) +"')"
     print q
     cur.execute(q)
     
+    
+    #DELETE from common_name_required_metadata_info_temp WHERE dataset_id in ('1120','1121','1122','1123')
+    #DELETE from elevation_required_metadata_info_temp WHERE dataset_id in ('1120','1121','1122','1123')
+    #DELETE from required_metadata_info_copy_before_big_changes WHERE dataset_id in ('1120','1121','1122','1123')
+    #DELETE from metadata_add_temp WHERE project_id = '282'
+    dataset_tmp_tables = ['required_metadata_info_old',
+    'taxon_id_required_metadata_info_temp',
+                            'description_required_metadata_info_temp',
+                            'assigned_from_geo_required_metadata_info_temp',
+                            'required_metadata_info_new',
+                            'dataset_copy',
+                            'required_metadata_info_new_copy',
+                            'required_metadata_info20170313',
+                            'required_metadata_info_copy20170313',
+                            'required_metadata_info_copyJun1_17',
+                            'required_metadata_info_copy_jun6_17',
+                            'required_metadata_info_copy_aug3_17',
+                            'required_metadata_info_copy_Nov_7',
+                            'required_metadata_info_copy032417',
+                            'common_name_required_metadata_info_temp',
+                            'elevation_required_metadata_info_temp',
+                            'depth_required_metadata_info_temp',
+                            'required_metadata_info_copy_before_big_changes',
+                            'metadata_add_temp']
+    project_tmp_tables = ['custom_metadata_fields_copy','description_required_metadata_info_temp',
+                            'common_name_required_metadata_info_temp',
+                            'metadata_add_temp',
+                            'custom_metadata_fields_copy_aug3_17',
+                            'user_project_status']
+    for table in dataset_tmp_tables:
+        q = "SELECT * FROM information_schema.tables WHERE table_schema = 'vamps2' AND table_name = '"+table+"' LIMIT 1;"
+        cur.execute(q)
+        if cur.rowcount > 0:
+            q = "DELETE from "+ table
+            q += " WHERE dataset_id in ('"+ "','".join(dids) +"')"
+            print q
+            cur.execute(q)
+        else:
+            print 'DS TMP table not found',table
+    
     q = 'DELETE from dataset'
     q += " WHERE dataset_id in ('"+ "','".join(dids) +"')"
+    print q
+    cur.execute(q)
+        
+    for table in project_tmp_tables:
+        q = "SELECT * FROM information_schema.tables WHERE table_schema = 'vamps2' AND table_name = '"+table+"' LIMIT 1;"
+        cur.execute(q)
+        if cur.rowcount > 0:
+            q = "DELETE from "+ table
+            q += " WHERE project_id = '"+str(pid)+"'"
+            print q
+            cur.execute(q)
+        else:
+            print 'PJ TMP table not found',table
+    
+    q = "DELETE from access WHERE project_id = '"+str(pid)+"'"
     print q
     cur.execute(q)
     
@@ -223,14 +283,15 @@ if __name__ == '__main__':
             
            -pid/--project_id        clean this pid only
            -p/--project_name        clean this name only
-           -host/--host
+           
            -all/--all               Remove ALL Data for fresh install
                                     Be Careful -- will remove ALL data from db
             -json_file_path/--json_file_path   json files path Default: ../json
             -host/--host            vampsdb vampsdev dbhost:  Default: localhost
+            -mo/--metadata_only
 
     """
-    parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
+    parser = argparse.ArgumentParser(prog='PROG', usage='%(prog)s [options]')                 
     
     
                                                     
@@ -258,31 +319,38 @@ if __name__ == '__main__':
     parser.add_argument("-json_file_path", "--json_file_path",        
                 required=False,  action='store', dest = "json_file_path",  default='../../json', 
                 help="")   
-                          
+    if len(sys.argv[1:])==0:
+        print myusage
+        sys.exit()                      
     args = parser.parse_args()    
+    
+    
     if not args.pid and not args.project and not args.all:
         print myusage
         sys.exit()
     args.datetime     = str(datetime.date.today()) 
        
-    print "ARGS: dbhost  =",args.dbhost
-    if args.dbhost == 'vamps' or args.dbhost == 'vampsdb':
+    
+    if args.dbhost == 'vampsdb' or args.dbhost == 'vamps':
+        args.dbhost = 'vampsdb'
         args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
         args.NODE_DATABASE = 'vamps2'
     elif args.dbhost == 'vampsdev':
         args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
         args.NODE_DATABASE = 'vamps2'
     else:
-        args.json_file_path = '/Users/avoorhis/programming/vamps-node.js/public/json'
+        args.json_file_path = '../../json'
         args.NODE_DATABASE = args.db
-    
+        args.dbhost = 'localhost'
+    print "ARGS: dbhost  =",args.dbhost
     if os.path.exists(args.json_file_path):
         print 'Validated: json file path'
     else:
         print "Could not find json directory: '",args.json_file_path,"'-Exiting"
         sys.exit(-1)
     print "ARGS: json_dir=",args.json_file_path 
-
+    if args.dbhost == 'vampsdev':
+        args.dbhost = 'bpcweb7'
 
     db = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
@@ -332,4 +400,4 @@ if __name__ == '__main__':
         clean(args)
     print 'Now, restart the server!'        
     
-        
+    

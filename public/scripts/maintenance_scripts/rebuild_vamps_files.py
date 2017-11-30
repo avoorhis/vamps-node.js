@@ -190,7 +190,17 @@ def go_list(args):
     print 'Number of Projects:',num
     
 
+def get_dco_pids(args):
+
+    query = "select project_id from project where project like 'DCO%'"
+    cur.execute(query)
+    rows = cur.fetchall()
+    pid_list = []
+    for row in rows:
+        pid_list.append(str(row[0])) 
     
+    return ','.join(pid_list)
+       
 def go_add(NODE_DATABASE, pids_str):
     from random import randrange
     counts_lookup = {}
@@ -453,10 +463,10 @@ def go_custom_metadata(did_list, pid, metadata_lookup):
                 #cnt = i
                 
                 if f != 'dataset_id':
-                    if row[i]:
-                        value = str(row[i]).replace('"','').replace("'",'')
-                    else:
-                        value = None
+                    #if row[i]:
+                    value = str(row[i])
+                    #else:
+                    #    value = None
                     #print 'XXX',did,i,f,value
 
                     if did in metadata_lookup:              
@@ -519,7 +529,7 @@ def get_dataset_ids(pid):
 #
 if __name__ == '__main__':
 
-    usage = """
+    myusage = """
         -pids/--pids  [list of comma separated pids]
         
                         
@@ -566,7 +576,9 @@ if __name__ == '__main__':
     parser.add_argument("-units", "--tax_units",    
                 required=False,  action='store', choices=['silva119','rdp2.6'], dest = "units",  default='silva119',
                 help="Default: 'silva119'; only other choice available is 'rdp2.6'")                       
-    
+    parser.add_argument("-dco", "--dco",    
+                required=False,  action='store_true',  dest = "dco",  default=False,
+                help="")   
     if len(sys.argv[1:]) == 0:
         print myusage
         sys.exit() 
@@ -585,10 +597,6 @@ if __name__ == '__main__':
     elif args.dbhost == 'localhost' and (socket.gethostname() == 'Annas-MacBook.local' or socket.gethostname() == 'Annas-MacBook-new.local'):
         args.NODE_DATABASE = 'vamps2'
         dbhost = 'localhost'        
-    elif args.dbhost[:5] == 'local' and socket.gethostname() == 'Andrews-Mac-Pro.local':
-        args.NODE_DATABASE = 'vamps_development'
-        dbhost = 'localhost' 
-        args.json_file_path = '/Users/avoorhis/programming/vamps-node.js/public/json'  
     else:
         dbhost = 'localhost'
         args.NODE_DATABASE = 'vamps_development'
@@ -638,7 +646,9 @@ if __name__ == '__main__':
     print 'DATABASE:',NODE_DATABASE
     
     
-         
+    if args.dco:
+        args.pids_str = get_dco_pids(args)
+             
     if args.list:
         go_list(args)
     elif args.pids_str:

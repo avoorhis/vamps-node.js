@@ -97,6 +97,47 @@ def go_list(args):
                          if pid not in other_problem:
                             other_problem[pid] = project_lookup[pid]
                          clean_project = False
+        custom_metadata_file = 'custom_metadata_'+str(pid)
+        q1 = "SHOW fields from "+custom_metadata_file
+        q2 = "SELECT * from "+custom_metadata_file
+        
+        fields = []
+        try:
+            cur.execute(q1)
+            rows = cur.fetchall()
+            for row in rows:    
+                #print row
+                field = str(row[0])
+                if field !=  custom_metadata_file+'_id' and field != 'dataset_id': 
+                    fields.append(field) # starts with idx 2
+            #print 'fields',fields
+        
+            #print q2
+            cur.execute(q2)
+            rows = cur.fetchall()
+            for row in rows:
+                did = str(row[1]) # first is custom_metadata_<pid>_id
+                for i,item in enumerate(fields):
+                    if item in metadata_lookup[did]:
+                        #print item,row[i+2]
+                        db_val = str(row[i+2])
+                        
+                        if str(metadata_lookup[did][item]) != db_val:
+                            if args.verbose:
+                                print project_lookup[pid]+' -- ' +did+'  no match for', item+':',metadata_lookup[did][item],' - ',db_val
+                            if pid not in mismatch_data:
+                                mismatch_data[pid] = project_lookup[pid]
+                            clean_project = False
+                    else:
+                        if args.verbose:
+                            print( str(pid) +'--'+project_lookup[pid]+' -- ' +did+' -- '+item+' item not found in metadata file')                         
+                        if pid not in other_problem:
+                            other_problem[pid] = project_lookup[pid]
+                        clean_project = False
+        except:
+            #print "FYI: No Custom Metadata:",custom_metadata_file,"is missing"
+            pass
+        #sys.exit() 
         #if not clean_project:
         #      failed_projects.append('pid:'+str(pid)+' -- '+project_lookup[pid])
     print
@@ -177,7 +218,7 @@ def get_project_lookup(args):
 #
 if __name__ == '__main__':
 
-    usage = """
+    myusage = """
         
         -host/--host        vampsdb, vampsdev    dbhost:  [Default: localhost]
         
@@ -199,6 +240,7 @@ if __name__ == '__main__':
         sys.exit() 
     args = parser.parse_args()
     
+    
     if args.dbhost == 'vamps' or args.dbhost == 'vampsdb':
         args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
         dbhost = 'vampsdb'
@@ -211,10 +253,6 @@ if __name__ == '__main__':
     elif args.dbhost == 'localhost' and (socket.gethostname() == 'Annas-MacBook.local' or socket.gethostname() == 'Annas-MacBook-new.local'):
         args.NODE_DATABASE = 'vamps2'
         dbhost = 'localhost'
-    elif args.dbhost[:5] == 'local' and socket.gethostname() == 'Andrews-Mac-Pro.local' :
-        args.NODE_DATABASE = 'vamps_development'
-        dbhost = 'localhost'
-        args.json_file_path = '/Users/avoorhis/programming/vamps-node.js/public/json'
     else:
         args.NODE_DATABASE = 'vamps_development'
         dbhost = 'localhost'
@@ -223,7 +261,6 @@ if __name__ == '__main__':
         args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_silva119")
     elif args.units == 'rdp2.6':
          args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets_rdp2.6")
-    
     else:
         sys.exit('UNITS ERROR: '+args.units)
     
