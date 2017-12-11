@@ -665,7 +665,7 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
         return
     }
     if(req.body.fasta_format == 'single_ds' && req.body.dataset == ''){
-        error_fxn('You need to enter a Dataset (sample) name.')
+        error_fxn('You need to enter a Dataset (sample) name in the required field.')
         return
     }
     console.log('In POST /import_choices/fasta')
@@ -673,26 +673,34 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
     
       console.log(req.body)
       console.log('success')
-       // project name is already vetted: not in current database and correct format
-    // determine if simple or multi:
-    // if ids are unique --> single dataset
-    // otherwise --> multi-dataset 
-     // uploadDataAV(req, res);
-     // open and read file (req.file.path)
-     //try{
-     //read gzip file
-     //}
+      
      var lineReader = require('readline').createInterface({
           input: require('fs').createReadStream(req.file.path)
         });
     var total_seq_count = 0
+    var unique_seq_count = 0
     var ds_counts = {}
     var sample_defline;
     lineReader.on('line', function (line) {      
       if(line[0] == '>'){
         //console.log('Line from file:', line);
         sample_defline = line
-        total_seq_count += 1    // total sequences IF fasta is not uniqued 
+        if(req.body.unique_status == 'uniqued'){
+            unique_seq_count += 1
+            //try{
+                items = line.split('|')  // last item must be 'frequency=xx'
+                console.log('SEQ_COUNT1: '+line)
+                freq = items[items.length - 1]
+                console.log('SEQ_COUNT2: '+freq)
+                seq_count = freq.split(':')
+                console.log('SEQ_COUNT2: '+seq_count[1].toString())
+                total_seq_count += parseInt(seq_count[1])
+                console.log('total_seq_count: '+total_seq_count.toString())
+            //}catch(err) {  }
+            
+        }else{
+            total_seq_count += 1    // total sequences IF fasta is not uniqued 
+        }
         line_items = line.split(/\s+/)
         first_item = line_items[0].substring(1,line_items[0].length)
         // now this is common M9Akey217.141086_98 last digits are 'count'
@@ -711,6 +719,7 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
       console.log('done');
       console.log('total_seq_count');
       console.log(total_seq_count);
+      
       num_of_unique_keys = Object.keys(ds_counts).length
       
       var info = {}
@@ -718,20 +727,34 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
       info.project_directory = ''
       info.total_seq_count = total_seq_count;
       info.owner = req.user.username
-      info.unique_seq_count = 0
+      info.unique_seq_count = unique_seq_count
       info.max_dataset_count = 0
       info.num_of_datasets = 0
+      info.original_fasta_unique_status = req.body.unique_status
       info.fasta_type = ''
       info.public = 1  // set true
       info.num_of_datasets = 0
       info.dataset = {}
+//       if(req.body.unique_status == 'not_uniqued' && sample_defline.split('|')[]){
+//       
+//       }
+      if(req.body.unique_status == 'uniqued'){
+        items = sample_defline.split('|')  // last item must be 'frequency=xx'
+        if(items[items.length - 1].substring(0,10) != 'frequency:'){
+             error_fxn('Error - You selected "Unique" but there is no "frequency=" at the end of the defline.<br>Here is the format of a sample defline: '+sample_defline)
+        }
+        compare_seq_count = unique_seq_count
+      }else{
+        compare_seq_count = total_seq_count
+      }
       
-      if(num_of_unique_keys == total_seq_count){
+      if(num_of_unique_keys == compare_seq_count){
         // looks like single
         console.log(num_of_unique_keys);
         console.log('This looks like a single dataset fasta - am I right?')
         console.log('number of keys(ids): '+num_of_unique_keys.toString())
-        console.log('number of Sequences: '+total_seq_count.toString())
+        console.log('number of Unique Sequences: '+ unique_seq_count.toString())
+        console.log('number of Total Sequences: '+ total_seq_count.toString())
         if(req.body.fasta_format == 'multi_ds'){
              error_fxn('Error - You selected "Multi" but this looks like a SINGLE Dataset formatted Fasta file.<br>Here is the format of a sample defline: '+sample_defline)
         }else{
@@ -748,7 +771,7 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
         console.log(num_of_unique_keys);
         console.log('This looks like a multi dataset fasta')
         console.log('number of keys(ds): '+num_of_unique_keys.toString())
-        console.log('Total number of Sequences: '+total_seq_count.toString())
+        console.log('number of Total Sequences: '+total_seq_count.toString())
         if(req.body.fasta_format == 'single_ds'){
              error_fxn('Error - You selected "Single" but this looks like a Multiple Dataset formatted Fasta file.<br>Here is the format of a sample defline: '+sample_defline)
         }else{

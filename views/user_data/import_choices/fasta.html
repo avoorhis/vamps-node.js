@@ -31,34 +31,52 @@
 
 	<div class="form-group">
       <label class="control-label col-sm-3" for="fasta">Fasta File <small>(required)</small>:</label>
-      <div class="col-sm-3 btn">
+      <div class="col-sm-3">
 
         <input type="file" name="upload_files" class="" id="fasta">
 
-      </div>Format: fasta (gzipped or plain text) -NOT Uniqued 
+      </div>
+        Format: fasta (gzipped or plain text)
 	       <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
-    
     </div>
-    
     <div class="form-group">
-      <label class="control-label col-sm-3" for="fasta">Choose fasta format:</label>
-      <div class="col-sm-3 btn">
+      
+      <label class="control-label col-sm-3" for="fasta">Uniqued Sequences Status:</label>
+      
+      <div class="col-sm-3">
+        <input type="radio" name="unique_status" class="" value="uniqued" > unique 
+        <br>
+        <input type="radio" checked name="unique_status" class="" value="not_uniqued" > non-unique
+
+      </div>
+      <div class="col-sm-5">
+          Indicate whether or not the fasta file sequences represent unique (per sample) sequences or not.<br>If they are unique
+          then the defline for each sequence must indicate the count by terminating like this:<br><pre>|frequency:xx</pre> where xx is the
+          count of this sequence in the sample. 
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-3" for="fasta">Choose Fasta Format:</label>
+      <div class="col-sm-3">
         <input type="radio" name="fasta_format" class="" value="single_ds" onclick="choose_fasta_style('single')">
         Demultiplexed (One Sample in fasta file)&nbsp;&nbsp;&nbsp;
         <br>
         <input type="radio" checked name="fasta_format" class="" value="multi_ds" onclick="choose_fasta_style('multi')"> Not Demultiplexed (Multiple Samples in fasta file)
-        <br><br>
-        IMPORTANT Defline Differences:
-        <br>
-        single dataset example defline:&emsp;&emsp;<small>&gt;uniqueID&lt;--tab or pipe'|'--&gt; +/-other information (not-used)</small>
-        <br>
-        multiple sample example defline:&emsp;<small>&gt;sampleName&lt;--tab or pipe'|'--&gt;uniqueID&lt;--tab or pipe'|'--&gt; +/-other information (not-used)</small>
-      
+        <div class="well well-sm">
+            IMPORTANT Defline Differences:
+            <br>
+            single dataset example defline:<br>
+            &nbsp;&nbsp;&nbsp;<small>&gt;uniqueID&lt;--tab or pipe'|'--&gt; +/-other information (not-used)</small>
+            <br>
+            multiple sample example defline:<br>
+            &nbsp;&nbsp;&nbsp;<small>&gt;sampleName&lt;--tab or pipe'|'--&gt;uniqueID&lt;--tab or pipe'|'--&gt; +/-other information (not-used)</small>
+       </div>
+       
       </div>
-	  <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
+	  <!-- <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a> -->
     </div>
 <div id='dataset_input' class="form-group" style='display:none'>
-      <label class="control-label col-sm-3" for="dataset">Dataset Name (required):</label>
+      <label class="control-label col-sm-3" for="dataset">Sample Name (required):</label>
 	  <div class="col-sm-3">          
         <input type="text" name="dataset" class="form-control" id="dataset" placeholder="Enter a Dataset(sample) Name" value="">
       </div> 
