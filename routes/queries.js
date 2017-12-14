@@ -14,7 +14,7 @@ get_project_permissions: function(){
 },
 get_select_datasets_query: function(){
     var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description,";
-    qSelectDatasets += " username, email, institution, first_name, last_name, owner_user_id, public";
+    qSelectDatasets += " username, email, institution, first_name, last_name, owner_user_id, public, metagenomic";
     
     //qSelectDatasets += " FROM dataset";
     //qSelectDatasets += " JOIN project USING(project_id)";
@@ -39,11 +39,12 @@ get_select_custom_units_query: function(){
 
 get_select_datasets_queryPID: function(pid){
     var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution,";
-    qSelectDatasets += " first_name, last_name, owner_user_id,public";
+    qSelectDatasets += " first_name, last_name, owner_user_id,public, metagenomic";
     qSelectDatasets += " FROM dataset";
     qSelectDatasets += " JOIN project USING(project_id)";
     qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
     qSelectDatasets += " WHERE project_id = " + connection.escape(pid);
+    //qSelectDatasets += " AND metagenomic='0'";
     qSelectDatasets += " ORDER BY project, dataset";
     //console.log(qSelectDatasets);
     return qSelectDatasets;	
@@ -435,7 +436,7 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
   get_metagenomic_projects_query: function() {      
 
         var qSelectProjects = "SELECT project, title, project_id as pid, project_description, ";
-        qSelectProjects += " username, email, institution, first_name, last_name, owner_user_id, public";
+        qSelectProjects += " username, email, institution, first_name, last_name, owner_user_id, public, metagenomic";
         qSelectProjects += " FROM project";   
         qSelectProjects += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
         qSelectProjects += " WHERE metagenomic='1'";
@@ -446,7 +447,7 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
   get_metagenomic_datasets_query: function() {      
 
         var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description,";
-        qSelectDatasets += " username, email, institution, first_name, last_name, owner_user_id, public";
+        qSelectDatasets += " username, email, institution, first_name, last_name, owner_user_id, public, metagenomic";
         qSelectDatasets += " FROM project";
         qSelectDatasets += " LEFT JOIN dataset USING(project_id)";    
         qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated

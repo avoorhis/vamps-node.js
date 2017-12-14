@@ -878,6 +878,7 @@ module.exports.run_select_datasets_query = function(rows){
         "title" :           rows[i].title,
         "description" :     rows[i].project_description,
         "public" :          rows[i].public,
+        "metagenomic" :          rows[i].metagenomic,
       };
       if(public || rows[i].username === 'guest'){
         PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC

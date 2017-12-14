@@ -13,8 +13,12 @@
     
     
 <% } %>
+
+<% if(data.metagenomic == 1){ %>
+    <div class="title fa fa-anchor">Metagenomic Project Profile</div>
+<% }else{ %>
   <div class='title fa fa-anchor'>Project Profile</div>
-  
+<% } %>  
   <div class='subtitle'><%= data.project %><br>
   <% if(Object.getOwnPropertyNames(portals).length > 0){ %>
     <small>Member of: 
