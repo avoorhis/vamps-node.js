@@ -47,7 +47,7 @@ router.post('/method_selection', helpers.isLoggedIn, function (req, res) {
     console.log('In otus_index')
     
     res.render('otus/otus_index', {
-                                  title       : 'VAMPS: Select OTUs',
+                                  title       : 'Select OTUs',
                                   subtitle    : 'OTU Selection Page',
                                   proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
                                   constants   : JSON.stringify(req.CONSTS),
@@ -192,7 +192,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
       BIOM_MATRIX = get_otu_matrix(otudata, datasets, visual_post_items);
       visual_post_items.max_ds_count   = BIOM_MATRIX.max_ds_count;
       res.render('otus/visuals/view_selection', {
-                    title           : 'VAMPS: OTU Visuals', 
+                    title           : 'OTU Visuals', 
                     referer         : 'otu_index',                                
                     matrix          : JSON.stringify(BIOM_MATRIX), 
                     project         : prj,
@@ -274,7 +274,7 @@ router.post('/view_selection2', helpers.isLoggedIn, function(req, res) {
           BIOM_MATRIX = get_otu_matrix(otudata, datasets, visual_post_items);
           visual_post_items.max_ds_count   = BIOM_MATRIX.max_ds_count;
           res.render('otus/visuals/view_selection', {
-                                title           : 'VAMPS: OTU Visuals', 
+                                title           : 'OTU Visuals', 
                                 referer         : 'otu_index',                                
                                 matrix          : JSON.stringify(BIOM_MATRIX), 
                                 project         : prj,
@@ -369,7 +369,7 @@ router.post('/view_selection2', helpers.isLoggedIn, function(req, res) {
 //             
 //             
 //             res.render('otus/visuals/view_selection', {
-//                                 title           : 'VAMPS: OTU Visuals', 
+//                                 title           : 'OTU Visuals', 
 //                                 referer         : 'otu_index',                                
 //                                 matrix          : JSON.stringify(BIOM_MATRIX), 
 //                                 project         : prj,

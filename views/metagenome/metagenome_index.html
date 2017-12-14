@@ -1,0 +1,23 @@
+<% menu_section='LINKS' %>
+<% proj = JSON.parse(obj) %>
+<% include ../add_ins/begin.ejs %>
+
+<p class='title'><%= title %></p>
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail" ><%- messages.fail %> </div>
+<% } %>
+
+<div class="container">
+		<div class="row">
+	       <div class="col-lg-12">
+				<% include project_listing %>
+		   </div>
+		</div>
+</div>
+
+<% include ../add_ins/end.ejs %>
+
+</body>
+</html>

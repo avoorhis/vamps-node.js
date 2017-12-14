@@ -741,7 +741,7 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
       if(req.body.unique_status == 'uniqued'){
         items = sample_defline.split('|')  // last item must be 'frequency=xx'
         if(items[items.length - 1].substring(0,10) != 'frequency:'){
-             error_fxn('Error - You selected "Unique" but there is no "frequency=" at the end of the defline.<br>Here is the format of a sample defline: '+sample_defline)
+             error_fxn('Error - You selected "Unique" but there is no "frequency:" at the end of the defline.<br>Here is the format of a sample defline: '+sample_defline)
         }
         compare_seq_count = unique_seq_count
       }else{
@@ -808,28 +808,41 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
                     fs.ensureDir(ds_dir, function ensureDSDir(err) {
                         var out_fasta = path.join(ds_dir,'seqfile.unique.fa')
                         var out_name = path.join(ds_dir,'seqfile.unique.name')
-                        fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
-                        var fastaunique_params = ['-o', out_fasta, '-n', out_name, new_fasta_filename_path]
-                        console.log('running fastaunique')
-                        console.log(fastaunique_cmd + ' ' + fastaunique_params.join(' '))
-                        var proc = spawn(fastaunique_cmd, fastaunique_params)
-                        var output = '';
-                        proc.stdout.on('data', function (data) {
-                          data = data.toString().replace(/^\s+|\s+$/g, '');                      
-                          output += data;
-                        });
-                        proc.on('close', function (code) {
-                            console.log('close: fastaunique proc exited with code ' + code);
-                            console.log("output: ");
-                            console.log(output);
-                            info.unique_seq_count = output
-                            fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
-                            req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-                            res.render('user_data/import_choices/fasta', {
-                                  title: 'VAMPS:Import Choices',         
-                                  user: req.user, hostname: req.CONFIG.hostname
+                        
+                        if(req.body.unique_status == 'uniqued'){
+                            fs.copy(new_fasta_filename_path,out_fasta, function copyFile(err){ 
+                                fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
+                                    req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+                                    res.render('user_data/import_choices/fasta', {
+                                          title: 'VAMPS:Import Choices',         
+                                          user: req.user, hostname: req.CONFIG.hostname
+                                });
                             });
-                        });
+                            
+                        }else{ // Not Uniqued
+                            fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
+                            var fastaunique_params = ['-o', out_fasta, '-n', out_name, new_fasta_filename_path]
+                            console.log('running fastaunique')
+                            console.log(fastaunique_cmd + ' ' + fastaunique_params.join(' '))
+                            var proc = spawn(fastaunique_cmd, fastaunique_params)
+                            var output = '';
+                            proc.stdout.on('data', function (data) {
+                              data = data.toString().replace(/^\s+|\s+$/g, '');                      
+                              output += data;
+                            });
+                            proc.on('close', function (code) {
+                                console.log('close: fastaunique proc exited with code ' + code);
+                                console.log("output: ");
+                                console.log(output);
+                                info.unique_seq_count = output
+                                fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
+                                req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+                                res.render('user_data/import_choices/fasta', {
+                                      title: 'VAMPS:Import Choices',         
+                                      user: req.user, hostname: req.CONFIG.hostname
+                                });
+                            });
+                        }
                     });   
                    
                 // create dir analysis/'dataset'
@@ -839,9 +852,14 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
                     
                     //demultiplex_script_path =  path.join(project_base_dir,'demultiplex.sh');
                     //demultiplex_script_text = '#!/bin/sh\n\n'
-                    fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
                     demultiplex_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py')
-                    var demultiplex_params = ['-i',new_fasta_filename_path,'-d',project_base_dir,'-f',fastaunique_cmd]
+                    if(req.body.unique_status == 'uniqued'){
+                        var demultiplex_params = ['-i',new_fasta_filename_path,'-d',project_base_dir]
+                    }else{
+                        fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
+                        var demultiplex_params = ['-i',new_fasta_filename_path,'-d',project_base_dir,'-f',fastaunique_cmd]
+                    }
+                    
                     //console.log('running: '+req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+ (demultiplex_params).join(' '))
                     //demultiplex_script_text += req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+demultiplex_params.join(' ')+'\n'
                     
@@ -859,7 +877,7 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
                           output += parseInt(data)
                         });
                         proc.on('close', function (code) {
-                            console.log('close: demultiplex/fastaunique proc exited with code ' + code);
+                            console.log('close: demultiplex (+/-fastaunique) proc exited with code ' + code);
                             console.log("output: ");
                             console.log(output);
                             if(helpers.isInt(output)){
@@ -2137,23 +2155,23 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
 
     } else {
         for (var d in items) {
-                var pts = items[d].split('-');  // ALL items in this dir should have this '-' to separate on
-                if (pts[0] === 'project') {
+            var pts = items[d].split('-');  // ALL items in this dir should have this '-' to separate on
+            if (pts[0] === 'project') {
 
-          var project_name = pts[1];
+              var project_name = items[d].substring(8,items[d].length);
           
-          console.log('dir',items[d])
-          if( ! project_info.hasOwnProperty(project_name)){
-            // these projects are either empty (NoDataYet) or orphans (dir w/o DB presence)
-            console.log('project in file but not in DB', project_name)
-            project_info[project_name] = {};
-            project_info[project_name].pid = '0';
-            project_info[project_name].validation = {};
-            project_info[project_name].vamps_status = 'NOT_ON_VAMPS';
-            project_info[project_name].classified_by = 'none'
-            project_info[project_name].in_global_obj = false
-            pnames.push(project_name);
-          }
+              console.log('dir',items[d])
+              if( ! project_info.hasOwnProperty(project_name)){
+                // these projects are either empty (NoDataYet) or orphans (dir w/o DB presence)
+                console.log('project in file but not in DB', project_name)
+                project_info[project_name] = {};
+                project_info[project_name].pid = '0';
+                project_info[project_name].validation = {};
+                project_info[project_name].vamps_status = 'NOT_ON_VAMPS';
+                project_info[project_name].classified_by = 'none'
+                project_info[project_name].in_global_obj = false
+                pnames.push(project_name);
+              }
           
           var stat_dir = fs.statSync(path.join(user_projects_base_dir, items[d]));
 

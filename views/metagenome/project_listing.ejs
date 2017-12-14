@@ -1,0 +1,39 @@
+<table class='table table-condensed table-striped sortable' >
+<thead>
+	<tr>
+		<th></th>
+		<th>ID</th>
+		<th>Name</th>
+		<th>Project Title</th>
+		<th>P.I. (username)</th>
+		<th>Email Address</th>
+		<th>Institute</th>
+		<th>Status</th>
+	</tr>
+</thead>
+<tbody>
+<% cnt = 1 %>
+<% for (n in proj){ %>
+	<% var pname = proj[n].project; %>
+	<% var public = proj[n].public; %>
+	    <tr>
+	    <td><%= cnt %></td>
+	    <td><%= proj[n].pid %></td>
+	    <td><a class='tooltip_pname' id='<%= proj[n].description %>' href='/projects/<%= proj[n].pid %>'><%= proj[n].project %></a></td>
+	    <td><%= proj[n].title %></td>
+
+	    	<td><%= proj[n].last_name %>, <%= proj[n].first_name %> (<%= proj[n].username %>)</td>
+	    	<td><%= proj[n].email %></td>
+	    	<td><%= proj[n].institution %></td>
+				<% if(public==1){ %>
+					<td></td>
+				<% }else{ %>
+					<td>private</td>
+				<% } %>
+
+	    </tr>
+	    <% cnt += 1 %>
+
+<% }%>
+</tbody>
+</table>

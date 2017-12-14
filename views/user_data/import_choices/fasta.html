@@ -18,76 +18,82 @@
     
   <form class="form-horizontal" role="form" method="POST" action="fasta" enctype="multipart/form-data">
     
-	<h4>Import Fasta Form: <small>(All fields are required unless indicated)</small></h4>
+	<h4>Import Fasta Form: <small>(All fields are required)</small></h4>
 
 	
 	<div class="form-group">
       <label class="control-label col-sm-3" for="project">Project Name (required):</label>
-	  <div class="col-sm-3">          
-        <input type="text" name="project" class="form-control" id="project" placeholder="Enter a Project Name" value="">
+	  <div class="col-sm-5">          
+        <input type="text" name="project" class="form-control" id="pname_input" placeholder="Enter a Project Name" value="" onchange='check_fasta_inputs()')>
       </div>    
     </div>
     
 
 	<div class="form-group">
       <label class="control-label col-sm-3" for="fasta">Fasta File <small>(required)</small>:</label>
-      <div class="col-sm-3">
+      <div class="col-sm-2">
 
-        <input type="file" name="upload_files" class="" id="fasta">
-
-      </div>
-        Format: fasta (gzipped or plain text)
-	       <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
-    </div>
-    <div class="form-group">
-      
-      <label class="control-label col-sm-3" for="fasta">Uniqued Sequences Status:</label>
-      
-      <div class="col-sm-3">
-        <input type="radio" name="unique_status" class="" value="uniqued" > unique 
-        <br>
-        <input type="radio" checked name="unique_status" class="" value="not_uniqued" > non-unique
+        <input type="file" name="upload_files" class="" id="file_input" onchange='check_fasta_inputs()'>
 
       </div>
       <div class="col-sm-5">
-          Indicate whether or not the fasta file sequences represent unique (per sample) sequences or not.<br>If they are unique
-          then the defline for each sequence must indicate the count by terminating like this:<br><pre>|frequency:xx</pre> where xx is the
-          count of this sequence in the sample. 
+        Format: fasta (gzipped or plain text)
+	       <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
       </div>
     </div>
+    
+    
     <div class="form-group">
       <label class="control-label col-sm-3" for="fasta">Choose Fasta Format:</label>
-      <div class="col-sm-3">
-        <input type="radio" name="fasta_format" class="" value="single_ds" onclick="choose_fasta_style('single')">
+      <div class="col-sm-5">
+        <input type="radio" name="fasta_format" class="" value="single_ds" onchange="check_fasta_inputs()">
         Demultiplexed (One Sample in fasta file)&nbsp;&nbsp;&nbsp;
         <br>
-        <input type="radio" checked name="fasta_format" class="" value="multi_ds" onclick="choose_fasta_style('multi')"> Not Demultiplexed (Multiple Samples in fasta file)
+        <input type="radio" name="fasta_format" class="" value="multi_ds" onchange="check_fasta_inputs()"> Not Demultiplexed (Multiple Samples in fasta file) (Non-Uniqued ONLY)
         <div class="well well-sm">
-            IMPORTANT Defline Differences:
+            IMPORTANT definition line (defline) differences:
             <br>
-            single dataset example defline:<br>
-            &nbsp;&nbsp;&nbsp;<small>&gt;uniqueID&lt;--tab or pipe'|'--&gt; +/-other information (not-used)</small>
+            &nbsp;&nbsp;&nbsp;"single sample" example defline (Demultiplexed):<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>&gt;uniqueID| (+/-other information (not-used)) |frequency:xxx (only if uniqued)</small>
             <br>
-            multiple sample example defline:<br>
-            &nbsp;&nbsp;&nbsp;<small>&gt;sampleName&lt;--tab or pipe'|'--&gt;uniqueID&lt;--tab or pipe'|'--&gt; +/-other information (not-used)</small>
+            &nbsp;&nbsp;&nbsp;"multiple samples" example defline (Not-Demultiplexed):<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>&gt;sampleName|uniqueID| (+/-other information (not-used)) |frequency:xxx (only if uniqued)</small>
        </div>
        
       </div>
 	  <!-- <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a> -->
     </div>
-<div id='dataset_input' class="form-group" style='display:none'>
-      <label class="control-label col-sm-3" for="dataset">Sample Name (required):</label>
+    
+    <div class="form-group">
+      
+      <label class="control-label col-sm-3" for="fasta">Uniqued Sequences Status:</label>
+      
+      <div class="col-sm-2">
+        <input type="radio" name="unique_status" class="" value="uniqued"  onchange='check_fasta_inputs()'> unique 
+        <br>
+        <input type="radio" name="unique_status" class="" value="not_uniqued"  onchange='check_fasta_inputs()'> non-unique
+
+      </div>
+      <div class="col-sm-5">
+          Indicate whether or not the fasta file sequences represent unique (per sample) sequences or not.<br>If they are unique
+          then the defline for each sequence MUST indicate the count by terminating like this:<br><pre>|frequency:XXX</pre> where XXX is the
+          number of this sequence in the sample. 
+      </div>
+    </div>
+
+<div id='dataset_input' class="form-group" style=''>
+      <label class="control-label col-sm-3" for="dataset">Sample Name:</label>
 	  <div class="col-sm-3">          
-        <input type="text" name="dataset" class="form-control" id="dataset" placeholder="Enter a Dataset(sample) Name" value="">
+        <input type="text" disabled name="dataset" class="form-control" id="dname_input" placeholder="Disabled by default" value="" onchange='check_fasta_inputs()'>
       </div> 
     
 </div>	
 
-    <br><br><br>
+    <br><br>
     
     <div class="form-group">        
       <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-default">Submit & Validate</button>
+        <button disabled id='submit_btn' type="submit" class="btn btn-default">Submit & Validate</button>
       </div>
     </div>
 	<input type="hidden" name="type" value="">

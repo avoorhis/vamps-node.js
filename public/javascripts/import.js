@@ -18,41 +18,47 @@ if (use_original_names !== null) {
 	 });
 }
 
-
-
-
-function choose_fasta_style(style)
+function check_fasta_inputs()
 {
-    if(style == 'single'){
-        document.getElementById('dataset_input').style.display = 'block'
+    all_good = true
+    
+    pname = document.getElementById('pname_input')
+    if(pname.value == ''){
+        all_good = false
+    }
+    file = document.getElementById('file_input')
+    if(file.value == ''){
+        all_good = false
+    }
+    unique = document.getElementsByName('unique_status')
+    if(unique[0].checked == false && unique[1].checked == false){
+        all_good = false
+    }
+    format = document.getElementsByName('fasta_format')
+    if(format[0].checked == false && format[1].checked == false){
+        all_good = false
+    }
+    dname = document.getElementById('dname_input')
+    if(format[0].checked==true && dname.value == ''){
+        all_good = false
+    }
+    if(format[0].checked==true){
+        dname.disabled = false
+        dname.placeholder = "Dataset(Sample) Name"
     }else{
-        document.getElementById('dataset_input').style.display = 'none'
-    }   
+        dname.disabled = true
+        dname.value = ''
+        dname.placeholder = "Disabled by default"
+    }
+    submit_btn = document.getElementById('submit_btn')
+    
+    //alert(all_good)
+    if(all_good){
+        submit_btn.disabled = false
+    }else{
+        submit_btn.disabled = true
+    }
+    
+    
 }
-
-// function import_submit(page) {
-//   var form = document.getElementById('import_form_id');
-//   fileNames = document.getElementsByName('upload_files');
-//   var metafile = fileNames[1];
-//   //alert(metafile[0].type)
-//   for(n in metafile){
-//     alert(n +' '+metafile[n])
-//   }
-//   args = 'id=3'
-//   var xmlhttp = new XMLHttpRequest();  
-//   xmlhttp.open("POST", '../validate_metadata2', true);
-//   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-//   xmlhttp.setRequestHeader("data-type","html");
-//   showDots='';
-  
-//   xmlhttp.onreadystatechange = function() {        
-//     if (xmlhttp.readyState == 4 ) {
-        
-//         var response = xmlhttp.responseText;            
-        
-//     }
-//   };
-//   xmlhttp.send(args);
-   
-// }
 

@@ -64,7 +64,7 @@ class Demultiplex:
       #print "opts = %s, args = %s" % (opts, args)
     except getopt.GetoptError:
       sys.exit(2)
-    
+    self.fastaunique_cmd = None
     for opt, arg in opts:
       if opt == '-h':
         self.usage()
@@ -162,6 +162,7 @@ class Demultiplex:
         sample_dir = os.path.join(analysis_dir,sample)
         out_fasta = os.path.join(sample_dir,'seqfile.unique.fa')
         out_name = os.path.join(sample_dir,'seqfile.unique.name')
+        
         fastaunique_cmd_list = [ self.fastaunique_cmd,'-o', out_fasta, '-n', out_name, infile]        
         #print ' '.join(fastaunique_cmd_list)
         #os.system(' '.join(fastaunique_cmd_list))
@@ -182,11 +183,12 @@ class Demultiplex:
             pass
           
 if __name__ == "__main__":
-    
+    import argparse
     usage = """
     USAGE: demultiplex.py -i FASTA.fa
     
     """
+    
     demult = Demultiplex()
     (inputfile) = demult.get_args(sys.argv[1:])
     #print 'Input file is "%s"' % inputfile
@@ -198,8 +200,9 @@ if __name__ == "__main__":
     demult.open_out_sample_files()
     demult.demultiplex_input(inputfile)
     demult.create_directories()
-    sum_unique_seq_count = demult.unique_files()
-    print sum_unique_seq_count
+    if demult.fastaunique_cmd:
+        sum_unique_seq_count = demult.unique_files()
+        print sum_unique_seq_count
     demult.cleanup()
     
     

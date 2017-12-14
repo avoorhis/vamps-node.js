@@ -97,8 +97,9 @@ var admin     = require('./routes/routes_admin');
 var oligotyping = require('./routes/routes_oligotyping');
 var otus        = require('./routes/routes_otus');
 var api        = require('./routes/routes_api');
-var portals   = require('./routes/routes_portals');
+var portals    = require('./routes/routes_portals');
 var metadata   = require('./routes/routes_metadata');
+var metagenome = require('./routes/routes_metagenome');
 //console.log('test')
 var visuals = require('./routes/visuals/routes_visualization');
 //console.log('test2')
@@ -211,6 +212,7 @@ app.use('/metadata', metadata);
 app.use('/oligotyping', oligotyping);
 app.use('/otus', otus);
 app.use('/api', api);
+app.use('/metagenome', metagenome);
 
 // for non-routing pages such as heatmap, counts and bar_charts
 app.get('/*', function(req, res, next){

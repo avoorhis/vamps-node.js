@@ -198,7 +198,7 @@ def run_fasta(args):
 #                 id = row['project']+'--'+row['dataset']+'--'+str(row['sequence_id'])+'_'+str(n)+'_'+str(seq_count)
 #                 file_txt += '>'+str(id)+'\n'+str(seq)+'\n'
 #         else:
-        my_id = str(row['sequence_id'])+'|'+row['project']+'--'+row['dataset']+'|'+str(seq_count)
+        my_id = str(row['sequence_id'])+'|'+row['project']+'--'+row['dataset']+'|frequency:'+str(seq_count)
         file_txt += '>'+str(my_id)+'\n'+str(seq)+'\n'
 
 
