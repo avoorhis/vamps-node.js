@@ -38,7 +38,7 @@ router.get('/index', helpers.isLoggedIn, function (req, res) {
                 METAGENOMIC_INFORMATION_BY_PID[pid].permissions     = []
             }
         }
-  //console.log(METAGENOMIC_INFORMATION_BY_PID)
+  console.log(METAGENOMIC_INFORMATION_BY_PID)
         res.render('metagenome/metagenome_index', {
                                   title       : 'Metagenomic Project Listing',
                                   subtitle    : 'Project Selection Page',
