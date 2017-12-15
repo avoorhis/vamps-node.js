@@ -57,6 +57,8 @@
         <li role="presentation" class="dropdown" >
             <a  class="dropdown-toggle" data-toggle="dropdown" href="#">Options<span class="caret"></span></a>
             <ul class="dropdown-menu">
+                
+                <% if(data.metagenomic !== 1){ %>
                 <li>
                     <form id='viz_select_form_id' method='POST' action='/visuals/visuals_index'>
                         <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Open in Dataset Selection</button>
@@ -77,6 +79,7 @@
                         <input type='hidden' name='referer' value='/projects/project_profile' />
                     </form>
                 </li>
+                <% }%>
                 <% if(Object.getOwnPropertyNames(metadata).length > 0){ %>
                 <li>
                     <form id='download_project_metadata_form1' method='POST' action=''>
