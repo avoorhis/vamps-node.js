@@ -3939,19 +3939,27 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
 
   if (req.body.download_type == 'whole_project') {
         var pid  = req.body.pid;
+        var file_tag = []
         dids = DATASET_IDS_BY_PID[pid];
         if(req.body.hasOwnProperty('project')){
           project = req.body.project;
         }else{
           project = PROJECT_INFORMATION_BY_PID[pid].project
         }
+        console.log(PROJECT_INFORMATION_BY_PID[pid])
+        if(PROJECT_INFORMATION_BY_PID[pid].hasOwnProperty('metagenomic')){
+            if((PROJECT_INFORMATION_BY_PID[pid].metagenomic).toString() == '1'){
+                file_tag.push('--include_metagenomic')
+            }
+        }
         if(orientation == 'cols'){
             file_name = 'metadata-'+timestamp+'-2.tsv.gz';
-            file_tag = ['--metadata_file2']
+            file_tag.push('--metadata_file2')
         }else{
             file_name = 'metadata-'+timestamp+'-1.tsv.gz';
-            file_tag = ['--metadata_file1']
+            file_tag.push('--metadata_file1')
         }
+        console.log(file_tag)
         //file_name = 'metadata-'+timestamp+'_'+project+'.csv';
         out_file_path = path.join(user_dir, file_name);
         header = "Project: "+project+"\n\t";

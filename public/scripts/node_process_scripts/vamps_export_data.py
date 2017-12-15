@@ -54,12 +54,14 @@ class GZipWriter(object):
     def write(self, data):
         self.proc.stdin.write(data)
 
-def get_fasta_sql(dids):
+def get_fasta_sql(args,dids):
     sql = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n"
     sql += " JOIN sequence using (sequence_id)\n"
     sql += " JOIN dataset using (dataset_id)\n"
     sql += " JOIN project using (project_id)\n"
     sql += " where dataset_id in ('"+dids+"');"
+    if not args.include_metagenomic:
+        sql += " AND metagenomic='0'"
     return sql
 
 def get_matrix_biom_taxbytax_sql(args, dids):
@@ -83,11 +85,13 @@ def get_matrix_biom_taxbytax_sql(args, dids):
         if rank == args.rank:
             break
     sql += " WHERE D.dataset_id in ('"+dids+"') \n"
+    if not args.include_metagenomic:
+        sql += " AND metagenomic='0'"
     sql += " GROUP BY taxonomy, dataset\n"
     sql += " ORDER BY taxonomy\n"
     return sql
 
-def get_taxbyseq_sql(dids):
+def get_taxbyseq_sql(args,dids):
     sql = "SELECT project, dataset, seq_count, gast_distance, UNCOMPRESS(sequence_comp) as sequence, concat_ws(';', \n"
     sql += " IF(LENGTH(`domain`),`domain`,NULL),\n"
     sql += " IF(LENGTH(`phylum`),`phylum`,NULL),\n"
@@ -114,6 +118,8 @@ def get_taxbyseq_sql(dids):
     sql += " JOIN `species` using (species_id)\n"
     sql += " JOIN `strain`  using (strain_id)\n"
     sql += " WHERE D.dataset_id in ('"+dids+"') \n"
+    if not args.include_metagenomic:
+        sql += " AND metagenomic='0'"
     sql += " ORDER BY taxonomy\n"
     return sql
 
@@ -182,7 +188,7 @@ def run_fasta(args):
         out_file = os.path.join(args.base,'fasta-'+args.runcode+'.fasta')
     cursor = args.obj.cursor()
     dids = "','".join(args.dids)
-    sql = get_fasta_sql(dids)
+    sql = get_fasta_sql(args,dids)
 
     print sql
     cursor.execute(sql)
@@ -422,13 +428,16 @@ def run_metadata(args, file_form, dco_bulk=False):
     if dco_bulk:
         sql += " where project_id in ('" + pids + "')\n"
         out_file = os.path.join(args.base,'dco_all_metadata_'+args.today+'.csv')
-        dco_exclude_data = get_dco_excludes(args) 
+        dco_exclude_data = []
+        #dco_exclude_data = get_dco_excludes(args) # Josh requestes ALL datasets 2017-11-28
     else:
         sql += " where dataset_id in ('" + dids + "')\n"
         if file_form == 'datasets_as_rows':
             out_file = os.path.join(args.base,'metadata-'+args.runcode+'-1.tsv') 
         else:
             out_file = os.path.join(args.base,'metadata-'+args.runcode+'-2.tsv')
+    if not args.include_metagenomic:
+        sql += " AND metagenomic='0'"
     print sql
     
     cursor.execute(sql)
@@ -436,6 +445,8 @@ def run_metadata(args, file_form, dco_bulk=False):
     data= {}
     #dataset_name_collector = {}
     headers_collector = {}
+    #print 'args.dataset_name_collector'
+    #print args.dataset_name_collector
     for project_dataset in args.dataset_name_collector.values():
         data[project_dataset] = {}
         #print project_dataset
@@ -446,10 +457,10 @@ def run_metadata(args, file_form, dco_bulk=False):
             project = row['project']
             dataset = row['dataset']
             project_dataset = project+'--'+dataset
-            data[project_dataset]['primers'] = ''
             headers_collector['primers'] = 1 
             for key in row:
                 if project_dataset in data:
+                    data[project_dataset]['primers'] = ''
                     if type(row[key]) == str:
                         if key == 'primer_suite':
                             #data[project_dataset][key] = row['primer_suite']+' ('+row['sequencing_platform']+')'  
@@ -670,7 +681,7 @@ def run_taxbyseq(args):
     print 'running taxbyseq --->>>'
     cursor = args.obj.cursor()
     dids = "','".join(args.dids)
-    sql = get_taxbyseq_sql(dids)
+    sql = get_taxbyseq_sql(args,dids)
 
     print sql
     cursor.execute(sql)
@@ -779,6 +790,8 @@ def get_dataset_counts(args):
         sql += " where project_id in ('"+pids+"')"
     else:
         sys.exit('no pids or dids from command line -- exiting')
+    if not args.include_metagenomic:
+        sql += " AND metagenomic='0'"
     sql += " group by dataset"
     
     print sql
@@ -803,16 +816,17 @@ def get_dataset_names(args):
     #pd = "') OR\n(project='".join(["' and dataset='".join(p.split('--')) for p in args.datasets])
     #sql = "SELECT distinct project, dataset, dataset_count from "+pd_table+" WHERE\n(project='" + pd + "')\n"
     sql = "SELECT dataset_id, project, dataset"
-    sql += " from sequence_pdr_info as i"
-    sql += " join dataset as D using(dataset_id)"
-    sql += " join project as P using(project_id)"
+    #sql += " from sequence_pdr_info as i"
+    sql += " FROM dataset"
+    sql += " join project using(project_id)"
     if dids:
         sql += " where dataset_id in ('"+dids+"')"
     elif pids:
         sql += " where project_id in ('"+pids+"')"
     else:
         sys.exit('no pids or dids from command line -- exiting')
-    
+    if not args.include_metagenomic:
+        sql += " AND metagenomic='0'"
     print sql
     cursor.execute(sql)
     rows = cursor.fetchall()
@@ -908,7 +922,9 @@ if __name__ == '__main__':
     parser.add_argument("-db", "--db",
                 required=False,  action='store', dest = "NODE_DATABASE",  default='vamps_development',
                 help="NODE_DATABASE")
-
+    parser.add_argument("-mg", "--include_metagenomic",
+                required=False,  action='store_true', dest = "include_metagenomic",  default=False,
+                help="")
     args = parser.parse_args()
 
     args.today = str(datetime.date.today())
