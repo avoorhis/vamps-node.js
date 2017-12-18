@@ -13,18 +13,18 @@
 </thead>
 <tbody>
 <% cnt = 1 %>
-<% for (n in proj){ %>
-	<% var pname = proj[n].project; %>
-	<% var public = proj[n].public; %>
+<% for (n in pnames){ %>
+     <% project = pnames[n] %>
+	<% var public = proj[project].public; %>
 	    <tr>
 	    <td><%= cnt %></td>
-	    <td><%= proj[n].pid %></td>
-	    <td><a class='tooltip_pname' id='<%= proj[n].description %>' href='/projects/<%= proj[n].pid %>?metagenomic=1'><%= proj[n].project %></a></td>
-	    <td><%= proj[n].title %></td>
+	    <td><%= proj[project].pid %></td>
+	    <td><a class='tooltip_pname' id='<%= proj[project].description %>' href='/projects/<%= proj[project].pid %>?metagenomic=1'><%= proj[project].project %></a></td>
+	    <td><%= proj[project].title %></td>
 
-	    	<td><%= proj[n].last %>, <%= proj[n].first %> (<%= proj[n].username %>)</td>
-	    	<td><%= proj[n].email %></td>
-	    	<td><%= proj[n].institution %></td>
+	    	<td><%= proj[project].last %>, <%= proj[project].first %> (<%= proj[project].username %>)</td>
+	    	<td><%= proj[project].email %></td>
+	    	<td><%= proj[project].institution %></td>
 				<% if(public==1){ %>
 					<td></td>
 				<% }else{ %>
