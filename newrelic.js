@@ -1,5 +1,4 @@
 'use strict'
-
 /**
  * New Relic agent configuration.
  *
@@ -10,7 +9,7 @@ exports.config = {
   /**
    * Array of application names.
    */
-  app_name: ['vamps-node.js'],
+  app_name: ['VAMPS-node.js'],
   /**
    * Your New Relic license key.
    */
@@ -21,7 +20,6 @@ exports.config = {
      * issues with the agent, 'info' and higher will impose the least overhead on
      * production applications.
      */
-    //level: 'trace'
     level: 'info'
   }
 }

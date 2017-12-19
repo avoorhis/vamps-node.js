@@ -19,7 +19,7 @@ export_project.sh
 *.csv.gz
 *.tsv.gz
 *.csv
-newrelic.js
+*newrelic.js
 bin/versions.sh
 version.log
 config/db-connection*
@@ -85,3 +85,4 @@ visuals_testing/
 venv
 
 .idea/
+newrelic.js
