@@ -470,7 +470,7 @@ router.get('/livesearch_user/:q', helpers.isLoggedIn, function(req, res) {
       last  = obj[uid].last_name;
       first = obj[uid].first_name;
 
-      if(last.toLowerCase().indexOf(q) != -1 || first.toLowerCase().indexOf(q) != -1){
+      if(last.toLowerCase().indexOf(q) != -1 || first.toLowerCase().indexOf(q) != -1 || user.toLowerCase().indexOf(q) != -1){
         //hint += "<a href='' onclick=\"get_user_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
         //hint += "<a href='#'>"+last+', '+first+' ('+user+")</a><br>";
         hint += "<form method='GET' action='/users/"+uid+"'>";

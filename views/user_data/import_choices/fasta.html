@@ -37,7 +37,7 @@
 
       </div>
       <div class="col-sm-5">
-        Format: fasta (gzipped or plain text)
+        File can either be compressed (gzip only) or uncompressed (plain text)
 	       <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
       </div>
     </div>
@@ -47,9 +47,10 @@
       <label class="control-label col-sm-3" for="fasta">Choose Fasta Format:</label>
       <div class="col-sm-5">
         <input type="radio" name="fasta_format" class="" value="single_ds" onchange="check_fasta_inputs()">
-        Demultiplexed (One Sample in fasta file)&nbsp;&nbsp;&nbsp;
+            Demultiplexed (The entire file represents one sample (dataset))
         <br>
-        <input type="radio" name="fasta_format" class="" value="multi_ds" onchange="check_fasta_inputs()"> Not Demultiplexed (Multiple Samples in fasta file) (Non-Uniqued ONLY)
+        <input type="radio" name="fasta_format" class="" value="multi_ds" onchange="check_fasta_inputs()"> 
+            Not Demultiplexed (Multiple samples (datasets) in fasta file) (Non-Uniqued ONLY)
         <div class="well well-sm">
             IMPORTANT definition line (defline) differences:
             <br>

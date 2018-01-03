@@ -218,7 +218,7 @@ def get_project_lookup(args):
 #
 if __name__ == '__main__':
 
-    myusage = """
+    usage = """
         
         -host/--host        vampsdb, vampsdev    dbhost:  [Default: localhost]
         
@@ -236,7 +236,7 @@ if __name__ == '__main__':
                 required=False,  action='store_true',  dest = "verbose",  default=False,
                 help="")                
     if len(sys.argv[1:]) == 0:
-        print myusage
+        print usage
         sys.exit() 
     args = parser.parse_args()
     

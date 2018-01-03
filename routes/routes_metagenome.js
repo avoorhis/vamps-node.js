@@ -3,17 +3,13 @@
 
 var express = require('express');
 var router = express.Router();
-var passport = require('passport');
 var helpers = require('./helpers/helpers');
-var path = require('path');
-var fs = require('fs-extra');
 var queries = require('./queries');
-var config = require('../config/config');
-var mysql = require('mysql2');
-var COMMON = require('./visuals/routes_common');
+//var mysql = require('mysql2');
+//var COMMON = require('./visuals/routes_common');
 
 
-METAGENOMIC_INFORMATION_BY_PID = {}
+METAGENOMIC_INFORMATION_BY_PID = {}  // GLOBAL
 
 router.get('/index', helpers.isLoggedIn, function (req, res) {
     console.log('In Metagenome index.html')
@@ -22,7 +18,7 @@ router.get('/index', helpers.isLoggedIn, function (req, res) {
         for(n in rows){
             pid = rows[n].pid
             pname = rows[n].project
-            project_list.push(rows[n]['project'])
+            project_list.push(pname)
             METAGENOMIC_INFORMATION_BY_PID[pname] = {}
             
             for(item in rows[n]){                
@@ -33,8 +29,7 @@ router.get('/index', helpers.isLoggedIn, function (req, res) {
                 METAGENOMIC_INFORMATION_BY_PID[pname].oid             = rows[n]['owner_user_id']
                 METAGENOMIC_INFORMATION_BY_PID[pname].email           = rows[n]['email']
                 METAGENOMIC_INFORMATION_BY_PID[pname].institution     = rows[n]['institution']
-                METAGENOMIC_INFORMATION_BY_PID[pname].project         = rows[n]['project']
-                
+                METAGENOMIC_INFORMATION_BY_PID[pname].project         = pname
                 METAGENOMIC_INFORMATION_BY_PID[pname].pid             = pid
                 METAGENOMIC_INFORMATION_BY_PID[pname].title           = rows[n]['title']
                 METAGENOMIC_INFORMATION_BY_PID[pname].description     = rows[n]['project_description']
@@ -43,7 +38,7 @@ router.get('/index', helpers.isLoggedIn, function (req, res) {
             }
         }
         project_list.sort()
-  console.log(METAGENOMIC_INFORMATION_BY_PID)
+        //console.log(METAGENOMIC_INFORMATION_BY_PID)
         res.render('metagenome/metagenome_index', {
                                   title       : 'Metagenomic Project Listing',
                                   subtitle    : 'Project Selection Page',

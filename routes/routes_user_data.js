@@ -668,12 +668,18 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
         error_fxn('You need to enter a Dataset (sample) name in the required field.')
         return
     }
+    if(req.body.fasta_format == 'multi_ds' && req.body.unique_status == 'uniqued'){
+        error_fxn('You cannot select both `multi-dataset file` and `unique`')
+        return
+    }
     console.log('In POST /import_choices/fasta')
     console.log('file',req.file)
     
       console.log(req.body)
       console.log('success')
-      
+    if(IsFileCompressed(req.file)){
+    
+    }  
      var lineReader = require('readline').createInterface({
           input: require('fs').createReadStream(req.file.path)
         });
@@ -689,14 +695,13 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
             unique_seq_count += 1
             //try{
                 items = line.split('|')  // last item must be 'frequency=xx'
-                console.log('SEQ_COUNT1: '+line)
+                //console.log('SEQ_COUNT1: '+line)
                 freq = items[items.length - 1]
-                console.log('SEQ_COUNT2: '+freq)
+                //console.log('SEQ_COUNT2: '+freq)
                 seq_count = freq.split(':')
-                console.log('SEQ_COUNT2: '+seq_count[1].toString())
+                //console.log('SEQ_COUNT2: '+seq_count[1].toString())
                 total_seq_count += parseInt(seq_count[1])
-                console.log('total_seq_count: '+total_seq_count.toString())
-            //}catch(err) {  }
+                //console.log('total_seq_count: '+total_seq_count.toString())
             
         }else{
             total_seq_count += 1    // total sequences IF fasta is not uniqued 
@@ -715,6 +720,7 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
         
       }
     });
+    
     lineReader.on('close', function (line) {
       console.log('done');
       console.log('total_seq_count');
@@ -893,35 +899,7 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
                                   user: req.user, hostname: req.CONFIG.hostname
                             });
                         });
-                   //  fs.writeFile(demultiplex_script_path, demultiplex_script_text, { mode: '777' }, function(err){
-//                         if(err){ console.log(err); return; }
-//                         console.log('DONE Writing demultiplex shell script')              
-//                     
-//                     
-//                         //this_proc = '/bin/sh '+demultiplex_script_path
-//                         //console.log(this_proc)
-//                         var proc = spawn(req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py', demultiplex_params, {
-//                        //  var proc = spawn(demultiplex_script_path, {
-//                             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-//                             detached: true, stdio: 'pipe'
-//                         });  // stdin, stdout, stderr)
-//                         var output = '';
-//                         proc.stdout.on('data', function (data) {
-//                           data = data.toString().replace(/^\s+|\s+$/g, '');                      
-//                           output += data;
-//                         });
-//                         proc.on('close', function (code) {
-//                             console.log('close: demultiplex proc exited with code ' + code);
-//                             //console.log("output: ");
-//                             //console.log(output);
-//                             fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
-//                             req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-//                             res.render('user_data/import_choices/fasta', {
-//                                       title: 'VAMPS:Import Choices',         
-//                                       user: req.user, hostname: req.CONFIG.hostname
-//                             });
-//                         });
-//                     });                    
+  
                    
                 }   
                

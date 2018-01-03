@@ -26,11 +26,12 @@ a {
     z-index:-1;
 }
 #footer {
-    font: 9px "Lucida Grande", Helvetica, Arial, sans-serif;
+    text-align: center;
+    font: 10px "Lucida Grande", Helvetica, arial, sans-serif;
+    color: grey;    
 }
 .content {
     margin: 0px 0 0 0px;  /* the menu is float left 200px */
-
     text-align:center;
 }
 .title {
