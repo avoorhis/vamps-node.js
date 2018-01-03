@@ -918,6 +918,7 @@ class Seq_csv:
     where_part = 'WHERE sequence_id in (%s)' % ', '.join(sequence_ids_strs)
     self.seq_id_w_silva_taxonomy_info_per_seq_id = mysql_util.get_all_name_id("silva_taxonomy_info_per_seq", "silva_taxonomy_info_per_seq_id", "sequence_id", where_part)
 
+  # TODO: remove, call get_seq_id_w_silva_taxonomy_info_per_seq_id instead
   def sequence_uniq_info_from_csv(self, sequences_w_ids):
     self.get_seq_id_w_silva_taxonomy_info_per_seq_id()
     # ! sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id, gg_otu_id, oligotype_id)
