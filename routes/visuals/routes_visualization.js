@@ -586,7 +586,8 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
  * GET visualization page.
  */
 router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
-   // This page is arrived at using GET from the Main Menu
+    console.log('in GET visuals_index')
+    // This page is arrived at using GET from the Main Menu
     // It will be protected usind the helpers.isLoggedIn function
     // TESTING:
     //      Should show the closed project list on initialize
@@ -641,6 +642,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   });
 
 router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
+  console.log('in POST visuals_index '+ req.user.username)
   // This page is arrived at using GET from the Main Menu
   // It will be protected usind the helpers.isLoggedIn function
   // TESTING:
@@ -652,7 +654,6 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
   //console.log(PROJECT_INFORMATION_BY_PID);
-  console.log(req.user.username+' POST req.body visuals_index')
   //console.log(req.body)
 
   //console.log(ALL_DATASETS);
@@ -2512,9 +2513,13 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
 router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     //SHOW_DATA = ALL_DATASETS;
     console.log('in clear filters')
-
+    //console.log(req.query)
     //FILTER_ON = false
     PROJECT_TREE_OBJ = []
+    if(req.query.hasOwnProperty('btn') && req.query.btn == '1'){
+        DATA_TO_OPEN = {}
+    }
+    //DATA_TO_OPEN = {}
     PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, SHOW_DATA.projects);
     PROJECT_FILTER = {"substring":"","env":[],"target":"","portal":"","public":"-1","metadata1":"","metadata2":"","metadata3":"","pid_length":PROJECT_TREE_PIDS.length}
     res.json(PROJECT_FILTER);
@@ -2842,10 +2847,12 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     console.log('IN project_dataset_tree_dhtmlx - routes_visualizations')
     var myurl = url.parse(req.url, true);
     var id = myurl.query.id
-    //console.log('id='+id)
+    console.log('id='+id)
     var json = {}
     json.id = id;
     json.item = []
+    console.log('DATA_TO_OPEN')
+    console.log(DATA_TO_OPEN)
     //PROJECT_TREE_OBJ = []
     //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
     var itemtext;

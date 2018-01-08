@@ -3,7 +3,7 @@ var ds_count = 0;
 var clear_filters_btn_id = document.getElementById('clear_filters_btn_id');
 if (typeof clear_filters_btn_id !== 'undefined') {
   clear_filters_btn_id.addEventListener('click', function () {
-      clear_filters();
+      clear_filters(true);
   });
 }
 
@@ -174,15 +174,18 @@ function expand_tree_dhtmlx(id){
 //
 // CLEAR FILTERS
 ////////////////////////////////////////////
-function clear_filters() {
+function clear_filters(from_clear_btn) {
   // used to clear all search filters and upon intial load
-  
+  //alert('in CF')
   var filtering = 0; 
   var datasets_local = {}; 
   if(portal_local){
     var target = "/visuals/load_portal/"+portal_local;
   }else{
     var target = "/visuals/clear_filters";
+  }
+  if(from_clear_btn == true){
+    target = target+'?btn=1'
   }
   document.getElementById('target_select').value='.....';
   document.getElementById('metadata_select1').value='.....';
@@ -206,7 +209,8 @@ function clear_filters() {
         update_gui_elements(result)
         projectTree.deleteChildItems(0);
         //load initial
-        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterLoadTree,"json"); 
+        //projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterLoadTree,"json"); 
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0"); 
     
     }
   }
@@ -216,7 +220,7 @@ function clear_filters() {
 //  After Loading Tree: get checked count and focus to top checked project (if any)
 //
 function afterLoadTree(){
-    var delay=2500; //0.5 second - need 1/2 second for LOTS of saved datasets to load ~1000 
+    var delay=2000; //0.5 second - need 1/2 second for LOTS of saved datasets to load ~1000 
     setTimeout(function() {
         //your code to be executed after 0.5 second
         set_dataset_count(0);
