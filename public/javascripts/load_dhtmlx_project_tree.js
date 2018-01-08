@@ -209,8 +209,8 @@ function clear_filters(from_clear_btn) {
         update_gui_elements(result)
         projectTree.deleteChildItems(0);
         //load initial
-        //projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterLoadTree,"json"); 
-        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0"); 
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterLoadTree,"json"); 
+        //projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0"); 
     
     }
   }
