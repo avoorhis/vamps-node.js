@@ -206,7 +206,7 @@ function clear_filters() {
         update_gui_elements(result)
         projectTree.deleteChildItems(0);
         //load initial
-        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json"); 
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterLoadTree,"json"); 
     
     }
   }
@@ -215,8 +215,8 @@ function clear_filters() {
 //
 //  After Loading Tree: get checked count and focus to top checked project (if any)
 //
-function afterCall(){
-    var delay=500; //0.5 second - need 1/2 second for LOTS of saved datasets to load ~1000 
+function afterLoadTree(){
+    var delay=2500; //0.5 second - need 1/2 second for LOTS of saved datasets to load ~1000 
     setTimeout(function() {
         //your code to be executed after 0.5 second
         set_dataset_count(0);
@@ -264,7 +264,7 @@ function showLiveProjectNames(e,str) {
         result = JSON.parse(xmlhttp.responseText);
         update_gui_elements(result)
         projectTree.deleteChildItems(0);
-        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");     
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterLoadTree,"json");     
     }
   }
   xmlhttp.send();
@@ -300,7 +300,7 @@ function filter_by_env() {
       result = JSON.parse(xmlhttp.responseText);
       update_gui_elements(result)
       projectTree.deleteChildItems(0);
-      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json"); 
+      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterLoadTree,"json"); 
     }
   }
   xmlhttp.send();
@@ -336,7 +336,7 @@ function filter_by_target() {
         result = JSON.parse(xmlhttp.responseText);
         update_gui_elements(result)
         projectTree.deleteChildItems(0);
-        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterLoadTree,"json");   
     }
   }
   xmlhttp.send();
@@ -372,7 +372,7 @@ function filter_by_portal() {
         result = JSON.parse(xmlhttp.responseText);
         update_gui_elements(result)
         projectTree.deleteChildItems(0);
-        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterLoadTree,"json");   
     }
   }
   xmlhttp.send();
@@ -406,7 +406,7 @@ function filter_by_status(pub_status) {
         result = JSON.parse(xmlhttp.responseText);
         update_gui_elements(result)
         projectTree.deleteChildItems(0);
-        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterLoadTree,"json");   
     }
   }
   xmlhttp.send();
@@ -441,7 +441,7 @@ function filter_by_metadata(num) {
         result = JSON.parse(xmlhttp.responseText);
         update_gui_elements(result)
         projectTree.deleteChildItems(0);
-        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterLoadTree,"json");   
     }
   }
   xmlhttp.send();

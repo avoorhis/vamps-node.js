@@ -627,7 +627,7 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
 });
 
 router.get('/import_choices/fasta', [helpers.isLoggedIn], function (req, res) {
-    console.log('in import_choices/fasta')
+    console.log('in GET import_choices/fasta')
     
     res.render('user_data/import_choices/fasta', {
           title: 'VAMPS:Import Choices',
