@@ -290,7 +290,11 @@ def write_all_metadata_file(args, metadata_lookup):
     #print md_file
     json_str = json.dumps(metadata_lookup, encoding='latin1')
     #print(json_str)
-    f = open(args.metadata_file_new, 'w')   # overwrite
+    if args.overwrite:
+        mdfile=args.metadata_file_original
+    else:
+        mdfile=args.metadata_file_new
+    f = open(mdfile,'w')
     f.write(json_str+"\n")
     f.close()
 
