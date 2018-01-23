@@ -7,22 +7,25 @@ import json
 class FastaReader:
     def __init__(self,file_name=None):
         self.file_name = file_name
-        self.h = open(self.file_name)
+        self.h = open(self.file_name,'rb')
+        #self.h = open(self.file_name)
         self.seq = ''
         self.id = None
 
     def next(self): 
         def read_id():
-            return self.h.readline().strip()[1:]
+            return self.h.readline().decode('utf-8').strip()[1:]
 
         def read_seq():
+            #ret = bytearray(b'')
             ret = ''
+            #ret = ''
             while True:
-                line = self.h.readline()
+                line = self.h.readline().decode('utf-8')
                 
                 while len(line) and not len(line.strip()):
                     # found empty line(s)
-                    line = self.h.readline()
+                    line = self.h.readline().decode('utf-8')
                 
                 if not len(line):
                     # EOF
@@ -31,11 +34,17 @@ class FastaReader:
                 if line.startswith('>'):
                     # found new defline: move back to the start
                     self.h.seek(-len(line), os.SEEK_CUR)
+                    #print('FFFFound1',line)
+                    #self.h.seek(-len(line), 1)
                     break
                     
                 else:
                     ret += line.strip()
+                    #print('FFFFound2-seq',ret)                    
+                    #ret = ret.decode('utf-8').strip()
                     
+            #return ret.decode("utf-8")
+            #print('ret',ret)
             return ret
         
         self.id = read_id()
@@ -54,8 +63,8 @@ class Demultiplex:
 
 
   def usage(self):
-    print '''python demultiplex_qiita.py -i <inputfile>
-             '''
+    print('''python demultiplex_qiita.py -i <inputfile>
+             ''')
 
   def get_args(self, argv):
   
@@ -92,8 +101,10 @@ class Demultiplex:
     while f_input.next():
       n+=1
       if (n % 100000 == 0 or n == 1):
-        sys.stderr.write('\r[demultiplex] Reading FASTA into memory: %s\n' % (n))
-        sys.stderr.flush()
+        #sys.stderr.write('\r[demultiplex] Reading FASTA into memory: %s\n' % (n))
+        #sys.stderr.flush()
+        pass
+      #print('f_input.id',f_input.id)
       f_out_name = self.make_file_name(f_input.id)
       self.out_file_names.add(f_out_name)
   # real  0m4.446s
@@ -140,8 +151,9 @@ class Demultiplex:
       self.write_id(f_output, id)
       self.write_seq(f_output, f_input.seq)
       if (i % 100000 == 0 or i == 1):
-        sys.stderr.write('\r[demultiplex] Writing entries into files: %s\n' % (i))
-        sys.stderr.flush()
+        #sys.stderr.write('\r[demultiplex] Writing entries into files: %s\n' % (i))
+        #sys.stderr.flush()
+        pass
     self.close_sample_files()
     
   def create_directories(self):
@@ -164,12 +176,11 @@ class Demultiplex:
         out_name = os.path.join(sample_dir,'seqfile.unique.name')
         
         fastaunique_cmd_list = [ self.fastaunique_cmd,'-o', out_fasta, '-n', out_name, infile]        
-        #print ' '.join(fastaunique_cmd_list)
-        #os.system(' '.join(fastaunique_cmd_list))
+        
         result = subprocess.check_output(' '.join(fastaunique_cmd_list), shell=True)
-        #print json.dumps({"unique_count":result.strip()})
+        
         sum_unique_seq_count += int(result.strip())
-        #print sample,i,sum_unique_seq_count,result.strip()
+        
     return sum_unique_seq_count
     
         
@@ -193,7 +204,7 @@ if __name__ == "__main__":
     (inputfile) = demult.get_args(sys.argv[1:])
     #print 'Input file is "%s"' % inputfile
     if inputfile == '':
-        print usage
+        print(usage)
         sys.exit()
     
     
@@ -202,7 +213,7 @@ if __name__ == "__main__":
     demult.create_directories()
     if demult.fastaunique_cmd:
         sum_unique_seq_count = demult.unique_files()
-        print sum_unique_seq_count
+        #print(sum_unique_seq_count)
     demult.cleanup()
     
     

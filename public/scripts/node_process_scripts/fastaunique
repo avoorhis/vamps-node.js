@@ -15,8 +15,8 @@ def main(args):
     try:
         input = u.SequenceSource(args.input_fasta, unique = True)
     except IOError:
-        print 'Error: File does not exist, or you do not have the right permissions to read it: "%s"'\
-                    % args.input_fasta
+        print('Error: File does not exist, or you do not have the right permissions to read it: "%s"'\
+                    % args.input_fasta)
         sys.exit(-1)
 
     if args.output_fasta:
@@ -27,8 +27,8 @@ def main(args):
     try:
         output = u.FastaOutput(output_file_path)
     except IOError:
-        print 'Error: You have no permission to write destination: "%s"'\
-                    % output_file_path
+        print('Error: You have no permission to write destination: "%s"'\
+                    % output_file_path)
         sys.exit(-1)
 
     if args.names_file:
@@ -39,8 +39,8 @@ def main(args):
     try:
         names = open(names_file_path, 'w')
     except IOError:
-        print 'Error: You have no permission to write destination: "%s"'\
-                    % names_file_path
+        print('Error: You have no permission to write destination: "%s"'\
+                    % names_file_path)
         sys.exit(-1)
 
     seqcount = 0
@@ -81,4 +81,4 @@ if __name__ == '__main__':
     #print 'unique_seq_count',unique_seq_count
     
     ##  **** THIS CAN BE THE ONLY OUTPUT ****
-    print unique_seq_count
+    print(unique_seq_count)

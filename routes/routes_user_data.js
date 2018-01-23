@@ -664,14 +664,14 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
         error_fxn('That project name is not availible.')
         return
     }
-    if(req.body.fasta_format == 'single_ds' && req.body.dataset == ''){
-        error_fxn('You need to enter a Dataset (sample) name in the required field.')
-        return
-    }
-    if(req.body.fasta_format == 'multi_ds' && req.body.unique_status == 'uniqued'){
-        error_fxn('You cannot select both `multi-dataset file` and `unique`')
-        return
-    }
+    // if(req.body.fasta_format == 'single_ds' && req.body.dataset == ''){
+//         error_fxn('You need to enter a Dataset (sample) name in the required field.')
+//         return
+//     }
+    // if(req.body.fasta_format == 'multi_ds' && req.body.unique_status == 'uniqued'){
+//         error_fxn('You cannot select both `multi-dataset file` and `unique`')
+//         return
+//     }
     console.log('In POST /import_choices/fasta')
     console.log('file',req.file)
     
@@ -684,28 +684,28 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
           input: require('fs').createReadStream(req.file.path)
         });
     var total_seq_count = 0
-    var unique_seq_count = 0
+    //var unique_seq_count = 0
     var ds_counts = {}
     var sample_defline;
     lineReader.on('line', function (line) {      
       if(line[0] == '>'){
         //console.log('Line from file:', line);
         sample_defline = line
-        if(req.body.unique_status == 'uniqued'){
-            unique_seq_count += 1
-            //try{
-                items = line.split('|')  // last item must be 'frequency=xx'
-                //console.log('SEQ_COUNT1: '+line)
-                freq = items[items.length - 1]
-                //console.log('SEQ_COUNT2: '+freq)
-                seq_count = freq.split(':')
-                //console.log('SEQ_COUNT2: '+seq_count[1].toString())
-                total_seq_count += parseInt(seq_count[1])
-                //console.log('total_seq_count: '+total_seq_count.toString())
-            
-        }else{
-            total_seq_count += 1    // total sequences IF fasta is not uniqued 
-        }
+        // if(req.body.unique_status == 'uniqued'){
+//             unique_seq_count += 1
+//             //try{
+//                 items = line.split('|')  // last item must be 'frequency=xx'
+//                 //console.log('SEQ_COUNT1: '+line)
+//                 freq = items[items.length - 1]
+//                 //console.log('SEQ_COUNT2: '+freq)
+//                 seq_count = freq.split(':')
+//                 //console.log('SEQ_COUNT2: '+seq_count[1].toString())
+//                 total_seq_count += parseInt(seq_count[1])
+//                 //console.log('total_seq_count: '+total_seq_count.toString())
+//             
+//         }else{
+        total_seq_count += 1    // total sequences IF fasta is not uniqued 
+        //}
         line_items = line.split(/\s+/)
         first_item = line_items[0].substring(1,line_items[0].length)
         // now this is common M9Akey217.141086_98 last digits are 'count'
@@ -733,10 +733,10 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
       info.project_directory = ''
       info.total_seq_count = total_seq_count;
       info.owner = req.user.username
-      info.unique_seq_count = unique_seq_count
+      //info.unique_seq_count = unique_seq_count
       info.max_dataset_count = 0
       info.num_of_datasets = 0
-      info.original_fasta_unique_status = req.body.unique_status
+      //info.original_fasta_unique_status = req.body.unique_status
       info.fasta_type = ''
       info.public = 1  // set true
       info.num_of_datasets = 0
@@ -744,22 +744,22 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
 //       if(req.body.unique_status == 'not_uniqued' && sample_defline.split('|')[]){
 //       
 //       }
-      if(req.body.unique_status == 'uniqued'){
-        items = sample_defline.split('|')  // last item must be 'frequency=xx'
-        if(items[items.length - 1].substring(0,10) != 'frequency:'){
-             error_fxn('Error - You selected "Unique" but there is no "frequency:" at the end of the defline.<br>Here is the format of a sample defline: '+sample_defline)
-        }
-        compare_seq_count = unique_seq_count
-      }else{
+      // if(req.body.unique_status == 'uniqued'){
+//         items = sample_defline.split('|')  // last item must be 'frequency=xx'
+//         if(items[items.length - 1].substring(0,10) != 'frequency:'){
+//              error_fxn('Error - You selected "Unique" but there is no "frequency:" at the end of the defline.<br>Here is the format of a sample defline: '+sample_defline)
+//         }
+//         compare_seq_count = unique_seq_count
+//       }else{
         compare_seq_count = total_seq_count
-      }
+      //}
       
       if(num_of_unique_keys == compare_seq_count){
         // looks like single
         console.log(num_of_unique_keys);
         console.log('This looks like a single dataset fasta - am I right?')
         console.log('number of keys(ids): '+num_of_unique_keys.toString())
-        console.log('number of Unique Sequences: '+ unique_seq_count.toString())
+        //console.log('number of Unique Sequences: '+ unique_seq_count.toString())
         console.log('number of Total Sequences: '+ total_seq_count.toString())
         if(req.body.fasta_format == 'multi_ds'){
              error_fxn('Error - You selected "Multi" but this looks like a SINGLE Dataset formatted Fasta file.<br>Here is the format of a sample defline: '+sample_defline)
@@ -808,54 +808,54 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
             fs.move(req.file.path, new_fasta_filename_path, function(err){
                 if (err) return console.log(err)
                 // create dir: analysis
-                if(req.body.fasta_format == 'single_ds'){
-                    var ds_dir = path.join(project_base_dir, 'analysis', req.body.dataset)
-                    console.log('1-creating directory '+ds_dir)
-                    fs.ensureDir(ds_dir, function ensureDSDir(err) {
-                        var out_fasta = path.join(ds_dir,'seqfile.unique.fa')
-                        var out_name = path.join(ds_dir,'seqfile.unique.name')
-                        
-                        if(req.body.unique_status == 'uniqued'){
-                            fs.copy(new_fasta_filename_path,out_fasta, function copyFile(err){ 
-                                fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
-                                    req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-                                    res.render('user_data/import_choices/fasta', {
-                                          title: 'VAMPS:Import Choices',         
-                                          user: req.user, hostname: req.CONFIG.hostname
-                                });
-                            });
-                            
-                        }else{ // Not Uniqued
-                            fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
-                            var fastaunique_params = ['-o', out_fasta, '-n', out_name, new_fasta_filename_path]
-                            console.log('running fastaunique')
-                            console.log(fastaunique_cmd + ' ' + fastaunique_params.join(' '))
-                            var proc = spawn(fastaunique_cmd, fastaunique_params)
-                            var output = '';
-                            proc.stdout.on('data', function (data) {
-                              data = data.toString().replace(/^\s+|\s+$/g, '');                      
-                              output += data;
-                            });
-                            proc.on('close', function (code) {
-                                console.log('close: fastaunique proc exited with code ' + code);
-                                console.log("output: ");
-                                console.log(output);
-                                info.unique_seq_count = output
-                                fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
-                                req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-                                res.render('user_data/import_choices/fasta', {
-                                      title: 'VAMPS:Import Choices',         
-                                      user: req.user, hostname: req.CONFIG.hostname
-                                });
-                            });
-                        }
-                    });   
-                   
-                // create dir analysis/'dataset'
-                // fataunique new_fasta_filename_path into dir
-                
-                }else{  // MULTI - create shell script demultiplex.sh
-                    
+ //                if(req.body.fasta_format == 'single_ds'){
+//                     var ds_dir = path.join(project_base_dir, 'analysis', req.body.dataset)
+//                     console.log('1-creating directory '+ds_dir)
+//                     fs.ensureDir(ds_dir, function ensureDSDir(err) {
+//                         var out_fasta = path.join(ds_dir,'seqfile.unique.fa')
+//                         var out_name = path.join(ds_dir,'seqfile.unique.name')
+//                         
+//                         if(req.body.unique_status == 'uniqued'){
+//                             fs.copy(new_fasta_filename_path,out_fasta, function copyFile(err){ 
+//                                 fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
+//                                     req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+//                                     res.render('user_data/import_choices/fasta', {
+//                                           title: 'VAMPS:Import Choices',         
+//                                           user: req.user, hostname: req.CONFIG.hostname
+//                                 });
+//                             });
+//                             
+//                         }else{ // Not Uniqued
+//                             fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
+//                             var fastaunique_params = ['-o', out_fasta, '-n', out_name, new_fasta_filename_path]
+//                             console.log('running fastaunique')
+//                             console.log(fastaunique_cmd + ' ' + fastaunique_params.join(' '))
+//                             var proc = spawn(fastaunique_cmd, fastaunique_params)
+//                             var output = '';
+//                             proc.stdout.on('data', function (data) {
+//                               data = data.toString().replace(/^\s+|\s+$/g, '');                      
+//                               output += data;
+//                             });
+//                             proc.on('close', function (code) {
+//                                 console.log('close: fastaunique proc exited with code ' + code);
+//                                 console.log("output: ");
+//                                 console.log(output);
+//                                 //info.unique_seq_count = output
+//                                 fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
+//                                 req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+//                                 res.render('user_data/import_choices/fasta', {
+//                                       title: 'VAMPS:Import Choices',         
+//                                       user: req.user, hostname: req.CONFIG.hostname
+//                                 });
+//                             });
+//                         }
+//                     });   
+//                    
+//                 // create dir analysis/'dataset'
+//                 // fataunique new_fasta_filename_path into dir
+//                 
+//                 }else{  // MULTI - create shell script demultiplex.sh
+//                     
                     //demultiplex_script_path =  path.join(project_base_dir,'demultiplex.sh');
                     //demultiplex_script_text = '#!/bin/sh\n\n'
                     demultiplex_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py')
@@ -872,36 +872,37 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
                     console.log(demultiplex_cmd + ' ' + demultiplex_params.join(' '))
                     var proc = spawn(demultiplex_cmd, demultiplex_params)
                     var output = '';
-                        proc.stdout.on('data', function (data) {
-                          //data = data.toString().replace(/^\s+|\s+$/g, '');  
-                          console.log('data1')  
-                          console.log(data)   
-                        //data = JSON.parse(data) 
-                          //console.log('data2')  
-                          //console.log(data)                 
-                          //output += data['unique_count'];
-                          output += parseInt(data)
+                    proc.stdout.on('data', function (data) {
+                      //data = data.toString().replace(/^\s+|\s+$/g, '');  
+                      console.log('data1')  
+                      console.log(data)   
+                      //data = JSON.parse(data) 
+                      //console.log('data2')  
+                      //console.log(data)                 
+                      //output += data['unique_count'];
+                      output += parseInt(data)
+                    });
+                    proc.on('exit', function (code) {
+                        console.log('close: demultiplex (+/-fastaunique) proc exited with code ' + code);
+                        console.log("output: ");
+                        output = output.trim()
+                        console.log(output);
+                        if(helpers.isInt(output)){  // ONLY output should unique count
+                            //info.unique_seq_count = output
+                        }else{
+                            console.log('seq_count Error: Check demultiplex.py script for print commands.')
+                            //info.unique_seq_count = 'ERROR'
+                        }
+                        fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
+                        req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+                        res.render('user_data/import_choices/fasta', {
+                              title: 'VAMPS:Import Choices',         
+                              user: req.user, hostname: req.CONFIG.hostname
                         });
-                        proc.on('close', function (code) {
-                            console.log('close: demultiplex (+/-fastaunique) proc exited with code ' + code);
-                            console.log("output: ");
-                            console.log(output);
-                            if(helpers.isInt(output)){
-                                info.unique_seq_count = output
-                            }else{
-                                console.log('seq_count Error: Check demultiplex.py script for print commands.')
-                                info.unique_seq_count = 'ERROR'
-                            }
-                            fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
-                            req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-                            res.render('user_data/import_choices/fasta', {
-                                  title: 'VAMPS:Import Choices',         
-                                  user: req.user, hostname: req.CONFIG.hostname
-                            });
-                        });
-  
+                    });
+
                    
-                }   
+//               }   
                
             });
             
@@ -2171,7 +2172,7 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
               
               //project_info[project_name].empty_dir = 'false'
               project_info[project_name].num_of_datasets = config.MAIN.num_of_datasets
-              project_info[project_name].seq_count = config.MAIN.unique_seq_count
+              //project_info[project_name].seq_count = config.MAIN.unique_seq_count
               //project_info[project_name].config = config;
               project_info[project_name].directory = items[d];
               //project_info[project_name].mtime = stat_dir.mtime;

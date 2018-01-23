@@ -1,6 +1,7 @@
 <% include ../add_ins/begin.ejs %>
 <% var oligo_info = JSON.parse(pinfo) %>
 <% var sort_info = JSON.parse(finfo) %>
+<%= console.log(messages) %>
 <% if (messages.success) { %>
   	<div class="alert_flash_message_success"><%= messages.success %></div>
 <% }else if(messages.fail){ %>

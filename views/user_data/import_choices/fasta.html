@@ -30,71 +30,55 @@
     
 
 	<div class="form-group">
-      <label class="control-label col-sm-3" for="fasta">Fasta File <small>(required)</small>:</label>
+      <label class="control-label col-sm-3" for="fasta">FASTA File <small>(required)</small>:</label>
       <div class="col-sm-2">
 
         <input type="file" name="upload_files" class="" id="file_input" onchange='check_fasta_inputs()'>
 
       </div>
       <div class="col-sm-5">
-        File can either be compressed (gzip only) or uncompressed (plain text)
+        File can either be compressed (gzipped with .gz extension) or uncompressed (plain text)
 	       <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
       </div>
     </div>
     
     
-    <div class="form-group">
-      <label class="control-label col-sm-3" for="fasta">Choose Fasta Format:</label>
-      <div class="col-sm-5">
-        <input type="radio" name="fasta_format" class="" value="single_ds" onchange="check_fasta_inputs()">
-            Demultiplexed (The entire file represents one sample (dataset))
-        <br>
-        <input type="radio" name="fasta_format" class="" value="multi_ds" onchange="check_fasta_inputs()"> 
-            Not Demultiplexed (Multiple samples (datasets) in fasta file) (Non-Uniqued ONLY)
-        <div class="well well-sm">
-            IMPORTANT definition line (defline) differences:
-            <br>
-            &nbsp;&nbsp;&nbsp;"single sample" example defline (Demultiplexed):<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>&gt;uniqueID| (+/-other information (not-used)) |frequency:xxx (only if uniqued)</small>
-            <br>
-            &nbsp;&nbsp;&nbsp;"multiple samples" example defline (Not-Demultiplexed):<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>&gt;sampleName|uniqueID| (+/-other information (not-used)) |frequency:xxx (only if uniqued)</small>
-       </div>
-       
-      </div>
-	  <!-- <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a> -->
-    </div>
     
-    <div class="form-group">
-      
-      <label class="control-label col-sm-3" for="fasta">Uniqued Sequences Status:</label>
-      
-      <div class="col-sm-2">
-        <input type="radio" name="unique_status" class="" value="uniqued"  onchange='check_fasta_inputs()'> unique 
+  
+<div class="form-group">
+    <label class="control-label col-sm-3" for="fasta">Preparing the FASTA file:</label> 
+    <div class="col-sm-8">
+        
+        The input FASTA file has to be formatted in a certain way.
         <br>
-        <input type="radio" name="unique_status" class="" value="not_uniqued"  onchange='check_fasta_inputs()'> non-unique
-
-      </div>
-      <div class="col-sm-5">
-          Indicate whether or not the fasta file sequences represent unique (per sample) sequences or not.<br>If they are unique
-          then the defline for each sequence MUST indicate the count by terminating like this:<br><pre>|frequency:XXX</pre> where XXX is the
-          number of this sequence in the sample. 
-      </div>
-    </div>
-
-<div id='dataset_input' class="form-group" style=''>
-      <label class="control-label col-sm-3" for="dataset">Sample Name:</label>
-	  <div class="col-sm-3">          
-        <input type="text" disabled name="dataset" class="form-control" id="dname_input" placeholder="Disabled by default" value="" onchange='check_fasta_inputs()'>
-      </div> 
+        It is not complicated, but it is a requirement before uploading successfully. 
+        First, all of your reads from all of your samples of interest have to be in a single FASTA file (ie. the file cannot be uniqued), and all reads have to have deflines formatted in the following format:
+        
+    <small><pre>
+         >Sample-01_ReadX
+         GTTGAAAAAGTTAGTGGTGAAATCCCAGA...
+         >Sample-01_ReadY
+         GTTGAAAAAGTTAGTGGTGAAATCCCAGA...
+         >Sample-01_ReadZ
+         GGTGAAAAAGTTAGTGGTGAAATCCCAGA...
+         >Sample-02_ReadN
+         GTTGAAAAAGTTAGTGGTGAAATCCCAGA...
+         >Sample-02_ReadM
+         GTTGAAAAAGTTAGTGGTGAAATCCCAGA...
+    </pre></small>
+        The script will check the number of samples and compare it with the number of reads. If the number of samples is greater than 10% of the reads you will get a warning
+        that your FASTA file may be formatted incorrectly.
+    </div>    
+</div>
     
-</div>	
-
+    
+    
+    
     <br><br>
     
     <div class="form-group">        
       <div class="col-sm-offset-2 col-sm-10">
-        <button disabled id='submit_btn' type="submit" class="btn btn-default">Submit & Validate</button>
+        <button id='submit_btn' type="submit" class="btn btn-default">Submit & Validate</button>
       </div>
     </div>
 	<input type="hidden" name="type" value="">
