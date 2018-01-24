@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 library(jsonlite,quietly=TRUE)
 require(vegan,quietly=TRUE);
-library(pheatmap) 
+library(pheatmap)
 library(RColorBrewer)
 args <- commandArgs(TRUE)
 print(args)
@@ -22,7 +22,7 @@ colnames(data_matrix)<-myjson$columns$id
 
 #  x remove empty columns (datasets)
 x<-data_matrix[,colSums(data_matrix) > 0]
-print('xxx')
+#print('xxx')
 ncols<-ncol(x)
 nrows<-nrow(x)
 
@@ -54,7 +54,7 @@ if (nrow(x) <= 30 ){
 }else if(nrow(x) > 1100 && nrow(x) <= 1200){
     h<-(nrow(x)*.09)
 }else{
-    
+
     h<-(nrow(x)*.1)
 }
 
@@ -79,11 +79,11 @@ print(paste("rows:",nrow(x),"h:",h,"rmarg:",r_margin))
 print(paste("cols:",ncol(x),"w:",w))
 #print(paste("fontsize_row:",fontsize_row))
 
-              
+
 fontsize_row = 8
 
 # clustering methods
-if(metric=='morisita-horn'){ 
+if(metric=='morisita-horn'){
     dist <- 'horn'
     text <- "Morisita-Horn"
 }else if(metric=='bray' || metric=='bray_curtis'){
@@ -119,9 +119,9 @@ write.table(as.matrix(d),file=distance_file)
 #dis<-vegdist(stand, method="horn",upper=FALSE,binary=FALSE);
 # x = x * 10
 #heatmap.2(x, col=mypalette, scale="row",
-#        distfun=function(d) vegdist(d, method=meth), 
+#        distfun=function(d) vegdist(d, method=meth),
 #            margins=c(16,r_margin), main="heatmap.2")
-#            key=FALSE, symkey=FALSE, density.info="none", trace="none", cexRow=0.5)        
+#            key=FALSE, symkey=FALSE, density.info="none", trace="none", cexRow=0.5)
 #pheatmap(x, col=mypalette3, scale="row", legend=FALSE,
 #        clustering_distance_rows=vegdist(x, method=meth),
 #        clustering_distance_cols=vegdist(t(x), method=meth), margins=c(15,r_margin),
@@ -136,8 +136,8 @@ write.table(as.matrix(d),file=distance_file)
 mypalette6<-colorRampPalette(brewer.pal(12,"Paired"))(256)
 #mypalette7<-colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
 #                     "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(128)
-#mypalette8<-colorRampPalette(c("red", "orange", "blue"),space = "Lab")(128)                    
-#mypalette9<-colorRampPalette(c("blue", "magenta", "red", "yellow"), bias=0.75, space="Lab")(128)  
+#mypalette8<-colorRampPalette(c("red", "orange", "blue"),space = "Lab")(128)
+#mypalette9<-colorRampPalette(c("blue", "magenta", "red", "yellow"), bias=0.75, space="Lab")(128)
 
 # scale will be yes if data is unnormalize; scale is un-needed otherwise
 
@@ -153,5 +153,3 @@ pheatmap(x1,  scale="none", color=mypalette6,
 
 #print(warnings())
 dev.off()
-
-

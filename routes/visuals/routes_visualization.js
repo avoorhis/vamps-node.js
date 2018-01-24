@@ -102,7 +102,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     visual_post_items.include_nas = req.body.include_nas              || "yes"
     visual_post_items.min_range = req.body.min_range                  || '0'
     visual_post_items.max_range = req.body.max_range                  || '100'
-    
+
     if((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length != 0){
         console.log('Found api dids ',req.body.ds_order)
         try{
@@ -126,10 +126,10 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         console.log('API ALERT - no dids or project')
         return;
     }
-    
+
     visual_post_items.update_data = req.body.update_data              || '1'   // fires changes
 
-    
+
     visual_post_items.no_of_datasets = dataset_ids.length
     chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);
     // for API select ALL metadata with these datasets
@@ -141,7 +141,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         }
     }
     visual_post_items.metadata = Object.keys(md)
-    
+
   }else if(req.body.restore_image === '1'){
     console.log('in view_selection RESTORE IMAGE')
   }else if(req.body.cancel_resort === '1'){
@@ -984,10 +984,10 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
   };
   console.log('outdir: '+dir_path);
-  console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
+  console.log(options1.scriptPath+'/pcoa.py '+options1.args.join(' '));
 
-
-  var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
+  exit()
+  var pcoa_process = spawn( options1.scriptPath+'/pcoa.py', options1.args, {
       env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
       detached: true,
       stdio:['pipe', 'pipe', 'pipe']
@@ -1035,7 +1035,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
                         //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
                         stdio: 'pipe' // stdin, stdout, stderr
                     });
-                    
+
                     var output = '';
 
                     emperor_process.stdout.on('data', function emperorProcessStdout(data) {
@@ -1076,7 +1076,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
                             return;
                         }
                     });
-                    
+
 
 
                 }else{
@@ -1693,7 +1693,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     //new_matrix.dids = [chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)]];
     new_matrix.data = []
     new_matrix.total = 0
-    
+
     new_matrix.shape = [BIOM_MATRIX.shape[0],1]
     var idx = -1;
 
@@ -2188,7 +2188,7 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
   console.log('req.body: save_config');
   var timestamp = +new Date();  // millisecs since the epoch!
   var filename = 'configuration-' + timestamp + '.json';
-  
+
   var json_obj = {}
   json_obj.source = 'VAMPS';
   json_obj.post_items = visual_post_items
@@ -2538,17 +2538,17 @@ function filter_project_tree_for_permissions(req, obj){
       node = PROJECT_INFORMATION_BY_PID[pid];
       //console.log(node)
       if(
-            node.public 
+            node.public
             || req.user.security_level <= 10                    // admin user ==1
             || node.permissions.length === 0                    // ??
             || node.permissions.indexOf(req.user.user_id) !== -1 // owner is user
             || (req.user.security_level == 45 && (node.project).substring(0,3) == 'DCO') // DCO Editor all DCO* projects
             ) {
-        
+
                 if(PROJECT_INFORMATION_BY_PID[pid].metagenomic == 0){
                     new_project_tree_pids.push(pid)
                 }
-        
+
       }
   }
   //console.log(obj)

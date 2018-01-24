@@ -22,32 +22,32 @@ taxon_color_legend: function(req, res) {
         for (var i in BIOM_MATRIX.rows){
             n = parseInt(i)+1;
             longtax = BIOM_MATRIX.rows[i].id
-            
+
             color = string_to_color_code(longtax)
-            html += '<tr>'    
-            
+            html += '<tr>'
+
             html += "<td style=''>"+longtax+"</td>"
             html += "<td width='30' style='background:"+color+";width:30px;'>"+color+"</td>"
-            html += '</tr>' 
-            
-        } 
-        html += '</table>'  
+            html += '</tr>'
+
+        }
+        html += '</table>'
         var outfile_name = ts + '-color_legend-api.html'
         outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
         console.log('outfile_path:',outfile_path)
-        result = save_file(html, outfile_path) 
+        result = save_file(html, outfile_path)
         console.log('result',result)
         data = {}
         data.html = html
         data.filename = outfile_name
         console.log('data.filename',data.filename)
         //return data
-        res.json(data)   
+        res.json(data)
       }
-      
+
     });
-    
-    
+
+
 }, // end color_legend
 counts_matrix: function(req, res) {
     console.log('In function: images/counts_matrix')
@@ -75,7 +75,7 @@ counts_matrix: function(req, res) {
             html += "<div id='tax_counts_graph_div' style='background-color:white;width:600px;height:400px;display:none;'></div>";
             html += "<br><br><br><br><br>"
         }
-        
+
         html += "<table id='counts_matrix_id' border='0' class='' >";
         html += "<tr><td class='no_border'></td>"
       for (t = 0; t < maxrank; t++) {
@@ -118,12 +118,12 @@ counts_matrix: function(req, res) {
             color = string_to_color_code(longtax)
             console.log('color',color)
             html += "<td style='background:"+color+"'>"+n.toString()+"</td>"
-             
+
         }
         for (t = 0; t < maxrank; t++) {
           ttip = ''
           ttip2 = ''
-          
+
           if(taxitems.length > t){
             if(req.body.source == 'website'){
                 if(taxitems[t].substring(taxitems[t].length-2,taxitems[t].length) != 'NA'
@@ -196,7 +196,7 @@ counts_matrix: function(req, res) {
       for (t = 0; t < maxrank; t++) {
         html += "<td></td>";
       }
-      
+
       html += "<td class='right_justify'><strong>Sums:</strong></td>";
       if(req.body.source == 'website'){
         html += "<td></td>"
@@ -210,7 +210,7 @@ counts_matrix: function(req, res) {
         }
         html += "<td title='Column Sum' class='right_justify'>" + total + "</td>";
       }
-      
+
       html += "<td></td><td></td><td></td><td></td><td></td>"
       html += "</tr>";
       html += "</table>";
@@ -221,7 +221,7 @@ counts_matrix: function(req, res) {
         var outfile_name = ts + '-counts_table-api.html'
         outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
         console.log('outfile_path:',outfile_path)
-        result = save_file(html, outfile_path) 
+        result = save_file(html, outfile_path)
         console.log('result',result)
         data = {}
         data.html = html
@@ -244,7 +244,7 @@ dheatmap: function(req, res){
     var ts = visual_post_items.ts
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
-    
+
     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
     //console.log('mtx1')
@@ -339,7 +339,7 @@ fheatmap: function(req, res){
     var ts = visual_post_items.ts
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
-    
+
     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     var options = {
         scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
@@ -355,12 +355,16 @@ fheatmap: function(req, res){
     stdout = '';
     fheatmap_process.stdout.on('data', function fheatmapProcessStdout(data) {
           stdout += data;
+          console.log('stdout-data:')
+          console.log(data.toString())
     });
     stderr = '';
     fheatmap_process.stderr.on('data', function fheatmapProcessStderr(data) {
           stderr += data;
+          console.log('stderr-data:')
+          console.log(data.toString())
     });
-    
+
     fheatmap_process.on('close', function fheatmapProcessOnClose(code) {
         console.log('fheatmap_process process exited with code ' + code);
         //distance_matrix = JSON.parse(output);
@@ -370,14 +374,14 @@ fheatmap: function(req, res){
             svgfile_path = path.join(config.PROCESS_DIR,'tmp', svgfile_name);  // file name save to user_location
             fs.readFile(svgfile_path, 'utf8', function(err, contents){
                 if(err){ res.send('ERROR reading file')}
-                
+
                 //console.log(contents)
                 var data = {}
                 data.html = contents
-                data.filename = svgfile_name   // returns data and local file_name to be written to 
-                res.json(data) 
-                return        
-            
+                data.filename = svgfile_name   // returns data and local file_name to be written to
+                res.json(data)
+                return
+
             })
 
 
@@ -407,7 +411,7 @@ piecharts: function(req, res) {
     }else{
 
       // parse data remove data less than 1%
-      
+
       BIOM_MATRIX = JSON.parse(data)
       matrix = BIOM_MATRIX
       // parse data remove data less than 1%
@@ -473,7 +477,7 @@ piecharts: function(req, res) {
           .innerRadius(0)
           .outerRadius(r);
 
-    
+
       jsdom.env({
         html:'',
         features:{ QuerySelector:true },
@@ -519,9 +523,9 @@ piecharts: function(req, res) {
                   return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
               })
         }
-          
-          
-          
+
+
+
           pies.append("text")
                     .attr("dx", -(r+m))
                     .attr("dy", r+m)
@@ -563,7 +567,7 @@ piecharts: function(req, res) {
               .append("path")
               .attr("class", "arc")
               .attr("d", arc)
-              
+
               .attr("fill", function(d, i) {
                   return string_to_color_code(unit_list[i])
               })
@@ -571,9 +575,9 @@ piecharts: function(req, res) {
                 .text(function(d, i) {
                   return unit_list[i]+' -- '+d.value;
                 })
-        }   
-              
-              
+        }
+
+
               var html = window.d3.select('.container').html()
               var outfile_name = ts + '-piecharts-api.svg'
               outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
@@ -733,7 +737,7 @@ metadata_csv: function(req, res){
     for(var i = 0; i < ds_order.length; i++){
         did = ds_order[i].toString()
         dname = DATASET_NAME_BY_DID[did]
-        html += sep + dname 
+        html += sep + dname
         //console.log('did',did)
         //console.log(AllMetadata[did])
         for(item in mdobj[did]){
@@ -741,30 +745,30 @@ metadata_csv: function(req, res){
         }
     }
     html += '\n\r'
-    // sort 
+    // sort
     console.log('item_obj',item_obj)
-    
+
     item_list = Object.keys(item_obj)
-    
+
     item_list.sort()
     console.log(item_list)
     // make a csv table
     for(var i = 0; i < item_list.length; i++){
         item = item_list[i]
-        html += item 
+        html += item
         for(var n = 0; n < ds_order.length; n++){
             did = ds_order[n].toString()
-            
+
             if(mdobj[did].hasOwnProperty(item)){
                 html += sep + mdobj[did][item].replace(',',' ')  // replace commas with space
             }else{
                 html += sep
             }
-            
+
         }
         html += '\n\r'
     }
-    
+
     //console.log(html)
     var outfile_name = ts + '-metadata-api.csv'
     outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
@@ -784,7 +788,7 @@ adiversity: function(req, res){
     var ts = visual_post_items.ts
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
-    
+
     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
     //console.log('mtx1')
@@ -806,7 +810,7 @@ adiversity: function(req, res){
             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
             stdio: 'pipe' // stdin, stdout, stderr
         });
-        
+
     var output = '';
 
     alphadiv_process.stdout.on('data', function adiversityProcessStdout(data) {
@@ -826,7 +830,7 @@ adiversity: function(req, res){
     alphadiv_process.on('close', function adiversityProcessOnClose(code) {
         console.log('alphadiv_process process exited with code ' + code);
         if(code == 0){
-            
+
            var lines = output.split('\n');
            //alert(lines[0])
            var headers = lines.shift();
@@ -849,7 +853,7 @@ adiversity: function(req, res){
               html +=  '</tr>';
            }
            html += '</table>';
-           
+
             var outfile_name = ts + '-adiversity-api.csv'
             outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
             console.log('outfile_path:',outfile_path)
@@ -874,11 +878,11 @@ dendrogram: function(req, res){
     var ts = visual_post_items.ts
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
-    
+
     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
     //console.log('mtx1')
-    
+
     var metric = visual_post_items.selected_distance;
     var html = '';
     var title = 'VAMPS';
@@ -922,21 +926,21 @@ dendrogram: function(req, res){
             svgfile_path = path.join(config.PROCESS_DIR,'tmp', svgfile_name);  // file name save to user_location
             fs.readFile(svgfile_path, 'utf8', function(err, contents){
                 if(err){ res.send('ERROR reading file');return}
-                
+
                 //console.log(contents)
                 var data = {}
                 data.html = contents
-                data.filename = svgfile_name   // returns data and local file_name to be written to 
-                res.json(data) 
-                return         
-            
+                data.filename = svgfile_name   // returns data and local file_name to be written to
+                res.json(data)
+                return
+
             })
             //outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
             //console.log('outfile_path:',outfile_path)
             //
             //console.log(result)
-            
-          
+
+
         }else{
           console.log('stderr: '+stderr);
           res.send('Script Error');
@@ -978,27 +982,27 @@ phyloseq: function(req,res){
           //distance_matrix = JSON.parse(output);
           //var last_line = ary[ary.length - 1];
           if(code === 0){   // SUCCESS
-            
+
                 var svgfile_name  = ts + '_phyloseq_test.svg'  // must match file name written in R script: dendrogram.R
                 svgfile_path = path.join(config.PROCESS_DIR,'tmp', svgfile_name);  // file name save to user_location
                 fs.readFile(svgfile_path, 'utf8', function(err, contents){
                     if(err){ res.send('ERROR reading file');return}
-                
+
                     //console.log(contents)
                     var data = {}
                     data.html = contents
-                    data.filename = svgfile_name   // returns data and local file_name to be written to 
-                    res.json(data) 
-                    return         
-            
+                    data.filename = svgfile_name   // returns data and local file_name to be written to
+                    res.json(data)
+                    return
+
                 })
-           
+
 
           }else{
             console.log('ERROR-2');
             html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's"
           }
-         
+
 
     });
 },
@@ -1009,14 +1013,14 @@ phyloseq: function(req,res){
 //     //eval(require('fs').readFileSync('./public/javascripts/newick.js', 'utf8'));
 //     //eval(require('fs').readFileSync('./public/javascripts/d3.phylogram.js', 'utf8'));
 //     //phylo_path = path.join(config.PROCESS_DIR,'public','javascripts','d3.phylogram.js')
-//     
+//
 //     //console.log(phylo_path)
 //     //phylo = require(phylo_path)
 //     //console.log(phylo)
 //     var ts = visual_post_items.ts
 //     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
 //     console.log(matrix_file_path)
-//     
+//
 //     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
 //     //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
 //     //console.log('mtx1')
@@ -1028,7 +1032,7 @@ phyloseq: function(req,res){
 //       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
 //       args :       [ '-in', matrix_file_path, '-metric', metric, '--function', 'dendrogram', '--outdir', path.join(pwd,'tmp'), '--prefix', ts ],
 //     };
-// 
+//
 //     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 //     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
 //     var dendrogram_process = spawn( options.scriptPath+'/distance.py', options.args, {
@@ -1037,14 +1041,14 @@ phyloseq: function(req,res){
 //             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
 //             stdio: 'pipe'  // stdin, stdout, stderr
 //     });
-// 
+//
 //     var stdout = '';
 //     dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
 //         //
 //         //data = data.toString().replace(/^\s+|\s+$/g, '');
 //         data = data.toString();
 //         stdout += data;
-// 
+//
 //     });
 //     var stderr = '';
 //     dendrogram_process.stderr.on('data', function dendrogramProcessStderr(data) {
@@ -1053,10 +1057,10 @@ phyloseq: function(req,res){
 //         data = data.toString();
 //         stderr += data;
 //     });
-// 
+//
 //     dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
 //         console.log('dendrogram_process process exited with code ' + code);
-// 
+//
 //         //var last_line = ary[ary.length - 1];
 //         if(code === 0){   // SUCCESS
 //           if(image_type == 'd3'){
@@ -1073,8 +1077,8 @@ phyloseq: function(req,res){
 //                         continue
 //                       }
 //                     }
-// 
-// 
+//
+//
 //                     try{
 //                       newick_json = JSON.parse(tmp[1]);
 //                       //var newick = Newick.parse(tmp[1]);
@@ -1087,8 +1091,8 @@ phyloseq: function(req,res){
 //                     catch(err){
 //                       newick_json = {"ERROR":err};
 //                     }
-//                     
-//                     
+//
+//
 //                     //console.log('newick',newick_json)
 //                     var outfile_name = ts + '_newick.tre'
 //                     //outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
@@ -1100,7 +1104,7 @@ phyloseq: function(req,res){
 //                     data.filename = outfile_name
 //                     res.json(data)
 //                     return;
-// 
+//
 //           }else{  // 'pdf'
 // //                     var viz_width = 1200;
 // //                     var viz_height = (visual_post_items.no_of_datasets*12)+100;
@@ -1118,8 +1122,8 @@ phyloseq: function(req,res){
 //           res.send('Script Error');
 //         }
 //     });
-// 
-// }    
+//
+// }
 
 };   // end module.exports
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1132,12 +1136,12 @@ function create_bars_svg_object(req, svg, props, data, ts) {
           .attr("class", "x axis")
           .style('stroke-width', '2px')
           .call(props.xAxis);
-          
+
       svg.append("text")
           .attr("x", props.plot_width-40)
           .attr("dx", "50")
           .style("font-size",  "11px")
-          .text("Percent");      
+          .text("Percent");
     if(req.body.source == 'website'){
        var datasetBar = svg.selectAll(".bar")
           .data(data)
@@ -1155,7 +1159,7 @@ function create_bars_svg_object(req, svg, props, data, ts) {
         .append("g")
           .attr("class", "g")
           .attr("transform", function(d) { return  "translate(0, " + props.y(d.pjds) + ")"; })
-       
+
     }
     var labels = datasetBar.append("text")
       .attr("class", "y label")
@@ -1164,7 +1168,7 @@ function create_bars_svg_object(req, svg, props, data, ts) {
       .style("font-weight",  "normal")
       .attr("x", "-2")
       .attr("y", props.bar_height*2)
-      .text(function(d) { return d.pjds; }) 
+      .text(function(d) { return d.pjds; })
     var labels = datasetBar.append("text")
       .style("text-anchor","start")
       .style("font-size",  "13px")
@@ -1172,7 +1176,7 @@ function create_bars_svg_object(req, svg, props, data, ts) {
       .attr("x", props.plot_width+10)
       .attr("y", props.bar_height*2)
       .text(function(d) { return 'SumCount: '+d.total; })
-     if(req.body.source == 'website'){ 
+     if(req.body.source == 'website'){
         var gnodes = datasetBar.selectAll("rect")
               .data(function(d) { return d.unitObj; })
             .enter()
@@ -1182,21 +1186,21 @@ function create_bars_svg_object(req, svg, props, data, ts) {
               .attr("x", function(d) { return props.x(d.x0); })
               .attr("y", 15)  // adjust where first bar starts on x-axis
               .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
-              .attr("height",  18)         
+              .attr("height",  18)
              // .attr("title",function(d){
              //     return d.tax
               //})
              .attr("id",function(d,i) {
                 //var cnt =  d.tax;
                 //var total = d.total;
-          
+
                 //console.log(this._parentNode.__data__['total']);
                 var ds = ''; // PLACEHOLDER for TT
                 var pct = (d.cnt * 100 / d.total).toFixed(2);
                 var id = 'bc/' + d.tax + '/'+ d.cnt.toString() + '/' + pct;
                 return id;
               })
-          
+
               .attr("class","tooltip_viz")
               .style("fill",   function(d,i) {
                 //return get_random_color()
@@ -1302,14 +1306,14 @@ function create_hm_table(req, dm){
 	html += "		  <imput type='hidden' id='' name='resorted' value='1' >"
 	html += "	  </div>"
 	html += "</td>"
-	
+
     for(i=1; i<=no.length; i++) {
         html += "<td><div class='cell'></div></td>"
     }
         html += "</tr>"
     k=1
     for(var n in no) {
-        var x = no[n] 
+        var x = no[n]
         if(req.body.source == 'website'){
             html += "<tr id='"+x+"'>"
         }else{
@@ -1317,21 +1321,21 @@ function create_hm_table(req, dm){
         }
         html += "<td  id='"+x+"' class='dragHandle ds_cell'>"+k+"</td>"
         html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+ id_order[n] +"' >"+x+"</td>"
-        for(var m in no) { 
-            var y = no[m] 
-            if(x in dm && y in dm[x]){ 
-                var d = dm[x][y].toFixed(5);  
-                var sv = Math.round( dm[x][y] * 15 ); 
-            } else{ 
-                  var d = 1 
-                  var sv = 1 * 15 
+        for(var m in no) {
+            var y = no[m]
+            if(x in dm && y in dm[x]){
+                var d = dm[x][y].toFixed(5);
+                var sv = Math.round( dm[x][y] * 15 );
+            } else{
+                  var d = 1
+                  var sv = 1 * 15
             }
-            var id = 'dh/'+x+'/'+y+'/'+ visual_post_items.selected_distance +'/'+d; 
+            var id = 'dh/'+x+'/'+y+'/'+ visual_post_items.selected_distance +'/'+d;
             if(x === y){
                 html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
-            }else{ 
+            }else{
                 if(req.body.source == 'website'){
-                    html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"                
+                    html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"
                     html += " onclick=\"window.open('/visuals/bar_double?did1="+ id_order[n] +"&did2="+ id_order[m] +"&ts="+visual_post_items.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
                     html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
                 }else{
@@ -1352,7 +1356,7 @@ function create_hm_table(req, dm){
     html += "</center>"
 /////////////////////
   return html
-  
+
 
 }
 function standardDeviation(values){
@@ -1393,9 +1397,9 @@ function thin_out_data_for_display(mtx){
     new_mtx.columns = mtx.columns
     new_mtx.data = []
     new_mtx.rows = []
-   
+
     for(m in mtx.data){
-        
+
         for(n in mtx.data[m]){
             cnt = mtx.data[m][n]
             dstot = mtx.column_totals[n]
@@ -1410,9 +1414,9 @@ function thin_out_data_for_display(mtx){
             }
             if(got_one_above_limit){
                 new_mtx.data.push(mtx.data[m])
-                new_mtx.rows.push(mtx.rows[m])            
+                new_mtx.rows.push(mtx.rows[m])
             }
-            
+
         }
     }
     new_mtx.shape = [new_mtx.rows.length, new_mtx.columns.length]
@@ -1428,5 +1432,5 @@ function thin_out_data_for_display(mtx){
     new_mtx.id = mtx.id
 
     return new_mtx
-    
+
 }

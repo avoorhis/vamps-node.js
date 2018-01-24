@@ -27,7 +27,18 @@ from cogent3.maths import distance_transform as dt
 def go_distance(args):
     #print args
 
+    # make pandas df
+    json_data = open(args.in_file)
+    data = json.load(json_data)
+    #print(data['columns'])
+    #print(data['rows'])
+    #print(data['data'])
+
+
+
     if args.file_format == 'json':
+        df_in_dict = {}
+        row_names = []
         try:
             json_data = open('./tmp/'+args.in_file)
         except IOError:
@@ -37,6 +48,13 @@ def go_distance(args):
             sys.exit()
 
         data = json.load(json_data)
+        for i,m in enumerate(data['columns']):
+            #print(i,m)
+            df_in_dict[m['id']] = data['data'][i]
+            row_names.append(data['rows'][i]['id'])
+        #print(df_in_dict)
+        df = pd.DataFrame(data=df_in_dict, index=row_names)
+        print(df)
         json_data.close()
     else: # csv file
         with open('./tmp/'+args.in_file, 'rb') as csvfile:
@@ -106,6 +124,17 @@ def go_distance(args):
     #print dm3
     #print edited_dataset_list
     #return (dm1, dist, dm2, dm3, edited_dataset_list, edited_did_hash)
+    #minkowski, cityblock, seuclidean, sqeuclidean, cosine, correlation, hamming, jaccard, chebyshev, canberra
+    dm4 = pd.DataFrame(distance.squareform(distance.pdist(df,metric='euclidean')), columns=df.columns.values,index=df.columns.values)
+    print(dm2)
+
+    """
+    dm1 goes to     1)dendrogram-pdf,   2)pcoa_3d
+    dist goes to    1)fheatmap
+    dm2 goes to (was written as json to important VAMPS distance.json file) also 2)dheatmap
+    dm3 goes to     1)dendrogram-d3,    2)dendrogram, 3)pcoa_2d
+    dm4 is new df distance. uses?
+    """
     return (dm1, dist, dm2, dm3, edited_dataset_list)
 # dm1: [[]]
 #[
@@ -376,7 +405,7 @@ def pcoa(args, dist):
 
     #dt = np.dtype(float)
     print('PCoA_result.proportion_explained')
-    print(PCoA_result.samples)
+    print(PCoA_result)
     print('end pcoa result')
     a = np.array(PCoA_result)  #[0:,0:5]   # capture only the first three vectors
     #print a
@@ -600,8 +629,8 @@ if __name__ == '__main__':
         print('starting pcoa_3d')
         from skbio import DistanceMatrix
         dm = DistanceMatrix(dm1)
-        print(dm)
-        print('end')
+        print(dm1)
+        print('end pcoa_3d')
         pcoa_data = pcoa(args, dm)
         #test_PCoA()
 
