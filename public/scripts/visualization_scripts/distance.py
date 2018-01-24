@@ -201,7 +201,7 @@ def dendrogram_pdf(args, dm, leafLabels):
         image_file = os.path.join(args.outdir,args.prefix+'_dendrogram.pdf')
 
         plt.savefig(image_file)
-        
+
 def dendrogram_newick(args, dm):
     #print json.dumps(dm)
 
@@ -553,13 +553,13 @@ if __name__ == '__main__':
         # unrooted_tree = Tree( newick )
         # print unrooted_tree
         # IMPORTANT print for D3
-        
+
         print('NEWICK='+json.dumps(newick))
 
     if args.function == 'dendrogram-pdf':
         #print distances
         dendrogram_pdf(args, dm1, datasets)
-        
+
     if args.function == 'dendrogram':
         # Notebook only
         from ete3 import Tree, TreeStyle
@@ -575,8 +575,8 @@ if __name__ == '__main__':
         #dendrogram = UnrootedDendrogram(tr)
         #print dendrogram
         #dendrogram.showFigure()
-        
-        print tr.asciiArt()
+
+        print(tr.asciiArt())
         ts = TreeStyle()
         ts.show_leaf_name = True
         ts.show_branch_length = True
@@ -585,13 +585,13 @@ if __name__ == '__main__':
         rooted_tree = Tree( newick )
         #svgfile = os.path.join('/Users/avoorhis/programming/jupyter/VAMPS_API',args.prefix+'_dendrogram.svg')
         svgfile = os.path.join(args.outdir,args.prefix+'_dendrogram.svg')
-        print os.getcwd()
+        print(os.getcwd())
         #print svgfile
         print('rendering0')
         rooted_tree.render(svgfile, tree_style=ts)  # writes file to tmp
-        
-        
-        
+
+
+
     if args.function == 'pcoa_3d':
         pcoa_data = pcoa(args, dm3)
         #test_PCoA()
