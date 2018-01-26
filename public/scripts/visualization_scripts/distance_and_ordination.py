@@ -72,17 +72,8 @@ def go_distance(args):
     dist = get_dist(args.metric, dmatrix)
     dm1 = get_dist_matrix1(dist)
 
-
-
     dm2 = {}
     dm3 = {}
-
-    
-    
-
-    #file_header_line = ','.join([x['id'] for x in data['columns']]) + '\n'
-
-    #out_fp.write(file_header_line)
 
     for row,name in enumerate(edited_dataset_list):
             name = str(name)
@@ -103,11 +94,11 @@ def go_distance(args):
         out_fp2.write(json.dumps(dm2))
         out_fp2.close()
     
-    dm1 = DistanceMatrix(dm1)  
-    dm1.ids = edited_dataset_list
-    print(dm1)
-    return (dm1, dist, dm2, dm3, edited_dataset_list)
-# dm1: [[]]
+    dm1 = DistanceMatrix(dm1)  # convert to scikit-bio DistanceMatrix (v 0.5.1)
+    dm1.ids = edited_dataset_list  # assign row names
+    #print(dm1)
+    return (dm1, dist, edited_dataset_list)
+# dm1: [[]]  skbio.stats.distance.DistanceMatrix
 #[
 #[  0.00000000e+00   9.86159727e-03   8.90286439e-05   7.11500728e-03
 #    2.11434615e-03   6.39773481e-03   4.40706533e-01   4.69163215e-01
@@ -450,16 +441,14 @@ if __name__ == '__main__':
     parser.add_argument('-ff','--file_format', required=False, action="store",  dest='file_format',help = 'json or csv only', default='json')
     parser.add_argument('-metric','--metric',  required=False, action="store",  dest='metric',    help = 'Distance Metric', default='bray_curtis')
     parser.add_argument('-fxn','--function',   required=True,  action="store",  dest='function',  help = 'distance, dendrogram, pcoa, dheatmap, fheatmap')
-    #parser.add_argument('-base','--site_base', required=True,  action="store",  dest='site_base', help = 'site base')
-    #parser.add_argument('-outdir','--outdir',   required=True,  action="store",  dest='outdir', help = 'site base')
-    parser.add_argument('-basedir','--basedir',   required=True,  action="store",  dest='basedir', help = 'site base')
+    parser.add_argument('-basedir','--basedir',required=True,  action="store",  dest='basedir',   help = 'site base')
     parser.add_argument('-pre','--prefix',     required=True,  action="store",  dest='prefix',    help = 'file prefix')
-    parser.add_argument('-m','--map_fp',  required=False, action="store",  dest='map_fp',  help = 'metadata file path')
+    parser.add_argument('-m','--map_fp',       required=False, action="store",  dest='map_fp',    help = 'metadata file path')
 
     args = parser.parse_args()
 
 
-    ( dm1, dist, dm2, dm3, datasets ) = go_distance(args)
+    ( dm1, dist, datasets ) = go_distance(args)
 
     if args.function == 'cluster_datasets':
         #did_list = cluster_datasets(args, dm3, did_hash)
@@ -472,15 +461,14 @@ if __name__ == '__main__':
         print(dist.tolist())
 
 
-    if args.function == 'dheatmap':
-        # IMPORTANT print for dist heatmap
-        print(json.dumps(dm2))
-        pass
+    # if args.function == 'dheatmap':
+#         # IMPORTANT print for dist heatmap
+#         #print(json.dumps(dm2))
+#         pass
 
     if args.function == 'dendrogram-d3':
         
         newick = dendrogram_newick(args, dm1)
-        
         # IMPORTANT print for D3
         print('NEWICK=',newick)
 
@@ -529,16 +517,17 @@ if __name__ == '__main__':
         create_emperor_visual(args, pcfile)
         #test_PCoA()
 
-    if args.function == 'pcoa_2d':
-        # if not args.metadata:
-        #   print "ERROR: In PCoA and no metadata recieved"
-        #   sys.exit()
-
-        pcoa_data = pcoa(args, dm3)
-        #print json.dumps(pcoa_data)
-
-        #metadata = json.loads( args.metadata.strip("'") )
-        pcoa_pdf(args, pcoa_data)
-        #print pcoa_data
-
-        pass
+    # pcoa_2d is calculated with an R script:  pcoa2.R
+  #   if args.function == 'pcoa_2d':
+#         # if not args.metadata:
+#         #   print "ERROR: In PCoA and no metadata recieved"
+#         #   sys.exit()
+# 
+#         pcoa_data = pcoa(args, dm3)
+#         #print json.dumps(pcoa_data)
+# 
+#         #metadata = json.loads( args.metadata.strip("'") )
+#         pcoa_pdf(args, pcoa_data)
+#         #print pcoa_data
+# 
+#         pass
