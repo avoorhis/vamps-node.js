@@ -257,13 +257,13 @@ dheatmap: function(req, res){
     var dist_json_file_path = path.join(config.PROCESS_DIR,'tmp', ts+'_distance.json')
     var options = {
      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-       args :       [ '-in', matrix_file_path, '-metric', visual_post_items.selected_distance, '--function', 'dheatmap', '--outdir', path.join(config.PROCESS_DIR,'tmp'), '--prefix', ts],
+       args :       [ '-in', matrix_file_path, '-metric', visual_post_items.selected_distance, '--function', 'dheatmap', '--basedir', pwd, '--prefix', ts],
      };
 
     var log = fs.openSync(path.join(config.PROCESS_DIR,'logs','visualization.log'), 'a');
 
-    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-    var heatmap_process = spawn( options.scriptPath+'/distance.py', options.args, {
+    console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
+    var heatmap_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true,
             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr

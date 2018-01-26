@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-    distance.py
+    distance_and_ordination.py
 
 
 """
@@ -17,28 +17,18 @@ import argparse
 import json
 import csv
 import pandas as pd
+from pathlib import Path
 #from ete2 import Tree
 #print >> sys.stderr, sys.argv[1:]
 # cogent will be phased out in python3
-
+from skbio import DistanceMatrix
 from cogent3.maths import distance_transform as dt
 #print sys.path
 
 def go_distance(args):
     #print args
 
-    # make pandas df
-    json_data = open(args.in_file)
-    data = json.load(json_data)
-    #print(data['columns'])
-    #print(data['rows'])
-    #print(data['data'])
-
-
-
     if args.file_format == 'json':
-        df_in_dict = {}
-        row_names = []
         try:
             json_data = open('./tmp/'+args.in_file)
         except IOError:
@@ -48,13 +38,6 @@ def go_distance(args):
             sys.exit()
 
         data = json.load(json_data)
-        for i,m in enumerate(data['columns']):
-            #print(i,m)
-            df_in_dict[m['id']] = data['data'][i]
-            row_names.append(data['rows'][i]['id'])
-        #print(df_in_dict)
-        df = pd.DataFrame(data=df_in_dict, index=row_names)
-        print(df)
         json_data.close()
     else: # csv file
         with open('./tmp/'+args.in_file, 'rb') as csvfile:
@@ -87,17 +70,15 @@ def go_distance(args):
 
     #print(edited_dataset_list)
     dist = get_dist(args.metric, dmatrix)
-    dm1 = get_data_matrix1(dist)
+    dm1 = get_dist_matrix1(dist)
 
 
 
     dm2 = {}
     dm3 = {}
 
-    #out_file = os.path.join(args.outdir, args.prefix+'_distance.csv')
-    out_file2 = os.path.join(args.outdir, args.prefix+'_distance.json')
-    #out_fp = open(out_file,'w')
-    out_fp2 = open(out_file2,'w')
+    
+    
 
     #file_header_line = ','.join([x['id'] for x in data['columns']]) + '\n'
 
@@ -115,26 +96,16 @@ def go_distance(args):
             file_data_line = file_data_line[:-1]+'\n'
             #out_fp.write(file_data_line)
 
-
-    #out_fp.close()
-    out_fp2.write(json.dumps(dm2))
-    out_fp2.close()
-    #print(edited_dataset_list)
-    #print(dm1)
-    #print dm3
-    #print edited_dataset_list
-    #return (dm1, dist, dm2, dm3, edited_dataset_list, edited_did_hash)
-    #minkowski, cityblock, seuclidean, sqeuclidean, cosine, correlation, hamming, jaccard, chebyshev, canberra
-    dm4 = pd.DataFrame(distance.squareform(distance.pdist(df,metric='euclidean')), columns=df.columns.values,index=df.columns.values)
-    print(dm2)
-
-    """
-    dm1 goes to     1)dendrogram-pdf,   2)pcoa_3d
-    dist goes to    1)fheatmap
-    dm2 goes to (was written as json to important VAMPS distance.json file) also 2)dheatmap
-    dm3 goes to     1)dendrogram-d3,    2)dendrogram, 3)pcoa_2d
-    dm4 is new df distance. uses?
-    """
+    out_file2 = os.path.join(args.basedir, 'tmp',args.prefix+'_distance.json')
+    my_file = Path(out_file2)
+    if not my_file.is_file():
+        out_fp2 = open(out_file2,'w')
+        out_fp2.write(json.dumps(dm2))
+        out_fp2.close()
+    
+    dm1 = DistanceMatrix(dm1)  
+    dm1.ids = edited_dataset_list
+    print(dm1)
     return (dm1, dist, dm2, dm3, edited_dataset_list)
 # dm1: [[]]
 #[
@@ -186,7 +157,7 @@ def get_dist(metric, mtx):
     dist = distance.squareform( dtvar )
     return dist
 
-def get_data_matrix1(dist):
+def get_dist_matrix1(dist):
     return distance.squareform(dist)
 
 def remove_zero_sum_datasets(mtx):
@@ -228,25 +199,24 @@ def dendrogram_pdf(args, dm, leafLabels):
 
         linkage_matrix = linkage(dm,  method="average" )
         dendrogram(linkage_matrix,  color_threshold=1,  leaf_font_size=6,  orientation='right', labels=leafLabels)
-        image_file = os.path.join(args.outdir,args.prefix+'_dendrogram.pdf')
+        image_file = os.path.join(args.basedir, 'tmp',args.prefix+'_dendrogram.pdf')
 
         plt.savefig(image_file)
 
-def dendrogram_newick(args, dm):
-    #print json.dumps(dm)
+def dendrogram_newick(args, dm1):
+      # apply the ds names as ids
+    mynewick = construct_cluster(args, dm1)
+    newick_file = os.path.join(args.basedir,'tmp',args.prefix+'_newick.tre')
+    mynewick.write(newick_file)
+    
+    return mynewick
 
-    mycluster = construct_cluster(args, dm)
+def cluster_datasets(args, dm1):
 
-    newick = mycluster.getNewick(with_distances=True)
-
-    return newick
-
-def cluster_datasets(args, dm):
-
-    new_ds_order =[]
-    new_did_order =[]
-
-    mycluster = construct_cluster(args, dm)
+    new_ds_order  = []
+    new_did_order = []
+    
+    mycluster = construct_cluster(args, dm1)
 
     # newick = mycluster.getNewick(with_distances=True)
     # print
@@ -255,21 +225,22 @@ def cluster_datasets(args, dm):
     #t = Tree()
     #t.populate(15)
 
-    ascii_tree = mycluster.asciiArt()
+    ascii_tree = mycluster.ascii_art()
+    print(ascii_tree)
     ascii_file = args.prefix+'_'+args.metric+'_tree.txt'
-    ascii_file_path = os.path.join(args.outdir,ascii_file)
+    ascii_file_path = os.path.join(args.basedir, 'tmp',ascii_file)
     fp = open(ascii_file_path,'w')
     fp.write(ascii_tree)
     fp.close()
-    nodenames =  mycluster.getNodeNames()
+    #nodenames =  mycluster.getNodeNames()
     #print nodenames
-    for node in nodenames:
-        #print line
-        if node == 'root' or node[:4] == 'edge':
-            continue
-
-        #did = did_hash[ds]
-        new_ds_order.append(node)
+    for node in mycluster.preorder():
+        #print(node.name)
+        #if str(node.name) != 'None' and str(node.name) == 'root' and str(node.name)[:4] == 'edge':
+        #    continue
+        if str(node.name) != 'None':
+            #did = did_hash[ds]
+            new_ds_order.append(str(node.name).replace(' ','_'))
     return new_ds_order
 
 
@@ -280,25 +251,12 @@ def write_csv_file(args):
 #
 #
 def construct_cluster(args, dm):
-        # UPGMA OR
+        
         # neighbor joining:
-
-        from cogent3.phylo import nj
-
-        from cogent3.cluster.UPGMA import upgma
-        # the following prints to stdout -- controlled in routes_visualizations.js
-        mycluster = nj.nj(dm)
-
-        #mycluster = upgma(dm)
-
-
+        from skbio.tree import nj
+        mycluster = nj(dm)
         return mycluster
 
-        # from scipy.cluster.hierarchy import linkage, to_tree
-        # condensed_dm = distance.squareform( dm )
-        # print condensed_dm
-        # linkage_matrix = linkage(condensed_dm,  method="average", metric=args.metric)
-        # newick = to_tree(linkage_matrix)
 
 #
 #
@@ -310,126 +268,69 @@ def construct_pcoa(dist_matrix):
 #
 #
 #
-def create_emperor_pc_file(args, data, PCoA_result):
-    # pc vector number    1       2       3       4       5
-    # PC.636      0.333514620475  0.081687        0.25081 0.103746        2.50106743521e-09
-    # PC.635      0.258145479886  -0.22437        -0.25446        -0.0290044      2.50106743521e-09
-    # PC.356      -0.270663791669 -0.23983        0.18965 -0.118931       2.50106743521e-09
-    # PC.481      -0.0437436047686        0.30751 -0.077078       -0.20627        2.50106743521e-09
-    # PC.354      -0.277252703922 0.074945        -0.10898        0.245681        2.50106743521e-09
-    #
-    #
-    # eigvals     0.329912543767  0.2147172       0.1815366       0.1261003       -3.127915774e-17
-    # % variation explained       38.68853        25.18276        21.2717 14.85772        3.667478e-15
+def create_emperor_visual(args, pcfile):
+    """
+    Sample .pc file
+    #     Eigvals	4
+    # 0.2705559825337763	0.07359266496720843	0.02997793703738496	0.0
+    # 
+    # Proportion explained	4
+    # 0.7231669539538659	0.19670525434062255	0.0801277917055116	0.0
+    # 
+    # Species	0	0
+    # 
+    # Site	4	4
+    # ICM_LCY_Bv6--LCY_0001_2003_05_11	-0.04067063044757823	-0.09380781760926289	0.13680474645584195	0.0
+    # ICM_LCY_Bv6--LCY_0003_2003_05_04	-0.11521436634022217	-0.15957409396683217	-0.10315005726535573	0.0
+    # ICM_LCY_Bv6--LCY_0005_2003_05_16	0.4268532792747924	0.06657577342833808	-0.02212569426459717	0.0
+    # ICM_LCY_Bv6--LCY_0007_2003_05_04	-0.2709682824869916	0.18680613814775715	-0.011528994925888972	0.0
+    # 
+    # Biplot	0	0
+    # 
+    # Site constraints	0	0
+    """
     #print PCoA_result
-    txt = 'pc vector number'+'\t'
-    ds_number = len(data['names'])
-    for i in range(0, ds_number):
-        txt += str(i+1)+'\t'
-    txt += '\n'
-    for line in str(PCoA_result).split('\n'):
-        items = line.strip().split()
-        if items[0] == 'Eigenvectors':
-            txt += items[1]+'\t'
-            for i in range(0, ds_number):
-                txt += items[i+2]+'\t'
-            txt += '\n'
-        if items[0] == 'Eigenvalues' and items[1] == 'eigenvalues':
-            eval_items = items
-        if items[0] == 'Eigenvalues' and items[1] == 'var':
-            pexpl_items = items
-    txt += '\n\neigvals'+'\t'
-    for i in range(0, ds_number):
-        txt += eval_items[i+2]+'\t'
-    txt += '\n% variation explained'+'\t'
-    for i in range(0, ds_number):
-        txt += pexpl_items[i+4]+'\t'
-    txt += '\n'
-    #print txt
-    pcfile = os.path.join(args.outdir,args.prefix+'.pc')
-    pcfile_fp = open(pcfile,'w')
-    pcfile_fp.write(txt)
-    pcfile_fp.close()
+    from emperor import Emperor
+    from skbio import OrdinationResults
+    
+    #load metadata
+    mf = load_mf(args.map_fp)
+    # must read from file (scikit-bio version 0.5.1 http://scikit-bio.org/docs/0.5.1/generated/generated/skbio.stats.ordination.OrdinationResults.html
+    res = OrdinationResults.read(pcfile)
+    emp = Emperor(res, mf)
+    pcoa_outdir = os.path.join(args.basedir,'views', 'tmp',args.prefix+'_pcoa3d')
+    print('OUT?',pcoa_outdir,args.basedir)
+    os.makedirs(pcoa_outdir, exist_ok=True)
+    with open(os.path.join(pcoa_outdir, 'index.html'), 'w') as f:
+        f.write(emp.make_emperor(standalone=True))
+        emp.copy_support_files(pcoa_outdir)
+   
+def load_mf(fn):
+    from skbio.io.util import open_file
+    from emperor.qiime_backports.parse import parse_mapping_file
+    with open_file(fn) as f:
+        mapping_data, header, _ = parse_mapping_file(f)
+        _mapping_file = pd.DataFrame(mapping_data, columns=header)
+        _mapping_file.set_index('SampleID', inplace=True)
+    return _mapping_file
 
-#
-#
-#
-def test_PCoA():
-        """PCoA returns a cogent Table result"""
-        import random
-        import skbio
-        from cogent3.cluster.metric_scaling import PCoA
-        from numpy import array
-        matrix14 = array([ \
-        [0,0.099,0.033,0.183,0.148,0.198,0.462,0.628,0.113,0.173,0.434,0.762,0.53,0.586],\
-                [0.099,0,0.022,0.114,0.224,0.039,0.266,0.442,0.07,0.119,0.419,0.633,0.389,0.435],\
-                [0.033,0.022,0,0.042,0.059,0.053,0.322,0.444,0.046,0.162,0.339,0.781,0.482,0.55], \
-                [0.183,0.114,0.042,0,0.068,0.085,0.435,0.406,0.047,0.331,0.505,0.7,0.579,0.53], \
-                [0.148,0.224,0.059,0.068,0,0.051,0.268,0.24,0.034,0.177,0.469,0.758,0.597,0.552], \
-                [0.198,0.039,0.053,0.085,0.051,0,0.025,0.129,0.002,0.039,0.39,0.625,0.498,0.509], \
-                [0.462,0.266,0.322,0.435,0.268,0.025,0,0.014,0.106,0.089,0.315,0.469,0.374,0.369], \
-                [0.628,0.442,0.444,0.406,0.24,0.129,0.014,0,0.129,0.237,0.349,0.618,0.562,0.471], \
-                [0.113,0.07,0.046,0.047,0.034,0.002,0.106,0.129,0,0.071,0.151,0.44,0.247,0.234], \
-                [0.173,0.119,0.162,0.331,0.177,0.039,0.089,0.237,0.071,0,0.43,0.538,0.383,0.346], \
-                [0.434,0.419,0.339,0.505,0.469,0.39,0.315,0.349,0.151,0.43,0,0.607,0.387,0.456], \
-                [0.762,0.633,0.781,0.7,0.758,0.625,0.469,0.618,0.44,0.538,0.607,0,0.084,0.09], \
-                [0.53,0.389,0.482,0.579,0.597,0.498,0.374,0.562,0.247,0.383,0.387,0.084,0,0.038], \
-                [0.586,0.435,0.55,0.53,0.552,0.509,0.369,0.471,0.234,0.346,0.456,0.09,0.038,0],\
-               ])
-        matrix26=skbio.stats.distance.randdm(26)
-       #  r = np.array([random.randrange(1, 26) for _ in range(0, 26)])
-#         matrix26 = scipy.spatial.distance.pdist(r, 'cityblock')
-        print(matrix26)
-        names14 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l','m', 'n']
-        names26 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l','m', 'n','o','p','q','r','s','t','u','v','w','x','y','z']
-        pairwise_dist = {}
-        for i, name1 in enumerate(names14):
-            for j, name2 in enumerate(names14):
-                combo = (name1, name2)
-                if combo not in pairwise_dist:
-                    pairwise_dist[combo] = matrix14[i,j]
+def write_mf(f, _df):
+    from emperor.qiime_backports.format import format_mapping_file
+    with open(f, 'w') as fp:
+        lines = format_mapping_file(['SampleID'] + _df.columns.tolist(),
+                                    list(_df.itertuples()))
+        fp.write(lines+'\n')
 
-        #perform with the PCoA function
-
-        result = PCoA(pairwise_dist)
-        print(pairwise_dist)
-        print(result)
-        #assertEqual(result[7,1], 'a')
-        #assertFloatEqual(abs(result[7,2]), 0.240788133045)
-
-def pcoa(args, dist):
+def create_emperor_pc_file(args, dist, ds_list):
     #from cogent3.cluster.metric_scaling import PCoA
-    from skbio.stats.ordination import PCoA, OrdinationResults
-    PCoA_result = PCoA(dist).scores()
-    #print PCoA_result
-
-    #dt = np.dtype(float)
-    print('PCoA_result.proportion_explained')
-    print(PCoA_result)
-    print('end pcoa result')
-    a = np.array(PCoA_result)  #[0:,0:5]   # capture only the first three vectors
-    #print a
-    json_array = {}
-    json_array["P1"] = a[:,2].tolist()[:-2]  # [:-2] is to remove the last two which are not eigen vectors
-
-    json_array["P2"] = a[:,3].tolist()[:-2]
-    try:
-        json_array["P3"] = a[:,4].tolist()[:-2]
-    except IndexError:
-        sys.exit('IndexError - try selecting more data or deeper taxonomy')
-
-    json_array["names"] = a[:,1].tolist()[:-2]
-
-    #json['v2'] = [x[0] for x in np.array(PCoA_result[:,3])[:-2]]
-    #json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
-    #json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
-    # sprint json_array
-    if args.function == 'pcoa_3d':
-        create_emperor_pc_file(args, json_array, PCoA_result)
-    return json_array
-    #return a
-#
-#
+    from skbio.stats.ordination import pcoa
+    PCoA_result = pcoa(dist)
+    PCoA_result.samples.index = ds_list
+    pcfile = os.path.join(args.basedir, 'tmp',args.prefix+'_pc.txt')
+    PCoA_result.write(pcfile)
+    
+    return pcfile
+   
 #
 #
 def pcoa_pdf(args, data):
@@ -525,7 +426,7 @@ def pcoa_pdf(args, data):
             ax[0,0].set_title('P1-P2')
             ax[0,2].set_title('P2-P3')
 
-            image_file = os.path.join(args.outdir,args.prefix+'_pcoa.pdf')
+            image_file = os.path.join(args.basedir, 'tmp',args.prefix+'_pcoa.pdf')
             pylab.savefig(image_file, bbox_inches='tight')
         else:
             print('no metadata')
@@ -538,7 +439,7 @@ if __name__ == '__main__':
     -in/--in                json_file
     -/metric/--metric       distance metric to calculate ['horn', ]
     -fxn/--function         [distance, dendrogram, pcoa, dheatmap, fheatmap]
-    -outdir/--outdir
+    -basedir/--basedir
     -pre/--prefix
 
     IMPORTANT -- no print statements allowed in functions
@@ -550,9 +451,10 @@ if __name__ == '__main__':
     parser.add_argument('-metric','--metric',  required=False, action="store",  dest='metric',    help = 'Distance Metric', default='bray_curtis')
     parser.add_argument('-fxn','--function',   required=True,  action="store",  dest='function',  help = 'distance, dendrogram, pcoa, dheatmap, fheatmap')
     #parser.add_argument('-base','--site_base', required=True,  action="store",  dest='site_base', help = 'site base')
-    parser.add_argument('-outdir','--outdir',   required=True,  action="store",  dest='outdir', help = 'site base')
+    #parser.add_argument('-outdir','--outdir',   required=True,  action="store",  dest='outdir', help = 'site base')
+    parser.add_argument('-basedir','--basedir',   required=True,  action="store",  dest='basedir', help = 'site base')
     parser.add_argument('-pre','--prefix',     required=True,  action="store",  dest='prefix',    help = 'file prefix')
-    #parser.add_argument('-meta','--metadata',  required=False, action="store",  dest='metadata',  help = 'json metadata')
+    parser.add_argument('-m','--map_fp',  required=False, action="store",  dest='map_fp',  help = 'metadata file path')
 
     args = parser.parse_args()
 
@@ -561,9 +463,9 @@ if __name__ == '__main__':
 
     if args.function == 'cluster_datasets':
         #did_list = cluster_datasets(args, dm3, did_hash)
-        new_ds_list = cluster_datasets(args, dm3)
+        new_ds_list = cluster_datasets(args, dm1)
         # IMPORTANT print the dataset list
-        print('DS_LIST='+json.dumps(new_ds_list))
+        print('DS_LIST=',json.dumps(new_ds_list))
 
     if args.function == 'fheatmap':
         # IMPORTANT print for freq heatmap
@@ -576,62 +478,55 @@ if __name__ == '__main__':
         pass
 
     if args.function == 'dendrogram-d3':
-        newick = dendrogram_newick(args, dm3)
-        newick_file = os.path.join(args.outdir,args.prefix+'_newick.tre')
-        fp = open(newick_file,'w')
-        fp.write(newick)
-        fp.close()
-        # print newick
-        # from ete2 import Tree
-        # unrooted_tree = Tree( newick )
-        # print unrooted_tree
+        
+        newick = dendrogram_newick(args, dm1)
+        
         # IMPORTANT print for D3
-
-        print('NEWICK='+json.dumps(newick))
+        print('NEWICK=',newick)
 
     if args.function == 'dendrogram-pdf':
         #print distances
-        dendrogram_pdf(args, dm1, datasets)
+        dendrogram_pdf(args, dm1)
 
-    if args.function == 'dendrogram':
-        # Notebook only
-        from ete3 import Tree, TreeStyle
-        from cogent3 import LoadTree
-        #from cogent3.draw import dendrogram
-        #from cogent3.draw.dendrogram import UnrootedDendrogram
-        newick = dendrogram_newick(args, dm3)
-        newick_file = os.path.join(args.outdir,args.prefix+'_newick.tre')
-        fp = open(newick_file,'w')
-        fp.write(newick)
-        fp.close()
-        tr = LoadTree(treestring=newick)
-        #dendrogram = UnrootedDendrogram(tr)
-        #print dendrogram
-        #dendrogram.showFigure()
-
-        print(tr.asciiArt())
-        ts = TreeStyle()
-        ts.show_leaf_name = True
-        ts.show_branch_length = True
-        ts.show_branch_support = True
-        print('NEWICK='+json.dumps(newick))
-        rooted_tree = Tree( newick )
-        #svgfile = os.path.join('/Users/avoorhis/programming/jupyter/VAMPS_API',args.prefix+'_dendrogram.svg')
-        svgfile = os.path.join(args.outdir,args.prefix+'_dendrogram.svg')
-        print(os.getcwd())
-        #print svgfile
-        print('rendering0')
-        rooted_tree.render(svgfile, tree_style=ts)  # writes file to tmp
+#     if args.function == 'dendrogram':
+#         # Notebook only
+#         from ete3 import Tree, TreeStyle
+#         from cogent3 import LoadTree
+#         #from cogent3.draw import dendrogram
+#         #from cogent3.draw.dendrogram import UnrootedDendrogram
+#         newick = dendrogram_newick(args, dm1)
+#         newick_file = os.path.join(args.outdir,args.prefix+'_newick.tre')
+#         fp = open(newick_file,'w')
+#         fp.write(newick)
+#         fp.close()
+#         tr = LoadTree(treestring=newick)
+#         #dendrogram = UnrootedDendrogram(tr)
+#         #print dendrogram
+#         #dendrogram.showFigure()
+# 
+#         print(tr.asciiArt())
+#         ts = TreeStyle()
+#         ts.show_leaf_name = True
+#         ts.show_branch_length = True
+#         ts.show_branch_support = True
+#         print('NEWICK='+json.dumps(newick))
+#         rooted_tree = Tree( newick )
+#         #svgfile = os.path.join('/Users/avoorhis/programming/jupyter/VAMPS_API',args.prefix+'_dendrogram.svg')
+#         svgfile = os.path.join(args.outdir,args.prefix+'_dendrogram.svg')
+#         print(os.getcwd())
+#         #print svgfile
+#         print('rendering0')
+#         rooted_tree.render(svgfile, tree_style=ts)  # writes file to tmp
 
 
 
     if args.function == 'pcoa_3d':
         print('starting pcoa_3d')
-        from skbio import DistanceMatrix
-        dm = DistanceMatrix(dm1)
-        print(dm1)
-        print('end pcoa_3d')
-        pcoa_data = pcoa(args, dm)
+        
+        #print(dm)
+        #print('end')
+        pcfile = create_emperor_pc_file(args, dm1, datasets)
+        create_emperor_visual(args, pcfile)
         #test_PCoA()
 
     if args.function == 'pcoa_2d':

@@ -8,7 +8,6 @@
   "contributors": [
     {}
   ],
-  "coopyhx": "",
   "license": "MIT",
   "scripts": {
     "start": "node ./bin/www",
