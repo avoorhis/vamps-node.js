@@ -61,7 +61,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
 				  <button type='submit' id='save_order_btn' class='btn btn-xs btn-success'>Use this Order and Return</button>
 				  <input  type='hidden' id='' class='' name='resorted' value='1'>
 				  <button type='button' id='cancel_btn'  onclick='javscript:window.history.back();' aria-label="Close"  class='btn btn-xs btn-success'>Cancel and Return</button>
-          <button type='button' id='cancel_btn2'  onclick="cancel_resort('<%= referer %>')" aria-label="Close"  class='btn btn-xs btn-success'>Cancel and Return2</button>
+         <!--  <button type='button' id='cancel_btn2'  onclick="cancel_resort('<%= referer %>')" aria-label="Close"  class='btn btn-xs btn-success'>Cancel and Return2</button> -->
 
 			  </div>
 			</td>
@@ -82,7 +82,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
 		  </tr>
           <tr>
 			<td class=''>
-				--Neighbor Joining Tree (python cogent.phylo)<br>
+				--Neighbor Joining Tree (python skbio.tree)<br>
 				--Select distance metric to cluster by:<br>
 
               <select id='selected_metric' name='selected_metric' class='small_font' onchange='cluster_order(this.value,"<%= ts %>")'>

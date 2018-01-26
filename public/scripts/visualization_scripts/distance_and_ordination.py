@@ -28,22 +28,13 @@ from cogent3.maths import distance_transform as dt
 def go_distance(args):
     #print args
 
-    if args.file_format == 'json':
-        try:
-            json_data = open('./tmp/'+args.in_file)
-        except IOError:
-            json_data = open(args.in_file)
-        except:
-            print("NO FILE FOUND ERROR")
-            sys.exit()
-
+    try:
+        json_data = open(args.in_file)
         data = json.load(json_data)
         json_data.close()
-    else: # csv file
-        with open('./tmp/'+args.in_file, 'rb') as csvfile:
-            csv_data = csv.reader(csvfile, delimiter=',', quotechar='"')
-            for row in csv_data:
-                pass
+    except:
+        print("NO FILE FOUND ERROR")
+        sys.exit()
 
     datasets = []
 
@@ -97,7 +88,7 @@ def go_distance(args):
     dm1 = DistanceMatrix(dm1)  # convert to scikit-bio DistanceMatrix (v 0.5.1)
     dm1.ids = edited_dataset_list  # assign row names
     #print(dm1)
-    return (dm1, dist, edited_dataset_list)
+    return (dm1, edited_dataset_list)
 # dm1: [[]]  skbio.stats.distance.DistanceMatrix
 #[
 #[  0.00000000e+00   9.86159727e-03   8.90286439e-05   7.11500728e-03
@@ -207,17 +198,9 @@ def cluster_datasets(args, dm1):
     new_ds_order  = []
     new_did_order = []
     
-    mycluster = construct_cluster(args, dm1)
+    mynewick = construct_cluster(args, dm1)
 
-    # newick = mycluster.getNewick(with_distances=True)
-    # print
-    # print newick
-    # print
-    #t = Tree()
-    #t.populate(15)
-
-    ascii_tree = mycluster.ascii_art()
-    print(ascii_tree)
+    ascii_tree = mynewick.ascii_art()
     ascii_file = args.prefix+'_'+args.metric+'_tree.txt'
     ascii_file_path = os.path.join(args.basedir, 'tmp',ascii_file)
     fp = open(ascii_file_path,'w')
@@ -225,10 +208,7 @@ def cluster_datasets(args, dm1):
     fp.close()
     #nodenames =  mycluster.getNodeNames()
     #print nodenames
-    for node in mycluster.preorder():
-        #print(node.name)
-        #if str(node.name) != 'None' and str(node.name) == 'root' and str(node.name)[:4] == 'edge':
-        #    continue
+    for node in mynewick.preorder():
         if str(node.name) != 'None':
             #did = did_hash[ds]
             new_ds_order.append(str(node.name).replace(' ','_'))
@@ -427,28 +407,30 @@ def pcoa_pdf(args, data):
 if __name__ == '__main__':
 
     usage = """
-    -in/--in                json_file
-    -/metric/--metric       distance metric to calculate ['horn', ]
-    -fxn/--function         [distance, dendrogram, pcoa, dheatmap, fheatmap]
-    -basedir/--basedir
-    -pre/--prefix
+    
+        distance_and_ordination.py
+    -in/--in                REQUIRED json biom file
+    -/metric/--metric       distance metric to calculate [default:bray_curtis]
+    -fxn/--function         REQUIRED [distance, dendrogram, pcoa, dheatmap, fheatmap]
+    -basedir/--basedir      REQUIRED
+    -pre/--prefix           REQUIRED
+    -m/--map_fp             path to metadata file [format: http://qiime.org/documentation/file_formats.html]
 
     IMPORTANT -- no print statements allowed in functions
     """
     parser = argparse.ArgumentParser(description="Calculates distance from input JSON file", usage=usage)
 
-    parser.add_argument('-in','--in',          required=True,  action="store",  dest='in_file',   help = '')
-    parser.add_argument('-ff','--file_format', required=False, action="store",  dest='file_format',help = 'json or csv only', default='json')
+    parser.add_argument('-in','--in',          required=True,  action="store",  dest='in_file',   help = 'input json biom file')
     parser.add_argument('-metric','--metric',  required=False, action="store",  dest='metric',    help = 'Distance Metric', default='bray_curtis')
     parser.add_argument('-fxn','--function',   required=True,  action="store",  dest='function',  help = 'distance, dendrogram, pcoa, dheatmap, fheatmap')
     parser.add_argument('-basedir','--basedir',required=True,  action="store",  dest='basedir',   help = 'site base')
     parser.add_argument('-pre','--prefix',     required=True,  action="store",  dest='prefix',    help = 'file prefix')
-    parser.add_argument('-m','--map_fp',       required=False, action="store",  dest='map_fp',    help = 'metadata file path')
+    parser.add_argument('-m','--map_fp',       required=False, action="store",  dest='map_fp',    help = 'metadata file path',default=None)
 
     args = parser.parse_args()
 
-
-    ( dm1, dist, datasets ) = go_distance(args)
+    # saves distance file:
+    ( dm1, datasets ) = go_distance(args)
 
     if args.function == 'cluster_datasets':
         #did_list = cluster_datasets(args, dm3, did_hash)
@@ -456,9 +438,9 @@ if __name__ == '__main__':
         # IMPORTANT print the dataset list
         print('DS_LIST=',json.dumps(new_ds_list))
 
-    if args.function == 'fheatmap':
-        # IMPORTANT print for freq heatmap
-        print(dist.tolist())
+ #    if args.function == 'fheatmap':
+#         # IMPORTANT print for freq heatmap
+#         print(dist.tolist())
 
 
     # if args.function == 'dheatmap':
