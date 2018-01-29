@@ -102,7 +102,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     visual_post_items.include_nas = req.body.include_nas              || "yes"
     visual_post_items.min_range = req.body.min_range                  || '0'
     visual_post_items.max_range = req.body.max_range                  || '100'
-    
+
     if((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length != 0){
         console.log('Found api dids ',req.body.ds_order)
         try{
@@ -126,10 +126,10 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         console.log('API ALERT - no dids or project')
         return;
     }
-    
+
     visual_post_items.update_data = req.body.update_data              || '1'   // fires changes
 
-    
+
     visual_post_items.no_of_datasets = dataset_ids.length
     chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);
     // for API select ALL metadata with these datasets
@@ -141,7 +141,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         }
     }
     visual_post_items.metadata = Object.keys(md)
-    
+
   }else if(req.body.restore_image === '1'){
     console.log('in view_selection RESTORE IMAGE')
   }else if(req.body.cancel_resort === '1'){
@@ -785,12 +785,12 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 
     var options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--outdir', path.join(pwd,'tmp'), '--prefix', ts ],
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--basedir', pwd, '--prefix', ts ],
     };
 
     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
-    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-    var dendrogram_process = spawn( options.scriptPath+'/distance.py', options.args, {
+    console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
+    var dendrogram_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true,
             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
@@ -828,17 +828,19 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                     for(n in lines){
                       if(lines[n].substring(0,6) == 'NEWICK' ){
                         tmp = lines[n].split('=')
+                        console.log('FOUND NEWICK '+tmp[1])
                         continue
                       }
                     }
 
 
                     try{
-                      newick = JSON.parse(tmp[1]);
+                      //newick = JSON.parse(tmp[1]);
+                      newick = tmp[1];
                       if(req.CONFIG.site == 'vamps' ){
                         console.log('VAMPS PRODUCTION -- no print to log');
                       }else{
-                        console.log(newick)
+                        console.log('NWK->'+newick)
                       }
                     }
                     catch(err){
@@ -943,10 +945,10 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
         var ts = visual_post_items.ts;
         var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-        var pc_file_name = ts+'.pc';
+        var pc_file_name = ts+'_pc.txt';
         //var pc_file = path.join(pwd,'tmp', pc_file_name);
         ///////////////////////////////////////////////////
-  console.log('in 3D');
+  console.log('POST in 3D');
   if(req.CONFIG.site == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
   }else{
@@ -963,7 +965,6 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
   var mapping_file_name = ts+'_metadata.txt';
   var mapping_file = path.join(pwd,'tmp', mapping_file_name);
-  var pc_file_name = ts+'.pc';
   var pc_file = path.join(pwd,'tmp', pc_file_name);
   //var tax_file_name = ts+'_taxonomy.txt';
   //var tax_file = path.join(pwd,'tmp', tax_file_name);
@@ -976,25 +977,27 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
   var options1 = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--outdir', path.join(pwd,'tmp'), '--prefix', ts],
+    args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--basedir', pwd, '--prefix', ts,'-m', mapping_file],
   };
-  var options2 = {
-      //scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
-  };
+ //  var options2 = {
+//       //scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
+//       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+//       args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
+//   };
   console.log('outdir: '+dir_path);
-  console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
+  console.log(options1.scriptPath+'/distance_and_ordination.py '+options1.args.join(' '));
 
 
-  var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
+  var pcoa_process = spawn( options1.scriptPath+'/distance_and_ordination.py', options1.args, {
       env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
       detached: true,
       stdio:['pipe', 'pipe', 'pipe']
       //stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr
 
-        pcoa_process.stdout.on('data', function pcoaProcessStdout(data) { console.log('1stdout: ' + data);  });
+        pcoa_process.stdout.on('data', function pcoaProcessStdout(data) { 
+            console.log('1stdout: ' + data);  
+        });
         stderr1='';
         pcoa_process.stderr.on('data', function pcoaProcessStderr(data) {
                 console.log('1stderr-POST: ' + data);
@@ -1002,17 +1005,18 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
                 //res.send(stderr1);
                 //return;
         });
-        pcoa_process.on('close', function pcoaProcessOnClose(code1) {
-                console.log('pcoa_process1 process exited with code ' + code1);
+        pcoa_process.on('close', function pcoaProcessOnClose(code) {
+                console.log('pcoa_process1 process exited with code ' + code);
 
-                if(code1 === 0){    // SUCCESS
+                if(code === 0){    // SUCCESS
+                    
                     //console.log(options2.scriptPath+'/make_emperor.py '+options2.args.join(' '));
 
                     //console.log(req.CONFIG.PATH)
                     //console.log(req.CONFIG.LD_LIBRARY_PATH)
                     //console.log(req.CONFIG.PYTHONPATH)
                     //console.log(path.join(pwd,'logs','visualization.log'))
-                    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+                    //var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
                     //var emperor_process = spawn( options2.scriptPath+'/make_emperor.py', options2.args, {
                     //var exec = require('child_process').exec;
                     //cmd = options2.scriptPath+'/make_emperor_custom.py'
@@ -1027,34 +1031,34 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
                     // for (someVar in env) {
                     //     envDup[someVar] = env[someVar];
                     // }
-                    console.log(options2.scriptPath+'make_emperor_custom.py '+options2.args.join(' '));
-                    var emperor_process = spawn( options2.scriptPath+'/make_emperor_custom.py', options2.args, {
-                    //var emperor_process = spawn( 'make_emperor.py', options2.args, {
-                        env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-                        detached: true,
-                        //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
-                        stdio: 'pipe' // stdin, stdout, stderr
-                    });
-                    
-                    var output = '';
-
-                    emperor_process.stdout.on('data', function emperorProcessStdout(data) {
-                          data = data.toString().trim();
-                          console.log(data)
-                          output += data;
-
-                    });
-
-                    stderr = '';
-                    emperor_process.stderr.on('data', function emperorProcessStderr(data) {
-                        data = data.toString();
-                        console.log(data)
-                        stderr += data;
-
-                    });
-                    emperor_process.on('close', function emperorProcessOnClose(code) {
-                        console.log('emperor_process process exited with code ' + code);
-                        if(code == 0){
+                   //  console.log(options2.scriptPath+'make_emperor2.py '+options2.args.join(' '));
+//                     var emperor_process = spawn( options2.scriptPath+'/make_emperor2.py', options2.args, {
+//                     //var emperor_process = spawn( 'make_emperor.py', options2.args, {
+//                         env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+//                         detached: true,
+//                         //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+//                         stdio: 'pipe' // stdin, stdout, stderr
+//                     });
+// 
+//                     var output = '';
+// 
+//                     emperor_process.stdout.on('data', function emperorProcessStdout(data) {
+//                           data = data.toString().trim();
+//                           console.log(data)
+//                           output += data;
+// 
+//                     });
+// 
+//                     stderr = '';
+//                     emperor_process.stderr.on('data', function emperorProcessStderr(data) {
+//                         data = data.toString();
+//                         console.log(data)
+//                         stderr += data;
+// 
+//                     });
+//                     emperor_process.on('close', function emperorProcessOnClose(code) {
+//                         console.log('emperor_process process exited with code ' + code);
+//                        if(code == 0){
                             var html = "** <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a> **"
                             html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
                             html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
@@ -1065,18 +1069,18 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
                             res.send(html);
                             return;
 
-                        }else{
-                          console.log('python script error: '+stderr);
-                          var html = stderr
-                            html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
-                            html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
-                            html += "<br>Mapping (metadata) File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
-                            html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
-                            res.send(html);
-                            return;
-                        }
-                    });
-                    
+                        // }else{
+//                           console.log('python script error: '+stderr);
+//                           var html = stderr
+//                             html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
+//                             html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
+//                             html += "<br>Mapping (metadata) File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
+//                             html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
+//                             res.send(html);
+//                             return;
+//                         }
+//                    });
+
 
 
                 }else{
@@ -1090,126 +1094,126 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
 });
 // GET is to create and open EMPEROR
-router.get('/pcoa3d', helpers.isLoggedIn, function(req, res) {
-
-  console.log('in 3D');
-  if(req.CONFIG.site == 'vamps' ){
-        console.log('VAMPS PRODUCTION -- no print to log');
-  }else{
-    console.log(visual_post_items);
-  }
-  var ts = visual_post_items.ts;
-  var metric = visual_post_items.selected_distance;
-
-  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-  var biom_file_name = ts+'_count_matrix.biom';
-  var biom_file = path.join(pwd,'tmp', biom_file_name);
-
-  var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
-
-  var mapping_file_name = ts+'_metadata.txt';
-  var mapping_file = path.join(pwd,'tmp', mapping_file_name);
-  var pc_file_name = ts+'.pc';
-  var pc_file = path.join(pwd,'tmp', pc_file_name);
-
-  var dir_name = ts+'_pcoa3d';
-  var dir_path = path.join(pwd,'views/tmp', dir_name);
-  var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
-  //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
-  var options1 = {
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--outdir', path.join(pwd,'tmp'), '--prefix', ts],
-  };
-  var options2 = {
-      //scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
-  };
-  console.log('outdir: '+dir_path);
-  console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
-
-  var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
-      env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
-      detached: true,
-      stdio:['pipe', 'pipe', 'pipe']
-      //stdio: [ 'ignore', null, log ]
-        });  // stdin, stdout, stderr1
-
-        pcoa_process.stdout.on('data', function pcoaProcessStdout(data) {
-          if(req.CONFIG.site == 'vamps' ){
-            console.log('VAMPS PRODUCTION -- no print to log');
-          }else{
-            console.log('1stdout: ' + data);
-          }
-        });
-        stderr1='';
-        pcoa_process.stderr1.on('data', function pcoaProcessStderr(data) {
-                console.log('1stderr-GET: ' + data);
-                stderr1 += data;
-        });
-        pcoa_process.on('close', function pcoaProcessOnClose(code1) {
-                console.log('pcoa_process1 process exited with code ' + code1);
-
-                if(code1 === 0){    // SUCCESS
-                    //console.log(options2.scriptPath+'/make_emperor.py '+options2.args.join(' '));
-
-                    //console.log(req.CONFIG.PATH)
-                    //console.log(req.CONFIG.LD_LIBRARY_PATH)
-                    //console.log(req.CONFIG.PYTHONPATH)
-                    //console.log(path.join(pwd,'logs','visualization.log'))
-                    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
-                    //var emperor_process = spawn( options2.scriptPath+'/make_emperor.py', options2.args, {
-                    var exec = require('child_process').exec;
-                    cmd = options2.scriptPath+'/make_emperor_custom.py'
-                    cmdline =  cmd+' '+options2.args.join(' ')
-                    console.log(cmdline);
-                    if(req.CONFIG.hostname.substring(0,6) == 'bpcweb'){
-                      var env = {'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'LAPACK':req.CONFIG.LAPACK};
-                    }else{
-                      var env = process.env;
-                    }
-                    // var env = process.env, envDup = {};
-                    // for (someVar in env) {
-                    //     envDup[someVar] = env[someVar];
-                    // }
-                    child = exec(cmdline, {
-                              //cwd: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-                              env : env
-                            }, function makeEmperorScriptExec(error, stdout, stderr) {
-
-                      //console.log('stdout-GET: ' + stdout);
-
-                      console.log('stderr-GET: ' + stderr);
-
-                      if (error !== null) {
-
-                        console.log('exec error-GET: ' + error);
-
-
-                      }else{
-                        //res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd});
-                        //open('file://'+html_path);
-                        //res.send("Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser.");
-                        //res.send("Done - <a href='/tmp/"+dir_name+"/index.html' target='_blank'>Emperor</a> will open a new window in your default browser.");
-                        //html = "<a href='../tmp/andy_1450362333240_pcoa3d/index' target='_blank'>Emperor1</a>"
-                        html = " <a href='/tmp/"+dir_name+"/index' target='_blank'>Emperor</a>"
-                        //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
-
-                        res.send(html);
-
-                      }
-
-                    });
-
-
-                }else{
-                    //console.log('ERROR');
-                    res.send('Python Script Error: '+stderr1);
-                }
-        });
-
-
-});
+// router.get('/pcoa3d', helpers.isLoggedIn, function(req, res) {
+// 
+//   console.log('GET in 3D');
+//   if(req.CONFIG.site == 'vamps' ){
+//         console.log('VAMPS PRODUCTION -- no print to log');
+//   }else{
+//     console.log(visual_post_items);
+//   }
+//   var ts = visual_post_items.ts;
+//   var metric = visual_post_items.selected_distance;
+// 
+//   var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+//   var biom_file_name = ts+'_count_matrix.biom';
+//   var biom_file = path.join(pwd,'tmp', biom_file_name);
+// 
+//   var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+// 
+//   var mapping_file_name = ts+'_metadata.txt';
+//   var mapping_file = path.join(pwd,'tmp', mapping_file_name);
+//   var pc_file_name = ts+'_pc.txt';
+//   var pc_file = path.join(pwd,'tmp', pc_file_name);
+// 
+//   var dir_name = ts+'_pcoa3d';
+//   var dir_path = path.join(pwd,'views/tmp', dir_name);
+//   var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
+//   //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
+//   var options1 = {
+//     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+//     args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--outdir', path.join(pwd,'tmp'), '--prefix', ts],
+//   };
+//   var options2 = {
+//       //scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
+//       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+//       args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
+//   };
+//   console.log('outdir: '+dir_path);
+//   console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
+// 
+//   var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
+//       env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
+//       detached: true,
+//       stdio:['pipe', 'pipe', 'pipe']
+//       //stdio: [ 'ignore', null, log ]
+//         });  // stdin, stdout, stderr1
+// 
+//         pcoa_process.stdout.on('data', function pcoaProcessStdout(data) {
+//           if(req.CONFIG.site == 'vamps' ){
+//             console.log('VAMPS PRODUCTION -- no print to log');
+//           }else{
+//             console.log('1stdout: ' + data);
+//           }
+//         });
+//         stderr1='';
+//         pcoa_process.stderr1.on('data', function pcoaProcessStderr(data) {
+//                 console.log('1stderr-GET: ' + data);
+//                 stderr1 += data;
+//         });
+//         pcoa_process.on('close', function pcoaProcessOnClose(code1) {
+//                 console.log('pcoa_process1 process exited with code ' + code1);
+// 
+//                 if(code1 === 0){    // SUCCESS
+//                     //console.log(options2.scriptPath+'/make_emperor.py '+options2.args.join(' '));
+// 
+//                     //console.log(req.CONFIG.PATH)
+//                     //console.log(req.CONFIG.LD_LIBRARY_PATH)
+//                     //console.log(req.CONFIG.PYTHONPATH)
+//                     //console.log(path.join(pwd,'logs','visualization.log'))
+//                     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+//                     //var emperor_process = spawn( options2.scriptPath+'/make_emperor.py', options2.args, {
+//                     var exec = require('child_process').exec;
+//                     cmd = options2.scriptPath+'/make_emperor_custom.py'
+//                     cmdline =  cmd+' '+options2.args.join(' ')
+//                     console.log(cmdline);
+//                     if(req.CONFIG.hostname.substring(0,6) == 'bpcweb'){
+//                       var env = {'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'LAPACK':req.CONFIG.LAPACK};
+//                     }else{
+//                       var env = process.env;
+//                     }
+//                     // var env = process.env, envDup = {};
+//                     // for (someVar in env) {
+//                     //     envDup[someVar] = env[someVar];
+//                     // }
+//                     child = exec(cmdline, {
+//                               //cwd: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+//                               env : env
+//                             }, function makeEmperorScriptExec(error, stdout, stderr) {
+// 
+//                       //console.log('stdout-GET: ' + stdout);
+// 
+//                       console.log('stderr-GET: ' + stderr);
+// 
+//                       if (error !== null) {
+// 
+//                         console.log('exec error-GET: ' + error);
+// 
+// 
+//                       }else{
+//                         //res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd});
+//                         //open('file://'+html_path);
+//                         //res.send("Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser.");
+//                         //res.send("Done - <a href='/tmp/"+dir_name+"/index.html' target='_blank'>Emperor</a> will open a new window in your default browser.");
+//                         //html = "<a href='../tmp/andy_1450362333240_pcoa3d/index' target='_blank'>Emperor1</a>"
+//                         html = " <a href='/tmp/"+dir_name+"/index' target='_blank'>Emperor</a>"
+//                         //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
+// 
+//                         res.send(html);
+// 
+//                       }
+// 
+//                     });
+// 
+// 
+//                 }else{
+//                     //console.log('ERROR');
+//                     res.send('Python Script Error: '+stderr1);
+//                 }
+//         });
+// 
+// 
+// });
 
 //
 // DATA BROWSER
@@ -1693,7 +1697,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     //new_matrix.dids = [chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)]];
     new_matrix.data = []
     new_matrix.total = 0
-    
+
     new_matrix.shape = [BIOM_MATRIX.shape[0],1]
     var idx = -1;
 
@@ -2188,7 +2192,7 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
   console.log('req.body: save_config');
   var timestamp = +new Date();  // millisecs since the epoch!
   var filename = 'configuration-' + timestamp + '.json';
-  
+
   var json_obj = {}
   json_obj.source = 'VAMPS';
   json_obj.post_items = visual_post_items
@@ -2381,14 +2385,14 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 
     var options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'cluster_datasets', '--outdir', path.join(pwd,'tmp'), '--prefix', ts],
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'cluster_datasets', '--basedir', pwd, '--prefix', ts],
     };
-    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+    console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
 
     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 
 
-    var cluster_process = spawn( options.scriptPath+'/distance.py', options.args, {
+    var cluster_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true,
             stdio: [ 'ignore', null, log ]
@@ -2538,17 +2542,17 @@ function filter_project_tree_for_permissions(req, obj){
       node = PROJECT_INFORMATION_BY_PID[pid];
       //console.log(node)
       if(
-            node.public 
+            node.public
             || req.user.security_level <= 10                    // admin user ==1
             || node.permissions.length === 0                    // ??
             || node.permissions.indexOf(req.user.user_id) !== -1 // owner is user
             || (req.user.security_level == 45 && (node.project).substring(0,3) == 'DCO') // DCO Editor all DCO* projects
             ) {
-        
+
                 if(PROJECT_INFORMATION_BY_PID[pid].metagenomic == 0){
                     new_project_tree_pids.push(pid)
                 }
-        
+
       }
   }
   //console.log(obj)

@@ -16,10 +16,12 @@ import numpy as np
 import argparse
 import json
 import csv
+import pandas as pd
 #from ete2 import Tree
 #print >> sys.stderr, sys.argv[1:]
 # cogent will be phased out in python3
-from cogent.maths import distance_transform as dt
+
+from cogent3.maths import distance_transform as dt
 #print sys.path
 
 def go_distance(args):
@@ -63,7 +65,7 @@ def go_distance(args):
     #edited_did_hash = {}
     for row,line in enumerate(data['columns']):
         if row not in bad_rows[0]:
-            edited_dataset_list.append(line['id'].encode("utf-8"))
+            edited_dataset_list.append(line['id'])
 
     #print(edited_dataset_list)
     dist = get_dist(args.metric, dmatrix)
@@ -83,16 +85,15 @@ def go_distance(args):
 
     #out_fp.write(file_header_line)
 
-
     for row,name in enumerate(edited_dataset_list):
-            #name = line['name']
-            dm2[name.encode("utf-8")] = {}
+            name = str(name)
+            dm2[name] = {}
             file_data_line = name+','
             for col,d in enumerate(dm1[row]):
                 #print data['columns'][col]['id']
                 file_data_line += str(dm1[row][col])+','
-                dm2[name][data['columns'][col]['id'].encode("utf-8")]  = dm1[row][col]
-                dm3[(name.encode("utf-8"), (data['columns'][col]['id'].encode("utf-8")))]  = dm1[row][col]
+                dm2[name][str(data['columns'][col]['id'])]  = dm1[row][col]
+                dm3[(name, str(data['columns'][col]['id']))]  = dm1[row][col]
             file_data_line = file_data_line[:-1]+'\n'
             #out_fp.write(file_data_line)
 
@@ -253,9 +254,9 @@ def construct_cluster(args, dm):
         # UPGMA OR
         # neighbor joining:
 
-        from cogent.phylo import nj
+        from cogent3.phylo import nj
 
-        from cogent.cluster.UPGMA import upgma
+        from cogent3.cluster.UPGMA import upgma
         # the following prints to stdout -- controlled in routes_visualizations.js
         mycluster = nj.nj(dm)
 
@@ -328,7 +329,7 @@ def test_PCoA():
         """PCoA returns a cogent Table result"""
         import random
         import skbio
-        from cogent.cluster.metric_scaling import PCoA
+        from cogent3.cluster.metric_scaling import PCoA
         from numpy import array
         matrix14 = array([ \
         [0,0.099,0.033,0.183,0.148,0.198,0.462,0.628,0.113,0.173,0.434,0.762,0.53,0.586],\
@@ -368,13 +369,16 @@ def test_PCoA():
         #assertFloatEqual(abs(result[7,2]), 0.240788133045)
 
 def pcoa(args, dist):
-    from cogent.cluster.metric_scaling import PCoA
-    PCoA_result = PCoA(dist)
+    #from cogent3.cluster.metric_scaling import PCoA
+    from skbio.stats.ordination import PCoA, OrdinationResults
+    PCoA_result = PCoA(dist).scores()
     #print PCoA_result
 
     #dt = np.dtype(float)
-    #print type(PCoA_result)
-    a = np.array(PCoA_result)[0:,0:5]   # capture only the first three vectors
+    print('PCoA_result.proportion_explained')
+    print(PCoA_result.samples)
+    print('end pcoa result')
+    a = np.array(PCoA_result)  #[0:,0:5]   # capture only the first three vectors
     #print a
     json_array = {}
     json_array["P1"] = a[:,2].tolist()[:-2]  # [:-2] is to remove the last two which are not eigen vectors
@@ -563,9 +567,9 @@ if __name__ == '__main__':
     if args.function == 'dendrogram':
         # Notebook only
         from ete3 import Tree, TreeStyle
-        from cogent import LoadTree
-        #from cogent.draw import dendrogram
-        #from cogent.draw.dendrogram import UnrootedDendrogram
+        from cogent3 import LoadTree
+        #from cogent3.draw import dendrogram
+        #from cogent3.draw.dendrogram import UnrootedDendrogram
         newick = dendrogram_newick(args, dm3)
         newick_file = os.path.join(args.outdir,args.prefix+'_newick.tre')
         fp = open(newick_file,'w')
@@ -593,7 +597,12 @@ if __name__ == '__main__':
 
 
     if args.function == 'pcoa_3d':
-        pcoa_data = pcoa(args, dm3)
+        print('starting pcoa_3d')
+        from skbio import DistanceMatrix
+        dm = DistanceMatrix(dm1)
+        print(dm)
+        print('end')
+        pcoa_data = pcoa(args, dm)
         #test_PCoA()
 
     if args.function == 'pcoa_2d':
