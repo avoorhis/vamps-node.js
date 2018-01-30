@@ -110,16 +110,30 @@ module.exports = function(passport, db) {
 /////////////////////////
 
 
-function validatePassword(entered_pw, database_pw) {
-    if (helpers.generateHash(entered_pw) === database_pw){
-        console.log('Password Match!');
-        return true;
-    }
-    console.log('No-Match!');
-    return false;
-}
+// function validatePassword(entered_pw, database_pw, db) {
+//     db.query("SELECT PASSWORD('"+entered_pw+"') as entered_pw", function(err,rows){
+//     	if(err) {
+//     		console.log("")
+//     		return false;
+//     	}else{
+//     		console.log("ROWS PW " +rows[0].entered_pw +' === '+database_pw)
+//     		if(rows[0].entered_pw === database_pw){
+//     			console.log('Password Match!');
+//          		return true;
+//     		}else{
+//     			console.log('No-Match!');
+//     			return false;
+//     		}
+//     	}
+//     })
+//     // if (helpers.generateHash(entered_pw) === database_pw){
+// //         console.log('Password Match!');
+// //         return true;
+// //     }
+//     
+// }
 function reset_password_auth(req, username, password, newpass, done, db){
-    var qSelectUser = queries.get_user_by_name(username)
+    var qSelectUser = queries.get_user_by_name(username,password)
     db.query(qSelectUser, function(err,rows){
         if (err)
             { return done(null, false, { message: err }); }
@@ -132,7 +146,8 @@ function reset_password_auth(req, username, password, newpass, done, db){
             { return done(null, false, req.flash('fail', 'That account is inactive -- send email to vamps.mbl.edu to request re-activation.'));}
         }
 
-        if ( validatePassword(password, rows[0].encrypted_password) )
+        //if ( validatePassword(password, rows[0].encrypted_password, db) )
+        if(rows[0].encrypted_password === rows[0].entered_pw)
         { 
             update_password(req, username, newpass, done, db)
             req.flash('success', 'Success. LOGGING OUT')
@@ -150,7 +165,8 @@ function reset_password_auth(req, username, password, newpass, done, db){
 }
 function login_auth_user(req, username, password, done, db){
    
-    var qSelectUser = queries.get_user_by_name(username)
+    var qSelectUser = queries.get_user_by_name(username,password)
+    console.log(qSelectUser)
     console.log('login_auth_user')
     db.query(qSelectUser, function(err,rows){
         if (err)
@@ -166,8 +182,10 @@ function login_auth_user(req, username, password, done, db){
         }
 
         //Wed Feb 11 2015 15:05:29 GMT-0500 (EST)
-        if ( validatePassword(password, rows[0].encrypted_password) )
+        //if ( validatePassword(password, rows[0].encrypted_password, db) )
+        if(rows[0].encrypted_password === rows[0].entered_pw)
         { 
+            console.log('returned TRUE')
             var new_count = parseInt(rows[0].sign_in_count) + 1;            
             var qResetUserSignin = queries.reset_user_signin(new_count, rows[0].current_sign_in_at, rows[0].user_id)
             //var q = "update user set sign_in_count='"+new_count+"', current_sign_in_at=CURRENT_TIMESTAMP(), last_sign_in_at='"+rows[0].current_sign_in_at+"' where user_id='"+rows[0].user_id+"'"
@@ -235,7 +253,7 @@ function signup_user(req, username, password, done, db){
     if( new_user.institution.length < 1 || new_user.institution.length > 128){
         return done(null, false, req.flash('fail', 'Institution name is required.'));
     }
-    db.query(queries.get_user_by_name(new_user.username), function(err, select_rows){
+    db.query(queries.get_user_by_name(new_user.username, new_user.password), function(err, select_rows){
             if (err) {
               console.log(err)
               return done(null, false, req.flash( 'fail', err ));

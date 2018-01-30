@@ -596,12 +596,12 @@ module.exports.checkUserName = function(username) {   // SAME FXN IN PASSPORT
   //console.log(a)
   return a;
 };
-module.exports.generateHash = function(password) {
-  //return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-  var cipher = crypto.createCipher('aes-256-cbc', 'salt');
-  cipher.update(password, 'utf8', 'base64');
-  return cipher.final('base64');
-};
+// module.exports.generateHash = function(password) {
+//   //return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+//   var cipher = crypto.createCipher('aes-256-cbc', 'salt');
+//   cipher.update(password, 'utf8', 'base64');
+//   return cipher.final('base64');
+// };
 // Sort list of json objects alphabetically
 module.exports.compareStrings_alpha = function(a, b) {
   // Assuming you want case-insensitive comparison

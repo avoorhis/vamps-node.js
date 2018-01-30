@@ -20,11 +20,14 @@ alter_security_level: function( status, uid ){
     return qAlterSecLevel;      
 },
 reset_user_password_by_uid: function(pass, uid){
-    var updateQuery = "UPDATE user set encrypted_password='"+helpers.generateHash(pass)+"', active='1' where user_id='"+uid+"'";
+    //var updateQuery = "UPDATE user set encrypted_password='"+helpers.generateHash(pass)+"', active='1' where user_id='"+uid+"'";
+    var updateQuery = "UPDATE user set encrypted_password=PASSWORD('"+pass+"'), active='1' where user_id='"+uid+"'";
+    
     return updateQuery
 },
 reset_user_password_by_uname: function(pass, uname){
-    var updateQuery = "UPDATE user set encrypted_password='"+helpers.generateHash(pass)+"', active='1' where username='"+uname+"'";
+    //var updateQuery = "UPDATE user set encrypted_password='"+helpers.generateHash(pass)+"', active='1' where username='"+uname+"'";
+    var updateQuery = "UPDATE user set encrypted_password=PASSWORD('"+pass+"'), active='1' where username='"+uname+"'";
     return updateQuery
 },
 reset_user_signin: function(new_count, old_date, uid){
@@ -52,8 +55,9 @@ inactivate_user: function( uid ){
 insert_new_user: function(mysql_new_user){
     
     var qInsertUser = "INSERT INTO user (username, encrypted_password, first_name, last_name, email, institution, active, sign_in_count, security_level, current_sign_in_at, last_sign_in_at)";
-    qInsertUser +=    " VALUES ('" + mysql_new_user.username +"', '"+
-                                    helpers.generateHash(mysql_new_user.password) +"', '"+
+    qInsertUser +=    " VALUES ('" + mysql_new_user.username +"', "+
+                                   // helpers.generateHash(mysql_new_user.password) +"', '"+
+                                    "PASSWORD('"+mysql_new_user.password+"'),   '"+
                                     mysql_new_user.firstname +"', '"+
                                     mysql_new_user.lastname +"', '"+
                                     mysql_new_user.email +"', '"+
@@ -66,9 +70,10 @@ insert_new_user: function(mysql_new_user){
     //console.log(qInsertUser)
     return qInsertUser
 },
-get_user_by_name: function(uname){
+get_user_by_name: function(uname,passwd){
     var q = "SELECT user_id, username, email, institution, first_name, last_name, active, security_level,"
-     q += " encrypted_password, sign_in_count, DATE_FORMAT(current_sign_in_at,'%Y-%m-%d %T') as current_sign_in_at,last_sign_in_at from user"
+     q += " encrypted_password, PASSWORD('"+passwd+"') as entered_pw, sign_in_count,"
+     q += " DATE_FORMAT(current_sign_in_at,'%Y-%m-%d %T') as current_sign_in_at,last_sign_in_at from user"
      q += " WHERE username ='"+uname+"'"
     return q;
 },
