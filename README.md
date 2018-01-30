@@ -69,11 +69,11 @@ Create a new database in your mysql installation and install one of the schemas 
 ```
 **Before starting the server**
  * Once the database is in place but before you start the server for the first time
-go into the public/scripts directory and run the INITIALIZE_ALL_FILES.py script. 
+go into the public/scripts directory and run the rebuild_vamps_files.py script. 
 
    ```
    cd public/scripts/maintenance_scripts; 
-   python INITIALIZE_ALL_FILES.py
+   rebuild_vamps_files.py --all
    ```
   
    This script requires that you have a .my.cnf file in your home directory
