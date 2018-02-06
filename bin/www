@@ -1,7 +1,7 @@
-#!/usr/bin/env /usr/local/www/vamps/software/node/bin/node
+#!/usr/bin/env node
 
 var app = require('../app');
-var debug = require('debug')('vamps-node.js'); 
+var debug = require('debug')('vamps-node.js');
 var config = require('../config/config');
 // CL example: nodemon bin/www testing
 
@@ -10,7 +10,7 @@ if(available_environments.indexOf(process.argv[2]) !== -1){
 	process.env.NODE_ENV = process.argv[2];
 }else{
 	console.log('available environments:',available_environments);
-	if(config.hostname == 'bpcweb8') {	
+	if(config.hostname == 'bpcweb8') {
 	    process.env.NODE_ENV = 'production';  // vamps
 	}else if(config.hostname == 'bpcweb7'){
 	    process.env.NODE_ENV = 'development';  // vampsdev

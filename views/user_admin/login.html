@@ -4,8 +4,16 @@
 
 <div class="title fa fa-anchor">Login</div>
 
-<center><h3 class='red'>2018-01-23 -- Our database is being updated so you may experience poor performance while this notice is present.</h3></center>
 
+<div id='' style='padding:10px;background: orange;'>
+        <h4>We've made a change to our authentication process which requires us to update all the passwords.
+        <br><br>
+        If your username fails to authenticate:
+        please email us at <a href="mailto:vamps@mbl.edu?subject=VAMPS Password Update&body=Full Name:%0D%0AUsername:">vamps@mbl.edu</a> with your name, and vamps username and we'll reply with your updated account information.
+        <br><br>
+        The new credentials will be valid on both VAMPS and new VAMPS (<a href='https://vamps2.mbl.edu'>https://vamps2.mbl.edu/</a>)
+        </h4>
+        </div>
 <div class="row">
     <div class="col-lg-3"></div>
       <div class="col-lg-6">
@@ -28,10 +36,10 @@
           <div>
               <input type="submit" value="Log In"/> <!-- <small><a href="forgot">Forgot Password?</a></small> -->
           </div>
-          <input type='hidden' name='return_to_url' value='<%=return_to_url%>'/>          
-      
+          <input type='hidden' name='return_to_url' value='<%=return_to_url%>'/>
+
       </form>
-      
+
       <br>
       <p>Guest Account (limited functionality): User: 'guest'; Password: 'guest'</p>
       <p>Need an account? <a href="/users/signup">Signup</a></p>
