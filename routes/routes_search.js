@@ -110,7 +110,7 @@ router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
     }
 
     res.json(dids_in_range)
-  
+
 });
 router.post('/accept_latlon_datasets', helpers.isLoggedIn, function(req, res) {
   console.log('in accept_latlon_datasets');
@@ -244,10 +244,16 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
       for(var n in rows){
         console.log(rows[n]);
         did = rows[n]['did'];
-        pid = PROJECT_ID_BY_DID[did];
-        pname = PROJECT_INFORMATION_BY_PID[pid].project;
-        datasets.ids.push(did);
-        datasets.names.push(pname+'--'+DATASET_NAME_BY_DID[did]);
+        try{
+          pid = PROJECT_ID_BY_DID[did];
+          pname = PROJECT_INFORMATION_BY_PID[pid].project;
+          datasets.ids.push(did);
+          datasets.names.push(pname+'--'+DATASET_NAME_BY_DID[did]);
+        }catch(e){
+          console.log('Skipping did:'+did+'; No project found')
+        }
+
+
       }
 
 
@@ -399,7 +405,7 @@ router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
 	var hint = '';
 	var obj = new_taxonomy.taxa_tree_dict_map_by_rank;
 	var taxon;
-	
+
 	if(q !== ''){
 		for(var n in obj["domain"]){
 			taxon = obj["domain"][n].taxon;
@@ -567,7 +573,7 @@ router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req
 	var this_item = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[selected_taxon+'_'+selected_rank];
 	var tax_str = selected_taxon;
 	var item = this_item;
-	
+
   // goes up the tree to get taxon parents:
   while(item.parent_id !== 0){
 		item  = new_taxonomy.taxa_tree_dict_map_by_id[item.parent_id];
@@ -758,7 +764,7 @@ function get_search_datasets(user, search){
         for (var did in AllMetadata){
           // search only if did allowed by permissions
           var pid = PROJECT_ID_BY_DID[did];
-          
+
           try{
 
               if(user.security_level <= 10 || PROJECT_INFORMATION_BY_PID[pid].permissions.length === 0 || PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(user.user_id) !=-1 ){
