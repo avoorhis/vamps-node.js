@@ -210,7 +210,16 @@ module.exports.get_datasets = function(callback){
       }
       console.log(' INITIALIZING MD_RUN');
   });
-
+  // connection.query(queries.get_portals_query(), function(err, rows, fields){    
+//       if (err)  {
+//         console.log('Query error: ' + err);
+//         console.log(err.stack);
+//         process.exit(1);
+//       } else {
+//         helpers.get_select_run_query(rows);          
+//       }
+//       console.log(' INITIALIZING PORTALS');
+//   });
   // slow query
   connection.query(queries.get_select_seq_count_query(), function(err, rows, fields){    
       

@@ -409,6 +409,11 @@ module.exports.get_select_primer_suite_query = function(rows){
 
   }
 };
+// module.exports.get_portals_query = function(rows){
+//   for (var i=0; i < rows.length; i++) {
+//     PORTAL[rows[i].portal_id] = rows[i].portal_prefix;
+//   }
+// };
 // module.exports.get_select_primer_query = function(rows){
 //     for (var i=0; i < rows.length; i++) {
 //         // MD_PRIMER[primer_suite_id] = [array of primers] names or seqs????

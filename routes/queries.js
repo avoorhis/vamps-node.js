@@ -455,7 +455,13 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
         qSelectDatasets += " ORDER BY project, dataset";
         //console.log(qSelectDatasets);
         return qSelectDatasets;
-  }
+  },
+   get_portals_query: function() {      
+      var q = "SELECT portal_id, portal_prefix\n"
+      q += " FROM `portal`\n"
+      //console.log(q)
+      return q;
+  },
   
   
  

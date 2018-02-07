@@ -44,13 +44,15 @@ router.get('/visuals_index/:portal', function(req, res) {
 // PROJECTS
 //
 router.get('/projects/:portal', function(req, res) {
-    console.log('in projects/:portal')
+    
     var portal = req.params.portal;
+    console.log('in projects/:portal:'+portal)
     var project_list = helpers.get_portal_projects(req, portal)
     
     project_list.sort(function(a, b){
           return helpers.compareStrings_alpha(a.project, b.project);
     });
+    console.log('project_list')
     console.log(project_list)
     res.render('portals/projects', { 
             title     : 'VAMPS:'+portal+'Portals',
@@ -73,8 +75,9 @@ router.get('/metadata/:portal', function(req, res) {
 });
 
 router.get('/:portal', function(req, res) {
-    console.log('in /:portal')
+    
     var portal = req.params.portal;
+    console.log('in /:portal -'+portal)
     var pagetitle, maintitle, subtitle;
 
     var pi = req.CONSTS.PORTALS[portal]
