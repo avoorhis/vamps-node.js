@@ -105,7 +105,7 @@ var visuals = require('./routes/visuals/routes_visualization');
 //console.log('test2')
 var expressSanitized = require('express-sanitized');
 // add timestamps in front of log messages
-require('console-stamp')(console, { pattern: 'yyyy/dd/mm HH:MM:ss.l' });
+require('console-stamp')(console, { pattern: 'yyyy/mm/dd HH:MM:ss.l' });
 
 var app = express();
 app.set('appName', 'VAMPS');
