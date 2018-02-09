@@ -409,20 +409,7 @@ module.exports.get_select_primer_suite_query = function(rows){
 
   }
 };
-// module.exports.get_portals_query = function(rows){
-//   for (var i=0; i < rows.length; i++) {
-//     PORTAL[rows[i].portal_id] = rows[i].portal_prefix;
-//   }
-// };
-// module.exports.get_select_primer_query = function(rows){
-//     for (var i=0; i < rows.length; i++) {
-//         // MD_PRIMER[primer_suite_id] = [array of primers] names or seqs????
-//         // [{'sequence':xxx, 'direction':'F','original_seq':xxxx,'name':967F,'region':'v6','domain':}
-//
-//         if(rows[i].primer_suite_id in MD_PRIMER)
-//
-//     }
-// };
+
 ////////////////////
 
 module.exports.get_select_run_query = function(rows){
@@ -721,23 +708,23 @@ module.exports.get_public_projects = function(req) {
 
 };
 
-module.exports.get_attributes_from_hdf5_group = function(did, type) {
-  var hash = {};
-  var h5group;
-  if(type == 'metadata'){
-    h5group = HDF5_MDATA.openGroup(did+"/"+type);
-  }else{
-    h5group = HDF5_TAXDATA.openGroup(did+"/"+type);
-  }
-
-  h5group.refresh();
-  Object.getOwnPropertyNames(h5group).forEach(function(str, idx, array) {
-    if(str != 'id'){
-      hash[str] = h5group[str];
-    }
-  });
-  return hash;
-};
+// module.exports.get_attributes_from_hdf5_group = function(did, type) {
+//   var hash = {};
+//   var h5group;
+//   if(type == 'metadata'){
+//     h5group = HDF5_MDATA.openGroup(did+"/"+type);
+//   }else{
+//     h5group = HDF5_TAXDATA.openGroup(did+"/"+type);
+//   }
+// 
+//   h5group.refresh();
+//   Object.getOwnPropertyNames(h5group).forEach(function(str, idx, array) {
+//     if(str != 'id'){
+//       hash[str] = h5group[str];
+//     }
+//   });
+//   return hash;
+// };
 
 module.exports.get_PTREE_metadata = function(OBJ, q) {
   projects = [];
@@ -916,7 +903,7 @@ module.exports.run_select_datasets_query = function(rows){
   //console.log(JSON.stringify(ALL_DATASETS))
   console.log('Getting md-names and those w/ lat/lon');
   //var clean_metadata = {};
-  if(HDF5_MDATA === ''){
+  //if(HDF5_MDATA === ''){
     var clean_metadata = {};
     // TODO: "Blocks are nested too deeply. (4)"
     for(did in AllMetadata){
@@ -950,51 +937,51 @@ module.exports.run_select_datasets_query = function(rows){
         }
       }
     }
-  }else{
-    for(did in DATASET_NAME_BY_DID){
-      //console.log(did)
-      //clean_metadata[did] = {}
-
-      var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-      mdgroup.refresh();
-      // TODO: "This function's cyclomatic complexity is too high. (8)"
-      // TODO: "Don't make functions within a loop."
-      Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-        if(mdname != 'id'){
-          //console.log(mdname, group[mdname])
-          //clean_metadata[did][mdname] = mdgroup[mdname]
-
-          if(AllMetadataNames.indexOf(mdname) == -1){
-            AllMetadataNames.push(mdname);
-          }
-          if(mdname == 'latitude' || mdname == 'longitude'){
-            if(did in DatasetsWithLatLong){
-              if(mdname == 'latitude'){
-                // TODO: "Blocks are nested too deeply. (4)"
-                DatasetsWithLatLong[did].latitude = +mdgroup[mdname];
-              }else{
-                DatasetsWithLatLong[did].longitude = +mdgroup[mdname];
-              }
-            }else{
-              DatasetsWithLatLong[did]={};
-
-              var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-              DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
-              DatasetsWithLatLong[did].pid = PROJECT_ID_BY_DID[did];
-              if(mdname == 'latitude'){
-                // TODO: Column: 47 "Blocks are nested too deeply. (4)"
-                DatasetsWithLatLong[did].latitude = +mdgroup[mdname];
-              }else{
-                DatasetsWithLatLong[did].longitude = +mdgroup[mdname];
-              }
-            }
-          }
-
-
-        }
-      });
-    }
-  }
+//   }else{
+//     for(did in DATASET_NAME_BY_DID){
+//       //console.log(did)
+//       //clean_metadata[did] = {}
+// 
+//       var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+//       mdgroup.refresh();
+//       // TODO: "This function's cyclomatic complexity is too high. (8)"
+//       // TODO: "Don't make functions within a loop."
+//       Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
+//         if(mdname != 'id'){
+//           //console.log(mdname, group[mdname])
+//           //clean_metadata[did][mdname] = mdgroup[mdname]
+// 
+//           if(AllMetadataNames.indexOf(mdname) == -1){
+//             AllMetadataNames.push(mdname);
+//           }
+//           if(mdname == 'latitude' || mdname == 'longitude'){
+//             if(did in DatasetsWithLatLong){
+//               if(mdname == 'latitude'){
+//                 // TODO: "Blocks are nested too deeply. (4)"
+//                 DatasetsWithLatLong[did].latitude = +mdgroup[mdname];
+//               }else{
+//                 DatasetsWithLatLong[did].longitude = +mdgroup[mdname];
+//               }
+//             }else{
+//               DatasetsWithLatLong[did]={};
+// 
+//               var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+//               DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
+//               DatasetsWithLatLong[did].pid = PROJECT_ID_BY_DID[did];
+//               if(mdname == 'latitude'){
+//                 // TODO: Column: 47 "Blocks are nested too deeply. (4)"
+//                 DatasetsWithLatLong[did].latitude = +mdgroup[mdname];
+//               }else{
+//                 DatasetsWithLatLong[did].longitude = +mdgroup[mdname];
+//               }
+//             }
+//           }
+// 
+// 
+//         }
+//       });
+//     }
+//   }
 
 
   AllMetadataNames.sort(function(a, b){

@@ -176,7 +176,7 @@ constants.PORTALS = {
     thumb:'/images/portals/dco_thumbnail.jpg',
     zoom:2  // worldwide
   },
-  'NIHHMP': {name:'Human Mircrobiome Project',
+  'NIHHMP': {name:'NIH Human Mircrobiome Project',
     subtext:'HMP',
     projects:[],
     prefixes:['NIHHMP'],
