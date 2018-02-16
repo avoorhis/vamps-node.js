@@ -701,11 +701,12 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], funct
     console.log(req.body)
     var uid = req.body.user_id;
     var password = req.body.password;
+    var user_order = get_name_ordered_users_list()
     var finish = function(){
       res.render('admin/new_password', {
               title     :'VAMPS Reset User Password',
               user: req.user,
-              user_info: JSON.stringify(ALL_USERS_BY_UID),
+              user_info: JSON.stringify(user_order),
               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
             });
 

@@ -4,12 +4,12 @@ var config  = require(app_root + '/config/config');
 
 var express = require('express');
 var router = express.Router();
-var fs = require('fs');
+var fs = require('fs-extra');
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport({});
 var util = require('util');
 var path  = require('path');
-var crypto = require('crypto');
+//var crypto = require('crypto');
 var mysql = require('mysql2');
 var spawn = require('child_process').spawn;
 var helpers = require(app_root + '/routes/helpers/helpers');
@@ -1904,4 +1904,17 @@ module.exports.get_key_from_value = function(obj, value)
   }
   console.log('4 -key - '+found_key)
   return found_key
+};
+module.exports.ensure_dir_exists = function(dir)
+{
+    console.log('1')
+    fs.ensureDir(dir, function (err) {
+    if(err) {console.log('2');console.log(err);} // => null
+    else{
+        console.log('3')
+        console.log(dir+' Guaranteed to exist on login')
+    }        // dir has now been created, including the directory it is to be placed in
+
+});
+
 };

@@ -6,7 +6,7 @@
 
 var CONSTS = require(app_root + '/public/constants');
 var helpers = require('./helpers');
-var fs = require('fs');
+var fs = require('fs-extra');
 
 // Private
 var taxon_name_id = 1;

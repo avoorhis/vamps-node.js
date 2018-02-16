@@ -1,6 +1,6 @@
 // common.js
 var path = require('path');
-var fs = require('fs');
+var fs = require('fs-extra');
 var extend = require('util')._extend;
 //var COMMON  = require('./routes_common');
 var CONSTS = require('../../public/constants');

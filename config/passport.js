@@ -3,11 +3,11 @@
 var helpers = require('../routes/helpers/helpers');
 var queries = require('../routes/queries_admin');
 var LocalStrategy = require('passport-local').Strategy;
+var path = require('path');
 //var bcrypt        = require('bcrypt-nodejs');
 
 
-var crypto = require('crypto')
-
+//var crypto = require('crypto')
 
 //var mysql = require('mysql');
  
@@ -193,7 +193,10 @@ function login_auth_user(req, username, password, done, db){
             db.query(qResetUserSignin, function(err,rows){
                 if (err){ console.log(err); }
             });
-
+            // helpers
+            var user_data_dir = path.join(req.CONFIG.USER_FILES_BASE,username);
+            console.log('Validating/Creating User Data Directory: '+user_data_dir)
+            helpers.ensure_dir_exists(user_data_dir)
             // Here on login we delete the users tmp/* files from previous sessions.
             // This seems better than on logout bacause users are less likely to manually logout.
             try{
@@ -305,7 +308,7 @@ function signup_user(req, username, password, done, db){
 //
 //
 var delete_previous_tmp_files = function(req, username){
-    var path = require('path');
+    
     var fs   = require('fs-extra');
     // dirs to delete from on login::
     var temp_dir_path1 = path.join(process.env.PWD,'tmp');

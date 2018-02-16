@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var fs   = require('fs');
+var fs   = require('fs-extra');
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport({});
 var zlib = require('zlib');

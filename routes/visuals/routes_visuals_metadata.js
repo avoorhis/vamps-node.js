@@ -1,5 +1,5 @@
 var path = require('path');
-var fs = require('fs');
+var fs = require('fs-extra');
 var COMMON  = require('./routes_common');
 var helpers = require('../helpers/helpers');
 

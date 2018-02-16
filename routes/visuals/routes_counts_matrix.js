@@ -1,6 +1,6 @@
 // counts_matrix.js
 var path = require('path');
-var fs = require('fs');
+var fs = require('fs-extra');
 //var hdf5 = require('hdf5');
 var COMMON  = require('./routes_common');
 var C = require('../../public/constants');
