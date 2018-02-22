@@ -23,7 +23,7 @@ import random
 import logging
 import csv
 from time import sleep
-import ConfigParser
+import configparser as ConfigParser
 sys.path.append( '/Users/avoorhis/programming/vamps-node.js/public/scripts/maintenance_scripts' )
 
 import datetime
@@ -63,7 +63,6 @@ id_queries = [
 def start_metadata_load_from_file(args):
     global mysql_conn, cur
     logging.info('CMD> '+' '.join(sys.argv))
-    print 'CMD> ',sys.argv
     
     if args.site == 'vamps':
         hostname = 'vampsdb'
@@ -85,12 +84,12 @@ def start_metadata_load_from_file(args):
         put_required_metadata()
         put_custom_metadata()
     else:
-        print "Could not find csv_file:",csv_infile
+        print ("Could not find csv_file:",csv_infile)
         # no metadata -- should enter defaults
         defaults = get_null_ids()
         # must get dids
-        print DATASET_ID_BY_NAME.values()
-        print defaults
+        print (DATASET_ID_BY_NAME.values())
+        print (defaults)
         
         "INSERT IGNORE into req_metadata_info (dataset_id,) VALUES"
         for did in DATASET_ID_BY_NAME.values():
@@ -107,7 +106,7 @@ def get_null_ids():
         row = cur.fetchone()
         unknowns[q['table']] = row[0]
     
-    print 'unknown IDs',unknowns
+    print ('unknown IDs',unknowns)
     return unknowns
     
 def put_required_metadata():
@@ -124,7 +123,7 @@ def put_required_metadata():
             else:
                 vals += "'',"
         q2 = q + vals[:-1] + ")"  
-        print q2
+        print(q2)
         logging.info(q2)
         #cur.execute(q2)
     #mysql_conn.commit()
@@ -135,10 +134,10 @@ def put_custom_metadata():
       create new table
     """
     global mysql_conn, cur
-    print 'starting put_custom_metadata'
+    print ('starting put_custom_metadata')
     # TABLE-1 === custom_metadata_fields
-    print 'CUST_METADATA_ITEMS',CUST_METADATA_ITEMS
-    print 'REQ_METADATA_ITEMS',REQ_METADATA_ITEMS
+    print ('CUST_METADATA_ITEMS',CUST_METADATA_ITEMS)
+    print ('REQ_METADATA_ITEMS',REQ_METADATA_ITEMS)
     for key in CUST_METADATA_ITEMS:
         logging.debug(key)
         q2 = "INSERT IGNORE into custom_metadata_fields(project_id,field_name,example)"
@@ -195,7 +194,7 @@ def put_custom_metadata():
                 q2 += "'"+val+"',"
         q2 = q2[:-1] + ")"    # remove trailing comma
 
-        print q2
+        print(q2)
         logging.info(q2)
         cur.execute(q2)
     
@@ -204,7 +203,7 @@ def put_custom_metadata():
 def get_metadata(indir,csv_infile):
     
     
-    print 'csv',csv_infile
+    print ('csv',csv_infile)
     logging.info('csv '+csv_infile)
     lol = list(csv.reader(open(csv_infile, 'rb'), delimiter='\t'))
    
@@ -217,7 +216,7 @@ def get_metadata(indir,csv_infile):
         for line in lol[1:]:
             TMP_METADATA_ITEMS[key].append(line[i])
     saved_indexes = []    
-    print 'dtasets',CONFIG_ITEMS['datasets']
+    print ('dtasets',CONFIG_ITEMS['datasets'])
     
     if CONFIG_ITEMS['fasta_type']=='multi':           
         for ds in CONFIG_ITEMS['datasets']:
@@ -233,7 +232,7 @@ def get_metadata(indir,csv_infile):
                                 
     
     # now get the data from just the datasets we have in CONFIG.ini
-    print 'TMP_METADATA_ITEMS',TMP_METADATA_ITEMS
+    print ('TMP_METADATA_ITEMS',TMP_METADATA_ITEMS)
     for key in TMP_METADATA_ITEMS:
         
         if key in required_metadata_fields:
@@ -276,8 +275,8 @@ def get_metadata(indir,csv_infile):
                     ds = CONFIG_ITEMS['datasets'][0]
                     did = DATASET_ID_BY_NAME[ds]
                     CUST_METADATA_ITEMS['dataset_id'].append(did)
-    print   'REQ_METADATA_ITEMS',REQ_METADATA_ITEMS
-    print   'CUST_METADATA_ITEMS',CUST_METADATA_ITEMS
+    print('REQ_METADATA_ITEMS',REQ_METADATA_ITEMS)
+    print('CUST_METADATA_ITEMS',CUST_METADATA_ITEMS)
     #sys.exit()             
     if not 'dataset_id' in REQ_METADATA_ITEMS:
         REQ_METADATA_ITEMS['dataset_id'] = []
@@ -287,7 +286,7 @@ def get_metadata(indir,csv_infile):
 def get_config_data(args):
     global mysql_conn, cur
     config_path = os.path.join(args.project_dir, args.config_file)
-    print config_path
+    print (config_path)
     logging.info(config_path)
     config = ConfigParser.ConfigParser()
     config.optionxform=str
@@ -302,6 +301,7 @@ def get_config_data(args):
     q = "SELECT project_id FROM project"
     q += " WHERE project = '"+CONFIG_ITEMS['project_name']+"'" 
     logging.info(q)
+    print(q)
     cur.execute(q)
     
     row = cur.fetchone()     

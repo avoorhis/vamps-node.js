@@ -11,7 +11,7 @@ import argparse
 import pymysql as MySQLdb
 import json
 import logging
-import ConfigParser
+import configparser as ConfigParser
 
 """
 SELECT sum(seq_count), dataset_id, domain_id,domain
@@ -111,7 +111,6 @@ DATASET_ID_BY_NAME = {}
 def go_add(args):
     
     logging.info('CMD> '+' '.join(sys.argv))
-    print 'CMD> ',sys.argv
     
     global mysql_conn, cur
     
@@ -133,10 +132,10 @@ def go_add(args):
     prefix = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+'--datasets')
     if not os.path.exists(prefix):
         os.makedirs(prefix)
-    print prefix
+    print (prefix)
     #DATASET_ID_BY_NAME[ds] = did
     dids = [str(x) for x in DATASET_ID_BY_NAME.values()]
-    print 'dids',dids
+    print ('dids',dids)
     #dids = get_dataset_ids(pid) 
     # delete old did files if any
     for did in dids:        
@@ -149,7 +148,7 @@ def go_add(args):
     #print counts_lookup
     for q in queries:
         query = q["query"] % (did_sql)
-        print query
+        print (query)
         dirs = []
         cur.execute(query)
         for row in cur.fetchall():
@@ -186,10 +185,10 @@ def go_add(args):
     logging.info('writing individual json files')
     write_json_files(prefix, metadata_lookup, counts_lookup)
     
-    print 'writing all metadata file'
+    print ('writing all metadata file')
     logging.info('writing all metadata file')
     write_all_metadata_file(args,metadata_lookup)
-    print 'writing all taxcount file'
+    print ('writing all taxcount file')
     logging.info('writing all taxcouts file')
     write_all_taxcounts_file(args,counts_lookup)
     # print 'DONE (must now move file into place)'
@@ -218,7 +217,7 @@ def write_all_taxcounts_file(args,counts_lookup):
     f.close()
       
 def write_json_files(prefix, metadata_lookup, counts_lookup):
-    print "In write_json_files"
+    print ("In write_json_files")
     #print counts_lookup
     #json_str = json.dumps(counts_lookup)    
     # print('Re-Writing JSON file (REMEMBER to move new file to ../json/)')
@@ -241,7 +240,7 @@ def write_json_files(prefix, metadata_lookup, counts_lookup):
          if did in metadata_lookup:
              my_metadata_str = json.dumps(metadata_lookup[did]) 
          else:
-             print 'WARNING -- no metadata for dataset: '+str(did)
+             print ('WARNING -- no metadata for dataset: '+str(did))
              logging.info('WARNING -- no metadata for dataset: '+str(did))
              my_metadata_str = json.dumps({})
          #f.write('{"'+str(did)+'":'+mystr+"}\n") 
@@ -293,11 +292,11 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
 
 
     
-    print 'did_list',did_list
-    print 'field_collection',field_collection
+    print ('did_list',did_list)
+    print ('field_collection',field_collection)
 
     cust_dquery = "SELECT `" + '`,`'.join(field_collection) + "` from " + table
-    print cust_dquery
+    print (cust_dquery)
     try:
         cur.execute(cust_dquery)
 
@@ -322,9 +321,9 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
                         	metadata_lookup[did][f] = value
                 
     except:
-        print 'could not find or read',table,'Skipping'
+        print ('could not find or read',table,'Skipping')
         logging.info('could not find or read '+table+' --Skipping')
-    print
+    print()
     #print 'metadata_lookup2',metadata_lookup
     #sys.exit()
     return metadata_lookup
@@ -338,7 +337,8 @@ def read_original_taxcounts(args):
             data = json.load(data_file)
     else:
         data = {}
-    return data  
+    return data 
+     
 def read_original_metadata(args):
     
     file_path = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+'--metadata.json')
@@ -348,41 +348,11 @@ def read_original_metadata(args):
     else:
         data = {}        
     return data 
-# def read_original_taxcounts(infile):
-#     counts_lookup = {}
-#     try:
-#         with open(infile) as data_file:
-#             counts_lookup = json.load(data_file)
-#     except:
-#         sys.exit("Could not find taxcounts file: "+infile)
-#     return counts_lookup
-    
-# def get_dataset_ids(pid):
-#     # print str(db)
-#     # print str(cur)
-#     # cur.execute('SELECT DATABASE()')
-#     # dbase= cur.fetchone()
-#     # print 'dbase',dbase[0]
-#     global mysql_conn, cur
-#     q = "SELECT dataset_id from dataset where project_id='%s'"  % (pid) 
-#     print q
-#     cur.execute(q)
-#     mysql_conn.commit()
-#     dids = []
-#     numrows = cur.rowcount
-#     if numrows == 0:
-#          sys.exit('No data found for pid '+str(pid))
-#     
-#     for row in cur.fetchall():
-#         print 'DS ROW',row
-#         dids.append(str(row[0]))
-#     
-#     return dids
 
 def get_config_data(args):
     global mysql_conn, cur
     config_path = os.path.join(args.project_dir, args.config_file)
-    print config_path
+    print (config_path)
     logging.info(config_path)
     config = ConfigParser.ConfigParser()
     config.optionxform=str
@@ -393,7 +363,7 @@ def get_config_data(args):
     CONFIG_ITEMS['datasets'] = []
     for dsname, count in  config.items('MAIN.dataset'):        
         CONFIG_ITEMS['datasets'].append(dsname)   
-    #print 'project',CONFIG_ITEMS['project']
+    #print ('project',CONFIG_ITEMS['project'])
     q = "SELECT project_id FROM project"
     q += " WHERE project = '"+CONFIG_ITEMS['project']+"'" 
     logging.info(q)
@@ -460,7 +430,7 @@ if __name__ == '__main__':
     go_add(args)
 
     logging.info("DONE")
-    print "DONE"
+    print ("DONE")
     fp = open(os.path.join(args.project_dir,'ASSIGNMENT_COMPLETE.txt'),'w')
     try:
         fp.write(str(CONFIG_ITEMS['project_id']))
@@ -469,7 +439,7 @@ if __name__ == '__main__':
     fp.close()
     #
     # THIS MUST BE THE LAST PRINT!!!!
-    print "PID="+str(CONFIG_ITEMS['project_id'])
+    print ("PID="+str(CONFIG_ITEMS['project_id']))
     ##
     logging.info("ALL DONE: (PID="+str(CONFIG_ITEMS['project_id'])+')')
     

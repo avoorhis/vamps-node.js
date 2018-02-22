@@ -22,7 +22,7 @@ import time
 import random
 import csv
 from time import sleep
-import ConfigParser
+import configparser as ConfigParser
 from IlluminaUtils.lib import fastalib
 
 import datetime
@@ -32,8 +32,7 @@ import subprocess
 import pymysql as MySQLdb
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
-print 'sys.path'
-print sys.path
+
 """
 New Table:
 CREATE TABLE `summed_counts` (
@@ -108,7 +107,7 @@ def start(args):
     TAX_ID_BY_RANKID_N_TAX = {}
     SUMMED_TAX_COLLECTOR = {} 
     logging.info('CMD> '+' '.join(sys.argv))
-    print 'CMD> ',sys.argv
+    print('CMD> ',sys.argv)
 
 
     
@@ -122,23 +121,23 @@ def start(args):
     
     
     logging.info("running get_config_data")
-    print "running get_config_data"
+    print ("running get_config_data")
     get_config_data(args)
     
     logging.info("checking user")
-    print "checking user"
+    print ("checking user")
     check_user()  ## script dies if user not in db
     
     logging.info("checking project")
-    print "checking project"
+    print ("checking project")
     res = check_project()  ## script dies if project is in db
     
     if res[0]=='ERROR':
-        print "1ERROR res[0] -- Exiting (project name is already in use)"
+        print ("1ERROR res[0] -- Exiting (project name is already in use)")
         sys.exit(res[1])
     
     logging.info("recreating ranks")
-    print "recreating ranks"
+    print ("recreating ranks")
     recreate_ranks()
 
     # logging.info("env sources")
@@ -146,37 +145,37 @@ def start(args):
 #     create_env_package()
 
     logging.info("classifier")
-    print "classifier"
+    print("classifier")
     create_classifier()
 
     logging.info("starting taxonomy")
-    print "starting taxonomy"
+    print ("starting taxonomy")
     push_taxonomy(args)
 
     logging.info("starting sequences")
-    print "starting sequences"
+    print ("starting sequences")
     push_sequences(args)
     #sys.exit()
         
     logging.info("projects")
-    print "projects"
+    print ("projects")
     push_project()
 
     logging.info("datasets")
-    print "datasets"
+    print ("datasets")
     push_dataset()
 
     #push_summed_counts()
     logging.info("starting push_pdr_seqs")
-    print "starting push_pdr_seqs"
+    print ("starting push_pdr_seqs")
     push_pdr_seqs(args)
 
     #print SEQ_COLLECTOR
     #pp.pprint(CONFIG_ITEMS)
     logging.info("Finished "+os.path.basename(__file__))
-    print "Finished "+os.path.basename(__file__)
-    print CONFIG_ITEMS['project_id']
-    print 'Writing pid to pid.txt'
+    print ("Finished "+os.path.basename(__file__))
+    print (CONFIG_ITEMS['project_id'])
+    print ('Writing pid to pid.txt')
     fp = open(os.path.join(args.project_dir,'pid.txt'),'w')
     fp.write(str(CONFIG_ITEMS['project_id']))
     fp.close()
@@ -206,7 +205,7 @@ def check_project():
     """
     global CONFIG_ITEMS
     global mysql_conn, cur
-    print 'checking project'
+    print ('checking project')
     proj = CONFIG_ITEMS['project_name']
     q = "SELECT project, project_id from project WHERE project='%s'" % (proj)
     cur.execute(q)
@@ -268,14 +267,14 @@ def push_project():
     q = "INSERT into project ("+(',').join(fields)+")"
     q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
     q = q % (proj,title,desc,rev,fund,id,pub)
-    print q
+    print(q)
     logging.info(q)
     #print cur.lastrowid
     ## should have already checked 
     cur.execute(q)
     CONFIG_ITEMS['project_id'] = cur.lastrowid
     logging.info("PID="+str(CONFIG_ITEMS['project_id']))
-    print "PID="+str(CONFIG_ITEMS['project_id'])
+    print ("PID="+str(CONFIG_ITEMS['project_id']))
     mysql_conn.commit()
     
     
@@ -301,11 +300,11 @@ def push_dataset():
         #print ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id']
         q4 = q % (ds,desc,CONFIG_ITEMS['project_id'])
         logging.info(q4)
-        print q4
+        print(q4)
         #try:
         cur.execute(q4)
         did = cur.lastrowid
-        print 'new did',did
+        print ('new did',did)
         DATASET_ID_BY_NAME[ds]=did
         mysql_conn.commit()
         #except:
@@ -318,7 +317,7 @@ def push_dataset():
 
 
 def push_pdr_seqs(args):
-    #print
+    #print()
     gast_dbs = ['','','']
 
     global SEQ_COLLECTOR
@@ -341,21 +340,21 @@ def push_pdr_seqs(args):
             #     q += " VALUES ('%s','%s','%s','1')"
             # else:
             #     q += " VALUES ('%s','%s','%s','3')"   # 3 is 'unknown'
-            print q
-            #print
+            print(q)
+            #print()
             logging.info(q)
             try:
                 cur.execute(q % (str(did),str(seqid),str(count),str(classid)))
             except:
                 logging.error(q)
-                print "ERROR Exiting: "+ds +"; Query: "+q
-                print DATASET_ID_BY_NAME
+                print ("ERROR Exiting: "+ds +"; Query: "+q)
+                print (DATASET_ID_BY_NAME)
                 sys.exit()
             mysql_conn.commit()
     
 def push_sequences(args):
     # sequences
-    #print
+    #print()
     
     global SEQ_COLLECTOR
     global mysql_conn, cur
@@ -373,7 +372,7 @@ def push_sequences(args):
                 mysql_conn.commit() 
                 row = cur.fetchone()
                 seqid=row[0]
-            #print 'seqid',seqid
+            #print ('seqid',seqid)
             SEQ_COLLECTOR[ds][seq]['sequence_id'] = seqid
             silva_tax_id = str(SEQ_COLLECTOR[ds][seq]['silva_tax_id'])
             
@@ -389,11 +388,11 @@ def push_sequences(args):
                 q += " (sequence_id,silva_taxonomy_id,refssu_id,rank_id)"
                 q += " VALUES ('%s','%s','0','%s')" % (str(seqid), silva_tax_id, rank_id)
             logging.info(q)
-            print q
+            print(q)
             cur.execute(q)
             mysql_conn.commit()
             silva_tax_seq_id = cur.lastrowid
-            print 'seqid',seqid
+            print ('seqid',seqid)
             if silva_tax_seq_id == 0:
                 q3 = "select silva_taxonomy_info_per_seq_id from silva_taxonomy_info_per_seq"
                 q3 += " where sequence_id = '"+str(seqid)+"'"
@@ -402,7 +401,7 @@ def push_sequences(args):
                     q3 += " and gast_distance = '"+distance+"'"
                 q3 += " and rank_id = '"+rank_id+"'"
                 #print 'DUP silva_tax_seq'
-                print q3
+                print(q3)
                 cur.execute(q3)
                 mysql_conn.commit() 
                 row = cur.fetchone()
@@ -435,7 +434,7 @@ def push_taxonomy(args):
         data_dir = os.path.join(args.project_dir,'taxbyseq')
         ext = '.txt'
     else:
-        print 'no data available -Exiting'
+        print ('no data available -Exiting')
         sys.exit()
     
     for ds in CONFIG_ITEMS['datasets']: 
@@ -451,7 +450,7 @@ def push_taxonomy(args):
             if args.classifier == 'TAXBYSEQ':
                 run_tax_by_seq_file(args, ds, data_file)
         else:
-            print "cound not find file:",data_file
+            print ("cound not find file:",data_file)
  
     logging.info( 'SUMMED_TAX_COLLECTOR')
     logging.info( SUMMED_TAX_COLLECTOR )        
@@ -489,7 +488,7 @@ def run_gast_tax_file(args,ds,tax_file):
     tax_items = []
     with open(tax_file,'r') as fh:
         for line in fh:
-            print line
+            print(line)
             items = line.strip().split("\t")
             if items[0] == 'HEADER': continue
             seq = items[0]
@@ -513,7 +512,7 @@ def run_gast_tax_file(args,ds,tax_file):
 #                
 def run_rdp_tax_file(args,ds, tax_file, seq_file): 
     minboot = 80
-    print 'reading seqfile',seq_file
+    print ('reading seqfile',seq_file)
     f = fastalib.SequenceSource(seq_file)
     tmp_seqs = {}
     tmp_freqs = {}
@@ -523,8 +522,8 @@ def run_rdp_tax_file(args,ds, tax_file, seq_file):
         items =  f.id.split('|')  # WILL have |frequency
         id = f.id.split()[0]
         freq = f.id.split('|')[1].split(':')[1]
-        print 'id',id
-        print 'freq',freq
+        print ('id',id)
+        print ('freq',freq)
         tmp_freqs[id] = freq
         tmp_seqs[id]= f.seq
     f.close()
@@ -543,7 +542,7 @@ def run_rdp_tax_file(args,ds, tax_file, seq_file):
             #seq_count =1
             tax_line = items[2:]
             
-            print tax_line
+            print (tax_line)
             for i in range(0,len(tax_line),3):
                   #print i,tax_line[i]
                   tax_name = tax_line[i].strip('"').strip("'")
@@ -675,7 +674,7 @@ def finish_tax(ds,refhvr_ids, rank, distance, seq, seq_count, tax_items):
         q4 += " VALUES("+','.join(ids_by_rank)+",CURRENT_TIMESTAMP())"
         #
         logging.info(q4)
-        #print q4
+        #print(q4)
         cur.execute(q4)
         mysql_conn.commit() 
         silva_tax_id = cur.lastrowid
@@ -730,7 +729,7 @@ def get_config_data(args):
         ds = dsname 
         datasets[ds] = count
     CONFIG_ITEMS['datasets'] = datasets    
-    print CONFIG_ITEMS 
+    print (CONFIG_ITEMS )
        
 
 if __name__ == '__main__':
@@ -798,5 +797,5 @@ if __name__ == '__main__':
     else:
         args.hostname = 'localhost'
         args.NODE_DATABASE = 'vamps_development'
-    print 'db host',args.hostname,'db name',args.NODE_DATABASE
+    print ('db host',args.hostname,'db name',args.NODE_DATABASE)
     start(args)

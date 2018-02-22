@@ -628,10 +628,11 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
 
 router.get('/import_choices/fasta', [helpers.isLoggedIn], function (req, res) {
     console.log('in GET import_choices/fasta')
-    
+    var rando = Math.floor((Math.random() * 100000) + 1);
+    var default_project_name = req.user.username+'_'+rando.toString();
     res.render('user_data/import_choices/fasta', {
           title: 'VAMPS:Import Choices',
-         
+          def_name:default_project_name,
           user: req.user, hostname: req.CONFIG.hostname
           });
           
@@ -655,6 +656,7 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
         req.flash('fail',msg)
         res.render('user_data/import_choices/fasta', {
           title: 'VAMPS:Import Choices',
+          def_name:'',
           user: req.user, hostname: req.CONFIG.hostname
           });
         return
@@ -896,7 +898,8 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
                         fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
                         req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
                         res.render('user_data/import_choices/fasta', {
-                              title: 'VAMPS:Import Choices',         
+                              title: 'VAMPS:Import Choices',  
+                              def_name:'',       
                               user: req.user, hostname: req.CONFIG.hostname
                         });
                     });

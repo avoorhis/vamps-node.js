@@ -57,7 +57,6 @@ def main(args):
                 output.store(input)
         names.write('%s\t%s\n' % (input.id, ','.join(input.ids)))
         seqcount += 1
-    
     output.close()
     return seqcount
 

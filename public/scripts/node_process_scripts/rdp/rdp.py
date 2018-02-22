@@ -46,12 +46,12 @@ def run_rdp(uniquefile, outfile, classifier, gene, site):
         # use non-trained as default:
         
         logging.debug('RDPCMD: '+rdp_cmd)
-        print rdp_cmd
+        print(rdp_cmd)
 
         subprocess.call(rdp_cmd, shell=True)
 
     except:
-        print "ERROR in RDP:  java - classifier: "+rdp_cmd
+        print("ERROR in RDP:  java - classifier: "+rdp_cmd)
         sys.exit(-23)
 
 

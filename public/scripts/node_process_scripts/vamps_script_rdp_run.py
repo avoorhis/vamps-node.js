@@ -23,7 +23,7 @@ import random
 import logging
 import csv
 from time import sleep
-import ConfigParser
+import configparser as ConfigParser
 import subprocess
      
 
@@ -41,7 +41,7 @@ def start_rdp(args):
 
     import rdp.rdp as rdp
     logging.info('CMD> '+' '.join(sys.argv))
-    print 'CMD> ',sys.argv
+    print('CMD> ',sys.argv)
     
     datasets = {}
     
@@ -57,9 +57,9 @@ def start_rdp(args):
     # CL take precedence for domain and dna_region
     
     for name, value in  config.items('MAIN'):
-        #print '  %s = %s' % (name, value)  
+        #print('  %s = %s' % (name, value)  )
         general_config_items[name] = value
-    #print     config.items('MAIN.dataset')
+    #print(config.items('MAIN.dataset'))
     file_prefix = 'testing-fp'
     dir_prefix  = general_config_items['project_directory']
             
@@ -73,7 +73,7 @@ def start_rdp(args):
     for dataset_item in config.items('MAIN.dataset'):
             dataset = dataset_item[0]
             dscount = dataset_item[1]  # raw count
-            print "\nDS KNT",dataset,dscount
+            print("\nDS KNT",dataset,dscount)
             unique_file = os.path.join(args.project_dir, 'analysis', dataset,'seqfile.unique.fa')
          
             rdp_out_file = os.path.join(rdp_dir, dataset+'.rdp') # to be created

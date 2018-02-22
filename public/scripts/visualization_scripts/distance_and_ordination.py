@@ -17,7 +17,7 @@ import argparse
 import json
 import csv
 import pandas as pd
-from pathlib import Path
+#from pathlib import Path
 #from ete2 import Tree
 #print >> sys.stderr, sys.argv[1:]
 # cogent will be phased out in python3
@@ -79,8 +79,9 @@ def go_distance(args):
             #out_fp.write(file_data_line)
 
     out_file2 = os.path.join(args.basedir, 'tmp',args.prefix+'_distance.json')
-    my_file = Path(out_file2)
-    if not my_file.is_file():
+    
+    #my_file = Path(out_file2)
+    if not os.path.exists(out_file2):
         out_fp2 = open(out_file2,'w')
         out_fp2.write(json.dumps(dm2))
         out_fp2.close()

@@ -28,18 +28,18 @@ logFile = inputfile+".rdplog"
 # $logFile  => /usr/local/www/vamps/tmp/fasta2tax.log
 
 if DEBUG:
-	print "DEBUG: Invoked with arguments (post processing):\n"
-	print "DEBUG: user: user\n"
-	print "DEBUG: inputfile: inputfile\n"
-	print "DEBUG: project: project\n"
-	print "DEBUG: dataset: dataset\n"
-	print "DEBUG: path_to_apps: path_to_apps\n"
-	print "DEBUG: database: database\n"
-	print "DEBUG: table1: table1\n"
-	print "DEBUG: table2: table2\n"
-	print "DEBUG: db_user: db_user\n"
-	print "DEBUG: db_password: db_password\n"
-	print "DEBUG: db_hostname: db_hostname\n"
+	print("DEBUG: Invoked with arguments (post processing):\n")
+	print("DEBUG: user: user\n")
+	print("DEBUG: inputfile: inputfile\n")
+	print("DEBUG: project: project\n")
+	print("DEBUG: dataset: dataset\n")
+	print("DEBUG: path_to_apps: path_to_apps\n")
+	print("DEBUG: database: database\n")
+	print("DEBUG: table1: table1\n")
+	print("DEBUG: table2: table2\n")
+	print("DEBUG: db_user: db_user\n")
+	print("DEBUG: db_password: db_password\n")
+	print("DEBUG: db_hostname: db_hostname\n")
 
 
 #######################################
@@ -59,12 +59,12 @@ if DEBUG:
 #######################################
 def run(project):
 	path_to_rdp = py_pipeline_path+"/bin/rdp"
-	print path_to_rdp
+	print(path_to_rdp)
 
 
 	rdpCmd = path_to_rdp+' ' +inputfile+' '+rdpFile
 
-	print "Preparing to execute RDP Command: rdpCmd\n";
+	print ("Preparing to execute RDP Command: rdpCmd\n";)
 
 	rdpCmdOutput = subprocess.check_output(rdpCmd, shell=True)
 
