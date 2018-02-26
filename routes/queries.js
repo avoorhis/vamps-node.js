@@ -14,7 +14,7 @@ get_project_permissions: function(){
 },
 get_select_datasets_query: function(){
     var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description,";
-    qSelectDatasets += " username, email, institution, first_name, last_name, owner_user_id, public, metagenomic,created_at,updated_at";
+    qSelectDatasets += " username, email, institution, first_name, last_name, owner_user_id, public, metagenomic,project.created_at,project.updated_at";
     
     //qSelectDatasets += " FROM dataset";
     //qSelectDatasets += " JOIN project USING(project_id)";
