@@ -1065,7 +1065,9 @@ router.post('/upload_user_personal_data_file', [helpers.isLoggedIn, upload.singl
     var new_file_name = req.body.username+'_'+req.file.originalname
     console.log('new_file_name ')
     console.log('new_file_name '+new_file_name)
-    var new_file_path = path.join(req.CONFIG.PATH_TO_USER_DATA_UPLOADS,new_file_name)
+    console.log('req.CONFIG.PATH_TO_USER_DATA_UPLOADS')
+    console.log(req.CONFIG.PATH_TO_USER_DATA_UPLOADS)
+    var new_file_path = path.join(req.CONFIG.PATH_TO_USER_DATA_UPLOADS, new_file_name)
     console.log('new_file_path2 '+new_file_path)
     console.log(new_file_path)
     fs.move(req.file.path, new_file_path, function moveDataDir(err) {
