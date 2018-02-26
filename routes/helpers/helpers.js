@@ -792,6 +792,8 @@ module.exports.update_project_information_global_object = function(pid, form, us
     return;
   }
   console.log('Creating new PROJECT_INFORMATION_BY_PID[pid]');
+  var ca = this.convertJSDateToString(rows[i].created_at)
+  var ua = this.convertJSDateToString(rows[i].updated_at)
   PROJECT_INFORMATION_BY_PID[pid] = {};
   PROJECT_INFORMATION_BY_PID[pid] = {
     "last" :             user_obj.last_name,
@@ -807,7 +809,10 @@ module.exports.update_project_information_global_object = function(pid, form, us
     "title" :            form.new_project_title,
     "description" :      form.new_project_description,
     "public" :           form.new_privacy,
-    "permissions" :     [user_obj.user_id]
+    "permissions" :      [user_obj.user_id],
+    "metagenomic" :      rows[i].metagenomic,
+    "created_at" :       ca,
+    "updated_at" :       ua
   };
   PROJECT_INFORMATION_BY_PNAME[form.new_project_name] =  PROJECT_INFORMATION_BY_PID[pid];
   console.log('PROJECT_INFORMATION_BY_PID[pid]');
@@ -852,7 +857,8 @@ module.exports.run_select_datasets_query = function(rows){
       var envpkgid = '1';
     }
 
-
+    var ca = this.convertJSDateToString(rows[i].created_at)
+    var ua = this.convertJSDateToString(rows[i].updated_at)
 
     if( ! PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid)){
       var public = rows[i].public;
@@ -870,7 +876,9 @@ module.exports.run_select_datasets_query = function(rows){
         "title" :           rows[i].title,
         "description" :     rows[i].project_description,
         "public" :          rows[i].public,
-        "metagenomic" :          rows[i].metagenomic,
+        "metagenomic" :     rows[i].metagenomic,
+        "created_at" :      ca,
+        "updated_at" :      ua
       };
       if(public || rows[i].username === 'guest'){
         PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
@@ -1002,7 +1010,15 @@ module.exports.run_select_datasets_query = function(rows){
   });
 };
 
-
+function mysqlTimeStampToDate(timestamp) {
+    //function parses mysql datetime string and returns javascript Date object
+    //input has to be in this format: 2007-06-05 15:26:02
+    var regex=/^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9]) (?:([0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$/;
+    console.log(timestamp)
+    var parts=timestamp.replace(regex,"$1 $2 $3 $4 $5 $6").split(' ');
+    console.log('2')
+    return new Date(parts[0],parts[1]-1,parts[2],parts[3],parts[4],parts[5]);
+  }
 module.exports.update_status = function(status_params) {
   console.log('in update_status');
   console.log(util.inspect(status_params, false, null));
@@ -1200,17 +1216,14 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
 
 };
 
-module.exports.get_local_script_text = function(scriptlog, cmd_name, cmd_list) {
+module.exports.get_local_script_text = function(cmd_list) {
   script_text = "#!/bin/sh\n\n";
-  script_text += "# CODE:\t$code\n\n";
-  script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
+  //script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
   script_text += 'echo -n "Hostname: "'+"\n";
   script_text += "hostname\n";
   script_text += 'echo -n "Current working directory: "'+"\n";
   script_text += "pwd\n\n";
-  if(config.site == 'vamps' || config.site == 'vampsdev'){
-    script_text += 'source /groups/vampsweb/'+config.site+'/seqinfobin/vamps_environment.sh\n\n'
-  }
+  
   for (var i in cmd_list) {
     script_text += cmd_list[i]+"\n\n";
   }
@@ -1615,6 +1628,30 @@ module.exports.isValidMySQLDate = function(dateString){
 
   // Check the range of the day
   return day > 0 && day <= monthLength[month - 1];
+};
+//
+//
+//
+module.exports.convertJSDateToString = function(jddate){
+    try{
+        var full_year = jddate.getFullYear()
+        var month = parseInt(jddate.getMonth()) + 1
+        var date = parseInt(jddate.getDate())
+        if(date < 10){
+            date = '0'+date.toString()
+        }
+        if(month < 10){
+            month = '0'+month.toString()
+        }
+        if(isNaN(full_year)){
+            return ''
+        }else{
+            return full_year.toString()+'-'+ month.toString() +'-'+ date.toString()
+        }
+    }catch(e){
+        return ''
+    }
+    
 };
 //
 //

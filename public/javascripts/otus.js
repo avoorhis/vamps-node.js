@@ -96,12 +96,13 @@ if (selection_btn_exports !== null) {
     download_data('slp_otus', file_name)
   });
 }
-function delete_project(method,code){
+function delete_project(code){
 	var resp = confirm('are you sure?')
 	if(resp){
-		//alert('good',resp)
+		//alert(code)
 		var xmlhttp = new XMLHttpRequest();
-	  xmlhttp.open("GET", "/otus/delete/" + method + '/' + code, true);
+	  //xmlhttp.open("GET", "/otus/delete/" + method + '/' + code, true);
+	  xmlhttp.open("GET", "/otus/delete/" + code, true);
     xmlhttp.onreadystatechange = function() {
           if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var response = xmlhttp.responseText;

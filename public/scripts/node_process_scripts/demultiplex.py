@@ -204,7 +204,7 @@ if __name__ == "__main__":
     demult.create_directories()
     if demult.fastaunique_cmd:
         sum_unique_seq_count = demult.unique_files()
-        #print(sum_unique_seq_count)
+        print('UNIQUE_SEQ_COUNT='+str(sum_unique_seq_count))
     demult.cleanup()
     
     

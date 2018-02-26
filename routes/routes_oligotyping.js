@@ -460,7 +460,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
   }
 
 
-  var script_text = helpers.get_local_script_text('entropy', cmd_list);
+  var script_text = helpers.get_local_script_text(cmd_list);
 
   var script_file = 'entropy_script.sh'
   var script_file_path = path.join(data_repo_path, script_file);
@@ -611,7 +611,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
   }
 
 
-  var script_text = helpers.get_local_script_text( 'oligo', cmd_list);
+  var script_text = helpers.get_local_script_text( cmd_list);
   var script_file = 'oligo_script.sh'
   var script_file_path = path.join(data_repo_path, script_file);
   console.log(script_text)

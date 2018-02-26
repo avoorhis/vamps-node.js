@@ -10,6 +10,9 @@ var path = require('path');
 //var session   = require('express-session')
 //var flash    = require('connect-flash');
 //var LocalStrategy = require('passport-local').Strategy;
+//var config  = require(app_root + '/config/config');
+//var multer    = require('multer');
+//var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
 new_user = {}
 /* GET User List (index) page. */
 

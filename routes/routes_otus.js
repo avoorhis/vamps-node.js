@@ -906,7 +906,7 @@ router.get('/load_otu_list', helpers.isLoggedIn, function (req, res) {
 //               script_commands.push(req.CONFIG.PATH_TO_NODE_SCRIPTS+"/vamps_export_data.py " + args.join(' '))
 // 
 //               if(site.substring(0,5) == 'local'){
-//                   var script_text = helpers.get_local_script_text(timestamp, script_commands)
+//                   var script_text = helpers.get_local_script_text(script_commands)
 //               }else{
 //                   var script_text = helpers.get_qsub_script_text(log, pwd, req.CONFIG.site, 'vmps_fasta', script_commands)
 //               }
@@ -984,7 +984,7 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, function (req, res) {
     var data_repo_path = path.join(user_dir_path, otus_dir);
     var fasta_file = 'fasta.fa'
     var fasta_file_path = path.join(data_repo_path, fasta_file);
-    var unique_file = 'fasta.unique.fa'
+    var unique_file = 'fasta.fa.unique'
     var unique_file_path = path.join(data_repo_path, unique_file);
     var config_file = 'config.ini'
     var config_file_path = path.join(data_repo_path, config_file);
@@ -994,7 +994,7 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, function (req, res) {
     var script_name = 'fasta_script.sh';
     var script_path = path.join(data_repo_path, script_name);
     var FASTA_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-FASTA')
-    console.log(data_repo_path)
+    console.log('path: '+data_repo_path)
 
     fs.ensureDir(data_repo_path, function (err) {
           if(err){ return console.log(err) } // => null
@@ -1010,7 +1010,8 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, function (req, res) {
                       '-fasta_file'
               ]
               script_commands.push(req.CONFIG.PATH_TO_NODE_SCRIPTS+"/vamps_export_data.py " + args.join(' '))
-              script_commands.push(req.CONFIG.PATH_TO_MOTHUR+" \"#unique.seqs(fasta="+fasta_file_path+")\"")
+              //script_commands.push(req.CONFIG.PATH_TO_MOTHUR+" \"#unique.seqs(fasta="+fasta_file_path+")\"")
+              script_commands.push(req.CONFIG.PATH_TO_NODE_SCRIPTS+"/fastaunique " + fasta_file_path)
               script_commands.push("val1=`grep '>' "+fasta_file_path+" | wc -l | xargs`")   // xargs trims the result
               script_commands.push("sed -i -e \"s/seq_count=/seq_count=\${val1}/\" "+config_file_path)
               script_commands.push("val2=`grep '>' "+unique_file_path+" | wc -l | xargs`")   // xargs trims the result
@@ -1018,13 +1019,17 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, function (req, res) {
               script_commands.push('touch '+path.join(data_repo_path,'COMPLETED-FASTA'))
               
               if(site.substring(0,5) == 'local'){
-                  var script_text = helpers.get_local_script_text(timestamp, script_commands)
+                  var script_text = helpers.get_local_script_text(script_commands)
               }else{
                   var script_text = helpers.get_qsub_script_text(log, pwd, req.CONFIG.site, 'vmps_fasta', script_commands)
               }
+              
               var mode = 0775; // executable
               var oldmask = process.umask(0);
               console.log("script_path = " + script_path);
+              console.log("site = " + site.substring(0,5));
+              console.log("script_commands = " + script_commands.join(' '));
+              console.log("script_text = " + script_text);
               fs.writeFile(script_path,
                 script_text,
                 {
@@ -1156,7 +1161,7 @@ router.post('/create_otus_step2/:code', helpers.isLoggedIn, function (req, res) 
       default:
   }
   if(site.substring(0,5) == 'local'){
-    var script_text = helpers.get_local_script_text(otus_code, script_commands)
+    var script_text = helpers.get_local_script_text(script_commands)
   }else{
     var script_text = helpers.get_qsub_script_text(log, pwd, req.CONFIG.site, 'vmps_otus', script_commands)
   }
@@ -1208,7 +1213,6 @@ router.get('/project_list', helpers.isLoggedIn, function (req, res) {
                 // andy-uclust-otus-1481290684543
                 var pts = items[d].split('-');
                 if (pts[0] === 'otus') {
-                  console.log('got dir', items[d])
                     //var method = pts[1];  // ie uclust
                     var otus_code = pts[1];  // ie 1481290684543
                     project_info[otus_code] = {};

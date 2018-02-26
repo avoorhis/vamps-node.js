@@ -628,7 +628,7 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
 
 router.get('/import_choices/fasta', [helpers.isLoggedIn], function (req, res) {
     console.log('in GET import_choices/fasta')
-    var rando = Math.floor((Math.random() * 100000) + 1);
+    var rando = Math.floor((Math.random() * (199999 - 100000 + 1)) + 100000);
     var default_project_name = req.user.username+'_'+rando.toString();
     res.render('user_data/import_choices/fasta', {
           title: 'VAMPS:Import Choices',
@@ -872,38 +872,56 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
                     //demultiplex_script_text += req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+demultiplex_params.join(' ')+'\n'
                     
                     console.log(demultiplex_cmd + ' ' + demultiplex_params.join(' '))
-                    var proc = spawn(demultiplex_cmd, demultiplex_params)
-                    var output = '';
-                    proc.stdout.on('data', function (data) {
-                      //data = data.toString().replace(/^\s+|\s+$/g, '');  
-                      console.log('data1')  
-                      console.log(data)   
-                      //data = JSON.parse(data) 
-                      //console.log('data2')  
-                      //console.log(data)                 
-                      //output += data['unique_count'];
-                      output += parseInt(data)
+                    var proc = spawn(demultiplex_cmd, demultiplex_params, {
+                        env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                        detached: true, stdio: 'pipe'
                     });
-                    proc.on('exit', function (code) {
+                    var output = '';
+                    proc.stderr.on('data', function (data) {
+                      console.log(data.toString())   
+                    });
+                    proc.stdout.on('data', function (data) { 
+                      console.log('data1')  
+                      console.log(data.toString())   
+                      output += data.toString()
+                      
+                    });
+                    proc.on('close', function (code) {
                         console.log('close: demultiplex (+/-fastaunique) proc exited with code ' + code);
                         console.log("output: ");
-                        output = output.trim()
-                        console.log(output);
-                        if(helpers.isInt(output)){  // ONLY output should unique count
+                        output = output.trim().split("\n");
+                        for( n in output){
+                            console.log(output[n]);
+                            if(output[n].substring(0,16) == 'UNIQUE_SEQ_COUNT'){
+                                res = output[n].split('=')
+                                info.unique_seq_count = res[1]                            
+                            }
+                        }
+                        
+                        if(helpers.isInt(info.unique_seq_count)){  // should unique count
                             //info.unique_seq_count = output
+                            console.log('seq_count SUCCESS: got int')
                         }else{
                             console.log('seq_count Error: Check demultiplex.py script for print commands.')
                             //info.unique_seq_count = 'ERROR'
                         }
-                        fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
-                        req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-                        res.render('user_data/import_choices/fasta', {
-                              title: 'VAMPS:Import Choices',  
-                              def_name:'',       
+                        console.log('info');
+                        console.log(info);
+                        console.log(new_info_filename_path)
+                        fs.writeFile(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }),function writeConfigFile(err) {                                  
+                            console.log('info1');
+                            req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+                            console.log('info2');
+                            //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
+                            res.render('user_data/import_choices/fasta', {
+                              title: 'VAMPS:Import Choices',
+                              def_name:'',
                               user: req.user, hostname: req.CONFIG.hostname
-                        });
+                            });
+                            return
+                        }); 
                     });
-
+                    return
                    
 //               }   
                
@@ -1039,6 +1057,29 @@ router.get('/upload_configuration', [helpers.isLoggedIn], function (req, res) {
             //project: project,
             //import_type: import_type,
           });
+});
+router.post('/upload_user_personal_data_file', [helpers.isLoggedIn, upload.single('upload_files', 12)],function (req, res) {
+    console.log('in POST config_file')
+    console.log(req.body)
+    console.log('file',req.file)
+    var new_file_name = req.body.username+'_'+req.file.originalname
+    var new_file_path = path.join(config.PATH_TO_USER_DATA_UPLOADS,new_file_name)
+    fs.move(req.file.path, new_file_path, function moveDataDir(err) {
+            if (err) {
+              console.log("err 1: ");
+              console.log(err);
+              res.send(err);
+            } else {
+              
+              console.log('From: '+req.file.path);
+              console.log('To: '+new_file_path);
+              req.flash('success', 'success');
+              res.redirect("/users/profile");
+              return;
+            }
+
+    });
+    
 });
 //
 //
@@ -2953,7 +2994,7 @@ function GetScriptVars(req, data_repository, cmd_list, cmd_name)
   {
     console.log('FOUND LOCAL')
     scriptlog   = path.join(data_repository, 'script.log');
-    script_text = helpers.get_local_script_text(scriptlog, cmd_name, cmd_list);
+    script_text = helpers.get_local_script_text(cmd_list);
   }
   else
   {

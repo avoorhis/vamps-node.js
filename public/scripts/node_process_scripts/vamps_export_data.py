@@ -17,7 +17,7 @@
 import os
 #from stat import * # ST_SIZE etc
 import sys
-import ConfigParser
+import configparser as ConfigParser
 from time import sleep
 from os.path import expanduser
 import datetime
@@ -52,14 +52,14 @@ class GZipWriter(object):
             self.fp = None
 
     def write(self, data):
-        self.proc.stdin.write(data)
+        self.proc.stdin.write(data.encode('utf-8'))
 
 def get_fasta_sql(args,dids):
     sql = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n"
     sql += " JOIN sequence using (sequence_id)\n"
     sql += " JOIN dataset using (dataset_id)\n"
     sql += " JOIN project using (project_id)\n"
-    sql += " where dataset_id in ('"+dids+"');"
+    sql += " where dataset_id in ('"+dids+"')"
     if not args.include_metagenomic:
         sql += " AND metagenomic='0'"
     return sql
@@ -180,7 +180,7 @@ def write_file_txt(args, out_file, file_txt):
             f.write(file_txt)
 
 def run_fasta(args):
-    print """running fasta --->>>"""
+    print ("""running fasta --->>>""")
     # args.datasets is a list of p--d pairs
     if args.function == 'otus':
         out_file = os.path.join(args.base,'fasta.fa')
@@ -190,7 +190,7 @@ def run_fasta(args):
     dids = "','".join(args.dids)
     sql = get_fasta_sql(args,dids)
 
-    print sql
+    print (sql)
     cursor.execute(sql)
 
     rows = cursor.fetchall()
@@ -214,7 +214,7 @@ def run_fasta(args):
 
 
 def run_matrix(args):
-    print '''running matrix --->>>'''
+    print ('''running matrix --->>>''')
     # file name could have date,include_nas,tax-depth,units,domains, normalization
     # or this data could go inside file?
     out_file = os.path.join(args.base,'matrix-'+args.runcode+'.tsv')
@@ -225,7 +225,7 @@ def run_matrix(args):
         args.rank = 'genus'
     sql = get_matrix_biom_taxbytax_sql(args, dids)
 
-    print sql
+    print (sql)
     cursor.execute(sql)
     rows = cursor.fetchall()
 
@@ -287,13 +287,13 @@ def run_matrix(args):
 
 
 def run_biom(args):
-    print '''running biom --->>>'''
+    print ('''running biom --->>>''')
     cursor = args.obj.cursor()
     out_file = os.path.join(args.base,'biom-'+args.runcode+'.biom')
     dids = "','".join(args.dids)
     sql = get_matrix_biom_taxbytax_sql(args, dids)
 
-    print sql
+    print (sql)
     cursor.execute(sql)
     rows = cursor.fetchall()
 
@@ -381,9 +381,9 @@ def run_biom(args):
     write_file_txt(args, out_file, file_txt)
 
 def run_metadata_from_files(args, file_form):
-    print 'in file metadata'
+    print ('in file metadata')
     for did in args.dids:
-        print 'did',did
+        print ('did',did)
         json_data=open(os.path.join(args.files_home, did+'.json')).read()
         mdata = (json.loads(json_data))['metadata']
         print(mdata)
@@ -407,7 +407,7 @@ def get_dco_excludes(args):
     return exclude_list
                
 def run_metadata(args, file_form, dco_bulk=False):
-    print 'running metadata --->>>'
+    print ('running metadata --->>>')
     # args.datasets is a list of p--d pairs
     
     cursor = args.obj.cursor()
@@ -438,7 +438,7 @@ def run_metadata(args, file_form, dco_bulk=False):
             out_file = os.path.join(args.base,'metadata-'+args.runcode+'-2.tsv')
     if not args.include_metagenomic:
         sql += " AND metagenomic='0'"
-    print sql
+    print (sql)
     
     cursor.execute(sql)
     result_count = cursor.rowcount
@@ -477,7 +477,7 @@ def run_metadata(args, file_form, dco_bulk=False):
                         data[project_dataset][key] = row[key]
                     headers_collector[key] = 1
     args.obj.commit()
-    print data
+    print (data)
     # PRIMERS (from primer_suite_id)
     # for pjds in data:
 #         for key in data[pjds]:
@@ -491,7 +491,7 @@ def run_metadata(args, file_form, dco_bulk=False):
 #                 primers_query += " WHERE primer_suite='%s'"
 #                 #pquery = primers_query % (row[key])
 #                 pquery = primers_query % (data[pjds][key])
-#                 print pquery
+#                 print (pquery)
 #                 cursor.execute(pquery)
 #                 primer_rows = cursor.fetchall()
 #                 #print 'p00',primer_rows
@@ -508,7 +508,7 @@ def run_metadata(args, file_form, dco_bulk=False):
         custom_table = 'custom_metadata_'+pid
         #print 'pid',pid
         sql3  = "SELECT * from "+custom_table
-        print sql3
+        print (sql3)
         #print 'args.dataset_name_collector'
         #print args.dataset_name_collector
         try:
@@ -596,7 +596,7 @@ def run_metadata(args, file_form, dco_bulk=False):
     write_file_txt(args, out_file, file_txt)
 
 def run_taxbytax(args):
-    print 'running taxbytax --->>>'
+    print ('running taxbytax --->>>')
 
     cursor = args.obj.cursor()
     dids = "','".join(args.dids)
@@ -604,7 +604,7 @@ def run_taxbytax(args):
         args.rank = 'genus'
     sql = get_matrix_biom_taxbytax_sql(args, dids)
 
-    print sql
+    print (sql)
     cursor.execute(sql)
     rows = cursor.fetchall()
 
@@ -678,12 +678,12 @@ def run_taxbytax(args):
     write_file_txt(args, out_file, file_txt)
 
 def run_taxbyseq(args):
-    print 'running taxbyseq --->>>'
+    print ('running taxbyseq --->>>')
     cursor = args.obj.cursor()
     dids = "','".join(args.dids)
     sql = get_taxbyseq_sql(args,dids)
 
-    print sql
+    print (sql)
     cursor.execute(sql)
     rows = cursor.fetchall()
 
@@ -774,7 +774,7 @@ def clean_samples(samples):
 
 
 def get_dataset_counts(args):
-    print '''getting dataset_counts --->>>'''
+    print('''getting dataset_counts --->>>''')
     cursor = args.obj.cursor()
     dids = "','".join(args.dids)
     pids = "','".join(args.pids)
@@ -794,7 +794,7 @@ def get_dataset_counts(args):
         sql += " AND metagenomic='0'"
     sql += " group by dataset"
     
-    print sql
+    print(sql)
     cursor.execute(sql)
     rows = cursor.fetchall()
     max_val = 0;
@@ -809,7 +809,7 @@ def get_dataset_counts(args):
     return (max_val, pd_counter)
     
 def get_dataset_names(args):
-    print '''getting dataset_names --->>>'''
+    print('''getting dataset_names --->>>''')
     cursor = args.obj.cursor()
     dids = "','".join(args.dids)
     pids = "','".join(args.pids)
@@ -827,7 +827,7 @@ def get_dataset_names(args):
         sys.exit('no pids or dids from command line -- exiting')
     if not args.include_metagenomic:
         sql += " AND metagenomic='0'"
-    print sql
+    print(sql)
     cursor.execute(sql)
     rows = cursor.fetchall()
     dataset_name_collector = {}
@@ -936,7 +936,7 @@ if __name__ == '__main__':
         db_home = '/groups/vampsweb/vamps/'
         args.files_home ='/groups/vampsweb/vamps_node_data/json/vamps2--datasets_silva119/'
     elif args.site == 'vampsdev':
-        db_host = 'vampsdev'
+        db_host = 'bpcweb7'
         #db_host = 'bpcweb7'
         args.NODE_DATABASE = 'vamps2'
         db_home = '/groups/vampsweb/vampsdev/'
@@ -948,7 +948,7 @@ if __name__ == '__main__':
     db_name = args.NODE_DATABASE
 
 
-    print db_host, db_name
+    print (db_host, db_name)
 
     home = expanduser("~")
     print(home)
@@ -970,8 +970,8 @@ if __name__ == '__main__':
     else:
         (args.max, args.dataset_counts) = get_dataset_counts(args)
         args.datasets = args.dataset_counts.keys()
-        print 'max', args.max
-        print 'max2', args.dataset_counts
+        print ('max', args.max)
+        print ('max2', args.dataset_counts)
     
     
 #     args.dc_sql_rows   = []
@@ -1003,4 +1003,4 @@ if __name__ == '__main__':
         if args.matrix:
             run_matrix(args)
 
-    print 'Finished'
+    print('Finished')

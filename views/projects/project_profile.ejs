@@ -166,7 +166,8 @@
                 <% } %>
                 <tr><td>Primary Investigator:</td><td> <%= data.first %> <%= data.last %> (<%= data.email %>)</td></tr>
                 <tr><td>Institution:</td><td> <%= data.institution %></li>
-                <tr><td>Date (processed or uploaded):</td><td></td></tr>
+                <tr><td>Date Created:</td><td><%= data.created_at %></td></tr>
+                <tr><td>Date Last Updated:</td><td><%= data.updated_at %></td></tr>
                 <% if(data.public || data.permissions.indexOf(user.user_id) != -1) { %>
                 <tr><td>Project Sequence Count:</td><td> <%= pcount %></td></tr>
                 <!-- <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr> -->
