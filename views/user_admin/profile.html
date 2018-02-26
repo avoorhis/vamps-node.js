@@ -36,11 +36,13 @@
             <strong>Security Level</strong>: <%= user.security_level %> (Guest) -- Public project access only<br>
           <% } %> 
           <% if(user.username === 'avoorhis') { %>          
+            <div style='padding-left:20px;'>
             <form class="form-horizontal" role="form" method="POST" action="/user_data/upload_user_personal_data_file" enctype="multipart/form-data">
                 <strong>Upload File</strong>:<input type="file" name="upload_files" class="" id="file_input" >
                 <input type='hidden' name='username' value='<%= user.username %>'>
-                <button id='submit_btn' type="submit" class="">Submit</button>
+                <br><input  type="SUBMIT" />
             </form>
+            </div>
           <% } %>
         </p>
     </div>

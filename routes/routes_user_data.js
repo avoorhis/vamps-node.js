@@ -1059,11 +1059,13 @@ router.get('/upload_configuration', [helpers.isLoggedIn], function (req, res) {
           });
 });
 router.post('/upload_user_personal_data_file', [helpers.isLoggedIn, upload.single('upload_files', 12)],function (req, res) {
-    console.log('in POST config_file')
+    console.log('in POST upload_user_personal_data_file')
     console.log(req.body)
     console.log('file',req.file)
     var new_file_name = req.body.username+'_'+req.file.originalname
     var new_file_path = path.join(config.PATH_TO_USER_DATA_UPLOADS,new_file_name)
+    console.log('new_file_path')
+    console.log(new_file_path)
     fs.move(req.file.path, new_file_path, function moveDataDir(err) {
             if (err) {
               console.log("err 1: ");
