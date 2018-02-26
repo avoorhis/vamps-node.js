@@ -1062,7 +1062,8 @@ router.post('/upload_user_personal_data_file', [helpers.isLoggedIn, upload.singl
     console.log('in POST upload_user_personal_data_file')
     console.log(req.body)
     console.log('file',req.file)
-    var new_file_name = req.body.username+'_'+req.file.originalname
+    var timestamp = +new Date();  // millisecs since the epoch!
+    var new_file_name = req.body.username+'_'+timestamp+'_'+req.file.originalname
     console.log('new_file_name ')
     console.log('new_file_name '+new_file_name)
     console.log('req.CONFIG.PATH_TO_USER_DATA_UPLOADS')
