@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+#! python
 # -*- coding: utf-8 -*-
 
 #
@@ -7,16 +6,14 @@
 #
 
 import sys
-
-from IlluminaUtils.lib import fastalib as u
-
+import IlluminaUtils.lib.fastalib as u
 
 def main(args):
     try:
         input = u.SequenceSource(args.input_fasta, unique = True)
     except IOError:
-        print 'Error: File does not exist, or you do not have the right permissions to read it: "%s"'\
-                    % args.input_fasta
+        print('Error: File does not exist, or you do not have the right permissions to read it: "%s"'\
+                    % args.input_fasta)
         sys.exit(-1)
 
     if args.output_fasta:
@@ -27,8 +24,8 @@ def main(args):
     try:
         output = u.FastaOutput(output_file_path)
     except IOError:
-        print 'Error: You have no permission to write destination: "%s"'\
-                    % output_file_path
+        print('Error: You have no permission to write destination: "%s"'\
+                    % output_file_path)
         sys.exit(-1)
 
     if args.names_file:
@@ -39,12 +36,12 @@ def main(args):
     try:
         names = open(names_file_path, 'w')
     except IOError:
-        print 'Error: You have no permission to write destination: "%s"'\
-                    % names_file_path
+        print('Error: You have no permission to write destination: "%s"'\
+                    % names_file_path)
         sys.exit(-1)
 
-    seqcount = 0
-    while input.next():
+    
+    while next(input):
         if args.dont_truncate_sequences:
             if args.dont_include_frequencies:
                 output.store(input, split = False, store_frequencies = False)
@@ -56,8 +53,6 @@ def main(args):
             else:
                 output.store(input)
         names.write('%s\t%s\n' % (input.id, ','.join(input.ids)))
-        seqcount += 1
-    print seqcount
     output.close()
 
 if __name__ == '__main__':
@@ -69,7 +64,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--output-fasta', metavar = 'OUTPUT_FASTA', default = None,
                             help = 'FASTA file to store unique sequences')
     parser.add_argument('-n', '--names-file', metavar = 'NAMES_FILE', default = None,
-                            help = 'FASTA fie to store unique sequences')
+                            help = 'File to store names (headers) of duplicate sequences.')
     parser.add_argument('-t', '--dont-truncate-sequences', action = 'store_true', default = False,
                             help = 'When present, sequences would not be truncated into multiple lines when creating FASTA')
     parser.add_argument('-f', '--dont-include-frequencies', action = 'store_true', default = False,
