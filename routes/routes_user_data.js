@@ -27,7 +27,8 @@ var COMMON  = require(app_root + '/routes/visuals/routes_common');
 var META    = require('./visuals/routes_visuals_metadata');
 var MTX     = require('./visuals/routes_counts_matrix');
 //var progress = require('progress-stream');
-var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
+//var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
+var upload = multer({ dest: config.TMP, limits: { fileSize: '4gb' }  });
 GLOBAL_EDIT_METADATA = {}
 var infile_fa = "infile.fna";
 // router.use(multer({ dest: 'tmp',
@@ -1064,20 +1065,13 @@ router.post('/upload_user_personal_data_file', [helpers.isLoggedIn, upload.singl
     console.log('file',req.file)
     var timestamp = +new Date();  // millisecs since the epoch!
     var new_file_name = req.body.username+'_'+timestamp+'_'+req.file.originalname
-    console.log('new_file_name ')
-    console.log('new_file_name '+new_file_name)
-    console.log('req.CONFIG.PATH_TO_USER_DATA_UPLOADS')
-    console.log(req.CONFIG.PATH_TO_USER_DATA_UPLOADS)
     var new_file_path = path.join(req.CONFIG.PATH_TO_USER_DATA_UPLOADS, new_file_name)
-    console.log('new_file_path2 '+new_file_path)
-    console.log(new_file_path)
+    
     fs.move(req.file.path, new_file_path, function moveDataDir(err) {
             if (err) {
-              console.log("err 1: ");
               console.log(err);
               res.send(err);
             } else {
-              
               console.log('From: '+req.file.path);
               console.log('To: '+new_file_path);
               req.flash('success', 'success');
@@ -1087,6 +1081,40 @@ router.post('/upload_user_personal_data_file', [helpers.isLoggedIn, upload.singl
 
     });
     
+});
+//
+//
+//
+router.post('/test_upload', upload.any(), function(req, res) {
+    console.log('in POST test_upload')
+    console.log(req.body)
+    console.log('file:',req.files)
+    
+    var timestamp = +new Date();  // millisecs since the epoch!
+    var originalFilePath = req.files[0].path
+    var new_file_name = req.body.username+'_'+timestamp+'_'+req.body.originalFileName
+    var new_file_path = path.join(req.CONFIG.PATH_TO_USER_DATA_UPLOADS, new_file_name)
+    console.log('new_file_path: '+new_file_path)
+    fs.move(originalFilePath, new_file_path, function moveDataDir(err) {
+            if (err) {
+              console.log('err:'+err);
+              res.send(err);
+            } else {
+              console.log('From: '+ originalFilePath);
+              console.log('To: '+ new_file_path);
+              res.send({'success':'hello'});
+              // req.flash('success', 'success');
+//               res.redirect("/users/profile");
+              //return;
+            }
+
+    });
+    // if(req.files.myFile) {
+//         console.log('hey, Im a file and Im here!!');
+//     } else {
+//         console.log('ooppss, may be you are running the IE 6 :(');
+//     }
+    //res.end();
 });
 //
 //

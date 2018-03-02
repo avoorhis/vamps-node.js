@@ -43,7 +43,7 @@ def gen_tmpl(args):  #taxon, otu_id_to_greengenes, greengenes_alignment, output_
     # if no genus level found then look at family level
     if not ids and look_twice_if_needed:
 
-        print "Looking at family level: none at genus level found."
+        print ("Looking at family level: none at genus level found.")
         taxon = args.family
         for id, tax in [line.strip().split('\t') for line in open(otu_id_to_greengenes).readlines()]:
             if tax.find(taxon) > 0:
@@ -51,7 +51,7 @@ def gen_tmpl(args):  #taxon, otu_id_to_greengenes, greengenes_alignment, output_
 
     ids = list(set(ids))
 
-    print '%d ids found for %s.' % (len(ids), taxon)
+    print ('%d ids found for %s.' % (len(ids), taxon))
 
     #template = u.FastaOutput('%s.tmpl' % taxon)
     template = u.FastaOutput(args.output)
@@ -83,11 +83,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.genus and not args.family:
-        print "no family entered"
+        print ("no family entered")
         sys.exit()
     if not args.genus and not args.family and not args.domain:
-        print "no taxa entered"
+        print ("no taxa entered")
         sys.exit()
     gen_tmpl(args)
 
-    print "Create GG Alignment File:DONE"
+    print ("Create GG Alignment File:DONE")

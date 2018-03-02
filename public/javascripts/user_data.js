@@ -73,19 +73,52 @@ function get_ref_dbs(project, classifier){
     html += '</select>'
     document.getElementById('refdb_id').innerHTML = html;
 }
-// function change_tree(tree){
-//   //document.getElementById('projects_select_div').innerHTML=''
-//   if(tree == 'projects'){
-//     show_dataset_tree = false;
-//     document.getElementById('projects_select_div').style.display = 'none'
-//     document.getElementById('projects_only_select_div').style.display = 'inline'
-//     load_projects_only_tree()
+function test_upload(user){
+    //alert('hello')
+    var file = document.getElementById('myFile').files[0];
+    //alert(file.name)
+    // name, size
+    
+    var formData = new FormData();
+    
+    //var file = $('#myFile').files[0];
+    
+    formData.append('myFile', file);
+    formData.append('originalFileName', file.name);
+    formData.append("username", user);
+    var xmlhttp = new XMLHttpRequest();
+    
+    xmlhttp.open("POST", "/user_data/test_upload", true);
+    
+    // xmlhttp.onreadystatechange = function() {
+//         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+//           var response = xmlhttp.responseText;
+//           //alert(response)
+//         }
+//     }
+    
+    xmlhttp.upload.onprogress = function(e) {
+      document.getElementById('bar_div').style.visibility = 'visible'
+      if (e.lengthComputable) {
+        //console.log(e);
+        var percentage = (e.loaded / e.total) * 100;
+        console.log(percentage + "%");
+        document.getElementById('bar').style.width = percentage + "%"
+        document.getElementById('bar').innerHTML = percentage.toFixed(0) + "%"
+        
+      }
+    };
 
-//   }else{
-//     show_dataset_tree = true;
-//     document.getElementById('projects_select_div').style.display = 'inline'
-//     document.getElementById('projects_only_select_div').style.display = 'none'
-//     clear_filters()
-//   }
-//   //initialize_form()
-// }
+    xmlhttp.onerror = function(e) {
+      console.log('Error');
+      console.log(e);
+    };
+    xmlhttp.onload = function() {
+      console.log('this '+this.statusText);
+      if(this.statusText == 'OK'){
+        document.getElementById('bar').innerHTML = 'Finished Uploading'
+      }
+    };
+    xmlhttp.send(formData);
+
+}
