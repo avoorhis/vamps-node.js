@@ -167,7 +167,7 @@ class Demultiplex:
         out_name = os.path.join(sample_dir,'seqfile.unique.name')
         
         fastaunique_cmd_list = [ self.fastaunique_cmd,'-o', out_fasta, '-n', out_name, infile]        
-        #print(' '.join(fastaunique_cmd_list))
+        print(' '.join(fastaunique_cmd_list))
         result = subprocess.check_output(' '.join(fastaunique_cmd_list), shell=True)
         
         sum_unique_seq_count += int(result.decode().strip())

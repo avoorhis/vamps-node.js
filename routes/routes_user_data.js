@@ -638,21 +638,19 @@ router.get('/import_choices/fasta', [helpers.isLoggedIn], function (req, res) {
           });
           
 });
-router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_files', 12)],
-   
-  form(
-    form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
-  ),
-  function (req, res)
-  {
-    //     file { fieldname: 'upload_files',
-    //   originalname: 'simple.fa',
-    //   encoding: '7bit',
-    //   mimetype: 'application/octet-stream',
-    //   destination: '/tmp/',
-    //   filename: 'b04c587004798dce0bd0f7224ae6d43d',
-    //   path: '/tmp/b04c587004798dce0bd0f7224ae6d43d',
-    //   size: 3452 }
+//
+//
+router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(req, res) {
+    console.log('in POST test_upload')
+    console.log(req.body)
+    console.log(req.files[0])
+    var project = req.body.project_name
+    var timestamp = +new Date();  // millisecs since the epoch!
+    var original_file_path = req.files[0].path
+    var original_file_name = req.files[0].originalname
+    
+    //
+    //console.log('new_file_path: '+new_file_path)
     var error_fxn = function(msg){
         req.flash('fail',msg)
         res.render('user_data/import_choices/fasta', {
@@ -662,280 +660,406 @@ router.post('/import_choices/fasta', [helpers.isLoggedIn, upload.single('upload_
           });
         return
     }
-    console.log('form',req.form)
-    if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project)){
+    if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
         error_fxn('That project name is not availible.')
         return
     }
-    // if(req.body.fasta_format == 'single_ds' && req.body.dataset == ''){
-//         error_fxn('You need to enter a Dataset (sample) name in the required field.')
-//         return
-//     }
-    // if(req.body.fasta_format == 'multi_ds' && req.body.unique_status == 'uniqued'){
-//         error_fxn('You cannot select both `multi-dataset file` and `unique`')
-//         return
-//     }
-    console.log('In POST /import_choices/fasta')
-    console.log('file',req.file)
+    var info = {}
+    console.log('1')
+    info.project_name = project
+    info.project_directory = ''
+    info.total_seq_count = 0
+    info.owner = req.user.username
+    info.max_dataset_count = 0
+    info.num_of_datasets = 0
+    info.public = 1 
+    info.dataset = {}
+    //console.log('2')
+    info.project_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+project);
+    var analysis_dir = path.join(info.project_base_dir, 'analysis')
+    var new_file_name = 'original_fasta.fna'
+    var new_fasta_file_path = path.join(info.project_base_dir, new_file_name)
+    var new_info_file_path = path.join(info.project_base_dir, req.CONSTS.CONFIG_FILE)
+    //console.log('3')
     
-      console.log(req.body)
-      console.log('success')
-    if(IsFileCompressed(req.file)){
     
-    }  
-     var lineReader = require('readline').createInterface({
-          input: require('fs').createReadStream(req.file.path)
+    //var chunks = []
+    
+    //console.log('4')
+    
+    fs.ensureDir(analysis_dir, function ensureProjectsDir(err) {
+        if(err){return console.log(err);} // => null
+        var readStream = fs.createReadStream(original_file_path);
+        var writeStream = fs.createWriteStream(new_fasta_file_path);
+        if(IsFileCompressed(req.files[0])){     
+            var gunzip = zlib.createGunzip();
+            console.log('File is gzip compressed')
+            rs = readStream.pipe(gunzip)   //.pipe(writeStream);
+        }else{
+            console.log('Move file as is')
+            rs = readStream     //.pipe(writeStream);
+        }
+                
+        console.log('Moving file')
+        console.log('From: '+original_file_path)
+        console.log('To: '+new_fasta_file_path)
+        //var newReadStream = fs.createReadStream(new_fasta_file_path);
+        var chunks = [];
+        var chunkstr = '';
+        var total_seq_count = 0;
+        var ds_counts = {}
+        rs.on('error', err => {
+            // handle error
+            console.log('error: '+err)
         });
-    var total_seq_count = 0
-    //var unique_seq_count = 0
-    var ds_counts = {}
-    var sample_defline;
-    lineReader.on('line', function (line) {      
-      if(line[0] == '>'){
-        //console.log('Line from file:', line);
-        sample_defline = line
-        // if(req.body.unique_status == 'uniqued'){
-//             unique_seq_count += 1
-//             //try{
-//                 items = line.split('|')  // last item must be 'frequency=xx'
-//                 //console.log('SEQ_COUNT1: '+line)
-//                 freq = items[items.length - 1]
-//                 //console.log('SEQ_COUNT2: '+freq)
-//                 seq_count = freq.split(':')
-//                 //console.log('SEQ_COUNT2: '+seq_count[1].toString())
-//                 total_seq_count += parseInt(seq_count[1])
-//                 //console.log('total_seq_count: '+total_seq_count.toString())
-//             
-//         }else{
-        total_seq_count += 1    // total sequences IF fasta is not uniqued 
-        //}
-        line_items = line.split(/\s+/)
-        first_item = line_items[0].substring(1,line_items[0].length)
-        // now this is common M9Akey217.141086_98 last digits are 'count'
-        // need to be removed
-        first_item = first_item.split('_')[0]
-        //console.log('First Item from file:', first_item);
-        if(ds_counts.hasOwnProperty(first_item)){
-            ds_counts[first_item] += 1
-        }else{
-            ds_counts[first_item] = 1
-        }
-        
-      }
-    });
-    
-    lineReader.on('close', function (line) {
-      console.log('done');
-      console.log('total_seq_count');
-      console.log(total_seq_count);
-      
-      num_of_unique_keys = Object.keys(ds_counts).length
-      
-      var info = {}
-      info.project_name = req.body.project
-      info.project_directory = ''
-      info.total_seq_count = total_seq_count;
-      info.owner = req.user.username
-      //info.unique_seq_count = unique_seq_count
-      info.max_dataset_count = 0
-      info.num_of_datasets = 0
-      //info.original_fasta_unique_status = req.body.unique_status
-      info.fasta_type = ''
-      info.public = 1  // set true
-      info.num_of_datasets = 0
-      info.dataset = {}
-//       if(req.body.unique_status == 'not_uniqued' && sample_defline.split('|')[]){
-//       
-//       }
-      // if(req.body.unique_status == 'uniqued'){
-//         items = sample_defline.split('|')  // last item must be 'frequency=xx'
-//         if(items[items.length - 1].substring(0,10) != 'frequency:'){
-//              error_fxn('Error - You selected "Unique" but there is no "frequency:" at the end of the defline.<br>Here is the format of a sample defline: '+sample_defline)
-//         }
-//         compare_seq_count = unique_seq_count
-//       }else{
-        compare_seq_count = total_seq_count
-      //}
-      
-      if(num_of_unique_keys == compare_seq_count){
-        // looks like single
-        console.log(num_of_unique_keys);
-        console.log('This looks like a single dataset fasta - am I right?')
-        console.log('number of keys(ids): '+num_of_unique_keys.toString())
-        //console.log('number of Unique Sequences: '+ unique_seq_count.toString())
-        console.log('number of Total Sequences: '+ total_seq_count.toString())
-        if(req.body.fasta_format == 'multi_ds'){
-             error_fxn('Error - You selected "Multi" but this looks like a SINGLE Dataset formatted Fasta file.<br>Here is the format of a sample defline: '+sample_defline)
-        }else{
-            // save file to new directory
-            info.fasta_type = 'single_ds'
-            info.num_of_datasets = 1
-            info.dataset[req.body.dataset] = total_seq_count
-            info.max_dataset_count = total_seq_count  // only one ds here
-            
-        }
-      }else{
-        // looks like multi
-        console.log(ds_counts);
-        console.log(num_of_unique_keys);
-        console.log('This looks like a multi dataset fasta')
-        console.log('number of keys(ds): '+num_of_unique_keys.toString())
-        console.log('number of Total Sequences: '+total_seq_count.toString())
-        if(req.body.fasta_format == 'single_ds'){
-             error_fxn('Error - You selected "Single" but this looks like a Multiple Dataset formatted Fasta file.<br>Here is the format of a sample defline: '+sample_defline)
-        }else{
-            // save file to new directory
-            info.fasta_type = 'multi_ds'
-            info.num_of_datasets = num_of_unique_keys
-            for(ds in ds_counts){
-                info.dataset[ds] = ds_counts[ds]
-                if(ds_counts[ds] > info.max_dataset_count){
-                    info.max_dataset_count = ds_counts[ds]
+        rs.on('data', chunk => {
+            console.log(chunk.toString())
+            //chunks.push(chunk.toString());
+            chunkstr += chunk.toString()
+        });
+
+        // File is done being read
+        rs.on('close', () => {
+            line_split_chunks = chunkstr.split('\n')
+            for(n in line_split_chunks){
+                //console.log('Line: '+line_split_chunks[n])
+                if(line_split_chunks[n][0] == '>'){
+                    line_items = line_split_chunks[n].split(/\s+/)  // split on white space
+                    total_seq_count += 1 
+                    first_item = line_items[0].substring(1,line_items[0].length)  // remove '>'
+                    // now this is common M9Akey217.141086_98 last digits are 'count'
+                    // need to be removed
+                    first_item = first_item.split('_')[0]  // if trailing number: remove it
+                    if(ds_counts.hasOwnProperty(first_item)){
+                        ds_counts[first_item] += 1
+                    }else{
+                        ds_counts[first_item] = 1
+                        
+                    }
+                                   
                 }
             }
-        }
-        
-      }
-      
-      // here all is ok and we can create user project directory
-      var project_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+req.body.project);
-      info.project_directory = project_base_dir
-      //console.log(project_base_dir)
-      var new_fasta_filename_path = path.join(project_base_dir, 'SEQFILE.fna')
-      var new_info_filename_path = path.join(project_base_dir, req.CONSTS.CONFIG_FILE)
-      //console.log(new_filename_path)
-      fs.ensureDir(project_base_dir, function ensureProjectsDir(err) {
-            if(err){return console.log(err);} // => null
-            // dir has now been created, including the directory it is to be placed in
-            console.log('1-moving fa file to '+new_fasta_filename_path)
-            fs.move(req.file.path, new_fasta_filename_path, function(err){
-                if (err) return console.log(err)
-                // create dir: analysis
- //                if(req.body.fasta_format == 'single_ds'){
-//                     var ds_dir = path.join(project_base_dir, 'analysis', req.body.dataset)
-//                     console.log('1-creating directory '+ds_dir)
-//                     fs.ensureDir(ds_dir, function ensureDSDir(err) {
-//                         var out_fasta = path.join(ds_dir,'seqfile.unique.fa')
-//                         var out_name = path.join(ds_dir,'seqfile.unique.name')
-//                         
-//                         if(req.body.unique_status == 'uniqued'){
-//                             fs.copy(new_fasta_filename_path,out_fasta, function copyFile(err){ 
-//                                 fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
-//                                     req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-//                                     res.render('user_data/import_choices/fasta', {
-//                                           title: 'VAMPS:Import Choices',         
-//                                           user: req.user, hostname: req.CONFIG.hostname
-//                                 });
-//                             });
-//                             
-//                         }else{ // Not Uniqued
-//                             fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
-//                             var fastaunique_params = ['-o', out_fasta, '-n', out_name, new_fasta_filename_path]
-//                             console.log('running fastaunique')
-//                             console.log(fastaunique_cmd + ' ' + fastaunique_params.join(' '))
-//                             var proc = spawn(fastaunique_cmd, fastaunique_params)
-//                             var output = '';
-//                             proc.stdout.on('data', function (data) {
-//                               data = data.toString().replace(/^\s+|\s+$/g, '');                      
-//                               output += data;
-//                             });
-//                             proc.on('close', function (code) {
-//                                 console.log('close: fastaunique proc exited with code ' + code);
-//                                 console.log("output: ");
-//                                 console.log(output);
-//                                 //info.unique_seq_count = output
-//                                 fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
-//                                 req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-//                                 res.render('user_data/import_choices/fasta', {
-//                                       title: 'VAMPS:Import Choices',         
-//                                       user: req.user, hostname: req.CONFIG.hostname
-//                                 });
-//                             });
-//                         }
-//                     });   
-//                    
-//                 // create dir analysis/'dataset'
-//                 // fataunique new_fasta_filename_path into dir
-//                 
-//                 }else{  // MULTI - create shell script demultiplex.sh
-//                     
-                    //demultiplex_script_path =  path.join(project_base_dir,'demultiplex.sh');
-                    //demultiplex_script_text = '#!/bin/sh\n\n'
-                    demultiplex_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py')
-                    if(req.body.unique_status == 'uniqued'){
-                        var demultiplex_params = ['-i',new_fasta_filename_path,'-d',project_base_dir]
-                    }else{
-                        fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
-                        var demultiplex_params = ['-i',new_fasta_filename_path,'-d',project_base_dir,'-f',fastaunique_cmd]
-                    }
-                    
-                    //console.log('running: '+req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+ (demultiplex_params).join(' '))
-                    //demultiplex_script_text += req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+demultiplex_params.join(' ')+'\n'
-                    
-                    console.log(demultiplex_cmd + ' ' + demultiplex_params.join(' '))
-                    var proc = spawn(demultiplex_cmd, demultiplex_params, {
-                        env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-                        detached: true, stdio: 'pipe'
-                    });
-                    var output = '';
-                    proc.stderr.on('data', function (data) {
-                      console.log(data.toString())   
-                    });
-                    proc.stdout.on('data', function (data) { 
-                      console.log('data1')  
-                      console.log(data.toString())   
-                      output += data.toString()
-                      
-                    });
-                    proc.on('close', function (code) {
-                        console.log('close: demultiplex (+/-fastaunique) proc exited with code ' + code);
-                        console.log("output: ");
-                        output = output.trim().split("\n");
-                        for( n in output){
-                            console.log(output[n]);
-                            if(output[n].substring(0,16) == 'UNIQUE_SEQ_COUNT'){
-                                res = output[n].split('=')
-                                info.unique_seq_count = res[1]                            
-                            }
-                        }
-                        
-                        if(helpers.isInt(info.unique_seq_count)){  // should unique count
-                            //info.unique_seq_count = output
-                            console.log('seq_count SUCCESS: got int')
-                        }else{
-                            console.log('seq_count Error: Check demultiplex.py script for print commands.')
-                            //info.unique_seq_count = 'ERROR'
-                        }
-                        console.log('info');
-                        console.log(info);
-                        console.log(new_info_filename_path)
-                        fs.writeFile(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }),function writeConfigFile(err) {                                  
-                            console.log('info1');
-                            req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-                            console.log('info2');
-                            //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
-                            res.render('user_data/import_choices/fasta', {
-                              title: 'VAMPS:Import Choices',
-                              def_name:'',
-                              user: req.user, hostname: req.CONFIG.hostname
-                            });
-                            return
-                        }); 
-                    });
-                    return
-                   
-//               }   
-               
-            });
+            console.log('facount='+total_seq_count.toString())
+            for(ds in ds_counts){
+                console.log(ds+' - '+ds_counts[ds].toString())
+                info.dataset[ds] = ds_counts[ds]
+                if(ds_counts[ds] > info.max_dataset_count){
+                     info.max_dataset_count = ds_counts[ds]
+                }
+            }
+            var demultiplex_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'demultiplex.py')
+            var fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique')
+            var demultiplex_params = ['-i',new_fasta_file_path,'-d',info.project_base_dir,'-f',fastaunique_cmd]
+            console.log(demultiplex_cmd + ' ' + demultiplex_params.join(' '))
+            // var proc = spawn(demultiplex_cmd, demultiplex_params, {
+//                     env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+//                     detached: true, stdio: 'pipe'
+//             });
             
-      // create json info file 
-      // single: mv fasta file to new dir 
-      // multi: demultiplex file 
-      
-    });
-  
-   });
+        }).pipe(writeStream)
+
+    })
+    
+    
 });
+ 
+// router.post('/import_choices/fasta2', [helpers.isLoggedIn, upload.single('upload_files', 12)],
+//    
+//   form(
+//     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
+//   ),
+//   function (req, res)
+//   {
+//     //     file { fieldname: 'upload_files',
+//     //   originalname: 'simple.fa',
+//     //   encoding: '7bit',
+//     //   mimetype: 'application/octet-stream',
+//     //   destination: '/tmp/',
+//     //   filename: 'b04c587004798dce0bd0f7224ae6d43d',
+//     //   path: '/tmp/b04c587004798dce0bd0f7224ae6d43d',
+//     //   size: 3452 }
+//     var error_fxn = function(msg){
+//         req.flash('fail',msg)
+//         res.render('user_data/import_choices/fasta', {
+//           title: 'VAMPS:Import Choices',
+//           def_name:'',
+//           user: req.user, hostname: req.CONFIG.hostname
+//           });
+//         return
+//     }
+//     console.log('form',req.form)
+//     if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project)){
+//         error_fxn('That project name is not availible.')
+//         return
+//     }
+//     // if(req.body.fasta_format == 'single_ds' && req.body.dataset == ''){
+// //         error_fxn('You need to enter a Dataset (sample) name in the required field.')
+// //         return
+// //     }
+//     // if(req.body.fasta_format == 'multi_ds' && req.body.unique_status == 'uniqued'){
+// //         error_fxn('You cannot select both `multi-dataset file` and `unique`')
+// //         return
+// //     }
+//     console.log('In POST /import_choices/fasta')
+//     console.log('file',req.file)
+//     
+//       console.log(req.body)
+//       console.log('success')
+//     if(IsFileCompressed(req.file)){
+//     
+//     }  
+//      var lineReader = require('readline').createInterface({
+//           input: require('fs').createReadStream(req.file.path)
+//         });
+//     var total_seq_count = 0
+//     //var unique_seq_count = 0
+//     var ds_counts = {}
+//     var sample_defline;
+//     lineReader.on('line', function (line) {      
+//       if(line[0] == '>'){
+//         //console.log('Line from file:', line);
+//         sample_defline = line
+//         // if(req.body.unique_status == 'uniqued'){
+// //             unique_seq_count += 1
+// //             //try{
+// //                 items = line.split('|')  // last item must be 'frequency=xx'
+// //                 //console.log('SEQ_COUNT1: '+line)
+// //                 freq = items[items.length - 1]
+// //                 //console.log('SEQ_COUNT2: '+freq)
+// //                 seq_count = freq.split(':')
+// //                 //console.log('SEQ_COUNT2: '+seq_count[1].toString())
+// //                 total_seq_count += parseInt(seq_count[1])
+// //                 //console.log('total_seq_count: '+total_seq_count.toString())
+// //             
+// //         }else{
+//         total_seq_count += 1    // total sequences IF fasta is not uniqued 
+//         //}
+//         line_items = line.split(/\s+/)
+//         first_item = line_items[0].substring(1,line_items[0].length)
+//         // now this is common M9Akey217.141086_98 last digits are 'count'
+//         // need to be removed
+//         first_item = first_item.split('_')[0]
+//         //console.log('First Item from file:', first_item);
+//         if(ds_counts.hasOwnProperty(first_item)){
+//             ds_counts[first_item] += 1
+//         }else{
+//             ds_counts[first_item] = 1
+//         }
+//         
+//       }
+//     });
+//     
+//     lineReader.on('close', function (line) {
+//       console.log('done');
+//       console.log('total_seq_count');
+//       console.log(total_seq_count);
+//       
+//       num_of_unique_keys = Object.keys(ds_counts).length
+//       
+//       var info = {}
+//       info.project_name = req.body.project
+//       info.project_directory = ''
+//       info.total_seq_count = total_seq_count;
+//       info.owner = req.user.username
+//       //info.unique_seq_count = unique_seq_count
+//       info.max_dataset_count = 0
+//       info.num_of_datasets = 0
+//       //info.original_fasta_unique_status = req.body.unique_status
+//       info.fasta_type = ''
+//       info.public = 1  // set true
+//       info.dataset = {}
+// //       if(req.body.unique_status == 'not_uniqued' && sample_defline.split('|')[]){
+// //       
+// //       }
+//       // if(req.body.unique_status == 'uniqued'){
+// //         items = sample_defline.split('|')  // last item must be 'frequency=xx'
+// //         if(items[items.length - 1].substring(0,10) != 'frequency:'){
+// //              error_fxn('Error - You selected "Unique" but there is no "frequency:" at the end of the defline.<br>Here is the format of a sample defline: '+sample_defline)
+// //         }
+// //         compare_seq_count = unique_seq_count
+// //       }else{
+//         compare_seq_count = total_seq_count
+//       //}
+//       
+//       if(num_of_unique_keys == compare_seq_count){
+//         // looks like single
+//         console.log(num_of_unique_keys);
+//         console.log('This looks like a single dataset fasta - am I right?')
+//         console.log('number of keys(ids): '+num_of_unique_keys.toString())
+//         //console.log('number of Unique Sequences: '+ unique_seq_count.toString())
+//         console.log('number of Total Sequences: '+ total_seq_count.toString())
+//         if(req.body.fasta_format == 'multi_ds'){
+//              error_fxn('Error - You selected "Multi" but this looks like a SINGLE Dataset formatted Fasta file.<br>Here is the format of a sample defline: '+sample_defline)
+//         }else{
+//             // save file to new directory
+//             info.fasta_type = 'single_ds'
+//             info.num_of_datasets = 1
+//             info.dataset[req.body.dataset] = total_seq_count
+//             info.max_dataset_count = total_seq_count  // only one ds here
+//             
+//         }
+//       }else{
+//         // looks like multi
+//         console.log(ds_counts);
+//         console.log(num_of_unique_keys);
+//         console.log('This looks like a multi dataset fasta')
+//         console.log('number of keys(ds): '+num_of_unique_keys.toString())
+//         console.log('number of Total Sequences: '+total_seq_count.toString())
+//         if(req.body.fasta_format == 'single_ds'){
+//              error_fxn('Error - You selected "Single" but this looks like a Multiple Dataset formatted Fasta file.<br>Here is the format of a sample defline: '+sample_defline)
+//         }else{
+//             // save file to new directory
+//             info.fasta_type = 'multi_ds'
+//             info.num_of_datasets = num_of_unique_keys
+//             for(ds in ds_counts){
+//                 info.dataset[ds] = ds_counts[ds]
+//                 if(ds_counts[ds] > info.max_dataset_count){
+//                     info.max_dataset_count = ds_counts[ds]
+//                 }
+//             }
+//         }
+//         
+//       }
+//       
+//       // here all is ok and we can create user project directory
+//       var project_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+req.body.project);
+//       info.project_directory = project_base_dir
+//       //console.log(project_base_dir)
+//       var new_fasta_filename_path = path.join(project_base_dir, 'SEQFILE.fna')
+//       var new_info_filename_path = path.join(project_base_dir, req.CONSTS.CONFIG_FILE)
+//       //console.log(new_filename_path)
+//       fs.ensureDir(project_base_dir, function ensureProjectsDir(err) {
+//             if(err){return console.log(err);} // => null
+//             // dir has now been created, including the directory it is to be placed in
+//             console.log('1-moving fa file to '+new_fasta_filename_path)
+//             fs.move(req.file.path, new_fasta_filename_path, function(err){
+//                 if (err) return console.log(err)
+//                 // create dir: analysis
+//  //                if(req.body.fasta_format == 'single_ds'){
+// //                     var ds_dir = path.join(project_base_dir, 'analysis', req.body.dataset)
+// //                     console.log('1-creating directory '+ds_dir)
+// //                     fs.ensureDir(ds_dir, function ensureDSDir(err) {
+// //                         var out_fasta = path.join(ds_dir,'seqfile.unique.fa')
+// //                         var out_name = path.join(ds_dir,'seqfile.unique.name')
+// //                         
+// //                         if(req.body.unique_status == 'uniqued'){
+// //                             fs.copy(new_fasta_filename_path,out_fasta, function copyFile(err){ 
+// //                                 fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
+// //                                     req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+// //                                     res.render('user_data/import_choices/fasta', {
+// //                                           title: 'VAMPS:Import Choices',         
+// //                                           user: req.user, hostname: req.CONFIG.hostname
+// //                                 });
+// //                             });
+// //                             
+// //                         }else{ // Not Uniqued
+// //                             fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
+// //                             var fastaunique_params = ['-o', out_fasta, '-n', out_name, new_fasta_filename_path]
+// //                             console.log('running fastaunique')
+// //                             console.log(fastaunique_cmd + ' ' + fastaunique_params.join(' '))
+// //                             var proc = spawn(fastaunique_cmd, fastaunique_params)
+// //                             var output = '';
+// //                             proc.stdout.on('data', function (data) {
+// //                               data = data.toString().replace(/^\s+|\s+$/g, '');                      
+// //                               output += data;
+// //                             });
+// //                             proc.on('close', function (code) {
+// //                                 console.log('close: fastaunique proc exited with code ' + code);
+// //                                 console.log("output: ");
+// //                                 console.log(output);
+// //                                 //info.unique_seq_count = output
+// //                                 fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
+// //                                 req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+// //                                 res.render('user_data/import_choices/fasta', {
+// //                                       title: 'VAMPS:Import Choices',         
+// //                                       user: req.user, hostname: req.CONFIG.hostname
+// //                                 });
+// //                             });
+// //                         }
+// //                     });   
+// //                    
+// //                 // create dir analysis/'dataset'
+// //                 // fataunique new_fasta_filename_path into dir
+// //                 
+// //                 }else{  // MULTI - create shell script demultiplex.sh
+// //                     
+//                     //demultiplex_script_path =  path.join(project_base_dir,'demultiplex.sh');
+//                     //demultiplex_script_text = '#!/bin/sh\n\n'
+//                     demultiplex_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py')
+//                     if(req.body.unique_status == 'uniqued'){
+//                         var demultiplex_params = ['-i',new_fasta_filename_path,'-d',project_base_dir]
+//                     }else{
+//                         fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
+//                         var demultiplex_params = ['-i',new_fasta_filename_path,'-d',project_base_dir,'-f',fastaunique_cmd]
+//                     }
+//                     
+//                     //console.log('running: '+req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+ (demultiplex_params).join(' '))
+//                     //demultiplex_script_text += req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+demultiplex_params.join(' ')+'\n'
+//                     
+//                     console.log(demultiplex_cmd + ' ' + demultiplex_params.join(' '))
+//                     var proc = spawn(demultiplex_cmd, demultiplex_params, {
+//                         env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+//                         detached: true, stdio: 'pipe'
+//                     });
+//                     var output = '';
+//                     proc.stderr.on('data', function (data) {
+//                       console.log(data.toString())   
+//                     });
+//                     proc.stdout.on('data', function (data) { 
+//                       console.log('data1')  
+//                       console.log(data.toString())   
+//                       output += data.toString()
+//                       
+//                     });
+//                     proc.on('close', function (code) {
+//                         console.log('close: demultiplex (+/-fastaunique) proc exited with code ' + code);
+//                         console.log("output: ");
+//                         output = output.trim().split("\n");
+//                         for( n in output){
+//                             console.log(output[n]);
+//                             if(output[n].substring(0,16) == 'UNIQUE_SEQ_COUNT'){
+//                                 res = output[n].split('=')
+//                                 info.unique_seq_count = res[1]                            
+//                             }
+//                         }
+//                         
+//                         if(helpers.isInt(info.unique_seq_count)){  // should unique count
+//                             //info.unique_seq_count = output
+//                             console.log('seq_count SUCCESS: got int')
+//                         }else{
+//                             console.log('seq_count Error: Check demultiplex.py script for print commands.')
+//                             //info.unique_seq_count = 'ERROR'
+//                         }
+//                         console.log('info');
+//                         console.log(info);
+//                         console.log(new_info_filename_path)
+//                         fs.writeFile(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }),function writeConfigFile(err) {                                  
+//                             console.log('info1');
+//                             req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+//                             console.log('info2');
+//                             //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
+//                             res.render('user_data/import_choices/fasta', {
+//                               title: 'VAMPS:Import Choices',
+//                               def_name:'',
+//                               user: req.user, hostname: req.CONFIG.hostname
+//                             });
+//                             return
+//                         }); 
+//                     });
+//                     return
+//                    
+// //               }   
+//                
+//             });
+//             
+//       // create json info file 
+//       // single: mv fasta file to new dir 
+//       // multi: demultiplex file 
+//       
+//     });
+//   
+//    });
+// });
 //
 //
 //
@@ -1059,40 +1183,42 @@ router.get('/upload_configuration', [helpers.isLoggedIn], function (req, res) {
             //import_type: import_type,
           });
 });
-router.post('/upload_user_personal_data_file', [helpers.isLoggedIn, upload.single('upload_files', 12)],function (req, res) {
-    console.log('in POST upload_user_personal_data_file')
-    console.log(req.body)
-    console.log('file',req.file)
-    var timestamp = +new Date();  // millisecs since the epoch!
-    var new_file_name = req.body.username+'_'+timestamp+'_'+req.file.originalname
-    var new_file_path = path.join(req.CONFIG.PATH_TO_USER_DATA_UPLOADS, new_file_name)
-    
-    fs.move(req.file.path, new_file_path, function moveDataDir(err) {
-            if (err) {
-              console.log(err);
-              res.send(err);
-            } else {
-              console.log('From: '+req.file.path);
-              console.log('To: '+new_file_path);
-              req.flash('success', 'success');
-              res.redirect("/users/profile");
-              return;
-            }
-
-    });
-    
-});
+// router.post('/upload_user_personal_data_file', [helpers.isLoggedIn, upload.single('upload_files', 12)],function (req, res) {
+//     console.log('in POST upload_user_personal_data_file')
+//     console.log(req.body)
+//     console.log('file',req.file)
+//     var timestamp = +new Date();  // millisecs since the epoch!
+//     var new_file_name = req.body.username+'_'+timestamp+'_'+req.file.originalname
+//     var new_file_path = path.join(req.CONFIG.PATH_TO_USER_DATA_UPLOADS, new_file_name)
+//     
+//     fs.move(req.file.path, new_file_path, function moveDataDir(err) {
+//             if (err) {
+//               console.log(err);
+//               res.send(err);
+//             } else {
+//               console.log('From: '+req.file.path);
+//               console.log('To: '+new_file_path);
+//               req.flash('success', 'success');
+//               res.redirect("/users/profile");
+//               return;
+//             }
+// 
+//     });
+//     
+// });
 //
 //
-//
-router.post('/test_upload', upload.any(), function(req, res) {
+//[helpers.isLoggedIn, upload.any()]
+router.post('/upload_file', [helpers.isLoggedIn, upload.any()], function(req, res) {
+    // called from user_data.js as way to upload random files from /users/profile.html
     console.log('in POST test_upload')
     console.log(req.body)
-    console.log('file:',req.files)
+    //console.log('file:',req.files)
     
     var timestamp = +new Date();  // millisecs since the epoch!
     var originalFilePath = req.files[0].path
-    var new_file_name = req.body.username+'_'+timestamp+'_'+req.body.originalFileName
+    var originalFileName = req.files[0].originalname
+    var new_file_name = req.body.username+'_'+timestamp+'_'+originalFileName
     var new_file_path = path.join(req.CONFIG.PATH_TO_USER_DATA_UPLOADS, new_file_name)
     console.log('new_file_path: '+new_file_path)
     fs.move(originalFilePath, new_file_path, function moveDataDir(err) {
@@ -1103,18 +1229,9 @@ router.post('/test_upload', upload.any(), function(req, res) {
               console.log('From: '+ originalFilePath);
               console.log('To: '+ new_file_path);
               res.send({'success':'hello'});
-              // req.flash('success', 'success');
-//               res.redirect("/users/profile");
-              //return;
             }
-
     });
-    // if(req.files.myFile) {
-//         console.log('hey, Im a file and Im here!!');
-//     } else {
-//         console.log('ooppss, may be you are running the IE 6 :(');
-//     }
-    //res.end();
+    
 });
 //
 //

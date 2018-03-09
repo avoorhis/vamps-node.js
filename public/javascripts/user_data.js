@@ -73,22 +73,19 @@ function get_ref_dbs(project, classifier){
     html += '</select>'
     document.getElementById('refdb_id').innerHTML = html;
 }
-function test_upload(user){
+//
+//
+//
+function upload_file(user){
     //alert('hello')
     var file = document.getElementById('myFile').files[0];
-    //alert(file.name)
-    // name, size
     
     var formData = new FormData();
     
-    //var file = $('#myFile').files[0];
-    
     formData.append('myFile', file);
-    formData.append('originalFileName', file.name);
     formData.append("username", user);
     var xmlhttp = new XMLHttpRequest();
-    
-    xmlhttp.open("POST", "/user_data/test_upload", true);
+    xmlhttp.open("POST", "/user_data/upload_file", true);
     
     // xmlhttp.onreadystatechange = function() {
 //         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
@@ -98,7 +95,7 @@ function test_upload(user){
 //     }
     
     xmlhttp.upload.onprogress = function(e) {
-      document.getElementById('bar_div').style.visibility = 'visible'
+      document.getElementById('bar_div').style.display = 'block'
       if (e.lengthComputable) {
         //console.log(e);
         var percentage = (e.loaded / e.total) * 100;

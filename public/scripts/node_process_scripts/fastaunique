@@ -1,4 +1,4 @@
-#! python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 #
@@ -6,8 +6,8 @@
 #
 
 import sys
-import IlluminaUtils.lib.fastalib as u
-
+#import IlluminaUtils.lib.fastalib as u
+import fastalibAV as u
 def main(args):
     try:
         input = u.SequenceSource(args.input_fasta, unique = True)
@@ -40,8 +40,9 @@ def main(args):
                     % names_file_path)
         sys.exit(-1)
 
-    
-    while next(input):
+    count = 0
+    while input.next():
+        count += 1
         if args.dont_truncate_sequences:
             if args.dont_include_frequencies:
                 output.store(input, split = False, store_frequencies = False)
@@ -54,6 +55,7 @@ def main(args):
                 output.store(input)
         names.write('%s\t%s\n' % (input.id, ','.join(input.ids)))
     output.close()
+    print(count)
 
 if __name__ == '__main__':
     import argparse

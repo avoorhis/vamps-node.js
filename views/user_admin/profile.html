@@ -35,17 +35,17 @@
           <% }else { %>
             <strong>Security Level</strong>: <%= user.security_level %> (Guest) -- Public project access only<br>
           <% } %> 
-          <% if(user.username === 'avoorhis') { %>          
+          <% if(user.security_level == 1) { %>          
                 <div style='padding-left:20px;'>
                 _________________________________
                 <br>
-                <strong>Upload Data File2</strong>:<input id='myFile' type="file" name="upload_files" class=""  >
-                <input  type="SUBMIT" onclick="test_upload('<%= user.username %>')" />
+                <strong>Upload File</strong>:<input id='myFile' type="file" name="upload_files" class=""  >
+                <input  type="SUBMIT" onclick="upload_file('<%= user.username %>')" style='margin-top:5px'>
                 </div>
                 <br>
-                <div id='bar_div' class="progress" style='visibility:hidden'>
+                <div id='bar_div' class="progress" style='display:none'>
                   <div id='bar' class="progress-bar progress-bar-success" role="progressbar" aria-valuenow=""
-                            aria-valuemin="0" aria-valuemax="100" style="width:1%">
+                            aria-valuemin="0" aria-valuemax="100" style="width:0%">
                   </div>
                 </div>
           <% } %>

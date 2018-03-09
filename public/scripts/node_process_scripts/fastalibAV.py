@@ -92,7 +92,9 @@ class SequenceSource():
 
         if self.unique:
             self.init_unique_hash()
-
+            
+    def __iter__(self):
+        return self
     def init_unique_hash(self):
         while self.next_regular():
             
