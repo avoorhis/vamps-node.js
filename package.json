@@ -32,6 +32,7 @@
     "console-stamp": "^0.2.6",
     "cookie-parser": "^1.4.3",
     "coopyhx": "^1.0.0",
+    "csv-compare": ","
     "csv-parse": "",
     "csvtojson": "^0.4.5",
     "d3": "",
