@@ -629,7 +629,7 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
 
 router.get('/import_choices/fasta', [helpers.isLoggedIn], function (req, res) {
     console.log('in GET import_choices/fasta')
-    var rando = Math.floor((Math.random() * (199999 - 100000 + 1)) + 100000);
+    var rando = Math.floor((Math.random() * (999999 - 100000 + 1)) + 100000);
     var default_project_name = req.user.username+'_'+rando.toString();
     res.render('user_data/import_choices/fasta', {
           title: 'VAMPS:Import Choices',
@@ -667,7 +667,6 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
     var info = {}
     console.log('1')
     info.project_name = project
-    info.project_directory = ''
     info.total_seq_count = 0
     info.owner = req.user.username
     info.max_dataset_count = 0
@@ -675,22 +674,27 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
     info.public = 1 
     info.dataset = {}
     //console.log('2')
-    info.project_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+project);
-    var analysis_dir = path.join(info.project_base_dir, 'analysis')
+    info.project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+project);
+    var new_info_filename_path = path.join(info.project_dir, req.CONSTS.CONFIG_FILE)
+    var analysis_dir = path.join(info.project_dir, 'analysis')
     var new_file_name = 'original_fasta.fna'
-    var new_fasta_file_path = path.join(info.project_base_dir, new_file_name)
-    var new_info_file_path = path.join(info.project_base_dir, req.CONSTS.CONFIG_FILE)
-    //console.log('3')
+    var new_fasta_file_path = path.join(info.project_dir, new_file_name)
+    var new_info_file_path = path.join(info.project_dir, req.CONSTS.CONFIG_FILE)
+    console.log('3')
     
     
     //var chunks = []
     
-    //console.log('4')
-    
-    fs.ensureDir(analysis_dir, function ensureProjectsDir(err) {
+    //console.log(process.umask())
+    //console.log(0777 & (~process.umask()))
+    //process.umask() = 0
+    //var mode = 0777 & ~process.umask()
+    //console.log(process.umask())
+    fs.mkdir(info.project_dir, function ensureProjectsDir(err) {
         if(err){return console.log(err);} // => null
+        fs.chmodSync(info.project_dir, 0o775);
         var readStream = fs.createReadStream(original_file_path);
-        var writeStream = fs.createWriteStream(new_fasta_file_path);
+        var writeStream = fs.createWriteStream(new_fasta_file_path,{mode: 0o664});
         if(IsFileCompressed(req.files[0])){     
             var gunzip = zlib.createGunzip();
             console.log('File is gzip compressed')
@@ -706,7 +710,6 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
         //var newReadStream = fs.createReadStream(new_fasta_file_path);
         var chunks = [];
         var chunkstr = '';
-        var total_seq_count = 0;
         var ds_counts = {}
         rs.on('error', err => {
             // handle error
@@ -725,7 +728,7 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
                 //console.log('Line: '+line_split_chunks[n])
                 if(line_split_chunks[n][0] == '>'){
                     line_items = line_split_chunks[n].split(/\s+/)  // split on white space
-                    total_seq_count += 1 
+                     
                     first_item = line_items[0].substring(1,line_items[0].length)  // remove '>'
                     // now this is common M9Akey217.141086_98 last digits are 'count'
                     // need to be removed
@@ -739,7 +742,7 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
                                    
                 }
             }
-            console.log('facount='+total_seq_count.toString())
+            
             for(ds in ds_counts){
                 console.log(ds+' - '+ds_counts[ds].toString())
                 info.dataset[ds] = ds_counts[ds]
@@ -749,13 +752,70 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
             }
             var demultiplex_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'demultiplex.py')
             var fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique')
-            var demultiplex_params = ['-i',new_fasta_file_path,'-d',info.project_base_dir,'-f',fastaunique_cmd]
+            var demultiplex_params = ['-i',new_fasta_file_path,'-d',info.project_dir,'-f',fastaunique_cmd]
             console.log(demultiplex_cmd + ' ' + demultiplex_params.join(' '))
-            // var proc = spawn(demultiplex_cmd, demultiplex_params, {
-//                     env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-//                     detached: true, stdio: 'pipe'
-//             });
-            
+            var proc = spawn(demultiplex_cmd, demultiplex_params, {
+                    env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                    detached: true, stdio: 'pipe'
+            });
+            var output = '';
+			proc.stderr.on('data', function (data) {
+			  console.log(data.toString())   
+			});
+			proc.stdout.on('data', function (data) { 
+			  console.log('stdout:')  
+			  console.log(data.toString())   
+			  output += data.toString()
+			  
+			});
+			proc.on('close', function (code) {
+				console.log('close: demultiplex (+/-fastaunique) proc exited with code ' + code);
+				console.log("output: ");
+				output = output.trim().split("\n");
+				// see bottom of demultiplex.py script out put is pure JSON: 
+				// print('{"UNIQUE_SEQ_COUNT":'+str(sum_unique_seq_count)+',"TOTAL_SEQ_COUNT":'+str(total_seq_count)+'}')
+				for( n in output){
+					try{
+						counts = JSON.parse(output[n])
+						console.log(counts)
+					}catch(e){
+						//console.log('err: '+e.toString());
+					}
+					
+				}
+				console.log('UNIQUE_SEQ_COUNT:'+counts['UNIQUE_SEQ_COUNT'].toString())
+				console.log('TOTAL_SEQ_COUNT:'+counts['TOTAL_SEQ_COUNT'].toString())
+				
+				if(helpers.isInt(counts['TOTAL_SEQ_COUNT']) && helpers.isInt(counts['UNIQUE_SEQ_COUNT'])){  // should unique count
+					//info.unique_seq_count = output
+					console.log('seq_counts SUCCESS: got counts from demultiplex.py')
+					info.unique_seq_count = counts['UNIQUE_SEQ_COUNT']
+					info.total_seq_count  = counts['TOTAL_SEQ_COUNT']
+					info.num_of_datasets  = counts['SAMPLE_COUNT']
+					
+				}else{
+					console.log('seq_count Error: Check demultiplex.py script for print commands.')
+					info.unique_seq_count = 0
+					info.total_seq_count  = 0
+				}
+				console.log('info');
+				console.log(info);
+				console.log(new_info_filename_path)
+				fs.writeFile(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }), {mode:0o664}, function writeConfigFile(err) {                                  
+					if(err){return console.log(err);} // => null
+					fs.chmodSync(new_info_filename_path, 0o664);
+					fs.chmodSync(new_fasta_file_path, 0o664);
+					req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+					console.log('info2');
+					//error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
+					res.render('user_data/import_choices/fasta', {
+					  title: 'VAMPS:Import Choices',
+					  def_name:'',
+					  user: req.user, hostname: req.CONFIG.hostname
+					});
+					return
+				}); 
+			});
         }).pipe(writeStream)
 
     })
@@ -1738,38 +1798,38 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
 
     var log = fs.openSync(path.join(process.env.PWD, 'logs', 'delete.log'), 'a');
 
-    console.log(options.scriptPath + '/vamps_script_utils.py '+options.args.join(' '));
-      var delete_process = spawn( options.scriptPath + '/vamps_script_utils.py', options.args,{
-                            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-                            detached: true, stdio: 'pipe'
-                            });  // stdin, stdout, stderr
-
-      var output = '';
-      delete_process.stdout.on('data', function deleteScriptStdout(data) {
-        console.log('stdout: ' + data);
-        // data = data.toString().replace(/^\s+|\s+$/g, '');
-        data = data.toString().trim();
-        output += data;
-        CheckIfPID(data);
-      });
-      delete_process.stderr.on('data', function deleteScriptStderr(data) {
-        console.log('stderr: ' + data);       
-      });
-      delete_process.on('close', function deleteScriptOnClose(code) {
-          console.log('delete_process process exited with code ' + code);
-          console.log('output',output)
-          var ary = output.split("\n");
-          
-          var last_line = ary[ary.length - 1];
-          if (code === 0) {
-           //console.log('PID last line: '+last_line)
-              status_params = {'type': 'delete', 'user_id':req.user.user_id,
-                                'pid':pid, 'status':'delete', 'msg':'delete' };
-              helpers.update_status(status_params);
-          } else {
-             // python script error
-          }
-      });
+//     console.log(options.scriptPath + '/vamps_script_utils.py '+options.args.join(' '));
+//       var delete_process = spawn( options.scriptPath + '/vamps_script_utils.py', options.args,{
+//                             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+//                             detached: true, stdio: 'pipe'
+//                             });  // stdin, stdout, stderr
+// 
+//       var output = '';
+//       delete_process.stdout.on('data', function deleteScriptStdout(data) {
+//         console.log('stdout: ' + data);
+//         // data = data.toString().replace(/^\s+|\s+$/g, '');
+//         data = data.toString().trim();
+//         output += data;
+//         CheckIfPID(data);
+//       });
+//       delete_process.stderr.on('data', function deleteScriptStderr(data) {
+//         console.log('stderr: ' + data);       
+//       });
+//       delete_process.on('close', function deleteScriptOnClose(code) {
+//           console.log('delete_process process exited with code ' + code);
+//           console.log('output:',output)
+//           var ary = output.split("\n");
+//           
+//           var last_line = ary[ary.length - 1];
+//           if (code === 0) {
+//            //console.log('PID last line: '+last_line)
+//               status_params = {'type': 'delete', 'user_id':req.user.user_id,
+//                                 'pid':pid, 'status':'delete', 'msg':'delete' };
+//               helpers.update_status(status_params);
+//           } else {
+//              // python script error
+//           }
+//       });
       // called imediately
       var msg = "";
       if (delete_kind == 'all') {
@@ -1787,22 +1847,37 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
           // MOVE file dir to DELETED path (so it won't show in 'your_projects' list)
           var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
           var deleted_data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'DELETED_project'+timestamp+'-'+project);
-
-          fs.move(data_dir, deleted_data_dir, function moveDataDir(err) {
-            if (err) {
-              console.log("err 1: ");
-              console.log(err);
-              res.send(err);
-            } else {
-              console.log('moved project_dir to DELETED_project_dir');
-              console.log('From: '+data_dir);
-              console.log('To: '+deleted_data_dir);
-              req.flash('success', msg);
-              res.redirect("/user_data/your_projects");
-              return;
-            }
-
-          });
+			
+		  fs.remove(data_dir, function(err){
+			if(err){ 
+				console.log(err); 
+				data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'DELETED_'+project);
+				fs.rmdir(data_dir, function(err2){
+					console.log(err2); 
+				})
+			}
+			console.log('Successfully removed')
+			req.flash('success', msg);
+            res.redirect("/user_data/your_projects");
+		  })
+		  //helpers.deleteFolderRecursive(data_dir)
+		  
+          // fs.move(data_dir, deleted_data_dir, function moveDataDir(err) {
+//             if (err) {
+//               console.log("err 1: ");
+//               console.log(err);
+//               res.send(err);
+//             } else {
+//               fs.chmodSync(deleted_data_dir, 0o775);
+//               console.log('moved project_dir to DELETED_project_dir');
+//               console.log('From: '+data_dir);
+//               console.log('To: '+deleted_data_dir);
+//               req.flash('success', msg);
+//               res.redirect("/user_data/your_projects");
+//               return;
+//             }
+// 
+//           });
 
       } else {
         req.flash('success', msg);
@@ -2331,7 +2406,7 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
     } else {
         for (var d in items) {
             var pts = items[d].split('-');  // ALL items in this dir should have this '-' to separate on
-            if (pts[0] === 'project') {
+            if (pts[0] === 'project' || pts[0].substring(0,7) === 'DELETED') {
 
               var project_name = items[d].substring(8,items[d].length);
           
@@ -3113,7 +3188,6 @@ function CheckIfPID(data)
 {
   var lines = data.split('\n');
   for (var n in lines) {
-  console.log('EEE line: ' + lines[n]);
     if (lines[n].substring(0, 4) == 'PID=') {
     console.log('NNN pid line ' + lines[n]);
     }

@@ -1,15 +1,8 @@
+// for newrelic: start in config.js
+var config = require('./config/config');
 connection = require('./config/database').pool;
 var consts 		= require('./public/constants');
-var config = require('./config/config');
-if(config.hostname.substring(0,7) == 'bpcweb8'){
-	try{
-	    require('newrelic');
-	    console.log('Starting newrelic module: logging to ./newrelic_agent.log')
-	}
-	catch (e) {
-	  	console.log(e);
-	}
-}
+
 
 // anna's
 // try{
