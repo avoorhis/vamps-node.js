@@ -149,10 +149,9 @@ function reset_password_auth(req, username, password, newpass, done, db){
         //if ( validatePassword(password, rows[0].encrypted_password, db) )
         if(rows[0].encrypted_password === rows[0].entered_pw)
         { 
-            update_password(req, username, newpass, done, db)
-            req.flash('success', 'Success. LOGGING OUT')
-            //req.session.destroy()
-            return done(null, rows[0], req.flash('success', 'Success.')); 
+            update_password(req, username, newpass, db)
+            return done(null, rows[0], req.flash('success', 'Success.'));
+            
         }
         
         // if the user is found but the password is wrong:
@@ -174,11 +173,11 @@ function login_auth_user(req, username, password, done, db){
             { return done(null, false, { message: err }); }
         if (!rows.length) {
             // req.flash is the way to set flashdata using connect-flash
-            { return done(null, false, req.flash('loginMessage', 'User not found.'));}
+            { return done(null, false, req.flash('fail', 'User not found.'));}
         }
         // If the account is not active
         if (rows[0].active !== 1) {
-            { return done(null, false, req.flash('loginMessage', 'That account is inactive -- send email to vamps.mbl.edu to request re-activation.'));}
+            { return done(null, false, req.flash('fail', 'That account is inactive -- send email to vamps.mbl.edu to request re-activation.'));}
         }
 
         //Wed Feb 11 2015 15:05:29 GMT-0500 (EST)
@@ -205,16 +204,19 @@ function login_auth_user(req, username, password, done, db){
             }catch(e){
                 console.log(e)
             }
-console.log('login_auth_user-2')
+            console.log('login_auth_user-2')
             return done(null, rows[0]); 
         }
         
         // if the user is found but the password is wrong:
         // create the loginMessage and save it to session as flashdata
-        return done(null, false, req.flash('loginMessage', 'Wrong password -- try again.'));
+        return done(null, false, req.flash('fail', 'Wrong password -- try again.'));
         // all is well, return successful user
     });
 }
+//
+//
+//
 function signup_user(req, username, password, done, db){
     // validate all 6 entries here
     // 1- check for empty fields and long lengths
@@ -222,13 +224,13 @@ function signup_user(req, username, password, done, db){
      // find a user whose email is the same as the forms email
     // we are checking to see if the user trying to login already exists
     new_user = {}
-    new_user.email = req.body.useremail;
-    new_user.firstname = req.body.userfirstname;
-    new_user.lastname = req.body.userlastname;
-    new_user.institution = req.body.userinstitution;
-    new_user.password = password;
-    var confirm_password = req.body.password_confirm;
-    new_user.username = username;
+    new_user.email          = req.body.useremail;
+    new_user.firstname      = req.body.userfirstname;
+    new_user.lastname       = req.body.userlastname;
+    new_user.institution    = req.body.userinstitution;
+    new_user.password       = password;
+    var confirm_password    = req.body.password_confirm;
+    new_user.username       = username;
     //console.log('XXXXXX')
     if(new_user.password != confirm_password){
         return done(null, false, req.flash('fail', 'Passwords do not match!.'));
@@ -354,41 +356,18 @@ var delete_previous_tmp_files = function(req, username){
         
     });
 };
-// var deleteFolderRecursive = function(path) {
 
-//     var fs   = require('fs-extra');
-//     if( fs.existsSync(path) ) {
-//         if(fs.lstatSync(path).isFile()) {
-//             fs.unlinkSync(path);
-//         }else{
-//             fs.readdirSync(path).forEach(function(file,index){
-              
-//               var curPath = path + "/" + file;
-//               //console.log('curPath '+curPath)
-//               if(fs.lstatSync(curPath).isDirectory()) { // recurse
-//                 deleteFolderRecursive(curPath);
-//               } else { // delete file
-//                 //console.log('deleting '+curPath)
-//                 fs.unlinkSync(curPath);
-//               }
-              
-//             });
-//             fs.rmdirSync(path);
-//         }
-    
-//     }
-// };
-var update_password = function(req, username, newpass, done, db) {
-    
-    db.query(queries.reset_user_password_by_uname(newpass,username), function(err, rows, done){
+var update_password = function(req, username, newpass, db) {
+    console.log('in update_password')
+    console.log(queries.reset_user_password_by_uname(newpass,username))
+    db.query(queries.reset_user_password_by_uname(newpass,username), function(err, rows){
         if (err){ 
-            return done(null, false, { message: err }); 
+            return (null, false, { message: err }); 
         }else{
             console.log('logging out')
-            req.session.destroy()
+            //req.session.destroy()
             req.logout()
 
         }
     });
-}
-
+};

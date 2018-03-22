@@ -17,7 +17,25 @@
         <br>Taxonomy Matrix File (In Development)
         <br>Biom File  (In Development)
       <% } %>
+      
   </div>
+  <div class="row">
+      <% if(user.security_level == 1){ %>
+        <div class="col-sm-3"><a href="/user_data/import_choices/matrix">Matrix File</a></div>
+      <% }else{ %>
+        
+      <% } %>
+      
+  </div>
+  <div class="row">
+      <% if(user.security_level == 1){ %>
+        <div class="col-sm-3"><a href="/user_data/import_choices/biom">Biom File (In Development)</a></div>
+      <% }else{ %>
+        
+      <% } %>
+      
+  </div>
+</div>
 <!-- 
 
   <div class="row">

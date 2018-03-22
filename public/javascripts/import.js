@@ -65,15 +65,19 @@ if (use_original_names !== null) {
 //
 //
 //
-function process_upload_form() {
+function process_upload_form(file_type) {
     
     var file = document.getElementById('file_input').files[0];
     var project_name = document.getElementById('pname_input').value
     var formData = new FormData();
-    formData.append('fastaFile', file);    
+    formData.append('file', file);    
+    formData.append('file_type', file_type);
     formData.append("project_name", project_name);
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("POST", "/user_data/upload_fasta_file", true);
+    
+    var url = "/user_data/upload_import_file"
+    
+    xmlhttp.open("POST", url, true);
     xmlhttp.upload.onprogress = function(e) {
       document.getElementById('bar_div').style.display = 'block'
       if (e.lengthComputable) {

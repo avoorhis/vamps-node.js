@@ -632,7 +632,18 @@ router.get('/import_choices/fasta', [helpers.isLoggedIn], function (req, res) {
     var rando = Math.floor((Math.random() * (999999 - 100000 + 1)) + 100000);
     var default_project_name = req.user.username+'_'+rando.toString();
     res.render('user_data/import_choices/fasta', {
-          title: 'VAMPS:Import Choices',
+          title: 'VAMPS:Import Data:fasta',
+          def_name:default_project_name,
+          user: req.user, hostname: req.CONFIG.hostname
+          });
+          
+});
+router.get('/import_choices/matrix', [helpers.isLoggedIn], function (req, res) {
+    console.log('in GET import_choices/matrix')
+    var rando = Math.floor((Math.random() * (999999 - 100000 + 1)) + 100000);
+    var default_project_name = req.user.username+'_'+rando.toString();
+    res.render('user_data/import_choices/matrix', {
+          title: 'VAMPS:Import Data:matrix',
           def_name:default_project_name,
           user: req.user, hostname: req.CONFIG.hostname
           });
@@ -640,20 +651,21 @@ router.get('/import_choices/fasta', [helpers.isLoggedIn], function (req, res) {
 });
 //
 //
-router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(req, res) {
+router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(req, res) {
     console.log('in POST test_upload')
     console.log(req.body)
     console.log(req.files[0])
     var project = req.body.project_name
+    var file_type = req.body.file_type
     var timestamp = +new Date();  // millisecs since the epoch!
     var original_file_path = req.files[0].path
     var original_file_name = req.files[0].originalname
     
     //
-    //console.log('new_file_path: '+new_file_path)
+   
     var error_fxn = function(msg){
         req.flash('fail',msg)
-        res.render('user_data/import_choices/fasta', {
+        res.render('user_data/import_choices', {
           title: 'VAMPS:Import Choices',
           def_name:'',
           user: req.user, hostname: req.CONFIG.hostname
@@ -665,7 +677,7 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
         return
     }
     var info = {}
-    console.log('1')
+    
     info.project_name = project
     info.total_seq_count = 0
     info.owner = req.user.username
@@ -677,11 +689,18 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
     info.project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+project);
     var new_info_filename_path = path.join(info.project_dir, req.CONSTS.CONFIG_FILE)
     var analysis_dir = path.join(info.project_dir, 'analysis')
-    var new_file_name = 'original_fasta.fna'
-    var new_fasta_file_path = path.join(info.project_dir, new_file_name)
-    var new_info_file_path = path.join(info.project_dir, req.CONSTS.CONFIG_FILE)
-    console.log('3')
+    if(file_type == 'fasta'){
+        var new_file_name = 'original_fasta.fna'
+    }else if(file_type == 'matrix'){
+        var new_file_name = 'original_matrix.csv'
+    }else{
+        console.log('Unknown file_type: '+file_type)
+        return
+    }
     
+    var new_file_path = path.join(info.project_dir, new_file_name)
+    var new_info_file_path = path.join(info.project_dir, req.CONSTS.CONFIG_FILE)
+       
     
     //var chunks = []
     
@@ -694,7 +713,7 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
         if(err){return console.log(err);} // => null
         fs.chmodSync(info.project_dir, 0o775);
         var readStream = fs.createReadStream(original_file_path);
-        var writeStream = fs.createWriteStream(new_fasta_file_path,{mode: 0o664});
+        var writeStream = fs.createWriteStream(new_file_path,{mode: 0o664});
         if(IsFileCompressed(req.files[0])){     
             var gunzip = zlib.createGunzip();
             console.log('File is gzip compressed')
@@ -706,7 +725,7 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
                 
         console.log('Moving file')
         console.log('From: '+original_file_path)
-        console.log('To: '+new_fasta_file_path)
+        console.log('To: '+new_file_path)
         //var newReadStream = fs.createReadStream(new_fasta_file_path);
         var chunks = [];
         var chunkstr = '';
@@ -716,19 +735,50 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
             console.log('error: '+err)
         });
         rs.on('data', chunk => {
-            console.log(chunk.toString())
+            //console.log(chunk.toString())
             //chunks.push(chunk.toString());
             chunkstr += chunk.toString()
         });
 
         // File is done being read
+        
         rs.on('close', () => {
             line_split_chunks = chunkstr.split('\n')
+            if(file_type == 'matrix'){
+                var split_on = '\t'
+                for(n in line_split_chunks){
+                    if(n==0){
+                        datasets = line_split_chunks[n].trim().split(split_on)
+                        console.log('datasets')
+                        console.log(datasets)
+                        unique = helpers.unique_array(datasets)
+                        if(datasets.length == unique.length){
+                            console.log('Dataset names are unique')
+                        }else{
+                            console.log('ERROR: Dataset Names ARE NOT unique')
+                            return;
+                        }
+                    }else{
+                        row_items = line_split_chunks[n].trim().split(split_on)
+                        tax = row_items[0]
+                        console.log(tax)
+                        tax_items = tax.split(';')
+                        if(tax_items.length > 8){
+                            console.log('ERROR: too many tax items -row:'+n.toString())
+                            return
+                        }                        
+                    }
+                
+                }
+                var load_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_matrix_loader.py')
+                var load_params = ['-i',new_file_path,'-d',info.project_dir,'-host',req.CONFIG.hostname]
+                
+            }else{
+            
             for(n in line_split_chunks){
                 //console.log('Line: '+line_split_chunks[n])
                 if(line_split_chunks[n][0] == '>'){
-                    line_items = line_split_chunks[n].split(/\s+/)  // split on white space
-                     
+                    line_items = line_split_chunks[n].split(/\s+/)  // split on white space                     
                     first_item = line_items[0].substring(1,line_items[0].length)  // remove '>'
                     // now this is common M9Akey217.141086_98 last digits are 'count'
                     // need to be removed
@@ -736,10 +786,8 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
                     if(ds_counts.hasOwnProperty(first_item)){
                         ds_counts[first_item] += 1
                     }else{
-                        ds_counts[first_item] = 1
-                        
-                    }
-                                   
+                        ds_counts[first_item] = 1                        
+                    }                                   
                 }
             }
             
@@ -752,7 +800,7 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
             }
             var demultiplex_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'demultiplex.py')
             var fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique')
-            var demultiplex_params = ['-i',new_fasta_file_path,'-d',info.project_dir,'-f',fastaunique_cmd]
+            var demultiplex_params = ['-i',new_file_path,'-d',info.project_dir,'-f',fastaunique_cmd]
             console.log(demultiplex_cmd + ' ' + demultiplex_params.join(' '))
             var proc = spawn(demultiplex_cmd, demultiplex_params, {
                     env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
@@ -804,7 +852,7 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
 				fs.writeFile(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }), {mode:0o664}, function writeConfigFile(err) {                                  
 					if(err){return console.log(err);} // => null
 					fs.chmodSync(new_info_filename_path, 0o664);
-					fs.chmodSync(new_fasta_file_path, 0o664);
+					fs.chmodSync(new_file_path, 0o664);
 					req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
 					console.log('info2');
 					//error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
@@ -816,7 +864,9 @@ router.post('/upload_fasta_file', [helpers.isLoggedIn, upload.any()], function(r
 					return
 				}); 
 			});
+            }
         }).pipe(writeStream)
+        
 
     })
     

@@ -22,7 +22,7 @@ import time
 import random
 import csv
 from time import sleep
-import ConfigParser
+import configparser as ConfigParser
 from IlluminaUtils.lib import fastalib
 
 import datetime
@@ -32,48 +32,8 @@ import subprocess
 import pymysql as MySQLdb
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
-print 'sys.path'
-print sys.path
-"""
-New Table:
-CREATE TABLE `summed_counts` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `dataset_id` int(11) unsigned DEFAULT NULL,
-  `domain_id` int(11) unsigned DEFAULT NULL,
-  `phylum_id` int(11) unsigned DEFAULT NULL,
-  `klass_id` int(11) unsigned DEFAULT NULL,
-  `order_id` int(11) unsigned DEFAULT NULL,
-  `family_id` int(11) unsigned DEFAULT NULL,
-  `genus_id` int(11) unsigned DEFAULT NULL,
-  `species_id` int(11) unsigned DEFAULT NULL,
-  `strain_id` int(11) unsigned DEFAULT NULL,
-  `rank_id` tinyint(11) unsigned DEFAULT NULL,
-  `count` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `summed_counts_ibfk_11` (`dataset_id`),
-  KEY `summed_counts_ibfk_1` (`strain_id`),
-  KEY `summed_counts_ibfk_3` (`genus_id`),
-  KEY `summed_counts_ibfk_4` (`domain_id`),
-  KEY `summed_counts_ibfk_5` (`family_id`),
-  KEY `summed_counts_ibfk_6` (`klass_id`),
-  KEY `summed_counts_ibfk_7` (`order_id`),
-  KEY `summed_counts_ibfk_8` (`phylum_id`),
-  KEY `summed_counts_ibfk_9` (`species_id`),
-  KEY `summed_counts_ibfk_10` (`rank_id`),
-  CONSTRAINT `summed_counts_ibfk_11` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE,
-  CONSTRAINT `summed_counts_ibfk_1` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`strain_id`) ON UPDATE CASCADE,
-  CONSTRAINT `summed_counts_ibfk_3` FOREIGN KEY (`genus_id`) REFERENCES `genus` (`genus_id`) ON UPDATE CASCADE,
-  CONSTRAINT `summed_counts_ibfk_4` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`domain_id`) ON UPDATE CASCADE,
-  CONSTRAINT `summed_counts_ibfk_5` FOREIGN KEY (`family_id`) REFERENCES `family` (`family_id`) ON UPDATE CASCADE,
-  CONSTRAINT `summed_counts_ibfk_6` FOREIGN KEY (`klass_id`) REFERENCES `klass` (`klass_id`) ON UPDATE CASCADE,
-  CONSTRAINT `summed_counts_ibfk_7` FOREIGN KEY (`order_id`) REFERENCES `order` (`order_id`) ON UPDATE CASCADE,
-  CONSTRAINT `summed_counts_ibfk_8` FOREIGN KEY (`phylum_id`) REFERENCES `phylum` (`phylum_id`) ON UPDATE CASCADE,
-  CONSTRAINT `summed_counts_ibfk_9` FOREIGN KEY (`species_id`) REFERENCES `species` (`species_id`) ON UPDATE CASCADE,
-  CONSTRAINT `summed_counts_ibfk_10` FOREIGN KEY (`rank_id`) REFERENCES `rank` (`rank_id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=464 DEFAULT CHARSET=latin1;
 
 
-"""
 # Global:
  # SUMMED_TAX_COLLECTOR[ds][rank][tax_string] = count
 classifiers = {"GAST":{'ITS1':1,'SILVA108_FULL_LENGTH':2,'GG_FEB2011':3,'GG_MAY2013':4},
@@ -108,7 +68,7 @@ def start(args):
     TAX_ID_BY_RANKID_N_TAX = {}
     SUMMED_TAX_COLLECTOR = {} 
     logging.info('CMD> '+' '.join(sys.argv))
-    print 'CMD> ',sys.argv
+    print ('CMD> ',sys.argv)
 
     NODE_DATABASE = args.NODE_DATABASE
 
@@ -126,23 +86,23 @@ def start(args):
     
     
     logging.info("running get_config_data")
-    print "running get_config_data"
+    print ("running get_config_data")
     get_config_data(args.project_dir)
     
     logging.info("checking user")
-    print "checking user"
+    print ("checking user")
     check_user()  ## script dies if user not in db
     
     logging.info("checking project")
-    print "checking project"
+    print ("checking project")
     res = check_project()  ## script dies if project is in db
     
     if res[0]=='ERROR':
-        print "ERROR res[0] -- Exiting (project name already taken)"
+        print ("ERROR res[0] -- Exiting (project name already taken)")
         sys.exit(res[1])
     else:
         logging.info("recreating ranks")
-        print "recreating ranks"
+        print ("recreating ranks")
         recreate_ranks()
     
         #logging.info("env sources")
@@ -150,36 +110,36 @@ def start(args):
         #create_env_source()
     
         logging.info("classifier")
-        print "classifier"
+        print ("classifier")
         create_classifier()
     
         logging.info("starting taxonomy")
-        print "starting taxonomy"
+        print ("starting taxonomy")
         push_taxonomy(args)
     
         logging.info("starting sequences")
-        print "starting sequences"
+        print ("starting sequences")
         push_sequences(args)
     
         logging.info("projects")
-        print "projects"
+        print ("projects")
         push_project()
     
         logging.info("datasets")
-        print "datasets"
+        print ("datasets")
         push_dataset()
     
         #push_summed_counts()
         logging.info("starting push_pdr_seqs")
-        print "starting push_pdr_seqs"
+        print ("starting push_pdr_seqs")
         push_pdr_seqs(args)
     
         #print SEQ_COLLECTOR
         #pp.pprint(CONFIG_ITEMS)
         logging.info("Finished "+os.path.basename(__file__))
-        print "Finished "+os.path.basename(__file__)
-        print CONFIG_ITEMS['project_id']
-        print 'Writing pid to pid.txt'
+        print ("Finished "+os.path.basename(__file__))
+        print (CONFIG_ITEMS['project_id'])
+        print ('Writing pid to pid.txt')
         fp = open(os.path.join(args.project_dir,'pid.txt'),'w')
         fp.write(str(CONFIG_ITEMS['project_id']))
         fp.close()
@@ -297,11 +257,11 @@ def push_dataset():
         
         q4 = q % (ds, desc, CONFIG_ITEMS['project_id'])
         logging.info(q4)
-        print q4
+        print (q4)
         #try:
         cur.execute(q4)
         did = cur.lastrowid
-        print 'new did',did
+        print ('new did',did)
         DATASET_ID_BY_NAME[ds]=did
         mysql_conn.commit()
         #except:
@@ -314,7 +274,7 @@ def push_dataset():
 
 
 def push_pdr_seqs(args):
-    #print
+    #print()
     gast_dbs = ['','','']
 
     global SEQ_COLLECTOR
@@ -339,15 +299,15 @@ def push_pdr_seqs(args):
             #     q += " VALUES ('%s','%s','%s','1')"
             # else:
             #     q += " VALUES ('%s','%s','%s','3')"   # 3 is 'unknown'
-            print q
-            #print
+            print (q)
+            #print()
             logging.info(q)
             try:
                 cur.execute(q % (str(did),str(seqid),str(count),str(classid)))
             except:
                 logging.error(q)
-                print "ERROR Exiting: "+ds +"; Query: "+q
-                print DATASET_ID_BY_NAME
+                print ("ERROR Exiting: "+ds +"; Query: "+q)
+                print (DATASET_ID_BY_NAME)
                 sys.exit()
             mysql_conn.commit()
     
@@ -421,7 +381,7 @@ def push_taxonomy(args):
     classifier = args.classifier
     
     gast_dir = os.path.join(indir,'analysis','gast') 
-    print  'gast_dir',gast_dir
+    print  ('gast_dir',gast_dir)
     
     
     
@@ -483,7 +443,7 @@ def run_gast_tax_file(args,ds,tax_file):
     tax_items = []
     with open(tax_file,'r') as fh:
         for line in fh:
-            print line
+            print(line)
             items = line.strip().split("\t")
             if items[0] == 'HEADER': continue
             seq = items[0]
@@ -507,7 +467,7 @@ def run_gast_tax_file(args,ds,tax_file):
 #                
 def run_rdp_tax_file(args,ds, tax_file, seq_file): 
     minboot = 80
-    print 'reading seqfile',seq_file
+    print ('reading seqfile',seq_file)
     f = fastalib.SequenceSource(seq_file)
     tmp_seqs = {}
     #print tax_file
@@ -531,9 +491,9 @@ def run_rdp_tax_file(args,ds, tax_file, seq_file):
             seq_count = tmp[1].split(':')[1]
             #seq_count =1
             tax_line = items[2:]
-            print 'id',seq_id
-            print 'cnt',seq_count
-            print tax_line
+            print ('id',seq_id)
+            print ('cnt',seq_count)
+            print (tax_line)
             for i in range(0,len(tax_line),3):
                   #print i,tax_line[i]
                   tax_name = tax_line[i].strip('"').strip("'")
@@ -665,7 +625,7 @@ def finish_tax(ds,refhvr_ids, rank, distance, seq, seq_count, tax_items):
         q4 += " VALUES("+','.join(ids_by_rank)+",CURRENT_TIMESTAMP())"
         #
         logging.info(q4)
-        #print q4
+        #print (q4)
         cur.execute(q4)
         mysql_conn.commit() 
         silva_tax_id = cur.lastrowid
@@ -675,13 +635,13 @@ def finish_tax(ds,refhvr_ids, rank, distance, seq, seq_count, tax_items):
             for i in range(0,len(silva)):
                 vals += ' '+silva[i]+"="+ids_by_rank[i]+' and'
             q5 = q5 + vals[0:-3] + ')'
-            #print q5
+            #print (q5)
             logging.info(q5)
             cur.execute(q5)
             mysql_conn.commit() 
             row = cur.fetchone()
             silva_tax_id=row[0]
-            #print 'silva_tax_id',silva_tax_id
+            #print ('silva_tax_id',silva_tax_id)
         
         SILVA_IDS_BY_TAX[tax_string] = silva_tax_id
         SEQ_COLLECTOR[ds][seq]['silva_tax_id'] = silva_tax_id
@@ -723,7 +683,7 @@ def get_config_data(indir):
         ds = dsname 
         datasets[ds] = count
     CONFIG_ITEMS['datasets'] = datasets    
-    #print CONFIG_ITEMS 
+    #print (CONFIG_ITEMS )
        
 
 if __name__ == '__main__':
