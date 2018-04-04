@@ -702,13 +702,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
     var new_info_file_path = path.join(info.project_dir, req.CONSTS.CONFIG_FILE)
        
     
-    //var chunks = []
-    
-    //console.log(process.umask())
-    //console.log(0777 & (~process.umask()))
-    //process.umask() = 0
-    //var mode = 0777 & ~process.umask()
-    //console.log(process.umask())
+   
     fs.mkdir(info.project_dir, function ensureProjectsDir(err) {
         if(err){return console.log(err);} // => null
         fs.chmodSync(info.project_dir, 0o775);
@@ -744,13 +738,14 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
         
         rs.on('close', () => {
             line_split_chunks = chunkstr.split('\n')
+            
             if(file_type == 'matrix'){
                 var split_on = '\t'
                 for(n in line_split_chunks){
                     if(n==0){
                         datasets = line_split_chunks[n].trim().split(split_on)
-                        console.log('datasets')
-                        console.log(datasets)
+                        //console.log('datasets')
+                        //console.log(datasets)
                         unique = helpers.unique_array(datasets)
                         if(datasets.length == unique.length){
                             console.log('Dataset names are unique')
@@ -761,7 +756,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                     }else{
                         row_items = line_split_chunks[n].trim().split(split_on)
                         tax = row_items[0]
-                        console.log(tax)
+                        //console.log(tax)
                         tax_items = tax.split(';')
                         if(tax_items.length > 8){
                             console.log('ERROR: too many tax items -row:'+n.toString())
@@ -770,9 +765,65 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                     }
                 
                 }
+                var pid = 'none'
                 var load_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_matrix_loader.py')
-                var load_params = ['-i',new_file_path,'-d',info.project_dir,'-host',req.CONFIG.hostname]
-                
+                var load_params = ['-i',new_file_path,'-d',info.project_dir,'-host',req.CONFIG.hostname,'-p',info.project_name,'-u',req.user.username]
+                console.log(load_cmd + ' ' + load_params.join(' '))
+                var matrix_proc = spawn(load_cmd, load_params, {
+                    env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                    detached: true, stdio: 'pipe'
+                });
+                var output = '';
+                matrix_proc.stderr.on('data', function (data) {
+                  console.log(data.toString())   
+                });
+                matrix_proc.stdout.on('data', function (data) { 
+                  //console.log('stdout:')  
+                  line = data.toString()
+                  //console.log(line)   
+                  output += line
+              
+                });
+                matrix_proc.on('close', function (code) {
+				    console.log('close: load_cmd proc exited with code ' + code);
+				    
+				    
+				    if(code == 0){
+				        lines = output.split('\n')
+				        for(n in lines){
+				            //console.log(lines[n]) 
+				            if(lines[n].substring(0,8) == 'done pid'){
+                                parts = lines[n].split(' ')
+                                //console.log(parts)
+                                pid = parts[2]
+                            }
+				        }
+				        var create_json_files_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'/rebuild_vamps_files.py')
+				        var create_json_files_params = ['-host', req.CONFIG.site, '--json_file_path', req.CONFIG.JSON_FILES_BASE,'-units','generic', '--pids', pid]
+                        console.log(create_json_files_cmd + ' ' + create_json_files_params.join(' '))
+                        var json_files_proc = spawn(create_json_files_cmd, create_json_files_params, {
+                            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                            detached: true, stdio: 'pipe'
+                        });
+                        json_files_proc.stderr.on('data', function (data) {
+                          console.log(data.toString())   
+                        });
+                        json_files_proc.stdout.on('data', function (data) { 
+                          //console.log('stdout:')  
+                          line = data.toString()
+                          //console.log(line)   
+                          output += line
+                        });
+                        json_files_proc.on('close', function (code) {
+				            console.log('close: json_files_proc proc exited with code ' + code);
+				        })
+                        
+                    }
+					
+				})
+            
+            
+            
             }else{
             
             for(n in line_split_chunks){

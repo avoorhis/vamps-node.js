@@ -811,6 +811,7 @@ module.exports.update_project_information_global_object = function(pid, form, us
     "public" :           form.new_privacy,
     "permissions" :      [user_obj.user_id],
     "metagenomic" :      rows[i].metagenomic,
+    //"seqs_available" :   rows[i].seqs_available,
     "created_at" :       ca,
     "updated_at" :       ua
   };
@@ -877,6 +878,7 @@ module.exports.run_select_datasets_query = function(rows){
         "description" :     rows[i].project_description,
         "public" :          rows[i].public,
         "metagenomic" :     rows[i].metagenomic,
+        //"seqs_available" :   rows[i].seqs_available,
         "created_at" :      ca,
         "updated_at" :      ua
       };

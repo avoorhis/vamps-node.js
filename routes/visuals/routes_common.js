@@ -157,8 +157,8 @@ module.exports = {
     if(config.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
     }else{
-      console.log('VS--BODY',req.body)
-      console.log('VS--DOMAINS',req.body.domains)
+      console.log('VS--BODY (routes_common.js)',req.body)
+      console.log('VS--DOMAINS (routes_common.js)',req.body.domains)
       console.log('req.body.ds_order',req.body.ds_order)
     }
 
@@ -174,7 +174,7 @@ module.exports = {
 
           if(post_hash.unit_choice === 'tax_silva119_simple'){
             post_hash.domains                    = req.body.domains      || ['NA'];
-          }else if( post_hash.unit_choice === 'tax_rdp2.6_simple'){
+          }else if( post_hash.unit_choice === 'tax_rdp2.6_simple' || post_hash.unit_choice === 'tax_generic_simple'){
             post_hash.domains                    = req.body['domains']      || ['NA'];
           }else{
             post_hash.domains = ['NA']
@@ -183,7 +183,6 @@ module.exports = {
           if(typeof post_hash.domains == 'string') {
               post_hash.domains = post_hash.domains.split(',');
           }
-          console.log('TYPEOF CUSTOM')
           if(config.site == 'vamps' ){
             console.log('VAMPS PRODUCTION -- no print to log');
           }else{

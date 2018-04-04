@@ -307,6 +307,9 @@ var all_silva_taxonomy = new silvaTaxonomy();
 var rdpTaxonomy = require('./models/rdp_taxonomy');
 var all_rdp_taxonomy = new rdpTaxonomy();
 
+var genericTaxonomy = require('./models/generic_taxonomy');
+var all_generic_taxonomy = new genericTaxonomy();
+
 var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
 //var CustomTaxa  = require('./routes/helpers/custom_taxa_class_json');   // for fancytree:  https://github.com/mar10/fancytree
 //var CustomTaxa  = require('./routes/helpers/custom_taxa_class_dhtmlx');   // for dhtmlx:  http://dhtmlx.com/docs/products/dhtmlxTree/
@@ -507,7 +510,7 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
 		//console.log('process.umask',process.umask(0))
   }
 });
-
+// THESE SHOULDN'T BE LOADED UNTILL NEEDED
 all_rdp_taxonomy.get_all_taxa(function(err, results) {
   if (err)
     console.log(err); // or return an error message, or something
@@ -524,7 +527,22 @@ all_rdp_taxonomy.get_all_taxa(function(err, results) {
     }
   }
 });
-
+all_generic_taxonomy.get_all_taxa(function(err, results) {
+  if (err)
+    console.log(err); // or return an error message, or something
+  else
+  {
+    new_generic_taxonomy = new CustomTaxa(results);
+    if(typeof new_generic_taxonomy === 'object'){
+        try{
+            console.log('SIZE (generic-taxonomy object):',sizeof(new_generic_taxonomy));
+        }catch(e){
+            new_generic_taxonomy = {};
+            console.log('Could not get sizeof(new_generic_taxonomy) in app.js')
+        }
+    }
+  }
+});
 //var taxCounts = require('./routes/helpers/create_taxcounts_class');
 //new taxCounts();
 

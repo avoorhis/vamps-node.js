@@ -22,7 +22,6 @@ get_select_datasets_query: function(){
     qSelectDatasets += " LEFT JOIN dataset USING(project_id)";
     
     qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
-    //qSelectDatasets += " WHERE metagenomic='0'";
     qSelectDatasets += " ORDER BY project, dataset";
     //console.log(qSelectDatasets);
     return qSelectDatasets;

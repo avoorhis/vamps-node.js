@@ -16,18 +16,16 @@ var taxa_query_pt1 = "SELECT DISTINCT domain, phylum, klass, `order`, family, ge
  JOIN strain AS str USING(strain_id)";
  //console.log('running custom tax query short-2');
  
-console.log('SILVA: running dataset_taxa_counts query from models/silva_taxonomy.js');
+console.log('GENERIC: running dataset_taxa_counts query from models/generic_taxonomy.js');
 
-module.exports = silvaTaxonomy;
+module.exports = genericTaxonomy;
 
-function silvaTaxonomy() {
+function genericTaxonomy() {
 }
 
-silvaTaxonomy.prototype.get_all_taxa = function(callback) 
+genericTaxonomy.prototype.get_all_taxa = function(callback) 
 {
-  var query = taxa_query_pt1+'silva_taxonomy'+taxa_query_pt2
-  //var query = taxa_query_pt1+'taxonomy'+taxa_query_pt2
-  //console.log('SILVA Taxonomy: '+query)
+  var query = taxa_query_pt1+'generic_taxonomy'+taxa_query_pt2
   connection.query(query, function (err, rows, fields) {
     callback(err, rows);
   });

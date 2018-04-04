@@ -76,7 +76,7 @@ router.post('/login',  passport.authenticate('local-login', {
 // =====================================
 // show the signup form
 router.get('/signup', function(req, res) {
-
+        new_user = {}
         // render the page and pass in any flash data if it exists
         console.log('new_user--signup')
         //console.log(new_user)

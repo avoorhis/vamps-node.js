@@ -35,53 +35,66 @@ where dataset_id = '426'
 GROUP BY dataset_id, domain_id, phylum_id
 """
 
+query_coreA = " FROM sequence_pdr_info"
+# query_coreA += " JOIN sequence_uniq_info USING(sequence_id)"
+
+query_core_join_silva119 = " JOIN silva_taxonomy_info_per_seq USING(sequence_id)"
+query_core_join_silva119 += " JOIN silva_taxonomy USING(silva_taxonomy_id)"
+
+query_core_join_rdp = " JOIN rdp_taxonomy_info_per_seq USING(sequence_id)"
+query_core_join_rdp += " JOIN rdp_taxonomy USING(rdp_taxonomy_id)"
+
+query_coreA_generic = " FROM generic_taxonomy_info"
+#query_core_join_generic = " JOIN generic_taxonomy_info USING(dataset_id)"
+query_core_join_generic = " JOIN generic_taxonomy USING(generic_taxonomy_id)"
 
 
+where_part = " WHERE dataset_id in ('%s')"
 
-query_core = " FROM sequence_pdr_info" 
-query_core += " JOIN sequence_uniq_info USING(sequence_id)"
-query_core += " JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)"
-query_core += " JOIN silva_taxonomy USING(silva_taxonomy_id)" 
+# query_core = " FROM sequence_pdr_info" 
+# query_core += " JOIN sequence_uniq_info USING(sequence_id)"
+# query_core += " JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)"
+# query_core += " JOIN silva_taxonomy USING(silva_taxonomy_id)" 
 
-domain_query = "SELECT sum(seq_count), dataset_id, domain_id"
-domain_query += query_core
-domain_query += " WHERE dataset_id in ('%s')"
-domain_query += " GROUP BY dataset_id, domain_id"
+domain_queryA = "SELECT sum(seq_count), dataset_id, domain_id"
+#domain_query += query_core
+domain_queryB = where_part
+domain_queryB += " GROUP BY dataset_id, domain_id"
 
-phylum_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id" 
-phylum_query += query_core
-phylum_query += " WHERE dataset_id in ('%s')"
-phylum_query += " GROUP BY dataset_id, domain_id, phylum_id"
+phylum_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id" 
+#phylum_query += query_core
+phylum_queryB = where_part
+phylum_queryB += " GROUP BY dataset_id, domain_id, phylum_id"
 
-class_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id" 
-class_query += query_core
-class_query += " WHERE dataset_id in ('%s')"
-class_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id"
+class_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id" 
+#class_query += query_core
+class_queryB = where_part
+class_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id"
 
-order_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id"
-order_query += query_core
-order_query += " WHERE dataset_id in ('%s')"
-order_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id"
+order_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id"
+#order_query += query_core
+order_queryB = where_part
+order_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id"
 
-family_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id"
-family_query += query_core
-family_query += " WHERE dataset_id in ('%s')"
-family_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id"
+family_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id"
+#family_query += query_core
+family_queryB = where_part
+family_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id"
 
-genus_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id" 
-genus_query += query_core
-genus_query += " WHERE dataset_id in ('%s')"
-genus_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id"
+genus_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id" 
+#genus_query += query_core
+genus_queryB = where_part
+genus_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id"
 
-species_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id" 
-species_query += query_core
-species_query += " WHERE dataset_id in ('%s')"
-species_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id"
+species_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id" 
+#species_query += query_core
+species_queryB = where_part
+species_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id"
 
-strain_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id" 
-strain_query += query_core
-strain_query += " WHERE dataset_id in ('%s')"
-strain_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
+strain_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id" 
+#strain_query += query_core
+strain_queryB = where_part
+strain_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
 
 required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_material", "latitude", "longitude", "public"];
 req_query = "SELECT dataset_id, "+','.join(required_metadata_fields)+" from required_metadata_info WHERE dataset_id in ('%s')"
@@ -89,15 +102,15 @@ cust_pquery = "SELECT project_id,field_name from custom_metadata_fields WHERE pr
 
 
 #queries = [domain_query,phylum_query,class_query,order_query,family_query,genus_query,species_query,strain_query]
-queries = [{"rank":"domain","query":domain_query},
-		   {"rank":"phylum","query":phylum_query},
-           {"rank":"klass","query":class_query},
-           {"rank":"order","query":order_query},
-           {"rank":"family","query":family_query},
-           {"rank":"genus","query":genus_query},
-           {"rank":"species","query":species_query},
-           {"rank":"strain","query":strain_query}
-		   ]
+queries = [{"rank": "domain", "queryA": domain_queryA, "queryB": domain_queryB},
+           {"rank": "phylum", "queryA": phylum_queryA, "queryB": phylum_queryB},
+           {"rank": "klass", "queryA": class_queryA, "queryB": class_queryB},
+           {"rank": "order", "queryA": order_queryA, "queryB": order_queryB},
+           {"rank": "family", "queryA": family_queryA, "queryB": family_queryB},
+           {"rank": "genus", "queryA": genus_queryA, "queryB": genus_queryB},
+           {"rank": "species", "queryA": species_queryA, "queryB": species_queryB},
+           {"rank": "strain", "queryA": strain_queryA, "queryB": strain_queryB}
+           ]
 
 
 # Globals
@@ -114,12 +127,13 @@ def go_add(args):
     
     global mysql_conn, cur
     
-    if args.site == 'vamps':
+    if args.site == 'vamps' or args.site = 'vampsdb':
         hostname = 'vampsdb'
     elif args.site == 'vampsdev':
         hostname = 'vampsdev'
     else:
         hostname = 'localhost'
+        args.NODE_DATABASE = 'vamps_development' 
     
     mysql_conn = MySQLdb.connect(db = args.NODE_DATABASE, host=hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     cur = mysql_conn.cursor()
@@ -147,6 +161,14 @@ def go_add(args):
     did_sql = "','".join(dids)
     #print counts_lookup
     for q in queries:
+        if arg.units == 'rdp2.6':
+            query = q["queryA"] + query_coreA + query_core_join_rdp + q["queryB"] % did_sql + end_group_query
+        elif arg.units == 'generic':
+            query = q["queryA"] + query_coreA_generic + query_core_join_generic + q["queryB"] % did_sql + end_group_query
+        else:  # default 'silva119'
+            query = q["queryA"] + query_coreA + query_core_join_silva119 + q["queryB"] % did_sql + end_group_query
+        
+        
         query = q["query"] % (did_sql)
         print (query)
         dirs = []
@@ -423,7 +445,10 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--jsonfile_dir",                   
                required=True,  action="store",   dest = "jsonfile_dir",
                help="""JSON Files Directory""")
-                                   
+    parser.add_argument("-units", "--tax_units",
+                required = False, action = 'store', choices = ['silva119', 'rdp2.6', 'generic'], dest = "units",
+                default = 'silva119',
+                help = "Default: 'silva119'; only other choice available is 'rdp2.6', 'generic'")                               
     args = parser.parse_args()
    
     

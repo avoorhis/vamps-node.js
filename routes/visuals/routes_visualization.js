@@ -7,7 +7,7 @@ var http = require('http');
 var path = require('path');
 var fs   = require('fs-extra');
 var open = require('open');
-var async = require('async');
+//var async = require('async');
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport({});
 var zlib = require('zlib');
@@ -85,6 +85,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   if(req.CONFIG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
+    console.log('req.body');
     console.log(req.body);
   }
   console.log('<<--req.body: view_selection');
@@ -189,17 +190,18 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   }
   TAXCOUNTS = {};
   METADATA  = {};
-
+  var file_found_error = false;
   for(var i in dataset_ids){
     var did = dataset_ids[i]
-
     try{
 
-          if(visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
-              var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
-          }else{
-              var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
-          }
+        if(visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
+            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
+        }else if(visual_post_items.unit_choice == 'tax_generic_simple'){
+            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
+        }else{
+            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");  // default
+        }
           var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
           var jsonfile = require(path_to_file);
           TAXCOUNTS[did] = jsonfile['taxcounts'];
@@ -208,14 +210,53 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     }
     catch(err){
       console.log('2-no file '+err.toString()+' Exiting');
-      req.flash('fail', "ERROR \
-        Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
-        //res.redirect('visuals_index');
+      file_found_error = true;
+      //res.redirect('visuals_index');
         //return;
     }
+    // try{
+// 
+//           if(visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
+//               var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
+//           }else{
+//               var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
+//           }
+//           var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+//           
+//           try{             
+//              var jsonfile = require(path_to_file);
+//           }catch(e1){
+//             try{
+//                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
+//                 var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+//                 var jsonfile = require(path_to_file);
+//             }catch(e2){
+//                 console.log('2-no file '+e2.toString()+' Exiting');
+//                 req.flash('fail', "ERROR \
+//                 Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
+//         //res.redirect('visuals_index');
+//         //return;
+//             }
+//           }
+//          
+//           TAXCOUNTS[did] = jsonfile['taxcounts'];
+//           METADATA[did]  = jsonfile['metadata'];
+// 
+//     }
+//     catch(err){
+//       console.log('2-no file '+err.toString()+' Exiting');
+//       req.flash('fail', "ERROR \
+//         Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
+//         //res.redirect('visuals_index');
+//         //return;
+//     }
 
   }
-
+  if(file_found_error){
+    req.flash('fail', "ERROR \
+        Dataset file not found. This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
+        
+  }
 
 
   var timestamp = +new Date();  // millisecs since the epoch!
@@ -223,7 +264,9 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   visual_post_items.ts = timestamp;
   distance_matrix = {};
   BIOM_MATRIX = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
+  console.log('vs1')
   visual_post_items.max_ds_count = BIOM_MATRIX.max_dataset_count;
+  console.log('vs2')
   if(visual_post_items.metadata.indexOf('primer_suite') != -1){
       visual_post_items.metadata.push('primers')
   }
@@ -312,7 +355,22 @@ function load_configuration_file(req, res, config_file_data )
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
             }
             var path_to_file = path.join(files_prefix, did.toString() +'.json');
-            var jsonfile = require(path_to_file);
+            
+            try{             
+                 var jsonfile = require(path_to_file);
+              }catch(e1){
+                try{
+                    var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
+                    var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+                    var jsonfile = require(path_to_file);
+                }catch(e2){
+                    console.log('2-no file '+e2.toString()+' Exiting');
+                    req.flash('fail', "ERROR \
+                    Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
+            //res.redirect('visuals_index');
+            //return;
+                }
+              }
             TAXCOUNTS[did] = jsonfile['taxcounts'];
             METADATA[did]  = jsonfile['metadata'];
       }
@@ -494,12 +552,16 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }else{
 	    // Global TAXCOUNTS, METADATA
 	    TAXCOUNTS = {};
-
 	    METADATA  = {};
-	    // Gather just the tax data of selected datasets
+	   
+        var available_units = req.CONSTS.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
+	    // GLOBAL Variable
+	    chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
+	    var custom_metadata_headers   = COMMON.get_metadata_selection(chosen_id_name_hash.ids, METADATA,'custom');
+	    var required_metadata_headers = COMMON.get_metadata_selection(chosen_id_name_hash.ids, METADATA,'required');
 
-      //  try{
+       // Gather just the tax data of selected datasets
       for(var i in dataset_ids){
         //console.log('ds',dataset_ids[i])
         var did = dataset_ids[i]
@@ -510,18 +572,35 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
         var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
         try{
             var jsonfile = require(path_to_file);
+             METADATA[dataset_ids[i]]  = jsonfile['metadata'];
         }catch(err){
             console.log(err)
             pid = PROJECT_ID_BY_DID[dataset_ids[i]]
             pname = PROJECT_INFORMATION_BY_PID[pid].project
             dname = DATASET_NAME_BY_DID[dataset_ids[i]]
-            req.flash('fail', 'No Data File found for this dataset:'+pname+'--'+dname+' (did:'+dataset_ids[i]+')');
-            LoadFailureRequest(req, res);
-            return
-          }
+            METADATA[dataset_ids[i]]  = {}
+            console.log(req.flash())
+            //if(! req.flash){
+            req.flash('fail', 'No Taxonomy found for this dataset ('+pname+'--'+dname+' (did:'+dataset_ids[i]+')) and possibly others. Try selecting other units.');
+            //}
+            //LoadFailureRequest(req, res);
+           //  res.render('visuals/unit_selection', {
+// 	                    title: 'VAMPS: Units Selection',
+//                         referer: 'visuals_index',
+// 	                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+// 	                    constants    : JSON.stringify(req.CONSTS),
+// 	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
+// 		  				md_req       : JSON.stringify(required_metadata_headers),   //
+//                         unit_choice  : unit_choice,
+// 	                    user         : req.user,hostname: req.CONFIG.hostname,
+// 	        });  // end render
+//             return
+        }
+        
+
 
               //TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
-          METADATA[dataset_ids[i]]  = jsonfile['metadata'];
+         
 
         }
 
@@ -536,13 +615,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  console.log('Pulling TAXCOUNTS and METADATA -- ONLY for datasets selected (from files)');
 	  //console.log('TAXCOUNTS= '+JSON.stringify(TAXCOUNTS));
     //console.log('METADATA= '+JSON.stringify(METADATA));
-	  var available_units = req.CONSTS.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
-
-	  // GLOBAL Variable
-	  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
-
-	  var custom_metadata_headers   = COMMON.get_metadata_selection(chosen_id_name_hash.ids, METADATA,'custom');
-	  var required_metadata_headers = COMMON.get_metadata_selection(chosen_id_name_hash.ids, METADATA,'required');
+	  
 
 	  //console.log(chosen_id_name_hash)
 	  // // benchmarking
@@ -571,8 +644,8 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
 	                    constants    : JSON.stringify(req.CONSTS),
 	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
-		  				        md_req       : JSON.stringify(required_metadata_headers),   //
-                      unit_choice : unit_choice,
+		  				md_req       : JSON.stringify(required_metadata_headers),   //
+                        unit_choice  : unit_choice,
 	                    user         : req.user,hostname: req.CONFIG.hostname,
 	  });  // end render
   }
@@ -2166,6 +2239,11 @@ router.get('/partials/tax_rdp2.6_simple', helpers.isLoggedIn,  function(req, res
         doms: req.CONSTS.DOMAINS
     });
 });
+router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, res) {
+    res.render("visuals/partials/tax_generic_simple", {
+        doms: req.CONSTS.DOMAINS
+    });
+});
 router.get('/partials/tax_gg_custom', helpers.isLoggedIn,  function(req, res) {
     res.render('visuals/partials/tax_gg_custom',{});
 });
@@ -2776,28 +2854,33 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
 //
 //
 //
-router.get('/set_units', function(req, res) {
-  //console.log('IN SET_UNITS')
-
-  if(req.query.hasOwnProperty('units')){
-    unit_choice = req.query.units
+router.post('/check_units', function(req, res) {
+  console.log('IN SET_UNITS')
+  console.log(req.body)
+  var files_prefix,path_to_file,jsonfile 
+  if(req.body.units == 'tax_silva119_simple'){
+        files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
+  }else if(req.body.units == 'tax_rdp2.6_simple'){
+        files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
+  }else if(req.body.units == 'tax_generic_simple'){
+        files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
   }else{
-    unit_choice = 'tax_silva119_simple';
+    // ERROR
   }
-
-});
-//
-//
-//
-router.get('/set_units', function(req, res) {
-  //console.log('IN SET_UNITS')
-
-  if(req.query.hasOwnProperty('units')){
-    unit_choice = req.query.units
-  }else{
-    unit_choice = 'tax_silva119_simple';
+  var file_err = 'PASS'
+  for(i in chosen_id_name_hash.ids){
+        path_to_file = path.join(files_prefix, chosen_id_name_hash.ids[i] +'.json');
+        try{
+            jsonfile = require(path_to_file);
+        }catch(e){
+            file_err='FAIL';
+            break
+        }
   }
-
+  console.log('file_err')
+  console.log(file_err)
+  res.send(file_err);
+   
 });
 //
 //

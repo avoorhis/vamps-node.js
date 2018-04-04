@@ -23,12 +23,13 @@
 
 </div>
 <br>
-<div class='title title_color_viz'>Community Visualization
-    <% if (messages.success) { %>
-        <div class="alert_flash_message_success"><%= messages.success %></div>
-    <% }else if(messages.fail){ %>
-        <div class="alert_flash_message_fail"><%= messages.fail %></div>
-    <% } %>
+<div class='title title_color_viz'>Community Visualization</div>
+<div id='flash_message_id'>
+<% if (messages.success) { %>
+    <div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+<% } %>
 </div>
 <div class='subtitle'>Select Units, Taxonomic Depth and Metadata</div>
 
@@ -42,12 +43,6 @@
     </div> <!-- End  show_selected_datasets_div -->
   </div>
 </div>
-
-
-
-
-
-
 
 
 <div id='' class=''>
@@ -68,6 +63,7 @@
           <!-- <div id='units_select_choices_div' class='unit_selection_page_div_border table' ></div>  -->
           <div id="simple_treebox" style="width:200;height:200;display:block;">Simple Tax</div>
           <div id="rdp_treebox" style="width:200;height:200;display:none;">RDP Tax</div>
+          <div id="generic_treebox" style="width:200;height:200;display:none;">Generic Tax</div>
           <div id='custom_tax_div' style="display:none;">
             <span class='lg_font'>Silva (v119) Custom Taxonomy Selection</span>
             <br>
