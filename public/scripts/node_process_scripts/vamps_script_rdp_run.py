@@ -61,13 +61,13 @@ def start_rdp(args):
         general_config_items[name] = value
     #print(config.items('MAIN.dataset'))
     file_prefix = 'testing-fp'
-    dir_prefix  = general_config_items['project_directory']
+    dir_prefix  = general_config_items['project_dir']
             
     
-    #global_gast_dir = os.path.join(args.basedir,'analysis','gast')
-    rdp_dir = os.path.join(args.project_dir,'rdp')
-    if not os.path.exists(rdp_dir):
-        os.makedirs(rdp_dir)
+    # global_gast_dir = os.path.join(args.basedir,'analysis','gast')
+#     rdp_dir = os.path.join(args.project_dir,'rdp')
+#     if not os.path.exists(rdp_dir):
+#         os.makedirs(rdp_dir)
         
     total_uniques = 0
     for dataset_item in config.items('MAIN.dataset'):
@@ -76,8 +76,8 @@ def start_rdp(args):
             print("\nDS KNT",dataset,dscount)
             unique_file = os.path.join(args.project_dir, 'analysis', dataset,'seqfile.unique.fa')
          
-            rdp_out_file = os.path.join(rdp_dir, dataset+'.rdp') # to be created
-
+            #rdp_out_file = os.path.join(rdp_dir, dataset+'.rdp') # to be created
+            rdp_out_file = os.path.join(args.project_dir, 'analysis', dataset, 'rdp_out.rdp') # to be created
             rdp.run_rdp( unique_file, rdp_out_file, args.path_to_classifier, args.gene, args.site )
     
 
@@ -125,6 +125,7 @@ if __name__ == '__main__':
     args = parser.parse_args() 
 
     start_rdp(args)
+    sys.exit('END: vamps_script_rdp_run.py')
 
 
 

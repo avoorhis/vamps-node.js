@@ -58,23 +58,25 @@
     <label class="control-label col-sm-3" for="matrix">Preparing the Matrix file:</label> 
     <div class="col-sm-8">
         
-        The input Matrix file has to be formatted in a certain way.
-        <br>
-        It is not complicated, but it is a requirement before uploading successfully. 
-        Column names are the dataset names. The dataset names MUST start in Column #2.<br>
-        Column #1 will contain the taxonomy strings and will start in Row #2.
-        Taxonomy strings cannot be more than eight ranks (domain..strain) and are separated by semicolons(;).
+        The input Matrix file has to be formatted in a certain way
+        as a requirement before uploading successfully. 
+        <li>The delimiter MUST be a TAB character. 
+        <li>Column names are the dataset names. 
+        <li>The dataset names MUST start in Column #2.
+        <li>Column #1 will contain the taxonomy strings and will start in Row #2.
+        <li>Taxonomy strings cannot be more than eight ranks (domain..strain) and are separated by semi-colons(;).
         
     <small><pre>
-                                                                                                        ds1	ds2	ds3	ds4	ds5
-fungi;ascomycota;dothideomycetes;dothideales;aureobasidiaceae;aureobasidium;aureobasidium_pullulans	0	0	0	0	0
-fungi;ascomycota;dothideomycetes;capnodiales;cladosporiaceae;cladosporium;cladosporium_cladosporioides	8	3	2	5	39
-fungi;ascomycota;saccharomycetes;saccharomycetales;saccharomycodaceae;hanseniaspora;hanseniaspora_uvarum	7	2	3	4	31
-fungi;ascomycota;dothideomycetes;pleosporales;pleosporaceae;alternaria;alternaria_alternata	0	0	0	0	0
-fungi;glomeromycota;glomeromycetes;diversisporales;acaulosporaceae;acaulospora;acaulospora_morrowiae	0	0	1	1	22
-fungi;basidiomycota;microbotryomycetes;sporidiobolales;sporidiobolales;rhodotorula;rhodotorula_sp.	0	1	0	0	0
-fungi;basidiomycota;agaricomycetes;agaricales;entolomataceae;clitopilus;clitopilus_prunulus	1	2	2	1	128
-fungi;chytridiomycota;chytridiomycetes;rhizophydiales;pateramycetaceae;pateramyces;rhizophydiales_sp.	0	0	0	0	0
+ SAMPLE Format :   
+                                                ds1	ds2	ds3	ds4	ds5
+domain1;phylum2;class3;order3;family1;genus1	0	0	0	0	0
+domain1;phylum2;class8;order9;family6;genus6	8	3	2	5	39
+domain1;phylum9;class11;order2;family3	7	2	3	4	31
+domain2;phylum5;class7;order7;family2;genus3	0	0	0	0	0
+domain1;phylum3;class6;order4;family4;genus2	0	0	1	1	22
+domain2;phylum4;class4;order6;family5;genus4	0	1	0	0	0
+domain3;phylum6;class5;order5;family7;genus10	1	2	2	1	128
+domain3;phylum7	0	1	0	0	1
 
     </pre></small>
         

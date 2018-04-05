@@ -95,6 +95,7 @@ strain_queryA = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_
 #strain_query += query_core
 strain_queryB = where_part
 strain_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
+end_group_query = " ORDER BY NULL"
 
 required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_material", "latitude", "longitude", "public"];
 req_query = "SELECT dataset_id, "+','.join(required_metadata_fields)+" from required_metadata_info WHERE dataset_id in ('%s')"
@@ -127,7 +128,7 @@ def go_add(args):
     
     global mysql_conn, cur
     
-    if args.site == 'vamps' or args.site = 'vampsdb':
+    if args.site == 'vamps' or args.site == 'vampsdb':
         hostname = 'vampsdb'
     elif args.site == 'vampsdev':
         hostname = 'vampsdev'
@@ -143,17 +144,23 @@ def go_add(args):
     pid = CONFIG_ITEMS['project_id']
     
     counts_lookup = {}
-    prefix = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+'--datasets')
-    if not os.path.exists(prefix):
-        os.makedirs(prefix)
-    print (prefix)
+    if args.units == 'rdp2.6':
+        file_prefix = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+'--datasets_rdp2.6')
+    elif args.units == 'generic':
+        file_prefix = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+'--datasets_generic')
+    else:  # default 'silva119'
+        file_prefix = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+'--datasets_silva119')
+    
+    if not os.path.exists(file_prefix):
+        os.makedirs(file_prefix)
+    print (file_prefix)
     #DATASET_ID_BY_NAME[ds] = did
     dids = [str(x) for x in DATASET_ID_BY_NAME.values()]
     print ('dids',dids)
     #dids = get_dataset_ids(pid) 
     # delete old did files if any
     for did in dids:        
-        pth = os.path.join(prefix,did+'.json')
+        pth = os.path.join(file_prefix,str(did)+'.json')
         try:            
             os.remove(pth)
         except:
@@ -161,15 +168,13 @@ def go_add(args):
     did_sql = "','".join(dids)
     #print counts_lookup
     for q in queries:
-        if arg.units == 'rdp2.6':
+        if args.units == 'rdp2.6':
             query = q["queryA"] + query_coreA + query_core_join_rdp + q["queryB"] % did_sql + end_group_query
-        elif arg.units == 'generic':
+        elif args.units == 'generic':
             query = q["queryA"] + query_coreA_generic + query_core_join_generic + q["queryB"] % did_sql + end_group_query
         else:  # default 'silva119'
             query = q["queryA"] + query_coreA + query_core_join_silva119 + q["queryB"] % did_sql + end_group_query
         
-        
-        query = q["query"] % (did_sql)
         print (query)
         dirs = []
         cur.execute(query)
@@ -200,19 +205,20 @@ def go_add(args):
                 counts_lookup[did] = {}
                 counts_lookup[did][tax_id_str] = count
     
-    logging.info('getting required metadata from db')
-    metadata_lookup = go_required_metadata(did_sql)
-    logging.info('getting custom metadata from db')
-    metadata_lookup = go_custom_metadata(dids, pid, metadata_lookup)
-    logging.info('writing individual json files')
-    write_json_files(prefix, metadata_lookup, counts_lookup)
+    metadata_lookup = {}
+    #logging.info('getting required metadata from db')
+    #metadata_lookup = go_required_metadata(did_sql)
+    #logging.info('getting custom metadata from db')
+    #metadata_lookup = go_custom_metadata(dids, pid, metadata_lookup)
+    #logging.info('writing individual json files')
+    write_json_files(file_prefix, metadata_lookup, counts_lookup)
     
     print ('writing all metadata file')
     logging.info('writing all metadata file')
     write_all_metadata_file(args,metadata_lookup)
     print ('writing all taxcount file')
-    logging.info('writing all taxcouts file')
-    write_all_taxcounts_file(args,counts_lookup)
+    #logging.info('writing all taxcouts file')
+    #write_all_taxcounts_file(args,counts_lookup)
     # print 'DONE (must now move file into place)'
 
 def write_all_metadata_file(args,metadata_lookup):
@@ -227,18 +233,18 @@ def write_all_metadata_file(args,metadata_lookup):
     f.write(json_str+"\n")
     f.close() 
     
-def write_all_taxcounts_file(args,counts_lookup):
-    original_counts_lookup = read_original_taxcounts(args)
-    tc_file = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+"--taxcounts.json")
-    for did in counts_lookup:
-        original_counts_lookup[did] = counts_lookup[did]
-    json_str = json.dumps(original_counts_lookup)		
-    #print(json_str)
-    f = open(tc_file,'w')
-    f.write(json_str+"\n")
-    f.close()
+# def write_all_taxcounts_file(args,counts_lookup):
+#     original_counts_lookup = read_original_taxcounts(args)
+#     tc_file = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+"--taxcounts.json")
+#     for did in counts_lookup:
+#         original_counts_lookup[did] = counts_lookup[did]
+#     json_str = json.dumps(original_counts_lookup)		
+#     #print(json_str)
+#     f = open(tc_file,'w')
+#     f.write(json_str+"\n")
+#     f.close()
       
-def write_json_files(prefix, metadata_lookup, counts_lookup):
+def write_json_files(file_prefix, metadata_lookup, counts_lookup):
     print ("In write_json_files")
     #print counts_lookup
     #json_str = json.dumps(counts_lookup)    
@@ -254,8 +260,9 @@ def write_json_files(prefix, metadata_lookup, counts_lookup):
 #         f.write('{"'+str(did)+'":'+mystr+"}\n")
 #         f.close()
     for did in counts_lookup:
-         file_path = os.path.join(prefix,str(did)+'.json')
+         file_path = os.path.join(file_prefix,str(did)+'.json')
          logging.info('file_path: '+file_path)
+         print('file_path: '+file_path)
          f = open(file_path,'w') 
         
          my_counts_str = json.dumps(counts_lookup[did]) 
@@ -387,7 +394,7 @@ def get_config_data(args):
         CONFIG_ITEMS['datasets'].append(dsname)   
     #print ('project',CONFIG_ITEMS['project'])
     q = "SELECT project_id FROM project"
-    q += " WHERE project = '"+CONFIG_ITEMS['project']+"'" 
+    q += " WHERE project = '"+CONFIG_ITEMS['project_name']+"'" 
     logging.info(q)
     cur.execute(q)
     
@@ -448,7 +455,11 @@ if __name__ == '__main__':
     parser.add_argument("-units", "--tax_units",
                 required = False, action = 'store', choices = ['silva119', 'rdp2.6', 'generic'], dest = "units",
                 default = 'silva119',
-                help = "Default: 'silva119'; only other choice available is 'rdp2.6', 'generic'")                               
+                help = "Default: 'silva119'; only other choice available is 'rdp2.6', 'generic'")
+    parser.add_argument("-config", "--config",
+                required = False, action = 'store',  dest = "config_file",
+                default = 'silva119',
+                help = "")                               
     args = parser.parse_args()
    
     
@@ -467,7 +478,7 @@ if __name__ == '__main__':
     print ("PID="+str(CONFIG_ITEMS['project_id']))
     ##
     logging.info("ALL DONE: (PID="+str(CONFIG_ITEMS['project_id'])+')')
-    
+    sys.exit('END: vamps_script_create_json_dataset_files.py')
 
         
 

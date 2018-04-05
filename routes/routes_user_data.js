@@ -664,10 +664,11 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
     //
    
     var error_fxn = function(msg){
+        console.log('FAIL re-open import choices page2')
         req.flash('fail',msg)
         res.render('user_data/import_choices', {
           title: 'VAMPS:Import Choices',
-          def_name:'',
+          project: '',
           user: req.user, hostname: req.CONFIG.hostname
           });
         return
@@ -699,7 +700,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
     }
     
     var new_file_path = path.join(info.project_dir, new_file_name)
-    var new_info_file_path = path.join(info.project_dir, req.CONSTS.CONFIG_FILE)
+    
        
     
    
@@ -738,7 +739,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
         
         rs.on('close', () => {
             line_split_chunks = chunkstr.split('\n')
-            
+// MATRIX             
             if(file_type == 'matrix'){
                 var split_on = '\t'
                 for(n in line_split_chunks){
@@ -748,7 +749,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                         //console.log(datasets)
                         unique = helpers.unique_array(datasets)
                         if(datasets.length == unique.length){
-                            console.log('Dataset names are unique')
+                            console.log('Dataset names are unique - good')
                         }else{
                             console.log('ERROR: Dataset Names ARE NOT unique')
                             return;
@@ -765,6 +766,8 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                     }
                 
                 }
+                info.type = file_type
+                info.num_of_datasets = datasets.length
                 var pid = 'none'
                 var load_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_matrix_loader.py')
                 var load_params = ['-i',new_file_path,'-d',info.project_dir,'-host',req.CONFIG.hostname,'-p',info.project_name,'-u',req.user.username]
@@ -773,9 +776,11 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                     env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
                     detached: true, stdio: 'pipe'
                 });
-                var output = '';
+                var output    = '';
+                var last_line = ''
                 matrix_proc.stderr.on('data', function (data) {
-                  console.log(data.toString())   
+                  console.log('error '+data.toString()) 
+                  last_line = data.toString()  
                 });
                 matrix_proc.stdout.on('data', function (data) { 
                   //console.log('stdout:')  
@@ -788,7 +793,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
 				    console.log('close: load_cmd proc exited with code ' + code);
 				    
 				    
-				    if(code == 0){
+				    if(code === 0){
 				        lines = output.split('\n')
 				        for(n in lines){
 				            //console.log(lines[n]) 
@@ -817,14 +822,40 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                         json_files_proc.on('close', function (code) {
 				            console.log('close: json_files_proc proc exited with code ' + code);
 				        })
+				        fs.writeFile(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }), {mode:0o664}, function writeConfigFile(err) {                                  
+                        if(err){return console.log(err);} // => null
+                            fs.chmodSync(new_info_filename_path, 0o664);
+                            fs.chmodSync(new_file_path, 0o664);
+                            req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+                            console.log('info2');
+                            //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
+                            res.render('user_data/import_choices/matrix', {
+                              title: 'VAMPS:Import Choices',
+                              def_name:'',
+                              user: req.user, hostname: req.CONFIG.hostname
+                            });
+                            return
+                        }); 
                         
+                    }else{
+                        console.log('FAIL re-open import choices page')
+                        req.flash('fail',' Fail: '+last_line)
+                        res.redirect('/')
+                        // res.render('user_data/import_choices', {
+//                           title: 'VAMPS:Import Choices',
+//                           project: '',
+//                           user: req.user, hostname: req.CONFIG.hostname
+//                         });
+                        return
                     }
 					
 				})
             
-            
-            
-            }else{
+// BIOM            
+            }else if(file_type == 'biom'){
+                console.log('Biom file detected')
+// FASTA
+            }else{  // not matrix or biom --> fasta??
             
             for(n in line_split_chunks){
                 //console.log('Line: '+line_split_chunks[n])
@@ -893,7 +924,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
 					info.num_of_datasets  = counts['SAMPLE_COUNT']
 					
 				}else{
-					console.log('seq_count Error: Check demultiplex.py script for print commands.')
+					console.log('seq_count Error: Check demultiplex.py.')
 					info.unique_seq_count = 0
 					info.total_seq_count  = 0
 				}
@@ -2142,7 +2173,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
     rdp_cmd1 = options.scriptPath + '/vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene +  ' --config '+ req.CONSTS.CONFIG_FILE
     rdp_cmd2 = options.scriptPath + '/vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP' + ' --config '+ req.CONSTS.CONFIG_FILE
     rdp_cmd3 = options.scriptPath + '/vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --config '+ req.CONSTS.CONFIG_FILE
-    rdp_cmd4 = options.scriptPath + '/vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE + ' --config '+ req.CONSTS.CONFIG_FILE
+    rdp_cmd4 = options.scriptPath + '/vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -units rdp2.6 --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE + ' --config '+ req.CONSTS.CONFIG_FILE
 
     script_name = 'rdp_script.sh';
     status_params.statusOK = 'OK-RDP';
@@ -2510,7 +2541,7 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
             if (pts[0] === 'project' || pts[0].substring(0,7) === 'DELETED') {
 
               var project_name = items[d].substring(8,items[d].length);
-          
+              console.log()
               console.log('dir',items[d])
               if( ! project_info.hasOwnProperty(project_name)){
                 // these projects are either empty (NoDataYet) or orphans (dir w/o DB presence)
@@ -2521,6 +2552,7 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
                 project_info[project_name].vamps_status = 'NOT_ON_VAMPS';
                 project_info[project_name].classified_by = 'none'
                 project_info[project_name].in_global_obj = false
+                project_info[project_name].ptype = ''
                 pnames.push(project_name);
               }
           
@@ -2534,31 +2566,41 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
             var config_file = path.join(user_projects_base_dir, items[d], req.CONSTS.CONFIG_FILE);
 
             try {  // to read config file
-              //var stat_config = fs.statSync(config_file);
-              //console.log('1 ', config_file)
-              //var config = iniparser.parseSync(config_file);
+              
+              console.log('2 ', config_file)
               var config = ini.parse(fs.readFileSync(config_file, 'utf-8'))
-              console.log('2 ', config)
-              var list_of_datasets = Object.keys(config.MAIN.dataset);
+            }
+            catch (err) {
+                console.log(' **NO CONFIG: '+project_name)
+            }
+            try{  
+              console.log('3 ', config)
+              if( config.MAIN.hasOwnProperty(dataset)){
+                var list_of_datasets = Object.keys(config.MAIN.dataset);
+                project_info[project_name].DATASETS = config.MAIN.dataset;
+              }
               //console.log('2 ', list_of_datasets)
               
               //project_info[project_name].empty_dir = 'false'
               project_info[project_name].num_of_datasets = config.MAIN.num_of_datasets
               //project_info[project_name].seq_count = config.MAIN.unique_seq_count
               //project_info[project_name].config = config;
-              project_info[project_name].directory = items[d];
+              
+              project_info[project_name].directory = items[d];              
+              if( config.MAIN.hasOwnProperty(type)){
+                project_info[project_name].ptype = config.MAIN.type;
+              }
               //project_info[project_name].mtime = stat_dir.mtime;
               //project_info[project_name].project = project_name;
               //project_info[project_name].number_of_datasets = config.GENERAL.number_of_datasets;
               //project_info[project_name].project_sequence_count = config.GENERAL.project_sequence_count;
               //project_info[project_name].public = config.GENERAL.public;
               //project_info[project_name].env_source_id = config.GENERAL.env_source_id;
-              project_info[project_name].DATASETS = config.MAIN.dataset;
+              
             }
             catch (err) {
               // these will be projects in the database; with or without datasets; with empty directories
-                console.log('Lost Project: '+project_name)
-                console.log('NO CONFIG: '+project_name)
+                console.log('Lost Project: '+project_name+' NO CONFIG: '+project_name)
               
             }
             

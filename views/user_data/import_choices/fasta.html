@@ -58,21 +58,23 @@
     <label class="control-label col-sm-3" for="fasta">Preparing the FASTA file:</label> 
     <div class="col-sm-8">
         
-        The input FASTA file has to be formatted in a certain way.
-        <br>
-        It is not complicated, but it is a requirement before uploading successfully. 
-        First, all of your reads from all of your samples of interest have to be in a single FASTA file (ie. the file cannot be uniqued), and all reads have to have deflines formatted in the following format:
+        The input Matrix file has to be formatted in a certain way
+        as a requirement before uploading successfully.  
+        <li>All of your reads from all of your samples of interest have to be in a single FASTA file (ie. the file cannot be uniqued).
+        <li>All reads MUST have deflines formatted in the following format: 
+        <li>>sampleName_uniqueID  (Sample Name and Unique ID are separated by an underscore: '_')
+        <li>The read MUST be pre-processed (no primers or barcodes attached).
         
     <small><pre>
-         >Sample-01_ReadX
+         >Sample01_UniqueIDX_Optional_Other_stuff
          GTTGAAAAAGTTAGTGGTGAAATCCCAGA...
-         >Sample-01_ReadY
+         >Sample01_UniqueIDY
          GTTGAAAAAGTTAGTGGTGAAATCCCAGA...
-         >Sample-01_ReadZ
+         >Sample01_UniqueIDZ_Optional_Other_stuff
          GGTGAAAAAGTTAGTGGTGAAATCCCAGA...
-         >Sample-02_ReadN
+         >Sample02_UniqueIDN
          GTTGAAAAAGTTAGTGGTGAAATCCCAGA...
-         >Sample-02_ReadM
+         >Sample02_UniqueIDM
          GTTGAAAAAGTTAGTGGTGAAATCCCAGA...
     </pre></small>
         The script will check the number of samples and compare it with the number of reads. If the number of samples is greater than 10% of the reads you will get a warning

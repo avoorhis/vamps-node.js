@@ -91,7 +91,7 @@ constants.UNIT_ASSIGNMENT_CHOICES2 = {
   'refGG_MAY2013': { taxonomy_curator:'GreenGenes (May2013)', method:'GAST', reference_db:'refssu',        availability:'not available', refdb:'GG_MAY2013' }
 };
 constants.UNIT_ASSIGNMENT_CHOICES = {
-  'RDP':  { ref_db:['2.12-16S','2.12-ITS'] },
+  'RDP':  { ref_db:['16S','ITS'] },
   'GAST': { ref_db:['refssu',  'refv1v3','refv3a', 'refv3',  'refv3v5','refv3v6','refv4','refv4v5a','refv4v5',
                     'refv4v6a','refv4v6','refv5',  'refv5v6','refv6a', 'refv6',  'refv9','refits1']
             },

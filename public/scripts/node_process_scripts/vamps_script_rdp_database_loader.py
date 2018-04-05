@@ -23,8 +23,8 @@ import random
 import csv
 from time import sleep
 import configparser as ConfigParser
-from IlluminaUtils.lib import fastalib
-
+#from IlluminaUtils.lib import fastalib
+import fastalibAV as fastalib
 import datetime
 import logging
 today = str(datetime.date.today())
@@ -79,7 +79,7 @@ classifiers = {"GAST":{'ITS1':1,'SILVA108_FULL_LENGTH':2,'GG_FEB2011':3,'GG_MAY2
                 "RDP":{'ITS1':6,'2.10.1':5,'GG_FEB2011':7,'GG_MAY2013':8},
                 'unknown':{'unknown':9}}
 ranks =['domain','phylum','klass','order','family','genus','species','strain']
-silva = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id','species_id','strain_id']
+eight_cats = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id','species_id','strain_id']
 accepted_domains = ['bacteria','archaea','eukarya','fungi','organelle','unknown']
 # ranks =[{'name':'domain', 'id':1,'num':0},
 #         {'name':'phylum', 'id':4,'num':1},
@@ -95,14 +95,14 @@ def start(args):
     global CONFIG_ITEMS
     global SEQ_COLLECTOR
     global DATASET_ID_BY_NAME
-    global SILVA_IDS_BY_TAX
+    global RDP_IDS_BY_TAX
     global RANK_COLLECTOR
     global TAX_ID_BY_RANKID_N_TAX
     global SUMMED_TAX_COLLECTOR
     CONFIG_ITEMS = {}
     SEQ_COLLECTOR = {}
     DATASET_ID_BY_NAME = {}
-    SILVA_IDS_BY_TAX = {}
+    RDP_IDS_BY_TAX = {}
     RANK_COLLECTOR={}
     TAX_ID_BY_RANKID_N_TAX = {}
     SUMMED_TAX_COLLECTOR = {} 
@@ -374,41 +374,36 @@ def push_sequences(args):
                 seqid=row[0]
             #print ('seqid',seqid)
             SEQ_COLLECTOR[ds][seq]['sequence_id'] = seqid
-            silva_tax_id = str(SEQ_COLLECTOR[ds][seq]['silva_tax_id'])
+            rdp_tax_id = str(SEQ_COLLECTOR[ds][seq]['rdp_tax_id'])
             
-            #logging.info( ds,seq, silva_tax_id)
+            #logging.info( ds,seq, rdp_tax_id)
             rank_id = str(SEQ_COLLECTOR[ds][seq]['rank_id'])
-            logging.info( rank_id)
-            q = "INSERT ignore into silva_taxonomy_info_per_seq"
-            if args.classifier == 'GAST':
-                distance = str(SEQ_COLLECTOR[ds][seq]['distance'])
-                q += " (sequence_id,silva_taxonomy_id,gast_distance,refssu_id,rank_id)"
-                q += " VALUES ('%s','%s','%s','0','%s')" % (str(seqid), silva_tax_id, distance, rank_id)
-            else:
-                q += " (sequence_id,silva_taxonomy_id,refssu_id,rank_id)"
-                q += " VALUES ('%s','%s','0','%s')" % (str(seqid), silva_tax_id, rank_id)
+            logging.info(rank_id)
+            q = "INSERT ignore into rdp_taxonomy_info_per_seq"
+            
+            q += " (sequence_id,rdp_taxonomy_id,refssu_id,rank_id)"
+            q += " VALUES ('%s','%s','0','%s')" % (str(seqid), rdp_tax_id, rank_id)
+            q += " ON DUPLICATE KEY UPDATE rdp_taxonomy_id='"+rdp_tax_id+"', rank_id='"+rank_id+"'"
             logging.info(q)
             print(q)
             cur.execute(q)
             mysql_conn.commit()
-            silva_tax_seq_id = cur.lastrowid
+            rdp_tax_seq_id = cur.lastrowid
             print ('seqid',seqid)
-            if silva_tax_seq_id == 0:
-                q3 = "select silva_taxonomy_info_per_seq_id from silva_taxonomy_info_per_seq"
+            if rdp_tax_seq_id == 0:
+                q3 = "select rdp_taxonomy_info_per_seq_id from rdp_taxonomy_info_per_seq"
                 q3 += " where sequence_id = '"+str(seqid)+"'"
-                q3 += " and silva_taxonomy_id = '"+silva_tax_id+"'"
-                if args.classifier == 'GAST':
-                    q3 += " and gast_distance = '"+distance+"'"
+                q3 += " and rdp_taxonomy_id = '"+rdp_tax_id+"'"
                 q3 += " and rank_id = '"+rank_id+"'"
-                #print 'DUP silva_tax_seq'
+                #print 'DUP rdp_tax_seq'
                 print(q3)
                 cur.execute(q3)
                 mysql_conn.commit() 
                 row = cur.fetchone()
-                silva_tax_seq_id=row[0]
+                rdp_tax_seq_id=row[0]
         
-            q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
-            q4 += " VALUES('%s','%s')" % (str(seqid), str(silva_tax_seq_id))
+            q4 = "INSERT ignore into sequence_uniq_info (sequence_id, rdp_taxonomy_info_per_seq_id)"
+            q4 += " VALUES('%s','%s')" % (str(seqid), str(rdp_tax_seq_id))
             logging.info(q4)
             cur.execute(q4)
             mysql_conn.commit()
@@ -422,33 +417,17 @@ def push_sequences(args):
 def push_taxonomy(args):
     
     global SUMMED_TAX_COLLECTOR
-    global mysql_conn, cur
-    
-    if args.classifier == 'GAST':
-        data_dir = os.path.join(args.project_dir,'gast') 
-        ext = '.fa.unique.gast'
-    elif args.classifier == 'RDP':
-        data_dir = os.path.join(args.project_dir,'rdp') 
-        ext = '.rdp'
-    elif args.classifier == 'TAXBYSEQ':
-        data_dir = os.path.join(args.project_dir,'taxbyseq')
-        ext = '.txt'
-    else:
-        print ('no data available -Exiting')
-        sys.exit()
+    global mysql_conn, cur    
     
     for ds in CONFIG_ITEMS['datasets']: 
         
         SEQ_COLLECTOR[ds] = {}
-        data_file = os.path.join(data_dir, ds+ext)
-        unique_file = os.path.join(args.project_dir,'analysis',ds,'seqfile.unique.fa')
-        if os.path.exists(data_file):
-            if args.classifier == 'GAST':
-                run_gast_tax_file(args, ds, data_file)
-            if args.classifier == 'RDP':
-                run_rdp_tax_file(args, ds, data_file, unique_file)
-            if args.classifier == 'TAXBYSEQ':
-                run_tax_by_seq_file(args, ds, data_file)
+        
+        data_dir = os.path.join(args.project_dir,'analysis',ds) 
+        unique_file = os.path.join(data_dir,'seqfile.unique.fa')
+        data_file   = os.path.join(data_dir, 'rdp_out.rdp')
+        if os.path.exists(data_file):            
+            run_rdp_tax_file(args, ds, data_file, unique_file)
         else:
             print ("cound not find file:",data_file)
  
@@ -571,7 +550,7 @@ def finish_tax(ds,refhvr_ids, rank, distance, seq, seq_count, tax_items):
     global CONFIG_ITEMS
     global SEQ_COLLECTOR
     global DATASET_ID_BY_NAME
-    global SILVA_IDS_BY_TAX
+    global RDP_IDS_BY_TAX
     global RANK_COLLECTOR
     global TAX_ID_BY_RANKID_N_TAX
     global SUMMED_TAX_COLLECTOR
@@ -670,30 +649,30 @@ def finish_tax(ds,refhvr_ids, rank, distance, seq, seq_count, tax_items):
                 TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
             #ids_by_rank.append('1')
         logging.info(  ids_by_rank )  
-        q4 =  "INSERT ignore into silva_taxonomy ("+','.join(silva)+",created_at)"
+        q4 =  "INSERT ignore into rdp_taxonomy ("+','.join(eight_cats)+",created_at)"
         q4 += " VALUES("+','.join(ids_by_rank)+",CURRENT_TIMESTAMP())"
         #
         logging.info(q4)
         #print(q4)
         cur.execute(q4)
         mysql_conn.commit() 
-        silva_tax_id = cur.lastrowid
-        if silva_tax_id == 0:
-            q5 = "SELECT silva_taxonomy_id from silva_taxonomy where ("
+        rdp_tax_id = cur.lastrowid
+        if rdp_tax_id == 0:
+            q5 = "SELECT rdp_taxonomy_id from rdp_taxonomy where ("
             vals = ''
-            for i in range(0,len(silva)):
-                vals += ' '+silva[i]+"="+ids_by_rank[i]+' and'
+            for i in range(0,len(eight_cats)):
+                vals += ' '+eight_cats[i]+"="+ids_by_rank[i]+' and'
             q5 = q5 + vals[0:-3] + ')'
             #print q5
             logging.info(q5)
             cur.execute(q5)
             mysql_conn.commit() 
             row = cur.fetchone()
-            silva_tax_id=row[0]
-            #print 'silva_tax_id',silva_tax_id
+            rdp_tax_id=row[0]
+            #print 'rdp_tax_id',rdp_tax_id
         
-        SILVA_IDS_BY_TAX[tax_string] = silva_tax_id
-        SEQ_COLLECTOR[ds][seq]['silva_tax_id'] = silva_tax_id
+        RDP_IDS_BY_TAX[tax_string] = rdp_tax_id
+        SEQ_COLLECTOR[ds][seq]['rdp_tax_id'] = rdp_tax_id
         
                 
                 
@@ -799,3 +778,6 @@ if __name__ == '__main__':
         args.NODE_DATABASE = 'vamps_development'
     print ('db host',args.hostname,'db name',args.NODE_DATABASE)
     start(args)
+    sys.exit('END: vamps_script_rdp_database_loader.py')
+    
+    
