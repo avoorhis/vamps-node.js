@@ -827,7 +827,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                             fs.chmodSync(new_info_filename_path, 0o664);
                             fs.chmodSync(new_file_path, 0o664);
                             req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-                            console.log('info2');
+        
                             //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
                             res.render('user_data/import_choices/matrix', {
                               title: 'VAMPS:Import Choices',
@@ -936,7 +936,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
 					fs.chmodSync(new_info_filename_path, 0o664);
 					fs.chmodSync(new_file_path, 0o664);
 					req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-					console.log('info2');
+					
 					//error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
 					res.render('user_data/import_choices/fasta', {
 					  title: 'VAMPS:Import Choices',
@@ -955,413 +955,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
     
 });
  
-// router.post('/import_choices/fasta2', [helpers.isLoggedIn, upload.single('upload_files', 12)],
-//    
-//   form(
-//     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
-//   ),
-//   function (req, res)
-//   {
-//     //     file { fieldname: 'upload_files',
-//     //   originalname: 'simple.fa',
-//     //   encoding: '7bit',
-//     //   mimetype: 'application/octet-stream',
-//     //   destination: '/tmp/',
-//     //   filename: 'b04c587004798dce0bd0f7224ae6d43d',
-//     //   path: '/tmp/b04c587004798dce0bd0f7224ae6d43d',
-//     //   size: 3452 }
-//     var error_fxn = function(msg){
-//         req.flash('fail',msg)
-//         res.render('user_data/import_choices/fasta', {
-//           title: 'VAMPS:Import Choices',
-//           def_name:'',
-//           user: req.user, hostname: req.CONFIG.hostname
-//           });
-//         return
-//     }
-//     console.log('form',req.form)
-//     if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project)){
-//         error_fxn('That project name is not availible.')
-//         return
-//     }
-//     // if(req.body.fasta_format == 'single_ds' && req.body.dataset == ''){
-// //         error_fxn('You need to enter a Dataset (sample) name in the required field.')
-// //         return
-// //     }
-//     // if(req.body.fasta_format == 'multi_ds' && req.body.unique_status == 'uniqued'){
-// //         error_fxn('You cannot select both `multi-dataset file` and `unique`')
-// //         return
-// //     }
-//     console.log('In POST /import_choices/fasta')
-//     console.log('file',req.file)
-//     
-//       console.log(req.body)
-//       console.log('success')
-//     if(IsFileCompressed(req.file)){
-//     
-//     }  
-//      var lineReader = require('readline').createInterface({
-//           input: require('fs').createReadStream(req.file.path)
-//         });
-//     var total_seq_count = 0
-//     //var unique_seq_count = 0
-//     var ds_counts = {}
-//     var sample_defline;
-//     lineReader.on('line', function (line) {      
-//       if(line[0] == '>'){
-//         //console.log('Line from file:', line);
-//         sample_defline = line
-//         // if(req.body.unique_status == 'uniqued'){
-// //             unique_seq_count += 1
-// //             //try{
-// //                 items = line.split('|')  // last item must be 'frequency=xx'
-// //                 //console.log('SEQ_COUNT1: '+line)
-// //                 freq = items[items.length - 1]
-// //                 //console.log('SEQ_COUNT2: '+freq)
-// //                 seq_count = freq.split(':')
-// //                 //console.log('SEQ_COUNT2: '+seq_count[1].toString())
-// //                 total_seq_count += parseInt(seq_count[1])
-// //                 //console.log('total_seq_count: '+total_seq_count.toString())
-// //             
-// //         }else{
-//         total_seq_count += 1    // total sequences IF fasta is not uniqued 
-//         //}
-//         line_items = line.split(/\s+/)
-//         first_item = line_items[0].substring(1,line_items[0].length)
-//         // now this is common M9Akey217.141086_98 last digits are 'count'
-//         // need to be removed
-//         first_item = first_item.split('_')[0]
-//         //console.log('First Item from file:', first_item);
-//         if(ds_counts.hasOwnProperty(first_item)){
-//             ds_counts[first_item] += 1
-//         }else{
-//             ds_counts[first_item] = 1
-//         }
-//         
-//       }
-//     });
-//     
-//     lineReader.on('close', function (line) {
-//       console.log('done');
-//       console.log('total_seq_count');
-//       console.log(total_seq_count);
-//       
-//       num_of_unique_keys = Object.keys(ds_counts).length
-//       
-//       var info = {}
-//       info.project_name = req.body.project
-//       info.project_directory = ''
-//       info.total_seq_count = total_seq_count;
-//       info.owner = req.user.username
-//       //info.unique_seq_count = unique_seq_count
-//       info.max_dataset_count = 0
-//       info.num_of_datasets = 0
-//       //info.original_fasta_unique_status = req.body.unique_status
-//       info.fasta_type = ''
-//       info.public = 1  // set true
-//       info.dataset = {}
-// //       if(req.body.unique_status == 'not_uniqued' && sample_defline.split('|')[]){
-// //       
-// //       }
-//       // if(req.body.unique_status == 'uniqued'){
-// //         items = sample_defline.split('|')  // last item must be 'frequency=xx'
-// //         if(items[items.length - 1].substring(0,10) != 'frequency:'){
-// //              error_fxn('Error - You selected "Unique" but there is no "frequency:" at the end of the defline.<br>Here is the format of a sample defline: '+sample_defline)
-// //         }
-// //         compare_seq_count = unique_seq_count
-// //       }else{
-//         compare_seq_count = total_seq_count
-//       //}
-//       
-//       if(num_of_unique_keys == compare_seq_count){
-//         // looks like single
-//         console.log(num_of_unique_keys);
-//         console.log('This looks like a single dataset fasta - am I right?')
-//         console.log('number of keys(ids): '+num_of_unique_keys.toString())
-//         //console.log('number of Unique Sequences: '+ unique_seq_count.toString())
-//         console.log('number of Total Sequences: '+ total_seq_count.toString())
-//         if(req.body.fasta_format == 'multi_ds'){
-//              error_fxn('Error - You selected "Multi" but this looks like a SINGLE Dataset formatted Fasta file.<br>Here is the format of a sample defline: '+sample_defline)
-//         }else{
-//             // save file to new directory
-//             info.fasta_type = 'single_ds'
-//             info.num_of_datasets = 1
-//             info.dataset[req.body.dataset] = total_seq_count
-//             info.max_dataset_count = total_seq_count  // only one ds here
-//             
-//         }
-//       }else{
-//         // looks like multi
-//         console.log(ds_counts);
-//         console.log(num_of_unique_keys);
-//         console.log('This looks like a multi dataset fasta')
-//         console.log('number of keys(ds): '+num_of_unique_keys.toString())
-//         console.log('number of Total Sequences: '+total_seq_count.toString())
-//         if(req.body.fasta_format == 'single_ds'){
-//              error_fxn('Error - You selected "Single" but this looks like a Multiple Dataset formatted Fasta file.<br>Here is the format of a sample defline: '+sample_defline)
-//         }else{
-//             // save file to new directory
-//             info.fasta_type = 'multi_ds'
-//             info.num_of_datasets = num_of_unique_keys
-//             for(ds in ds_counts){
-//                 info.dataset[ds] = ds_counts[ds]
-//                 if(ds_counts[ds] > info.max_dataset_count){
-//                     info.max_dataset_count = ds_counts[ds]
-//                 }
-//             }
-//         }
-//         
-//       }
-//       
-//       // here all is ok and we can create user project directory
-//       var project_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+req.body.project);
-//       info.project_directory = project_base_dir
-//       //console.log(project_base_dir)
-//       var new_fasta_filename_path = path.join(project_base_dir, 'SEQFILE.fna')
-//       var new_info_filename_path = path.join(project_base_dir, req.CONSTS.CONFIG_FILE)
-//       //console.log(new_filename_path)
-//       fs.ensureDir(project_base_dir, function ensureProjectsDir(err) {
-//             if(err){return console.log(err);} // => null
-//             // dir has now been created, including the directory it is to be placed in
-//             console.log('1-moving fa file to '+new_fasta_filename_path)
-//             fs.move(req.file.path, new_fasta_filename_path, function(err){
-//                 if (err) return console.log(err)
-//                 // create dir: analysis
-//  //                if(req.body.fasta_format == 'single_ds'){
-// //                     var ds_dir = path.join(project_base_dir, 'analysis', req.body.dataset)
-// //                     console.log('1-creating directory '+ds_dir)
-// //                     fs.ensureDir(ds_dir, function ensureDSDir(err) {
-// //                         var out_fasta = path.join(ds_dir,'seqfile.unique.fa')
-// //                         var out_name = path.join(ds_dir,'seqfile.unique.name')
-// //                         
-// //                         if(req.body.unique_status == 'uniqued'){
-// //                             fs.copy(new_fasta_filename_path,out_fasta, function copyFile(err){ 
-// //                                 fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
-// //                                     req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-// //                                     res.render('user_data/import_choices/fasta', {
-// //                                           title: 'VAMPS:Import Choices',         
-// //                                           user: req.user, hostname: req.CONFIG.hostname
-// //                                 });
-// //                             });
-// //                             
-// //                         }else{ // Not Uniqued
-// //                             fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
-// //                             var fastaunique_params = ['-o', out_fasta, '-n', out_name, new_fasta_filename_path]
-// //                             console.log('running fastaunique')
-// //                             console.log(fastaunique_cmd + ' ' + fastaunique_params.join(' '))
-// //                             var proc = spawn(fastaunique_cmd, fastaunique_params)
-// //                             var output = '';
-// //                             proc.stdout.on('data', function (data) {
-// //                               data = data.toString().replace(/^\s+|\s+$/g, '');                      
-// //                               output += data;
-// //                             });
-// //                             proc.on('close', function (code) {
-// //                                 console.log('close: fastaunique proc exited with code ' + code);
-// //                                 console.log("output: ");
-// //                                 console.log(output);
-// //                                 //info.unique_seq_count = output
-// //                                 fs.writeFileSync(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }))            
-// //                                 req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-// //                                 res.render('user_data/import_choices/fasta', {
-// //                                       title: 'VAMPS:Import Choices',         
-// //                                       user: req.user, hostname: req.CONFIG.hostname
-// //                                 });
-// //                             });
-// //                         }
-// //                     });   
-// //                    
-// //                 // create dir analysis/'dataset'
-// //                 // fataunique new_fasta_filename_path into dir
-// //                 
-// //                 }else{  // MULTI - create shell script demultiplex.sh
-// //                     
-//                     //demultiplex_script_path =  path.join(project_base_dir,'demultiplex.sh');
-//                     //demultiplex_script_text = '#!/bin/sh\n\n'
-//                     demultiplex_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py')
-//                     if(req.body.unique_status == 'uniqued'){
-//                         var demultiplex_params = ['-i',new_fasta_filename_path,'-d',project_base_dir]
-//                     }else{
-//                         fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique');
-//                         var demultiplex_params = ['-i',new_fasta_filename_path,'-d',project_base_dir,'-f',fastaunique_cmd]
-//                     }
-//                     
-//                     //console.log('running: '+req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+ (demultiplex_params).join(' '))
-//                     //demultiplex_script_text += req.CONFIG.PATH_TO_NODE_SCRIPTS+'demultiplex.py '+demultiplex_params.join(' ')+'\n'
-//                     
-//                     console.log(demultiplex_cmd + ' ' + demultiplex_params.join(' '))
-//                     var proc = spawn(demultiplex_cmd, demultiplex_params, {
-//                         env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-//                         detached: true, stdio: 'pipe'
-//                     });
-//                     var output = '';
-//                     proc.stderr.on('data', function (data) {
-//                       console.log(data.toString())   
-//                     });
-//                     proc.stdout.on('data', function (data) { 
-//                       console.log('data1')  
-//                       console.log(data.toString())   
-//                       output += data.toString()
-//                       
-//                     });
-//                     proc.on('close', function (code) {
-//                         console.log('close: demultiplex (+/-fastaunique) proc exited with code ' + code);
-//                         console.log("output: ");
-//                         output = output.trim().split("\n");
-//                         for( n in output){
-//                             console.log(output[n]);
-//                             if(output[n].substring(0,16) == 'UNIQUE_SEQ_COUNT'){
-//                                 res = output[n].split('=')
-//                                 info.unique_seq_count = res[1]                            
-//                             }
-//                         }
-//                         
-//                         if(helpers.isInt(info.unique_seq_count)){  // should unique count
-//                             //info.unique_seq_count = output
-//                             console.log('seq_count SUCCESS: got int')
-//                         }else{
-//                             console.log('seq_count Error: Check demultiplex.py script for print commands.')
-//                             //info.unique_seq_count = 'ERROR'
-//                         }
-//                         console.log('info');
-//                         console.log(info);
-//                         console.log(new_info_filename_path)
-//                         fs.writeFile(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }),function writeConfigFile(err) {                                  
-//                             console.log('info1');
-//                             req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-//                             console.log('info2');
-//                             //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
-//                             res.render('user_data/import_choices/fasta', {
-//                               title: 'VAMPS:Import Choices',
-//                               def_name:'',
-//                               user: req.user, hostname: req.CONFIG.hostname
-//                             });
-//                             return
-//                         }); 
-//                     });
-//                     return
-//                    
-// //               }   
-//                
-//             });
-//             
-//       // create json info file 
-//       // single: mv fasta file to new dir 
-//       // multi: demultiplex file 
-//       
-//     });
-//   
-//    });
-// });
-//
-//
-//
-// AShipunova Aug 2016
-// AAV Oct 2016
-// router.get('/import_choices/*_fasta', [helpers.isLoggedIn], function (req, res) {
-//   var url_parts = url.parse(req.url);
-//   var project = req.query.project || ''
-//   var import_type = url_parts.pathname.split("/").slice(-1)[0];
-//   console.log('in import_choices/*_fasta; project='+project)
-//   //console.log(url_parts);
-//   //console.log('in GET /import_choices/*_fasta')
-//   console.log('import_type',import_type)
-//   //'/import_choices/multi_fasta', 'multi_fasta'
-//   user_project_info = {}
-//   //console.log(PROJECT_INFORMATION_BY_PID)
-//  // PROJECT_INFORMATION_BY_PID.forEach(function(prj) {
-//   // for(pid in PROJECT_INFORMATION_BY_PID){
-// //     
-// //     if(PROJECT_INFORMATION_BY_PID[pid].username == req.user.username){
-// //           user_project_info[pid] = PROJECT_INFORMATION_BY_PID[pid] 
-// //           console.log('pid',pid)
-// //     }       
-// //   }
-// 	var q = queries.get_projects_queryUID(req.user.user_id)
-// 	console.log(q)
-//   connection.query(queries.get_projects_queryUID(req.user.user_id), function (err, rows, fields) {
-//       if (err)
-//       {
-//         console.log(err);
-//       }
-//       else
-//       {
-//           for(n in rows){
-//             pid = rows[n]['project_id']
-//             p   = rows[n]['project']
-//             user_project_info[pid] = {'project':p}            
-//           }
-//           res.render(path.join('user_data',url_parts.pathname), {
-//             title:       'Import Data',
-//             user:        req.user,
-//             hostname:    req.CONFIG.hostname,
-//             pinfo:       JSON.stringify(user_project_info),
-//             project: project,
-//             import_type: import_type,
-//           });
-//      }
-//   });
-// });
 
-// TODO: check editUploadData and uploadData for simple_fasta vs. multi_fasta etc.
-// router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],
-//   form(
-//     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
-//     form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s (no spaces)").maxLength(64).entityEncode()
-//   ),
-//   function (req, res)
-//   {
-//     console.log("QQQ1 in router.post('import_choices/simple_fasta'");
-//     if (!req.form.isValid) {
-//       req.flash('fail', req.form.errors);
-//       editUploadData(req, res);
-//       //TODO: check if the project name is in db, if not - redirect to add_project
-//       return;
-//     }
-//     else
-//     {
-//       uploadData(req, res);
-//     }
-//   }
-// );
-
-// router.post('/import_choices/multi_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],
-//   form(
-//     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
-//   ),
-//   function (req, res)
-//   {
-//     console.log("QQQ12 in router.post('import_choices/multi_fasta'");
-//     if (!req.form.isValid) {
-//       req.flash('fail', req.form.errors);
-//       editUploadData(req, res);
-//       //TODO: check if the project name is in db, if not - redirect to add_project
-//       return;
-//     }
-//     else
-//     {
-//       uploadData(req, res);
-//     }
-//   }
-// );
-// router.post('/import_choices/add_metadata_to_pr', [helpers.isLoggedIn, upload.array('upload_files', 12)],
-//   form(
-//     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode()
-//   ),
-//   function (req, res)
-//   {
-//     console.log("QQQ12 in router.post('import_choices/multi_fasta'");
-//     if (!req.form.isValid) {
-//       req.flash('fail', req.form.errors);
-//       editUploadData(req, res);
-//       //TODO: check if the project name is in db, if not - redirect to add_project
-//       return;
-//     }
-//     else
-//     {
-//       uploadData(req, res);
-//     }
-//   }
-// );
 router.get('/upload_configuration', [helpers.isLoggedIn], function (req, res) {
   console.log('in upload_configuration')
 
@@ -1375,32 +969,9 @@ router.get('/upload_configuration', [helpers.isLoggedIn], function (req, res) {
             //import_type: import_type,
           });
 });
-// router.post('/upload_user_personal_data_file', [helpers.isLoggedIn, upload.single('upload_files', 12)],function (req, res) {
-//     console.log('in POST upload_user_personal_data_file')
-//     console.log(req.body)
-//     console.log('file',req.file)
-//     var timestamp = +new Date();  // millisecs since the epoch!
-//     var new_file_name = req.body.username+'_'+timestamp+'_'+req.file.originalname
-//     var new_file_path = path.join(req.CONFIG.PATH_TO_USER_DATA_UPLOADS, new_file_name)
-//     
-//     fs.move(req.file.path, new_file_path, function moveDataDir(err) {
-//             if (err) {
-//               console.log(err);
-//               res.send(err);
-//             } else {
-//               console.log('From: '+req.file.path);
-//               console.log('To: '+new_file_path);
-//               req.flash('success', 'success');
-//               res.redirect("/users/profile");
-//               return;
-//             }
-// 
-//     });
-//     
-// });
 //
 //
-//[helpers.isLoggedIn, upload.any()]
+//
 router.post('/upload_file', [helpers.isLoggedIn, upload.any()], function(req, res) {
     // called from user_data.js as way to upload random files from /users/profile.html
     console.log('in POST test_upload')
@@ -1428,129 +999,7 @@ router.post('/upload_file', [helpers.isLoggedIn, upload.any()], function(req, re
 //
 //
 //
-// router.post('/config_file', [helpers.isLoggedIn, upload.single('upload_files', 12)],function (req, res) {
-//     console.log('in POST config_file')
-//     // UPLOAD of outside config file make sure defaults are in place
-//     // "unit_choice":"tax_silva119_simple"
-//     //"custom_taxa":["NA"]
-//     console.log(req.body)
-//     console.log('file',req.file)
-//     var upld_obj = JSON.parse(fs.readFileSync(req.file.path, 'utf8'));
-//     console.log(upld_obj)
-//     var timestamp = +new Date();
-//     if(upld_obj.hasOwnProperty('image')){
-//       console.log('1) FILE is IMAGE')
-//       image = upld_obj.image
-//       new_filename = 'image-'+image+'-'+timestamp+'.json'
-//     }else{
-//       console.log('2) FILE is CONFIG')
-//       new_filename = 'configuration-'+timestamp+'.json'
-//     }
-//     // vet data ids for permissions!!
-//     var ids = upld_obj.id_name_hash.ids
-//     console.log('original_ids',ids)
-//     new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
-//     console.log('new_ids',new_dataset_ids)
-//     // if no dids deny saving file
-//     // otherwise save config with new did set
-//     // update: ids, names and number_of_ds
-//     if(! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) != 'VAMPS'){
-//       req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
-//       res.redirect('/user_data/upload_configuration');
-//       return;
-//     }
-//     if(! upld_obj.hasOwnProperty('post_items') ){
-//         upld_obj.post_items = {}
-//     }
-//     if(new_dataset_ids.length == 0){
-//       req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
-//       res.redirect('/user_data/upload_configuration');
-//       return;
-//     //}else if(new_dataset_ids.length != ids.length){
-//       // SOME of the datasets are being excluded (either because they dont exist or no permissions)
-//     }else{
-//       // move the file ASIS to the CONFIG.USER_FILES_BASE location
-//       upld_obj.id_name_hash.ids = new_dataset_ids
-//       upld_obj.id_name_hash.names = []
-//       upld_obj.post_items.no_of_datasets = new_dataset_ids.length
-//       for(n in upld_obj.id_name_hash.ids){
-//          did = upld_obj.id_name_hash.ids[n]
-//           pid = PROJECT_ID_BY_DID[did]
-//           pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did]
-//           upld_obj.id_name_hash.names.push(pjds)
-//       }
-//       // ADD DEFAULTS if needed
-//       if(! upld_obj.post_items.hasOwnProperty('metadata') || upld_obj.post_items.metadata.length == 0){
-//         upld_obj.post_items.metadata = ['latitude','longitude']
-//       }
-//       upld_obj.post_items.unit_choice = 'tax_silva119_simple'
-//       upld_obj.post_items.custom_taxa = ["NA"]
-//       if(! upld_obj.post_items.hasOwnProperty('normalization')){
-//         upld_obj.post_items.normalization = 'none'
-//       }
-//       if(! upld_obj.post_items.hasOwnProperty('selected_distance')){
-//         upld_obj.post_items.selected_distance = 'morisita_horn'
-//       }
-//       if(! upld_obj.post_items.hasOwnProperty('tax_depth')){
-//         upld_obj.post_items.tax_depth = 'phylum'
-//       }
-//       if(! upld_obj.post_items.hasOwnProperty('include_nas')){
-//         upld_obj.post_items.include_nas = 'yes'
-//       }
-//       if(! upld_obj.post_items.hasOwnProperty('domains') || upld_obj.post_items.domains.length == 0){
-//         upld_obj.post_items.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
-//       }
-//       if(! upld_obj.post_items.hasOwnProperty('min_range')){
-//         upld_obj.post_items.min_range = 0
-//       }
-//       if(! upld_obj.post_items.hasOwnProperty('max_range')){
-//         upld_obj.post_items.max_range = 100
-//       }
-//       
-//       new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename)
-//       console.log('new_filename_path')
-//       console.log(new_filename_path)
-//       fs.writeFile(new_filename_path, JSON.stringify(upld_obj),  function writeConfigFile01(err) {
-//         if (err) {
-//           console.log("err 11: ");
-//           console.log(err);
-//           res.send(err);
-//         } else {
-//           console.log('write new config file success');
-//           //res.redirect('/visuals/view_selection/'+new_filename+'/1') 
-//           // 307 redirect to post request
-//           res.redirect(307,'/visuals/view_selection?from_configuration_file=1&fn='+new_filename)  
-//         }
-//       });
-//       
-//       //fs.move(req.file.path, new_filename_path, function(err){
-//         //if (err) return console.error(err)
-//         //var args = "?filename="+new_filename
-//         //args += "&from_configuration_file=1"
-//         //res.redirect('/visuals/view_selection'+args)
-//         //res.redirect('/visuals/view_selection/'+new_filename+'/1')
-//       //})
-//     }
-// });
-//
-//
-//
-// router.get('/import_choices/upload_image_file', [helpers.isLoggedIn], function (req, res) {
-//   
-//   url         = path.join('user_data', req.url);
-//   import_type = req.url.split("/").slice(-1)[0];
-//   //'/import_choices/multi_fasta', 'multi_fasta'
-//   
-//   res.render(url, {
-//     title:       'Import Data',
-//     user:        req.user,
-//     hostname:    req.CONFIG.hostname,
-//     import_type: import_type,
-//   });
-// });
-//
-//
-//
+
 router.post('/import_choices/re_create_from_file', [helpers.isLoggedIn, upload.single('upload_files', 12)], function (req, res) {
     console.log('in re_create_image_from_file')
     console.log(req.body)
@@ -1577,64 +1026,7 @@ router.post('/import_choices/re_create_from_file', [helpers.isLoggedIn, upload.s
       res.redirect('/visuals/view_selection/'+new_filename+'/1')
     })
 });
-// TODO: change, see improt choices
-//
-// IMPORT DATA
-//
-/* GET Import Data page. */
-// router.get('/import_data', helpers.isLoggedIn, function (req, res) {
-//   console.log('import_data, req.url = ');
-//   console.log(req.url);
-//   var myurl = url.parse(req.url, true);
 
-
-//   var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-
-//   var my_projects = [];
-//   var import_type    = myurl.query.import_type;
-
-//     fs.readdir(user_projects_base_dir, function readProjectsDir(err, items) {
-//         if (err) {
-
-//           fs.ensureDir(user_projects_base_dir, function ensureProjectsDir(err) {
-//             console.log("err 0: "); // => null
-//             console.log(err); // => null
-//             // dir has now been created, including the directory it is to be placed in
-//           });
-
-
-//         } else {
-//           console.log("user_projects_base_dir: ");
-//           console.log(user_projects_base_dir);
-//           for (var d in items) {
-//             var pts = items[d].split('-');
-//             if (pts[0] === 'project') {
-
-//               var project_name = pts[1];
-//               my_projects.push(project_name);
-
-//             }
-//           }
-//           //'/import_choices/upload_data_tax_by_seq'
-//           var render_url = path.join("user_data", req.url);
-
-//           res.render(render_url, {
-//             title: 'VAMPS:Import Data',
-
-//             import_type: import_type,
-//             my_projects: my_projects,
-//             user: req.user,
-//             hostname: req.CONFIG.hostname
-//           });
-
-//         } // end else
-//       });
-
-
-// });
-//
-// VALIDATE FORMAT
-//
 /* GET Validate page. */
 router.get('/validate_format', helpers.isLoggedIn, function (req, res) {
   console.log('validate_format');
@@ -1754,61 +1146,6 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
          });
 });
 
-// // ---- metadata_upload ----
-//
-// router.get('/metadata_upload', [helpers.isLoggedIn], function (req, res) {
-//   console.log('in get /metadata_upload');
-//
-//   res.render('user_data/metadata_upload', {
-//     title: 'VAMPS: Metadata_upload',
-//     user: req.user,
-//     hostname: req.CONFIG.hostname,
-//   });
-// });
-//
-// router.post('/metadata_upload',
-//   [helpers.isLoggedIn],
-//   form(
-//     form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_]+$/),
-//     form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z- ]+$/),
-//     form.field("pi_email", "PI's email address").trim().isEmail().required().entityEncode(),
-//     form.field("project_abstract", "Project abstract").trim().required().entityEncode(),
-//     form.field("references", "References").trim().required().entityEncode(),
-//     // References should clean URL
-//     form.field("project_name", "VAMPS project name").trim().entityEncode(),
-//     form.field("dataset_name", "VAMPS dataset name").trim().entityEncode(),
-//     form.field("sample_name", "Sample ID (user sample name)").trim().required().entityEncode(),
-//     form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode(),
-//     form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode(),
-//     form.field("collection_date", "Sample collection date (YYYY-MM-DD)").trim().required().entityEncode().isDate("Sample collection date format: YYYY-MM-DD"),
-//     form.field("latitude", "Latitude (WGS84 system, values bounded by ±90°)").trim().required().entityEncode(),
-//     form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode(),
-//     form.field("geo_loc_name_country", "Country").trim().entityEncode(),
-//     form.field("longhurst_zone", "Longhurst Zone").trim().entityEncode(),
-//     form.field("biome", "Biome").trim().required().entityEncode(),
-//     form.field("env_feature_primary", "Environmental Feature - Primary").trim().required().entityEncode(),
-//     form.field("env_feature_secondary", "Environmental Feature - Secondary").trim().entityEncode(),
-//     form.field("env_material_primary", "Environmental Material - Primary").trim().required().entityEncode(),
-//     form.field("env_material_secondary", "Environmental Material - Secondary").trim().entityEncode()
-//    ),
-//   function (req, res) {
-//     if (!req.form.isValid) {
-//       // Handle errors
-//       console.log(req.form.errors);
-//       req.flash('fail', req.form.errors);
-//       res.redirect("/user_data/metadata_upload");
-//     } else {
-//       console.log('in post /metadata_upload');
-//       console.log(req);
-//
-//       res.redirect("/user_data/your_projects");
-//     }
-//
-//     return;
-//   }
-// );
-//
-// // ---- metadata_upload end ----
 
 //
 // USER PROJECT METADATA:ID
@@ -2281,8 +1618,6 @@ function checkPid(check_pid_options, last_line)
           status_params.status = status_params.statusOK;
           status_params.msg = status_params.msgOK;
           helpers.update_status(status_params);
-
-
           ALL_CLASSIFIERS_BY_PID[pid] = classifier + '_' + ref_db;
           console.log('FROM func. ALL_CLASSIFIERS_BY_PID: ' + ALL_CLASSIFIERS_BY_PID);
           console.log('FROM func. ALL_CLASSIFIERS_BY_PID[pid]: ' + ALL_CLASSIFIERS_BY_PID[pid]);
@@ -2320,17 +1655,17 @@ function spingoTax(req, project_config, options, ref_db)
 function gastTax(req, project_config, options, ref_db)
 {
   console.log('in routes_user_data::gastTax')
-  var project  = project_config.GENERAL.project;
-  var data_dir = project_config.GENERAL.baseoutputdir;
+  var project  = project_config.MAIN.project_name;
+  var data_dir = project_config.MAIN.project_dir;
   script_name = 'gast_script.sh';
 
   // var oldmask = process.umask(0);
   // fs.closeSync(fs.openSync(`${data_dir}/clust_gast_ill_${project}.sh`, 'w', 0777));
   // process.umask(oldmask);
   full_option = '';
-  file_suffix      = ".fa" + getSuffix(project_config.GENERAL.dna_region);
-  //ref_db_name      = chooseRefFile(classifier_id);
-  //full_option      = getFullOption(classifier_id);
+  file_suffix      = ".fa" //+ getSuffix(project_config.MAIN.dna_region);
+  ref_db_name      = chooseRefFile(req.params.classifier);  //req.body.classifier
+  full_option      = getFullOption(req.params.classifier);
   gast_db_path     = config.GAST_DB_PATH;
   gast_script_path = config.GAST_SCRIPT_PATH;
   

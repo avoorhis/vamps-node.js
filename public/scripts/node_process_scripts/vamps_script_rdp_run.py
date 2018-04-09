@@ -125,7 +125,7 @@ if __name__ == '__main__':
     args = parser.parse_args() 
 
     start_rdp(args)
-    sys.exit('END: vamps_script_rdp_run.py')
+    #sys.exit('END: vamps_script_rdp_run.py')
 
 
 

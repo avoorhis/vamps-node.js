@@ -205,7 +205,6 @@ def check_project():
     """
     global CONFIG_ITEMS
     global mysql_conn, cur
-    print ('checking project')
     proj = CONFIG_ITEMS['project_name']
     q = "SELECT project, project_id from project WHERE project='%s'" % (proj)
     cur.execute(q)
@@ -778,6 +777,6 @@ if __name__ == '__main__':
         args.NODE_DATABASE = 'vamps_development'
     print ('db host',args.hostname,'db name',args.NODE_DATABASE)
     start(args)
-    sys.exit('END: vamps_script_rdp_database_loader.py')
+    #sys.exit('END: vamps_script_rdp_database_loader.py')
     
     
