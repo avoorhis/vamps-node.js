@@ -308,24 +308,42 @@ module.exports.get_select_custom_units_query = function(rows){
 };
 
 module.exports.get_select_seq_counts_query = function(rows){
-  for (var i=0; i < rows.length; i++) {
-    //console.log('rows[i].project_id in run_select_sequences_query');
-    var pid = rows[i].project_id;
-    var did = rows[i].dataset_id;
-    var count= rows[i].seq_count;
-    var cid  =  rows[i].classifier_id;
-    ALL_DCOUNTS_BY_DID[did] = parseInt(count);
-    if(ALL_CLASSIFIERS_BY_CID.hasOwnProperty(cid)){
-      ALL_CLASSIFIERS_BY_PID[pid] = ALL_CLASSIFIERS_BY_CID[cid];
-    }else{
 
+  //instead it's better to use PROJECT_ID_BY_DID after it's initialized
+  connection.query('SELECT dataset_id, project_id from dataset', function(err, rows2, fields) {
+
+      // for (p in arguments[i]) {
+      //   if (arguments[i].hasOwnProperty(p)) {
+      //     ret[p] = arguments[i][p];
+      //   }
+
+      // to a separate function
+      var p_d = [];
+      for (var r in rows2) {
+        var d_id = rows2[r]['dataset_id'];
+        var p_id = rows2[r]['project_id'];
+        p_d[d_id] = p_id;
+      }
+
+      for (var i = 0; i < rows.length; i++) {
+        var did                 = rows[i].dataset_id;
+        var pid = p_d[did];
+
+      //console.log('rows[i].project_id in run_select_sequences_query');
+      // var pid                 = rows[i].project_id;
+      var count               = rows[i].seq_count;
+      var cid                 = rows[i].classifier_id;
+      ALL_DCOUNTS_BY_DID[did] = parseInt(count);
+      if (ALL_CLASSIFIERS_BY_CID.hasOwnProperty(cid)) {
+        ALL_CLASSIFIERS_BY_PID[pid] = ALL_CLASSIFIERS_BY_CID[cid];
+      }
+      if (pid in ALL_PCOUNTS_BY_PID) {
+        ALL_PCOUNTS_BY_PID[pid] += parseInt(count);
+      } else {
+        ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
+      }
     }
-    if(pid in ALL_PCOUNTS_BY_PID){
-      ALL_PCOUNTS_BY_PID[pid] += parseInt(count);
-    }else{
-      ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
-    }
-  }
+  });
 };
 
 module.exports.run_ranks_query = function(rank,rows){
