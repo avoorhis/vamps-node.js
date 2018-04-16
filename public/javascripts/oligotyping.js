@@ -79,9 +79,7 @@ function get_oligotype_seqs2(){
     var tax_obj = document.getElementById("hidden_item").value;
     document.getElementById("oligo_genus_err_msg").style.visibility = 'visible';
     document.getElementById("oligo_genus_err_msg").innerHTML = 'no';
-    //var xmlhttp = new XMLHttpRequest();
-    //var args = 'tax_string='+tax_string
-    //args += '&tax_obj='+tax_obj
+    
 
   	var f = document.createElement("form");
     f.setAttribute('method',"post");
@@ -106,17 +104,17 @@ function get_oligotype_seqs2(){
 //
 function delete_project(code){
 	var resp = confirm('are you sure?')
-	if(resp){
-		//alert('good',resp)
+	if(resp){		
 		var xmlhttp = new XMLHttpRequest();
-	  xmlhttp.open("GET", "/oligotyping/delete/" + code, true);
-    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-      var response = xmlhttp.responseText;
-      // if(response=='OK')
-      document.getElementById(code).style.display = 'none';
-    }
-	  xmlhttp.send();
-	}else{
+		xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+                    var response = xmlhttp.responseText;
+                    document.getElementById(code).style.display = 'none';
+            }
+        }
+        xmlhttp.open("GET", "/oligotyping/delete/" + code, true);
+	    xmlhttp.send();
+    }else{
 		return
 	}
 
@@ -161,26 +159,7 @@ function run_oligotyping(btn, code){
 	}
 	//alert(args)
 	form.submit()
- //window.open('file:///User/avoorhis/programming/vamps-node.js/views/tmp/projects/andy_OLIGOTYPING_1474547262567/HTML-OUTPUT/index.html')
-	// var xmlhttp = new XMLHttpRequest();
- //  xmlhttp.open("POST", '/oligotyping/oligo/'+code, true);
- //  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
- //  xmlhttp.setRequestHeader("data-type","html");
-
- //  xmlhttp.onreadystatechange = function() {
- //    if (xmlhttp.readyState == 4 ) {
-
- //        //var response = xmlhttp.responseText;
- //        //alert(response)
- //        var rando = getRandomInt(10000,99999)
- //        var link = html_dir+"/HTML-OUTPUT/index.html?rando="+rando.toString()
- //        var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **"
- //        document.getElementById("html_link_div").innerHTML = html
- //        document.getElementById("html_link_info").innerHTML = 'READY'
- //        document.getElementById("oligo_text").innerHTML = oligo_text
- //    }
- //  };
- //  xmlhttp.send(args);
+ 
 }
 
 function getRandomInt(min, max) {

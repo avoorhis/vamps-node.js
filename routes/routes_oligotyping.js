@@ -870,12 +870,12 @@ router.get('/delete/:code', helpers.isLoggedIn, function (req, res) {
   var user_dir_path = path.join(pwd,'public','user_projects');
   var olig_dir = req.user.username+'-oligotyping-'+oligo_code
   var data_repo_path = path.join(user_dir_path, olig_dir);
-  //var out_oligotype_path  = path.join(pwd,'public','oligotyping','projects', req.user.username+'_OLIGOTYPING_'+oligo_code);
-  console.log(data_repo_path)
+  console.log('path: '+data_repo_path)
   helpers.deleteFolderRecursive(data_repo_path)
-  //helpers.deleteFolderRecursive(out_oligotype_path)
-  res.send('OK')
-  //res.send('done')
+  console.log('done')
+  //res.send('OK')
+  res.send('done')
+  
 });
 // router.post('/go', helpers.isLoggedIn, function (req, res) {
 //   console.log('in go')
