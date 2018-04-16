@@ -82,9 +82,10 @@ router.post('/get_metadata_from_project', function(req, res){
           var item_obj = {}
           for(did in mdobj){
             var ds = DATASET_NAME_BY_DID[did]
-            console.log(ds)
+            //console.log(ds)            
             item_obj[ds] = mdobj[did]
           }
+          console.log('Success: found '+item_obj.length.toString()+' datasests' )
           res.send(JSON.stringify(item_obj))
           
       }

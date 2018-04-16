@@ -116,36 +116,7 @@
                 <a class="btn btn-sm btn-link" href='/oligotyping/project_list'>your oligotype projects</a>
             </li>
             <br>
-            <li>
-            <table>
-            <tr>
-            <td>
-              <% if(user.username == 'guest'  || hostname.substring(0,7) == 'bpcweb8'){ %>
-                <button type="button" disabled class="btn btn-sm btn-success" name='Next' id="selection_btn_otus">
-                    &nbsp;OTU Creation (In Development)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
-                </button>
-              <% }else if(hostname.substring(0,7) == 'bpcweb7'){ %>
-                <button type="button" class="btn btn-sm btn-success" name='Next' id="selection_btn_otus">
-                    &nbsp;OTU Creation (In Development)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
-                </button>
-              <% }else{ %>
-                <button type="button" class="btn btn-sm btn-success" name='Next' id="selection_btn_otus">
-                    &nbsp;OTU Creation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
-                </button>
-              <% } %>
-              </td>
-              <td>
-                
-                - Create OTUs from VAMPS sequence data.<br>
-                 (<a href='/otus/otus_index' ><small>Explore Precompiled OTUs here.</small></a>)
-                </td>
-                </tr>
-               </table> 
-            </li>
-            <br>
+            
             
 
             <br>

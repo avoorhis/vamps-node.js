@@ -41,7 +41,7 @@
 <div class='overflow_500' style='height:600px;'>
 
 
-  <table class='table table-condensed  sortable'>
+  <table id='seqs_table'>
   	<thead>
 
     <tr><th data-defaultsort='disabled'></th>
@@ -66,9 +66,9 @@
            <% } %>
            <td><input type='radio' id='' name='ncbiblast' value='' onclick="ncbi_blast('<%= seqrows[r].seq %>')" \></td>
               
-                <td><span class='hide_class_seq'><pre><%- seqrows[r].prettyseq %></pre></span></td>
+            <td><span class='hide_class_seq' style="font-family: monospace;"><%- seqrows[r].prettyseq %></span></td>
               
-                <td><span class='hide_class_tax'><%= seqrows[r].tax %></span></td>
+            <td><span class='hide_class_tax'><%= seqrows[r].tax %></span></td>
           
       	   
          </tr>

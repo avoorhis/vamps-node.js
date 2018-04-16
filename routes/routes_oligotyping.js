@@ -69,8 +69,8 @@ router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req
 
   // goes up the tree to get taxon parents:
   while(item.parent_id !== 0){
-    item  = new_taxonomy.taxa_tree_dict_map_by_id[item.parent_id];
-    tax_str = item.taxon +';'+tax_str;
+    var item  = new_taxonomy.taxa_tree_dict_map_by_id[item.parent_id];
+    var tax_str = item.taxon +';'+tax_str;
     //console.log(item);
   }
 
@@ -90,8 +90,12 @@ router.post('/taxa_selection', helpers.isLoggedIn, function (req, res) {
   console.log(req.body);
   console.log('req.body: <<--oligo_taxa_selection');
 
-  dataset_ids = JSON.parse(req.body.dataset_ids);
-
+  var dataset_ids = JSON.parse(req.body.dataset_ids);
+  //
+  //
+  req.session.chosen_id_order = dataset_ids
+  //
+  //
   console.log('dataset_ids '+dataset_ids);
   if (dataset_ids === undefined || dataset_ids.length === 0) {
       console.log('redirecting back -- no data selected');
@@ -100,19 +104,16 @@ router.post('/taxa_selection', helpers.isLoggedIn, function (req, res) {
      return;
   } else {
       // GLOBAL Variable
-      chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
+      var id_name_hash           = COMMON.create_chosen_id_name_order(dataset_ids);
       console.log('chosen_id_name_hash-->');
       //console.log(chosen_id_name_hash);
-      console.log(chosen_id_name_hash.ids.length);
+      console.log(id_name_hash.length);
       console.log('<--chosen_id_name_hash');
 
       res.render('oligotyping/oligotyping_taxa_selection', {
               title: 'VAMPS:Oligotyping',
               referer: 'oligotyping1',
-              //constants: JSON.stringify(req.CONSTS),
-              chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-              //selected_rank:'phylum', // initial condition
-              //selected_domains:JSON.stringify(req.CONSTS.DOMAINS.domains), // initial condition
+              id_name_hash: JSON.stringify(id_name_hash),
              
               user: req.user, hostname: req.CONFIG.hostname
       });
@@ -123,15 +124,18 @@ router.post('/taxa_selection', helpers.isLoggedIn, function (req, res) {
 //
 router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
     console.log('in routes_oligotyping.js /project_list2');
-    console.log('req.body: oligo status-->>');
+    console.log('req.body: 1-oligo status-->>');
     console.log(req.body);
     console.log('req.body: <<--oligo status');
-    var tax_string = req.body.tax_string;
+    //var tax_string = req.body.tax_string;
     var tax_obj = JSON.parse(req.body.tax_obj);
+    var tax_string = req.body.tax_obj.full_string;
     var rank = tax_obj.rank
     console.log('tax_obj:')
     console.log(JSON.stringify(tax_obj, null, 4));
-    var sql_dids = (chosen_id_name_hash.ids).join("','")
+    console.log(req.session)
+    var sql_dids = (req.session.chosen_id_order).join("','")
+    
     q = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n"
     q += " join sequence using (sequence_id)\n"
     q += " join silva_taxonomy_info_per_seq using(sequence_id)\n"
@@ -244,7 +248,7 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
 });
 router.post('/project_list', helpers.isLoggedIn, function (req, res) {
     console.log('in routes_oligotyping.js /project_list');
-    console.log('req.body: oligo status-->>');
+    console.log('req.body: 2-oligo status-->>');
     console.log(req.body);
     console.log('req.body: <<--oligo status');
     var tax_string = req.body.tax_string;

@@ -315,10 +315,10 @@ def run_biom(args):
         if args.normalization == 'not_normalized':
             count = knt
         else:
-            if args.dataset_counts[pjds] <= 0:
+            if args.dataset_counts[samp] <= 0:
                 dataset_count = 1;
             else:
-                dataset_count = args.dataset_counts[pjds]
+                dataset_count = args.dataset_counts[samp]
             if args.normalization == 'normalized_by_percent':
                 count = round((knt /  dataset_count )*100,8)
             elif args.normalization == 'normalized_to_maximum':
@@ -698,7 +698,8 @@ def run_taxbyseq(args):
         seq_count  = row['seq_count']
 
         distance   = row['gast_distance']
-        seq        = row['sequence'].encode('zlib')
+        seq        = row['sequence']  #.encode('zlib')
+        #print(str(seq))
         taxonomy   = row['taxonomy']
 
         if args.normalization == 'not_normalized':
@@ -747,8 +748,7 @@ def run_taxbyseq(args):
         rank = ranks[len(tax.split(';'))-1]
         #refhvr_ids = seqs_refhvrs_array[seq]
         dist = seqs_dist_array[seq]
-        show_seq = seq.decode("zlib")
-
+        
         #txt += refhvr_ids+'\t'
         #line += refhvr_ids+'\t'
         for d in sample_order:
@@ -758,7 +758,7 @@ def run_taxbyseq(args):
             else:
                 #txt += "0\t"
                 line += "0\t"
-        line += str(dist)+"\t"+show_seq+"\t"+rank+"\t"+tax+"\n"
+        line += str(dist)+"\t"+seq.decode('UTF-8')+"\t"+rank+"\t"+tax+"\n"
         file_txt += line
     write_file_txt(args, out_file, file_txt)
 
@@ -967,11 +967,11 @@ if __name__ == '__main__':
         args.dataset_name_collector = get_dataset_names(args)
         #print 'args.dataset_name_collector'
         #print args.dataset_name_collector
-    else:
-        (args.max, args.dataset_counts) = get_dataset_counts(args)
-        args.datasets = args.dataset_counts.keys()
-        print ('max', args.max)
-        print ('max2', args.dataset_counts)
+    
+    (args.max, args.dataset_counts) = get_dataset_counts(args)
+    args.datasets = args.dataset_counts.keys()
+    print ('max', args.max)
+    print ('max2', args.dataset_counts)
     
     
 #     args.dc_sql_rows   = []

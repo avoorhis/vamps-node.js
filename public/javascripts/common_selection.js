@@ -94,29 +94,28 @@ var save_datasets_list = function(ds_local, user)
 // PIES and BARS
 //
 function create_piecharts(imagetype, ts, mtx) {
-    //alert(imagetype)  // group or single
-    //d3.select('svg').remove();
+    //alert(imagetype)  // this is single only: per taxonomy
+    
+      var unit_list = [];
+      for (var n in mtx.rows){
+          unit_list.push(mtx.rows[n].id);
+      }
 
-  var unit_list = [];
-  for (var n in mtx.rows){
-      unit_list.push(mtx.rows[n].id);
-  }
+      //colorsX = {}
+      var total = 0
+      for(n in mtx.rows){
+        if(imagetype == 'single'){
+          //colorsX[mtx.rows[n].id] = get_random_color()
+          total +=  parseInt(mtx.data[n])
+        }else{
+          //colorsX[mtx.rows[n].id] = string_to_color_code(mtx.rows[n].id)
+        }
+      }
 
-  //colorsX = {}
-  var total = 0
-  for(n in mtx.rows){
-    if(imagetype == 'single'){
-      //colorsX[mtx.rows[n].id] = get_random_color()
-      total +=  parseInt(mtx.data[n])
-    }else{
-      //colorsX[mtx.rows[n].id] = string_to_color_code(mtx.rows[n].id)
-    }
-  }
-
-  var tmp={};
-  var tmp_names={};
-    for (var d in mtx.columns){
-      tmp[mtx.columns[d].id]=[]; // data
+    var tmp={};
+    var tmp_names={};
+    for (var d in mtx.columns){  // datasets
+      tmp[mtx.columns[d].id]=[]; // tmp[taxname] = []
       //tmp_names[mtx_local.columns[d].id]=mtx_local.columns[d].id; // datasets
     }
     for (var x in mtx.data){
@@ -125,11 +124,11 @@ function create_piecharts(imagetype, ts, mtx) {
       }
     }
     var myjson_obj={};
-    myjson_obj.names=[];
+    myjson_obj.dids=[];
     myjson_obj.values=[];
     //myjson_obj.dids=[];
     for (var z in tmp) {
-        myjson_obj.names.push(z);
+        myjson_obj.dids.push(z);
         myjson_obj.values.push(tmp[z]);
         //myjson_obj.dids.push(z);
     }
@@ -173,16 +172,15 @@ function create_piecharts(imagetype, ts, mtx) {
             return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
         })
 
-      .append("a")
-          //.attr("xlink:xlink:href", function(d, i) { return 'bar_single?did='+myjson_obj.dids[i]+'&ts='+ts;} )
-          .attr("xlink:xlink:href", function(d, i) {
-            if(imagetype == 'group'){
-              return '/visuals/bar_single?id='+myjson_obj.names[i]+'&ts='+ts+'&orderby=alpha&val=z';
-            }else{
-              return null
-            }
-          } )
-      .attr("target", '_blank' );
+//       .append("a")
+//           //.attr("xlink:xlink:href", function(d, i) { return 'bar_single?did='+myjson_obj.dids[i]+'&ts='+ts;} )
+//           .attr("xlink:xlink:href", function(d, i) {
+//             //if(imagetype == 'group'){
+//               return '/visuals/bar_single?did='+mtx.rows[i].did+'&ts='+ts+'&orderby=alpha&val=z';
+//             //}else{
+//             //  return null
+//             //}
+//           }).attr("target", '_blank' );
 
   pies.append("text")
         .attr("dx", -(r+m))
@@ -198,8 +196,13 @@ function create_piecharts(imagetype, ts, mtx) {
         });
     pies.selectAll("path")
         .data(pie.sort(null))
-        .enter().append("path")
+        .enter()
+        .append("a").attr("xlink:xlink:href", function(d, i) {            
+              return '/visuals/bar_single?did='+mtx.rows[i].did+'&ts='+ts+'&orderby=alpha&val=z';            
+          }).attr("target", '_blank' )
+        .append("path")
         .attr("d", arc)
+        
         .attr("id",function(d, i) {
             var cnt = d.value;
             var total = 0;
@@ -213,13 +216,10 @@ function create_piecharts(imagetype, ts, mtx) {
             return id;
         })
         .attr("class","tooltip_viz")
+        
         .style("fill", function(d, i) {
-
-            //if(=='single'){
-              //return colorsX[unit_list[i]]
-            //}else{
+            
             return string_to_color_code(unit_list[i])
-            //}
 
         });
 
@@ -479,7 +479,7 @@ function create_doublebar_svg_object(svg, props, data, ts) {
              //return 'sequences?did='+mtx_local.did+'&taxa='+encodeURIComponent(d.id);
              //alert(d.dsname)
              var filename = user_local+'_'+d.did+'_'+ts+'_sequences.json'
-             return 'sequences?id='+d.dsname+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
+             return 'sequences?did='+d.did+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
           }).style("fill",   function(d) { return string_to_color_code(d.name); })
 
         .append("rect")
@@ -530,7 +530,7 @@ function create_singlebar_svg_object(svg, props, data, ts) {
                .append('a').attr("xlink:href",  function(d) {
              //return 'sequences?did='+mtx_local.did+'&taxa='+encodeURIComponent(d.id);
              var filename = user_local+'_'+d.did+'_'+ts+'_sequences.json'
-             return 'sequences?id='+data[0].datasetName+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
+             return 'sequences?did='+data[0].did+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
           }).style("fill",   function(d) { return string_to_color_code(d.name); })
 
            .append("rect")
@@ -566,7 +566,7 @@ function create_svg_object(svg, props, data, ts) {
           .attr("class", "g")
           .attr("transform", function(d) { console.log('props.y(d.datasetName)',props.y(d.datasetName));return  "translate(0, " + props.y(d.datasetName) + ")"; })
           .append("a")
-          .attr("xlink:xlink:href",  function(d) { return '/visuals/bar_single?id='+d.datasetName+'&ts='+ts+'&order=alphaDown';} )
+          .attr("xlink:xlink:href",  function(d) { return '/visuals/bar_single?did='+d.did+'&ts='+ts+'&order=alphaDown';} )
           .attr("target", '_blank' );
 
 
