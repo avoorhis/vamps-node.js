@@ -151,20 +151,16 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         console.log('UpDaTe DaTa')
         // populate req.session and visual_post_items from req.body(post)
         var dataset_ids = req.session.chosen_id_order;
-        req.session.unit_choice = visual_post_items.unit_choice = req.body.unit_choice
-        req.session.no_of_datasets = visual_post_items.no_of_datasets = dataset_ids.length
-        req.session.normalization = visual_post_items.normalization = req.body.normalization
-        req.session.selected_distance = visual_post_items.selected_distance = req.body.selected_distance
-        req.session.tax_depth = visual_post_items.tax_depth = req.body.tax_depth
-        req.session.include_nas = visual_post_items.include_nas = req.body.include_nas
-        req.session.min_range = visual_post_items.min_range = req.body.min_range
-        req.session.max_range = visual_post_items.max_range = req.body.max_range
-        req.session.metadata = visual_post_items.metadata = req.body.metadata || ['latitude','longitude']
-        req.session.domains = visual_post_items.domains = req.body.domains.split(',')  
-        req.session.custom_taxa = visual_post_items.custom_taxa = req.body.custom_taxa || ['NA'] 
+        visual_post_items = COMMON.save_post_items(req);
+        for(item in visual_post_items){
+            req.session[item] = visual_post_items[item]
+        }
+        
+        
+    
         
   }else if(req.body.resorted === '1'){
-        console.log('resorted')
+        console.log('resorted == 1')
         // populate visual_post_items from req.session (except new ds_order)
         req.flash('success','The dataset order has been updated.');
         var dataset_ids = req.body.ds_order;
