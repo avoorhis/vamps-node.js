@@ -1,13 +1,13 @@
 <% include ../add_ins/begin.ejs %>
 
-<%  var items  = JSON.parse(chosen_id_name_hash); %>
+<%  var items  = JSON.parse(id_name_hash); %>
 
 <% if (messages.success) { %>
   	<div class="alert_flash_message_success"><%= messages.success %></div>
 <% } %>
 
 <script>
-  var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
+  var ds_local  = JSON.parse('<%- id_name_hash %>');
   var user_local  = '<%= user.username %>';
 </script>
   <a href='http://merenlab.org' target='_blank'><img class='pull-right' src='/images/visuals/oligotyping-logo.png' height='60'></a>

@@ -1613,8 +1613,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     pi.domains = req.session.domains
     var write_file = false;  // DO NOT OVERWRITE The Matrix File
     var new_matrix = MTX.get_biom_matrix(req, pi, write_file);
-    console.log('new_matrix')
-console.log(new_matrix)
+   
 
     new_matrix.dataset = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did]
     new_matrix.did = selected_did
