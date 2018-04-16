@@ -9,19 +9,19 @@ var helpers = require('./helpers/helpers');
 
 module.exports = {
 taxon_color_legend: function(req, res) {
-    console.log('In function: images/taxon_color_legend')
-    var ts = visual_post_items.ts
+    console.log('In routes_images/function: images/taxon_color_legend')
+    var ts = req.session.ts
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     fs.readFile(matrix_file_path, 'utf8', function(err, data){
       if (err) {
           var msg = 'ERROR Message '+err;
           console.log(msg)
       }else{
-        BIOM_MATRIX = JSON.parse(data)
+        var biom_data = JSON.parse(data)
         html = '<table>'
-        for (var i in BIOM_MATRIX.rows){
+        for (var i in biom_data.rows){
             n = parseInt(i)+1;
-            longtax = BIOM_MATRIX.rows[i].id
+            longtax = biom_data.rows[i].id
 
             color = string_to_color_code(longtax)
             html += '<tr>'
@@ -50,185 +50,179 @@ taxon_color_legend: function(req, res) {
 
 }, // end color_legend
 counts_matrix: function(req, res) {
-    console.log('In function: images/counts_matrix')
-    var ts = visual_post_items.ts
+    console.log('In routes_images/function: images/counts_matrix')
+    
+    //console.log('req session')
+    //console.log(req.session)
+    
+    var ts = req.session.ts
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
-
     fs.readFile(matrix_file_path, 'utf8', function(err, data){
       if (err) {
           var msg = 'ERROR Message '+err;
           console.log(msg)
       }else{
 
-        BIOM_MATRIX = JSON.parse(data)
-
-        var html = '';
-        // need the max ranks
-        maxrank = 0;
-        for (var i in BIOM_MATRIX.rows){
-          taxitems = BIOM_MATRIX.rows[i].id.split(';');
-          if(maxrank < taxitems.length){
-            maxrank = taxitems.length;
-          }
-        }
-        if(req.body.source == 'website'){
-            html += "<div id='tax_counts_graph_div' style='background-color:white;width:600px;height:400px;display:none;'></div>";
-            html += "<br><br><br><br><br>"
-        }
-
-        html += "<table id='counts_matrix_id' border='0' class='' >";
-        html += "<tr><td class='no_border'></td>"
-      for (t = 0; t < maxrank; t++) {
-        if(t==2){
-          html += "<th class='' valign='bottom'><small>Class</small></th>";
-        }else{
-          html += "<th class='' valign='bottom'><small>"+req.CONSTS.RANKS[t].toUpperCase().charAt(0)+req.CONSTS.RANKS[t].slice(1)+"</small></th>";
-        }
-      }
-      if(req.body.source == 'website'){
-        html += "<th class='right_justify' valign='bottom'><small>Graph</small></th>";
-      }
-      for (var n in BIOM_MATRIX.columns) {
-        //html += "<th class='verticalTableHeader' >"+BIOM_MATRIX.columns[n].id +"</th>";
-        if(req.body.source == 'website'){
-            html += "<th class='rotate'><div><span>"
-            html += "<a href='/visuals/bar_single?id="+BIOM_MATRIX.columns[n].id+"&ts="+ts+"&orderby=alpha&val=z' target='_blank' >"+(parseInt(n)+1).toString()+') '
-            html += BIOM_MATRIX.columns[n].id+"</a></span></div></th>";
-        }else{
-            html += "<th class=''><div><span>"+ (parseInt(n)+1).toString()+') '+ BIOM_MATRIX.columns[n].id+"</span></div></th>";
-        }
-      }
-
-      html += "<th class='center' valign='bottom'><small>Total</small></th>";
-      html += "<th class='center' valign='bottom'><small>Avg</small></th>";
-      html += "<th class='center' valign='bottom'><small>Min</small></th>";
-      html += "<th class='center' valign='bottom'><small>Max</small></th>";
-      html += "<th class='center' valign='bottom'><small>Std Dev</small></th>";
-
-      html += "</tr>";
-      // END OF TITLE ROW
-      for (var i in BIOM_MATRIX.rows){
-        n = parseInt(i)+1;
-        longtax = BIOM_MATRIX.rows[i].id
-        taxitems = longtax.split(';');
-        html += "<tr class='chart_row'>"
-        if(req.body.source == 'website'){
-            html += "<td><a href='taxa_piechart?tax="+longtax+"' title='Link to Taxa PieChart' target='_blank'>"+n.toString()+"</a></td>";
-        }else{
-            color = string_to_color_code(longtax)
-            console.log('color',color)
-            html += "<td style='background:"+color+"'>"+n.toString()+"</td>"
-
-        }
-        for (t = 0; t < maxrank; t++) {
-          ttip = ''
-          ttip2 = ''
-
-          if(taxitems.length > t){
+            var biom_data = JSON.parse(data)
+            var html = '';
+            // need the max ranks
+            maxrank = 0;
+            for (var i in biom_data.rows){
+              taxitems = biom_data.rows[i].id.split(';');
+              if(maxrank < taxitems.length){
+                maxrank = taxitems.length;
+              }
+            }
             if(req.body.source == 'website'){
-                if(taxitems[t].substring(taxitems[t].length-2,taxitems[t].length) != 'NA'
-                        && taxitems[t].substring(1,6) != 'mpty_'
-                        && taxitems[t] != 'Unknown'
-                        && taxitems[t] != 'Unassigned'){
-                  ttip = '<span class="taxa">External "'+taxitems[t]+'" Links:'
-                  ttip += '<li><a href="https://en.wikipedia.org/wiki/'+taxitems[t]+'" target="_blank">Wikipedia</a></li>'
-                  ttip += '<li><a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name='+taxitems[t]+'" target="_blank">NCBI</a></li>'
-                  ttip += '<li><a href="http://www.eol.org/search?q='+taxitems[t]+'" target="_blank">EOL</a></li>'
-                  ttip += '</span>'
-                  ttip2 = taxitems[t]
+                html += "<div id='tax_counts_graph_div' style='background-color:white;width:600px;height:400px;display:none;'></div>";
+                html += "<br><br><br><br><br>"
+            }
+
+            html += "<table id='counts_matrix_id' border='0' class='' >";
+            html += "<tr><td class='no_border'></td>"
+            for (t = 0; t < maxrank; t++) {
+                if(t==2){
+                  html += "<th class='' valign='bottom'><small>Class</small></th>";
+                }else{
+                  html += "<th class='' valign='bottom'><small>"+req.CONSTS.RANKS[t].toUpperCase().charAt(0)+req.CONSTS.RANKS[t].slice(1)+"</small></th>";
                 }
             }
-            if(taxitems[t].substring(taxitems[t].length-3, taxitems[t].length) == '_NA'){
-              if(visual_post_items.include_nas == 'yes'){
-                html += "<td id='' >"+taxitems[t]+"</td>";
-              }else{
-                html += "<td class='center' id='' ></td>";
-              }
-            }else{
-              html += "<td class='left_justify' id='"+ttip2+"' ><div class='taxa_name'>"+taxitems[t]
-              html += "<span class='taxa_tooltip' >"+ttip+"</span>";
-              html += "</div></td>";
+      
+            if(req.body.source == 'website'){
+                html += "<th class='right_justify' valign='bottom'><small>Graph</small></th>";
             }
-          }else{
-            html += "<td class='left_justify' id=''>--</td>";
-          }
-        }
-        if(req.body.source == 'website'){
-            counts_string=JSON.stringify(BIOM_MATRIX.data[i])
-            graph_link_id = 'flot_graph_link'+i.toString()
-            html += "<td align='center' style='cursor:pointer;'>"
-            html += "<img width='25' id='"+graph_link_id+"' src='/images/visuals/graph.png' onclick=\"graph_counts('"+i.toString()+"','"+longtax+"','"+counts_string+"')\">"
-            html += "</td>";
-        }
 
-        var tot   = 0;
-        var avg   = 0;
-        var min   = BIOM_MATRIX.data[i][0];
-        var max   = 0;
-        var sd    = 0;
-        for (var da in BIOM_MATRIX.data[i]) {
-          var cnt = BIOM_MATRIX.data[i][da];
-          var ds_num = (parseInt(da)+1).toString()
-          var pct =  (cnt * 100 / BIOM_MATRIX.column_totals[da]).toFixed(2);
-          var id  = 'fq/'+BIOM_MATRIX.rows[i].id+'/'+ds_num+') '+BIOM_MATRIX.columns[da].id+'/'+cnt.toString()+'/'+pct.toString();
-          html += "<td id='"+id+"' class='tooltip_viz right_justify tax_data'>"+cnt.toString()+'</td>';
-          tot += cnt;
-          if(cnt > max){
-            max = cnt
-          }
-          if(cnt < min){
-            min = cnt
-          }
+            for (var n in biom_data.columns) {
+                if(req.body.source == 'website'){
+                    html += "<th class='rotate'><div><span>"
+                    html += "<a href='/visuals/bar_single?did="+biom_data.columns[n].did+"&ts="+ts+"&orderby=alpha&val=z' target='_blank' >"+(parseInt(n)+1).toString()+') '
+                    html += biom_data.columns[n].id+"</a></span></div></th>";
+                }else{
+                    html += "<th class=''><div><span>"+ (parseInt(n)+1).toString()+') '+ biom_data.columns[n].id+"</span></div></th>";
+                }
+            }
+            html += "<th class='center' valign='bottom'><small>Total</small></th>";
+            html += "<th class='center' valign='bottom'><small>Avg</small></th>";
+            html += "<th class='center' valign='bottom'><small>Min</small></th>";
+            html += "<th class='center' valign='bottom'><small>Max</small></th>";
+            html += "<th class='center' valign='bottom'><small>Std Dev</small></th>";
 
-        }
+            html += "</tr>";
+            // END OF TITLE ROW
+            for (var i in biom_data.rows){
+                
+                longtax = biom_data.rows[i].id
+                taxitems = longtax.split(';');
+                html += "<tr class='chart_row'>"
+                if(req.body.source == 'website'){
+                    html += "<td><a href='taxa_piechart?tax="+longtax+"' title='Link to Taxa PieChart' target='_blank'>"+(parseInt(i)+1).toString()+"</a></td>";
+                }else{
+                    color = string_to_color_code(longtax)
+                    console.log('color',color)
+                    html += "<td style='background:"+color+"'>"+(parseInt(i)+1).toString()+"</td>"
+                }
+                for (t = 0; t < maxrank; t++) {
+                  ttip = ''
+                  ttip2 = ''
 
-        avg = (tot/(BIOM_MATRIX.columns).length).toFixed(2)
-        sd = standardDeviation(BIOM_MATRIX.data[i]).toFixed(2)
-        html += "<td title='Total' class='right_justify tax_result'><small>"+tot.toString()+'</small></td>';
-        html += "<td title='Average' class='right_justify tax_result'><small>"+avg.toString()+"</small></td>";
-        html += "<td title='Minimum' class='right_justify tax_result'><small>"+min.toString()+"</small></td>";
-        html += "<td title='Maximum' class='right_justify tax_result'><small>"+max.toString()+"</small></td>";
-        html += "<td title='Standard Deviation' class='right_justify tax_result'><small>"+sd.toString()+"</small></td>";
-        html += "</tr>";
-      }
-      // TOTALS
-      html += "<tr>";
-      for (t = 0; t < maxrank; t++) {
-        html += "<td></td>";
-      }
+                  if(taxitems.length > t){
+                    if(req.body.source == 'website'){
+                        if(taxitems[t].substring(taxitems[t].length-2,taxitems[t].length) != 'NA'
+                                && taxitems[t].substring(1,6) != 'mpty_'
+                                && taxitems[t] != 'Unknown'
+                                && taxitems[t] != 'Unassigned'){
+                          ttip = '<span class="taxa">External "'+taxitems[t]+'" Links:'
+                          ttip += '<li><a href="https://en.wikipedia.org/wiki/'+taxitems[t]+'" target="_blank">Wikipedia</a></li>'
+                          ttip += '<li><a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name='+taxitems[t]+'" target="_blank">NCBI</a></li>'
+                          ttip += '<li><a href="http://www.eol.org/search?q='+taxitems[t]+'" target="_blank">EOL</a></li>'
+                          ttip += '</span>'
+                          ttip2 = taxitems[t]
+                        }
+                    }
+                    if(taxitems[t].substring(taxitems[t].length-3, taxitems[t].length) == '_NA'){
+                      if(req.session.include_nas == 'yes'){
+                        html += "<td id='' >"+taxitems[t]+"</td>";
+                      }else{
+                        html += "<td class='center' id='' ></td>";
+                      }
+                    }else{
+                      html += "<td class='left_justify' id='"+ttip2+"' ><div class='taxa_name'>"+taxitems[t]
+                      html += "<span class='taxa_tooltip' >"+ttip+"</span>";
+                      html += "</div></td>";
+                    }
+                  }else{
+                    html += "<td class='left_justify' id=''>--</td>";
+                  }
+                }
+                if(req.body.source == 'website'){
+                    counts_string = JSON.stringify(biom_data.data[i])
+                    graph_link_id = 'flot_graph_link'+i.toString()
+                    html += "<td align='center' style='cursor:pointer;'>"
+                    html += "<img width='25' id='"+graph_link_id+"' src='/images/visuals/graph.png' onclick=\"graph_counts('"+i.toString()+"','"+longtax+"','"+counts_string+"')\">"
+                    html += "</td>";
+                }
 
-      html += "<td class='right_justify'><strong>Sums:</strong></td>";
-      if(req.body.source == 'website'){
-        html += "<td></td>"
-      }
-      for (var m in BIOM_MATRIX.column_totals){
-        var total;
-        if(visual_post_items.normalization == 'frequency'){
-          total = BIOM_MATRIX.column_totals[m].toFixed(6);
-        }else{
-          total = BIOM_MATRIX.column_totals[m];
-        }
-        html += "<td title='Column Sum' class='right_justify'>" + total + "</td>";
-      }
+                var tot   = 0;
+                var avg   = 0;
+                var min   = biom_data.data[i][0];
+                var max   = 0;
+                var sd    = 0;
+                for (var da in biom_data.data[i]) {
+                      var cnt = biom_data.data[i][da];
+                      var ds_num = (parseInt(da)+1).toString()
+                      var pct =  (cnt * 100 / biom_data.column_totals[da]).toFixed(2);
+                      var id  = 'fq/'+biom_data.rows[i].id+'/'+ds_num+') '+biom_data.columns[da].id+'/'+cnt.toString()+'/'+pct.toString();
+                      html += "<td id='"+id+"' class='tooltip_viz right_justify tax_data'>"+cnt.toString()+'</td>';
+                      tot += cnt;
+                      if(cnt > max){
+                        max = cnt
+                      }
+                      if(cnt < min){
+                        min = cnt
+                      }
+                }
+            
+                avg = (tot/(biom_data.columns).length).toFixed(2)
+                sd = standardDeviation(biom_data.data[i]).toFixed(2)
+                html += "<td title='Total' class='right_justify tax_result'><small>"+tot.toString()+'</small></td>';
+                html += "<td title='Average' class='right_justify tax_result'><small>"+avg.toString()+"</small></td>";
+                html += "<td title='Minimum' class='right_justify tax_result'><small>"+min.toString()+"</small></td>";
+                html += "<td title='Maximum' class='right_justify tax_result'><small>"+max.toString()+"</small></td>";
+                html += "<td title='Standard Deviation' class='right_justify tax_result'><small>"+sd.toString()+"</small></td>";
+                html += "</tr>";
+            }
+            
+            // TOTALS
+            html += "<tr>";
+            for (t = 0; t < maxrank; t++) {
+                html += "<td></td>";
+            }
+            html += "<td class='right_justify'><strong>Sums:</strong></td>";
+            if(req.body.source == 'website'){
+                html += "<td></td>"
+            }
+            for (var m in biom_data.column_totals){
+            if((req.session).normalization == 'frequency'){
+                var total = biom_data.column_totals[m].toFixed(6);
+            }else{
+                var total = biom_data.column_totals[m];
+            }
+            html += "<td title='Column Sum' class='right_justify'>" + total.toString() + "</td>";
+            }
 
-      html += "<td></td><td></td><td></td><td></td><td></td>"
-      html += "</tr>";
-      html += "</table>";
-      //console.log(html)
-
-
-
-        var outfile_name = ts + '-counts_table-api.html'
-        outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
-        console.log('outfile_path:',outfile_path)
-        result = save_file(html, outfile_path)
-        console.log('result',result)
-        data = {}
-        data.html = html
-        data.filename = outfile_name
-        console.log('data.filename',data.filename)
-        //return data
-        res.json(data)
+            html += "<td></td><td></td><td></td><td></td><td></td>"
+            html += "</tr>";
+            html += "</table>";
+      
+            var outfile_name = ts + '-counts_table-api.html'
+            outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+        
+            result = save_file(html, outfile_path)
+            data = {}
+            data.html = html
+            data.filename = outfile_name
+            //return data
+            res.json(data)
 
       }
 
@@ -239,9 +233,9 @@ counts_matrix: function(req, res) {
 //   DISTANCE HEATMAP
 //
 dheatmap: function(req, res){
-    console.log('In function: images/dheatmap')
+    console.log('In routes_images/function: images/dheatmap')
 
-    var ts = visual_post_items.ts
+    var ts = req.session.ts
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
 
@@ -257,7 +251,7 @@ dheatmap: function(req, res){
     var dist_json_file_path = path.join(config.PROCESS_DIR,'tmp', ts+'_distance.json')
     var options = {
      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-       args :       [ '-in', matrix_file_path, '-metric', visual_post_items.selected_distance, '--function', 'dheatmap', '--basedir', pwd, '--prefix', ts],
+       args :       [ '-in', matrix_file_path, '-metric', req.session.selected_distance, '--function', 'dheatmap', '--basedir', pwd, '--prefix', ts],
      };
 
     var log = fs.openSync(path.join(config.PROCESS_DIR,'logs','visualization.log'), 'a');
@@ -335,15 +329,15 @@ dheatmap: function(req, res){
 //
 //
 fheatmap: function(req, res){
-    console.log('In function: images/fheatmap')
-    var ts = visual_post_items.ts
+    console.log('In routes_images/function: images/fheatmap')
+    var ts = req.session.ts
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
 
     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     var options = {
         scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-        args :       [ pwd, visual_post_items.selected_distance, ts, visual_post_items.tax_depth],
+        args :       [ pwd, req.session.selected_distance, ts, req.session.tax_depth],
     };
     console.log(options.scriptPath+'/fheatmap2.R '+options.args.join(' '));
     var fheatmap_process = spawn( options.scriptPath+'/fheatmap2.R', options.args, {
@@ -395,11 +389,11 @@ fheatmap: function(req, res){
 //   PIE CHARTS
 //
 piecharts: function(req, res) {
-  console.log('In function: images/piecharts')
+  console.log('In routes_images/function: images/piecharts')
   d3 = require('d3');
   // see: https://bl.ocks.org/tomgp/c99a699587b5c5465228
   var jsdom = require('jsdom');
-  var ts = visual_post_items.ts
+  var ts = req.session.ts
 
   var imagetype = 'group'
 
@@ -412,13 +406,13 @@ piecharts: function(req, res) {
 
       // parse data remove data less than 1%
 
-      BIOM_MATRIX = JSON.parse(data)
-      matrix = BIOM_MATRIX
+      var biom_data = JSON.parse(data)
+      matrix = biom_data
       // parse data remove data less than 1%
       if(req.body.hasOwnProperty('type') && req.body.type == 'otus'){
-          //if(BIOM_MATRIX.rows.length > 100){
-            console.log('calling thin_out_data_for_display: length= '+BIOM_MATRIX.rows.length.toString())
-            matrix = thin_out_data_for_display(BIOM_MATRIX)
+          
+            console.log('calling thin_out_data_for_display: length= '+biom_data.rows.length.toString())
+            matrix = thin_out_data_for_display(biom_data)
           //}
       }
 
@@ -509,7 +503,7 @@ piecharts: function(req, res) {
               })
             .append("a")
             .attr("xlink:xlink:href", function(d, i) {
-              return '/visuals/bar_single?id='+matrix.columns[i].id+'&ts='+ts+'&orderby=alpha&val=z';
+              return '/visuals/bar_single?did='+matrix.columns[i].did+'&ts='+ts+'&orderby=alpha&val=z';
             })
             .attr("target", '_blank' );
         }else{
@@ -602,11 +596,11 @@ piecharts: function(req, res) {
 //   BAR CHARTS
 //
 barcharts: function(req, res){
-  console.log('In function: images/barcharts')
+  console.log('In routes_images/function: images/barcharts')
   d3 = require('d3');
   // see: https://bl.ocks.org/tomgp/c99a699587b5c5465228
   var jsdom = require('jsdom');
-  var ts = visual_post_items.ts
+  var ts = req.session.ts
 
   var imagetype = 'group'
 
@@ -617,13 +611,13 @@ barcharts: function(req, res){
         console.log(msg)
     }else{
 
-     BIOM_MATRIX = JSON.parse(data)
-     matrix = BIOM_MATRIX
+     var biom_data = JSON.parse(data)
+     matrix = biom_data
      if(req.body.hasOwnProperty('type') && req.body.type == 'otus'){
-          //if(BIOM_MATRIX.rows.length > 100){
-            console.log('calling thin_out_data_for_display: length= '+BIOM_MATRIX.rows.length.toString())
-            matrix = thin_out_data_for_display(BIOM_MATRIX)
-          //}
+          
+            console.log('calling thin_out_data_for_display: length= '+biom_data.rows.length.toString())
+            matrix = thin_out_data_for_display(biom_data)
+          
       }
 
       var ds_count = matrix.shape[1];
@@ -722,8 +716,8 @@ barcharts: function(req, res){
 },  // end barcharts
 
 metadata_csv: function(req, res){
-    console.log('in metadata_csv')
-    var ts = visual_post_items.ts
+    console.log('in routes_images/metadata_csv')
+    var ts = req.session.ts
     try{
         var ds_order = JSON.parse(req.body.ds_order)
     }catch(e){
@@ -784,8 +778,8 @@ metadata_csv: function(req, res){
 },
 
 adiversity: function(req, res){
-    console.log('in adiversity')
-    var ts = visual_post_items.ts
+    console.log('in routes_images/adiversity')
+    var ts = req.session.ts
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
 
@@ -872,10 +866,10 @@ adiversity: function(req, res){
 
 },
 dendrogram: function(req, res){
-    console.log('in dendrogram2')
+    console.log('in routes_images/dendrogram2')
     ///groups/vampsweb/vampsdev/seqinfobin/bin/Rscript --no-save --slave --no-restore tree_create.R avoorhis_4742180_normalized.mtx horn avoorhis_4742180 trees
     //console.log(phylo)
-    var ts = visual_post_items.ts
+    var ts = req.session.ts
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
 
@@ -883,7 +877,7 @@ dendrogram: function(req, res){
     //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
     //console.log('mtx1')
 
-    var metric = visual_post_items.selected_distance;
+    var metric = req.session.selected_distance;
     var html = '';
     var title = 'VAMPS';
     var options = {
@@ -952,11 +946,11 @@ dendrogram: function(req, res){
 //
 //
 phyloseq: function(req,res){
-    console.log('in phyloseq')
-    var ts = visual_post_items.ts
+    console.log('in routes_images/phyloseq')
+    var ts = req.session.ts
     //var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
-    var metric = visual_post_items.selected_distance
-    var tax_depth = visual_post_items.tax_depth
+    var metric = req.session.selected_distance
+    var tax_depth = req.session.tax_depth
     var options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ req.CONFIG.PROCESS_DIR, metric, ts, tax_depth ],
@@ -1006,124 +1000,7 @@ phyloseq: function(req,res){
 
     });
 },
-// dendrogram: function(req, res){
-//     console.log('in dendrogram')
-//     //d3 = require('d3');
-//     //newick = require('newick.js')
-//     //eval(require('fs').readFileSync('./public/javascripts/newick.js', 'utf8'));
-//     //eval(require('fs').readFileSync('./public/javascripts/d3.phylogram.js', 'utf8'));
-//     //phylo_path = path.join(config.PROCESS_DIR,'public','javascripts','d3.phylogram.js')
-//
-//     //console.log(phylo_path)
-//     //phylo = require(phylo_path)
-//     //console.log(phylo)
-//     var ts = visual_post_items.ts
-//     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
-//     console.log(matrix_file_path)
-//
-//     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-//     //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
-//     //console.log('mtx1')
-//     var image_type = 'd3'
-//     var metric = visual_post_items.selected_distance;
-//     var html = '';
-//     var title = 'VAMPS';
-//     var options = {
-//       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-//       args :       [ '-in', matrix_file_path, '-metric', metric, '--function', 'dendrogram', '--outdir', path.join(pwd,'tmp'), '--prefix', ts ],
-//     };
-//
-//     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
-//     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-//     var dendrogram_process = spawn( options.scriptPath+'/distance.py', options.args, {
-//             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-//             detached: true,
-//             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
-//             stdio: 'pipe'  // stdin, stdout, stderr
-//     });
-//
-//     var stdout = '';
-//     dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
-//         //
-//         //data = data.toString().replace(/^\s+|\s+$/g, '');
-//         data = data.toString();
-//         stdout += data;
-//
-//     });
-//     var stderr = '';
-//     dendrogram_process.stderr.on('data', function dendrogramProcessStderr(data) {
-//         //console.log('stderr: ' + data);
-//         //data = data.toString().replace(/^\s+|\s+$/g, '');
-//         data = data.toString();
-//         stderr += data;
-//     });
-//
-//     dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
-//         console.log('dendrogram_process process exited with code ' + code);
-//
-//         //var last_line = ary[ary.length - 1];
-//         if(code === 0){   // SUCCESS
-//           if(image_type == 'd3'){
-//                    console.log(stdout)
-//                    //  if(req.CONFIG.site == 'vamps' ){
-// //                       console.log('VAMPS PRODUCTION -- no print to log');
-// //                     }else{
-// //                         console.log('stdout: ' + stdout);
-// //                     }
-//                     lines = stdout.split('\n')
-//                     for(n in lines){
-//                       if(lines[n].substring(0,6) == 'NEWICK' ){
-//                         tmp = lines[n].split('=')
-//                         continue
-//                       }
-//                     }
-//
-//
-//                     try{
-//                       newick_json = JSON.parse(tmp[1]);
-//                       //var newick = Newick.parse(tmp[1]);
-//                       if(req.CONFIG.site == 'vamps' ){
-//                         console.log('VAMPS PRODUCTION -- no print to log');
-//                       }else{
-//                         console.log('newick-01',newick_json)
-//                       }
-//                     }
-//                     catch(err){
-//                       newick_json = {"ERROR":err};
-//                     }
-//
-//
-//                     //console.log('newick',newick_json)
-//                     var outfile_name = ts + '_newick.tre'
-//                     //outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
-//                     //console.log('outfile_path:',outfile_path)
-//                     //result = save_file(newick, outfile_path) // this saved file should now be downloadable from jupyter notebook
-//                     //console.log(result)
-//                     var data = {}
-//                     data.html = newick_json
-//                     data.filename = outfile_name
-//                     res.json(data)
-//                     return;
-//
-//           }else{  // 'pdf'
-// //                     var viz_width = 1200;
-// //                     var viz_height = (visual_post_items.no_of_datasets*12)+100;
-// //                     var image = '/'+ts+'_dendrogram.pdf';
-// //                     //console.log(image)
-// //                     html = "<div id='pdf'>";
-// //                     html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
-// //                     html += " <p>ERROR in loading pdf file</p>";
-// //                     html += "</object></div>";
-// //                     res.send(html);
-// //                     return;
-//           }
-//         }else{
-//           console.log('stderr: '+stderr);
-//           res.send('Script Error');
-//         }
-//     });
-//
-// }
+
 
 };   // end module.exports
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1150,7 +1027,7 @@ function create_bars_svg_object(req, svg, props, data, ts) {
           .attr("class", "g")
           .attr("transform", function(d) { return  "translate(0, " + props.y(d.pjds) + ")"; })
           .append("a")
-          .attr("xlink:xlink:href",  function(d) { return '/visuals/bar_single?id='+d.pjds+'&ts='+ts+'&order=alphaDown';} )
+          .attr("xlink:xlink:href",  function(d) { return '/visuals/bar_single?did='+d.did+'&ts='+ts+'&order=alphaDown';} )
           .attr("target", '_blank' );
     }else{
         var datasetBar = svg.selectAll(".bar")
@@ -1276,8 +1153,8 @@ function get_image_properties(imagetype, ds_count) {
 function create_hm_table(req, dm){
 
     var colors   = req.CONSTS.HEATMAP_COLORS
-    var no       = chosen_id_name_hash.names
-    var id_order = chosen_id_name_hash.ids
+    var id_order = req.session.chosen_id_order
+    
     var html = ''
     html += "<center>"
     if(req.body.source == 'website'){
@@ -1306,45 +1183,50 @@ function create_hm_table(req, dm){
 	html += "		  <imput type='hidden' id='' name='resorted' value='1' >"
 	html += "	  </div>"
 	html += "</td>"
-
-    for(i=1; i<=no.length; i++) {
+    for(i=1; i<=id_order.length; i++) {
         html += "<td><div class='cell'></div></td>"
     }
         html += "</tr>"
     k=1
-    for(var n in no) {
-        var x = no[n]
+    for(var n in id_order) {
+        var xdid = id_order[n]
+        var xpjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[xdid]].project +'--'+DATASET_NAME_BY_DID[xdid]
+        //var x = id_order[n]
         if(req.body.source == 'website'){
-            html += "<tr id='"+x+"'>"
+            html += "<tr id='"+xpjds+"'>"
         }else{
-            html += "<tr id='"+x+"' style='line-height:11px;'>"
+            html += "<tr id='"+xpjds+"' style='line-height:11px;'>"
         }
-        html += "<td  id='"+x+"' class='dragHandle ds_cell'>"+k+"</td>"
-        html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+ id_order[n] +"' >"+x+"</td>"
-        for(var m in no) {
-            var y = no[m]
-            if(x in dm && y in dm[x]){
-                var d = dm[x][y].toFixed(5);
-                var sv = Math.round( dm[x][y] * 15 );
-            } else{
+        html += "<td  id='"+xpjds+"' class='dragHandle ds_cell'>"+k+"</td>"
+        html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+ xdid +"' >"+xpjds+"</td>"
+        for(var m in id_order) {
+            
+            var ydid = id_order[m]
+            var ypjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[ydid]].project +'--'+DATASET_NAME_BY_DID[ydid]
+            
+            if(dm.hasOwnProperty(xpjds) && dm[xpjds].hasOwnProperty(ypjds)){
+                var d = dm[xpjds][ypjds].toFixed(5);
+                var sv = Math.round( dm[xpjds][ypjds] * 15 );
+            }else{
                   var d = 1
                   var sv = 1 * 15
             }
-            var id = 'dh/'+x+'/'+y+'/'+ visual_post_items.selected_distance +'/'+d;
-            if(x === y){
+            
+            var id = 'dh/'+xpjds+'/'+ypjds+'/'+ req.session.selected_distance +'/'+d;
+                        
+            if(xdid === ydid){
                 html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
             }else{
                 if(req.body.source == 'website'){
                     html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"
-                    html += " onclick=\"window.open('/visuals/bar_double?did1="+ id_order[n] +"&did2="+ id_order[m] +"&ts="+visual_post_items.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
+                    html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
                     html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
                 }else{
-                    var title = x+'&#13;'+y+'&#13;'+ visual_post_items.selected_distance +' -- '+d;
+                    var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
                     html += "<td title='"+title+"' class='heat_map_td' bgcolor='#"+ colors[sv]+"'"
                 }
                 html += "</td>"
             }
-
 
         }
         k++
@@ -1361,7 +1243,6 @@ function create_hm_table(req, dm){
 }
 function standardDeviation(values){
   var avg = average(values);
-
   var squareDiffs = values.map(function(value){
     var diff = value - avg;
     var sqrDiff = diff * diff;
@@ -1383,13 +1264,6 @@ function average(data){
 function save_file(data, file_path){
     fs.writeFileSync(file_path, data)
     return 'Success'
-  // fs.writeFileSync(file_path, data, function writeFile(err) {
-//     if(err){
-//       return err
-//     }else{
-//       return 'Success'
-//     }
-//   })
 }
 function thin_out_data_for_display(mtx){
     console.log('in thin_out_data_for_display- OTUs only')

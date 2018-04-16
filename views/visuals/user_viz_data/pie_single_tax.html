@@ -2,7 +2,6 @@
 
 <link rel="stylesheet" href="/stylesheets/bootstrap-sortable.css" >
 <script>
-  var pi_local  = JSON.parse('<%- post_items %>');
   var mtx_local = JSON.parse('<%- matrix %>');
 </script>
   
@@ -28,7 +27,7 @@
 
 <script>
  $(document).ready(function() {  
-
+    
   // function is where?  common_selection
   create_piecharts('single', <%= ts %>, mtx_local);
   

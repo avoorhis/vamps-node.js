@@ -205,8 +205,8 @@ function load_initial_taxa_tree(unit_choice) {
       alert(unit_choice+' not implemented...')
   }
   
-  xmlhttp2.open("GET", 'set_units?units='+unit_choice);
-  xmlhttp2.send();
+  //xmlhttp2.open("GET", 'set_units?units='+unit_choice);
+  //xmlhttp2.send();
 
 }
 function load_silva119_tax_simple() {

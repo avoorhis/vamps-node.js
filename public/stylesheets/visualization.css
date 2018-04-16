@@ -585,3 +585,6 @@ i.icon-minus-sign {
     height:500px;
     overflow:auto;
 }
+#seqs_table tbody tr td{
+    font-size:small
+}

@@ -24,7 +24,14 @@ function view_datasets_ajax( filename, user, fxn ){
 		    if (xmlhttp.readyState == 4 ) {
 					var data = xmlhttp.responseText;
 					obj = JSON.parse(data);
-					dataset_ids = obj.ids;
+					dataset_ids = [];
+					line_data = ''
+		 			for( var i in obj ){
+		 				var did =  obj[i].did;
+		 				var dsname = obj[i].name;
+		 				line_data += '<tr><td>'+(parseInt(i)+parseInt(1)).toString()+'</td><td>'+did+'</td><td>'+dsname+'</td></tr>';
+		 				dataset_ids.push(did)
+		 			}
 					//alert(dataset_ids)
 					tree_data = get_data_for_tree(obj);
 					//alert(JSON.stringify(tree_data))
@@ -47,12 +54,7 @@ function view_datasets_ajax( filename, user, fxn ){
 				
 					html += "<table class='small_font table table-condensed' >";
 				 	html += '<tr><td></td><th>SampleID</th><th>project--dataset</th></tr>';
-					
-		 			for( var i in obj.ids ){
-		 				var id =  obj.ids[i];
-		 				var dsname = obj.names[i];
-		 				html += '<tr><td>'+(parseInt(i)+parseInt(1)).toString()+'</td><td>'+id+'</td><td>'+dsname+'</td></tr>';
-		 			}
+					html += line_data					
 		 			html += '</table></div>';
 					document.getElementById(filename+"_div").innerHTML=html;
 					document.getElementById(filename+'_open_btn_id').innerHTML = 'toggle open <span class="caret"></span>'
@@ -66,13 +68,17 @@ function get_data_for_tree(file_json) {
 	//					{"ids":["1720","1719","1715","1714","1716","1717","1721","1718"],
 	//					"names":["ICM_ABR_Bv6--ABR_0001_2005_01_02","ICM_ABR_Bv6--ABR_0003_2005_01_02","ICM_ABR_Bv6--ABR_0005_2005_01_07","ICM_ABR_Bv6--ABR_0007_2005_01_07","ICM_ABR_Bv6--ABR_0009_2005_01_30","ICM_ABR_Bv6--ABR_0011_2005_01_30","ICM_ABR_Bv6--ABR_0013_2005_02_26","ICM_ABR_Bv6--ABR_0015_2005_02_26"]}
 	// convert to pjname = [did list]
+	// NEW
+	// [{"did":"339906","name":"AB_HGB1_Bv6v4--HGB_0005_2"},{"did":"339907","name":"AB_HGB1_Bv6v4--HGB_0014_2"},
+	//{"did":"339908","name":"AB_HGB1_Bv6v4--HGB_0020"},{"did":"339909","name":"AB_HGB1_Bv6v4--HGB_0021"},{"did":"339910","name":"AB_HGB1_Bv6v4--HGB_0022"},{"did":"339911","name":"AB_HGB1_Bv6v4--HGB_0023"},
+	//{"did":"339912","name":"AB_HGB1_Bv6v4--HGB_0024"},{"did":"339913","name":"AB_HGB1_Bv6v4--HGB_0025"}
 	projects = {}
-	for(i in file_json.names){
-		p = file_json.names[i].split('--')[0];
-		if(projects.hasOwnProperty(p)){
-			projects[p].push(parseInt(file_json.ids[i]));
+	for(i in file_json){
+		var pj = file_json[i].name.split('--')[0];
+		if(projects.hasOwnProperty(pj)){
+			projects[pj].push( parseInt(file_json[i].did) );
 		}else{
-			projects[p] = [parseInt(file_json.ids[i])]
+			projects[pj] = [ parseInt(file_json[i].did) ]
 		}
 	}
 	return projects;

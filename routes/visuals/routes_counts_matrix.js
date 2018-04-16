@@ -42,10 +42,10 @@ var extend = require('util')._extend;
 module.exports = {
 
 
-		get_biom_matrix: function(chosen_id_name_hash, post_items) {
+		get_biom_matrix: function(req, post_items, write_file) {
 			var date = new Date();
 			var did, rank, db_tax_id, node_id, cnt, matrix_file;
-			biom_matrix = {
+			var biom_matrix_start = {
 					id: post_items.ts,
 					format: "Biological Observation Matrix 0.9.1-dev",
 					format_url:"http://biom-format.org/documentation/format_versions/biom-1.0.html",
@@ -63,26 +63,14 @@ module.exports = {
 	     		data:  []										// ORDERED list of lists of counts: [ [],[],[] ... ]
 	     		};
 			//GLOBAL.boim_matrix;
-			var ukeys = [];
-			var unit_name_lookup = {};
+			//var ukeys = [];
 			
-			var unit_name_lookup_per_dataset = {};
-			var unit_name_counts = {};
-
 			
-			if(post_items.unit_choice === 'tax_rdp2.6_simple') {
-				taxonomy_object = new_rdp_taxonomy
-			}else if(post_items.unit_choice === 'tax_silva119_simple'){
-				taxonomy_object = new_taxonomy
-			}else if(post_items.unit_choice === 'tax_generic_simple'){
-                taxonomy_object = new_generic_taxonomy
-			}else if(post_items.unit_choice === 'tax_silva119_custom'){
-				taxonomy_object = new_taxonomy
-			}else{
-				console.log('Taxonomy Object ERROR')
-			}
-			biom_matrix = fill_out_taxonomy(biom_matrix,taxonomy_object,post_items,unit_name_lookup,unit_name_lookup_per_dataset)
+			var biom_matrix = fill_out_taxonomy(req, biom_matrix_start, post_items, write_file)
+			//console.log('biom_matrix')
 			//console.log(biom_matrix)
+			//console.log('//////////////////////////////////////////////////////////////')
+			console.log('7')
 			return biom_matrix
 			
 },
@@ -92,15 +80,24 @@ module.exports = {
 
 
 		 //
-  // GET CUSTOM BIOM MATRIX
+ 
+
+};
+
+
+//
+//
+//
+ // GET CUSTOM BIOM MATRIX
   //
-  get_updated_biom_matrix: function(visual_post_items, mtx) {
+  function get_updated_biom_matrix(post_items, mtx) {
+    console.log('in UPDATED biom_matrix')
     var custom_count_matrix = extend({},mtx);  // this clones count_matrix which keeps original intact.
 
     var max_cnt = mtx.max_dataset_count,
-        min     = visual_post_items.min_range,
-        max     = visual_post_items.max_range,
-        norm    = visual_post_items.normalization;
+        min     = post_items.min_range,
+        max     = post_items.max_range,
+        norm    = post_items.normalization;
 
     //console.log('in custom biom '+max_cnt.toString());
 
@@ -177,97 +174,43 @@ module.exports = {
 
     //console.log('returning custom_count_matrix');
     return custom_count_matrix;
-  },
+  }
 
-
-};
-
-
-//
-//  R E M O V E  E M P T Y  R O W S
-//
-function remove_empty_rows(taxa_counts) {
-		// remove empty rows:
-
-		var tmparr = [];
-		for(var taxname in taxa_counts) {
-			var sum = 0;
-			for(var c in taxa_counts[taxname]){
-				sum += taxa_counts[taxname][c];
-				//console.log(k);
-			}
-			if(sum > 0){
-				tmparr.push(taxname);
-			}
-		}
-		return tmparr;
-
-}
-//
-//	C R E A T E  U N I T  N A M E  C O U N T S
-//
-function create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset) {
-
-		var taxa_counts={};
-	  for(var tax_name in unit_name_lookup){
-	  	taxa_counts[tax_name]=[];
-	  }
-
-        //console.log('unit_name_lookup')
-	    //console.log(unit_name_lookup)
-		for (var n in chosen_id_name_hash.ids) { // correct order
-	  	did = chosen_id_name_hash.ids[n];
-	  	for (var tax_name1 in unit_name_lookup) {
-	  		if(did in unit_name_lookup_per_dataset && tax_name1 in unit_name_lookup_per_dataset[did]) {
-	  			cnt = unit_name_lookup_per_dataset[did][tax_name1];
-	  			taxa_counts[tax_name1].push(cnt);
-	  		} else {
-	  			taxa_counts[tax_name1].push(0);
-	  		}
-	  	}
-	  }
-	  //console.log('taxa_counts')
-	  //console.log(taxa_counts)
-	  return taxa_counts;
-}
-//
-//	F I L L I N  N A M E  L O O K U P  P E R  D S
-//
-function fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {
-
-
-    //console.log('lookup1')
-    //console.log(lookup)
-	if(did in lookup) {
-  		if(tax_name in lookup[did]) {
-  			lookup[did][tax_name] += parseInt(cnt);
-  		}else{
-  			lookup[did][tax_name] = parseInt(cnt);
-  		}
-
-  	}else{
-  		lookup[did] = {};
-  		if(tax_name in lookup[did]) {
-  			lookup[did][tax_name] += parseInt(cnt);
-
-  		}else{
-  			lookup[did][tax_name] = parseInt(cnt);
-  		}
-  	}
-  	//console.log('lookup2')
-  	//console.log(lookup)
-  	return lookup;
-}
 //
 
 //
 //
-function fill_out_taxonomy(biom_matrix, taxonomy_object, post_items, unit_name_lookup, unit_name_lookup_per_dataset){
+function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
     	console.log('IN routes_counts_matrix::fill_out_taxonomy')
     	db_tax_id_list = {};
-		for (var n in chosen_id_name_hash.ids) { // has correct order
-
-                did = chosen_id_name_hash.ids[n];
+    	
+    	if(post_items.unit_choice == 'tax_rdp2.6_simple'){
+            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
+            var taxonomy_object = new_rdp_taxonomy
+        }else if(post_items.unit_choice == 'tax_generic_simple'){
+            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
+            var taxonomy_object = new_generic_taxonomy
+        }else{
+            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");  // default
+            var taxonomy_object = new_taxonomy
+        }
+    	var unit_name_lookup = {};			
+		var unit_name_lookup_per_dataset = {};
+		for (var i in post_items.chosen_datasets) { // has correct order
+                var did = post_items.chosen_datasets[i].did
+                try{
+                    var path_to_file = path.join(files_prefix, did +'.json');
+                    var jsonfile = require(path_to_file);
+                    var taxcounts = jsonfile['taxcounts'];
+                    
+                }
+                catch(err){
+                  console.log('2-no file '+err.toString()+' Exiting');
+                  file_found_error = true;
+                  //res.redirect('visuals_index');
+                    //return;
+                }
+                
                 //console.log(did)
                 rank = post_items.tax_depth;
                 //console.log('rank: '+rank)
@@ -276,12 +219,14 @@ function fill_out_taxonomy(biom_matrix, taxonomy_object, post_items, unit_name_l
 				  		
 				  		
 							rank_no = parseInt(C.RANKS.indexOf(rank))	+ 1;
-							for(var x in TAXCOUNTS[did]){
-									//console.log('new_taxonomy',taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank)
+							for(var x in taxcounts){
+								//console.log('new_taxonomy',taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank)
+								
 								if((x.match(/_/g) || []).length == rank_no){
 
 									var ids = x.split('_');   // x === _5_55184_61061_62018_62239_63445
-									cnt = TAXCOUNTS[did][x];
+									
+									cnt = taxcounts[x];
 									var tax_long_name = '';
 									var domain = '';
 									for(var y=1;y<ids.length;y++){  // must start at 1 because leading '_':  _2_55184
@@ -383,26 +328,7 @@ function fill_out_taxonomy(biom_matrix, taxonomy_object, post_items, unit_name_l
 										//console.log(tax_node)
 										var rank_name = tax_node.rank;
 										var rank_no = parseInt(C.RANKS.indexOf(rank_name));
-										//console.log('got one '+ rank_name)
-									//console.log('name_n_rank',name_n_rank)
-									//console.log('TAXCOUNTS[did]>>')
-									//console.log(TAXCOUNTS[did])
-									//console.log('<<TAXCOUNTS[did]')
-									//for(var x in TAXCOUNTS[did]){
-									//	var cnt = TAXCOUNTS[did][x]
-										//var ids = x.split('_');// _3437_1749484_1819019_2223710_2287237_2311724_2240949_2062201: 9,
-										// ids = ['','3437','1749484','1819019','2223710','2287237','2311724','2240949','2062201']
-										//ids.shift(); // remove first -blank- item
-
-										//temp = name_n_rank.split('_')
-										//rank_name = temp[1]
-										//rank_no = parseInt(C.RANKS.indexOf(rank_name));
-										//console.log(rank_no,rank_name)
-										// db_id = ids[rank_no]
-										// //console.log(rank_name,rank_no,db_id)
-										// db_id_n_rank = db_id+'_'+rank_name;
-										//console.log('tax',testtax,db_id_n_rank,rank_name,rank_no,db_id)
-										//if(name_n_rank in new_taxonomy.taxa_tree_dict_map_by_name_n_rank){
+										
 											db_tax_id_list[did][selected_node_id] = ''
 											tax_long_name = '';
 											//if(db_id_n_rank in new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank) {
@@ -430,12 +356,12 @@ function fill_out_taxonomy(biom_matrix, taxonomy_object, post_items, unit_name_l
 
 									  	}
 									  	cnt = 0
-									  	for(var id_chain in TAXCOUNTS[did]){
+									  	for(var id_chain in taxcounts){
 									  			//console.log('id_chain',id_chain)
 									  			//if(id_chain.indexOf(db_tax_id_list[did][name_n_rank]) === 0){
 									  			if(id_chain == db_tax_id_list[did][selected_node_id]){
 									  				//console.log('MATCH',db_tax_id_list[did][selected_node_id], id_chain);
-									  				cnt = TAXCOUNTS[did][id_chain];
+									  				cnt = taxcounts[id_chain];
 									  				break;
 									  			}
 									  	}
@@ -471,44 +397,121 @@ function fill_out_taxonomy(biom_matrix, taxonomy_object, post_items, unit_name_l
 
 			}
 
-
-			unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);
-
-
+console.log('1')
+			unit_name_counts = create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_per_dataset);
+console.log('2')
 			ukeys = remove_empty_rows(unit_name_counts);
 			ukeys = ukeys.filter(onlyUnique);
 			ukeys.sort();
-
+console.log('3')
 			// Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
 			//console.log(unit_name_counts);
 			//console.log('POSTx - from routes_counts_matrix.js');
 			//console.log(post_items);
 
-			biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
-
+			biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, post_items );
+console.log('4')
 			if(post_items.update_data === true || post_items.update_data === 1 || post_items.update_data === '1'){
-
-				biom_matrix = this.get_updated_biom_matrix( post_items, biom_matrix );
+console.log('5')
+				biom_matrix = get_updated_biom_matrix( post_items, biom_matrix );
 
 			}else{
 			// nothing here for the time being.....
 			}
 
 
+			if(write_file == true || write_file == undefined){
+                var tax_file = '../../tmp/'+post_items.ts+'_taxonomy.txt';
+                COMMON.output_tax_file( tax_file, biom_matrix, C.RANKS.indexOf(post_items.tax_depth));
 
-			// For R:phyloseq object
-			var tax_file = '../../tmp/'+post_items.ts+'_taxonomy.txt';
-			COMMON.output_tax_file( tax_file, biom_matrix, C.RANKS.indexOf(post_items.tax_depth));
-
-            matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
-			//COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
-			COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
-
+                matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
+                //COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
+                COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
+            }
+ console.log('6')
 			return biom_matrix;
 
 			function onlyUnique(value, index, self) {
 				return self.indexOf(value) === index;
 			}
+}
+//
+//
+//
+//
+//  R E M O V E  E M P T Y  R O W S
+//
+function remove_empty_rows(taxa_counts) {
+		// remove empty rows:
+
+		var tmparr = [];
+		for(var taxname in taxa_counts) {
+			var sum = 0;
+			for(var c in taxa_counts[taxname]){
+				sum += taxa_counts[taxname][c];
+				//console.log(k);
+			}
+			if(sum > 0){
+				tmparr.push(taxname);
+			}
+		}
+		return tmparr;
+
+}
+//
+//	C R E A T E  U N I T  N A M E  C O U N T S
+//
+function create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_per_dataset) {
+    
+		var taxa_counts={};
+	  for(var tax_name in unit_name_lookup){
+	  	taxa_counts[tax_name]=[];
+	  }
+
+        //console.log('unit_name_lookup')
+	    //console.log(unit_name_lookup)
+		for (var i in post_items.chosen_datasets) { // correct order
+	  	    var did = post_items.chosen_datasets[i].did
+            for (var tax_name1 in unit_name_lookup) {
+                if(did in unit_name_lookup_per_dataset && tax_name1 in unit_name_lookup_per_dataset[did]) {
+                    cnt = unit_name_lookup_per_dataset[did][tax_name1];
+                    taxa_counts[tax_name1].push(cnt);
+                } else {
+                    taxa_counts[tax_name1].push(0);
+                }
+            }
+	  }
+	  //console.log('taxa_counts')
+	  //console.log(taxa_counts)
+	  return taxa_counts;
+}
+//
+//	F I L L I N  N A M E  L O O K U P  P E R  D S
+//
+function fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {
+
+
+    //console.log('lookup1')
+    //console.log(lookup)
+	if(did in lookup) {
+  		if(tax_name in lookup[did]) {
+  			lookup[did][tax_name] += parseInt(cnt);
+  		}else{
+  			lookup[did][tax_name] = parseInt(cnt);
+  		}
+
+  	}else{
+  		lookup[did] = {};
+  		if(tax_name in lookup[did]) {
+  			lookup[did][tax_name] += parseInt(cnt);
+
+  		}else{
+  			lookup[did][tax_name] = parseInt(cnt);
+  		}
+  	}
+  	//console.log('lookup2')
+  	//console.log(lookup)
+  	return lookup;
 }
 //
 //
@@ -519,16 +522,17 @@ function onlyUnique(value, index, self) {
 //
 //	C R E A T E  B I O M  M A T R I X
 //
-function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash ) {
+function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, post_items ) {
 
 	console.log('in create_biom_matrix');  // uname:
-	//console.log(chosen_id_name_hash);
 	
 
-	for (var n in chosen_id_name_hash.names) {   // correct order
+	for (var i in post_items.chosen_datasets) {   // correct order
+	    var did = post_items.chosen_datasets[i].did
+	    var dname = post_items.chosen_datasets[i].name
 	    //console.log(dataset_ids[did])
 	    //biom_matrix.columns.push({ name: chosen_id_name_hash.names[n], did:chosen_id_name_hash.ids[n], metadata: {} });
-	    biom_matrix.columns.push({ did: chosen_id_name_hash.ids[n], id: chosen_id_name_hash.names[n], metadata: null });
+	    biom_matrix.columns.push({ did: did, id: dname, metadata: null });
 	}
 	// ukeys is sorted by alpha
 	for(var uk in ukeys) {
@@ -537,7 +541,10 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name
 
 		biom_matrix.data.push(unit_name_counts[ukeys[uk]]);
 	}
-
+   //  console.log('biom_matrix.rows');
+// 	console.log(biom_matrix.rows);
+// 	console.log('biom_matrix.data');
+// 	console.log(biom_matrix.data);
 	biom_matrix.shape = [biom_matrix.rows.length, biom_matrix.columns.length];
     
 	var max_count = {};
@@ -545,24 +552,25 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name
 	if(ukeys === undefined) {
 		max = 0;
 	}else{
-		for (var n1 in biom_matrix.columns) {
-		  	max_count[biom_matrix.columns[n1].id] = 0;
+		for (var n in biom_matrix.columns) {
+		  	max_count[biom_matrix.columns[n].id] = 0;  //id is the NAME of the dataset in biom
 		  	for(var d in biom_matrix.data) {
-		  		max_count[biom_matrix.columns[n1].id] += biom_matrix.data[d][n1];
+		  		max_count[biom_matrix.columns[n].id] += biom_matrix.data[d][n];
 		  	}
 		}
 		max = 0;
-		for (var n2 in chosen_id_name_hash.names) { 		// correct order
-		  	biom_matrix.column_totals.push(max_count[chosen_id_name_hash.names[n2]]);
-		  	if(max_count[chosen_id_name_hash.names[n2]] > max){
-		  		max = max_count[chosen_id_name_hash.names[n2]];
+		for (var i in post_items.chosen_datasets) { 		// correct order
+		  	var dname = post_items.chosen_datasets[i].name
+		  	biom_matrix.column_totals.push(max_count[dname]);
+		  	if(max_count[dname] > max){
+		  		max = max_count[dname];
 		  	}
 		}
 	}
 	//console.log('in create_biom_matrix1');
 	biom_matrix.max_dataset_count = max;
-	//console.log('in create_biom_matrix2');
-	//console.log(biom_matrix);
-	//console.log(max_count);
+	// console.log('in create_biom_matrix2');
+// 	console.log(biom_matrix);
+// 	console.log(max_count);
 	return(biom_matrix);
 }

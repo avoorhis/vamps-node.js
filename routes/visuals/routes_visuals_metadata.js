@@ -8,8 +8,9 @@ var helpers = require('../helpers/helpers');
 module.exports = {
 
 
-		write_metadata_file: function(chosen_id_name_hash, post_items) {
+		write_metadata_file: function(post_items) {
 			console.log('in metadata: write_metadata_file')
+			console.log(post_items)
 			var metadata_names = post_items.metadata;
 			console.log(metadata_names)
 			var metadata = [];
@@ -70,7 +71,7 @@ module.exports = {
 		//
 		//
 		//
-		write_mapping_file: function(chosen_id_name_hash, post_items) {
+		write_mapping_file: function(post_items) {
 			console.log('in metadata: write_mapping_file')
 			var metadata_names = post_items.metadata;
 			
@@ -85,23 +86,23 @@ module.exports = {
 			}
 			txt += 		"\tProject\tDescription\n";
 			var txt2 = '';
-			for (var i in chosen_id_name_hash.names) {
+			for (var i in post_items.chosen_datasets) {
+			    var did = post_items.chosen_datasets[i].did
 				var ds_row = {};
-				var pjds = chosen_id_name_hash.names[i];
+				var pjds = post_items.chosen_datasets[i].name;
 				metadata2[pjds] = {};
 				var tmp = pjds.split('--');
-				var did = chosen_id_name_hash.ids[i];
+				
 				txt2 = pjds;
 				
 				for (var n in metadata_names) {				
 					var mdname = metadata_names[n];
                     //console.log(METADATA[did])
                     //console.log(mdname)
-                    var data = helpers.required_metadata_ids_from_names(METADATA[did], mdname)
-                    console.log('data')
-                     console.log(data)
+                    var data = helpers.required_metadata_ids_from_names(AllMetadata[did], mdname)
+                    
 
-					if(did in METADATA) {
+					if(did in AllMetadata) {
 						ds_row[mdname] = data.value;
 						metadata2[pjds][mdname] = data.value;
 						if(metadata2[pjds][mdname] == ''){
@@ -127,7 +128,7 @@ module.exports = {
 				metadata.push(ds_row);
 				
 			}
-			console.log(MD_PRIMER_SUITE)
+			
 			COMMON.write_file(metadata_filename, txt);
 			return metadata2;
 		},

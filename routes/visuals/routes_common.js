@@ -158,15 +158,16 @@ module.exports = {
       console.log('VAMPS PRODUCTION -- no print to log');
     }else{
       console.log('VS--BODY (routes_common.js)',req.body)
-      console.log('VS--DOMAINS (routes_common.js)',req.body.domains)
-      console.log('req.body.ds_order',req.body.ds_order)
     }
 
     if(req.body.ds_order === undefined) {
 
           post_hash.unit_choice                  = req.body.unit_choice;
           //visual_post_items.max_ds_count                 = COMMON.get_max_dataset_count(selection_obj);
-          post_hash.no_of_datasets               = chosen_id_name_hash.ids.length;
+          console.log('(req.session.chosen_id_order).length')
+          console.log((req.session.chosen_id_order).length)
+          post_hash.no_of_datasets               = (req.session.chosen_id_order).length;
+          
           post_hash.normalization                = req.body.normalization || 'none';
           post_hash.visuals                      = req.body.visuals;
           post_hash.selected_distance            = req.body.selected_distance || 'morisita_horn';
@@ -200,13 +201,7 @@ module.exports = {
             }
           }
 
-          // if(post_hash.unit_choice == 'tax_silva108_custom_dhtmlx'){
-          //   post_hash.custom_taxa                  = req.body.custom_taxa_dhtmlx  || ['NA'];
-          // }else if(post_hash.unit_choice == 'tax_silva108_custom_dhtmlx'){
-          //   post_hash.custom_taxa                  = req.body.custom_taxa_fancytree  || ['NA'];
-          // }else if(post_hash.unit_choice == 'tax_silva108_custom'){
-          //   post_hash.custom_taxa                  = req.body.custom_taxa  || ['NA'];
-          // }
+          
 
           // in the unusual event that a single custom checkbox is selected --> must change from string to list:
 
@@ -229,9 +224,9 @@ module.exports = {
 
 
     }else {
-console.log('DEFINING chosen_id_name_hash')
-        chosen_id_name_hash = this.create_chosen_id_name_hash(req.body.ds_order);
-        post_hash = visual_post_items;
+        //console.log('DEFINING chosen_id_name_hash')
+        //req.session.chosen_id_order = req.session.chosen_id_order //this.create_chosen_id_name_hash(req.body.ds_order);
+        //post_hash = visual_post_items;
     }
 
     return post_hash;
@@ -402,68 +397,53 @@ run_script_cmd: function (req,res, ts, command, visual_name) {
 //
 //
 //
-create_chosen_id_name_hash: function(dataset_ids) {
-  console.log('in common: chosen_id_name_hash' );
-  if(config.site == 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print to log');
-  }else{
-      console.log(chosen_id_name_hash );
-      console.log(dataset_ids)
-  }
-  var chosen_id_name_hash    = {};
-  chosen_id_name_hash.ids    = [];
-  chosen_id_name_hash.names  = [];
-
+create_chosen_id_name_order: function(dataset_ids) {
+  console.log('in common: create_chosen_id_name_order' );
+  console.log('in common: WAS create_chosen_id_name_hash' );
+  var id_name_order    = [];
+  
   for (var i in dataset_ids){
-
-      did   = dataset_ids[i];
-      dname = DATASET_NAME_BY_DID[did];
-      pid   = PROJECT_ID_BY_DID[did];
-      pname = PROJECT_INFORMATION_BY_PID[pid].project;
-      //dataset_ids.push(did+'--'+pname+'--'+dname);
-      chosen_id_name_hash.ids.push(did);
-      chosen_id_name_hash.names.push(pname+'--'+dname);
+      var did   = dataset_ids[i];
+      var name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did]
+  	  id_name_order.push({did:did,name:name})
   }
 
-  return chosen_id_name_hash;
+  return id_name_order;
 },
-create_new_chosen_id_name_hash: function(dataset_list) {
+create_new_chosen_id_name_hash: function(dataset_list, pjds_lookup) {
 
   if(config.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
-      console.log(chosen_id_name_hash );
+      
   }
-  var potential_chosen_id_name_hash    = {};
-  potential_chosen_id_name_hash.ids    = [];
-  potential_chosen_id_name_hash.names  = [];
+  var potential_id_name_hash    = {};
+  potential_id_name_hash.ids    = [];
+  potential_id_name_hash.names  = [];
+  
   for (var i in dataset_list){
-      //items = dataset_list[i].split('--');
-      did= chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(dataset_list[i])]
-      //did   = dataset_list[i];
-      dname = DATASET_NAME_BY_DID[did];
-      pid   = PROJECT_ID_BY_DID[did];
-      pname = PROJECT_INFORMATION_BY_PID[pid].project;
-      //dataset_ids.push(did+'--'+pname+'--'+dname);
-      potential_chosen_id_name_hash.ids.push(did);
-      potential_chosen_id_name_hash.names.push(pname+'--'+dname);
+      var pjds = dataset_list[i]
+      var did = pjds_lookup[pjds]
+      
+      potential_id_name_hash.ids.push(did);
+      potential_id_name_hash.names.push(pjds);
   }
 
-  return potential_chosen_id_name_hash;
+  return potential_id_name_hash;
 },
 //
 //
 //
 
-get_metadata_selection: function(dataset_ids, metadata, type) {
+get_metadata_selection: function(dataset_ids, type) {
     req_metadata = CONSTS.REQ_METADATA_FIELDS;
     //console.log('req_metadata '+req_metadata)
     fields_lookup = {};
     for (var i in dataset_ids) {
-      did = dataset_ids[i];
+      var did = dataset_ids[i];
       //console.log('id '+ id)
-      if (did in metadata) {
-        for (var field in metadata[did]) {
+      if (did in AllMetadata) {        
+        for (var field in AllMetadata[did]) {
 
           //console.log('field_name '+field)
           // keep *_id in metadata file(s) and show name on GUI
@@ -582,7 +562,7 @@ clean_custom_tax: function(custom_tax_ids){
       }
     }
 
-    console.log('cleaned_id_list ',cleaned_id_list)
+    //console.log('cleaned_id_list ',cleaned_id_list)
     custom_tax_ids = cleaned_id_list
     return custom_tax_ids
 
