@@ -780,7 +780,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                             fs.chmodSync(new_info_filename_path, 0o664);
                             fs.chmodSync(new_file_path, 0o664);
                             req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-                            
+
                             //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
                             res.render('user_data/import_choices/matrix', {
                               title: 'VAMPS:Import Choices',
@@ -888,7 +888,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
 					fs.chmodSync(new_info_filename_path, 0o664);
 					fs.chmodSync(new_file_path, 0o664);
 					req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-		
+
 					//error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
 					res.render('user_data/import_choices/fasta', {
 					  title: 'VAMPS:Import Choices',
@@ -921,6 +921,7 @@ router.get('/upload_configuration', [helpers.isLoggedIn], function (req, res) {
             //import_type: import_type,
           });
 });
+
 
 router.post('/upload_file', [helpers.isLoggedIn, upload.any()], function(req, res) {
     // called from user_data.js as way to upload random files from /users/profile.html
@@ -1093,61 +1094,6 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
          });
 });
 
-// // ---- metadata_upload ----
-//
-// router.get('/metadata_upload', [helpers.isLoggedIn], function (req, res) {
-//   console.log('in get /metadata_upload');
-//
-//   res.render('user_data/metadata_upload', {
-//     title: 'VAMPS: Metadata_upload',
-//     user: req.user,
-//     hostname: req.CONFIG.hostname,
-//   });
-// });
-//
-// router.post('/metadata_upload',
-//   [helpers.isLoggedIn],
-//   form(
-//     form.field("project_title", "Project title").trim().required().entityEncode().is(/^[a-zA-Z0-9_]+$/),
-//     form.field("pi_name", "PI name").trim().required().entityEncode().is(/^[a-zA-Z- ]+$/),
-//     form.field("pi_email", "PI's email address").trim().isEmail().required().entityEncode(),
-//     form.field("project_abstract", "Project abstract").trim().required().entityEncode(),
-//     form.field("references", "References").trim().required().entityEncode(),
-//     // References should clean URL
-//     form.field("project_name", "VAMPS project name").trim().entityEncode(),
-//     form.field("dataset_name", "VAMPS dataset name").trim().entityEncode(),
-//     form.field("sample_name", "Sample ID (user sample name)").trim().required().entityEncode(),
-//     form.field("dna_extraction_meth", "DNA Extraction").trim().required().entityEncode(),
-//     form.field("dna_quantitation", "DNA Quantitation").trim().required().entityEncode(),
-//     form.field("collection_date", "Sample collection date (YYYY-MM-DD)").trim().required().entityEncode().isDate("Sample collection date format: YYYY-MM-DD"),
-//     form.field("latitude", "Latitude (WGS84 system, values bounded by ±90°)").trim().required().entityEncode(),
-//     form.field("longitude", "Longitude (values bounded by ±180°)").trim().required().entityEncode(),
-//     form.field("geo_loc_name_country", "Country").trim().entityEncode(),
-//     form.field("longhurst_zone", "Longhurst Zone").trim().entityEncode(),
-//     form.field("biome", "Biome").trim().required().entityEncode(),
-//     form.field("env_feature_primary", "Environmental Feature - Primary").trim().required().entityEncode(),
-//     form.field("env_feature_secondary", "Environmental Feature - Secondary").trim().entityEncode(),
-//     form.field("env_material_primary", "Environmental Material - Primary").trim().required().entityEncode(),
-//     form.field("env_material_secondary", "Environmental Material - Secondary").trim().entityEncode()
-//    ),
-//   function (req, res) {
-//     if (!req.form.isValid) {
-//       // Handle errors
-//       console.log(req.form.errors);
-//       req.flash('fail', req.form.errors);
-//       res.redirect("/user_data/metadata_upload");
-//     } else {
-//       console.log('in post /metadata_upload');
-//       console.log(req);
-//
-//       res.redirect("/user_data/your_projects");
-//     }
-//
-//     return;
-//   }
-// );
-//
-// // ---- metadata_upload end ----
 
 //
 // USER PROJECT METADATA:ID
@@ -1572,8 +1518,6 @@ function checkPid(check_pid_options, last_line)
           status_params.status = status_params.statusOK;
           status_params.msg = status_params.msgOK;
           helpers.update_status(status_params);
-
-
           ALL_CLASSIFIERS_BY_PID[pid] = classifier + '_' + ref_db;
           console.log('FROM func. ALL_CLASSIFIERS_BY_PID: ' + ALL_CLASSIFIERS_BY_PID);
           console.log('FROM func. ALL_CLASSIFIERS_BY_PID[pid]: ' + ALL_CLASSIFIERS_BY_PID[pid]);
@@ -1611,17 +1555,17 @@ function spingoTax(req, project_config, options, ref_db)
 function gastTax(req, project_config, options, ref_db)
 {
   console.log('in routes_user_data::gastTax')
-  var project  = project_config.GENERAL.project;
-  var data_dir = project_config.GENERAL.baseoutputdir;
+  var project  = project_config.MAIN.project_name;
+  var data_dir = project_config.MAIN.project_dir;
   script_name = 'gast_script.sh';
 
   // var oldmask = process.umask(0);
   // fs.closeSync(fs.openSync(`${data_dir}/clust_gast_ill_${project}.sh`, 'w', 0777));
   // process.umask(oldmask);
   full_option = '';
-  file_suffix      = ".fa" + getSuffix(project_config.GENERAL.dna_region);
-  //ref_db_name      = chooseRefFile(classifier_id);
-  //full_option      = getFullOption(classifier_id);
+  file_suffix      = ".fa" //+ getSuffix(project_config.MAIN.dna_region);
+  ref_db_name      = chooseRefFile(req.params.classifier);  //req.body.classifier
+  full_option      = getFullOption(req.params.classifier);
   gast_db_path     = config.GAST_DB_PATH;
   gast_script_path = config.GAST_SCRIPT_PATH;
   

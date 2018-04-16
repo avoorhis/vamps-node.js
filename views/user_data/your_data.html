@@ -33,10 +33,10 @@
 		            <div class="panel panel-default">
 		              <div class="panel-heading">
 		              	<% if(user.username == 'guest'){ %>
-		              	    <button disabled type="submit" class='btn btn-sm btn-primary' name="" value="" >Export Data</button>
+		              	    <button disabled type="submit" class='btn btn-sm btn-primary' name="" value="" >Download Data</button>
 		              	<% }else{ %>
 		              	    <form action="/visuals/visuals_index" method="POST">
-                			    <button type="submit" class='btn btn-sm btn-primary' name="" value="" >Export Data</button>
+                			    <button type="submit" class='btn btn-sm btn-primary' name="" value="" >Download Data</button>
               			    </form>
                         <% } %>
 		               <!--  <a class="btn btn-sm btn-primary" href='/user_data/export_data'>Export Data</a> -->
@@ -119,8 +119,10 @@
 		              <div class="panel-heading">
                         <% if(user.username == 'guest'){ %>
                             <a disabled class="btn btn-sm btn-primary" href=''>Your OTUs</a>
-		                <% }else{ %>
+		                <% }else if(user.security_level == 1){ %>
 		                    <a class="btn btn-sm btn-primary" href='/otus/project_list'>Your OTUs</a>
+                        <% }else{ %>
+                            <a disabled class="btn btn-sm btn-primary" href=''>Your OTUs (under development)</a>
                         <% } %>
 		              </div>
 		              <div class="panel-body">

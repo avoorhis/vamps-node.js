@@ -387,7 +387,7 @@ if __name__ == '__main__':
     
     
     start_metadata_load_from_file(args)
-    sys.exit('END: vamps_script_upload_metadata.py')
+    #sys.exit('END: vamps_script_upload_metadata.py')
     
         
     
