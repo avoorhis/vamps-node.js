@@ -478,7 +478,7 @@ if __name__ == '__main__':
     print ("PID="+str(CONFIG_ITEMS['project_id']))
     ##
     logging.info("ALL DONE: (PID="+str(CONFIG_ITEMS['project_id'])+')')
-    sys.exit('END: vamps_script_create_json_dataset_files.py')
+    #sys.exit('END: vamps_script_create_json_dataset_files.py')
 
         
 

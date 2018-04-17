@@ -45,7 +45,7 @@ get_select_datasets_queryPID: function(pid){
     qSelectDatasets += " WHERE project_id = " + connection.escape(pid);
     //qSelectDatasets += " AND metagenomic='0'";
     qSelectDatasets += " ORDER BY project, dataset";
-    //console.log(qSelectDatasets);
+    console.log(qSelectDatasets);
     return qSelectDatasets;	
 },
 

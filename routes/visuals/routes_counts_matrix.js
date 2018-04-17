@@ -70,7 +70,6 @@ module.exports = {
 			//console.log('biom_matrix')
 			//console.log(biom_matrix)
 			//console.log('//////////////////////////////////////////////////////////////')
-			console.log('7')
 			return biom_matrix
 			
 },
@@ -397,22 +396,17 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 
 			}
 
-console.log('1')
 			unit_name_counts = create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_per_dataset);
-console.log('2')
 			ukeys = remove_empty_rows(unit_name_counts);
 			ukeys = ukeys.filter(onlyUnique);
 			ukeys.sort();
-console.log('3')
 			// Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
 			//console.log(unit_name_counts);
 			//console.log('POSTx - from routes_counts_matrix.js');
 			//console.log(post_items);
 
 			biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, post_items );
-console.log('4')
 			if(post_items.update_data === true || post_items.update_data === 1 || post_items.update_data === '1'){
-console.log('5')
 				biom_matrix = get_updated_biom_matrix( post_items, biom_matrix );
 
 			}else{
@@ -428,7 +422,6 @@ console.log('5')
                 //COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
                 COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
             }
- console.log('6')
 			return biom_matrix;
 
 			function onlyUnique(value, index, self) {

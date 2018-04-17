@@ -1234,6 +1234,7 @@ function create_hm_table(req, dm){
 
     }
     html += "</table>"
+    html += "<input type='hidden' name='resorted' value='1'>"
     html += "</form>"
     html += "</center>"
 /////////////////////
