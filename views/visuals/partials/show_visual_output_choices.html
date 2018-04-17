@@ -2,11 +2,13 @@
 <%   var distrows  = JSON.parse(constants).DISTANCECHOICES.choices; %>
 <%   var rows      = JSON.parse(constants).NORMALIZATIONCHOICES.choices %>
 <%   var pct_range = JSON.parse(constants).PCT_RANGE  %>
-<%   var items     = JSON.parse(chosen_id_name_hash) %>
+
 Screening/Options:<br>
 <div id='screening_options_div' class='small_font' style='height:250px;'>
 <form id='' name='' method='POST' action='view_selection'>
 <table class='small_font table table-striped'>
+   
+   
     <tr>
         <td>Normalization of Counts:<br>
             <% for (i in rows) { %>
@@ -82,6 +84,8 @@ Screening/Options:<br>
 
 <tr><td><button type='submit' class="btn btn-xs btn-info" disabled='disabled' id='output_choices_submit_btn' name='' >Update</button>
 </td></tr>
+
+
 </table>
 <input type='hidden' name='domains' value='<%= pi.domains %>'>
 <input type='hidden' name='tax_depth' value='<%= pi.tax_depth %>'>

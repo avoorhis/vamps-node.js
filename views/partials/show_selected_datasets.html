@@ -1,10 +1,12 @@
 
 
-Selected Dataset Order (Count:<%= items.names.length %>)<br>
+Selected Dataset Order (Count:<%= items.length %>)<br>
 <div id='dataset_names_div' class='small_font'>
 <table>
-    <% for (var i in items.names){ %>
-        <tr><td nowrap ><%= parseInt(i)+1 %> (id:<%= items.ids[i] %>)&nbsp;&nbsp;&nbsp;<%= items.names[i] %></td></tr>
+   
+    <% for (var i in items){ %>
+        
+        <tr><td nowrap ><%= parseInt(i)+1 %> (id:<%= items[i].did %>)&nbsp;&nbsp;&nbsp;<%= items[i].name %></td></tr>
     <% } %>
 </table>
 </div>

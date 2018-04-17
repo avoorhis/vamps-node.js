@@ -1,10 +1,10 @@
 <% include ../add_ins/begin.ejs %>
 <link rel="stylesheet" href="/stylesheets/dhtmlx/dhtmlxtree.css" >
 <!-- <link rel="stylesheet" href="/stylesheets/fancytree/skin-lion/ui.fancytree.css" > -->
-<%  var items  = JSON.parse(chosen_id_name_hash); %>
+<%  var items  = JSON.parse(chosen_datasets); %>
 <%  var referer = 'unit_selection'; %>
 <script>
-  var ds_local       = JSON.parse('<%- chosen_id_name_hash %>');
+  var ds_local       = JSON.parse('<%- chosen_datasets %>');
   var unit_choice = '<%= unit_choice %>';
   var user_local     = '<%= user.username %>';
 </script>

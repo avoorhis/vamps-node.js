@@ -483,144 +483,6 @@ function create_counts_matrix(new_window, show_nas) {
         xmlhttp.send(JSON.stringify(args));
         return
 /////////////////////////////
-      
-
-      
-
-      // need the max ranks
-//       maxrank = 0;
-//       for (var i in mtx_local.rows){
-//         taxitems = mtx_local.rows[i].id.split(';');
-//         if(maxrank < taxitems.length){
-//           maxrank = taxitems.length;
-//         }
-//       }
-//       html += "<div id='tax_counts_graph_div' style='background-color:white;width:600px;height:400px;display:none;'></div>";
-//       html += "<br><br><br><br><br><table id='counts_matrix_id' border='0' class='' >";
-//       
-//       
-//       html += "<tr><td class='no_border'></td>"
-//       for (t = 0; t < maxrank; t++) {
-//         if(t==2){
-//           html += "<th class='' valign='bottom'><small>Class</small></th>";
-//         }else{
-//           html += "<th class='' valign='bottom'><small>"+cts_local.RANKS[t].toUpperCase().charAt(0)+cts_local.RANKS[t].slice(1)+"</small></th>";
-//         }
-//       }
-//       html += "<th class='right_justify' valign='bottom'><small>Graph</small></th>";
-//       for (var n in mtx_local.columns) {
-//         //html += "<th class='verticalTableHeader' >"+mtx_local.columns[n].id +"</th>";
-//         html += "<th class='rotate'><div><span><a href='/visuals/bar_single?id="+mtx_local.columns[n].id+"&ts="+pi_local.ts+"&orderby=alpha&val=z' target='_blank' >"+(parseInt(n)+1).toString()+') '
-// 
-//         html += mtx_local.columns[n].id+"</a></span></div></th>";
-// 
-//       }
-// 
-//       html += "<th class='center' valign='bottom'><small>Total</small></th>";
-//       html += "<th class='center' valign='bottom'><small>Avg</small></th>";
-//       html += "<th class='center' valign='bottom'><small>Min</small></th>";
-//       html += "<th class='center' valign='bottom'><small>Max</small></th>";
-//       html += "<th class='center' valign='bottom'><small>Std Dev</small></th>";
-// 
-//       html += "</tr>";
-//       // END OF TITLE ROW
-//       for (var i in mtx_local.rows){
-//         count = parseInt(i)+1;
-//         taxitems = mtx_local.rows[i].id.split(';');
-// 
-//         html += "<tr class='chart_row'><td><a href='taxa_piechart?tax="+mtx_local.rows[i].id+"' title='Link to Taxa PieChart' target='_blank'>"+count.toString()+"</a></td>";
-// 
-//         for (t = 0; t < maxrank; t++) {
-//           ttip = ''
-//           ttip2 = ''
-//           if(taxitems.length > t){
-//             if(taxitems[t].substring(taxitems[t].length-2,taxitems[t].length) != 'NA'
-//                     && taxitems[t].substring(1,6) != 'mpty_'
-//                     && taxitems[t] != 'Unknown'
-//                     && taxitems[t] != 'Unassigned'){
-//               ttip = '<span class="taxa">External "'+taxitems[t]+'" Links:'
-//               ttip += '<li><a href="https://en.wikipedia.org/wiki/'+taxitems[t]+'" target="_blank">Wikipedia</a></li>'
-//               ttip += '<li><a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name='+taxitems[t]+'" target="_blank">NCBI</a></li>'
-//               ttip += '<li><a href="http://www.eol.org/search?q='+taxitems[t]+'" target="_blank">EOL</a></li>'
-//               ttip += '</span>'
-//               ttip2 = taxitems[t]
-//             }
-// 
-//             if(taxitems[t].substring(taxitems[t].length-3, taxitems[t].length) == '_NA'){
-//               if(show_nas.raw){
-//                 html += "<td id='' >"+taxitems[t]+"</td>";
-//               }else{
-//                 html += "<td class='center' id='' >"+show_nas.string +"</td>";
-//               }
-//             }else{
-//               html += "<td class='left_justify' id='"+ttip2+"' ><div class='taxa_name'>"+taxitems[t]
-//               html += "<span class='taxa_tooltip' >"+ttip+"</span>";
-//               html += "</div></td>";
-//             }
-//           }else{
-//             html += "<td class='left_justify' id=''>--</td>";
-//           }
-//         }
-//         counts_string=JSON.stringify(mtx_local.data[i])
-// 
-//         graph_link_id = 'flot_graph_link'+i.toString()
-//         html += "<td align='center' style='cursor:pointer;'>"
-//         html += "<img width='25' id='"+graph_link_id+"' src='/images/visuals/graph.png' onclick=\"graph_counts('"+i.toString()+"','"+mtx_local.rows[i].id+"','"+counts_string+"')\">"
-//         html += "</td>";
-// 
-// 
-//         var tot   = 0;
-//         var avg   = 0;
-//         var min   = mtx_local.data[i][0];
-//         var max   = 0;
-//         var sd    = 0;
-//         for (var da in mtx_local.data[i]) {
-//           var cnt = mtx_local.data[i][da];
-//           var ds_num = (parseInt(da)+1).toString()
-//           var pct =  (cnt * 100 / mtx_local.column_totals[da]).toFixed(2);
-//           var id  = 'fq/'+mtx_local.rows[i].id+'/'+ds_num+') '+mtx_local.columns[da].id+'/'+cnt.toString()+'/'+pct.toString();
-//           html += "<td id='"+id+"' class='tooltip_viz right_justify tax_data'>"+cnt.toString()+'</td>';
-//           tot += cnt;
-//           if(cnt > max){
-//             max = cnt
-//           }
-//           if(cnt < min){
-//             min = cnt
-//           }
-// 
-//         }
-// 
-// 
-//         avg = (tot/(mtx_local.columns).length).toFixed(2)
-//         sd = standardDeviation(mtx_local.data[i]).toFixed(2)
-//         html += "<td title='Total' class='right_justify tax_result'><small>"+tot.toString()+'</small></td>';
-//         html += "<td title='Average' class='right_justify tax_result'><small>"+avg.toString()+"</small></td>";
-//         html += "<td title='Minimum' class='right_justify tax_result'><small>"+min.toString()+"</small></td>";
-//         html += "<td title='Maximum' class='right_justify tax_result'><small>"+max.toString()+"</small></td>";
-//         html += "<td title='Standard Deviation' class='right_justify tax_result'><small>"+sd.toString()+"</small></td>";
-//         html += "</tr>";
-//       }
-//       // TOTALS
-//       html += "<tr><td></td>";
-//       for (t = 0; t < maxrank; t++) {
-//         html += "<td></td>";
-//       }
-//       html += "<td class='right_justify'><strong>Sums:</strong></td>";
-//       for (var m in mtx_local.column_totals){
-//         var total;
-//         if(pi_local.normalization == 'frequency'){
-//           total = mtx_local.column_totals[m].toFixed(6);
-//         }else{
-//           total = mtx_local.column_totals[m];
-//         }
-//         html += "<td title='Column Sum' class='right_justify'>" + total + "</td>";
-//       }
-//       html += "</tr>";
-//       html += "</table>";
-// 
-//       tax_counts_div.innerHTML = html;
-//       document.getElementById('counts_matrix_dnld_btn').disabled = false
-//       //$(".verticalTableHeader").each(function(){$(this).height($(this).width())
 
 }
 
@@ -909,7 +771,7 @@ function create_dendrogram(ts, image_type, script, new_window) {
                   buildNewickNodes(newick)
                   var w = 1100;
                   var h = 900;
-                  if(ds_local.ids.length > 50){
+                  if(ds_local.length > 50){
                     h = 1200;
                   }
                   if(script == 'phylogram'){
@@ -1432,9 +1294,7 @@ function create_piecharts_group(new_window) {
         xmlhttp.onreadystatechange = function(){
             if (xmlhttp.readyState == 4 ) {
                 clearInterval(myWaitVar);
-               data = JSON.parse(xmlhttp.response)
-               
-               //alert(data)          
+               data = JSON.parse(xmlhttp.response)    
                piecharts_div.innerHTML = data.html;
                 document.getElementById('piecharts_dnld_btn').disabled = false          
             }
@@ -1973,7 +1833,9 @@ function new_window_skeleton(html){
   var n = 0;
   var cols = 2;
   for(item in pi_local){
-    if(item !== 'metadata' && item !== 'ts'){
+    if(item == 'chosen_datasets'){
+       // do not show
+    }else if(item !== 'metadata' && item !== 'ts'){
       txt += "<td align='right' style='padding-left:3px;'>"+item+":</td><td>&nbsp;"+pi_local[item]+"</td>"
       if( n % cols === (cols - 1) ) {
           txt += "</tr><tr>"

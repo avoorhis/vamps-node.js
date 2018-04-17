@@ -1,7 +1,7 @@
 <% include ../../add_ins/begin_nomenu.ejs %>
 <% var mtx = JSON.parse(matrix); %>
-<% var dataset1 = mtx.datasets[0]; %>
-<% var dataset2 = mtx.datasets[1]; %>
+<% var dataset1 = mtx.columns[0].id; %>
+<% var dataset2 = mtx.columns[1].id; %>
 <% var did1 = mtx.columns[0].did; %>
 <% var did2 = mtx.columns[1].did; %>
 <% var order = JSON.parse(order); %>
@@ -38,8 +38,6 @@
   </div>
 
   <div class='pull-left' >Order of first dataset's values:<br>
-
-  
 
 
     <a class='btn btn-xs btn-success' href='/visuals/bar_double?did1=<%= did1 %>&did2=<%= did2 %>&ts=<%= ts %>&dist=<%= dist %>&orderby=alpha&val=<%= order.alpha_value %>'>

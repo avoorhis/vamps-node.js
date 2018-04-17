@@ -94,7 +94,7 @@ function get_single_bar_html(obj, ts){
     if(obj.data[n] > 0){
       color = string_to_color_code(obj.rows[n].id)
       filename = user_local+'_'+obj.columns[0].did+'_'+ts+'_sequences.json';
-      link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
+      link = 'sequences?did='+obj.columns[0].did+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
       var pct = ((obj.data[n] / total)*100).toFixed(2);
       var id = 'barcharts/' + obj.rows[n].id + '/'+ obj.data[n] + '/' + pct;
       //alert(id)
@@ -144,7 +144,7 @@ function get_double_bar_html(obj, ts){
         html += '<th>'+ranks[i]+'</th>'
       }
   }
-  html += "<th>"+obj.datasets[0]+" </th><th>"+obj.datasets[1]+"</th></tr>";
+  html += "<th>"+obj.columns[0].id+" </th><th>"+obj.columns[1].id+"</th></tr>";
   html += '</thead><tbody>'
   
   for(n in obj.rows){
@@ -152,8 +152,8 @@ function get_double_bar_html(obj, ts){
         color = string_to_color_code(obj.rows[n].id)
         filename1 = user_local+'_'+obj.columns[0].did+'_'+ts+'_sequences.json';
         filename2 = user_local+'_'+obj.columns[1].did+'_'+ts+'_sequences.json';
-        link1 = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename1;
-        link2 = 'sequences?id='+obj.columns[1].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename2;
+        link1 = 'sequences?did='+obj.columns[0].did+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename1;
+        link2 = 'sequences?did='+obj.columns[1].did+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename2;
         pct1 = ((obj.data[n][0] / total[0])*100).toFixed(2);
         id1 = 'barcharts/' + obj.rows[n].id + '/'+ obj.data[n][0] + '/' + pct1;
         pct2 = ((obj.data[n][1] / total[1])*100).toFixed(2);
@@ -187,6 +187,7 @@ function get_single_pie_html(obj){
   var ranks = ['Domain','Phylum','Class','Order','Family','Genus','Species','Strain']
   for(n in obj.rows){
     //if(obj.data[n] > 0){
+    //alert(obj.data[n])
       total += parseInt(obj.data[n]);
       ds = obj.rows[n].id
 
@@ -210,9 +211,8 @@ function get_single_pie_html(obj){
   // colorsX is created in common_selection::create_piecharts(imagetype, ts, mtx)
   for(n in obj.rows){
     //if(obj.data[n] > 0){
-      //color = string_to_color_code(obj.rows[n].id)
-      color = colorsX[obj.rows[n].id]
-      //link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
+      color = string_to_color_code(obj.rows[n].id)
+      //color = colorsX[obj.rows[n].id]
       var pct = ((obj.data[n] / total)*100).toFixed(2);
       var id = 'barcharts/' + obj.rows[n].id + '/'+ obj.data[n] + '/' + pct;
       html += "<tr class='tooltip_viz' id='"+id+"' ><td style='background-color:"+color+"'></td>";

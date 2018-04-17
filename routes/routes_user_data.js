@@ -31,18 +31,7 @@ var MTX     = require('./visuals/routes_counts_matrix');
 var upload = multer({ dest: config.TMP, limits: { fileSize: '4gb' }  });
 GLOBAL_EDIT_METADATA = {}
 var infile_fa = "infile.fna";
-// router.use(multer({ dest: 'tmp',
-// rename: function (fieldname, filename) {
-// return filename+Date.now();
-// },
-// onFileUploadStart: function (file) {
-// console.log(file.originalname + ' is starting ...')
-// },
-// onFileUploadComplete: function (file) {
-// console.log(file.fieldname + ' uploaded to ' + file.path)
-// done=true;
-// }
-// }));
+
 //
 // YOUR DATA
 //
@@ -82,7 +71,7 @@ router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(re
       //reverse sort: recent-->oldest
       return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
     });
-    console.log(JSON.stringify(files))
+    //console.log(JSON.stringify(files))
     res.render('user_data/file_retrieval', { title: 'VAMPS:Retrieve Data',
       user: req.user, hostname: req.CONFIG.hostname,
       finfo: JSON.stringify(files)
@@ -97,7 +86,11 @@ router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(re
 router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
     console.log('req.body: export_confirm-->>');
     console.log(req.body);
+    //console.log(req.session);
     console.log('req.body: <<--export_confirm');
+    
+    
+    var id_name_order           = COMMON.create_chosen_id_name_order(req.session.chosen_id_order);
     if (req.body.fasta === undefined
         && req.body.taxbyseq === undefined
         && req.body.taxbyref === undefined
@@ -106,18 +99,19 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
         && req.body.metadata2 === undefined
         && req.body.biom === undefined ) {
         req.flash('fail', 'Select one or more file formats');
+        
         res.render('user_data/export_selection', {
           title					: 'VAMPS: Export Choices',
           referer				: 'export_data',
-          chosen_id_name_hash	: JSON.stringify(chosen_id_name_hash),
+          chosen_id_name_hash	: JSON.stringify(id_name_order),
           constants				: JSON.stringify(req.CONSTS),
-          selected_rank			:req.body.tax_depth,
-          selected_domains		:JSON.stringify(req.body.domains),
+          selected_rank			: req.body.tax_depth,
+          selected_domains		: JSON.stringify(req.body.domains),
           user: req.user, hostname: req.CONFIG.hostname
         });
         return;
     }
-    var dids = req.body.dids.split(',');
+    
     var requested_files = [];
 
     if (req.body.fasta) {
@@ -153,13 +147,15 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
 
 
     }
+    //console.log('id_name_order' )
+    //console.log(id_name_order )
     if (requested_files.length >0) {
       if (req.body.tax_depth=='class') {var td='klass';}
       else {var td=req.body.tax_depth;}
       helpers.create_export_files(req, 
             user_dir, 
             timestamp, 
-            dids, 
+            req.session.chosen_id_order, 
             requested_files, 
             req.body.normalization, 
             td, 
@@ -171,7 +167,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
     res.render('user_data/export_selection', {
           title: 'VAMPS: Export Choices',
           referer: 'export_data',
-          chosen_id_name_hash 	: JSON.stringify(chosen_id_name_hash),
+          chosen_id_name_hash 	: JSON.stringify(id_name_order),
           constants				: JSON.stringify(req.CONSTS),
           selected_rank			: req.body.tax_depth,
           selected_domains		: JSON.stringify(req.body.domains),
@@ -208,11 +204,13 @@ router.post('/export_selection', helpers.isLoggedIn, function (req, res) {
 
 
   if (req.body.retain_data === '1') {
-    dataset_ids = JSON.parse(req.body.dataset_ids);
+    var dataset_ids = JSON.parse(req.body.dataset_ids);
   } else {
-    dataset_ids = req.body.dataset_ids;
+    var dataset_ids = req.body.dataset_ids;
   }
-  console.log('dataset_ids '+dataset_ids);
+  req.session.chosen_id_order   = dataset_ids
+  
+  //console.log('dataset_ids:: '+dataset_ids);
   if (dataset_ids === undefined || dataset_ids.length === 0) {
       console.log('redirecting back -- no data selected');
       req.flash('fail', 'Select Some Datasets');
@@ -220,17 +218,13 @@ router.post('/export_selection', helpers.isLoggedIn, function (req, res) {
      return;
   } else {
    // GLOBAL Variable
-  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
-  console.log('chosen_id_name_hash-->');
-  console.log(chosen_id_name_hash);
-  console.log(chosen_id_name_hash.ids.length);
-  console.log('<--chosen_id_name_hash');
-
+  var id_name_order           = COMMON.create_chosen_id_name_order(dataset_ids);
+ 
     res.render('user_data/export_selection', {
           title: 'VAMPS: Export Choices',
           referer: 'export_data',
           constants: JSON.stringify(req.CONSTS),
-          chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+          chosen_id_name_hash: JSON.stringify(id_name_order),
           selected_rank:'phylum', // initial condition
           selected_domains:JSON.stringify(req.CONSTS.DOMAINS.domains), // initial condition
           user: req.user, hostname: req.CONFIG.hostname
@@ -238,46 +232,13 @@ router.post('/export_selection', helpers.isLoggedIn, function (req, res) {
   }
 });
 
-//
-//  EXPORT DATA
-//
-// router.post('/export_data', helpers.isLoggedIn, function (req, res) {
-//   console.log('req.body export_data');
-//   console.log(req.body);
-//   // GLOBAL
-//   DATA_TO_OPEN = {};
-//   SHOW_DATA = ALL_DATASETS;
-//   if (req.body.data_to_open) {
-//     // open many projects
-//     obj = JSON.parse(req.body.data_to_open);
-//     for (var pj in obj) {
-//       pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
-//       DATA_TO_OPEN[pid] = obj[pj];
-//     }
-//     //console.log('got data to open '+data_to_open)
-//   } else if (req.body.project) {
-//     // open whole project
-//     DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
-//   }
-//   console.log('DATA_TO_OPEN-exports');
-//   console.log(DATA_TO_OPEN);
 
-//     res.render('user_data/export_data', { title: 'VAMPS:Export Data',
-//                 rows     : JSON.stringify(ALL_DATASETS),
-//                 proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
-//                 constants: JSON.stringify(req.CONSTS),
-//                 md_names    : AllMetadataNames,
-//                 data_to_open: JSON.stringify(DATA_TO_OPEN),
-
-//                 user: req.user, hostname: req.CONFIG.hostname
-//           });
-// });
 // AAV add metadata to established project Aug 14 2017
 router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (req, res) {
     console.log('in GET import_choices/add_metadata_to_pr');
-    console.log(req.query)
+    //console.log(req.query)
     var project = req.query.project || ''
-    console.log(PROJECT_INFORMATION_BY_PID)
+    //console.log(PROJECT_INFORMATION_BY_PID)
     owned_projects = [] 
     if(! project){
         for(pid in PROJECT_INFORMATION_BY_PID){
@@ -287,9 +248,9 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (r
         }
     }
     //console.log('owned_projects',owned_projects)
-    console.log('MD_ENV_CNTRY size',Object.keys(MD_ENV_CNTRY).length)
-    console.log('MD_ENV_LZC size',Object.keys(MD_ENV_LZC).length)
-    console.log('MD_ENV_ENVO size',Object.keys(MD_ENV_ENVO).length)
+    //console.log('MD_ENV_CNTRY size',Object.keys(MD_ENV_CNTRY).length)
+    //console.log('MD_ENV_LZC size',Object.keys(MD_ENV_LZC).length)
+    //console.log('MD_ENV_ENVO size',Object.keys(MD_ENV_ENVO).length)
     //console.log('MD_ENV_ENVO')
     var loc_array = []
     for(id in MD_ENV_CNTRY){
@@ -345,9 +306,9 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
     console.log('in retrieve_metadata')
     console.log(req.body)
     var project = req.body.project;
-    console.log(project)
+    //console.log(project)
     var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
-    console.log('pid',pid)
+    //console.log('pid',pid)
     var metadata = {}   // metadata[dname][mditem] = value
     metadata.by_mditem = {}   // metadata[mditem][dname] = value
     var dids = DATASET_IDS_BY_PID[pid]
@@ -384,11 +345,11 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
             }
         }
     }
-    console.log('geo_loc_name')
-    console.log(metadata.by_mditem['geo_loc_name'])
+    //console.log('geo_loc_name')
+    //console.log(metadata.by_mditem['geo_loc_name'])
     // adding custom metadata keys
-    console.log('keys1')
-    console.log(Object.keys(metadata.by_mditem))
+    //console.log('keys1')
+    //console.log(Object.keys(metadata.by_mditem))
     for(n in dids){
         did = dids[n]
         dname = DATASET_NAME_BY_DID[did]
@@ -398,8 +359,8 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
             }
         }        
     }
-    console.log('keys2')
-    console.log(Object.keys(metadata.by_mditem))
+    //console.log('keys2')
+    //console.log(Object.keys(metadata.by_mditem))
     // what is this for? Fill in custom metadata and unknowns
     for(mdname in metadata.by_mditem){
         for(n in dids){
@@ -415,7 +376,7 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
     console.log('end of retr data')
     //console.log(Object.keys(metadata.by_mditem))
     //console.log(metadata.by_mditem)
-    console.log(metadata.by_mditem)
+    //console.log(metadata.by_mditem)
     //console.log(AllMetadata['73'])
     if(GLOBAL_EDIT_METADATA.hasOwnProperty('project') &&  GLOBAL_EDIT_METADATA.project == project){
        res.json(GLOBAL_EDIT_METADATA)
@@ -465,7 +426,7 @@ router.post('/save_metadata', helpers.isLoggedIn, function (req, res) {
         req_data[did] = {}
         cust_data[did] = {}
         for(mdname in GLOBAL_EDIT_METADATA.by_mditem){
-            console.log('mdname01 - '+mdname)
+            //console.log('mdname01 - '+mdname)
             val = GLOBAL_EDIT_METADATA.by_mditem[mdname][did]
             ret = save_av_metadata('id', mdname, val )
             obj[did][ret.name] = ret.value
@@ -481,7 +442,7 @@ router.post('/save_metadata', helpers.isLoggedIn, function (req, res) {
                 cust_data[did][ret.name] = ret.value
             }
         }
-        console.log('WRITING',did)
+        //console.log('WRITING',did)
         
         helpers.write_metadata_to_files(did)
     }
@@ -496,14 +457,14 @@ router.post('/save_metadata', helpers.isLoggedIn, function (req, res) {
     }
    
     for(did in req_data){
-        console.log(req_data[did])
+        //console.log(req_data[did])
         q = "UPDATE required_metadata_info set "
         for(n in req_sql_fields){
             q += req_sql_fields[n]+"='"+req_data[did][req_sql_fields[n]]+"',"
         }
         q = q.substring(0,q.length-1)
         q += " where dataset_id='"+did+"'"
-        console.log(q)
+        //console.log(q)
         connection.query(q, function update_req_metadata(err, rows, fields) {
            if (err) {
              console.log('ERROR-in req metadata update: '+err);
@@ -545,11 +506,7 @@ function save_av_metadata(type, mdname, data){
     }else if(mdname == 'env_biome'){  
         idname = mdname+'_id'              
         value = helpers.get_key_from_value(MD_ENV_ENVO, data)
-        console.log('BIOME1 '+value)
-       //  if( ! value){
-//             value = helpers.get_key_from_value(MD_ENV_ENVO, 'unknown')
-//         }
-        console.log('BIOME2 '+value)               
+                 
     }else if(mdname == 'env_feature'){
         idname = mdname+'_id'              
         value = helpers.get_key_from_value(MD_ENV_ENVO, data)                
@@ -588,7 +545,7 @@ function save_av_metadata(type, mdname, data){
         idname =  mdname          
         value = data              
     }
-    console.log('2 '+idname+' -- '+value)
+    //console.log('2 '+idname+' -- '+value)
     md = { "name":idname, "value": value }
         //console.log('did '+did+' - '+mdname+' - '+data[did]+' key: '+value)
     return md    
@@ -654,7 +611,7 @@ router.get('/import_choices/matrix', [helpers.isLoggedIn], function (req, res) {
 router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(req, res) {
     console.log('in POST test_upload')
     console.log(req.body)
-    console.log(req.files[0])
+    
     var project = req.body.project_name
     var file_type = req.body.file_type
     var timestamp = +new Date();  // millisecs since the epoch!
@@ -686,7 +643,6 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
     info.num_of_datasets = 0
     info.public = 1 
     info.dataset = {}
-    //console.log('2')
     info.project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+project);
     var new_info_filename_path = path.join(info.project_dir, req.CONSTS.CONFIG_FILE)
     var analysis_dir = path.join(info.project_dir, 'analysis')
@@ -711,17 +667,14 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
         var writeStream = fs.createWriteStream(new_file_path,{mode: 0o664});
         if(IsFileCompressed(req.files[0])){     
             var gunzip = zlib.createGunzip();
-            console.log('File is gzip compressed')
+            //console.log('File is gzip compressed')
             rs = readStream.pipe(gunzip)   //.pipe(writeStream);
         }else{
-            console.log('Move file as is')
+            //console.log('Move file as is')
             rs = readStream     //.pipe(writeStream);
         }
                 
-        console.log('Moving file')
-        console.log('From: '+original_file_path)
-        console.log('To: '+new_file_path)
-        //var newReadStream = fs.createReadStream(new_fasta_file_path);
+        
         var chunks = [];
         var chunkstr = '';
         var ds_counts = {}
@@ -827,7 +780,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                             fs.chmodSync(new_info_filename_path, 0o664);
                             fs.chmodSync(new_file_path, 0o664);
                             req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-        
+
                             //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
                             res.render('user_data/import_choices/matrix', {
                               title: 'VAMPS:Import Choices',
@@ -874,7 +827,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
             }
             
             for(ds in ds_counts){
-                console.log(ds+' - '+ds_counts[ds].toString())
+                //console.log(ds+' - '+ds_counts[ds].toString())
                 info.dataset[ds] = ds_counts[ds]
                 if(ds_counts[ds] > info.max_dataset_count){
                      info.max_dataset_count = ds_counts[ds]
@@ -893,21 +846,21 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
 			  console.log(data.toString())   
 			});
 			proc.stdout.on('data', function (data) { 
-			  console.log('stdout:')  
-			  console.log(data.toString())   
+			  //console.log('stdout:')  
+			  //console.log(data.toString())   
 			  output += data.toString()
 			  
 			});
 			proc.on('close', function (code) {
 				console.log('close: demultiplex (+/-fastaunique) proc exited with code ' + code);
-				console.log("output: ");
+				//console.log("output: ");
 				output = output.trim().split("\n");
 				// see bottom of demultiplex.py script out put is pure JSON: 
 				// print('{"UNIQUE_SEQ_COUNT":'+str(sum_unique_seq_count)+',"TOTAL_SEQ_COUNT":'+str(total_seq_count)+'}')
 				for( n in output){
 					try{
 						counts = JSON.parse(output[n])
-						console.log(counts)
+						//console.log(counts)
 					}catch(e){
 						//console.log('err: '+e.toString());
 					}
@@ -928,15 +881,14 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
 					info.unique_seq_count = 0
 					info.total_seq_count  = 0
 				}
-				console.log('info');
-				console.log(info);
-				console.log(new_info_filename_path)
+				
+				//console.log(new_info_filename_path)
 				fs.writeFile(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }), {mode:0o664}, function writeConfigFile(err) {                                  
 					if(err){return console.log(err);} // => null
 					fs.chmodSync(new_info_filename_path, 0o664);
 					fs.chmodSync(new_file_path, 0o664);
 					req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-					
+
 					//error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
 					res.render('user_data/import_choices/fasta', {
 					  title: 'VAMPS:Import Choices',
@@ -969,9 +921,8 @@ router.get('/upload_configuration', [helpers.isLoggedIn], function (req, res) {
             //import_type: import_type,
           });
 });
-//
-//
-//
+
+
 router.post('/upload_file', [helpers.isLoggedIn, upload.any()], function(req, res) {
     // called from user_data.js as way to upload random files from /users/profile.html
     console.log('in POST test_upload')
@@ -1003,7 +954,7 @@ router.post('/upload_file', [helpers.isLoggedIn, upload.any()], function(req, re
 router.post('/import_choices/re_create_from_file', [helpers.isLoggedIn, upload.single('upload_files', 12)], function (req, res) {
     console.log('in re_create_image_from_file')
     console.log(req.body)
-    console.log('file',req.file)
+    
     var upld_obj = JSON.parse(fs.readFileSync(req.file.path, 'utf8'));
     console.log(upld_obj)
     var timestamp = +new Date();
@@ -1027,6 +978,9 @@ router.post('/import_choices/re_create_from_file', [helpers.isLoggedIn, upload.s
     })
 });
 
+//
+// VALIDATE FORMAT
+//
 /* GET Validate page. */
 router.get('/validate_format', helpers.isLoggedIn, function (req, res) {
   console.log('validate_format');
@@ -1057,8 +1011,7 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
     console.log(req.file);
     var file_type    = req.body.file_type;
     var file_style   = req.body.file_style;
-    console.log('file_type '+ file_type);
-    console.log('file_style '+ file_style);
+    
     var file_path = path.join(process.env.PWD, req.file.path);
     console.log('file_path '+ file_path);
 
@@ -1083,18 +1036,14 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
     });
     validate_process.on('close', function validateScriptOnClose(code) {
         console.log('validate_process exited with code ' + code);
-        console.log("output: ");
-        console.log(output);
+       
 
         var ary = output.substring(2, output.length-2).split("', '");
         var result = ary.shift();
-        console.log("ary: ");
-        console.log(ary);
+       
         //var last_line = ary[ary.length - 1];
         if (code === 0) {
-          //console.log('OK '+code)
-          console.log("typeof ary");
-          console.log(typeof ary);
+          
 
           if (result == 'OK') {
             req.flash('success', 'Validates');
@@ -1136,8 +1085,7 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
   var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, req.CONSTS.CONFIG_FILE);
 
   var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
-  console.log("config: ");
-  console.log(config);
+  
   res.render('user_data/profile', {
       project : project,
       pinfo   : JSON.stringify(config),
@@ -1170,8 +1118,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function (req, res)
 
   var parser = parse({delimiter: '\t'}, function createParserPipe(err, data) {
       json_data = {};
-      console.log("data: ");
-      console.log(data);
+
 
       res.render('user_data/metadata', {
         project : project,
@@ -1242,7 +1189,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
     var pid = 0;
   }
 
-    console.log('in delete_project2: '+project+' - '+pid);
+    
     var options = {
         scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
         args :       [ '-pid', pid, '-site', req.CONFIG.site, '--user', req.user.username, '--project', project, '-pdir', process.env.PWD ],
@@ -1262,43 +1209,11 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
       res.redirect("/user_data/your_projects");
       return;
     }
-    //console.log("options.args.join(' ')");
-    //console.log(options.args.join(' '));
+    
 
     var log = fs.openSync(path.join(process.env.PWD, 'logs', 'delete.log'), 'a');
 
-//     console.log(options.scriptPath + '/vamps_script_utils.py '+options.args.join(' '));
-//       var delete_process = spawn( options.scriptPath + '/vamps_script_utils.py', options.args,{
-//                             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-//                             detached: true, stdio: 'pipe'
-//                             });  // stdin, stdout, stderr
-// 
-//       var output = '';
-//       delete_process.stdout.on('data', function deleteScriptStdout(data) {
-//         console.log('stdout: ' + data);
-//         // data = data.toString().replace(/^\s+|\s+$/g, '');
-//         data = data.toString().trim();
-//         output += data;
-//         CheckIfPID(data);
-//       });
-//       delete_process.stderr.on('data', function deleteScriptStderr(data) {
-//         console.log('stderr: ' + data);       
-//       });
-//       delete_process.on('close', function deleteScriptOnClose(code) {
-//           console.log('delete_process process exited with code ' + code);
-//           console.log('output:',output)
-//           var ary = output.split("\n");
-//           
-//           var last_line = ary[ary.length - 1];
-//           if (code === 0) {
-//            //console.log('PID last line: '+last_line)
-//               status_params = {'type': 'delete', 'user_id':req.user.user_id,
-//                                 'pid':pid, 'status':'delete', 'msg':'delete' };
-//               helpers.update_status(status_params);
-//           } else {
-//              // python script error
-//           }
-//       });
+
       // called imediately
       var msg = "";
       if (delete_kind == 'all') {
@@ -1331,22 +1246,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
 		  })
 		  //helpers.deleteFolderRecursive(data_dir)
 		  
-          // fs.move(data_dir, deleted_data_dir, function moveDataDir(err) {
-//             if (err) {
-//               console.log("err 1: ");
-//               console.log(err);
-//               res.send(err);
-//             } else {
-//               fs.chmodSync(deleted_data_dir, 0o775);
-//               console.log('moved project_dir to DELETED_project_dir');
-//               console.log('From: '+data_dir);
-//               console.log('To: '+deleted_data_dir);
-//               req.flash('success', msg);
-//               res.redirect("/user_data/your_projects");
-//               return;
-//             }
-// 
-//           });
+         
 
       } else {
         req.flash('success', msg);
@@ -1945,8 +1845,8 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
       }
 
       pnames.sort();
-      console.log("JSON.stringify(project_info)");
-      console.log(JSON.stringify(project_info,null,2));
+      //console.log("JSON.stringify(project_info)");
+      //console.log(JSON.stringify(project_info,null,2));
 
     }  // readdir/err
 
@@ -1978,8 +1878,8 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function (req, res) {
    project_info.config = iniparser.parseSync(config_file);
 
   if (project_name in PROJECT_INFORMATION_BY_PNAME) {   // these projects have tax assignments
-    console.log("PROJECT_INFORMATION_BY_PNAME[project_name]: ");
-    console.log(PROJECT_INFORMATION_BY_PNAME[project_name]);
+    //console.log("PROJECT_INFORMATION_BY_PNAME[project_name]: ");
+    //console.log(PROJECT_INFORMATION_BY_PNAME[project_name]);
     project_info.pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
     project_info.status = 'Taxonomic Data Available';
     project_info.tax = 'GAST';
@@ -2067,8 +1967,7 @@ router.post('/edit_project', helpers.isLoggedIn, function (req, res) {
       p_sql += " public='1'\n";
     }
     p_sql += " WHERE project_id='"+req.body.project_pid+"' ";
-    console.log("p_sql: ");
-    console.log(p_sql);
+    
     connection.query(p_sql, function mysqlUpdateProject(err, rows, fields) {
        if (err) {
          console.log('ERROR-in project update: '+err);
@@ -2242,8 +2141,7 @@ router.post('/edit_project', helpers.isLoggedIn, function (req, res) {
 
   var old_dataset_array = Object.keys(project_info.config.DATASETS).map(function (k) { return k; });
   var counts_array = Object.keys(project_info.config.DATASETS).map(function (k) { return project_info.config.DATASETS[k]; });
-  console.log("old_dataset_array: ");
-  console.log(old_dataset_array);
+  
   project_info.config.DATASETS={};
   config_info.datasets = [];
   for (var n in req.body.dataset_ids) {
@@ -2319,7 +2217,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
           var output = '';
           console.log('py process pid='+upload_metadata_process.pid);
           upload_metadata_process.stdout.on('data', function uploadMetadataScriptStdout(data) {
-            console.log('stdout: ' + data);
+            //console.log('stdout: ' + data);
             data = data.toString().replace(/^\s+|\s+$/g, '');
             output += data;
 
@@ -3521,6 +3419,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
   qSelect += " JOIN sequence using (sequence_id)\n";
   qSelect += " JOIN dataset using (dataset_id)\n";
   qSelect += " JOIN project using (project_id)\n";
+  
   var seq, seqid, seq_count, pjds;
   var timestamp = +new Date();  // millisecs since the epoch!
   var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
@@ -3547,7 +3446,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
   } else if (req.body.download_type == 'partial_project') {
 
     //var pids = JSON.parse(req.body.datasets).ids;
-    var dids = chosen_id_name_hash.ids;
+    var dids = req.session.chosen_id_order;
     file_name = 'fasta-'+timestamp+'_custom.fa.gz';
     out_file_path = path.join(user_dir, file_name);
     qSelect += " where dataset_id in ("+dids+")";
@@ -3602,7 +3501,6 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
       .pipe(wstream)
       .on('finish', function readableStreamOnFinish() {  // finished
         console.log('done compressing and writing file: fasta');
-        console.log(JSON.stringify(req.user));
         var info = {
               to : req.user.email,
               from : "vamps@mbl.edu",
@@ -3703,7 +3601,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
         res.send(file_name);
         return;
   } else if (req.body.download_type == 'partial_project'){
-        dids = chosen_id_name_hash.ids;
+        dids = req.session.chosen_id_order;
         if(orientation == 'cols'){
             //file_name = 'metadata-samples_in_cols'+timestamp+'.csv.gz';
             file_name = 'metadata-'+timestamp+'-2.tsv.gz';
@@ -4005,7 +3903,7 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function (req, res)
     helpers.mkdirSync(user_dir);  // create dir if not exists
 
     //console.log(biom_matrix)
-    dids = chosen_id_name_hash.ids;
+    dids = req.session.chosen_id_order;
     var timestamp = +new Date();
     var file_name = 'matrix-'+timestamp+'.csv';
     //out_file_path = path.join(user_dir, file_name);
@@ -4016,7 +3914,7 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function (req, res)
     var gzip = zlib.createGzip();
     var rs = new Readable();
 
-    header_txt = "Taxonomy ("+visual_post_items.tax_depth+" level)";
+    header_txt = "Taxonomy ("+req.session.tax_depth+" level)";
     for (var y in biom_matrix.columns) {
       header_txt += ', '+biom_matrix.columns[y].id;
     }
@@ -4056,7 +3954,7 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
     });
 
     console.log('in copy_html_to_image');
-    return;
+    console.log(req.body);
     // Lint: "Unreachable 'var' after 'return'."
     var ts = req.body.ts;
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
@@ -4064,6 +3962,7 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
     if(req.body.image == 'barcharts'){
       html = req.body.html;
       outfile = path.join( user_dir, 'barcharts-image-'+ts+'.png' );
+      
     }else if(req.body.image == 'piecharts'){
       html = req.body.html;
       outfile = path.join( user_dir, 'piecharts-image-'+ts+'.png' );
@@ -4077,18 +3976,17 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
         html += "</tr>";
         var n = 1;
         console.log(distance_matrix);
-        id_order = chosen_id_name_hash.ids;
-
-        name_order = chosen_id_name_hash.names;
-        var w = id_order.length;
+        var id_name_order           = COMMON.create_chosen_id_name_order(req.session.chosen_id_order);
+        
+        var w = id_name_order.length;
         console.log(w);
-        for(var x in name_order) {
-          var x_dname = name_order[x];
+        for(var x in id_name_order) {
+          var x_dname = id_name_order[x].name;
           html += "<tr id='"+x_dname+"'>";
           html += "<td  id='"+x_dname+"' class='dragHandle ds_cell'>"+n.toString()+"</td>";
           html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+id_order[x]+"' >"+ x_dname +"</td>";
-          for(var y in name_order) {
-            var y_dname = name_order[y];
+          for(var y in id_name_order) {
+            var y_dname = id_name_order[y].name;
               var dist = distance_matrix[x_dname][y_dname].toFixed(5);
               if(x_dname === y_dname){
                 html += "<td id='' class='heat_map_td' bgcolor='#000'></td>";
@@ -4114,6 +4012,8 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
           res.send('OK');
         });
     }
+    console.log('outfile');
+    console.log(outfile);
     console.log(html);
     var webshot = require('webshot');
     var options = {
@@ -4149,12 +4049,12 @@ router.post('/download_file', helpers.isLoggedIn, function (req, res) {
       helpers.create_export_files(req, 
         user_dir, 
         timestamp, 
-        chosen_id_name_hash.ids, 
+        req.session.chosen_id_order, 
         file_tag, 
-        visual_post_items.normalization, 
-        visual_post_items.tax_depth, 
-        visual_post_items.domains, 
-        visual_post_items.include_nas,  // yes or no
+        req.session.normalization, 
+        req.session.tax_depth, 
+        req.session.domains, 
+        req.session.include_nas,  // yes or no
         true);
     //}
     res.send(req.body.file_type);

@@ -1,4 +1,4 @@
-<%  var items  = JSON.parse(chosen_id_name_hash); %>
+
 <%  var mtx    = JSON.parse(matrix); %>
 <!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
     <html xmlns='http://www.w3.org/1999/xhtml' xml:lang="en" lang="en">
@@ -22,13 +22,13 @@
       </attributes>
       <color attribute='seqcount' valueStart='0' valueEnd='<%= max_total_count.toString() %>' hueStart='120' hueEnd='240'></color>
       <datasets>
-<%    for(i in items.names){ %>
-            <dataset><%= items.names[i] %></dataset>
+<%    for(i in mtx.columns){ %>
+            <dataset><%= mtx.columns[i].id %></dataset>
 <%    }  %>
       </datasets>
       <node id='dataset_name' name='root'>
        <seqcount>
-<%     for(i in items.names){  %>
+<%     for(i in mtx.columns){  %>
         <val><%= mtx.column_totals[i].toString() %></val>
 <%     } %>
     </seqcount>
