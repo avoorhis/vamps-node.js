@@ -307,7 +307,19 @@ module.exports.get_select_custom_units_query = function(rows){
   console.timeEnd("TIME: get_select_custom_units_query");
 };
 
+function make_pid_by_did_dict(rows) {
+  // to a separate function
+  var p_d = [];
+  for (var r in rows) {
+    var d_id = rows[r]['dataset_id'];
+    var p_id = rows[r]['project_id'];
+    p_d[d_id] = p_id;
+  }
+  return p_d;
+}
+
 module.exports.get_select_seq_counts_query = function(rows){
+  console.time("TIME: get_select_seq_counts_query");
 
   //instead it's better to use PROJECT_ID_BY_DID after it's initialized
   connection.query('SELECT dataset_id, project_id from dataset', function(err, rows2, fields) {
@@ -316,18 +328,14 @@ module.exports.get_select_seq_counts_query = function(rows){
       //   if (arguments[i].hasOwnProperty(p)) {
       //     ret[p] = arguments[i][p];
       //   }
-
-      // to a separate function
-      var p_d = [];
-      for (var r in rows2) {
-        var d_id = rows2[r]['dataset_id'];
-        var p_id = rows2[r]['project_id'];
-        p_d[d_id] = p_id;
-      }
+    // console.time("TIME: make_pid_by_did_dict");
+    //   pid_by_did_dict = make_pid_by_did_dict(rows2);
+    // console.timeEnd("TIME: get_select_custom_units_query");
 
       for (var i = 0; i < rows.length; i++) {
         var did                 = rows[i].dataset_id;
-        var pid = p_d[did];
+        var pid                 = PROJECT_ID_BY_DID[did];
+              // pid_by_did_dict[did];
 
       //console.log('rows[i].project_id in run_select_sequences_query');
       // var pid                 = rows[i].project_id;
@@ -344,6 +352,8 @@ module.exports.get_select_seq_counts_query = function(rows){
       }
     }
   });
+  console.timeEnd("TIME: get_select_seq_counts_query");
+
 };
 
 module.exports.run_ranks_query = function(rank,rows){
