@@ -65,14 +65,13 @@ get_all_user_query: function(){
 },
 
 get_projects_queryUID: function( uid ) {
-    var q = "SELECT project, project_id from project where owner_user_id='"+uid+"'"
+    var q = "SELECT project, project_id from project where owner_user_id='"+uid+"'";
     return q;
 },
 get_select_seq_count_query: function(){
 
   var qSequenceCounts = "SELECT dataset_id, classifier_id, SUM(seq_count) as seq_count";
-  qSequenceCounts += " FROM sequence_pdr_info";
-  qSequenceCounts += " JOIN dataset using(dataset_id)";
+  qSequenceCounts += " FROM sequence_pdr_info USE INDEX FOR GROUP BY (dataset_id)";
   qSequenceCounts += " GROUP BY dataset_id, classifier_id";
   return qSequenceCounts;
 

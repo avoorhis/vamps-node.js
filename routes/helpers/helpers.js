@@ -308,7 +308,6 @@ module.exports.get_select_custom_units_query = function(rows){
 };
 
 function make_pid_by_did_dict(rows) {
-  // to a separate function
   var p_d = [];
   for (var r in rows) {
     var d_id = rows[r]['dataset_id'];
@@ -328,9 +327,9 @@ module.exports.get_select_seq_counts_query = function(rows){
       //   if (arguments[i].hasOwnProperty(p)) {
       //     ret[p] = arguments[i][p];
       //   }
-    // console.time("TIME: make_pid_by_did_dict");
-    //   pid_by_did_dict = make_pid_by_did_dict(rows2);
-    // console.timeEnd("TIME: get_select_custom_units_query");
+      console.time("TIME: make_pid_by_did_dict");
+        pid_by_did_dict = make_pid_by_did_dict(rows2);
+      console.timeEnd("TIME: make_pid_by_did_dict");
 
       for (var i = 0; i < rows.length; i++) {
         var did                 = rows[i].dataset_id;
