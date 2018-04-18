@@ -317,10 +317,10 @@ function make_pid_by_did_dict(rows) {
   return p_d;
 }
 
-function make_counts_globals() {
+function make_counts_globals(rows, pid_by_did_dict) {
   for (var i = 0; i < rows.length; i++) {
     var did                 = rows[i].dataset_id;
-    var pid                 = PROJECT_ID_BY_DID[did];
+    var pid                 = pid_by_did_dict[did];
     // pid_by_did_dict[did];
 
     //console.log('rows[i].project_id in run_select_sequences_query');
@@ -347,14 +347,14 @@ module.exports.get_select_seq_counts_query = function(rows){
     connection.query('SELECT dataset_id, project_id from dataset', function(err, rows2, fields) {
 
       console.time("TIME: make_pid_by_did_dict");
-      PROJECT_ID_BY_DID = make_pid_by_did_dict(rows2);
+      pid_by_did_dict = make_pid_by_did_dict(rows2);
       console.timeEnd("TIME: make_pid_by_did_dict");
-      make_counts_globals();
+      make_counts_globals(rows, pid_by_did_dict);
 
     });
   }
   else { // use ready one
-    make_counts_globals();
+    make_counts_globals(PROJECT_ID_BY_DID);
   }
 
   //instead it's better to use PROJECT_ID_BY_DID after it's initialized
