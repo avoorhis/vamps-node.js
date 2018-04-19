@@ -339,6 +339,7 @@ function make_counts_globals(rows, pid_by_did_dict) {
   }
 }
 
+//add the same check to PROJECT_ID_BY_DID creation elsewhere
 module.exports.get_select_seq_counts_query = function(rows){
   console.time("TIME: get_select_seq_counts_query");
   const values = Object.keys(PROJECT_ID_BY_DID).map(k => PROJECT_ID_BY_DID[k]);
