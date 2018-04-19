@@ -308,6 +308,8 @@ module.exports.get_select_custom_units_query = function(rows){
 };
 
 module.exports.get_select_seq_counts_query = function(rows){
+  console.time("TIME: get_select_seq_counts_query");
+
   for (var i=0; i < rows.length; i++) {
     //console.log('rows[i].project_id in run_select_sequences_query');
     var pid = rows[i].project_id;
@@ -326,6 +328,8 @@ module.exports.get_select_seq_counts_query = function(rows){
       ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
     }
   }
+  console.time("timeEnd: get_select_seq_counts_query");
+
 };
 
 module.exports.run_ranks_query = function(rank,rows){
