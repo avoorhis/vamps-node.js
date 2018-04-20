@@ -610,6 +610,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
         // !!!use default taxonomy here (may choose other on this page)
         var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
         var path_to_file = path.join(files_prefix, did +'.json');
+        var error_msg = ''
         try{
             var jsonfile = require(path_to_file);
             //this_session_metadata[did]  = jsonfile['metadata'];
@@ -619,14 +620,15 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
             var pname = PROJECT_INFORMATION_BY_PID[pid].project
             var dname = DATASET_NAME_BY_DID[did]
             //this_session_metadata[did]  = {}
-            
-            req.flash('fail', 'No Taxonomy found for this dataset ('+pname+'--'+dname+' (did:'+did+')) and possibly others. Try selecting other units.');
+            error_msg = 'No Taxonomy found for this dataset ('+pname+'--'+dname+' (did:'+did+')) and possibly others. Try selecting other units.'
             
         }
          
 
     }
-	 
+	 if(error_msg){
+	    req.flash('fail', error_msg);
+	 }
 	  // benchmarking
 	  helpers.start = process.hrtime();
 	  helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");

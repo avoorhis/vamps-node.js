@@ -48,28 +48,19 @@ function get_tax_str(taxon,rank){
 }
 function get_oligotype_seqs(){
   var tax_obj = document.getElementById("hidden_item").value;
-  //alert(tax_obj)
-  var xmlhttp = new XMLHttpRequest();
-  args = {'tax_obj':tax_obj}
-  document.getElementById("oligo_genus_err_msg").innerHTML = '';
-  xmlhttp.open("POST", "/oligotyping/project_list2", true);
-  xmlhttp.setRequestHeader("Content-type","application/json");
-  xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-          var response = xmlhttp.responseText;
-          //alert(response)
-          // try{
-//             var tmp = JSON.parse(response);
-//           }catch(e){
+  // var xmlhttp = new XMLHttpRequest();
+//   args = {'tax_obj':tax_obj}
+//   document.getElementById("oligo_genus_err_msg").innerHTML = '';
+//   xmlhttp.open("POST", "/oligotyping/project_list2", true);
+//   xmlhttp.setRequestHeader("Content-type","application/json");
+//   xmlhttp.onreadystatechange = function() {
+//         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+//           var response = xmlhttp.responseText;
+//           alert(response)
 //           
-//           }
-
-          //alert(tmp['res'])
-          //document.getElementById("oligo_genus_err_msg").style.visibility = 'visible';
-          //document.getElementById("oligo_genus_err_msg").innerHTML = 'No Data';
-        }
-  }
-  xmlhttp.send(JSON.stringify(args));
+//         }
+//   }
+//   xmlhttp.send(JSON.stringify(args));
 }
 
 

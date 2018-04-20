@@ -67,13 +67,13 @@
 						</div>
 				</div>
 				<div class="col-md-6">
-						<form method='POST' name='export_data_form' action='/user_data/oligo_step2_create_fasta'>
+						<form method='POST' name='export_data_form' action='/oligotyping/project_list2'>
 								<input type='text' readonly id='livesearch_result_div' value='' name='tax_string' maxlength='150' size='100'  />
 								<input type='hidden' id='hidden_item' value='ajax' name='tax_obj'  />
 								<input type='hidden' name='dids' value='<%- items.ids %>'>
 								<br>
-									<button id='fasta_start_btn' disabled class='btn btn-xs' type='button' value='Go' onclick='get_oligotype_seqs()'>Search for Sequences</button>
-
+									<button id='fasta_start_btn' disabled class='btn btn-xs' type='submit' value='Go' >Search for Sequences</button>
+<!-- onclick='get_oligotype_seqs()' -->
                  <!-- 
  <% if(messages.fail){ %>
                       <span class="alert_flash_message_fail" ><%= messages.fail %></span>
