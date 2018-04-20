@@ -348,10 +348,30 @@ module.exports.get_select_seq_counts_query = function(rows){
   // console.log(Object.values(PROJECT_ID_BY_DID));
   connection.query('SELECT dataset_id, project_id from dataset', function(err, rows2, fields) {
 
-      console.time("TIME: make_pid_by_did_dict");
-      var pid_by_did_dict = make_pid_by_did_dict(rows2);
-      console.timeEnd("TIME: make_pid_by_did_dict");
-      make_counts_globals(rows, pid_by_did_dict);
+    console.time("TIME: make_pid_by_did_dict");
+    var pid_by_did_dict = make_pid_by_did_dict(rows2);
+    console.timeEnd("TIME: make_pid_by_did_dict");
+
+    for (var i = 0; i < rows.length; i++) {
+      var did                 = rows[i].dataset_id;
+      var pid                 = pid_by_did_dict[did];
+      //console.log('rows[i].project_id in run_select_sequences_query');
+      // var pid                 = rows[i].project_id;
+      var count               = rows[i].seq_count;
+      var cid                 = rows[i].classifier_id;
+      ALL_DCOUNTS_BY_DID[did] = parseInt(count);
+      if (ALL_CLASSIFIERS_BY_CID.hasOwnProperty(cid)) {
+        ALL_CLASSIFIERS_BY_PID[pid] = ALL_CLASSIFIERS_BY_CID[cid];
+      }
+      if (pid in ALL_PCOUNTS_BY_PID) {
+        ALL_PCOUNTS_BY_PID[pid] += parseInt(count);
+      } else {
+        ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
+      }
+    }
+    console.log("ALL_PCOUNTS_BY_PID 0: ");
+    console.log(ALL_PCOUNTS_BY_PID);
+      // make_counts_globals(rows, pid_by_did_dict);
 
     });
 
