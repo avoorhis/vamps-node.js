@@ -372,12 +372,12 @@ module.exports.get_select_seq_counts_query = function(rows){
     console.log("ALL_PCOUNTS_BY_PID 0: ");
     console.log(ALL_PCOUNTS_BY_PID);
       // make_counts_globals(rows, pid_by_did_dict);
+    console.timeEnd("TIME: get_select_seq_counts_query");
 
     });
 
   //instead it's better to use PROJECT_ID_BY_DID after it's initialized
 
-  console.timeEnd("TIME: get_select_seq_counts_query");
 };
 
 module.exports.run_ranks_query = function(rank,rows){
