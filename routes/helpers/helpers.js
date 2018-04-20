@@ -336,28 +336,24 @@ function make_counts_globals(rows, pid_by_did_dict) {
       ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
     }
   }
-  console.log("ALL_PCOUNTS_BY_PID: ");
+  console.log("ALL_PCOUNTS_BY_PID 0: ");
   console.log(ALL_PCOUNTS_BY_PID);
+  // console.log("PROJECT_ID_BY_DID 0: ");
+  // console.log(PROJECT_ID_BY_DID);
 }
 
 //add the same check to PROJECT_ID_BY_DID creation elsewhere
 module.exports.get_select_seq_counts_query = function(rows){
   console.time("TIME: get_select_seq_counts_query");
-  const values = Object.keys(PROJECT_ID_BY_DID).map(k => PROJECT_ID_BY_DID[k]);
   // console.log(Object.values(PROJECT_ID_BY_DID));
-  if (values.length === 0) { //create one
-    connection.query('SELECT dataset_id, project_id from dataset', function(err, rows2, fields) {
+  connection.query('SELECT dataset_id, project_id from dataset', function(err, rows2, fields) {
 
       console.time("TIME: make_pid_by_did_dict");
-      pid_by_did_dict = make_pid_by_did_dict(rows2);
+      var pid_by_did_dict = make_pid_by_did_dict(rows2);
       console.timeEnd("TIME: make_pid_by_did_dict");
       make_counts_globals(rows, pid_by_did_dict);
 
     });
-  }
-  else { // use ready one
-    make_counts_globals(PROJECT_ID_BY_DID);
-  }
 
   //instead it's better to use PROJECT_ID_BY_DID after it's initialized
 
