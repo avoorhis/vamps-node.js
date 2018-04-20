@@ -322,7 +322,6 @@ function make_counts_globals(rows, pid_by_did_dict) {
     var did                 = rows[i].dataset_id;
     var pid                 = pid_by_did_dict[did];
     // pid_by_did_dict[did];
-
     //console.log('rows[i].project_id in run_select_sequences_query');
     // var pid                 = rows[i].project_id;
     var count               = rows[i].seq_count;
@@ -361,7 +360,8 @@ module.exports.get_select_seq_counts_query = function(rows){
   //instead it's better to use PROJECT_ID_BY_DID after it's initialized
 
   console.timeEnd("TIME: get_select_seq_counts_query");
-
+  console.log("ALL_PCOUNTS_BY_PID: ");
+  console.log(ALL_PCOUNTS_BY_PID);
 };
 
 module.exports.run_ranks_query = function(rank,rows){

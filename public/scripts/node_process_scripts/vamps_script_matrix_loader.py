@@ -184,6 +184,8 @@ def parse_matrix_file():
     tax_data_by_ds = {}  # tax_data[ds][tax] = count 
     temp = {}
     for row in reader:
+        if not row:
+            continue
         if len(row) == 1:
             print('File delimiter expected to be a <tab>')
             sys.exit('File delimiter expected to be a <tab>')
@@ -373,7 +375,7 @@ def push_taxonomy(args):
     
     global SUMMED_TAX_COLLECTOR
     global mysql_conn, cur
-    
+    print('Starting finish_tax per dataset per tax')
     for ds in args.tax_data_by_ds.keys():
         #print('ds:'+ds)
         for tax in args.tax_data_by_ds[ds]:
@@ -386,7 +388,7 @@ def push_taxonomy(args):
 def finish_tax(ds,  seq_count, tax_string):
     #tax_collector = {} 
     
-    print('IN finish_tax')
+    #print('IN finish_tax')
     #print(ds, rank, seq_count, tax_items)
     
     global DATASET_ID_BY_NAME
