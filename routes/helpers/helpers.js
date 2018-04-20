@@ -329,7 +329,8 @@ module.exports.get_select_seq_counts_query = function(rows){
     }
   }
   console.time("timeEnd: get_select_seq_counts_query");
-
+  console.log("ALL_PCOUNTS_BY_PID: ");
+  console.log(ALL_PCOUNTS_BY_PID);
 };
 
 module.exports.run_ranks_query = function(rank,rows){
