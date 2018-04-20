@@ -351,8 +351,8 @@ module.exports.get_select_seq_counts_query = function(rows){
         ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
       }
     }
-    console.log("ALL_PCOUNTS_BY_PID: ");
-    console.log(ALL_PCOUNTS_BY_PID);
+    // console.log("ALL_PCOUNTS_BY_PID: ");
+    // console.log(ALL_PCOUNTS_BY_PID);
     // make_counts_globals(rows, pid_by_did_dict);
 
     });
