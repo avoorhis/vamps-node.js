@@ -1754,8 +1754,6 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
         }else{
             project_info[p].taxonomy = 'Taxonomic Data Available (project on VAMPS)'
             project_info[p].seq_count = ALL_PCOUNTS_BY_PID[pid]
-            console.log("ALL_PCOUNTS_BY_PID3: ");
-            console.log(ALL_PCOUNTS_BY_PID);
         }
         pnames.push(p);
     }
