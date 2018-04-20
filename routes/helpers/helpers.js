@@ -325,7 +325,13 @@ module.exports.get_select_seq_counts_query = function(rows){
 
     console.time("TIME: make_pid_by_did_dict");
     //instead it's better to use PROJECT_ID_BY_DID after it's initialized
-    var pid_by_did_dict = make_pid_by_did_dict(rows2);
+    var pid_by_did_dict = [];
+    if (Object.keys(PROJECT_ID_BY_DID).length > 0) {
+      pid_by_did_dict = PROJECT_ID_BY_DID;
+    }
+    else {
+      pid_by_did_dict = make_pid_by_did_dict(rows2);
+    }
     console.timeEnd("TIME: make_pid_by_did_dict");
 
     for (var i = 0; i < rows.length; i++) {
@@ -345,8 +351,8 @@ module.exports.get_select_seq_counts_query = function(rows){
         ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
       }
     }
-    // console.log("ALL_PCOUNTS_BY_PID 0: ");
-    // console.log(ALL_PCOUNTS_BY_PID);
+    console.log("ALL_PCOUNTS_BY_PID: ");
+    console.log(ALL_PCOUNTS_BY_PID);
     // make_counts_globals(rows, pid_by_did_dict);
 
     });
