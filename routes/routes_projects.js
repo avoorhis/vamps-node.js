@@ -82,6 +82,8 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         var info = PROJECT_INFORMATION_BY_PID[req.params.id];
         var project_count = ALL_PCOUNTS_BY_PID[req.params.id];
         console.log(info)
+        // console.log("ALL_PCOUNTS_BY_PID 2: ");
+        // console.log(ALL_PCOUNTS_BY_PID);
 
         var dataset_counts = {};
         for(var n0 in ALL_DATASETS.projects){

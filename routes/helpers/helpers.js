@@ -307,28 +307,56 @@ module.exports.get_select_custom_units_query = function(rows){
   console.timeEnd("TIME: get_select_custom_units_query");
 };
 
+function make_pid_by_did_dict(rows) {
+  var p_d = [];
+  for (var r in rows) {
+    var d_id = rows[r]['dataset_id'];
+    var p_id = rows[r]['project_id'];
+    p_d[d_id] = p_id;
+  }
+  return p_d;
+}
+
+//add the same check to PROJECT_ID_BY_DID creation elsewhere
 module.exports.get_select_seq_counts_query = function(rows){
   console.time("TIME: get_select_seq_counts_query");
+  // console.log(Object.values(PROJECT_ID_BY_DID));
+  connection.query('SELECT dataset_id, project_id from dataset', function(err, rows2, fields) {
 
-  for (var i=0; i < rows.length; i++) {
-    //console.log('rows[i].project_id in run_select_sequences_query');
-    var pid = rows[i].project_id;
-    var did = rows[i].dataset_id;
-    var count= rows[i].seq_count;
-    var cid  =  rows[i].classifier_id;
-    ALL_DCOUNTS_BY_DID[did] = parseInt(count);
-    if(ALL_CLASSIFIERS_BY_CID.hasOwnProperty(cid)){
-      ALL_CLASSIFIERS_BY_PID[pid] = ALL_CLASSIFIERS_BY_CID[cid];
-    }else{
+    console.time("TIME: make_pid_by_did_dict");
+    //instead it's better to use PROJECT_ID_BY_DID after it's initialized
+    var pid_by_did_dict = [];
+    if (Object.keys(PROJECT_ID_BY_DID).length > 0) {
+      pid_by_did_dict = PROJECT_ID_BY_DID;
+    }
+    else {
+      pid_by_did_dict = make_pid_by_did_dict(rows2);
+    }
+    console.timeEnd("TIME: make_pid_by_did_dict");
 
+    for (var i = 0; i < rows.length; i++) {
+      var did                 = rows[i].dataset_id;
+      var pid                 = pid_by_did_dict[did];
+      //console.log('rows[i].project_id in run_select_sequences_query');
+      // var pid                 = rows[i].project_id;
+      var count               = rows[i].seq_count;
+      var cid                 = rows[i].classifier_id;
+      ALL_DCOUNTS_BY_DID[did] = parseInt(count);
+      if (ALL_CLASSIFIERS_BY_CID.hasOwnProperty(cid)) {
+        ALL_CLASSIFIERS_BY_PID[pid] = ALL_CLASSIFIERS_BY_CID[cid];
+      }
+      if (pid in ALL_PCOUNTS_BY_PID) {
+        ALL_PCOUNTS_BY_PID[pid] += parseInt(count);
+      } else {
+        ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
+      }
     }
-    if(pid in ALL_PCOUNTS_BY_PID){
-      ALL_PCOUNTS_BY_PID[pid] += parseInt(count);
-    }else{
-      ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
-    }
-  }
-  console.time("timeEnd: get_select_seq_counts_query");
+    // console.log("ALL_PCOUNTS_BY_PID: ");
+    // console.log(ALL_PCOUNTS_BY_PID);
+    // make_counts_globals(rows, pid_by_did_dict);
+
+    });
+  console.timeEnd("TIME: get_select_seq_counts_query");
 
 };
 
