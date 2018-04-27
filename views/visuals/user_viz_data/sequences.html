@@ -44,10 +44,10 @@
   <table id='seqs_table'>
   	<thead>
 
-    <tr><th data-defaultsort='disabled'></th>
-        <th>Count</th>
-        <th>GAST<br>Distance</th>
-        <th>NCBI<br>BLAST</th>
+    <tr><th data-defaultsort='disabled'>#</th>
+        <th style='padding:0 5px 0 5px;'>Seq<br>Count</th>
+        <th style='padding:0 5px 0 5px;'>GAST<br>Distance</th>
+        <th style='padding:0 5px 0 5px;'>NCBI<br>BLAST</th>
         <th><span class='hide_class_seq'>Sequence</span></th>
         <th><span class='hide_class_tax'>Taxonomy</span></th>
        
@@ -58,13 +58,13 @@
       <% for (r in seqrows) { %>
          <tr>
       	   <td><%= parseInt(r)+1 %></td>
-      	   <td><%= seqrows[r].seq_count %></td>
+      	   <td style='text-align:center'><%= seqrows[r].seq_count %></td>
       	   <% if(seqrows[r].classifier =='GAST') { %>
-                <td><%= seqrows[r].gast_distance %></td>
+                <td style='text-align:center'><%= seqrows[r].gast_distance %></td>
       	   <% }else{ %>
-                <td>none</t>
+                <td style='text-align:center'>none</t>
            <% } %>
-           <td><input type='radio' id='' name='ncbiblast' value='' onclick="ncbi_blast('<%= seqrows[r].seq %>')" \></td>
+           <td style='text-align:center'><input type='radio' id='' name='ncbiblast' value='' onclick="ncbi_blast('<%= seqrows[r].seq %>')" \></td>
               
             <td><span class='hide_class_seq' style="font-family: monospace;"><%- seqrows[r].prettyseq %></span></td>
               
