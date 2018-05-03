@@ -1042,6 +1042,16 @@ function create_dheatmap(ts, new_window) {
             var data = JSON.parse(xmlhttp.response)
             dhm_div.innerHTML = data.html;
             document.getElementById('dheatmap_dnld_btn').disabled = false
+            //alert(data.numbers_or_colors)
+            document.getElementById('hm_colors_radio').checked = true
+            // if(data.numbers_or_colors == 'colors'){
+//                 
+//                 document.getElementById('hm_colors_radio').checked = true
+//                 document.getElementById('hm_numbers_radio').checked = false
+//             }else{
+//                 document.getElementById('hm_colors_radio').checked = false
+//                 document.getElementById('hm_numbers_radio').checked = true
+//             }
         }
       };
       
@@ -1363,33 +1373,33 @@ function create_barcharts_group(new_window) {
 //
 //
 //
-function heatmap_click_fxn(did1,ds1,did2,ds2){
-      //alert(did1)
-      var args =  "did1="+did1;
-      args += "&ds1="+ds1;
-      args += "&did2="+did2;
-      args += "&ds2="+ds2;
-      //args += "&ts="+ts;
-      //document.getElementById('pre_adiversity_div').style.display = 'block';
-       // get distance matrix via AJAX
-      var xmlhttp = new XMLHttpRequest();
-      xmlhttp.open("POST", '/visuals/bar_double', true);
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-      //showDots='';
-      //var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);
-      xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState == 4 ) {
-
-
-           //clearInterval(myWaitVar);
-            var retstring = xmlhttp.responseText;
-        alert(retstring)
-        window.open(retstring,"_blank")
-        
-        }
-      };
-      xmlhttp.send(args);
-}
+// function heatmap_click_fxn(did1,ds1,did2,ds2){
+//       //alert(did1)
+//       var args =  "did1="+did1;
+//       args += "&ds1="+ds1;
+//       args += "&did2="+did2;
+//       args += "&ds2="+ds2;
+//       //args += "&ts="+ts;
+//       //document.getElementById('pre_adiversity_div').style.display = 'block';
+//        // get distance matrix via AJAX
+//       var xmlhttp = new XMLHttpRequest();
+//       xmlhttp.open("POST", '/visuals/bar_double', true);
+//       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+//       //showDots='';
+//       //var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);
+//       xmlhttp.onreadystatechange = function() {
+//         if (xmlhttp.readyState == 4 ) {
+// 
+// 
+//            //clearInterval(myWaitVar);
+//             var retstring = xmlhttp.responseText;
+//         alert(retstring)
+//         window.open(retstring,"_blank")
+//         
+//         }
+//       };
+//       xmlhttp.send(args);
+// }
 
 //
 //
@@ -1912,3 +1922,67 @@ function download(filename, text) {
 
   document.body.removeChild(element);
 }
+//
+//
+//
+function change_hm_view(numbers_or_colors){
+    console.log(numbers_or_colors)
+    args={'numbers_or_colors':numbers_or_colors,'source':'website'}
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", '/visuals/dheatmap_number_to_color', true);
+    xmlhttp.setRequestHeader("Content-type","application/json");
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+         var data = JSON.parse(xmlhttp.responseText);
+         document.getElementById('dheatmap_div').innerHTML = data.html
+         console.log(data.numbers_or_colors)
+         if(data.numbers_or_colors == 'colors'){                
+            document.getElementById('hm_colors_radio').checked = true
+            document.getElementById('hm_numbers_radio').checked = false
+        }else{
+            document.getElementById('hm_colors_radio').checked = false
+            document.getElementById('hm_numbers_radio').checked = true
+        }
+
+      }
+    };
+    xmlhttp.send(JSON.stringify(args));
+}
+//
+////
+
+//
+function get_split_view(split_distance_choice, numbers_or_colors){
+    //console.log(numbers_or_colors)
+    args={'split_distance_choice':split_distance_choice,'source':'website','numbers_or_colors':numbers_or_colors}
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", '/visuals/dheatmap_split_distance', true);
+    xmlhttp.setRequestHeader("Content-type","application/json");
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+         //alert(xmlhttp.responseText)
+         var data = JSON.parse(xmlhttp.responseText);
+         //console.log(data.numbers_or_colors)
+         document.getElementById('dheatmap_div').innerHTML = data.html
+         if(data.numbers_or_colors == 'colors'){                
+            document.getElementById('hm_colors_radio').checked = true
+            document.getElementById('hm_numbers_radio').checked = false
+        }else{
+            document.getElementById('hm_colors_radio').checked = false
+            document.getElementById('hm_numbers_radio').checked = true
+        }
+
+
+      }
+    };
+    xmlhttp.send(JSON.stringify(args));
+    
+}
+
+
+
+
+
+
+
+

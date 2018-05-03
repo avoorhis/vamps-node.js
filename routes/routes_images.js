@@ -280,7 +280,7 @@ dheatmap: function(req, res){
         data = data.toString();
         stderr += data;
     });
-
+    
     heatmap_process.on('close', function heatmapProcessOnClose(code) {
         console.log('heatmap_process process exited with code ' + code);
 
@@ -288,18 +288,25 @@ dheatmap: function(req, res){
         if(code === 0){   // SUCCESS
           try{
             console.log('dist_json_file_path',dist_json_file_path)
+             
             fs.readFile(dist_json_file_path, 'utf8', function (err, distance_matrix) {
                 if (err) throw err;
                 //distance_matrix = JSON.parse(data);
-                var html = create_hm_table(req, JSON.parse(distance_matrix))
+                metadata = {}
+                metadata.numbers_or_colors = 'colors'
+                metadata.split = false
+                metadata.metric = req.session.selected_distance
+                var html = module.exports.create_hm_table(req, JSON.parse(distance_matrix), metadata )
+                
                 var outfile_name = ts + '-dheatmap-api.html'
                 outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
                 console.log('outfile_path:',outfile_path)
                 result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
-                console.log(result)
+                //console.log(result)
                 //res.send(outfile_name)
-                data = {}
+                var data = {}
                 data.html = html
+                data.numbers_or_colors = ''
                 data.filename = outfile_name
                 //res.send(outfile_name)
                 res.json(data)
@@ -325,6 +332,7 @@ dheatmap: function(req, res){
 
 
 },  // end DISTANCE HEATMAP
+
 //
 //
 //
@@ -1000,7 +1008,336 @@ phyloseq: function(req,res){
 
     });
 },
+//
+//
+//
+create_hm_table_from_csv: function(req, dm, metadata){
+    console.log('in create_hm_table_from_csv')
+    //for split heatmaps only
+    //console.log(metadata)
+    
+    var choices = {'jc_kz':'Jaccard\\Kulczynski',     'jc_cb':   'Jaccard\\Canberra','jc_mh': 'Jaccard\\Morisita-Horn','jc_bc':'Jaccard\\Bray-Curtis',
+                        'kz_cb':'Kulczynski\\Canberra','kz_mh':'Kulczynski\\Morisita-Horn', 'kz_bc':  'Kulczynski\\Bray-Curtis','cb_mh':'Canberra\\Morisita-Horn',
+                        'cb_bc':'Canberra\\Bray-Curtis','mh_bc':'Morisita-Horn\\Bray-Curtis'}
+    var html = ''
+    
+    if(req.body.source == 'website'){
+        html += "<div class='pull-right'>"
+        html += "	<small>"       
+        
+        if(metadata.numbers_or_colors == 'colors'){
+            html += "View: <input id='hm_numbers_radio' type='radio'          name='hm_view' value='nums' onclick=\"change_hm_view('numbers')\"> Numbers&nbsp;&nbsp;&nbsp;&nbsp;"
+            html += "<input id='hm_colors_radio' type='radio' checked name='hm_view' value='color' onclick=\"change_hm_view('colors')\"> Colors"
+        }else{
+            html += "View: <input id='hm_numbers_radio' type='radio'  checked  name='hm_view' value='nums' onclick=\"change_hm_view('numbers')\"> Numbers&nbsp;&nbsp;&nbsp;&nbsp;"
+            html += "<input id='hm_colors_radio' type='radio' name='hm_view' value='color' onclick=\"change_hm_view('colors')\"> Colors"
+        }
+        html += "<br>Split Distance Metric:&nbsp;"
+        
+        html += "<select onchange=\"get_split_view(this.value,'"+metadata.numbers_or_colors+"')\">"
+        html += "<option>Choose Metric Pair</option>"
+        for(met in choices){
+            if(met == metadata.metric){
+                html += "<option selected value='"+met+"'>"+choices[met]+"</option>"
+            }else{
+                html += "<option value='"+met+"'>"+choices[met]+"</option>"
+            }            
+        }
+        html += "</select>"
+        html += "    </small>"
+        html += "</div>"
+   
+        html += "<center>"
+        html += "	<small>"
+        html += "      <span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span>"
+        html += "    </small>"
+        html += "</center>"
+        
+        html += "<span>"+choices[metadata.metric]+"</span>"
+        
+        html += "<br>"
+    }
+    
+    //html += "<div id='distance_matrix' style='visibility:hidden'><%= dm %></div>"
+    html += "<form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/view_selection'>"
+    html += "<table border='1' id='drag_table' class='heatmap_table center_table' >"
+	if(req.body.source == 'website'){
+	    html += "<tr class='nodrag nodrop' ><td></td>"
+    }else{
+        html += "<tr class='nodrag nodrop' style='line-height:11px;'><td></td>"
+    }
+	html += "<td><div id='ds_save_order_div'>"
+	if(req.body.source == 'website'){
+	    html += "<button type='submit' id='ds_save_order_btn' class='btn btn-xs btn-default'>Save Order</button>"
+        html += "<span class='label blue' bgcolor='blue'>Similar (0.0)</span> <span class='label red' bgcolor='red'>Dissimilar (1.0)</span>"
+    }else{
+        html += "<span class='' style='color:white;background:blue' >Similar (0.0)</span> <span class='' style='background:red' >Dissimilar (1.0)</span>"
+    }
+	html += "		  <imput type='hidden' id='' name='resorted' value='1' >"
+	html += "	  </div>"
+	html += "</td>"
+    
+    
+    var ds_order = dm[0].trim().split('\t')
+    
+    for(n in ds_order){
+        var did =req.session.chosen_id_order[n]
+        var pjds = ds_order[n].split('--')
+        var pid = PROJECT_INFORMATION_BY_PNAME[pjds[0]].pid
+        if(pjds[1] != DATASET_NAME_BY_DID[did]){
+            //errors
+            console.log('ERROR1 in create_hm_table_from_csv')
+            return
+        }
+        
+       
+    }
+    for(i=1; i<=ds_order.length; i++) {
+        html += "<td><div class='cell'></div></td>"
+    }
+    html += "</tr>"
+    
+    
+    k=1
+    for(var n in ds_order) { //rows
+        var row = dm[k]  // k starts at 1 -- first data row
+       
+        var row_items = row.split('\t') // ds c1 c2 c3 c4 c5
+        
+        var xdid = req.session.chosen_id_order[n]
+        var xpjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[xdid]].project +'--'+DATASET_NAME_BY_DID[xdid]
+        var row_pjds = row_items.shift() // leaves only the counts
+        
+        if(row_pjds != xpjds){
+            console.log('ERROR2 in create_hm_table_from_csv')
+            return
+        }
 
+        if(req.body.source == 'website'){
+            html += "<tr id='"+xpjds+"'>"
+        }else{
+            html += "<tr id='"+xpjds+"' style='line-height:11px;'>"
+        }
+        html += "<td  id='"+xpjds+"' class='dragHandle ds_cell'>"+k+"</td>"
+        html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+ xdid +"' >"+xpjds+"</td>"
+        
+        
+        for(var m in ds_order) { //cols
+            
+            var ydid = req.session.chosen_id_order[m]
+            var ypjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[ydid]].project +'--'+DATASET_NAME_BY_DID[ydid]
+            
+            var d = parseFloat(row_items[m]).toFixed(5)
+            var sv = Math.round( d * 15 );
+            
+            split_matrix_elems = choices[metadata.metric].split('\\')
+            //console.log(n.toString()+' -- '+m.toString()+' -- '+choices[metadata.metric])
+            if(parseInt(n) < parseInt(m)){ // rows < cols
+                var metric = split_matrix_elems[1]
+                var id = 'dh/'+xpjds+'/'+ypjds+'/'+ metric +'/'+d;
+            }else{
+                var metric = split_matrix_elems[0]
+                var id = 'dh/'+xpjds+'/'+ypjds+'/'+ metric +'/'+d;
+            }
+            //console.log(id)
+            if(metadata.numbers_or_colors == 'numbers'){
+                
+                if(xdid === ydid){
+                    html += "<td id='' class='heat_map_td' align='center' bgcolor='white'>0.0</td>"
+                }else{
+                    
+                    if(req.body.source == 'website'){
+                        html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='white'"
+                        html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&metric="+metric+"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
+                        html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
+                    }else{
+                        var title = xpjds+'&#13;'+ypjds+'&#13;'+ choices[metadata.metric] +' -- '+d;
+                        html += "<td title='"+title+"' class='heat_map_td' bgcolor='white'>"
+                    }
+                    html += d.toString()+"</td>"
+                }
+                
+            }else{        
+                var colors   = req.CONSTS.HEATMAP_COLORS
+                if(xdid === ydid){
+                    html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
+                }else{
+                    if(req.body.source == 'website'){
+                        html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"
+                        html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&metric="+metric+"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
+                        html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
+                    }else{
+                        var title = xpjds+'&#13;'+ypjds+'&#13;'+ choices[metadata.metric] +' -- '+d;
+                        html += "<td title='"+title+"' class='heat_map_td' bgcolor='#"+ colors[sv]+"'>"
+                    }
+                    html += "</td>"
+                }
+                
+            }
+
+ 
+        
+        
+       }  // inner for()
+       html += "</tr>"
+       k++
+    } // outer for()
+    html += "</table>"
+    html += "<input type='hidden' name='resorted' value='1'>"
+    html += "</form>"
+    html += "</center>"
+    
+    return html
+},
+create_hm_table: function(req, dm, metadata){
+    console.log('in create_hm_table2')
+    console.log(metadata)
+    var id_order = req.session.chosen_id_order
+    
+    
+    var choices = {'jc_kz':'Jaccard\\Kulczynski',     'jc_cb':   'Jaccard\\Canberra','jc_mh': 'Jaccard\\Morisita-Horn','jc_bc':'Jaccard\\Bray-Curtis',
+                        'kz_cb':'Kulczynski\\Canberra','kz_mh':'Kulczynski\\Morisita-Horn', 'kz_bc':  'Kulczynski\\Bray-Curtis','cb_mh':'Canberra\\Morisita-Horn',
+                        'cb_bc':'Canberra\\Bray-Curtis','mh_bc':'Morisita-Horn\\Bray-Curtis'}
+    var html = ''
+    
+    if(req.body.source == 'website'){
+        html += "<div class='pull-right'>"
+        html += "	<small>"       
+        
+        if(metadata.numbers_or_colors == 'colors'){
+            html += "View: <input id='hm_numbers_radio' type='radio'          name='hm_view' value='nums' onclick=\"change_hm_view('numbers')\"> Numbers&nbsp;&nbsp;&nbsp;&nbsp;"
+            html += "<input id='hm_colors_radio' type='radio' checked name='hm_view' value='color' onclick=\"change_hm_view('colors')\"> Colors"
+        }else{
+            html += "View: <input id='hm_numbers_radio' type='radio'  checked  name='hm_view' value='nums' onclick=\"change_hm_view('numbers')\"> Numbers&nbsp;&nbsp;&nbsp;&nbsp;"
+            html += "<input id='hm_colors_radio' type='radio' name='hm_view' value='color' onclick=\"change_hm_view('colors')\"> Colors"
+        }
+        html += "<br>Split Distance Metric:&nbsp;"
+        
+        html += "<select onchange=\"get_split_view(this.value,'"+metadata.numbers_or_colors+"')\">"
+        html += "<option>Choose Metric Pair</option>"
+        for(met in choices){
+            if(met == metadata.metric){
+                html += "<option selected value='"+met+"'>"+choices[met]+"</option>"
+            }else{
+                html += "<option value='"+met+"'>"+choices[met]+"</option>"
+            }            
+        }
+        html += "</select>"
+        html += "    </small>"
+        html += "</div>"
+   
+        html += "<center>"
+        html += "	<small>"
+        html += "      <span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span>"
+        html += "    </small>"
+        html += "</center>"
+        
+        html += "<span>"+req.session.selected_distance+"</span>"
+        
+        html += "<br>"
+    }
+    
+    
+ 
+    html += "<form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/view_selection'>"
+    html += "<table border='1' id='drag_table' class='heatmap_table center_table' >"
+	if(req.body.source == 'website'){
+	    html += "<tr class='nodrag nodrop' ><td></td>"
+    }else{
+        html += "<tr class='nodrag nodrop' style='line-height:11px;'><td></td>"
+    }
+	html += "<td><div id='ds_save_order_div'>"
+	if(req.body.source == 'website'){
+	    html += "<button type='submit' id='ds_save_order_btn' class='btn btn-xs btn-default'>Save Order</button>"
+        html += "<span class='label blue' bgcolor='blue'>Similar (0.0)</span> <span class='label red' bgcolor='red'>Dissimilar (1.0)</span>"
+    }else{
+        html += "<span class='' style='color:white;background:blue' >Similar (0.0)</span> <span class='' style='background:red' >Dissimilar (1.0)</span>"
+    }
+	html += "		  <imput type='hidden' id='' name='resorted' value='1' >"
+	html += "	  </div>"
+	html += "</td>"
+    for(i=1; i<=id_order.length; i++) {
+        html += "<td><div class='cell'></div></td>"
+    }
+        html += "</tr>"
+    k=1
+    for(var n in id_order) { // rows
+        var xdid = id_order[n]
+        var xpjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[xdid]].project +'--'+DATASET_NAME_BY_DID[xdid]
+        //var x = id_order[n]
+        if(req.body.source == 'website'){
+            html += "<tr id='"+xpjds+"'>"
+        }else{
+            html += "<tr id='"+xpjds+"' style='line-height:11px;'>"
+        }
+        html += "<td  id='"+xpjds+"' class='dragHandle ds_cell'>"+k+"</td>"
+        html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+ xdid +"' >"+xpjds+"</td>"
+        for(var m in id_order) {  // cols
+            
+            var ydid = id_order[m]
+            var ypjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[ydid]].project +'--'+DATASET_NAME_BY_DID[ydid]
+            
+            if(dm.hasOwnProperty(xpjds) && dm[xpjds].hasOwnProperty(ypjds)){
+                var d = dm[xpjds][ypjds].toFixed(5);
+                var sv = Math.round( dm[xpjds][ypjds] * 15 );
+            }else{
+                  var d = 1
+                  var sv = 1 * 15
+            }
+            var metric = req.session.selected_distance
+            var id = 'dh/'+xpjds+'/'+ypjds+'/'+ metric +'/'+d;
+            
+            
+            
+            if(metadata.numbers_or_colors == 'numbers'){
+                
+                if(xdid === ydid){
+                    html += "<td id='' class='heat_map_td' align='center' bgcolor='white'>0.0</td>"
+                }else{
+                    
+                    if(req.body.source == 'website'){
+                        html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='white'"
+                        html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&metric="+metric+"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
+                        html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
+                    }else{
+                        var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
+                        html += "<td title='"+title+"' class='heat_map_td' bgcolor='white'>"
+                    }
+                    html += d.toString()+"</td>"
+                }
+                
+            }else{        
+                var colors   = req.CONSTS.HEATMAP_COLORS
+                if(xdid === ydid){
+                    html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
+                }else{
+                    if(req.body.source == 'website'){
+                        html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"
+                        html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&metric="+metric+"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
+                        html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
+                    }else{
+                        var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
+                        html += "<td title='"+title+"' class='heat_map_td' bgcolor='#"+ colors[sv]+"'>"
+                    }
+                    html += "</td>"
+                }
+                
+            }
+
+        }
+        k++
+        html += "</tr>"
+
+    }
+    html += "</table>"
+    html += "<input type='hidden' name='resorted' value='1'>"
+    html += "</form>"
+    html += "</center>"
+/////////////////////
+  return html
+
+
+},
 
 };   // end module.exports
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1150,98 +1487,121 @@ function get_image_properties(imagetype, ds_count) {
 
   return props;
 }
-function create_hm_table(req, dm){
-
-    var colors   = req.CONSTS.HEATMAP_COLORS
-    var id_order = req.session.chosen_id_order
-    
-    var html = ''
-    html += "<center>"
-    if(req.body.source == 'website'){
-        html += "<center>"
-        html += "	<small>"
-        html += "      <span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span>"
-        html += "    </small>"
-        html += "</center>"
-        html += "<br>"
-    }
-    //html += "<div id='distance_matrix' style='visibility:hidden'><%= dm %></div>"
-    html += "<form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/view_selection'>"
-    html += "<table border='1' id='drag_table' class='heatmap_table center_table' >"
-	if(req.body.source == 'website'){
-	    html += "<tr class='nodrag nodrop' ><td></td>"
-    }else{
-        html += "<tr class='nodrag nodrop' style='line-height:11px;'><td></td>"
-    }
-	html += "<td><div id='ds_save_order_div'>"
-	if(req.body.source == 'website'){
-	    html += "<button type='submit' id='ds_save_order_btn' class='btn btn-xs btn-default'>Save Order</button>"
-        html += "<span class='label blue' bgcolor='blue'>Similar (0.0)</span> <span class='label red' bgcolor='red'>Dissimilar (1.0)</span>"
-    }else{
-        html += "<span class='' style='color:white;background:blue' >Similar (0.0)</span> <span class='' style='background:red' >Dissimilar (1.0)</span>"
-    }
-	html += "		  <imput type='hidden' id='' name='resorted' value='1' >"
-	html += "	  </div>"
-	html += "</td>"
-    for(i=1; i<=id_order.length; i++) {
-        html += "<td><div class='cell'></div></td>"
-    }
-        html += "</tr>"
-    k=1
-    for(var n in id_order) {
-        var xdid = id_order[n]
-        var xpjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[xdid]].project +'--'+DATASET_NAME_BY_DID[xdid]
-        //var x = id_order[n]
-        if(req.body.source == 'website'){
-            html += "<tr id='"+xpjds+"'>"
-        }else{
-            html += "<tr id='"+xpjds+"' style='line-height:11px;'>"
-        }
-        html += "<td  id='"+xpjds+"' class='dragHandle ds_cell'>"+k+"</td>"
-        html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+ xdid +"' >"+xpjds+"</td>"
-        for(var m in id_order) {
-            
-            var ydid = id_order[m]
-            var ypjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[ydid]].project +'--'+DATASET_NAME_BY_DID[ydid]
-            
-            if(dm.hasOwnProperty(xpjds) && dm[xpjds].hasOwnProperty(ypjds)){
-                var d = dm[xpjds][ypjds].toFixed(5);
-                var sv = Math.round( dm[xpjds][ypjds] * 15 );
-            }else{
-                  var d = 1
-                  var sv = 1 * 15
-            }
-            
-            var id = 'dh/'+xpjds+'/'+ypjds+'/'+ req.session.selected_distance +'/'+d;
-                        
-            if(xdid === ydid){
-                html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
-            }else{
-                if(req.body.source == 'website'){
-                    html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"
-                    html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
-                    html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
-                }else{
-                    var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
-                    html += "<td title='"+title+"' class='heat_map_td' bgcolor='#"+ colors[sv]+"'"
-                }
-                html += "</td>"
-            }
-
-        }
-        k++
-        html += "</tr>"
-
-    }
-    html += "</table>"
-    html += "<input type='hidden' name='resorted' value='1'>"
-    html += "</form>"
-    html += "</center>"
-/////////////////////
-  return html
-
-
-}
+// function create_hm_table(req, dm, numbers_or_colors){
+//     console.log('in create_hm_table')
+//     
+//     var id_order = req.session.chosen_id_order
+//     
+//     var html = ''
+//     html += "<center>"
+//     if(req.body.source == 'website'){
+//         html += "<center>"
+//         html += "	<small>"
+//         html += "      <span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span>"
+//         html += "    </small>"
+//         html += "</center>"
+//         html += "<table class='pull-right'><tr>"
+//         html += "<td><input type='radio' name='hm_view' value='nums' onclick=\"change_hm_view('numbers')\"> Numbers&nbsp;&nbsp;&nbsp;&nbsp;</td>"
+//         html += "<td><input type='radio' name='hm_view' value='color' onclick=\"change_hm_view('colors')\"> Colors </td>"
+//         html += "</tr></table>"
+//         html += "<br>"
+//     }
+//     //html += "<div id='distance_matrix' style='visibility:hidden'><%= dm %></div>"
+//     html += "<form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/view_selection'>"
+//     html += "<table border='1' id='drag_table' class='heatmap_table center_table' >"
+// 	if(req.body.source == 'website'){
+// 	    html += "<tr class='nodrag nodrop' ><td></td>"
+//     }else{
+//         html += "<tr class='nodrag nodrop' style='line-height:11px;'><td></td>"
+//     }
+// 	html += "<td><div id='ds_save_order_div'>"
+// 	if(req.body.source == 'website'){
+// 	    html += "<button type='submit' id='ds_save_order_btn' class='btn btn-xs btn-default'>Save Order</button>"
+//         html += "<span class='label blue' bgcolor='blue'>Similar (0.0)</span> <span class='label red' bgcolor='red'>Dissimilar (1.0)</span>"
+//     }else{
+//         html += "<span class='' style='color:white;background:blue' >Similar (0.0)</span> <span class='' style='background:red' >Dissimilar (1.0)</span>"
+//     }
+// 	html += "		  <imput type='hidden' id='' name='resorted' value='1' >"
+// 	html += "	  </div>"
+// 	html += "</td>"
+//     for(i=1; i<=id_order.length; i++) {
+//         html += "<td><div class='cell'></div></td>"
+//     }
+//         html += "</tr>"
+//     k=1
+//     for(var n in id_order) {
+//         var xdid = id_order[n]
+//         var xpjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[xdid]].project +'--'+DATASET_NAME_BY_DID[xdid]
+//         //var x = id_order[n]
+//         if(req.body.source == 'website'){
+//             html += "<tr id='"+xpjds+"'>"
+//         }else{
+//             html += "<tr id='"+xpjds+"' style='line-height:11px;'>"
+//         }
+//         html += "<td  id='"+xpjds+"' class='dragHandle ds_cell'>"+k+"</td>"
+//         html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+ xdid +"' >"+xpjds+"</td>"
+//         for(var m in id_order) {
+//             
+//             var ydid = id_order[m]
+//             var ypjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[ydid]].project +'--'+DATASET_NAME_BY_DID[ydid]
+//             
+//             if(dm.hasOwnProperty(xpjds) && dm[xpjds].hasOwnProperty(ypjds)){
+//                 var d = dm[xpjds][ypjds].toFixed(5);
+//                 var sv = Math.round( dm[xpjds][ypjds] * 15 );
+//             }else{
+//                   var d = 1
+//                   var sv = 1 * 15
+//             }
+//             var id = 'dh/'+xpjds+'/'+ypjds+'/'+ req.session.selected_distance +'/'+d;
+//             
+//             if(numbers_or_colors == 'numbers'){
+//                 
+//                 if(xdid === ydid){
+//                     html += "<td id='' class='heat_map_td' align='center'>0.0</td>"
+//                 }else{
+//                     if(req.body.source == 'website'){
+//                         html += "<td id='"+id+"' class='heat_map_td tooltip_viz' "
+//                         html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
+//                         html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
+//                     }else{
+//                         var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
+//                         html += "<td title='"+title+"' class='heat_map_td' >"
+//                     }
+//                     html += d.toString()+"</td>"
+//                 }
+//                 
+//             }else{        
+//                 var colors   = req.CONSTS.HEATMAP_COLORS
+//                 if(xdid === ydid){
+//                     html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
+//                 }else{
+//                     if(req.body.source == 'website'){
+//                         html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"
+//                         html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
+//                         html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
+//                     }else{
+//                         var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
+//                         html += "<td title='"+title+"' class='heat_map_td' bgcolor='#"+ colors[sv]+"'>"
+//                     }
+//                     html += "</td>"
+//                 }
+//                 
+//             }
+// 
+//         }
+//         k++
+//         html += "</tr>"
+// 
+//     }
+//     html += "</table>"
+//     html += "<input type='hidden' name='resorted' value='1'>"
+//     html += "</form>"
+//     html += "</center>"
+// /////////////////////
+//   return html
+// 
+// 
+// }
 function standardDeviation(values){
   var avg = average(values);
   var squareDiffs = values.map(function(value){

@@ -60,7 +60,12 @@ def go_distance(args):
             edited_dataset_list.append(line['id'])
 
     #print(edited_dataset_list)
-    dist = get_dist(args.metric, dmatrix)
+    dist = get_dist(dmatrix, data)
+    if args.create_splits:
+        # we're done
+        return
+    #print(dist)
+    #sys.exit()
     dm1 = get_dist_matrix1(dist)
 
     dm2 = {}
@@ -69,20 +74,20 @@ def go_distance(args):
     for row,name in enumerate(edited_dataset_list):
             name = str(name)
             dm2[name] = {}
-            file_data_line = name+','
+            #file_data_line = name+','
             for col,d in enumerate(dm1[row]):
                 #print data['columns'][col]['id']
-                file_data_line += str(dm1[row][col])+','
+                #file_data_line += str(dm1[row][col])+','
                 dm2[name][str(data['columns'][col]['id'])]  = dm1[row][col]
                 dm3[(name, str(data['columns'][col]['id']))]  = dm1[row][col]
-            file_data_line = file_data_line[:-1]+'\n'
+            #file_data_line = file_data_line[:-1]+'\n'
             #out_fp.write(file_data_line)
 
-    out_file2 = os.path.join(args.basedir, 'tmp',args.prefix+'_distance.json')
+    out_file_selected      = os.path.join(args.basedir, 'tmp', args.prefix+'_distance.json')
     
-    #my_file = Path(out_file2)
-    if not os.path.exists(out_file2):
-        out_fp2 = open(out_file2,'w')
+    #my_file = Path(out_file_selected)
+    if not os.path.exists(out_file_selected):
+        out_fp2 = open(out_file_selected,'w')
         out_fp2.write(json.dumps(dm2))
         out_fp2.close()
     
@@ -123,22 +128,112 @@ def go_distance(args):
     #     ('ICM_LCY_Bv6--test_ds2', 'ICM_LCY_Bv6--test_ds1'): 0.25973116774012883
     # }
 
-def get_dist(metric, mtx):
-    if metric == 'bray_curtis':
-        dtvar = dt.dist_bray_curtis(mtx, strict=False)
-    elif metric == 'morisita_horn':
-        dtvar = dt.dist_morisita_horn(mtx, strict=False)
-    elif metric == 'canberra':
-        dtvar = dt.dist_canberra(mtx, strict=False)
-    elif metric == 'jaccard':
-        dtvar = dt.binary_dist_jaccard(mtx, strict=False)
-    elif metric == 'kulczynski':
-        dtvar = dt.dist_kulczynski(mtx, strict=False)
-    else:  # default
-        dtvar = dt.dist_bray_curtis(mtx, strict=False)
-
-    dist = distance.squareform( dtvar )
-    return dist
+def get_dist(mtx, biom_data):
+    cols = [ i['id'] for i in biom_data['columns']]
+    if args.create_splits:
+        dtvar_jc = dt.binary_dist_jaccard(mtx, strict=False)
+        dtvar_bc = dt.dist_bray_curtis(mtx, strict=False)        
+        dtvar_mh = dt.dist_morisita_horn(mtx, strict=False)
+        dtvar_cb = dt.dist_canberra(mtx, strict=False)        
+        dtvar_kz = dt.dist_kulczynski(mtx, strict=False)
+        
+        # there are 10 combos
+        np_jc_l = np.tril(dtvar_jc)        
+        np_bc_u = np.triu(dtvar_bc)
+        np_mh_u = np.triu(dtvar_mh)
+        np_mh_l = np.tril(dtvar_mh)        
+        np_cb_u = np.triu(dtvar_cb)
+        np_cb_l = np.tril(dtvar_cb)        
+        np_kz_u = np.triu(dtvar_kz)
+        np_kz_l = np.tril(dtvar_kz)
+        matrices = {'jc_kz':np_jc_l + np_kz_u,'jc_cb':np_jc_l + np_cb_u,'jc_mh':np_jc_l + np_mh_u,'jc_bc':np_jc_l + np_bc_u ,'kz_cb':np_kz_l + np_cb_u,'kz_mh':np_kz_l + np_mh_u,'kz_bc':np_kz_l + np_bc_u,'cb_mh':np_cb_l + np_mh_u,'cb_bc':np_cb_l + np_bc_u,'mh_bc':np_mh_l + np_bc_u}
+        #print(matrices['cb_mh'])
+        # convention: first(left) is lower left on heatmap
+        for spl in matrices:
+            df = pd.DataFrame(data=matrices[spl],index=cols,columns=cols)
+            #dict = df.to_dict()
+            out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_'+spl+'.tsv')
+            df.to_csv(out_file, sep='\t', encoding='utf-8')
+            #out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_'+spl+'.json')
+            #out_fp = open(out_file,'w')
+            #out_fp.write(json.dumps(dict))
+            #out_fp.close()
+        # dtvar = np_jc_l + np_cb_u
+#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
+#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_jc_cb.tsv')
+#         df.to_csv(out_file, sep='\t', encoding='utf-8')
+#         
+#         
+#         dtvar = np_jc_l + np_mh_u
+#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
+#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_jc_mh.tsv')
+#         df.to_csv(out_file, sep='\t', encoding='utf-8')
+#         
+#         
+#         dtvar = np_jc_l + np_bc_u  
+#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
+#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_jc_bc.tsv')
+#         df.to_csv(out_file, sep='\t', encoding='utf-8')      
+#         
+#         
+#         dtvar = np_kz_l + np_cb_u
+#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
+#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_kz_cb.tsv')
+#         df.to_csv(out_file, sep='\t', encoding='utf-8') 
+#         
+#         
+#         dtvar = np_kz_l + np_mh_u  
+#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
+#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_kz_mh.tsv')
+#         df.to_csv(out_file, sep='\t', encoding='utf-8')      
+#         
+#         
+#         dtvar = np_kz_l + np_bc_u
+#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
+#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_kz_bc.tsv')
+#         df.to_csv(out_file, sep='\t', encoding='utf-8') 
+#         
+#         
+#         dtvar = np_cb_l + np_mh_u
+#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
+#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_cb_mh.tsv')
+#         df.to_csv(out_file, sep='\t', encoding='utf-8') 
+#         
+#         
+#         dtvar = np_cb_l + np_bc_u
+#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
+#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_cb_bc.tsv')
+#         df.to_csv(out_file, sep='\t', encoding='utf-8') 
+#         
+#         
+#         dtvar = np_mh_l + np_bc_u
+#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
+#         dict = df.to_dict()
+        
+        
+        #df.to_csv(out_file, sep='\t', encoding='utf-8')         
+        
+        
+        #print(dict)
+        #sys.exit()
+        return {}
+    else:    
+        if args.metric == 'bray_curtis':
+            dtvar = dt.dist_bray_curtis(mtx, strict=False)
+        elif args.metric == 'morisita_horn':
+            dtvar = dt.dist_morisita_horn(mtx, strict=False)
+        elif args.metric == 'canberra':
+            dtvar = dt.dist_canberra(mtx, strict=False)
+        elif args.metric == 'jaccard':
+            dtvar = dt.binary_dist_jaccard(mtx, strict=False)
+        elif args.metric == 'kulczynski':
+            dtvar = dt.dist_kulczynski(mtx, strict=False)
+        else:  # default
+            dtvar = dt.dist_bray_curtis(mtx, strict=False)
+    
+        #sys.exit()
+        dist = distance.squareform( dtvar )
+        return dist
 
 def get_dist_matrix1(dist):
     return distance.squareform(dist)
@@ -427,7 +522,7 @@ if __name__ == '__main__':
     parser.add_argument('-basedir','--basedir',required=True,  action="store",  dest='basedir',   help = 'site base')
     parser.add_argument('-pre','--prefix',     required=True,  action="store",  dest='prefix',    help = 'file prefix')
     parser.add_argument('-m','--map_fp',       required=False, action="store",  dest='map_fp',    help = 'metadata file path',default=None)
-
+    parser.add_argument('-splits','--create_split_distance_files', required=False, action="store_true",  dest='create_splits',    help = '',default=False)
     args = parser.parse_args()
 
     # saves distance file:

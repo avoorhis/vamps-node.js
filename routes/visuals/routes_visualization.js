@@ -20,6 +20,7 @@ var QUERY = require('../queries');
 
 var COMMON  = require('./routes_common');
 var META    = require('./routes_visuals_metadata');
+var IMAGES = require('../routes_images');
 //var PCOA    = require('./routes_pcoa');
 var MTX     = require('./routes_counts_matrix');
 //var HMAP    = require('./routes_distance_heatmap');
@@ -1750,6 +1751,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     var did1 = myurl.query.did1;
     var did2 = myurl.query.did2;
     var dist = myurl.query.dist;
+    var metric = myurl.query.metric;
     //var ts   = myurl.query.ts;
     var orderby = myurl.query.orderby || 'alpha'; // alpha, count
     var value = myurl.query.val || 'z'; // a,z, min, max
@@ -1772,7 +1774,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     pi.tax_depth = req.session.tax_depth
     pi.include_nas = req.session.include_nas
     pi.domains = req.session.domains
-    pi.selected_distance = req.session.selected_distance
+    pi.selected_distance = metric
     var write_file = false;  // DO NOT OVERWRITE The Matrix File
     var new_matrix = MTX.get_biom_matrix(req, pi, write_file);
     console.log('new_matrix')
@@ -2394,6 +2396,137 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 //
 //
 //
+
+router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res) {
+    console.log('in dheatmap_number_to_color')
+    console.log(req.body)
+    
+    var ts = req.session.ts
+    var distmtx_file_name = ts+'_distance.json';
+    var distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
+    console.log(distmtx_file)
+    var distance_matrix = JSON.parse(fs.readFileSync(distmtx_file, 'utf8')) // function (err, distance_matrix) {
+                            
+    //distance_matrix = JSON.parse(data);
+    console.log(distance_matrix)
+    metadata = {}
+    metadata.numbers_or_colors = req.body.numbers_or_colors
+    metadata.split = false
+    metadata.metric = req.session.selected_distance  // revert back to selected
+    var html = IMAGES.create_hm_table(req, distance_matrix, metadata )
+    
+    //console.log(html)
+    var outfile_name = ts + '-dheatmap-api.html'
+    outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+    //console.log('outfile_path:',outfile_path)
+    //result = IMAGES.save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
+    //console.log(result)
+    //res.send(outfile_name)
+    var data = {}
+    data.html = html
+    data.numbers_or_colors = req.body.numbers_or_colors
+    data.filename = outfile_name
+    //res.send(outfile_name)
+    res.json(data)
+
+   
+});
+router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) {
+    console.log('in dheatmap_split_distance')
+    console.log(req.body)
+    
+    
+    var ts = req.session.ts
+    var test_split_file_name = ts+'_distance_mh_bc.tsv';
+    var test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
+    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    var biom_file_name = ts+'_count_matrix.biom';
+    var biom_file = path.join(pwd,'tmp',biom_file_name);
+    
+    
+            
+    var FinishSplitFile = function(req, res){
+        var ts = req.session.ts
+        //var suffix = split_file_suffixes[req.body.split_distance_choice]
+        var suffix = req.body.split_distance_choice
+        //var distmtx_file_name = ts+'_distance_'+suffix+'.json';
+        var distmtx_file_name = ts+'_distance_'+suffix+'.tsv';
+        var distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
+        //console.log(distmtx_file)
+        fs.readFile(distmtx_file, 'utf8',function readFile(err,mtxdata) {
+            if (err) {
+                res.json({'err':err})
+            }else{
+                //console.log(mtxdata)
+                var split_distance_csv_matrix = mtxdata.split('\n')
+                
+                var IMAGES = require('../routes_images');
+                metadata = {}
+                metadata.numbers_or_colors = req.body.numbers_or_colors
+                metadata.split = true
+                metadata.metric = suffix
+                
+                var html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata )
+
+                var outfile_name = ts + '-dheatmap-api.html'
+                outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+                
+                var data = {}
+                data.html = html
+                data.numbers_or_colors = req.body.numbers_or_colors
+                data.filename = outfile_name
+                //res.send(outfile_name)
+                res.json(data)
+            }
+          
+        });
+    }
+    if(helpers.fileExists(test_distmtx_file)){
+        console.log('Using Old Files')
+        FinishSplitFile(req, res) 
+        return   
+    }
+    
+    var options = {
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      args :       [ '-in', biom_file, '-splits', '--function', 'splits_only', '--basedir', pwd, '--prefix', ts ],
+    }; 
+    console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
+    var split_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
+            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+            detached: true,
+            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            stdio: 'pipe'  // stdin, stdout, stderr
+    });
+
+    var stdout = '';
+    split_process.stdout.on('data', function splitsProcessStdout(data) {
+        //
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stdout += data;
+
+    });
+    var stderr = '';
+    split_process.stderr.on('data', function splitsProcessStderr(data) {
+        console.log('stderr: ' + data);
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stderr += data;
+    });
+    split_process.on('close', function splitsProcessOnClose(code) {
+        console.log('finished code:'+code.toString())
+        console.log('Creating New Split Distance Files')
+        FinishSplitFile(req, res)        
+        //var split_distance_csv_matrix = JSON.parse(fs.readFile(distmtx_file, 'utf8', function)) // function (err, distance_matrix) {
+                
+
+    })
+});
+//
+//
+//
+
 router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
     console.log('in routes_visualization download_file')
     var html = '';
