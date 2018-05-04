@@ -94,6 +94,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
     if (req.body.fasta === undefined
         && req.body.taxbyseq === undefined
         && req.body.taxbyref === undefined
+        && req.body.taxbytax === undefined
         && req.body.matrix === undefined
         && req.body.metadata1 === undefined
         && req.body.metadata2 === undefined
@@ -134,6 +135,9 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
       //}
       if (key === 'taxbyseq') {
         requested_files.push('-taxbyseq_file');
+      }
+      if (key === 'taxbytax') {
+        requested_files.push('-taxbytax_file');
       }
       if (key === 'metadata1') {
         requested_files.push('-metadata_file1');
