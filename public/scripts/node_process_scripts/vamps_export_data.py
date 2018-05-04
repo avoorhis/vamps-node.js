@@ -648,6 +648,7 @@ def run_taxbytax(args):
                         else:
                             tax_array[tax][pjds] = count
 
+
                     else:
                         tax_array[tax] = {}
                         tax_array[tax][pjds] = count
