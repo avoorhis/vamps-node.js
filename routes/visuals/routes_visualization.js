@@ -2404,11 +2404,11 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
     var ts = req.session.ts
     var distmtx_file_name = ts+'_distance.json';
     var distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
-    console.log(distmtx_file)
+    //console.log(distmtx_file)
     var distance_matrix = JSON.parse(fs.readFileSync(distmtx_file, 'utf8')) // function (err, distance_matrix) {
                             
     //distance_matrix = JSON.parse(data);
-    console.log(distance_matrix)
+    //console.log(distance_matrix)
     metadata = {}
     metadata.numbers_or_colors = req.body.numbers_or_colors
     metadata.split = false
