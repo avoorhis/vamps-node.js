@@ -6,6 +6,7 @@ var transporter = nodemailer.createTransport({});
 var zlib = require('zlib');
 var Readable = require('stream').Readable;
 var helpers = require('./helpers/helpers');
+var queries = require(app_root + '/routes/queries');
 var path = require('path');
 var config  = require(app_root + '/config/config');
 //var crypto = require('crypto');
@@ -70,14 +71,32 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //  MD_ENV_CNTRY   country
 //  MD_ENV_LZC     longhurst zone code
 
-  //console.log(req.user)
- //  if(req.query.hasOwnProperty('metagenomic') && req.query.metagenomic == 1){
-//     var metagenomic = true
-//     var search_obj = METAGENOMIC_INFORMATION_BY_PID
-//   }else{
-//     var metagenomic = false
-//     var search_obj = PROJECT_INFORMATION_BY_PID
-//   }
+      var ProjectProfileFinishRequest = function (req, pnotes) {
+          
+              res.render('projects/profile', {
+              title  : 'VAMPS Project',
+              info: JSON.stringify(info),
+              //project_prefix : info.project,  // see lines 135
+              dsinfo: dsinfo,
+              dscounts: JSON.stringify(dscounts),
+              pid: req.params.id,
+              mdata: JSON.stringify(mdata),
+              pcount: project_count,
+              portal :    JSON.stringify(member_of_portal),
+              //abstracts: JSON.stringify(abstracts[project_prefix]),
+              abstract_info : JSON.stringify(abstract_data),
+              //pnotes:JSON.stringify(pnotes),
+              pnotes:pnotes,
+              dco_file: best_file,
+
+              finfo: JSON.stringify(project_file_names),
+
+              user   : req.user,
+              hostname: req.CONFIG.hostname
+            });
+      
+      
+        };
       if(req.params.id in PROJECT_INFORMATION_BY_PID){
         var info = PROJECT_INFORMATION_BY_PID[req.params.id];
         var project_count = ALL_PCOUNTS_BY_PID[req.params.id];
@@ -140,29 +159,29 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         var best_file = ''
         if(info.project.substring(0,3) == 'DCO'){
 
-          try{
-            info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','DCO_info.json');
-            abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
-          }catch(e){
-            abstract_data = {};
-          }
-          var dco_all_metadata_file =''
-          best_date = Date.parse('2000-01-01')
-
-          fs.readdirSync(req.CONFIG.PATH_TO_DCO_DOWNLOADS).forEach(file => {
-            if(file.substring(0,16) == 'dco_all_metadata'){
-            //console.log('file '+file)
-            file_date = file.substring(17,file.length - 7)
-            //console.log('file_date: '+file_date)
-            d = Date.parse(file_date)
-            if(d > best_date){
-              best_file = file
+            try{
+                info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','DCO_info.json');
+                abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+            }catch(e){
+                abstract_data = {};
             }
-          }
-        })
-          //best_file =  'dco_all_metadata_'+yyyy+'-'+mm+'-'+dd+'.tsv.gz'
-          //console.log('best_file '+best_file)
-          best_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,best_file)
+            var dco_all_metadata_file =''
+            best_date = Date.parse('2000-01-01')
+
+            fs.readdirSync(req.CONFIG.PATH_TO_DCO_DOWNLOADS).forEach(file => {
+                if(file.substring(0,16) == 'dco_all_metadata'){
+                    //console.log('file '+file)
+                    file_date = file.substring(17,file.length - 7)
+                    //console.log('file_date: '+file_date)
+                    d = Date.parse(file_date)
+                    if(d > best_date){
+                        best_file = file
+                    }
+                }
+            })
+            //best_file =  'dco_all_metadata_'+yyyy+'-'+mm+'-'+dd+'.tsv.gz'
+            //console.log('best_file '+best_file)
+            best_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,best_file)
 
 
         }
@@ -171,31 +190,32 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         var project_file_names = filter_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
 
         project_file_names.sort(function sortByTime(a, b) {
-          //reverse sort: recent-->oldest
-          return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
+            //reverse sort: recent-->oldest
+            return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
         });
-
-        //console.log(info)
-        res.render('projects/profile', {
-          title  : 'VAMPS Project',
-          info: JSON.stringify(info),
-          project_prefix : project_prefix,
-          dsinfo: dsinfo,
-          dscounts: JSON.stringify(dscounts),
-          pid: req.params.id,
-          mdata: JSON.stringify(mdata),
-          pcount: project_count,
-          portal :    JSON.stringify(member_of_portal),
-          //abstracts: JSON.stringify(abstracts[project_prefix]),
-          abstract_info : JSON.stringify(abstract_data),
-
-          dco_file: best_file,
-
-          finfo: JSON.stringify(project_file_names),
-
-          user   : req.user,
-          hostname: req.CONFIG.hostname
+        var pnotes = []
+        connection.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows, fields){
+            if (err)  {
+                      console.log('Getting Project Notes Error: ' + err);                   
+            } else {                
+                if(rows.length > 0){
+                    pnotes = rows[0].notes
+                }
+                ProjectProfileFinishRequest(req, pnotes)
+            }
+            
         });
+        // pnotes_file = path.join(req.CONFIG.PATH_TO_PROJECT_NOTES,'read_me.'+PROJECT_INFORMATION_BY_PID[req.params.id].project+'.txt');
+//         if(helpers.fileExists(pnotes_file)){
+//             fs.readFile(pnotes_file,'utf8', function(err, pnotes){
+//                 var lines = pnotes.split('\r')
+//                 ProjectProfileFinishRequest(req, lines)
+//             })
+//         }else{
+            
+        //}
+                   
+        
 
   }else{
     req.flash('fail','not found');

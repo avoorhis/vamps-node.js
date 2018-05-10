@@ -1,5 +1,6 @@
 <% include ../add_ins/begin.ejs %>
 <% data = JSON.parse(info)      %>
+<% project_prefix = data.project %>
 <% portals = JSON.parse(portal)    %>
 
   <% if (messages.success) { %>
@@ -7,8 +8,8 @@
   <% }else if(messages.fail){ %>
     <div class="alert_flash_message_fail"><%= messages.fail %></div>
   <% } %>
-<% if(project_prefix.substring(0,3) == 'DCO' ){ %>
-    <div class='pull-right'><img src='/static/images/<%= project_prefix %>.png' alt='project_image' height='200'></div>
+<% if(data.project.substring(0,3) == 'DCO' ){ %>
+    <div class='pull-right'><img src='/static/images/<%= data.project %>.png' alt='project_image' height='200'></div>
     
     
     

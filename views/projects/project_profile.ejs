@@ -3,6 +3,7 @@
 <% metadata  = JSON.parse(mdata)    %>
 <% //abstracts  = JSON.parse(abstracts) %>
 <% abstract_data  = JSON.parse(abstract_info) %>
+<% //pnotes  = JSON.parse(pnotes) %>
 
 <% var reveal_all = false %>
 <% var edit_metadata = false %>
@@ -150,33 +151,33 @@
                 <tr><td>Project Name: </td><td><%= data.project %></td></tr>
                 <tr><td>Project_id:</td><td> <%= pid %></td></tr>
                 <% if(project_prefix.substring(0,3) == 'DCO' ){ %>
-                <% if(abstract_data.hasOwnProperty('project_prefix') && abstract_data[project_prefix].id != '') { %>
-                <tr><td>DCO id (Link to DeepCarbon.net site)</td>
-                    <td><a href='<%= abstract_data[project_prefix].url %>' target='_blank'> <%= abstract_data[project_prefix].id %></td>
-                </tr>
-                <% } %>
+                    <% if(abstract_data.hasOwnProperty('project_prefix') && abstract_data[project_prefix].id != '') { %>
+                        <tr><td>DCO id (Link to DeepCarbon.net site)</td>
+                            <td><a href='<%= abstract_data[project_prefix].url %>' target='_blank'> <%= abstract_data[project_prefix].id %></td>
+                        </tr>
+                    <% } %>
                 <% } %>
                 <tr><td>Title:</td><td> <%= data.title %></td></tr>
                 <tr><td>Description:</td><td> <%= data.description %></td></tr>
 
                 <% if(data.public) { %>
-                <tr><td>Status:</td><td> Public</td></tr>
+                    <tr><td>Status:</td><td> Public</td></tr>
                 <% } else { %>
-                <tr><td>Status:</td><td> Private</td></tr>
+                    <tr><td>Status:</td><td> Private</td></tr>
                 <% } %>
                 <tr><td>Primary Investigator:</td><td> <%= data.first %> <%= data.last %> (<%= data.email %>)</td></tr>
                 <tr><td>Institution:</td><td> <%= data.institution %></li>
                 <tr><td>Date Created:</td><td><%= data.created_at %></td></tr>
                 <tr><td>Date Last Updated:</td><td><%= data.updated_at %></td></tr>
                 <% if(data.public || data.permissions.indexOf(user.user_id) != -1) { %>
-                <tr><td>Project Sequence Count:</td><td> <%= pcount %></td></tr>
-                <!-- <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr> -->
-                <tr><td>Number of samples (datasets):</td><td> <%= dsinfo.length %></td></tr>
+                    <tr><td>Project Sequence Count:</td><td> <%= pcount %></td></tr>
+                    <!-- <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr> -->
+                    <tr><td>Number of samples (datasets):</td><td> <%= dsinfo.length %></td></tr>
                 <% } %>
-
+                
                 <!-- ABSTRACT -->
                 <% if(abstract_data.hasOwnProperty(project_prefix)){ %>
-                <tr><td>Abstract</td><td>
+                    <tr><td>Abstract</td><td>
                         <% for(n in abstract_data[project_prefix].pdfs){ %>
                         <a href='/static/abstracts/<%= abstract_data[project_prefix].pdfs[n] %>' target='_blank'>
                             <%= abstract_data[project_prefix].pdfs[n] %></a>
@@ -184,7 +185,12 @@
                         <% } %>
                     </td></tr>
                 <% } %>
-
+                <!-- NOTES -->
+                <% if(pnotes.length > 0){ %>
+                    <tr><td>Notes:</td>
+                    <td><textarea readonly rows='4' cols='100'><%= pnotes %></textarea></td></tr>
+                    
+                <% } %>
             </table>
         </div> <!-- End project div -->
         <% if(reveal_all) { %>

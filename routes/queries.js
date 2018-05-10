@@ -459,6 +459,13 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
         qSelectDatasets += " ORDER BY project, dataset";
         //console.log(qSelectDatasets);
         return qSelectDatasets;
-  }  
+  },
+  get_project_notes_query: function(pid) {      
+
+        var qSelectNotes = "SELECT notes FROM project_notes";
+        qSelectNotes += " WHERE project_id='"+pid+"'";
+        //console.log(qSelectNotes);
+        return qSelectNotes;
+  }    
  
 } // end of module.exports

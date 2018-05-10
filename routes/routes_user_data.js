@@ -596,7 +596,7 @@ router.get('/import_choices/fasta', [helpers.isLoggedIn], function (req, res) {
           title: 'VAMPS:Import Data:fasta',
           def_name:default_project_name,
           user: req.user, hostname: req.CONFIG.hostname
-          });
+    });
           
 });
 router.get('/import_choices/matrix', [helpers.isLoggedIn], function (req, res) {
@@ -607,7 +607,18 @@ router.get('/import_choices/matrix', [helpers.isLoggedIn], function (req, res) {
           title: 'VAMPS:Import Data:matrix',
           def_name:default_project_name,
           user: req.user, hostname: req.CONFIG.hostname
-          });
+    });
+          
+});
+router.get('/import_choices/biom', [helpers.isLoggedIn], function (req, res) {
+    console.log('in GET import_choices/biom')
+    var rando = Math.floor((Math.random() * (999999 - 100000 + 1)) + 100000);
+    var default_project_name = req.user.username+'_'+rando.toString();
+    res.render('user_data/import_choices/biom', {
+          title: 'VAMPS:Import Data:Biom',
+          def_name:default_project_name,
+          user: req.user, hostname: req.CONFIG.hostname
+    });
           
 });
 //
