@@ -10,17 +10,17 @@
 
 <div id="import_choices">
   <div class="row">
-      <% if(user.security_level == 1){ %>
+      <% if(hostname.substring(0,7) != 'bpcweb8'){ %>
         <div class="col-sm-3"><a href="/user_data/import_choices/fasta">Fasta File</a></div>
       <% }else{ %>
-        Fasta File (In Development)
+            Fasta File (In Development)
         <br>Taxonomy Matrix File (In Development)
         <br>Biom File  (In Development)
       <% } %>
       
   </div>
   <div class="row">
-      <% if(user.security_level == 1){ %>
+      <% if(hostname.substring(0,7) != 'bpcweb8'){ %>
         <div class="col-sm-3"><a href="/user_data/import_choices/matrix">Matrix File</a></div>
       <% }else{ %>
         
@@ -28,7 +28,7 @@
       
   </div>
   <div class="row">
-      <% if(user.security_level == 1){ %>
+      <% if(hostname.substring(0,7) != 'bpcweb8'){ %> 
         <div class="col-sm-3"><a href="/user_data/import_choices/biom">Biom File (In Development)</a></div>
       <% }else{ %>
         
