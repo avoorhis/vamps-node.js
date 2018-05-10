@@ -12,7 +12,7 @@
 <%  reveal_all = true %>
 <% } %>
 <!-- DCO only - AND (owner or admin) can see/edit ALSO MBL power users (Mitch) and DCO_metadata_editors(45)-->
-<%  console.log('xxx') %>
+
 <!-- if user == owner or if admin or DCO-Editor  -->
 <% if(user.user_id == data.oid  || user.security_level <= 10 || user.security_level == 45 ){ %>
 <%  edit_metadata = true %>
