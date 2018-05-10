@@ -1099,11 +1099,11 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
   var project = req.params.id;
   var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, req.CONSTS.CONFIG_FILE);
 
-  var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
+  var cfg_data = ini.parse(fs.readFileSync(config_file, 'utf-8'));
   
   res.render('user_data/profile', {
       project : project,
-      pinfo   : JSON.stringify(config),
+      pinfo   : JSON.stringify(cfg_data),
       title   : project,
       user: req.user, hostname: req.CONFIG.hostname
          });
@@ -1124,10 +1124,10 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function (req, res)
   stats = fs.statSync(config_file);
   if (stats.isFile()) {
      console.log('config found');
-     var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
+     var cfg_data = ini.parse(fs.readFileSync(config_file, 'utf-8'));
   } else {
     //console.log('config NOT found')
-     config = {'config file NOT AVAILABLE':1};
+     cfg_data = {'config file NOT AVAILABLE':1};
   }
   var metadata_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, 'metadata_clean.csv');
 
@@ -1137,7 +1137,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function (req, res)
 
       res.render('user_data/metadata', {
         project : project,
-        pinfo   : JSON.stringify(config),
+        pinfo   : JSON.stringify(cfg_data),
         mdata   : data,
         title   : project,
         user: req.user, hostname: req.CONFIG.hostname
@@ -1156,7 +1156,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function (req, res)
     console.log('meta NOT found');
     res.render('user_data/metadata', {
       project : project,
-      pinfo   : JSON.stringify(config),
+      pinfo   : JSON.stringify(cfg_data),
       mdata   : [],
       title   : project,
       user: req.user, hostname: req.CONFIG.hostname
@@ -1178,10 +1178,10 @@ router.get('/user_project_validation/:id', helpers.isLoggedIn, function (req, re
         stats = fs.statSync(config_file);
         if (stats.isFile()) {
            console.log('config found');
-           var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
+           var cfg_data = ini.parse(fs.readFileSync(config_file, 'utf-8'));
         } else {
             console.log('config NOT found');
-            config = {'config file NOT AVAILABLE':1};
+            cfg_data = {'config file NOT AVAILABLE':1};
         }
         res.redirect("/user_data/your_projects");
 });
@@ -1818,34 +1818,29 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
             try {  // to read config file
               
               console.log('2 ', config_file)
-              var config = ini.parse(fs.readFileSync(config_file, 'utf-8'))
+              var cfg_data = ini.parse(fs.readFileSync(config_file, 'utf-8'))
             }
             catch (err) {
                 console.log(' **NO CONFIG: '+project_name)
             }
             try{  
-              console.log('3 ', config)
-              if( config.MAIN.hasOwnProperty(dataset)){
-                var list_of_datasets = Object.keys(config.MAIN.dataset);
-                project_info[project_name].DATASETS = config.MAIN.dataset;
+              console.log('3 ', cfg_data)
+              if( cfg_data.MAIN.hasOwnProperty(dataset)){
+                var list_of_datasets = Object.keys(cfg_data.MAIN.dataset);
+                project_info[project_name].DATASETS = cfg_data.MAIN.dataset;
               }
               //console.log('2 ', list_of_datasets)
               
               //project_info[project_name].empty_dir = 'false'
-              project_info[project_name].num_of_datasets = config.MAIN.num_of_datasets
-              //project_info[project_name].seq_count = config.MAIN.unique_seq_count
-              //project_info[project_name].config = config;
+              project_info[project_name].num_of_datasets = cfg_data.MAIN.num_of_datasets
+              //project_info[project_name].seq_count = cfg_data.MAIN.unique_seq_count
+              //project_info[project_name].config = cfg_data;
               
               project_info[project_name].directory = items[d];              
-              if( config.MAIN.hasOwnProperty(type)){
-                project_info[project_name].ptype = config.MAIN.type;
+              if( cfg_data.MAIN.hasOwnProperty(type)){
+                project_info[project_name].ptype = cfg_data.MAIN.type;
               }
-              //project_info[project_name].mtime = stat_dir.mtime;
-              //project_info[project_name].project = project_name;
-              //project_info[project_name].number_of_datasets = config.GENERAL.number_of_datasets;
-              //project_info[project_name].project_sequence_count = config.GENERAL.project_sequence_count;
-              //project_info[project_name].public = config.GENERAL.public;
-              //project_info[project_name].env_source_id = config.GENERAL.env_source_id;
+              
               
             }
             catch (err) {
