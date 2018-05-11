@@ -47,7 +47,8 @@ router.get('/your_data', helpers.isLoggedIn, function get_your_data(req, res) {
             pid = rows[n].project_id
             var dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+rows[n].project);
             if(! helpers.fileExists(dir)){
-                 helpers.mkdirSync(dir);
+                 // turned OFF
+                 //helpers.mkdirSync(dir);
             }
         }
     });
