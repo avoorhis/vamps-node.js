@@ -1502,7 +1502,6 @@ function checkPid(check_pid_options, last_line)
   ref_db    = check_pid_options[3];
   console.log(' classifier CLCLCL: ' + classifier);
   console.log(' last_line CLCLCL: ' + last_line);
-  console.log(' classifier CLCLCL: ');
   console.log("status_params from checkPid: ");
   console.log(util.inspect(status_params, false, null));
 

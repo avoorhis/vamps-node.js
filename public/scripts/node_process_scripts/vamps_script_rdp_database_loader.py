@@ -339,11 +339,13 @@ def push_pdr_seqs(args):
             #     q += " VALUES ('%s','%s','%s','1')"
             # else:
             #     q += " VALUES ('%s','%s','%s','3')"   # 3 is 'unknown'
-            print(q)
+            
             #print()
             logging.info(q)
             try:
-                cur.execute(q % (str(did),str(seqid),str(count),str(classid)))
+                q = q  % (str(did),str(seqid),str(count),str(classid))
+                print(q)
+                cur.execute(q)
             except:
                 logging.error(q)
                 print ("ERROR Exiting: "+ds +"; Query: "+q)
