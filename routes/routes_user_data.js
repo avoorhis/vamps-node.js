@@ -2705,15 +2705,14 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
   child.stdout.on('data', function AddDataToOutput(data) {
         data = data.toString().trim();
         output += data;
+        console.log('stdout: ' + data);
         CheckIfPID(data);
   });
   
-  // {
-//       console.log('stdout: ' + data);
-//   });
+ 
   
   child.stderr.on('data', function(data) {
-      console.log('stdout: ' + data);
+      console.log('stderr: ' + data);
   });
   
   child.on('close', function checkExitCode(code) {
