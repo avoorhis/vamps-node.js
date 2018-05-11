@@ -37,7 +37,7 @@ get_select_custom_units_query: function(){
 
 get_select_datasets_queryPID: function(pid){
     var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution,";
-    qSelectDatasets += " first_name, last_name, owner_user_id,public, metagenomic,DATE(created_at),DATE(updated_at)";
+    qSelectDatasets += " first_name, last_name, owner_user_id,public, metagenomic,DATE(project.created_at),DATE(project.updated_at)";
     qSelectDatasets += " FROM dataset";
     qSelectDatasets += " JOIN project USING(project_id)";
     qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
