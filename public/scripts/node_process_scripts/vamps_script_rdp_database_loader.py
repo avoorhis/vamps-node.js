@@ -312,8 +312,32 @@ def push_dataset():
     
     
 
-    
+def get_default_run_info_ill_id():
 
+    q =  "SELECT run_info_ill_id from run_info_ill"
+    q += " JOIN run_key using(run_key_id)"
+    q += " JOIN run using(run_id)"
+    q += " JOIN dataset using(dataset_id)"
+    q += " JOIN dna_region using(dna_region_id)"
+    q += " JOIN primer_suite using(primer_suite_id)"
+    q += " JOIN illumina_index using(illumina_index_id)"
+    q += " WHERE run_key='%s'"
+    q += " AND run='%s'"
+    q += " AND dataset='%s'"
+    q += " AND dna_region='%s'"
+    q += " AND primer_suite='%s'"
+    q += " AND illumina_index='%s'"
+    
+    try:
+        q = q  % ('unknown','unknown','default_dataset','unknown','unknown','unknown')
+        print(q)
+        cur.execute(q)
+    except:
+        print ("ERROR No default run_info_ill_id; Query: "+q)
+        sys.exit()
+    row = cur.fetchone()
+    run_info_ill_id=row[0]
+    return run_info_ill_id
 
 def push_pdr_seqs(args):
     #print()
@@ -322,16 +346,17 @@ def push_pdr_seqs(args):
     global SEQ_COLLECTOR
     global DATASET_ID_BY_NAME
     global mysql_conn, cur
+    run_info_ill_id = get_default_run_info_ill_id()
     for ds in SEQ_COLLECTOR:
         for seq in SEQ_COLLECTOR[ds]:
             did = DATASET_ID_BY_NAME[ds]
             seqid = SEQ_COLLECTOR[ds][seq]['sequence_id']
             count = SEQ_COLLECTOR[ds][seq]['seq_count']
-            q = "INSERT into sequence_pdr_info (dataset_id, sequence_id, seq_count, classifier_id)"
+            q = "INSERT into sequence_pdr_info (dataset_id, sequence_id, seq_count, classifier_id,run_info_ill_id)"
             #if args.classifier.upper() == 'GAST':
             
             classid=9  # 'unknown'
-            q += " VALUES ('%s','%s','%s','%s')"   
+            q += " VALUES ('%s','%s','%s','%s','%s')"   
 
 
             #     q += " VALUES ('%s','%s','%s','2')"
@@ -343,7 +368,7 @@ def push_pdr_seqs(args):
             #print()
             logging.info(q)
             try:
-                q = q  % (str(did),str(seqid),str(count),str(classid))
+                q = q  % (str(did),str(seqid),str(count),str(classid),str(run_info_ill_id))
                 print(q)
                 cur.execute(q)
             except:
