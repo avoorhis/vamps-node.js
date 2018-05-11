@@ -1791,8 +1791,8 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
             if (pts[0] === 'project' || pts[0].substring(0,7) === 'DELETED') {
 
               var project_name = items[d].substring(8,items[d].length);
-              console.log()
-              console.log('dir',items[d])
+              //console.log()
+              //console.log('dir',items[d])
               if( ! project_info.hasOwnProperty(project_name)){
                 // these projects are either empty (NoDataYet) or orphans (dir w/o DB presence)
                 console.log('project in file but not in DB', project_name)
@@ -1814,40 +1814,36 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
             // need to read config file
             // check status?? dir strcture: analisis/gast/<ds>
             var config_file = path.join(user_projects_base_dir, items[d], req.CONSTS.CONFIG_FILE);
-
+            //console.log(config_file)
+            var cfg_data = {}
             try {  // to read config file
               
-              console.log('2 ', config_file)
-              var cfg_data = ini.parse(fs.readFileSync(config_file, 'utf-8'))
+              //console.log('2 ', config_file)
+              cfg_data = ini.parse(fs.readFileSync(config_file, 'utf-8'))
             }
             catch (err) {
                 console.log(' **NO CONFIG: '+project_name)
             }
-            try{  
-              console.log('3 ', cfg_data)
-              if( cfg_data.MAIN.hasOwnProperty(dataset)){
-                var list_of_datasets = Object.keys(cfg_data.MAIN.dataset);
-                project_info[project_name].DATASETS = cfg_data.MAIN.dataset;
+           //console.log(cfg_data)
+              if( cfg_data.hasOwnProperty('MAIN')){              
+                //console.log(' found MAIN ')
+                if(cfg_data.MAIN.hasOwnProperty('dataset')){
+                    //console.log(' found MAIN.datasets ')
+                    var list_of_datasets = Object.keys(cfg_data.MAIN.dataset);
+                    project_info[project_name].DATASETS = cfg_data.MAIN.dataset;
+                }
+                //console.log(' items ')
+                //console.log(items[d])
+                project_info[project_name].num_of_datasets = cfg_data.MAIN.num_of_datasets
+                project_info[project_name].directory = items[d];              
+                if( cfg_data.MAIN.hasOwnProperty('type')){
+                    //console.log(' found MAIN.type ')
+                    project_info[project_name].ptype = cfg_data.MAIN.type;
+                }
+              }else{
+                 console.log('Lost Project: '+project_name+' NO CONFIG: '+project_name)
               }
-              //console.log('2 ', list_of_datasets)
               
-              //project_info[project_name].empty_dir = 'false'
-              project_info[project_name].num_of_datasets = cfg_data.MAIN.num_of_datasets
-              //project_info[project_name].seq_count = cfg_data.MAIN.unique_seq_count
-              //project_info[project_name].config = cfg_data;
-              
-              project_info[project_name].directory = items[d];              
-              if( cfg_data.MAIN.hasOwnProperty(type)){
-                project_info[project_name].ptype = cfg_data.MAIN.type;
-              }
-              
-              
-            }
-            catch (err) {
-              // these will be projects in the database; with or without datasets; with empty directories
-                console.log('Lost Project: '+project_name+' NO CONFIG: '+project_name)
-              
-            }
             
           }
 

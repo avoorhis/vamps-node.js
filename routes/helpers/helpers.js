@@ -521,8 +521,8 @@ module.exports.update_global_variables = function(pid,type){
 };
 
 module.exports.assignment_finish_request = function(res, rows1, rows2, status_params) {
-  console.log('query ok1 '+JSON.stringify(rows1));
-  console.log('query ok2 '+JSON.stringify(rows2));
+  //console.log('query ok1 '+JSON.stringify(rows1));
+  //console.log('query ok2 '+JSON.stringify(rows2));
 
   this.run_select_datasets_query(rows1);
   console.log(' UPDATING ALL_DATASETS');
