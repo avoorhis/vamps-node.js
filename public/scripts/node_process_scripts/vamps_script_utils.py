@@ -22,9 +22,8 @@ import time
 import random
 import logging
 import csv
-import ConfigParser
-#sys.path.append( '/bioware/python/lib/python2.7/site-packages/' )
-from IlluminaUtils.lib import fastalib
+import configparser as ConfigParser
+
 import datetime
 today = str(datetime.date.today())
 import subprocess
@@ -41,14 +40,15 @@ def get_data(args):
     
     q = "select dataset_id,dataset,project_id,project from dataset JOIN project USING(project_id) where project_id='"+args.pid+"'"
     
-    print q
+    print(q)
     cur.execute(q)
     args.obj.commit()
     dids = []
     dsets = []
     proj = ''
     if not cur.rowcount:
-        print "No project found -- Continuing on"
+        print("No project Found -- Exiting")
+        sys.exit()
     for row in cur.fetchall():
         did = str(row[0])
         ds = row[1]
@@ -64,15 +64,15 @@ def get_data(args):
             
             
 def delete_whole_project(args,proj,dids,dsets):
-    print 'cleaning'
+    print('cleaning')
     
     for did in dids:
         did_file = os.path.join('public','json', args.NODE_DATABASE+'--taxcounts', did+'.json')
-        print did_file
+        print(did_file)
         try:
             os.remove(did_file)
         except OSError:
-            print "File Not Found: "+did_file
+            print("File Not Found: "+did_file)
     # delete files in public/json/NODE_DATABASE/args.user/pid.json
     # grab taxcounts
     # grab metadata
@@ -91,43 +91,60 @@ def delete_whole_project(args,proj,dids,dsets):
 def delete_metadata_only(args,proj,dids):
     q = "DELETE from required_metadata_info"
     q += " WHERE dataset_id in ('"+ "','".join(dids) + "')"
-    print q
+    print(q)
     cur.execute(q)
 
     q_drop = "DROP TABLE if exists %s"
     q = q_drop % ('custom_metadata_'+str(args.pid))
-    print q
+    print(q)
     cur.execute(q)
 
     q = "DELETE from custom_metadata_fields"
     q += " WHERE project_id = '"+str(args.pid)+"'"
-    print q
+    print(q)
     cur.execute(q)
     
 def delete_tax_only(args,proj,dids,dsets):    
     
     for did in dids:
         
-        did_file = os.path.join(args.process_dir,'public','json', args.NODE_DATABASE+'--datasets', did+'.json')
-        print did_file
+        did_file1 = os.path.join(args.process_dir,'public','json', args.NODE_DATABASE+'--datasets_generic', did+'.json')
+        did_file2 = os.path.join(args.process_dir,'public','json', args.NODE_DATABASE+'--datasets_rdp2.6', did+'.json')
+        did_file3 = os.path.join(args.process_dir,'public','json', args.NODE_DATABASE+'--datasets_silva119', did+'.json')
+        print(did_file1)
         try:
-            os.remove(did_file)
+            os.remove(did_file1)
         except OSError:
-            print "File Not Found: "+did_file
-            
+            #print("File Not Found: "+did_file)
+            pass
+        try:
+            os.remove(did_file2)
+        except OSError:
+            #print("File Not Found: "+did_file2)
+            pass
+        try:
+            os.remove(did_file3)
+        except OSError:
+            #print("File Not Found: "+did_file3)
+            pass    
     q = "DELETE from required_metadata_info"
     q += " WHERE dataset_id in ('"+ "','".join(dids) + "')"
-    print q
+    print(q)
     cur.execute(q)
 
     q_drop = "DROP TABLE if exists %s"
     q = q_drop % ('custom_metadata_'+str(args.pid))
-    print q
+    print(q)
     cur.execute(q)
 
     q = "DELETE from custom_metadata_fields"
     q += " WHERE project_id = '"+str(args.pid)+"'"
-    print q
+    print(q)
+    cur.execute(q)
+    
+    q = "DELETE from matrix_taxonomy_info"
+    q += " WHERE dataset_id in ('"+ "','".join(dids) +"')"
+    print(q)
     cur.execute(q)
     
     q = "DELETE from sequence_pdr_info"
@@ -143,17 +160,17 @@ def delete_tax_only(args,proj,dids,dsets):
     
         
     args.obj.commit()
-    for ds in dsets:
-        gast_dir = os.path.join(args.process_dir,'user_data', args.NODE_DATABASE, args.user,'project:'+proj,'analysis',ds,'gast')
-        try:
-            shutil.rmtree(gast_dir)
-        except:
-            print gast_dir, 'not found or removed'
-        rdp_dir = os.path.join(args.process_dir,'user_data', args.NODE_DATABASE, args.user,'project:'+proj,'analysis',ds,'rdp')
-        try:
-            shutil.rmtree(rdp_dir)
-        except:
-            print rdp_dir, 'not found or removed'
+    # for ds in dsets:
+#         gast_dir = os.path.join(args.process_dir,'user_data', args.NODE_DATABASE, args.user,'project:'+proj,'analysis',ds,'gast')
+#         try:
+#             shutil.rmtree(gast_dir)
+#         except:
+#             print(gast_dir, 'not found or removed')
+#         rdp_dir = os.path.join(args.process_dir,'user_data', args.NODE_DATABASE, args.user,'project:'+proj,'analysis',ds,'rdp')
+#         try:
+#             shutil.rmtree(rdp_dir)
+#         except:
+#             print(rdp_dir, 'not found or removed')
     
     
 def delete_metadata_and_tax(args,proj,dids,dsets):   
@@ -205,7 +222,7 @@ if __name__ == '__main__':
     args = parser.parse_args()    
     
     LOG_FILENAME = os.path.join(args.process_dir,'logs','script_utils.log')
-    print LOG_FILENAME
+    print(LOG_FILENAME)
     
     logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)    
     if args.site == 'vamps':
@@ -232,6 +249,7 @@ if __name__ == '__main__':
     
     
     (proj,dids,dsets) = get_data(args)  
+    
     if args.action == 'delete_whole_project':
         delete_whole_project(args,proj,dids,dsets)
         
@@ -244,5 +262,5 @@ if __name__ == '__main__':
     elif args.action == 'delete_metadata_and_tax' and args.pid != 0:
         delete_metadata_and_tax(args,proj,dids,dsets)
         
-    print "DONE"
-    print "PID="+str(args.pid)
+    print("DONE")
+    print("PID="+str(args.pid))

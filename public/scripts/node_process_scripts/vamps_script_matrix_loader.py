@@ -36,7 +36,7 @@ pp = pprint.PrettyPrinter(indent=4)
  # SUMMED_TAX_COLLECTOR[ds][rank][tax_string] = count
 
 ranks =['domain','phylum','klass','order','family','genus','species','strain']
-generic = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id','species_id','strain_id']
+matrix_taxa_ids = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id','species_id','strain_id']
 #accepted_domains = ['bacteria','archaea','eukarya','fungi','organelle','unknown']
 # ranks =[{'name':'domain', 'id':1,'num':0},
 #         {'name':'phylum', 'id':4,'num':1},
@@ -128,9 +128,6 @@ def start(args):
     print ("starting taxonomy_info")
     push_taxonomy_info(args)
     
-    # logging.info("starting push_pdr_seqs")
-#     print ("starting push_pdr_seqs")
-#     push_pdr_seqs(args)
 
 
     logging.info("Finished "+os.path.basename(__file__))
@@ -264,10 +261,10 @@ def push_project():
     rev = args.project[::-1]
     fund = "Unknown"
     pub = 0  # private
-    fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public']
+    fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public','matrix']
     q = "INSERT into project ("+(',').join(fields)+")"
-    q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
-    q = q % (args.project,title,desc,rev,fund,args.user_id,pub)
+    q += " VALUES('%s','%s','%s','%s','%s','%s','%s','%s')"
+    q = q % (args.project,title,desc,rev,fund,args.user_id,pub,'1')
     if args.verbose:
         print(q)
     logging.info(q)
@@ -308,34 +305,18 @@ def push_dataset():
         DATASET_ID_BY_NAME[ds] = did
         mysql_conn.commit()    
 
-
-def push_pdr_seqs(args):
-    #print()
-    gast_dbs = ['','','']
-
-    global DATASET_ID_BY_NAME
-    global mysql_conn, cur
-    sum_ds_counts = 0
-    classid = '9'
-    for ds in args.tax_data_by_ds:
-        for tax in args.tax_data_by_ds[ds]:
-            sum_ds_counts += int(args.tax_data_by_ds[ds][tax])
-        did = DATASET_ID_BY_NAME[ds]
-        seqid = '1'
-        q = "INSERT into sequence_pdr_info (dataset_id, sequence_id, seq_count, classifier_id)"
-        q += " VALUES ('%s','%s','%s','%s')" % (str(did),'1',str(sum_ds_counts),str(classid))  
-        
-        #print()
-        logging.info(q)
-        try:
-            print(q)
-            cur.execute(q)
-        except:
-            logging.error(q)
-            print ("ERROR Exiting: "+ds +"; Query: "+q)
-            sys.exit()
-        mysql_conn.commit()
+def push_taxonomy(args):
     
+    global SUMMED_TAX_COLLECTOR
+    global mysql_conn, cur
+    print('Starting finish_tax per dataset per tax')
+    for ds in args.tax_data_by_ds.keys():
+        #print('ds:'+ds)
+        for tax in args.tax_data_by_ds[ds]:
+            
+            (rank,rank_id) = get_rank_from_tax_string(tax)
+            seq_count = args.tax_data_by_ds[ds][tax]
+            finish_tax(ds, seq_count, tax)
 
 def push_taxonomy_info(args):  # was push_sequences
     
@@ -351,10 +332,10 @@ def push_taxonomy_info(args):  # was push_sequences
             tax_id = GENERIC_IDS_BY_TAX[tax]
             seq_count = args.tax_data_by_ds[ds][tax]
             (rank, rank_id) = get_rank_from_tax_string(tax)
-            q = "INSERT ignore into generic_taxonomy_info"            
+            q = "INSERT ignore into matrix_taxonomy_info"            
             q += " (dataset_id, generic_taxonomy_id, seq_count, rank_id)"
             q += " VALUES ('%s','%s','%s','%s')" % (str(did), str(tax_id), str(seq_count), str(rank_id))
-            logging.info(q)
+            print(q)
             if args.verbose:
                 print(q)
             cur.execute(q)
@@ -371,18 +352,7 @@ def get_rank_from_tax_string(tax):
     rank_id = RANK_COLLECTOR[rank]
     return (rank,rank_id)
 
-def push_taxonomy(args):
-    
-    global SUMMED_TAX_COLLECTOR
-    global mysql_conn, cur
-    print('Starting finish_tax per dataset per tax')
-    for ds in args.tax_data_by_ds.keys():
-        #print('ds:'+ds)
-        for tax in args.tax_data_by_ds[ds]:
-            
-            (rank,rank_id) = get_rank_from_tax_string(tax)
-            seq_count = args.tax_data_by_ds[ds][tax]
-            finish_tax(ds, seq_count, tax)
+
 
             
 def finish_tax(ds,  seq_count, tax_string):
@@ -479,7 +449,7 @@ def finish_tax(ds,  seq_count, tax_string):
             TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
         #ids_by_rank.append('1')
     logging.info(  ids_by_rank )  
-    q4 =  "INSERT ignore into generic_taxonomy ("+','.join(generic)+",created_at)"
+    q4 =  "INSERT ignore into generic_taxonomy ("+','.join(matrix_taxa_ids)+",created_at)"
     q4 += " VALUES("+','.join(ids_by_rank)+",CURRENT_TIMESTAMP())"
     #
     logging.info(q4)
@@ -487,12 +457,12 @@ def finish_tax(ds,  seq_count, tax_string):
         print (q4)
     cur.execute(q4)
     mysql_conn.commit() 
-    generic_tax_id = cur.lastrowid
-    if generic_tax_id == 0:
+    tax_id = cur.lastrowid
+    if tax_id == 0:
         q5 = "SELECT generic_taxonomy_id from generic_taxonomy where ("
         vals = ''
-        for i in range(0,len(generic)):
-            vals += ' '+generic[i]+"="+ids_by_rank[i]+' and'
+        for i in range(0,len(matrix_taxa_ids)):
+            vals += ' '+matrix_taxa_ids[i]+"="+ids_by_rank[i]+' and'
         q5 = q5 + vals[0:-3] + ')'
         if args.verbose:
             print (q5)
@@ -500,11 +470,11 @@ def finish_tax(ds,  seq_count, tax_string):
         cur.execute(q5)
         mysql_conn.commit() 
         row = cur.fetchone()
-        generic_tax_id=row[0]
+        tax_id=row[0]
         if args.verbose:
-            print ('generic_tax_id',generic_tax_id)
+            print ('generic_tax_id',tax_id)
     
-    GENERIC_IDS_BY_TAX[tax_string] = generic_tax_id
+    GENERIC_IDS_BY_TAX[tax_string] = tax_id
         
         
 
@@ -553,6 +523,7 @@ if __name__ == '__main__':
                 required=False,  action="store",   dest = "verbose",  default=False,
                 help = 'chatty')            
     args = parser.parse_args() 
+    
     pid = start(args)
     # keep this as print('done pid',pid) for routes_user_data
     print('done pid',pid)

@@ -349,6 +349,7 @@ def push_pdr_seqs(args):
     run_info_ill_id = get_default_run_info_ill_id()
     for ds in SEQ_COLLECTOR:
         for seq in SEQ_COLLECTOR[ds]:
+            print('SEQSEQ')
             did = DATASET_ID_BY_NAME[ds]
             seqid = SEQ_COLLECTOR[ds][seq]['sequence_id']
             count = SEQ_COLLECTOR[ds][seq]['seq_count']
@@ -451,9 +452,9 @@ def push_taxonomy(args):
         
         data_dir = os.path.join(args.project_dir,'analysis',ds) 
         unique_file = os.path.join(data_dir,'seqfile.unique.fa')
-        data_file   = os.path.join(data_dir, 'rdp_out.rdp')
+        data_file   = os.path.join(data_dir, 'spingo_out.txt')
         if os.path.exists(data_file):            
-            run_rdp_tax_file(args, ds, data_file, unique_file)
+            run_spingo_tax_file(args, ds, data_file, unique_file)
         else:
             print ("cound not find file:",data_file)
  
@@ -493,7 +494,7 @@ def run_gast_tax_file(args,ds,tax_file):
     tax_items = []
     with open(tax_file,'r') as fh:
         for line in fh:
-            print(line)
+            
             items = line.strip().split("\t")
             if items[0] == 'HEADER': continue
             seq = items[0]
@@ -511,7 +512,36 @@ def run_gast_tax_file(args,ds,tax_file):
             if tax_items != []:
                 finish_tax(ds,refhvr_ids,rank,distance,seq,seq_count,tax_items)
 
-     
+def run_spingo_tax_file(args,ds,tax_file, seq_file):
+    #tax_collector = {}
+    tax_items = []
+    print(tax_file)
+    # make seq lookup for this DATASET
+    #with open(seq_file,'r') as fh:
+    
+    
+    with open(tax_file,'r') as fh:
+        for line in fh:
+            print('line')
+            print(line.strip())
+            items = line.strip().split()
+            #seq = items[0]
+            ds_from_file = items[0].split('_')[0]
+            print("ds_from_file+' -- '+ds")
+            print(ds_from_file+' -- '+ds)
+            if ds_from_file != ds:
+                sys.exit('Dataset file--name mismatch -- Confused! Exiting!')
+            tax_string = items[3]
+            refhvr_ids = items[4]
+            rank = items[5]
+            if rank == 'class': rank = 'klass'
+            if rank == 'orderx': rank = 'order'
+            seq_count = items[6]
+            distance = items[8]
+            tax_items = tax_string.split(';')
+            if tax_items != []:
+                finish_tax(ds,refhvr_ids,rank,distance,seq,seq_count,tax_items)
+    sys.exit()
 #
 #
 #                
@@ -804,3 +834,6 @@ if __name__ == '__main__':
         args.NODE_DATABASE = 'vamps_development'
     print ('db host',args.hostname,'db name',args.NODE_DATABASE)
     start(args)
+    #sys.exit('END: vamps_script_rdp_database_loader.py')
+    
+    

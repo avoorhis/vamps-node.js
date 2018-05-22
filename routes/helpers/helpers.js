@@ -533,8 +533,8 @@ module.exports.assignment_finish_request = function(res, rows1, rows2, status_pa
   console.log(' UPDATING DATASET_NAME_BY_DID');
   console.log(' UPDATING AllMetadataNames');
   console.log(' UPDATING DatasetsWithLatLong');
-
-  this.run_select_sequences_query(rows2);
+  // This function needs to be (re)written
+  //this.run_select_sequences_query(rows2);
   console.log(' UPDATING ALL_DCOUNTS_BY_DID');
   console.log(' UPDATING ALL_PCOUNTS_BY_PID ');
   console.log(' UPDATING ALL_CLASSIFIERS_BY_PID');
@@ -910,6 +910,7 @@ module.exports.run_select_datasets_query = function(rows){
         "description" :     rows[i].project_description,
         "public" :          rows[i].public,
         "metagenomic" :     rows[i].metagenomic,
+        "matrix" :     rows[i].matrix,
         //"seqs_available" :   rows[i].seqs_available,
         "created_at" :      ca,
         "updated_at" :      ua
@@ -1401,17 +1402,17 @@ module.exports.deleteFolderRecursive = function(path) {
 //
 //
 //
-module.exports.make_gast_script_txt = function(req, data_dir, project) {
+module.exports.make_gast_script_txt = function(req, data_dir, project, opts) {
 
-
+  console.log('LOCAL or NOT: '+module.exports.isLocal(req))
   make_gast_script_txt = "";
-  if (module.exports.is_local)
+  if (module.exports.isLocal(req))
   {
     make_gast_script_txt += "export PERL5LIB="+app_root+"/public/scripts/gast\n"
     make_gast_script_txt += "PATH=$PATH:"+app_root+"/public/scripts/gast:"+req.CONFIG.GAST_SCRIPT_PATH+"\n"
     make_gast_script_txt += "touch "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
   }
-  make_gast_script_txt += "ls "+data_dir+"/*"+file_suffix+" > "+data_dir+"/filenames.list\n"
+  make_gast_script_txt += "ls "+data_dir+"/*"+opts.file_suffix+" > "+data_dir+"/filenames.list\n"
   make_gast_script_txt += "# chmod 666 "+data_dir+"/filenames.list\n"
   make_gast_script_txt += "cd "+data_dir+"\n";
 
@@ -1426,10 +1427,10 @@ module.exports.make_gast_script_txt = function(req, data_dir, project) {
   make_gast_script_txt += "#!/bin/bash\n";
 
 
-  if (module.exports.is_local)
+  if (module.exports.isLocal(req))
   {
     make_gast_script_txt += "\n";
-    make_gast_script_txt += "for FASTA in "+data_dir+"/*"+file_suffix+"; do \n"
+    make_gast_script_txt += "for FASTA in "+data_dir+"/*"+opts.file_suffix+"; do \n"
     make_gast_script_txt += "# INFILE=\\$(basename \\$FASTA)\n"
     make_gast_script_txt += "INFILE=\\$FASTA\n"
     make_gast_script_txt += "echo \"\\$INFILE\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
@@ -1469,12 +1470,12 @@ module.exports.make_gast_script_txt = function(req, data_dir, project) {
   make_gast_script_txt += "  echo '' >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
   make_gast_script_txt += "  echo \"SGE_TASK_ID = \\$SGE_TASK_ID\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
   make_gast_script_txt += "  echo '' >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
-  make_gast_script_txt += "  echo \""+gast_script_path+"/gast_ill -saveuc -nodup "+full_option+" -in \\$INFILE -db "+gast_db_path+"/"+ref_db_name+".fa -rtax "+gast_db_path+"/"+ref_db_name+".tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
+  make_gast_script_txt += "  echo \""+opts.gast_script_path+"/gast/gast_ill -saveuc -nodup "+opts.full_option+" -in \\$INFILE -db "+opts.gast_db_path+"/"+opts.ref_db_name+".fa -rtax "+opts.gast_db_path+"/"+opts.ref_db_name+".tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
 
-  make_gast_script_txt += "   "+gast_script_path+"/gast_ill -saveuc -nodup "+full_option+" -in \\$INFILE -db "+gast_db_path+"/"+ref_db_name+".fa -rtax "+gast_db_path+"/"+ref_db_name+".tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0\n";
+  make_gast_script_txt += "   "+opts.gast_script_path+"/gast/gast_ill -saveuc -nodup "+opts.full_option+" -in \\$INFILE -db "+opts.gast_db_path+"/"+opts.ref_db_name+".fa -rtax "+opts.gast_db_path+"/"+opts.ref_db_name+".tax -out \\$INFILE.gast -uc \\$INFILE.uc -threads 0\n";
   make_gast_script_txt += "\n";
 
-  if (module.exports.is_local)
+  if (module.exports.isLocal(req))
   {
     make_gast_script_txt += "done\n";
   }
@@ -1488,7 +1489,7 @@ module.exports.make_gast_script_txt = function(req, data_dir, project) {
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
 
-  if (module.exports.is_local)
+  if (module.exports.isLocal(req))
   {
     // # TODO: make local version, iterate over (splited) files in LISTFILE instead of qsub
     make_gast_script_txt += "bash "+data_dir+"/clust_gast_ill_"+project+".sh\n";

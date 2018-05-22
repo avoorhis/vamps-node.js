@@ -75,11 +75,10 @@
                         <span class="caret"></span>
                       </button>
                       <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
-                        <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="import_choices?project=<%= project %>">Add Data</a></li>
                         <li role="presentation">    
-                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete Project</a></li>   
-                                      
+                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/data_only">Delete Data from VAMPS</a></li>   
+                        <li role="presentation">    
+                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete Whole Project</a></li>             
                       </ul>
                 </div>
             </td>

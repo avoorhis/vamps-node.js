@@ -44,9 +44,16 @@ query_core_join_silva119 += " JOIN silva_taxonomy USING(silva_taxonomy_id)"
 query_core_join_rdp = " JOIN rdp_taxonomy_info_per_seq USING(sequence_id)"
 query_core_join_rdp += " JOIN rdp_taxonomy USING(rdp_taxonomy_id)"
 
-query_coreA_generic = " FROM generic_taxonomy_info"
+query_coreA_generic = " FROM generic_taxonomy_info_per_seq"
 #query_core_join_generic = " JOIN generic_taxonomy_info USING(dataset_id)"
-query_core_join_generic = " JOIN generic_taxonomy USING(generic_taxonomy_id)"
+#query_core_join_generic = " JOIN generic_taxonomy USING(generic_taxonomy_id)"
+query_core_join_generic = " JOIN generic_taxonomy_info_per_seq USING(sequence_id)"
+query_core_join_generic += " JOIN generic_taxonomy USING(generic_taxonomy_id)"
+
+#SELECT sum(seq_count), dataset_id, domain_id 
+query_coreA_matrix     = " FROM  matrix_taxonomy_info"
+query_core_join_matrix = " JOIN generic_taxonomy USING(generic_taxonomy_id)"
+#JOIN generic_taxonomy USING(generic_taxonomy_id) WHERE dataset_id in ('4413','4414','4415','4416','4417') GROUP BY dataset_id, domain_id ORDER BY NULL
 
 
 where_part = " WHERE dataset_id in ('%s')"
@@ -144,16 +151,19 @@ def go_add(args):
     pid = CONFIG_ITEMS['project_id']
     
     counts_lookup = {}
-    if args.units == 'rdp2.6':
+    if args.units == 'rdp':
         file_prefix = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+'--datasets_rdp2.6')
     elif args.units == 'generic':
+        file_prefix = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+'--datasets_generic')
+    elif args.units == 'matrix':  # add matrix files to generic
         file_prefix = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+'--datasets_generic')
     else:  # default 'silva119'
         file_prefix = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+'--datasets_silva119')
     
     if not os.path.exists(file_prefix):
         os.makedirs(file_prefix)
-    print (file_prefix)
+    if args.verbose:
+        print (file_prefix)
     #DATASET_ID_BY_NAME[ds] = did
     dids = [str(x) for x in DATASET_ID_BY_NAME.values()]
     print ('dids',dids)
@@ -168,28 +178,25 @@ def go_add(args):
     did_sql = "','".join(dids)
     #print counts_lookup
     for q in queries:
-        if args.units == 'rdp2.6':
+        if args.units == 'rdp':
             query = q["queryA"] + query_coreA + query_core_join_rdp + q["queryB"] % did_sql + end_group_query
         elif args.units == 'generic':
-            query = q["queryA"] + query_coreA_generic + query_core_join_generic + q["queryB"] % did_sql + end_group_query
+            #query = q["queryA"] + query_coreA_generic + query_core_join_generic + q["queryB"] % did_sql + end_group_query
+            query = q["queryA"] + query_coreA + query_core_join_generic + q["queryB"] % did_sql + end_group_query
+        elif args.units == 'matrix':
+            query = q["queryA"] + query_coreA_matrix + query_core_join_matrix + q["queryB"] % did_sql + end_group_query
         else:  # default 'silva119'
             query = q["queryA"] + query_coreA + query_core_join_silva119 + q["queryB"] % did_sql + end_group_query
-        
-        print (query)
+        if args.verbose:
+            print (query)
         dirs = []
         cur.execute(query)
+        
         for row in cur.fetchall():
             #print row
             count = int(row[0])
             did = str(row[1])
-            # if args.separate_taxcounts_files:
-           #      dir = prefix + str(ds_id)
-           #
-           #      if not os.path.isdir(dir):
-           #          os.mkdir(dir)
-                
-            #tax_id = row[2]
-            #rank = q["rank"]
+           
             tax_id_str = ''
             for k in range(2,len(row)):
                 tax_id_str += '_' + str(row[k])
@@ -204,7 +211,9 @@ def go_add(args):
             else:
                 counts_lookup[did] = {}
                 counts_lookup[did][tax_id_str] = count
-    
+    if args.verbose:
+        print('counts_lookup')
+        print(counts_lookup)
     metadata_lookup = {}
     #logging.info('getting required metadata from db')
     #metadata_lookup = go_required_metadata(did_sql)
@@ -262,7 +271,8 @@ def write_json_files(file_prefix, metadata_lookup, counts_lookup):
     for did in counts_lookup:
          file_path = os.path.join(file_prefix,str(did)+'.json')
          logging.info('file_path: '+file_path)
-         print('file_path: '+file_path)
+         if args.verbose:
+            print('file_path: '+file_path)
          f = open(file_path,'w') 
         
          my_counts_str = json.dumps(counts_lookup[did]) 
@@ -453,19 +463,22 @@ if __name__ == '__main__':
                required=True,  action="store",   dest = "jsonfile_dir",
                help="""JSON Files Directory""")
     parser.add_argument("-units", "--tax_units",
-                required = False, action = 'store', choices = ['silva119', 'rdp2.6', 'generic'], dest = "units",
+                required = False, action = 'store', choices = ['silva119', 'rdp', 'generic', 'matrix'], dest = "units",
                 default = 'silva119',
-                help = "Default: 'silva119'; only other choice available is 'rdp2.6', 'generic'")
+                help = "Default: 'silva119'; only other choice available is 'rdp', 'generic', 'matrix'")
     parser.add_argument("-config", "--config",
                 required = False, action = 'store',  dest = "config_file",
-                default = 'silva119',
+                default = 'INFO.config',
                 help = "")                               
+    parser.add_argument("-v", "--verbose",    
+                required=False,  action="store_true",   dest = "verbose", default=False,
+                help = 'chatty')  
     args = parser.parse_args()
    
     
     go_add(args)
 
-    logging.info("DONE")
+    
     print ("DONE")
     fp = open(os.path.join(args.project_dir,'ASSIGNMENT_COMPLETE.txt'),'w')
     try:

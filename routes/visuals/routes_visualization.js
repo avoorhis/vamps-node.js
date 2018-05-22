@@ -257,7 +257,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         req.session.normalization = "none"
         req.session.selected_distance = "morisita_horn"
         req.session.tax_depth = req.body.tax_depth
-        req.session.domains = req.body.domains
+        req.session.domains = req.body.domains || [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown']
         req.session.include_nas = "yes"
         req.session.min_range = '0'
         req.session.max_range = '100'

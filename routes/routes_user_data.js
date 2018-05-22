@@ -735,90 +735,158 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                     }
                 
                 }
+                for(n in datasets){
+                    console.log('ds '+datasets[n])
+                    info.dataset[datasets[n]] = '0'
+                    
+                }
                 info.type = file_type
                 info.num_of_datasets = datasets.length
                 var pid = 'none'
-                var load_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_matrix_loader.py')
-                var load_params = ['-i',new_file_path,'-d',info.project_dir,'-host',req.CONFIG.hostname,'-p',info.project_name,'-u',req.user.username]
-                console.log(load_cmd + ' ' + load_params.join(' '))
-                var matrix_proc = spawn(load_cmd, load_params, {
-                    env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-                    detached: true, stdio: 'pipe'
-                });
-                var output    = '';
-                var last_line = ''
-                matrix_proc.stderr.on('data', function (data) {
-                  console.log('error '+data.toString()) 
-                  last_line = data.toString()  
-                });
-                matrix_proc.stdout.on('data', function (data) { 
-                  //console.log('stdout:')  
-                  line = data.toString()
-                  //console.log(line)   
-                  output += line
-              
-                });
-                matrix_proc.on('close', function (code) {
-				    console.log('close: load_cmd proc exited with code ' + code);
-				    
-				    
-				    if(code === 0){
-				        lines = output.split('\n')
-				        for(n in lines){
-				            //console.log(lines[n]) 
-				            if(lines[n].substring(0,8) == 'done pid'){
-                                parts = lines[n].split(' ')
-                                //console.log(parts)
-                                pid = parts[2]
-                            }
-				        }
-				        var create_json_files_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'/rebuild_vamps_files.py')
-				        var create_json_files_params = ['-host', req.CONFIG.site, '--json_file_path', req.CONFIG.JSON_FILES_BASE,'-units','generic', '--pids', pid]
-                        console.log(create_json_files_cmd + ' ' + create_json_files_params.join(' '))
-                        var json_files_proc = spawn(create_json_files_cmd, create_json_files_params, {
-                            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-                            detached: true, stdio: 'pipe'
-                        });
-                        json_files_proc.stderr.on('data', function (data) {
-                          console.log(data.toString())   
-                        });
-                        json_files_proc.stdout.on('data', function (data) { 
-                          //console.log('stdout:')  
-                          line = data.toString()
-                          //console.log(line)   
-                          output += line
-                        });
-                        json_files_proc.on('close', function (code) {
-				            console.log('close: json_files_proc proc exited with code ' + code);
-				        })
-				        fs.writeFile(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }), {mode:0o664}, function writeConfigFile(err) {                                  
-                        if(err){return console.log(err);} // => null
-                            fs.chmodSync(new_info_filename_path, 0o664);
-                            fs.chmodSync(new_file_path, 0o664);
-                            req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+                //==========================
+                
+                var cmd_list = matrixTax(req, info);
+                console.log(cmd_list)
+                var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': info.project_name, 'status': '', 'msg': '' };
+                status_params.statusOK = 'OK-MATRIX';
+                status_params.statusSUCCESS = 'MATRIX-SUCCESS';
+                status_params.msgOK = 'Finished MATRIX';
+                status_params.msgSUCCESS = 'MATRIX -Tax assignments';
+                var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'matrix');
+                var scriptlog   = script_vars[0];
+                var script_text = script_vars[1];
+                var script_path     = path.join(info.project_dir, 'matrix_script.sh');
 
-                            //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
-                            res.render('user_data/import_choices/matrix', {
-                              title: 'VAMPS:Import Choices',
-                              def_name:'',
-                              user: req.user, hostname: req.CONFIG.hostname
-                            });
-                            return
-                        }); 
-                        
-                    }else{
-                        console.log('FAIL re-open import choices page')
-                        req.flash('fail',' Fail: '+last_line)
-                        res.redirect('/')
-                        // res.render('user_data/import_choices', {
-//                           title: 'VAMPS:Import Choices',
-//                           project: '',
-//                           user: req.user, hostname: req.CONFIG.hostname
-//                         });
-                        return
-                    }
+                var nodelog         = fs.openSync(path.join(info.project_dir, 'assignment.log'), 'a', 0664);
+                var ok_code_options = ['matrix', status_params, res];
+
+                // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
+
+                var mode = 0775;
+                var oldmask = process.umask(0);
+                console.log("script_path2 = " + script_path);
+                
+                fs.writeFile(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }), {mode:0o664}, function writeConfigFile(err) {                                  
+					if(err){return console.log(err);} // => null
+					fs.chmodSync(new_info_filename_path, 0o664);
+					fs.chmodSync(new_file_path, 0o664);
+					req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+
+					fs.writeFile(script_path, 
+                    script_text, 
+                    {
+                      mode: mode
+                    }, 
+                    function(err) {
+                      if(err) {
+                          return console.log(err);
+                      }
+                      else
+                      {
+                        console.log('Before RunAndCheck Matrix')
+                        RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
+                        status_params.status = status_params.statusSUCCESS;
+                        status_params.msg = status_params.msgSUCCESS;
+                        helpers.update_status(status_params);
+                        console.log('After helpers.update_status Matrix')
+                        req.flash('success', 'Matrix' + " has been started for project: '" + info.project_name + "'");
+                        //res.redirect("/user_data/your_projects");
+                        process.umask(oldmask);
+                        console.log("1-The file was saved!");
+                        res.render('user_data/import_choices/matrix', {
+					        title: 'VAMPS:Import Choices',
+					        def_name:'',
+					        user: req.user, hostname: req.CONFIG.hostname
+					    });
+					    return
+                      }
+                      //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
+					  
+                    }); 
 					
-				})
+					
+				}); 
+                
+//=================================
+                
+//                 var load_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_matrix_loader.py')
+//                 var load_params = ['-i',new_file_path,'-d',info.project_dir,'-host',req.CONFIG.hostname,'-p',info.project_name,'-u',req.user.username]
+//                 console.log(load_cmd + ' ' + load_params.join(' '))
+//                 var matrix_proc = spawn(load_cmd, load_params, {
+//                     env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+//                     detached: true, stdio: 'pipe'
+//                 });
+//                 var output    = '';
+//                 var last_line = ''
+//                 matrix_proc.stderr.on('data', function (data) {
+//                   console.log('error '+data.toString()) 
+//                   last_line = data.toString()  
+//                 });
+//                 matrix_proc.stdout.on('data', function (data) { 
+//                   //console.log('stdout:')  
+//                   line = data.toString()
+//                   //console.log(line)   
+//                   output += line
+//               
+//                 });
+//                 matrix_proc.on('close', function (code) {
+// 				    console.log('close: load_cmd proc exited with code ' + code);
+// 				    
+// 				    
+// 				    if(code === 0){
+// 				        lines = output.split('\n')
+// 				        for(n in lines){
+// 				            //console.log(lines[n]) 
+// 				            if(lines[n].substring(0,8) == 'done pid'){
+//                                 parts = lines[n].split(' ')
+//                                 //console.log(parts)
+//                                 pid = parts[2]
+//                             }
+// 				        }       
+// 				        var create_json_files_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'/vamps_script_create_json_dataset_files.py')
+// 				        var create_json_files_params = ['-site', req.CONFIG.site,'-project_dir',info.project_dir,'-p',info.project_name, '--jsonfile_dir', req.CONFIG.JSON_FILES_BASE,'-units','matrix']
+//                         console.log(create_json_files_cmd + ' ' + create_json_files_params.join(' '))
+//                         var json_files_proc = spawn(create_json_files_cmd, create_json_files_params, {
+//                             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+//                             detached: true, stdio: 'pipe'
+//                         });
+//                         json_files_proc.stderr.on('data', function (data) {
+//                           console.log(data.toString())   
+//                         });
+//                         json_files_proc.stdout.on('data', function (data) { 
+//                           //console.log('stdout:')  
+//                           line = data.toString()
+//                           //console.log(line)   
+//                           output += line
+//                         });
+//                         json_files_proc.on('close', function (code) {
+// 				            console.log('close: json_files_proc proc exited with code ' + code);
+// 				        })
+// 				        
+// 				        fs.writeFile(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }), {mode:0o664}, function writeConfigFile(err) {                                  
+//                         if(err){return console.log(err);} // => null
+//                             fs.chmodSync(new_info_filename_path, 0o664);
+//                             fs.chmodSync(new_file_path, 0o664);
+//                             req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
+// 
+//                             //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
+//                             res.render('user_data/import_choices/matrix', {
+//                               title: 'VAMPS:Import Choices',
+//                               def_name:'',
+//                               user: req.user, hostname: req.CONFIG.hostname
+//                             });
+//                             return
+//                         }); 
+//                         
+//                     }else{
+//                         console.log('FAIL re-open import choices page')
+//                         req.flash('fail',' Fail: '+last_line)
+//                         res.redirect('/')
+//                         
+//                         return
+//                     }
+// 					
+// 				})
             
 // BIOM            
             }else if(file_type == 'biom'){
@@ -1214,6 +1282,8 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
       // must delete pid data from mysql ()
       // and all datasets files
       options.args = options.args.concat(['--action', 'delete_whole_project']);
+    } else if (delete_kind == 'data_only' && pid !== 0) {
+        options.args = options.args.concat(['--action', 'delete_tax_only' ]);
     } else if (delete_kind == 'tax' && pid !== 0) {
       options.args = options.args.concat(['--action', 'delete_tax_only' ]);
 
@@ -1225,8 +1295,8 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
       res.redirect("/user_data/your_projects");
       return;
     }
-    
-
+    var delete_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS, 'vamps_script_utils.py') + ' ' + options.args.join(' ')
+    console.log(delete_cmd)
     var log = fs.openSync(path.join(process.env.PWD, 'logs', 'delete.log'), 'a');
 
 
@@ -1236,14 +1306,21 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
         msg = "Deletion in progress: '"+project+"'";
       } else if (delete_kind == 'tax') {
         msg = "Deletion in progress: taxonomy from '"+project+"'";
-      } else if (delete_kind == 'meta') {
+      } else if (delete_kind == 'data_only') {
+        msg = "Deletion in progress: vamps data only from '"+project+"'";
+      }else if (delete_kind == 'meta') {
         msg = "Deletion in progress: metadata from '"+project+"'";
       } else {
         req.flash('fail', 'ERROR nothing deleted');
         res.redirect("/user_data/your_projects");
         return;
       }
-      if (delete_kind == 'all') {
+      if (delete_kind == 'data_only') {
+            RunAndCheck(delete_cmd, '', req, project, res, checkPid, {});
+            console.log('Back from Del RunAndCheck')
+            req.flash('success', msg);
+            res.redirect("/user_data/your_projects");
+      } else if (delete_kind == 'all') {
           // MOVE file dir to DELETED path (so it won't show in 'your_projects' list)
           var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
           var deleted_data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'DELETED_project'+timestamp+'-'+project);
@@ -1361,17 +1438,17 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
   //var ref_db_dir = req.params.ref_db;
   //var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
   console.log('start: Project: ' + project + ' - Classifier: ' + classifier + ' - RefDatabase: ' + ref_db);
-  status_params = {'type': 'update', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
+  var status_params = {'type': 'update', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
   var data_dir  = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
   //TODO: check if needed:
-  var qsub_script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
+  //var script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
 
   var config_file = path.join(data_dir, req.CONSTS.CONFIG_FILE);
   try
   {
     //var stat_config = fs.statSync(config_file);
     // console.log('1 ', config_file)
-    project_config = iniparser.parseSync(config_file);
+    var project_config = iniparser.parseSync(config_file);
     //console.log('project_config', project_config);
     //console.log('project_config2', project_config.MAIN.fasta_type);
     // TODO: project_config is wrong (not updated) in
@@ -1385,57 +1462,50 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
     console.log('no read config file ', err);
   }
 
-  var options = {
-    scriptPath : qsub_script_path,
-    gast_run_args : [ '-c', config_file, '-process_dir', process.env.PWD,
-    '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db, '-site', req.CONFIG.site ],
-    rdp_run_args :  [ '-c', config_file, '-process_dir', process.env.PWD, '-site', req.CONFIG.site,
-    '-project_dir', data_dir, '-ref_db', ref_db, '-path_to_classifier', req.CONFIG.PATH_TO_CLASSIFIER ],
-    database_loader_args : [ '-class', classifier, '-host', req.CONFIG.dbhost, '-process_dir', process.env.PWD, '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db],
-    upload_metadata_args : [ '-project_dir', data_dir, '-host', req.CONFIG.dbhost, '-db', NODE_DATABASE ],
-    create_json_args : [ '-process_dir', process.env.PWD, '-host', req.CONFIG.dbhost, '-project_dir', data_dir, '-db', NODE_DATABASE ]
- };
+ //  var options = {
+//     scriptPath : qsub_script_path,
+//     gast_run_args : [ '-c', config_file, '-process_dir', process.env.PWD,
+//     '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db, '-site', req.CONFIG.site ],
+//     
+//     database_loader_args : [ '-class', classifier, '-host', req.CONFIG.dbhost, '-process_dir', process.env.PWD, '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db],
+//     upload_metadata_args : [ '-project_dir', data_dir, '-host', req.CONFIG.dbhost, '-db', NODE_DATABASE ],
+//     create_json_args : [ '-process_dir', process.env.PWD, '-host', req.CONFIG.dbhost, '-project_dir', data_dir, '-db', NODE_DATABASE ]
+//  };
 
   if (classifier == 'SPINGO')
   {
     // calls helpers.make_gast_script_txt
     var script_name = 'spingo_script.sh';
-    var cmd_list = spingoTax(req, project_config, options, ref_db);
+    var cmd_list = spingoTax(req, project_config, ref_db);
     console.log(cmd_list)
+    
     status_params.statusOK = 'OK-SPINGO';
     status_params.statusSUCCESS = 'SPINGO-SUCCESS';
     status_params.msgOK = 'Finished SPINGO';
     status_params.msgSUCCESS = 'SPINGO -Tax assignments';
     
   }
-  else if (classifier == 'GAST')
-  {
-    // calls helpers.make_gast_script_txt
-    cmd_list = gastTax(req, project_config, options, ref_db);
-  }
   else if (classifier == 'RDP' )
   {
     // TODO: move to a separate function!
     // These are from the RDP README
-    var gene = '16srrna'; // default
-    if (ref_db == '2.12-ITS')
-    {
-      gene = 'fungalits_unite';
-    }
-    var path2classifier = path.join(req.CONFIG.PATH_TO_CLASSIFIER,'classifier.jar')  // + '_' + ref_db;
-    rdp_cmd1 = options.scriptPath + '/vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene +  ' --config '+ req.CONSTS.CONFIG_FILE
-    rdp_cmd2 = options.scriptPath + '/vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP' + ' --config '+ req.CONSTS.CONFIG_FILE
-    rdp_cmd3 = options.scriptPath + '/vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --config '+ req.CONSTS.CONFIG_FILE
-    rdp_cmd4 = options.scriptPath + '/vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -units rdp2.6 --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE + ' --config '+ req.CONSTS.CONFIG_FILE
-
-    script_name = 'rdp_script.sh';
+    
+    var cmd_list = rdpTax(req, project_config, ref_db);
+    
+    var script_name = 'rdp_script.sh';
     status_params.statusOK = 'OK-RDP';
     status_params.statusSUCCESS = 'RDP-SUCCESS';
     status_params.msgOK = 'Finished RDP';
     status_params.msgSUCCESS = 'RDP -Tax assignments';
-    cmd_list = [ rdp_cmd1, rdp_cmd2, rdp_cmd3, rdp_cmd4 ];
+    
   }
-
+  else if (classifier == 'GAST')
+  {
+    // calls helpers.make_gast_script_txt
+    var script_name = 'gast_script.sh';
+    var cmd_list = gastTax(req, project_config, ref_db);
+    
+  }
   //TODO: separate below as write and run, see also uploadData - DRY
   // var script_text = "";
 
@@ -1458,7 +1528,9 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
   // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/0e1cb0aad4ce57b30c6a0002a1ac2527 -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/dce2a788f226eb033388f2844a89648e -upload_type single -d test_gast_dataset -q
   // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_fnaunique.sh /opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/ashipunova/BPC/vamps-node.js/public/scripts/bin: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project
   // --- end test
+  
   var script_path     = path.join(data_dir, script_name);
+  
   var nodelog         = fs.openSync(path.join(data_dir, 'assignment.log'), 'a', 0664);
   var ok_code_options = [classifier, status_params, res, ref_db];
 
@@ -1503,6 +1575,7 @@ function checkPid(check_pid_options, last_line)
   console.log(' classifier CLCLCL: ' + classifier);
   console.log(' last_line CLCLCL: ' + last_line);
   console.log("status_params from checkPid: ");
+  console.log(check_pid_options);
   console.log(util.inspect(status_params, false, null));
 
   console.log(classifier.toUpperCase() + ' Success');
@@ -1550,42 +1623,97 @@ function checkPid(check_pid_options, last_line)
     console.log('ERROR pid is not an integer: ', pid);
   }
 }
-function spingoTax(req, project_config, options, ref_db)
+function matrixTax(req, info)
 {
-  console.log('in routes_user_data::spingoTax')
-  var cmd_list = []
-  var project  = project_config.GENERAL.project;
-  var data_dir = project_config.GENERAL.baseoutputdir;
-  var ref_db_path = req.CONFIG.PATH_TO_SPINGO+'/database/'+ref_db+'.species.fa'
-  
-  for(ds in project_config.DATASETS){
-    var inFasta = project_config.GENERAL.baseoutputdir+'/'+ds+'.fa'
-    var out_file = project_config.GENERAL.baseoutputdir+'/'+ds+'.spingo.out'
-    cmd = req.CONFIG.PATH_TO_SPINGO+'/spingo -i '+  inFasta +' -d '+ref_db_path +' > '+out_file
-    cmd_list.push(cmd)
-  }
-  return cmd_list
+    var script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
+    var units = 'matrix'
+    var new_file_path = path.join(info.project_dir, 'original_matrix.csv')
+    var cmd1_opts = [ '-i',new_file_path,'-d',info.project_dir,'-host',req.CONFIG.hostname,'-p',info.project_name,'-u',req.user.username]    
+    var cmd2_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',req.CONFIG.site,'--config',req.CONSTS.CONFIG_FILE ]
+    var cmd3_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',req.CONSTS.CONFIG_FILE ]
+    var matrix_cmd1 = script_path + '/vamps_script_matrix_loader.py'                + ' '+cmd1_opts.join(' ')   
+    var matrix_cmd2 = script_path + '/vamps_script_upload_metadata.py'              + ' '+cmd2_opts.join(' ')
+    var matrix_cmd3 = script_path + '/vamps_script_create_json_dataset_files.py'    + ' '+cmd3_opts.join(' ')
+    var cmd_list = [ matrix_cmd1, matrix_cmd2, matrix_cmd3 ];
+
+    return cmd_list
+}
+function rdpTax(req, project_config, ref_db)
+{
+    var project  = project_config.MAIN.project_name;
+    var data_dir = project_config.MAIN.project_dir;
+    var gene = '16srrna'; // default
+    
+    if (ref_db.substr(-3) == 'ITS')   // 16S or ITS
+    {
+      gene = 'fungalits_unite';
+    }
+    
+    var path2classifier = path.join(req.CONFIG.PATH_TO_CLASSIFIER,'classifier.jar')  // + '_' + ref_db;
+    var script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
+    var units = 'rdp'
+    var classifier = 'RDP'
+    var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-path_to_classifier',path2classifier,'-gene',gene,'--config',req.CONSTS.CONFIG_FILE]    
+    var cmd2_opts = [ '-project_dir',data_dir,'-site',req.CONFIG.site,'--classifier',classifier,'--config',req.CONSTS.CONFIG_FILE ]
+    var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'--config',req.CONSTS.CONFIG_FILE ]
+    var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',req.CONSTS.CONFIG_FILE ]
+    
+    var rdp_cmd1 = script_path + '/vamps_script_rdp_run.py'                         + ' '+cmd1_opts.join(' ')
+    var rdp_cmd2 = script_path + '/vamps_script_database_loader.py'                 + ' '+cmd2_opts.join(' ')
+    var rdp_cmd3 = script_path + '/vamps_script_upload_metadata.py'                 + ' '+cmd3_opts.join(' ')
+    var rdp_cmd4 = script_path + '/vamps_script_create_json_dataset_files.py'       + ' '+cmd4_opts.join(' ')
+    
+    var cmd_list = [ rdp_cmd1, rdp_cmd2, rdp_cmd3, rdp_cmd4 ];
+
+
+    return cmd_list
+}
+function spingoTax(req, project_config, ref_db)
+{
+    var project  = project_config.MAIN.project_name;
+    var data_dir = project_config.MAIN.project_dir;
+    var ref_db_path = path.join(req.CONFIG.PATH_TO_SPINGO+'database',ref_db+'.full_taxa.fa')
+    console.log('ref_db_path')
+    console.log(ref_db_path)
+    var path2spingo = path.join(req.CONFIG.PATH_TO_SPINGO,'spingo') 
+    var script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
+    var units = 'generic'
+    var classifier = 'SPINGO'
+    
+    var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-path_to_spingo',path2spingo,'--config',req.CONSTS.CONFIG_FILE,'-db',ref_db_path]    
+    var cmd2_opts = [ '-project_dir',data_dir,'-site',req.CONFIG.site,'--classifier',classifier,'--config',req.CONSTS.CONFIG_FILE ]
+    var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'--config',req.CONSTS.CONFIG_FILE ]
+    var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',req.CONSTS.CONFIG_FILE ]
+    var spingo_cmd1 = script_path + '/vamps_script_spingo_run.py'                   + ' '+cmd1_opts.join(' ')
+    var spingo_cmd2 = script_path + '/vamps_script_database_loader.py'              + ' '+cmd2_opts.join(' ')
+    var spingo_cmd3 = script_path + '/vamps_script_upload_metadata.py'              + ' '+cmd3_opts.join(' ')
+    var spingo_cmd4 = script_path + '/vamps_script_create_json_dataset_files.py'    + ' '+cmd4_opts.join(' ')
+    
+    var cmd_list = [ spingo_cmd1, spingo_cmd2, spingo_cmd3, spingo_cmd4 ];
+
+    return cmd_list
   
 }
-function gastTax(req, project_config, options, ref_db)
+function gastTax(req, project_config, ref_db)
 {
   console.log('in routes_user_data::gastTax')
   var project  = project_config.MAIN.project_name;
   var data_dir = project_config.MAIN.project_dir;
-  script_name = 'gast_script.sh';
+  var script_name = 'gast_script.sh';
 
   // var oldmask = process.umask(0);
   // fs.closeSync(fs.openSync(`${data_dir}/clust_gast_ill_${project}.sh`, 'w', 0777));
   // process.umask(oldmask);
-  full_option = '';
-  file_suffix      = ".fa" //+ getSuffix(project_config.MAIN.dna_region);
-  ref_db_name      = chooseRefFile(req.params.classifier);  //req.body.classifier
-  full_option      = getFullOption(req.params.classifier);
-  gast_db_path     = config.GAST_DB_PATH;
-  gast_script_path = config.GAST_SCRIPT_PATH;
+  var opts = {}
+  opts.full_option = '';
+  opts.file_suffix      = ".fa" //+ getSuffix(project_config.MAIN.dna_region);
+  opts.ref_db_name      = chooseRefFile(req.params.classifier);  //req.body.classifier
+  opts.full_option      = getFullOption(req.params.classifier);
+  opts.gast_db_path     = config.GAST_DB_PATH;
+  opts.gast_script_path = config.GAST_SCRIPT_PATH;
   
-  console.log('gast_db_path: ' + gast_db_path); 
-  console.log('gast_script_path: ' + gast_script_path); 
+  console.log('gast_db_path: ' + opts.gast_db_path); 
+  console.log('gast_script_path: ' + opts.gast_script_path); 
 
   // var ookeys = Object.keys(project_info[project].validation);
   // console.log('OOO ookeys: '); 
@@ -1619,24 +1747,23 @@ function gastTax(req, project_config, options, ref_db)
   // create filenames.list and get numbers
   // create clust_gast_ill_PROJECT_NAME.sh
   // run it
-  make_gast_script_txt = helpers.make_gast_script_txt(req, data_dir, project);
-  scriptlog   = path.join(data_dir, 'cluster.log');
+  var make_gast_script_txt = helpers.make_gast_script_txt(req, data_dir, project, opts);
+  var scriptlog   = path.join(data_dir, 'cluster.log');
   
   //make_gast_script_txt = helpers.get_qsub_script_text_only(scriptlog, data_dir, req.CONFIG.site, 'gastTax', cmd_list)
   //is_local = helpers.isLocal(req);
   // for tests: is_local = false;
-  var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py'
-  database_loader += " -site " + req.CONFIG.site
-  database_loader += " -class GAST" 
-  database_loader += " -project_dir "+data_dir
-  //database_loader += " -ref_db_dir "+ref_db_name
-  metadata_file_exists = true  // testing
-  if(metadata_file_exists){
-  	metadata_loader   = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_upload_metadata.py'
-  }
-  create_json_files = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_create_json_dataset_files.py'
+  var new_info_filename_path = path.join(data_dir, req.CONSTS.CONFIG_FILE)
+  var database_loader_args = ['-site',req.CONFIG.site,'-class','GAST','-project_dir',data_dir,'-config',new_info_filename_path]
+  var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py' +' '+database_loader_args.join(' ')
+  
+  
+  var metadata_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path]
+  var metadata_loader   = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_upload_metadata.py' +' '+metadata_args.join(' ')
+  var create_json_files_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE]
+  var create_json_files = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_create_json_dataset_files.py' +' '+create_json_files_args.join(' ')
 
-
+  var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
   status_params.statusOK      = 'OK-GAST';
   status_params.statusSUCCESS = 'GAST-SUCCESS';
   status_params.msgOK         = 'Finished GAST';
@@ -2611,9 +2738,9 @@ function GetScriptVars(req, data_repository, cmd_list, cmd_name)
   }
   
   // console.log('111 scriptlog: ' + scriptlog);
-  // console.log('222 script_text: ' + script_text);
-  // console.log('222 =====');
-  // console.log(helpers.isLocal(req));
+//   console.log('222 script_text: ' + script_text);
+//   console.log('222 =====');
+//   console.log(helpers.isLocal(req));
   return [scriptlog, script_text];
 }
 
@@ -4050,7 +4177,7 @@ router.post('/download_file', helpers.isLoggedIn, function (req, res) {
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     var timestamp = +new Date();  // millisecs since the epoch!
     var file_tag = ['-'+req.body.file_type+'_file'];
-    
+    console.log(req.session);
       helpers.create_export_files(req, 
         user_dir, 
         timestamp, 
