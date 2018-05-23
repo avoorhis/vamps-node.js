@@ -46,7 +46,12 @@ GAST vs RDP
         <select onchange='get_ref_dbs("<%= project %>",this.value)'  >
         <option>choose</option>
         <% for(classifier in choices){ %>
-            <option><%=  classifier %></option>
+            <% if(hostname.substring(0,6) != 'bpcweb' && classifier == 'GAST'){ %>
+               <!-- GAST Not availible on localhost -->
+               <option disabled><%=  classifier %></option>
+            <% } else { %>
+                <option><%=  classifier %></option>
+            <% } %>
         <% } %>
         </select>
     </div>
