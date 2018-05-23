@@ -1707,7 +1707,8 @@ function gastTax(req, project_config, ref_db)
   var opts = {}
   opts.full_option = '';
   opts.file_suffix      = ".fa" //+ getSuffix(project_config.MAIN.dna_region);
-  opts.ref_db_name      = chooseRefFile(req.params.classifier);  //req.body.classifier
+  //opts.ref_db_name      = chooseRefFile(req.params.classifier);  //req.body.classifier
+  opts.ref_db_name      = req.params.ref_db
   opts.full_option      = getFullOption(req.params.classifier);
   opts.gast_db_path     = config.GAST_DB_PATH;
   opts.gast_script_path = config.GAST_SCRIPT_PATH;
