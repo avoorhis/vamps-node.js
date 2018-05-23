@@ -1805,7 +1805,7 @@ function getSuffix(dna_region)
 
 function chooseRefFile(classifier_id)
 {
-  return CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb; 
+  return CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].ref_db; 
 }
 
 function getFullOption(classifier_id)
