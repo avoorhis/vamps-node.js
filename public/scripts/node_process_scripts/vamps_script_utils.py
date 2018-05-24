@@ -131,30 +131,30 @@ def delete_tax_only(args,proj,dids,dsets):
     q += " WHERE dataset_id in ('"+ "','".join(dids) + "')"
     print(q)
     cur.execute(q)
-
+    args.obj.commit()
     q_drop = "DROP TABLE if exists %s"
     q = q_drop % ('custom_metadata_'+str(args.pid))
     print(q)
     cur.execute(q)
-
+    args.obj.commit()
     q = "DELETE from custom_metadata_fields"
     q += " WHERE project_id = '"+str(args.pid)+"'"
     print(q)
     cur.execute(q)
-    
+    args.obj.commit()
     q = "DELETE from matrix_taxonomy_info"
     q += " WHERE dataset_id in ('"+ "','".join(dids) +"')"
     print(q)
     cur.execute(q)
-    
+    args.obj.commit()
     q = "DELETE from sequence_pdr_info"
     q += " WHERE dataset_id in ('"+ "','".join(dids) +"')"
     cur.execute(q)
-    
+    args.obj.commit()
     q = 'DELETE from dataset'
     q += " WHERE dataset_id in ('"+ "','".join(dids) +"')"
     cur.execute(q)
-    
+    args.obj.commit()
     q = "DELETE from project WHERE project_id = '"+str(args.pid)+"'"
     cur.execute(q)
     
