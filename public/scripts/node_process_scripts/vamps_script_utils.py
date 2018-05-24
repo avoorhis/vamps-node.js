@@ -115,8 +115,10 @@ def delete_metadata_only(args):
     
     
 def delete_dids_from_metadata_bulk_file(args):
+    print('deleting dids from metadata bulk file')
     md_bulk_file = os.path.join(args.jsonfile_dir, args.NODE_DATABASE+'--metadata.json')
-    #open and read json
+    print(md_bulk_file)
+    
     with open(md_bulk_file) as fp:
         metadata = json.load(fp)
         for did in args.dids:
@@ -172,6 +174,7 @@ def delete_tax_only(args):    # this should leave ONLY the project directory
     args.obj.commit()
     q = "DELETE from sequence_pdr_info"
     q += " WHERE dataset_id in ('"+ "','".join(args.dids) +"')"
+    print(q)
     cur.execute(q)
     args.obj.commit()
     q = 'DELETE from dataset'
@@ -240,10 +243,7 @@ if __name__ == '__main__':
                       
     args = parser.parse_args()    
     
-    LOG_FILENAME = 'script_utils.log'
-    print(LOG_FILENAME)
     
-    logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)    
     if args.site == 'vamps':
         #db_host = 'vampsdb'
         db_host = 'bpcweb8'
