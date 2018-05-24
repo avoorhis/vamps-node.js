@@ -40,7 +40,7 @@ def get_data(args):
     # pid may be zero 
     if int(args.pid) > 0:
         q = "select dataset_id,dataset,project_id,project from dataset JOIN project USING(project_id) where project_id='"+args.pid+"'"
-    elif args.project ! = '':
+    elif args.project != '':
         q = "select dataset_id,dataset,project_id,project from dataset JOIN project USING(project_id) where project='"+args.project+"'"
     else:
         print("No project Found -- Exiting")
@@ -86,7 +86,7 @@ def delete_whole_project(args):
     try:
         shutil.rmtree(os.path.join(args.data_dir,args.NODE_DATABASE,args.user,'project-'+args.proj))
     except OSError:
-        print 'Project dir not found: '+os.path.join(args.data_dir,args.NODE_DATABASE,args.user,'project-'+args.proj)
+        print('Project dir not found: '+os.path.join(args.data_dir,args.NODE_DATABASE,args.user,'project-'+args.proj))
     
     delete_metadata_only(args)
     delete_tax_only(args)
