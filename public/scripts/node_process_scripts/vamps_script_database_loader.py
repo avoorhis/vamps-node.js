@@ -449,7 +449,8 @@ def push_taxonomy(args):
             else:
                 print ("cound not find file:",data_file)
         elif args.classifier.upper() == 'GAST':
-            data_file   = os.path.join(data_dir, 'gast_out.txt')
+            #data_file   = os.path.join(data_dir, 'gast_out.txt')
+            data_file   = unique_file+'.gast'
             
             if os.path.exists(data_file):
                 run_gast_tax_file(args, ds, data_file,tmp_seqs)
