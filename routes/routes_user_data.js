@@ -1276,7 +1276,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
     
     var options = {
         scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-        args :       [ '-pid', pid, '-site', req.CONFIG.site, '--user', req.user.username, '--project', project, '-pdir', process.env.PWD ],
+        args :       [ '-pid', pid, '-site', req.CONFIG.site, '--user', req.user.username, '--project', project, '-data_dir',req.CONFIG.USER_FILES_BASE,'-jsonfile_dir', req.CONFIG.JSON_FILES_BASE ],
         };
     if (delete_kind == 'all') {
       // must delete pid data from mysql ()
