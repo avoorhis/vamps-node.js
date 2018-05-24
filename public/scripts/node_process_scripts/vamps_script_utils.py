@@ -158,9 +158,7 @@ def delete_tax_only(args,proj,dids,dsets):
     args.obj.commit()
     q = "DELETE from project WHERE project_id = '"+str(args.pid)+"'"
     print(q)
-    cur.execute(q)
-    
-        
+    cur.execute(q)        
     args.obj.commit()
     # for ds in dsets:
 #         gast_dir = os.path.join(args.process_dir,'user_data', args.NODE_DATABASE, args.user,'project:'+proj,'analysis',ds,'gast')
