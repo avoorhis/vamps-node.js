@@ -2826,7 +2826,12 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
   console.log("QQQRRR1 script_path: " + script_path);
 
   var exec = require('child_process').exec;
-  var child = exec(script_path);
+  var opts = {env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH} }
+  var child = exec(script_path,opts);
+  //var child = spawn(script_path, create_json_files_params, {
+//                             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+//                             detached: true, stdio: 'pipe'
+//                         });
   var output = '';
   
   child.stdout.on('data', function AddDataToOutput(data) {
