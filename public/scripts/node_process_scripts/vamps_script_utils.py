@@ -153,9 +153,11 @@ def delete_tax_only(args,proj,dids,dsets):
     args.obj.commit()
     q = 'DELETE from dataset'
     q += " WHERE dataset_id in ('"+ "','".join(dids) +"')"
+    print(q)
     cur.execute(q)
     args.obj.commit()
     q = "DELETE from project WHERE project_id = '"+str(args.pid)+"'"
+    print(q)
     cur.execute(q)
     
         
