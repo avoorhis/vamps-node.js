@@ -193,6 +193,9 @@ def create_classifier():
     
 def recreate_ranks():
     
+    #RANK_COLLECTOR={'domain':1,'phylum':2,'klass':3,'order':4,'family':5,'genus':6,'species':7,'strain':8}
+    #return
+
     global RANK_COLLECTOR
     global mysql_conn, cur
     for i,rank in enumerate(ranks):

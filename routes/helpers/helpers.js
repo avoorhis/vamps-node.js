@@ -1413,7 +1413,8 @@ module.exports.make_gast_script_txt = function(req, data_dir, project, opts) {
     make_gast_script_txt += "PATH=$PATH:"+app_root+"/public/scripts/gast:"+req.CONFIG.GAST_SCRIPT_PATH+"\n"
     make_gast_script_txt += "touch "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"
   }
-  make_gast_script_txt += "ls "+data_dir+"/*"+opts.file_suffix+" > "+data_dir+"/filenames.list\n"
+  // /groups/vampsweb/vampsdev_node_data/user_data/avoorhis/project-avoorhis_435638/analysis/*/seqfile.unique.fa
+  make_gast_script_txt += "ls "+data_dir+"/analysis/*/seqfile.unique"+opts.file_suffix+" > "+data_dir+"/filenames.list\n"
   make_gast_script_txt += "# chmod 666 "+data_dir+"/filenames.list\n"
   make_gast_script_txt += "cd "+data_dir+"\n";
 
