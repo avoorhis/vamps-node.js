@@ -758,7 +758,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                 var script_path     = path.join(info.project_dir, 'matrix_script.sh');
 
                 var nodelog         = fs.openSync(path.join(info.project_dir, 'assignment.log'), 'a', 0664);
-                var ok_code_options = ['matrix', status_params, res];
+                var ok_code_options = ['matrix', status_params, res,''];
 
                 // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
 
@@ -1316,7 +1316,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
         return;
       }
       if (delete_kind == 'data_only') {
-            RunAndCheck(delete_cmd, '', req, project, res, checkPid, {});
+            RunAndCheck(delete_cmd, '', req, project, res, checkPid, ['Unknown',{},res,'']);
             console.log('Back from Del RunAndCheck')
             req.flash('success', msg);
             res.redirect("/user_data/your_projects");

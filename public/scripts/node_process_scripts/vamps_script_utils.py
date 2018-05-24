@@ -122,7 +122,10 @@ def delete_dids_from_metadata_bulk_file(args):
     with open(md_bulk_file) as fp:
         metadata = json.load(fp)
         for did in args.dids:
-            del metadata[did]
+            if did in metadata:
+                print('deleting',did)
+                del metadata[did]
+                
     md_bulk_file2 = os.path.join(args.jsonfile_dir, args.NODE_DATABASE+'--metadata2.json')
     with open(md_bulk_file2, 'w') as outfile:
         json.dump(metadata, outfile)
