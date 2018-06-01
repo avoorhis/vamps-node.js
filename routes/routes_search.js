@@ -42,15 +42,19 @@ router.get('/blast', helpers.isLoggedIn, function(req, res) {
     // separate dbs
     var db_collector = []
     for(n in blast_dbs){
-        var blast_db_test = path.join('public','blast', blast_dbs[n]+'.nhr');
-        if(helpers.fileExists(blast_db_test)){
+        var blast_db_test1 = path.join('public','blast', blast_dbs[n]+'.nhr');
+        var blast_db_test2 = path.join('public','blast', blast_dbs[n]+'.00.nhr');
+        if(helpers.fileExists(blast_db_test1)){
             db_collector.push(blast_dbs[n])
-        }    
+        }
+        if(helpers.fileExists(blast_db_test2)){
+            db_collector.push(blast_dbs[n])
+        }      
     }
     
-    if(helpers.fileExists(misc_blast_dbs_test)){
-            db_collector.push(req.CONSTS.misc_blast_dbs)
-    } 
+    // if(helpers.fileExists(misc_blast_dbs_test)){
+//             db_collector.push(req.CONSTS.misc_blast_dbs)
+//     } 
     
     
     res.render('search/blast', { title: 'VAMPS:Search',
