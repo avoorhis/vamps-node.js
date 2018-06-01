@@ -4,6 +4,7 @@ var passport = require('passport');
 var helpers = require('./helpers/helpers');
 var fs   = require('fs-extra');
 var path  = require('path');
+var spawn = require('child_process').spawn;
 
 /* GET Search page. */
 router.get('/search_index', helpers.isLoggedIn, function(req, res) {
@@ -35,24 +36,26 @@ router.get('/names', helpers.isLoggedIn, function(req, res) {
 //
 //
 router.get('/blast', helpers.isLoggedIn, function(req, res) {
-    var blast_db = req.CONSTS.blast_db;
+    var blast_dbs = req.CONSTS.blast_dbs;
+    var misc_blast_dbs_test = path.join('public','blast', req.CONSTS.misc_blast_dbs+'.nhr')
     // check if blast database exists:
-    var blast_nin = path.join('public','blast', NODE_DATABASE, blast_db+'.nin');
-    console.log(blast_nin);
-    try{
-      stats = fs.lstatSync(blast_nin);
-      if (stats.isFile()) {
-        var blast_db_path = path.join('public','blast', NODE_DATABASE, blast_db);
-      }else{
-        var blast_db_path = false;
-      }
+    // separate dbs
+    var db_collector = []
+    for(n in blast_dbs){
+        var blast_db_test = path.join('public','blast', blast_dbs[n]+'.nhr');
+        if(helpers.fileExists(blast_db_test)){
+            db_collector.push(blast_dbs[n])
+        }    
     }
-    catch (e){
-      console.log(e);
-    }
+    
+    if(helpers.fileExists(misc_blast_dbs_test)){
+            db_collector.push(req.CONSTS.misc_blast_dbs)
+    } 
+    
+    
     res.render('search/blast', { title: 'VAMPS:Search',
-        blast_db_path:blast_db_path,
-        user:                 req.user,hostname: req.CONFIG.hostname,
+        blast_dbs : JSON.stringify(db_collector),
+        user: req.user,hostname: req.CONFIG.hostname,
     });
 });
 //
@@ -599,48 +602,115 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
     console.log('search:in blast res');
     console.log(req.body);
     if(req.body.query === ''){
-      req.flash('fail', 'No Query Sequence Found');
-      res.redirect('search_index#blast');
-      return;
+        req.flash('fail', 'No Query Sequence Found');
+        res.redirect('/search/blast');
+        return;
     }
-    var blast_db = req.body.blast_db_path;
+    if(req.body.query.length <10 || req.body.query.length > 500){
+        req.flash('fail', 'Query length needs to be between 10 and 500 base pairs');
+        res.redirect('/search/blast');
+        return;
+    }
+    var patt = /[^ATCGUKSYMWRBDHV]/i   //contains anything other than 'A','T','C' or 'G'
+    if( patt.test(req.body.query) ){
+        req.flash('fail', 'Wrong character(s) detected: only letters represented by the standard IUB/IUPAC codes');
+        res.redirect('/search/blast');
+        return;
+    }
+    var db_collector = []
+    var db_collector_short = []
+    for(n in req.CONSTS.blast_dbs){
+        if(req.CONSTS.blast_dbs[n] in req.body){
+            var db_path = path.join(req.CONFIG.PROCESS_DIR,'public','blast',req.CONSTS.blast_dbs[n])
+            db_collector.push(db_path)
+            db_collector_short.push(req.CONSTS.blast_dbs[n])
+        }
+    }
+    if(db_collector.length == 0){
+        req.flash('fail', 'No Databases Selected');
+        res.redirect('/search/blast');
+        return;
+    }
+    
+    
     // got query now put it in a file (where?)
     var timestamp = +new Date();  // millisecs since the epoch!
     timestamp = req.user.username + '_' + timestamp;
-    var query_file = timestamp+"_blast_query.fa";
-    var query_file_path = path.join('tmp',query_file);
+    
 
     // using blastn with -outfmt 13 option produces 2 files
-    var out_file0 = timestamp+"_blast_result.json";
-    var out_file_path0 = path.join('tmp',out_file0);
-    var out_file1 = timestamp+"_blast_result_1.json";
-    var out_file_path1 = path.join('tmp',out_file1);
+    var out_file = timestamp+"_blast_result.json";
+    var out_file_path = path.join(req.CONFIG.PROCESS_DIR,'tmp',out_file);
+    var query_file = timestamp+"_blast_query.fa";
+    var query_file_path = path.join(req.CONFIG.PROCESS_DIR,'tmp',query_file);
     // then run 'blastn' command
     // blastn -db <dbname> -query <query_file> -outfmt 13 -out <outfile_name>
+    
+    var exec = require('child_process').exec;
+    //var log = fs.openSync(path.join(process.env.PWD,'logs','blast.log'), 'a');
+    var blast_cmd = req.CONFIG.PATH_TO_BLAST+"/blastn"
+    var dbs_string = '"'+db_collector.join(' ')+'"'
+    //var echo_cmd = "\""+"echo -e TTTAGAGGGGTTTTGCGCAGCTAACGCG|"
+    // Ev9:  ACACGACGACAACCTGAAAGGGAT
+    var task = 'blastn'
+    if(req.body.query.length < 50){
+        task = 'blastn-short'
+    }
     fs.writeFile(query_file_path,req.body.query+"\n",function(err){
       if(err){
         req.flash('fail', 'ERROR - Could not write query file');
         res.redirect('search_index');
       }else{
-        var spawn = require('child_process').spawn;
-        var log = fs.openSync(path.join(process.env.PWD,'logs','blast.log'), 'a');
-        var blast_options = {
-          scriptPath : req.CONFIG.PATH_TO_BLAST,
-          args :       [ '-db', blast_db, '-query', query_file_path, '-outfmt','13','-out',out_file_path0 ],
-        };
-        //var blastn_cmd = 'blastn -db '+blast_db+' -query '+query_file_path+' -outfmt 13 -out '+out_file_path0
-        var blast_process = spawn( blast_options.scriptPath+'/blastn', blast_options.args, {detached: true, stdio: [ 'ignore', null, log ]} );
-
-        blast_process.stdout.on('data', function (data) {
-          //console.log('stdout: ' + data);
-          data = data.toString().replace(/^\s+|\s+$/g, '');
-          var lines = data.split('\n');
-          for(var n in lines){
-            console.log('blastn line '+lines[n]);
-          }
+            var blast_options = {
+              scriptPath : req.CONFIG.PATH_TO_BLAST,
+              //args :       [ "-c",echo_cmd+blast_cmd,"-db ",dbs_string,"-outfmt","15","-out",out_file_path+"\"" ],
+              args :       [ blast_cmd,"-db ",dbs_string,"-outfmt","15","-query",query_file_path,"-out",out_file_path,'-task',task ],
+            };
+            //var blastn_cmd = 'blastn -db '+blast_db+' -query '+query_file_path+' -outfmt 13 -out '+out_file_path0
+            console.log(blast_options.args.join(' '))
+            //return   TTTAGAGGGGTTTTGCGCAGCTAACGCG
+           //  var blast_process = exec( "sh",blast_options.args, {
+        //             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+        //             detached: true,
+        //             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+        //             stdio: 'pipe'  // stdin, stdout, stderr
+        //     } );
+            var blast_process = exec( blast_options.args.join(' '), (e, stdout, stderr)=> {
+            if (e) {
+                console.error(e);
+                return
+            }
+            var obj = require(out_file_path);
+    
+            res.render('search/search_result_blast', {
+                    title    : 'VAMPS: BLAST Result',
+                    data     : JSON.stringify(obj),
+                    show     : 'blast_result',
+                    dbs      : JSON.stringify(db_collector_short),
+                    query    : req.body.query,
+                    user     : req.user,hostname: req.CONFIG.hostname,
+            });
         });
-        // AAGTCTTGACATCCCGATGAAAGATCCTTAACCAGATTCCCTCTTCGGAGCATTGGAGAC
-        blast_process.on('close', function (code) {
+        console.log('1')
+    }
+    });
+return
+//sh -c "echo -e TTTAGAGGGGTTTTGCGCAGCTAACGCG|/usr/local/ncbi/blast/bin//blastn -db \\"/Users/avoorhis/programming/vamps-node.js/public/blast/Bv6 /Users/avoorhis/programming/vamps-node.js/public/blast/Ev9\\" -outfmt 13 -out /Users/avoorhis/programming/vamps-node.js/tmp/avoorhis_1527702469368_blast_result.json"
+    blast_process.stdout.on('data', function (data) {
+        //console.log('stdout: ' + data);
+        data = data.toString().replace(/^\s+|\s+$/g, '');
+        var lines = data.split('\n');
+        for(var n in lines){
+            console.log('blastn line '+lines[n]);
+        }
+    });
+    blast_process.stderr.on('data', function (data) {
+        //console.log('stdout: ' + data);
+        console.log('stderr: ' + data);
+    });
+console.log('2')
+    // AAGTCTTGACATCCCGATGAAAGATCCTTAACCAGATTCCCTCTTCGGAGCATTGGAGAC
+    blast_process.on('close', function (code) {
          console.log('blast_process process exited with code ' + code);
          if(code === 0){
            console.log('BLAST SUCCESS');
@@ -667,13 +737,9 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
             req.flash('fail', 'ERROR - BLAST command exit code: '+code);
             res.redirect('search_index');
          }
-        });
-
-      }
-
     });
 
-  });
+});
 //
 //
 //

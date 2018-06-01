@@ -1,41 +1,53 @@
 <% include ../add_ins/begin.ejs %>
 <% if(show == 'blast_result'){ %>
 		<% dt = JSON.parse(data); %>
-
+		<% //dbs = JSON.parse(dbs); %>
+        <% var report = dt.BlastOutput2[0].report %>
 
 		<div class='title'>BLAST Result</div>
 		<div class='subtitle'></div>
 
-		<%= dt.BlastOutput2.report.program %> (Program: <%= dt.BlastOutput2.report.version %>)
-		<br>Query ID: <%= dt.BlastOutput2.report.results.search.query_id %>
-		<br>Query Title: <%= dt.BlastOutput2.report.results.search.query_title %>
-		<br>Query Length: <%= dt.BlastOutput2.report.results.search.query_len %>
-		<table border='1' class='table'>
-		<thead>
-			<tr>
-				<th>#</th><th>hit seqid</th><th>score</th><th>evalue</th><th>seqs</th>
-			</tr>
-		</thead>
-		<tbody>
-			<% for(i in dt.BlastOutput2.report.results.search.hits) { %>
-			<% var hit = dt.BlastOutput2.report.results.search.hits[i] %>
-			<tr>
-		<td><%= hit.num %></td>
-		<td><a href='/search/seqs/<%= hit.description[0].id %>'><%= hit.description[0].id %></a></td>
-		<td><%= hit.hsps[0].score %></td>
-		<td><%= hit.hsps[0].evalue %></td>
-		<td><pre>
-		query:   <%= hit.hsps[0].qseq %>
-		hit:     <%= hit.hsps[0].hseq %>
-		midline: <%= hit.hsps[0].midline %>
-		</pre>
+		<%= report.program %> (Program: <%= report.version %>)
+		<br>Reference: <%= report.reference %>
+		<br>VAMPS Databases Searched: <%= dbs %>
+		<br>Query Sequence: <%= query %>
+		<br>Query Length: <%= report.results.search.query_len %>
+		<% if(report.results.search.message == 'No hits found') { %>
+		    <hr><h3>No Hits Found</h3>
+		<% }else{ %>
+            
+            <table border='1' class='table'>
+            <thead>
+                <tr>
+                    <th>#</th><th>hit seqid</th><th>score</th><th>seqs</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(i in report.results.search.hits) { %>
+                <% var hit = report.results.search.hits[i] %>
+                <tr>
+            <td><%= hit.num %></td>
+            <td><a href='/search/seqs/<%= hit.description[0].id %>'><%= hit.description[0].id %></a>
+            <br><%= hit.description[0].title %>
+            </td>
+            <td>Bit-Score: <%= hit.hsps[0].bit_score %>
+            <br>Score: <%= hit.hsps[0].score %>
+            <br>Evalue: <%= hit.hsps[0].evalue %>
+            <br>Identity: <%= hit.hsps[0].identity %>
+            </td>            
+            <td><pre>
+            query:   <%= hit.hsps[0].qseq %>
+            hit:     <%= hit.hsps[0].hseq %>
+            midline: <%= hit.hsps[0].midline %>
+            </pre>
 
-		</td>
+            </td>
 
-		</tr>
-		<% } %>
-		</tbody>
-		</table>
+            </tr>
+            <% } %>
+            </tbody>
+            </table>
+        <% } %>
 <% }else{ %>
 	<% r = JSON.parse(obj); %>
     <div class='title'>Datasets that include this sequence ID: <%= seqid %></div>

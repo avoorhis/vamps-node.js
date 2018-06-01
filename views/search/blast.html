@@ -1,4 +1,6 @@
 <% include ../add_ins/begin.ejs %>
+<% var blast_dbs = JSON.parse(blast_dbs) %>
+
 <link rel="stylesheet" type="text/css" href="/stylesheets/search.css">
 
 
@@ -17,57 +19,37 @@
 <div class='container'>
   <div class='row'>
     <div class="col-lg-12">
-        <div id='blast_search_div' class='well'><strong>Local Blast</strong>
+        <div id='blast_search_div' class='well'><strong>Blast VAMPS Public Data Sequences</strong>
             <div class='pull-right'>
                 <a href='make_a_blast_db'>How to make a blast database</a>
             </div>
-            <% if(blast_db_path){ %>	
+            	
                 <form method='POST' action='/search/blast_search_result'>
+                Select one or more Databases:
+                <% for(n in blast_dbs){ %>
+                    <br><input type='checkbox' name='<%= blast_dbs[n] %>' value='1'> <%= blast_dbs[n] %>
+                <% } %>
                 <table class='table'>
                     <tr><td>
                                     
                                 <ul>
                                         <div class="">Enter a complete or partial fasta sequence 
-                                            (with or without definition line ie: TGACATTGAGAGAATCCGCTAGAAATAGTGGAGTGTCTAACTTGCTAG)
+                                            (No definition line). 
+                                            For example: Try selecting The Bv6 database and enter this sequence below: TGACATTGAGAGAATCCGCTAGAAATAGTGGAGTGTCTAACTTGCTAG
                                           
                                             <textarea id="blast_search_area" class="" name='query' rows='5' cols="10" ></textarea>
                                             <br><button class='btn btn-xs btn-primary' type='submit'>BLAST</button>				  	  	
                                         </div>
                                 </ul>
-                                <input type='hidden' name='blast_db_path' value='<%= blast_db_path %>'>				  
+                              	  
                   
                         </td><td>
-                        <div>
-                    
-                            <table>
-                                <tr><td>Select a Database:</td></tr>
-                                <tr><td>
-                            <input type='radio' name='region' value='v1v3' /> v1v3<br>
-                                </td><td>
-                            <input type='radio' name='region' value='v3'   /> v3<br>
-                                </td></tr>
-                                <tr><td>
-                            <input type='radio' name='region' value='v3v5' /> v3v5<br>
-                                </td><td>
-                            <input type='radio' name='region' value='v4'   /> v4<br>
-                                </td></tr>
-                                <tr><td>
-                            <input type='radio' checked name='region' value='v6'   /> v6<br>
-                                </td><td>
-                            <input type='radio' name='region' value='v4v6' /> v4v6<br>
-                                </td></tr>
-                                <tr><td>
-                            <input type='radio' name='region' value='its'  /> ITS
-                                </td>
-                            </tr>
-                            </table>
-                        </div>
+                        
                     </td></tr>
                 </table>
                 </form>
-            <% }else{ %>
-                        No Blast Database Found
-            <% } %>
+                The query sequence must be greater that 10 and less than 500 base pairs. Sequences are expected to be represented by the standard IUB/IUPAC codes.
+            
         </div>
 
 </div>
