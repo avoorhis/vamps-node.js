@@ -1,0 +1,32 @@
+<% include ../add_ins/begin.ejs %>
+
+<link href="/stylesheets/submissions.css" rel="stylesheet" \>
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+<% } %>
+	
+	
+<div class="container">
+	
+    <div class="row">  
+        <h3>Submission File Upload</h3>
+        <li>This page is for uploading a file (csv format) of sample data for submission to the Marine Biological Laboratory's KECK sequencing facilty. 
+        <li>To start the submission process and download a template file you should go to the <a href='/submissions/submission_request'>submission request page.</a> 
+        <li>We recommend you use OpenOffice or a Microsoft Excel spreadsheet to edit the downloaded file. 
+        <li>Make sure to keep the same headers, in the correct order and save it as a UNIX csv file.
+
+    </div>
+
+</div>
+<br>
+   
+
+
+
+<script type="text/javascript" src="/javascripts/submissions.js"></script>	
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>

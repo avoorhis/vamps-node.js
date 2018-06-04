@@ -17,7 +17,7 @@ constants.dataset_count_for_visuals_max     = 1100
 constants.dataset_count_for_visuals_cutoff  = 500
 constants.show_nas   = {"raw":false,"string":"--"};  // if raw==true will show class_NA, genus_NA etc; else show string (tax table only; not biom file)
 // blast dbs are in public/blast
-constants.blast_dbs   = ['Bv3v5','Bv4v5','Av4v5','Bv4','Bv6','Bv6v4','Av6v4','Av6','Ev9'];
+constants.blast_dbs   = ['Bv3v5','Bv4v5','Av4v5','Bv4','Bv6','Bv6v4','Av6v4','Av6','Ev9','Misc']; // leave 'Misc' as last item
 constants.misc_blast_dbs   = 'misc_blast' // ['Bv1v2','Bv1v4','Bv1v3','Bv2','Bv3','Av3v5','Bv3v4','Av3','Bv5v6','ITS']
 constants.download_file_formats = ['metadata','fasta','taxbytax','taxbyref','taxbyseq','biom','matrix','phyloseq','distance','emperor','pdf','tree','heatmap','otus'];
 // constants.ENV_SOURCE = {

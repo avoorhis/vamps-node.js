@@ -1,0 +1,38 @@
+<% include ../add_ins/begin.ejs %>
+<% var data = JSON.parse(data) %>
+<link href="/stylesheets/submissions.css" rel="stylesheet" \>
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+<% } %>
+	
+	
+<div class="container">
+	
+    <div class="row">  
+      <div class="col-lg-4">
+        <h3>View Submissions</h3>  
+        <select onchange='show_change(this.value)'>
+        <option>Select</option>
+        <% for(i in data){ %>
+            <option value='<%= data[i].submit_code %>'><%= (data[i].date_updated).substring(0,10) %> -- <%= data[i].submit_code %></option>
+        <% } %>
+        </select>
+	  </div>
+	  
+	  
+
+    </div>
+
+</div>
+<br>
+<div id='sub_table'></div>    
+
+
+
+<script type="text/javascript" src="/javascripts/submissions.js"></script>	
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>

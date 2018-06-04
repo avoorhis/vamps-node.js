@@ -32,9 +32,20 @@
                 <% }else{%>
                     <form method='POST' action='/search/blast_search_result'>
                     Select one or more Databases:
+                    <table>
+                        <tr>
+                        
                     <% for(n in blast_dbs){ %>
-                        <br><input type='checkbox' name='<%= blast_dbs[n] %>' value='1'> <%= blast_dbs[n] %>
+                        <% var note = '' %>
+                        <% if(blast_dbs[n] == 'Misc'){ %>
+                        <%      note = '(All other public seqs)' %>
+                        <% } %>
+                        <td style='padding-left:10px;'><input type='checkbox' name='<%= blast_dbs[n] %>' value='1'> <%= blast_dbs[n] %> <%= note %></td>
+                        <% if(n % 2 === 1){ %>
+                            </tr><tr>
+                        <% } %>                       
                     <% } %>
+                    </table>
                     <table class='table'>
                         <tr><td>
                                     

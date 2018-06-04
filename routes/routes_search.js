@@ -610,7 +610,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
         res.redirect('/search/blast');
         return;
     }
-    var patt = /[^ATCGUKSYMWRBDHV]/i   //contains anything other than 'A','T','C' or 'G'
+    var patt = /[^ATCGUKSYMWRBDHVN]/i   //contains anything other than 'A','T','C' or 'G'
     if( patt.test(req.body.query) ){
         req.flash('fail', 'Wrong character(s) detected: only letters represented by the standard IUB/IUPAC codes');
         res.redirect('/search/blast');
