@@ -206,6 +206,7 @@ if (metadata_search_field3 !== null) {
 //
 //
 //
+
 function change_comparison(comparison, item){
     var comparison_input;
     var minval;

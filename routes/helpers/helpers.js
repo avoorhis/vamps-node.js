@@ -1990,5 +1990,9 @@ module.exports.ensure_dir_exists = function(dir)
     }        // dir has now been created, including the directory it is to be placed in
 
 });
+// Use abstract equality == for "is number" test
+module.exports.isEven = function (n) {
+    return n == parseFloat(n)? !(n%2) : void 0;
+}
 
 };
