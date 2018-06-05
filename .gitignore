@@ -27,7 +27,7 @@ config/config*
 config/config.js
 config/db_vamps_node.sql.gz
 config/old/*
-
+!public/constants.js
 vamps-launcher.sh
 
 node_modules/
@@ -59,7 +59,6 @@ public/tmp_images/*
 public/blast/*
 !public/blast/.gitignore
 public/monitor/*
-
 # ignore public/databases directory
 public/databases/*
 
