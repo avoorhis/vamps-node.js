@@ -1,18 +1,19 @@
 <% include ../add_ins/begin.ejs %>
 
 <% if (user_submits) {
-var user_submits = JSON.parse(user_submits)
 } else {
 var user_submits = {}
 } %>
 
 <% if (regions) {
-var regions = JSON.parse(regions)
 } else {
 var regions = {}
 } %>
 
-
+<% if (pi_list) { %>
+<% } else { %>
+<% var pi_list = {} %>
+<% } %>
 
 <link href="/stylesheets/submissions.css" rel="stylesheet" \>
 <% if (messages.success) { %>
