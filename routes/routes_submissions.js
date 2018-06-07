@@ -15,14 +15,7 @@ router.get('/submission_request', function(req, res) {
   console.log('in GET submission_request');
 
   // get_pi_list
-  pi_list = [];
-  for (var i in ALL_USERS_BY_UID) {
-    pi_list.push({'PI': ALL_USERS_BY_UID[i].last_name + ' ' + ALL_USERS_BY_UID[i].first_name, 'pid': i});
 
-  }
-  pi_list.sort(function sortByAlpha(a, b) {
-    return helpers.compareStrings_alpha(a.PI, b.PI);
-  });
   console.log("PPP pi_list");
   console.log(pi_list);
   res.render('submissions/submission_request', { title: 'VAMPS: Submission Request',
