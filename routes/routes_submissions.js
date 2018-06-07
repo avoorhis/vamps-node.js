@@ -27,7 +27,8 @@ router.get('/submission_request', function(req, res) {
   console.log(pi_list);
   res.render('submissions/submission_request', { title: 'VAMPS: Submission Request',
     user: req.user,
-    hostname: req.CONFIG.hostname
+    hostname: req.CONFIG.hostname,
+    pi_list: pi_list
   });
   console.log('user');
   console.log(req.user);
