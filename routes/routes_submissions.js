@@ -8,13 +8,14 @@ var path = require("path");
 var config  = require(app_root + '/config/config');
 var validator = require('validator');
 var nodeMailer = require('nodemailer');
+var submission_controller = require(app_root + '/controllers/submissionController');
 
 
 /* GET new submission form */
 router.get('/submission_request', function(req, res) {
   console.log('in GET submission_request');
 
-  // get_pi_list
+  var pi_list = submission_controller.get_pi_list();
 
   console.log("PPP pi_list");
   console.log(pi_list);
