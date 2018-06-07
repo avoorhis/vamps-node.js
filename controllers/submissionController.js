@@ -1,4 +1,5 @@
 var Submission = require(app_root + '/models/submission');
+var helpers = require(app_root + '/routes/helpers/helpers');
 
 // Display list of all Submissions.
 // exports.submission_list = function (req, res) {
@@ -15,11 +16,10 @@ exports.get_pi_list = function () {
 
   }
 
-  pi_list.sort(function sortByAlpha(a, b) {
-    return helpers.compareStrings_alpha(a.PI, b.PI);
-  });
+  // pi_list.sort(function sortByAlpha(a, b) {
+  //   return helpers.compareStrings_alpha(a.PI, b.PI);
+  // });
 
-  console.log("PPP1");
-  console.log(pi_list);
+  return pi_list;
 };
 
