@@ -61,9 +61,9 @@ var regions = {}
         <div class="col-lg-12">
             <label for="select_pi">Select PI for submission to be submitted under:</label>
             <select id="select_pi" name="select_pi">
-                <% for (var i in pi_list){ %>
-                <option value='<%= pi_list[i].pid %>'><%= pi_list[i].PI %></option>
-                <% } %>
+                <% pi_list.forEach(function(value){ %>
+                <option value="<%= value.pid %>"><%= value.PI %></option>
+                <% }); %>
             </select>
 
         </div>
