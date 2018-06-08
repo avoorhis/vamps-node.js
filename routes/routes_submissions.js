@@ -22,7 +22,7 @@ router.get('/submission_request', function(req, res) {
 
   var Submission = require(app_root + '/models/submission');
 
-  var all_subm = Submission.get_submissions_by_user();
+  var all_subm = Submission.get_submissions_by_user(req);
   console.log(all_subm);
 
 
