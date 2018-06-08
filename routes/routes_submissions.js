@@ -17,8 +17,15 @@ router.get('/submission_request', function(req, res) {
 
   var pi_list = submission_controller.get_pi_list();
 
-  console.log("PPP pi_list");
-  console.log(pi_list);
+      // Previous Submissions List
+    // var user_submissions_query = "SELECT submit_code from vamps.vamps_submissions where user_id='" + req.user.user_id + "'";
+
+  var Submission = require(app_root + '/models/submission');
+
+  var all_subm = Submission.get_submissions_by_user();
+  console.log(all_subm);
+
+
   res.render('submissions/submission_request', { title: 'VAMPS: Submission Request',
     user: req.user,
     hostname: req.CONFIG.hostname,
