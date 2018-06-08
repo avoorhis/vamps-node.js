@@ -142,6 +142,13 @@ module.exports.get_datasets = function(callback){
     //console.log('gp',gp)
     USER_GROUPS[gp] = []
     //ug_array.push(config.user_groups[gp])
+    console.log(config.user_groups[gp])
+    if(Array.isArray(config.user_groups[gp])){
+        console.log('UG is array')
+        
+    }else{
+        console.log('UG is not Array')
+    }
     var q = 'SELECT project_id FROM project '+ config.user_groups[gp]
     ug_array.push({'q':q,'gp':gp})
   }
@@ -154,7 +161,7 @@ module.exports.get_datasets = function(callback){
           console.log(err);
           return;
         }
-        console.log(' INITIALIZING USER_GROUPS');
+        console.log('INITIALIZING USER_GROUPS');
         
       }
   )
@@ -307,7 +314,7 @@ var fakeAsyncApi = function(thing, callback) {
                 USER_GROUPS[gp].push(rows[n].project_id)  
               }  
             });
-      console.log("'"+thing.gp + "' processed");
+      //console.log("'"+thing.gp + "' processed");
       callback(null);
     
   }, 2000);
