@@ -1,84 +1,83 @@
 <% include ../add_ins/begin.ejs %>
-<% var user_submits = JSON.parse(user_submits) %>
-<% var regions = JSON.parse(regions)  %>
-<% var pi_list = JSON.parse(pi_list) %>
+
+<% if (user_submits) {
+var user_submits = JSON.parse(user_submits)
+} else {
+var user_submits = {}
+} %>
+
+<% if (regions) {
+var regions = JSON.parse(regions)
+} else {
+var regions = {}
+} %>
+
+<% if (pi_list) {
+var pi_list = JSON.parse(pi_list)
+} else {
+var pi_list = {}
+} %>
+
 <link href="/stylesheets/submissions.css" rel="stylesheet" \>
 <% if (messages.success) { %>
-  	<div class="alert_flash_message_success"><%= messages.success %></div>
+<div class="alert_flash_message_success"><%= messages.success %></div>
 <% }else if(messages.fail){ %>
-    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+<div class="alert_flash_message_fail"><%= messages.fail %></div>
 <% } %>
-	
-	
+
+
 <div class="container">
-	
-    <div class="row">  
-      <div class="col-lg-12">
-        <h3>Submission Request and Form Download</h3> 
-        You must first fill out this form if you plan to have samples sequenced in the MBL's Keck facility (Illumina HiSeq or MiSeq). 
-        <br>We need to know about your samples (e.g. how many, which rRNA domain is targeted, what the sample concentration is, metadata for each sample) and about your project (description, PI information, cost center to be charged). 
-        <br>The information is used at various points in the sequencing process, from sample preparation through upload to VAMPS. 
-        <br>Requests to change information should be addressed to <a href='mailto:morrison@mbl.edu'>Hilary Morrison</a>. 
-        <br>Once the form is submitted the information can still be recalled and viewed by loading the submission code below. 
-        <br><a href=''>Form Help</a>|<a href=''>Upload and Validate completed form</a>|<a href=''>Reset Form</a> 
-      </div>
-      <div class="pull-right">
-      Load Previous Submissions for viewing: 
-      <select>
-        <option>Select</option>
-        <% for(i in user_submits){ %>
-            <option value='<%= user_submits[i] %>'><%= user_submits[i] %></option>
-        <% } %>
-      </select>
-      </div>
-    </div>
-    
-    
-    <div class="row"> 
-    <div class="col-lg-12">
-    <table border='1' style='border-collapse:collapse'>
-      <tr><td>Select PI for submission to be submitted under:</td>
-        <td>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h3>Submission Request and Form Download</h3>
+            You must first fill out this form if you plan to have samples sequenced in the MBL's Keck facility (Illumina
+            HiSeq or MiSeq).
+            <br>We need to know about your samples (e.g. how many, which rRNA domain is targeted, what the sample
+            concentration is, metadata for each sample) and about your project (description, PI information, cost center
+            to be charged).
+            <br>The information is used at various points in the sequencing process, from sample preparation through
+            upload to VAMPS.
+            <br>Requests to change information should be addressed to <a href='mailto:morrison@mbl.edu'>Hilary
+            Morrison</a>.
+            <br>Once the form is submitted the information can still be recalled and viewed by loading the submission
+            code below.
+            <br><a href=''>Form Help</a> | <a href=''>Upload and Validate completed form</a> | <a href=''>Reset Form</a>
+        </div>
+        <div class="pull-right">
+            Load Previous Submissions for viewing:
             <select>
-            <option>Select</option>
-            <% for(i in pi_list){ %>
-                <option value='<%= pi_list[i].pid%>'><%= pi_list[i].PI %></option>
-            <% } %>
+                <option>Select</option>
+                <% for (var i in user_submits){ %>
+                <option value='<%= user_submits[i] %>'><%= user_submits[i] %></option>
+                <% } %>
             </select>
-        </td>
-      </tr>
-      <tr><td>Project Name (This name may be adjusted by the MBL)</td>
-        <td>
-           <input type='text' size='3' maxlength='3'>_<input type='text' size='4' maxlength='4'>_<input style='background:grey' disabled type='text' size='5'>
-        </td>
-      </tr>
-      <tr><td>Title (max length: 60 chars)</td>
-        <td>
-           <input type='text' name='title' size='65'>
-        </td>
-      </tr>  
-      <tr><td>Project Description (max length: 1000 chars)</td>
-        <td>
-           <textarea rows="3" cols="50" maxlength='1000'></textarea>
-        </td>
-      </tr> 
-      <tr>
-        <td>Domain and Region</td>
-        <td>
-        <% for(i in regions){ %>
-          <input type='radio' value='<%= regions[i] %>'> <%= regions[i] %>
-        <% } %>
-        </td>
-      </tr>   
-    </table>
+        </div>
     </div>
+
+
+    <div class="row">
+        <div class="col-lg-12">
+            <label for="select_pi">Select PI for submission to be submitted under:</label>
+            <select id="select_pi" name="select_pi">
+                <% pi_list.forEach(function(value){ %>
+                <option value="<%= pi_list[i].pid%>"
+                <% if (value == "QUQU") {%>
+                selected
+                <% } %>
+                >
+                <%= pi_list[i].PI %></option>
+                <% }); %>
+            </select>
+
+        </div>
     </div>
 
 </div>
 <br>
 
-<script type="text/javascript" src="/javascripts/submissions.js"></script>	
+<script type="text/javascript" src="/javascripts/submissions.js"></script>
 <% include ../add_ins/end.ejs %>
-   
- </body>
- </html>
+
+</body>
+</html>

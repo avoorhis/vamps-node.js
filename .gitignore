@@ -7,6 +7,7 @@
 .vagrant
 
 public/scripts/*.pyc
+public/scripts/gast/VSEARCH2.6.1
 old_2_new_vamps_by_project.py
 rebuild_vamps_files.py
 metadata_files_synchrony.py
