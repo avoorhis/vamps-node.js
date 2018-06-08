@@ -22,19 +22,20 @@ router.get('/submission_request', function(req, res) {
 
   var Submission = require(app_root + '/models/submission');
 
-  Submission.getAllSubmissions(function (err, rows) {
+  var all_subm = Submission.getAllSubmissions(function (err, rows) {
 
     if (err) {
       res.json(err);
     }
     else {
       console.log("RRR1", rows);
+      return rows;
     }
 
   });
 
   // var all_subm = Submission.get_submissions_by_user();
-  // console.log(all_subm);
+  console.log("AAA", all_subm);
 
 
   res.render('submissions/submission_request', { title: 'VAMPS: Submission Request',
