@@ -46,7 +46,38 @@ router.post('/login',  passport.authenticate('local-login', {
     if (redirect_to_home.indexOf(req.body.return_to_url) !== -1) {
       url = '/';
     }
-
+    
+    
+   //  console.log(PROJECT_INFORMATION_BY_PID[283])
+//     console.log('USER_GROUPS3')
+//     console.log(USER_GROUPS)
+//     console.log('ALL_USERS_BY_UID')
+//     console.log(ALL_USERS_BY_UID)
+    for(uid in ALL_USERS_BY_UID){
+        if((ALL_USERS_BY_UID[uid].groups).length > 0){
+            for(i in ALL_USERS_BY_UID[uid].groups){
+                var gp = ALL_USERS_BY_UID[uid].groups[i];
+                pid_list = USER_GROUPS[gp]
+                for(j in pid_list){
+                    var pid = pid_list[j]
+                    
+                    //console.log('pushing uid '+uid+' to pid '+pid)
+                    //console.log(PROJECT_INFORMATION_BY_PID[pid].permissions)
+                    //console.log('pushing uid2')
+                    if(PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(parseInt(uid)) == -1){
+                        //console.log('2pushing uid '+uid+' to pid '+pid)
+                        PROJECT_INFORMATION_BY_PID[pid].permissions.push(parseInt(uid))
+                    }
+                    
+                    
+                }
+                
+            }
+        }
+     
+    }
+    console.log(PROJECT_INFORMATION_BY_PID)
+    
     fs.ensureDir(data_dir, function (err) {
         if(err) {console.log(err);} // => null
         else{
@@ -57,6 +88,8 @@ router.post('/login',  passport.authenticate('local-login', {
                     console.log('Setting USER_FILES_BASE permissions to 0775');
                     console.log('=== url ===: req.body.return_to_url');
                     console.log(url);
+                    
+                    console.log('USER',req.user)
                     res.redirect(url);    
                     delete req.session.returnTo;
                     req.body.return_to_url = '';
@@ -64,6 +97,7 @@ router.post('/login',  passport.authenticate('local-login', {
             });
         }
     });
+    
     
     
   }

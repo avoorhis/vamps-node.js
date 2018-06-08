@@ -716,3 +716,6 @@ function displayCoordinates(pnt) {
         document.getElementById("coord").innerHTML = 'Cursor location --Latitude: '+lat+' --Longitude: '+lng;
         //console.log("Latitude: " + lat + "  Longitude: " + lng);
 }
+function blast(){
+    var query = document.getElementById("query").innerHTML
+}

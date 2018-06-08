@@ -59,10 +59,12 @@ get_all_user_query: function(){
     var qSelectUser = "SELECT user_id as uid, username, email, institution, last_name, first_name, security_level";
     qSelectUser += " FROM user WHERE active='1'";
     //console.log(qSelectClassifiers);
-    return qSelectUser;
-  
+    return qSelectUser;  
 },
-
+get_all_user_groups: function(){
+    var qSelectUserGroup = "SELECT user_id as uid, `group` FROM user_group"
+    return qSelectUserGroup;
+},
 get_projects_queryUID: function( uid ) {
     var q = "SELECT project, project_id from project where owner_user_id='"+uid+"'";
     return q;

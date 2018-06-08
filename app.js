@@ -509,8 +509,10 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
 
     //console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
     //console.log(PROJECT_INFORMATION_BY_PID)
+    
     //console.log(MD_PRIMER_SUITE[34])
     //console.log(MD_SEQUENCING_PLATFORM)
+     
     //console.log(AllMetadata[88])
 		//var mode = 0777 & ~process.umask();
 		//console.log('mode',mode)

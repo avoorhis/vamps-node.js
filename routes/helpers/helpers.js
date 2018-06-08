@@ -452,6 +452,7 @@ module.exports.get_select_run_query = function(rows){
 // TODO: "This function's cyclomatic complexity is too high. (6)"
 module.exports.run_permissions_query = function(rows){
   //console.log(PROJECT_INFORMATION_BY_PID)
+  
   for (var i=0; i < rows.length; i++) {
     var pid = rows[i].project_id;
     var uid = rows[i].user_id;

@@ -71,6 +71,7 @@ module.exports = function(passport, db) {
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, username, password, done) { // callback with username and password from our form
+        
         return login_auth_user(req, username, password, done, db);
     }));
 
@@ -183,6 +184,7 @@ function login_auth_user(req, username, password, done, db){
         //if ( validatePassword(password, rows[0].encrypted_password, db) )
         if(rows[0].encrypted_password === rows[0].entered_pw)
         { 
+            delete rows[0].entered_pw
             console.log('returned TRUE')
             var new_count = parseInt(rows[0].sign_in_count) + 1;            
             var qResetUserSignin = queries.reset_user_signin(new_count, rows[0].current_sign_in_at, rows[0].user_id)
@@ -203,12 +205,16 @@ function login_auth_user(req, username, password, done, db){
             }catch(e){
                 console.log(e)
             }
+            console.log('USER_GROUPS')
+    console.log(USER_GROUPS)
             console.log('login_auth_user-2')
+            
             return done(null, rows[0]); 
         }
         
         // if the user is found but the password is wrong:
         // create the loginMessage and save it to session as flashdata
+        
         return done(null, false, req.flash('fail', 'Wrong password -- try again.'));
         // all is well, return successful user
     });

@@ -529,8 +529,6 @@ function create_clean_config(req, upld_obj)
 router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 //router.post('/unit_selection',  function(req, res) {
 
-
-
   console.log(req.user.username+' req.body: unit_selection-->>');
   if(req.CONFIG.site == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
