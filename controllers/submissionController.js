@@ -16,9 +16,11 @@ exports.get_pi_list = function () {
 
   }
 
-  // pi_list.sort(function sortByAlpha(a, b) {
-  //   return helpers.compareStrings_alpha(a.PI, b.PI);
-  // });
+  pi_list.sort(function sortByAlpha(a, b) {
+    return helpers.compareStrings_alpha(a.PI, b.PI);
+  });
+
+  console.log("PLL", pi_list);
 
   return pi_list;
 };

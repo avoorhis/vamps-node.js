@@ -16,9 +16,6 @@ router.get('/submission_request', function(req, res) {
   console.log('in GET submission_request');
 
   var pi_list = submission_controller.get_pi_list();
-  pi_list.sort(function sortByAlpha(a, b) {
-    return helpers.compareStrings_alpha(a.PI, b.PI);
-  });
 
   console.log("PPP pi_list");
   console.log(pi_list);
