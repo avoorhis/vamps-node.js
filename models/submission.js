@@ -1,26 +1,32 @@
 var mysql = require('mysql2');
 
-exports.get_submissions_by_user = function(callback){
-
-  return connection.query("Select * from test_vamps.vamps_submissions", callback);
-
-};
-
-// exports.get_submissions_by_user = function(req, callback)
-// {
-//   var user_submissions_query = "SELECT submit_code from test_vamps.vamps_submissions";
-//   // where user_id = '" + req.user.user_id + "'";
+// exports.get_submissions_by_user = function (callback) {
 //
-//   connection.query(user_submissions_query, function (err, rows, fields) {
-//     if (err)
-//     {    console.log("EEE", err);
+//   return connection.query("Select * from test_vamps.vamps_submissions", callback);
 //
-//       return err;}
-//     console.log("RRR", rows);
-//
-//     callback(err, rows);
-//   });
 // };
 
 
+var Submission = {
 
+  getAllSubmissions: function (callback) {
+
+    return connection.query("Select * from test_vamps.vamps_submissions", callback);
+
+  },
+  getSubmissionById: function (id, callback) {
+
+    return connection.query("select * from test_vamps.vamps_submissions where Id=?", [id], callback);
+  },
+  addSubmission: function (Submission, callback) {
+    return connection.query("Insert into test_vamps.vamps_submissions values(?,?,?)", [Submission.Id, Submission.Title, Submission.Status], callback);
+  },
+  deleteSubmission: function (id, callback) {
+    return connection.query("delete from test_vamps.vamps_submissions where Id=?", [id], callback);
+  },
+  updateSubmission: function (id, Submission, callback) {
+    return connection.query("update test_vamps.vamps_submissions set Title=?,Status=? where Id=?", [Submission.Title, Submission.Status, id], callback);
+  }
+
+};
+module.exports = Submission;
