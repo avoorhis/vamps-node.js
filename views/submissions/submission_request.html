@@ -82,25 +82,27 @@ var regions = {}
         <!--<legend id="select_domain_region-legend">Domain and Region:</legend>-->
         Domain and Region:<br/>
         <% for (var i in domain_regions["domain_regions"]){ %>
-        <label class="control-label col-sm-1"><%= domain_regions["domain_regions"][i]["domain"] %></label>
-        <div class="col-sm-offset-1 col-sm-11">
-            <% var regions = domain_regions["domain_regions"][i]["regions"] %>
+        <div class="row">
+            <label class="control-label col-sm-1"><%= domain_regions["domain_regions"][i]["domain"] %></label>
+            <div class="col-sm-11">
+                <% var regions = domain_regions["domain_regions"][i]["regions"] %>
 
-            <% for (var k in regions){ %>
+                <% for (var k in regions){ %>
 
-            <!--check if empty regions (shotgun) and add radio button-->
-            <% if(typeof(regions[k].length) != 'undefined') %>
-            <% { %>
-            <% regions[k].length %>
-            <% } %>
+                <!--check if empty regions (shotgun) and add radio button-->
+                <% if(typeof(regions[k].length) != 'undefined') %>
+                <% { %>
+                <% regions[k].length %>
+                <% } %>
 
 
-            <%= // JSON.stringify(domain_regions["domain_regions"][i]) %>
-            <input id="d_region" name="d_region" type='radio'
-                   value='<%= regions[k] %>'> <%= regions[k] %> </input><br/>
+                <%= // JSON.stringify(domain_regions["domain_regions"][i]) %>
+                <input id="d_region" name="d_region" type='radio'
+                       value='<%= regions[k] %>'> <%= regions[k] %> </input><br/>
 
-            <% }; %>
+                <% }; %>
 
+            </div>
         </div>
         <% }; %>
 
