@@ -2,8 +2,10 @@
     font-size: larger;
 }
 
-.form_field {
+.submission_form_field {
     background-color: #ECECEC;
+    display: block;
+
 }
 
 .overrides {
