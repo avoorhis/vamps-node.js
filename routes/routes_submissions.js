@@ -1,35 +1,48 @@
-var express = require('express');
-var router  = express.Router();
-var helpers = require('./helpers/helpers');
-var form    = require("express-form");
-var CONSTS  = require(app_root + "/public/constants");
-var fs = require("fs");
-var path = require("path");
-var config  = require(app_root + '/config/config');
-var validator = require('validator');
-var nodeMailer = require('nodemailer');
+var express               = require('express');
+var router                = express.Router();
+var helpers               = require('./helpers/helpers');
+var form                  = require("express-form");
+var CONSTS                = require(app_root + "/public/constants");
+var fs                    = require("fs");
+var path                  = require("path");
+var config                = require(app_root + '/config/config');
+var validator             = require('validator');
+var nodeMailer            = require('nodemailer');
 var submission_controller = require(app_root + '/controllers/submissionController');
 
 
 /* GET new submission form */
-router.get('/submission_request', function(req, res) {
+router.get('/submission_request', function (req, res) {
   console.log('in GET submission_request');
 
   var pi_list = submission_controller.get_pi_list();
 
-      // Previous Submissions List
-    // var user_submissions_query = "SELECT submit_code from vamps.vamps_submissions where user_id='" + req.user.user_id + "'";
+  // Previous Submissions List
+  // var user_submissions_query = "SELECT submit_code from vamps.vamps_submissions where user_id='" + req.user.user_id + "'";
 
   var Submission = require(app_root + '/models/submission');
+  console.log("RRR2", res);
 
-  var all_subm = Submission.getAllSubmissions(function (err, rows) {
+  // Submission.getAllSubmissions(function (err, rows) {
+  //
+  //   if (err) {
+  //     res.json(err);
+  //   }
+  //   else {
+  //     res.json(rows);
+  //   }
+  //
+  // });
+
+  var all_subm;
+  Submission.getAllSubmissions(function (err, rows) {
 
     if (err) {
       res.json(err);
     }
     else {
-      console.log("RRR1", rows);
-      return rows;
+      all_subm = rows;
+      console.log("AAA0", all_subm);
     }
 
   });
@@ -38,13 +51,14 @@ router.get('/submission_request', function(req, res) {
   console.log("AAA", all_subm);
 
 
-  res.render('submissions/submission_request', { title: 'VAMPS: Submission Request',
+  res.render('submissions/submission_request', {
+    title: 'VAMPS: Submission Request',
     user: req.user,
     hostname: req.CONFIG.hostname,
     pi_list: pi_list
   });
-  console.log('user');
-  console.log(req.user);
+  // console.log('user');
+  // console.log(req.user);
 
 });
 
