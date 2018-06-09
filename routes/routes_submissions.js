@@ -17,7 +17,6 @@ router.get('/submission_request', function (req, res) {
   console.log('in GET submission_request');
 
   var pi_list = submission_controller.get_pi_list();
-  var domain_region = CONSTS.DOMAIN_REGION;
   var user_id = req.user.user_id;
   Submission.getSubmitCodeByUser(user_id, function (err, rows) {
     // console.log("AAA0", res);
@@ -35,7 +34,8 @@ router.get('/submission_request', function (req, res) {
         user: req.user,
         hostname: req.CONFIG.hostname,
         user_submits: user_submits,
-        // regions  : JSON.stringify(dandr),
+        domain_regions: CONSTS.DOMAIN_REGIONS,
+          // JSON.stringify(dandr),
         pi_list: pi_list
       });
 

@@ -54,7 +54,7 @@ constants.DOMAINS = {
   ]
 };
 
-constants.DOMAIN_REGION = {
+constants.DOMAIN_REGIONS = {
   domain_regions: [
     {domain: "Archaeal", regions: ['v4', 'v6', 'v4v5']},
     {domain: "Bacterial", regions: ['v4', 'v6', 'v4v5']},
