@@ -1,6 +1,19 @@
-table tr th {
-  padding:0 5px;
+#domain_regions-legend {
+    font-size: larger;
 }
+
+.form_field {
+    background-color: #ECECEC;
+}
+
+.overrides {
+    padding-top: 0px !important;
+}
+
+table tr th {
+    padding: 0 5px;
+}
+
 table tr td {
-  text-align:center;
+    text-align: center;
 }
