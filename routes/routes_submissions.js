@@ -7,52 +7,56 @@ var fs                    = require("fs");
 var path                  = require("path");
 var config                = require(app_root + '/config/config');
 var validator             = require('validator');
-var nodeMailer = require('nodemailer');
+var nodeMailer            = require('nodemailer');
 var Submission            = require(app_root + '/models/submission');
 var submission_controller = require(app_root + '/controllers/submissionController');
 
 
 /* GET new submission form */
-router.get('/submission_request', function (req, res) {
-  console.log('in GET submission_request');
+router.get('/submission_request',
+  [helpers.isLoggedIn],
+  function (req, res) {
+    console.log('in GET submission_request');
 
-  var pi_list = submission_controller.get_pi_list();
-  var user_id = req.user.user_id;
-  Submission.getSubmitCodeByUser(user_id, function (err, rows) {
-    // console.log("AAA0", res);
+    var pi_list = submission_controller.get_pi_list();
+    var user_id = req.user.user_id;
+    Submission.getSubmitCodeByUser(user_id, function (err, rows) {
+      // console.log("AAA0", res);
 
-    if (err) {
-      res.json(err);
-    }
-    else {
-      var user_submits = rows;
-      // console.log("AAA0", user_submits);
-      // console.log("AAA1", JSON.stringify(user_submits));
+      if (err) {
+        res.json(err);
+      }
+      else {
+        var user_submits = rows;
+        // console.log("AAA0", user_submits);
+        // console.log("AAA1", JSON.stringify(user_submits));
 
-      res.render('submissions/submission_request', {
-        title: 'VAMPS: Submission Request',
-        user: req.user,
-        hostname: req.CONFIG.hostname,
-        user_submits: user_submits,
-        domain_regions: CONSTS.DOMAIN_REGIONS,
+        res.render('submissions/submission_request', {
+          title: 'VAMPS: Submission Request',
+          user: req.user,
+          hostname: req.CONFIG.hostname,
+          user_submits: user_submits,
+          domain_regions: CONSTS.DOMAIN_REGIONS,
           // JSON.stringify(dandr),
-        pi_list: pi_list
-      });
+          pi_list: pi_list
+        });
 
-      // console.log('user');
-      // console.log(req.user);
+        // console.log('user');
+        // console.log(req.user);
 
 
-    }
+      }
+
+    });
 
   });
 
-});
-
-// router.post('/submission_request',
-//   [helpers.isLoggedIn],
-//   function (req, res) {
-//     console.log('in POST submission_request');
+router.post('/submission_request',
+  [helpers.isLoggedIn],
+  function (req, res) {
+    console.log('in POST submission_request');
+    console.log('OOO post');
+  };
 //
 //     // get_pi_list
 //     pi_list = [];
