@@ -14,6 +14,11 @@ var Submission = {
     return connection.query("Select * from test_vamps.vamps_submissions where user_id = " + connection.escape(user_id), callback);
 
   },
+  getSubmitCodeByUser: function (user_id, callback) {
+
+    return connection.query("Select distinct submit_code from test_vamps.vamps_submissions where user_id = " + connection.escape(user_id), callback);
+
+  },
   getSubmissionById: function (id, callback) {
 
     return connection.query("select * from test_vamps.vamps_submissions where Id=?", [id], callback);

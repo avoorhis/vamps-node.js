@@ -22,32 +22,22 @@ router.get('/submission_request', function (req, res) {
 
   var Submission = require(app_root + '/models/submission');
 
-  // Submission.getAllSubmissions(function (err, rows) {
-  //
-  //   if (err) {
-  //     res.json(err);
-  //   }
-  //   else {
-  //     res.json(rows);
-  //   }
-  //
-  // });
-
   var user_id = req.user.user_id;
-  Submission.getAllSubmissions(user_id, function (err, rows) {
+  Submission.getSubmitCodeByUser(user_id, function (err, rows) {
 
     if (err) {
       res.json(err);
     }
     else {
-      var all_subm = rows;
-      console.log("AAA0", all_subm);
+      var user_submits = rows;
+      console.log("AAA0", user_submits);
+      console.log("AAA1", JSON.stringify(user_submits));
 
       res.render('submissions/submission_request', {
         title: 'VAMPS: Submission Request',
         user: req.user,
         hostname: req.CONFIG.hostname,
-        user_submits: JSON.stringify(all_subm),
+        user_submits: user_submits,
         // user_submits : JSON.stringify(rows),
         // regions  : JSON.stringify(dandr),
         // pi_list  : JSON.stringify(pi_list),

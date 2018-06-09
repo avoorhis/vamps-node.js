@@ -50,7 +50,7 @@ var regions = {}
             <select id="previous_submissions" name="previous_submissions">
                 <option>Select</option>
                 <% for (var i in user_submits){ %>
-                <option value='<%= user_submits[i] %>'><%= user_submits[i] %></option>
+                <option value='<%= user_submits[i].submit_code %>'><%= user_submits[i].submit_code %></option>
                 <% } %>
             </select>
         </div>
