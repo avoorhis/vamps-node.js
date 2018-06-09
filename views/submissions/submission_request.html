@@ -39,7 +39,8 @@ var regions = {}
             Morrison</a>.
             <br>Once the form is submitted the information can still be recalled and viewed by loading the submission
             code below.
-            <br><a href=''>Form Help</a> | <a href=''>Upload and Validate completed form</a> | <a href=''>Reset Form</a>
+            <p><a href=''>Form Help</a> | <a href=''>Upload and Validate completed form</a> | <a href=''>Reset Form</a>
+            </p>
         </div>
     </div>
 
@@ -53,7 +54,6 @@ var regions = {}
         </select>
     </div>
 
-
     <div class="form-group">
 
         <label for="select_pi">Select PI for submission to be submitted under:</label>
@@ -63,42 +63,65 @@ var regions = {}
             <% }); %>
         </select>
     </div>
+    <div class="form-group">
+        Project Name (This name may be adjusted by the MBL)
+    </div>
+
+    <div class="form-group">
+        Project Title (max length: 60 chars)
+    </div>
+
+    <div class="form-group">
+        Project Description (max length: 1000 chars)
+    </div>
+
 
     <div class="form-group">
 
-        <fieldset id="select_domain_region">
-            <legend id="select_domain_region-legend">Domain and Region:</legend>
+        <!--<fieldset id="select_domain_region">-->
+        <!--<legend id="select_domain_region-legend">Domain and Region:</legend>-->
+        Domain and Region:<br/>
+        <% for (var i in domain_regions["domain_regions"]){ %>
+        <label class="control-label col-sm-1"><%= domain_regions["domain_regions"][i]["domain"] %></label>
+        <div class="col-sm-offset-1 col-sm-11">
+            <% var regions = domain_regions["domain_regions"][i]["regions"] %>
 
-            <% for (var i in domain_regions["domain_regions"]){ %>
-            <div class="col-sm-1">
-                <label for="domain"><%= domain_regions["domain_regions"][i]["domain"] %></label>
-            </div>
-            <div class="col-sm-11">
-                <% var regions = domain_regions["domain_regions"][i]["regions"] %>
+            <% for (var k in regions){ %>
 
-                <% for (var k in regions){ %>
-
-                <!--check if empty regions (shotgun) and add radio button-->
-                <% if(typeof(regions[k].length) != 'undefined') %>
-                <% { %>
-                <%= regions[k].length %>
-                <% } %>
+            <!--check if empty regions (shotgun) and add radio button-->
+            <% if(typeof(regions[k].length) != 'undefined') %>
+            <% { %>
+            <% regions[k].length %>
+            <% } %>
 
 
-                <%= // JSON.stringify(domain_regions["domain_regions"][i]) %>
-                <input id="d_region" name="d_region" type='radio'
-                       value='<%= regions[k] %>'> <%= regions[k] %> </input><br/>
+            <%= // JSON.stringify(domain_regions["domain_regions"][i]) %>
+            <input id="d_region" name="d_region" type='radio'
+                   value='<%= regions[k] %>'> <%= regions[k] %> </input><br/>
 
-                <% }; %>
-
-            </div>
             <% }; %>
 
-        </fieldset>
+        </div>
+        <% }; %>
+
+        <!--</fieldset>-->
 
     </div>
+    <div class="row"></div>
+    <div class="form-group">
+        Funding Code (numeric only)
+    </div>
 
-    <p>GGGG</p>
+    <div class="form-group">
+        How many individual samples will be submitted?
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Validate</button>
+        </div>
+    </div>
+
 </div>
 
 <script type="text/javascript" src="/javascripts/submissions.js"></script>
