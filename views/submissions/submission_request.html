@@ -23,68 +23,85 @@ var regions = {}
 <% } %>
 
 
-<div class="container">
+<form class=" form-horizontal">
 
     <div class="row">
         <div class="col-sm-12">
             <h3>Submission Request and Form Download</h3>
-            You must first fill out this form if you plan to have samples sequenced in the MBL's Keck facility (Illumina
-            HiSeq or MiSeq).
-            <br>We need to know about your samples (e.g. how many, which rRNA domain is targeted, what the sample
-            concentration is, metadata for each sample) and about your project (description, PI information, cost center
-            to be charged).
-            <br>The information is used at various points in the sequencing process, from sample preparation through
-            upload to VAMPS.
-            <br>Requests to change information should be addressed to <a href='mailto:morrison@mbl.edu'>Hilary
-            Morrison</a>.
-            <br>Once the form is submitted the information can still be recalled and viewed by loading the submission
-            code below.
-            <p><a href=''>Form Help</a> | <a href=''>Upload and Validate completed form</a> | <a href=''>Reset Form</a>
+            <p>You must first fill out this form if you plan to have samples sequenced in the MBL's Keck facility
+                (Illumina HiSeq or MiSeq).</p>
+            <p>We need to know about your samples (e.g. how many, which rRNA domain is targeted, what the sample
+                concentration is, metadata for each sample) and about your project (description, PI information, cost
+                center
+                to be charged).</p>
+            <p>The information is used at various points in the sequencing process, from sample preparation through
+                upload to VAMPS.</p>
+            <p>Requests to change information should be addressed to <a href='mailto:morrison@mbl.edu'>Hilary
+                Morrison</a>.</p>
+            <p>Once the form is submitted the information can still be recalled and viewed by loading the submission
+                code below.</p>
+            <p class="center"><a href=''>Form Help</a> | <a href=''>Upload and Validate completed form</a> | <a href=''>Reset
+                Form</a>
             </p>
         </div>
     </div>
 
     <div class="form-group">
-        <label for="previous_submissions">Load Previous Submissions for viewing:</label>
-        <select id="previous_submissions" name="previous_submissions" class="form-control">
-            <option>Select</option>
-            <% for (var i in user_submits){ %>
-            <option value='<%= user_submits[i].submit_code %>'><%= user_submits[i].submit_code %></option>
-            <% } %>
-        </select>
+        <label class="control-label col-sm-4" for="previous_submissions">Load Previous Submissions for viewing:</label>
+        <div class="col-sm-3">
+
+            <select id="previous_submissions" name="previous_submissions" class="form-control" width="20">
+                <option>Select</option>
+                <% for (var i in user_submits){ %>
+                <option value='<%= user_submits[i].submit_code %>'><%= user_submits[i].submit_code %></option>
+                <% } %>
+            </select>
+        </div>
     </div>
 
     <div class="form-group">
 
-        <label for="select_pi">Select PI for submission to be submitted under:</label>
-        <select id="select_pi" name="select_pi" class="form-control">
-            <% pi_list.forEach(function(value){ %>
-            <option value="<%= value.pid %>"><%= value.PI %></option>
-            <% }); %>
-        </select>
+        <label class="control-label col-sm-4" for="select_pi">Select PI for submission to be submitted under:</label>
+        <div class="col-sm-3">
+            <select id="select_pi" name="select_pi" class="form-control">
+                <% pi_list.forEach(function(value){ %>
+                <option value="<%= value.pid %>"><%= value.PI %></option>
+                <% }); %>
+            </select>
+        </div>
     </div>
     <div class="form-group">
-        <label for="project_name">Project Name (This name may be adjusted by the MBL)</label>
-        <input type="text" id="project_name1" name="project_name1" maxlength="4" size="4" value="">_<input type="text"
-                                                                                                           id="project_name2"
-                                                                                                           name="project_name2"
-                                                                                                           maxlength="4"
-                                                                                                           size="4"
-                                                                                                           value="">_<input
-            type="text" id="project_name3" name="project_name3" maxlength="4" size="5" value="" readonly>
+        <label class="control-label col-sm-4" for="project_name">Project Name (This name may be adjusted by the
+            MBL)</label>
+        <div class="col-sm-8">
+
+            <input type="text" id="project_name1" name="project_name1" maxlength="4" size="4" value="">_<input
+                type="text"
+                id="project_name2"
+                name="project_name2"
+                maxlength="4"
+                size="4"
+                value="">_<input
+                type="text" id="project_name3" name="project_name3" maxlength="4" size="5" value="" readonly>
+        </div>
     </div>
 
     <div class="form-group">
 
-        <label for="project_title">Project Title (max length: 60 chars)</label>
-        <input type="text" id="project_title" name="project_title" maxlength="60" size="60" value="">
-    </div>
+        <label class="control-label col-sm-4" for="project_title">Project Title (max length: 60 chars)</label>
+        <div class="col-sm-8">
 
+            <input type="text" id="project_title" name="project_title" maxlength="60" size="60" value="">
+        </div>
+    </div>
     <div class="form-group">
-        <label for="project_description">Project Description (max length: 1000 chars)</label>
-        <input type="text" id="project_description" name="project_description" maxlength="1000" value="">
-    </div>
+        <label class="control-label col-sm-4" for="project_description">Project Description (max length: 1000
+            chars)</label>
+        <div class="col-sm-8">
 
+            <input type="text" id="project_description" name="project_description" maxlength="1000" value="">
+        </div>
+    </div>
 
     <div class="form-group">
 
@@ -117,13 +134,18 @@ var regions = {}
 
     </div>
     <div class="form-group">
-        <label for="funding_code">Funding Code (numeric only)</label>
-        <input type="number" id="funding_code" name="funding_code" maxlength="10" size="10" value="">
+        <label class="control-label col-sm-4" for="funding_code">Funding Code (numeric only)</label>
+        <div class="col-sm-8">
+            <input type="number" id="funding_code" name="funding_code" maxlength="10" size="10" value="">
+        </div>
     </div>
 
     <div class="form-group">
-        <label for="samples_number">How many individual samples will be submitted?</label>
-        <input type="number" id="samples_number" name="samples_number" size="3" value="1">
+        <label class="control-label col-sm-4" for="samples_number">How many individual samples will be
+            submitted?</label>
+        <div class="col-sm-8">
+            <input type="number" id="samples_number" name="samples_number" size="3" value="">
+        </div>
     </div>
 
     <div class="form-group">
@@ -132,7 +154,7 @@ var regions = {}
         </div>
     </div>
 
-</div>
+</form>
 
 <script type="text/javascript" src="/javascripts/submissions.js"></script>
 <% include ../add_ins/end.ejs %>
