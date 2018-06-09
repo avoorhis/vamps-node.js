@@ -7,7 +7,8 @@ var fs                    = require("fs");
 var path                  = require("path");
 var config                = require(app_root + '/config/config');
 var validator             = require('validator');
-var nodeMailer            = require('nodemailer');
+var nodeMailer = require('nodemailer');
+var Submission            = require(app_root + '/models/submission');
 var submission_controller = require(app_root + '/controllers/submissionController');
 
 
@@ -16,16 +17,10 @@ router.get('/submission_request', function (req, res) {
   console.log('in GET submission_request');
 
   var pi_list = submission_controller.get_pi_list();
-
-  // Previous Submissions List
-  // var user_submissions_query = "SELECT submit_code from vamps.vamps_submissions where user_id='" + req.user.user_id + "'";
-
-  var Submission = require(app_root + '/models/submission');
-
+  var domain_region = CONSTS.DOMAIN_REGION;
   var user_id = req.user.user_id;
   Submission.getSubmitCodeByUser(user_id, function (err, rows) {
     // console.log("AAA0", res);
-    console.log("AAA1", CONSTS.DOMAINS);
 
     if (err) {
       res.json(err);
@@ -44,8 +39,8 @@ router.get('/submission_request', function (req, res) {
         pi_list: pi_list
       });
 
-      console.log('user');
-      console.log(req.user);
+      // console.log('user');
+      // console.log(req.user);
 
 
     }
