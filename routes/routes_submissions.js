@@ -24,24 +24,23 @@ router.get('/submission_request', function (req, res) {
 
   var user_id = req.user.user_id;
   Submission.getSubmitCodeByUser(user_id, function (err, rows) {
+    // console.log("AAA0", res);
+    console.log("AAA1", CONSTS.DOMAINS);
 
     if (err) {
       res.json(err);
     }
     else {
       var user_submits = rows;
-      console.log("AAA0", user_submits);
-      console.log("AAA1", JSON.stringify(user_submits));
+      // console.log("AAA0", user_submits);
+      // console.log("AAA1", JSON.stringify(user_submits));
 
       res.render('submissions/submission_request', {
         title: 'VAMPS: Submission Request',
         user: req.user,
         hostname: req.CONFIG.hostname,
         user_submits: user_submits,
-        // user_submits : JSON.stringify(rows),
         // regions  : JSON.stringify(dandr),
-        // pi_list  : JSON.stringify(pi_list),
-        // hostname : req.CONFIG.hostname,
         pi_list: pi_list
       });
 
