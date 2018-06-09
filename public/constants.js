@@ -56,18 +56,19 @@ constants.DOMAINS = {
 
 constants.DOMAIN_REGION = {
   domain_regions: [
-    {domain: "Archaea", regions: ['v4', 'v6', 'v4v5']},
-    {domain: "Bacteria", regions: ['v4', 'v6', 'v4v5']},
-    {domain: "Eukarya", regions: ['v4', 'v4_hap (HSSU)', 'v4_hap (HLSU)']},
-    {domain: "Fungi", regions: ['ITS1']},
-    {domain: "shotgun", regions: []}
+    {domain: "Archaeal", regions: ['v4', 'v6', 'v4v5']},
+    {domain: "Bacterial", regions: ['v4', 'v6', 'v4v5']},
+    {domain: "Eukaryal", regions: ['v4', 'v4_hap (HSSU)', 'v4_hap (HLSU)']},
+    {domain: "Fungal", regions: ['ITS1']},
+    {domain: "Shotgun", regions: []}
   ]
 };
 
-constants.TARGETS                  = ["Av3", "Av3v5", "Av4", "Av4v5", "Av5v6", "Av6", "Av6v4",
+constants.TARGETS = ["Av3", "Av3v5", "Av4", "Av4v5", "Av5v6", "Av6", "Av6v4",
   "Bv1v2", "Bv1v3", "Bv1v4", "Bv2", "Bv3", "Bv3v4", "Bv3v5", "Bv4", "Bv4v5", "Bv5", "Bv5v6", "Bv6", "Bv6v4",
   "Ev4", "Ev9", "ITS"];
-constants.UNITSELECT               = {
+
+constants.UNITSELECT = {
   units: [
     {
       id: 'tax_silva119_simple',
