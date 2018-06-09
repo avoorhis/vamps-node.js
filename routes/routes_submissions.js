@@ -21,7 +21,6 @@ router.get('/submission_request', function (req, res) {
   // var user_submissions_query = "SELECT submit_code from vamps.vamps_submissions where user_id='" + req.user.user_id + "'";
 
   var Submission = require(app_root + '/models/submission');
-  console.log("RRR2", res);
 
   // Submission.getAllSubmissions(function (err, rows) {
   //
@@ -34,31 +33,35 @@ router.get('/submission_request', function (req, res) {
   //
   // });
 
-  var all_subm;
-  Submission.getAllSubmissions(function (err, rows) {
+  var user_id = req.user.user_id;
+  Submission.getAllSubmissions(user_id, function (err, rows) {
 
     if (err) {
       res.json(err);
     }
     else {
-      all_subm = rows;
+      var all_subm = rows;
       console.log("AAA0", all_subm);
+
+      res.render('submissions/submission_request', {
+        title: 'VAMPS: Submission Request',
+        user: req.user,
+        hostname: req.CONFIG.hostname,
+        user_submits: JSON.stringify(all_subm),
+        // user_submits : JSON.stringify(rows),
+        // regions  : JSON.stringify(dandr),
+        // pi_list  : JSON.stringify(pi_list),
+        // hostname : req.CONFIG.hostname,
+        pi_list: pi_list
+      });
+
+      console.log('user');
+      console.log(req.user);
+
+
     }
 
   });
-
-  // var all_subm = Submission.get_submissions_by_user();
-  console.log("AAA", all_subm);
-
-
-  res.render('submissions/submission_request', {
-    title: 'VAMPS: Submission Request',
-    user: req.user,
-    hostname: req.CONFIG.hostname,
-    pi_list: pi_list
-  });
-  // console.log('user');
-  // console.log(req.user);
 
 });
 

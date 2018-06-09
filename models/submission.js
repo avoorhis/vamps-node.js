@@ -9,9 +9,9 @@ var mysql = require('mysql2');
 
 var Submission = {
 
-  getAllSubmissions: function (callback) {
+  getAllSubmissions: function (user_id, callback) {
 
-    return connection.query("Select * from test_vamps.vamps_submissions", callback);
+    return connection.query("Select * from test_vamps.vamps_submissions where user_id = " + connection.escape(user_id), callback);
 
   },
   getSubmissionById: function (id, callback) {
