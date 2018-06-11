@@ -54,32 +54,31 @@ router.get('/submission_request',
 router.post('/submission_request',
   [helpers.isLoggedIn],
   function (req, res) {
+
     console.log('in POST submission_request');
     console.log('OOO post');
-  };
-//
-//     // get_pi_list
-//     pi_list = [];
-//     for (var i in ALL_USERS_BY_UID) {
-//       pi_list.push({'PI': ALL_USERS_BY_UID[i].last_name + ' ' + ALL_USERS_BY_UID[i].first_name, 'pid': i});
-//
-//     }
-//     pi_list.sort(function sortByAlpha(a, b) {
-//       return helpers.compareStrings_alpha(a.PI, b.PI);
-//     });
-//     console.log("PPP pi_list");
-//     console.log(pi_list);
-//
-//     // Previous Submissions List
-//     var user_submissions_query = "SELECT submit_code from vamps.vamps_submissions where user_id='" + req.user.user_id + "'";
-//     console.log(user_submissions_query);
-//
-//     // Domain and Region List
-//
-//     console.time("TIME: 1) in post /edit_submission_form");
-//     // make_submission_object_from_db(req, res);
-//     console.timeEnd("TIME: 1) in post /edit_submission_form");
-//   });
+    console.log('req.body', req.body);
+
+    // get_pi_list
+    pi_list = [];
+    for (var i in ALL_USERS_BY_UID) {
+      pi_list.push({'PI': ALL_USERS_BY_UID[i].last_name + ' ' + ALL_USERS_BY_UID[i].first_name, 'pid': i});
+
+    }
+    pi_list.sort(function sortByAlpha(a, b) {
+      return helpers.compareStrings_alpha(a.PI, b.PI);
+    });
+
+    // Previous Submissions List
+    var user_submissions_query = "SELECT submit_code from vamps.vamps_submissions where user_id='" + req.user.user_id + "'";
+    console.log(user_submissions_query);
+
+    // Domain and Region List
+
+    console.time("TIME: 1) in post /submission_request");
+    // make_submission_object_from_db(req, res);
+    console.timeEnd("TIME: 1) in post /submission_request");
+  });
 
 function render_edit_form(req, res) {
   // console.log("JJJ1 all_submission");
