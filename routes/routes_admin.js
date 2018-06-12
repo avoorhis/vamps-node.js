@@ -52,9 +52,8 @@ router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
 
     console.log('in permissions');
     
-    project_order = []
-    user_order = get_name_ordered_users_list()
-    project_order = get_name_ordered_projects_list()
+    var user_order = get_name_ordered_users_list()
+    var project_order = get_name_ordered_projects_list()
     //console.log(JSON.stringify(ALL_USERS_BY_UID))
     res.render('admin/permissions', {
               title     :'VAMPS Site Administration',
@@ -121,8 +120,8 @@ router.get('/admin_status', [helpers.isLoggedIn, helpers.isAdmin], function(req,
 
     console.log('in admin_status');
   
-    user_order = get_name_ordered_users_list()
-    console.log(ALL_USERS_BY_UID)
+    var user_order = get_name_ordered_users_list()
+    //console.log(ALL_USERS_BY_UID)
     res.render('admin/admin_status', {
               title     :'VAMPS Site Administration',
               user: req.user,
@@ -242,8 +241,8 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req
    }else{
     var proj_to_open = PROJECT_INFORMATION_BY_PID[url_parts.query.pid];
    }
-   console.log(PROJECT_INFORMATION_BY_PID);
-   console.log(ALL_USERS_BY_UID);
+   //console.log(PROJECT_INFORMATION_BY_PID);
+   //console.log(ALL_USERS_BY_UID);
    var project_list = get_name_ordered_projects_list()
    res.render('admin/alter_project', {
               title       : 'VAMPS Site Administration',

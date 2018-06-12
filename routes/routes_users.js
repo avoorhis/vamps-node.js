@@ -76,7 +76,7 @@ router.post('/login',  passport.authenticate('local-login', {
         }
      
     }
-    console.log(PROJECT_INFORMATION_BY_PID)
+    //console.log(PROJECT_INFORMATION_BY_PID)
     
     fs.ensureDir(data_dir, function (err) {
         if(err) {console.log(err);} // => null
