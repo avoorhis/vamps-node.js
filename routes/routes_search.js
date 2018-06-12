@@ -646,7 +646,6 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
     // blastn -db <dbname> -query <query_file> -outfmt 13 -out <outfile_name>
     
     var exec = require('child_process').exec;
-    //var log = fs.openSync(path.join(process.env.PWD,'logs','blast.log'), 'a');
     var blast_cmd = req.CONFIG.PATH_TO_BLAST+"/blastn"
     var dbs_string = '"'+db_collector.join(' ')+'"'
     //var echo_cmd = "\""+"echo -e TTTAGAGGGGTTTTGCGCAGCTAACGCG|"

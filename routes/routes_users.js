@@ -89,7 +89,7 @@ router.post('/login',  passport.authenticate('local-login', {
                     console.log('=== url ===: req.body.return_to_url');
                     console.log(url);
                     
-                    console.log('USER',req.user)
+                    //console.log('USER',req.user)
                     res.redirect(url);    
                     delete req.session.returnTo;
                     req.body.return_to_url = '';

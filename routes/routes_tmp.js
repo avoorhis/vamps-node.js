@@ -27,37 +27,14 @@ var helpers = require('./helpers/helpers');
 // EMPEROR
 router.get('/:dir_name/index', function(req, res){
     console.log('6&&&& HERE in routes_tmp.js ' +req.params.dir_name)
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    var pwd = req.CONFIG.PROCESS_DIR;
     var file = 'views/tmp/'+req.params.dir_name+'/index.html'
     res.sendFile(file, {root:pwd})
 });
-//
-//
-// OLIGOTYPING
-// router.get('/:dir_name', function(req, res){
-//     console.log('7&&&& HERE in routes_tmp.js ' +req.params.dir_name)
-//     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-//     var file = 'tmp/xxxxx_OLIGOTYPING_1474656828888/HTML-OUTPUT/index.html'
-//     //var root = 'views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
-//     res.sendFile(file, {root:pwd})
-// });
-// router.get('/:img', function(req, res){
-//     console.log('8&&&& HERE in routes_tmp.js ' +req.params.img)
-//     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-//     //var file = '/Users/avoorhis/programming/vamps-node.js/views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
-//     //var root = 'views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
-//     //es.sendFile(file)
-// });
-// router.get('/oligotyping/oligo/:img', function(req, res){
-//     console.log('9&&&& HERE in routes_tmp.js ' +req.params.img)
-//     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-//     //var file = '/Users/avoorhis/programming/vamps-node.js/views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
-//     //var root = 'views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
-//     r//es.sendFile(file)
-// });
+
 router.get('/oligotyping/oligo/:img', function(req, res){
     console.log('9&&&& HERE in routes_tmp.js ' +req.params.img)
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    var pwd = req.CONFIG.PROCESS_DIR;
     //var file = '/Users/avoorhis/programming/vamps-node.js/views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
     //var root = 'views/tmp/projects/'+req.params.dir_name+'/HTML-OUTPUT/index.html'
     //es.sendFile(file)

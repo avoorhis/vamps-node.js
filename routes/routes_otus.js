@@ -703,7 +703,7 @@ function get_custom_biom_matrix( post_items, mtx) {
 //     var ts = req.body.ts;  // ie avoorhis-1495119485990
 //     var metric = req.body.metric;
 //     var biom_file_name = ts+'_count_matrix.biom';
-//     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+//     var pwd = req.CONFIG.PROCESS_DIR;
 //     var biom_file = path.join(pwd,'tmp', biom_file_name);
 //     console.log(biom_file) 
 //     var html = '';
@@ -823,131 +823,8 @@ router.get('/load_otu_list', helpers.isLoggedIn, function (req, res) {
         }
     })
 });
-// router.get('/load_otu_listDELETEME', helpers.isLoggedIn, function (req, res) {
-//     console.log('in load_otu_list')
-//     var q = 'SELECT otu_project, otu_project_id, title, otu_size, method, project_description, owner_user_id, ds_count, otu_count'
-//     q += ' from  otu_project'
-//     //q += ' JOIN otu_dataset using(otu_project_id)' 
-//     //q += ' group by otu_project_id'
-//     q += ' order by otu_project'
-//     otu_project_list = {}
-//     connection.query(q, function otu_projects(err, rows, fields){
-//         if(err){
-//             console.log(err)
-//         }else{
-//             for(n in rows){
-//                 //console.log(rows[n])
-//                 
-//                 opid = rows[n]['otu_project_id'].toString()
-//                 prj = rows[n]['otu_project']
-//                 title =  rows[n]['title']
-//                 size  =  rows[n]['otu_size']
-//                 method = rows[n]['method'] 
-//                 desc =  rows[n]['project_description']
-//                 oid =  rows[n]['owner_user_id']
-//                 ds_count = rows[n]['ds_count'].toString()
-//                 otu_count = rows[n]['otu_count'].toString()
-//                 otu_project_list[prj] = {"ds_count":ds_count,"title":title,"opid":opid,"otu_count":otu_count,"method":method,"size":size}
-//                 
-//             }
-//             
-//         }
-//         //console.log('json')
-//         //console.log(json)
-//         res.json(otu_project_list)
-//     })
-//     
-// });
-//
-//
-// router.get('/create_otus_fasta', helpers.isLoggedIn, function (req, res) {
-//   console.log('in create_otus_fasta')
-//   console.log(req.body);
-//   console.log('<<--in create_otus_fasta')
-//   var dataset_lookup = {}
-//   var html='';
-//   var timestamp = +new Date();  // millisecs since the epoch!
-//   //var method = req.body.otu_method
-//   var otu_size;
-//   
-// 
-//     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-//     console.log(process.env.PWD)
-//     console.log(req.CONFIG.PROCESS_DIR)
-//     var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
-//     //var otu_dir = req.user.username+'-'+otu_method+'-otus-'+timestamp;
-//     var otus_dir = 'otus-'+timestamp
-//     var data_repo_path = path.join(user_dir_path, otus_dir);
-//     var fasta_file = 'fasta.fa'
-//     var fasta_file_path = path.join(data_repo_path, fasta_file);
-//     var config_file = 'config.ini'
-//     var config_file_path = path.join(data_repo_path, config_file);
-//     var log = path.join(data_repo_path, 'qsub.log');
-//     var site = req.CONFIG.site
-// 
-//     var script_name = 'fasta_script.sh';
-//     var script_path = path.join(data_repo_path, script_name);
-//     //var FASTA_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-FASTA')
-//     console.log(data_repo_path)
-// 
-//     fs.ensureDir(data_repo_path, function (err) {
-//           if(err){ return console.log(err) } // => null
-//           fs.chmod(data_repo_path, '0775', function chmodFile(err) {
-//               if(err){ return console.log(err) } // => null
-//               script_commands =[]
-//               args = ['--site',req.CONFIG.site,
-//                       '-r',timestamp,
-//                       '-u',req.user.username,
-//                       '-dids',(chosen_id_name_hash.ids).join(","),
-//                       '-base',data_repo_path,
-//                       '-fxn','otus',
-//                       '-fasta_file'
-//               ]
-//               script_commands.push(req.CONFIG.PATH_TO_NODE_SCRIPTS+"/vamps_export_data.py " + args.join(' '))
-// 
-//               if(site.substring(0,5) == 'local'){
-//                   var script_text = helpers.get_local_script_text(script_commands)
-//               }else{
-//                   var script_text = helpers.get_qsub_script_text(log, pwd, req.CONFIG.site, 'vmps_fasta', script_commands)
-//               }
-//               var mode = 0775; // executable
-//               var oldmask = process.umask(0);
-//               console.log("script_path = " + script_path);
-//               fs.writeFile(script_path,
-//                 script_text,
-//                 {
-//                   mode: mode
-//                 },
-//                 function(err) {
-//                   if(err) {
-//                       return console.log(err);
-//                   }
-//                   else
-//                   {
-//                     console.log("The Fasta file script was saved!");
-//                     helpers.run_external_command(script_path)
-//                     //fs.closeSync(fs.openSync(FASTA_SUCCESS_FILE, 'w'));
-//                   }
-//               });
-//               var config_text = '\n[MAIN]\npath='+data_repo_path+"\n";
-//               config_text += 'directory='+otus_dir+"\n";
-//               //config_text += 'taxonomy='+tax_obj.full_string+"\n";
-//               config_text += 'otu_method=NOT_DETERMINED_YET'+"\n";
-//               config_text += 'otu_size='+"\n";
-//               config_text += '\n[DATASETS]'+"\n";
-//               for(i in chosen_id_name_hash.names){
-//                  config_text += chosen_id_name_hash.names[i]+"\n";
-//               }
-//               //
-//               fs.writeFile(config_file_path, config_text, function writeConfigFile(err) {
-//                    if(err) { return console.log(err); }
-//                    console.log("The Config file was saved!");
-//               });
-//             });
-//       });
-// 
-//   res.redirect('project_list')  // may not see .well yet as fasta needs to be completed
-// })
+
+
 router.post('/create_otus_fasta', helpers.isLoggedIn, function (req, res) {
   console.log('in create_otus_fasta')
   console.log(req.body);
@@ -975,9 +852,7 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, function (req, res) {
             otu_size = '3'
   }
 
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-    console.log(process.env.PWD)
-    console.log(req.CONFIG.PROCESS_DIR)
+    var pwd = req.CONFIG.PROCESS_DIR;
     var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
     //var otu_dir = req.user.username+'-'+otu_method+'-otus-'+timestamp;
     var otus_dir = 'otus-'+timestamp
@@ -1076,7 +951,7 @@ router.post('/create_otus_step2/:code', helpers.isLoggedIn, function (req, res) 
   console.log("in create_otus_step2");
   //var method = req.params.method
   var otus_code = req.params.code
-  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+  var pwd = req.CONFIG.PROCESS_DIR;
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
   var otus_dir = 'otus-'+otus_code;
   var data_repo_path = path.join(user_dir_path, otus_dir);
@@ -1199,7 +1074,7 @@ router.post('/create_otus_step2/:code', helpers.isLoggedIn, function (req, res) 
 router.get('/project_list', helpers.isLoggedIn, function (req, res) {
     //console.log(PROJECT_INFORMATION_BY_PNAME);
 
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    var pwd = req.CONFIG.PROCESS_DIR;
     var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
 
 
@@ -1271,7 +1146,7 @@ router.get('/project_list', helpers.isLoggedIn, function (req, res) {
 router.get('/delete/:code', helpers.isLoggedIn, function (req, res) {
   console.log('in otus delete')
   var otus_code = req.params.code
-  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+  var pwd = req.CONFIG.PROCESS_DIR;
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
   var otus_dir = 'otus-'+otus_code
   var data_repo_path = path.join(user_dir_path, otus_dir);
@@ -1287,7 +1162,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   console.log('in otus - project')
   var otus_code = req.params.code
   console.log(otus_code)
-  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+  var pwd = req.CONFIG.PROCESS_DIR;
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
   var otus_dir = 'otus-'+otus_code
   var data_repo_path = path.join(user_dir_path, otus_dir);

@@ -825,7 +825,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
   var timestamp = +new Date();
   var selected_pid = req.body.pid
   var filename = req.body.filename
-  var file_path = path.join(process.env.PWD,'tmp',filename)
+  var file_path = path.join(req.CONFIG.PROCESS_DIR,'tmp',filename)
   var dids = DATASET_IDS_BY_PID[selected_pid]
   var new_required_metadata = {}
   var new_custom_metadata = {}
@@ -1061,7 +1061,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
                 console.log('OK--VALIDATES')
               }
               html_json.filename = username+'_'+project_name+'--'+timestamp+'.json'
-              file_path = path.join(process.env.PWD,'tmp',html_json.filename)
+              file_path = path.join(req.CONFIG.PROCESS_DIR,'tmp',html_json.filename)
               
               mdata = convert_names_to_ids_for_storage(newmd)
               
@@ -1452,11 +1452,11 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   // console.log(file);
   //// DOWNLOAD //////
   if (req.query.fxn == 'download' && req.query.template == '1') {
-    var file = path.join(process.env.PWD, req.query.filename);
+    var file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
   } else if (req.query.fxn == 'download' &&  req.query.type=='pcoa') {
-    var file = path.join(process.env.PWD, 'tmp', req.query.filename);
+    var file = path.join(req.CONFIG.PROCESS_DIR, 'tmp', req.query.filename);
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
   } else if (req.query.fxn == 'download') {

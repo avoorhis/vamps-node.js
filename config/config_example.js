@@ -17,9 +17,9 @@ config.TMP = path.join(config.PROCESS_DIR, '/tmp');
 // on your system and provide the path to classifier.jar file here.
 // You will also need java on your system to run this.
 //config.PATH_TO_RDP = path.join(config.PROCESS_DIR, '/rdp_classifier/dist');
-config.PATH_TO_NODE_SCRIPTS = path.join(process.env.PWD, 'public', 'scripts', 'node_process_scripts');
-config.PATH_TO_VIZ_SCRIPTS = path.join(process.env.PWD, 'public', 'scripts', 'visualization_scripts');
-config.PATH_TO_ADDITIONAL_SCRIPTS = path.join(process.env.PWD, 'public', 'scripts', 'bin');
+config.PATH_TO_NODE_SCRIPTS = path.join(config.PROCESS_DIR, 'public', 'scripts', 'node_process_scripts');
+config.PATH_TO_VIZ_SCRIPTS = path.join(config.PROCESS_DIR, 'public', 'scripts', 'visualization_scripts');
+config.PATH_TO_ADDITIONAL_SCRIPTS = path.join(config.PROCESS_DIR, 'public', 'scripts', 'bin');
 //
 // http://www.ncbi.nlm.nih.gov/books/NBK279671/
 config.PATH_TO_BLAST = 'your_path';
