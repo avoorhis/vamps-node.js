@@ -34,6 +34,7 @@ router.get('/submission_request',
         res.render('submissions/submission_request', {
           button_name: "Validate",
           d_region: "",
+          domain: "",
           domain_regions: CONSTS.DOMAIN_REGIONS,
           funding_code: "",
           hostname: req.CONFIG.hostname,
@@ -77,7 +78,7 @@ router.get('/submission_request',
 router.post('/submission_request',
   [helpers.isLoggedIn],
   form(
-    form.field("d_region").trim().required().entityEncode().array(),
+    form.field("d_region").trim().required().entityEncode(),
     form.field("funding_code").trim().required().is(/^[0-9]+$/).entityEncode().array(),
     form.field("pi_id").trim().required().is(/^[0-9]+$/).entityEncode().array(),
     form.field("pi_name").trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
@@ -116,13 +117,12 @@ router.post('/submission_request',
       req.flash('success', 'Form validated. Now download and open in OpenOffice or Excel to fill-in remaining data.');
       // DRY (already done in get)
       var pi_list = submission_controller.get_pi_list();
+      var d_region =  req.form.d_region.split("#");
 
-      // console.log("RRR1 res", res);
-      // console.log("RRR2 req", req);
       res.render('submissions/submission_request', {
         // domain_region
         button_name: "Download as Spreadsheet",
-        d_region: req.form.d_region,
+        d_region: d_region, // d_region: [ 'Archaeal#v4' ],
         domain_regions: CONSTS.DOMAIN_REGIONS,
         funding_code: req.form.funding_code,
         hostname: req.CONFIG.hostname,
