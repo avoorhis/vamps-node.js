@@ -32,6 +32,7 @@ router.get('/submission_request',
         // console.log("AAA1", JSON.stringify(user_submits));
 
         res.render('submissions/submission_request', {
+          button_name: "Validate",
           d_region: "",
           domain_regions: CONSTS.DOMAIN_REGIONS,
           funding_code: "",
@@ -120,6 +121,7 @@ router.post('/submission_request',
       // console.log("RRR2 req", req);
       res.render('submissions/submission_request', {
         // domain_region
+        button_name: "Download as Spreadsheet",
         d_region: req.form.d_region,
         domain_regions: CONSTS.DOMAIN_REGIONS,
         funding_code: req.form.funding_code,
