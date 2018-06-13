@@ -53,11 +53,19 @@ router.get('/submission_request',
 
 router.post('/submission_request',
   [helpers.isLoggedIn],
+  form(
+    form.field("dna_region").trim().required().entityEncode().array(),
+    form.field("domain").trim().required().entityEncode().array(),
+    form.field("pi_name").trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
+    form.field("project").trim().required().entityEncode().array(),
+    form.field("project_title").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
+    form.field("target_gene").trim().required().entityEncode().array()
+  ),
   function (req, res) {
-
     console.log('in POST submission_request');
     console.log('OOO post');
     console.log('req.body', req.body);
+    console.log('req.form', req.form);
 
     // get_pi_list
     pi_list = [];
