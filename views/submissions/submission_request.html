@@ -86,7 +86,7 @@ domain_regions:
                 <select id="pi_id" name="pi_id" class="form-control">
                     <% pi_list.forEach(function(val){ %>
                     <option value="<%= val.pid %>"
-                    <% if (val.PI == pi_name) {%>
+                    <% if (val.pid == pi_id) {%>
                     selected
                     <% } %>
                     ><%= val.PI %></option>
