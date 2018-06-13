@@ -1,9 +1,21 @@
 <% include ../add_ins/begin.ejs %>
 
-<br/> project_name2
+<br/> user_submits
 
-<%= project_name2 %>
+<%= user_submits %>
+
+JSON.stringify(user_submits)
 <br/>
+<%= JSON.stringify(user_submits)%>
+<br/>
+
+
+<br/> submit_name
+
+<%= submit_name %>
+<br/>
+
+
 <link href="/stylesheets/submissions.css" rel="stylesheet" \>
 <% if (messages.success) { %>
 <div class="alert_flash_message_success"><%= messages.success %></div>
@@ -36,16 +48,25 @@
 
     <div class="submission_form_field">
         <div class="form-group">
-            <label class="control-label col-sm-4" for="previous_submissions">Load Previous Submissions for
+            <label class="control-label col-sm-4" for="submit_name">Load Previous Submissions for
                 viewing:</label>
             <div class="col-sm-3">
-
-                <select id="previous_submissions" name="previous_submissions" class="form-control" width="20">
-                    <option>Select</option>
-                    <% for (var i in user_submits){ %>
-                    <option value='<%= user_submits[i].submit_code %>'><%= user_submits[i].submit_code %></option>
+                <select id="submit_name" name="submit_name">
+                    <% user_submits.forEach(function(value){ %>
+                    <option value="<%= value.submit_code %>"
+                    <% if (value.submit_code == submit_name) {%>
+                    selected
                     <% } %>
+                    ><%= value.submit_name %></option>
+                    <% }); %>
                 </select>
+
+                <!--<select id="previous_submissions" name="previous_submissions" class="form-control" width="20">-->
+                    <!--<option>Select</option>-->
+                    <!--<% for (var i in user_submits){ %>-->
+                    <!--<option value='<%= user_submits[i].submit_code %>'><%= user_submits[i].submit_code %></option>-->
+                    <!--<% } %>-->
+                <!--</select>-->
             </div>
         </div>
 
@@ -145,7 +166,6 @@
         </div>
 
         <input type="hidden" name="user_submits" value=<%= JSON.stringify(user_submits) %>>
-        <input type="hidden" name="pi_list" value=<%= JSON.stringify(pi_list) %>>
 
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
