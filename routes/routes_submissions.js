@@ -37,7 +37,8 @@ router.get('/submission_request',
           funding_code: "",
           hostname: req.CONFIG.hostname,
           pi_list: pi_list,
-          // pi_name
+          pi_id: "",
+          pi_name: "",
           // previous_submission
           project_description: "",
           project_name1: "",
@@ -77,6 +78,7 @@ router.post('/submission_request',
   form(
     form.field("d_region").trim().required().entityEncode().array(),
     form.field("funding_code").trim().required().is(/^[0-9]+$/).entityEncode().array(),
+    form.field("pi_id").trim().required().is(/^[0-9]+$/).entityEncode().array(),
     form.field("pi_name").trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
     form.field("submit_name").trim().entityEncode().array(),
     form.field("project_description").trim().required().entityEncode().array(),
@@ -118,17 +120,18 @@ router.post('/submission_request',
       // console.log("RRR2 req", req);
       res.render('submissions/submission_request', {
         // domain_region
-        d_region: req.body.d_region,
+        d_region: req.form.d_region,
         domain_regions: CONSTS.DOMAIN_REGIONS,
         funding_code: req.form.funding_code,
         hostname: req.CONFIG.hostname,
         pi_list: pi_list,
-        // pi_name
+        pi_id: req.form.pi_id,
+        pi_name: req.form.pi_name,
         // previous_submission
         project_description: req.form.project_description,
         project_name1: req.form.project_name1,
         project_name2: req.form.project_name2,
-        project_name3: req.form.d_region,
+        project_name3: req.body.d_region,
         project_title: req.form.project_title,
         submit_name: req.form.submit_name,
         samples_number: req.form.samples_number,

@@ -10,9 +10,10 @@ JSON.stringify(user_submits)
 <br/>
 
 
-<br/> submit_name
 
-<%= submit_name %>
+<br/> d_region
+
+<%= d_region %>
 <br/>
 
 
@@ -24,7 +25,6 @@ JSON.stringify(user_submits)
 <% } %>
 
 <form id='submissions_edit_form' method='POST' action='/submissions/submission_request' class="form-horizontal">
-
 
 
     <div class="col-sm-12">
@@ -62,25 +62,32 @@ JSON.stringify(user_submits)
                 </select>
 
                 <!--<select id="previous_submissions" name="previous_submissions" class="form-control" width="20">-->
-                    <!--<option>Select</option>-->
-                    <!--<% for (var i in user_submits){ %>-->
-                    <!--<option value='<%= user_submits[i].submit_code %>'><%= user_submits[i].submit_code %></option>-->
-                    <!--<% } %>-->
+                <!--<option>Select</option>-->
+                <!--<% for (var i in user_submits){ %>-->
+                <!--<option value='<%= user_submits[i].submit_code %>'><%= user_submits[i].submit_code %></option>-->
+                <!--<% } %>-->
                 <!--</select>-->
             </div>
         </div>
 
         <div class="form-group">
 
-            <label class="control-label col-sm-4" for="select_pi_id">Select PI for submission to be submitted
+            <label class="control-label col-sm-4" for="pi_id">Select PI for submission to be submitted
                 under:</label>
             <div class="col-sm-3">
-                <select id="select_pi_id" name="select_pi_id" class="form-control">
-                    <% pi_list.forEach(function(value){ %>
-                    <option value="<%= value.pid %>"><%= value.PI %></option>
-
+                <select id="pi_id" name="pi_id" class="form-control">
+                    <% pi_list.forEach(function(val){ %>
+                    <option value="<%= val.pid %>"
+                    <% if (val.PI == pi_name) {%>
+                    selected
+                    <% } %>
+                    ><%= val.PI %></option>
                     <% }); %>
                 </select>
+                <% if (!typeof val == 'undefined') {%>
+                <input type="hidden" name="pi_name" value=<%= val.PI %>>
+                <% } %>
+
             </div>
         </div>
 
@@ -89,7 +96,8 @@ JSON.stringify(user_submits)
                 MBL)</label>
             <div class="col-sm-8">
 
-                <input type="text" id="project_name1" name="project_name1" maxlength="4" size="4" value=<%= project_name1 %>>_<input
+                <input type="text" id="project_name1" name="project_name1" maxlength="4" size="4" value=<%=
+                       project_name1 %>>_<input
                     type="text"
                     id="project_name2"
                     name="project_name2"
@@ -105,7 +113,8 @@ JSON.stringify(user_submits)
             <label class="control-label col-sm-4" for="project_title">Project Title (max length: 60 chars)</label>
             <div class="col-sm-8">
 
-                <input type="text" id="project_title" name="project_title" maxlength="60" size="60" value=<%= project_title %>>
+                <input type="text" id="project_title" name="project_title" maxlength="60" size="60" value=<%=
+                       project_title %>>
             </div>
         </div>
 
@@ -114,7 +123,8 @@ JSON.stringify(user_submits)
                 chars)</label>
             <div class="col-sm-8">
 
-                <input type="text" id="project_description" name="project_description" maxlength="1000" size="60" value=<%= project_description %>>
+                <input type="text" id="project_description" name="project_description" maxlength="1000" size="60"
+                       value=<%= project_description %>>
             </div>
         </div>
 
@@ -138,10 +148,12 @@ JSON.stringify(user_submits)
                     <% regions[k].length %>
                     <% } %>
 
-
-                    <%= // JSON.stringify(domain_regions["domain_regions"][i]) %>
                     <input id="d_region" name="d_region" type='radio'
-                           value='<%= regions[k] %>'> <%= regions[k] %> </input><br/>
+                           value='<%= regions[k] %>'
+                    <% if (regions[k] == d_region) {%>
+                        selected
+                    <% } %>
+                    > <%= regions[k] %> </input><br/>
 
                     <% }; %>
 
@@ -153,7 +165,8 @@ JSON.stringify(user_submits)
         <div class="form-group">
             <label class="control-label col-sm-4" for="funding_code">Funding Code (numeric only)</label>
             <div class="col-sm-8">
-                <input type="number" id="funding_code" name="funding_code" maxlength="10" size="10" value=<%= funding_code %>>
+                <input type="number" id="funding_code" name="funding_code" maxlength="10" size="10" value=<%=
+                       funding_code %>>
             </div>
         </div>
 
