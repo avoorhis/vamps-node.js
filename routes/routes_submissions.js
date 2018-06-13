@@ -54,13 +54,16 @@ router.get('/submission_request',
 router.post('/submission_request',
   [helpers.isLoggedIn],
   form(
-    form.field("dna_region").trim().required().entityEncode().array(),
-    form.field("domain").trim().required().entityEncode().array(),
+    form.field("domain_region").trim().required().entityEncode().array(),
+    form.field("funding_code").trim().required().is(/^[0-9]+$/).entityEncode().array(),
     form.field("pi_name").trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
-    form.field("project").trim().required().entityEncode().array(),
+    form.field("previous_submission").trim().entityEncode().array(),
+    form.field("project_description").trim().required().entityEncode().array(),
+    form.field("project_name1").trim().required().entityEncode().array(),
+    form.field("project_name2").trim().required().entityEncode().array(),
     form.field("project_title").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
-    form.field("target_gene").trim().required().entityEncode().array()
-  ),
+    form.field("samples_number").trim().required().is(/^[0-9]+$/).entityEncode().array()
+),
   function (req, res) {
     console.log('in POST submission_request');
     console.log('OOO post');
