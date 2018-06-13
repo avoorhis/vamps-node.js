@@ -1,20 +1,9 @@
 <% include ../add_ins/begin.ejs %>
 
-<% if (user_submits) {
-} else {
-var user_submits = {}
-} %>
+<br/> project_name2
 
-<% if (regions) {
-} else {
-var regions = {}
-} %>
-
-<% if (pi_list) { %>
-<% } else { %>
-<% var pi_list = {} %>
-<% } %>
-
+<%= project_name2 %>
+<br/>
 <link href="/stylesheets/submissions.css" rel="stylesheet" \>
 <% if (messages.success) { %>
 <div class="alert_flash_message_success"><%= messages.success %></div>
@@ -23,6 +12,8 @@ var regions = {}
 <% } %>
 
 <form id='submissions_edit_form' method='POST' action='/submissions/submission_request' class="form-horizontal">
+
+
 
     <div class="col-sm-12">
         <h3>Submission Request and Form Download</h3>
@@ -60,12 +51,13 @@ var regions = {}
 
         <div class="form-group">
 
-            <label class="control-label col-sm-4" for="select_pi">Select PI for submission to be submitted
+            <label class="control-label col-sm-4" for="select_pi_id">Select PI for submission to be submitted
                 under:</label>
             <div class="col-sm-3">
-                <select id="select_pi" name="select_pi" class="form-control">
+                <select id="select_pi_id" name="select_pi_id" class="form-control">
                     <% pi_list.forEach(function(value){ %>
                     <option value="<%= value.pid %>"><%= value.PI %></option>
+
                     <% }); %>
                 </select>
             </div>
@@ -76,13 +68,13 @@ var regions = {}
                 MBL)</label>
             <div class="col-sm-8">
 
-                <input type="text" id="project_name1" name="project_name1" maxlength="4" size="4" value="">_<input
+                <input type="text" id="project_name1" name="project_name1" maxlength="4" size="4" value=<%= project_name1 %>>_<input
                     type="text"
                     id="project_name2"
                     name="project_name2"
                     maxlength="4"
                     size="4"
-                    value="">_<input
+                    value=<%= project_name2 %>>_<input
                     type="text" id="project_name3" name="project_name3" maxlength="4" size="5" value="" readonly>
             </div>
         </div>
@@ -92,7 +84,7 @@ var regions = {}
             <label class="control-label col-sm-4" for="project_title">Project Title (max length: 60 chars)</label>
             <div class="col-sm-8">
 
-                <input type="text" id="project_title" name="project_title" maxlength="60" size="60" value="">
+                <input type="text" id="project_title" name="project_title" maxlength="60" size="60" value=<%= project_title %>>
             </div>
         </div>
 
@@ -101,7 +93,7 @@ var regions = {}
                 chars)</label>
             <div class="col-sm-8">
 
-                <input type="text" id="project_description" name="project_description" maxlength="1000" size="60" value="">
+                <input type="text" id="project_description" name="project_description" maxlength="1000" size="60" value=<%= project_description %>>
             </div>
         </div>
 
@@ -140,7 +132,7 @@ var regions = {}
         <div class="form-group">
             <label class="control-label col-sm-4" for="funding_code">Funding Code (numeric only)</label>
             <div class="col-sm-8">
-                <input type="number" id="funding_code" name="funding_code" maxlength="10" size="10" value="">
+                <input type="number" id="funding_code" name="funding_code" maxlength="10" size="10" value=<%= funding_code %>>
             </div>
         </div>
 
@@ -148,9 +140,13 @@ var regions = {}
             <label class="control-label col-sm-4" for="samples_number">How many individual samples will be
                 submitted?</label>
             <div class="col-sm-8">
-                <input type="number" id="samples_number" name="samples_number" size="3" value="">
+                <input type="number" id="samples_number" name="samples_number" size="3" value=<%= samples_number %>>
             </div>
         </div>
+
+        <input type="hidden" name="user_submits" value=<%= JSON.stringify(user_submits) %>>
+        <input type="hidden" name="pi_list" value=<%= pi_list %>>
+        <%= pi_list.length %>
 
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">

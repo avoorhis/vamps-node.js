@@ -32,13 +32,21 @@ router.get('/submission_request',
         // console.log("AAA1", JSON.stringify(user_submits));
 
         res.render('submissions/submission_request', {
+          domain_regions: CONSTS.DOMAIN_REGIONS,
+          funding_code: "",
+          hostname: req.CONFIG.hostname,
+          pi_list: pi_list,
+          // pi_name
+          // previous_submission
+          project_description: "",
+          project_name1: "",
+          project_name2: "",
+          project_name3: "",
+          project_title: "",
+          samples_number: "",
           title: 'VAMPS: Submission Request',
           user: req.user,
-          hostname: req.CONFIG.hostname,
           user_submits: user_submits,
-          domain_regions: CONSTS.DOMAIN_REGIONS,
-          // JSON.stringify(dandr),
-          pi_list: pi_list
         });
 
         // console.log('user');
@@ -51,10 +59,21 @@ router.get('/submission_request',
 
   });
 
+// https://www.npmjs.com/package/express-form
+// domain_region
+// funding_code
+// pi_name
+// previous_submission
+// project_description
+// project_name1
+// project_name2
+// project_title
+// samples_number
+
 router.post('/submission_request',
   [helpers.isLoggedIn],
   form(
-    form.field("domain_region").trim().required().entityEncode().array(),
+    form.field("d_region").trim().required().entityEncode().array(),
     form.field("funding_code").trim().required().is(/^[0-9]+$/).entityEncode().array(),
     form.field("pi_name").trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
     form.field("previous_submission").trim().entityEncode().array(),
@@ -63,18 +82,61 @@ router.post('/submission_request',
     form.field("project_name2").trim().required().entityEncode().array(),
     form.field("project_title").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
     form.field("samples_number").trim().required().is(/^[0-9]+$/).entityEncode().array()
-),
+  ),
   function (req, res) {
     console.log('in POST submission_request');
     console.log('OOO post');
     console.log('req.body', req.body);
     console.log('req.form', req.form);
 
+    console.log('QQQ req.body.pi_list', req.body.pi_list);
+    // field("post[user][id]").isInt(),
+
+    // if(!req.form.isValid){
+    //   // TODO: remove here, should be after validation only
+    //   make_csv(req, res);
+    //   editMetadata(req, res);
+    // }else{
+    //   make_csv(req, res);
+    //   saveToDb(req.metadata);
+    //   // TODO: change
+    //   res.redirect("/metadata"+req.metadata.id+"/edit");
+    // }
+
     if (!req.form.isValid) {
-      console.log('in post /submission_request, !req.form.isValid');
+      console.log('2) in post /submission_request, !req.form.isValid');
     }
     else {
-      console.log('in post /submission_request, req.form.isValid');
+      console.log('3) in post /submission_request, req.form.isValid');
+      req.flash('success', 'Form validated. Now download and open in OpenOffice or Excel to fill-in remaining data.');
+      // DRY (already done in get)
+      var pi_list = submission_controller.get_pi_list();
+
+      // console.log("RRR1 res", res);
+      // console.log("RRR2 req", req);
+      res.render('submissions/submission_request', {
+        // domain_region
+        domain_regions: CONSTS.DOMAIN_REGIONS,
+        funding_code: req.form.funding_code,
+        hostname: req.CONFIG.hostname,
+        pi_list: pi_list,
+        // pi_name
+        // previous_submission
+        project_description: req.form.project_description,
+        project_name1: req.body.project_name1,
+        project_name2: req.body.project_name2,
+        project_name3: req.body.d_region,
+        project_title: req.body.project_title,
+        samples_number: req.body.samples_number,
+        title: 'VAMPS: Submission Request',
+        user: req.user,
+        user_submits: JSON.parse(req.body.user_submits),
+      });
+
+
+      // Form validated.
+      //   Now download and open in OpenOffice or Excel to fill-in remaining data
+      // Unique Prefix
     }
 
     console.time("TIME: 1) in post /submission_request");
@@ -82,26 +144,26 @@ router.post('/submission_request',
     console.timeEnd("TIME: 1) in post /submission_request");
   });
 
-function render_edit_form(req, res) {
-  // console.log("JJJ1 all_submission");
-  // console.log(JSON.stringify(all_submission));
-  //
-
-  connection.query(function (err, rows, fields) {
-    if (err) {
-      console.log('ERR', err);
-      return;
-    }
-    res.render('submissions/submission_request', {
-      title: 'VAMPS: Submission Request',
-      user: req.user,
-      user_submits: JSON.stringify(rows),
-      // regions: JSON.stringify(dandr),
-      // pi_list: JSON.stringify(pi_list),
-      hostname: req.CONFIG.hostname,
-    });
-  });
-}
+// function render_edit_form(req, res) {
+//   // console.log("JJJ1 all_submission");
+//   // console.log(JSON.stringify(all_submission));
+//   //
+//
+//   connection.query(function (err, rows, fields) {
+//     if (err) {
+//       console.log('ERR', err);
+//       return;
+//     }
+//     res.render('submissions/submission_request', {
+//       title: 'VAMPS: Submission Request',
+//       user: req.user,
+//       user_submits: JSON.stringify(rows),
+//       // regions: JSON.stringify(dandr),
+//       // pi_list: JSON.stringify(pi_list),
+//       hostname: req.CONFIG.hostname,
+//     });
+//   });
+// }
 
 
 module.exports = router;
