@@ -10,16 +10,11 @@ JSON.stringify(user_submits)
 <br/>
 
 
-domain_regions:
-<%= JSON.stringify(domain_regions) %>
+<br/> submit_name
 
-<br/> d_region
+<%= submit_name %>
 
-<%= d_region %>
 
-<br/> JSON.stringify(domain_regions.domain_regions)
-
-<%= JSON.stringify(domain_regions.domain_regions)%>
 <br/>
 
 <br/>
@@ -112,7 +107,7 @@ domain_regions:
                     maxlength="4"
                     size="4"
                     value=<%= project_name2 %>>_<input
-                    type="text" id="project_name3" name="project_name3" maxlength="4" size="5" value="" readonly>
+                    type="text" id="project_name3" name="project_name3" maxlength="4" size="5" value=<%= d_region[2] %>>
             </div>
         </div>
 
@@ -149,21 +144,20 @@ domain_regions:
                     <% var regions = domain_regions["domain_regions"][i]["regions"] %>
 
                     <% for (var k in regions){ %>
-
+                    <% var short_d_r = domain_regions.domain_regions[i].d_r[k] %>
+                    <% var cur_region = regions[k] %>
                     <!--<% if(typeof(regions[k].length) != 'undefined') %>-->
                     <!--<% { %>-->
-                    <!--<% regions[k].length %>-->
+                    <!--<%= regions[k].length %>-->
                     <!--<% } %>-->
-
-                    <!--d_region: Bacterial,v6-->
-
+                    <!--<br/><% short_d_r %>-->
+                    <!--d_region: Bacterial,v6,Bv6-->
 
                     <input id="d_region" name="d_region" type='radio'
                     <% if ((cur_domain == d_region[0]) && (regions[k] == d_region[1])) {%>
                     checked="checked"
                     <% } %>
-                    value=<%= cur_domain %>#<%= regions[k] %>
-                    > <%= regions[k] %> </input><br/>
+                    value=<%= cur_domain %>#<%= cur_region %>#<%= short_d_r %>> <%= regions[k] %> </input><br/>
 
                     <% }; %>
 

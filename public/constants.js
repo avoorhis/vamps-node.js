@@ -56,11 +56,11 @@ constants.DOMAINS = {
 
 constants.DOMAIN_REGIONS = {
   domain_regions: [
-    {domain: "Archaeal", regions: ['v4', 'v6', 'v4v5']},
-    {domain: "Bacterial", regions: ['v4', 'v6', 'v4v5']},
-    {domain: "Eukaryal", regions: ['v4', 'v4_hap (HSSU)', 'v4_hap (HLSU)']},
-    {domain: "Fungal", regions: ['ITS1']},
-    {domain: "Shotgun", regions: ['']},
+    {d_r: ['Av4', 'Av6', 'Av4v5'], domain: "Archaeal", regions: ['v4', 'v6', 'v4v5']},
+    {d_r: ['Bv4', 'Bv6', 'Bv4v5'], domain: "Bacterial", regions: ['v4', 'v6', 'v4v5']},
+    {d_r: ['Ev4', 'EHSSU', 'EHLSU'], domain: "Eukaryal", regions: ['v4', 'v4_hap_HSSU', 'v4_hap_HLSU']},
+    {d_r: ["ITS1"], domain: "Fungal", regions: ['ITS1']},
+    {d_r: [""], domain: "Shotgun", regions: ['']},
   ]
 };
 

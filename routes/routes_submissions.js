@@ -28,9 +28,12 @@ router.get('/submission_request',
       }
       else {
         var user_submits = rows;
-        // console.log("AAA0", user_submits);
-        // console.log("AAA1", JSON.stringify(user_submits));
-
+        console.log("AAA0", user_submits);
+        console.log("AAA1", JSON.stringify(user_submits));
+        // [2018/06/13 16:26:32.598] [LOG]   AAA0 [ TextRow { submit_code: 'ashipunova354276' },
+        // TextRow { submit_code: 'ashipunova_100460' } ]
+        // [2018/06/13 16:26:32.601] [LOG]   AAA1 [{"submit_code":"ashipunova354276"},{"submit_code":"ashipunova_100460"}]
+        //
         res.render('submissions/submission_request', {
           button_name: "Validate",
           d_region: "",
@@ -118,11 +121,11 @@ router.post('/submission_request',
       // DRY (already done in get)
       var pi_list = submission_controller.get_pi_list();
       var d_region =  req.form.d_region.split("#");
-
+      // console.log("DDD d_region = ", d_region);
       res.render('submissions/submission_request', {
         // domain_region
         button_name: "Download as Spreadsheet",
-        d_region: d_region, // d_region: [ 'Archaeal#v4' ],
+        d_region: d_region, // d_region =  [ 'Fungal', 'ITS1', 'ITS1' ]
         domain_regions: CONSTS.DOMAIN_REGIONS,
         funding_code: req.form.funding_code,
         hostname: req.CONFIG.hostname,
@@ -135,7 +138,7 @@ router.post('/submission_request',
         project_name2: req.form.project_name2,
         project_name3: req.body.d_region,
         project_title: req.form.project_title,
-        submit_name: req.form.submit_name,
+        submit_name: req.form.submit_name, // submit_name: [ 'ashipunova354276' ],
         samples_number: req.form.samples_number,
         title: 'VAMPS: Submission Request',
         user: req.user,
