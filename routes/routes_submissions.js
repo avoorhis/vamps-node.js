@@ -32,6 +32,7 @@ router.get('/submission_request',
         // console.log("AAA1", JSON.stringify(user_submits));
 
         res.render('submissions/submission_request', {
+          d_region: "",
           domain_regions: CONSTS.DOMAIN_REGIONS,
           funding_code: "",
           hostname: req.CONFIG.hostname,
@@ -116,6 +117,7 @@ router.post('/submission_request',
       // console.log("RRR2 req", req);
       res.render('submissions/submission_request', {
         // domain_region
+        d_region: req.body.d_region,
         domain_regions: CONSTS.DOMAIN_REGIONS,
         funding_code: req.form.funding_code,
         hostname: req.CONFIG.hostname,
@@ -123,11 +125,11 @@ router.post('/submission_request',
         // pi_name
         // previous_submission
         project_description: req.form.project_description,
-        project_name1: req.body.project_name1,
-        project_name2: req.body.project_name2,
-        project_name3: req.body.d_region,
-        project_title: req.body.project_title,
-        samples_number: req.body.samples_number,
+        project_name1: req.form.project_name1,
+        project_name2: req.form.project_name2,
+        project_name3: req.form.d_region,
+        project_title: req.form.project_title,
+        samples_number: req.form.samples_number,
         title: 'VAMPS: Submission Request',
         user: req.user,
         user_submits: JSON.parse(req.body.user_submits),
