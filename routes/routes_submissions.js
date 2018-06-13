@@ -67,21 +67,12 @@ router.post('/submission_request',
     console.log('req.body', req.body);
     console.log('req.form', req.form);
 
-    // get_pi_list
-    pi_list = [];
-    for (var i in ALL_USERS_BY_UID) {
-      pi_list.push({'PI': ALL_USERS_BY_UID[i].last_name + ' ' + ALL_USERS_BY_UID[i].first_name, 'pid': i});
-
+    if (!req.form.isValid) {
+      console.log('in post /submission_request, !req.form.isValid');
     }
-    pi_list.sort(function sortByAlpha(a, b) {
-      return helpers.compareStrings_alpha(a.PI, b.PI);
-    });
-
-    // Previous Submissions List
-    var user_submissions_query = "SELECT submit_code from vamps.vamps_submissions where user_id='" + req.user.user_id + "'";
-    console.log(user_submissions_query);
-
-    // Domain and Region List
+    else {
+      console.log('in post /submission_request, req.form.isValid');
+    }
 
     console.time("TIME: 1) in post /submission_request");
     // make_submission_object_from_db(req, res);
