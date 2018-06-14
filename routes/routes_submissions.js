@@ -19,6 +19,7 @@ router.get('/submission_request',
     console.log('in GET submission_request');
 
     var pi_list = submission_controller.get_pi_list();
+    req.session.pi_list = pi_list;
     var user_id = req.user.user_id;
     Submission.getSubmitCodeByUser(user_id, function (err, rows) {
       // console.log("AAA0", res);
@@ -28,6 +29,8 @@ router.get('/submission_request',
       }
       else {
         var user_submits = rows;
+        req.session.user_submits = user_submits;
+
         console.log("AAA0", user_submits);
         console.log("AAA1", JSON.stringify(user_submits));
         // [2018/06/13 16:26:32.598] [LOG]   AAA0 [ TextRow { submit_code: 'ashipunova354276' },
@@ -50,6 +53,7 @@ router.get('/submission_request',
           project_name2: "",
           project_name3: "",
           project_title: "",
+          submit_code: "",
           submit_name: "",
           samples_number: "",
           title: 'VAMPS: Submission Request',
@@ -85,7 +89,7 @@ router.post('/submission_request',
     form.field("funding_code").trim().required().is(/^[0-9]+$/).entityEncode().array(),
     form.field("pi_id").trim().required().is(/^[0-9]+$/).entityEncode().array(),
     form.field("pi_name").trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
-    form.field("submit_name").trim().entityEncode().array(),
+    form.field("submit_code").trim().entityEncode().array(),
     form.field("project_description").trim().required().entityEncode().array(),
     form.field("project_name1").trim().required().entityEncode().array(),
     form.field("project_name2").trim().required().entityEncode().array(),
@@ -98,7 +102,6 @@ router.post('/submission_request',
     console.log('req.body', req.body);
     console.log('req.form', req.form);
 
-    console.log('QQQ req.body.pi_list', req.body.pi_list);
     // field("post[user][id]").isInt(),
 
     // if(!req.form.isValid){
@@ -119,8 +122,13 @@ router.post('/submission_request',
       console.log('3) in post /submission_request, req.form.isValid');
       req.flash('success', 'Form validated. Now download and open in OpenOffice or Excel to fill-in remaining data.');
       // DRY (already done in get)
-      var pi_list = submission_controller.get_pi_list();
-      var d_region =  req.form.d_region.split("#");
+      // var pi_list = submission_controller.get_pi_list();
+      var pi_list = req.session.pi_list;
+      // console.log('QQQ1 req.body.pi_list', pi_list);
+      var user_submits = req.session.user_submits;
+      // console.log('QQQ2 req.body.pi_list', user_submits);
+
+      var d_region = req.form.d_region.split("#");
       // console.log("DDD d_region = ", d_region);
       res.render('submissions/submission_request', {
         // domain_region
@@ -138,11 +146,11 @@ router.post('/submission_request',
         project_name2: req.form.project_name2,
         project_name3: req.body.d_region,
         project_title: req.form.project_title,
-        submit_name: req.form.submit_name, // submit_name: [ 'ashipunova354276' ],
+        submit_code: req.form.submit_code,
         samples_number: req.form.samples_number,
         title: 'VAMPS: Submission Request',
         user: req.user,
-        user_submits: JSON.parse(req.body.user_submits),
+        user_submits: user_submits,
       });
 
 
