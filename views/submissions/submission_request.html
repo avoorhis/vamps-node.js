@@ -1,25 +1,5 @@
 <% include ../add_ins/begin.ejs %>
 
-<br/> user_submits
-
-<%= user_submits %>
-<br/>
-
-JSON.stringify(user_submits):
-<%= JSON.stringify(user_submits)%>
-<br/>
-
-
-<br/> submit_code
-
-<%= submit_code %>
-
-
-<br/>
-
-<br/>
-
-
 <link href="/stylesheets/submissions.css" rel="stylesheet" \>
 <% if (messages.success) { %>
 <div class="alert_flash_message_success"><%= messages.success %></div>
@@ -55,15 +35,11 @@ JSON.stringify(user_submits):
                 viewing:</label>
             <div class="col-sm-3">
                 <select id="submit_code" name="submit_code">
+                    <option selected="true" disabled>Load&hellip;</option>
                     <% for (var i in user_submits){ %>
                     <option value='<%= user_submits[i].submit_code %>'><%= user_submits[i].submit_code %></option>
                     <% } %>
 
-
-
-                    <% user_submits.forEach(function(value){ %>
-                    <option value="<%= value.submit_code %>"><%= value.submit_code %></option>
-                    <% }); %>
                 </select>
 
             </div>
