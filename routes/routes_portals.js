@@ -64,60 +64,51 @@ router.get('/projects/:portal', function(req, res) {
 //
 // METADATA
 //
-router.get('/metadata/:portal', function(req, res) {
-    var portal = req.params.portal;
-    console.log('in metadata/:portal:'+portal)
-    var project_list = helpers.get_portal_projects(req, portal)
-    
-    var md = {}
-    for(n in project_list){
-        var pid = project_list[n].pid
-        var dids = DATASET_IDS_BY_PID[pid]
-        // console.log('dids')
-//         console.log(dids)
-//         console.log('DATASET_NAME_BY_DID')
-//         console.log(DATASET_NAME_BY_DID)
-        
-        md_order = []
-        md_lookup = {}
-        for(m in dids){
-            var pjds = project_list[n].project+'--'+DATASET_NAME_BY_DID[dids[m]]
-            
-            // x = AllMetadata[dids[m]]
-//             for(j in x){
-//                 helpers.required_metadata_names_from_ids()
+// router.get('/metadata/:portal', function(req, res) {
+//     var portal = req.params.portal;
+//     console.log('in metadata/:portal:'+portal)
+//     var project_list = helpers.get_portal_projects(req, portal)
+//     
+//     var md = {}
+//     for(n in project_list){
+//         var pid = project_list[n].pid
+//         var dids = DATASET_IDS_BY_PID[pid]
+//        
+//         
+//         md_order = []
+//         md_lookup = {}
+//         for(m in dids){
+//             var pjds = project_list[n].project+'--'+DATASET_NAME_BY_DID[dids[m]]
+//             
+//             md[pjds] = {}
+//             headers = {}
+//             for(item in AllMetadata[dids[m]]){
+//                 console.log('item '+item)
+//                 result = helpers.required_metadata_names_from_ids(AllMetadata[dids[m]], item)
+//                 console.log(result)
+//                 console.log(result.name +' -- '+result.value)
+//                 md[pjds][result.name] = result.value
+//                 headers[result.name] = 1
+//                 md_lookup[item] = 1
 //             }
-            //md[pjds] = AllMetadata[dids[m]]
-            
-            md[pjds] = {}
-            headers = {}
-            for(item in AllMetadata[dids[m]]){
-                console.log('item '+item)
-                result = helpers.required_metadata_names_from_ids(AllMetadata[dids[m]], item)
-                console.log(result)
-                console.log(result.name +' -- '+result.value)
-                md[pjds][result.name] = result.value
-                headers[result.name] = 1
-                md_lookup[item] = 1
-            }
-            
-        }
-    }
-    md_order = Object.keys(md_lookup)
-    md_order.sort()
-    hd_order = Object.keys(headers)
-    hd_order.sort()
-    console.log(md['CMP_JJ_Bv5v6x--ApD2'])
-    res.render('portals/metadata', { 
-            title  : 'VAMPS:'+portal+' Portal Metadata',
-            user   : req.user,hostname: req.CONFIG.hostname,
-            mdata  : JSON.stringify(md),
-            portal : portal,
-            md_order: JSON.stringify(md_order),
-            hd_order: JSON.stringify(hd_order)
-            
-        });
-});
+//             
+//         }
+//     }
+//     md_order = Object.keys(md_lookup)
+//     md_order.sort()
+//     hd_order = Object.keys(headers)
+//     hd_order.sort()
+//     console.log(md['CMP_JJ_Bv5v6x--ApD2'])
+//     res.render('portals/metadata', { 
+//             title  : 'VAMPS:'+portal+' Portal Metadata',
+//             user   : req.user,hostname: req.CONFIG.hostname,
+//             mdata  : JSON.stringify(md),
+//             portal : portal,
+//             md_order: JSON.stringify(md_order),
+//             hd_order: JSON.stringify(hd_order)
+//             
+//         });
+// });
 
 router.get('/:portal', function(req, res) {
     

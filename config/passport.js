@@ -277,10 +277,10 @@ function signup_user(req, username, password, done, db){
                 var newUserMysql            = {};
                 newUserMysql.username       = new_user.username;
                 newUserMysql.password       = new_user.password;  /// Password is HASHed in queries_admin
-                newUserMysql.firstname     = new_user.firstname;
-                newUserMysql.lastname      = new_user.lastname;
+                newUserMysql.firstname     = new_user.firstname.replace("'","");
+                newUserMysql.lastname      = new_user.lastname.replace("'","");
                 newUserMysql.email          = new_user.email;
-                newUserMysql.institution    = new_user.institution;
+                newUserMysql.institution    = new_user.institution.replace("'","");
                 newUserMysql.security_level = 50;  //reg user
                 
                 // todo: why this is in two places? See routes/routes_admin.js:552
