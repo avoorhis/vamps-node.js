@@ -18,9 +18,9 @@ router.get('/submission_request',
   function (req, res) {
     console.log('in GET submission_request');
 
-    var pi_list = submission_controller.get_pi_list();
+    var pi_list         = submission_controller.get_pi_list();
     req.session.pi_list = pi_list;
-    var user_id = req.user.user_id;
+    var user_id         = req.user.user_id;
     Submission.getSubmitCodeByUser(user_id, function (err, rows) {
       // console.log("AAA0", res);
 
@@ -28,7 +28,7 @@ router.get('/submission_request',
         res.json(err);
       }
       else {
-        var user_submits = rows;
+        var user_submits         = rows;
         req.session.user_submits = user_submits;
 
         console.log("AAA0", user_submits);
@@ -123,7 +123,7 @@ router.post('/submission_request',
       req.flash('success', 'Form validated. Now download and open in OpenOffice or Excel to fill-in remaining data.');
       // DRY (already done in get)
       // var pi_list = submission_controller.get_pi_list();
-      var pi_list = req.session.pi_list;
+      var pi_list      = req.session.pi_list;
       // console.log('QQQ1 req.body.pi_list', pi_list);
       var user_submits = req.session.user_submits;
       // console.log('QQQ2 req.body.pi_list', user_submits);
@@ -159,10 +159,18 @@ router.post('/submission_request',
       // Unique Prefix
     }
 
-    console.time("TIME: 1) in post /submission_request");
+    // console.time("TIME: 1) in post /submission_request");
     // make_submission_object_from_db(req, res);
-    console.timeEnd("TIME: 1) in post /submission_request");
+    // console.timeEnd("TIME: 1) in post /submission_request");
   });
+
+router.get('/submission_form_faq', function (req, res) {
+  res.render('submissions/submission_form_faq.html', {
+    title: 'Sample Submission Process',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+  });
+});
 
 // function render_edit_form(req, res) {
 //   // console.log("JJJ1 all_submission");

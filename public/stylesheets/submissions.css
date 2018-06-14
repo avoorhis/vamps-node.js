@@ -5,7 +5,6 @@
 .submission_form_field {
     background-color: #ECECEC;
     display: block;
-
 }
 
 .overrides {
@@ -18,4 +17,17 @@ table tr th {
 
 table tr td {
     text-align: center;
+}
+
+.no_bullets_list {
+    list-style-type: none;
+}
+
+.inline_bold_header {
+    font-weight: bold;
+}
+
+.paragraph_no_pad {
+    margin: 0;
+    padding: 0;
 }
