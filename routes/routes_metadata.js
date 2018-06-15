@@ -10,6 +10,8 @@ var config  = require(app_root + '/config/config');
 var validator = require('validator');
 // var expressValidator = require('express-validator');
 var nodeMailer = require('nodemailer');
+var Metadata            = require(app_root + '/models/metadata');
+var metadata_controller = require(app_root + '/controllers/metadataController');
 
 
 /* GET metadata page. */
@@ -231,9 +233,9 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
   });
 }
 
-function get_all_field_units(req){
-  var current_field_units = MD_CUSTOM_UNITS[req.body.project_id];
-}
+// function get_all_field_units(req){
+//   var current_field_units = MD_CUSTOM_UNITS[req.body.project_id];
+// }
 
 // create form from req.form
 //TODO: benchmark
