@@ -13,7 +13,6 @@ var nodeMailer = require('nodemailer');
 var Metadata            = require(app_root + '/models/metadata');
 var metadata_controller = require(app_root + '/controllers/metadataController');
 
-
 /* GET metadata page. */
  router.get('/metadata', function(req, res) {
       console.log('in metadata');
@@ -239,21 +238,21 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 
 // create form from req.form
 //TODO: benchmark
-function get_second(element) {
-  console.time("TIME: get_second");
-
-  for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES)
-  {
-    if (CONSTS.ORDERED_METADATA_NAMES[met_names_row].includes(element))
-    {
-      // console.log("ETET met_names_row[1]");
-      // console.log(CONSTS.ORDERED_METADATA_NAMES[met_names_row][1]);
-      return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
-    }
-  }
-  console.timeEnd("TIME: get_second");
-
-}
+// function metadata_controller.get_second(element) {
+//   console.time("TIME: get_second");
+//
+//   for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES)
+//   {
+//     if (CONSTS.ORDERED_METADATA_NAMES[met_names_row].includes(element))
+//     {
+//       // console.log("ETET met_names_row[1]");
+//       // console.log(CONSTS.ORDERED_METADATA_NAMES[met_names_row][1]);
+//       return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
+//     }
+//   }
+//   console.timeEnd("TIME: get_second");
+//
+// }
 
 function env_items_validation(value) {
   if (value === "Please choose one") {
@@ -469,119 +468,119 @@ function get_first_column(matrix, col) {
 router.post('/metadata_upload',
   [helpers.isLoggedIn],
   form(
-    form.field("npoc", get_second("npoc")).trim().entityEncode().array(),
-    form.field("access_point_type", get_second("access_point_type")).trim().entityEncode().array(),
-    form.field("adapter_sequence", get_second("adapter_sequence")).trim().required().entityEncode().array(),
-    form.field("alkalinity", get_second("alkalinity")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("ammonium", get_second("ammonium")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("bicarbonate", get_second("bicarbonate")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("env_biome", get_second("env_biome")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("biome_secondary", get_second("biome_secondary")).trim().entityEncode().array(),
-    form.field("calcium", get_second("calcium")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("carbonate", get_second("carbonate")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("chloride", get_second("chloride")).trim().entityEncode().array(),
-    form.field("clone_library_results", get_second("clone_library_results")).trim().entityEncode().array(),
-    form.field("collection_date", get_second("collection_date")).trim().required().isDate("Sample collection date format: YYYY-MM-DD").entityEncode().array(),
-    form.field("conductivity", get_second("conductivity")).trim().custom(numbers_n_period).required().entityEncode().array(),
-    form.field("dataset", get_second("dataset")).trim().required().entityEncode().array(),
+    form.field("npoc", metadata_controller.get_second("npoc")).trim().entityEncode().array(),
+    form.field("access_point_type", metadata_controller.get_second("access_point_type")).trim().entityEncode().array(),
+    form.field("adapter_sequence", metadata_controller.get_second("adapter_sequence")).trim().required().entityEncode().array(),
+    form.field("alkalinity", metadata_controller.get_second("alkalinity")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("ammonium", metadata_controller.get_second("ammonium")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("bicarbonate", metadata_controller.get_second("bicarbonate")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("env_biome", metadata_controller.get_second("env_biome")).trim().required().custom(env_items_validation).entityEncode().array(),
+    form.field("biome_secondary", metadata_controller.get_second("biome_secondary")).trim().entityEncode().array(),
+    form.field("calcium", metadata_controller.get_second("calcium")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("carbonate", metadata_controller.get_second("carbonate")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("chloride", metadata_controller.get_second("chloride")).trim().entityEncode().array(),
+    form.field("clone_library_results", metadata_controller.get_second("clone_library_results")).trim().entityEncode().array(),
+    form.field("collection_date", metadata_controller.get_second("collection_date")).trim().required().isDate("Sample collection date format: YYYY-MM-DD").entityEncode().array(),
+    form.field("conductivity", metadata_controller.get_second("conductivity")).trim().custom(numbers_n_period).required().entityEncode().array(),
+    form.field("dataset", metadata_controller.get_second("dataset")).trim().required().entityEncode().array(),
     form.field("dataset_id", "").trim().required().isInt().entityEncode().array(),
-    // form.field("del180_water", get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("del180_water", get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    // form.field("del180_water", metadata_controller.get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("del180_water", metadata_controller.get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
 
-    form.field("depth_in_core", get_second("depth_in_core")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("depth_subseafloor", get_second("depth_subseafloor")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("depth_subterrestrial", get_second("depth_subterrestrial")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("diss_hydrogen", get_second("diss_hydrogen")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("diss_inorg_carb", get_second("diss_inorg_carb")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("diss_inorg_carbon_del13c", get_second("diss_inorg_carbon_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("diss_org_carb", get_second("diss_org_carb")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("diss_oxygen", get_second("diss_oxygen")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("dna_extraction_meth", get_second("dna_extraction_meth")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("dna_quantitation", get_second("dna_quantitation")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("dna_region", get_second("dna_region")).trim().required().entityEncode().array(),
-    form.field("domain", get_second("domain")).trim().required().entityEncode().array(),
-    form.field("elevation", get_second("elevation")).trim().required("", "Elevation is required (for terrestrial only)").custom(numbers_n_period_n_minus).entityEncode().array(),
-    form.field("env_package", get_second("env_package")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("enzyme_activities", get_second("enzyme_activities")).trim().entityEncode().array(),
-    form.field("env_feature", get_second("env_feature")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("fish_probe_name", get_second("fish_probe_name")).trim().entityEncode().array(),
-    form.field("fish_probe_seq", get_second("fish_probe_seq")).trim().is(/^$|[ATUGCYRSWKMBDHVN]/).entityEncode().array(),
-    form.field("feature_secondary", get_second("feature_secondary")).trim().entityEncode().array(),
-    form.field("formation_name", get_second("formation_name")).trim().entityEncode().array(),
-    form.field("forward_primer", get_second("forward_primer")).trim().entityEncode().array(),
-    form.field("functional_gene_assays", get_second("functional_gene_assays")).trim().entityEncode().array(),
-    form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().custom(geo_loc_name_continental_filter).custom(geo_loc_name_validation).custom(geo_loc_name_continental_validation).entityEncode().array(),
-    form.field("geo_loc_name_marine", get_second("geo_loc_name_marine")).trim().custom(geo_loc_name_validation).custom(geo_loc_name_marine_validation).entityEncode().array(),
-    form.field("illumina_index", get_second("illumina_index")).trim().entityEncode().array(),
+    form.field("depth_in_core", metadata_controller.get_second("depth_in_core")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("depth_subseafloor", metadata_controller.get_second("depth_subseafloor")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("depth_subterrestrial", metadata_controller.get_second("depth_subterrestrial")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("diss_hydrogen", metadata_controller.get_second("diss_hydrogen")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("diss_inorg_carb", metadata_controller.get_second("diss_inorg_carb")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("diss_inorg_carbon_del13c", metadata_controller.get_second("diss_inorg_carbon_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("diss_org_carb", metadata_controller.get_second("diss_org_carb")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("diss_oxygen", metadata_controller.get_second("diss_oxygen")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("dna_extraction_meth", metadata_controller.get_second("dna_extraction_meth")).trim().required().custom(env_items_validation).entityEncode().array(),
+    form.field("dna_quantitation", metadata_controller.get_second("dna_quantitation")).trim().required().custom(env_items_validation).entityEncode().array(),
+    form.field("dna_region", metadata_controller.get_second("dna_region")).trim().required().entityEncode().array(),
+    form.field("domain", metadata_controller.get_second("domain")).trim().required().entityEncode().array(),
+    form.field("elevation", metadata_controller.get_second("elevation")).trim().required("", "Elevation is required (for terrestrial only)").custom(numbers_n_period_n_minus).entityEncode().array(),
+    form.field("env_package", metadata_controller.get_second("env_package")).trim().required().custom(env_items_validation).entityEncode().array(),
+    form.field("enzyme_activities", metadata_controller.get_second("enzyme_activities")).trim().entityEncode().array(),
+    form.field("env_feature", metadata_controller.get_second("env_feature")).trim().required().custom(env_items_validation).entityEncode().array(),
+    form.field("fish_probe_name", metadata_controller.get_second("fish_probe_name")).trim().entityEncode().array(),
+    form.field("fish_probe_seq", metadata_controller.get_second("fish_probe_seq")).trim().is(/^$|[ATUGCYRSWKMBDHVN]/).entityEncode().array(),
+    form.field("feature_secondary", metadata_controller.get_second("feature_secondary")).trim().entityEncode().array(),
+    form.field("formation_name", metadata_controller.get_second("formation_name")).trim().entityEncode().array(),
+    form.field("forward_primer", metadata_controller.get_second("forward_primer")).trim().entityEncode().array(),
+    form.field("functional_gene_assays", metadata_controller.get_second("functional_gene_assays")).trim().entityEncode().array(),
+    form.field("geo_loc_name_continental", metadata_controller.get_second("geo_loc_name_continental")).trim().custom(geo_loc_name_continental_filter).custom(geo_loc_name_validation).custom(geo_loc_name_continental_validation).entityEncode().array(),
+    form.field("geo_loc_name_marine", metadata_controller.get_second("geo_loc_name_marine")).trim().custom(geo_loc_name_validation).custom(geo_loc_name_marine_validation).entityEncode().array(),
+    form.field("illumina_index", metadata_controller.get_second("illumina_index")).trim().entityEncode().array(),
     // Index sequence (required for Illumina)
-    form.field("intact_polar_lipid", get_second("intact_polar_lipid")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("investigation_type", get_second("investigation_type")).trim().required().entityEncode().array(),
-    form.field("iron", get_second("iron")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("iron_ii", get_second("iron_ii")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("iron_iii", get_second("iron_iii")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("isol_growth_cond", get_second("isol_growth_cond")).trim().entityEncode().array(),
-    // form.field("latitude", get_second("latitude")).trim().custom(latitude_valid).is(/^$|^[0-9.-]+$/).required().entityEncode().array(),
+    form.field("intact_polar_lipid", metadata_controller.get_second("intact_polar_lipid")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("investigation_type", metadata_controller.get_second("investigation_type")).trim().required().entityEncode().array(),
+    form.field("iron", metadata_controller.get_second("iron")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("iron_ii", metadata_controller.get_second("iron_ii")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("iron_iii", metadata_controller.get_second("iron_iii")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("isol_growth_cond", metadata_controller.get_second("isol_growth_cond")).trim().entityEncode().array(),
+    // form.field("latitude", metadata_controller.get_second("latitude")).trim().custom(latitude_valid).is(/^$|^[0-9.-]+$/).required().entityEncode().array(),
     //, see <a href='https://www.latlong.net/degrees-minutes-seconds-to-decimal-degrees' target='_blank'>a converter</a>
-    form.field("latitude", get_second("latitude")).trim().custom(latitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
-    form.field("longitude", get_second("longitude")).trim().custom(longitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
-    form.field("magnesium", get_second("magnesium")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("manganese", get_second("manganese")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("env_material", get_second("env_material")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("material_secondary", get_second("material_secondary")).trim().entityEncode().array(),
-    form.field("methane", get_second("methane")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("methane_del13c", get_second("methane_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("microbial_biomass_fish", get_second("microbial_biomass_fish")).trim().custom(numbers_n_period).entityEncode().array(),
-    // form.field("microbial_biomass_avg_cell_number", get_second("microbial_biomass_avg_cell_number")).trim().entityEncode().array(),
-    // form.field("microbial_biomass_intactpolarlipid", get_second("microbial_biomass_intactpolarlipid")).trim().entityEncode().array(),
-    form.field("microbial_biomass_microscopic", get_second("microbial_biomass_microscopic")).trim().entityEncode().array(),
-    // form.field("microbial_biomass_platecounts", get_second("microbial_biomass_platecounts")).trim().entityEncode().array(),
-    form.field("microbial_biomass_qpcr", get_second("microbial_biomass_qpcr")).trim().entityEncode().array(),
-    form.field("nitrate", get_second("nitrate")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("nitrite", get_second("nitrite")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("nitrogen_tot", get_second("nitrogen_tot")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("noble_gas_chemistry", get_second("noble_gas_chemistry")).trim().entityEncode().array(),
-    form.field("org_carb_nitro_ratio", get_second("org_carb_nitro_ratio")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("ph", get_second("ph")).trim().custom(numbers_n_period).custom(ph_valid).required().entityEncode().array(),
-    form.field("part_org_carbon_del13c", get_second("part_org_carbon_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("phosphate", get_second("phosphate")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("pi_email", get_second("pi_email")).trim().isEmail().required().entityEncode().array(),
-    form.field("pi_name", get_second("pi_name")).trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
-    form.field("plate_counts", get_second("plate_counts")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("porosity", get_second("porosity")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
-    form.field("potassium", get_second("potassium")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("pressure", get_second("pressure")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("project", get_second("project")).trim().required().entityEncode().array(),
-    form.field("project_abstract", get_second("project_abstract")).trim().required().entityEncode().array(),
-    form.field("project_title", get_second("project_title")).trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
-    form.field("redox_potential", get_second("redox_potential")).trim().custom(numbers_n_period_n_minus).entityEncode().array(),
-    form.field("redox_state", get_second("redox_state")).trim().is(/^$|^[a-zA-Z ]+$/).entityEncode().array(),
-    form.field("reference", get_second("reference")).trim().entityEncode().array(),
-    form.field("resistivity", get_second("resistivity")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("reverse_primer", get_second("reverse_primer")).trim().entityEncode().array(),
-    form.field("rock_age", get_second("rock_age")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("run", get_second("run")).trim().required().entityEncode().array(),
-    form.field("salinity", get_second("salinity")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("sample_collection_device", get_second("sample_collection_device")).trim().entityEncode().array(),
-    form.field("samp_store_dur", get_second("samp_store_dur")).trim().is(/^$|^[0-9a-zA-Z ]+$/).entityEncode().array(),
-    form.field("samp_store_temp", get_second("samp_store_temp")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("sample_name", get_second("sample_name")).trim().required().entityEncode().array(),
-    form.field("sample_size_mass", get_second("sample_size_mass")).trim().custom(positive).custom(numbers_n_period).entityEncode().array(),
-    form.field("sample_size_vol", get_second("sample_size_vol")).trim().custom(positive).custom(numbers_n_period).entityEncode().array(),
-    form.field("sample_type", get_second("sample_type")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("sequencing_meth", get_second("sequencing_meth")).trim().required().entityEncode().array(),
-    form.field("silicate", get_second("silicate")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("sodium", get_second("sodium")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("sulfate", get_second("sulfate")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("sulfide", get_second("sulfide")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("sulfur_tot", get_second("sulfur_tot")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("target_gene", get_second("target_gene")).trim().required().entityEncode().array(),
-    form.field("temperature", get_second("temperature")).trim().is(/^$|^[0-9.-]+$/).required().entityEncode().array(),
-    form.field("tot_carb", get_second("tot_carb")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
-    form.field("tot_depth_water_col", get_second("tot_depth_water_col")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("tot_inorg_carb", get_second("tot_inorg_carb")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
-    form.field("tot_org_carb", get_second("tot_org_carb")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
-    form.field("trace_element_geochem", get_second("trace_element_geochem")).trim().entityEncode().array(),
-    form.field("water_age", get_second("water_age")).trim().custom(numbers_n_period).entityEncode().array()
+    form.field("latitude", metadata_controller.get_second("latitude")).trim().custom(latitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
+    form.field("longitude", metadata_controller.get_second("longitude")).trim().custom(longitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
+    form.field("magnesium", metadata_controller.get_second("magnesium")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("manganese", metadata_controller.get_second("manganese")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("env_material", metadata_controller.get_second("env_material")).trim().required().custom(env_items_validation).entityEncode().array(),
+    form.field("material_secondary", metadata_controller.get_second("material_secondary")).trim().entityEncode().array(),
+    form.field("methane", metadata_controller.get_second("methane")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("methane_del13c", metadata_controller.get_second("methane_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("microbial_biomass_fish", metadata_controller.get_second("microbial_biomass_fish")).trim().custom(numbers_n_period).entityEncode().array(),
+    // form.field("microbial_biomass_avg_cell_number", metadata_controller.get_second("microbial_biomass_avg_cell_number")).trim().entityEncode().array(),
+    // form.field("microbial_biomass_intactpolarlipid", metadata_controller.get_second("microbial_biomass_intactpolarlipid")).trim().entityEncode().array(),
+    form.field("microbial_biomass_microscopic", metadata_controller.get_second("microbial_biomass_microscopic")).trim().entityEncode().array(),
+    // form.field("microbial_biomass_platecounts", metadata_controller.get_second("microbial_biomass_platecounts")).trim().entityEncode().array(),
+    form.field("microbial_biomass_qpcr", metadata_controller.get_second("microbial_biomass_qpcr")).trim().entityEncode().array(),
+    form.field("nitrate", metadata_controller.get_second("nitrate")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("nitrite", metadata_controller.get_second("nitrite")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("nitrogen_tot", metadata_controller.get_second("nitrogen_tot")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("noble_gas_chemistry", metadata_controller.get_second("noble_gas_chemistry")).trim().entityEncode().array(),
+    form.field("org_carb_nitro_ratio", metadata_controller.get_second("org_carb_nitro_ratio")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("ph", metadata_controller.get_second("ph")).trim().custom(numbers_n_period).custom(ph_valid).required().entityEncode().array(),
+    form.field("part_org_carbon_del13c", metadata_controller.get_second("part_org_carbon_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("phosphate", metadata_controller.get_second("phosphate")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("pi_email", metadata_controller.get_second("pi_email")).trim().isEmail().required().entityEncode().array(),
+    form.field("pi_name", metadata_controller.get_second("pi_name")).trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
+    form.field("plate_counts", metadata_controller.get_second("plate_counts")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("porosity", metadata_controller.get_second("porosity")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
+    form.field("potassium", metadata_controller.get_second("potassium")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("pressure", metadata_controller.get_second("pressure")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("project", metadata_controller.get_second("project")).trim().required().entityEncode().array(),
+    form.field("project_abstract", metadata_controller.get_second("project_abstract")).trim().required().entityEncode().array(),
+    form.field("project_title", metadata_controller.get_second("project_title")).trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
+    form.field("redox_potential", metadata_controller.get_second("redox_potential")).trim().custom(numbers_n_period_n_minus).entityEncode().array(),
+    form.field("redox_state", metadata_controller.get_second("redox_state")).trim().is(/^$|^[a-zA-Z ]+$/).entityEncode().array(),
+    form.field("reference", metadata_controller.get_second("reference")).trim().entityEncode().array(),
+    form.field("resistivity", metadata_controller.get_second("resistivity")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("reverse_primer", metadata_controller.get_second("reverse_primer")).trim().entityEncode().array(),
+    form.field("rock_age", metadata_controller.get_second("rock_age")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("run", metadata_controller.get_second("run")).trim().required().entityEncode().array(),
+    form.field("salinity", metadata_controller.get_second("salinity")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("sample_collection_device", metadata_controller.get_second("sample_collection_device")).trim().entityEncode().array(),
+    form.field("samp_store_dur", metadata_controller.get_second("samp_store_dur")).trim().is(/^$|^[0-9a-zA-Z ]+$/).entityEncode().array(),
+    form.field("samp_store_temp", metadata_controller.get_second("samp_store_temp")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("sample_name", metadata_controller.get_second("sample_name")).trim().required().entityEncode().array(),
+    form.field("sample_size_mass", metadata_controller.get_second("sample_size_mass")).trim().custom(positive).custom(numbers_n_period).entityEncode().array(),
+    form.field("sample_size_vol", metadata_controller.get_second("sample_size_vol")).trim().custom(positive).custom(numbers_n_period).entityEncode().array(),
+    form.field("sample_type", metadata_controller.get_second("sample_type")).trim().required().custom(env_items_validation).entityEncode().array(),
+    form.field("sequencing_meth", metadata_controller.get_second("sequencing_meth")).trim().required().entityEncode().array(),
+    form.field("silicate", metadata_controller.get_second("silicate")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("sodium", metadata_controller.get_second("sodium")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("sulfate", metadata_controller.get_second("sulfate")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("sulfide", metadata_controller.get_second("sulfide")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("sulfur_tot", metadata_controller.get_second("sulfur_tot")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("target_gene", metadata_controller.get_second("target_gene")).trim().required().entityEncode().array(),
+    form.field("temperature", metadata_controller.get_second("temperature")).trim().is(/^$|^[0-9.-]+$/).required().entityEncode().array(),
+    form.field("tot_carb", metadata_controller.get_second("tot_carb")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
+    form.field("tot_depth_water_col", metadata_controller.get_second("tot_depth_water_col")).trim().custom(numbers_n_period).entityEncode().array(),
+    form.field("tot_inorg_carb", metadata_controller.get_second("tot_inorg_carb")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
+    form.field("tot_org_carb", metadata_controller.get_second("tot_org_carb")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
+    form.field("trace_element_geochem", metadata_controller.get_second("trace_element_geochem")).trim().entityEncode().array(),
+    form.field("water_age", metadata_controller.get_second("water_age")).trim().custom(numbers_n_period).entityEncode().array()
   ),
   function (req, res) {
     console.time("TIME: post metadata_upload");
