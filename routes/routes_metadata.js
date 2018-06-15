@@ -207,8 +207,8 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
   // console.log("JJJ2 all_field_names");
   // console.log(JSON.stringify(all_field_names));
 
-  MD_ENV_CNTRY_vals = get_object_vals(MD_ENV_CNTRY);
-  MD_ENV_LZC_vals   = get_object_vals(MD_ENV_LZC);
+  MD_ENV_CNTRY_vals = metadata_controller.get_object_vals(MD_ENV_CNTRY);
+  MD_ENV_LZC_vals   = metadata_controller.get_object_vals(MD_ENV_LZC);
   var ordered_field_names_obj = make_ordered_field_names_obj();
 
   res.render("metadata/metadata_edit_form", {
@@ -239,56 +239,50 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 // create form from req.form
 
 
-// function metadata_controller.env_items_validation(value) {
-//   if (value === "Please choose one") {
-//     throw new Error("%s is required. Please choose one value from the dropdown menu");
+// function checkArray(my_arr){
+//   for (var i = 0; my_arr.length > i; i++) {
+//   if (my_arr[i] === "")
+//     return false;
+// }
+//   return true;
+// }
+//
+// function metadata_controller.geo_loc_name_validation(value, source) {
+//   if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
+//       throw new Error("Either 'Country' or 'Longhurst Zone' are required");
 //   }
 // }
-
-function checkArray(my_arr){
-  for (var i = 0; my_arr.length > i; i++) {
-  if (my_arr[i] === "")
-    return false;
-}
-  return true;
-}
-
-function geo_loc_name_validation(value, source) {
-  if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
-      throw new Error("Either 'Country' or 'Longhurst Zone' are required");
-  }
-}
-
-function geo_loc_name_continental_filter(value) {
-  console.time("geo_loc_name_continental_filter");
-  for (var key in CONSTS.GAZ_SPELLING) {
-    if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
-      var curr = CONSTS.GAZ_SPELLING[key];
-      if (curr.indexOf(value.toLowerCase()) > -1) {
-        return key;
-      }
-    }
-  }
-  console.timeEnd("geo_loc_name_continental_filter");
-}
-
-function get_object_vals(object_name) {
-  return Object.keys(object_name).map(function (key) {
-    return object_name[key];
-  });
-}
-
-function geo_loc_name_marine_validation(value) {
-  if(MD_ENV_LZC_vals.indexOf(value) < 0 && (value !== '')) {
-    throw new Error("There is no Longhurst Zone '" + value + "', please check the spelling");
-  }
-}
-
-function geo_loc_name_continental_validation(value) {
-  if(MD_ENV_CNTRY_vals.indexOf(value) < 0 && (value !== '')) {
-    throw new Error("There is no Country '" + value + "', please check the spelling");
-  }
-}
+//
+// function metadata_controller.geo_loc_name_continental_filter(value) {
+//   console.time("metadata_controller.geo_loc_name_continental_filter");
+//   for (var key in CONSTS.GAZ_SPELLING) {
+//     if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
+//       var curr = CONSTS.GAZ_SPELLING[key];
+//       if (curr.indexOf(value.toLowerCase()) > -1) {
+//         return key;
+//       }
+//     }
+//   }
+//   console.timeEnd("metadata_controller.geo_loc_name_continental_filter");
+// }
+//
+// function metadata_controller.get_object_vals(object_name) {
+//   return Object.keys(object_name).map(function (key) {
+//     return object_name[key];
+//   });
+// }
+//
+// function metadata_controller.geo_loc_name_marine_validation(value) {
+//   if(MD_ENV_LZC_vals.indexOf(value) < 0 && (value !== '')) {
+//     throw new Error("There is no Longhurst Zone '" + value + "', please check the spelling");
+//   }
+// }
+//
+// function metadata_controller.geo_loc_name_continental_validation(value) {
+//   if(MD_ENV_CNTRY_vals.indexOf(value) < 0 && (value !== '')) {
+//     throw new Error("There is no Country '" + value + "', please check the spelling");
+//   }
+// }
 
 function check_regexp(reg_exp, value, err_msg) {
   var result = value.match(reg_exp);
@@ -494,8 +488,8 @@ router.post('/metadata_upload',
     form.field("formation_name", metadata_controller.get_second("formation_name")).trim().entityEncode().array(),
     form.field("forward_primer", metadata_controller.get_second("forward_primer")).trim().entityEncode().array(),
     form.field("functional_gene_assays", metadata_controller.get_second("functional_gene_assays")).trim().entityEncode().array(),
-    form.field("geo_loc_name_continental", metadata_controller.get_second("geo_loc_name_continental")).trim().custom(geo_loc_name_continental_filter).custom(geo_loc_name_validation).custom(geo_loc_name_continental_validation).entityEncode().array(),
-    form.field("geo_loc_name_marine", metadata_controller.get_second("geo_loc_name_marine")).trim().custom(geo_loc_name_validation).custom(geo_loc_name_marine_validation).entityEncode().array(),
+    form.field("geo_loc_name_continental", metadata_controller.get_second("geo_loc_name_continental")).trim().custom(metadata_controller.geo_loc_name_continental_filter).custom(metadata_controller.geo_loc_name_validation).custom(metadata_controller.geo_loc_name_continental_validation).entityEncode().array(),
+    form.field("geo_loc_name_marine", metadata_controller.get_second("geo_loc_name_marine")).trim().custom(metadata_controller.geo_loc_name_validation).custom(metadata_controller.geo_loc_name_marine_validation).entityEncode().array(),
     form.field("illumina_index", metadata_controller.get_second("illumina_index")).trim().entityEncode().array(),
     // Index sequence (required for Illumina)
     form.field("intact_polar_lipid", metadata_controller.get_second("intact_polar_lipid")).trim().custom(numbers_n_period).entityEncode().array(),
