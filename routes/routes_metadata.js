@@ -237,28 +237,13 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 // }
 
 // create form from req.form
-//TODO: benchmark
-// function metadata_controller.get_second(element) {
-//   console.time("TIME: get_second");
-//
-//   for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES)
-//   {
-//     if (CONSTS.ORDERED_METADATA_NAMES[met_names_row].includes(element))
-//     {
-//       // console.log("ETET met_names_row[1]");
-//       // console.log(CONSTS.ORDERED_METADATA_NAMES[met_names_row][1]);
-//       return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
-//     }
-//   }
-//   console.timeEnd("TIME: get_second");
-//
-// }
 
-function env_items_validation(value) {
-  if (value === "Please choose one") {
-    throw new Error("%s is required. Please choose one value from the dropdown menu");
-  }
-}
+
+// function metadata_controller.env_items_validation(value) {
+//   if (value === "Please choose one") {
+//     throw new Error("%s is required. Please choose one value from the dropdown menu");
+//   }
+// }
 
 function checkArray(my_arr){
   for (var i = 0; my_arr.length > i; i++) {
@@ -474,7 +459,7 @@ router.post('/metadata_upload',
     form.field("alkalinity", metadata_controller.get_second("alkalinity")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("ammonium", metadata_controller.get_second("ammonium")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("bicarbonate", metadata_controller.get_second("bicarbonate")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("env_biome", metadata_controller.get_second("env_biome")).trim().required().custom(env_items_validation).entityEncode().array(),
+    form.field("env_biome", metadata_controller.get_second("env_biome")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
     form.field("biome_secondary", metadata_controller.get_second("biome_secondary")).trim().entityEncode().array(),
     form.field("calcium", metadata_controller.get_second("calcium")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("carbonate", metadata_controller.get_second("carbonate")).trim().custom(numbers_n_period).entityEncode().array(),
@@ -495,14 +480,14 @@ router.post('/metadata_upload',
     form.field("diss_inorg_carbon_del13c", metadata_controller.get_second("diss_inorg_carbon_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
     form.field("diss_org_carb", metadata_controller.get_second("diss_org_carb")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("diss_oxygen", metadata_controller.get_second("diss_oxygen")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("dna_extraction_meth", metadata_controller.get_second("dna_extraction_meth")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("dna_quantitation", metadata_controller.get_second("dna_quantitation")).trim().required().custom(env_items_validation).entityEncode().array(),
+    form.field("dna_extraction_meth", metadata_controller.get_second("dna_extraction_meth")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
+    form.field("dna_quantitation", metadata_controller.get_second("dna_quantitation")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
     form.field("dna_region", metadata_controller.get_second("dna_region")).trim().required().entityEncode().array(),
     form.field("domain", metadata_controller.get_second("domain")).trim().required().entityEncode().array(),
     form.field("elevation", metadata_controller.get_second("elevation")).trim().required("", "Elevation is required (for terrestrial only)").custom(numbers_n_period_n_minus).entityEncode().array(),
-    form.field("env_package", metadata_controller.get_second("env_package")).trim().required().custom(env_items_validation).entityEncode().array(),
+    form.field("env_package", metadata_controller.get_second("env_package")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
     form.field("enzyme_activities", metadata_controller.get_second("enzyme_activities")).trim().entityEncode().array(),
-    form.field("env_feature", metadata_controller.get_second("env_feature")).trim().required().custom(env_items_validation).entityEncode().array(),
+    form.field("env_feature", metadata_controller.get_second("env_feature")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
     form.field("fish_probe_name", metadata_controller.get_second("fish_probe_name")).trim().entityEncode().array(),
     form.field("fish_probe_seq", metadata_controller.get_second("fish_probe_seq")).trim().is(/^$|[ATUGCYRSWKMBDHVN]/).entityEncode().array(),
     form.field("feature_secondary", metadata_controller.get_second("feature_secondary")).trim().entityEncode().array(),
@@ -525,7 +510,7 @@ router.post('/metadata_upload',
     form.field("longitude", metadata_controller.get_second("longitude")).trim().custom(longitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
     form.field("magnesium", metadata_controller.get_second("magnesium")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("manganese", metadata_controller.get_second("manganese")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("env_material", metadata_controller.get_second("env_material")).trim().required().custom(env_items_validation).entityEncode().array(),
+    form.field("env_material", metadata_controller.get_second("env_material")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
     form.field("material_secondary", metadata_controller.get_second("material_secondary")).trim().entityEncode().array(),
     form.field("methane", metadata_controller.get_second("methane")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("methane_del13c", metadata_controller.get_second("methane_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
@@ -566,7 +551,7 @@ router.post('/metadata_upload',
     form.field("sample_name", metadata_controller.get_second("sample_name")).trim().required().entityEncode().array(),
     form.field("sample_size_mass", metadata_controller.get_second("sample_size_mass")).trim().custom(positive).custom(numbers_n_period).entityEncode().array(),
     form.field("sample_size_vol", metadata_controller.get_second("sample_size_vol")).trim().custom(positive).custom(numbers_n_period).entityEncode().array(),
-    form.field("sample_type", metadata_controller.get_second("sample_type")).trim().required().custom(env_items_validation).entityEncode().array(),
+    form.field("sample_type", metadata_controller.get_second("sample_type")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
     form.field("sequencing_meth", metadata_controller.get_second("sequencing_meth")).trim().required().entityEncode().array(),
     form.field("silicate", metadata_controller.get_second("silicate")).trim().custom(numbers_n_period).entityEncode().array(),
     form.field("sodium", metadata_controller.get_second("sodium")).trim().custom(numbers_n_period).entityEncode().array(),
