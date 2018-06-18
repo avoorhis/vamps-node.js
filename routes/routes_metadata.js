@@ -238,34 +238,6 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 
 
 // create form from req.form
-// function get_cell_val_by_row(row_idx, req) {
-//   console.time("TIME: get_cell_val_by_row");
-//   var new_row_length = req.body.new_row_length;
-//   var new_row_val    = [];
-//
-//   for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
-//     var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
-//     var clean_val = validator.escape(req.body[cell_name] + "");
-//     clean_val     = validator.trim(clean_val + "");
-//
-//     new_row_val.push(clean_val);
-//   }
-//   console.timeEnd("TIME: get_cell_val_by_row");
-//
-//   return new_row_val;
-// }
-
-// function metadata_controller.get_first_column(matrix, col) {
-//   console.time("TIME: metadata_controller.get_first_column");
-//   var column = [];
-//   for (var i = 0; i < matrix.length; i++) {
-//     column.push(matrix[i][col]);
-//   }
-//   console.timeEnd("TIME: metadata_controller.get_first_column");
-//
-//   return column;
-// }
-
 // TODO: update field names from https://docs.google.com/spreadsheets/d/1adAtGc9DdY2QBQZfd1oaRdWBzjOv4t-PF1hBfO8mAoA/edit#gid=1223926458
 router.post('/metadata_upload',
   [helpers.isLoggedIn],
@@ -1110,9 +1082,6 @@ function get_file_diff(req, files) {
 }
 
 // common functions
-// function isUnique(all_clean_field_names_arr, column_name) {
-//   return (all_clean_field_names_arr.indexOf(column_name) < 0);
-// }
 
 function get_project_info(project_name_or_pid) {
   var project_info;
