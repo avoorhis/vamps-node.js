@@ -379,19 +379,19 @@ router.post('/metadata_upload',
     console.timeEnd("TIME: post metadata_upload");
   });
 
-function get_new_val(req, all_metadata_pid, all_new_names) {
-  var new_val = [];
-  for (var new_name_idx in all_new_names) {
-    var new_name = all_new_names[new_name_idx];
-    if (new_name !== '') {
-      new_val = req.body[new_name];
-    }
-    if (typeof new_val !== 'undefined' && new_val.length !== 0) {
-      all_metadata_pid[new_name] = new_val;
-    }
-  }
-  return all_metadata_pid;
-}
+// function metadata_controller.get_new_val(req, all_metadata_pid, all_new_names) {
+//   var new_val = [];
+//   for (var new_name_idx in all_new_names) {
+//     var new_name = all_new_names[new_name_idx];
+//     if (new_name !== '') {
+//       new_val = req.body[new_name];
+//     }
+//     if (typeof new_val !== 'undefined' && new_val.length !== 0) {
+//       all_metadata_pid[new_name] = new_val;
+//     }
+//   }
+//   return all_metadata_pid;
+// }
 
 function make_metadata_object_from_form(req, res) {
   console.time("TIME: make_metadata_object_from_form");
@@ -423,7 +423,7 @@ function make_metadata_object_from_form(req, res) {
 
   var all_field_names_first_column = metadata_controller.get_first_column(all_field_names_with_new, 0);
   var all_new_names                = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
-  all_metadata[pid]                = get_new_val(req, all_metadata[pid], all_new_names);
+  all_metadata[pid]                = metadata_controller.get_new_val(req, all_metadata[pid], all_new_names);
 
   //collect errors
   var myArray_fail = helpers.unique_array(req.form.errors);

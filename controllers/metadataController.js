@@ -241,3 +241,16 @@ exports.get_first_column = function(matrix, col) {
   return column;
 };
 
+exports.get_new_val = function(req, all_metadata_pid, all_new_names) {
+  var new_val = [];
+  for (var new_name_idx in all_new_names) {
+    var new_name = all_new_names[new_name_idx];
+    if (new_name !== '') {
+      new_val = req.body[new_name];
+    }
+    if (typeof new_val !== 'undefined' && new_val.length !== 0) {
+      all_metadata_pid[new_name] = new_val;
+    }
+  }
+  return all_metadata_pid;
+};
