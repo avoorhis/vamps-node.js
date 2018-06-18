@@ -239,12 +239,6 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 
 // create form from req.form
 
-function positive(value) {
-  if (value !== '' && parseInt(value) < 0) {
-    throw new Error("'" + value + "' is not valid, %s should be greater then 0.");
-  }
-}
-
 function new_row_field_validation(req, field_name) {
   console.time("TIME: new_row_field_validation");
   var err_msg = '';
@@ -451,8 +445,8 @@ router.post('/metadata_upload',
     form.field("samp_store_dur", metadata_controller.get_second("samp_store_dur")).trim().is(/^$|^[0-9a-zA-Z ]+$/).entityEncode().array(),
     form.field("samp_store_temp", metadata_controller.get_second("samp_store_temp")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
     form.field("sample_name", metadata_controller.get_second("sample_name")).trim().required().entityEncode().array(),
-    form.field("sample_size_mass", metadata_controller.get_second("sample_size_mass")).trim().custom(positive).custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("sample_size_vol", metadata_controller.get_second("sample_size_vol")).trim().custom(positive).custom(metadata_controller.numbers_n_period).entityEncode().array(),
+    form.field("sample_size_mass", metadata_controller.get_second("sample_size_mass")).trim().custom(metadata_controller.positive).custom(metadata_controller.numbers_n_period).entityEncode().array(),
+    form.field("sample_size_vol", metadata_controller.get_second("sample_size_vol")).trim().custom(metadata_controller.positive).custom(metadata_controller.numbers_n_period).entityEncode().array(),
     form.field("sample_type", metadata_controller.get_second("sample_type")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
     form.field("sequencing_meth", metadata_controller.get_second("sequencing_meth")).trim().required().entityEncode().array(),
     form.field("silicate", metadata_controller.get_second("silicate")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),

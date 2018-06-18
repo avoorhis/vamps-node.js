@@ -127,3 +127,9 @@ exports.ph_valid = function(value) {
 exports.percent_valid = function(value) {
   region_valid(value, 0, 100);
 };
+
+exports.positive = function(value) {
+  if (value !== '' && parseInt(value) < 0) {
+    throw new Error("'" + value + "' is not valid, %s should be greater then 0.");
+  }
+}
