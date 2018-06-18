@@ -7,6 +7,28 @@ var CONSTS = require(app_root + "/public/constants");
 //   res.send('NOT IMPLEMENTED: Submission list');
 // };
 
+
+// private
+checkArray = function (my_arr) {
+  for (var i = 0; my_arr.length > i; i++) {
+    if (my_arr[i] === "")
+      return false;
+  }
+  return true;
+};
+
+check_regexp = function(reg_exp, value, err_msg) {
+  var result = value.match(reg_exp);
+
+  // if (value !== "" && result === null) {
+  if (value !== "" && result !== null) {
+    throw new Error("'" + value + "' is not allowed in '%s'" + err_msg);
+  }
+}
+
+
+// public
+
 exports.get_all_field_units = function (req) {
   var current_field_units = MD_CUSTOM_UNITS[req.body.project_id];
 };
@@ -30,13 +52,6 @@ exports.env_items_validation = function (value) {
   }
 };
 
-checkArray = function (my_arr) {
-  for (var i = 0; my_arr.length > i; i++) {
-    if (my_arr[i] === "")
-      return false;
-  }
-  return true;
-};
 
 exports.geo_loc_name_validation = function (value, source) {
   if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
@@ -73,4 +88,20 @@ exports.geo_loc_name_continental_validation = function (value) {
   if (MD_ENV_CNTRY_vals.indexOf(value) < 0 && (value !== '')) {
     throw new Error("There is no Country '" + value + "', please check the spelling");
   }
+};
+
+exports.numbers_n_period = function(value) {
+  // var regex = /^[0-9.]+$/;
+  //[^0-9.] faster
+  var reg_exp = /[^0-9.]/;
+  var err_msg = ", please use only numbers and periods.";
+  check_regexp(reg_exp, value, err_msg);
+};
+
+exports.numbers_n_period_n_minus = function(value) {
+  // var regex = /^[0-9.]+$/;
+  //[^0-9.] faster
+  var reg_exp = /[^0-9.-]/;
+  var err_msg = ", please use only numbers, periods and minus.";
+  check_regexp(reg_exp, value, err_msg);
 };
