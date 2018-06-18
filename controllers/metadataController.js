@@ -24,7 +24,13 @@ check_regexp = function(reg_exp, value, err_msg) {
   if (value !== "" && result !== null) {
     throw new Error("'" + value + "' is not allowed in '%s'" + err_msg);
   }
-}
+};
+
+region_valid = function(value, region_low, region_high) {
+  if ((value !== '') && (parseInt(value) < parseInt(region_low) || parseInt(value) > parseInt(region_high))) {
+    throw new Error("'" + value + "' is not valid, %s should be between " + region_low + " and " + region_high);
+  }
+};
 
 
 // public
@@ -104,4 +110,20 @@ exports.numbers_n_period_n_minus = function(value) {
   var reg_exp = /[^0-9.-]/;
   var err_msg = ", please use only numbers, periods and minus.";
   check_regexp(reg_exp, value, err_msg);
+};
+
+exports.longitude_valid = function(value) {
+  region_valid(value, -180, 180);
+};
+
+exports.latitude_valid = function(value) {
+  region_valid(value, -90, 90);
+};
+
+exports.ph_valid = function(value) {
+  region_valid(value, 0, 14);
+};
+
+exports.percent_valid = function(value) {
+  region_valid(value, 0, 100);
 };
