@@ -232,37 +232,9 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
   });
 }
 
-// function get_all_field_units(req){
-//   var current_field_units = MD_CUSTOM_UNITS[req.body.project_id];
-// }
 
 // create form from req.form
 
-
-// function check_regexp(reg_exp, value, err_msg) {
-//   var result = value.match(reg_exp);
-//
-//   // if (value !== "" && result === null) {
-//   if (value !== "" && result !== null) {
-//     throw new Error("'" + value + "' is not allowed in '%s'" + err_msg);
-//   }
-// }
-
-function metadata_controller.numbers_n_period(value) {
-//   // var regex = /^[0-9.]+$/;
-//   //[^0-9.] faster
-//   var reg_exp = /[^0-9.]/;
-//   var err_msg = ", please use only numbers and periods.";
-//   check_regexp(reg_exp, value, err_msg);
-// }
-//
-// function metadata_controller.numbers_n_period_n_minus(value) {
-//   // var regex = /^[0-9.]+$/;
-//   //[^0-9.] faster
-//   var reg_exp = /[^0-9.-]/;
-//   var err_msg = ", please use only numbers, periods and minus.";
-//   check_regexp(reg_exp, value, err_msg);
-// }
 
 function region_valid(value, region_low, region_high) {
   if ((value !== '') && (parseInt(value) < parseInt(region_low) || parseInt(value) > parseInt(region_high))) {
