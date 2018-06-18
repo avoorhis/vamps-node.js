@@ -52,9 +52,8 @@ router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
 
     console.log('in permissions');
     
-    project_order = []
-    user_order = get_name_ordered_users_list()
-    project_order = get_name_ordered_projects_list()
+    var user_order = get_name_ordered_users_list()
+    var project_order = get_name_ordered_projects_list()
     //console.log(JSON.stringify(ALL_USERS_BY_UID))
     res.render('admin/permissions', {
               title     :'VAMPS Site Administration',
@@ -121,8 +120,8 @@ router.get('/admin_status', [helpers.isLoggedIn, helpers.isAdmin], function(req,
 
     console.log('in admin_status');
   
-    user_order = get_name_ordered_users_list()
-    console.log(ALL_USERS_BY_UID)
+    var user_order = get_name_ordered_users_list()
+    //console.log(ALL_USERS_BY_UID)
     res.render('admin/admin_status', {
               title     :'VAMPS Site Administration',
               user: req.user,
@@ -242,8 +241,8 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req
    }else{
     var proj_to_open = PROJECT_INFORMATION_BY_PID[url_parts.query.pid];
    }
-   console.log(PROJECT_INFORMATION_BY_PID);
-   console.log(ALL_USERS_BY_UID);
+   //console.log(PROJECT_INFORMATION_BY_PID);
+   //console.log(ALL_USERS_BY_UID);
    var project_list = get_name_ordered_projects_list()
    res.render('admin/alter_project', {
               title       : 'VAMPS Site Administration',
@@ -826,7 +825,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(r
   var timestamp = +new Date();
   var selected_pid = req.body.pid
   var filename = req.body.filename
-  var file_path = path.join(process.env.PWD,'tmp',filename)
+  var file_path = path.join(req.CONFIG.PROCESS_DIR,'tmp',filename)
   var dids = DATASET_IDS_BY_PID[selected_pid]
   var new_required_metadata = {}
   var new_custom_metadata = {}
@@ -1062,7 +1061,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function(
                 console.log('OK--VALIDATES')
               }
               html_json.filename = username+'_'+project_name+'--'+timestamp+'.json'
-              file_path = path.join(process.env.PWD,'tmp',html_json.filename)
+              file_path = path.join(req.CONFIG.PROCESS_DIR,'tmp',html_json.filename)
               
               mdata = convert_names_to_ids_for_storage(newmd)
               
@@ -1453,11 +1452,11 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   // console.log(file);
   //// DOWNLOAD //////
   if (req.query.fxn == 'download' && req.query.template == '1') {
-    var file = path.join(process.env.PWD, req.query.filename);
+    var file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
   } else if (req.query.fxn == 'download' &&  req.query.type=='pcoa') {
-    var file = path.join(process.env.PWD, 'tmp', req.query.filename);
+    var file = path.join(req.CONFIG.PROCESS_DIR, 'tmp', req.query.filename);
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
   } else if (req.query.fxn == 'download') {

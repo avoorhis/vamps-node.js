@@ -1,5 +1,7 @@
 <% include ../add_ins/begin.ejs %>
-
+<% var mdata = JSON.parse(mdata) %> 
+<% var mdata_order = JSON.parse(md_order) %>
+<% var header_order = JSON.parse(hd_order) %>
 
   <% if (messages.success) { %>
   	<div class="alert_flash_message_success"><%= messages.success %></div>
@@ -8,17 +10,27 @@
   <% } %>
 	
 	
-	
-	<div class="hero-unit">
-	            <h2>VAMPS:</h2>
-				<h3>Visualization and Analysis of Microbial Population Structures</h3>
-		       An integrated collection of tools for researchers to visualize and analyze data for microbial population structures and distributions.         
+	<h3><%= portal %> Metadata</h3>
+	<div class="">
+	<table class='table table-condensed'>
+	        <tr><th>Project/Dataset</th>
+	        <% for(i in header_order){ %>
+	            <th><%= header_order[i] %></th>
+	        <% } %>
+	        </tr>
+	        
+	        <% for(ds in mdata){ %>
+                <% ds_items = ds.split('--') %>
+                
+                <tr><td><%= ds_items[0] %><br><%= ds_items[1] %></td>
+                    <% for(i in header_order){ %>
+                        <td><%= mdata[ds][header_order[i]] %></td>
+                    <% } %>
+	            </tr>
+	        <% } %>
+	</table>
 	</div>
 	
-    
-      
-<h4>There are two essential elements to VAMPS:</h4>    
-
 
 	
 <% include ../add_ins/end.ejs %>

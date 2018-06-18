@@ -3,6 +3,8 @@ var express = require('express');
 var router = express.Router();
 var queries = require('./queries');
 var helpers = require('./helpers/helpers');
+var config  = require('../config/config');
+var async = require('async');
 //
 //
 //
@@ -24,7 +26,8 @@ module.exports.get_datasets = function(callback){
   ALL_USERS_BY_UID            = {};
   ALL_DCOUNTS_BY_DID          = {};    // GLOBAL  
   ALL_PCOUNTS_BY_PID          = {};    // GLOBAL 
-  ALL_CLASSIFIERS_BY_PID      = {}; 
+  ALL_CLASSIFIERS_BY_PID      = {};
+    USER_GROUPS          = {}; 
   // Metadata ids and values lookups
   MD_ENV_ENVO                 = {};
   MD_ENV_CNTRY                = {};
@@ -39,6 +42,7 @@ module.exports.get_datasets = function(callback){
   MD_PRIMER_SUITE             = {};
   MD_RUN                      = {};
   MD_CUSTOM_UNITS             = {};
+  
 
   connection.query(queries.get_select_datasets_query(), function(err, rows, fields){
       if (err)  {
@@ -73,14 +77,32 @@ module.exports.get_datasets = function(callback){
       } else {
         
         for (var i=0; i < rows.length; i++) {
-          ALL_USERS_BY_UID[rows[i].uid] = {}
-          ALL_USERS_BY_UID[rows[i].uid].email       = rows[i].email;
-          ALL_USERS_BY_UID[rows[i].uid].username    = rows[i].username;
-          ALL_USERS_BY_UID[rows[i].uid].last_name   = rows[i].last_name;
-          ALL_USERS_BY_UID[rows[i].uid].first_name  = rows[i].first_name;
-          ALL_USERS_BY_UID[rows[i].uid].institution = rows[i].institution;
-          ALL_USERS_BY_UID[rows[i].uid].status      = rows[i].security_level;
+          var uid = rows[i].uid
+          ALL_USERS_BY_UID[uid] = {}
+          ALL_USERS_BY_UID[uid].email       = rows[i].email;
+          ALL_USERS_BY_UID[uid].username    = rows[i].username;
+          ALL_USERS_BY_UID[uid].last_name   = rows[i].last_name;
+          ALL_USERS_BY_UID[uid].first_name  = rows[i].first_name;
+          ALL_USERS_BY_UID[uid].institution = rows[i].institution;
+          ALL_USERS_BY_UID[uid].status      = rows[i].security_level;
+          ALL_USERS_BY_UID[uid].groups = [];
         }
+        connection.query(queries.get_all_user_groups(), function(err, rows, fields){     
+          if (err)  {
+            console.log('Query error: ' + err);
+            console.log(err.stack);
+            process.exit(1);
+          } else {
+            for (var i=0; i < rows.length; i++) {
+                var uid = rows[i].uid
+                var group = rows[i].group
+                if( ALL_USERS_BY_UID[uid].groups.indexOf(group) == -1 ){
+                    ALL_USERS_BY_UID[uid].groups.push(group)
+                }
+            }
+          }
+        })
+        
       }
       console.log(' INITIALIZING ALL_USERS_BY_UID');      
   });
@@ -113,8 +135,39 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING MD_ENV_CNTRY');
       console.log(' INITIALIZING MD_ENV_LZC');
   });
-  
-  
+ /////////////////////////////////////////// 
+
+  var ug_array = []
+  for(var gp in config.user_groups){
+    //console.log('gp',gp)
+    USER_GROUPS[gp] = []
+    //ug_array.push(config.user_groups[gp])
+    console.log(config.user_groups[gp])
+    if(Array.isArray(config.user_groups[gp])){
+        console.log('UG is array')
+        
+    }else{
+        console.log('UG is not Array')
+    }
+    var q = 'SELECT project_id FROM project '+ config.user_groups[gp]
+    ug_array.push({'q':q,'gp':gp})
+  }
+  //console.log(ug_array)
+  //ug_array = ['one','two']
+  async.eachSeries(ug_array, fakeAsyncApi,
+      function(err) {
+        if (err) {
+          console.log('An error occurred!');
+          console.log(err);
+          return;
+        }
+        console.log('INITIALIZING USER_GROUPS');
+        
+      }
+  )
+
+
+  ///////////////////////////////////////////////////
   connection.query(queries.get_select_env_package_query(), function(err, rows, fields){    
       if (err)  {
         console.log('Query error: ' + err);
@@ -246,8 +299,26 @@ module.exports.get_datasets = function(callback){
   
   
 };
-
-
+///// For USER_GROUPS ////////////////////////
+var fakeAsyncApi = function(thing, callback) {
+  var gp = thing.gp   // group from config file
+  var q = thing.q     // query from config file
+  setTimeout(function() {
+        connection.query(q, function(err, rows, fields){    
+              if (err)  {
+                console.log('Query error: ' + err);
+                return
+              } 
+//              console.log(rows)
+              for(n in rows){                
+                USER_GROUPS[gp].push(rows[n].project_id)  
+              }  
+            });
+      //console.log("'"+thing.gp + "' processed");
+      callback(null);
+    
+  }, 2000);
+};  
 
 
 

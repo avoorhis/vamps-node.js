@@ -529,8 +529,6 @@ function create_clean_config(req, upld_obj)
 router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 //router.post('/unit_selection',  function(req, res) {
 
-
-
   console.log(req.user.username+' req.body: unit_selection-->>');
   if(req.CONFIG.site == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
@@ -859,7 +857,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     var metric = req.body.metric;
     var script = req.body.script; // python, phylogram or phylonator
     var image_type = req.body.image_type;  // png(python script) or svg
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
     //console.log('image_type '+image_type);
     // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 
@@ -975,9 +973,9 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     //var image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
     var image_file = ts+'_pcoa.pdf';
     var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-    var tmp_path = path.join(process.env.PWD,'tmp');
+    var biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp', biom_file_name);
+    var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
+    var tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 
     md1 = req.body.md1 || "Project";
@@ -985,7 +983,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 
       // var options = {
       //   scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', process.env.PWD, '--prefix', ts],
+      //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', req.CONFIG.PROCESS_DIR, '--prefix', ts],
       // };
       var options2 = {
         scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
@@ -1034,7 +1032,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
         var ts = req.session.ts;
-        var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+        var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
         var pc_file_name = ts+'_pc.txt';
             //var pc_file = path.join(pwd,'tmp', pc_file_name);
             ///////////////////////////////////////////////////
@@ -1047,7 +1045,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
         var metric = req.session.selected_distance;
 
-        var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+        var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
         var biom_file_name = ts+'_count_matrix.biom';
         var biom_file = path.join(pwd,'tmp', biom_file_name);
 
@@ -1252,7 +1250,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
 
     console.log("render visuals/dbrowser")
     //var file_name = ts+'_krona.html';
-    //var html_path = path.join(process.env.PWD,'tmp', file_name);
+    //var html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
 
     res.render('visuals/dbrowser', {
       title: 'VAMPS:Taxonomy Browser (Krona)',
@@ -1284,7 +1282,7 @@ router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
 
     console.log("render visuals/oligotyping")
     //var file_name = ts+'_krona.html';
-    //var html_path = path.join(process.env.PWD,'tmp', file_name);
+    //var html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
 
     res.render('visuals/oligotyping', {
       title: 'VAMPS:Oligotyping',
@@ -1314,12 +1312,12 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     var image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.svg';
     var phy,md1,md2,ordtype,maxdist,script
 
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
     var fill = req.session.tax_depth.charAt(0).toUpperCase() + req.session.tax_depth.slice(1);
     if(fill === 'Klass'){
         fill = 'Class';
     }
-    var tmp_path = path.join(process.env.PWD,'tmp');
+    var tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
     var html = '';
     //console.log(biom_file)
     var options = {
@@ -2291,8 +2289,8 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(process.env.PWD,'tmp',biom_file_name);
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    var biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp',biom_file_name);
+    var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
     var pjds_lookup = {}
     for(i in req.session.chosen_id_order){
         var did = req.session.chosen_id_order[i]
@@ -2439,7 +2437,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     var ts = req.session.ts
     var test_split_file_name = ts+'_distance_mh_bc.tsv';
     var test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(pwd,'tmp',biom_file_name);
     
@@ -2534,15 +2532,15 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
     var file_type = req.body.file_type;
     if(file_type == 'biom'){
       file_name = ts+'_count_matrix.biom';
-      file_path = path.join(process.env.PWD, 'tmp', file_name);
+      file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', file_name);
       res.setHeader('Content-Type', 'text');
     }else if(file_type == 'tax'){
       file_name = ts+'_taxonomy.txt';
-      file_path = path.join(process.env.PWD, 'tmp', file_name);
+      file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', file_name);
       res.setHeader('Content-Type', 'text');
     }else if(file_type == 'meta'){
       file_name = ts+'_metadata.txt';
-      file_path = path.join(process.env.PWD, 'tmp', file_name);
+      file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', file_name);
       res.setHeader('Content-Type', 'text');
     }else if(file_type == 'configuration'){
       file_name = req.body.filename;

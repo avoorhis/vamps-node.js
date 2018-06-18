@@ -71,6 +71,7 @@ module.exports = function(passport, db) {
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, username, password, done) { // callback with username and password from our form
+        
         return login_auth_user(req, username, password, done, db);
     }));
 
@@ -183,6 +184,7 @@ function login_auth_user(req, username, password, done, db){
         //if ( validatePassword(password, rows[0].encrypted_password, db) )
         if(rows[0].encrypted_password === rows[0].entered_pw)
         { 
+            delete rows[0].entered_pw
             console.log('returned TRUE')
             var new_count = parseInt(rows[0].sign_in_count) + 1;            
             var qResetUserSignin = queries.reset_user_signin(new_count, rows[0].current_sign_in_at, rows[0].user_id)
@@ -203,12 +205,15 @@ function login_auth_user(req, username, password, done, db){
             }catch(e){
                 console.log(e)
             }
+            
             console.log('login_auth_user-2')
+            
             return done(null, rows[0]); 
         }
         
         // if the user is found but the password is wrong:
         // create the loginMessage and save it to session as flashdata
+        
         return done(null, false, req.flash('fail', 'Wrong password -- try again.'));
         // all is well, return successful user
     });
@@ -272,10 +277,10 @@ function signup_user(req, username, password, done, db){
                 var newUserMysql            = {};
                 newUserMysql.username       = new_user.username;
                 newUserMysql.password       = new_user.password;  /// Password is HASHed in queries_admin
-                newUserMysql.firstname     = new_user.firstname;
-                newUserMysql.lastname      = new_user.lastname;
+                newUserMysql.firstname     = new_user.firstname.replace("'","");
+                newUserMysql.lastname      = new_user.lastname.replace("'","");
                 newUserMysql.email          = new_user.email;
-                newUserMysql.institution    = new_user.institution;
+                newUserMysql.institution    = new_user.institution.replace("'","");
                 newUserMysql.security_level = 50;  //reg user
                 
                 // todo: why this is in two places? See routes/routes_admin.js:552
@@ -312,14 +317,15 @@ var delete_previous_tmp_files = function(req, username){
     
     var fs   = require('fs-extra');
     // dirs to delete from on login::
-    var temp_dir_path1 = path.join(process.env.PWD,'tmp');
-    var temp_dir_path2 = path.join(process.env.PWD,'views','tmp');
+    var temp_dir_path1 = path.join(req.CONFIG.PROCESS_DIR,'tmp');
+    var temp_dir_path2 = path.join(req.CONFIG.PROCESS_DIR,'views','tmp');
     // for vamps and vampsdev qsub scripts:
     var temp_dir_path3 = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp');
     //console.log('Deleting old tmp files2:')
-    //console.log(temp_dir_path1)
-    //console.log(temp_dir_path2)
-    //console.log(temp_dir_path3)
+    
+    console.log(temp_dir_path1)
+    console.log(temp_dir_path2)
+    console.log(temp_dir_path3)
     fs.readdir(temp_dir_path1, function(err,files){
         
         for (var i=0; i<files.length; i++) {

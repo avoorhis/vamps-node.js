@@ -239,7 +239,7 @@ dheatmap: function(req, res){
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
 
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    var pwd = req.CONFIG.PROCESS_DIR;
     //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
     //console.log('mtx1')
 
@@ -342,7 +342,7 @@ fheatmap: function(req, res){
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
 
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    var pwd = req.CONFIG.PROCESS_DIR;
     var options = {
         scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
         args :       [ pwd, req.session.selected_distance, ts, req.session.tax_depth],
@@ -791,7 +791,7 @@ adiversity: function(req, res){
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
 
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    var pwd = req.CONFIG.PROCESS_DIR;
     //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
     //console.log('mtx1')
 
@@ -800,7 +800,7 @@ adiversity: function(req, res){
 
     var options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-in', matrix_file_path, '--site_base', process.env.PWD, '--prefix', ts],
+      args :       [ '-in', matrix_file_path, '--site_base', req.CONFIG.PROCESS_DIR, '--prefix', ts],
     };
 
     var log = fs.openSync(path.join(config.PROCESS_DIR,'logs','visualization.log'), 'a');
@@ -881,7 +881,7 @@ dendrogram: function(req, res){
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
 
-    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    var pwd = req.CONFIG.PROCESS_DIR;
     //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
     //console.log('mtx1')
 

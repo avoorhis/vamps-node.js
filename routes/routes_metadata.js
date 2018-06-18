@@ -1056,11 +1056,11 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   //// DOWNLOAD //////
   var file;
   if (req.query.fxn == 'download' && req.query.template == '1') {
-    file = path.join(process.env.PWD, req.query.filename);
+    file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
   } else if (req.query.fxn == 'download' &&  req.query.type=='pcoa') {
-    file = path.join(process.env.PWD, 'tmp', req.query.filename);
+    file = path.join(req.CONFIG.PROCESS_DIR, 'tmp', req.query.filename);
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
   } else if (req.query.fxn == 'download') {

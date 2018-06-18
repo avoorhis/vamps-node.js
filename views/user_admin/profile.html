@@ -35,7 +35,7 @@
           <% }else { %>
             <strong>Security Level</strong>: <%= user.security_level %> (Guest) -- Public project access only<br>
           <% } %> 
-          <% if(user.security_level == 1) { %>          
+          <% if(user.security_level == 1 || user.username == 'apprill') { %>          
                 <div style='padding-left:20px;'>
                 _________________________________
                 <br>

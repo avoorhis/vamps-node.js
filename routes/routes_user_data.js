@@ -1096,16 +1096,16 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
     var file_type    = req.body.file_type;
     var file_style   = req.body.file_style;
     
-    var file_path = path.join(process.env.PWD, req.file.path);
+    var file_path = path.join(req.CONFIG.PROCESS_DIR, req.file.path);
     console.log('file_path '+ file_path);
 
     var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-                  args : [ '-i', file_path, '-ft', file_type, '-s', file_style, '-process_dir', process.env.PWD, ]
+                  args : [ '-i', file_path, '-ft', file_type, '-s', file_style, '-process_dir', req.CONFIG.PROCESS_DIR, ]
               };
 
     console.log(options.scriptPath + '/vamps_script_validate.py '+options.args.join(' '));
 
-    var log = fs.openSync(path.join(process.env.PWD, 'logs', 'validate.log'), 'a');
+    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR, 'logs', 'validate.log'), 'a');
     var validate_process = spawn( options.scriptPath + '/vamps_script_validate.py', options.args, {
                         env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
                         detached: true, stdio: 'pipe'
@@ -1297,7 +1297,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
     }
     var delete_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS, 'vamps_script_utils.py') + ' ' + options.args.join(' ')
     console.log(delete_cmd)
-    var log = fs.openSync(path.join(process.env.PWD, 'logs', 'delete.log'), 'a');
+    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR, 'logs', 'delete.log'), 'a');
 
 
       // called imediately
@@ -1462,15 +1462,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
     console.log('no read config file ', err);
   }
 
- //  var options = {
-//     scriptPath : qsub_script_path,
-//     gast_run_args : [ '-c', config_file, '-process_dir', process.env.PWD,
-//     '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db, '-site', req.CONFIG.site ],
-//     
-//     database_loader_args : [ '-class', classifier, '-host', req.CONFIG.dbhost, '-process_dir', process.env.PWD, '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db],
-//     upload_metadata_args : [ '-project_dir', data_dir, '-host', req.CONFIG.dbhost, '-db', NODE_DATABASE ],
-//     create_json_args : [ '-process_dir', process.env.PWD, '-host', req.CONFIG.dbhost, '-project_dir', data_dir, '-db', NODE_DATABASE ]
-//  };
+ 
 
   if (classifier == 'SPINGO')
   {
@@ -2319,7 +2311,7 @@ router.post('/edit_project', helpers.isLoggedIn, function (req, res) {
 router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file', 12)], function (req, res) {
   var project = req.body.project_name;
   var file_format = req.body.metadata_file_format;
-  var original_metafile = path.join(process.env.PWD, req.file.path);
+  var original_metafile = path.join(req.CONFIG.PROCESS_DIR, req.file.path);
   var username = req.user.username;
   console.log('1-req.body upload_metadata');
   console.log(req.body);
@@ -2336,14 +2328,14 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
   var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
 
           var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-                  args : [ '-i', original_metafile, '-t',file_format,'-o', username, '-p', project, '-db', NODE_DATABASE, '-add','-pdir',process.env.PWD,]
+                  args : [ '-i', original_metafile, '-t',file_format,'-o', username, '-p', project, '-db', NODE_DATABASE, '-add','-pdir',req.CONFIG.PROCESS_DIR]
               };
           if(has_tax){
             options.args = options.args.concat(['--has_tax']);
           }
           console.log(options.scriptPath+'/metadata_utils.py '+options.args.join(' '));
           
-          var log = fs.openSync(path.join(process.env.PWD,'logs','upload.log'), 'a');
+          var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','upload.log'), 'a');
           var upload_metadata_process = spawn( options.scriptPath+'/metadata_utils.py', options.args, {
                                         env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
                                         detached: true, stdio: 'pipe'
@@ -2575,7 +2567,7 @@ function OriginalMetafileUpload(req, options)
 
   var original_metafile  = '';
   try {
-    //original_metafile  = path.join(process.env.PWD, 'tmp', req.files[1].filename);
+    
     original_metafile   = path.join(req.CONFIG.TMP, req.files[1].filename);
     options.args        = options.args.concat(['-mdfile', original_metafile ]);
     metadata_compressed = IsFileCompressed(req.files[1]);
@@ -3320,12 +3312,6 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
     return;
   } else {
 
-
-
-      //var file_path = path.join(process.env.PWD, req.file.path);
-      //var original_taxbyseqfile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
-      //var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
-      //var original_taxbyseqfile = path.join(process.env.PWD, 'tmp', req.files[0].filename);
       var original_taxbyseqfile = path.join('/tmp', req.files[0].filename);
       console.log("original_taxbyseqfile: ");
       console.log(original_taxbyseqfile);
@@ -3338,7 +3324,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
       // }
       var original_metafile  = '';
       try {
-        //original_metafile  = path.join(process.env.PWD, 'tmp', req.files[1].filename);
+       
         original_metafile  = path.join('/tmp', req.files[1].filename);
         // TODO: test
         metadata_compressed = IsFileCompressed(req.files[1]);
@@ -3376,7 +3362,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
 
       var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
                   args :       [ '-infile', original_taxbyseqfile, '-o', username, '--upload_type', 'multi',
-                                  '--process_dir', process.env.PWD, '-db', NODE_DATABASE, '-host', req.CONFIG.dbhost ]
+                                  '--process_dir', req.CONFIG.PROCESS_DIR, '-db', NODE_DATABASE, '-host', req.CONFIG.dbhost ]
       };
       if (taxbyseq_compressed) {
         options.args = options.args.concat(['-tax_comp']);
@@ -3402,7 +3388,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
 
         console.log(options.scriptPath + '/vamps_load_tax_by_seq.py '+options.args.join(' '));
 
-        var log = fs.openSync(path.join(process.env.PWD, 'logs', 'upload_taxbyseq.log'), 'a');
+        var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR, 'logs', 'upload_taxbyseq.log'), 'a');
 
 
         var tax_by_seq_process = spawn( options.scriptPath + '/vamps_load_tax_by_seq.py', options.args, {
@@ -3498,11 +3484,11 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   console.log(file);
   //// DOWNLOAD //////
   if (req.query.fxn == 'download' && req.query.template == '1') {
-      var file = path.join(process.env.PWD, req.query.filename);
+      var file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
       res.setHeader('Content-Type', 'text');
       res.download(file); // Set disposition and send it.
   } else if (req.query.fxn == 'download' &&  req.query.type=='pcoa') {
-      var file = path.join(process.env.PWD, 'tmp', req.query.filename);
+      var file = path.join(req.CONFIG.PROCESS_DIR, 'tmp', req.query.filename);
       res.setHeader('Content-Type', 'text');
       res.download(file); // Set disposition and send it.
   } else if (req.query.fxn == 'download') {
@@ -3566,7 +3552,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
   // } else if (req.CONFIG.hostname.substring(0, 7) == 'bpcweb8') {
   //       var user_dir = path.join('/groups/vampsweb/vamps_user_data/', req.user.username);
   // } else {
-  //       var user_dir = path.join(process.env.PWD, 'user_data', NODE_DATABASE, req.user.username);
+  //       var user_dir = path.join(req.CONFIG.PROCESS_DIR, 'user_data', NODE_DATABASE, req.user.username);
   // }
   helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
   helpers.mkdirSync(user_dir);  // create dir if not exists
@@ -4018,8 +4004,8 @@ router.get('/download_selected_metadata', helpers.isLoggedIn, function download_
         //console.log(JSON.stringify(req.user))
         
         //req.flash('Done')
-        console.log(path.join(process.env.PWD,  out_file_path))
-        res.download(path.join(process.env.PWD,   out_file_path))
+        console.log(path.join(req.CONFIG.PROCESS_DIR,  out_file_path))
+        res.download(path.join(req.CONFIG.PROCESS_DIR,   out_file_path))
 
 
       });
@@ -4213,36 +4199,36 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
     var new_file_name = file_type+'-'+timestamp+'.txt';
     if (file_type == 'phyloseq-biom') {
       old_file_name = old_ts+'_count_matrix.biom';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.biom';
     }else if (file_type == 'phyloseq-tax') {
       old_file_name = old_ts+'_taxonomy.txt';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
     }else if (file_type == 'phyloseq-tree') {
       old_file_name = old_ts+'_outtree.tre';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.tre';
     }else if (file_type == 'distance-R') {
       old_file_name = old_ts+'_distance.R';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
     }else if (file_type == 'distance-py') {
       old_file_name = old_ts+'_distance.json';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.json';
     }else if (file_type == 'emperor-pc') {
       old_file_name = old_ts+'.pc';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
     }else if (file_type == 'pdf-fheatmap') {
       old_file_name = old_ts+'_fheatmap.pdf';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.pdf';
     }else if (file_type == 'pdf-pcoa') {
       old_file_name = old_ts+'_pcoa.pdf';
-       old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+       old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.pdf';
     }else if (file_type == 'metadata') {
       old_file_name = old_ts+'_metadata.txt';
-      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.tsv';
     }else if (file_type == 'slp_otus') {
       old_file_name = old_ts

@@ -293,7 +293,7 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
 // 
 //         }else{
 //           //var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-//           //var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+//           //var pwd = req.CONFIG.PROCESS_DIR;
 //           //var user_dir_path = path.join(pwd,'public','user_projects');
 //           var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
 //           var olig_dir = 'oligotyping-'+timestamp
@@ -387,7 +387,7 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
 router.get('/project_list', helpers.isLoggedIn, function (req, res) {
     //console.log(PROJECT_INFORMATION_BY_PNAME);
 
-    //var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+    //var pwd = req.CONFIG.PROCESS_DIR;
     var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     //var user_dir_path = path.join(pwd,','user_projects');
 
@@ -468,7 +468,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   console.log('in oligo - project')
   var oligo_code = req.params.code
   console.log(oligo_code)
-  //var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+  //var pwd = req.CONFIG.PROCESS_DIR;
   //var user_dir_path = path.join(pwd,'public','user_projects');
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
   var olig_dir = 'oligotyping-'+oligo_code
@@ -524,7 +524,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
   // code: '1474030905992',
   // rank: 'family' }
   // create shell script in dir:
-  //var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+  //var pwd = req.CONFIG.PROCESS_DIR;
   //var user_dir_path = path.join(pwd,'public','user_projects');
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
   var olig_dir = 'oligotyping-'+oligo_code
@@ -692,7 +692,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
     return
   }
 
-  //var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+  //var pwd = req.CONFIG.PROCESS_DIR;
   //var user_dir_path = path.join(pwd,'public','user_projects');
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
   var olig_dir = 'oligotyping-'+oligo_code

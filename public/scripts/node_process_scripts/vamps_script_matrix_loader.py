@@ -348,6 +348,7 @@ def push_taxonomy_info(args):  # was push_sequences
 #
 def get_rank_from_tax_string(tax):
     tax_items = tax.split(';')
+    print(tax_items)
     rank =  ranks[len(tax_items) - 1]  #string
     rank_id = RANK_COLLECTOR[rank]
     return (rank,rank_id)

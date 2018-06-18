@@ -229,7 +229,7 @@ router.post('/find_user_projects',  function(req, res){
     }
     var availible_projects = {}
     // all pid list == 
-    console.log(PROJECT_INFORMATION_BY_PID)
+    //console.log(PROJECT_INFORMATION_BY_PID)
     var all_pids = Object.keys(PROJECT_INFORMATION_BY_PID)
     var new_pid_list = helpers.screen_pids_for_permissions(req, all_pids)
     for(n in new_pid_list){

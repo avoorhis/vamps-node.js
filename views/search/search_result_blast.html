@@ -23,27 +23,30 @@
                 </tr>
             </thead>
             <tbody>
-                <% for(i in report.results.search.hits) { %>
+            <% for(i in report.results.search.hits) { %>
                 <% var hit = report.results.search.hits[i] %>
+                <% var id_parts = (hit.description[0].id).split('|') %>
                 <tr>
-            <td><%= hit.num %></td>
-            <td><a href='/search/seqs/<%= hit.description[0].id %>'><%= hit.description[0].id %></a>
-            <br><%= hit.description[0].title %>
-            </td>
-            <td>Bit-Score: <%= hit.hsps[0].bit_score %>
-            <br>Score: <%= hit.hsps[0].score %>
-            <br>Evalue: <%= hit.hsps[0].evalue %>
-            <br>Identity: <%= hit.hsps[0].identity %>
-            </td>            
-            <td><pre>
-            query:   <%= hit.hsps[0].qseq %>
-            hit:     <%= hit.hsps[0].hseq %>
-            midline: <%= hit.hsps[0].midline %>
-            </pre>
+                <td><%= hit.num %></td>
+                <td><a href=''><%= id_parts[0] %></a>
+                <br>Seq_id: <%= id_parts[1] %>
+                <br>Taxonomy: <%= id_parts[2] %>
+                <br><%= id_parts[3] %>
+                </td>
+                <td>Bit-Score: <%= hit.hsps[0].bit_score %>
+                <br>Score: <%= hit.hsps[0].score %>
+                <br>Evalue: <%= hit.hsps[0].evalue %>
+                <br>Identity: <%= hit.hsps[0].identity %>
+                </td>            
+                <td><pre>
+                query:   <%= hit.hsps[0].qseq %>
+                hit:     <%= hit.hsps[0].hseq %>
+                midline: <%= hit.hsps[0].midline %>
+                </pre>
 
-            </td>
+                </td>
 
-            </tr>
+                </tr>
             <% } %>
             </tbody>
             </table>

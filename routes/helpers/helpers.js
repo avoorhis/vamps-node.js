@@ -452,6 +452,7 @@ module.exports.get_select_run_query = function(rows){
 // TODO: "This function's cyclomatic complexity is too high. (6)"
 module.exports.run_permissions_query = function(rows){
   //console.log(PROJECT_INFORMATION_BY_PID)
+  
   for (var i=0; i < rows.length; i++) {
     var pid = rows[i].project_id;
     var uid = rows[i].user_id;
@@ -693,28 +694,28 @@ module.exports.sort_json_matrix = function(mtx, fxn_obj) {
 module.exports.get_portal_projects = function(req, portal) {
 
   projects = [];
-  var basis = req.CONSTS.PORTALS[portal];
+  var cnsts_basis = req.CONSTS.PORTALS[portal];
   //switch (portal) {
-  console.log('ALL_DATASETS-PORTAL', ALL_DATASETS);
-  console.log(JSON.stringify(basis));
+  //console.log('ALL_DATASETS-PORTAL', ALL_DATASETS);
+  //console.log('JSON.stringify(cnsts_basis)');
+  //console.log(JSON.stringify(cnsts_basis));
   ALL_DATASETS.projects.forEach(function(prj) {
     var pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
     var split = prj.name.split('_');
 
-    if(basis.projects.indexOf(prj.name) != -1){
+    if(cnsts_basis.projects.indexOf(prj.name) != -1){
       projects.push(pinfo);
     }
-    if(basis.prefixes.indexOf(split[0]) != -1){
+    if(cnsts_basis.prefixes.indexOf(split[0]) != -1){
       projects.push(pinfo);
     }
     //console.log('UniEuk-basis',basis);
-    if(basis.suffixes.indexOf(split[split.length-1]) != -1){
+    if(cnsts_basis.suffixes.indexOf(split[split.length-1]) != -1){
       //console.log('UniEuk',JSON.stringify(pinfo));
       projects.push(pinfo);
     }
   });
 
-  console.log('INFO', projects);
   return projects;
 
 };
@@ -1981,11 +1982,9 @@ module.exports.get_key_from_value = function(obj, value)
 };
 module.exports.ensure_dir_exists = function(dir)
 {
-    console.log('1')
     fs.ensureDir(dir, function (err) {
     if(err) {console.log('2');console.log(err);} // => null
     else{
-        console.log('3')
         console.log(dir+' Guaranteed to exist on login')
     }        // dir has now been created, including the directory it is to be placed in
 
