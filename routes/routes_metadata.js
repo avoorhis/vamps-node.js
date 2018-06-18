@@ -476,23 +476,6 @@ function make_metadata_object_from_csv(req, res) {
 }
 
 // create form from db
-
-function get_all_req_metadata(dataset_id) {
-  console.time("TIME: 5) get_all_req_metadata");
-
-  var data = {};
-  for (var idx = 0; idx < CONSTS.REQ_METADATA_FIELDS_wIDs.length; idx++) {
-    var key      = CONSTS.REQ_METADATA_FIELDS_wIDs[idx];
-    // data[key] = [];
-    var val_hash = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
-
-    data[key] = val_hash.value;
-  }
-  console.time("TIME: 5) get_all_req_metadata");
-
-  return data;
-}
-
 function make_metadata_object_from_db(req, res) {
   console.time("TIME: make_metadata_object_from_db");
   var pid         = req.body.project_id;
@@ -527,7 +510,7 @@ function make_metadata_object_from_db(req, res) {
   console.time("TIME: add missing info to AllMetadata_picked");
   for (var d in dataset_ids) {
     var dataset_id = dataset_ids[d];
-    var ids_data   = get_all_req_metadata(dataset_id);
+    var ids_data   = metadata_controller.get_all_req_metadata(dataset_id);
 
     Object.assign(AllMetadata_picked[dataset_id], ids_data);
     var primers_info_by_dataset_id = metadata_controller.get_primers_info(dataset_id);

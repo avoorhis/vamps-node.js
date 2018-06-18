@@ -318,3 +318,21 @@ exports.get_primers_info = function(dataset_id) {
   console.timeEnd("TIME: get_primers_info");
   return primer_info;
 };
+
+
+exports.get_all_req_metadata = function(dataset_id) {
+  console.time("TIME: 5) get_all_req_metadata");
+
+  var data = {};
+  for (var idx = 0; idx < CONSTS.REQ_METADATA_FIELDS_wIDs.length; idx++) {
+    var key      = CONSTS.REQ_METADATA_FIELDS_wIDs[idx];
+    // data[key] = [];
+    var val_hash = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
+
+    data[key] = val_hash.value;
+  }
+  console.time("TIME: 5) get_all_req_metadata");
+
+  return data;
+};
+
