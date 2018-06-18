@@ -550,12 +550,6 @@ function make_metadata_object_from_db(req, res) {
   console.timeEnd("TIME: make_metadata_object_from_db");
 }
 
-function filterItems(arr, query) {
-  return arr.filter(function (el) {
-    return el.toLowerCase().indexOf(query.toLowerCase()) < 0;
-  });
-}
-
 // from form to a csv file
 
 function make_csv(req) {

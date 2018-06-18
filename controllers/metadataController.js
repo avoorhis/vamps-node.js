@@ -148,6 +148,12 @@ get_project_info = function (project_name_or_pid) {
   };
 };
 
+filterItems = function(arr, query) {
+  return arr.filter(function (el) {
+    return el.toLowerCase().indexOf(query.toLowerCase()) < 0;
+  });
+};
+
 // public
 
 exports.get_all_field_units = function (req) {
