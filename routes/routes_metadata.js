@@ -428,21 +428,6 @@ function make_metadata_object_from_form(req, res) {
 
 // create form from a csv file
 
-function get_project_name(edit_metadata_file) {
-  console.time("TIME: get_project_name");
-
-  var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
-  var edit_metadata_project    = "";
-
-  if (edit_metadata_file_parts.length >= 4) {
-
-    edit_metadata_project = edit_metadata_file_parts[1] + "_" + edit_metadata_file_parts[2] + "_" + edit_metadata_file_parts[3];
-  }
-
-  console.timeEnd("TIME: get_project_name");
-  return edit_metadata_project;
-}
-
 function make_metadata_object_from_csv(req, res) {
   console.time("TIME: make_metadata_object_from_csv");
 
@@ -450,11 +435,11 @@ function make_metadata_object_from_csv(req, res) {
   // console.log(req.body);
 
   var file_name    = req.body.edit_metadata_file;
-  var project_name = get_project_name(file_name);
+  var project_name = metadata_controller.get_project_name(file_name);
   var pid          = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
 
 
-  // console.log("GGG1 project_name from get_project_name");
+  // console.log("GGG1 project_name from metadata_controller.get_project_name");
   // console.log(project_name);
   //data from file
   var inputPath    = path.join(config.USER_FILES_BASE, req.user.username, file_name);
