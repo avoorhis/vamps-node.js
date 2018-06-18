@@ -379,20 +379,6 @@ router.post('/metadata_upload',
     console.timeEnd("TIME: post metadata_upload");
   });
 
-// function metadata_controller.get_new_val(req, all_metadata_pid, all_new_names) {
-//   var new_val = [];
-//   for (var new_name_idx in all_new_names) {
-//     var new_name = all_new_names[new_name_idx];
-//     if (new_name !== '') {
-//       new_val = req.body[new_name];
-//     }
-//     if (typeof new_val !== 'undefined' && new_val.length !== 0) {
-//       all_metadata_pid[new_name] = new_val;
-//     }
-//   }
-//   return all_metadata_pid;
-// }
-
 function make_metadata_object_from_form(req, res) {
   console.time("TIME: make_metadata_object_from_form");
   var pid  = req.body.project_id;
@@ -442,21 +428,21 @@ function make_metadata_object_from_form(req, res) {
 
 // create form from a csv file
 
-function slice_object(object, slice_keys) {
-  console.time("TIME: convert to string");
-  for (var i = 0; i < slice_keys.length; i++) slice_keys[i] = String(slice_keys[i]);
-  console.timeEnd("TIME: convert to string");
-
-  return Object.keys(object)
-    .filter(function (key) {
-      return slice_keys.indexOf(key) >= 0;
-    })
-    .reduce(function (acc, key) {
-      acc[key] = object[key];
-      return acc;
-    }, {});
-
-}
+// function metadata_controller.slice_object(object, slice_keys) {
+//   console.time("TIME: convert to string");
+//   for (var i = 0; i < slice_keys.length; i++) slice_keys[i] = String(slice_keys[i]);
+//   console.timeEnd("TIME: convert to string");
+//
+//   return Object.keys(object)
+//     .filter(function (key) {
+//       return slice_keys.indexOf(key) >= 0;
+//     })
+//     .reduce(function (acc, key) {
+//       acc[key] = object[key];
+//       return acc;
+//     }, {});
+//
+// }
 
 function get_project_name(edit_metadata_file) {
   console.time("TIME: get_project_name");
@@ -583,9 +569,9 @@ function make_metadata_object_from_db(req, res) {
   var project     = PROJECT_INFORMATION_BY_PID[pid].project;
 
   // get_db_data
-  console.time("TIME: slice_object");
-  var AllMetadata_picked = slice_object(AllMetadata, dataset_ids);
-  console.timeEnd("TIME: slice_object");
+  console.time("TIME: metadata_controller.slice_object");
+  var AllMetadata_picked = metadata_controller.slice_object(AllMetadata, dataset_ids);
+  console.timeEnd("TIME: metadata_controller.slice_object");
 
   console.time("TIME: dataset_info");
   // get dataset_info

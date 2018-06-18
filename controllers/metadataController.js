@@ -1,5 +1,5 @@
 // var Metadata = require(app_root + '/models/metadata');
-var helpers  = require(app_root + '/routes/helpers/helpers');
+var helpers   = require(app_root + '/routes/helpers/helpers');
 var CONSTS    = require(app_root + "/public/constants");
 var validator = require('validator');
 
@@ -52,11 +52,11 @@ new_row_field_validation = function (req, field_name) {
   return field_val_trimmed;
 };
 
-isUnique = function(all_clean_field_names_arr, column_name) {
+isUnique = function (all_clean_field_names_arr, column_name) {
   return (all_clean_field_names_arr.indexOf(column_name) < 0);
 };
 
-get_cell_val_by_row = function(row_idx, req) {
+get_cell_val_by_row = function (row_idx, req) {
   console.time("TIME: get_cell_val_by_row");
   var new_row_length = req.body.new_row_length;
   var new_row_val    = [];
@@ -193,7 +193,7 @@ exports.get_column_name = function (row_idx, req) {
   console.timeEnd("TIME: get_column_name");
 };
 
-exports.collect_new_rows = function(req, all_field_names) {
+exports.collect_new_rows = function (req, all_field_names) {
   console.time("TIME: collect_new_rows");
   // var new_rows_hash = {};
   var new_row_num               = req.body.new_row_num;
@@ -230,7 +230,7 @@ exports.collect_new_rows = function(req, all_field_names) {
   return all_field_names;
 };
 
-exports.get_first_column = function(matrix, col) {
+exports.get_first_column = function (matrix, col) {
   console.time("TIME: get_first_column");
   var column = [];
   for (var i = 0; i < matrix.length; i++) {
@@ -241,7 +241,7 @@ exports.get_first_column = function(matrix, col) {
   return column;
 };
 
-exports.get_new_val = function(req, all_metadata_pid, all_new_names) {
+exports.get_new_val = function (req, all_metadata_pid, all_new_names) {
   var new_val = [];
   for (var new_name_idx in all_new_names) {
     var new_name = all_new_names[new_name_idx];
@@ -253,4 +253,19 @@ exports.get_new_val = function(req, all_metadata_pid, all_new_names) {
     }
   }
   return all_metadata_pid;
+};
+
+exports.slice_object = function (object, slice_keys) {
+  console.time("TIME: convert to string");
+  for (var i = 0; i < slice_keys.length; i++) slice_keys[i] = String(slice_keys[i]);
+  console.timeEnd("TIME: convert to string");
+
+  return Object.keys(object)
+    .filter(function (key) {
+      return slice_keys.indexOf(key) >= 0;
+    })
+    .reduce(function (acc, key) {
+      acc[key] = object[key];
+      return acc;
+    }, {});
 };
