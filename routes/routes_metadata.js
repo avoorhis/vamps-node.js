@@ -394,12 +394,12 @@ function make_metadata_object_from_form(req, res) {
   var normal_length = data['dataset'].length;
   for (var a in data) {
     if (data[a].length < normal_length && (typeof data[a][0] !== 'undefined')) {
-      data[a] = fill_out_arr_doubles(data[a][0], normal_length);
+      data[a] = metadata_controller.fill_out_arr_doubles(data[a][0], normal_length);
     }
   }
 
-  var all_metadata         = make_metadata_object(req, res, pid, data);
-  var all_field_names_orig = make_all_field_names(data['dataset_id']);
+  var all_metadata         = metadata_controller.make_metadata_object(req, res, pid, data);
+  var all_field_names_orig = metadata_controller.make_all_field_names(data['dataset_id']);
 
   //add_new
   var all_field_names_with_new = metadata_controller.collect_new_rows(req, all_field_names_orig);
@@ -458,11 +458,11 @@ function make_metadata_object_from_csv(req, res) {
   // console.log("MMM0 dataset_ids");
   // console.log(dataset_ids);
 
-  var data_in_obj_of_arr = from_obj_to_obj_of_arr(data, pid);
+  var data_in_obj_of_arr = metadata_controller.from_obj_to_obj_of_arr(data, pid);
 
   // all_metadata
-  var all_metadata    = make_metadata_object(req, res, pid, data_in_obj_of_arr);
-  var all_field_names = make_all_field_names(dataset_ids);
+  var all_metadata    = metadata_controller.make_metadata_object(req, res, pid, data_in_obj_of_arr);
+  var all_field_names = metadata_controller.make_all_field_names(dataset_ids);
 
   // console.log("DDD3 all_field_names from make_metadata_object_from_csv");
   // console.log(JSON.stringify(all_field_names));
@@ -525,7 +525,7 @@ function make_metadata_object_from_db(req, res) {
   }
   console.timeEnd("TIME: add missing info to AllMetadata_picked");
 
-  var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata_picked, pid);
+  var data_in_obj_of_arr = metadata_controller.from_obj_to_obj_of_arr(AllMetadata_picked, pid);
 
   // add abstract_data
   var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
@@ -534,11 +534,11 @@ function make_metadata_object_from_db(req, res) {
     abstract_data.pdfs = [];
   }
 
-  data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
+  data_in_obj_of_arr["project_abstract"] = metadata_controller.fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 
-  var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
+  var all_metadata = metadata_controller.make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
-  var all_field_names = make_all_field_names(dataset_ids);
+  var all_field_names = metadata_controller.make_all_field_names(dataset_ids);
 
   // console.log("DDD2 all_field_names");
   // console.log(JSON.stringify(all_field_names));
@@ -550,76 +550,10 @@ function make_metadata_object_from_db(req, res) {
   console.timeEnd("TIME: make_metadata_object_from_db");
 }
 
-function make_all_field_names(dataset_ids) {
-  var ordered_metadata_names_only = get_names_from_ordered_const();
-
-  var structured_field_names0 = get_field_names(dataset_ids);
-  var diff_names              = structured_field_names0.filter(function (x) {
-    return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0;
-  });
-  diff_names                  = diff_names.filter(function (item) {
-    return /^((?!_id).)*$/.test(item);
-  });
-  diff_names                  = diff_names.filter(function (x) {
-    return ordered_metadata_names_only.indexOf(x) < 0;
-  });
-
-  // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES
-  // TODO: add units from db
-  var big_arr_diff_names = [];
-  for (var i2 = 0; i2 < diff_names.length; i2++) {
-    var temp_arr = [diff_names[i2], diff_names[i2], "", ""];
-    big_arr_diff_names.push(temp_arr);
-  }
-
-  return helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
-
-}
-
 function filterItems(arr, query) {
   return arr.filter(function (el) {
     return el.toLowerCase().indexOf(query.toLowerCase()) < 0;
   });
-}
-
-function from_obj_to_obj_of_arr(data, pid) {
-  console.time("TIME: from_obj_to_obj_of_arr");
-  var obj_of_arr = {};
-
-  var dataset_ids = DATASET_IDS_BY_PID[pid];
-
-  // var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
-  //TODO: make field_names collection a separate function
-  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
-  all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
-  all_field_names     = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
-
-  all_field_names = helpers.unique_array(all_field_names);
-
-  // console.log("HHH0 AllMetadataNames");
-  // console.log(JSON.stringify(AllMetadataNames));
-  //
-  // console.log("HHH2 all_field_names");
-  // console.log(JSON.stringify(all_field_names));
-
-  for (var did_idx in dataset_ids) {
-    var did = dataset_ids[did_idx];
-    for (var field_name_idx in all_field_names) {
-
-      var field_name = all_field_names[field_name_idx];
-      if (!(obj_of_arr.hasOwnProperty(field_name))) {
-        obj_of_arr[field_name] = [];
-      }
-      obj_of_arr[field_name].push(data[did][field_name]);
-    }
-  }
-
-  // console.log("HHH3 obj_of_arr from from_obj_to_obj_of_arr");
-  // console.log(JSON.stringify(obj_of_arr));
-
-  console.timeEnd("TIME: from_obj_to_obj_of_arr");
-  return obj_of_arr;
 }
 
 // from form to a csv file
@@ -681,7 +615,7 @@ function transpose_2d_arr(data_arr, project_id) {
   var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
   var length_array  = data_arr[0];
   if (data_arr[0].length < matrix_length) {
-    length_array = fill_out_arr_doubles('', matrix_length);
+    length_array = metadata_controller.fill_out_arr_doubles('', matrix_length);
   }
 
   var newArray = length_array.map(function (col, i) {
@@ -984,30 +918,6 @@ function get_file_diff(req, files) {
 
 // common functions
 
-function get_project_info(project_name_or_pid) {
-  var project_info;
-
-  if (helpers.isInt(project_name_or_pid)) {
-    project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
-  }
-  else {
-    project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
-  }
-
-  return {
-    project: project_info.project,
-    first_name: project_info.first,
-    institution: project_info.institution,
-    last_name: project_info.last,
-    pi_email: project_info.email,
-    pi_name: project_info.first + " " + project_info.last,
-    project_title: project_info.title,
-    public: project_info.public,
-    username: project_info.username
-  };
-
-}
-
 function get_project_abstract_data(project, path_to_static) {
   console.time("TIME: get_project_abstract_data");
 
@@ -1049,67 +959,6 @@ function add_all_val_by_key(my_key_hash, my_val_hash, all_metadata_pid) {
   }
   console.timeEnd("TIME: 6) add_all_val_by_key");
   return all_metadata_pid;
-}
-
-
-function prepare_empty_metadata_object(pid, field_names_arr, all_metadata) {
-  console.time("TIME: prepare_empty_metadata_object");
-  all_metadata = all_metadata || {};
-  if (!(all_metadata.hasOwnProperty(pid))) {
-    all_metadata[pid] = {};
-  }
-
-  for (var i = 0; i < field_names_arr.length; i++) {
-    var field_name = field_names_arr[i];
-    if (!(all_metadata[pid].hasOwnProperty(field_name))) {
-      all_metadata[pid][field_name] = [];
-    }
-  }
-
-  console.timeEnd("TIME: prepare_empty_metadata_object");
-  return all_metadata;
-}
-
-function get_field_names(dataset_ids) {
-  var field_names_arr = [];
-  // field_names_arr = field_names_arr.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  // field_names_arr = field_names_arr.concat(CONSTS.PROJECT_INFO_FIELDS);
-
-  for (var i = 0; i < dataset_ids.length; i++) {
-    var dataset_id = dataset_ids[i];
-
-    field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
-
-    field_names_arr = helpers.unique_array(field_names_arr);
-    field_names_arr.sort();
-  }
-
-  // console.log("MMM0 AllMetadataNames");
-  // console.log(JSON.stringify(AllMetadataNames));
-  //
-  // console.log("MMM1 field_names_arr");
-  // console.log(JSON.stringify(field_names_arr));
-
-  return field_names_arr;
-}
-
-function get_names_from_ordered_const() {
-  console.time("time: ordered_metadata_names_only");
-
-  const arraycolumn = (arr, n) => arr.map(x => x[n]);
-
-  // var ordered_metadata_names_only = consts.metadata_form_required_fields.concat(arraycolumn(consts.ordered_metadata_names, 0));
-
-  console.timeEnd("time: ordered_metadata_names_only");
-  return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
-}
-
-function fill_out_arr_doubles(value, repeat_times) {
-  var arr_temp = Array(repeat_times);
-
-  arr_temp.fill(value, 0, repeat_times);
-
-  return arr_temp;
 }
 
 function make_ordered_field_names_obj() {
@@ -1158,87 +1007,4 @@ function send_mail_finished(req, res) {
 
   console.timeEnd("TIME: send_mail_finished");
 }
-
-function make_metadata_object(req, res, pid, info) {
-  console.time("TIME: make_metadata_object");
-
-  var all_metadata = {};
-  var dataset_ids  = DATASET_IDS_BY_PID[pid];
-  var project      = PROJECT_INFORMATION_BY_PID[pid].project;
-  var repeat_times = dataset_ids.length;
-
-  // 0) get field_names
-  //TODO: DRY
-  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
-  all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
-  all_field_names     = helpers.unique_array(all_field_names);
-
-  // console.log("HHH3 all_field_names");
-  // console.log(JSON.stringify(all_field_names));
-
-
-  // console.log("QQQ0 AllMetadataNames");
-  // console.log(JSON.stringify(AllMetadataNames));
-  //
-  // console.log("QQQ1 all_field_names");
-  // console.log(JSON.stringify(all_field_names));
-
-
-  // 1)
-  // TODO: don't send all_metadata?
-  all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
-  // console.log("MMM2 all_metadata");
-  // console.log(all_metadata);
-
-  //2) all
-  // console.log("HHH info object in make_metadata_object");
-  // console.log(JSON.stringify(info));
-
-  all_metadata[pid] = info;
-
-  //3) special
-
-  // TODO: move to db creation?
-  var project_info = get_project_info(pid);
-  // console.log("MMM33 all_metadata[pid]");
-  // console.log(JSON.stringify(all_metadata[pid]));
-
-  for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
-    var field_name = CONSTS.PROJECT_INFO_FIELDS[idx];
-
-    //todo: split if, if length == dataset_ids.length - just use as is
-    if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
-      all_metadata[pid][field_name] = fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
-    }
-    else {
-      all_metadata[pid][field_name] = fill_out_arr_doubles(project_info[field_name], repeat_times);
-    }
-  }
-
-  if ((all_metadata[pid]["project_abstract"] === 'undefined') || (!all_metadata[pid].hasOwnProperty(["project_abstract"]))) {
-    all_metadata[pid]["project_abstract"] = fill_out_arr_doubles("", repeat_times);
-  }
-  else {
-
-    if ((all_metadata[pid]["project_abstract"][0] !== 'undefined') && (!Array.isArray(all_metadata[pid]["project_abstract"][0]))) {
-
-      var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]["project_abstract"]);
-
-      if (typeof project_abstract_correct_form[0] !== 'undefined') {
-
-        all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(project_abstract_correct_form[0].split(","), repeat_times);
-
-      }
-    }
-  }
-
-  // console.log("MMM9 all_metadata[pid][\"reference\"]");
-  // console.log(JSON.stringify(all_metadata[pid]["reference"]));
-
-
-  console.timeEnd("TIME: make_metadata_object");
-  return all_metadata;
-}
-
 // ---- metadata_upload end ----
