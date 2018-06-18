@@ -96,8 +96,8 @@ module.exports.get_datasets = function(callback){
             for (var i=0; i < rows.length; i++) {
                 var uid = rows[i].uid;
                 var group = rows[i].group;
-                if( ALL_USERS_BY_UID[uid].groups.indexOf(group) == -1 ){
-                // if ((ALL_USERS_BY_UID[uid]) && ( ALL_USERS_BY_UID[uid].groups.indexOf(group) == -1 )) {
+                // if( ALL_USERS_BY_UID[uid].groups.indexOf(group) == -1 ){
+                if ((ALL_USERS_BY_UID[uid]) && ( ALL_USERS_BY_UID[uid].groups.indexOf(group) == -1 )) {
                     ALL_USERS_BY_UID[uid].groups.push(group);
                 }
             }
