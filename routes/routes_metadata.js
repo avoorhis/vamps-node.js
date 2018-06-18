@@ -477,40 +477,6 @@ function make_metadata_object_from_csv(req, res) {
 
 // create form from db
 
-function get_primers_info(dataset_id) {
-  console.time("TIME: get_primers_info");
-  var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
-  var primer_info     = {};
-
-  if (typeof primer_suite_id === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id] === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined') {
-    return {};
-  }
-  else {
-    try {
-      for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
-
-        var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
-
-        if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
-          primer_info[curr_direction] = [];
-        }
-
-        primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
-      }
-    } catch (err) {
-      // Handle the error here.
-      return {};
-    }
-
-  }
-  // console.log("DDD primer_info");
-  // console.log(JSON.stringify(primer_info));
-  // {"F":["CCTACGGGAGGCAGCAG","CCTACGGG.GGC[AT]GCAG","TCTACGGAAGGCTGCAG"],"R":["GGATTAG.TACCC"]}
-
-  console.timeEnd("TIME: get_primers_info");
-  return primer_info;
-}
-
 function get_all_req_metadata(dataset_id) {
   console.time("TIME: 5) get_all_req_metadata");
 
@@ -564,7 +530,7 @@ function make_metadata_object_from_db(req, res) {
     var ids_data   = get_all_req_metadata(dataset_id);
 
     Object.assign(AllMetadata_picked[dataset_id], ids_data);
-    var primers_info_by_dataset_id = get_primers_info(dataset_id);
+    var primers_info_by_dataset_id = metadata_controller.get_primers_info(dataset_id);
 
     AllMetadata_picked[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
     AllMetadata_picked[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
