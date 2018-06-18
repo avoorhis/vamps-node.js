@@ -239,29 +239,6 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 
 // create form from req.form
 
-
-// function region_valid(value, region_low, region_high) {
-//   if ((value !== '') && (parseInt(value) < parseInt(region_low) || parseInt(value) > parseInt(region_high))) {
-//     throw new Error("'" + value + "' is not valid, %s should be between " + region_low + " and " + region_high);
-//   }
-// }
-//
-// function metadata_controller.longitude_valid(value) {
-//   region_valid(value, -180, 180);
-// }
-//
-// function metadata_controller.latitude_valid(value) {
-//   region_valid(value, -90, 90);
-// }
-//
-// function metadata_controller.ph_valid(value) {
-//   region_valid(value, 0, 14);
-// }
-//
-// function metadata_controller.percent_valid(value) {
-//   region_valid(value, 0, 100);
-// }
-
 function positive(value) {
   if (value !== '' && parseInt(value) < 0) {
     throw new Error("'" + value + "' is not valid, %s should be greater then 0.");
