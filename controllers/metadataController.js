@@ -1,5 +1,5 @@
 // var Metadata = require(app_root + '/models/metadata');
-// var helpers  = require(app_root + '/routes/helpers/helpers');
+var helpers  = require(app_root + '/routes/helpers/helpers');
 var CONSTS    = require(app_root + "/public/constants");
 var validator = require('validator');
 
@@ -52,6 +52,26 @@ new_row_field_validation = function (req, field_name) {
   return field_val_trimmed;
 };
 
+isUnique = function(all_clean_field_names_arr, column_name) {
+  return (all_clean_field_names_arr.indexOf(column_name) < 0);
+};
+
+get_cell_val_by_row = function(row_idx, req) {
+  console.time("TIME: get_cell_val_by_row");
+  var new_row_length = req.body.new_row_length;
+  var new_row_val    = [];
+
+  for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
+    var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
+    var clean_val = validator.escape(req.body[cell_name] + "");
+    clean_val     = validator.trim(clean_val + "");
+
+    new_row_val.push(clean_val);
+  }
+  console.timeEnd("TIME: get_cell_val_by_row");
+
+  return new_row_val;
+};
 
 // public
 
@@ -172,3 +192,52 @@ exports.get_column_name = function (row_idx, req) {
   }
   console.timeEnd("TIME: get_column_name");
 };
+
+exports.collect_new_rows = function(req, all_field_names) {
+  console.time("TIME: collect_new_rows");
+  // var new_rows_hash = {};
+  var new_row_num               = req.body.new_row_num;
+  var all_clean_field_names_arr = helpers.unique_array(module.exports.get_first_column(all_field_names, 0));
+  // console.log("JSON.stringify(unique_array.all_clean_field_names_arr)");
+  // console.log(JSON.stringify(helpers.unique_array(all_clean_field_names_arr)));
+
+  for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
+    var column_n_unit_names = module.exports.get_column_name(row_idx, req);
+
+    if (column_n_unit_names) {
+
+      var users_column_name = column_n_unit_names[0];
+      var units_field_name  = column_n_unit_names[1];
+      var column_name       = users_column_name + ' (' + units_field_name + ')';
+      var re                = / /g;
+      var clean_column_name = users_column_name.toLowerCase().replace(re, '_') + '--UNITS--' + units_field_name.toLowerCase().replace(re, '_');
+
+
+      if (column_name && isUnique(all_clean_field_names_arr, clean_column_name)) {
+        // [ 'run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD' ],
+        all_field_names.push([clean_column_name, column_name, '', units_field_name]);
+        req.form[clean_column_name] = [];
+        req.form[clean_column_name] = get_cell_val_by_row(row_idx, req);
+      }
+      else if (!isUnique(all_clean_field_names_arr, clean_column_name)) {
+        var err_msg = 'User added field with units "' + column_name + '" must be unique and have only alpha numeric characters';
+        req.form.errors.push(err_msg);
+      }
+    }
+  }
+  console.timeEnd("TIME: collect_new_rows");
+
+  return all_field_names;
+};
+
+exports.get_first_column = function(matrix, col) {
+  console.time("TIME: get_first_column");
+  var column = [];
+  for (var i = 0; i < matrix.length; i++) {
+    column.push(matrix[i][col]);
+  }
+  console.timeEnd("TIME: get_first_column");
+
+  return column;
+};
+

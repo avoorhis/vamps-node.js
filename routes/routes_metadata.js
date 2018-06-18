@@ -7,7 +7,7 @@ var CONSTS              = require(app_root + "/public/constants");
 var fs                  = require("fs");
 var path                = require("path");
 var config              = require(app_root + '/config/config');
-var validator           = require('validator');
+// var validator           = require('validator');
 // var expressValidator = require('express-validator');
 var nodeMailer          = require('nodemailer');
 var Metadata            = require(app_root + '/models/metadata');
@@ -238,114 +238,33 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 
 
 // create form from req.form
-
-// function new_row_field_validation(req, field_name) {
-//   console.time("TIME: new_row_field_validation");
-//   var err_msg = '';
+// function get_cell_val_by_row(row_idx, req) {
+//   console.time("TIME: get_cell_val_by_row");
+//   var new_row_length = req.body.new_row_length;
+//   var new_row_val    = [];
 //
-//   //todo: send a value instead of "req.body[field_name]"?
-//   var field_val_trimmed   = validator.escape(req.body[field_name] + "");
-//   field_val_trimmed       = validator.trim(field_val_trimmed + "");
-//   var field_val_not_valid = validator.isEmpty(field_val_trimmed + "");
+//   for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
+//     var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
+//     var clean_val = validator.escape(req.body[cell_name] + "");
+//     clean_val     = validator.trim(clean_val + "");
 //
-//   if (field_val_not_valid) {
-//     console.log("ERROR: an empty user's " + field_name);
-//     err_msg = 'User added field "' + field_name + '" must be not empty and have only alpha numeric characters';
-//     req.form.errors.push(err_msg);
-
-
+//     new_row_val.push(clean_val);
 //   }
+//   console.timeEnd("TIME: get_cell_val_by_row");
 //
-//   console.timeEnd("TIME: new_row_field_validation");
-//   return field_val_trimmed;
-// }
-//
-// function metadata_controller.get_column_name(row_idx, req) {
-//   console.time("TIME: metadata_controller.get_column_name");
-//
-//   var units_field_name = new_row_field_validation(req, "Units" + row_idx);
-//
-//   var users_column_name = new_row_field_validation(req, "Column Name" + row_idx);
-//
-//   // console.log("LLL1 units_field_name");
-//   // console.log(units_field_name);
-//   //
-//   // console.log("LLL2 users_column_name");
-//   // console.log(users_column_name);
-//
-//   if (units_field_name !== "" && users_column_name !== "") {
-//     return [users_column_name, units_field_name];
-//   }
-//   console.timeEnd("TIME: metadata_controller.get_column_name");
+//   return new_row_val;
 // }
 
-function collect_new_rows(req, all_field_names) {
-  console.time("TIME: collect_new_rows");
-  // var new_rows_hash = {};
-  var new_row_num               = req.body.new_row_num;
-  var all_clean_field_names_arr = helpers.unique_array(get_first_column(all_field_names, 0));
-  // console.log("JSON.stringify(unique_array.all_clean_field_names_arr)");
-  // console.log(JSON.stringify(helpers.unique_array(all_clean_field_names_arr)));
-
-  for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
-    var column_n_unit_names = metadata_controller.get_column_name(row_idx, req);
-
-    if (column_n_unit_names) {
-
-      var users_column_name = column_n_unit_names[0];
-      var units_field_name  = column_n_unit_names[1];
-      var column_name       = users_column_name + ' (' + units_field_name + ')';
-      var re                = / /g;
-      var clean_column_name = users_column_name.toLowerCase().replace(re, '_') + '--UNITS--' + units_field_name.toLowerCase().replace(re, '_');
-
-
-      if (column_name && isUnique(all_clean_field_names_arr, clean_column_name)) {
-        // [ 'run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD' ],
-        all_field_names.push([clean_column_name, column_name, '', units_field_name]);
-        req.form[clean_column_name] = [];
-        req.form[clean_column_name] = get_cell_val_by_row(row_idx, req);
-      }
-      else if (!isUnique(all_clean_field_names_arr, clean_column_name)) {
-        var err_msg = 'User added field with units "' + column_name + '" must be unique and have only alpha numeric characters';
-        req.form.errors.push(err_msg);
-      }
-    }
-  }
-
-
-  console.timeEnd("TIME: collect_new_rows");
-
-  return all_field_names;
-
-}
-
-function get_cell_val_by_row(row_idx, req) {
-  console.time("TIME: get_cell_val_by_row");
-  var new_row_length = req.body.new_row_length;
-  var new_row_val    = [];
-
-  for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
-    var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
-    var clean_val = validator.escape(req.body[cell_name] + "");
-    clean_val     = validator.trim(clean_val + "");
-
-    new_row_val.push(clean_val);
-  }
-  console.timeEnd("TIME: get_cell_val_by_row");
-
-  return new_row_val;
-}
-
-function get_first_column(matrix, col) {
-  console.time("TIME: get_first_column");
-  var column = [];
-  for (var i = 0; i < matrix.length; i++) {
-    column.push(matrix[i][col]);
-  }
-  console.timeEnd("TIME: get_first_column");
-
-  return column;
-}
+// function metadata_controller.get_first_column(matrix, col) {
+//   console.time("TIME: metadata_controller.get_first_column");
+//   var column = [];
+//   for (var i = 0; i < matrix.length; i++) {
+//     column.push(matrix[i][col]);
+//   }
+//   console.timeEnd("TIME: metadata_controller.get_first_column");
+//
+//   return column;
+// }
 
 // TODO: update field names from https://docs.google.com/spreadsheets/d/1adAtGc9DdY2QBQZfd1oaRdWBzjOv4t-PF1hBfO8mAoA/edit#gid=1223926458
 router.post('/metadata_upload',
@@ -525,12 +444,12 @@ function make_metadata_object_from_form(req, res) {
   var all_field_names_orig = make_all_field_names(data['dataset_id']);
 
   //add_new
-  var all_field_names_with_new = collect_new_rows(req, all_field_names_orig);
+  var all_field_names_with_new = metadata_controller.collect_new_rows(req, all_field_names_orig);
 
   // console.log("YYY3 all_field_names_with_new");
   // console.log(JSON.stringify(all_field_names_with_new));
 
-  var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
+  var all_field_names_first_column = metadata_controller.get_first_column(all_field_names_with_new, 0);
   var all_new_names                = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
   all_metadata[pid]                = get_new_val(req, all_metadata[pid], all_new_names);
 
@@ -1191,9 +1110,9 @@ function get_file_diff(req, files) {
 }
 
 // common functions
-function isUnique(all_clean_field_names_arr, column_name) {
-  return (all_clean_field_names_arr.indexOf(column_name) < 0);
-}
+// function isUnique(all_clean_field_names_arr, column_name) {
+//   return (all_clean_field_names_arr.indexOf(column_name) < 0);
+// }
 
 function get_project_info(project_name_or_pid) {
   var project_info;
