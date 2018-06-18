@@ -30,7 +30,7 @@ exports.env_items_validation = function (value) {
   }
 };
 
-exports.checkArray = function (my_arr) {
+checkArray = function (my_arr) {
   for (var i = 0; my_arr.length > i; i++) {
     if (my_arr[i] === "")
       return false;

@@ -239,51 +239,6 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 // create form from req.form
 
 
-// function checkArray(my_arr){
-//   for (var i = 0; my_arr.length > i; i++) {
-//   if (my_arr[i] === "")
-//     return false;
-// }
-//   return true;
-// }
-//
-// function metadata_controller.geo_loc_name_validation(value, source) {
-//   if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
-//       throw new Error("Either 'Country' or 'Longhurst Zone' are required");
-//   }
-// }
-//
-// function metadata_controller.geo_loc_name_continental_filter(value) {
-//   console.time("metadata_controller.geo_loc_name_continental_filter");
-//   for (var key in CONSTS.GAZ_SPELLING) {
-//     if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
-//       var curr = CONSTS.GAZ_SPELLING[key];
-//       if (curr.indexOf(value.toLowerCase()) > -1) {
-//         return key;
-//       }
-//     }
-//   }
-//   console.timeEnd("metadata_controller.geo_loc_name_continental_filter");
-// }
-//
-// function metadata_controller.get_object_vals(object_name) {
-//   return Object.keys(object_name).map(function (key) {
-//     return object_name[key];
-//   });
-// }
-//
-// function metadata_controller.geo_loc_name_marine_validation(value) {
-//   if(MD_ENV_LZC_vals.indexOf(value) < 0 && (value !== '')) {
-//     throw new Error("There is no Longhurst Zone '" + value + "', please check the spelling");
-//   }
-// }
-//
-// function metadata_controller.geo_loc_name_continental_validation(value) {
-//   if(MD_ENV_CNTRY_vals.indexOf(value) < 0 && (value !== '')) {
-//     throw new Error("There is no Country '" + value + "', please check the spelling");
-//   }
-// }
-
 function check_regexp(reg_exp, value, err_msg) {
   var result = value.match(reg_exp);
 
