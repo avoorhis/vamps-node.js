@@ -239,43 +239,45 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 
 // create form from req.form
 
-function new_row_field_validation(req, field_name) {
-  console.time("TIME: new_row_field_validation");
-  var err_msg = '';
+// function new_row_field_validation(req, field_name) {
+//   console.time("TIME: new_row_field_validation");
+//   var err_msg = '';
+//
+//   //todo: send a value instead of "req.body[field_name]"?
+//   var field_val_trimmed   = validator.escape(req.body[field_name] + "");
+//   field_val_trimmed       = validator.trim(field_val_trimmed + "");
+//   var field_val_not_valid = validator.isEmpty(field_val_trimmed + "");
+//
+//   if (field_val_not_valid) {
+//     console.log("ERROR: an empty user's " + field_name);
+//     err_msg = 'User added field "' + field_name + '" must be not empty and have only alpha numeric characters';
+//     req.form.errors.push(err_msg);
 
-  //todo: send a value instead of "req.body[field_name]"?
-  var field_val_trimmed   = validator.escape(req.body[field_name] + "");
-  field_val_trimmed       = validator.trim(field_val_trimmed + "");
-  var field_val_not_valid = validator.isEmpty(field_val_trimmed + "");
 
-  if (field_val_not_valid) {
-    console.log("ERROR: an empty user's " + field_name);
-    err_msg = 'User added field "' + field_name + '" must be not empty and have only alpha numeric characters';
-    req.form.errors.push(err_msg);
-  }
-
-  console.timeEnd("TIME: new_row_field_validation");
-  return field_val_trimmed;
-}
-
-function get_column_name(row_idx, req) {
-  console.time("TIME: get_column_name");
-
-  var units_field_name = new_row_field_validation(req, "Units" + row_idx);
-
-  var users_column_name = new_row_field_validation(req, "Column Name" + row_idx);
-
-  // console.log("LLL1 units_field_name");
-  // console.log(units_field_name);
-  //
-  // console.log("LLL2 users_column_name");
-  // console.log(users_column_name);
-
-  if (units_field_name !== "" && users_column_name !== "") {
-    return [users_column_name, units_field_name];
-  }
-  console.timeEnd("TIME: get_column_name");
-}
+//   }
+//
+//   console.timeEnd("TIME: new_row_field_validation");
+//   return field_val_trimmed;
+// }
+//
+// function metadata_controller.get_column_name(row_idx, req) {
+//   console.time("TIME: metadata_controller.get_column_name");
+//
+//   var units_field_name = new_row_field_validation(req, "Units" + row_idx);
+//
+//   var users_column_name = new_row_field_validation(req, "Column Name" + row_idx);
+//
+//   // console.log("LLL1 units_field_name");
+//   // console.log(units_field_name);
+//   //
+//   // console.log("LLL2 users_column_name");
+//   // console.log(users_column_name);
+//
+//   if (units_field_name !== "" && users_column_name !== "") {
+//     return [users_column_name, units_field_name];
+//   }
+//   console.timeEnd("TIME: metadata_controller.get_column_name");
+// }
 
 function collect_new_rows(req, all_field_names) {
   console.time("TIME: collect_new_rows");
@@ -286,7 +288,7 @@ function collect_new_rows(req, all_field_names) {
   // console.log(JSON.stringify(helpers.unique_array(all_clean_field_names_arr)));
 
   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
-    var column_n_unit_names = get_column_name(row_idx, req);
+    var column_n_unit_names = metadata_controller.get_column_name(row_idx, req);
 
     if (column_n_unit_names) {
 
