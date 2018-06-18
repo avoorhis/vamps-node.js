@@ -428,28 +428,9 @@ function make_metadata_object_from_form(req, res) {
 
 // create form from a csv file
 
-// function metadata_controller.slice_object(object, slice_keys) {
-//   console.time("TIME: convert to string");
-//   for (var i = 0; i < slice_keys.length; i++) slice_keys[i] = String(slice_keys[i]);
-//   console.timeEnd("TIME: convert to string");
-//
-//   return Object.keys(object)
-//     .filter(function (key) {
-//       return slice_keys.indexOf(key) >= 0;
-//     })
-//     .reduce(function (acc, key) {
-//       acc[key] = object[key];
-//       return acc;
-//     }, {});
-//
-// }
-
 function get_project_name(edit_metadata_file) {
   console.time("TIME: get_project_name");
 
-  // console.log("GGG edit_metadata_file from get_project_name");
-  // console.log(edit_metadata_file);
-  // var edit_metadata_file = "metadata-project_DCO_GAI_Bv3v5_65982.csv";
   var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
   var edit_metadata_project    = "";
 
