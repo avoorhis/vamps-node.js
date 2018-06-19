@@ -767,7 +767,7 @@ function saveMetadata(req, res) {
 router.get('/metadata_file_list', function (req, res) {
   console.time("TIME: get metadata_file_list");
   console.log('in metadata_file_list');
-  var user_metadata_csv_files = get_csv_files(req);
+  var user_metadata_csv_files = metadata_controller.get_csv_files(req);
 
   user_metadata_csv_files.sort(function sortByTime(a, b) {
     //reverse sort: recent-->oldest
@@ -785,16 +785,6 @@ router.get('/metadata_file_list', function (req, res) {
   console.timeEnd("TIME: get metadata_file_list");
 
 });
-
-function get_csv_files(req) {
-  console.time("TIME: get_csv_files");
-
-  var user_csv_dir = path.join(config.USER_FILES_BASE, req.user.username);
-  var all_my_files = helpers.walk_sync(user_csv_dir);
-
-  console.timeEnd("TIME: get_csv_files");
-  return all_my_files;
-}
 
 router.post('/metadata_files',
   [helpers.isLoggedIn],

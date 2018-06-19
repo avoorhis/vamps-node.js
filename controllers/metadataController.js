@@ -631,6 +631,17 @@ exports.get_file_diff = function(req, files) {
   return "<div class = 'highlighter'>" + table_diff_html + "</div>";
 };
 
+exports.get_csv_files = function(req) {
+  console.time("TIME: get_csv_files");
+
+  var user_csv_dir = path.join(config.USER_FILES_BASE, req.user.username);
+  var all_my_files = helpers.walk_sync(user_csv_dir);
+
+  console.timeEnd("TIME: get_csv_files");
+  return all_my_files;
+};
+
+
 exports.make_metadata_object = function(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
 
