@@ -538,6 +538,19 @@ exports.get_project_abstract_data = function(project, path_to_static) {
   return abstract_data;
 };
 
+// TODO: move to helpers, use here and for project_profile
+exports.get_project_prefix = function(project) {
+  console.time("TIME: get_project_prefix");
+  var project_parts  = project.split('_');
+  var project_prefix = project;
+
+  if (project_parts.length >= 2) {
+    project_prefix = project_parts[0] + '_' + project_parts[1];
+  }
+  console.timeEnd("TIME: get_project_prefix");
+  return project_prefix;
+};
+
 exports.make_metadata_object = function(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
 
@@ -619,3 +632,4 @@ exports.make_metadata_object = function(req, res, pid, info) {
   console.timeEnd("TIME: make_metadata_object");
   return all_metadata;
 };
+
