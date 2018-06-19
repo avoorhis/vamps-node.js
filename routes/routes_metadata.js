@@ -938,23 +938,7 @@ function get_project_prefix(project) {
   return project_prefix;
 }
 
-function add_all_val_by_key(my_key_hash, my_val_hash, all_metadata_pid) {
-  console.time("TIME: 6) add_all_val_by_key");
-
-  for (var i1 = 0, len1 = my_key_hash.length; i1 < len1; i1++) {
-    var key = my_key_hash[i1];
-    var val = my_val_hash[key];
-
-    if (!(all_metadata_pid.hasOwnProperty(key))) {
-      all_metadata_pid[key] = [];
-    }
-    all_metadata_pid[key].push(val);
-
-  }
-  console.timeEnd("TIME: 6) add_all_val_by_key");
-  return all_metadata_pid;
-}
-
+// doesn't work from controller
 function send_mail_finished(req, res) {
   console.time("TIME: send_mail_finished");
 

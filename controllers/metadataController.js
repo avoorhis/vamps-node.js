@@ -503,7 +503,25 @@ exports.make_ordered_field_names_obj = function() {
   }
   console.timeEnd("TIME: make_ordered_field_names_obj");
   return ordered_field_names_obj;
-}
+};
+
+//not_used?
+// exports.add_all_val_by_key = function(my_key_hash, my_val_hash, all_metadata_pid) {
+//   console.time("TIME: 6) add_all_val_by_key");
+//
+//   for (var i1 = 0, len1 = my_key_hash.length; i1 < len1; i1++) {
+//     var key = my_key_hash[i1];
+//     var val = my_val_hash[key];
+//
+//     if (!(all_metadata_pid.hasOwnProperty(key))) {
+//       all_metadata_pid[key] = [];
+//     }
+//     all_metadata_pid[key].push(val);
+//
+//   }
+//   console.timeEnd("TIME: 6) add_all_val_by_key");
+//   return all_metadata_pid;
+// };
 
 exports.make_metadata_object = function(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
