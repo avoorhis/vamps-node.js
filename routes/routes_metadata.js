@@ -807,7 +807,7 @@ router.post('/metadata_files',
 
     if (typeof req.body.compare !== 'undefined' && req.body.compare.length === 2) {
 
-      table_diff_html = get_file_diff(req, files_to_compare);
+      table_diff_html = metadata_controller.get_file_diff(req, files_to_compare);
       res.render("metadata/metadata_file_list", {
         title: "VAMPS: Metadata File List",
         user: req.user,
@@ -829,55 +829,6 @@ router.post('/metadata_files',
 
     console.timeEnd("TIME: in post /metadata_files");
   });
-
-function get_file_diff(req, files) {
-  var coopy      = require('coopyhx');
-  var inputPath1 = path.join(config.USER_FILES_BASE, req.user.username, files[0]["filename"]);
-  var inputPath2 = path.join(config.USER_FILES_BASE, req.user.username, files[1]["filename"]);
-
-  // console.log("PPP1 inputPath1");
-  // console.log(inputPath1);
-
-  var columnDelimiter = ',';
-  var lineDelimiter   = '\n';
-  var cellEscape      = '"';
-
-  var data1 = String(fs.readFileSync(inputPath1));
-  var data2 = String(fs.readFileSync(inputPath2));
-  // console.log("AAA7 data1");
-  // console.log(data1);
-  // todo: async?
-  // var parse = require('csv-parse');
-  // var parser = parse({delimiter: columnDelimiter, trim: true}, function(err, data){
-  //   console.log("AAA7 data");
-  //   console.log(data);
-  // });
-  // fs.createReadStream(inputPath1).pipe(parser);
-
-
-  var parse_sync = require('csv-parse/lib/sync');
-  var records1   = parse_sync(data1, {trim: true});
-  var records2   = parse_sync(data2, {trim: true});
-
-  var table1 = new coopy.CoopyTableView(records1);
-  var table2 = new coopy.CoopyTableView(records2);
-
-  var alignment = coopy.compareTables(table1, table2).align();
-
-  var data_diff  = [];
-  var table_diff = new coopy.CoopyTableView(data_diff);
-
-  var flags       = new coopy.CompareFlags();
-  var highlighter = new coopy.TableDiff(alignment, flags);
-  highlighter.hilite(table_diff);
-
-  var diff2html = new coopy.DiffRender();
-  diff2html.render(table_diff);
-  var table_diff_html = diff2html.html();
-
-  return "<div class = 'highlighter'>" + table_diff_html + "</div>";
-
-}
 
 // doesn't work from controller
 function send_mail_finished(req, res) {
