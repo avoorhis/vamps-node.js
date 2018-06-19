@@ -213,7 +213,7 @@ function render_edit_form(req, res, all_metadata, all_field_names) {
 
   MD_ENV_CNTRY_vals           = metadata_controller.get_object_vals(MD_ENV_CNTRY);
   MD_ENV_LZC_vals             = metadata_controller.get_object_vals(MD_ENV_LZC);
-  var ordered_field_names_obj = make_ordered_field_names_obj();
+  var ordered_field_names_obj = metadata_controller.make_ordered_field_names_obj();
 
   res.render("metadata/metadata_edit_form", {
     title: "VAMPS: Metadata_upload",
@@ -955,19 +955,19 @@ function add_all_val_by_key(my_key_hash, my_val_hash, all_metadata_pid) {
   return all_metadata_pid;
 }
 
-function make_ordered_field_names_obj() {
-  console.time("TIME: make_ordered_field_names_obj");
-  var ordered_field_names_obj = {};
-
-  for (var i in CONSTS.ORDERED_METADATA_NAMES) {
-    // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
-    var temp_arr = [i];
-    temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
-    ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
-  }
-  console.timeEnd("TIME: make_ordered_field_names_obj");
-  return ordered_field_names_obj;
-}
+// function make_ordered_field_names_obj() {
+//   console.time("TIME: make_ordered_field_names_obj");
+//   var ordered_field_names_obj = {};
+//
+//   for (var i in CONSTS.ORDERED_METADATA_NAMES) {
+//     // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
+//     var temp_arr = [i];
+//     temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
+//     ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
+//   }
+//   console.timeEnd("TIME: make_ordered_field_names_obj");
+//   return ordered_field_names_obj;
+// }
 
 function send_mail_finished(req, res) {
   console.time("TIME: send_mail_finished");

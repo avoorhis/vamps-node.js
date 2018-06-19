@@ -491,6 +491,20 @@ exports.from_obj_to_obj_of_arr = function(data, pid) {
   return obj_of_arr;
 };
 
+exports.make_ordered_field_names_obj = function() {
+  console.time("TIME: make_ordered_field_names_obj");
+  var ordered_field_names_obj = {};
+
+  for (var i in CONSTS.ORDERED_METADATA_NAMES) {
+    // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
+    var temp_arr = [i];
+    temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
+    ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
+  }
+  console.timeEnd("TIME: make_ordered_field_names_obj");
+  return ordered_field_names_obj;
+}
+
 exports.make_metadata_object = function(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
 
