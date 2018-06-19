@@ -2,6 +2,8 @@
 var helpers   = require(app_root + '/routes/helpers/helpers');
 var CONSTS    = require(app_root + "/public/constants");
 var validator = require('validator');
+var fs                  = require("fs");
+var path                = require("path");
 
 // Display list of all Submissions.
 // exports.submission_list = function (req, res) {
@@ -522,6 +524,19 @@ exports.make_ordered_field_names_obj = function() {
 //   console.timeEnd("TIME: 6) add_all_val_by_key");
 //   return all_metadata_pid;
 // };
+
+exports.get_project_abstract_data = function(project, path_to_static) {
+  console.time("TIME: get_project_abstract_data");
+
+  var info_file     = '';
+  var abstract_data = {};
+  if (project.substring(0, 3) === 'DCO') {
+    info_file     = path.join(path_to_static, 'abstracts', 'DCO_info.json');
+    abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+  }
+  console.timeEnd("TIME: get_project_abstract_data");
+  return abstract_data;
+};
 
 exports.make_metadata_object = function(req, res, pid, info) {
   console.time("TIME: make_metadata_object");

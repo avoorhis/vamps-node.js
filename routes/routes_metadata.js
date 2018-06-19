@@ -528,7 +528,7 @@ function make_metadata_object_from_db(req, res) {
   var data_in_obj_of_arr = metadata_controller.from_obj_to_obj_of_arr(AllMetadata_picked, pid);
 
   // add abstract_data
-  var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
+  var abstract_data = metadata_controller.get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
   if (typeof abstract_data === 'undefined') {
     abstract_data      = {};
     abstract_data.pdfs = [];
@@ -911,20 +911,6 @@ function get_file_diff(req, files) {
 }
 
 // common functions
-
-function get_project_abstract_data(project, path_to_static) {
-  console.time("TIME: get_project_abstract_data");
-
-  var info_file     = '';
-  var abstract_data = {};
-  if (project.substring(0, 3) === 'DCO') {
-    info_file     = path.join(path_to_static, 'abstracts', 'DCO_info.json');
-    abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
-  }
-  console.timeEnd("TIME: get_project_abstract_data");
-  return abstract_data;
-}
-
 // TODO: move to helpers, use here and for project_profile
 function get_project_prefix(project) {
   console.time("TIME: get_project_prefix");
