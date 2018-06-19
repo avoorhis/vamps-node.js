@@ -2,6 +2,7 @@
 var helpers   = require(app_root + '/routes/helpers/helpers');
 var CONSTS    = require(app_root + "/public/constants");
 var validator = require('validator');
+var config              = require(app_root + '/config/config');
 var fs                  = require("fs");
 var path                = require("path");
 
@@ -549,6 +550,19 @@ exports.get_project_prefix = function(project) {
   }
   console.timeEnd("TIME: get_project_prefix");
   return project_prefix;
+};
+
+exports.sorted_files_by_time = function(req) {
+  console.time("sorted_files_by_time");
+  var f_info = JSON.parse(req.body.file_info);
+  var dir    = path.join(config.USER_FILES_BASE, req.user.username);
+  f_info.sort(function (a, b) {
+    return fs.statSync(path.join(dir, a.filename)).mtime.getTime() -
+      fs.statSync(path.join(dir, b.filename)).mtime.getTime();
+  });
+
+  console.timeEnd("sorted_files_by_time");
+  return f_info;
 };
 
 exports.sorted_files_to_compare = function(req, sorted_files) {

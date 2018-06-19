@@ -802,7 +802,7 @@ router.post('/metadata_files',
 
     console.time("TIME: in post /metadata_files");
     var table_diff_html, sorted_files, files_to_compare;
-    sorted_files     = sorted_files_by_time(req);
+    sorted_files     = metadata_controller.sorted_files_by_time(req);
     files_to_compare = metadata_controller.sorted_files_to_compare(req, sorted_files);
 
     if (typeof req.body.compare !== 'undefined' && req.body.compare.length === 2) {
@@ -829,19 +829,6 @@ router.post('/metadata_files',
 
     console.timeEnd("TIME: in post /metadata_files");
   });
-
-function sorted_files_by_time(req) {
-  console.time("sorted_files_by_time");
-  var f_info = JSON.parse(req.body.file_info);
-  var dir    = path.join(config.USER_FILES_BASE, req.user.username);
-  f_info.sort(function (a, b) {
-    return fs.statSync(path.join(dir, a.filename)).mtime.getTime() -
-      fs.statSync(path.join(dir, b.filename)).mtime.getTime();
-  });
-
-  console.timeEnd("sorted_files_by_time");
-  return f_info;
-}
 
 function get_file_diff(req, files) {
   var coopy      = require('coopyhx');
