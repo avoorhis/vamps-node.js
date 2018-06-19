@@ -803,7 +803,7 @@ router.post('/metadata_files',
     console.time("TIME: in post /metadata_files");
     var table_diff_html, sorted_files, files_to_compare;
     sorted_files     = sorted_files_by_time(req);
-    files_to_compare = sorted_files_to_compare(req, sorted_files);
+    files_to_compare = metadata_controller.sorted_files_to_compare(req, sorted_files);
 
     if (typeof req.body.compare !== 'undefined' && req.body.compare.length === 2) {
 
@@ -841,24 +841,6 @@ function sorted_files_by_time(req) {
 
   console.timeEnd("sorted_files_by_time");
   return f_info;
-}
-
-function sorted_files_to_compare(req, sorted_files) {
-  console.time("sorted_files_to_compare");
-
-  var file_names_array = req.body.compare;
-  var files            = [];
-
-  if (typeof file_names_array === 'undefined' || file_names_array.length === 0) {
-    return null;
-  }
-  sorted_files.filter(function (el) {
-    if (file_names_array.includes(el.filename)) {
-      files.push(el);
-    }
-  });
-  console.timeEnd("sorted_files_to_compare");
-  return files;
 }
 
 function get_file_diff(req, files) {
@@ -909,9 +891,6 @@ function get_file_diff(req, files) {
   return "<div class = 'highlighter'>" + table_diff_html + "</div>";
 
 }
-
-// common functions
-
 
 // doesn't work from controller
 function send_mail_finished(req, res) {

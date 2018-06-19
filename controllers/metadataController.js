@@ -551,6 +551,24 @@ exports.get_project_prefix = function(project) {
   return project_prefix;
 };
 
+exports.sorted_files_to_compare = function(req, sorted_files) {
+  console.time("sorted_files_to_compare");
+
+  var file_names_array = req.body.compare;
+  var files            = [];
+
+  if (typeof file_names_array === 'undefined' || file_names_array.length === 0) {
+    return null;
+  }
+  sorted_files.filter(function (el) {
+    if (file_names_array.includes(el.filename)) {
+      files.push(el);
+    }
+  });
+  console.timeEnd("sorted_files_to_compare");
+  return files;
+};
+
 exports.make_metadata_object = function(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
 
