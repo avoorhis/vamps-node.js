@@ -12,6 +12,7 @@ var config              = require(app_root + '/config/config');
 var nodeMailer          = require('nodemailer');
 var Metadata            = require(app_root + '/models/metadata');
 var metadata_controller = require(app_root + '/controllers/metadataController');
+var csv_files_controller = require(app_root + '/controllers/csvFilesController');
 
 /* GET metadata page. */
 router.get('/metadata', function (req, res) {
@@ -767,7 +768,7 @@ function saveMetadata(req, res) {
 router.get('/metadata_file_list', function (req, res) {
   console.time("TIME: get metadata_file_list");
   console.log('in metadata_file_list');
-  var user_metadata_csv_files = metadata_controller.get_csv_files(req);
+  var user_metadata_csv_files = csv_files_controller.get_csv_files(req);
 
   user_metadata_csv_files.sort(function sortByTime(a, b) {
     //reverse sort: recent-->oldest
@@ -792,12 +793,12 @@ router.post('/metadata_files',
 
     console.time("TIME: in post /metadata_files");
     var table_diff_html, sorted_files, files_to_compare;
-    sorted_files     = metadata_controller.sorted_files_by_time(req);
-    files_to_compare = metadata_controller.sorted_files_to_compare(req, sorted_files);
+    sorted_files     = csv_files_controller.sorted_files_by_time(req);
+    files_to_compare = csv_files_controller.sorted_files_to_compare(req, sorted_files);
 
     if (typeof req.body.compare !== 'undefined' && req.body.compare.length === 2) {
 
-      table_diff_html = metadata_controller.get_file_diff(req, files_to_compare);
+      table_diff_html = csv_files_controller.get_file_diff(req, files_to_compare);
       res.render("metadata/metadata_file_list", {
         title: "VAMPS: Metadata File List",
         user: req.user,
