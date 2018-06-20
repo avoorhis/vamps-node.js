@@ -18,6 +18,7 @@ router.get('/submission_request',
   function (req, res) {
     console.log('in GET submission_request');
 
+    // DRY (same in post)
     var pi_list         = submission_controller.get_pi_list();
     req.session.pi_list = pi_list;
     var user_id         = req.user.user_id;
@@ -63,12 +64,8 @@ router.get('/submission_request',
 
         // console.log('user');
         // console.log(req.user);
-
-
       }
-
     });
-
   });
 
 // https://www.npmjs.com/package/express-form
@@ -121,12 +118,8 @@ router.post('/submission_request',
     else {
       console.log('3) in post /submission_request, req.form.isValid');
       req.flash('success', 'Form validated. Now download and open in OpenOffice or Excel to fill-in remaining data.');
-      // DRY (already done in get)
-      // var pi_list = submission_controller.get_pi_list();
-      var pi_list      = req.session.pi_list;
       // console.log('QQQ1 req.body.pi_list', pi_list);
-      var user_submits = req.session.user_submits;
-      // console.log('QQQ2 req.body.pi_list', user_submits);
+      req.session.DOMAIN_REGIONS = CONSTS.DOMAIN_REGIONS;
 
       var d_region = req.form.d_region.split("#");
       // console.log("DDD d_region = ", d_region);
@@ -134,10 +127,10 @@ router.post('/submission_request',
         // domain_region
         button_name: "Download as Spreadsheet",
         d_region: d_region, // d_region =  [ 'Fungal', 'ITS1', 'ITS1' ]
-        domain_regions: CONSTS.DOMAIN_REGIONS,
+        domain_regions: req.session.DOMAIN_REGIONS,
         funding_code: req.form.funding_code,
         hostname: req.CONFIG.hostname,
-        pi_list: pi_list,
+        pi_list: req.session.pi_list,
         pi_id: req.form.pi_id,
         pi_name: req.form.pi_name,
         // previous_submission
@@ -150,7 +143,7 @@ router.post('/submission_request',
         samples_number: req.form.samples_number,
         title: 'VAMPS: Submission Request',
         user: req.user,
-        user_submits: user_submits,
+        user_submits: req.session.user_submits,
       });
 
 
