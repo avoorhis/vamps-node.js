@@ -587,25 +587,6 @@ function make_csv(req) {
   console.timeEnd("TIME: make_csv");
 }
 
-function transpose_2d_arr(data_arr, project_id) {
-  console.time("TIME: transpose_2d_arr");
-
-  //make an array with proper length, even if the first one is empty
-  var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
-  var length_array  = data_arr[0];
-  if (data_arr[0].length < matrix_length) {
-    length_array = metadata_controller.fill_out_arr_doubles('', matrix_length);
-  }
-
-  var newArray = length_array.map(function (col, i) {
-    return data_arr.map(function (row) {
-      return row[i];
-    });
-  });
-  console.timeEnd("TIME: transpose_2d_arr");
-  return newArray;
-}
-
 function convertArrayOfObjectsToCSV(args) {
   console.time("TIME: convertArrayOfObjectsToCSV");
 
@@ -628,7 +609,7 @@ function convertArrayOfObjectsToCSV(args) {
 
   data_arr = metadata_controller.array_from_object(data);
 
-  transposed_data_arr = transpose_2d_arr(data_arr, project_id);
+  transposed_data_arr = metadata_controller.transpose_2d_arr(data_arr, project_id);
 
   columnDelimiter = args.columnDelimiter || ',';
   lineDelimiter   = args.lineDelimiter || '\n';

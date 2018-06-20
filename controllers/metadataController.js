@@ -565,7 +565,27 @@ exports.array_from_object = function(data) {
     data_arr.push(value_arr);
   }
   return data_arr;
-}
+};
+
+exports.transpose_2d_arr = function(data_arr, project_id) {
+  console.time("TIME: transpose_2d_arr");
+
+  //make an array with proper length, even if the first one is empty
+  var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
+  var length_array  = data_arr[0];
+  if (data_arr[0].length < matrix_length) {
+    length_array = module.exports.fill_out_arr_doubles('', matrix_length);
+  }
+
+  var newArray = length_array.map(function (col, i) {
+    return data_arr.map(function (row) {
+      return row[i];
+    });
+  });
+  console.timeEnd("TIME: transpose_2d_arr");
+  return newArray;
+};
+
 
 exports.make_metadata_object = function(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
