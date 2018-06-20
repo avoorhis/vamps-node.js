@@ -1,16 +1,8 @@
-// var Metadata = require(app_root + '/models/metadata');
 var helpers   = require(app_root + '/routes/helpers/helpers');
-var CONSTS    = require(app_root + "/public/constants");
-var validator = require('validator');
 var config              = require(app_root + '/config/config');
 var fs                  = require("fs");
 var path                = require("path");
-
-// Display list of all Submissions.
-// exports.submission_list = function (req, res) {
-//   res.send('NOT IMPLEMENTED: Submission list');
-// };
-
+var metadata_controller = require(app_root + '/controllers/metadataController');
 
 // private
 
@@ -103,4 +95,33 @@ exports.get_csv_files = function(req) {
 
   console.timeEnd("TIME: get_csv_files");
   return all_my_files;
+};
+
+exports.make_csv = function(req) {
+  var out_csv_file_name;
+  console.time("TIME: make_csv");
+
+  var csv = metadata_controller.convertArrayOfObjectsToCSV({
+    data: req.form,
+    user_info: req.user,
+    project_id: req.body.project_id
+  });
+
+  time_stamp = new Date().getTime();
+
+  var base_name     = "metadata-project" + '_' + req.body.project + '_' + req.user.username + '_' + time_stamp + ".csv";
+  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
+
+  //TODO: more robust project!
+
+  fs.writeFile(out_csv_file_name, csv, function (err) {
+    if (err) throw err;
+  });
+
+  console.log('file ' + out_csv_file_name + ' saved');
+
+  var msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.';
+  req.flash("success", msg);
+
+  console.timeEnd("TIME: make_csv");
 };

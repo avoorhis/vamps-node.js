@@ -363,7 +363,8 @@ router.post('/metadata_upload',
       console.log('in post /metadata_upload, !req.form.isValid');
 
       make_metadata_object_from_form(req, res);
-      make_csv(req, res);
+      console.log("III in form");
+      csv_files_controller.make_csv(req, res);
 
       if (req.body.done_editing === "done_editing") {
         send_mail_finished(req, res);
@@ -553,35 +554,6 @@ function make_metadata_object_from_db(req, res) {
 
 // from form to a csv file
 
-function make_csv(req) {
-  var out_csv_file_name;
-  console.time("TIME: make_csv");
-  
-  var csv = metadata_controller.convertArrayOfObjectsToCSV({
-    data: req.form,
-    user_info: req.user,
-    project_id: req.body.project_id
-  });
-
-  time_stamp = new Date().getTime();
-
-  var base_name     = "metadata-project" + '_' + req.body.project + '_' + req.user.username + '_' + time_stamp + ".csv";
-  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
-
-  //TODO: more robust project!
-
-  fs.writeFile(out_csv_file_name, csv, function (err) {
-    if (err) throw err;
-  });
-
-  console.log('file ' + out_csv_file_name + ' saved');
-
-  var msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.';
-  req.flash("success", msg);
-
-  console.timeEnd("TIME: make_csv");
-}
-
 // from a csv file to db
 
 // TODO: mv to helpers and refactor (see also in admin & user_data
@@ -645,7 +617,9 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 
 function saveMetadata(req, res) {
   console.time("TIME: saveMetadata");
-  make_csv(req, res);
+  console.log("SSS in saveMetadata");
+
+  csv_files_controller.make_csv(req, res);
   // var pid = req.body.project_id;
   req.flash("success", "Success with the metadata submit!");
 
