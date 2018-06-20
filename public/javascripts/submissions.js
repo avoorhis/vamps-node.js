@@ -17,38 +17,54 @@ function show_change(scode) {
 
 }
 
-$("button[name='Download as Spreadsheet']").on('click',
+$("button[name='Add datasets']").on('click',
   function (event) {
     event.preventDefault();
     event.stopPropagation();
+    var d_region = $('input:checked[name=d_region]').val().split("#");
+    alert(d_region);
     $.ajax({
       type: "POST",
-      url: "submissions/submission_request",
+      url: "/submissions/submission_request",
       dataType: "html",
+      //   $.post("/",$(this).serialize(), function( data ) {
+      //   console.log(data);
+      // });
+      //   var formData = {
+      //     'name'              : $('input[name=name]').val(),
+      //     'email'             : $('input[name=email]').val(),
+      //     'superheroAlias'    : $('input[name=superheroAlias]').val()
+      //   };
       data: {
         button_name: "Weird name",
-        // d_region: d_region, // d_region =  [ 'Fungal', 'ITS1', 'ITS1' ]
-        // domain_regions: CONSTS.DOMAIN_REGIONS,
-        // funding_code: req.form.funding_code,
+        // $('input:checked[name=d_region]').val()
+        // "Bacterial#v4#Bv4"
+        d_region: $('input:checked[name=d_region]').val().split("#"),
+        // domain_regions: req.session.domain_regions,
+        funding_code: $('input:checked[name=funding_code]').val(),
         // hostname: req.CONFIG.hostname,
-        // pi_list: pi_list,
-        // pi_id: req.form.pi_id,
+        // pi_list: req.session.pi_list,
+        //$('select[name=pi_id] option:selected').val()
+        // "425"
+        pi_id: $('select[name=pi_id] option:selected').val(),
         // pi_name: req.form.pi_name,
         // // previous_submission
-        // project_description: req.form.project_description,
-        // project_name1: req.form.project_name1,
-        // project_name2: req.form.project_name2,
-        // project_name3: req.body.d_region,
-        // project_title: req.form.project_title,
-        // submit_code: req.form.submit_code,
-        // samples_number: "5",
-        // title: 'VAMPS: Submission Request',
+        project_description: $('input[name=project_description]').val(),
+
+        project_name1: $('input[name=project_name1]').val(),
+        project_name2: $('input[name=project_name2]').val(),
+        project_name3: d_region,
+        project_title: $('input[name=project_title]').val(),
+        submit_code: $('input[name=submit_code]').val(),
+        samples_number: $('input[name=samples_number]').val(),
+        title: 'VAMPS: Submission Request',
         // user: req.user,
-        // user_submits: user_submits
+        // user_submits: req.session.user_submits
       }
     })
       .done(function (result) {
         alert("UUU");
+        $("button#submissions_edit_form_btn").attr('name', 'New name');
         changeCategories(result);
       })
       .fail(function (fail) {

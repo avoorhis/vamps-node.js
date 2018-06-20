@@ -114,6 +114,8 @@ router.post('/submission_request',
 
     if (!req.form.isValid) {
       console.log('2) in post /submission_request, !req.form.isValid');
+      console.log("EEE req.form.errors", req.form.errors);
+      console.log("FOFOFO req.form", req.form);
     }
     else {
       console.log('3) in post /submission_request, req.form.isValid');
@@ -125,7 +127,7 @@ router.post('/submission_request',
       // console.log("DDD d_region = ", d_region);
       res.render('submissions/submission_request', {
         // domain_region
-        button_name: "Download as Spreadsheet",
+        button_name: "Add datasets",
         d_region: d_region, // d_region =  [ 'Fungal', 'ITS1', 'ITS1' ]
         domain_regions: req.session.DOMAIN_REGIONS,
         funding_code: req.form.funding_code,
