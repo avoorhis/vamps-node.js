@@ -40,6 +40,7 @@ router.get('/submission_request',
         //
         res.render('submissions/submission_request', {
           button_name: "Validate",
+          dataset_name: "",
           d_region: "",
           domain: "",
           domain_regions: CONSTS.DOMAIN_REGIONS,
@@ -82,6 +83,7 @@ router.get('/submission_request',
 router.post('/submission_request',
   [helpers.isLoggedIn],
   form(
+    form.field("dataset_name").trim().is(/^[a-zA-Z0-9_]+$/).entityEncode().array(),
     form.field("d_region").trim().required().entityEncode(),
     form.field("funding_code").trim().required().is(/^[0-9]+$/).entityEncode().array(),
     form.field("pi_id").trim().required().is(/^[0-9]+$/).entityEncode().array(),
@@ -128,6 +130,7 @@ router.post('/submission_request',
       res.render('submissions/submission_request', {
         // domain_region
         button_name: "Add datasets",
+        dataset_name: req.form.dataset_name,
         d_region: d_region, // d_region =  [ 'Fungal', 'ITS1', 'ITS1' ]
         domain_regions: req.session.DOMAIN_REGIONS,
         funding_code: req.form.funding_code,
