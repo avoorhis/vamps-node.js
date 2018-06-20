@@ -556,12 +556,7 @@ function make_metadata_object_from_db(req, res) {
 function make_csv(req) {
   var out_csv_file_name;
   console.time("TIME: make_csv");
-
-  // var csv = metadata_controller.convertArrayOfObjectsToCSV({
-  //   data: req.form,
-  //   user_info: req.user
-  // });
-
+  
   var csv = metadata_controller.convertArrayOfObjectsToCSV({
     data: req.form,
     user_info: req.user,
