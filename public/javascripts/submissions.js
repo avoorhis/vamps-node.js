@@ -21,8 +21,12 @@ $("button[name='Add datasets']").on('click',
   function (event) {
     event.preventDefault();
     event.stopPropagation();
+    var form = $(this).parents('form:first');
+    var formData = $(form).serialize();
+    alert(formData);
+    console.log("formData", formData);
+
     var d_region = $('input:checked[name=d_region]').val().split("#");
-    alert(d_region);
     $.ajax({
       type: "POST",
       url: "/submissions/submission_request",
@@ -39,7 +43,7 @@ $("button[name='Add datasets']").on('click',
         button_name: "Weird name",
         // $('input:checked[name=d_region]').val()
         // "Bacterial#v4#Bv4"
-        d_region: $('input:checked[name=d_region]').val().split("#"),
+        d_region: d_region,
         // domain_regions: req.session.domain_regions,
         funding_code: $('input:checked[name=funding_code]').val(),
         // hostname: req.CONFIG.hostname,
