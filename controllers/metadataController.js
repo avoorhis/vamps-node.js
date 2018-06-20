@@ -551,6 +551,22 @@ exports.get_project_prefix = function(project) {
   return project_prefix;
 };
 
+exports.array_from_object = function(data) {
+  var data_arr = [];
+  for (var key in data) {
+    var value_arr;
+    if (typeof data[key] === "object") {
+      value_arr = data[key];
+    }
+    else {
+      value_arr = [data[key]];
+    }
+    value_arr.unshift(key);
+    data_arr.push(value_arr);
+  }
+  return data_arr;
+}
+
 exports.make_metadata_object = function(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
 

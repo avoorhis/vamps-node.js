@@ -587,21 +587,21 @@ function make_csv(req) {
   console.timeEnd("TIME: make_csv");
 }
 
-function array_from_object(data) {
-  var data_arr = [];
-  for (var key in data) {
-    var value_arr;
-    if (typeof data[key] === "object") {
-      value_arr = data[key];
-    }
-    else {
-      value_arr = [data[key]];
-    }
-    value_arr.unshift(key);
-    data_arr.push(value_arr);
-  }
-  return data_arr;
-}
+// function array_from_object(data) {
+//   var data_arr = [];
+//   for (var key in data) {
+//     var value_arr;
+//     if (typeof data[key] === "object") {
+//       value_arr = data[key];
+//     }
+//     else {
+//       value_arr = [data[key]];
+//     }
+//     value_arr.unshift(key);
+//     data_arr.push(value_arr);
+//   }
+//   return data_arr;
+// }
 
 function transpose_2d_arr(data_arr, project_id) {
   console.time("TIME: transpose_2d_arr");
@@ -642,7 +642,7 @@ function convertArrayOfObjectsToCSV(args) {
     return null;
   }
 
-  data_arr = array_from_object(data);
+  data_arr = metadata_controller.array_from_object(data);
 
   transposed_data_arr = transpose_2d_arr(data_arr, project_id);
 
