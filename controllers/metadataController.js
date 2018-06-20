@@ -586,6 +586,50 @@ exports.transpose_2d_arr = function(data_arr, project_id) {
   return newArray;
 };
 
+exports.convertArrayOfObjectsToCSV = function(args) {
+  console.time("TIME: convertArrayOfObjectsToCSV");
+
+  var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_id;
+
+  data = args.data || null;
+  if (data === null) {
+    return null;
+  }
+
+  user_info = args.user_info || null;
+  if (user_info === null) {
+    return null;
+  }
+
+  project_id = args.project_id || null;
+  if (project_id === null) {
+    return null;
+  }
+
+  data_arr = module.exports.array_from_object(data);
+
+  transposed_data_arr = module.exports.transpose_2d_arr(data_arr, project_id);
+
+  columnDelimiter = args.columnDelimiter || ',';
+  lineDelimiter   = args.lineDelimiter || '\n';
+  cellEscape      = args.cellEscape || '"';
+
+  result = '';
+  transposed_data_arr.map(function (row) {
+    // TODO: to a function?
+    var r1 = row.map(function (item) {
+      // Wrap each element of the items array with quotes
+      return cellEscape + item + cellEscape;
+    }).join(columnDelimiter);
+
+    result += r1;
+    result += lineDelimiter;
+  });
+
+  console.timeEnd("TIME: convertArrayOfObjectsToCSV");
+
+  return result;
+};
 
 exports.make_metadata_object = function(req, res, pid, info) {
   console.time("TIME: make_metadata_object");

@@ -557,12 +557,12 @@ function make_csv(req) {
   var out_csv_file_name;
   console.time("TIME: make_csv");
 
-  // var csv = convertArrayOfObjectsToCSV({
+  // var csv = metadata_controller.convertArrayOfObjectsToCSV({
   //   data: req.form,
   //   user_info: req.user
   // });
 
-  var csv = convertArrayOfObjectsToCSV({
+  var csv = metadata_controller.convertArrayOfObjectsToCSV({
     data: req.form,
     user_info: req.user,
     project_id: req.body.project_id
@@ -587,54 +587,7 @@ function make_csv(req) {
   console.timeEnd("TIME: make_csv");
 }
 
-function convertArrayOfObjectsToCSV(args) {
-  console.time("TIME: convertArrayOfObjectsToCSV");
-
-  var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_id;
-
-  data = args.data || null;
-  if (data === null) {
-    return null;
-  }
-
-  user_info = args.user_info || null;
-  if (user_info === null) {
-    return null;
-  }
-
-  project_id = args.project_id || null;
-  if (project_id === null) {
-    return null;
-  }
-
-  data_arr = metadata_controller.array_from_object(data);
-
-  transposed_data_arr = metadata_controller.transpose_2d_arr(data_arr, project_id);
-
-  columnDelimiter = args.columnDelimiter || ',';
-  lineDelimiter   = args.lineDelimiter || '\n';
-  cellEscape      = args.cellEscape || '"';
-
-  result = '';
-  transposed_data_arr.map(function (row) {
-    // TODO: to a function?
-    var r1 = row.map(function (item) {
-      // Wrap each element of the items array with quotes
-      return cellEscape + item + cellEscape;
-    }).join(columnDelimiter);
-
-    result += r1;
-    result += lineDelimiter;
-  });
-
-  console.timeEnd("TIME: convertArrayOfObjectsToCSV");
-
-  return result;
-}
-
 // from a csv file to db
-
-// ??
 
 // TODO: mv to helpers and refactor (see also in admin & user_data
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
