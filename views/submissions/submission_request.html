@@ -1,6 +1,6 @@
 <% include ../add_ins/begin.ejs %>
 
-<link href="/stylesheets/submissions.css" rel="stylesheet" >
+<link href="/stylesheets/submissions.css" rel="stylesheet">
 
 <% if(messages.success){ %>
 <div class="alert_flash_message_success"><%- messages.success %></div>
@@ -90,7 +90,8 @@
                     maxlength="4"
                     size="4"
                     value="<%= project_name2 %>">_<input
-                    type="text" id="project_name3" name="project_name3" maxlength="4" size="5" value="<%= d_region[2] %>">
+                    type="text" id="project_name3" name="project_name3" maxlength="4" size="5"
+                    value="<%= d_region[2] %>">
             </div>
         </div>
 
@@ -99,7 +100,8 @@
             <label class="control-label col-sm-4" for="project_title">Project Title (max length: 60 chars)</label>
             <div class="col-sm-8">
 
-                <input type="text" id="project_title" name="project_title" maxlength="60" size="60" value="<%= project_title %>">
+                <input type="text" id="project_title" name="project_title" maxlength="60" size="60"
+                       value="<%= project_title %>">
             </div>
         </div>
 
@@ -163,6 +165,46 @@
                 <input type="number" id="samples_number" name="samples_number" size="3" value="<%= samples_number %>">
             </div>
         </div>
+
+        <% if (samples_number > 0){ %>
+        <% for (var i = 0; i < Number(samples_number); i++) { %>
+        <div class="form-row">
+            <div class="form-group col-sm-5">
+                <label for="dataset_name"><%= i+1%>) Dataset name</label>
+                <input type="text" class="form-control" id="dataset_name"
+                       placeholder="Alphanumeric and '_' only and must start with a letter, less than 30 characters">
+            </div>
+            <div class="form-group col-sm-7">
+                <label for="tube_label">Tube Label #<%= i+1%></label>
+                <input type="text" class="form-control" id="tube_label"
+                       placeholder="What is written on the sample tube for identification.">
+            </div>
+        </div>
+        <div class="form-row">
+            <label class="control-label col-sm-3" for="dataset_description">Sample (Dataset) Description</label>
+            <div class="col-sm-9">
+                <textarea rows="4" cols="50" type="text" class="form-control" id="dataset_description"
+                          placeholder="A short (1-2 sentances) description of the sample.">
+                </textarea>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-sm-6">
+                <label class="control-label" for="sample_concentration">Sample Concentration
+                    (ng/ul):</label>
+                <input type="number" class="form-control" id="sample_concentration" name="sample_concentration"
+                       maxlength="10" size="10" value="" placeholder="Numeric only (ng/ul)">
+            </div>
+            <div class="form-group col-sm-6">
+                <label class="control-label" for="adaptor">Adaptor</label>
+                <select id="adaptor" class="form-control">
+                    <option selected>Choose...</option>
+                    <option>...</option>
+                </select>
+            </div>
+        </div>
+        <% } %> <!--if-->
+        <% } %> <!--for-->
 
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
