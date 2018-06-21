@@ -17,7 +17,7 @@ function show_change(scode) {
 
 }
 
-$("button[name='Add datasets']").on('click',
+// $("button[name='Add datasets']").on('click',
 //   function (event) {
 //     event.preventDefault();
 //     event.stopPropagation();
