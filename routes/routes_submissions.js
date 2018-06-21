@@ -47,6 +47,7 @@ router.get('/submission_request',
           funding_code: "",
           hostname: req.CONFIG.hostname,
           pi_list: pi_list,
+          pi_id_name: "",
           pi_id: "",
           pi_name: "",
           // previous_submission
@@ -86,8 +87,9 @@ router.post('/submission_request',
     form.field("dataset_name").trim().is(/^[a-zA-Z0-9_]+$/).entityEncode().array(),
     form.field("d_region").trim().required().entityEncode(),
     form.field("funding_code").trim().required().is(/^[0-9]+$/).entityEncode().array(),
-    form.field("pi_id").trim().required().is(/^[0-9]+$/).entityEncode().array(),
-    form.field("pi_name").trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
+    form.field("pi_id_name").trim().required().entityEncode(),
+    // form.field("pi_id").trim().required().is(/^[0-9]+$/).entityEncode().array(),
+    // form.field("pi_name").trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
     form.field("submit_code").trim().entityEncode().array(),
     form.field("project_description").trim().required().entityEncode().array(),
     form.field("project_name1").trim().required().entityEncode().array(),
@@ -125,7 +127,8 @@ router.post('/submission_request',
       // console.log('QQQ1 req.body.pi_list', pi_list);
       req.session.DOMAIN_REGIONS = CONSTS.DOMAIN_REGIONS;
 
-      var d_region = req.form.d_region.split("#");
+      var d_region       = req.form.d_region.split("#");
+      var pi_id_name_arr = req.form.pi_id_name.split("#");
       // console.log("DDD d_region = ", d_region);
       res.render('submissions/submission_request', {
         // domain_region
@@ -136,8 +139,9 @@ router.post('/submission_request',
         funding_code: req.form.funding_code,
         hostname: req.CONFIG.hostname,
         pi_list: req.session.pi_list,
-        pi_id: req.form.pi_id,
-        pi_name: req.form.pi_name,
+        pi_id: pi_id_name_arr[0],
+        pi_id_name: req.form.pi_id_name,
+        pi_name: pi_id_name_arr[1],
         // previous_submission
         project_description: req.form.project_description,
         project_name1: req.form.project_name1,

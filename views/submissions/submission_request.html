@@ -59,12 +59,12 @@
 
         <div class="form-group">
 
-            <label class="control-label col-sm-4" for="pi_id">Select PI for submission to be submitted
+            <label class="control-label col-sm-4" for="pi_id_name">Select PI for submission to be submitted
                 under:</label>
             <div class="col-sm-3">
-                <select id="pi_id" name="pi_id" class="form-control">
+                <select id="pi_id_name" name="pi_id_name" class="form-control">
                     <% pi_list.forEach(function(val){ %>
-                    <option value="<%= val.pid %>"
+                    <option value="<%= val.pid %>#<%= val.PI %>"
                     <% if (val.pid == pi_id) {%>
                     selected
                     <% } %>
@@ -72,7 +72,6 @@
                     <% }); %>
                 </select>
                 <% if (!typeof val == 'undefined') {%>
-                <input type="hidden" name="pi_name" value="<%= val.PI %>">
                 <% } %>
 
             </div>
