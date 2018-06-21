@@ -19,6 +19,10 @@ table tr td {
     text-align: center;
 }
 
+.full_length_input {
+    text-align: center;
+}
+
 .no_bullets_list {
     list-style-type: none;
 }
