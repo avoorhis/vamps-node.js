@@ -3,7 +3,7 @@
 }
 
 .submission_form_field {
-    background-color: #ECECEC;
+    background-color: #EEEEEE;
     display: block;
 }
 
@@ -19,10 +19,6 @@ table tr td {
     text-align: center;
 }
 
-.full_length_input {
-    text-align: center;
-}
-
 .no_bullets_list {
     list-style-type: none;
 }
@@ -34,4 +30,8 @@ table tr td {
 .paragraph_no_pad {
     margin: 0;
     padding: 0;
+}
+
+.spacer5 {
+    height: 5px;
 }
