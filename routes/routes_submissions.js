@@ -10,6 +10,7 @@ var validator             = require('validator');
 var nodeMailer            = require('nodemailer');
 var Submission            = require(app_root + '/models/submission');
 var submission_controller = require(app_root + '/controllers/submissionController');
+var metadata_controller   = require(app_root + '/controllers/metadataController');
 
 
 /* GET new submission form */
@@ -99,7 +100,7 @@ router.post('/submission_request',
     form.field("sample_concentration").trim().required().isInt().entityEncode().array(),
     form.field("samples_number").trim().required().is(/^[0-9]+$/).entityEncode().array(),
     form.field("submit_code").trim().entityEncode().array(),
-    form.field("tube_label").trim().required().is(/^[a-zA-Z0-9_-]+$/).entityEncode().array()
+    form.field("tube_label").trim().required().is(/^[a-zA-Z0-9_ -]+$/).entityEncode().array()
   ),
   function (req, res) {
     console.log('in POST submission_request');
@@ -124,19 +125,107 @@ router.post('/submission_request',
       console.log('2) in post /submission_request, !req.form.isValid');
       console.log("EEE req.form.errors", req.form.errors);
       console.log("FOFOFO req.form", req.form);
+
+      //collect errors
+      var myArray_fail = helpers.unique_array(req.form.errors);
+
+      if (helpers.has_duplicates(req.form.sample_name)) {
+        myArray_fail.push('Sample ID (user sample name) should be unique.');
+      }
+
+      myArray_fail.sort();
+      console.log("myArray_fail = ", myArray_fail);
+      req.flash("fail", myArray_fail);
+
+      // console.log('QQQ1 req.body.pi_list', pi_list);
+      req.session.DOMAIN_REGIONS = CONSTS.DOMAIN_REGIONS;
+      req.session.button_name    = "Add datasets";
+      var d_region               = req.form.d_region.split("#");
+      var pi_id_name_arr         = req.form.pi_id_name.split("#");
+      // console.log("DDD d_region = ", d_region);
+      res.render('submissions/submission_request', {
+        // domain_region
+        button_name: req.session.button_name,
+        dataset_name: req.form.dataset_name,
+        d_region: d_region, // d_region =  [ 'Fungal', 'ITS1', 'ITS1' ]
+        domain_regions: req.session.DOMAIN_REGIONS,
+        funding_code: req.form.funding_code,
+        messages: req.flash,
+        hostname: req.CONFIG.hostname,
+        pi_list: req.session.pi_list,
+        pi_id: pi_id_name_arr[0],
+        pi_id_name: req.form.pi_id_name,
+        pi_name: pi_id_name_arr[1],
+        // previous_submission
+        project_description: req.form.project_description,
+        project_name1: req.form.project_name1,
+        project_name2: req.form.project_name2,
+        project_name3: req.body.d_region,
+        project_title: req.form.project_title,
+        submit_code: req.form.submit_code,
+        samples_number: req.form.samples_number,
+        title: 'VAMPS: Submission Request',
+        user: req.user,
+        user_submits: req.session.user_submits,
+      });
+
+
+      // Form validated.
+      //   Now download and open in OpenOffice or Excel to fill-in remaining data
+      // Unique Prefix
+    }
+
+    else if (req.session.button_name === "Add datasets") {
+      console.log('3) in post /submission_request, req.form.isValid');
+      req.flash('success', 'Form validated. Now download and open in OpenOffice or Excel to fill-in remaining data.');
+      // console.log('QQQ1 req.body.pi_list', pi_list);
+      req.session.DOMAIN_REGIONS = CONSTS.DOMAIN_REGIONS;
+      req.session.button_name    = "Add metadata";
+      var d_region               = req.form.d_region.split("#");
+      var pi_id_name_arr         = req.form.pi_id_name.split("#");
+      // console.log("DDD d_region = ", d_region);
+      res.render('submissions/submission_request', {
+        // domain_region
+        button_name: "Add metadata",
+        dataset_name: req.form.dataset_name,
+        d_region: d_region, // d_region =  [ 'Fungal', 'ITS1', 'ITS1' ]
+        domain_regions: req.session.DOMAIN_REGIONS,
+        funding_code: req.form.funding_code,
+        hostname: req.CONFIG.hostname,
+        pi_list: req.session.pi_list,
+        pi_id: pi_id_name_arr[0],
+        pi_id_name: req.form.pi_id_name,
+        pi_name: pi_id_name_arr[1],
+        // previous_submission
+        project_description: req.form.project_description,
+        project_name1: req.form.project_name1,
+        project_name2: req.form.project_name2,
+        project_name3: req.body.d_region,
+        project_title: req.form.project_title,
+        submit_code: req.form.submit_code,
+        samples_number: req.form.samples_number,
+        title: 'VAMPS: Submission Request',
+        user: req.user,
+        user_submits: req.session.user_submits,
+      });
+
+
+      // Form validated.
+      //   Now download and open in OpenOffice or Excel to fill-in remaining data
+      // Unique Prefix
     }
     else {
       console.log('3) in post /submission_request, req.form.isValid');
       req.flash('success', 'Form validated. Now download and open in OpenOffice or Excel to fill-in remaining data.');
       // console.log('QQQ1 req.body.pi_list', pi_list);
       req.session.DOMAIN_REGIONS = CONSTS.DOMAIN_REGIONS;
-
-      var d_region       = req.form.d_region.split("#");
-      var pi_id_name_arr = req.form.pi_id_name.split("#");
+      req.session.button_name    = "Add datasets";
+      var d_region               = req.form.d_region.split("#");
+      var pi_id_name_arr         = req.form.pi_id_name.split("#");
       // console.log("DDD d_region = ", d_region);
       res.render('submissions/submission_request', {
         // domain_region
-        button_name: "Add datasets",
+        button_name: req.session.button_name,
         dataset_name: req.form.dataset_name,
         d_region: d_region, // d_region =  [ 'Fungal', 'ITS1', 'ITS1' ]
         domain_regions: req.session.DOMAIN_REGIONS,
@@ -177,27 +266,6 @@ router.get('/submission_form_faq', function (req, res) {
     hostname: req.CONFIG.hostname,
   });
 });
-
-// function render_edit_form(req, res) {
-//   // console.log("JJJ1 all_submission");
-//   // console.log(JSON.stringify(all_submission));
-//   //
-//
-//   connection.query(function (err, rows, fields) {
-//     if (err) {
-//       console.log('ERR', err);
-//       return;
-//     }
-//     res.render('submissions/submission_request', {
-//       title: 'VAMPS: Submission Request',
-//       user: req.user,
-//       user_submits: JSON.stringify(rows),
-//       // regions: JSON.stringify(dandr),
-//       // pi_list: JSON.stringify(pi_list),
-//       hostname: req.CONFIG.hostname,
-//     });
-//   });
-// }
 
 
 module.exports = router;

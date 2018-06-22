@@ -2,7 +2,8 @@
 
 <link href="/stylesheets/submissions.css" rel="stylesheet">
 
-<% if(messages.success){ %>
+<%= messages %>
+<% if (messages.success){ %>
 <div class="alert_flash_message_success"><%- messages.success %></div>
 <% } if(messages.fail) { %>
 <div class="alert_flash_message_fail">
@@ -170,36 +171,36 @@
         <% for (var i = 0; i < Number(samples_number); i++) { %>
                 <div class="form-row">
                     <div class="form-group col-sm-5">
-                        <label for="dataset_name"><%= i+1%>) Dataset name</label>
-                        <input type="text" class="form-control" id="dataset_name"
-                               placeholder="Alphanumeric and '_' only and must start with a letter, less than 30 characters">
+                        <label for="dataset_name<%= i+1%>"><%= i+1%>) Dataset name</label>
+                        <input type="text" class="form-control" id="dataset_name<%= i+1%>" name="dataset_name[]"
+                               placeholder="Alphanumeric and '_' only and must start with a letter, less than 30 characters" value="">
                     </div>
                     <div class="form-group col-sm-7">
-                        <label for="tube_label">Tube Label #<%= i+1%></label>
-                        <input type="text" class="form-control" id="tube_label"
-                               placeholder="What is written on the sample tube for identification.">
+                        <label for="tube_label<%= i+1%>">Tube Label #<%= i+1%></label>
+                        <input type="text" class="form-control" id="tube_label<%= i+1%>" name="tube_label[]"
+                               placeholder="What is written on the sample tube for identification." value="">
                     </div>
                 </div>
                 <div class="form-row">
-                    <label class="col-sm-3 paragraph_no_pad" for="dataset_description">Sample (Dataset)
+                    <label class="col-sm-3 paragraph_no_pad" for="dataset_description<%= i+1%>">Sample (Dataset)
                         Description</label>
                     <div class="col-sm-9">
-                <textarea rows="2" cols="30" type="text" class="form-control" id="dataset_description"
-                          placeholder="A short (1-2 sentances) description of the sample.">
+                <textarea rows="2" cols="30" type="text" class="form-control" id="dataset_description<%= i+1%>" name="dataset_description[]"
+                          placeholder="A short (1-2 sentances) description of the sample." value="">
                 </textarea>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-sm-6">
-                        <label class="control-label" for="sample_concentration">Sample Concentration
+                        <label class="control-label" for="sample_concentration<%= i+1%>">Sample Concentration
                             (ng/ul):</label>
-                        <input type="number" class="form-control" id="sample_concentration" name="sample_concentration"
+                        <input type="number" class="form-control" id="sample_concentration<%= i+1%>" name="sample_concentration[]"
                                maxlength="10" size="10" value="" placeholder="Numeric only (ng/ul)">
                     </div>
                     <div class="form-group col-sm-6">
-                        <label class="control-label" for="adaptor">Adaptor</label>
-                        <select id="adaptor" class="form-control">
-                            <option selected>Choose...</option>
+                        <label class="control-label" for="adaptor<%= i+1%>">Adaptor</label>
+                        <select id="adaptor<%= i+1%>" class="form-control">
+                            <option selected name="adaptor[]">Choose...</option>
                             <option>...</option>
                         </select>
                     </div>
