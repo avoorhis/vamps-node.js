@@ -403,6 +403,8 @@ function make_metadata_object_from_form(req, res) {
   var all_metadata         = metadata_controller.make_metadata_object(req, res, pid, data);
   var all_field_names_orig = metadata_controller.make_all_field_names(data['dataset_id']);
 
+
+
   //add_new
   var all_field_names_with_new = metadata_controller.collect_new_rows(req, all_field_names_orig);
 

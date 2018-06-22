@@ -157,6 +157,26 @@ filterItems = function(arr, query) {
   });
 };
 
+make_ordered_field_names_obj = function() {
+  console.time("TIME: make_ordered_field_names_obj");
+  var ordered_field_names_obj = {};
+
+  for (var i in CONSTS.ORDERED_METADATA_NAMES) {
+    // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
+    var temp_arr = [i];
+    temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
+    ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
+  }
+  console.timeEnd("TIME: make_ordered_field_names_obj");
+  return ordered_field_names_obj;
+};
+
+get_object_vals = function (object_name) {
+  return Object.keys(object_name).map(function (key) {
+    return object_name[key];
+  });
+};
+
 // public
 
 exports.get_all_field_units = function (req) {
@@ -199,12 +219,6 @@ exports.geo_loc_name_continental_filter = function (value) {
     }
   }
   console.timeEnd("geo_loc_name_continental_filter");
-};
-
-get_object_vals = function (object_name) {
-  return Object.keys(object_name).map(function (key) {
-    return object_name[key];
-  });
 };
 
 exports.geo_loc_name_marine_validation = function (value) {
@@ -493,20 +507,6 @@ exports.from_obj_to_obj_of_arr = function(data, pid) {
   return obj_of_arr;
 };
 
-make_ordered_field_names_obj = function() {
-  console.time("TIME: make_ordered_field_names_obj");
-  var ordered_field_names_obj = {};
-
-  for (var i in CONSTS.ORDERED_METADATA_NAMES) {
-    // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
-    var temp_arr = [i];
-    temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
-    ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
-  }
-  console.timeEnd("TIME: make_ordered_field_names_obj");
-  return ordered_field_names_obj;
-};
-
 //not_used?
 // exports.add_all_val_by_key = function(my_key_hash, my_val_hash, all_metadata_pid) {
 //   console.time("TIME: 6) add_all_val_by_key");
@@ -632,6 +632,14 @@ exports.convertArrayOfObjectsToCSV = function(args) {
   return result;
 };
 
+exports.get_all_field_names = function(dataset_ids) {
+  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
+  all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+  all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
+  all_field_names     = helpers.unique_array(all_field_names);
+  return all_field_names;
+};
+
 exports.make_metadata_object = function(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
 
@@ -642,12 +650,12 @@ exports.make_metadata_object = function(req, res, pid, info) {
 
   // 0) get field_names
   //TODO: DRY
-  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
-  all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
-  all_field_names     = helpers.unique_array(all_field_names);
-
-  // console.log("HHH3 all_field_names");
+  // var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
+  // all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+  // all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
+  // all_field_names     = helpers.unique_array(all_field_names);
+  var all_field_names = module.exports.get_all_field_names(dataset_ids);
+  console.log("HHH3 all_field_names");
   // console.log(JSON.stringify(all_field_names));
 
 
@@ -715,11 +723,11 @@ exports.make_metadata_object = function(req, res, pid, info) {
 };
 
 exports.render_edit_form = function(req, res, all_metadata, all_field_names) {
-  // console.log("JJJ1 all_metadata");
-  // console.log(JSON.stringify(all_metadata));
-  //
-  // console.log("JJJ2 all_field_names");
-  // console.log(JSON.stringify(all_field_names));
+  console.log("JJJ1 all_metadata");
+  console.log(JSON.stringify(all_metadata));
+
+  console.log("JJJ2 all_field_names");
+  console.log(JSON.stringify(all_field_names));
 
   MD_ENV_CNTRY_vals           = get_object_vals(MD_ENV_CNTRY);
   MD_ENV_LZC_vals             = get_object_vals(MD_ENV_LZC);
