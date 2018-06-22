@@ -205,37 +205,37 @@ router.post('/metadata_edit_form',
     console.timeEnd("TIME: 1) in post /metadata_edit_form");
   });
 
-function render_edit_form(req, res, all_metadata, all_field_names) {
-  // console.log("JJJ1 all_metadata");
-  // console.log(JSON.stringify(all_metadata));
-  //
-  // console.log("JJJ2 all_field_names");
-  // console.log(JSON.stringify(all_field_names));
-
-  MD_ENV_CNTRY_vals           = metadata_controller.get_object_vals(MD_ENV_CNTRY);
-  MD_ENV_LZC_vals             = metadata_controller.get_object_vals(MD_ENV_LZC);
-  var ordered_field_names_obj = metadata_controller.make_ordered_field_names_obj();
-
-  res.render("metadata/metadata_edit_form", {
-    title: "VAMPS: Metadata_upload",
-    user: req.user,
-    hostname: req.CONFIG.hostname,
-    all_metadata: all_metadata,
-    all_field_names: all_field_names,
-    ordered_field_names_obj: ordered_field_names_obj,
-    all_field_units: MD_CUSTOM_UNITS[req.body.project_id],
-    dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-    dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-    dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-    biome_primary_options: CONSTS.BIOME_PRIMARY,
-    feature_primary_options: CONSTS.FEATURE_PRIMARY,
-    material_primary_options: CONSTS.MATERIAL_PRIMARY,
-    metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-    env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-    investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-    sample_type_options: CONSTS.SAMPLE_TYPE
-  });
-}
+// function render_edit_form(req, res, all_metadata, all_field_names) {
+//   // console.log("JJJ1 all_metadata");
+//   // console.log(JSON.stringify(all_metadata));
+//   //
+//   // console.log("JJJ2 all_field_names");
+//   // console.log(JSON.stringify(all_field_names));
+//
+//   MD_ENV_CNTRY_vals           = metadata_controller.get_object_vals(MD_ENV_CNTRY);
+//   MD_ENV_LZC_vals             = metadata_controller.get_object_vals(MD_ENV_LZC);
+//   var ordered_field_names_obj = metadata_controller.make_ordered_field_names_obj();
+//
+//   res.render("metadata/metadata_edit_form", {
+//     title: "VAMPS: Metadata_upload",
+//     user: req.user,
+//     hostname: req.CONFIG.hostname,
+//     all_metadata: all_metadata,
+//     all_field_names: all_field_names,
+//     ordered_field_names_obj: ordered_field_names_obj,
+//     all_field_units: MD_CUSTOM_UNITS[req.body.project_id],
+//     dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+//     dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+//     dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+//     biome_primary_options: CONSTS.BIOME_PRIMARY,
+//     feature_primary_options: CONSTS.FEATURE_PRIMARY,
+//     material_primary_options: CONSTS.MATERIAL_PRIMARY,
+//     metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+//     env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+//     investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+//     sample_type_options: CONSTS.SAMPLE_TYPE
+//   });
+// }
 
 
 // create form from req.form
@@ -423,7 +423,7 @@ function make_metadata_object_from_form(req, res) {
   myArray_fail.sort();
   req.flash("fail", myArray_fail);
 
-  render_edit_form(req, res, all_metadata, all_field_names_with_new);
+  metadata_controller.render_edit_form(req, res, all_metadata, all_field_names_with_new);
 
   console.timeEnd("TIME: make_metadata_object_from_form");
 }
@@ -472,7 +472,7 @@ function make_metadata_object_from_csv(req, res) {
   // console.log("DDD4 all_metadata from make_metadata_object_from_csv");
   // console.log(JSON.stringify(all_metadata));
   req.body.project_id = pid;
-  render_edit_form(req, res, all_metadata, all_field_names);
+  metadata_controller.render_edit_form(req, res, all_metadata, all_field_names);
 
   console.timeEnd("TIME: make_metadata_object_from_csv");
 }
@@ -547,7 +547,7 @@ function make_metadata_object_from_db(req, res) {
   // console.log("DDD2 all_metadata");
   // console.log(JSON.stringify(all_metadata));
 
-  render_edit_form(req, res, all_metadata, all_field_names);
+  metadata_controller.render_edit_form(req, res, all_metadata, all_field_names);
 
   console.timeEnd("TIME: make_metadata_object_from_db");
 }

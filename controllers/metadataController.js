@@ -201,7 +201,7 @@ exports.geo_loc_name_continental_filter = function (value) {
   console.timeEnd("geo_loc_name_continental_filter");
 };
 
-exports.get_object_vals = function (object_name) {
+get_object_vals = function (object_name) {
   return Object.keys(object_name).map(function (key) {
     return object_name[key];
   });
@@ -493,7 +493,7 @@ exports.from_obj_to_obj_of_arr = function(data, pid) {
   return obj_of_arr;
 };
 
-exports.make_ordered_field_names_obj = function() {
+make_ordered_field_names_obj = function() {
   console.time("TIME: make_ordered_field_names_obj");
   var ordered_field_names_obj = {};
 
@@ -714,3 +714,34 @@ exports.make_metadata_object = function(req, res, pid, info) {
   return all_metadata;
 };
 
+exports.render_edit_form = function(req, res, all_metadata, all_field_names) {
+  // console.log("JJJ1 all_metadata");
+  // console.log(JSON.stringify(all_metadata));
+  //
+  // console.log("JJJ2 all_field_names");
+  // console.log(JSON.stringify(all_field_names));
+
+  MD_ENV_CNTRY_vals           = get_object_vals(MD_ENV_CNTRY);
+  MD_ENV_LZC_vals             = get_object_vals(MD_ENV_LZC);
+  var ordered_field_names_obj = make_ordered_field_names_obj();
+
+  res.render("metadata/metadata_edit_form", {
+    title: "VAMPS: Metadata_upload",
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    all_metadata: all_metadata,
+    all_field_names: all_field_names,
+    ordered_field_names_obj: ordered_field_names_obj,
+    all_field_units: MD_CUSTOM_UNITS[req.body.project_id],
+    dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+    dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+    dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+    biome_primary_options: CONSTS.BIOME_PRIMARY,
+    feature_primary_options: CONSTS.FEATURE_PRIMARY,
+    material_primary_options: CONSTS.MATERIAL_PRIMARY,
+    metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+    env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+    investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+    sample_type_options: CONSTS.SAMPLE_TYPE
+  });
+};
