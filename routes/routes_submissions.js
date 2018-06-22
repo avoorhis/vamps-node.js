@@ -84,18 +84,22 @@ router.get('/submission_request',
 router.post('/submission_request',
   [helpers.isLoggedIn],
   form(
-    form.field("dataset_name").trim().is(/^[a-zA-Z0-9_]+$/).entityEncode().array(),
-    form.field("d_region").trim().required().entityEncode(),
-    form.field("funding_code").trim().required().is(/^[0-9]+$/).entityEncode().array(),
-    form.field("pi_id_name").trim().required().entityEncode(),
     // form.field("pi_id").trim().required().is(/^[0-9]+$/).entityEncode().array(),
     // form.field("pi_name").trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
-    form.field("submit_code").trim().entityEncode().array(),
+    form.field("adaptor").trim().required().is(/^[a-zA-Z0-9]+$/).entityEncode().array(),
+    form.field("d_region").trim().required().entityEncode(),
+    form.field("dataset_description").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
+    form.field("dataset_name").trim().is(/^[a-zA-Z0-9_]+$/).entityEncode().array(),
+    form.field("funding_code").trim().required().is(/^[0-9]+$/).entityEncode().array(),
+    form.field("pi_id_name").trim().required().entityEncode(),
     form.field("project_description").trim().required().entityEncode().array(),
     form.field("project_name1").trim().required().entityEncode().array(),
     form.field("project_name2").trim().required().entityEncode().array(),
     form.field("project_title").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
-    form.field("samples_number").trim().required().is(/^[0-9]+$/).entityEncode().array()
+    form.field("sample_concentration").trim().required().isInt().entityEncode().array(),
+    form.field("samples_number").trim().required().is(/^[0-9]+$/).entityEncode().array(),
+    form.field("submit_code").trim().entityEncode().array(),
+    form.field("tube_label").trim().required().is(/^[a-zA-Z0-9_-]+$/).entityEncode().array()
   ),
   function (req, res) {
     console.log('in POST submission_request');
