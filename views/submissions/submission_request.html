@@ -167,10 +167,7 @@
         </div>
 
         <% if (samples_number > 0){ %>
-        <ul class="color_form no_bullets_list">
-
         <% for (var i = 0; i < Number(samples_number); i++) { %>
-            <li>
                 <div class="form-row">
                     <div class="form-group col-sm-5">
                         <label for="dataset_name"><%= i+1%>) Dataset name</label>
@@ -207,10 +204,7 @@
                         </select>
                     </div>
                 </div>
-            </li>
         <% } %> <!--for-->
-        </ul>
-
         <% } %> <!--if-->
 
         <div class="form-group">
