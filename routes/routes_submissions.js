@@ -191,20 +191,23 @@ router.post('/submission_request',
       // console.log('VVV1 get_object_vals ALL_USERS_BY_UID', vv);
 
 
-      var tagMap = {};
-      var i = null;
-      for (var property1 in ALL_USERS_BY_UID) {
-        tagMap[ALL_USERS_BY_UID[property1].username] = ALL_USERS_BY_UID[property1];
-      }
+      //TODO: remove
+      // var all_users_by_username = metadata_controller.all_users_by_username();
 
-      var hasTag = function(email) {
-        return tagMap[email];
-      };
+      console.log('TTT1 req.body', req.body);
 
-      console.log('TTT1 hasTag', hasTag);
-      console.log('TTT2 tagMap', tagMap);
+      var all_metadata = {};
+      pi_id = req.body.pi_id_name.split("#")[0];
+      pi_name = req.body.pi_id_name.split("#")[1];
+      pid = "";
+      all_metadata[pid]["pi_email"] = [ALL_USERS_BY_UID[pi_id]];
+      all_metadata[pid]["project_title"] = [req.body.project_title];
+      all_metadata[pid]["project"] = req.body.project_name1 + "_" + req.body.project_name2 + "_" + req.body.d_region.split("#")[2];
+      all_metadata[pid]["dataset_id"] = [];
+      all_metadata[pid]["pi_name"] = pi_name;
+      all_metadata[pid]["project_abstract"] = [];
 
-      // metadata_controller.make_metadata_object(req, res, pid, req.form);
+          // metadata_controller.make_metadata_object(req, res, pid, req.form);
 
       // req.session.DOMAIN_REGIONS = CONSTS.DOMAIN_REGIONS;
       // req.session.button_name    = "Add metadata";
