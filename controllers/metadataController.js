@@ -632,9 +632,8 @@ exports.convertArrayOfObjectsToCSV = function(args) {
   return result;
 };
 
-exports.get_all_field_names = function(dataset_ids) {
-  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
-  all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+exports.prepare_field_names = function() {
+  var all_field_names = CONSTS.REQ_METADATA_FIELDS_wIDs;
   all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
   all_field_names     = helpers.unique_array(all_field_names);
   return all_field_names;
@@ -648,15 +647,21 @@ exports.make_metadata_object = function(req, res, pid, info) {
   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
   var repeat_times = dataset_ids.length;
 
+  // console.log("LLL ALL_DATASETS", ALL_DATASETS);
+
   // 0) get field_names
-  //TODO: DRY
+  //TODO: DRY and clean up
   // var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
   // all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
   // all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
   // all_field_names     = helpers.unique_array(all_field_names);
-  var all_field_names = module.exports.get_all_field_names(dataset_ids);
+  var all_field_names = module.exports.prepare_field_names();
+  all_field_names     = all_field_names.concat(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
+  all_field_names     = helpers.unique_array(all_field_names);
+
+
   console.log("HHH3 all_field_names");
-  // console.log(JSON.stringify(all_field_names));
+  console.log(JSON.stringify(all_field_names));
 
 
   // console.log("QQQ0 AllMetadataNames");
