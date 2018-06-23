@@ -82,6 +82,13 @@ router.get('/submission_request',
 // project_title
 // samples_number
 
+get_object_vals = function (object_name) {
+  return Object.keys(object_name).map(function (key) {
+    return object_name[key];
+  });
+};
+
+
 router.post('/submission_request',
   [helpers.isLoggedIn],
   form(
@@ -178,7 +185,24 @@ router.post('/submission_request',
       console.log('3) in post /submission_request, req.form.isValid');
       req.flash('success', 'Form validated. Now download and open in OpenOffice or Excel to fill-in remaining data.');
       console.log("req.session.button_name: ", req.session.button_name);
-      // console.log('QQQ1 req.body.pi_list', pi_list);
+      delete req.session.button_name;
+      console.log('UUU1 ALL_USERS_BY_UID', ALL_USERS_BY_UID);
+      // var vv = get_object_vals(ALL_USERS_BY_UID);
+      // console.log('VVV1 get_object_vals ALL_USERS_BY_UID', vv);
+
+
+      var tagMap = {};
+      var i = null;
+      for (var property1 in ALL_USERS_BY_UID) {
+        tagMap[ALL_USERS_BY_UID[property1].username] = ALL_USERS_BY_UID[property1];
+      }
+
+      var hasTag = function(email) {
+        return tagMap[email];
+      };
+
+      console.log('TTT1 hasTag', hasTag);
+      console.log('TTT2 tagMap', tagMap);
 
       // metadata_controller.make_metadata_object(req, res, pid, req.form);
 
@@ -186,32 +210,11 @@ router.post('/submission_request',
       // req.session.button_name    = "Add metadata";
       // var pi_id_name_arr1         = req.form.pi_id_name.split("#");
       // // console.log("DDD d_region = ", d_region);
-      all_field_names =
+      var all_field_names = metadata_controller.prepare_field_names();
+      console.log("FFF1 all_field_names = ", all_field_names);
+
       metadata_controller.render_edit_form(req, res, {}, {}, all_field_names);
-      // res.render('/metadata/metadata_upload_new');
-      //   // domain_region
-      //   button_name: "Add metadata",
-      //   dataset_name: req.form.dataset_name,
-      //   d_region: req.form.d_region.split("#"), // d_region =  [ 'Fungal', 'ITS1', 'ITS1' ]
-      //   domain_regions: req.session.DOMAIN_REGIONS,
-      //   funding_code: req.form.funding_code,
-      //   hostname: req.CONFIG.hostname,
-      //   pi_list: req.session.pi_list,
-      //   pi_id: pi_id_name_arr1[0],
-      //   pi_id_name: req.form.pi_id_name,
-      //   pi_name: pi_id_name_arr1[1],
-      //   // previous_submission
-      //   project_description: req.form.project_description,
-      //   project_name1: req.form.project_name1,
-      //   project_name2: req.form.project_name2,
-      //   project_name3: req.body.d_region,
-      //   project_title: req.form.project_title,
-      //   submit_code: req.form.submit_code,
-      //   samples_number: req.form.samples_number,
-      //   title: 'VAMPS: Submission Request',
-      //   user: req.user,
-      //   user_submits: req.session.user_submits,
-      // });
+
       // Form validated.
       //   Now download and open in OpenOffice or Excel to fill-in remaining data
       // Unique Prefix
@@ -223,7 +226,7 @@ router.post('/submission_request',
       req.session.DOMAIN_REGIONS = CONSTS.DOMAIN_REGIONS;
       req.session.button_name    = "Add datasets";
       var d_region               = req.form.d_region.split("#");
-      var pi_id_name_arr         = req.form.pi_id_name.split("#");
+      var pi_id_name_arr1         = req.form.pi_id_name.split("#");
       // console.log("DDD d_region = ", d_region);
       res.render('submissions/submission_request', {
         // domain_region
@@ -234,9 +237,9 @@ router.post('/submission_request',
         funding_code: req.form.funding_code,
         hostname: req.CONFIG.hostname,
         pi_list: req.session.pi_list,
-        pi_id: pi_id_name_arr[0],
+        pi_id: pi_id_name_arr1[0],
         pi_id_name: req.form.pi_id_name,
-        pi_name: pi_id_name_arr[1],
+        pi_name: pi_id_name_arr1[1],
         // previous_submission
         project_description: req.form.project_description,
         project_name1: req.form.project_name1,
