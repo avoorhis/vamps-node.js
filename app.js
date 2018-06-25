@@ -512,9 +512,7 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     
     //console.log(MD_PRIMER_SUITE[34])
     //console.log(MD_SEQUENCING_PLATFORM)
-     var os= require('os')
-     console.log('SYS USER');
-    console.log(os.userInfo());
+    
     //console.log(AllMetadata[88])
 		//var mode = 0777 & ~process.umask();
 		//console.log('mode',mode)

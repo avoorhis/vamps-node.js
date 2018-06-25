@@ -62,7 +62,11 @@
     		
     		    
     <tr>
-        <td><%= p %></td>
+        <% if(ptype == 'matrix'){ %>
+            <td><%= p %> (<%= ptype %>)</td>
+        <% }else{ %>
+            <td><%= p %></td>
+        <% } %>
         <td><%= status %></td>
         <td><%= number_of_datasets %></td>
         <td><%= total_number_of_sequences %></td>
@@ -75,8 +79,11 @@
                         <span class="caret"></span>
                       </button>
                       <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
-                        <li role="presentation">    
-                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/data_only">Delete Taxonomy Only</a></li>   
+                        <% if(ptype != 'matrix'){ %>
+                            <li role="presentation">    
+                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/data_only">Delete Taxonomy Only</a></li> 
+                        <% } %>
+                          
                         <li role="presentation">    
                                 <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete Entire Project </a></li>             
                       </ul>
@@ -119,17 +126,18 @@
                         <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_metadata/<%= project %>">View Metadata</a></li> -->
                         <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_validation/<%= project %>">Validate Project</a></li> -->
                         <!-- <li role="presentation" class="divider"></li> -->                               
-                        <% if(classified_by){ %>
-                            <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="assign_taxonomy/<%= project %>">Assign Taxonomy</a></li>
-                            <li role="presentation" class="divider"></li>
-                        <% }else{ %>
+                        <% if(ptype != 'matrix'){ %>
+                            <% if(classified_by){ %>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="assign_taxonomy/<%= project %>">Assign Taxonomy</a></li>
+                                <li role="presentation" class="divider"></li>
+                            <% }else{ %>
                             
-                            <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>
-                            <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/meta">Delete Metadata Only</a></li>  -->
-                            <!--  <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/select">Delete Datasets from Project</a></li> -->   
-                        <% } %>
-                            
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>
+                                <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/meta">Delete Metadata Only</a></li>  -->
+                                <!--  <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/select">Delete Datasets from Project</a></li> -->   
+                            <% } %>
+                         <% } %>   
                             <li role="presentation">    
                                 <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete Entire Project</a></li>                    
                       </ul>

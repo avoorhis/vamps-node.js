@@ -430,11 +430,11 @@ def push_taxonomy(args):
         #print tax_file
         #print seq_file
         while f.next():
+            items =  f.id.split('|')  # WILL have id|frequency:x
             if args.verbose:
                 print(f.id)
-            items =  f.id.split('|')  # WILL have id|frequency:x
-            
-            id = items[0]
+                print('items',items)
+            id = items[0].split()[0]
             tmp_seqs[id]={}
             freq = items[1].split(':')[1]  # WILL have id|frequency:x
             
@@ -459,7 +459,7 @@ def push_taxonomy(args):
         elif args.classifier.upper() == 'RDP':         
             data_file   = os.path.join(data_dir, 'rdp_out.rdp')
             if os.path.exists(data_file):            
-                run_rdp_tax_file(args, ds, data_file, unique_file,tmp_seqs)
+                run_rdp_tax_file(args, ds, data_file, unique_file, tmp_seqs)
             else:
                 print ("cound not find file:",data_file)
         elif args.classifier.upper() == 'SPINGO':
@@ -535,7 +535,7 @@ def run_rdp_tax_file(args, ds, tax_file, seq_file, seqs):
     minboot = 80
     
     print('tax_file: '+tax_file)    
-    tax_items = [] 
+    tax_items = []
     with open(tax_file,'r') as fh:
         for line in fh:
             tax_items = []
@@ -545,7 +545,6 @@ def run_rdp_tax_file(args, ds, tax_file, seq_file, seqs):
             # ['21|frequency:1', '', 'Bacteria', 'domain', '1.0', '"Firmicutes"', 'phylum', '1.0', '"Clostridia"', 'class', '1.0', 'Clostridiales', 'order', '1.0', '"Ruminococcaceae"', 'family', '1.0', 'Faecalibacterium', 'genus', '1.0']
             # if boot_value > minboot add to tax_string
             id = items[0].split('|')[0]   # WILL have id|frequency:x
-            
             seq_count = seqs[id]['freq']
             #seq_count =1
             tax_line = items[2:]
