@@ -639,6 +639,22 @@ exports.prepare_field_names = function() {
   return all_field_names;
 };
 
+exports.get_pi_list = function () {
+  console.log("FROM Controller");
+  var pi_list = [];
+
+  for (var i in ALL_USERS_BY_UID) {
+    pi_list.push({'PI': ALL_USERS_BY_UID[i].last_name + ' ' + ALL_USERS_BY_UID[i].first_name, 'pid': i});
+
+  }
+
+  pi_list.sort(function sortByAlpha(a, b) {
+    return helpers.compareStrings_alpha(a.PI, b.PI);
+  });
+
+  return pi_list;
+};
+
 exports.make_metadata_object = function(req, res, pid, info) {
   console.time("TIME: make_metadata_object");
 
