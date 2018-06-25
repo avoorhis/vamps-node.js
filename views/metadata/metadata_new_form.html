@@ -1,0 +1,199 @@
+<% include ../add_ins/begin.ejs %>
+
+<br>
+ <div class='title'>Metadata</div>
+ <div class='subtitle'></div>
+
+<% if (all_metadata) { %>
+<%
+} else {
+  var all_metadata = {}
+} %>
+
+<script>
+  var all_field_units_js = <%- JSON.stringify(all_field_units) %>;
+  var ordered_field_names_obj_js = <%- JSON.stringify(ordered_field_names_obj) %>;
+</script>
+
+<div id="postresult">
+</div>
+
+
+<% if (messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% } if(messages.fail) { %>
+<div class="alert_flash_message_fail" >
+  <ul>
+  <% messages.fail.forEach(function(value){ %>
+    <li>
+      <%= value %>
+    </li>
+  <% }) %>
+  </ul>
+</div>
+<% }%>
+<br>
+
+
+<H3>Instructions:</H3>
+<ol>
+<li>
+ Fields in yellow are mandatory; other unknown entries may be left blank.
+</li>
+<li>
+ The parameter names listed below are from the MIGS/MIMS/MIMARKS project of the  Genomic Standards Consortium.
+</li>
+<li class="message">
+ A range is not permitted for any value.
+</li>
+  <li>
+    <a href='/metadata/FormTutorial_083117.pdf' target='_blank'>For further questions see the Tutorial.</a>
+  </li>
+</ol>
+<form name='add_project_form' method='POST' action='/metadata/metadata_new'>
+<!-- <form action="" method="post" enctype="multipart/form-data"> -->
+  <fieldset id="general" class="required_fields" >
+  <legend id="general-legend">General sample description</legend>
+    <% for (var pid in all_metadata) { %>
+      <% if (typeof(all_metadata[pid]) !== 'undefined') { %>
+        <% pi_email = all_metadata[pid]["pi_email"][0] %>
+        <% if (typeof(all_metadata[pid]["reference"]) !== 'undefined') { %>
+          <% reference = all_metadata[pid]["reference"][0] %>
+        <% } else { %>
+        <% reference = ""%>
+        <% } %>
+
+        <% project_title = all_metadata[pid]["project_title"][0] %>
+        <% project = all_metadata[pid]["project"][0] %>
+        <% pi_name = all_metadata[pid]["pi_name"][0] %>
+        <% dataset_ids = all_metadata[pid]["dataset_id"] %>
+        <% project_abstracts = all_metadata[pid]["project_abstract"] %>
+    <% } %>
+
+    <!-- dataset_id project title username email institution first_name last_name public -->
+
+      <label for="project_title">Title of Project:</label>
+      <input type="text" class="long_input" id="project_title" name="project_title" value='<%= project_title %>'/>
+
+      <br />
+      <!--<label for="project">VAMPS project name (MBL Supplied)</label>-->
+      <!--<input type="text" id="project" class="readonly" readonly name="project" placeholder="DCO_GAI_Bv3v5" value='<%= project %>'/>-->
+    <label class="control-label col-sm-4" for="project_name">Project Name (This name may be adjusted by the
+      MBL)</label>
+    <div class="col-sm-8">
+
+      <input type="text" id="project_name1" name="project_name1" maxlength="4" size="4" value="<%=
+                       project_name1 %>">_<input
+            type="text"
+            id="project_name2"
+            name="project_name2"
+            maxlength="4"
+            size="4"
+            value="<%= project_name2 %>">_<input
+            type="text" id="project_name3" name="project_name3" maxlength="4" size="5"
+            value="<%= d_region[2] %>">
+    </div>
+
+      <br />
+    <div class="form-group">
+
+      <label class="control-label col-sm-4" for="pi_id_name">Select PI for submission to be submitted
+        under:</label>
+      <div class="col-sm-3">
+        <select id="pi_id_name" name="pi_id_name" class="form-control">
+          <% pi_list.forEach(function(val){ %>
+          <option value="<%= val.pid %>#<%= val.PI %>"
+          <% if (val.pid == pi_id) {%>
+          selected
+          <% } %>
+          ><%= val.PI %></option>
+          <% }); %>
+        </select>
+        <% if (!typeof val == 'undefined') {%>
+        <% } %>
+
+      </div>
+    </div>
+
+    <label for="pi_id_name">PI Name:</label>
+    <select id="pi_id_name" name="pi_id_name" class="form-control">
+      <% pi_list.forEach(function(val){ %>
+      <option value="<%= val.pid %>#<%= val.PI %>"
+      <% if (val.pid == pi_id) {%>
+      selected
+      <% } %>
+      ><%= val.PI %></option>
+      <% }); %>
+    </select>
+
+      <% for (var did in dataset_ids) { %>
+        <input type='hidden' name='dataset_id' value='<%= dataset_ids[did] %>' />
+      <% } %>
+
+    <% } %>
+
+  <br />
+  <label for="pi_email">PI's email address:</label>
+  <input type="email" id="pi_email" name="pi_email"  value='<%= pi_email %>'/>
+  <br />
+  <label for="project_abstract">Project abstract:</label>
+    <% if ((typeof(project_abstracts[0]) !== 'undefined') && (project_abstracts[0].length > 0)) { %>
+      <div class="white_box readonly">
+        <% for (var n in project_abstracts[0]) { %>
+          <a href='/static/abstracts/<%= project_abstracts[0][n] %>' target='_blank'><%= project_abstracts[0][n] %></a><br/>
+        <% } %> <!-- for (var pid in all_metadata)-->
+        <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= project_abstracts[0] %>'/>
+      </div>
+      <% } else { %> <!-- if not (all_metadata[pid]["project_abstract"]) -->
+    <textarea class="textarea_long" class="readonly" readonly id="project_abstract" name="project_abstract" placeholder="Please send the abstract to VAMPS"></textarea>
+    <% } %> <!-- if else (all_metadata[pid]["project_abstract"]) -->
+
+    <br />
+  <label for="reference">References for selected manuscripts published that describe the location:</label>
+    <textarea class="textarea_long" id="reference" name="reference"  placeholder='<%= reference %>'><%= reference %></textarea>
+  <br />
+  </fieldset>
+  <fieldset id="parameters">
+    <legend id="parameters-legend">Table of metadata parameters</legend>
+    <div class="Headers">
+      <table class="NewHeader">
+        <tr>
+          <td class="empty1"></td><td class="empty1"></td>
+        </tr>
+      </table>
+    </div>
+      <% include first_fixed_table.ejs %>
+  </fieldset>
+<br>
+
+<!-- center -->
+
+  <input type='hidden' name='new_row_num' id='new_row_num' value='' />
+  <input type='hidden' name='new_row_length' id='new_row_length' value='' />
+  <!--<input name='new_row_num' id='new_row_num' value='' />-->
+  <!--<input name='new_row_length' id='new_row_length' value='' />-->
+
+  <input type='hidden' name='project_id' value='<%= pid %>' />
+  <input type='hidden' name='from_where' value='metadata_upload_from_file' />
+
+
+  <p>
+    <label for="done_editing">Notify the website management that I have finished submitting available metadata to this project.</label>
+
+    Yes <input type="radio" id="done_editing"     name="done_editing" value="done_editing">
+    No <input type="radio"  id="not_done_editing" name="done_editing" value="not_done_editing" checked="checked">
+
+  </p>
+
+  <button id='add_project_form_submit_btn' class='btn btn-sm btn-primary' type='submit'>Submit</button>
+
+</form>
+
+
+<% include ../add_ins/end.ejs %>
+<script type='text/javascript' src='/javascripts/global.js'></script>
+<script type='text/javascript' src='/javascripts/metadata.js'></script>
+<script type='text/javascript' src='/javascripts/bootstrap-select.js'></script>
+</script>
+</body>
+</html>
