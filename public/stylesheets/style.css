@@ -598,3 +598,7 @@ td.left_justify {
     empty-cells: show;
 }
 
+.uppercase
+{
+    text-transform: uppercase;
+}
