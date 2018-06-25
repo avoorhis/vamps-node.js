@@ -195,7 +195,7 @@ function get_metadata_hash(md_selected) {
 // render new form
 // ?? render_edit_form(req, res, {}, {}, all_field_names)
 router.get('/metadata_new_form', helpers.isLoggedIn, function (req, res) {
-  var pi_list         = submission_controller.get_pi_list();
+  var pi_list         = metadata_controller.get_pi_list();
   // req.session.pi_list = pi_list;
   res.render('metadata/metadata_new_form', {
     title: 'VAMPS: New Metadata',

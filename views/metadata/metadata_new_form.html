@@ -72,23 +72,12 @@ var all_metadata = {}
                 <select id="pi_id_name" name="pi_id_name" class="form-control">
                     <% pi_list.forEach(function(val){ %>
                     <option value="<%= val.pid %>#<%= val.PI %>"
-                    <% if (val.pid == pi_id) {%>
+                    <% if ((typeof(pi_id) !== 'undefined') && (val.pid == pi_id)) {%>
                     selected
                     <% } %>
                     ><%= val.PI %></option>
                     <% }); %>
                 </select>
-
-        <label for="pi_id_name">PI Name:</label>
-        <select id="pi_id_name" name="pi_id_name" class="form-control">
-            <% pi_list.forEach(function(val){ %>
-            <option value="<%= val.pid %>#<%= val.PI %>"
-            <% if (val.pid == pi_id) {%>
-            selected
-            <% } %>
-            ><%= val.PI %></option>
-            <% }); %>
-        </select>
 
         <br/>
         <label for="project_abstract">Project abstract:</label>
@@ -121,7 +110,6 @@ var all_metadata = {}
     <!--<input name='new_row_num' id='new_row_num' value='' />-->
     <!--<input name='new_row_length' id='new_row_length' value='' />-->
 
-    <input type='hidden' name='project_id' value='<%= pid %>'/>
     <input type='hidden' name='from_where' value='metadata_new_form'/>
 
 
