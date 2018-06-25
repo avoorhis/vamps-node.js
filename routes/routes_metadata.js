@@ -1,17 +1,17 @@
-var express             = require("express");
-var router              = express.Router();
-var helpers             = require("./helpers/helpers");
-var form                = require("express-form");
-var queries             = require(app_root + "/routes/queries");
-var CONSTS              = require(app_root + "/public/constants");
-var fs                  = require("fs");
-var path                = require("path");
-var config              = require(app_root + '/config/config');
+var express = require("express");
+var router  = express.Router();
+var helpers = require("./helpers/helpers");
+var form    = require("express-form");
+var queries = require(app_root + "/routes/queries");
+var CONSTS  = require(app_root + "/public/constants");
+var fs      = require("fs");
+var path    = require("path");
+var config  = require(app_root + '/config/config');
 // var validator           = require('validator');
 // var expressValidator = require('express-validator');
-var nodeMailer          = require('nodemailer');
-var Metadata            = require(app_root + '/models/metadata');
-var metadata_controller = require(app_root + '/controllers/metadataController');
+var nodeMailer           = require('nodemailer');
+var Metadata             = require(app_root + '/models/metadata');
+var metadata_controller  = require(app_root + '/controllers/metadataController');
 var csv_files_controller = require(app_root + '/controllers/csvFilesController');
 
 /* GET metadata page. */
@@ -194,12 +194,15 @@ function get_metadata_hash(md_selected) {
 
 // render new form
 // ?? render_edit_form(req, res, {}, {}, all_field_names)
-  router.get('/metadata_new_form', helpers.isLoggedIn, function (req, res) {
+router.get('/metadata_new_form', helpers.isLoggedIn, function (req, res) {
+  var pi_list         = submission_controller.get_pi_list();
+  // req.session.pi_list = pi_list;
   res.render('metadata/metadata_new_form', {
     title: 'VAMPS: New Metadata',
     user: req.user,
     hostname: req.CONFIG.hostname,
-    all_metadata: {}
+    all_metadata: {},
+    pi_list: pi_list
     // finfo: JSON.stringify(user_metadata_csv_files),
     // edit: true
   });
@@ -412,7 +415,6 @@ function make_metadata_object_from_form(req, res) {
 
   var all_metadata         = metadata_controller.make_metadata_object(req, res, pid, data);
   var all_field_names_orig = metadata_controller.make_all_field_names(data['dataset_id']);
-
 
 
   //add_new
@@ -753,4 +755,5 @@ function send_mail_finished(req, res) {
 
   console.timeEnd("TIME: send_mail_finished");
 }
+
 // ---- metadata_upload end ----
