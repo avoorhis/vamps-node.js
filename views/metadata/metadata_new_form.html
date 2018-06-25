@@ -76,7 +76,7 @@ var all_metadata = {}
                 <option selected="true" disabled>Select&hellip;</option>
 
                 <% pi_list.forEach(function(val){ %>
-                <option value="<%= val.pi_id %>#<%= val.PI %>"
+                <option value="<%= val.pi_id %>#<%= val.PI %>#<%= val.last_name %>#<%= val.first_name %>#<%= val.pi_email %>"
                 <% if ((typeof(pi_id) !== 'undefined') && (val.pi_id == pi_id)) {%>
                 selected
                 <% } %>
@@ -85,13 +85,17 @@ var all_metadata = {}
             </select>
         </div>
         </div>
-        <!--<br/>-->
+
+        <label class="col-sm-4" for="pi_email">PI's email address:</label>
+        <input type="email" id="pi_email" name="pi_email"  value=''/>
+        <br />
+
 
         <label class="col-sm-4" for="project_abstract">Project abstract:</label>
         <textarea class="textarea_long" class="readonly" readonly id="project_abstract" name="project_abstract"
                   placeholder="Please send the abstract to VAMPS"></textarea>
         <br/>
-        <label class="col-sm-4" for="reference">References for selected manuscripts published that describe the location:</label>
+        <label class="col-sm-4" for="reference">References for selected manuscripts published:</label>
         <textarea class="textarea_long" id="reference" name="reference"
                   placeholder=''></textarea>
         <br/>

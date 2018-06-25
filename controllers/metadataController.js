@@ -640,7 +640,7 @@ exports.prepare_field_names = function() {
 };
 
 exports.get_pi_list = function () {
-  console.log("FROM Controller");
+  console.log("FROM Controller", ALL_USERS_BY_UID);
   var pi_list = [];
 
   for (var i in ALL_USERS_BY_UID) {
@@ -649,7 +649,7 @@ exports.get_pi_list = function () {
       'pi_id': i,
       'last_name': ALL_USERS_BY_UID[i].last_name,
       'first_name': ALL_USERS_BY_UID[i].first_name,
-      'pi_email': ALL_USERS_BY_UID[i].pi_email
+      'pi_email': ALL_USERS_BY_UID[i].email
     });
   }
 

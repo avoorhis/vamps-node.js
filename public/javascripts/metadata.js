@@ -947,32 +947,25 @@ showUnits = function () {
 };
 // ---
 
+//164#Amaral Zettler Linda#Amaral Zettler#Linda#amaral@mbl.edu
+
 $('#pi_id_name').change(function () {
   // alert(this.value);
-  var pi_id = this.value.split("#")[0];
-  var pi_name = this.value.split("#")[1];
-  var inits = pi_name.split(" ");
+  var last_name = this.value.split("#")[2];
+  var first_name = this.value.split("#")[3];
+  var pi_email = this.value.split("#")[4];
+  var full_name = first_name + " " + last_name;
+  var inits = full_name.split(" ");
   var inits_len = inits.length;
   var project_name1 = "";
-  for (var i = 1; i < inits_len; i++) {
+  for (var i = 0; i < inits_len; i++) {
     project_name1 = project_name1 + inits[i][0];
   }
-  project_name1 = project_name1 + inits[0][0];
   // alert(project_name1);
   $('input#project_name1').val(project_name1);
+  $('input#pi_email').val(pi_email);
+
 });
-
-
-// 425#Shipunova Anna
-// {
-//   populate_secondary_select.call(this, ['feature', feature_seq_options]);
-// }).each(function () {
-//
-//   if ($(this).val() !== "Please choose one") {
-//     populate_secondary_select.call(this, ['feature', feature_seq_options]);
-//   }
-
-// });
 
 // ---
 
