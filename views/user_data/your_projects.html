@@ -76,9 +76,9 @@
                       </button>
                       <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
                         <li role="presentation">    
-                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/data_only">Delete Data from VAMPS</a></li>   
+                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/data_only">Delete Taxonomy Only</a></li>   
                         <li role="presentation">    
-                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete Whole Project</a></li>             
+                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete Entire Project </a></li>             
                       </ul>
                 </div>
             </td>
@@ -114,31 +114,22 @@
                         <span class="caret"></span>
                       </button>
                       <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="edit_project/<%= project %>">View/Edit Project Information</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_info/<%= project %>">View Datasets and Counts</a></li> 
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_metadata/<%= project %>">View Metadata</a></li>
+                        <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="edit_project/<%= project %>">View/Edit Project Information</a></li> -->
+                        <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_info/<%= project %>">View Datasets and Counts</a></li> --> 
+                        <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_metadata/<%= project %>">View Metadata</a></li> -->
                         <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_validation/<%= project %>">Validate Project</a></li> -->
-                        <li role="presentation" class="divider"></li>                               
+                        <!-- <li role="presentation" class="divider"></li> -->                               
                         <% if(classified_by){ %>
                             <li role="presentation">
                                 <a role="menuitem" tabindex="-1" href="assign_taxonomy/<%= project %>">Assign Taxonomy</a></li>
                             <li role="presentation" class="divider"></li>
                         <% }else{ %>
-                            <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="#">Cluster</a></li>
-                            <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>
-                            <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/meta">Delete Metadata Only</a></li> 
-                            <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/select">Delete Datasets from Project</a></li>   
+                            
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>
+                            <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/meta">Delete Metadata Only</a></li>  -->
+                            <!--  <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/select">Delete Datasets from Project</a></li> -->   
                         <% } %>
-                            <!-- 
-                                <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="duplicate_project/<%= project %> ">Duplicate this Project</a></li>   
-             
-                            <li role="presentation" class="divider"></li>
-                            -->
+                            
                             <li role="presentation">    
                                 <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete Entire Project</a></li>                    
                       </ul>
