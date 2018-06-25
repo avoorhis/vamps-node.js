@@ -967,6 +967,15 @@ $('#pi_id_name').change(function () {
 
 });
 
+$('input:radio[name="d_region"]').change(
+  function () {
+    if ($(this).is(':checked')) {
+      var project_name3 = this.value.split("#")[2];
+      $('input#project_name3').val(project_name3);
+    }
+  });
+
+
 // ---
 
 $(document).ready(function () {
