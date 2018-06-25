@@ -194,6 +194,15 @@ function get_metadata_hash(md_selected) {
 
 // render new form
 // ?? render_edit_form(req, res, {}, {}, all_field_names)
+  router.get('/metadata_upload_new', helpers.isLoggedIn, function (req, res) {
+  res.render('metadata/metadata_upload_new', {
+    title: 'VAMPS: Metadata New',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    // finfo: JSON.stringify(user_metadata_csv_files),
+    // edit: true
+  });
+});
 
 // render edit form
 router.post('/metadata_edit_form',
