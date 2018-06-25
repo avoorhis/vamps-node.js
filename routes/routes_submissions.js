@@ -200,12 +200,13 @@ router.post('/submission_request',
       pi_id = req.body.pi_id_name.split("#")[0];
       pi_name = req.body.pi_id_name.split("#")[1];
       pid = "";
-      all_metadata[pid]["pi_email"] = [ALL_USERS_BY_UID[pi_id]];
-      all_metadata[pid]["project_title"] = [req.body.project_title];
-      all_metadata[pid]["project"] = req.body.project_name1 + "_" + req.body.project_name2 + "_" + req.body.d_region.split("#")[2];
+      all_metadata[pid] = {};
+      all_metadata[pid]["pi_email"] = [ALL_USERS_BY_UID[pi_id]["email"]];
       all_metadata[pid]["dataset_id"] = [];
       all_metadata[pid]["pi_name"] = pi_name;
+      all_metadata[pid]["project"] = req.body.project_name1 + "_" + req.body.project_name2 + "_" + req.body.d_region.split("#")[2];
       all_metadata[pid]["project_abstract"] = [];
+      all_metadata[pid]["project_title"] = [req.body.project_title];
 
           // metadata_controller.make_metadata_object(req, res, pid, req.form);
 
@@ -213,11 +214,15 @@ router.post('/submission_request',
       // req.session.button_name    = "Add metadata";
       // var pi_id_name_arr1         = req.form.pi_id_name.split("#");
       // // console.log("DDD d_region = ", d_region);
+      //TODO: add field names from previous datasets, see metadata controller
       var all_field_names = metadata_controller.prepare_field_names();
       console.log("FFF1 all_field_names = ", all_field_names);
+      // Message: last_name is not defined
 
       metadata_controller.render_edit_form(req, res, {}, {}, all_field_names);
-
+      //TODO: create metadata object from existing metadata
+      //TODO: save into submission table
+      // TODO: When to save a new project?
       // Form validated.
       //   Now download and open in OpenOffice or Excel to fill-in remaining data
       // Unique Prefix
