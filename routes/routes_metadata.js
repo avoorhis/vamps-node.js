@@ -202,6 +202,7 @@ router.get('/metadata_new_form', helpers.isLoggedIn, function (req, res) {
     user: req.user,
     hostname: req.CONFIG.hostname,
     domain_regions: CONSTS.DOMAIN_REGIONS,
+    samples_number: 1,
     pi_list: pi_list
   });
 });

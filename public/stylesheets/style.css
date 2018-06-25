@@ -602,3 +602,9 @@ td.left_justify {
 {
     text-transform: uppercase;
 }
+
+.domain_regions th {
+    vertical-align: top;
+    padding-right: 1ex;
+
+}
