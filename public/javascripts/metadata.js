@@ -948,8 +948,21 @@ showUnits = function () {
 // ---
 
 $('#pi_id_name').change(function () {
-  alert(this.value);
-  // 425#Shipunova Anna
+  // alert(this.value);
+  var pi_id = this.value.split("#")[0];
+  var pi_name = this.value.split("#")[1];
+  var inits = pi_name.split(" ");
+  var inits_len = inits.length;
+  var project_name1 = "";
+  for (var i = 1; i < inits_len; i++) {
+    project_name1 = project_name1 + inits[i][0];
+  }
+  project_name1 = project_name1 + inits[0][0];
+  alert(project_name1);
+});
+
+
+// 425#Shipunova Anna
 // {
 //   populate_secondary_select.call(this, ['feature', feature_seq_options]);
 // }).each(function () {
@@ -958,7 +971,7 @@ $('#pi_id_name').change(function () {
 //     populate_secondary_select.call(this, ['feature', feature_seq_options]);
 //   }
 
-});
+// });
 
 // ---
 
