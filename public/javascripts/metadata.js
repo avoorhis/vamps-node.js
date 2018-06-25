@@ -951,12 +951,12 @@ showUnits = function () {
 
 $('#pi_id_name').change(function () {
   // alert(this.value);
-  var last_name = this.value.split("#")[2];
-  var first_name = this.value.split("#")[3];
-  var pi_email = this.value.split("#")[4];
-  var full_name = first_name + " " + last_name;
-  var inits = full_name.split(" ");
-  var inits_len = inits.length;
+  var last_name     = this.value.split("#")[2];
+  var first_name    = this.value.split("#")[3];
+  var pi_email      = this.value.split("#")[4];
+  var full_name     = first_name + " " + last_name;
+  var inits         = full_name.split(" ");
+  var inits_len     = inits.length;
   var project_name1 = "";
   for (var i = 0; i < inits_len; i++) {
     project_name1 = project_name1 + inits[i][0];

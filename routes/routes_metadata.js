@@ -202,10 +202,12 @@ router.get('/metadata_new_form', helpers.isLoggedIn, function (req, res) {
     user: req.user,
     hostname: req.CONFIG.hostname,
     domain_regions: CONSTS.DOMAIN_REGIONS,
-    samples_number: 1,
+    samples_number: "",
     pi_list: pi_list
   });
 });
+
+// POST /metadata/metadata_new
 
 // render edit form
 router.post('/metadata_edit_form',

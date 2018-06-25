@@ -55,37 +55,21 @@ var all_metadata = {}
         <input type="text" class="long_input" id="project_title" name="project_title" value=''/>
 
         <br/>
-        <label class="col-sm-4" for="project_name">Project Name (This name may be adjusted by the
-            MBL)</label>
-        <input class="uppercase" type="text" id="project_name1" name="project_name1" maxlength="4" size="5"
-               value="">_<input
-            class="uppercase"
-            type="text"
-            id="project_name2"
-            name="project_name2"
-            maxlength="4"
-            size="4"
-            value="">_<input
-            type="text" id="project_name3" name="project_name3" maxlength="4" size="5"
-            value="">
-        <br/>
         <label class="col-sm-4" for="pi_id_name">Select PI for submission to be submitted
             under:</label>
-        <div class="row">
-            <div class="col-sm-3">
-                <select id="pi_id_name" name="pi_id_name" class="form-control">
-                    <option selected="true" disabled>Select&hellip;</option>
-
-                    <% pi_list.forEach(function(val){ %>
-                    <option value="<%= val.pi_id %>#<%= val.PI %>#<%= val.last_name %>#<%= val.first_name %>#<%= val.pi_email %>"
-                    <% if ((typeof(pi_id) !== 'undefined') && (val.pi_id == pi_id)) {%>
-                    selected
-                    <% } %>
-                    ><%= val.PI %></option>
-                    <% }); %>
-                </select>
-            </div>
+        <div>
+        <select id="pi_id_name" name="pi_id_name">
+            <option selected="true" disabled>Select&hellip;</option>
+            <% pi_list.forEach(function(val){ %>
+            <option value="<%= val.pi_id %>#<%= val.PI %>#<%= val.last_name %>#<%= val.first_name %>#<%= val.pi_email %>"
+            <% if ((typeof(pi_id) !== 'undefined') && (val.pi_id == pi_id)) {%>
+            selected
+            <% } %>
+            ><%= val.PI %></option>
+            <% }); %>
+        </select>
         </div>
+        <br/>
 
         <label class="col-sm-4" for="pi_email">PI's email address:</label>
         <input type="email" id="pi_email" name="pi_email" value=''/>
@@ -95,12 +79,7 @@ var all_metadata = {}
         <textarea class="textarea_long" id="project_description" name="project_description"
                   placeholder="max length: 1000 chars"></textarea>
         <br/>
-        <label class="col-sm-4" for="reference">References for selected manuscripts published:</label>
-        <textarea class="textarea_long" id="reference" name="reference"
-                  placeholder=''></textarea>
-        <br/>
 
-        <!--<div class="form-group">-->
         <label class="col-sm-4" id="domain_regions-legend">Domain and Region:</label>
         <table class="domain_regions">
             <% for (var i in domain_regions["domain_regions"]){ %>
@@ -129,13 +108,32 @@ var all_metadata = {}
         </table>
         <br/>
 
+        <label class="col-sm-4">Project Name (Please add the middle part)</label>
+        <input class="uppercase" type="text" id="project_name1" name="project_name1" maxlength="4" size="5"
+               value="">_<input
+            class="uppercase"
+            type="text"
+            id="project_name2"
+            name="project_name2"
+            maxlength="4"
+            size="4"
+            value="">_<input
+            type="text" id="project_name3" readonly name="project_name3" maxlength="4" size="5"
+            value="">
+        <br/>
+
+        <label class="col-sm-4" for="reference">References for selected manuscripts published:</label>
+        <textarea class="textarea_long" id="reference" name="reference"
+                  placeholder=''></textarea>
+        <br/>
+
         <label class="col-sm-4" for="funding_code">Funding Code (numeric only)</label>
         <input type="number" id="funding_code" name="funding_code" maxlength="10" size="10" value="">
         <br/>
 
         <label class="col-sm-4" for="samples_number">How many individual samples will be
             submitted?</label>
-        <input type="number" id="samples_number" name="samples_number" size="3" value="<%= samples_number %>">
+        <input type="number" id="samples_number" name="samples_number" size="3" value="">
         <br/>
 
 
