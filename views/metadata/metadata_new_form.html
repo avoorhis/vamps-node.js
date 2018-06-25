@@ -49,52 +49,26 @@ var all_metadata = {}
     <!-- <form action="" method="post" enctype="multipart/form-data"> -->
     <fieldset id="general" class="required_fields">
         <legend id="general-legend">General sample description</legend>
-        <% for (var pid in all_metadata) { %>
-        <% if (typeof(all_metadata[pid]) !== 'undefined') { %>
-        <% pi_email = all_metadata[pid]["pi_email"][0] %>
-        <% if (typeof(all_metadata[pid]["reference"]) !== 'undefined') { %>
-        <% reference = all_metadata[pid]["reference"][0] %>
-        <% } else { %>
-        <% reference = ""%>
-        <% } %>
-
-        <% project_title = all_metadata[pid]["project_title"][0] %>
-        <% project = all_metadata[pid]["project"][0] %>
-        <% pi_name = all_metadata[pid]["pi_name"][0] %>
-        <% dataset_ids = all_metadata[pid]["dataset_id"] %>
-        <% project_abstracts = all_metadata[pid]["project_abstract"] %>
-        <% } %>
-
         <!-- dataset_id project title username email institution first_name last_name public -->
 
         <label for="project_title">Title of Project:</label>
-        <input type="text" class="long_input" id="project_title" name="project_title" value='<%= project_title %>'/>
+        <input type="text" class="long_input" id="project_title" name="project_title" value=''/>
 
         <br/>
-        <!--<label for="project">VAMPS project name (MBL Supplied)</label>-->
-        <!--<input type="text" id="project" class="readonly" readonly name="project" placeholder="DCO_GAI_Bv3v5" value='<%= project %>'/>-->
-        <label class="control-label col-sm-4" for="project_name">Project Name (This name may be adjusted by the
+        <label for="project_name">Project Name (This name may be adjusted by the
             MBL)</label>
-        <div class="col-sm-8">
-
-            <input type="text" id="project_name1" name="project_name1" maxlength="4" size="4" value="<%=
-                       project_name1 %>">_<input
+            <input type="text" id="project_name1" name="project_name1" maxlength="4" size="4" value="">_<input
                 type="text"
                 id="project_name2"
                 name="project_name2"
                 maxlength="4"
                 size="4"
-                value="<%= project_name2 %>">_<input
+                value="">_<input
                 type="text" id="project_name3" name="project_name3" maxlength="4" size="5"
-                value="<%= d_region[2] %>">
-        </div>
-
+                value="">
         <br/>
-        <div class="form-group">
-
-            <label class="control-label col-sm-4" for="pi_id_name">Select PI for submission to be submitted
+            <label for="pi_id_name">Select PI for submission to be submitted
                 under:</label>
-            <div class="col-sm-3">
                 <select id="pi_id_name" name="pi_id_name" class="form-control">
                     <% pi_list.forEach(function(val){ %>
                     <option value="<%= val.pid %>#<%= val.PI %>"
@@ -104,11 +78,6 @@ var all_metadata = {}
                     ><%= val.PI %></option>
                     <% }); %>
                 </select>
-                <% if (!typeof val == 'undefined') {%>
-                <% } %>
-
-            </div>
-        </div>
 
         <label for="pi_id_name">PI Name:</label>
         <select id="pi_id_name" name="pi_id_name" class="form-control">
@@ -120,11 +89,6 @@ var all_metadata = {}
             ><%= val.PI %></option>
             <% }); %>
         </select>
-
-        <% for (var did in dataset_ids) { %>
-        <input type='hidden' name='dataset_id' value='<%= dataset_ids[did] %>'/>
-        <% } %>
-        <% } %>
 
         <br/>
         <label for="project_abstract">Project abstract:</label>
