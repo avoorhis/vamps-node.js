@@ -51,40 +51,44 @@ var all_metadata = {}
         <legend id="general-legend">General sample description</legend>
         <!-- dataset_id project title username email institution first_name last_name public -->
 
-        <label for="project_title">Title of Project:</label>
+        <label class="col-sm-4" for="project_title">Title of Project:</label>
         <input type="text" class="long_input" id="project_title" name="project_title" value=''/>
 
         <br/>
-        <label for="project_name">Project Name (This name may be adjusted by the
+        <label class="col-sm-4" for="project_name">Project Name (This name may be adjusted by the
             MBL)</label>
-            <input type="text" id="project_name1" name="project_name1" maxlength="4" size="4" value="">_<input
-                type="text"
-                id="project_name2"
-                name="project_name2"
-                maxlength="4"
-                size="4"
-                value="">_<input
-                type="text" id="project_name3" name="project_name3" maxlength="4" size="5"
-                value="">
+        <input type="text" id="project_name1" name="project_name1" maxlength="4" size="4" value="">_<input
+            type="text"
+            id="project_name2"
+            name="project_name2"
+            maxlength="4"
+            size="4"
+            value="">_<input
+            type="text" id="project_name3" name="project_name3" maxlength="4" size="5"
+            value="">
         <br/>
-            <label for="pi_id_name">Select PI for submission to be submitted
-                under:</label>
-                <select id="pi_id_name" name="pi_id_name" class="form-control">
-                    <% pi_list.forEach(function(val){ %>
-                    <option value="<%= val.pid %>#<%= val.PI %>"
-                    <% if ((typeof(pi_id) !== 'undefined') && (val.pid == pi_id)) {%>
-                    selected
-                    <% } %>
-                    ><%= val.PI %></option>
-                    <% }); %>
-                </select>
+        <label class="col-sm-4" for="pi_id_name">Select PI for submission to be submitted
+            under:</label>
+        <div class="row">
+        <div class="col-sm-3">
+            <select id="pi_id_name" name="pi_id_name" class="form-control">
+                <% pi_list.forEach(function(val){ %>
+                <option value="<%= val.pid %>#<%= val.PI %>"
+                <% if ((typeof(pi_id) !== 'undefined') && (val.pid == pi_id)) {%>
+                selected
+                <% } %>
+                ><%= val.PI %></option>
+                <% }); %>
+            </select>
+        </div>
+        </div>
+        <!--<br/>-->
 
-        <br/>
-        <label for="project_abstract">Project abstract:</label>
+        <label class="col-sm-4" for="project_abstract">Project abstract:</label>
         <textarea class="textarea_long" class="readonly" readonly id="project_abstract" name="project_abstract"
                   placeholder="Please send the abstract to VAMPS"></textarea>
         <br/>
-        <label for="reference">References for selected manuscripts published that describe the location:</label>
+        <label class="col-sm-4" for="reference">References for selected manuscripts published that describe the location:</label>
         <textarea class="textarea_long" id="reference" name="reference"
                   placeholder=''></textarea>
         <br/>

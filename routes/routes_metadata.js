@@ -201,10 +201,7 @@ router.get('/metadata_new_form', helpers.isLoggedIn, function (req, res) {
     title: 'VAMPS: New Metadata',
     user: req.user,
     hostname: req.CONFIG.hostname,
-    all_metadata: {},
     pi_list: pi_list
-    // finfo: JSON.stringify(user_metadata_csv_files),
-    // edit: true
   });
 });
 
