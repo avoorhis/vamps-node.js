@@ -73,9 +73,11 @@ var all_metadata = {}
         <div class="row">
         <div class="col-sm-3">
             <select id="pi_id_name" name="pi_id_name" class="form-control">
+                <option selected="true" disabled>Select&hellip;</option>
+
                 <% pi_list.forEach(function(val){ %>
-                <option value="<%= val.pid %>#<%= val.PI %>"
-                <% if ((typeof(pi_id) !== 'undefined') && (val.pid == pi_id)) {%>
+                <option value="<%= val.pi_id %>#<%= val.PI %>"
+                <% if ((typeof(pi_id) !== 'undefined') && (val.pi_id == pi_id)) {%>
                 selected
                 <% } %>
                 ><%= val.PI %></option>

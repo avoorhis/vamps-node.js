@@ -644,8 +644,13 @@ exports.get_pi_list = function () {
   var pi_list = [];
 
   for (var i in ALL_USERS_BY_UID) {
-    pi_list.push({'PI': ALL_USERS_BY_UID[i].last_name + ' ' + ALL_USERS_BY_UID[i].first_name, 'pid': i});
-
+    pi_list.push({
+      'PI': ALL_USERS_BY_UID[i].last_name + ' ' + ALL_USERS_BY_UID[i].first_name,
+      'pi_id': i,
+      'last_name': ALL_USERS_BY_UID[i].last_name,
+      'first_name': ALL_USERS_BY_UID[i].first_name,
+      'pi_email': ALL_USERS_BY_UID[i].pi_email
+    });
   }
 
   pi_list.sort(function sortByAlpha(a, b) {
