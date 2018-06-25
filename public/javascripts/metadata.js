@@ -958,7 +958,8 @@ $('#pi_id_name').change(function () {
     project_name1 = project_name1 + inits[i][0];
   }
   project_name1 = project_name1 + inits[0][0];
-  alert(project_name1);
+  // alert(project_name1);
+  $('input#project_name1').val(project_name1);
 });
 
 
