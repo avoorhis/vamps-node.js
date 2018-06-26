@@ -136,10 +136,9 @@
                 
                 <% if(user && user.security_level <= 10){ %>
                     <li class="divider"></li>
-                    <li class="dropdown-header">Data Submissions</li>
+                    <li class="dropdown-header">Metadata Submissions</li>
                     <li><a href="/submissions/show_submission">Submission Tables -Admin</a></li>
-                    <li><a href="/submissions/submission_request">Submission Request</a></li>
-                    <li><a href="/submissions/upload_csv">Upload New Submission</a></li>
+                    <li><a href="/metadata/metadata_new">New Submission</a></li>
                     <li><a href="/submissions/illumina_submission">Illumina Submissions (currently on vampsdev)</a></li>
                 <% } %>
                 <li class="divider"></li>                

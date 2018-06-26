@@ -193,11 +193,14 @@ function get_metadata_hash(md_selected) {
 */
 
 // render new form
+// save project and dataset to vamps2
+// save the rest into vamps_submissions?
+// run the "normal" edit metadata
 // ?? render_edit_form(req, res, {}, {}, all_field_names)
-router.get('/metadata_new_form', helpers.isLoggedIn, function (req, res) {
+router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
   var pi_list = metadata_controller.get_pi_list();
   // req.session.pi_list = pi_list;
-  res.render('metadata/metadata_new_form', {
+  res.render('metadata/metadata_new', {
     title: 'VAMPS: New Metadata',
     user: req.user,
     hostname: req.CONFIG.hostname,
