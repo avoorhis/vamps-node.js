@@ -669,6 +669,10 @@ exports.get_inits = function (arr) {
   return project_name1;
 };
 
+exports.saveProject = function(project_info) {
+
+};
+
 exports.make_metadata_object = function (req, res, pid, info) {
   console.time("TIME: make_metadata_object");
 

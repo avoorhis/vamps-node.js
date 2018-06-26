@@ -193,10 +193,17 @@ function get_metadata_hash(md_selected) {
 */
 
 // render new form
-// save project and dataset to vamps2
-// save the rest into vamps_submissions?
-// run the "normal" edit metadata
+// if not valid show again with errors
+// if valid
+// save project to vamps2
+// save the rest into vamps_submissions
+// run the "normal" edit metadata with samples_number datasets
+// save datasets to vamps2?
+// <% if (samples_number > 0){ %>
+// <% for (var i = 0; i < Number(samples_number); i++) { %>
+
 // ?? render_edit_form(req, res, {}, {}, all_field_names)
+
 router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
   var pi_list = metadata_controller.get_pi_list();
   req.session.pi_list = pi_list;
@@ -232,8 +239,9 @@ router.post('/metadata_new',
     form.field("tube_label").trim().required().is(/^[a-zA-Z0-9_ -]+$/).entityEncode().array()
   ),
   function (req, res) {
-    console.log('in POST submission_request');
-    console.log('OOO post');    console.log("MMM1, req.body", req.body);
+    console.log('in POST METADATA new form');
+    console.log('OOO post');
+    console.log("MMM1, req.body", req.body);
 
     // MMM1, req.body { project_title: 'AAA title',
     //   pi_id_name: '913#Shangpliang H. Nakibapher Jones#Shangpliang#H. Nakibapher Jones#nakibapher19@gmail.com',
@@ -272,31 +280,66 @@ router.post('/metadata_new',
 
     console.log("MMM2, req.form", req.form);
 
+    if (!req.form.isValid) {
+      console.log('!req.form.isValid');
+      console.log("EEE req.form.errors", req.form.errors);
 
-    var d_region_arr = req.form.d_region.split("#");
-    var pi_id_name_arr = req.form.pi_id_name.split("#");
-    var full_name = pi_id_name_arr[3] + " " + pi_id_name_arr[2];
-    var project_name1 = req.form.project_name1[0];
-    if (project_name1 === '') {
-      project_name1 = metadata_controller.get_inits(full_name.split(" "));
+      //collect errors
+      var myArray_fail = helpers.unique_array(req.form.errors);
+
+      // if (helpers.has_duplicates(req.form.sample_name)) {
+      //   myArray_fail.push('Sample ID (user sample name) should be unique.');
+      // }
+
+      myArray_fail.sort();
+      console.log("myArray_fail = ", myArray_fail);
+      req.flash("fail", myArray_fail);
+
+      // console.log('QQQ1 req.body.pi_list', pi_list);
+      // req.session.DOMAIN_REGIONS = CONSTS.DOMAIN_REGIONS;
+      // req.session.button_name    = "Add datasets";
+
+      var d_region_arr   = req.form.d_region.split("#");
+      var pi_id_name_arr = req.form.pi_id_name.split("#");
+      var full_name      = pi_id_name_arr[3] + " " + pi_id_name_arr[2];
+      var project_name1  = req.form.project_name1[0];
+      if (project_name1 === '') {
+        project_name1 = metadata_controller.get_inits(full_name.split(" "));
+      }
+      var project_name3 = d_region_arr[2];
+      var project_name  = project_name1 + "_" + req.form.project_name2[0] + "_" + project_name3;
+
+      console.log("PPP project_name1", project_name1);
+      console.log("PPP1 project_name", project_name);
+      res.render('metadata/metadata_new', {
+        button_name: "Validate",
+        domain_regions: CONSTS.DOMAIN_REGIONS,
+        hostname: req.CONFIG.hostname,
+        pi_email: pi_id_name_arr[4],
+        pi_list: req.session.pi_list,
+        project_title: req.form.project_title[0],
+        samples_number: req.form.samples_number[0],
+        title: 'VAMPS: New Metadata',
+        user: req.user,
+      });
     }
-    var project_name3 = d_region_arr[2];
-    var project_name = project_name1 + "_" + req.form.project_name2[0] + "_" + project_name3;
-
-    console.log("PPP project_name1", project_name1);
-    console.log("PPP1 project_name", project_name);
-    res.render('metadata/metadata_new', {
-      button_name: "Validate",
-      domain_regions: CONSTS.DOMAIN_REGIONS,
-      hostname: req.CONFIG.hostname,
-      pi_email: pi_id_name_arr[4],
-      pi_list: req.session.pi_list,
-      project_title: req.form.project_title[0],
-      samples_number: req.form.samples_number[0],
-      title: 'VAMPS: New Metadata',
-      user: req.user,
-    });
+    else {
+      // ?? render_edit_form(req, res, {}, {}, all_field_names)
+      console.log("metadata_upload_new is valid");
+      metadata_controller.saveProject();
+      res.render('metadata/metadata_upload_new', {
+        button_name: "Submit",
+        domain_regions: CONSTS.DOMAIN_REGIONS,
+        hostname: req.CONFIG.hostname,
+        pi_list: req.session.pi_list,
+        project_title: req.form.project_title[0],
+        samples_number: req.form.samples_number[0],
+        title: 'VAMPS: New Metadata',
+        user: req.user,
+      });
+    }
   });
+
 // render edit form
 router.post('/metadata_edit_form',
   [helpers.isLoggedIn],
