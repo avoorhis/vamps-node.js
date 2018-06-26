@@ -227,12 +227,12 @@ router.post('/metadata_new',
     form.field("d_region").trim().required().entityEncode(),
     form.field("dataset_description").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
     form.field("dataset_name").trim().is(/^[a-zA-Z0-9_]+$/).entityEncode().array(),
-    form.field("funding_code").trim().required().is(/^[0-9]+$/).entityEncode().array(),
+    form.field("funding_code").trim().required().is(/^[0-9]+$/).entityEncode(),
     form.field("pi_id_name").trim().required().entityEncode(),
-    form.field("project_description").trim().required().entityEncode().array(),
-    form.field("project_name1").trim().required().entityEncode().array(),
-    form.field("project_name2").trim().required().entityEncode().array(),
-    form.field("project_title").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
+    form.field("project_description").trim().required().entityEncode(),
+    form.field("project_name1").trim().required().entityEncode(),
+    form.field("project_name2").trim().required().entityEncode(),
+    form.field("project_title").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode(),
     form.field("sample_concentration").trim().required().isInt().entityEncode().array(),
     form.field("samples_number").trim().required().is(/^[0-9]+$/).entityEncode().array(),
     form.field("submit_code").trim().entityEncode().array(),
@@ -302,12 +302,12 @@ router.post('/metadata_new',
       var d_region_arr   = req.form.d_region.split("#");
       var pi_id_name_arr = req.form.pi_id_name.split("#");
       var full_name      = pi_id_name_arr[3] + " " + pi_id_name_arr[2];
-      var project_name1  = req.form.project_name1[0];
+      var project_name1  = req.form.project_name1;
       if (project_name1 === '') {
         project_name1 = metadata_controller.get_inits(full_name.split(" "));
       }
       var project_name3 = d_region_arr[2];
-      var project_name  = project_name1 + "_" + req.form.project_name2[0] + "_" + project_name3;
+      var project_name  = project_name1 + "_" + req.form.project_name2 + "_" + project_name3;
 
       console.log("PPP project_name1", project_name1);
       console.log("PPP1 project_name", project_name);
@@ -317,8 +317,8 @@ router.post('/metadata_new',
         hostname: req.CONFIG.hostname,
         pi_email: pi_id_name_arr[4],
         pi_list: req.session.pi_list,
-        project_title: req.form.project_title[0],
-        samples_number: req.form.samples_number[0],
+        project_title: req.form.project_title,
+        samples_number: req.form.samples_number,
         title: 'VAMPS: New Metadata',
         user: req.user,
       });
@@ -326,14 +326,14 @@ router.post('/metadata_new',
     else {
       // ?? render_edit_form(req, res, {}, {}, all_field_names)
       console.log("metadata_upload_new is valid");
-      metadata_controller.saveProject();
+      metadata_controller.saveProject(req.form);
       res.render('metadata/metadata_upload_new', {
         button_name: "Submit",
         domain_regions: CONSTS.DOMAIN_REGIONS,
         hostname: req.CONFIG.hostname,
         pi_list: req.session.pi_list,
-        project_title: req.form.project_title[0],
-        samples_number: req.form.samples_number[0],
+        project_title: req.form.project_title,
+        samples_number: req.form.samples_number,
         title: 'VAMPS: New Metadata',
         user: req.user,
       });
@@ -882,8 +882,7 @@ function send_mail_finished(req, res) {
     }
     console.log('Message %s sent: %s', info.messageId, info.response);
   // res.render('index');
-})
-  ;
+});
 
   console.timeEnd("TIME: send_mail_finished");
 }

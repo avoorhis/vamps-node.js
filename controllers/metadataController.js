@@ -669,8 +669,47 @@ exports.get_inits = function (arr) {
   return project_name1;
 };
 
-exports.saveProject = function(project_info) {
+// [2018/06/26 13:52:48.300] [LOG]   MMM2, req.form { adaptor: [],
+//   d_region: 'Eukaryal#v4#Ev4',
+//   dataset_description: [],
+//   dataset_name: [],
+//   funding_code: [ '0' ],
+//   pi_id_name: '913#Shangpliang H. Nakibapher Jones#Shangpliang#H. Nakibapher Jones#nakibapher19@gmail.com',
+//   project_description: [ 'AAA description' ],
+//   project_name1: [ 'HNJS' ],
+//   project_name2: [ 'AAA' ],
+//   project_title: [ 'AAA title' ],
+//   sample_concentration: [],
+//   samples_number: [ '2' ],
+//   submit_code: [],
+//   tube_label: [] }
 
+exports.saveProject = function (project_info) {
+  console.log("JJJ project_info from saveProject = ", project_info);
+  d_region_arr    = project_info.d_region.split("#");
+  var metagenomic = 0;
+  var project_name3 = d_region_arr[2];
+  if (d_region_arr[0] === 'Shotgun') {
+    metagenomic = 1;
+    project_name3 = "Sgun";
+  }
+  Project                     = {};
+  Project.project_id          = 0;
+  Project.project             = "'" + project_info.project_name1 + "_" + project_info.project_name2 + "_" + project_name3 + "'";
+  Project.title               = "'" + project_info.project_title + "'";
+  Project.project_description = "'" + project_info.project_description + "'";
+  Project.rev_project_name    = "reverse('" + Project.project + "')";
+  Project.funding             = project_info.funding_code;
+  Project.owner_user_id       = project_info.pi_id_name.split("#")[0];
+  Project.public              = 0;
+  Project.metagenomic         = metagenomic;
+  Project.matrix              = 0;
+  Project.created_at          = "Now()";
+  Project.updated_at          = "Now()";
+  Project.active              = 0;
+
+  console.log("JJJ1 JSON.stringify(Project) = ", JSON.stringify(Project));
+  return Project;
 };
 
 exports.make_metadata_object = function (req, res, pid, info) {
