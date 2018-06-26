@@ -1356,7 +1356,7 @@ module.exports.get_qsub_script_text_only = function(req, scriptlog, dir_path, cm
   script_text += "# source environment:\n"
   script_text += "source /groups/vampsweb/"+req.CONFIG.site+"/seqinfobin/vamps_environment.sh\n\n"
   script_text += "TSTAMP=\`date +%Y%m%d%H%M%S\`\n\n"
-  script_text += "# Loading Module didn work when testing:\n"
+  script_text += "# Loading Module didn't work when testing:\n"
   script_text += ". /usr/share/Modules/init/sh\n"
   script_text += "export MODULEPATH=/usr/local/www/vamps/software/modulefiles\n"
   script_text += "module load clusters/vamps\n\n"

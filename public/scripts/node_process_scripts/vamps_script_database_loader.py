@@ -362,8 +362,8 @@ def push_sequences(args):
                 distance = str(args.SEQ_COLLECTOR[ds][seq]['distance'])
                 q = "INSERT ignore into silva_taxonomy_info_per_seq"
                 q += " (sequence_id,silva_taxonomy_id,gast_distance,refssu_id,rank_id)"
-                q += " VALUES ('%s','%s','%s','0','%s')" % (str(seqid), silva_tax_id, distance, rank_id)
-                q += " ON DUPLICATE KEY UPDATE silva_taxonomy_id='"+tax_id+"', dast_distance='"+distance+"',refssu_id='0', rank_id='"+rank_id+"'"
+                q += " VALUES ('%s','%s','%s','0','%s')" % (str(seqid), tax_id, distance, rank_id)
+                q += " ON DUPLICATE KEY UPDATE silva_taxonomy_id='"+tax_id+"', gast_distance='"+distance+"',refssu_id='0', rank_id='"+rank_id+"'"
                 q3 = "SELECT silva_taxonomy_info_per_seq_id from silva_taxonomy_info_per_seq"
             elif args.classifier.upper() == 'RDP':
                 q = "INSERT ignore into rdp_taxonomy_info_per_seq"
@@ -385,8 +385,8 @@ def push_sequences(args):
                 print(q)
             cur.execute(q)
             mysql_conn.commit()
-            silva_tax_seq_id = cur.lastrowid
-            if silva_tax_seq_id == 0:
+            tax_seq_id = cur.lastrowid
+            if tax_seq_id == 0:
                 
                 q3 += " where sequence_id = '"+str(seqid)+"'"
                 if args.verbose:
@@ -395,10 +395,10 @@ def push_sequences(args):
                 cur.execute(q3)
                 mysql_conn.commit() 
                 row = cur.fetchone()
-                silva_tax_seq_id=row[0]
+                tax_seq_id=row[0]
         
             q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
-            q4 += " VALUES('%s','%s')" % (str(seqid), str(silva_tax_seq_id))
+            q4 += " VALUES('%s','%s')" % (str(seqid), str(tax_seq_id))
             logging.info(q4)
             cur.execute(q4)
             mysql_conn.commit()
@@ -445,7 +445,7 @@ def push_taxonomy(args):
             tax_file = os.path.join(data_dir,'sequences_n_taxonomy.txt')
             unique_file = os.path.join(gast_dir, dir, 'unique.fa')
             if os.path.exists(tax_file):
-                run_tax_by_seq_file(args, ds, data_file,tmp_seqs)
+                run_tax_by_seq_file(args, ds, data_file, tmp_seqs)
             else:
                 print ("cound not find file:",data_file)
         elif args.classifier.upper() == 'GAST':
@@ -453,7 +453,7 @@ def push_taxonomy(args):
             data_file   = unique_file+'.gast'
             
             if os.path.exists(data_file):
-                run_gast_tax_file(args, ds, data_file,tmp_seqs)
+                run_gast_tax_file(args, ds, data_file, tmp_seqs)
             else:
                 print ("cound not find file:",data_file)
         elif args.classifier.upper() == 'RDP':         
@@ -466,7 +466,7 @@ def push_taxonomy(args):
             data_dir = os.path.join(args.project_dir,'analysis',ds)             
             data_file   = os.path.join(data_dir, 'spingo_out.txt')
             if os.path.exists(data_file):            
-                run_spingo_tax_file(args, ds, data_file, unique_file,tmp_seqs)
+                run_spingo_tax_file(args, ds, data_file, unique_file, tmp_seqs)
             else:
                 print ("cound not find file:",data_file)
         else:
@@ -503,29 +503,41 @@ def run_tax_by_seq_file(args,ds,tax_file, seqs):
 #
 #
 #                               
-def run_gast_tax_file(args,ds,tax_file, seqs):
+def run_gast_tax_file(args,ds, tax_file, seqs):
     #tax_collector = {}
     tax_items = []
     with open(tax_file,'r') as fh:
+        n=0
         for line in fh:
+            line = line.strip()
+            items = line.split("\t")
+            #if items[0] == 'HEADER': continue
+            if n==0: 
+                n = n+1
+                continue
+            seq = items[0]
+            ds_file = items[0].split()[0].split('_')[0]
             if args.verbose:
                 print(line)
-            items = line.strip().split("\t")
-            if items[0] == 'HEADER': continue
-            seq = items[0]
-            ds_file = items[2]
+                print('ds_file:',ds_file,'ds:',ds)
             if ds_file != ds:
                 sys.exit('Dataset file--name mismatch -- Confused! Exiting!')
-            tax_string = items[3]
-            refhvr_ids = items[4]
-            rank = items[5]
+            tax_string = items[1]
+            distance = items[2]
+            rank = items[3]
+            
+            
             if rank == 'class': rank = 'klass'
             if rank == 'orderx': rank = 'order'
-            seq_count = items[6]
-            distance = items[8]
+            seq_count = items[4]
+            refhvr_ids = items[10]
             tax_items = tax_string.split(';')
+            if args.verbose:
+                print()
+                print('tax_string:',tax_string,'refhvr_ids:',refhvr_ids,'rank',rank,'seq_count',seq_count,'distance',distance)
             if tax_items != []:
                 finish_tax(ds,refhvr_ids,rank,distance,seq,seq_count,tax_items)
+            
 
      
 #
@@ -579,10 +591,10 @@ def run_spingo_tax_file(args, ds, tax_file, seq_file, seqs):
     
     with open(tax_file,'r') as fh:
         for line in fh:            
-            items = line.strip().split()
+            items = line.strip().split('\t')
             if args.verbose:
-                print(items)
-            id = items[0].split('|')[0]   # WILL have id|frequency:x
+                print('items',items)
+            id = items[0].split()[0].split('|')[0]   # WILL have id|frequency:x
             seq = seqs[id]['seq']
             
             tax_string = items[4]

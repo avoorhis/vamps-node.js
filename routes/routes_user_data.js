@@ -1574,7 +1574,7 @@ function checkPid(check_pid_options, last_line)
   //console.log('PID last line: ' + last_line)
   var ll = last_line.split('=');
   var pid = ll[1];
-  console.log('NEW PID=: ' + pid);
+  console.log('checkPID NEW PID=: ' + pid);
   //console.log('ALL_DATASETS: ' + JSON.stringify(ALL_DATASETS));
   if (helpers.isInt(pid))
   {
@@ -1612,7 +1612,7 @@ function checkPid(check_pid_options, last_line)
   }
   else
   { // end if int
-    console.log('ERROR pid is not an integer: ', pid);
+    console.log('checkPID ERROR pid is not an integer: ', pid);
   }
 }
 function matrixTax(req, info)
@@ -3423,7 +3423,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
                  for (var i in pid_list) {
                    //var pid = ll[1];
                    var pid = pid_list[i];
-                   console.log('NEW PID=: '+pid);
+                   console.log('TaxbySeq NEW PID=: '+pid);
                    //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
                    if (helpers.isInt(pid)) {
                      // TODO: Don't make functions within a loop.
@@ -3451,7 +3451,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
                      });
 
                        } else { // end if int
-                             console.log('ERROR pid is not an integer: '+pid.toString());
+                             console.log('TaxbySeq ERROR pid is not an integer: '+pid.toString());
                    }
                  } // end for pid in pid_list
               }
