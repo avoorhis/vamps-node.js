@@ -608,3 +608,7 @@ td.left_justify {
     padding-right: 1ex;
 
 }
+
+.metadata {
+    margin-left: 0.5ex;
+}

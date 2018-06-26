@@ -45,19 +45,21 @@ var all_metadata = {}
         <a href='/metadata/FormTutorial_083117.pdf' target='_blank'>For further questions see the Tutorial.</a>
     </li>
 </ol>
+
 <form name='add_project_form' method='POST' action='/metadata/metadata_new'>
     <!-- <form action="" method="post" enctype="multipart/form-data"> -->
     <fieldset id="general" class="required_fields">
         <legend id="general-legend">General sample description</legend>
         <!-- dataset_id project title username email institution first_name last_name public -->
 
-        <label class="col-sm-4" for="project_title">Title of Project:</label>
+        <div class="metadata">
+        <label class="col-sm-5" for="project_title">Title of Project:</label>
         <input type="text" class="long_input" id="project_title" name="project_title" value=''/>
+        </div>
 
-        <br/>
-        <label class="col-sm-4" for="pi_id_name">Select PI for submission to be submitted
+        <div class="metadata">
+        <label class="col-sm-5" for="pi_id_name">Select PI for submission to be submitted
             under:</label>
-        <div>
         <select id="pi_id_name" name="pi_id_name">
             <option selected="true" disabled>Select&hellip;</option>
             <% pi_list.forEach(function(val){ %>
@@ -71,16 +73,20 @@ var all_metadata = {}
         </div>
         <br/>
 
-        <label class="col-sm-4" for="pi_email">PI's email address:</label>
+        <div class="metadata">
+        <label class="col-sm-5" for="pi_email">PI's email address:</label>
         <input type="email" id="pi_email" name="pi_email" value=''/>
-        <br/>
+        </div>
 
-        <label class="col-sm-4" for="project_description">Project Description:</label>
+
+        <div class="metadata">
+        <label class="col-sm-5" for="project_description">Project Description:</label>
         <textarea class="textarea_long" id="project_description" name="project_description"
                   placeholder="max length: 1000 chars"></textarea>
-        <br/>
+        </div>
 
-        <label class="col-sm-4" id="domain_regions-legend">Domain and Region:</label>
+        <div class="metadata">
+        <label class="col-sm-5" id="domain_regions-legend">Domain and Region:</label>
         <table class="domain_regions">
             <% for (var i in domain_regions["domain_regions"]){ %>
             <% var cur_domain = domain_regions["domain_regions"][i]["domain"] %>
@@ -106,9 +112,10 @@ var all_metadata = {}
             </tr>
             <% }; %>
         </table>
-        <br/>
+        </div>
 
-        <label class="col-sm-4">Project Name (Please add the middle part)</label>
+        <div class="metadata">
+        <label class="col-sm-5">Project Name (Please add the middle part)</label>
         <input class="uppercase" type="text" id="project_name1" name="project_name1" maxlength="4" size="5"
                value="">_<input
             class="uppercase"
@@ -120,21 +127,24 @@ var all_metadata = {}
             value="">_<input
             type="text" id="project_name3" readonly name="project_name3" maxlength="4" size="5"
             value="">
-        <br/>
+        </div>
 
-        <label class="col-sm-4" for="reference">References for selected manuscripts published:</label>
+        <div class="metadata">
+        <label class="col-sm-5" for="reference">References for selected manuscripts published:</label>
         <textarea class="textarea_long" id="reference" name="reference"
                   placeholder=''></textarea>
-        <br/>
+        </div>
 
-        <label class="col-sm-4" for="funding_code">Funding Code (numeric only)</label>
+        <div class="metadata">
+        <label class="col-sm-5" for="funding_code">Funding Code (numeric only)</label>
         <input type="number" id="funding_code" name="funding_code" maxlength="10" size="10" value="">
-        <br/>
+        </div>
 
-        <label class="col-sm-4" for="samples_number">How many individual samples will be
+        <div class="metadata">
+        <label class="col-sm-5" for="samples_number">How many individual samples will be
             submitted?</label>
         <input type="number" id="samples_number" name="samples_number" size="3" value="">
-        <br/>
+        </div>
 
 
     </fieldset>
@@ -171,7 +181,7 @@ var all_metadata = {}
 
     </p>
 
-    <button id='add_project_form_submit_btn' class='btn btn-sm btn-primary' type='submit'>Submit</button>
+    <button id='add_project_form_new_btn' class='btn btn-sm btn-primary' type='submit'><%= button_name %></button>
 
 </form>
 

@@ -2,9 +2,9 @@
 var helpers   = require(app_root + '/routes/helpers/helpers');
 var CONSTS    = require(app_root + "/public/constants");
 var validator = require('validator');
-var config              = require(app_root + '/config/config');
-var fs                  = require("fs");
-var path                = require("path");
+var config    = require(app_root + '/config/config');
+var fs        = require("fs");
+var path      = require("path");
 
 // Display list of all Submissions.
 // exports.submission_list = function (req, res) {
@@ -76,7 +76,7 @@ get_cell_val_by_row = function (row_idx, req) {
   return new_row_val;
 };
 
-get_names_from_ordered_const = function() {
+get_names_from_ordered_const = function () {
   console.time("time: ordered_metadata_names_only");
 
   const arraycolumn = (arr, n) => arr.map(x => x[n]);
@@ -87,7 +87,7 @@ get_names_from_ordered_const = function() {
   return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
 };
 
-get_field_names = function(dataset_ids) {
+get_field_names = function (dataset_ids) {
   var field_names_arr = [];
   // field_names_arr = field_names_arr.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
   // field_names_arr = field_names_arr.concat(CONSTS.PROJECT_INFO_FIELDS);
@@ -110,7 +110,7 @@ get_field_names = function(dataset_ids) {
   return field_names_arr;
 };
 
-prepare_empty_metadata_object = function(pid, field_names_arr, all_metadata) {
+prepare_empty_metadata_object = function (pid, field_names_arr, all_metadata) {
   console.time("TIME: prepare_empty_metadata_object");
   all_metadata = all_metadata || {};
   if (!(all_metadata.hasOwnProperty(pid))) {
@@ -151,13 +151,13 @@ get_project_info = function (project_name_or_pid) {
   };
 };
 
-filterItems = function(arr, query) {
+filterItems = function (arr, query) {
   return arr.filter(function (el) {
     return el.toLowerCase().indexOf(query.toLowerCase()) < 0;
   });
 };
 
-make_ordered_field_names_obj = function() {
+make_ordered_field_names_obj = function () {
   console.time("TIME: make_ordered_field_names_obj");
   var ordered_field_names_obj = {};
 
@@ -367,7 +367,7 @@ exports.slice_object = function (object, slice_keys) {
     }, {});
 };
 
-exports.get_project_name =  function(edit_metadata_file) {
+exports.get_project_name = function (edit_metadata_file) {
   console.time("TIME: get_project_name");
 
   var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
@@ -382,7 +382,7 @@ exports.get_project_name =  function(edit_metadata_file) {
   return edit_metadata_project;
 };
 
-exports.get_primers_info = function(dataset_id) {
+exports.get_primers_info = function (dataset_id) {
   console.time("TIME: get_primers_info");
   var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
   var primer_info     = {};
@@ -417,7 +417,7 @@ exports.get_primers_info = function(dataset_id) {
 };
 
 
-exports.get_all_req_metadata = function(dataset_id) {
+exports.get_all_req_metadata = function (dataset_id) {
   console.time("TIME: 5) get_all_req_metadata");
 
   var data = {};
@@ -433,7 +433,7 @@ exports.get_all_req_metadata = function(dataset_id) {
   return data;
 };
 
-exports.make_all_field_names = function(dataset_ids) {
+exports.make_all_field_names = function (dataset_ids) {
   var ordered_metadata_names_only = get_names_from_ordered_const();
 
   var structured_field_names0 = get_field_names(dataset_ids);
@@ -459,7 +459,7 @@ exports.make_all_field_names = function(dataset_ids) {
 
 };
 
-exports.fill_out_arr_doubles = function(value, repeat_times) {
+exports.fill_out_arr_doubles = function (value, repeat_times) {
   var arr_temp = Array(repeat_times);
 
   arr_temp.fill(value, 0, repeat_times);
@@ -467,7 +467,7 @@ exports.fill_out_arr_doubles = function(value, repeat_times) {
   return arr_temp;
 };
 
-exports.from_obj_to_obj_of_arr = function(data, pid) {
+exports.from_obj_to_obj_of_arr = function (data, pid) {
   console.time("TIME: from_obj_to_obj_of_arr");
   var obj_of_arr = {};
 
@@ -525,7 +525,7 @@ exports.from_obj_to_obj_of_arr = function(data, pid) {
 //   return all_metadata_pid;
 // };
 
-exports.get_project_abstract_data = function(project, path_to_static) {
+exports.get_project_abstract_data = function (project, path_to_static) {
   console.time("TIME: get_project_abstract_data");
 
   var info_file     = '';
@@ -539,7 +539,7 @@ exports.get_project_abstract_data = function(project, path_to_static) {
 };
 
 // TODO: move to helpers, use here and for project_profile
-exports.get_project_prefix = function(project) {
+exports.get_project_prefix = function (project) {
   console.time("TIME: get_project_prefix");
   var project_parts  = project.split('_');
   var project_prefix = project;
@@ -551,7 +551,7 @@ exports.get_project_prefix = function(project) {
   return project_prefix;
 };
 
-exports.array_from_object = function(data) {
+exports.array_from_object = function (data) {
   var data_arr = [];
   for (var key in data) {
     var value_arr;
@@ -567,7 +567,7 @@ exports.array_from_object = function(data) {
   return data_arr;
 };
 
-exports.transpose_2d_arr = function(data_arr, project_id) {
+exports.transpose_2d_arr = function (data_arr, project_id) {
   console.time("TIME: transpose_2d_arr");
 
   //make an array with proper length, even if the first one is empty
@@ -587,7 +587,7 @@ exports.transpose_2d_arr = function(data_arr, project_id) {
 };
 
 //TODO: move to csv files controller?
-exports.convertArrayOfObjectsToCSV = function(args) {
+exports.convertArrayOfObjectsToCSV = function (args) {
   console.time("TIME: convertArrayOfObjectsToCSV");
 
   var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_id;
@@ -632,7 +632,7 @@ exports.convertArrayOfObjectsToCSV = function(args) {
   return result;
 };
 
-exports.prepare_field_names = function() {
+exports.prepare_field_names = function () {
   var all_field_names = CONSTS.REQ_METADATA_FIELDS_wIDs;
   all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
   all_field_names     = helpers.unique_array(all_field_names);
@@ -660,7 +660,16 @@ exports.get_pi_list = function () {
   return pi_list;
 };
 
-exports.make_metadata_object = function(req, res, pid, info) {
+exports.get_inits = function (arr) {
+  var inits_len     = arr.length;
+  var project_name1 = "";
+  for (var i = 0; i < inits_len; i++) {
+    project_name1 = project_name1 + arr[i][0];
+  }
+  return project_name1;
+};
+
+exports.make_metadata_object = function (req, res, pid, info) {
   console.time("TIME: make_metadata_object");
 
   var all_metadata = {};
@@ -748,7 +757,7 @@ exports.make_metadata_object = function(req, res, pid, info) {
   return all_metadata;
 };
 
-exports.render_edit_form = function(req, res, all_metadata, all_field_names) {
+exports.render_edit_form = function (req, res, all_metadata, all_field_names) {
   console.log("JJJ1 all_metadata");
   console.log(JSON.stringify(all_metadata));
 

@@ -199,19 +199,104 @@ function get_metadata_hash(md_selected) {
 // ?? render_edit_form(req, res, {}, {}, all_field_names)
 router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
   var pi_list = metadata_controller.get_pi_list();
-  // req.session.pi_list = pi_list;
+  req.session.pi_list = pi_list;
   res.render('metadata/metadata_new', {
     title: 'VAMPS: New Metadata',
     user: req.user,
     hostname: req.CONFIG.hostname,
+    button_name: "Validate",
     domain_regions: CONSTS.DOMAIN_REGIONS,
     samples_number: "",
     pi_list: pi_list
   });
 });
 
-// POST /metadata/metadata_new
+router.post('/metadata_new',
+  [helpers.isLoggedIn],
+  form(
+    // form.field("pi_id").trim().required().is(/^[0-9]+$/).entityEncode().array(),
+    // form.field("pi_name").trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
+    form.field("adaptor").trim().required().is(/^[a-zA-Z0-9]+$/).entityEncode().array(),
+    form.field("d_region").trim().required().entityEncode(),
+    form.field("dataset_description").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
+    form.field("dataset_name").trim().is(/^[a-zA-Z0-9_]+$/).entityEncode().array(),
+    form.field("funding_code").trim().required().is(/^[0-9]+$/).entityEncode().array(),
+    form.field("pi_id_name").trim().required().entityEncode(),
+    form.field("project_description").trim().required().entityEncode().array(),
+    form.field("project_name1").trim().required().entityEncode().array(),
+    form.field("project_name2").trim().required().entityEncode().array(),
+    form.field("project_title").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
+    form.field("sample_concentration").trim().required().isInt().entityEncode().array(),
+    form.field("samples_number").trim().required().is(/^[0-9]+$/).entityEncode().array(),
+    form.field("submit_code").trim().entityEncode().array(),
+    form.field("tube_label").trim().required().is(/^[a-zA-Z0-9_ -]+$/).entityEncode().array()
+  ),
+  function (req, res) {
+    console.log('in POST submission_request');
+    console.log('OOO post');    console.log("MMM1, req.body", req.body);
 
+    // MMM1, req.body { project_title: 'AAA title',
+    //   pi_id_name: '913#Shangpliang H. Nakibapher Jones#Shangpliang#H. Nakibapher Jones#nakibapher19@gmail.com',
+    //   pi_email: 'nakibapher19@gmail.com',
+    //   project_description: 'AAA description',
+    //   d_region: 'Eukaryal#v4#Ev4',
+    //   project_name1: 'HNJS',
+    //   project_name2: 'AAA',
+    //   project_name3: 'Ev4',
+    //   reference: '',
+    //   funding_code: '0',
+    //   samples_number: '2',
+    //   new_row_num: '',
+    //   new_row_length: '',
+    //   from_where: 'metadata_new_form',
+    //   done_editing: 'not_done_editing' }
+    // [2018/06/26 13:52:48.300] [LOG]   MMM2, req.form { adaptor: [],
+    //   d_region: 'Eukaryal#v4#Ev4',
+    //   dataset_description: [],
+    //   dataset_name: [],
+    //   funding_code: [ '0' ],
+    //   pi_id_name: '913#Shangpliang H. Nakibapher Jones#Shangpliang#H. Nakibapher Jones#nakibapher19@gmail.com',
+    //   project_description: [ 'AAA description' ],
+    //   project_name1: [ 'HNJS' ],
+    //   project_name2: [ 'AAA' ],
+    //   project_title: [ 'AAA title' ],
+    //   sample_concentration: [],
+    //   samples_number: [ '2' ],
+    //   submit_code: [],
+    //   tube_label: [] }
+
+    // var last_name     = this.value.split("#")[2];
+    // var first_name    = this.value.split("#")[3];
+    // var full_name     = first_name + " " + last_name;
+    // var inits         = full_name.split(" ");
+
+    console.log("MMM2, req.form", req.form);
+
+
+    var d_region_arr = req.form.d_region.split("#");
+    var pi_id_name_arr = req.form.pi_id_name.split("#");
+    var full_name = pi_id_name_arr[3] + " " + pi_id_name_arr[2];
+    var project_name1 = req.form.project_name1[0];
+    if (project_name1 === '') {
+      project_name1 = metadata_controller.get_inits(full_name.split(" "));
+    }
+    var project_name3 = d_region_arr[2];
+    var project_name = project_name1 + "_" + req.form.project_name2[0] + "_" + project_name3;
+
+    console.log("PPP project_name1", project_name1);
+    console.log("PPP1 project_name", project_name);
+    res.render('metadata/metadata_new', {
+      button_name: "Validate",
+      domain_regions: CONSTS.DOMAIN_REGIONS,
+      hostname: req.CONFIG.hostname,
+      pi_email: pi_id_name_arr[4],
+      pi_list: req.session.pi_list,
+      project_title: req.form.project_title[0],
+      samples_number: req.form.samples_number[0],
+      title: 'VAMPS: New Metadata',
+      user: req.user,
+    });
+  });
 // render edit form
 router.post('/metadata_edit_form',
   [helpers.isLoggedIn],
