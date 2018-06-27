@@ -1,4 +1,4 @@
-// var Metadata = require(app_root + '/models/metadata');
+var Project = require(app_root + '/models/metadata');
 var helpers   = require(app_root + '/routes/helpers/helpers');
 var CONSTS    = require(app_root + "/public/constants");
 var validator = require('validator');
@@ -709,7 +709,10 @@ exports.saveProject = function (project_info) {
   Project.active              = 0;
 
   console.log("JJJ1 JSON.stringify(Project) = ", JSON.stringify(Project));
-  return Project;
+  Project.addProject(Project, function (err, rows, fields) {
+    console.log("WWW rows", rows);
+    console.log("WWW1 fields", fields);
+  });
 };
 
 exports.make_metadata_object = function (req, res, pid, info) {
