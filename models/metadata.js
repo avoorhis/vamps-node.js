@@ -1,25 +1,18 @@
 var mysql = require('mysql2');
 
-// exports.get_projects_by_user = function (callback) {
-//
-//   return connection.query("Select * from vamps2.project", callback);
-//
-// };
-
-
 var Project    = {
 
   getAllProjects: function (callback) {
 
-    return connection.query("Select * from vamps2.project", callback);
+    return connection.query("Select * from project", callback);
 
   },
   getProjectById: function (id, callback) {
 
-    return connection.query("select * from vamps2.project where project_id = ?", [project_id], callback);
+    return connection.query("select * from project where project_id = ?", [project_id], callback);
   },
   addProject: function (Project, callback) {
-    return connection.query("Insert into vamps2.project values(?,?,?,?,?,?,?,?,?,?,?,?,?)", [Project.project_id,
+    return connection.query("Insert into project values(?,?,?,?,?,?,?,?,?,?,?,?,?)", [Project.project_id,
       Project.project,
       Project.title,
       Project.project_description,
@@ -35,11 +28,38 @@ var Project    = {
     ], callback);
   },
   deleteProject: function (id, callback) {
-    return connection.query("delete from vamps2.project where Id=?", [id], callback);
+    return connection.query("delete from project where Id=?", [id], callback);
   },
   updateProject: function (id, Project, callback) {
-    return connection.query("update vamps2.project set Title=?,Status=? where Id=?", [Project.Title, Project.Status, id], callback);
+    return connection.query("update project set Title=?,Status=? where Id=?", [Project.Title, Project.Status, id], callback);
   }
 
 };
 module.exports = Project;
+
+
+var Metadata = {
+
+  getAllCustomMetadata: function (callback) {
+
+    return connection.query("SELECT * FROM custom_metadata_fields", callback);
+
+  },
+  getAllRequiredMetadata: function (callback) {
+
+    return connection.query("SELECT * FROM required_metadata_info", callback);
+
+  },
+  getAllRequiredMetadataFields: function (callback) {
+
+    return connection.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'required_metadata_info'", callback);
+
+  },
+
+  getAllCustomMetadataFields: function (callback) {
+
+    return connection.query("SELECT DISTINCT field_name FROM custom_metadata_fields ORDER BY field_name", callback);
+
+  }
+};
+module.exports = Metadata;
