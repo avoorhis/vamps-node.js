@@ -140,7 +140,7 @@ class Demultiplex:
       i += 1
       total_seq_count += 1
       id = f_input.id.split()[1]  # remove ds and all after the <space>
-      #print(id)
+      print(id)
       f_out_name = self.make_file_name(f_input.id)
       
       f_output   = self.out_files[f_out_name]

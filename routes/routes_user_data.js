@@ -1564,13 +1564,14 @@ function checkPid(check_pid_options, last_line)
   status_params = check_pid_options[1];
   res           = check_pid_options[2];
   ref_db    = check_pid_options[3];
-  console.log(' classifier CLCLCL: ' + classifier);
-  console.log(' last_line CLCLCL: ' + last_line);
-  console.log("status_params from checkPid: ");
-  console.log(check_pid_options);
-  console.log(util.inspect(status_params, false, null));
-
-  console.log(classifier.toUpperCase() + ' Success');
+  if(config.hostname.substring(0,7) != 'bpcweb8'){
+      console.log(' classifier CLCLCL: ' + classifier);
+      console.log(' last_line CLCLCL: ' + last_line);
+      console.log("status_params from checkPid: ");
+      console.log(check_pid_options);
+      console.log(util.inspect(status_params, false, null));
+      console.log(classifier.toUpperCase() + ' Success');
+  }
   //console.log('PID last line: ' + last_line)
   var ll = last_line.split('=');
   var pid = ll[1];

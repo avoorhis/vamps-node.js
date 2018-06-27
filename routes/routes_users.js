@@ -54,7 +54,7 @@ router.post('/login',  passport.authenticate('local-login', {
 //     console.log('ALL_USERS_BY_UID')
 //     console.log(ALL_USERS_BY_UID)
     for(uid in ALL_USERS_BY_UID){
-        if((ALL_USERS_BY_UID[uid].groups).length > 0){
+        if( ALL_USERS_BY_UID[uid].hasOwnProperty('groups') && (ALL_USERS_BY_UID[uid].groups).length > 0){
             for(i in ALL_USERS_BY_UID[uid].groups){
                 var gp = ALL_USERS_BY_UID[uid].groups[i];
                 pid_list = USER_GROUPS[gp]
