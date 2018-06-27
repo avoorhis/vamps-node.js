@@ -1,4 +1,4 @@
-var Project = require(app_root + '/models/metadata');
+var Project   = require(app_root + '/models/metadata');
 var helpers   = require(app_root + '/routes/helpers/helpers');
 var CONSTS    = require(app_root + "/public/constants");
 var validator = require('validator');
@@ -686,32 +686,48 @@ exports.get_inits = function (arr) {
 
 exports.saveProject = function (project_info) {
   console.log("JJJ project_info from saveProject = ", project_info);
-  d_region_arr    = project_info.d_region.split("#");
-  var metagenomic = 0;
+  d_region_arr      = project_info.d_region.split("#");
+  var metagenomic   = 0;
   var project_name3 = d_region_arr[2];
   if (d_region_arr[0] === 'Shotgun') {
-    metagenomic = 1;
+    metagenomic   = 1;
     project_name3 = "Sgun";
   }
-  Project                     = {};
-  Project.project_id          = 0;
-  Project.project             = "'" + project_info.project_name1 + "_" + project_info.project_name2 + "_" + project_name3 + "'";
-  Project.title               = "'" + project_info.project_title + "'";
-  Project.project_description = "'" + project_info.project_description + "'";
-  Project.rev_project_name    = "reverse('" + Project.project + "')";
-  Project.funding             = project_info.funding_code;
-  Project.owner_user_id       = project_info.pi_id_name.split("#")[0];
-  Project.public              = 0;
-  Project.metagenomic         = metagenomic;
-  Project.matrix              = 0;
-  Project.created_at          = "Now()";
-  Project.updated_at          = "Now()";
-  Project.active              = 0;
+  Project_obj                     = {};
+  Project_obj.project_id          = 0;
+  Project_obj.project             = "'" + project_info.project_name1 + "_" + project_info.project_name2 + "_" + project_name3 + "'";
+  Project_obj.title               = "'" + project_info.project_title + "'";
+  Project_obj.project_description = "'" + project_info.project_description + "'";
+  Project_obj.rev_project_name    = "reverse('" + Project_obj.project + "')";
+  Project_obj.funding             = project_info.funding_code;
+  Project_obj.owner_user_id       = project_info.pi_id_name.split("#")[0];
+  Project_obj.public              = 0;
+  Project_obj.metagenomic         = metagenomic;
+  Project_obj.matrix              = 0;
+  Project_obj.created_at          = "Now()";
+  Project_obj.updated_at          = "Now()";
+  Project_obj.active              = 0;
 
-  console.log("JJJ1 JSON.stringify(Project) = ", JSON.stringify(Project));
-  Project.addProject(Project, function (err, rows, fields) {
-    console.log("WWW rows", rows);
-    console.log("WWW1 fields", fields);
+  console.log("JJJ1 JSON.stringify(Project_obj) = ", JSON.stringify(Project_obj));
+
+  Project.getAllProjects(function (err, rows) {
+    console.log("EEE err", err);
+    console.log("EEE0 rows", rows);
+
+  });
+
+  Project.addProject(Project_obj, function (err, rows) {
+
+    if (err) {
+      console.log("WWW0 err", err);
+
+      // res.json(err);
+    }
+    else {
+      console.log("WWW rows", rows);
+      // res.json(rows);
+    }
+
   });
 };
 
