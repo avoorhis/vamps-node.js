@@ -177,6 +177,12 @@ get_object_vals = function (object_name) {
   });
 };
 
+reverseString = function(str) {
+  return str.split("").reverse().join("");
+};
+
+
+
 // public
 
 exports.get_all_field_units = function (req) {
@@ -684,9 +690,9 @@ exports.get_inits = function (arr) {
 //   submit_code: [],
 //   tube_label: [] }
 
-exports.saveProject = function (project_info) {
-  console.log("JJJ project_info from saveProject = ", project_info);
-  d_region_arr      = project_info.d_region.split("#");
+exports.saveProject = function (req, res) {
+  console.log("JJJ req.form from saveProject = ", req.form);
+  d_region_arr      = req.form.d_region.split("#");
   var metagenomic   = 0;
   var project_name3 = d_region_arr[2];
   if (d_region_arr[0] === 'Shotgun') {
@@ -695,12 +701,12 @@ exports.saveProject = function (project_info) {
   }
   Project_obj                     = {};
   Project_obj.project_id          = 0;
-  Project_obj.project             = "'" + project_info.project_name1 + "_" + project_info.project_name2 + "_" + project_name3 + "'";
-  Project_obj.title               = "'" + project_info.project_title + "'";
-  Project_obj.project_description = "'" + project_info.project_description + "'";
-  Project_obj.rev_project_name    = "reverse('" + Project_obj.project + "')";
-  Project_obj.funding             = project_info.funding_code;
-  Project_obj.owner_user_id       = project_info.pi_id_name.split("#")[0];
+  Project_obj.project             = req.form.project_name1 + "_" + req.form.project_name2 + "_" + project_name3;
+  Project_obj.title               = req.form.project_title;
+  Project_obj.project_description = req.form.project_description;
+  Project_obj.rev_project_name    = reverseString(Project_obj.project);
+  Project_obj.funding             = req.form.funding_code;
+  Project_obj.owner_user_id       = req.form.pi_id_name.split("#")[0];
   Project_obj.public              = 0;
   Project_obj.metagenomic         = metagenomic;
   Project_obj.matrix              = 0;
@@ -723,13 +729,26 @@ exports.saveProject = function (project_info) {
     if (err) {
       console.log("WWW0 err", err);
 
-      // res.json(err);
+      res.json(err);
     }
     else {
       console.log("WWW rows", rows);
+      console.log("WWW rows", rows);
+      var new_project_id = rows.insertId;
+      var warningStatus = rows.warningStatus;
+      console.log("DDD new_project_id", new_project_id);
       // res.json(rows);
+      res.render('metadata/metadata_upload_new', {
+        button_name: "Submit",
+        domain_regions: CONSTS.DOMAIN_REGIONS,
+        hostname: req.CONFIG.hostname,
+        pi_list: req.session.pi_list,
+        project_title: req.form.project_title,
+        samples_number: req.form.samples_number,
+        title: 'VAMPS: New Metadata',
+        user: req.user
+      });
     }
-
   });
 };
 
