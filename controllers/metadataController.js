@@ -1,4 +1,4 @@
-var Project   = require(app_root + '/models/metadata');
+var Project   = require(app_root + '/models/project_model');
 var helpers   = require(app_root + '/routes/helpers/helpers');
 var CONSTS    = require(app_root + "/public/constants");
 var validator = require('validator');
@@ -100,7 +100,7 @@ get_all_dataset_ids = function() {
   return all_dataset_ids_uniq;
 };
 
-get_field_names = function (dataset_ids) {
+get_field_names_by_dataset_ids = function (dataset_ids) {
 
   var field_names_arr = [];
   // field_names_arr = field_names_arr.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
@@ -118,8 +118,8 @@ get_field_names = function (dataset_ids) {
     field_names_arr.sort();
   }
 
-  console.log("MMM0 AllMetadata");
-  console.log(JSON.stringify(AllMetadata));
+  // console.log("MMM0 AllMetadata");
+  // console.log(JSON.stringify(AllMetadata));
   //
   // console.log("MMM1 field_names_arr");
   // console.log(JSON.stringify(field_names_arr));
@@ -201,6 +201,18 @@ reverseString = function (str) {
   }
   return out_str;
 };
+
+prepare_field_names = function (dataset_ids) {
+  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS;
+  if (typeof dataset_ids !== 'undefined' && dataset_ids.length !== 0) {
+    all_field_names = all_field_names.concat(get_field_names_by_dataset_ids(dataset_ids));
+  }
+  all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+  all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
+  all_field_names     = helpers.unique_array(all_field_names);
+  return all_field_names;
+};
+
 
 // public
 
@@ -461,7 +473,7 @@ exports.get_all_req_metadata = function (dataset_id) {
 exports.make_all_field_names = function (dataset_ids) {
   var ordered_metadata_names_only = get_names_from_ordered_const();
 
-  var structured_field_names0 = get_field_names(dataset_ids);
+  var structured_field_names0 = get_field_names_by_dataset_ids(dataset_ids);
   var diff_names              = structured_field_names0.filter(function (x) {
     return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0;
   });
@@ -498,9 +510,9 @@ exports.from_obj_to_obj_of_arr = function (data, pid) {
 
   var dataset_ids = DATASET_IDS_BY_PID[pid];
 
-  // var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
+  // var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names_by_dataset_ids(dataset_ids)));
   //TODO: make field_names collection a separate function
-  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
+  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names_by_dataset_ids(dataset_ids));
   all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
   all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
   all_field_names     = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
@@ -657,14 +669,6 @@ exports.convertArrayOfObjectsToCSV = function (args) {
   return result;
 };
 
-exports.prepare_field_names = function (dataset_ids) {
-  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
-  all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
-  all_field_names     = helpers.unique_array(all_field_names);
-  return all_field_names;
-};
-
 exports.get_pi_list = function () {
   console.log("FROM Controller");
   var pi_list = [];
@@ -760,18 +764,19 @@ exports.saveProject = function (req, res) {
       console.log("DDD3, all_dataset_ids.flat(2)", all_dataset_ids);
 
       console.log("DDD pid", pid);
-      var all_field_names = get_all_field_names();
-            // module.exports.prepare_field_names(all_dataset_ids);
+      var all_field_names = prepare_field_names();
 
       console.log("PPP0 PROJECT_INFORMATION_BY_PID", PROJECT_INFORMATION_BY_PID);
 
       var all_metadata = {};
-      var dataset_ids  = all_dataset_ids;
-      var project      = PROJECT_INFORMATION_BY_PID[pid].project;
+      // var dataset_ids  = all_dataset_ids;
+      var project      = Project_obj.project;
       var repeat_times = req.form.samples_number;
 
+      //TODO: create all_metadata for empty new project
+
       // project_abstracts
-      module.exports.render_edit_form(req, res, {}, all_field_names);
+      module.exports.render_edit_form(req, res, all_metadata, all_field_names);
       // function (req, res, all_metadata, all_field_names) {
 
       // res.render('metadata/metadata_edit_form', {
@@ -819,7 +824,7 @@ exports.make_metadata_object = function (req, res, pid, info) {
 
   // 0) get field_names
   //TODO: DRY and clean up
-  // var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
+  // var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names_by_dataset_ids(dataset_ids));
   // all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
   // all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
   // all_field_names     = helpers.unique_array(all_field_names);

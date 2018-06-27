@@ -234,7 +234,7 @@ router.post('/metadata_new',
     form.field("project_name2").trim().required().entityEncode(),
     form.field("project_title").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode(),
     form.field("sample_concentration").trim().required().isInt().entityEncode().array(),
-    form.field("samples_number").trim().required().is(/^[0-9]+$/).entityEncode().array(),
+    form.field("samples_number").trim().required().is(/^[0-9]+$/).entityEncode(),
     form.field("submit_code").trim().entityEncode().array(),
     form.field("tube_label").trim().required().is(/^[a-zA-Z0-9_ -]+$/).entityEncode().array()
   ),
