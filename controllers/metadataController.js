@@ -704,17 +704,19 @@ exports.saveProject = function (project_info) {
   Project_obj.public              = 0;
   Project_obj.metagenomic         = metagenomic;
   Project_obj.matrix              = 0;
-  Project_obj.created_at          = "Now()";
-  Project_obj.updated_at          = "Now()";
+  Project_obj.created_at          = new Date();
+  Project_obj.updated_at          = new Date();
   Project_obj.active              = 0;
+
+  //2018-06-20 13:09:14
 
   console.log("JJJ1 JSON.stringify(Project_obj) = ", JSON.stringify(Project_obj));
 
-  Project.getAllProjects(function (err, rows) {
-    console.log("EEE err", err);
-    console.log("EEE0 rows", rows);
-
-  });
+  // Project.getAllProjects(function (err, rows) {
+  //   console.log("EEE err", err);
+  //   console.log("EEE0 rows", rows);
+  //
+  // });
 
   Project.addProject(Project_obj, function (err, rows) {
 
