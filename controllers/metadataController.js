@@ -79,7 +79,9 @@ get_cell_val_by_row = function (row_idx, req) {
 get_names_from_ordered_const = function () {
   console.time("time: ordered_metadata_names_only");
 
-  const arraycolumn = (arr, n) => arr.map(x => x[n]);
+  const arraycolumn = (arr, n) =>
+  arr.map(x => x[n]
+);
 
   // var ordered_metadata_names_only = consts.metadata_form_required_fields.concat(arraycolumn(consts.ordered_metadata_names, 0));
 
@@ -87,7 +89,17 @@ get_names_from_ordered_const = function () {
   return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
 };
 
+get_all_dataset_ids = function() {
+  console.time("TIME: get_all_dataset_ids");
+  var all_dataset_ids = get_object_vals(DATASET_IDS_BY_PID);
+  var merged = [].concat.apply([], all_dataset_ids);
+  var uniqued_merge = Array.from(new Set(merged));
+  console.timeEnd("TIME: get_all_dataset_ids");
+  return uniqued_merge;
+};
+
 get_field_names = function (dataset_ids) {
+
   var field_names_arr = [];
   // field_names_arr = field_names_arr.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
   // field_names_arr = field_names_arr.concat(CONSTS.PROJECT_INFO_FIELDS);
@@ -177,11 +189,13 @@ get_object_vals = function (object_name) {
   });
 };
 
-reverseString = function(str) {
-  return str.split("").reverse().join("");
+reverseString = function (str) {
+  var out_str = '';
+  for (var i = s.length - 1; i >= 0; i--) {
+    out_str += s[i];
+  }
+  return out_str;
 };
-
-
 
 // public
 
@@ -638,8 +652,9 @@ exports.convertArrayOfObjectsToCSV = function (args) {
   return result;
 };
 
-exports.prepare_field_names = function () {
-  var all_field_names = CONSTS.REQ_METADATA_FIELDS_wIDs;
+exports.prepare_field_names = function (dataset_ids) {
+  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
+  all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
   all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
   all_field_names     = helpers.unique_array(all_field_names);
   return all_field_names;
@@ -735,19 +750,45 @@ exports.saveProject = function (req, res) {
       console.log("WWW rows", rows);
       console.log("WWW rows", rows);
       var new_project_id = rows.insertId;
-      var warningStatus = rows.warningStatus;
+      var warningStatus  = rows.warningStatus;
+      uniqued_merge      = get_all_dataset_ids;
+      console.log("DDD3, all_dataset_ids.flat(2)", uniqued_merge);
+
       console.log("DDD new_project_id", new_project_id);
-      // res.json(rows);
-      res.render('metadata/metadata_upload_new', {
-        button_name: "Submit",
-        domain_regions: CONSTS.DOMAIN_REGIONS,
-        hostname: req.CONFIG.hostname,
-        pi_list: req.session.pi_list,
-        project_title: req.form.project_title,
-        samples_number: req.form.samples_number,
-        title: 'VAMPS: New Metadata',
-        user: req.user
-      });
+      var all_field_names = module.exports.prepare_field_names(uniqued_merge);
+
+      module.exports.render_edit_form(req, res, {}, all_field_names);
+      // function (req, res, all_metadata, all_field_names) {
+
+      // res.render('metadata/metadata_edit_form', {
+      // title: "VAMPS: Metadata_upload",
+      // user: req.user,
+      // hostname: req.CONFIG.hostname,
+      // all_metadata: {},
+      // all_field_names: all_field_names,
+      // ordered_field_names_obj: ordered_field_names_obj,
+      // all_field_units: MD_CUSTOM_UNITS[req.body.project_id],
+      // dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+      // dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+      // dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+      // biome_primary_options: CONSTS.BIOME_PRIMARY,
+      // feature_primary_options: CONSTS.FEATURE_PRIMARY,
+      // material_primary_options: CONSTS.MATERIAL_PRIMARY,
+      // metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+      // env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+      // investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+      // sample_type_options: CONSTS.SAMPLE_TYPE
+      // button_name: "Submit",
+      // domain_regions: CONSTS.DOMAIN_REGIONS,
+      // hostname: req.CONFIG.hostname,
+      // pi_list: req.session.pi_list,
+      // project_title: req.form.project_title,
+      // samples_number: req.form.samples_number,
+      // title: 'VAMPS: New Metadata',
+      // user: req.user
+      // });
+      // }
+
     }
   });
 };
@@ -768,10 +809,7 @@ exports.make_metadata_object = function (req, res, pid, info) {
   // all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
   // all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
   // all_field_names     = helpers.unique_array(all_field_names);
-  var all_field_names = module.exports.prepare_field_names();
-  all_field_names     = all_field_names.concat(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
-  all_field_names     = helpers.unique_array(all_field_names);
-
+  var all_field_names = module.exports.prepare_field_names(dataset_ids);
 
   console.log("HHH3 all_field_names");
   console.log(JSON.stringify(all_field_names));
