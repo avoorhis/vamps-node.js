@@ -93,9 +93,11 @@ get_all_dataset_ids = function() {
   console.time("TIME: get_all_dataset_ids");
   var all_dataset_ids = get_object_vals(DATASET_IDS_BY_PID);
   var merged = [].concat.apply([], all_dataset_ids);
-  var uniqued_merge = Array.from(new Set(merged));
+  // var uniqued_merge = Array.from(new Set(merged));
+  var all_dataset_ids_uniq = helpers.unique_array(merged);
+  // all_dataset_ids_uniq.sort();
   console.timeEnd("TIME: get_all_dataset_ids");
-  return uniqued_merge;
+  return all_dataset_ids_uniq;
 };
 
 get_field_names = function (dataset_ids) {
@@ -107,14 +109,17 @@ get_field_names = function (dataset_ids) {
   for (var i = 0; i < dataset_ids.length; i++) {
     var dataset_id = dataset_ids[i];
 
+    console.log("MMM0 AllMetadata");
+    console.log(JSON.stringify(AllMetadata));
+
     field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
 
     field_names_arr = helpers.unique_array(field_names_arr);
     field_names_arr.sort();
   }
 
-  // console.log("MMM0 AllMetadataNames");
-  // console.log(JSON.stringify(AllMetadataNames));
+  console.log("MMM0 AllMetadata");
+  console.log(JSON.stringify(AllMetadata));
   //
   // console.log("MMM1 field_names_arr");
   // console.log(JSON.stringify(field_names_arr));
@@ -749,14 +754,23 @@ exports.saveProject = function (req, res) {
     else {
       console.log("WWW rows", rows);
       console.log("WWW rows", rows);
-      var new_project_id = rows.insertId;
+      var pid = rows.insertId;
       var warningStatus  = rows.warningStatus;
-      uniqued_merge      = get_all_dataset_ids;
-      console.log("DDD3, all_dataset_ids.flat(2)", uniqued_merge);
+      var all_dataset_ids      = get_all_dataset_ids();
+      console.log("DDD3, all_dataset_ids.flat(2)", all_dataset_ids);
 
-      console.log("DDD new_project_id", new_project_id);
-      var all_field_names = module.exports.prepare_field_names(uniqued_merge);
+      console.log("DDD pid", pid);
+      var all_field_names = get_all_field_names();
+            // module.exports.prepare_field_names(all_dataset_ids);
 
+      console.log("PPP0 PROJECT_INFORMATION_BY_PID", PROJECT_INFORMATION_BY_PID);
+
+      var all_metadata = {};
+      var dataset_ids  = all_dataset_ids;
+      var project      = PROJECT_INFORMATION_BY_PID[pid].project;
+      var repeat_times = req.form.samples_number;
+
+      // project_abstracts
       module.exports.render_edit_form(req, res, {}, all_field_names);
       // function (req, res, all_metadata, all_field_names) {
 
