@@ -326,17 +326,7 @@ router.post('/metadata_new',
     else {
       // ?? render_edit_form(req, res, {}, {}, all_field_names)
       console.log("metadata_upload_new is valid");
-      metadata_controller.saveProject(req.form);
-      res.render('metadata/metadata_upload_new', {
-        button_name: "Submit",
-        domain_regions: CONSTS.DOMAIN_REGIONS,
-        hostname: req.CONFIG.hostname,
-        pi_list: req.session.pi_list,
-        project_title: req.form.project_title,
-        samples_number: req.form.samples_number,
-        title: 'VAMPS: New Metadata',
-        user: req.user,
-      });
+      metadata_controller.saveProject(req, res);
     }
   });
 
