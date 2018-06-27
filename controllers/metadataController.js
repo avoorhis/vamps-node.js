@@ -191,8 +191,8 @@ get_object_vals = function (object_name) {
 
 reverseString = function (str) {
   var out_str = '';
-  for (var i = s.length - 1; i >= 0; i--) {
-    out_str += s[i];
+  for (var i = str.length - 1; i >= 0; i--) {
+    out_str += str[i];
   }
   return out_str;
 };
