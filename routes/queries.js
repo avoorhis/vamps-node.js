@@ -22,6 +22,7 @@ get_select_datasets_query: function(){
     qSelectDatasets += " LEFT JOIN dataset USING(project_id)";
     
     qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
+    qSelectDatasets += " WHERE project.active = 1";
     qSelectDatasets += " ORDER BY project, dataset";
     //console.log(qSelectDatasets);
     return qSelectDatasets;
@@ -42,7 +43,8 @@ get_select_datasets_queryPID: function(pid){
     qSelectDatasets += " JOIN project USING(project_id)";
     qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
     qSelectDatasets += " WHERE project_id = " + connection.escape(pid);
-    //qSelectDatasets += " AND metagenomic='0'";
+    qSelectDatasets += " AND project.active = 1";
+//qSelectDatasets += " AND metagenomic='0'";
     qSelectDatasets += " ORDER BY project, dataset";
     console.log(qSelectDatasets);
     return qSelectDatasets;	
@@ -67,7 +69,9 @@ get_all_user_groups: function(){
 },
 get_projects_queryUID: function( uid ) {
     var q = "SELECT project, project_id from project where owner_user_id='"+uid+"'";
-    return q;
+    q += " WHERE project.active = 1";
+
+  return q;
 },
 get_select_seq_count_query: function(){
 
@@ -90,6 +94,7 @@ get_select_seq_count_queryPID: function(pid){
 		qSequenceCounts += " FROM sequence_pdr_info";
 		qSequenceCounts += " JOIN dataset using(dataset_id)";
 		qSequenceCounts += " WHERE project_id = " + connection.escape(pid);
+    qSequenceCounts += " AND project.active = 1";
 		qSequenceCounts += " GROUP BY project_id, dataset_id";
 		return qSequenceCounts;
 	
@@ -446,6 +451,7 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
         qSelectProjects += " FROM project";   
         qSelectProjects += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
         qSelectProjects += " WHERE metagenomic='1'";
+        qSelectProjects += " AND project.active = 1";
         qSelectProjects += " ORDER BY project";
         //console.log(qSelectProjects);
         return qSelectProjects;
@@ -458,6 +464,7 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
         qSelectDatasets += " LEFT JOIN dataset USING(project_id)";    
         qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
         qSelectDatasets += " WHERE metagenomic='1'";
+        qSelectDatasets += " AND project.active = 1";
         qSelectDatasets += " ORDER BY project, dataset";
         //console.log(qSelectDatasets);
         return qSelectDatasets;
