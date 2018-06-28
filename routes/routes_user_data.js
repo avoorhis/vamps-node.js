@@ -901,11 +901,17 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                     first_item = line_items[0].substring(1,line_items[0].length)  // remove '>'
                     // now this is common M9Akey217.141086_98 last digits are 'count'
                     // need to be removed
-                    first_item = first_item.split('_')[0]  // if trailing number: remove it
-                    if(ds_counts.hasOwnProperty(first_item)){
-                        ds_counts[first_item] += 1
+                    items = first_item.split('_')
+                    if(helpers.isInt(items[items.length - 1])){
+                        dataset = first_item.split('_')[0]  // if trailing number: remove it
                     }else{
-                        ds_counts[first_item] = 1                        
+                        dataset = first_item
+                    }
+                    
+                    if(ds_counts.hasOwnProperty(dataset)){
+                        ds_counts[dataset] += 1
+                    }else{
+                        ds_counts[dataset] = 1                        
                     }                                   
                 }
             }
