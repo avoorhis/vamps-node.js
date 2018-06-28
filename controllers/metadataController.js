@@ -1,4 +1,5 @@
 var Project   = require(app_root + '/models/project_model');
+var User   = require(app_root + '/models/user_model');
 var helpers   = require(app_root + '/routes/helpers/helpers');
 var CONSTS    = require(app_root + "/public/constants");
 var validator = require('validator');
@@ -217,7 +218,9 @@ create_all_metadata_form_new = function(rows, req, res, all_field_names)
 {
   var pid = rows.insertId;
   var warningStatus  = rows.warningStatus;
-  // var all_dataset_ids      = get_all_dataset_ids();
+  var user_id = req.form.pi_id_name.split("#")[0];
+
+  var user_obj = User.getUserInfoFromGlobal(user_id);
   // console.log("DDD3, all_dataset_ids.flat(2)", all_dataset_ids);
 
   console.log("DDD pid", pid);
@@ -226,8 +229,91 @@ create_all_metadata_form_new = function(rows, req, res, all_field_names)
   var all_metadata = {};
   all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
   console.log("PPP0 all_metadata from create_all_metadata_form_new", all_metadata);
-  var project      = Project_obj.project;
   var repeat_times = req.form.samples_number;
+
+  var project_info = {
+    project: project_obj.project,
+    first_name: user_obj.first_name,
+    institution: user_obj.institution,
+    last_name: user_obj.last_name,
+    pi_email: user_obj.email,
+    pi_name: user_obj.first_name + " " + user_obj.last_name,
+    project_title: project_obj.title,
+    public: project_obj.public,
+    username: user_obj.username
+  };
+
+
+  console.log("MMM33 all_metadata[pid]");
+  console.log(JSON.stringify(all_metadata[pid]));
+
+  for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
+    var field_name = CONSTS.PROJECT_INFO_FIELDS[idx];
+
+    //todo: split if, if length == dataset_ids.length - just use as is
+    if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
+      all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
+    }
+    else {
+      all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(project_info[field_name], repeat_times);
+    }
+  }
+
+  if ((all_metadata[pid]["project_abstract"] === 'undefined') || (!all_metadata[pid].hasOwnProperty(["project_abstract"]))) {
+    all_metadata[pid]["project_abstract"] = module.exports.fill_out_arr_doubles("", repeat_times);
+  }
+  else {
+
+    if ((all_metadata[pid]["project_abstract"][0] !== 'undefined') && (!Array.isArray(all_metadata[pid]["project_abstract"][0]))) {
+
+      var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]["project_abstract"]);
+
+      if (typeof project_abstract_correct_form[0] !== 'undefined') {
+
+        all_metadata[pid]["project_abstract"] = module.exports.fill_out_arr_doubles(project_abstract_correct_form[0].split(","), repeat_times);
+
+      }
+    }
+  }
+
+    // var pid  = req.body.project_id;
+    // var data = req.form;
+  //
+  //   // console.log("DDD9 req.form");
+  //   // console.log(JSON.stringify(req.form));
+  //
+  //
+  //   //add project_abstract etc.
+  //   //TODO: DRY with other such places.
+  //
+  //   var normal_length = req.form.samples_number;
+  //   for (var a in data) {
+  //     if (data[a].length < normal_length && (typeof data[a][0] !== 'undefined')) {
+  //       data[a] = module.exports.fill_out_arr_doubles(data[a][0], normal_length);
+  //     }
+  //   }
+  //
+
+  console.log("PPP0 all_metadata from create_all_metadata_form_new", all_metadata);
+//--
+  // "4115":{"adapter_sequence_id":"81",
+  // "geo_loc_name_id":"668066",
+  // "run_id":"66",
+  // "collection_date":"2008-04-12",
+  // "env_material_id":"6191",
+  // "dna_region_id":"12",
+  // "longitude":"8.43361",
+  // "domain_id":"3",
+  // "target_gene_id":"1",
+  // "env_feature_id":"1425",
+  // "env_package_id":"22",
+  // "illumina_index_id":"83",
+  // "env_biome_id":"6191",
+  // "latitude":"55.02861",
+  // "primer_suite_id":"23",
+  // "sequencing_platform_id":"1"},
+
+
 
   return all_metadata;
   //TODO: create all_metadata for empty new project
@@ -781,31 +867,32 @@ exports.get_inits = function (arr) {
 
 exports.saveProject = function (req, res) {
   console.log("JJJ req.form from saveProject = ", req.form);
-  d_region_arr      = req.form.d_region.split("#");
+  var d_region_arr      = req.form.d_region.split("#");
+  var owner_info = req.form.pi_id_name.split("#");
   var metagenomic   = 0;
   var project_name3 = d_region_arr[2];
   if (d_region_arr[0] === 'Shotgun') {
     metagenomic   = 1;
     project_name3 = "Sgun";
   }
-  Project_obj                     = {};
-  Project_obj.project_id          = 0;
-  Project_obj.project             = req.form.project_name1 + "_" + req.form.project_name2 + "_" + project_name3;
-  Project_obj.title               = req.form.project_title;
-  Project_obj.project_description = req.form.project_description;
-  Project_obj.rev_project_name    = reverseString(Project_obj.project);
-  Project_obj.funding             = req.form.funding_code;
-  Project_obj.owner_user_id       = req.form.pi_id_name.split("#")[0];
-  Project_obj.public              = 0;
-  Project_obj.metagenomic         = metagenomic;
-  Project_obj.matrix              = 0;
-  Project_obj.created_at          = new Date();
-  Project_obj.updated_at          = new Date();
-  Project_obj.active              = 0;
+  project_obj                     = {};
+  project_obj.project_id          = 0;
+  project_obj.project             = req.form.project_name1 + "_" + req.form.project_name2 + "_" + project_name3;
+  project_obj.title               = req.form.project_title;
+  project_obj.project_description = req.form.project_description;
+  project_obj.rev_project_name    = reverseString(project_obj.project);
+  project_obj.funding             = req.form.funding_code;
+  project_obj.public              = 0;
+  project_obj.metagenomic         = metagenomic;
+  project_obj.matrix              = 0;
+  project_obj.created_at          = new Date();
+  project_obj.updated_at          = new Date();
+  project_obj.active              = 0;
+
 
   //2018-06-20 13:09:14
 
-  console.log("OOO1 JSON.stringify(Project_obj) = ", JSON.stringify(Project_obj));
+  console.log("OOO1 JSON.stringify(project_obj) = ", JSON.stringify(project_obj));
 
   // Project.getAllProjects(function (err, rows) {
   //   console.log("EEE err", err);
@@ -813,7 +900,7 @@ exports.saveProject = function (req, res) {
   //
   // });
 
-  Project.addProject(Project_obj, function (err, rows) {
+  Project.addProject(project_obj, function (err, rows) {
 
     if (err) {
       console.log("WWW0 err", err);
@@ -865,8 +952,8 @@ exports.make_metadata_object = function (req, res, pid, info) {
   // console.log(all_metadata);
 
   //2) all
-  // console.log("HHH info object in make_metadata_object");
-  // console.log(JSON.stringify(info));
+  console.log("HHH info object in make_metadata_object");
+  console.log(JSON.stringify(info));
 
   all_metadata[pid] = info;
 
