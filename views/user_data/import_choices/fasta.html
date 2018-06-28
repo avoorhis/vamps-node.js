@@ -61,21 +61,21 @@
         The input FASTA file has to be formatted in a certain way
         as a requirement before uploading successfully.  
         <li>All of your reads from all of your samples of interest have to be in a single FASTA file (ie. the file cannot be uniqued).
-        <li>All reads MUST have deflines formatted in the following format: 
-        <li>>sampleName_uniqueID  (Sample Name and Unique ID are separated by an underscore: '_')
+        <li>All reads MUST have def-lines formatted in the following format: SampleName and Unique ID are separated by a single space - no TAB characters
+        <li>Example: &gt;sampleName&lt;SPACE&gt;uniqueID&lt;SPACE&gt;optional other data 
+        <li>The sample names must be alphanumeric (no spaces or special characters other than period '.' or underscore '_'). It is okay to
+        have an underscore_count (ie. PC.634_2) at the end of the SampleName - it will be removed if it is an integer.
         <li>The reads MUST be pre-processed (no primers or barcodes attached).
         
     <small><pre>
-         >Sample01_UniqueIDX_Optional_Other_stuff
-         GTTGAAAAAGTTAGTGGTGAAATCCCAGA...
-         >Sample01_UniqueIDY
-         GTTGAAAAAGTTAGTGGTGAAATCCCAGA...
-         >Sample01_UniqueIDZ_Optional_Other_stuff
-         GGTGAAAAAGTTAGTGGTGAAATCCCAGA...
-         >Sample02_UniqueIDN
-         GTTGAAAAAGTTAGTGGTGAAATCCCAGA...
-         >Sample02_UniqueIDM
-         GTTGAAAAAGTTAGTGGTGAAATCCCAGA...
+        >PC.634_1 FLP3FBN01ELBSX orig_bc=ACAGAGTCGGCT new_bc=ACAGAGTCGGCT bc_diffs=0
+        CTGGGCCGTGTCTCAGTCCCAATGTGGCCGTTTACCCTCTCAGGCCGGCTACGCATCATCGCCTTGGTGGGCCGTT
+        >PC.634_2 FLP3FBN01EG8AX orig_bc=ACAGAGTCGGCT new_bc=ACAGAGTCGGCT bc_diffs=0
+        TTGGACCGTGTCTCAGTTCCAATGTGGGGGCCTTCCTCTCAGAACCCCTATCCATCGAAGGCTTGGTGGGCCGTTA
+        >PC.354_3 FLP3FBN01EEWKD orig_bc=AGCACGAGCCTA new_bc=AGCACGAGCCTA bc_diffs=0
+        TTGGGCCGTGTCTCAGTCCCAATGTGGCCGATCAGTCTCTTAACTCGGCTATGCATCATTGCCTTGGTAAGCCGTT
+        >PC.481_4 FLP3FBN01DEHK3 orig_bc=ACCAGCGACTAG new_bc=ACCAGCGACTAG bc_diffs=0
+        CTGGGCCGTGTCTCAGTCCCAATGTGGCCGTTCAACCTCTCAGTCCGGCTACTGATCGTCGACTTGGTGAGCCGTT
     </pre></small>
         The script will check the number of samples and compare it with the number of reads. If the number of samples is greater than 10% of the reads you will get a warning
         that your FASTA file may be formatted incorrectly.
