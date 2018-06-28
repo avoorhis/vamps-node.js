@@ -229,8 +229,8 @@ create_all_metadata_form_new = function(rows, req, res, all_field_names)
   var all_metadata = {};
   all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
   console.log("PPP0 all_metadata from create_all_metadata_form_new", all_metadata);
-  var repeat_times = req.form.samples_number;
-
+  var repeat_times = parseInt(req.form.samples_number, 10);
+  console.log(typeof repeat_times);
   var project_info = {
     project: project_obj.project,
     first_name: user_obj.first_name,
@@ -249,7 +249,7 @@ create_all_metadata_form_new = function(rows, req, res, all_field_names)
 
   for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
     var field_name = CONSTS.PROJECT_INFO_FIELDS[idx];
-
+    all_metadata[pid][field_name] = [project_info[field_name]];
     //todo: split if, if length == dataset_ids.length - just use as is
     if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
       all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
