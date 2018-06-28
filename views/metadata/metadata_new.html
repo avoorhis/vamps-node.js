@@ -158,7 +158,10 @@ var all_metadata = {}
                 </tr>
             </table>
         </div>
+      <% if ((typeof(all_metadata) !== 'undefined') && all_metadata.length > 0) { %>
+        <%= JSON.stryngify(all_metadata) %>
         <% include first_fixed_table.ejs %>
+      <% } %>
     </fieldset>
     <br>
 
