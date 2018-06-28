@@ -94,7 +94,7 @@ module.exports = {
     qSequenceCounts += " FROM sequence_pdr_info";
     qSequenceCounts += " JOIN dataset using(dataset_id)";
     qSequenceCounts += " WHERE project_id = " + connection.escape(pid);
-    qSequenceCounts += " AND project.active = 1";
+    //qSequenceCounts += " AND project.active = 1";  // not needed here
     qSequenceCounts += " GROUP BY project_id, dataset_id";
     return qSequenceCounts;
 
