@@ -568,15 +568,15 @@ function save_cust_metadata(pid, mdname, data){
 router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
   console.log('in import_choices');
   var project = req.query.project || '' // url should always be like: /user_data/import_choices?project=andy003 
-  if(req.user.security_level > 1 && req.CONFIG.hostname == 'bpcweb8'){
-      req.flash('fail','Not coded yet')
-      res.render('user_data/your_data', {
-        title: 'VAMPS:Data Administration',
-        user: req.user, hostname: req.CONFIG.hostname,
-        
-      });
-      return;
-  }
+  // if(req.user.security_level > 1 && req.CONFIG.hostname == 'bpcweb8'){
+//       req.flash('fail','Not coded yet')
+//       res.render('user_data/your_data', {
+//         title: 'VAMPS:Data Administration',
+//         user: req.user, hostname: req.CONFIG.hostname,
+//         
+//       });
+//       return;
+//   }
   if (req.user.username == 'guest') {
        req.flash('fail', "The 'guest' user is not permitted to import data");
        res.redirect('/user_data/your_data');
@@ -1851,14 +1851,14 @@ function metadata_upload(req, options, data_dir, project)
 // YOUR PROJECTS
 //
 router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
-    if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
-      req.flash('fail','Not coded yet')
-      res.render('user_data/your_data', {
-        title: 'VAMPS:Data Administration',
-        user: req.user, hostname: req.CONFIG.hostname,
-      });
-      return;
-    }
+    // if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
+//       req.flash('fail','Not coded yet')
+//       res.render('user_data/your_data', {
+//         title: 'VAMPS:Data Administration',
+//         user: req.user, hostname: req.CONFIG.hostname,
+//       });
+//       return;
+//     }
     var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
    // AAV must find and list projects that 
    //   1) have no directory (DB only)
