@@ -228,7 +228,7 @@ create_all_metadata_form_new = function(rows, req, res, all_field_names)
 
   var all_metadata = {};
   all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
-  console.log("PPP0 all_metadata from create_all_metadata_form_new", all_metadata);
+  console.log("PPP01 all_metadata from create_all_metadata_form_new", all_metadata);
   var repeat_times = parseInt(req.form.samples_number, 10);
   console.log(typeof repeat_times);
   var project_info = {
@@ -294,7 +294,7 @@ create_all_metadata_form_new = function(rows, req, res, all_field_names)
   //   }
   //
 
-  console.log("PPP0 all_metadata from create_all_metadata_form_new", all_metadata);
+  console.log("PPP02 all_metadata from create_all_metadata_form_new", all_metadata);
 //--
   // "4115":{"adapter_sequence_id":"81",
   // "geo_loc_name_id":"668066",
@@ -314,7 +314,57 @@ create_all_metadata_form_new = function(rows, req, res, all_field_names)
   // "sequencing_platform_id":"1"},
 
 
-
+  all_metadata = { '485':
+    { project: [ 'MS_AAA_EHSSU', 'MS_AAA_EHSSU', 'MS_AAA_EHSSU' ],
+      dataset: ["", "", ""],
+      sample_name: ["", "", ""],
+      investigation_type: ["", "", ""],
+      sample_type: ["", "", ""],
+      collection_date: ["", "", ""],
+      latitude: ["", "", ""],
+      longitude: ["", "", ""],
+      geo_loc_name_continental: ["", "", ""],
+      geo_loc_name_marine: ["", "", ""],
+      env_package: ["", "", ""],
+      env_biome: ["", "", ""],
+      env_feature: ["", "", ""],
+      env_material: ["", "", ""],
+      elevation: ["", "", ""],
+      dna_extraction_meth: ["", "", ""],
+      dna_quantitation: ["", "", ""],
+      domain: ["", "", ""],
+      target_gene: ["", "", ""],
+      dna_region: ["", "", ""],
+      sequencing_meth: ["", "", ""],
+      forward_primer: ["", "", ""],
+      reverse_primer: ["", "", ""],
+      illumina_index: ["", "", ""],
+      adapter_sequence: ["", "", ""],
+      run: ["", "", ""],
+      ph: ["", "", ""],
+      temperature: ["", "", ""],
+      conductivity: ["", "", ""],
+      geo_loc_name: ["", "", ""],
+      sequencing_platform: ["", "", ""],
+      primer_suite: ["", "", ""],
+      first_name: [ 'Mohammadkarim', 'Mohammadkarim', 'Mohammadkarim' ],
+      institution:
+      [ 'University of Duisburg-Essen',
+        'University of Duisburg-Essen',
+        'University of Duisburg-Essen' ],
+        last_name: [ 'Saeedghalati', 'Saeedghalati', 'Saeedghalati' ],
+      pi_email:
+      [ 'm.saeedghalati@uni-due.de',
+        'm.saeedghalati@uni-due.de',
+        'm.saeedghalati@uni-due.de' ],
+        pi_name:
+      [ 'Mohammadkarim Saeedghalati',
+        'Mohammadkarim Saeedghalati',
+        'Mohammadkarim Saeedghalati' ],
+        project_title: [ 'AAA title', 'AAA title', 'AAA title' ],
+      public: [ 0, 0, 0 ],
+      username: [ 'saeedghalati', 'saeedghalati', 'saeedghalati' ],
+      project_abstract: [ '', '', '' ] } };
   return all_metadata;
   //TODO: create all_metadata for empty new project
   // "4115":{"adapter_sequence_id":"81",
@@ -904,8 +954,9 @@ exports.saveProject = function (req, res) {
 
     if (err) {
       console.log("WWW0 err", err);
+      req.flash("fail", err);
 
-      res.json(err);
+      // res.json(err);
     }
     else {
       console.log("WWW rows", rows);
