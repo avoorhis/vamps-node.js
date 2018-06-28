@@ -213,7 +213,72 @@ prepare_field_names = function (dataset_ids) {
   return all_field_names;
 };
 
+create_all_metadata_form_new = function(rows, req, res, all_field_names)
+{
+  var pid = rows.insertId;
+  var warningStatus  = rows.warningStatus;
+  // var all_dataset_ids      = get_all_dataset_ids();
+  // console.log("DDD3, all_dataset_ids.flat(2)", all_dataset_ids);
 
+  console.log("DDD pid", pid);
+
+
+  var all_metadata = {};
+  all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
+  console.log("PPP0 all_metadata from create_all_metadata_form_new", all_metadata);
+  var project      = Project_obj.project;
+  var repeat_times = req.form.samples_number;
+
+  return all_metadata;
+  //TODO: create all_metadata for empty new project
+  // "4115":{"adapter_sequence_id":"81",
+  // "geo_loc_name_id":"668066",
+  // "run_id":"66",
+  // "collection_date":"2008-04-12",
+  // "env_material_id":"6191",
+  // "dna_region_id":"12",
+  // "longitude":"8.43361",
+  // "domain_id":"3",
+  // "target_gene_id":"1",
+  // "env_feature_id":"1425",
+  // "env_package_id":"22",
+  // "illumina_index_id":"83",
+  // "env_biome_id":"6191",
+  // "latitude":"55.02861",
+  // "primer_suite_id":"23",
+  // "sequencing_platform_id":"1"},
+
+  // project_abstracts
+  // res.render('metadata/metadata_edit_form', {
+  // title: "VAMPS: Metadata_upload",
+  // user: req.user,
+  // hostname: req.CONFIG.hostname,
+  // all_metadata: {},
+  // all_field_names: all_field_names,
+  // ordered_field_names_obj: ordered_field_names_obj,
+  // all_field_units: MD_CUSTOM_UNITS[req.body.project_id],
+  // dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+  // dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+  // dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+  // biome_primary_options: CONSTS.BIOME_PRIMARY,
+  // feature_primary_options: CONSTS.FEATURE_PRIMARY,
+  // material_primary_options: CONSTS.MATERIAL_PRIMARY,
+  // metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+  // env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+  // investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+  // sample_type_options: CONSTS.SAMPLE_TYPE
+  // button_name: "Submit",
+  // domain_regions: CONSTS.DOMAIN_REGIONS,
+  // hostname: req.CONFIG.hostname,
+  // pi_list: req.session.pi_list,
+  // project_title: req.form.project_title,
+  // samples_number: req.form.samples_number,
+  // title: 'VAMPS: New Metadata',
+  // user: req.user
+  // });
+  // }
+
+};
 // public
 
 exports.get_all_field_units = function (req) {
@@ -740,7 +805,7 @@ exports.saveProject = function (req, res) {
 
   //2018-06-20 13:09:14
 
-  console.log("JJJ1 JSON.stringify(Project_obj) = ", JSON.stringify(Project_obj));
+  console.log("OOO1 JSON.stringify(Project_obj) = ", JSON.stringify(Project_obj));
 
   // Project.getAllProjects(function (err, rows) {
   //   console.log("EEE err", err);
@@ -757,57 +822,9 @@ exports.saveProject = function (req, res) {
     }
     else {
       console.log("WWW rows", rows);
-      console.log("WWW rows", rows);
-      var pid = rows.insertId;
-      var warningStatus  = rows.warningStatus;
-      var all_dataset_ids      = get_all_dataset_ids();
-      console.log("DDD3, all_dataset_ids.flat(2)", all_dataset_ids);
-
-      console.log("DDD pid", pid);
       var all_field_names = prepare_field_names();
-
-      console.log("PPP0 PROJECT_INFORMATION_BY_PID", PROJECT_INFORMATION_BY_PID);
-
-      var all_metadata = {};
-      // var dataset_ids  = all_dataset_ids;
-      var project      = Project_obj.project;
-      var repeat_times = req.form.samples_number;
-
-      //TODO: create all_metadata for empty new project
-
-      // project_abstracts
+      var all_metadata = create_all_metadata_form_new(rows, req, res, all_field_names);
       module.exports.render_edit_form(req, res, all_metadata, all_field_names);
-      // function (req, res, all_metadata, all_field_names) {
-
-      // res.render('metadata/metadata_edit_form', {
-      // title: "VAMPS: Metadata_upload",
-      // user: req.user,
-      // hostname: req.CONFIG.hostname,
-      // all_metadata: {},
-      // all_field_names: all_field_names,
-      // ordered_field_names_obj: ordered_field_names_obj,
-      // all_field_units: MD_CUSTOM_UNITS[req.body.project_id],
-      // dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-      // dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-      // dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-      // biome_primary_options: CONSTS.BIOME_PRIMARY,
-      // feature_primary_options: CONSTS.FEATURE_PRIMARY,
-      // material_primary_options: CONSTS.MATERIAL_PRIMARY,
-      // metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-      // env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-      // investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-      // sample_type_options: CONSTS.SAMPLE_TYPE
-      // button_name: "Submit",
-      // domain_regions: CONSTS.DOMAIN_REGIONS,
-      // hostname: req.CONFIG.hostname,
-      // pi_list: req.session.pi_list,
-      // project_title: req.form.project_title,
-      // samples_number: req.form.samples_number,
-      // title: 'VAMPS: New Metadata',
-      // user: req.user
-      // });
-      // }
-
     }
   });
 };
@@ -828,7 +845,7 @@ exports.make_metadata_object = function (req, res, pid, info) {
   // all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
   // all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
   // all_field_names     = helpers.unique_array(all_field_names);
-  var all_field_names = module.exports.prepare_field_names(dataset_ids);
+  var all_field_names = prepare_field_names(dataset_ids);
 
   console.log("HHH3 all_field_names");
   console.log(JSON.stringify(all_field_names));
@@ -857,8 +874,8 @@ exports.make_metadata_object = function (req, res, pid, info) {
 
   // TODO: move to db creation?
   var project_info = get_project_info(pid);
-  // console.log("MMM33 all_metadata[pid]");
-  // console.log(JSON.stringify(all_metadata[pid]));
+  console.log("MMM33 all_metadata[pid]");
+  console.log(JSON.stringify(all_metadata[pid]));
 
   for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
     var field_name = CONSTS.PROJECT_INFO_FIELDS[idx];
