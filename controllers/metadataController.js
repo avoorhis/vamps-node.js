@@ -1,5 +1,5 @@
 var Project   = require(app_root + '/models/project_model');
-var User   = require(app_root + '/models/user_model');
+var User      = require(app_root + '/models/user_model');
 var helpers   = require(app_root + '/routes/helpers/helpers');
 var CONSTS    = require(app_root + "/public/constants");
 var validator = require('validator');
@@ -81,8 +81,8 @@ get_names_from_ordered_const = function () {
   console.time("time: ordered_metadata_names_only");
 
   const arraycolumn = (arr, n) =>
-  arr.map(x => x[n]
-);
+  arr.map(x => x[n])
+  ;
 
   // var ordered_metadata_names_only = consts.metadata_form_required_fields.concat(arraycolumn(consts.ordered_metadata_names, 0));
 
@@ -90,34 +90,29 @@ get_names_from_ordered_const = function () {
   return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
 };
 
-get_all_dataset_ids = function() {
-  console.time("TIME: get_all_dataset_ids");
-  var all_dataset_ids = get_object_vals(DATASET_IDS_BY_PID);
-  var merged = [].concat.apply([], all_dataset_ids);
-  // var uniqued_merge = Array.from(new Set(merged));
-  var all_dataset_ids_uniq = helpers.unique_array(merged);
-  // all_dataset_ids_uniq.sort();
-  console.timeEnd("TIME: get_all_dataset_ids");
-  return all_dataset_ids_uniq;
-};
+// get_all_dataset_ids = function () {
+//   console.time("TIME: get_all_dataset_ids");
+//   var all_dataset_ids = Object.keys(AllMetadata[dataset_id]);
+//   console.timeEnd("TIME: get_all_dataset_ids");
+//   return all_dataset_ids_uniq;
+// };
 
 get_field_names_by_dataset_ids = function (dataset_ids) {
 
   var field_names_arr = [];
   // field_names_arr = field_names_arr.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
   // field_names_arr = field_names_arr.concat(CONSTS.PROJECT_INFO_FIELDS);
-
-  for (var i = 0; i < dataset_ids.length; i++) {
-    var dataset_id = dataset_ids[i];
-
-    console.log("MMM0 AllMetadata");
-    console.log(JSON.stringify(AllMetadata));
-
-    field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
-
-    field_names_arr = helpers.unique_array(field_names_arr);
-    field_names_arr.sort();
+  if (typeof dataset_ids === 'undefined' || dataset_ids.length === 0) {
+    // get all custom fields
   }
+  else {
+    for (var i = 0; i < dataset_ids.length; i++) {
+      var dataset_id = dataset_ids[i];
+      field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
+    }
+  }
+  field_names_arr = helpers.unique_array(field_names_arr); // one level
+  field_names_arr.sort();
 
   // console.log("MMM0 AllMetadata");
   // console.log(JSON.stringify(AllMetadata));
@@ -208,17 +203,16 @@ prepare_field_names = function (dataset_ids) {
   if (typeof dataset_ids !== 'undefined' && dataset_ids.length !== 0) {
     all_field_names = all_field_names.concat(get_field_names_by_dataset_ids(dataset_ids));
   }
-  all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
-  all_field_names     = helpers.unique_array(all_field_names);
+  all_field_names = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+  all_field_names = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
+  all_field_names = helpers.unique_array(all_field_names);
   return all_field_names;
 };
 
-create_all_metadata_form_new = function(rows, req, res, all_field_names)
-{
-  var pid = rows.insertId;
-  var warningStatus  = rows.warningStatus;
-  var user_id = req.form.pi_id_name.split("#")[0];
+create_all_metadata_form_new = function (rows, req, res, all_field_names) {
+  var pid           = rows.insertId;
+  var warningStatus = rows.warningStatus;
+  var user_id       = req.form.pi_id_name.split("#")[0];
 
   var user_obj = User.getUserInfoFromGlobal(user_id);
   // console.log("DDD3, all_dataset_ids.flat(2)", all_dataset_ids);
@@ -227,7 +221,7 @@ create_all_metadata_form_new = function(rows, req, res, all_field_names)
 
 
   var all_metadata = {};
-  all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
+  all_metadata     = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
   console.log("PPP01 all_metadata from create_all_metadata_form_new", all_metadata);
   var repeat_times = parseInt(req.form.samples_number, 10);
   console.log(typeof repeat_times);
@@ -248,7 +242,7 @@ create_all_metadata_form_new = function(rows, req, res, all_field_names)
   console.log(JSON.stringify(all_metadata[pid]));
 
   for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
-    var field_name = CONSTS.PROJECT_INFO_FIELDS[idx];
+    var field_name                = CONSTS.PROJECT_INFO_FIELDS[idx];
     all_metadata[pid][field_name] = [project_info[field_name]];
     //todo: split if, if length == dataset_ids.length - just use as is
     if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
@@ -292,12 +286,12 @@ create_all_metadata_form_new = function(rows, req, res, all_field_names)
     "sequencing_platform_id",
     "target_gene_id"];
 
-  for (var f in more_fields ) {
+  for (var f in more_fields) {
     all_metadata[pid][more_fields[f]] = module.exports.fill_out_arr_doubles("", repeat_times);
 
   }
-    // var pid  = req.body.project_id;
-    // var data = req.form;
+  // var pid  = req.body.project_id;
+  // var data = req.form;
   //
   //   // console.log("DDD9 req.form");
   //   // console.log(JSON.stringify(req.form));
@@ -385,9 +379,9 @@ create_all_metadata_form_new = function(rows, req, res, all_field_names)
 };
 // public
 
-exports.get_all_field_units = function (req) {
-  var current_field_units = MD_CUSTOM_UNITS[req.body.project_id];
-};
+// exports.get_all_field_units = function (req) {
+//   var current_field_units = MD_CUSTOM_UNITS[req.body.project_id];
+// };
 
 exports.get_second = function (element) {
   console.time("TIME: get_second");
@@ -706,8 +700,8 @@ exports.from_obj_to_obj_of_arr = function (data, pid) {
     }
   }
 
-  // console.log("HHH3 obj_of_arr from from_obj_to_obj_of_arr");
-  // console.log(JSON.stringify(obj_of_arr));
+  console.log("HHH3 obj_of_arr from from_obj_to_obj_of_arr");
+  console.log(JSON.stringify(obj_of_arr));
 
   console.timeEnd("TIME: from_obj_to_obj_of_arr");
   return obj_of_arr;
@@ -885,8 +879,8 @@ exports.get_inits = function (arr) {
 
 exports.saveProject = function (req, res) {
   console.log("JJJ req.form from saveProject = ", req.form);
-  var d_region_arr      = req.form.d_region.split("#");
-  var owner_info = req.form.pi_id_name.split("#");
+  var d_region_arr  = req.form.d_region.split("#");
+  var owner_info    = req.form.pi_id_name.split("#");
   var metagenomic   = 0;
   var project_name3 = d_region_arr[2];
   if (d_region_arr[0] === 'Shotgun') {
@@ -929,7 +923,12 @@ exports.saveProject = function (req, res) {
     else {
       console.log("WWW rows", rows);
       var all_field_names = prepare_field_names();
-      all_field_names = [["structured comment name","Parameter","",""],["","General","",""],["dataset","VAMPS dataset name","MBL Supplied",""],["geo_loc_name_continental","Country (if not international waters)","User Supplied",""],["geo_loc_name_marine","Longhurst Zone (if marine)","User Supplied",""],["","MBL generated laboratory metadata","",""],["domain","Domain","MBL Supplied",""],["target_gene","Target gene name","MBL Supplied","16S rRNA, mcrA, etc"],["dna_region","DNA region","MBL Supplied",""],["sequencing_platform","Sequencing method","MBL Supplied",""],["forward_primer","Forward PCR Primer","MBL Supplied",""],["reverse_primer","Reverse PCR Primer","MBL Supplied",""],["illumina_index","Index sequence (for Illumina)","MBL Supplied",""],["adapter_sequence","Adapter sequence","MBL Supplied",""],["run","Sequencing run date","MBL Supplied","YYYY-MM-DD"],["","User supplied metadata","",""],["env_package","Environmental Package","User supplied",""],["sample_name","Sample ID (user sample name)","User supplied",""],["investigation_type","Investigation Type","User supplied",""],["sample_type","Sample Type","User supplied",""],["collection_date","Sample collection date","User supplied","YYYY-MM-DD"],["latitude","Latitude (±90°)","User supplied","decimal degrees ±90°"],["longitude","Longitude (±180°)","User supplied","decimal degrees ±180°"],["env_biome","Environmental Biome - Primary","User supplied",""],["biome_secondary","Environmental Biome - Secondary","User supplied",""],["env_feature","Environmental Feature - Primary","User supplied",""],["feature_secondary","Environmental Feature - Secondary","User supplied",""],["env_material","Environmental Material - Primary","User supplied",""],["material_secondary","Environmental Material - Secondary","User supplied",""],["","Enter depth values in one or more categories","",""],["depth_subseafloor","Depth below seafloor","User supplied","mbsf"],["depth_subterrestrial","Depth below terrestrial surface","User supplied","meter"],["tot_depth_water_col","Water column depth","User supplied","meter"],["elevation","Elevation (if terrestrial)","User supplied","meter"],["dna_extraction_meth","DNA Extraction","User supplied",""],["dna_quantitation","DNA Quantitation","User supplied",""],["","Enter either volume or mass","",""],["sample_size_vol","Sample Size (volume)","User supplied","liter"],["sample_size_mass","Sample Size (mass)","User supplied","gram"],["sample_collection_device","Sample collection device","User supplied",""],["formation_name","Formation name","User supplied",""],["","Sample handling","",""],["samp_store_dur","Storage duration","User supplied","days"],["samp_store_temp","Storage temperature","User supplied","degrees celsius"],["isol_growth_cond","Isolation and growth condition (reference)","User supplied","PMID, DOI or URL"],["","Non-biological","",""],["ph","pH","User supplied",""],["temperature","Temperature","User supplied","degrees celsius"],["conductivity","Conductivity","User supplied","mS/cm"],["resistivity","Resistivity","","ohm-meter"],["salinity","Salinity","","PSU"],["pressure","Pressure","","bar"],["redox_state","Redox state","",""],["redox_potential","Redox potential","","millivolt"],["diss_oxygen","Dissolved oxygen","","µmol/kg"],["diss_hydrogen","Dissolved hydrogen","","µmol/kg"],["diss_org_carb","Dissolved organic carbon","","µmol/kg"],["diss_inorg_carb","Dissolved inorganic carbon","","µmol/kg"],["tot_org_carb","Total organic carbon","","percent"],["npoc","Non-purgeable organic carbon","","µmol/kg"],["tot_inorg_carb","Total inorganic carbon","","percent"],["tot_carb","Total carbon","","percent"],["carbonate","Carbonate","","µmol/kg"],["bicarbonate","Bicarbonate","","µmol/kg"],["silicate","Silicate","","µmol/kg"],["del180_water","Delta 180 of water","","parts per mil"],["part_org_carbon_del13c","Delta 13C for particulate organic carbon","","parts per mil"],["diss_inorg_carbon_del13c","Delta 13C for dissolved inorganic carbon","","parts per mil"],["methane_del13c","Delta 13C for methane","","parts per mil"],["alkalinity","Alkalinity","","meq/L"],["calcium","Calcium","","µmol/kg"],["sodium","Sodium","","µmol/kg"],["ammonium","Ammonium","","µmol/kg"],["nitrate","Nitrate","","µmol/kg"],["nitrite","Nitrite","","µmol/kg"],["nitrogen_tot","Total nitrogen","","µmol/kg"],["org_carb_nitro_ratio","Carbon nitrogen ratio","",""],["sulfate","Sulfate","","µmol/kg"],["sulfide","Sulfide","","µmol/kg"],["sulfur_tot","Total sulfur","","µmol/kg"],["chloride","Chloride","","µmol/kg"],["phosphate","Phosphate","","µmol/kg"],["potassium","Potassium","","µmol/kg"],["iron","Total iron","","µmol/kg"],["iron_ii","Iron II","","µmol/kg"],["iron_iii","Iron III","","µmol/kg"],["magnesium","Magnesium","","µmol/kg"],["manganese","Manganese","","µmol/kg"],["methane","Methane","","µmol/kg"],["noble_gas_chemistry","Noble gas chemistry","",""],["trace_element_geochem","Trace element geochemistry","",""],["porosity","Porosity","","percent"],["rock_age","Sediment or rock age","","millions of years (Ma)"],["water_age","Water age","","thousands of years (ka)"],["","Biological","",""],["microbial_biomass_microscopic","Microbial biomass - total cell counts","","cells/g"],["n_acid_for_cell_cnt","NA dyes used for total cell counts","",""],["microbial_biomass_fish","FISH-based cell counts","","cells/g"],["fish_probe_name","Name of FISH probe","",""],["fish_probe_seq","Sequence of FISH probe","",""],["intact_polar_lipid","Intact polar lipid","","pg/g"],["microbial_biomass_qpcr","qPCR and primers used","","gene copies"],["biomass_wet_weight","Biomass - wet weight","","gram"],["biomass_dry_weight","Biomass - dry weight","","gram"],["plate_counts","Plate counts - colony forming","","CFU/ml"],["functional_gene_assays","functional gene assays","",""],["clone_library_results","clone library results","",""],["enzyme_activities","enzyme activities","",""],["","User-added","",""],["geo_loc_name","geo_loc_name","",""]];
+      // TODO: add
+      //   funding_code: [ '0' ],
+      //   sample_concentration: [],
+      //   submit_code: [],
+      //   tube_label:
+      all_field_names = [["structured comment name", "Parameter", "", ""], ["", "General", "", ""], ["dataset", "VAMPS dataset name", "MBL Supplied", ""], ["geo_loc_name_continental", "Country (if not international waters)", "User Supplied", ""], ["geo_loc_name_marine", "Longhurst Zone (if marine)", "User Supplied", ""], ["", "MBL generated laboratory metadata", "", ""], ["domain", "Domain", "MBL Supplied", ""], ["target_gene", "Target gene name", "MBL Supplied", "16S rRNA, mcrA, etc"], ["dna_region", "DNA region", "MBL Supplied", ""], ["sequencing_platform", "Sequencing method", "MBL Supplied", ""], ["forward_primer", "Forward PCR Primer", "MBL Supplied", ""], ["reverse_primer", "Reverse PCR Primer", "MBL Supplied", ""], ["illumina_index", "Index sequence (for Illumina)", "MBL Supplied", ""], ["adapter_sequence", "Adapter sequence", "MBL Supplied", ""], ["run", "Sequencing run date", "MBL Supplied", "YYYY-MM-DD"], ["", "User supplied metadata", "", ""], ["env_package", "Environmental Package", "User supplied", ""], ["sample_name", "Sample ID (user sample name)", "User supplied", ""], ["investigation_type", "Investigation Type", "User supplied", ""], ["sample_type", "Sample Type", "User supplied", ""], ["collection_date", "Sample collection date", "User supplied", "YYYY-MM-DD"], ["latitude", "Latitude (±90°)", "User supplied", "decimal degrees ±90°"], ["longitude", "Longitude (±180°)", "User supplied", "decimal degrees ±180°"], ["env_biome", "Environmental Biome - Primary", "User supplied", ""], ["biome_secondary", "Environmental Biome - Secondary", "User supplied", ""], ["env_feature", "Environmental Feature - Primary", "User supplied", ""], ["feature_secondary", "Environmental Feature - Secondary", "User supplied", ""], ["env_material", "Environmental Material - Primary", "User supplied", ""], ["material_secondary", "Environmental Material - Secondary", "User supplied", ""], ["", "Enter depth values in one or more categories", "", ""], ["depth_subseafloor", "Depth below seafloor", "User supplied", "mbsf"], ["depth_subterrestrial", "Depth below terrestrial surface", "User supplied", "meter"], ["tot_depth_water_col", "Water column depth", "User supplied", "meter"], ["elevation", "Elevation (if terrestrial)", "User supplied", "meter"], ["dna_extraction_meth", "DNA Extraction", "User supplied", ""], ["dna_quantitation", "DNA Quantitation", "User supplied", ""], ["", "Enter either volume or mass", "", ""], ["sample_size_vol", "Sample Size (volume)", "User supplied", "liter"], ["sample_size_mass", "Sample Size (mass)", "User supplied", "gram"], ["sample_collection_device", "Sample collection device", "User supplied", ""], ["formation_name", "Formation name", "User supplied", ""], ["", "Sample handling", "", ""], ["samp_store_dur", "Storage duration", "User supplied", "days"], ["samp_store_temp", "Storage temperature", "User supplied", "degrees celsius"], ["isol_growth_cond", "Isolation and growth condition (reference)", "User supplied", "PMID, DOI or URL"], ["", "Non-biological", "", ""], ["ph", "pH", "User supplied", ""], ["temperature", "Temperature", "User supplied", "degrees celsius"], ["conductivity", "Conductivity", "User supplied", "mS/cm"], ["resistivity", "Resistivity", "", "ohm-meter"], ["salinity", "Salinity", "", "PSU"], ["pressure", "Pressure", "", "bar"], ["redox_state", "Redox state", "", ""], ["redox_potential", "Redox potential", "", "millivolt"], ["diss_oxygen", "Dissolved oxygen", "", "µmol/kg"], ["diss_hydrogen", "Dissolved hydrogen", "", "µmol/kg"], ["diss_org_carb", "Dissolved organic carbon", "", "µmol/kg"], ["diss_inorg_carb", "Dissolved inorganic carbon", "", "µmol/kg"], ["tot_org_carb", "Total organic carbon", "", "percent"], ["npoc", "Non-purgeable organic carbon", "", "µmol/kg"], ["tot_inorg_carb", "Total inorganic carbon", "", "percent"], ["tot_carb", "Total carbon", "", "percent"], ["carbonate", "Carbonate", "", "µmol/kg"], ["bicarbonate", "Bicarbonate", "", "µmol/kg"], ["silicate", "Silicate", "", "µmol/kg"], ["del180_water", "Delta 180 of water", "", "parts per mil"], ["part_org_carbon_del13c", "Delta 13C for particulate organic carbon", "", "parts per mil"], ["diss_inorg_carbon_del13c", "Delta 13C for dissolved inorganic carbon", "", "parts per mil"], ["methane_del13c", "Delta 13C for methane", "", "parts per mil"], ["alkalinity", "Alkalinity", "", "meq/L"], ["calcium", "Calcium", "", "µmol/kg"], ["sodium", "Sodium", "", "µmol/kg"], ["ammonium", "Ammonium", "", "µmol/kg"], ["nitrate", "Nitrate", "", "µmol/kg"], ["nitrite", "Nitrite", "", "µmol/kg"], ["nitrogen_tot", "Total nitrogen", "", "µmol/kg"], ["org_carb_nitro_ratio", "Carbon nitrogen ratio", "", ""], ["sulfate", "Sulfate", "", "µmol/kg"], ["sulfide", "Sulfide", "", "µmol/kg"], ["sulfur_tot", "Total sulfur", "", "µmol/kg"], ["chloride", "Chloride", "", "µmol/kg"], ["phosphate", "Phosphate", "", "µmol/kg"], ["potassium", "Potassium", "", "µmol/kg"], ["iron", "Total iron", "", "µmol/kg"], ["iron_ii", "Iron II", "", "µmol/kg"], ["iron_iii", "Iron III", "", "µmol/kg"], ["magnesium", "Magnesium", "", "µmol/kg"], ["manganese", "Manganese", "", "µmol/kg"], ["methane", "Methane", "", "µmol/kg"], ["noble_gas_chemistry", "Noble gas chemistry", "", ""], ["trace_element_geochem", "Trace element geochemistry", "", ""], ["porosity", "Porosity", "", "percent"], ["rock_age", "Sediment or rock age", "", "millions of years (Ma)"], ["water_age", "Water age", "", "thousands of years (ka)"], ["", "Biological", "", ""], ["microbial_biomass_microscopic", "Microbial biomass - total cell counts", "", "cells/g"], ["n_acid_for_cell_cnt", "NA dyes used for total cell counts", "", ""], ["microbial_biomass_fish", "FISH-based cell counts", "", "cells/g"], ["fish_probe_name", "Name of FISH probe", "", ""], ["fish_probe_seq", "Sequence of FISH probe", "", ""], ["intact_polar_lipid", "Intact polar lipid", "", "pg/g"], ["microbial_biomass_qpcr", "qPCR and primers used", "", "gene copies"], ["biomass_wet_weight", "Biomass - wet weight", "", "gram"], ["biomass_dry_weight", "Biomass - dry weight", "", "gram"], ["plate_counts", "Plate counts - colony forming", "", "CFU/ml"], ["functional_gene_assays", "functional gene assays", "", ""], ["clone_library_results", "clone library results", "", ""], ["enzyme_activities", "enzyme activities", "", ""], ["", "User-added", "", ""], ["geo_loc_name", "geo_loc_name", "", ""]];
 
       var all_metadata = create_all_metadata_form_new(rows, req, res, all_field_names);
       // all_metadata = { '485':
@@ -1084,6 +1083,8 @@ exports.make_metadata_object = function (req, res, pid, info) {
   // console.log("MMM9 all_metadata[pid][\"reference\"]");
   // console.log(JSON.stringify(all_metadata[pid]["reference"]));
 
+  console.log("MMM9 all_metadata[pid]");
+  console.log(JSON.stringify(all_metadata[pid]));
 
   console.timeEnd("TIME: make_metadata_object");
   return all_metadata;
