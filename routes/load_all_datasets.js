@@ -282,8 +282,7 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING ALL_PCOUNTS_BY_PID');
       console.log(' INITIALIZING ALL_CLASSIFIERS_BY_PID');
   });
-
-
+  
   connection.query(queries.get_select_custom_units_query(), function(err, rows, fields){
     console.time("TIME: connection queries.get_select_custom_units_query");
     if (err)  {
