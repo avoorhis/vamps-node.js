@@ -205,16 +205,27 @@ reverseString = function (str) {
   return out_str;
 };
 
-prepare_field_names = function (dataset_ids) {
-  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS;
-  if (typeof dataset_ids !== 'undefined' && dataset_ids.length !== 0) {
-    all_field_names = all_field_names.concat(get_field_names_by_dataset_ids(dataset_ids));
-  }
-  all_field_names = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  all_field_names = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
+collect_field_names = function(dataset_ids) {
+  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names_by_dataset_ids(dataset_ids));
+  all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+  all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
+  all_field_names     = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
+
   all_field_names = helpers.unique_array(all_field_names);
   return all_field_names;
+
 };
+
+// prepare_field_names = function (dataset_ids) {
+//   var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS;
+//   if (typeof dataset_ids !== 'undefined' && dataset_ids.length !== 0) {
+//     all_field_names = all_field_names.concat(get_field_names_by_dataset_ids(dataset_ids));
+//   }
+//   all_field_names = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+//   all_field_names = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
+//   all_field_names = helpers.unique_array(all_field_names);
+//   return all_field_names;
+// };
 
 create_all_metadata_form_new = function (rows, req, res, all_field_names) {
   var pid           = rows.insertId;
@@ -682,13 +693,14 @@ exports.from_obj_to_obj_of_arr = function (data, pid) {
 
   // var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names_by_dataset_ids(dataset_ids)));
   //TODO: make field_names collection a separate function
-  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names_by_dataset_ids(dataset_ids));
-  all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
-  all_field_names     = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
+  // var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names_by_dataset_ids(dataset_ids));
+  // all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+  // all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
+  // all_field_names     = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
+  //
+  // all_field_names = helpers.unique_array(all_field_names);
 
-  all_field_names = helpers.unique_array(all_field_names);
-
+  var all_field_names = collect_field_names(dataset_ids);
   // console.log("HHH0 AllMetadataNames");
   // console.log(JSON.stringify(AllMetadataNames));
   //
@@ -707,8 +719,8 @@ exports.from_obj_to_obj_of_arr = function (data, pid) {
     }
   }
 
-  console.log("HHH3 obj_of_arr from from_obj_to_obj_of_arr");
-  console.log(JSON.stringify(obj_of_arr));
+  // console.log("HHH3 obj_of_arr from from_obj_to_obj_of_arr");
+  // console.log(JSON.stringify(obj_of_arr));
 
   console.timeEnd("TIME: from_obj_to_obj_of_arr");
   return obj_of_arr;
@@ -929,7 +941,7 @@ exports.saveProject = function (req, res) {
     }
     else {
       console.log("WWW rows", rows);
-      var all_field_names = prepare_field_names();
+      var all_field_names = collect_field_names();
       // TODO: add
       //   funding_code: [ '0' ],
       //   sample_concentration: [],
@@ -1026,7 +1038,7 @@ exports.make_metadata_object = function (req, res, pid, info) {
   // all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
   // all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
   // all_field_names     = helpers.unique_array(all_field_names);
-  var all_field_names = prepare_field_names(dataset_ids);
+  var all_field_names = collect_field_names(dataset_ids);
 
   console.log("HHH3 all_field_names");
   console.log(JSON.stringify(all_field_names));
