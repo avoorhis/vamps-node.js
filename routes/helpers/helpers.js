@@ -1993,5 +1993,20 @@ module.exports.ensure_dir_exists = function(dir)
 module.exports.isEven = function (n) {
     return n == parseFloat(n)? !(n%2) : void 0;
 }
-
+// module.exports.validate_name = function (name) {
+//     console.log('helpers.validate_name: '+name)
+//     pattern=/([^a-zA-Z0-9\.]+)/gi
+//     
+//     var new_pname = name.replace(pattern, '_')
+//     //console.log('xx: '+new_name)
+//     if(new_pname.length > 30){
+//         //console.log('too long')
+//         return false;
+//     }
+//     if(new_pname.length < 3){
+//         //console.log('too short')
+//         return false;
+//     }
+//     return new_pname;
+// }
 };

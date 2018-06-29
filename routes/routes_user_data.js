@@ -627,27 +627,28 @@ router.get('/import_choices/biom', [helpers.isLoggedIn], function (req, res) {
 router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(req, res) {
     console.log('in POST test_upload')
     console.log(req.body)
-    
+    // project name validation/replace is in import.js
     var project = req.body.project_name
+    
     var file_type = req.body.file_type
     var timestamp = +new Date();  // millisecs since the epoch!
     var original_file_path = req.files[0].path
     var original_file_name = req.files[0].originalname
     
-    //
-   
-    var error_fxn = function(msg){
+    var error_fxn = function(req, res, msg){
         console.log('FAIL re-open import choices page2')
         req.flash('fail',msg)
+        //res.redirect('/');
         res.render('user_data/import_choices', {
           title: 'VAMPS:Import Choices',
           project: '',
           user: req.user, hostname: req.CONFIG.hostname
-          });
-        return
+        });
+        
     }
+    
     if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
-        error_fxn('That project name is not availible.')
+        error_fxn(req, res, 'That project name is not availible.')
         return
     }
     var info = {}
