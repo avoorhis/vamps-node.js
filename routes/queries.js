@@ -32,9 +32,6 @@ get_select_custom_units_query: function(where_part){
   if (typeof where_part === 'undefined') {
     where_part = "WHERE field_units <> 'Alphanumeric' AND field_units <> 'unknown'";
   }
-  else {
-    where_part = "";
-  }
   var qSelectCustomUnits = "SELECT project_id, field_name, field_units FROM `custom_metadata_fields` " + where_part;
   console.log("qSelectCustomUnits:");
   console.log(qSelectCustomUnits);

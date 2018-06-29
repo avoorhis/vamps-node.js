@@ -27,7 +27,7 @@ module.exports.get_datasets = function(callback){
   ALL_DCOUNTS_BY_DID          = {};    // GLOBAL  
   ALL_PCOUNTS_BY_PID          = {};    // GLOBAL 
   ALL_CLASSIFIERS_BY_PID      = {};
-    USER_GROUPS          = {}; 
+  USER_GROUPS                 = {};
   // Metadata ids and values lookups
   MD_ENV_ENVO                 = {};
   MD_ENV_CNTRY                = {};
@@ -42,7 +42,8 @@ module.exports.get_datasets = function(callback){
   MD_PRIMER_SUITE             = {};
   MD_RUN                      = {};
   MD_CUSTOM_UNITS             = {};
-  
+  MD_CUSTOM_FIELDS_UNITS      = {};
+
 
   connection.query(queries.get_select_datasets_query(), function(err, rows, fields){
       if (err)  {
@@ -282,7 +283,7 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING ALL_PCOUNTS_BY_PID');
       console.log(' INITIALIZING ALL_CLASSIFIERS_BY_PID');
   });
-  
+
   connection.query(queries.get_select_custom_units_query(), function(err, rows, fields){
     console.time("TIME: connection queries.get_select_custom_units_query");
     if (err)  {
