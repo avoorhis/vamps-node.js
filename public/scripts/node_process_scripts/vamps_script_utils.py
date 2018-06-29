@@ -173,7 +173,6 @@ def delete_tax_only(args):    # this should leave ONLY the project directory
     args.obj.commit()
     
     
-    
     q = 'DELETE from dataset'
     q += " WHERE dataset_id in ('"+ "','".join(args.dids) +"')"
     print(q)

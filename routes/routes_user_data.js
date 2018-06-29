@@ -1323,7 +1323,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
       }
       if (delete_kind == 'data_only') {
             RunAndCheck(delete_cmd, '', req, project, res, checkPid, ['Unknown',{},res,'']);
-            console.log('Back from Del RunAndCheck')
+            console.log('1-Back from Del RunAndCheck')
             req.flash('success', msg);
             res.redirect("/user_data/your_projects");
       } else if (delete_kind == 'all') {
@@ -1339,14 +1339,12 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
 					console.log(err2); 
 				})
 			}
-			console.log('Successfully removed')
+			RunAndCheck(delete_cmd, '', req, project, res, checkPid, ['Unknown',{},res,'']);
+            console.log('2-Back from Del RunAndCheck')
 			req.flash('success', msg);
             res.redirect("/user_data/your_projects");
 		  })
-		  //helpers.deleteFolderRecursive(data_dir)
-		  
-         
-
+  
       } else {
         req.flash('success', msg);
         res.redirect("/user_data/your_projects");
