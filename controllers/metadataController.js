@@ -97,6 +97,7 @@ get_names_from_ordered_const = function () {
 //   return all_dataset_ids_uniq;
 // };
 
+
 get_field_names_by_dataset_ids = function (dataset_ids) {
 
   var field_names_arr = [];
@@ -104,6 +105,12 @@ get_field_names_by_dataset_ids = function (dataset_ids) {
   // field_names_arr = field_names_arr.concat(CONSTS.PROJECT_INFO_FIELDS);
   if (typeof dataset_ids === 'undefined' || dataset_ids.length === 0) {
     // get all custom fields
+  //MD_CUSTOM_FIELDS_UNITS
+    // {
+    //   "ammonium": "micromolePerKilogram",
+    //   "chloride": "micromolePerKilogram",
+    field_names_arr = field_names_arr.concat(Object.keys(MD_CUSTOM_FIELDS_UNITS));
+
   }
   else {
     for (var i = 0; i < dataset_ids.length; i++) {
