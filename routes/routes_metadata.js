@@ -600,7 +600,7 @@ function make_metadata_object_from_csv(req, res) {
 
   // all_metadata
   var all_metadata    = metadata_controller.make_metadata_object(req, res, pid, data_in_obj_of_arr);
-  var all_field_names = metadata_controller.make_all_field_names(dataset_ids);
+  var all_field_names4 = metadata_controller.make_all_field_names(dataset_ids);
 
   // console.log("DDD3 all_field_names from make_metadata_object_from_csv");
   // console.log(JSON.stringify(all_field_names));
@@ -608,7 +608,7 @@ function make_metadata_object_from_csv(req, res) {
   // console.log("DDD4 all_metadata from make_metadata_object_from_csv");
   // console.log(JSON.stringify(all_metadata));
   req.body.project_id = pid;
-  metadata_controller.render_edit_form(req, res, all_metadata, all_field_names);
+  metadata_controller.render_edit_form(req, res, all_metadata, all_field_names4);
 
   console.timeEnd("TIME: make_metadata_object_from_csv");
 }
@@ -673,17 +673,18 @@ function make_metadata_object_from_db(req, res) {
   }
 
   data_in_obj_of_arr["project_abstract"] = metadata_controller.fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
+  // as many values per field as there are datasets
 
   var all_metadata = metadata_controller.make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
-  var all_field_names = metadata_controller.make_all_field_names(dataset_ids);
+  var all_field_names4 = metadata_controller.make_all_field_names(dataset_ids);
 
   // console.log("DDD2 all_field_names");
   // console.log(JSON.stringify(all_field_names));
   // console.log("DDD2 all_metadata");
   // console.log(JSON.stringify(all_metadata));
 
-  metadata_controller.render_edit_form(req, res, all_metadata, all_field_names);
+  metadata_controller.render_edit_form(req, res, all_metadata, all_field_names4);
 
   console.timeEnd("TIME: make_metadata_object_from_db");
 }
