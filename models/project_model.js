@@ -12,7 +12,7 @@ var Project    = {
     return connection.query("select * from project where project_id = ?", [project_id], callback);
   },
   addProject: function (Project, callback) {
-    return connection.query("Insert into project values(?,?,?,?,?,?,?,?,?,?,?,?,?)", [Project.project_id,
+    return connection.query("INSERT INTO project VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE project = VALUES(project), rev_project_name = VALUES(rev_project_name);", [Project.project_id,
       Project.project,
       Project.title,
       Project.project_description,
@@ -36,3 +36,5 @@ var Project    = {
 
 };
 module.exports = Project;
+//  UNIQUE KEY `project` (`project`),
+//   UNIQUE KEY `rev_project_name` (`rev_project_name`),

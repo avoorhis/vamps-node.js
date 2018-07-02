@@ -925,22 +925,12 @@ exports.saveProject = function (req, res) {
     if (err) {
       console.log("WWW0 err", err);
       req.flash("fail", err);
-      res.render('metadata/metadata_new', {
-        button_name: "Validate",
-        domain_regions: CONSTS.DOMAIN_REGIONS,
-        hostname: req.CONFIG.hostname,
-        pi_email: pi_id_name_arr[4],
-        pi_list: req.session.pi_list,
-        project_title: req.form.project_title,
-        samples_number: req.form.samples_number,
-        title: 'VAMPS: New Metadata',
-        user: req.user,
-      });
+      module.exports.show_metadata_new_again(req, res);
       // res.json(err);
     }
     else {
       console.log("WWW rows", rows);
-      // var all_field_names = collect_field_names();
+      var all_field_names = collect_field_names();
       // TODO: add
       //   funding_code: [ '0' ],
       //   sample_concentration: [],
@@ -1002,7 +992,7 @@ exports.saveProject = function (req, res) {
       all_field_names4 = all_field_names4.concat(second_part_part_3);
 
 
-      var all_metadata = create_all_metadata_form_new(rows, req, res, all_field_names4);
+      var all_metadata = create_all_metadata_form_new(rows, req, res, all_field_names);
       // all_metadata = { '485':
       //     { project: [ 'MS_AAA_EHSSU', 'MS_AAA_EHSSU', 'MS_AAA_EHSSU' ],
       //       dataset: ["", "", ""],
