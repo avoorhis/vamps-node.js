@@ -925,7 +925,17 @@ exports.saveProject = function (req, res) {
     if (err) {
       console.log("WWW0 err", err);
       req.flash("fail", err);
-
+      res.render('metadata/metadata_new', {
+        button_name: "Validate",
+        domain_regions: CONSTS.DOMAIN_REGIONS,
+        hostname: req.CONFIG.hostname,
+        pi_email: pi_id_name_arr[4],
+        pi_list: req.session.pi_list,
+        project_title: req.form.project_title,
+        samples_number: req.form.samples_number,
+        title: 'VAMPS: New Metadata',
+        user: req.user,
+      });
       // res.json(err);
     }
     else {
@@ -959,9 +969,13 @@ exports.saveProject = function (req, res) {
       var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
       var dataset_description  = [["dataset_description", "Dataset description", "User Supplied", ""]];
       var tube_label           = [["tube_label", "Tube label", "User Supplied", ""]];
-      var sample_concentration = [["sample_concentration", "Funding code", "User Supplied", "ng/ul"]];
+      var sample_concentration = [["sample_concentration", "Sample concentration", "User Supplied", "ng/ul"]];
       var dna_quantitation     = CONSTS.ORDERED_METADATA_NAMES.slice(35, 36);
-      var second_part_part     = CONSTS.ORDERED_METADATA_NAMES.slice(1);
+      var env_package          = CONSTS.ORDERED_METADATA_NAMES.slice(16, 17);
+
+      var second_part_part_1     = CONSTS.ORDERED_METADATA_NAMES.slice(1,16);
+      var second_part_part_2    = CONSTS.ORDERED_METADATA_NAMES.slice(18,35);
+      var second_part_part_3    = CONSTS.ORDERED_METADATA_NAMES.slice(36);
 
       // var general = CONSTS.ORDERED_METADATA_NAMES.slice(1,1);
       // var funding_code = [["funding_code", "Funding Code", "User Supplied", "numeric only"]];
@@ -982,7 +996,10 @@ exports.saveProject = function (req, res) {
       all_field_names4 = all_field_names4.concat(tube_label);
       all_field_names4 = all_field_names4.concat(sample_concentration);
       all_field_names4 = all_field_names4.concat(dna_quantitation);
-      all_field_names4 = all_field_names4.concat(second_part_part);
+      all_field_names4 = all_field_names4.concat(env_package);
+      all_field_names4 = all_field_names4.concat(second_part_part_1);
+      all_field_names4 = all_field_names4.concat(second_part_part_2);
+      all_field_names4 = all_field_names4.concat(second_part_part_3);
 
 
       var all_metadata = create_all_metadata_form_new(rows, req, res, all_field_names4);
@@ -997,6 +1014,48 @@ exports.saveProject = function (req, res) {
     }
   });
 };
+
+exports.show_metadata_new_again = function(req, res) {
+  //collect errors
+  var myArray_fail = helpers.unique_array(req.form.errors);
+
+  // if (helpers.has_duplicates(req.form.sample_name)) {
+  //   myArray_fail.push('Sample ID (user sample name) should be unique.');
+  // }
+
+  myArray_fail.sort();
+  console.log("myArray_fail = ", myArray_fail);
+  req.flash("fail", myArray_fail);
+
+  // console.log('QQQ1 req.body.pi_list', pi_list);
+  // req.session.DOMAIN_REGIONS = CONSTS.DOMAIN_REGIONS;
+  // req.session.button_name    = "Add datasets";
+
+  var d_region_arr   = req.form.d_region.split("#");
+  var pi_id_name_arr = req.form.pi_id_name.split("#");
+  var full_name      = pi_id_name_arr[3] + " " + pi_id_name_arr[2];
+  var project_name1  = req.form.project_name1;
+  if (project_name1 === '') {
+    project_name1 = metadata_controller.get_inits(full_name.split(" "));
+  }
+  var project_name3 = d_region_arr[2];
+  var project_name  = project_name1 + "_" + req.form.project_name2 + "_" + project_name3;
+
+  console.log("PPP project_name1", project_name1);
+  console.log("PPP1 project_name", project_name);
+  res.render('metadata/metadata_new', {
+    button_name: "Validate",
+    domain_regions: CONSTS.DOMAIN_REGIONS,
+    hostname: req.CONFIG.hostname,
+    pi_email: pi_id_name_arr[4],
+    pi_list: req.session.pi_list,
+    project_title: req.form.project_title,
+    samples_number: req.form.samples_number,
+    title: 'VAMPS: New Metadata',
+    user: req.user,
+  });
+};
+
 
 exports.make_metadata_object = function (req, res, pid, info) {
   console.time("TIME: make_metadata_object");
@@ -1112,3 +1171,4 @@ exports.render_edit_form = function (req, res, all_metadata, all_field_names) {
     sample_type_options: CONSTS.SAMPLE_TYPE
   });
 };
+
