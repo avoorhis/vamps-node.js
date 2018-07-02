@@ -1005,7 +1005,7 @@ exports.saveProject = function (req, res) {
       //       sequencing_platform_id: ["", "", ""],
       //       target_gene_id: ["", "", ""]
       //     } };
-      module.exports.render_edit_form(req, res, all_metadata, all_field_names);
+      module.exports.render_edit_form(req, res, all_metadata, all_field_names4);
     }
   });
 };
