@@ -27,6 +27,9 @@ var Project    = {
       Project.active
     ], callback);
   },
+  getProjectByName: function (project_name, callback) {
+    return connection.query("select * from project where project_name = ?", [project_name], callback);
+  },
   deleteProject: function (id, callback) {
     return connection.query("delete from project where Id=?", [id], callback);
   },

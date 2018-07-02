@@ -1,4 +1,5 @@
 var Project   = require(app_root + '/models/project_model');
+var Dataset   = require(app_root + '/models/dataset_model');
 var User      = require(app_root + '/models/user_model');
 var helpers   = require(app_root + '/routes/helpers/helpers');
 var CONSTS    = require(app_root + "/public/constants");
@@ -375,6 +376,52 @@ make_array4 = function (field_names_arr) {
     new_arr.push(temp_arr);
   }
   return new_arr;
+};
+
+add_info_to_project = function (object_to_add) {
+  console.log("CCC11 PROJECT_INFORMATION_BY_PID = ", PROJECT_INFORMATION_BY_PID);
+  // DATASET_IDS_BY_PID[pid];
+  //[2018/07/02 17:12:58.330] [LOG]   OOO1 JSON.stringify(project_obj) =  {"project_id":0,
+// "project":"RA_AAA_Bv6",
+// "title":"AAA54645674",
+// "project_description":"sdf sdgfdsg sfgdf",
+// "rev_project_name":"6vB_AAA_AR",
+// "funding":"0",
+// "public":0,
+// "metagenomic":0,
+// "matrix":0,
+// "created_at":"2018-07-02T21:12:58.330Z",
+// "updated_at":"2018-07-02T21:12:58.330Z",
+// "active":0}
+
+  // project_obj                     = {};
+  //   project_obj.project_id          = 0;
+  //   project_obj.project             = req.form.project_name1 + "_" + req.form.project_name2 + "_" + project_name3;
+  //   project_obj.title               = req.form.project_title;
+  //   project_obj.project_description = req.form.project_description;
+  //   project_obj.rev_project_name    = reverseString(project_obj.project);
+  //   project_obj.funding             = req.form.funding_code;
+  //   project_obj.public              = 0;
+  //   project_obj.metagenomic         = metagenomic;
+  //   project_obj.matrix              = 0;
+  //   project_obj.created_at          = new Date();
+  //   project_obj.updated_at          = new Date();
+  //   project_obj.active              = 0;
+  //
+  //   var owner_info    = req.form.pi_id_name.split("#");
+
+
+  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
+  PROJECT_INFORMATION_BY_PID[pid].project_id = object_to_add.project_id;
+  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
+  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
+  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
+  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
+  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
+  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
+  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
+  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
+  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
 };
 
 // public
@@ -870,6 +917,24 @@ exports.get_inits = function (arr) {
   return project_name1;
 };
 
+exports.saveDataset = function (req, res) {
+  console.log("TTT1 req.form from saveDataset = ", req.form);
+  //dataset_id, dataset, dataset_description, project_id, created_at, updated_at,
+
+  dataset_obj                     = {};
+  dataset_obj.dataset_id          = 0;
+  dataset_obj.dataset             = req.form.dataset_name;
+  dataset_obj.dataset_description = req.form.dataset_description;
+  dataset_obj.project_id    = reverseString(dataset_obj.dataset);
+  dataset_obj.created_at          = new Date();
+  dataset_obj.updated_at          = new Date();
+
+  console.log("OOO1 JSON.stringify(dataset_obj) = ", JSON.stringify(dataset_obj));
+
+    // Dataset.addDataset(dataset_obj, function (err, rows) {
+
+  };
+
 // [2018/06/26 13:52:48.300] [LOG]   MMM2, req.form { adaptor: [],
 //   d_region: 'Eukaryal#v4#Ev4',
 //   dataset_description: [],
@@ -908,6 +973,7 @@ exports.saveProject = function (req, res) {
   project_obj.created_at          = new Date();
   project_obj.updated_at          = new Date();
   project_obj.active              = 0;
+  project_obj.owner_id            = req.form.pi_id_name.split("#")[0];
 
 
   //2018-06-20 13:09:14
@@ -930,6 +996,9 @@ exports.saveProject = function (req, res) {
     }
     else {
       console.log("WWW rows", rows);
+
+      add_info_to_project(project_obj);
+
       var all_field_names = collect_field_names();
       // TODO: add
       //   funding_code: [ '0' ],
