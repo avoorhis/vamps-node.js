@@ -955,12 +955,12 @@ exports.saveProject = function (req, res) {
       var all_field_names4     = [];
       // var all_field_names4_temp = CONSTS.ORDERED_METADATA_NAMES;
       var parameter            = CONSTS.ORDERED_METADATA_NAMES.slice(0, 1);
-      var new_user_submit      = [["new_user_submit", "New Submit Info", "User Supplied", ""]];
+      var new_user_submit      = [["", "New submit info", "", ""]];
       var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
-      var dataset_description  = [["dataset_description", "Dataset Description", "User Supplied", ""]];
-      var tube_label           = [["tube_label", "Tube Label", "User Supplied", ""]];
-      var sample_concentration = [["sample_concentration", "Funding Code", "User Supplied", "ng/ul"]];
-      var dna_quantitation     = CONSTS.ORDERED_METADATA_NAMES.slice(36, 37);
+      var dataset_description  = [["dataset_description", "Dataset description", "User Supplied", ""]];
+      var tube_label           = [["tube_label", "Tube label", "User Supplied", ""]];
+      var sample_concentration = [["sample_concentration", "Funding code", "User Supplied", "ng/ul"]];
+      var dna_quantitation     = CONSTS.ORDERED_METADATA_NAMES.slice(35, 36);
       var second_part_part     = CONSTS.ORDERED_METADATA_NAMES.slice(1);
 
       // var general = CONSTS.ORDERED_METADATA_NAMES.slice(1,1);
