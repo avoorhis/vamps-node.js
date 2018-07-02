@@ -425,7 +425,7 @@ add_info_to_project_globals = function (object_to_add, pid) {
   //     User_obj.encrypted_password = ALL_USERS_BY_UID[user_id].encrypted_password;
   //     User_obj.groups             = ALL_USERS_BY_UID[user_id].groups;
 
-  //repeat for PROJECT_INFORMATION_BY_PNAME
+  //undefined: description, env_package_id, permissions
   if (typeof PROJECT_INFORMATION_BY_PID[pid] === 'undefined') {
 
     PROJECT_INFORMATION_BY_PID[pid]                = {};
