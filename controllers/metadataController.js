@@ -378,8 +378,9 @@ make_array4 = function (field_names_arr) {
   return new_arr;
 };
 
-add_info_to_project = function (object_to_add) {
-  console.log("CCC11 PROJECT_INFORMATION_BY_PID = ", PROJECT_INFORMATION_BY_PID);
+add_info_to_project_globals = function (object_to_add, pid) {
+  // console.log("CCC11 PROJECT_INFORMATION_BY_PID = ", PROJECT_INFORMATION_BY_PID);
+  // console.log("CCC12 PROJECT_INFORMATION_BY_PNAME = ", PROJECT_INFORMATION_BY_PNAME);
   // DATASET_IDS_BY_PID[pid];
   //[2018/07/02 17:12:58.330] [LOG]   OOO1 JSON.stringify(project_obj) =  {"project_id":0,
 // "project":"RA_AAA_Bv6",
@@ -407,21 +408,54 @@ add_info_to_project = function (object_to_add) {
   //   project_obj.created_at          = new Date();
   //   project_obj.updated_at          = new Date();
   //   project_obj.active              = 0;
-  //
+  //   project_obj.owner_id
+
   //   var owner_info    = req.form.pi_id_name.split("#");
+  // var user_id       = req.form.pi_id_name.split("#")[0];
+  //
+  // var user_obj = User.getUserInfoFromGlobal(user_id);
 
+  //    User_obj.user_id            = user_id;
+  //     User_obj.username           = ALL_USERS_BY_UID[user_id].username;
+  //     User_obj.email              = ALL_USERS_BY_UID[user_id].email;
+  //     User_obj.institution        = ALL_USERS_BY_UID[user_id].institution;
+  //     User_obj.first_name         = ALL_USERS_BY_UID[user_id].first_name;
+  //     User_obj.last_name          = ALL_USERS_BY_UID[user_id].last_name;
+  //     User_obj.security_level     = ALL_USERS_BY_UID[user_id].status;
+  //     User_obj.encrypted_password = ALL_USERS_BY_UID[user_id].encrypted_password;
+  //     User_obj.groups             = ALL_USERS_BY_UID[user_id].groups;
 
-  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
-  PROJECT_INFORMATION_BY_PID[pid].project_id = object_to_add.project_id;
-  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
-  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
-  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
-  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
-  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
-  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
-  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
-  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
-  PROJECT_INFORMATION_BY_PID[pid].project = object_to_add.project;
+  //repeat for PROJECT_INFORMATION_BY_PNAME
+  if (typeof PROJECT_INFORMATION_BY_PID[pid] === 'undefined') {
+
+    PROJECT_INFORMATION_BY_PID[pid]                = {};
+    PROJECT_INFORMATION_BY_PID[pid].created_at     = object_to_add.created_at;
+    PROJECT_INFORMATION_BY_PID[pid].description    = object_to_add.description;
+    PROJECT_INFORMATION_BY_PID[pid].email          = object_to_add.owner_info.email;
+    PROJECT_INFORMATION_BY_PID[pid].env_package_id = object_to_add.env_package_id;
+    PROJECT_INFORMATION_BY_PID[pid].first          = object_to_add.owner_info.first_name;
+    PROJECT_INFORMATION_BY_PID[pid].institution    = object_to_add.owner_info.institution;
+    PROJECT_INFORMATION_BY_PID[pid].last           = object_to_add.owner_info.last_name;
+    PROJECT_INFORMATION_BY_PID[pid].matrix         = object_to_add.matrix;
+    PROJECT_INFORMATION_BY_PID[pid].metagenomic    = object_to_add.metagenomic;
+    PROJECT_INFORMATION_BY_PID[pid].oid            = object_to_add.owner_info.user_id;
+    PROJECT_INFORMATION_BY_PID[pid].permissions    = object_to_add.permissions;
+    PROJECT_INFORMATION_BY_PID[pid].pid            = pid;
+    PROJECT_INFORMATION_BY_PID[pid].project        = object_to_add.project;
+    PROJECT_INFORMATION_BY_PID[pid].public         = object_to_add.public;
+    PROJECT_INFORMATION_BY_PID[pid].title          = object_to_add.title;
+    PROJECT_INFORMATION_BY_PID[pid].updated_at     = object_to_add.updated_at;
+    PROJECT_INFORMATION_BY_PID[pid].username       = object_to_add.owner_info.username;
+
+  }
+  console.log("CCC22 PROJECT_INFORMATION_BY_PID after add = ", PROJECT_INFORMATION_BY_PID);
+
+  if (typeof PROJECT_INFORMATION_BY_PNAME[object_to_add.project] === 'undefined') {
+    PROJECT_INFORMATION_BY_PNAME[object_to_add.project] = Object.assign(PROJECT_INFORMATION_BY_PID[pid]);
+  }
+
+  console.log("CCC44 PROJECT_INFORMATION_BY_PNAME after add = ", PROJECT_INFORMATION_BY_PID);
+
 };
 
 // public
@@ -950,16 +984,19 @@ exports.saveDataset = function (req, res) {
 //   submit_code: [],
 //   tube_label: [] }
 
-exports.saveProject = function (req, res) {
+exports.saveProject = function (req, res) { //check if exists in PROJECT_INFORMATION_BY_PID and just pull id and project_obj, render if yes; Project.addProject if new
   console.log("JJJ req.form from saveProject = ", req.form);
   var d_region_arr  = req.form.d_region.split("#");
-  var owner_info    = req.form.pi_id_name.split("#");
   var metagenomic   = 0;
   var project_name3 = d_region_arr[2];
   if (d_region_arr[0] === 'Shotgun') {
     metagenomic   = 1;
     project_name3 = "Sgun";
   }
+  var user_id       = req.form.pi_id_name.split("#")[0];
+  var user_obj = User.getUserInfoFromGlobal(user_id);
+  console.log("OOO4 user_obj from saveProject = ", user_obj);
+
   project_obj                     = {};
   project_obj.project_id          = 0;
   project_obj.project             = req.form.project_name1 + "_" + req.form.project_name2 + "_" + project_name3;
@@ -973,8 +1010,18 @@ exports.saveProject = function (req, res) {
   project_obj.created_at          = new Date();
   project_obj.updated_at          = new Date();
   project_obj.active              = 0;
-  project_obj.owner_id            = req.form.pi_id_name.split("#")[0];
+  project_obj.owner_info          = user_obj;
 
+
+  //    User_obj.user_id            = user_id;
+  //     User_obj.username           = ALL_USERS_BY_UID[user_id].username;
+  //     User_obj.email              = ALL_USERS_BY_UID[user_id].email;
+  //     User_obj.institution        = ALL_USERS_BY_UID[user_id].institution;
+  //     User_obj.first_name         = ALL_USERS_BY_UID[user_id].first_name;
+  //     User_obj.last_name          = ALL_USERS_BY_UID[user_id].last_name;
+  //     User_obj.security_level     = ALL_USERS_BY_UID[user_id].status;
+  //     User_obj.encrypted_password = ALL_USERS_BY_UID[user_id].encrypted_password;
+  //     User_obj.groups             = ALL_USERS_BY_UID[user_id].groups;
 
   //2018-06-20 13:09:14
 
@@ -996,8 +1043,8 @@ exports.saveProject = function (req, res) {
     }
     else {
       console.log("WWW rows", rows);
-
-      add_info_to_project(project_obj);
+      var pid = rows.insertId;
+      add_info_to_project_globals(project_obj, pid);
 
       var all_field_names = collect_field_names();
       // TODO: add
