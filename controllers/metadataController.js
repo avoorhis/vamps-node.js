@@ -1131,10 +1131,10 @@ exports.make_metadata_object = function (req, res, pid, info) {
 };
 
 exports.render_edit_form = function (req, res, all_metadata, all_field_names) {
-  console.log("JJJ1 all_metadata");
+  console.log("JJJ1 all_metadata from render_edit_form");
   console.log(JSON.stringify(all_metadata));
 
-  console.log("JJJ2 all_field_names");
+  console.log("JJJ2 all_field_names from render_edit_form");
   console.log(JSON.stringify(all_field_names));
 
   MD_ENV_CNTRY_vals           = get_object_vals(MD_ENV_CNTRY);
