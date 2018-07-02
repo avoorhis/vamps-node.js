@@ -81,7 +81,8 @@ get_names_from_ordered_const = function () {
   console.time("time: ordered_metadata_names_only");
 
   const arraycolumn = (arr, n) =>
-  arr.map(x => x[n])
+  arr.map(x => x[n]
+)
   ;
 
   console.timeEnd("time: ordered_metadata_names_only");
@@ -96,7 +97,7 @@ get_field_names_by_dataset_ids = function (dataset_ids) {
   }
   else {
     for (var i = 0; i < dataset_ids.length; i++) {
-      var dataset_id = dataset_ids[i];
+      var dataset_id  = dataset_ids[i];
       field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
     }
   }
@@ -186,7 +187,7 @@ reverseString = function (str) {
   return out_str;
 };
 
-collect_field_names = function(dataset_ids) {
+collect_field_names = function (dataset_ids) {
   var all_field_names = get_field_names_by_dataset_ids(dataset_ids);
   all_field_names     = all_field_names.concat(CONSTS.METADATA_FORM_REQUIRED_FIELDS);
   all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
@@ -935,7 +936,54 @@ exports.saveProject = function (req, res) {
       //   sample_concentration: [],
       //   submit_code: [],
       //   tube_label:
-      all_field_names4 = CONSTS.ORDERED_METADATA_NAMES;
+      // d_region: 'Bacterial#v4v5#Bv4v5',
+      //   dataset_description: [],
+      //   dataset_name: [],
+      //   funding_code: '0',
+      //   pi_id_name: '1453#Amrani Said#Amrani#Said#said_amrani@yahoo.com',
+      //   project_description: 'sdf sdgfdsg sfgdf',
+      //   project_name1: 'SA',
+      //   project_name2: 'AAA',
+      //   project_title: 'AAA54645674',
+      //   sample_concentration: [],
+      //   samples_number: '2',
+      //   submit_code: [],
+      //   tube_label: [] }
+
+      // 14	  ["run", "Sequencing run date", "MBL Supplied", "YYYY-MM-DD"],
+
+      var all_field_names4     = [];
+      // var all_field_names4_temp = CONSTS.ORDERED_METADATA_NAMES;
+      var parameter            = CONSTS.ORDERED_METADATA_NAMES.slice(0, 1);
+      var new_user_submit      = [["new_user_submit", "New Submit Info", "User Supplied", ""]];
+      var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
+      var dataset_description  = [["dataset_description", "Dataset Description", "User Supplied", ""]];
+      var tube_label           = [["tube_label", "Tube Label", "User Supplied", ""]];
+      var sample_concentration = [["sample_concentration", "Funding Code", "User Supplied", "ng/ul"]];
+      var dna_quantitation     = CONSTS.ORDERED_METADATA_NAMES.slice(36, 37);
+      var second_part_part     = CONSTS.ORDERED_METADATA_NAMES.slice(1);
+
+      // var general = CONSTS.ORDERED_METADATA_NAMES.slice(1,1);
+      // var funding_code = [["funding_code", "Funding Code", "User Supplied", "numeric only"]];
+      // var vamps_dataset_name = CONSTS.ORDERED_METADATA_NAMES.slice(2,2);
+      // var second_part_part = CONSTS.ORDERED_METADATA_NAMES.slice(3,5);
+      // var domain = CONSTS.ORDERED_METADATA_NAMES.slice(6,6);
+      // var target_gene = CONSTS.ORDERED_METADATA_NAMES.slice(7,7);
+      // var dna_region = CONSTS.ORDERED_METADATA_NAMES.slice(8,8);
+
+      //   submit_code: [],
+
+      // [["structured comment name","Parameter","",""],["","General","",""],["dataset","VAMPS dataset name","MBL Supplied",""]
+
+      all_field_names4 = all_field_names4.concat(parameter);
+      all_field_names4 = all_field_names4.concat(new_user_submit);
+      all_field_names4 = all_field_names4.concat(user_sample_name);
+      all_field_names4 = all_field_names4.concat(dataset_description);
+      all_field_names4 = all_field_names4.concat(tube_label);
+      all_field_names4 = all_field_names4.concat(sample_concentration);
+      all_field_names4 = all_field_names4.concat(dna_quantitation);
+      all_field_names4 = all_field_names4.concat(second_part_part);
+
 
       var all_metadata = create_all_metadata_form_new(rows, req, res, all_field_names4);
       // all_metadata = { '485':
@@ -943,68 +991,8 @@ exports.saveProject = function (req, res) {
       //       dataset: ["", "", ""],
       //       sample_name: ["", "", ""],
       //       investigation_type: ["", "", ""],
-      //       sample_type: ["", "", ""],
-      //       collection_date: ["", "", ""],
-      //       latitude: ["", "", ""],
-      //       longitude: ["", "", ""],
-      //       geo_loc_name_continental: ["", "", ""],
-      //       geo_loc_name_marine: ["", "", ""],
-      //       env_package: ["", "", ""],
-      //       env_biome: ["", "", ""],
-      //       env_feature: ["", "", ""],
-      //       env_material: ["", "", ""],
-      //       elevation: ["", "", ""],
-      //       dna_extraction_meth: ["", "", ""],
-      //       dna_quantitation: ["", "", ""],
       //       domain: ["", "", ""],
-      //       target_gene: ["", "", ""],
-      //       dna_region: ["", "", ""],
-      //       sequencing_meth: ["", "", ""],
-      //       forward_primer: ["", "", ""],
-      //       reverse_primer: ["", "", ""],
-      //       illumina_index: ["", "", ""],
-      //       adapter_sequence: ["", "", ""],
-      //       run: ["", "", ""],
-      //       ph: ["", "", ""],
-      //       temperature: ["", "", ""],
-      //       conductivity: ["", "", ""],
-      //       geo_loc_name: ["", "", ""],
-      //       sequencing_platform: ["", "", ""],
-      //       primer_suite: ["", "", ""],
       //       first_name: [ 'Mohammadkarim', 'Mohammadkarim', 'Mohammadkarim' ],
-      //       institution:
-      //         [ 'University of Duisburg-Essen',
-      //           'University of Duisburg-Essen',
-      //           'University of Duisburg-Essen' ],
-      //       last_name: [ 'Saeedghalati', 'Saeedghalati', 'Saeedghalati' ],
-      //       pi_email:
-      //         [ 'm.saeedghalati@uni-due.de',
-      //           'm.saeedghalati@uni-due.de',
-      //           'm.saeedghalati@uni-due.de' ],
-      //       pi_name:
-      //         [ 'Mohammadkarim Saeedghalati',
-      //           'Mohammadkarim Saeedghalati',
-      //           'Mohammadkarim Saeedghalati' ],
-      //       project_title: [ 'AAA title', 'AAA title', 'AAA title' ],
-      //       public: [ 0, 0, 0 ],
-      //       username: [ 'saeedghalati', 'saeedghalati', 'saeedghalati' ],
-      //       project_abstract: [ '', '', '' ],
-      //       adapter_sequence_id: ["", "", ""],
-      //       dataset_description: ["", "", ""],
-      //       dataset_id: ["", "", ""],
-      //       dna_region_id: ["", "", ""],
-      //       domain_id: ["", "", ""],
-      //       env_biome_id: ["", "", ""],
-      //       env_feature_id: ["", "", ""],
-      //       env_material_id: ["", "", ""],
-      //       env_package_id: ["", "", ""],
-      //       geo_loc_name_id: ["", "", ""],
-      //       illumina_index_id: ["", "", ""],
-      //       primer_suite_id: ["", "", ""],
-      //       run_id: ["", "", ""],
-      //       sequencing_platform_id: ["", "", ""],
-      //       target_gene_id: ["", "", ""]
-      //     } };
       module.exports.render_edit_form(req, res, all_metadata, all_field_names4);
     }
   });
