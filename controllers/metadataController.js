@@ -203,7 +203,7 @@ create_all_metadata_form_new = function (rows, req, res, all_field_names) {
   var pid           = rows.insertId;
   var warningStatus = rows.warningStatus;
   var user_id       = req.form.pi_id_name.split("#")[0];
-
+  var d_region_arr  = req.form.d_region.split("#");
   var user_obj = User.getUserInfoFromGlobal(user_id);
   // console.log("DDD3, all_dataset_ids.flat(2)", all_dataset_ids);
 
@@ -215,8 +215,9 @@ create_all_metadata_form_new = function (rows, req, res, all_field_names) {
   console.log("PPP01 all_metadata from create_all_metadata_form_new", all_metadata);
   var repeat_times = parseInt(req.form.samples_number, 10);
   console.log(typeof repeat_times);
-  var project_info = {
+  var current_info = {
     project: project_obj.project,
+    project_description: project_obj.project_description,
     first_name: user_obj.first_name,
     institution: user_obj.institution,
     last_name: user_obj.last_name,
@@ -224,26 +225,53 @@ create_all_metadata_form_new = function (rows, req, res, all_field_names) {
     pi_name: user_obj.first_name + " " + user_obj.last_name,
     project_title: project_obj.title,
     public: project_obj.public,
-    username: user_obj.username
+    username: user_obj.username,
+    domain: d_region_arr[0].slice(0, -1),
+    dna_region: d_region_arr[1].split("_")[0],
+    funding_code: project_obj.funding
+    // target_gene:
   };
+  // TOD: domain_id
+  // constants.DOMAINS = {
+  //   domains: [
+  //     {id: 1, name: "Archaea"},
+
+  //      // var domain = CONSTS.ORDERED_METADATA_NAMES.slice(6,6);
+  //       // var target_gene = CONSTS.ORDERED_METADATA_NAMES.slice(7,7);
+  //       // var dna_region = CONSTS.ORDERED_METADATA_NAMES.slice(8,8);
+  //{
+  //   "adaptor": [],
+  //   "d_region": "Eukaryal#v4_hap_HSSU#EHSSU",
+  //   "dataset_description": [],
+  //   "dataset_name": [],
+  //   "funding_code": "9",
+  //   "pi_id_name": "1120#Adebayo Adewale#Adebayo#Adewale#walsaks@gmail.com",
+  //   "project_description": "AAA description",
+  //   "project_name1": "AA",
+  //   "project_name2": "AAA",
+  //   "project_title": "AAA title",
+  //   "sample_concentration": [],
+  //   "samples_number": "2",
+  //   "submit_code": [],
+  //   "tube_label": []
+  // }
 
 
-  console.log("MMM33 all_metadata[pid]");
-  console.log(JSON.stringify(all_metadata[pid]));
+  // console.log("MMM33 all_metadata[pid]");
+  // console.log(JSON.stringify(all_metadata[pid]));
 
-  for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
-    var field_name                = CONSTS.PROJECT_INFO_FIELDS[idx];
-    all_metadata[pid][field_name] = [project_info[field_name]];
+  for (var field_name in current_info) {
+    all_metadata[pid][field_name] = [current_info[field_name]];
     //todo: split if, if length == dataset_ids.length - just use as is
     if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
       all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
     }
     else {
-      all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(project_info[field_name], repeat_times);
+      all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(current_info[field_name], repeat_times);
     }
   }
 
-  if ((all_metadata[pid]["project_abstract"] === 'undefined') || (!all_metadata[pid].hasOwnProperty(["project_abstract"]))) {
+    if ((all_metadata[pid]["project_abstract"] === 'undefined') || (!all_metadata[pid].hasOwnProperty(["project_abstract"]))) {
     all_metadata[pid]["project_abstract"] = module.exports.fill_out_arr_doubles("", repeat_times);
   }
   else {
