@@ -21,8 +21,8 @@ var path      = require("path");
 // 3 show data
 
 // http://book.mixu.net/node/ch6.html
-// CLASS InObj()
-function InObj() {
+// CLASS ShowObj()
+function ShowObj() {
   // needed:
   // project_id (for all_field_units, all_metadata, globals: PROJECT_INFORMATION_BY..., DATASET_IDS_BY_PID)
   // dataset_ids (for show, for global: DATASET_IDS_BY_PID[pid];
@@ -58,8 +58,9 @@ function InObj() {
     sample_type_options: CONSTS.SAMPLE_TYPE
   });
   };
+
 // export the class
-  module.exports = Foo;
+  module.exports = ShowObj;
 
 
 }

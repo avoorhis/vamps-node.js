@@ -15,30 +15,30 @@ var path      = require("path");
 
 
 // private
-checkArray = function (my_arr) {
+function checkArray(my_arr) {
   for (var i = 0; my_arr.length > i; i++) {
     if (my_arr[i] === "")
       return false;
   }
   return true;
-};
+}
 
-check_regexp = function (reg_exp, value, err_msg) {
+function check_regexp(reg_exp, value, err_msg) {
   var result = value.match(reg_exp);
 
   // if (value !== "" && result === null) {
   if (value !== "" && result !== null) {
     throw new Error("'" + value + "' is not allowed in '%s'" + err_msg);
   }
-};
+}
 
-region_valid = function (value, region_low, region_high) {
+function region_valid(value, region_low, region_high) {
   if ((value !== '') && (parseInt(value) < parseInt(region_low) || parseInt(value) > parseInt(region_high))) {
     throw new Error("'" + value + "' is not valid, %s should be between " + region_low + " and " + region_high);
   }
-};
+}
 
-new_row_field_validation = function (req, field_name) {
+function new_row_field_validation(req, field_name) {
   console.time("TIME: new_row_field_validation");
   var err_msg = '';
 
@@ -57,11 +57,11 @@ new_row_field_validation = function (req, field_name) {
   return field_val_trimmed;
 };
 
-isUnique = function (all_clean_field_names_arr, column_name) {
+function isUnique(all_clean_field_names_arr, column_name) {
   return (all_clean_field_names_arr.indexOf(column_name) < 0);
 };
 
-get_cell_val_by_row = function (row_idx, req) {
+function get_cell_val_by_row(row_idx, req) {
   console.time("TIME: get_cell_val_by_row");
   var new_row_length = req.body.new_row_length;
   var new_row_val    = [];
@@ -90,7 +90,7 @@ get_names_from_ordered_const = function () {
   return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
 };
 
-get_field_names_by_dataset_ids = function (dataset_ids) {
+function get_field_names_by_dataset_ids(dataset_ids) {
 
   var field_names_arr = [];
   if (typeof dataset_ids === 'undefined' || dataset_ids.length === 0) {
@@ -113,7 +113,7 @@ get_field_names_by_dataset_ids = function (dataset_ids) {
 // ...
 };
 
-prepare_empty_metadata_object = function (pid, field_names_arr, all_metadata) {
+function prepare_empty_metadata_object(pid, field_names_arr, all_metadata) {
   console.time("TIME: prepare_empty_metadata_object");
   all_metadata = all_metadata || {};
   if (!(all_metadata.hasOwnProperty(pid))) {
@@ -131,7 +131,7 @@ prepare_empty_metadata_object = function (pid, field_names_arr, all_metadata) {
   return all_metadata;
 };
 
-get_project_info = function (project_name_or_pid) {
+function get_project_info(project_name_or_pid) {
   var project_info;
 
   if (helpers.isInt(project_name_or_pid)) {
@@ -154,7 +154,7 @@ get_project_info = function (project_name_or_pid) {
   };
 };
 
-filterItems = function (arr, query) {
+function filterItems(arr, query) {
   return arr.filter(function (el) {
     return el.toLowerCase().indexOf(query.toLowerCase()) < 0;
   });
@@ -174,13 +174,13 @@ make_ordered_field_names_obj = function () {
   return ordered_field_names_obj;
 };
 
-get_object_vals = function (object_name) {
+function get_object_vals(object_name) {
   return Object.keys(object_name).map(function (key) {
     return object_name[key];
   });
 };
 
-reverseString = function (str) {
+function reverseString(str) {
   var out_str = '';
   for (var i = str.length - 1; i >= 0; i--) {
     out_str += str[i];
@@ -188,7 +188,7 @@ reverseString = function (str) {
   return out_str;
 };
 
-collect_field_names = function (dataset_ids) {
+function collect_field_names(dataset_ids) {
   var all_field_names = get_field_names_by_dataset_ids(dataset_ids);
   all_field_names     = all_field_names.concat(CONSTS.METADATA_FORM_REQUIRED_FIELDS);
   all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
@@ -396,7 +396,7 @@ create_all_metadata_form_new = function (rows, req, res, all_field_names) {
 
 };
 
-make_array4 = function (field_names_arr) {
+function make_array4(field_names_arr) {
 // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [field_names_arr[i2], field_names_arr[i2], "", ""]
   var new_arr = [];
   for (var i2 = 0; i2 < field_names_arr.length; i2++) {
@@ -404,9 +404,9 @@ make_array4 = function (field_names_arr) {
     new_arr.push(temp_arr);
   }
   return new_arr;
-};
+}
 
-add_info_to_project_globals = function (object_to_add, pid) {
+function add_info_to_project_globals(object_to_add, pid) {
   // console.log("CCC11 PROJECT_INFORMATION_BY_PID = ", PROJECT_INFORMATION_BY_PID);
   // console.log("CCC12 PROJECT_INFORMATION_BY_PNAME = ", PROJECT_INFORMATION_BY_PNAME);
   // DATASET_IDS_BY_PID[pid];
@@ -484,7 +484,7 @@ add_info_to_project_globals = function (object_to_add, pid) {
 
   console.log("CCC44 PROJECT_INFORMATION_BY_PNAME after add = ", PROJECT_INFORMATION_BY_PID);
 
-};
+}
 
 // public
 
