@@ -987,7 +987,7 @@ exports.saveDataset = function (req, res) {
   dataset_obj.dataset_id          = 0;
   dataset_obj.dataset             = req.form.dataset_name;
   dataset_obj.dataset_description = req.form.dataset_description;
-  dataset_obj.project_id    = reverseString(dataset_obj.dataset);
+  dataset_obj.project_id          = project_id;
   dataset_obj.created_at          = new Date();
   dataset_obj.updated_at          = new Date();
 
