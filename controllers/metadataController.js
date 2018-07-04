@@ -2,11 +2,11 @@ var Project   = require(app_root + '/models/project_model');
 var Dataset   = require(app_root + '/models/dataset_model');
 var User      = require(app_root + '/models/user_model');
 var helpers   = require(app_root + '/routes/helpers/helpers');
-var CONSTS    = require(app_root + "/public/constants");
+var CONSTS    = require(app_root + '/public/constants');
 var validator = require('validator');
 var config    = require(app_root + '/config/config');
-var fs        = require("fs");
-var path      = require("path");
+var fs        = require('fs');
+var path      = require('path');
 
 // Display list of all Submissions.
 // exports.submission_list = function (req, res) {
@@ -18,7 +18,7 @@ var path      = require("path");
 function checkArray(my_arr) {
   for (var i = 0; my_arr.length > i; i++) {
     if (my_arr[i] === "")
-      return false;
+    {return false;}
   }
   return true;
 }
@@ -27,7 +27,7 @@ function check_regexp(reg_exp, value, err_msg) {
   var result = value.match(reg_exp);
 
   // if (value !== "" && result === null) {
-  if (value !== "" && result !== null) {
+  if (value !== '' && result !== null) {
     throw new Error("'" + value + "' is not allowed in '%s'" + err_msg);
   }
 }
@@ -39,13 +39,13 @@ function region_valid(value, region_low, region_high) {
 }
 
 function new_row_field_validation(req, field_name) {
-  console.time("TIME: new_row_field_validation");
+  console.time('TIME: new_row_field_validation');
   var err_msg = '';
 
   //todo: send a value instead of "req.body[field_name]"?
-  var field_val_trimmed   = validator.escape(req.body[field_name] + "");
-  field_val_trimmed       = validator.trim(field_val_trimmed + "");
-  var field_val_not_valid = validator.isEmpty(field_val_trimmed + "");
+  var field_val_trimmed   = validator.escape(req.body[field_name] + '');
+  field_val_trimmed       = validator.trim(field_val_trimmed + '');
+  var field_val_not_valid = validator.isEmpty(field_val_trimmed + '');
 
   if (field_val_not_valid) {
     console.log("ERROR: an empty user's " + field_name);
@@ -53,7 +53,7 @@ function new_row_field_validation(req, field_name) {
     req.form.errors.push(err_msg);
   }
 
-  console.timeEnd("TIME: new_row_field_validation");
+  console.timeEnd('TIME: new_row_field_validation');
   return field_val_trimmed;
 }
 
@@ -940,7 +940,7 @@ exports.convertArrayOfObjectsToCSV = function (args) {
       // Wrap each element of the items array with quotes
       return cellEscape + item + cellEscape;
     }).join(columnDelimiter);
-    
+
     result += r1;
     result += lineDelimiter;
   });

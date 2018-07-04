@@ -19,10 +19,11 @@
     <option es3="false" />
     <option es5="false" />
     <option esnext="false" />
+    <option esversion="6" />
     <option evil="false" />
     <option expr="false" />
     <option forin="false" />
-    <option freeze="false" />
+    <option freeze="true" />
     <option funcscope="false" />
     <option futurehostile="false" />
     <option gcl="false" />
@@ -36,9 +37,11 @@
     <option laxbreak="false" />
     <option laxcomma="false" />
     <option loopfunc="false" />
+    <option maxcomplexity="5" />
+    <option maxdepth="5" />
     <option maxerr="50" />
     <option mocha="false" />
-    <option module="false" />
+    <option module="true" />
     <option mootools="false" />
     <option moz="false" />
     <option multistr="false" />
@@ -60,7 +63,7 @@
     <option proto="false" />
     <option prototypejs="false" />
     <option qunit="false" />
-    <option quotmark="false" />
+    <option quotmark="true" />
     <option rhino="false" />
     <option scripturl="false" />
     <option shadow="false" />
@@ -72,8 +75,8 @@
     <option supernew="false" />
     <option trailing="true" />
     <option typed="false" />
-    <option undef="false" />
-    <option unused="false" />
+    <option undef="true" />
+    <option unused="true" />
     <option validthis="true" />
     <option varstmt="false" />
     <option white="false" />
