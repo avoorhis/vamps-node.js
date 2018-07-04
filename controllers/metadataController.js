@@ -55,11 +55,11 @@ function new_row_field_validation(req, field_name) {
 
   console.timeEnd("TIME: new_row_field_validation");
   return field_val_trimmed;
-};
+}
 
 function isUnique(all_clean_field_names_arr, column_name) {
   return (all_clean_field_names_arr.indexOf(column_name) < 0);
-};
+}
 
 function get_cell_val_by_row(row_idx, req) {
   console.time("TIME: get_cell_val_by_row");
@@ -76,7 +76,7 @@ function get_cell_val_by_row(row_idx, req) {
   console.timeEnd("TIME: get_cell_val_by_row");
 
   return new_row_val;
-};
+}
 
 get_names_from_ordered_const = function () {
   console.time("time: ordered_metadata_names_only");
@@ -111,7 +111,7 @@ function get_field_names_by_dataset_ids(dataset_ids) {
 //   "adapter_sequence",
 //   "adapter_sequence_id",
 // ...
-};
+}
 
 function prepare_empty_metadata_object(pid, field_names_arr, all_metadata) {
   console.time("TIME: prepare_empty_metadata_object");
@@ -129,7 +129,7 @@ function prepare_empty_metadata_object(pid, field_names_arr, all_metadata) {
 
   console.timeEnd("TIME: prepare_empty_metadata_object");
   return all_metadata;
-};
+}
 
 function get_project_info(project_name_or_pid) {
   var project_info;
@@ -152,15 +152,15 @@ function get_project_info(project_name_or_pid) {
     public: project_info.public,
     username: project_info.username
   };
-};
+}
 
 function filterItems(arr, query) {
   return arr.filter(function (el) {
     return el.toLowerCase().indexOf(query.toLowerCase()) < 0;
   });
-};
+}
 
-make_ordered_field_names_obj = function () {
+function make_ordered_field_names_obj() {
   console.time("TIME: make_ordered_field_names_obj");
   var ordered_field_names_obj = {};
 
@@ -172,13 +172,13 @@ make_ordered_field_names_obj = function () {
   }
   console.timeEnd("TIME: make_ordered_field_names_obj");
   return ordered_field_names_obj;
-};
+}
 
 function get_object_vals(object_name) {
   return Object.keys(object_name).map(function (key) {
     return object_name[key];
   });
-};
+}
 
 function reverseString(str) {
   var out_str = '';
@@ -186,7 +186,7 @@ function reverseString(str) {
     out_str += str[i];
   }
   return out_str;
-};
+}
 
 function collect_field_names(dataset_ids) {
   var all_field_names = get_field_names_by_dataset_ids(dataset_ids);
@@ -197,14 +197,14 @@ function collect_field_names(dataset_ids) {
 
   all_field_names = helpers.unique_array(all_field_names);
   return all_field_names;
-};
+}
 
-create_all_metadata_form_new = function (rows, req, res, all_field_names) {
+function create_all_metadata_form_new(rows, req, res, all_field_names) {
   var pid           = rows.insertId;
   var warningStatus = rows.warningStatus;
   var user_id       = req.form.pi_id_name.split("#")[0];
   var d_region_arr  = req.form.d_region.split("#");
-  var user_obj = User.getUserInfoFromGlobal(user_id);
+  var user_obj      = User.getUserInfoFromGlobal(user_id);
   // console.log("DDD3, all_dataset_ids.flat(2)", all_dataset_ids);
 
   console.log("DDD pid", pid);
@@ -271,7 +271,7 @@ create_all_metadata_form_new = function (rows, req, res, all_field_names) {
     }
   }
 
-    if ((all_metadata[pid]["project_abstract"] === 'undefined') || (!all_metadata[pid].hasOwnProperty(["project_abstract"]))) {
+  if ((all_metadata[pid]["project_abstract"] === 'undefined') || (!all_metadata[pid].hasOwnProperty(["project_abstract"]))) {
     all_metadata[pid]["project_abstract"] = module.exports.fill_out_arr_doubles("", repeat_times);
   }
   else {
@@ -935,14 +935,16 @@ exports.convertArrayOfObjectsToCSV = function (args) {
   result = '';
   transposed_data_arr.map(function (row) {
     // TODO: to a function?
+    // result = row.map(function (item) {
     var r1 = row.map(function (item) {
       // Wrap each element of the items array with quotes
       return cellEscape + item + cellEscape;
     }).join(columnDelimiter);
-
+    
     result += r1;
     result += lineDelimiter;
   });
+
 
   console.timeEnd("TIME: convertArrayOfObjectsToCSV");
 
@@ -983,7 +985,7 @@ exports.saveDataset = function (req, res) {
   console.log("TTT1 req.form from saveDataset = ", req.form);
   //dataset_id, dataset, dataset_description, project_id, created_at, updated_at,
 
-  dataset_obj                     = {};
+  var dataset_obj                 = {};
   dataset_obj.dataset_id          = 0;
   dataset_obj.dataset             = req.form.dataset_name;
   dataset_obj.dataset_description = req.form.dataset_description;
@@ -993,9 +995,9 @@ exports.saveDataset = function (req, res) {
 
   console.log("OOO1 JSON.stringify(dataset_obj) = ", JSON.stringify(dataset_obj));
 
-    // Dataset.addDataset(dataset_obj, function (err, rows) {
+  // Dataset.addDataset(dataset_obj, function (err, rows) {
 
-  };
+};
 
 // [2018/06/26 13:52:48.300] [LOG]   MMM2, req.form { adaptor: [],
 //   d_region: 'Eukaryal#v4#Ev4',
@@ -1021,11 +1023,11 @@ exports.saveProject = function (req, res) { //check if exists in PROJECT_INFORMA
     metagenomic   = 1;
     project_name3 = "Sgun";
   }
-  var user_id       = req.form.pi_id_name.split("#")[0];
+  var user_id  = req.form.pi_id_name.split("#")[0];
   var user_obj = User.getUserInfoFromGlobal(user_id);
   console.log("OOO4 user_obj from saveProject = ", user_obj);
 
-  project_obj                     = {};
+  var project_obj                 = {};
   project_obj.project_id          = 0;
   project_obj.project             = req.form.project_name1 + "_" + req.form.project_name2 + "_" + project_name3;
   project_obj.title               = req.form.project_title;
@@ -1107,9 +1109,9 @@ exports.saveProject = function (req, res) { //check if exists in PROJECT_INFORMA
       var dna_quantitation     = CONSTS.ORDERED_METADATA_NAMES.slice(35, 36);
       var env_package          = CONSTS.ORDERED_METADATA_NAMES.slice(16, 17);
 
-      var second_part_part_1     = CONSTS.ORDERED_METADATA_NAMES.slice(1,16);
-      var second_part_part_2    = CONSTS.ORDERED_METADATA_NAMES.slice(18,35);
-      var second_part_part_3    = CONSTS.ORDERED_METADATA_NAMES.slice(36);
+      var second_part_part_1 = CONSTS.ORDERED_METADATA_NAMES.slice(1, 16);
+      var second_part_part_2 = CONSTS.ORDERED_METADATA_NAMES.slice(18, 35);
+      var second_part_part_3 = CONSTS.ORDERED_METADATA_NAMES.slice(36);
 
       // var general = CONSTS.ORDERED_METADATA_NAMES.slice(1,1);
       // var funding_code = [["funding_code", "Funding Code", "User Supplied", "numeric only"]];
@@ -1149,7 +1151,7 @@ exports.saveProject = function (req, res) { //check if exists in PROJECT_INFORMA
   });
 };
 
-exports.show_metadata_new_again = function(req, res) {
+exports.show_metadata_new_again = function (req, res) {
   //collect errors
   var myArray_fail = helpers.unique_array(req.form.errors);
 
@@ -1281,8 +1283,8 @@ exports.render_edit_form = function (req, res, all_metadata, all_field_names) {
   console.log("JJJ2 all_field_names from render_edit_form");
   console.log(JSON.stringify(all_field_names));
 
-  MD_ENV_CNTRY_vals           = get_object_vals(MD_ENV_CNTRY);
-  MD_ENV_LZC_vals             = get_object_vals(MD_ENV_LZC);
+  var MD_ENV_CNTRY_vals       = get_object_vals(MD_ENV_CNTRY);
+  var MD_ENV_LZC_vals         = get_object_vals(MD_ENV_LZC);
   var ordered_field_names_obj = make_ordered_field_names_obj();
 
   res.render("metadata/metadata_edit_form", {
