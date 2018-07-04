@@ -1,10 +1,10 @@
-var Project   = require(app_root + '/models/project_model');
+var Project   = require(app_root + '/models/project_model'); // jshint ignore:line
 var Dataset   = require(app_root + '/models/dataset_model');
 var User      = require(app_root + '/models/user_model');
 var helpers   = require(app_root + '/routes/helpers/helpers');
 var CONSTS    = require(app_root + '/public/constants');
 var validator = require('validator');
-var config    = require(app_root + '/config/config');
+// var config    = require(app_root + '/config/config');
 var fs        = require('fs');
 var path      = require('path');
 
@@ -199,6 +199,7 @@ function collect_field_names(dataset_ids) {
   return all_field_names;
 }
 
+//TODO: cyclomatic comlexity is 8!
 function create_all_metadata_form_new(rows, req, res, all_field_names) {
   var pid           = rows.insertId;
   // var warningStatus = rows.warningStatus;
@@ -513,7 +514,7 @@ exports.env_items_validation = function (value) {
 
 exports.geo_loc_name_validation = function (value, source) {
   if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
-    throw new Error("Either 'Country' or 'Longhurst Zone' are required");
+    throw new Error("Either 'Country' or 'Longhurst Zone' are required"); // jshint ignore:line
   }
 };
 
@@ -691,6 +692,7 @@ exports.get_project_name = function (edit_metadata_file) {
   return edit_metadata_project;
 };
 
+//TODO: cyclomatic comlexity is 8!
 exports.get_primers_info = function (dataset_id) {
   console.time('TIME: get_primers_info');
   var primer_suite_id = AllMetadata[dataset_id]['primer_suite_id'];
@@ -904,6 +906,7 @@ exports.transpose_2d_arr = function (data_arr, project_id) {
 };
 
 //TODO: move to csv files controller?
+//TODO: cyclomatic comlexity is 10!
 exports.convertArrayOfObjectsToCSV = function (args) {
   console.time('TIME: convertArrayOfObjectsToCSV');
 
@@ -1172,7 +1175,7 @@ exports.show_metadata_new_again = function (req, res) {
   var full_name      = pi_id_name_arr[3] + ' ' + pi_id_name_arr[2];
   var project_name1  = req.form.project_name1;
   if (project_name1 === '') {
-    project_name1 = metadata_controller.get_inits(full_name.split(' '));
+    project_name1 = module.exports.get_inits(full_name.split(' '));
   }
   var project_name3 = d_region_arr[2];
   var project_name  = project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
@@ -1192,7 +1195,7 @@ exports.show_metadata_new_again = function (req, res) {
   });
 };
 
-
+//TODO: cyclomatic comlexity is 7!
 exports.make_metadata_object = function (req, res, pid, info) {
   console.time('TIME: make_metadata_object');
 

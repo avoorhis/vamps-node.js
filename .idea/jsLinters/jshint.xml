@@ -32,14 +32,14 @@
     <option iterator="false" />
     <option jasmine="false" />
     <option jquery="true" />
-    <option lastsemic="false" />
+    <option lastsemic="true" />
     <option latedef="false" />
     <option laxbreak="false" />
     <option laxcomma="false" />
     <option loopfunc="false" />
     <option maxcomplexity="5" />
     <option maxdepth="5" />
-    <option maxerr="50" />
+    <option maxerr="500" />
     <option mocha="false" />
     <option module="true" />
     <option mootools="false" />
@@ -75,7 +75,7 @@
     <option supernew="false" />
     <option trailing="true" />
     <option typed="false" />
-    <option undef="true" />
+    <option undef="false" />
     <option unused="true" />
     <option validthis="true" />
     <option varstmt="false" />
