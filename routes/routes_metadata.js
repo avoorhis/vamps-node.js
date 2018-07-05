@@ -13,6 +13,7 @@ var nodeMailer           = require('nodemailer');
 // var Metadata             = require(app_root + '/models/metadata');
 var metadata_controller  = require(app_root + '/controllers/metadataController');
 var csv_files_controller = require(app_root + '/controllers/csvFilesController');
+var new_metadata_controller  = require(app_root + '/controllers/metadataController_copy');
 
 /* GET metadata page. */
 router.get('/metadata', function (req, res) {
@@ -205,7 +206,9 @@ function get_metadata_hash(md_selected) {
 // ?? render_edit_form(req, res, {}, {}, all_field_names)
 
 router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
-  var pi_list = metadata_controller.get_pi_list();
+  const met_obj = new new_metadata_controller.CreateDataObj(req, res, "", "");
+
+  var pi_list = met_obj.get_pi_list();
   req.session.pi_list = pi_list;
   res.render('metadata/metadata_new', {
     title: 'VAMPS: New Metadata',
