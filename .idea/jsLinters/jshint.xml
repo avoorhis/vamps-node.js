@@ -60,6 +60,7 @@
     <option passfail="false" />
     <option phantom="false" />
     <option plusplus="false" />
+    <option predef="MD_CUSTOM_FIELDS_UNITS, AllMetadata, app_root" />
     <option proto="false" />
     <option prototypejs="false" />
     <option qunit="false" />
