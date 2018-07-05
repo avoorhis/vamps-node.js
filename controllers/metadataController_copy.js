@@ -1,4 +1,4 @@
-// var Project   = require(app_root + '/models/project_model');
+var Project   = require(app_root + '/models/project_model');
 // var Dataset   = require(app_root + '/models/dataset_model');
 // var User      = require(app_root + '/models/user_model');
 var helpers = require(app_root + '/routes/helpers/helpers');
@@ -91,96 +91,94 @@ class CreateDataObj {
     this.all_metadata = all_metadata;
   }
 
+  get_project_info(req, res, project_name_or_pid) {
+    var project_info;
 
-//   //2) all
-//
-//   all_metadata[pid] = info;
-//
-//   //3) special
-//
+    if (typeof project_name_or_pid === 'undefined') {
+      const new_project = new Project(req, res, user_obj);
+      var project_obj = new_project.project_obj;
+
+    }
+    if (helpers.isInt(project_name_or_pid)) {
+      project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
+    }
+    else {
+      project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
+    }
+
+    return {
+      project: project_info.project,
+      first_name: project_info.first,
+      institution: project_info.institution,
+      last_name: project_info.last,
+      pi_email: project_info.email,
+      pi_name: project_info.first + ' ' + project_info.last,
+      project_title: project_info.title,
+      public: project_info.public,
+      username: project_info.username
+    };
+  }
+
+
   //TODO: cyclomatic comlexity is 7!
-  // make_metadata_object(req, res, pid, info) {
-  //   console.time('TIME: make_metadata_object');
-  //
-  //   var all_metadata = {};
-  //   var dataset_ids  = DATASET_IDS_BY_PID[pid];
-  //   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
-  //   var repeat_times = dataset_ids.length;
-  //
-  //   // console.log('LLL ALL_DATASETS', ALL_DATASETS);
-  //
-  //   // 0) get field_names
-  //   //TODO: DRY and clean up
-  //   var all_field_names = collect_field_names(dataset_ids);
-  //
-  //   console.log('HHH3 all_field_names');
-  //   console.log(JSON.stringify(all_field_names));
-  //
-  //
-  //   // console.log('QQQ0 AllMetadataNames');
-  //   // console.log(JSON.stringify(AllMetadataNames));
-  //   //
-  //   // console.log('QQQ1 all_field_names');
-  //   // console.log(JSON.stringify(all_field_names));
-  //
-  //
-  //   // 1)
-  //   // TODO: don't send all_metadata?
-  //   all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
-  //   // console.log('MMM2 all_metadata');
-  //   // console.log(all_metadata);
-  //
-  //   //2) all
-  //   console.log('HHH info object in make_metadata_object');
-  //   console.log(JSON.stringify(info));
-  //
-  //   all_metadata[pid] = info;
-  //
-  //   //3) special
-  //
-  //   // TODO: move to db creation?
-  //   var project_info = get_project_info(pid);
-  //   console.log('MMM33 all_metadata[pid]');
-  //   console.log(JSON.stringify(all_metadata[pid]));
-  //
-  //   for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
-  //     var field_name = CONSTS.PROJECT_INFO_FIELDS[idx];
-  //
-  //     //todo: split if, if length == dataset_ids.length - just use as is
-  //     if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
-  //       all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
-  //     }
-  //     else {
-  //       all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(project_info[field_name], repeat_times);
-  //     }
-  //   }
-  //
-  //   if ((all_metadata[pid]['project_abstract'] === 'undefined') || (!all_metadata[pid].hasOwnProperty(['project_abstract']))) {
-  //     all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles('', repeat_times);
-  //   }
-  //   else {
-  //
-  //     if ((all_metadata[pid]['project_abstract'][0] !== 'undefined') && (!Array.isArray(all_metadata[pid]['project_abstract'][0]))) {
-  //
-  //       var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]['project_abstract']);
-  //
-  //       if (typeof project_abstract_correct_form[0] !== 'undefined') {
-  //
-  //         all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles(project_abstract_correct_form[0].split(','), repeat_times);
-  //
-  //       }
-  //     }
-  //   }
-  //
-  //   // console.log('MMM9 all_metadata[pid][\'reference\']');
-  //   // console.log(JSON.stringify(all_metadata[pid]['reference']));
-  //
-  //   console.log('MMM9 all_metadata[pid]');
-  //   console.log(JSON.stringify(all_metadata[pid]));
-  //
-  //   console.timeEnd('TIME: make_metadata_object');
-  //   return all_metadata;
-  // };
+  make_metadata_object(req, res, pid, data_obj) {
+    console.time('TIME: make_metadata_object');
+    console.timeEnd('TIME: make_metadata_object');
+
+    var all_metadata = {};
+    var dataset_ids  = DATASET_IDS_BY_PID[pid];
+    var repeat_times = dataset_ids.length;
+
+    // 0) get field_names
+    var all_field_names = this.collect_field_names(dataset_ids);
+
+    // 1)
+    //   // TODO: don't send all_metadata?
+    all_metadata = this.all_metadata;
+
+    //2) all
+
+    all_metadata[pid] = data_obj;
+
+    //3) special
+
+    // TODO: move to db creation?
+    // TODO: user_obj
+    var project_info = get_project_info(req, res, pid);
+    console.log('MMM33 all_metadata[pid]');
+    console.log(JSON.stringify(all_metadata[pid]));
+
+    for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
+      var field_name = CONSTS.PROJECT_INFO_FIELDS[idx];
+
+      //todo: split if, if length == dataset_ids.length - just use as is
+      if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
+        all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
+      }
+      else {
+        all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(project_info[field_name], repeat_times);
+      }
+    }
+
+    if ((all_metadata[pid]['project_abstract'] === 'undefined') || (!all_metadata[pid].hasOwnProperty(['project_abstract']))) {
+      all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles('', repeat_times);
+    }
+    else {
+
+      if ((all_metadata[pid]['project_abstract'][0] !== 'undefined') && (!Array.isArray(all_metadata[pid]['project_abstract'][0]))) {
+
+        var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]['project_abstract']);
+
+        if (typeof project_abstract_correct_form[0] !== 'undefined') {
+
+          all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles(project_abstract_correct_form[0].split(','), repeat_times);
+
+        }
+      }
+    }
+
+
+  }
 
   get_pi_list () {
     console.log('FROM Metadata Controller');

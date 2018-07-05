@@ -52,6 +52,8 @@ class Project {
     return project_obj;
   }
 
+  add_info_to_globals() {}
+
   getAllProjects(callback) {
 
     return connection.query("Select * from project", callback);

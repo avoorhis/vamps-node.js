@@ -132,28 +132,28 @@ function prepare_empty_metadata_object(pid, field_names_arr, all_metadata) {
   return all_metadata;
 }
 
-function get_project_info(project_name_or_pid) {
-  var project_info;
-
-  if (helpers.isInt(project_name_or_pid)) {
-    project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
-  }
-  else {
-    project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
-  }
-
-  return {
-    project: project_info.project,
-    first_name: project_info.first,
-    institution: project_info.institution,
-    last_name: project_info.last,
-    pi_email: project_info.email,
-    pi_name: project_info.first + ' ' + project_info.last,
-    project_title: project_info.title,
-    public: project_info.public,
-    username: project_info.username
-  };
-}
+// function get_project_info(project_name_or_pid) {
+//   var project_info;
+//
+//   if (helpers.isInt(project_name_or_pid)) {
+//     project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
+//   }
+//   else {
+//     project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
+//   }
+//
+//   return {
+//     project: project_info.project,
+//     first_name: project_info.first,
+//     institution: project_info.institution,
+//     last_name: project_info.last,
+//     pi_email: project_info.email,
+//     pi_name: project_info.first + ' ' + project_info.last,
+//     project_title: project_info.title,
+//     public: project_info.public,
+//     username: project_info.username
+//   };
+// }
 
 function filterItems(arr, query) {
   return arr.filter(function (el) {
