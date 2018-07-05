@@ -7,6 +7,7 @@ var validator = require('validator');
 // var config    = require(app_root + '/config/config');
 var fs        = require('fs');
 var path      = require('path');
+var new_metadata_controller  = require(app_root + '/controllers/metadataController_copy');
 
 // Display list of all Submissions.
 // exports.submission_list = function (req, res) {
@@ -188,16 +189,16 @@ function reverseString(str) {
   return out_str;
 }
 
-function collect_field_names(dataset_ids) {
-  var all_field_names = get_field_names_by_dataset_ids(dataset_ids);
-  all_field_names     = all_field_names.concat(CONSTS.METADATA_FORM_REQUIRED_FIELDS);
-  all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
-  all_field_names     = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
-
-  all_field_names = helpers.unique_array(all_field_names);
-  return all_field_names;
-}
+// function collect_field_names(dataset_ids) {
+//   var all_field_names = get_field_names_by_dataset_ids(dataset_ids);
+//   all_field_names     = all_field_names.concat(CONSTS.METADATA_FORM_REQUIRED_FIELDS);
+//   all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+//   all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
+//   all_field_names     = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
+//
+//   all_field_names = helpers.unique_array(all_field_names);
+//   return all_field_names;
+// }
 
 //TODO: cyclomatic comlexity is 8!
 function create_all_metadata_form_new(rows, req, res, all_field_names) {
@@ -786,7 +787,9 @@ exports.from_obj_to_obj_of_arr = function (data, pid) {
 
   var dataset_ids = DATASET_IDS_BY_PID[pid];
 
-  var all_field_names = collect_field_names(dataset_ids);
+  const met_obj = new new_metadata_controller.CreateDataObj({}, {}, pid, dataset_ids);
+
+  var all_field_names = met_obj.collect_field_names(dataset_ids);
 
   // console.log('HHH0 AllMetadataNames');
   // console.log(JSON.stringify(AllMetadataNames));
@@ -1079,7 +1082,11 @@ exports.saveProject = function (req, res) { //check if exists in PROJECT_INFORMA
       var pid = rows.insertId;
       add_info_to_project_globals(project_obj, pid);
 
-      var all_field_names = collect_field_names();
+      const met_obj = new new_metadata_controller.CreateDataObj(req, res, pid, []);
+
+      var all_field_names = met_obj.collect_field_names();
+
+      // var all_field_names = collect_field_names();
       // TODO: add
       //   funding_code: [ '0' ],
       //   sample_concentration: [],
@@ -1208,7 +1215,12 @@ exports.make_metadata_object = function (req, res, pid, info) {
 
   // 0) get field_names
   //TODO: DRY and clean up
-  var all_field_names = collect_field_names(dataset_ids);
+  // var all_field_names = collect_field_names(dataset_ids);
+
+  const met_obj = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+
+  var all_field_names = met_obj.collect_field_names(dataset_ids);
+
 
   console.log('HHH3 all_field_names');
   console.log(JSON.stringify(all_field_names));
