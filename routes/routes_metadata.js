@@ -2,7 +2,7 @@ var express = require("express");
 var router  = express.Router();
 var helpers = require("./helpers/helpers");
 var form    = require("express-form");
-var queries = require(app_root + "/routes/queries");
+// var queries = require(app_root + "/routes/queries");
 var CONSTS  = require(app_root + "/public/constants");
 var fs      = require("fs");
 var path    = require("path");
@@ -10,7 +10,7 @@ var config  = require(app_root + '/config/config');
 // var validator           = require('validator');
 // var expressValidator = require('express-validator');
 var nodeMailer           = require('nodemailer');
-var Metadata             = require(app_root + '/models/metadata');
+// var Metadata             = require(app_root + '/models/metadata');
 var metadata_controller  = require(app_root + '/controllers/metadataController');
 var csv_files_controller = require(app_root + '/controllers/csvFilesController');
 
