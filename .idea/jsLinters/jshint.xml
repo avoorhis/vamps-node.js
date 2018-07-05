@@ -60,11 +60,11 @@
     <option passfail="false" />
     <option phantom="false" />
     <option plusplus="false" />
-    <option predef="MD_CUSTOM_FIELDS_UNITS, AllMetadata, app_root" />
+    <option predef="MD_CUSTOM_FIELDS_UNITS, AllMetadata, app_root, PROJECT_INFORMATION_BY_PID, PROJECT_INFORMATION_BY_NAME" />
     <option proto="false" />
     <option prototypejs="false" />
     <option qunit="false" />
-    <option quotmark="true" />
+    <option quotmark="false" />
     <option rhino="false" />
     <option scripturl="false" />
     <option shadow="false" />
