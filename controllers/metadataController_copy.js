@@ -207,7 +207,7 @@ class CreateDataObj {
 
 class ShowObj {
 
-  constructor(res, all_metadata, all_field_names_arr, all_field_units, ordered_field_names_obj, user, hostname) {
+  constructor(req, res, all_metadata, all_field_names_arr, all_field_units, ordered_field_names_obj, user, hostname) {
     this.res                     = res;
     this.all_metadata            = all_metadata;
     this.all_field_names_arr     = all_field_names_arr;
@@ -238,6 +238,42 @@ class ShowObj {
       sample_type_options: CONSTS.SAMPLE_TYPE
     });
   }
+
+  show_metadata_new_again (req, res) {
+    //collect errors
+    var myArray_fail = helpers.unique_array(req.form.errors);
+
+    myArray_fail.sort();
+    console.log('myArray_fail = ', myArray_fail);
+    req.flash('fail', myArray_fail);
+
+    // TODO: send to object creation in Imp
+    var d_region_arr   = req.form.d_region.split('#');
+    var pi_id_name_arr = req.form.pi_id_name.split('#');
+    var full_name      = pi_id_name_arr[3] + ' ' + pi_id_name_arr[2];
+    var project_name1  = req.form.project_name1;
+    if (project_name1 === '') {
+      project_name1 = module.exports.get_inits(full_name.split(' '));
+    }
+    var project_name3 = d_region_arr[2];
+    var project_name  = project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
+
+    res.render('metadata/metadata_new', {
+      // TODO: object created separately in Imp.
+      button_name: 'Validate',
+      domain_regions: CONSTS.DOMAIN_REGIONS,
+      hostname: req.CONFIG.hostname,
+      pi_email: pi_id_name_arr[4],
+      pi_list: req.session.pi_list,
+      pi_name: full_name,
+      project_name: project_name,
+      project_title: req.form.project_title,
+      samples_number: req.form.samples_number,
+      title: 'VAMPS: New Metadata',
+      user: req.user,
+    });
+  }
+
 
 }
 

@@ -265,6 +265,14 @@ module.exports.fileExists = function (path) {
   }
 };
 
+module.exports.reverseString = function(str) {
+  var out_str = '';
+  for (var i = str.length - 1; i >= 0; i--) {
+    out_str += str[i];
+  }
+  return out_str;
+}
+
 module.exports.send_mail = function(mail_info) {
   var to_addr = mail_info.addr;
   var from_addr = mail_info.from;

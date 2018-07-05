@@ -181,13 +181,13 @@ function get_object_vals(object_name) {
   });
 }
 
-function reverseString(str) {
-  var out_str = '';
-  for (var i = str.length - 1; i >= 0; i--) {
-    out_str += str[i];
-  }
-  return out_str;
-}
+// function reverseString(str) {
+//   var out_str = '';
+//   for (var i = str.length - 1; i >= 0; i--) {
+//     out_str += str[i];
+//   }
+//   return out_str;
+// }
 
 // function collect_field_names(dataset_ids) {
 //   var all_field_names = get_field_names_by_dataset_ids(dataset_ids);
@@ -217,6 +217,11 @@ function create_all_metadata_form_new(rows, req, res, all_field_names) {
   console.log('PPP01 all_metadata from create_all_metadata_form_new', all_metadata);
   var repeat_times = parseInt(req.form.samples_number, 10);
   console.log(typeof repeat_times);
+
+  //TODO: Use existing project!
+  const new_project = new Project(req, res, user_obj);
+  var project_obj = new_project.project_obj;
+
   var current_info = {
     project: project_obj.project,
     project_description: project_obj.project_description,
@@ -233,7 +238,7 @@ function create_all_metadata_form_new(rows, req, res, all_field_names) {
     funding_code: project_obj.funding
     // target_gene:
   };
-  // TOD: domain_id
+  // TODO: domain_id
   // constants.DOMAINS = {
   //   domains: [
   //     {id: 1, name: 'Archaea'},
@@ -1022,31 +1027,31 @@ exports.saveDataset = function (req, res) {
 
 exports.saveProject = function (req, res) { //check if exists in PROJECT_INFORMATION_BY_PID and just pull id and project_obj, render if yes; Project.addProject if new
   console.log('JJJ req.form from saveProject = ', req.form);
-  var d_region_arr  = req.form.d_region.split('#');
-  var metagenomic   = 0;
-  var project_name3 = d_region_arr[2];
-  if (d_region_arr[0] === 'Shotgun') {
-    metagenomic   = 1;
-    project_name3 = 'Sgun';
-  }
-  var user_id  = req.form.pi_id_name.split('#')[0];
-  var user_obj = User.getUserInfoFromGlobal(user_id);
-  console.log('OOO4 user_obj from saveProject = ', user_obj);
+  // var d_region_arr  = req.form.d_region.split('#');
+  // var metagenomic   = 0;
+  // var project_name3 = d_region_arr[2];
+  // if (d_region_arr[0] === 'Shotgun') {
+  //   metagenomic   = 1;
+  //   project_name3 = 'Sgun';
+  // }
+  // var user_id  = req.form.pi_id_name.split('#')[0];
+  // var user_obj = User.getUserInfoFromGlobal(user_id);
+  // console.log('OOO4 user_obj from saveProject = ', user_obj);
 
-  var project_obj                 = {};
-  project_obj.project_id          = 0;
-  project_obj.project             = req.form.project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
-  project_obj.title               = req.form.project_title;
-  project_obj.project_description = req.form.project_description;
-  project_obj.rev_project_name    = reverseString(project_obj.project);
-  project_obj.funding             = req.form.funding_code;
-  project_obj.public              = 0;
-  project_obj.metagenomic         = metagenomic;
-  project_obj.matrix              = 0;
-  project_obj.created_at          = new Date();
-  project_obj.updated_at          = new Date();
-  project_obj.active              = 0;
-  project_obj.owner_info          = user_obj;
+  // var project_obj                 = {};
+  // project_obj.project_id          = 0;
+  // project_obj.project             = req.form.project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
+  // project_obj.title               = req.form.project_title;
+  // project_obj.project_description = req.form.project_description;
+  // project_obj.rev_project_name    = reverseString(project_obj.project);
+  // project_obj.funding             = req.form.funding_code;
+  // project_obj.public              = 0;
+  // project_obj.metagenomic         = metagenomic;
+  // project_obj.matrix              = 0;
+  // project_obj.created_at          = new Date();
+  // project_obj.updated_at          = new Date();
+  // project_obj.active              = 0;
+  // project_obj.owner_info          = user_obj;
 
 
   //    User_obj.user_id            = user_id;
@@ -1061,6 +1066,11 @@ exports.saveProject = function (req, res) { //check if exists in PROJECT_INFORMA
 
   //2018-06-20 13:09:14
 
+  var user_id  = req.form.pi_id_name.split('#')[0];
+  var user_obj      = User.getUserInfoFromGlobal(user_id);
+  const new_project = new Project(req, res, user_obj);
+
+  var project_obj = new_project.project_obj;
   console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
 
   // Project.getAllProjects(function (err, rows) {
@@ -1069,7 +1079,7 @@ exports.saveProject = function (req, res) { //check if exists in PROJECT_INFORMA
   //
   // });
 
-  Project.addProject(project_obj, function (err, rows) {
+  new_project.addProject(project_obj, function (err, rows) {
 
     if (err) {
       console.log('WWW0 err', err);

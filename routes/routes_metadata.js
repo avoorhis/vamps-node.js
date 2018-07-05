@@ -288,44 +288,9 @@ router.post('/metadata_new',
       console.log('!req.form.isValid');
       console.log("EEE req.form.errors", req.form.errors);
 
-      // //collect errors
-      // var myArray_fail = helpers.unique_array(req.form.errors);
-      //
-      // // if (helpers.has_duplicates(req.form.sample_name)) {
-      // //   myArray_fail.push('Sample ID (user sample name) should be unique.');
-      // // }
-      //
-      // myArray_fail.sort();
-      // console.log("myArray_fail = ", myArray_fail);
-      // req.flash("fail", myArray_fail);
-      //
-      // // console.log('QQQ1 req.body.pi_list', pi_list);
-      // // req.session.DOMAIN_REGIONS = CONSTS.DOMAIN_REGIONS;
-      // // req.session.button_name    = "Add datasets";
-      //
-      // var d_region_arr   = req.form.d_region.split("#");
-      // var pi_id_name_arr = req.form.pi_id_name.split("#");
-      // var full_name      = pi_id_name_arr[3] + " " + pi_id_name_arr[2];
-      // var project_name1  = req.form.project_name1;
-      // if (project_name1 === '') {
-      //   project_name1 = metadata_controller.get_inits(full_name.split(" "));
-      // }
-      // var project_name3 = d_region_arr[2];
-      // var project_name  = project_name1 + "_" + req.form.project_name2 + "_" + project_name3;
-      //
-      // console.log("PPP project_name1", project_name1);
-      // console.log("PPP1 project_name", project_name);
-      // res.render('metadata/metadata_new', {
-      //   button_name: "Validate",
-      //   domain_regions: CONSTS.DOMAIN_REGIONS,
-      //   hostname: req.CONFIG.hostname,
-      //   pi_email: pi_id_name_arr[4],
-      //   pi_list: req.session.pi_list,
-      //   project_title: req.form.project_title,
-      //   samples_number: req.form.samples_number,
-      //   title: 'VAMPS: New Metadata',
-      //   user: req.user,
-      // });
+      const show_new = new new_metadata_controller.ShowObj(req, res);
+      show_new.show_metadata_new_again();
+
     }
     else {
       // ?? render_edit_form(req, res, {}, {}, all_field_names)
