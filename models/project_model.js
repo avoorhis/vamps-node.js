@@ -6,7 +6,7 @@ class Project {
   constructor(req, res, user_obj) {
     this.req         = req || {};
     this.res         = res || {};
-    this.user_obj = user_obj;
+    this.user_obj    = user_obj;
     this.project_obj = this.make_project_obj();
   }
 
@@ -14,7 +14,7 @@ class Project {
     req                     = this.req;
     var d_region_arr        = [];
     var funding             = "";
-    var metagenomic        = 0;
+    var metagenomic         = 0;
     var project_description = "";
     var project_name        = "";
     var project_name3       = "";
@@ -27,7 +27,7 @@ class Project {
       project_name        = req.form.project_name1 + '_' + req.form.project_name2 + '_' + d_region_arr[2];
       title               = req.form.project_title;
       if (d_region_arr[0] === 'Shotgun') {
-        metagenomic  = 1;
+        metagenomic   = 1;
         project_name3 = 'Sgun';
       }
     }
@@ -52,7 +52,8 @@ class Project {
     return project_obj;
   }
 
-  add_info_to_globals() {}
+  add_info_to_globals() {
+  }
 
   getAllProjects(callback) {
 
