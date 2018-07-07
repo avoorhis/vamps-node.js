@@ -9,11 +9,11 @@ var path    = require("path");
 var config  = require(app_root + '/config/config');
 // var validator           = require('validator');
 // var expressValidator = require('express-validator');
-var nodeMailer           = require('nodemailer');
+var nodeMailer              = require('nodemailer');
 // var Metadata             = require(app_root + '/models/metadata');
-var metadata_controller  = require(app_root + '/controllers/metadataController');
-var csv_files_controller = require(app_root + '/controllers/csvFilesController');
-var new_metadata_controller  = require(app_root + '/controllers/metadataController_copy');
+var metadata_controller     = require(app_root + '/controllers/metadataController');
+var csv_files_controller    = require(app_root + '/controllers/csvFilesController');
+var new_metadata_controller = require(app_root + '/controllers/metadataController_copy');
 
 /* GET metadata page. */
 router.get('/metadata', function (req, res) {
@@ -208,7 +208,7 @@ function get_metadata_hash(md_selected) {
 router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
   const met_obj = new new_metadata_controller.CreateDataObj(req, res, "", "");
 
-  var pi_list = met_obj.get_pi_list();
+  var pi_list         = met_obj.get_pi_list();
   req.session.pi_list = pi_list;
   res.render('metadata/metadata_new', {
     title: 'VAMPS: New Metadata',
@@ -470,8 +470,8 @@ function make_metadata_object_from_form(req, res) {
       data[a] = metadata_controller.fill_out_arr_doubles(data[a][0], normal_length);
     }
   }
-
-  var all_metadata         = metadata_controller.make_metadata_object(req, res, pid, data);
+  const met_obj            = new new_metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
+  var all_metadata         = met_obj.make_metadata_object(req, res, pid, data);
   var all_field_names_orig = metadata_controller.make_all_field_names(data['dataset_id']);
 
 
@@ -534,8 +534,9 @@ function make_metadata_object_from_csv(req, res) {
 
   var data_in_obj_of_arr = metadata_controller.from_obj_to_obj_of_arr(data, pid);
 
-  // all_metadata
-  var all_metadata    = metadata_controller.make_metadata_object(req, res, pid, data_in_obj_of_arr);
+  const met_obj        = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+// all_metadata
+  var all_metadata     = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
   var all_field_names4 = metadata_controller.make_all_field_names(dataset_ids);
 
   // console.log("DDD3 all_field_names from make_metadata_object_from_csv");
@@ -611,7 +612,8 @@ function make_metadata_object_from_db(req, res) {
   data_in_obj_of_arr["project_abstract"] = metadata_controller.fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
   // as many values per field as there are datasets
 
-  var all_metadata = metadata_controller.make_metadata_object(req, res, pid, data_in_obj_of_arr);
+  const met_obj    = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+  var all_metadata = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
   var all_field_names4 = metadata_controller.make_all_field_names(dataset_ids);
 
@@ -804,12 +806,12 @@ function send_mail_finished(req, res) {
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
-    if(error) {
+    if (error) {
       return console.log(error);
     }
     console.log('Message %s sent: %s', info.messageId, info.response);
-  // res.render('index');
-});
+    // res.render('index');
+  });
 
   console.timeEnd("TIME: send_mail_finished");
 }

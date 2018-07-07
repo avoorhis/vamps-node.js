@@ -30,7 +30,8 @@ class CreateDataObj {
     this.pid             = project_id || '';
     this.dataset_ids     = dataset_ids || [];
     this.all_field_names = this.collect_field_names();
-    this.all_metadata    = this.prepare_empty_metadata_object();
+    this.all_metadata    = {};
+    this.prepare_empty_metadata_object();
     //
     // this.project         = PROJECT_INFORMATION_BY_PID[project_id].project;
   }
@@ -124,7 +125,7 @@ class CreateDataObj {
 
   add_project_abstract_info(all_metadata_pid, repeat_times) {
     if ((all_metadata_pid['project_abstract'] === 'undefined') || (!all_metadata_pid.hasOwnProperty(['project_abstract']))) {
-      all_metadata_pid['project_abstract'] = module.exports.fill_out_arr_doubles('', repeat_times);
+      all_metadata_pid['project_abstract'] = this.fill_out_arr_doubles('', repeat_times);
     }
     else {
 
@@ -134,7 +135,7 @@ class CreateDataObj {
 
         if (typeof project_abstract_correct_form[0] !== 'undefined') {
 
-          all_metadata_pid['project_abstract'] = module.exports.fill_out_arr_doubles(project_abstract_correct_form[0].split(','), repeat_times);
+          all_metadata_pid['project_abstract'] = this.fill_out_arr_doubles(project_abstract_correct_form[0].split(','), repeat_times);
 
         }
       }
@@ -142,17 +143,15 @@ class CreateDataObj {
     return all_metadata_pid;
   }
 
-  //TODO: cyclomatic comlexity is 7!
   make_metadata_object(req, res, pid, data_obj) {
     console.time('TIME: make_metadata_object');
-    console.timeEnd('TIME: make_metadata_object');
 
     var all_metadata = {};
     var dataset_ids  = DATASET_IDS_BY_PID[pid];
     var repeat_times = dataset_ids.length;
 
     // 0) get field_names
-    var all_field_names = this.collect_field_names(dataset_ids);
+    // var all_field_names = this.collect_field_names(dataset_ids);
 
     // 1)
     //   // TODO: don't send all_metadata?
@@ -164,42 +163,42 @@ class CreateDataObj {
 
     //3) special
 
+    var owner_id      = PROJECT_INFORMATION_BY_PID[pid].oid;
+    const new_project = new Project(req, res, pid, owner_id);
+    var project_info  = new_project.project_obj;
+
     // TODO: move to db creation?
-    // TODO: user_obj
-    var project_info = get_project_info(req, res, pid);
-    console.log('MMM33 all_metadata[pid]');
-    console.log(JSON.stringify(all_metadata[pid]));
+    // console.log('MMM33 all_metadata[pid]');
+    // console.log(JSON.stringify(all_metadata[pid]));
 
     for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
       var field_name = CONSTS.PROJECT_INFO_FIELDS[idx];
 
       //todo: split if, if length == dataset_ids.length - just use as is
       if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
-        all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
+        all_metadata[pid][field_name] = this.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
       }
       else {
-        all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(project_info[field_name], repeat_times);
+        all_metadata[pid][field_name] = this.fill_out_arr_doubles(project_info[field_name], repeat_times);
       }
     }
 
-    if ((all_metadata[pid]['project_abstract'] === 'undefined') || (!all_metadata[pid].hasOwnProperty(['project_abstract']))) {
-      all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles('', repeat_times);
-    }
-    else {
+    all_metadata[pid] = this.add_project_abstract_info(all_metadata[pid], repeat_times);
 
-      if ((all_metadata[pid]['project_abstract'][0] !== 'undefined') && (!Array.isArray(all_metadata[pid]['project_abstract'][0]))) {
+    // console.log('MMM9 all_metadata[pid]');
+    // console.log(JSON.stringify(all_metadata[pid]));
 
-        var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]['project_abstract']);
+    console.timeEnd('TIME: make_metadata_object');
+    return all_metadata;
 
-        if (typeof project_abstract_correct_form[0] !== 'undefined') {
+  }
 
-          all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles(project_abstract_correct_form[0].split(','), repeat_times);
+  fill_out_arr_doubles(value, repeat_times) {
+    var arr_temp = Array(repeat_times);
 
-        }
-      }
-    }
+    arr_temp.fill(value, 0, repeat_times);
 
-
+    return arr_temp;
   }
 
   get_pi_list() {
@@ -237,27 +236,27 @@ class ShowObj {
     this.hostname                = hostname;
   }
 
-  render_edit_form() {
-    this.res.render('metadata/metadata_edit_form', {
-      title: 'VAMPS: Metadata_upload',
-      user: this.user,
-      hostname: this.hostname,
-      all_metadata: this.all_metadata,
-      all_field_names: this.all_field_names_arr,
-      ordered_field_names_obj: this.ordered_field_names_obj,
-      all_field_units: this.all_field_units,
-      dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-      dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-      dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-      biome_primary_options: CONSTS.BIOME_PRIMARY,
-      feature_primary_options: CONSTS.FEATURE_PRIMARY,
-      material_primary_options: CONSTS.MATERIAL_PRIMARY,
-      metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-      env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-      investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-      sample_type_options: CONSTS.SAMPLE_TYPE
-    });
-  }
+  // render_edit_form() {
+  //   this.res.render('metadata/metadata_edit_form', {
+  //     title: 'VAMPS: Metadata_upload',
+  //     user: this.user,
+  //     hostname: this.hostname,
+  //     all_metadata: this.all_metadata,
+  //     all_field_names: this.all_field_names_arr,
+  //     ordered_field_names_obj: this.ordered_field_names_obj,
+  //     all_field_units: this.all_field_units,
+  //     dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+  //     dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+  //     dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+  //     biome_primary_options: CONSTS.BIOME_PRIMARY,
+  //     feature_primary_options: CONSTS.FEATURE_PRIMARY,
+  //     material_primary_options: CONSTS.MATERIAL_PRIMARY,
+  //     metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+  //     env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+  //     investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+  //     sample_type_options: CONSTS.SAMPLE_TYPE
+  //   });
+  // }
 
   show_metadata_new_again(req, res) {
     //collect errors

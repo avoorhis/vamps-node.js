@@ -1122,99 +1122,79 @@ exports.show_metadata_new_again = function (req, res) {
 };
 
 //TODO: cyclomatic comlexity is 7!
-exports.make_metadata_object = function (req, res, pid, info) {
-  console.time('TIME: make_metadata_object');
-
-  var all_metadata = {};
-  var dataset_ids  = DATASET_IDS_BY_PID[pid];
-  var project      = PROJECT_INFORMATION_BY_PID[pid].project;
-  var repeat_times = dataset_ids.length;
-
-  // console.log('LLL ALL_DATASETS', ALL_DATASETS);
-
-  // 0) get field_names
-  //TODO: DRY and clean up
-  // var all_field_names = collect_field_names(dataset_ids);
-
-  const met_obj = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
-
-  var all_field_names = met_obj.collect_field_names(dataset_ids);
-
-
-  console.log('HHH3 all_field_names');
-  console.log(JSON.stringify(all_field_names));
-
-
-  // console.log('QQQ0 AllMetadataNames');
-  // console.log(JSON.stringify(AllMetadataNames));
-  //
-  // console.log('QQQ1 all_field_names');
-  // console.log(JSON.stringify(all_field_names));
-
-
-  // 1)
-  // TODO: don't send all_metadata?
-  met_obj.prepare_empty_metadata_object(pid, all_field_names, all_metadata);
-  all_metadata = met_obj.all_metadata;
-  // console.log('MMM2 all_metadata');
-  // console.log(all_metadata);
-
-  //2) all
-  console.log('HHH info object in make_metadata_object');
-  console.log(JSON.stringify(info));
-
-  all_metadata[pid] = info;
-
-  //3) special
-  var owner_id      = PROJECT_INFORMATION_BY_PID[pid].oid;
-  const new_project = new Project(req, res, pid, owner_id);
-  var project_info  = new_project.project_obj;
-
-  // TODO: move to db creation?
-  // var project_info = met_obj.get_project_info(req, res, pid);
-  console.log('MMM33 all_metadata[pid]');
-  console.log(JSON.stringify(all_metadata[pid]));
-
-  for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
-    var field_name = CONSTS.PROJECT_INFO_FIELDS[idx];
-
-    //todo: split if, if length == dataset_ids.length - just use as is
-    if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
-      all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
-    }
-    else {
-      all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(project_info[field_name], repeat_times);
-    }
-  }
-
-  all_metadata[pid] = met_obj.add_project_abstract_info(all_metadata[pid], repeat_times);
-
-  // if ((all_metadata[pid]['project_abstract'] === 'undefined') || (!all_metadata[pid].hasOwnProperty(['project_abstract']))) {
-  //   all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles('', repeat_times);
-  // }
-  // else {
-  //
-  //   if ((all_metadata[pid]['project_abstract'][0] !== 'undefined') && (!Array.isArray(all_metadata[pid]['project_abstract'][0]))) {
-  //
-  //     var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]['project_abstract']);
-  //
-  //     if (typeof project_abstract_correct_form[0] !== 'undefined') {
-  //
-  //       all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles(project_abstract_correct_form[0].split(','), repeat_times);
-  //
-  //     }
-  //   }
-  // }
-
-  // console.log('MMM9 all_metadata[pid][\'reference\']');
-  // console.log(JSON.stringify(all_metadata[pid]['reference']));
-
-  console.log('MMM9 all_metadata[pid]');
-  console.log(JSON.stringify(all_metadata[pid]));
-
-  console.timeEnd('TIME: make_metadata_object');
-  return all_metadata;
-};
+// exports.make_metadata_object = function (req, res, pid, info) {
+//   console.time('TIME: make_metadata_object');
+//
+//   var all_metadata = {};
+//   var dataset_ids  = DATASET_IDS_BY_PID[pid];
+//   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
+//   var repeat_times = dataset_ids.length;
+//
+//   // console.log('LLL ALL_DATASETS', ALL_DATASETS);
+//
+//   // 0) get field_names
+//   //TODO: DRY and clean up
+//   // var all_field_names = collect_field_names(dataset_ids);
+//
+//   const met_obj = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+//
+//   var all_field_names = met_obj.collect_field_names(dataset_ids);
+//
+//
+//   console.log('HHH3 all_field_names');
+//   console.log(JSON.stringify(all_field_names));
+//
+//
+//   // console.log('QQQ0 AllMetadataNames');
+//   // console.log(JSON.stringify(AllMetadataNames));
+//   //
+//   // console.log('QQQ1 all_field_names');
+//   // console.log(JSON.stringify(all_field_names));
+//
+//
+//   // 1)
+//   // TODO: don't send all_metadata?
+//   met_obj.prepare_empty_metadata_object(pid, all_field_names, all_metadata);
+//   all_metadata = met_obj.all_metadata;
+//   // console.log('MMM2 all_metadata');
+//   // console.log(all_metadata);
+//
+//   //2) all
+//   console.log('HHH info object in make_metadata_object');
+//   console.log(JSON.stringify(info));
+//
+//   all_metadata[pid] = info;
+//
+//   //3) special
+//   var owner_id      = PROJECT_INFORMATION_BY_PID[pid].oid;
+//   const new_project = new Project(req, res, pid, owner_id);
+//   var project_info  = new_project.project_obj;
+//
+//   // TODO: move to db creation?
+//   // var project_info = met_obj.get_project_info(req, res, pid);
+//   console.log('MMM33 all_metadata[pid]');
+//   console.log(JSON.stringify(all_metadata[pid]));
+//
+//   for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
+//     var field_name = CONSTS.PROJECT_INFO_FIELDS[idx];
+//
+//     //todo: split if, if length == dataset_ids.length - just use as is
+//     if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
+//       all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
+//     }
+//     else {
+//       all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(project_info[field_name], repeat_times);
+//     }
+//   }
+//
+//   all_metadata[pid] = met_obj.add_project_abstract_info(all_metadata[pid], repeat_times);
+//
+//   console.log('MMM9 all_metadata[pid]');
+//   console.log(JSON.stringify(all_metadata[pid]));
+//
+//   console.timeEnd('TIME: make_metadata_object');
+//   return all_metadata;
+// };
 
 exports.render_edit_form = function (req, res, all_metadata, all_field_names) {
   console.log('JJJ1 all_metadata from render_edit_form');
