@@ -24,15 +24,26 @@ var User       = {
     //      groups: [] },
     
     User_obj.user_id            = user_id;
-    User_obj.username           = ALL_USERS_BY_UID[user_id].username;
-    User_obj.email              = ALL_USERS_BY_UID[user_id].email;
-    User_obj.institution        = ALL_USERS_BY_UID[user_id].institution;
-    User_obj.first_name         = ALL_USERS_BY_UID[user_id].first_name;
-    User_obj.last_name          = ALL_USERS_BY_UID[user_id].last_name;
-    User_obj.security_level     = ALL_USERS_BY_UID[user_id].status;
-    User_obj.encrypted_password = ALL_USERS_BY_UID[user_id].encrypted_password;
-    User_obj.groups             = ALL_USERS_BY_UID[user_id].groups;
-
+    if (typeof ALL_USERS_BY_UID[user_id] !== 'undefined') {
+      User_obj.username           = ALL_USERS_BY_UID[user_id].username;
+      User_obj.email              = ALL_USERS_BY_UID[user_id].email;
+      User_obj.institution        = ALL_USERS_BY_UID[user_id].institution;
+      User_obj.first_name         = ALL_USERS_BY_UID[user_id].first_name;
+      User_obj.last_name          = ALL_USERS_BY_UID[user_id].last_name;
+      User_obj.security_level     = ALL_USERS_BY_UID[user_id].status;
+      User_obj.encrypted_password = ALL_USERS_BY_UID[user_id].encrypted_password;
+      User_obj.groups             = ALL_USERS_BY_UID[user_id].groups;
+    }
+    else {
+      User_obj.username           = "";
+      User_obj.email              = "";
+      User_obj.institution        = "";
+      User_obj.first_name         = "";
+      User_obj.last_name          = "";
+      User_obj.security_level     = "";
+      User_obj.encrypted_password = "";
+      User_obj.groups             = "";
+    }
     return User_obj;
   },
   addUser: function (User_obj, callback) {
