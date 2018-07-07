@@ -495,7 +495,20 @@ function make_metadata_object_from_form(req, res) {
   myArray_fail.sort();
   req.flash("fail", myArray_fail);
 
-  metadata_controller.render_edit_form(req, res, all_metadata, all_field_names_with_new);
+  // ShowObj {
+  //
+  //   constructor(req, res, all_metadata, all_field_names_arr,
+  // done ordered_field_names_obj
+  // TODO: ??? all_field_units, ordered_field_names_obj, user, hostname)
+
+  var all_field_units = MD_CUSTOM_UNITS[req.body.project_id];
+  var user = "";
+  var hostname = ""
+
+  const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units, user, hostname );
+  show_new.render_edit_form();
+
+  // metadata_controller.render_edit_form(req, res, all_metadata, all_field_names_with_new);
 
   console.timeEnd("TIME: make_metadata_object_from_form");
 }
@@ -622,7 +635,10 @@ function make_metadata_object_from_db(req, res) {
   // console.log("DDD2 all_metadata");
   // console.log(JSON.stringify(all_metadata));
 
-  metadata_controller.render_edit_form(req, res, all_metadata, all_field_names4);
+  const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names4);
+  show_new.render_edit_form();
+
+  // metadata_controller.render_edit_form(req, res, all_metadata, all_field_names4);
 
   console.timeEnd("TIME: make_metadata_object_from_db");
 }

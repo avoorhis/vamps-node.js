@@ -98,6 +98,7 @@ class CreateDataObj {
     var user_id  = req.form.pi_id_name.split('#')[0];
     var user_obj = User.getUserInfoFromGlobal(user_id);
 
+    // TODO: use with new
     if (typeof project_name_or_pid === 'undefined') {
       const new_project = new Project(req, res, user_obj);
       var project_obj   = new_project.project_obj;
@@ -226,37 +227,57 @@ class CreateDataObj {
 
 class ShowObj {
 
-  constructor(req, res, all_metadata, all_field_names_arr, all_field_units, ordered_field_names_obj, user, hostname) {
+  constructor(req, res, all_metadata, all_field_names_arr, all_field_units, user, hostname) {
     this.res                     = res;
     this.all_metadata            = all_metadata;
     this.all_field_names_arr     = all_field_names_arr;
     this.all_field_units         = all_field_units;
-    this.ordered_field_names_obj = ordered_field_names_obj;
-    this.user                    = user;
-    this.hostname                = hostname;
+    this.ordered_field_names_obj = this.make_ordered_field_names_obj();
+    this.user                    = user || req.user.username;
+    this.hostname                = hostname || req.headers.host;
   }
 
-  // render_edit_form() {
-  //   this.res.render('metadata/metadata_edit_form', {
-  //     title: 'VAMPS: Metadata_upload',
-  //     user: this.user,
-  //     hostname: this.hostname,
-  //     all_metadata: this.all_metadata,
-  //     all_field_names: this.all_field_names_arr,
-  //     ordered_field_names_obj: this.ordered_field_names_obj,
-  //     all_field_units: this.all_field_units,
-  //     dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-  //     dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-  //     dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-  //     biome_primary_options: CONSTS.BIOME_PRIMARY,
-  //     feature_primary_options: CONSTS.FEATURE_PRIMARY,
-  //     material_primary_options: CONSTS.MATERIAL_PRIMARY,
-  //     metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-  //     env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-  //     investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-  //     sample_type_options: CONSTS.SAMPLE_TYPE
-  //   });
-  // }
+  make_ordered_field_names_obj() {
+    console.time('TIME: make_ordered_field_names_obj');
+    var ordered_field_names_obj = {};
+
+    for (var i in CONSTS.ORDERED_METADATA_NAMES) {
+      // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
+      var temp_arr = [i];
+      temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
+      ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
+    }
+    console.timeEnd('TIME: make_ordered_field_names_obj');
+    return ordered_field_names_obj;
+  }
+
+  render_edit_form() {
+    console.log('JJJ1 all_metadata from render_edit_form');
+    console.log(JSON.stringify(this.all_metadata));
+
+    console.log('JJJ2 all_field_names from render_edit_form');
+    console.log(JSON.stringify(this.all_field_names_arr));
+
+    this.res.render('metadata/metadata_edit_form', {
+      title: 'VAMPS: Metadata_upload',
+      user: this.user,
+      hostname: this.hostname,
+      all_metadata: this.all_metadata,
+      all_field_names: this.all_field_names_arr,
+      ordered_field_names_obj: this.ordered_field_names_obj,
+      all_field_units: this.all_field_units,
+      dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+      dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
+      dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+      biome_primary_options: CONSTS.BIOME_PRIMARY,
+      feature_primary_options: CONSTS.FEATURE_PRIMARY,
+      material_primary_options: CONSTS.MATERIAL_PRIMARY,
+      metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+      env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+      investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+      sample_type_options: CONSTS.SAMPLE_TYPE
+    });
+  }
 
   show_metadata_new_again(req, res) {
     //collect errors
