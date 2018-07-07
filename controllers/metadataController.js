@@ -203,16 +203,9 @@ function get_object_vals(object_name) {
 
 //TODO: cyclomatic comlexity is 8!
 function create_all_metadata_form_new(rows, req, res, all_field_names, project_obj) {
-  var pid = rows.insertId;
-  if (pid === 0) {
-    pid = project_obj.pid;
-  }
+  var pid = project_obj.pid;
   console.log('DDD pid', pid);
-  // var warningStatus = rows.warningStatus;
-  // var user_id      = req.form.pi_id_name.split('#')[0];
   var d_region_arr = req.form.d_region.split('#');
-  // var user_obj     = User.getUserInfoFromGlobal(user_id);
-  // console.log('DDD3, all_dataset_ids.flat(2)', all_dataset_ids);
   const met_obj = new new_metadata_controller.CreateDataObj({}, {}, pid, []);
 
   console.log('DDD3, all_field_names', all_field_names);
@@ -223,9 +216,7 @@ function create_all_metadata_form_new(rows, req, res, all_field_names, project_o
   var repeat_times = parseInt(req.form.samples_number, 10);
   console.log(typeof repeat_times);
 
-  // Use existing project! - done
-  // TODO: assign project_obj and add domain etc.
-  // TODO: add to current_info fields from below and do all_metadata[pid][field_name] for all at once
+   // TODO: add to current_info fields from below and do all_metadata[pid][field_name] for all at once
 
   var current_info        = Object.assign(project_obj);
   current_info.domain     = d_region_arr[0].slice(0, -1);
@@ -236,30 +227,6 @@ function create_all_metadata_form_new(rows, req, res, all_field_names, project_o
   // constants.DOMAINS = {
   //   domains: [
   //     {id: 1, name: 'Archaea'},
-
-  //      // var domain = CONSTS.ORDERED_METADATA_NAMES.slice(6,6);
-  //       // var target_gene = CONSTS.ORDERED_METADATA_NAMES.slice(7,7);
-  //       // var dna_region = CONSTS.ORDERED_METADATA_NAMES.slice(8,8);
-  //{
-  //   'adaptor': [],
-  //   'd_region': 'Eukaryal#v4_hap_HSSU#EHSSU',
-  //   'dataset_description': [],
-  //   'dataset_name': [],
-  //   'funding_code': '9',
-  //   'pi_id_name': '1120#Adebayo Adewale#Adebayo#Adewale#walsaks@gmail.com',
-  //   'project_description': 'AAA description',
-  //   'project_name1': 'AA',
-  //   'project_name2': 'AAA',
-  //   'project_title': 'AAA title',
-  //   'sample_concentration': [],
-  //   'samples_number': '2',
-  //   'submit_code': [],
-  //   'tube_label': []
-  // }
-
-
-  // console.log('MMM33 all_metadata[pid]');
-  // console.log(JSON.stringify(all_metadata[pid]));
 
   for (var field_name in current_info) {
     all_metadata[pid][field_name] = [current_info[field_name]];
@@ -272,22 +239,34 @@ function create_all_metadata_form_new(rows, req, res, all_field_names, project_o
     }
   }
 
-  if ((all_metadata[pid]['project_abstract'] === 'undefined') || (!all_metadata[pid].hasOwnProperty(['project_abstract']))) {
-    all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles('', repeat_times);
-  }
-  else {
+  // obj1.concat(obj2);
 
-    if ((all_metadata[pid]['project_abstract'][0] !== 'undefined') && (!Array.isArray(all_metadata[pid]['project_abstract'][0]))) {
+    console.log('FFF1 all_metadata[pid] before');
+    console.log(JSON.stringify(all_metadata[pid]));
 
-      var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]['project_abstract']);
+  all_metadata[pid] = met_obj.add_project_abstract_info(all_metadata[pid], repeat_times);
 
-      if (typeof project_abstract_correct_form[0] !== 'undefined') {
+  console.log('FFF2 all_metadata[pid] before');
+  console.log(JSON.stringify(all_metadata[pid]));
 
-        all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles(project_abstract_correct_form[0].split(','), repeat_times);
 
-      }
-    }
-  }
+  // all_metadata[pid] = all_metadata[pid].concat(all_metadata_temp);
+  // if ((all_metadata[pid]['project_abstract'] === 'undefined') || (!all_metadata[pid].hasOwnProperty(['project_abstract']))) {
+  //   all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles('', repeat_times);
+  // }
+  // else {
+  //
+  //   if ((all_metadata[pid]['project_abstract'][0] !== 'undefined') && (!Array.isArray(all_metadata[pid]['project_abstract'][0]))) {
+  //
+  //     var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]['project_abstract']);
+  //
+  //     if (typeof project_abstract_correct_form[0] !== 'undefined') {
+  //
+  //       all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles(project_abstract_correct_form[0].split(','), repeat_times);
+  //
+  //     }
+  //   }
+  // }
 
   var more_fields = ['adapter_sequence_id',
     'dataset_description',
@@ -1208,22 +1187,24 @@ exports.make_metadata_object = function (req, res, pid, info) {
     }
   }
 
-  if ((all_metadata[pid]['project_abstract'] === 'undefined') || (!all_metadata[pid].hasOwnProperty(['project_abstract']))) {
-    all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles('', repeat_times);
-  }
-  else {
+  all_metadata[pid] = met_obj.add_project_abstract_info(all_metadata[pid], repeat_times);
 
-    if ((all_metadata[pid]['project_abstract'][0] !== 'undefined') && (!Array.isArray(all_metadata[pid]['project_abstract'][0]))) {
-
-      var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]['project_abstract']);
-
-      if (typeof project_abstract_correct_form[0] !== 'undefined') {
-
-        all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles(project_abstract_correct_form[0].split(','), repeat_times);
-
-      }
-    }
-  }
+  // if ((all_metadata[pid]['project_abstract'] === 'undefined') || (!all_metadata[pid].hasOwnProperty(['project_abstract']))) {
+  //   all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles('', repeat_times);
+  // }
+  // else {
+  //
+  //   if ((all_metadata[pid]['project_abstract'][0] !== 'undefined') && (!Array.isArray(all_metadata[pid]['project_abstract'][0]))) {
+  //
+  //     var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]['project_abstract']);
+  //
+  //     if (typeof project_abstract_correct_form[0] !== 'undefined') {
+  //
+  //       all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles(project_abstract_correct_form[0].split(','), repeat_times);
+  //
+  //     }
+  //   }
+  // }
 
   // console.log('MMM9 all_metadata[pid][\'reference\']');
   // console.log(JSON.stringify(all_metadata[pid]['reference']));

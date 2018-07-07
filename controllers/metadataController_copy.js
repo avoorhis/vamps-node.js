@@ -1,6 +1,6 @@
-var Project   = require(app_root + '/models/project_model');
+var Project = require(app_root + '/models/project_model');
 // var Dataset   = require(app_root + '/models/dataset_model');
-var User      = require(app_root + '/models/user_model');
+var User    = require(app_root + '/models/user_model');
 var helpers = require(app_root + '/routes/helpers/helpers');
 var CONSTS  = require(app_root + '/public/constants');
 // var validator = require('validator');
@@ -72,9 +72,9 @@ class CreateDataObj {
 
   prepare_empty_metadata_object() {
     console.time('TIME: prepare_empty_metadata_object');
-    var pid = this.pid;
+    var pid             = this.pid;
     var field_names_arr = this.all_field_names;
-    var all_metadata = this.all_metadata || {};
+    var all_metadata    = this.all_metadata || {};
 
     if (!(all_metadata.hasOwnProperty(this.pid))) {
       all_metadata[pid] = {};
@@ -94,12 +94,12 @@ class CreateDataObj {
   get_project_info(req, res, project_name_or_pid) {
     var project_info;
 
-    var user_id       = req.form.pi_id_name.split('#')[0];
-    var user_obj      = User.getUserInfoFromGlobal(user_id);
+    var user_id  = req.form.pi_id_name.split('#')[0];
+    var user_obj = User.getUserInfoFromGlobal(user_id);
 
     if (typeof project_name_or_pid === 'undefined') {
       const new_project = new Project(req, res, user_obj);
-      var project_obj = new_project.project_obj;
+      var project_obj   = new_project.project_obj;
 
     }
     if (helpers.isInt(project_name_or_pid)) {
@@ -122,6 +122,25 @@ class CreateDataObj {
     };
   }
 
+  add_project_abstract_info(all_metadata_pid, repeat_times) {
+    if ((all_metadata_pid['project_abstract'] === 'undefined') || (!all_metadata_pid.hasOwnProperty(['project_abstract']))) {
+      all_metadata_pid['project_abstract'] = module.exports.fill_out_arr_doubles('', repeat_times);
+    }
+    else {
+
+      if ((all_metadata_pid['project_abstract'][0] !== 'undefined') && (!Array.isArray(all_metadata_pid['project_abstract'][0]))) {
+
+        var project_abstract_correct_form = helpers.unique_array(all_metadata_pid['project_abstract']);
+
+        if (typeof project_abstract_correct_form[0] !== 'undefined') {
+
+          all_metadata_pid['project_abstract'] = module.exports.fill_out_arr_doubles(project_abstract_correct_form[0].split(','), repeat_times);
+
+        }
+      }
+    }
+    return all_metadata_pid;
+  }
 
   //TODO: cyclomatic comlexity is 7!
   make_metadata_object(req, res, pid, data_obj) {
@@ -183,7 +202,7 @@ class CreateDataObj {
 
   }
 
-  get_pi_list () {
+  get_pi_list() {
     console.log('FROM Metadata Controller');
     var pi_list = [];
 
@@ -240,7 +259,7 @@ class ShowObj {
     });
   }
 
-  show_metadata_new_again (req, res) {
+  show_metadata_new_again(req, res) {
     //collect errors
     var myArray_fail = helpers.unique_array(req.form.errors);
 
