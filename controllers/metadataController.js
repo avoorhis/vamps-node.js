@@ -1075,7 +1075,12 @@ exports.saveProject = function (req, res) { //check if exists in PROJECT_INFORMA
       //       investigation_type: ['', '', ''],
       //       domain: ['', '', ''],
       //       first_name: [ 'Mohammadkarim', 'Mohammadkarim', 'Mohammadkarim' ],
-      module.exports.render_edit_form(req, res, all_metadata, all_field_names4);
+      // module.exports.render_edit_form(req, res, all_metadata, all_field_names4);
+
+      var all_field_units = MD_CUSTOM_UNITS[pid];
+
+      const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
+      show_new.render_edit_form();
     }
   });
 };
