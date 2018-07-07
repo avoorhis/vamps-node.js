@@ -502,13 +502,10 @@ function make_metadata_object_from_form(req, res) {
   // TODO: ??? all_field_units, ordered_field_names_obj, user, hostname)
 
   var all_field_units = MD_CUSTOM_UNITS[req.body.project_id];
-  var user = "";
-  var hostname = ""
 
-  const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units, user, hostname );
+  const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units);
   show_new.render_edit_form();
 
-  // metadata_controller.render_edit_form(req, res, all_metadata, all_field_names_with_new);
 
   console.timeEnd("TIME: make_metadata_object_from_form");
 }
@@ -558,7 +555,11 @@ function make_metadata_object_from_csv(req, res) {
   // console.log("DDD4 all_metadata from make_metadata_object_from_csv");
   // console.log(JSON.stringify(all_metadata));
   req.body.project_id = pid;
-  metadata_controller.render_edit_form(req, res, all_metadata, all_field_names4);
+  // metadata_controller.render_edit_form(req, res, all_metadata, all_field_names4);
+
+  var all_field_units = MD_CUSTOM_UNITS[pid];
+  const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
+  show_new.render_edit_form();
 
   console.timeEnd("TIME: make_metadata_object_from_csv");
 }

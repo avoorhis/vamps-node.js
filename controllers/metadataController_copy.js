@@ -227,14 +227,16 @@ class CreateDataObj {
 
 class ShowObj {
 
-  constructor(req, res, all_metadata, all_field_names_arr, all_field_units, user, hostname) {
+  constructor(req, res, all_metadata, all_field_names_arr, all_field_units) {
     this.res                     = res;
     this.all_metadata            = all_metadata;
     this.all_field_names_arr     = all_field_names_arr;
     this.all_field_units         = all_field_units;
     this.ordered_field_names_obj = this.make_ordered_field_names_obj();
-    this.user                    = user || req.user.username;
-    this.hostname                = hostname || req.headers.host;
+    this.hostname                = req.CONFIG.hostname;
+    this.user                    = req.user;
+    // this.user                    = user || req.user.username;
+    // this.hostname                = hostname || req.headers.host;
   }
 
   make_ordered_field_names_obj() {
