@@ -202,26 +202,28 @@ function get_object_vals(object_name) {
 // }
 
 //TODO: cyclomatic comlexity is 8!
-function create_all_metadata_form_new(rows, req, res, all_field_names) {
+function create_all_metadata_form_new(rows, req, res, all_field_names, project_obj) {
   var pid          = rows.insertId;
+  if (pid === 0) {
+    pid = project_obj.pid;
+  }
+  console.log('DDD pid', pid);
   // var warningStatus = rows.warningStatus;
   var user_id      = req.form.pi_id_name.split('#')[0];
   var d_region_arr = req.form.d_region.split('#');
   var user_obj     = User.getUserInfoFromGlobal(user_id);
   // console.log('DDD3, all_dataset_ids.flat(2)', all_dataset_ids);
+  const met_obj = new new_metadata_controller.CreateDataObj({}, {}, pid, []);
 
-  console.log('DDD pid', pid);
-
-
-  var all_metadata = {};
-  all_metadata     = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
+  met_obj.prepare_empty_metadata_object(pid, all_field_names, {});
+  var all_metadata = met_obj.all_metadata
   console.log('PPP01 all_metadata from create_all_metadata_form_new', all_metadata);
   var repeat_times = parseInt(req.form.samples_number, 10);
   console.log(typeof repeat_times);
 
-  //TODO: Use existing project!
-  const new_project = new Project(req, res, user_id);
-  var project_obj   = new_project.project_obj;
+  // Use existing project! - done
+  // TODO: assign project_obj and add domain etc.
+  // TODO: add to current_info fields from below and do all_metadata[pid][field_name] for all at once
 
   var current_info = {
     project: project_obj.project,
@@ -1095,7 +1097,7 @@ exports.saveProject = function (req, res) { //check if exists in PROJECT_INFORMA
       all_field_names4 = all_field_names4.concat(second_part_part_3);
 
 
-      var all_metadata = create_all_metadata_form_new(rows, req, res, all_field_names);
+      var all_metadata = create_all_metadata_form_new(rows, req, res, all_field_names, project_obj);
       // all_metadata = { '485':
       //     { project: [ 'MS_AAA_EHSSU', 'MS_AAA_EHSSU', 'MS_AAA_EHSSU' ],
       //       dataset: ['', '', ''],
