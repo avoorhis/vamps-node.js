@@ -47,41 +47,48 @@ class Project {
     var temp_project_obj = {};
     var req              = this.req;
     var d_region_arr     = [];
-    var project_name  = "";
-    var project_name3 = "";
+    var project_name     = "";
+    var project_name3    = "";
 
     temp_project_obj = {
       active: 0,
       created_at: new Date(),
+      email: this.user_obj.email,
+      first: this.user_obj.first_name,
+      first_name: this.user_obj.first_name,
+      institution: this.user_obj.institution,
+      last: this.user_obj.last_name,
+      last_name: this.user_obj.last_name,
       matrix: 0,
-      owner_info: this.user_obj,
+      oid:  this.user_obj.user_id,
       owner_user_id: this.user_obj.user_id,
+      permissions: [this.user_obj.user_id], // initially has only project owner_id
+      pi_email: this.user_obj.email,
+      pi_name: this.user_obj.first_name + ' ' + this.user_obj.last_name,
+      pid: 0,
       project_id: 0,
       public: 0,
       updated_at: new Date(),
-      first_name: this.user_obj.first_name,
-      institution: this.user_obj.institution,
-      last_name: this.user_obj.last_name,
-      pi_email: this.user_obj.email,
-      pi_name: this.user_obj.first_name + ' ' + this.user_obj.last_name,
       username: this.user_obj.username
     };
 
     if ((typeof req.form !== 'undefined') && (typeof req.form.d_region !== 'undefined')) {
+      d_region_arr = req.form.d_region.split('#');
       if (d_region_arr[0] === 'Shotgun') {
         temp_project_obj.metagenomic = 1;
         project_name3                = 'Sgun';
       }
-      project_name3 = d_region_arr[2];
-
-      d_region_arr                         = req.form.d_region.split('#');
+      project_name3                        = d_region_arr[2];
       temp_project_obj.funding             = req.form.funding_code;
       temp_project_obj.metagenomic         = 0;
       project_name                         = req.form.project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
       temp_project_obj.project             = project_name;
       temp_project_obj.project_description = req.form.project_description;
+      temp_project_obj.description         = req.form.project_description;
       temp_project_obj.rev_project_name    = helpers.reverseString(project_name);
       temp_project_obj.title               = req.form.project_title;
+      temp_project_obj.project_title       = req.form.project_title;
+      // env_package_id
 
     }
     this.project_obj = temp_project_obj;
