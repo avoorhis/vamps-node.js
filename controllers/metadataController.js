@@ -114,23 +114,23 @@ function get_field_names_by_dataset_ids(dataset_ids) {
 // ...
 }
 
-function prepare_empty_metadata_object(pid, field_names_arr, all_metadata) {
-  console.time('TIME: prepare_empty_metadata_object');
-  all_metadata = all_metadata || {};
-  if (!(all_metadata.hasOwnProperty(pid))) {
-    all_metadata[pid] = {};
-  }
-
-  for (var i = 0; i < field_names_arr.length; i++) {
-    var field_name = field_names_arr[i];
-    if (!(all_metadata[pid].hasOwnProperty(field_name))) {
-      all_metadata[pid][field_name] = [];
-    }
-  }
-
-  console.timeEnd('TIME: prepare_empty_metadata_object');
-  return all_metadata;
-}
+// function prepare_empty_metadata_object(pid, field_names_arr, all_metadata) {
+//   console.time('TIME: prepare_empty_metadata_object');
+//   all_metadata = all_metadata || {};
+//   if (!(all_metadata.hasOwnProperty(pid))) {
+//     all_metadata[pid] = {};
+//   }
+//
+//   for (var i = 0; i < field_names_arr.length; i++) {
+//     var field_name = field_names_arr[i];
+//     if (!(all_metadata[pid].hasOwnProperty(field_name))) {
+//       all_metadata[pid][field_name] = [];
+//     }
+//   }
+//
+//   console.timeEnd('TIME: prepare_empty_metadata_object');
+//   return all_metadata;
+// }
 
 // function get_project_info(project_name_or_pid) {
 //   var project_info;
@@ -219,7 +219,7 @@ function create_all_metadata_form_new(rows, req, res, all_field_names) {
   console.log(typeof repeat_times);
 
   //TODO: Use existing project!
-  const new_project = new Project(req, res, user_obj);
+  const new_project = new Project(req, res, user_id);
   var project_obj = new_project.project_obj;
 
   var current_info = {
@@ -1067,8 +1067,8 @@ exports.saveProject = function (req, res) { //check if exists in PROJECT_INFORMA
   //2018-06-20 13:09:14
 
   var user_id  = req.form.pi_id_name.split('#')[0];
-  var user_obj      = User.getUserInfoFromGlobal(user_id);
-  const new_project = new Project(req, res, user_obj);
+  var user_id      = User.getUserInfoFromGlobal(user_id);
+  const new_project = new Project(req, res, user_id);
 
   var project_obj = new_project.project_obj;
   console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
@@ -1245,7 +1245,8 @@ exports.make_metadata_object = function (req, res, pid, info) {
 
   // 1)
   // TODO: don't send all_metadata?
-  all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
+  met_obj.prepare_empty_metadata_object(pid, all_field_names, all_metadata);
+  all_metadata = met_obj.all_metadata;
   // console.log('MMM2 all_metadata');
   // console.log(all_metadata);
 
@@ -1256,9 +1257,12 @@ exports.make_metadata_object = function (req, res, pid, info) {
   all_metadata[pid] = info;
 
   //3) special
+  var owner_id = PROJECT_INFORMATION_BY_PID[pid].oid;
+  const new_project = new Project(req, res, pid, owner_id);
+  var project_info = new_project.project_obj;
 
   // TODO: move to db creation?
-  var project_info = get_project_info(pid);
+  // var project_info = met_obj.get_project_info(req, res, pid);
   console.log('MMM33 all_metadata[pid]');
   console.log(JSON.stringify(all_metadata[pid]));
 
