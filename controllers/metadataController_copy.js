@@ -94,6 +94,9 @@ class CreateDataObj {
   get_project_info(req, res, project_name_or_pid) {
     var project_info;
 
+    var user_id       = req.form.pi_id_name.split('#')[0];
+    var user_obj      = User.getUserInfoFromGlobal(user_id);
+
     if (typeof project_name_or_pid === 'undefined') {
       const new_project = new Project(req, res, user_obj);
       var project_obj = new_project.project_obj;

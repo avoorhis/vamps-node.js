@@ -1,53 +1,110 @@
 // var mysql = require('mysql2');
 var helpers = require(app_root + '/routes/helpers/helpers');
+var User    = require(app_root + '/models/user_model');
 
 class Project {
 
-  constructor(req, res, user_obj) {
-    this.req         = req || {};
-    this.res         = res || {};
-    this.user_obj    = user_obj;
+  constructor(req, res, pid, owner_id) {
+    this.req      = req || {};
+    this.res      = res || {};
+    this.pid      = pid;
+    this.user_obj = User.getUserInfoFromGlobal(owner_id);
+
     this.project_obj = this.make_project_obj();
   }
 
-  make_project_obj(req) {
-    req                     = this.req;
-    var d_region_arr        = [];
-    var funding             = "";
-    var metagenomic         = 0;
-    var project_description = "";
-    var project_name        = "";
-    var project_name3       = "";
-    var title               = "";
+  make_project_obj() {
+    var project_obj   = {};
+    var req           = this.req;
+    var d_region_arr  = [];
+    // var funding             = "";
+    var metagenomic   = 0;
+    // var project_description = "";
+    var project_name  = "";
+    var project_name3 = "";
+    // var title               = "";
 
-    if (typeof req.form !== 'undefined') {
-      d_region_arr        = req.form.d_region.split('#');
-      funding             = req.form.funding_code;
-      project_description = req.form.project_description;
-      project_name        = req.form.project_name1 + '_' + req.form.project_name2 + '_' + d_region_arr[2];
-      title               = req.form.project_title;
+    if ((helpers.isInt(this.pid)) && this.pid > 0) {
+      project_obj = Object.assign(PROJECT_INFORMATION_BY_PID[this.pid]);
+    }
+    else {
+      project_obj = {
+        active: 0,
+        created_at: new Date(),
+        matrix: 0,
+        owner_info: this.user_obj,
+        owner_user_id: this.user_obj.user_id,
+        project_id: 0,
+        public: 0,
+        updated_at: new Date(),
+        first_name: this.user_obj.first_name,
+        institution: this.user_obj.institution,
+        last_name: this.user_obj.last_name,
+        pi_email: this.user_obj.email,
+        pi_name: this.user_obj.first_name + ' ' + this.user_obj.last_name,
+        username: this.user_obj.username
+      };
+    }
+
+    if ((typeof req.form !== 'undefined') && (typeof req.form.d_region !== 'undefined')) {
+      d_region_arr                    = req.form.d_region.split('#');
+      project_obj.funding             = req.form.funding_code;
+      project_obj.metagenomic         = metagenomic;
+      project_obj.project             = req.form.project_name1 + '_' + req.form.project_name2 + '_' + d_region_arr[2];
+      project_obj.project_description = req.form.project_description;
+      project_obj.rev_project_name    = helpers.reverseString(project_name);
+      project_obj.title               = req.form.project_title;
       if (d_region_arr[0] === 'Shotgun') {
         metagenomic   = 1;
         project_name3 = 'Sgun';
       }
-    }
 
-    var project_obj = {
-      active: 0,
-      created_at: new Date(),
-      funding: req.form.funding_code,
-      matrix: 0,
-      metagenomic: metagenomic,
-      owner_info: this.user_obj,
-      owner_user_id: this.user_obj.user_id,
-      project: project_name,
-      project_description: project_description,
-      project_id: 0,
-      public: 0,
-      rev_project_name: helpers.reverseString(project_name),
-      title: title,
-      updated_at: new Date(),
-    };
+    }
+    else {
+      if (typeof req.body.project_id !== 'undefined' && (helpers.isInt(req.body.project_id))) {
+        var pid = this.pid;
+
+        project_obj.project_description = PROJECT_INFORMATION_BY_PID[pid].description;
+        project_obj.pi_email            = PROJECT_INFORMATION_BY_PID[pid].email;
+        project_obj.pi_name             = PROJECT_INFORMATION_BY_PID[pid].first + ' ' + PROJECT_INFORMATION_BY_PID[pid].last;
+        project_obj.first_name          = PROJECT_INFORMATION_BY_PID[pid].first;
+        project_obj.last_name           = PROJECT_INFORMATION_BY_PID[pid].last;
+        project_obj.project_id          = PROJECT_INFORMATION_BY_PID[pid].pid;
+        project_obj.rev_project_name    = helpers.reverseString(PROJECT_INFORMATION_BY_PID[pid].project);
+        project_obj.project_title       = PROJECT_INFORMATION_BY_PID[pid].title;
+        // project_obj.funding             = req.form.funding_code;
+
+      }
+      // else {
+      //   project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
+      // }
+
+    }
+    //
+    // project_obj = {
+    //   active: 0,
+    //   created_at: new Date(),
+    //   funding: funding,
+    //   matrix: 0,
+    //   metagenomic: metagenomic,
+    //   owner_info: this.user_obj,
+    //   owner_user_id: this.user_obj.user_id,
+    //   project: project_name,
+    //   project_description: project_description,
+    //   project_id: 0,
+    //   public: 0,
+    //   rev_project_name: helpers.reverseString(project_name),
+    //   title: title,
+    //   updated_at: new Date(),
+    //   first_name: this.user_obj.first,
+    //   institution: this.user_obj.institution,
+    //   last_name: this.user_obj.last,
+    //   pi_email: this.user_obj.email,
+    //   pi_name: this.user_obj.first + ' ' + this.user_obj.last,
+    //   username: this.user_obj.username
+    //
+    // };
+
     console.log("CCHH this.project_obj = ", project_obj);
     return project_obj;
   }
