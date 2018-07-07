@@ -10,103 +10,82 @@ class Project {
     this.pid      = pid;
     this.user_obj = User.getUserInfoFromGlobal(owner_id);
 
-    this.project_obj = this.make_project_obj();
+    this.project_obj = {};
+    this.make_project_obj();
   }
 
   make_project_obj() {
-    var project_obj   = {};
-    var req           = this.req;
-    var d_region_arr  = [];
-    // var funding             = "";
-    var metagenomic   = 0;
-    // var project_description = "";
+    if ((helpers.isInt(this.pid)) && this.pid > 0) {
+      this.make_project_obj_with_existing_project_info_by_pid();
+    }
+    else {
+      this.make_project_obj_from_new_form_info();
+    }
+
+    console.log("CCHH this.project_obj = ", this.project_obj);
+  }
+
+  make_project_obj_with_existing_project_info_by_pid() {
+    var temp_project_obj = Object.assign(PROJECT_INFORMATION_BY_PID[this.pid]);
+
+    var pid = this.pid;
+
+    temp_project_obj.project_description = PROJECT_INFORMATION_BY_PID[pid].description;
+    temp_project_obj.pi_email            = PROJECT_INFORMATION_BY_PID[pid].email;
+    temp_project_obj.pi_name             = PROJECT_INFORMATION_BY_PID[pid].first + ' ' + PROJECT_INFORMATION_BY_PID[pid].last;
+    temp_project_obj.first_name          = PROJECT_INFORMATION_BY_PID[pid].first;
+    temp_project_obj.last_name           = PROJECT_INFORMATION_BY_PID[pid].last;
+    temp_project_obj.project_id          = PROJECT_INFORMATION_BY_PID[pid].pid;
+    temp_project_obj.rev_project_name    = helpers.reverseString(PROJECT_INFORMATION_BY_PID[pid].project);
+    temp_project_obj.project_title       = PROJECT_INFORMATION_BY_PID[pid].title;
+    // temp_project_obj.funding             = req.form.funding_code;
+
+    this.project_obj = temp_project_obj;
+  }
+
+  make_project_obj_from_new_form_info() {
+    var temp_project_obj = {};
+    var req              = this.req;
+    var d_region_arr     = [];
     var project_name  = "";
     var project_name3 = "";
-    // var title               = "";
 
-    if ((helpers.isInt(this.pid)) && this.pid > 0) {
-      project_obj = Object.assign(PROJECT_INFORMATION_BY_PID[this.pid]);
-    }
-    else {
-      project_obj = {
-        active: 0,
-        created_at: new Date(),
-        matrix: 0,
-        owner_info: this.user_obj,
-        owner_user_id: this.user_obj.user_id,
-        project_id: 0,
-        public: 0,
-        updated_at: new Date(),
-        first_name: this.user_obj.first_name,
-        institution: this.user_obj.institution,
-        last_name: this.user_obj.last_name,
-        pi_email: this.user_obj.email,
-        pi_name: this.user_obj.first_name + ' ' + this.user_obj.last_name,
-        username: this.user_obj.username
-      };
-    }
+    temp_project_obj = {
+      active: 0,
+      created_at: new Date(),
+      matrix: 0,
+      owner_info: this.user_obj,
+      owner_user_id: this.user_obj.user_id,
+      project_id: 0,
+      public: 0,
+      updated_at: new Date(),
+      first_name: this.user_obj.first_name,
+      institution: this.user_obj.institution,
+      last_name: this.user_obj.last_name,
+      pi_email: this.user_obj.email,
+      pi_name: this.user_obj.first_name + ' ' + this.user_obj.last_name,
+      username: this.user_obj.username
+    };
 
     if ((typeof req.form !== 'undefined') && (typeof req.form.d_region !== 'undefined')) {
-      d_region_arr                    = req.form.d_region.split('#');
-      project_obj.funding             = req.form.funding_code;
-      project_obj.metagenomic         = metagenomic;
-      project_obj.project             = req.form.project_name1 + '_' + req.form.project_name2 + '_' + d_region_arr[2];
-      project_obj.project_description = req.form.project_description;
-      project_obj.rev_project_name    = helpers.reverseString(project_name);
-      project_obj.title               = req.form.project_title;
       if (d_region_arr[0] === 'Shotgun') {
-        metagenomic   = 1;
-        project_name3 = 'Sgun';
+        temp_project_obj.metagenomic = 1;
+        project_name3                = 'Sgun';
       }
+      project_name3 = d_region_arr[2];
+
+      d_region_arr                         = req.form.d_region.split('#');
+      temp_project_obj.funding             = req.form.funding_code;
+      temp_project_obj.metagenomic         = 0;
+      project_name                         = req.form.project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
+      temp_project_obj.project             = project_name;
+      temp_project_obj.project_description = req.form.project_description;
+      temp_project_obj.rev_project_name    = helpers.reverseString(project_name);
+      temp_project_obj.title               = req.form.project_title;
 
     }
-    else {
-      if (typeof req.body.project_id !== 'undefined' && (helpers.isInt(req.body.project_id))) {
-        var pid = this.pid;
+    this.project_obj = temp_project_obj;
 
-        project_obj.project_description = PROJECT_INFORMATION_BY_PID[pid].description;
-        project_obj.pi_email            = PROJECT_INFORMATION_BY_PID[pid].email;
-        project_obj.pi_name             = PROJECT_INFORMATION_BY_PID[pid].first + ' ' + PROJECT_INFORMATION_BY_PID[pid].last;
-        project_obj.first_name          = PROJECT_INFORMATION_BY_PID[pid].first;
-        project_obj.last_name           = PROJECT_INFORMATION_BY_PID[pid].last;
-        project_obj.project_id          = PROJECT_INFORMATION_BY_PID[pid].pid;
-        project_obj.rev_project_name    = helpers.reverseString(PROJECT_INFORMATION_BY_PID[pid].project);
-        project_obj.project_title       = PROJECT_INFORMATION_BY_PID[pid].title;
-        // project_obj.funding             = req.form.funding_code;
-
-      }
-      // else {
-      //   project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
-      // }
-
-    }
-    //
-    // project_obj = {
-    //   active: 0,
-    //   created_at: new Date(),
-    //   funding: funding,
-    //   matrix: 0,
-    //   metagenomic: metagenomic,
-    //   owner_info: this.user_obj,
-    //   owner_user_id: this.user_obj.user_id,
-    //   project: project_name,
-    //   project_description: project_description,
-    //   project_id: 0,
-    //   public: 0,
-    //   rev_project_name: helpers.reverseString(project_name),
-    //   title: title,
-    //   updated_at: new Date(),
-    //   first_name: this.user_obj.first,
-    //   institution: this.user_obj.institution,
-    //   last_name: this.user_obj.last,
-    //   pi_email: this.user_obj.email,
-    //   pi_name: this.user_obj.first + ' ' + this.user_obj.last,
-    //   username: this.user_obj.username
-    //
-    // };
-
-    console.log("CCHH this.project_obj = ", project_obj);
-    return project_obj;
   }
 
   add_info_to_globals() {
