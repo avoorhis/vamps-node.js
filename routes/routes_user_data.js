@@ -714,7 +714,8 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                 var split_on = '\t'
                 for(n in line_split_chunks){
                     if(n==0){
-                        datasets = line_split_chunks[n].trim().split(split_on)
+                        datasets = line_split_chunks[n].split(split_on)
+                        datasets.shift();  // removes col1 (whether text or not)
                         //console.log('datasets')
                         //console.log(datasets)
                         unique = helpers.unique_array(datasets)
