@@ -629,11 +629,6 @@ function make_metadata_object_from_db(req, res) {
   var project_obj   = new_project.project_obj;
 
   var abstract_data =  project_obj.abstract_data;
-        // project_obj.get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[metadata_controller.get_project_prefix(project)];
-  // if (typeof abstract_data === 'undefined') {
-  //   abstract_data      = {};
-  //   abstract_data.pdfs = [];
-  // }
 
   var data_in_obj_of_arr                 = met_obj.from_obj_to_obj_of_arr(AllMetadata_picked, pid);
   data_in_obj_of_arr["project_abstract"] = metadata_controller.fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);

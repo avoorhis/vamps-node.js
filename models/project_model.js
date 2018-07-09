@@ -31,9 +31,6 @@ class Project {
     var temp_project_obj = Object.assign(PROJECT_INFORMATION_BY_PID[this.pid]);
 
     var pid               = this.pid;
-    var all_abstract_data = this.get_project_abstract_data(temp_project_obj.project, this.req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
-    var project_prefix    = this.get_project_prefix(temp_project_obj.project);
-
 
     temp_project_obj.project_description = PROJECT_INFORMATION_BY_PID[pid].description;
     temp_project_obj.pi_email            = PROJECT_INFORMATION_BY_PID[pid].email;
@@ -43,11 +40,7 @@ class Project {
     temp_project_obj.project_id          = PROJECT_INFORMATION_BY_PID[pid].pid;
     temp_project_obj.rev_project_name    = helpers.reverseString(PROJECT_INFORMATION_BY_PID[pid].project);
     temp_project_obj.project_title       = PROJECT_INFORMATION_BY_PID[pid].title;
-    temp_project_obj.abstract_data       = all_abstract_data[project_prefix];
-    if (typeof temp_project_obj.abstract_data === 'undefined') {
-      temp_project_obj.abstract_data      = {};
-      temp_project_obj.abstract_data.pdfs = [];
-    }
+    temp_project_obj.abstract_data       = this.get_current_project_abstract_data(temp_project_obj.project);
     // temp_project_obj.funding             = req.form.funding_code;
 
     this.project_obj = temp_project_obj;
@@ -79,7 +72,7 @@ class Project {
       project_id: 0,
       public: 0,
       updated_at: new Date(),
-      username: this.user_obj.username
+      username: this.user_obj.username,
     };
 
     if ((typeof req.form !== 'undefined') && (typeof req.form.d_region !== 'undefined')) {
@@ -98,15 +91,27 @@ class Project {
       temp_project_obj.rev_project_name    = helpers.reverseString(project_name);
       temp_project_obj.title               = req.form.project_title;
       temp_project_obj.project_title       = req.form.project_title;
+      temp_project_obj.abstract_data       = this.get_current_project_abstract_data(temp_project_obj.project);
+
       // env_package_id
 
     }
     this.project_obj = temp_project_obj;
-
   }
 
-  get_project_abstract_data(project, path_to_static) {
-    console.time('TIME: get_project_abstract_data');
+  get_current_project_abstract_data(project) {
+    var all_abstract_data = this.get_projects_abstract_data(project, this.req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
+    var project_prefix    = this.get_project_prefix(project);
+    var current_abstr = all_abstract_data[project_prefix];
+    if (typeof current_abstr === 'undefined') {
+      current_abstr      = {};
+      current_abstr.pdfs = [];
+    }
+    return current_abstr;
+  }
+
+  get_projects_abstract_data(project, path_to_static) {
+    console.time('TIME: get_projects_abstract_data');
 
     var info_file     = '';
     var abstract_data = {};
@@ -115,7 +120,7 @@ class Project {
       abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
     }
 
-    console.timeEnd('TIME: get_project_abstract_data');
+    console.timeEnd('TIME: get_projects_abstract_data');
     return abstract_data;
   }
 
