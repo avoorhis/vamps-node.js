@@ -59,6 +59,21 @@ module.exports.isAdmin = function(req, res, next) {
   // return;
 };
 
+module.exports.array_from_object = function (data) {
+  var data_arr = [];
+  for (var key in data) {
+    var value_arr;
+    if (typeof data[key] === 'object') {
+      value_arr = data[key];
+    }
+    else {
+      value_arr = [data[key]];
+    }
+    value_arr.unshift(key);
+    data_arr.push(value_arr);
+  }
+  return data_arr;
+};
 
 // };
 

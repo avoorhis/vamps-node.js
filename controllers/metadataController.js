@@ -182,181 +182,6 @@ function get_object_vals(object_name) {
   });
 }
 
-
-// function create_all_metadata_form_new(rows, req, res, all_field_names, project_obj) {
-//   var pid = project_obj.pid;
-//   console.log('DDD pid', pid);
-//   var d_region_arr = req.form.d_region.split('#');
-//   const met_obj = new new_metadata_controller.CreateDataObj({}, {}, pid, []);
-//
-//   console.log('DDD3, all_field_names', all_field_names);
-//
-//   met_obj.prepare_empty_metadata_object(pid, all_field_names, {});
-//   var all_metadata = met_obj.all_metadata;
-//   console.log('PPP01 all_metadata from create_all_metadata_form_new', all_metadata);
-//   var repeat_times = parseInt(req.form.samples_number, 10);
-//   console.log(typeof repeat_times);
-//
-//    // TODO: add to current_info fields from below and do all_metadata[pid][field_name] for all at once
-//
-//   var current_info        = Object.assign(project_obj);
-//   current_info.domain     = d_region_arr[0].slice(0, -1);
-//   current_info.dna_region = d_region_arr[1].split('_')[0];
-//   // target_gene:
-//
-//   // TODO: domain_id
-//   // constants.DOMAINS = {
-//   //   domains: [
-//   //     {id: 1, name: 'Archaea'},
-//
-//   for (var field_name in current_info) {
-//     all_metadata[pid][field_name] = [current_info[field_name]];
-//     //todo: split if, if length == dataset_ids.length - just use as is
-//     if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
-//       all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
-//     }
-//     else {
-//       all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(current_info[field_name], repeat_times);
-//     }
-//   }
-//
-//   // obj1.concat(obj2);
-//
-//     console.log('FFF1 all_metadata[pid] before');
-//     console.log(JSON.stringify(all_metadata[pid]));
-//
-//   all_metadata[pid] = met_obj.add_project_abstract_info(all_metadata[pid], repeat_times);
-//
-//   console.log('FFF2 all_metadata[pid] before');
-//   console.log(JSON.stringify(all_metadata[pid]));
-//
-//
-//   // all_metadata[pid] = all_metadata[pid].concat(all_metadata_temp);
-//   // if ((all_metadata[pid]['project_abstract'] === 'undefined') || (!all_metadata[pid].hasOwnProperty(['project_abstract']))) {
-//   //   all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles('', repeat_times);
-//   // }
-//   // else {
-//   //
-//   //   if ((all_metadata[pid]['project_abstract'][0] !== 'undefined') && (!Array.isArray(all_metadata[pid]['project_abstract'][0]))) {
-//   //
-//   //     var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]['project_abstract']);
-//   //
-//   //     if (typeof project_abstract_correct_form[0] !== 'undefined') {
-//   //
-//   //       all_metadata[pid]['project_abstract'] = module.exports.fill_out_arr_doubles(project_abstract_correct_form[0].split(','), repeat_times);
-//   //
-//   //     }
-//   //   }
-//   // }
-//
-//   var more_fields = ['adapter_sequence_id',
-//     'dataset_description',
-//     'dataset_id',
-//     'dna_region_id',
-//     'domain_id',
-//     'env_biome_id',
-//     'env_feature_id',
-//     'env_material_id',
-//     'env_package_id',
-//     'geo_loc_name_id',
-//     'illumina_index_id',
-//     'primer_suite_id',
-//     'run_id',
-//     'sequencing_platform_id',
-//     'target_gene_id'];
-//
-//   for (var f in more_fields) {
-//     all_metadata[pid][more_fields[f]] = module.exports.fill_out_arr_doubles('', repeat_times);
-//
-//   }
-//   // var pid  = req.body.project_id;
-//   // var data = req.form;
-//   //
-//   //   // console.log('DDD9 req.form');
-//   //   // console.log(JSON.stringify(req.form));
-//   //
-//   //
-//   //   //add project_abstract etc.
-//   //   //TODO: DRY with other such places.
-//   //
-//   //   var normal_length = req.form.samples_number;
-//   //   for (var a in data) {
-//   //     if (data[a].length < normal_length && (typeof data[a][0] !== 'undefined')) {
-//   //       data[a] = module.exports.fill_out_arr_doubles(data[a][0], normal_length);
-//   //     }
-//   //   }
-//   //
-//
-//   console.log('PPP02 all_metadata from create_all_metadata_form_new', all_metadata);
-// //--
-//   // '4115':{'adapter_sequence_id':'81',
-//   // 'geo_loc_name_id':'668066',
-//   // 'run_id':'66',
-//   // 'collection_date':'2008-04-12',
-//   // 'env_material_id':'6191',
-//   // 'dna_region_id':'12',
-//   // 'longitude':'8.43361',
-//   // 'domain_id':'3',
-//   // 'target_gene_id':'1',
-//   // 'env_feature_id':'1425',
-//   // 'env_package_id':'22',
-//   // 'illumina_index_id':'83',
-//   // 'env_biome_id':'6191',
-//   // 'latitude':'55.02861',
-//   // 'primer_suite_id':'23',
-//   // 'sequencing_platform_id':'1'},
-//
-//   return all_metadata;
-//   //TODO: create all_metadata for empty new project
-//   // '4115':{'adapter_sequence_id':'81',
-//   // 'geo_loc_name_id':'668066',
-//   // 'run_id':'66',
-//   // 'collection_date':'2008-04-12',
-//   // 'env_material_id':'6191',
-//   // 'dna_region_id':'12',
-//   // 'longitude':'8.43361',
-//   // 'domain_id':'3',
-//   // 'target_gene_id':'1',
-//   // 'env_feature_id':'1425',
-//   // 'env_package_id':'22',
-//   // 'illumina_index_id':'83',
-//   // 'env_biome_id':'6191',
-//   // 'latitude':'55.02861',
-//   // 'primer_suite_id':'23',
-//   // 'sequencing_platform_id':'1'},
-//
-//   // project_abstracts
-//   // res.render('metadata/metadata_edit_form', {
-//   // title: 'VAMPS: Metadata_upload',
-//   // user: req.user,
-//   // hostname: req.CONFIG.hostname,
-//   // all_metadata: {},
-//   // all_field_names: all_field_names,
-//   // ordered_field_names_obj: ordered_field_names_obj,
-//   // all_field_units: MD_CUSTOM_UNITS[req.body.project_id],
-//   // dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-//   // dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-//   // dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-//   // biome_primary_options: CONSTS.BIOME_PRIMARY,
-//   // feature_primary_options: CONSTS.FEATURE_PRIMARY,
-//   // material_primary_options: CONSTS.MATERIAL_PRIMARY,
-//   // metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-//   // env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-//   // investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-//   // sample_type_options: CONSTS.SAMPLE_TYPE
-//   // button_name: 'Submit',
-//   // domain_regions: CONSTS.DOMAIN_REGIONS,
-//   // hostname: req.CONFIG.hostname,
-//   // pi_list: req.session.pi_list,
-//   // project_title: req.form.project_title,
-//   // samples_number: req.form.samples_number,
-//   // title: 'VAMPS: New Metadata',
-//   // user: req.user
-//   // });
-//   // }
-//
-// }
-
 function make_array4(field_names_arr) {
 // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [field_names_arr[i2], field_names_arr[i2], '', '']
   var new_arr = [];
@@ -689,89 +514,90 @@ exports.fill_out_arr_doubles = function (value, repeat_times) {
 //   return project_prefix;
 // };
 
-exports.array_from_object = function (data) {
-  var data_arr = [];
-  for (var key in data) {
-    var value_arr;
-    if (typeof data[key] === 'object') {
-      value_arr = data[key];
-    }
-    else {
-      value_arr = [data[key]];
-    }
-    value_arr.unshift(key);
-    data_arr.push(value_arr);
-  }
-  return data_arr;
-};
+// exports.array_from_object = function (data) {
+//   var data_arr = [];
+//   for (var key in data) {
+//     var value_arr;
+//     if (typeof data[key] === 'object') {
+//       value_arr = data[key];
+//     }
+//     else {
+//       value_arr = [data[key]];
+//     }
+//     value_arr.unshift(key);
+//     data_arr.push(value_arr);
+//   }
+//   return data_arr;
+// };
 
-exports.transpose_2d_arr = function (data_arr, project_id) {
-  console.time('TIME: transpose_2d_arr');
-
-  //make an array with proper length, even if the first one is empty
-  var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
-  var length_array  = data_arr[0];
-  if (data_arr[0].length < matrix_length) {
-    length_array = module.exports.fill_out_arr_doubles('', matrix_length);
-  }
-
-  var newArray = length_array.map(function (col, i) {
-    return data_arr.map(function (row) {
-      return row[i];
-    });
-  });
-  console.timeEnd('TIME: transpose_2d_arr');
-  return newArray;
-};
+// exports.transpose_2d_arr = function (data_arr, project_id) {
+//   console.time('TIME: transpose_2d_arr');
+//
+//   //make an array with proper length, even if the first one is empty
+//   var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
+//   var length_array  = data_arr[0];
+//   if (data_arr[0].length < matrix_length) {
+//     length_array = module.exports.fill_out_arr_doubles('', matrix_length);
+//   }
+//
+//   var newArray = length_array.map(function (col, i) {
+//     return data_arr.map(function (row) {
+//       return row[i];
+//     });
+//   });
+//   console.timeEnd('TIME: transpose_2d_arr');
+//   return newArray;
+// };
 
 //TODO: move to csv files controller?
 //TODO: cyclomatic comlexity is 10!
-exports.convertArrayOfObjectsToCSV = function (args) {
-  console.time('TIME: convertArrayOfObjectsToCSV');
-
-  var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_id;
-
-  data = args.data || null;
-  if (data === null) {
-    return null;
-  }
-
-  user_info = args.user_info || null;
-  if (user_info === null) {
-    return null;
-  }
-
-  project_id = args.project_id || null;
-  if (project_id === null) {
-    return null;
-  }
-
-  data_arr = module.exports.array_from_object(data);
-
-  transposed_data_arr = module.exports.transpose_2d_arr(data_arr, project_id);
-
-  columnDelimiter = args.columnDelimiter || ',';
-  lineDelimiter   = args.lineDelimiter || '\n';
-  cellEscape      = args.cellEscape || '"';
-
-  result = '';
-  transposed_data_arr.map(function (row) {
-    // TODO: to a function?
-    // result = row.map(function (item) {
-    var r1 = row.map(function (item) {
-      // Wrap each element of the items array with quotes
-      return cellEscape + item + cellEscape;
-    }).join(columnDelimiter);
-
-    result += r1;
-    result += lineDelimiter;
-  });
-
-
-  console.timeEnd('TIME: convertArrayOfObjectsToCSV');
-
-  return result;
-};
+// exports.convertArrayOfObjectsToCSV = function (args) {
+//   console.time('TIME: convertArrayOfObjectsToCSV');
+//
+//   var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_id;
+//
+//   data = args.data || null;
+//   if (data === null) {
+//     return null;
+//   }
+//
+//   user_info = args.user_info || null;
+//   if (user_info === null) {
+//     return null;
+//   }
+//
+//   project_id = args.project_id || null;
+//   if (project_id === null) {
+//     return null;
+//   }
+//
+//   data_arr = module.exports.array_from_object(data);
+//
+//   var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
+//   transposed_data_arr = module.exports.transpose_2d_arr(data_arr, matrix_length);
+//
+//   columnDelimiter = args.columnDelimiter || ',';
+//   lineDelimiter   = args.lineDelimiter || '\n';
+//   cellEscape      = args.cellEscape || '"';
+//
+//   result = '';
+//   transposed_data_arr.map(function (row) {
+//     // TODO: to a function?
+//     // result = row.map(function (item) {
+//     var r1 = row.map(function (item) {
+//       // Wrap each element of the items array with quotes
+//       return cellEscape + item + cellEscape;
+//     }).join(columnDelimiter);
+//
+//     result += r1;
+//     result += lineDelimiter;
+//   });
+//
+//
+//   console.timeEnd('TIME: convertArrayOfObjectsToCSV');
+//
+//   return result;
+// };
 
 // exports.get_pi_list = function () {
 //   console.log('FROM Controller');
