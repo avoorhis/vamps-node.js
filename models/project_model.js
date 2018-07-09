@@ -150,6 +150,20 @@ class Project {
     return connection.query("select * from project where project_id = ?", [project_id], callback);
   }
 
+  add_info_to_project_globals(object_to_add, pid) {
+
+    //undefined: env_package_id
+    if (typeof PROJECT_INFORMATION_BY_PID[pid] === 'undefined') {
+      PROJECT_INFORMATION_BY_PID[pid]            = Object.assign(object_to_add);
+      PROJECT_INFORMATION_BY_PID[pid].pid        = pid;
+      PROJECT_INFORMATION_BY_PID[pid].project_id = pid;
+    }
+
+    if (typeof PROJECT_INFORMATION_BY_PNAME[object_to_add.project] === 'undefined') {
+      PROJECT_INFORMATION_BY_PNAME[object_to_add.project] = Object.assign(PROJECT_INFORMATION_BY_PID[pid]);
+    }
+  }
+
   addProject(project_obj, callback) {
     return connection.query("INSERT INTO project VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE project = VALUES(project), rev_project_name = VALUES(rev_project_name);", [project_obj.project_id,
       project_obj.project,

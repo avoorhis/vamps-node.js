@@ -283,20 +283,19 @@ router.post('/metadata_new',
     // var inits         = full_name.split(" ");
 
     console.log("MMM2, req.form", req.form);
+    const show_new = new new_metadata_controller.ShowObj(req, res);
 
     if (!req.form.isValid) {
-      metadata_controller.show_metadata_new_again(req, res);
+      // metadata_controller.show_metadata_new_again(req, res);
       console.log('!req.form.isValid');
       console.log("EEE req.form.errors", req.form.errors);
-
-      const show_new = new new_metadata_controller.ShowObj(req, res);
       show_new.show_metadata_new_again();
 
     }
     else {
       // ?? render_edit_form(req, res, {}, {}, all_field_names)
       console.log("metadata_upload_new is valid");
-      metadata_controller.saveProject(req, res);
+      show_new.saveProject(req, res);
     }
   });
 
