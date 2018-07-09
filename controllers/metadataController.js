@@ -695,53 +695,53 @@ exports.fill_out_arr_doubles = function (value, repeat_times) {
   return arr_temp;
 };
 
-exports.from_obj_to_obj_of_arr = function (data, pid) {
-  console.time('TIME: from_obj_to_obj_of_arr');
-  var obj_of_arr = {};
-
-  var dataset_ids = DATASET_IDS_BY_PID[pid];
-
-  const met_obj = new new_metadata_controller.CreateDataObj({}, {}, pid, dataset_ids);
-
-  var all_field_names = met_obj.collect_field_names(dataset_ids);
-
-  // console.log('HHH0 AllMetadataNames');
-  // console.log(JSON.stringify(AllMetadataNames));
-  //
-  // console.log('HHH2 all_field_names');
-  // console.log(JSON.stringify(all_field_names));
-
-  for (var did_idx in dataset_ids) {
-    var did = dataset_ids[did_idx];
-    for (var field_name_idx in all_field_names) {
-
-      var field_name = all_field_names[field_name_idx];
-      if (!(obj_of_arr.hasOwnProperty(field_name))) {
-        obj_of_arr[field_name] = [];
-      }
-      obj_of_arr[field_name].push(data[did][field_name]);
-    }
-  }
-
-  // console.log('HHH3 obj_of_arr from from_obj_to_obj_of_arr');
-  // console.log(JSON.stringify(obj_of_arr));
-  // adapter_sequence = [
-  //   'NNNNCAGTA',
-  //   'NNNNATCGA',
-  //   'NNNNAGACA',
-  //   null,
-  //   'NNNNCAGTA',
-  //   'NNNNATCGA',
-  //   null,
-  //   'NNNNTGATA',
-  //   'NNNNTAGCA',
-  //   'NNNNATATA',
-  //   'NNNNTCACA',
-  //   'NNNNACTAT'
-  // ]
-  console.timeEnd('TIME: from_obj_to_obj_of_arr');
-  return obj_of_arr;
-};
+// exports.from_obj_to_obj_of_arr = function (data, pid) {
+//   console.time('TIME: from_obj_to_obj_of_arr');
+//   var obj_of_arr = {};
+//
+//   var dataset_ids = DATASET_IDS_BY_PID[pid];
+//
+//   const met_obj = new new_metadata_controller.CreateDataObj({}, {}, pid, dataset_ids);
+//
+//   var all_field_names = met_obj.collect_field_names(dataset_ids);
+//
+//   // console.log('HHH0 AllMetadataNames');
+//   // console.log(JSON.stringify(AllMetadataNames));
+//   //
+//   // console.log('HHH2 all_field_names');
+//   // console.log(JSON.stringify(all_field_names));
+//
+//   for (var did_idx in dataset_ids) {
+//     var did = dataset_ids[did_idx];
+//     for (var field_name_idx in all_field_names) {
+//
+//       var field_name = all_field_names[field_name_idx];
+//       if (!(obj_of_arr.hasOwnProperty(field_name))) {
+//         obj_of_arr[field_name] = [];
+//       }
+//       obj_of_arr[field_name].push(data[did][field_name]);
+//     }
+//   }
+//
+//   // console.log('HHH3 obj_of_arr from from_obj_to_obj_of_arr');
+//   // console.log(JSON.stringify(obj_of_arr));
+//   // adapter_sequence = [
+//   //   'NNNNCAGTA',
+//   //   'NNNNATCGA',
+//   //   'NNNNAGACA',
+//   //   null,
+//   //   'NNNNCAGTA',
+//   //   'NNNNATCGA',
+//   //   null,
+//   //   'NNNNTGATA',
+//   //   'NNNNTAGCA',
+//   //   'NNNNATATA',
+//   //   'NNNNTCACA',
+//   //   'NNNNACTAT'
+//   // ]
+//   console.timeEnd('TIME: from_obj_to_obj_of_arr');
+//   return obj_of_arr;
+// };
 
 //not_used?
 // exports.add_all_val_by_key = function(my_key_hash, my_val_hash, all_metadata_pid) {
@@ -1125,111 +1125,4 @@ exports.show_metadata_new_again = function (req, res) {
     user: req.user,
   });
 };
-
-//TODO: cyclomatic comlexity is 7!
-// exports.make_metadata_object = function (req, res, pid, info) {
-//   console.time('TIME: make_metadata_object');
-//
-//   var all_metadata = {};
-//   var dataset_ids  = DATASET_IDS_BY_PID[pid];
-//   var project      = PROJECT_INFORMATION_BY_PID[pid].project;
-//   var repeat_times = dataset_ids.length;
-//
-//   // console.log('LLL ALL_DATASETS', ALL_DATASETS);
-//
-//   // 0) get field_names
-//   //TODO: DRY and clean up
-//   // var all_field_names = collect_field_names(dataset_ids);
-//
-//   const met_obj = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
-//
-//   var all_field_names = met_obj.collect_field_names(dataset_ids);
-//
-//
-//   console.log('HHH3 all_field_names');
-//   console.log(JSON.stringify(all_field_names));
-//
-//
-//   // console.log('QQQ0 AllMetadataNames');
-//   // console.log(JSON.stringify(AllMetadataNames));
-//   //
-//   // console.log('QQQ1 all_field_names');
-//   // console.log(JSON.stringify(all_field_names));
-//
-//
-//   // 1)
-//   // TODO: don't send all_metadata?
-//   met_obj.prepare_empty_metadata_object(pid, all_field_names, all_metadata);
-//   all_metadata = met_obj.all_metadata;
-//   // console.log('MMM2 all_metadata');
-//   // console.log(all_metadata);
-//
-//   //2) all
-//   console.log('HHH info object in make_metadata_object');
-//   console.log(JSON.stringify(info));
-//
-//   all_metadata[pid] = info;
-//
-//   //3) special
-//   var owner_id      = PROJECT_INFORMATION_BY_PID[pid].oid;
-//   const new_project = new Project(req, res, pid, owner_id);
-//   var project_info  = new_project.project_obj;
-//
-//   // TODO: move to db creation?
-//   // var project_info = met_obj.get_project_info(req, res, pid);
-//   console.log('MMM33 all_metadata[pid]');
-//   console.log(JSON.stringify(all_metadata[pid]));
-//
-//   for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
-//     var field_name = CONSTS.PROJECT_INFO_FIELDS[idx];
-//
-//     //todo: split if, if length == dataset_ids.length - just use as is
-//     if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
-//       all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
-//     }
-//     else {
-//       all_metadata[pid][field_name] = module.exports.fill_out_arr_doubles(project_info[field_name], repeat_times);
-//     }
-//   }
-//
-//   all_metadata[pid] = met_obj.add_project_abstract_info(all_metadata[pid], repeat_times);
-//
-//   console.log('MMM9 all_metadata[pid]');
-//   console.log(JSON.stringify(all_metadata[pid]));
-//
-//   console.timeEnd('TIME: make_metadata_object');
-//   return all_metadata;
-// };
-
-// exports.render_edit_form = function (req, res, all_metadata, all_field_names) {
-//   console.log('JJJ1 all_metadata from render_edit_form');
-//   console.log(JSON.stringify(all_metadata));
-//
-//   console.log('JJJ2 all_field_names from render_edit_form');
-//   console.log(JSON.stringify(all_field_names));
-//
-//   // var MD_ENV_CNTRY_vals       = get_object_vals(MD_ENV_CNTRY);
-//   // var MD_ENV_LZC_vals         = get_object_vals(MD_ENV_LZC);
-//   var ordered_field_names_obj = make_ordered_field_names_obj();
-//
-//   res.render('metadata/metadata_edit_form', {
-//     title: 'VAMPS: Metadata_upload',
-//     user: req.user,
-//     hostname: req.CONFIG.hostname,
-//     all_metadata: all_metadata,
-//     all_field_names: all_field_names,
-//     ordered_field_names_obj: ordered_field_names_obj,
-//     all_field_units: MD_CUSTOM_UNITS[req.body.project_id],
-//     dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-//     dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-//     dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-//     biome_primary_options: CONSTS.BIOME_PRIMARY,
-//     feature_primary_options: CONSTS.FEATURE_PRIMARY,
-//     material_primary_options: CONSTS.MATERIAL_PRIMARY,
-//     metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-//     env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-//     investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-//     sample_type_options: CONSTS.SAMPLE_TYPE
-//   });
-// };
 

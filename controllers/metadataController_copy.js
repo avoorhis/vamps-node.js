@@ -223,6 +223,54 @@ class CreateDataObj {
     return pi_list;
   }
 
+  from_obj_to_obj_of_arr(data, pid) {
+    console.time('TIME: from_obj_to_obj_of_arr');
+    var obj_of_arr = {};
+
+    var dataset_ids = DATASET_IDS_BY_PID[pid];
+
+    // const met_obj = new this.CreateDataObj({}, {}, pid, dataset_ids);
+
+    var all_field_names = this.all_field_names;
+
+    // console.log('HHH0 AllMetadataNames');
+    // console.log(JSON.stringify(AllMetadataNames));
+    //
+    // console.log('HHH2 all_field_names');
+    // console.log(JSON.stringify(all_field_names));
+
+    for (var did_idx in dataset_ids) {
+      var did = dataset_ids[did_idx];
+      for (var field_name_idx in all_field_names) {
+
+        var field_name = all_field_names[field_name_idx];
+        if (!(obj_of_arr.hasOwnProperty(field_name))) {
+          obj_of_arr[field_name] = [];
+        }
+        obj_of_arr[field_name].push(data[did][field_name]);
+      }
+    }
+
+    // console.log('HHH3 obj_of_arr from from_obj_to_obj_of_arr');
+    // console.log(JSON.stringify(obj_of_arr));
+    // adapter_sequence = [
+    //   'NNNNCAGTA',
+    //   'NNNNATCGA',
+    //   'NNNNAGACA',
+    //   null,
+    //   'NNNNCAGTA',
+    //   'NNNNATCGA',
+    //   null,
+    //   'NNNNTGATA',
+    //   'NNNNTAGCA',
+    //   'NNNNATATA',
+    //   'NNNNTCACA',
+    //   'NNNNACTAT'
+    // ]
+    console.timeEnd('TIME: from_obj_to_obj_of_arr');
+    return obj_of_arr;
+  };
+
 }
 
 class ShowObj {

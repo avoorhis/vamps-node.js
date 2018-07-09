@@ -542,9 +542,9 @@ function make_metadata_object_from_csv(req, res) {
   // console.log("MMM0 dataset_ids");
   // console.log(dataset_ids);
 
-  var data_in_obj_of_arr = metadata_controller.from_obj_to_obj_of_arr(data, pid);
-
   const met_obj        = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+  var data_in_obj_of_arr = met_obj.from_obj_to_obj_of_arr(data, pid);
+
 // all_metadata
   var all_metadata     = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
   var all_field_names4 = metadata_controller.make_all_field_names(dataset_ids);
@@ -614,7 +614,7 @@ function make_metadata_object_from_db(req, res) {
   }
   console.timeEnd("TIME: add missing info to AllMetadata_picked");
 
-  var data_in_obj_of_arr = metadata_controller.from_obj_to_obj_of_arr(AllMetadata_picked, pid);
+  // var data_in_obj_of_arr = metadata_controller.from_obj_to_obj_of_arr(AllMetadata_picked, pid);
 
   // add abstract_data
   var abstract_data = metadata_controller.get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[metadata_controller.get_project_prefix(project)];
@@ -623,10 +623,12 @@ function make_metadata_object_from_db(req, res) {
     abstract_data.pdfs = [];
   }
 
-  data_in_obj_of_arr["project_abstract"] = metadata_controller.fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
   // as many values per field as there are datasets
 
   const met_obj    = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+  var data_in_obj_of_arr = met_obj.from_obj_to_obj_of_arr(AllMetadata_picked, pid);
+  data_in_obj_of_arr["project_abstract"] = metadata_controller.fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
+
   var all_metadata = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
   var all_field_names4 = metadata_controller.make_all_field_names(dataset_ids);
