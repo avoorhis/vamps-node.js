@@ -1,6 +1,8 @@
 // var mysql = require('mysql2');
 var helpers = require(app_root + '/routes/helpers/helpers');
 var User    = require(app_root + '/models/user_model');
+var fs      = require('fs');
+var path    = require('path');
 
 class Project {
 
@@ -28,7 +30,9 @@ class Project {
   make_project_obj_with_existing_project_info_by_pid() {
     var temp_project_obj = Object.assign(PROJECT_INFORMATION_BY_PID[this.pid]);
 
-    var pid = this.pid;
+    var pid               = this.pid;
+    var all_abstract_data = this.get_project_abstract_data(temp_project_obj.project, this.req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
+    var project_prefix    = this.get_project_prefix(temp_project_obj.project);
 
     temp_project_obj.project_description = PROJECT_INFORMATION_BY_PID[pid].description;
     temp_project_obj.pi_email            = PROJECT_INFORMATION_BY_PID[pid].email;
@@ -38,6 +42,7 @@ class Project {
     temp_project_obj.project_id          = PROJECT_INFORMATION_BY_PID[pid].pid;
     temp_project_obj.rev_project_name    = helpers.reverseString(PROJECT_INFORMATION_BY_PID[pid].project);
     temp_project_obj.project_title       = PROJECT_INFORMATION_BY_PID[pid].title;
+    temp_project_obj.abstract_data       = all_abstract_data[project_prefix];
     // temp_project_obj.funding             = req.form.funding_code;
 
     this.project_obj = temp_project_obj;
@@ -60,7 +65,7 @@ class Project {
       last: this.user_obj.last_name,
       last_name: this.user_obj.last_name,
       matrix: 0,
-      oid:  this.user_obj.user_id,
+      oid: this.user_obj.user_id,
       owner_user_id: this.user_obj.user_id,
       permissions: [this.user_obj.user_id], // initially has only project owner_id
       pi_email: this.user_obj.email,
@@ -93,6 +98,32 @@ class Project {
     }
     this.project_obj = temp_project_obj;
 
+  }
+
+  get_project_abstract_data(project, path_to_static) {
+    console.time('TIME: get_project_abstract_data');
+
+    var info_file     = '';
+    var abstract_data = {};
+    if (project.substring(0, 3) === 'DCO') {
+      info_file     = path.join(path_to_static, 'abstracts', 'DCO_info.json');
+      abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+    }
+
+    console.timeEnd('TIME: get_project_abstract_data');
+    return abstract_data;
+  }
+
+  get_project_prefix(project) {
+    console.time('TIME: get_project_prefix');
+    var project_parts  = project.split('_');
+    var project_prefix = project;
+
+    if (project_parts.length >= 2) {
+      project_prefix = project_parts[0] + '_' + project_parts[1];
+    }
+    console.timeEnd('TIME: get_project_prefix');
+    return project_prefix;
   }
 
   add_info_to_globals() {

@@ -10,7 +10,8 @@ var config  = require(app_root + '/config/config');
 // var validator           = require('validator');
 // var expressValidator = require('express-validator');
 var nodeMailer              = require('nodemailer');
-// var Metadata             = require(app_root + '/models/metadata');
+var Project                 = require(app_root + '/models/project_model');
+var User    = require(app_root + '/models/user_model');
 var metadata_controller     = require(app_root + '/controllers/metadataController');
 var csv_files_controller    = require(app_root + '/controllers/csvFilesController');
 var new_metadata_controller = require(app_root + '/controllers/metadataController_copy');
@@ -542,7 +543,7 @@ function make_metadata_object_from_csv(req, res) {
   // console.log("MMM0 dataset_ids");
   // console.log(dataset_ids);
 
-  const met_obj        = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+  const met_obj          = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
   var data_in_obj_of_arr = met_obj.from_obj_to_obj_of_arr(data, pid);
 
 // all_metadata
@@ -558,7 +559,7 @@ function make_metadata_object_from_csv(req, res) {
   // metadata_controller.render_edit_form(req, res, all_metadata, all_field_names4);
 
   var all_field_units = MD_CUSTOM_UNITS[pid];
-  const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
+  const show_new      = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
   show_new.render_edit_form();
 
   console.timeEnd("TIME: make_metadata_object_from_csv");
@@ -620,14 +621,21 @@ function make_metadata_object_from_db(req, res) {
 
   // as many values per field as there are datasets
 
-  const met_obj    = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
-  var abstract_data = met_obj.get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[metadata_controller.get_project_prefix(project)];
+  const met_obj     = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+  var user_id     = PROJECT_INFORMATION_BY_PID[pid].oid;
+  // var user_obj = new User.getUserInfoFromGlobal(user_id);
+
+  const new_project = new Project(req, res, pid, user_id);
+  var project_obj   = new_project.project_obj;
+
+  var abstract_data =  project_obj.abstract_data;
+        // project_obj.get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[metadata_controller.get_project_prefix(project)];
   if (typeof abstract_data === 'undefined') {
     abstract_data      = {};
     abstract_data.pdfs = [];
   }
 
-  var data_in_obj_of_arr = met_obj.from_obj_to_obj_of_arr(AllMetadata_picked, pid);
+  var data_in_obj_of_arr                 = met_obj.from_obj_to_obj_of_arr(AllMetadata_picked, pid);
   data_in_obj_of_arr["project_abstract"] = metadata_controller.fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 
   var all_metadata = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
