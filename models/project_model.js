@@ -34,6 +34,7 @@ class Project {
     var all_abstract_data = this.get_project_abstract_data(temp_project_obj.project, this.req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
     var project_prefix    = this.get_project_prefix(temp_project_obj.project);
 
+
     temp_project_obj.project_description = PROJECT_INFORMATION_BY_PID[pid].description;
     temp_project_obj.pi_email            = PROJECT_INFORMATION_BY_PID[pid].email;
     temp_project_obj.pi_name             = PROJECT_INFORMATION_BY_PID[pid].first + ' ' + PROJECT_INFORMATION_BY_PID[pid].last;
@@ -43,6 +44,10 @@ class Project {
     temp_project_obj.rev_project_name    = helpers.reverseString(PROJECT_INFORMATION_BY_PID[pid].project);
     temp_project_obj.project_title       = PROJECT_INFORMATION_BY_PID[pid].title;
     temp_project_obj.abstract_data       = all_abstract_data[project_prefix];
+    if (typeof temp_project_obj.abstract_data === 'undefined') {
+      temp_project_obj.abstract_data      = {};
+      temp_project_obj.abstract_data.pdfs = [];
+    }
     // temp_project_obj.funding             = req.form.funding_code;
 
     this.project_obj = temp_project_obj;
