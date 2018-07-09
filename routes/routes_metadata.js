@@ -617,15 +617,16 @@ function make_metadata_object_from_db(req, res) {
   // var data_in_obj_of_arr = metadata_controller.from_obj_to_obj_of_arr(AllMetadata_picked, pid);
 
   // add abstract_data
-  var abstract_data = metadata_controller.get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[metadata_controller.get_project_prefix(project)];
+
+  // as many values per field as there are datasets
+
+  const met_obj    = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+  var abstract_data = met_obj.get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[metadata_controller.get_project_prefix(project)];
   if (typeof abstract_data === 'undefined') {
     abstract_data      = {};
     abstract_data.pdfs = [];
   }
 
-  // as many values per field as there are datasets
-
-  const met_obj    = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
   var data_in_obj_of_arr = met_obj.from_obj_to_obj_of_arr(AllMetadata_picked, pid);
   data_in_obj_of_arr["project_abstract"] = metadata_controller.fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 

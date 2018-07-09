@@ -1520,6 +1520,10 @@ module.exports.make_gast_script_txt = function(req, data_dir, project, opts) {
   return make_gast_script_txt
 }
 
+module.exports.isEmptyObject = function(obj) {
+  return !Object.keys(obj).length;
+}
+
 module.exports.filter_projects = function(req, prj_obj, filter_obj) {
   // 1 substring      name search
   // 2 env            search PROJECT_INFORMATION_BY_PID

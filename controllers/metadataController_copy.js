@@ -5,8 +5,8 @@ var helpers = require(app_root + '/routes/helpers/helpers');
 var CONSTS  = require(app_root + '/public/constants');
 // var validator = require('validator');
 // var config    = require(app_root + '/config/config');
-// var fs        = require('fs');
-// var path      = require('path');
+var fs        = require('fs');
+var path      = require('path');
 
 // 1 create data from
 // 1.1  db
@@ -229,15 +229,7 @@ class CreateDataObj {
 
     var dataset_ids = DATASET_IDS_BY_PID[pid];
 
-    // const met_obj = new this.CreateDataObj({}, {}, pid, dataset_ids);
-
     var all_field_names = this.all_field_names;
-
-    // console.log('HHH0 AllMetadataNames');
-    // console.log(JSON.stringify(AllMetadataNames));
-    //
-    // console.log('HHH2 all_field_names');
-    // console.log(JSON.stringify(all_field_names));
 
     for (var did_idx in dataset_ids) {
       var did = dataset_ids[did_idx];
@@ -269,7 +261,21 @@ class CreateDataObj {
     // ]
     console.timeEnd('TIME: from_obj_to_obj_of_arr');
     return obj_of_arr;
-  };
+  }
+
+  get_project_abstract_data(project, path_to_static) {
+    console.time('TIME: get_project_abstract_data');
+
+    var info_file     = '';
+    var abstract_data = {};
+    if (project.substring(0, 3) === 'DCO') {
+      info_file     = path.join(path_to_static, 'abstracts', 'DCO_info.json');
+      abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+    }
+
+    console.timeEnd('TIME: get_project_abstract_data');
+    return abstract_data;
+  }
 
 }
 

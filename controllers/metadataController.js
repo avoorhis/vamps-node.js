@@ -695,18 +695,18 @@ exports.fill_out_arr_doubles = function (value, repeat_times) {
   return arr_temp;
 };
 
-exports.get_project_abstract_data = function (project, path_to_static) {
-  console.time('TIME: get_project_abstract_data');
-
-  var info_file     = '';
-  var abstract_data = {};
-  if (project.substring(0, 3) === 'DCO') {
-    info_file     = path.join(path_to_static, 'abstracts', 'DCO_info.json');
-    abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
-  }
-  console.timeEnd('TIME: get_project_abstract_data');
-  return abstract_data;
-};
+// exports.get_project_abstract_data = function (project, path_to_static) {
+//   console.time('TIME: get_project_abstract_data');
+//
+//   var info_file     = '';
+//   var abstract_data = {};
+//   if (project.substring(0, 3) === 'DCO') {
+//     info_file     = path.join(path_to_static, 'abstracts', 'DCO_info.json');
+//     abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+//   }
+//   console.timeEnd('TIME: get_project_abstract_data');
+//   return abstract_data;
+// };
 
 // TODO: move to helpers, use here and for project_profile
 exports.get_project_prefix = function (project) {
