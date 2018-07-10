@@ -18,45 +18,45 @@ var new_metadata_controller = require(app_root + '/controllers/metadataControlle
 // private
 
 
-function new_row_field_validation(req, field_name) {
-  console.time('TIME: new_row_field_validation');
-  var err_msg = '';
+// function new_row_field_validation(req, field_name) {
+//   console.time('TIME: new_row_field_validation');
+//   var err_msg = '';
+//
+//   //todo: send a value instead of 'req.body[field_name]'?
+//   var field_val_trimmed   = validator.escape(req.body[field_name] + '');
+//   field_val_trimmed       = validator.trim(field_val_trimmed + '');
+//   var field_val_not_valid = validator.isEmpty(field_val_trimmed + '');
+//
+//   if (field_val_not_valid) {
+//     console.log("ERROR: an empty user's " + field_name);
+//     err_msg = 'User added field "' + field_name + '" must be not empty and have only alpha numeric characters';
+//     req.form.errors.push(err_msg);
+//   }
+//
+//   console.timeEnd('TIME: new_row_field_validation');
+//   return field_val_trimmed;
+// }
 
-  //todo: send a value instead of 'req.body[field_name]'?
-  var field_val_trimmed   = validator.escape(req.body[field_name] + '');
-  field_val_trimmed       = validator.trim(field_val_trimmed + '');
-  var field_val_not_valid = validator.isEmpty(field_val_trimmed + '');
+// function isUnique(all_clean_field_names_arr, column_name) {
+//   return (all_clean_field_names_arr.indexOf(column_name) < 0);
+// }
 
-  if (field_val_not_valid) {
-    console.log("ERROR: an empty user's " + field_name);
-    err_msg = 'User added field "' + field_name + '" must be not empty and have only alpha numeric characters';
-    req.form.errors.push(err_msg);
-  }
-
-  console.timeEnd('TIME: new_row_field_validation');
-  return field_val_trimmed;
-}
-
-function isUnique(all_clean_field_names_arr, column_name) {
-  return (all_clean_field_names_arr.indexOf(column_name) < 0);
-}
-
-function get_cell_val_by_row(row_idx, req) {
-  console.time('TIME: get_cell_val_by_row');
-  var new_row_length = req.body.new_row_length;
-  var new_row_val    = [];
-
-  for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
-    var cell_name = 'new_row' + row_idx.toString() + 'cell' + cell_idx.toString();
-    var clean_val = validator.escape(req.body[cell_name] + '');
-    clean_val     = validator.trim(clean_val + '');
-
-    new_row_val.push(clean_val);
-  }
-  console.timeEnd('TIME: get_cell_val_by_row');
-
-  return new_row_val;
-}
+// function get_cell_val_by_row(row_idx, req) {
+//   console.time('TIME: get_cell_val_by_row');
+//   var new_row_length = req.body.new_row_length;
+//   var new_row_val    = [];
+//
+//   for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
+//     var cell_name = 'new_row' + row_idx.toString() + 'cell' + cell_idx.toString();
+//     var clean_val = validator.escape(req.body[cell_name] + '');
+//     clean_val     = validator.trim(clean_val + '');
+//
+//     new_row_val.push(clean_val);
+//   }
+//   console.timeEnd('TIME: get_cell_val_by_row');
+//
+//   return new_row_val;
+// }
 
 // get_names_from_ordered_const = function () {
 //   console.time('time: ordered_metadata_names_only');
@@ -184,75 +184,76 @@ function add_info_to_project_globals(object_to_add, pid) {
   }
 }
 
+// get_column_name = function (row_idx, req) {
+//   console.time('TIME: get_column_name');
+//
+//   var units_field_name = new_row_field_validation(req, 'Units' + row_idx);
+//
+//   var users_column_name = new_row_field_validation(req, 'Column Name' + row_idx);
+//
+//   // console.log('LLL1 units_field_name');
+//   // console.log(units_field_name);
+//   //
+//   // console.log('LLL2 users_column_name');
+//   // console.log(users_column_name);
+//
+//   if (units_field_name !== '' && users_column_name !== '') {
+//     return [users_column_name, units_field_name];
+//   }
+//   console.timeEnd('TIME: get_column_name');
+// };
 // public
 
 
-exports.get_column_name = function (row_idx, req) {
-  console.time('TIME: get_column_name');
-
-  var units_field_name = new_row_field_validation(req, 'Units' + row_idx);
-
-  var users_column_name = new_row_field_validation(req, 'Column Name' + row_idx);
-
-  // console.log('LLL1 units_field_name');
-  // console.log(units_field_name);
-  //
-  // console.log('LLL2 users_column_name');
-  // console.log(users_column_name);
-
-  if (units_field_name !== '' && users_column_name !== '') {
-    return [users_column_name, units_field_name];
-  }
-  console.timeEnd('TIME: get_column_name');
-};
-
-exports.collect_new_rows = function (req, all_field_names) {
-  console.time('TIME: collect_new_rows');
-  // var new_rows_hash = {};
-  var new_row_num               = req.body.new_row_num;
-  var all_clean_field_names_arr = helpers.unique_array(module.exports.get_first_column(all_field_names, 0));
-  // console.log('JSON.stringify(unique_array.all_clean_field_names_arr)');
-  // console.log(JSON.stringify(helpers.unique_array(all_clean_field_names_arr)));
-
-  for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
-    var column_n_unit_names = module.exports.get_column_name(row_idx, req);
-
-    if (column_n_unit_names) {
-
-      var users_column_name = column_n_unit_names[0];
-      var units_field_name  = column_n_unit_names[1];
-      var column_name       = users_column_name + ' (' + units_field_name + ')';
-      var re                = / /g;
-      var clean_column_name = users_column_name.toLowerCase().replace(re, '_') + '--UNITS--' + units_field_name.toLowerCase().replace(re, '_');
 
 
-      if (column_name && isUnique(all_clean_field_names_arr, clean_column_name)) {
-        // [ 'run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD' ],
-        all_field_names.push([clean_column_name, column_name, '', units_field_name]);
-        req.form[clean_column_name] = [];
-        req.form[clean_column_name] = get_cell_val_by_row(row_idx, req);
-      }
-      else if (!isUnique(all_clean_field_names_arr, clean_column_name)) {
-        var err_msg = 'User added field with units "' + column_name + '" must be unique and have only alpha numeric characters';
-        req.form.errors.push(err_msg);
-      }
-    }
-  }
-  console.timeEnd('TIME: collect_new_rows');
+// exports.collect_new_rows = function (req, all_field_names) {
+//   console.time('TIME: collect_new_rows');
+//   // var new_rows_hash = {};
+//   var new_row_num               = req.body.new_row_num;
+//   var all_clean_field_names_arr = helpers.unique_array(module.exports.get_first_column(all_field_names, 0));
+//   // console.log('JSON.stringify(unique_array.all_clean_field_names_arr)');
+//   // console.log(JSON.stringify(helpers.unique_array(all_clean_field_names_arr)));
+//
+//   for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
+//     var column_n_unit_names = get_column_name(row_idx, req);
+//
+//     if (column_n_unit_names) {
+//
+//       var users_column_name = column_n_unit_names[0];
+//       var units_field_name  = column_n_unit_names[1];
+//       var column_name       = users_column_name + ' (' + units_field_name + ')';
+//       var re                = / /g;
+//       var clean_column_name = users_column_name.toLowerCase().replace(re, '_') + '--UNITS--' + units_field_name.toLowerCase().replace(re, '_');
+//
+//
+//       if (column_name && isUnique(all_clean_field_names_arr, clean_column_name)) {
+//         // [ 'run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD' ],
+//         all_field_names.push([clean_column_name, column_name, '', units_field_name]);
+//         req.form[clean_column_name] = [];
+//         req.form[clean_column_name] = get_cell_val_by_row(row_idx, req);
+//       }
+//       else if (!isUnique(all_clean_field_names_arr, clean_column_name)) {
+//         var err_msg = 'User added field with units "' + column_name + '" must be unique and have only alpha numeric characters';
+//         req.form.errors.push(err_msg);
+//       }
+//     }
+//   }
+//   console.timeEnd('TIME: collect_new_rows');
+//
+//   return all_field_names;
+// };
 
-  return all_field_names;
-};
-
-exports.get_first_column = function (matrix, col) {
-  console.time('TIME: get_first_column');
-  var column = [];
-  for (var i = 0; i < matrix.length; i++) {
-    column.push(matrix[i][col]);
-  }
-  console.timeEnd('TIME: get_first_column');
-
-  return column;
-};
+// exports.get_first_column = function (matrix, col) {
+//   console.time('TIME: get_first_column');
+//   var column = [];
+//   for (var i = 0; i < matrix.length; i++) {
+//     column.push(matrix[i][col]);
+//   }
+//   console.timeEnd('TIME: get_first_column');
+//
+//   return column;
+// };
 
 exports.get_new_val = function (req, all_metadata_pid, all_new_names) {
   var new_val = [];
