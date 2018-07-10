@@ -297,6 +297,25 @@ router.post('/metadata_new',
       const new_project = new Project(req, res, 0, user_id);
       var project_obj = new_project.project_obj;
       console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
+      new_project.addProject(project_obj, function (err, rows) {
+          if (err) {
+            console.log('WWW0 err', err);
+            req.flash('fail', err);
+            show_new.show_metadata_new_again();
+            // res.json(err);
+          }
+          else {
+            console.log('New project SAVED');
+            console.log('WWW rows', rows);
+            var pid = rows.insertId;
+            new_project.add_info_to_project_globals(project_obj, pid);
+
+            const met_obj = new new_metadata_controller.CreateDataObj(req, res, pid, []);
+            met_obj.make_new_project_for_form(rows, req, res, project_obj);
+          }
+        }
+        );
+
       // metadata_controller.saveProject(req, res);
     }
   });
