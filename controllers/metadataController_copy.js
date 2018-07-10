@@ -619,7 +619,6 @@ class CreateDataObj {
     return primer_info;
   }
 
-
 }
 
 class ShowObj {

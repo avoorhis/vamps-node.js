@@ -630,7 +630,7 @@ function make_metadata_object_from_db(req, res) {
   var abstract_data =  project_obj.abstract_data;
 
   var data_in_obj_of_arr                 = met_obj.from_obj_to_obj_of_arr(AllMetadata_picked, pid);
-  data_in_obj_of_arr["project_abstract"] = metadata_controller.fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
+  data_in_obj_of_arr["project_abstract"] = met_obj.fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 
   var all_metadata = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
 

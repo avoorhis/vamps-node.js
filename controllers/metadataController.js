@@ -75,50 +75,15 @@ exports.get_project_name = function (edit_metadata_file) {
   return edit_metadata_project;
 };
 
-//TODO: cyclomatic comlexity is 8!
-exports.get_primers_info = function (dataset_id) {
-  console.time('TIME: get_primers_info');
-  var primer_suite_id = AllMetadata[dataset_id]['primer_suite_id'];
-  var primer_info     = {};
-
-  if (typeof primer_suite_id === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id] === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined') {
-    return {};
-  }
-  else {
-    try {
-      for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
-
-        var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
-
-        if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
-          primer_info[curr_direction] = [];
-        }
-
-        primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
-      }
-    } catch (err) {
-      // Handle the error here.
-      return {};
-    }
-
-  }
-  // console.log('DDD primer_info');
-  // console.log(JSON.stringify(primer_info));
-  // {'F':['CCTACGGGAGGCAGCAG','CCTACGGG.GGC[AT]GCAG','TCTACGGAAGGCTGCAG'],'R':['GGATTAG.TACCC']}
-
-  console.timeEnd('TIME: get_primers_info');
-  return primer_info;
-};
 
 
-
-exports.fill_out_arr_doubles = function (value, repeat_times) {
-  var arr_temp = Array(repeat_times);
-
-  arr_temp.fill(value, 0, repeat_times);
-
-  return arr_temp;
-};
+// exports.fill_out_arr_doubles = function (value, repeat_times) {
+//   var arr_temp = Array(repeat_times);
+//
+//   arr_temp.fill(value, 0, repeat_times);
+//
+//   return arr_temp;
+// };
 
 exports.saveDataset = function (req, res) {
   console.log('TTT1 req.form from saveDataset = ', req.form);
