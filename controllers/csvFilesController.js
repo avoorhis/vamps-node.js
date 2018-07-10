@@ -1,14 +1,15 @@
-var helpers   = require(app_root + '/routes/helpers/helpers');
-var config              = require(app_root + '/config/config');
-var fs                  = require("fs");
-var path                = require("path");
-var metadata_controller = require(app_root + '/controllers/metadataController');
+var helpers                 = require(app_root + '/routes/helpers/helpers');
+var config                  = require(app_root + '/config/config');
+var fs                      = require("fs");
+var path                    = require("path");
+var metadata_controller     = require(app_root + '/controllers/metadataController');
+var new_metadata_controller = require(app_root + '/controllers/metadataController_copy');
 
 // private
 
 // public
 
-exports.sorted_files_by_time = function(req) {
+exports.sorted_files_by_time = function (req) {
   console.time("sorted_files_by_time");
   var f_info = JSON.parse(req.body.file_info);
   var dir    = path.join(config.USER_FILES_BASE, req.user.username);
@@ -21,7 +22,7 @@ exports.sorted_files_by_time = function(req) {
   return f_info;
 };
 
-exports.sorted_files_to_compare = function(req, sorted_files) {
+exports.sorted_files_to_compare = function (req, sorted_files) {
   console.time("sorted_files_to_compare");
 
   var file_names_array = req.body.compare;
@@ -39,7 +40,7 @@ exports.sorted_files_to_compare = function(req, sorted_files) {
   return files;
 };
 
-exports.get_file_diff = function(req, files) {
+exports.get_file_diff = function (req, files) {
   var coopy      = require('coopyhx');
   var inputPath1 = path.join(config.USER_FILES_BASE, req.user.username, files[0]["filename"]);
   var inputPath2 = path.join(config.USER_FILES_BASE, req.user.username, files[1]["filename"]);
@@ -87,7 +88,7 @@ exports.get_file_diff = function(req, files) {
   return "<div class = 'highlighter'>" + table_diff_html + "</div>";
 };
 
-exports.get_csv_files = function(req) {
+exports.get_csv_files = function (req) {
   console.time("TIME: get_csv_files");
 
   var user_csv_dir = path.join(config.USER_FILES_BASE, req.user.username);
@@ -97,17 +98,68 @@ exports.get_csv_files = function(req) {
   return all_my_files;
 };
 
-exports.make_csv = function(req) {
+exports.convertArrayOfObjectsToCSV = function (args) {
+  console.time('TIME: convertArrayOfObjectsToCSV');
+
+  var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_id;
+
+  data = args.data || null;
+  if (data === null) {
+    return null;
+  }
+
+  user_info = args.user_info || null;
+  if (user_info === null) {
+    return null;
+  }
+
+  project_id = args.project_id || null;
+  if (project_id === null) {
+    return null;
+  }
+
+  data_arr = helpers.array_from_object(data);
+
+  var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
+  transposed_data_arr = this.transpose_2d_arr(data_arr, matrix_length);
+
+  columnDelimiter = args.columnDelimiter || ',';
+  lineDelimiter   = args.lineDelimiter || '\n';
+  cellEscape      = args.cellEscape || '"';
+
+  result = '';
+  transposed_data_arr.map(function (row) {
+    // TODO: to a function?
+    // result = row.map(function (item) {
+    var r1 = row.map(function (item) {
+      // Wrap each element of the items array with quotes
+      return cellEscape + item + cellEscape;
+    }).join(columnDelimiter);
+
+    result += r1;
+    result += lineDelimiter;
+  });
+
+
+  console.timeEnd('TIME: convertArrayOfObjectsToCSV');
+
+  return result;
+};
+
+exports.make_csv = function (req) {
   var out_csv_file_name;
   console.time("TIME: make_csv");
 
-  var csv = metadata_controller.convertArrayOfObjectsToCSV({
+  // const met_obj    = new new_metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
+  // var all_metadata = met_obj.make_metadata_object(req, res, pid, data);
+
+  var csv = module.exports.convertArrayOfObjectsToCSV({
     data: req.form,
     user_info: req.user,
     project_id: req.body.project_id
   });
 
-  time_stamp = new Date().getTime();
+  var time_stamp = new Date().getTime();
 
   var base_name     = "metadata-project" + '_' + req.body.project + '_' + req.user.username + '_' + time_stamp + ".csv";
   out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
