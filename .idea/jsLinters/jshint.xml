@@ -60,7 +60,7 @@
     <option passfail="false" />
     <option phantom="false" />
     <option plusplus="false" />
-    <option predef="MD_CUSTOM_FIELDS_UNITS, AllMetadata, app_root, PROJECT_INFORMATION_BY_PID, PROJECT_INFORMATION_BY_PNAME,&#10;DATASET_IDS_BY_PID,&#10;ALL_USERS_BY_UID,&#10;connection, mysql, ALL_DATASETS, MD_CUSTOM_UNITS," />
+    <option predef="MD_CUSTOM_FIELDS_UNITS, AllMetadata, app_root, PROJECT_INFORMATION_BY_PID, PROJECT_INFORMATION_BY_PNAME,&#10;DATASET_IDS_BY_PID,&#10;ALL_USERS_BY_UID,&#10;connection, mysql, ALL_DATASETS, MD_CUSTOM_UNITS, MD_PRIMER_SUITE, " />
     <option proto="false" />
     <option prototypejs="false" />
     <option qunit="false" />

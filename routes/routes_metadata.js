@@ -603,7 +603,7 @@ function make_metadata_object_from_db(req, res) {
     var ids_data   = met_obj.get_all_req_metadata(dataset_id);
 
     Object.assign(AllMetadata_picked[dataset_id], ids_data);
-    var primers_info_by_dataset_id = metadata_controller.get_primers_info(dataset_id);
+    var primers_info_by_dataset_id = met_obj.get_primers_info(dataset_id);
 
     AllMetadata_picked[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
     AllMetadata_picked[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];

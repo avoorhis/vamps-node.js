@@ -124,6 +124,7 @@ class CreateDataObj {
     };
   }
 
+  // This function cyclomatic complexity is too high (6)
   add_project_abstract_info(all_metadata_pid, repeat_times) { // use project_obj.abstract_data instead
     if ((all_metadata_pid['project_abstract'] === 'undefined') || (typeof all_metadata_pid['project_abstract'] === 'undefined') || (!all_metadata_pid.hasOwnProperty(['project_abstract']))) {
       all_metadata_pid['project_abstract'] = this.fill_out_arr_doubles('', repeat_times);
@@ -214,7 +215,7 @@ class CreateDataObj {
   make_metadata_object(req, res, pid, data_obj) {
     console.time('TIME: make_metadata_object');
 
-    var all_metadata = {};
+    // var all_metadata = {};
     var dataset_ids  = DATASET_IDS_BY_PID[pid];
     var repeat_times = dataset_ids.length;
 
@@ -223,7 +224,7 @@ class CreateDataObj {
 
     // 1)
     //   // TODO: don't send all_metadata?
-    all_metadata = this.all_metadata;
+    var all_metadata = this.all_metadata;
 
     //2) all
 
@@ -581,6 +582,41 @@ class CreateDataObj {
     console.time('TIME: 5) get_all_req_metadata');
 
     return data;
+  }
+
+  // This function cyclomatic complexity is too high (68)
+  get_primers_info(dataset_id) {
+    console.time('TIME: get_primers_info');
+    var primer_suite_id = AllMetadata[dataset_id]['primer_suite_id'];
+    var primer_info     = {};
+
+    if (typeof primer_suite_id === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id] === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined') {
+      return {};
+    }
+    else {
+      try {
+        for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
+
+          var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
+
+          if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
+            primer_info[curr_direction] = [];
+          }
+
+          primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
+        }
+      } catch (err) {
+        // Handle the error here.
+        return {};
+      }
+
+    }
+    // console.log('DDD primer_info');
+    // console.log(JSON.stringify(primer_info));
+    // {'F':['CCTACGGGAGGCAGCAG','CCTACGGG.GGC[AT]GCAG','TCTACGGAAGGCTGCAG'],'R':['GGATTAG.TACCC']}
+
+    console.timeEnd('TIME: get_primers_info');
+    return primer_info;
   }
 
 
