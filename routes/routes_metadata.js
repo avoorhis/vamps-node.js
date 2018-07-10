@@ -295,7 +295,7 @@ router.post('/metadata_new',
     else {
       // ?? render_edit_form(req, res, {}, {}, all_field_names)
       console.log("metadata_upload_new is valid");
-      show_new.saveProject(req, res);
+      metadata_controller.saveProject(req, res);
     }
   });
 
