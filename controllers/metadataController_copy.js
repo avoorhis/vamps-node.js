@@ -405,13 +405,7 @@ class CreateDataObj {
 
   }
 
-  // fill_out_arr_doubles(value, repeat_times) {
-  //   var arr_temp = Array(repeat_times);
-  //
-  //   arr_temp.fill(value, 0, repeat_times);
-  //
-  //   return arr_temp;
-  // }
+
 
 }
 

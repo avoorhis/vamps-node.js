@@ -75,6 +75,18 @@ module.exports.array_from_object = function (data) {
   return data_arr;
 };
 
+module.exports.get_second = function (element) {
+  console.time('TIME: get_second');
+
+  for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES) {
+    if (CONSTS.ORDERED_METADATA_NAMES[met_names_row].includes(element)) {
+      // console.log('ETET met_names_row[1]');
+      // console.log(CONSTS.ORDERED_METADATA_NAMES[met_names_row][1]);
+      return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
+    }
+  }
+  console.timeEnd('TIME: get_second');
+};
 // };
 
 /** Benchmarking
