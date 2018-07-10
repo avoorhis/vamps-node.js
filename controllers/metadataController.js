@@ -60,23 +60,6 @@ function add_info_to_project_globals(object_to_add, pid) {
   }
 }
 
-// exports.slice_object = function (object, slice_keys) {
-//   console.time('TIME: convert to string');
-//   for (var i = 0; i < slice_keys.length; i++) {
-//     slice_keys[i] = String(slice_keys[i]);
-//   }
-//   console.timeEnd('TIME: convert to string');
-//
-//   return Object.keys(object)
-//     .filter(function (key) {
-//       return slice_keys.indexOf(key) >= 0;
-//     })
-//     .reduce(function (acc, key) {
-//       acc[key] = object[key];
-//       return acc;
-//     }, {});
-// };
-
 exports.get_project_name = function (edit_metadata_file) {
   console.time('TIME: get_project_name');
 
@@ -128,21 +111,21 @@ exports.get_primers_info = function (dataset_id) {
 };
 
 
-exports.get_all_req_metadata = function (dataset_id) {
-  console.time('TIME: 5) get_all_req_metadata');
-
-  var data = {};
-  for (var idx = 0; idx < CONSTS.REQ_METADATA_FIELDS_wIDs.length; idx++) {
-    var key      = CONSTS.REQ_METADATA_FIELDS_wIDs[idx];
-    // data[key] = [];
-    var val_hash = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + '_id');
-
-    data[key] = val_hash.value;
-  }
-  console.time('TIME: 5) get_all_req_metadata');
-
-  return data;
-};
+// exports.get_all_req_metadata = function (dataset_id) {
+//   console.time('TIME: 5) get_all_req_metadata');
+//
+//   var data = {};
+//   for (var idx = 0; idx < CONSTS.REQ_METADATA_FIELDS_wIDs.length; idx++) {
+//     var key      = CONSTS.REQ_METADATA_FIELDS_wIDs[idx];
+//     // data[key] = [];
+//     var val_hash = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + '_id');
+//
+//     data[key] = val_hash.value;
+//   }
+//   console.time('TIME: 5) get_all_req_metadata');
+//
+//   return data;
+// };
 
 
 

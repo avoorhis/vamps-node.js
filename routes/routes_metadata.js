@@ -569,7 +569,7 @@ function make_metadata_object_from_db(req, res) {
   var pid         = req.body.project_id;
   //repeated!
   var dataset_ids = DATASET_IDS_BY_PID[pid];
-  var project     = PROJECT_INFORMATION_BY_PID[pid].project;
+  // var project     = PROJECT_INFORMATION_BY_PID[pid].project;
 
   // get_db_data
   console.time("TIME: helpers.slice_object");
@@ -594,11 +594,13 @@ function make_metadata_object_from_db(req, res) {
   }
   console.timeEnd("TIME: dataset_info");
 
+  const met_obj     = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+
   // add missing info to AllMetadata_picked
   console.time("TIME: add missing info to AllMetadata_picked");
   for (var d in dataset_ids) {
     var dataset_id = dataset_ids[d];
-    var ids_data   = metadata_controller.get_all_req_metadata(dataset_id);
+    var ids_data   = met_obj.get_all_req_metadata(dataset_id);
 
     Object.assign(AllMetadata_picked[dataset_id], ids_data);
     var primers_info_by_dataset_id = metadata_controller.get_primers_info(dataset_id);
@@ -619,7 +621,6 @@ function make_metadata_object_from_db(req, res) {
 
   // as many values per field as there are datasets
 
-  const met_obj     = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
   var user_id     = PROJECT_INFORMATION_BY_PID[pid].oid;
   // var user_obj = new User.getUserInfoFromGlobal(user_id);
 
