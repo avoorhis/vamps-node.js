@@ -286,7 +286,6 @@ router.post('/metadata_new',
     const show_new = new new_metadata_controller.ShowObj(req, res);
 
     if (!req.form.isValid) {
-      // metadata_controller.show_metadata_new_again(req, res);
       console.log('!req.form.isValid');
       console.log("EEE req.form.errors", req.form.errors);
       show_new.show_metadata_new_again();
@@ -573,9 +572,9 @@ function make_metadata_object_from_db(req, res) {
   var project     = PROJECT_INFORMATION_BY_PID[pid].project;
 
   // get_db_data
-  console.time("TIME: metadata_controller.slice_object");
-  var AllMetadata_picked = metadata_controller.slice_object(AllMetadata, dataset_ids);
-  console.timeEnd("TIME: metadata_controller.slice_object");
+  console.time("TIME: helpers.slice_object");
+  var AllMetadata_picked = helpers.slice_object(AllMetadata, dataset_ids);
+  console.timeEnd("TIME: helpers.slice_object");
 
   console.time("TIME: dataset_info");
   // get dataset_info

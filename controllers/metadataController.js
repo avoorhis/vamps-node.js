@@ -60,37 +60,22 @@ function add_info_to_project_globals(object_to_add, pid) {
   }
 }
 
-
-// exports.get_new_val = function (req, all_metadata_pid, all_new_names) {
-//   var new_val = [];
-//   for (var new_name_idx in all_new_names) {
-//     var new_name = all_new_names[new_name_idx];
-//     if (new_name !== '') {
-//       new_val = req.body[new_name];
-//     }
-//     if (typeof new_val !== 'undefined' && new_val.length !== 0) {
-//       all_metadata_pid[new_name] = new_val;
-//     }
+// exports.slice_object = function (object, slice_keys) {
+//   console.time('TIME: convert to string');
+//   for (var i = 0; i < slice_keys.length; i++) {
+//     slice_keys[i] = String(slice_keys[i]);
 //   }
-//   return all_metadata_pid;
+//   console.timeEnd('TIME: convert to string');
+//
+//   return Object.keys(object)
+//     .filter(function (key) {
+//       return slice_keys.indexOf(key) >= 0;
+//     })
+//     .reduce(function (acc, key) {
+//       acc[key] = object[key];
+//       return acc;
+//     }, {});
 // };
-
-exports.slice_object = function (object, slice_keys) {
-  console.time('TIME: convert to string');
-  for (var i = 0; i < slice_keys.length; i++) {
-    slice_keys[i] = String(slice_keys[i]);
-  }
-  console.timeEnd('TIME: convert to string');
-
-  return Object.keys(object)
-    .filter(function (key) {
-      return slice_keys.indexOf(key) >= 0;
-    })
-    .reduce(function (acc, key) {
-      acc[key] = object[key];
-      return acc;
-    }, {});
-};
 
 exports.get_project_name = function (edit_metadata_file) {
   console.time('TIME: get_project_name');

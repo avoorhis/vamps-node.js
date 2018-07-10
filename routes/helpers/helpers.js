@@ -2130,3 +2130,20 @@ exports.geo_loc_name_continental_validation = function (value) {
     throw new Error("There is no Country '" + value + "', please check the spelling");
   }
 };
+
+exports.slice_object = function (object, slice_keys) {
+  console.time('TIME: convert to string');
+  for (var i = 0; i < slice_keys.length; i++) {
+    slice_keys[i] = String(slice_keys[i]);
+  }
+  console.timeEnd('TIME: convert to string');
+
+  return Object.keys(object)
+    .filter(function (key) {
+      return slice_keys.indexOf(key) >= 0;
+    })
+    .reduce(function (acc, key) {
+      acc[key] = object[key];
+      return acc;
+    }, {});
+};
