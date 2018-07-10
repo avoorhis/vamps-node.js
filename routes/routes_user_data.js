@@ -738,7 +738,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                 
                 }
                 for(n in datasets){
-                    console.log('ds '+datasets[n])
+                    //console.log('ds '+datasets[n])
                     info.dataset[datasets[n]] = '0'
                     
                 }
@@ -746,8 +746,8 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                 info.num_of_datasets = datasets.length
                 var pid = 'none'
                 //==========================
-                
-                var cmd_list = matrixTax(req, info);
+                var scriptlog1   = path.join(info.project_dir, 'matrix_log1.txt');
+                var cmd_list = matrixTax(req, info, scriptlog1);
                 console.log(cmd_list)
                 var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': info.project_name, 'status': '', 'msg': '' };
                 status_params.statusOK = 'OK-MATRIX';
@@ -755,11 +755,11 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                 status_params.msgOK = 'Finished MATRIX';
                 status_params.msgSUCCESS = 'MATRIX -Tax assignments';
                 var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'matrix');
-                var scriptlog   = script_vars[0];
-                var script_text = script_vars[1];
-                var script_path     = path.join(info.project_dir, 'matrix_script.sh');
-
-                var nodelog         = fs.openSync(path.join(info.project_dir, 'assignment.log'), 'a', 0664);
+                var scriptlog2   = script_vars[0]; //path.join(info.project_dir, 'matrix_log.txt');
+                var script_text = script_vars[1]; //helpers.get_qsub_script_text_only(req, scriptlog2, info.project_dir, 'matrix', cmd_list);
+                var script_path = path.join(info.project_dir, 'matrix_script.sh');
+                
+                //var nodelog         = fs.openSync(path.join(info.project_dir, 'assignment.log'), 'a', 0664);
                 var ok_code_options = ['matrix', status_params, res,''];
 
                 // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
@@ -770,8 +770,8 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                 
                 fs.writeFile(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }), {mode:0o664}, function writeConfigFile(err) {                                  
 					if(err){return console.log(err);} // => null
-					fs.chmodSync(new_info_filename_path, 0o664);
-					fs.chmodSync(new_file_path, 0o664);
+					fs.chmodSync(new_info_filename_path, 0o666);
+					fs.chmodSync(new_file_path, 0o666);
 					req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
 
 					fs.writeFile(script_path, 
@@ -786,7 +786,8 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                       else
                       {
                         console.log('Before RunAndCheck Matrix')
-                        RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
+                        var full_script     = script_path + ' > ' + scriptlog2
+                        RunAndCheck(full_script, '', req, project, res, checkPid, ok_code_options);
                         status_params.status = status_params.statusSUCCESS;
                         status_params.msg = status_params.msgSUCCESS;
                         helpers.update_status(status_params);
@@ -794,7 +795,6 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                         req.flash('success', 'Matrix' + " has been started for project: '" + info.project_name + "'");
                         //res.redirect("/user_data/your_projects");
                         process.umask(oldmask);
-                        console.log("1-The file was saved!");
                         res.render('user_data/import_choices/matrix', {
 					        title: 'VAMPS:Import Choices',
 					        def_name:'',
@@ -1622,7 +1622,7 @@ function checkPid(check_pid_options, last_line)
     console.log('checkPID ERROR pid is not an integer: ', pid);
   }
 }
-function matrixTax(req, info)
+function matrixTax(req, info, log)
 {
     var script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
     var units = 'matrix'
@@ -1630,9 +1630,9 @@ function matrixTax(req, info)
     var cmd1_opts = [ '-i',new_file_path,'-d',info.project_dir,'-host',req.CONFIG.hostname,'-p',info.project_name,'-u',req.user.username]    
     var cmd2_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',req.CONFIG.site,'--config',req.CONSTS.CONFIG_FILE ]
     var cmd3_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',req.CONSTS.CONFIG_FILE ]
-    var matrix_cmd1 = script_path + '/vamps_script_matrix_loader.py'                + ' '+cmd1_opts.join(' ')   
-    var matrix_cmd2 = script_path + '/vamps_script_upload_metadata.py'              + ' '+cmd2_opts.join(' ')
-    var matrix_cmd3 = script_path + '/vamps_script_create_json_dataset_files.py'    + ' '+cmd3_opts.join(' ')
+    var matrix_cmd1 = script_path + '/vamps_script_matrix_loader.py'                + ' '+cmd1_opts.join(' ')  + ' >> ' + log 
+    var matrix_cmd2 = script_path + '/vamps_script_upload_metadata.py'              + ' '+cmd2_opts.join(' ')  + ' >> ' + log
+    var matrix_cmd3 = script_path + '/vamps_script_create_json_dataset_files.py'    + ' '+cmd3_opts.join(' ')  + ' >> ' + log
     var cmd_list = [ matrix_cmd1, matrix_cmd2, matrix_cmd3 ];
 
     return cmd_list
@@ -2826,7 +2826,7 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
 
   var exec = require('child_process').exec;
   var opts = {env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH} }
-  var child = exec(script_path,opts);
+  var child = exec(script_path, opts);
   //var child = spawn(script_path, create_json_files_params, {
 //                             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
 //                             detached: true, stdio: 'pipe'
