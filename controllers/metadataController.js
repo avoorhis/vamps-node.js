@@ -1,49 +1,38 @@
 var Project                 = require(app_root + '/models/project_model'); // jshint ignore:line
-var Dataset                 = require(app_root + '/models/dataset_model');
-var User                    = require(app_root + '/models/user_model');
 var helpers                 = require(app_root + '/routes/helpers/helpers');
 var CONSTS                  = require(app_root + '/public/constants');
-var validator               = require('validator');
-// var config    = require(app_root + '/config/config');
-var fs                      = require('fs');
-var path                    = require('path');
 var new_metadata_controller = require(app_root + '/controllers/metadataController_copy');
-
-// Display list of all Submissions.
-// exports.submission_list = function (req, res) {
-//   res.send('NOT IMPLEMENTED: Submission list');
-// };
 
 
 // private
 
 
 
-function filterItems(arr, query) {
-  return arr.filter(function (el) {
-    return el.toLowerCase().indexOf(query.toLowerCase()) < 0;
-  });
-}
+// function filterItems(arr, query) {
+//   return arr.filter(function (el) {
+//     return el.toLowerCase().indexOf(query.toLowerCase()) < 0;
+//   });
+// }
 
-function make_ordered_field_names_obj() {
-  console.time('TIME: make_ordered_field_names_obj');
-  var ordered_field_names_obj = {};
+// function make_ordered_field_names_obj() {
+//   console.time('TIME: make_ordered_field_names_obj');
+//   var ordered_field_names_obj = {};
+//
+//   for (var i in CONSTS.ORDERED_METADATA_NAMES) {
+//     // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
+//     var temp_arr = [i];
+//     temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
+//     ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
+//   }
+//   console.timeEnd('TIME: make_ordered_field_names_obj');
+//   return ordered_field_names_obj;
+// }
 
-  for (var i in CONSTS.ORDERED_METADATA_NAMES) {
-    // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
-    var temp_arr = [i];
-    temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
-    ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
-  }
-  console.timeEnd('TIME: make_ordered_field_names_obj');
-  return ordered_field_names_obj;
-}
-
-function get_object_vals(object_name) {
-  return Object.keys(object_name).map(function (key) {
-    return object_name[key];
-  });
-}
+// function get_object_vals(object_name) {
+//   return Object.keys(object_name).map(function (key) {
+//     return object_name[key];
+//   });
+// }
 
 
 function add_info_to_project_globals(object_to_add, pid) {

@@ -2,8 +2,7 @@ var helpers                 = require(app_root + '/routes/helpers/helpers');
 var config                  = require(app_root + '/config/config');
 var fs                      = require("fs");
 var path                    = require("path");
-var metadata_controller     = require(app_root + '/controllers/metadataController');
-var new_metadata_controller = require(app_root + '/controllers/metadataController_copy');
+// var new_metadata_controller = require(app_root + '/controllers/metadataController_copy');
 
 // private
 
