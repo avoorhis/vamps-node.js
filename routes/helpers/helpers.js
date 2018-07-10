@@ -2038,6 +2038,19 @@ function check_regexp(reg_exp, value, err_msg) {
   }
 }
 
+// metadata form validation
+// TODO: move to controller
+
+
+function checkArray(my_arr) {
+  for (var i = 0; my_arr.length > i; i++) {
+    if (my_arr[i] === '') {
+      return false;
+    }
+  }
+  return true;
+}
+
 function region_valid(value, region_low, region_high) {
   if ((value !== '') && (parseInt(value) < parseInt(region_low) || parseInt(value) > parseInt(region_high))) {
     throw new Error("'" + value + "' is not valid, %s should be between " + region_low + " and " + region_high);

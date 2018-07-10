@@ -16,29 +16,7 @@ var new_metadata_controller = require(app_root + '/controllers/metadataControlle
 
 
 // private
-function checkArray(my_arr) {
-  for (var i = 0; my_arr.length > i; i++) {
-    if (my_arr[i] === '') {
-      return false;
-    }
-  }
-  return true;
-}
 
-// function check_regexp(reg_exp, value, err_msg) {
-//   var result = value.match(reg_exp);
-//
-//   // if (value !== '' && result === null) {
-//   if (value !== '' && result !== null) {
-//     throw new Error("'" + value + "' is not allowed in '%s'" + err_msg);
-//   }
-// }
-
-// function region_valid(value, region_low, region_high) {
-//   if ((value !== '') && (parseInt(value) < parseInt(region_low) || parseInt(value) > parseInt(region_high))) {
-//     throw new Error("'" + value + "' is not valid, %s should be between " + region_low + " and " + region_high);
-//   }
-// }
 
 function new_row_field_validation(req, field_name) {
   console.time('TIME: new_row_field_validation');
@@ -208,97 +186,6 @@ function add_info_to_project_globals(object_to_add, pid) {
 
 // public
 
-// exports.get_all_field_units = function (req) {
-//   var current_field_units = MD_CUSTOM_UNITS[req.body.project_id];
-// };
-
-exports.get_second = function (element) {
-  console.time('TIME: get_second');
-
-  for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES) {
-    if (CONSTS.ORDERED_METADATA_NAMES[met_names_row].includes(element)) {
-      // console.log('ETET met_names_row[1]');
-      // console.log(CONSTS.ORDERED_METADATA_NAMES[met_names_row][1]);
-      return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
-    }
-  }
-  console.timeEnd('TIME: get_second');
-};
-
-// exports.env_items_validation = function (value) {
-//   if (value === 'Please choose one') {
-//     throw new Error('%s is required. Please choose one value from the dropdown menu');
-//   }
-// };
-//
-// exports.geo_loc_name_validation = function (value, source) {
-//   if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
-//     throw new Error("Either 'Country' or 'Longhurst Zone' are required"); // jshint ignore:line
-//   }
-// };
-//
-// exports.geo_loc_name_continental_filter = function (value) {
-//   console.time('geo_loc_name_continental_filter');
-//   for (var key in CONSTS.GAZ_SPELLING) {
-//     if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
-//       var curr = CONSTS.GAZ_SPELLING[key];
-//       if (curr.indexOf(value.toLowerCase()) > -1) {
-//         return key;
-//       }
-//     }
-//   }
-//   console.timeEnd('geo_loc_name_continental_filter');
-// };
-//
-// exports.geo_loc_name_marine_validation = function (value) {
-//   if (MD_ENV_LZC_vals.indexOf(value) < 0 && (value !== '')) {
-//     throw new Error("There is no Longhurst Zone '" + value + "', please check the spelling");
-//   }
-// };
-//
-// exports.geo_loc_name_continental_validation = function (value) {
-//   if (MD_ENV_CNTRY_vals.indexOf(value) < 0 && (value !== '')) {
-//     throw new Error("There is no Country '" + value + "', please check the spelling");
-//   }
-// };
-
-// exports.numbers_n_period = function (value) {
-//   // var regex = /^[0-9.]+$/;
-//   //[^0-9.] faster
-//   var reg_exp = /[^0-9.]/;
-//   var err_msg = ', please use only numbers and periods.';
-//   check_regexp(reg_exp, value, err_msg);
-// };
-//
-// exports.numbers_n_period_n_minus = function (value) {
-//   // var regex = /^[0-9.]+$/;
-//   //[^0-9.] faster
-//   var reg_exp = /[^0-9.-]/;
-//   var err_msg = ', please use only numbers, periods and minus.';
-//   check_regexp(reg_exp, value, err_msg);
-// };
-//
-// exports.longitude_valid = function (value) {
-//   region_valid(value, -180, 180);
-// };
-//
-// exports.latitude_valid = function (value) {
-//   region_valid(value, -90, 90);
-// };
-//
-// exports.ph_valid = function (value) {
-//   region_valid(value, 0, 14);
-// };
-//
-// exports.percent_valid = function (value) {
-//   region_valid(value, 0, 100);
-// };
-//
-// exports.positive = function (value) {
-//   if (value !== '' && parseInt(value) < 0) {
-//     throw new Error("'" + value + "' is not valid, %s should be greater then 0.");
-//   }
-// };
 
 exports.get_column_name = function (row_idx, req) {
   console.time('TIME: get_column_name');
@@ -465,33 +352,7 @@ exports.get_all_req_metadata = function (dataset_id) {
   return data;
 };
 
-// exports.make_all_field_names = function (dataset_ids) {
-//   var ordered_metadata_names_only = get_names_from_ordered_const();
-//
-//   // why get_field_names_by_dataset_ids again? 1) substract METADATA_NAMES_SUBSTRACT, 2) substract '_id', 3) substract ordered_metadata_names_only
-//   var structured_field_names0 = get_field_names_by_dataset_ids(dataset_ids);
-//   var diff_names              = structured_field_names0.filter(function (x) {
-//     return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0;
-//   });
-//   diff_names                  = diff_names.filter(function (item) {
-//     return /^((?!_id).)*$/.test(item);
-//   });
-//   diff_names                  = diff_names.filter(function (x) {
-//     return ordered_metadata_names_only.indexOf(x) < 0;
-//   });
-//
-//   // // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [diff_names[i2], diff_names[i2], '', '']
-//   // // TODO: add units from db
-//   // var big_arr_diff_names = [];
-//   // for (var i2 = 0; i2 < diff_names.length; i2++) {
-//   //   var temp_arr = [diff_names[i2], diff_names[i2], '', ''];
-//   //   big_arr_diff_names.push(temp_arr);
-//   // }
-//
-//   var big_arr_diff_names = make_array4(diff_names);
-//   return helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
-//
-// };
+
 
 exports.fill_out_arr_doubles = function (value, repeat_times) {
   var arr_temp = Array(repeat_times);
@@ -500,134 +361,6 @@ exports.fill_out_arr_doubles = function (value, repeat_times) {
 
   return arr_temp;
 };
-
-// TODO: move to helpers, use here and for project_profile
-// exports.get_project_prefix = function (project) {
-//   console.time('TIME: get_project_prefix');
-//   var project_parts  = project.split('_');
-//   var project_prefix = project;
-//
-//   if (project_parts.length >= 2) {
-//     project_prefix = project_parts[0] + '_' + project_parts[1];
-//   }
-//   console.timeEnd('TIME: get_project_prefix');
-//   return project_prefix;
-// };
-
-// exports.array_from_object = function (data) {
-//   var data_arr = [];
-//   for (var key in data) {
-//     var value_arr;
-//     if (typeof data[key] === 'object') {
-//       value_arr = data[key];
-//     }
-//     else {
-//       value_arr = [data[key]];
-//     }
-//     value_arr.unshift(key);
-//     data_arr.push(value_arr);
-//   }
-//   return data_arr;
-// };
-
-// exports.transpose_2d_arr = function (data_arr, project_id) {
-//   console.time('TIME: transpose_2d_arr');
-//
-//   //make an array with proper length, even if the first one is empty
-//   var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
-//   var length_array  = data_arr[0];
-//   if (data_arr[0].length < matrix_length) {
-//     length_array = module.exports.fill_out_arr_doubles('', matrix_length);
-//   }
-//
-//   var newArray = length_array.map(function (col, i) {
-//     return data_arr.map(function (row) {
-//       return row[i];
-//     });
-//   });
-//   console.timeEnd('TIME: transpose_2d_arr');
-//   return newArray;
-// };
-
-//TODO: move to csv files controller?
-//TODO: cyclomatic comlexity is 10!
-// exports.convertArrayOfObjectsToCSV = function (args) {
-//   console.time('TIME: convertArrayOfObjectsToCSV');
-//
-//   var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_id;
-//
-//   data = args.data || null;
-//   if (data === null) {
-//     return null;
-//   }
-//
-//   user_info = args.user_info || null;
-//   if (user_info === null) {
-//     return null;
-//   }
-//
-//   project_id = args.project_id || null;
-//   if (project_id === null) {
-//     return null;
-//   }
-//
-//   data_arr = module.exports.array_from_object(data);
-//
-//   var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
-//   transposed_data_arr = module.exports.transpose_2d_arr(data_arr, matrix_length);
-//
-//   columnDelimiter = args.columnDelimiter || ',';
-//   lineDelimiter   = args.lineDelimiter || '\n';
-//   cellEscape      = args.cellEscape || '"';
-//
-//   result = '';
-//   transposed_data_arr.map(function (row) {
-//     // TODO: to a function?
-//     // result = row.map(function (item) {
-//     var r1 = row.map(function (item) {
-//       // Wrap each element of the items array with quotes
-//       return cellEscape + item + cellEscape;
-//     }).join(columnDelimiter);
-//
-//     result += r1;
-//     result += lineDelimiter;
-//   });
-//
-//
-//   console.timeEnd('TIME: convertArrayOfObjectsToCSV');
-//
-//   return result;
-// };
-
-// exports.get_pi_list = function () {
-//   console.log('FROM Controller');
-//   var pi_list = [];
-//
-//   for (var i in ALL_USERS_BY_UID) {
-//     pi_list.push({
-//       'PI': ALL_USERS_BY_UID[i].last_name + ' ' + ALL_USERS_BY_UID[i].first_name,
-//       'pi_id': i,
-//       'last_name': ALL_USERS_BY_UID[i].last_name,
-//       'first_name': ALL_USERS_BY_UID[i].first_name,
-//       'pi_email': ALL_USERS_BY_UID[i].email
-//     });
-//   }
-//
-//   pi_list.sort(function sortByAlpha(a, b) {
-//     return helpers.compareStrings_alpha(a.PI, b.PI);
-//   });
-//
-//   return pi_list;
-// };
-
-// exports.get_inits = function (arr) {
-//   var inits_len     = arr.length;
-//   var project_name1 = '';
-//   for (var i = 0; i < inits_len; i++) {
-//     project_name1 = project_name1 + arr[i][0];
-//   }
-//   return project_name1;
-// };
 
 exports.saveDataset = function (req, res) {
   console.log('TTT1 req.form from saveDataset = ', req.form);
