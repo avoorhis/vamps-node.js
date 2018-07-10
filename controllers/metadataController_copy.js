@@ -372,7 +372,7 @@ class CreateDataObj {
     console.timeEnd('TIME: get_first_column');
 
     return column;
-  };
+  }
 
   collect_new_rows(req, all_field_names) {
     console.time('TIME: collect_new_rows');
@@ -551,6 +551,20 @@ class CreateDataObj {
 
     return all_metadata;
 
+  }
+
+  get_new_val(req, all_metadata_pid, all_new_names) {
+    var new_val = [];
+    for (var new_name_idx in all_new_names) {
+      var new_name = all_new_names[new_name_idx];
+      if (new_name !== '') {
+        new_val = req.body[new_name];
+      }
+      if (typeof new_val !== 'undefined' && new_val.length !== 0) {
+        all_metadata_pid[new_name] = new_val;
+      }
+    }
+    return all_metadata_pid;
   }
 
 

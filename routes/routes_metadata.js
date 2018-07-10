@@ -483,7 +483,7 @@ function make_metadata_object_from_form(req, res) {
 
   var all_field_names_first_column = met_obj.get_first_column(all_field_names_with_new, 0);
   var all_new_names                = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
-  all_metadata[pid]                = metadata_controller.get_new_val(req, all_metadata[pid], all_new_names);
+  all_metadata[pid]                = met_obj.get_new_val(req, all_metadata[pid], all_new_names);
 
   //collect errors
   var myArray_fail = helpers.unique_array(req.form.errors);
