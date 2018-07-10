@@ -12,7 +12,7 @@ var config  = require(app_root + '/config/config');
 var nodeMailer              = require('nodemailer');
 var Project                 = require(app_root + '/models/project_model');
 // var User    = require(app_root + '/models/user_model');
-var metadata_controller     = require(app_root + '/controllers/metadataController');
+// var metadata_controller     = require(app_root + '/controllers/metadataController');
 var csv_files_controller    = require(app_root + '/controllers/csvFilesController');
 var new_metadata_controller = require(app_root + '/controllers/metadataController_copy');
 
@@ -516,9 +516,12 @@ function make_metadata_object_from_csv(req, res) {
 
   // console.log("MMM req.body from make_metadata_object_from_csv");
   // console.log(req.body);
+  // const met_obj          = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+  // var data_in_obj_of_arr = met_obj.from_obj_to_obj_of_arr(data, pid);
 
   var file_name    = req.body.edit_metadata_file;
-  var project_name = metadata_controller.get_project_name(file_name);
+  var project_name = req.body.project;
+        // metadata_controller.get_project_name(file_name);
   var pid          = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
 
 
@@ -643,9 +646,6 @@ function make_metadata_object_from_db(req, res) {
 
   const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names4);
   show_new.render_edit_form();
-
-  // metadata_controller.render_edit_form(req, res, all_metadata, all_field_names4);
-
   console.timeEnd("TIME: make_metadata_object_from_db");
 }
 
