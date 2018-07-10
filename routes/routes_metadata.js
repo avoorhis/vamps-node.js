@@ -311,7 +311,8 @@ router.post('/metadata_new',
             new_project.add_info_to_project_globals(project_obj, pid);
 
             const met_obj = new new_metadata_controller.CreateDataObj(req, res, pid, []);
-            met_obj.make_new_project_for_form(rows, req, res, project_obj);
+            console.trace("Show me");
+            met_obj.make_new_project_for_form(rows, project_obj);
           }
         }
         );
