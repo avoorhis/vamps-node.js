@@ -516,9 +516,6 @@ function make_metadata_object_from_csv(req, res) {
 
   // console.log("MMM req.body from make_metadata_object_from_csv");
   // console.log(req.body);
-  // const met_obj          = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
-  // var data_in_obj_of_arr = met_obj.from_obj_to_obj_of_arr(data, pid);
-
   var file_name    = req.body.edit_metadata_file;
   var project_name = req.body.project;
         // metadata_controller.get_project_name(file_name);
