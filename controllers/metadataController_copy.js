@@ -124,8 +124,8 @@ class CreateDataObj {
     };
   }
 
-  add_project_abstract_info(all_metadata_pid, repeat_times) {
-    if ((all_metadata_pid['project_abstract'] === 'undefined') || (!all_metadata_pid.hasOwnProperty(['project_abstract']))) {
+  add_project_abstract_info(all_metadata_pid, repeat_times) { // use project_obj.abstract_data instead
+    if ((all_metadata_pid['project_abstract'] === 'undefined') || (typeof all_metadata_pid['project_abstract'] === 'undefined') || (!all_metadata_pid.hasOwnProperty(['project_abstract']))) {
       all_metadata_pid['project_abstract'] = this.fill_out_arr_doubles('', repeat_times);
     }
     else {
@@ -405,13 +405,13 @@ class CreateDataObj {
 
   }
 
-  fill_out_arr_doubles(value, repeat_times) {
-    var arr_temp = Array(repeat_times);
-
-    arr_temp.fill(value, 0, repeat_times);
-
-    return arr_temp;
-  }
+  // fill_out_arr_doubles(value, repeat_times) {
+  //   var arr_temp = Array(repeat_times);
+  //
+  //   arr_temp.fill(value, 0, repeat_times);
+  //
+  //   return arr_temp;
+  // }
 
 }
 
@@ -519,7 +519,6 @@ class ShowObj {
     console.log('JJJ req.form from saveProject = ', req.form);
     var user_id       = req.form.pi_id_name.split('#')[0];
     const new_project = new Project(req, res, 0, user_id);
-
     var project_obj = new_project.project_obj;
     console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
 
@@ -614,9 +613,9 @@ class ShowObj {
 
         this.all_field_units = MD_CUSTOM_UNITS[pid];
 
-        this.render_edit_form();
       }
     });
+    this.render_edit_form();
   }
 }
 
