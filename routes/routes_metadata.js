@@ -11,7 +11,7 @@ var config  = require(app_root + '/config/config');
 // var expressValidator = require('express-validator');
 var nodeMailer              = require('nodemailer');
 var Project                 = require(app_root + '/models/project_model');
-var User    = require(app_root + '/models/user_model');
+// var User    = require(app_root + '/models/user_model');
 var metadata_controller     = require(app_root + '/controllers/metadataController');
 var csv_files_controller    = require(app_root + '/controllers/csvFilesController');
 var new_metadata_controller = require(app_root + '/controllers/metadataController_copy');
@@ -435,7 +435,7 @@ router.post('/metadata_upload',
 
       make_metadata_object_from_form(req, res);
       console.log("III in form");
-      csv_files_controller.make_csv(req, res);
+      // csv_files_controller.make_csv(req, res);
 
       if (req.body.done_editing === "done_editing") {
         send_mail_finished(req, res);
@@ -463,14 +463,14 @@ function make_metadata_object_from_form(req, res) {
 
   //add project_abstract etc.
   //TODO: DRY with other such places.
+  const met_obj            = new new_metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
 
   var normal_length = data['dataset'].length;
   for (var a in data) {
     if (data[a].length < normal_length && (typeof data[a][0] !== 'undefined')) {
-      data[a] = metadata_controller.fill_out_arr_doubles(data[a][0], normal_length);
+      data[a] = met_obj.fill_out_arr_doubles(data[a][0], normal_length);
     }
   }
-  const met_obj            = new new_metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
   var all_metadata         = met_obj.make_metadata_object(req, res, pid, data);
   var all_field_names_orig = metadata_controller.make_all_field_names(data['dataset_id']);
 
