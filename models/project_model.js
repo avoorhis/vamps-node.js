@@ -193,6 +193,8 @@ class Project {
     return connection.query("update project set Title=?,Status=? where Id=?", [Project.Title, Project.Status, id], callback);
   }
 
+
+
 }
 
 module.exports = Project;

@@ -1,38 +1,7 @@
 var Project                 = require(app_root + '/models/project_model'); // jshint ignore:line
-var helpers                 = require(app_root + '/routes/helpers/helpers');
 var CONSTS                  = require(app_root + '/public/constants');
 var new_metadata_controller = require(app_root + '/controllers/metadataController_copy');
 
-
-// private
-
-
-
-// function filterItems(arr, query) {
-//   return arr.filter(function (el) {
-//     return el.toLowerCase().indexOf(query.toLowerCase()) < 0;
-//   });
-// }
-
-// function make_ordered_field_names_obj() {
-//   console.time('TIME: make_ordered_field_names_obj');
-//   var ordered_field_names_obj = {};
-//
-//   for (var i in CONSTS.ORDERED_METADATA_NAMES) {
-//     // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
-//     var temp_arr = [i];
-//     temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
-//     ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
-//   }
-//   console.timeEnd('TIME: make_ordered_field_names_obj');
-//   return ordered_field_names_obj;
-// }
-
-// function get_object_vals(object_name) {
-//   return Object.keys(object_name).map(function (key) {
-//     return object_name[key];
-//   });
-// }
 
 
 function add_info_to_project_globals(object_to_add, pid) {
@@ -48,39 +17,6 @@ function add_info_to_project_globals(object_to_add, pid) {
     PROJECT_INFORMATION_BY_PNAME[object_to_add.project] = Object.assign(PROJECT_INFORMATION_BY_PID[pid]);
   }
 }
-
-exports.saveDataset = function (req, res) {
-  console.log('TTT1 req.form from saveDataset = ', req.form);
-  //dataset_id, dataset, dataset_description, project_id, created_at, updated_at,
-
-  var dataset_obj                 = {};
-  dataset_obj.dataset_id          = 0;
-  dataset_obj.dataset             = req.form.dataset_name;
-  dataset_obj.dataset_description = req.form.dataset_description;
-  dataset_obj.project_id          = project_id;
-  dataset_obj.created_at          = new Date();
-  dataset_obj.updated_at          = new Date();
-
-  console.log('OOO1 JSON.stringify(dataset_obj) = ', JSON.stringify(dataset_obj));
-
-  // Dataset.addDataset(dataset_obj, function (err, rows) {
-
-};
-
-// [2018/06/26 13:52:48.300] [LOG]   MMM2, req.form { adaptor: [],
-//   d_region: 'Eukaryal#v4#Ev4',
-//   dataset_description: [],
-//   dataset_name: [],
-//   funding_code: [ '0' ],
-//   pi_id_name: '913#Shangpliang H. Nakibapher Jones#Shangpliang#H. Nakibapher Jones#nakibapher19@gmail.com',
-//   project_description: [ 'AAA description' ],
-//   project_name1: [ 'HNJS' ],
-//   project_name2: [ 'AAA' ],
-//   project_title: [ 'AAA title' ],
-//   sample_concentration: [],
-//   samples_number: [ '2' ],
-//   submit_code: [],
-//   tube_label: [] }
 
 exports.saveProject = function (req, res) { //check if exists in PROJECT_INFORMATION_BY_PID and just pull id and project_obj, render if yes; Project.addProject if new
   console.log('JJJ req.form from saveProject = ', req.form);
@@ -230,47 +166,6 @@ exports.saveProject = function (req, res) { //check if exists in PROJECT_INFORMA
       const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
       show_new.render_edit_form();
     }
-  });
-};
-
-exports.show_metadata_new_again = function (req, res) {
-  //collect errors
-  var myArray_fail = helpers.unique_array(req.form.errors);
-
-  // if (helpers.has_duplicates(req.form.sample_name)) {
-  //   myArray_fail.push('Sample ID (user sample name) should be unique.');
-  // }
-
-  myArray_fail.sort();
-  console.log('myArray_fail = ', myArray_fail);
-  req.flash('fail', myArray_fail);
-
-  // console.log('QQQ1 req.body.pi_list', pi_list);
-  // req.session.DOMAIN_REGIONS = CONSTS.DOMAIN_REGIONS;
-  // req.session.button_name    = 'Add datasets';
-
-  var d_region_arr   = req.form.d_region.split('#');
-  var pi_id_name_arr = req.form.pi_id_name.split('#');
-  var full_name      = pi_id_name_arr[3] + ' ' + pi_id_name_arr[2];
-  var project_name1  = req.form.project_name1;
-  if (project_name1 === '') {
-    project_name1 = module.exports.get_inits(full_name.split(' '));
-  }
-  var project_name3 = d_region_arr[2];
-  var project_name  = project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
-
-  console.log('PPP project_name1', project_name1);
-  console.log('PPP1 project_name', project_name);
-  res.render('metadata/metadata_new', {
-    button_name: 'Validate',
-    domain_regions: CONSTS.DOMAIN_REGIONS,
-    hostname: req.CONFIG.hostname,
-    pi_email: pi_id_name_arr[4],
-    pi_list: req.session.pi_list,
-    project_title: req.form.project_title,
-    samples_number: req.form.samples_number,
-    title: 'VAMPS: New Metadata',
-    user: req.user,
   });
 };
 

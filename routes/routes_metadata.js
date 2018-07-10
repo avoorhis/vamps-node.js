@@ -292,8 +292,11 @@ router.post('/metadata_new',
 
     }
     else {
-      // ?? render_edit_form(req, res, {}, {}, all_field_names)
       console.log("metadata_upload_new is valid");
+      var user_id       = req.form.pi_id_name.split('#')[0];
+      const new_project = new Project(req, res, 0, user_id);
+      var project_obj = new_project.project_obj;
+      console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
       // metadata_controller.saveProject(req, res);
     }
   });
