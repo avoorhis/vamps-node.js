@@ -80,40 +80,40 @@ function get_cell_val_by_row(row_idx, req) {
   return new_row_val;
 }
 
-get_names_from_ordered_const = function () {
-  console.time('time: ordered_metadata_names_only');
+// get_names_from_ordered_const = function () {
+//   console.time('time: ordered_metadata_names_only');
+//
+//   const arraycolumn = (arr, n) =>
+//     arr.map(x => x[n]
+//     )
+//   ;
+//
+//   console.timeEnd('time: ordered_metadata_names_only');
+//   return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
+// };
 
-  const arraycolumn = (arr, n) =>
-    arr.map(x => x[n]
-    )
-  ;
-
-  console.timeEnd('time: ordered_metadata_names_only');
-  return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
-};
-
-function get_field_names_by_dataset_ids(dataset_ids) {
-
-  var field_names_arr = [];
-  if (typeof dataset_ids === 'undefined' || dataset_ids.length === 0) {
-    field_names_arr = field_names_arr.concat(Object.keys(MD_CUSTOM_FIELDS_UNITS));
-  }
-  else {
-    for (var i = 0; i < dataset_ids.length; i++) {
-      var dataset_id  = dataset_ids[i];
-      field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
-    }
-  }
-  field_names_arr = helpers.unique_array(field_names_arr); // one level
-  field_names_arr.sort();
-
-  return field_names_arr;
-//  [
-//   'access_point_type',
-//   'adapter_sequence',
-//   'adapter_sequence_id',
-// ...
-}
+// function get_field_names_by_dataset_ids(dataset_ids) {
+//
+//   var field_names_arr = [];
+//   if (typeof dataset_ids === 'undefined' || dataset_ids.length === 0) {
+//     field_names_arr = field_names_arr.concat(Object.keys(MD_CUSTOM_FIELDS_UNITS));
+//   }
+//   else {
+//     for (var i = 0; i < dataset_ids.length; i++) {
+//       var dataset_id  = dataset_ids[i];
+//       field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
+//     }
+//   }
+//   field_names_arr = helpers.unique_array(field_names_arr); // one level
+//   field_names_arr.sort();
+//
+//   return field_names_arr;
+// //  [
+// //   'access_point_type',
+// //   'adapter_sequence',
+// //   'adapter_sequence_id',
+// // ...
+// }
 
 // function prepare_empty_metadata_object(pid, field_names_arr, all_metadata) {
 //   console.time('TIME: prepare_empty_metadata_object');
@@ -182,15 +182,15 @@ function get_object_vals(object_name) {
   });
 }
 
-function make_array4(field_names_arr) {
-// make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [field_names_arr[i2], field_names_arr[i2], '', '']
-  var new_arr = [];
-  for (var i2 = 0; i2 < field_names_arr.length; i2++) {
-    var temp_arr = [field_names_arr[i2], field_names_arr[i2], '', ''];
-    new_arr.push(temp_arr);
-  }
-  return new_arr;
-}
+// function make_array4(field_names_arr) {
+// // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [field_names_arr[i2], field_names_arr[i2], '', '']
+//   var new_arr = [];
+//   for (var i2 = 0; i2 < field_names_arr.length; i2++) {
+//     var temp_arr = [field_names_arr[i2], field_names_arr[i2], '', ''];
+//     new_arr.push(temp_arr);
+//   }
+//   return new_arr;
+// }
 
 function add_info_to_project_globals(object_to_add, pid) {
 
@@ -465,33 +465,33 @@ exports.get_all_req_metadata = function (dataset_id) {
   return data;
 };
 
-exports.make_all_field_names = function (dataset_ids) {
-  var ordered_metadata_names_only = get_names_from_ordered_const();
-
-  // why get_field_names_by_dataset_ids again? 1) substract METADATA_NAMES_SUBSTRACT, 2) substract '_id', 3) substract ordered_metadata_names_only
-  var structured_field_names0 = get_field_names_by_dataset_ids(dataset_ids);
-  var diff_names              = structured_field_names0.filter(function (x) {
-    return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0;
-  });
-  diff_names                  = diff_names.filter(function (item) {
-    return /^((?!_id).)*$/.test(item);
-  });
-  diff_names                  = diff_names.filter(function (x) {
-    return ordered_metadata_names_only.indexOf(x) < 0;
-  });
-
-  // // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [diff_names[i2], diff_names[i2], '', '']
-  // // TODO: add units from db
-  // var big_arr_diff_names = [];
-  // for (var i2 = 0; i2 < diff_names.length; i2++) {
-  //   var temp_arr = [diff_names[i2], diff_names[i2], '', ''];
-  //   big_arr_diff_names.push(temp_arr);
-  // }
-
-  var big_arr_diff_names = make_array4(diff_names);
-  return helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
-
-};
+// exports.make_all_field_names = function (dataset_ids) {
+//   var ordered_metadata_names_only = get_names_from_ordered_const();
+//
+//   // why get_field_names_by_dataset_ids again? 1) substract METADATA_NAMES_SUBSTRACT, 2) substract '_id', 3) substract ordered_metadata_names_only
+//   var structured_field_names0 = get_field_names_by_dataset_ids(dataset_ids);
+//   var diff_names              = structured_field_names0.filter(function (x) {
+//     return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0;
+//   });
+//   diff_names                  = diff_names.filter(function (item) {
+//     return /^((?!_id).)*$/.test(item);
+//   });
+//   diff_names                  = diff_names.filter(function (x) {
+//     return ordered_metadata_names_only.indexOf(x) < 0;
+//   });
+//
+//   // // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [diff_names[i2], diff_names[i2], '', '']
+//   // // TODO: add units from db
+//   // var big_arr_diff_names = [];
+//   // for (var i2 = 0; i2 < diff_names.length; i2++) {
+//   //   var temp_arr = [diff_names[i2], diff_names[i2], '', ''];
+//   //   big_arr_diff_names.push(temp_arr);
+//   // }
+//
+//   var big_arr_diff_names = make_array4(diff_names);
+//   return helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
+//
+// };
 
 exports.fill_out_arr_doubles = function (value, repeat_times) {
   var arr_temp = Array(repeat_times);

@@ -472,7 +472,7 @@ function make_metadata_object_from_form(req, res) {
     }
   }
   var all_metadata         = met_obj.make_metadata_object(req, res, pid, data);
-  var all_field_names_orig = metadata_controller.make_all_field_names(data['dataset_id']);
+  var all_field_names_orig = met_obj.make_all_field_names(data['dataset_id']);
 
 
   //add_new
@@ -547,7 +547,7 @@ function make_metadata_object_from_csv(req, res) {
 
 // all_metadata
   var all_metadata     = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
-  var all_field_names4 = metadata_controller.make_all_field_names(dataset_ids);
+  var all_field_names4 = met_obj.make_all_field_names(dataset_ids);
 
   // console.log("DDD3 all_field_names from make_metadata_object_from_csv");
   // console.log(JSON.stringify(all_field_names));
@@ -634,7 +634,7 @@ function make_metadata_object_from_db(req, res) {
 
   var all_metadata = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
-  var all_field_names4 = metadata_controller.make_all_field_names(dataset_ids);
+  var all_field_names4 = met_obj.make_all_field_names(dataset_ids);
 
   // console.log("DDD2 all_field_names");
   // console.log(JSON.stringify(all_field_names));
