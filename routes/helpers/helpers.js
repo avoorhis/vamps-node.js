@@ -1379,7 +1379,8 @@ module.exports.get_qsub_script_text_only = function(req, scriptlog, dir_path, cm
 };
 
 module.exports.isLocal = function (req) {
-  return !(req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb');
+  var ext_hosts = ['vampsdev','bpcweb7','vamps','vampsdb']
+  return !(req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'bpcweb7' || req.CONFIG.dbhost == 'vampsdb'|| req.CONFIG.dbhost == 'vamps');
 };
 
 module.exports.deleteFolderRecursive = function(path) {
