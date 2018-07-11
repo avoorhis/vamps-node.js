@@ -259,7 +259,7 @@ router.post('/metadata_new',
       var project_obj   = new_project.project_obj;
       console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
       new_project.addProject(project_obj, function (err, rows) {
-        console.time("TIME: in post /metadata_new, add project");
+          console.time("TIME: in post /metadata_new, add project");
           if (err) {
             console.log('WWW0 err', err);
             req.flash('fail', err);
@@ -501,14 +501,11 @@ function make_metadata_object_from_csv(req, res) {
 
   // console.log("MMM req.body from make_metadata_object_from_csv");
   // console.log(req.body);
-  var file_name    = req.body.edit_metadata_file;
+  var file_name     = req.body.edit_metadata_file;
   const cur_project = new Project(req, res, 0, 0);
-  var project_name = req.body.project || cur_project.get_project_name_from_file_name(file_name);
-  var pid          = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
+  var project_name  = req.body.project || cur_project.get_project_name_from_file_name(file_name);
+  var pid           = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
 
-
-  // console.log("GGG1 project_name from metadata_controller.get_project_name");
-  // console.log(project_name);
   //data from file
   var inputPath    = path.join(config.USER_FILES_BASE, req.user.username, file_name);
   var file_content = fs.readFileSync(inputPath);
@@ -539,7 +536,6 @@ function make_metadata_object_from_csv(req, res) {
   // console.log("DDD4 all_metadata from make_metadata_object_from_csv");
   // console.log(JSON.stringify(all_metadata));
   req.body.project_id = pid;
-  // metadata_controller.render_edit_form(req, res, all_metadata, all_field_names4);
 
   var all_field_units = MD_CUSTOM_UNITS[pid];
   const show_new      = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
@@ -735,7 +731,7 @@ function saveMetadata(req, res) {
 router.get('/metadata_file_list', function (req, res) {
   console.time("TIME: get metadata_file_list");
   console.log('in metadata_file_list');
-  const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
+  const csv_files_obj         = new csv_files_controller.CsvFiles(req, res);
   var user_metadata_csv_files = csv_files_obj.get_csv_files();
 
   user_metadata_csv_files.sort(function sortByTime(a, b) {
@@ -762,8 +758,8 @@ router.post('/metadata_files',
     console.time("TIME: in post /metadata_files");
     var table_diff_html, sorted_files, files_to_compare;
     const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
-    sorted_files     = csv_files_obj.sorted_files_by_time();
-    files_to_compare = csv_files_obj.sorted_files_to_compare(sorted_files);
+    sorted_files        = csv_files_obj.sorted_files_by_time();
+    files_to_compare    = csv_files_obj.sorted_files_to_compare(sorted_files);
 
     if (typeof req.body.compare !== 'undefined' && req.body.compare.length === 2) {
 
