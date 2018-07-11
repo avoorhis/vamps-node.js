@@ -655,101 +655,101 @@ class CreateDataObj {
   }
 
   //  new submission
-  new_project_saved(err, rows) {
-
-    if (err) {
-      console.log('WWW0 err', err);
-      req.flash('fail', err);
-      module.exports.show_metadata_new_again(req, res);
-      // res.json(err);
-    }
-    else {
-      console.log('WWW rows', rows);
-      var pid = rows.insertId;
-      add_info_to_project_globals(project_obj, pid);
-
-      const met_obj = new new_metadata_controller.CreateDataObj(req, res, pid, []);
-
-      var all_field_names = met_obj.collect_field_names();
-
-      // var all_field_names = collect_field_names();
-      // TODO: add
-      //   funding_code: [ '0' ],
-      //   sample_concentration: [],
-      //   submit_code: [],
-      //   tube_label:
-      // d_region: 'Bacterial#v4v5#Bv4v5',
-      //   dataset_description: [],
-      //   dataset_name: [],
-      //   funding_code: '0',
-      //   pi_id_name: '1453#Amrani Said#Amrani#Said#said_amrani@yahoo.com',
-      //   project_description: 'sdf sdgfdsg sfgdf',
-      //   project_name1: 'SA',
-      //   project_name2: 'AAA',
-      //   project_title: 'AAA54645674',
-      //   sample_concentration: [],
-      //   samples_number: '2',
-      //   submit_code: [],
-      //   tube_label: [] }
-
-      // 14	  ['run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD'],
-
-      var all_field_names4     = [];
-      // var all_field_names4_temp = CONSTS.ORDERED_METADATA_NAMES;
-      var parameter            = CONSTS.ORDERED_METADATA_NAMES.slice(0, 1);
-      var new_user_submit      = [['', 'New submit info', '', '']];
-      var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
-      var dataset_description  = [['dataset_description', 'Dataset description', 'User Supplied', '']];
-      var tube_label           = [['tube_label', 'Tube label', 'User Supplied', '']];
-      var sample_concentration = [['sample_concentration', 'Sample concentration', 'User Supplied', 'ng/ul']];
-      var dna_quantitation     = CONSTS.ORDERED_METADATA_NAMES.slice(35, 36);
-      var env_package          = CONSTS.ORDERED_METADATA_NAMES.slice(16, 17);
-
-      var second_part_part_1 = CONSTS.ORDERED_METADATA_NAMES.slice(1, 16);
-      var second_part_part_2 = CONSTS.ORDERED_METADATA_NAMES.slice(18, 35);
-      var second_part_part_3 = CONSTS.ORDERED_METADATA_NAMES.slice(36);
-
-      // var general = CONSTS.ORDERED_METADATA_NAMES.slice(1,1);
-      // var funding_code = [['funding_code', 'Funding Code', 'User Supplied', 'numeric only']];
-      // var vamps_dataset_name = CONSTS.ORDERED_METADATA_NAMES.slice(2,2);
-      // var second_part_part = CONSTS.ORDERED_METADATA_NAMES.slice(3,5);
-      // var domain = CONSTS.ORDERED_METADATA_NAMES.slice(6,6);
-      // var target_gene = CONSTS.ORDERED_METADATA_NAMES.slice(7,7);
-      // var dna_region = CONSTS.ORDERED_METADATA_NAMES.slice(8,8);
-
-      //   submit_code: [],
-
-      // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
-
-      all_field_names4 = all_field_names4.concat(parameter);
-      all_field_names4 = all_field_names4.concat(new_user_submit);
-      all_field_names4 = all_field_names4.concat(user_sample_name);
-      all_field_names4 = all_field_names4.concat(dataset_description);
-      all_field_names4 = all_field_names4.concat(tube_label);
-      all_field_names4 = all_field_names4.concat(sample_concentration);
-      all_field_names4 = all_field_names4.concat(dna_quantitation);
-      all_field_names4 = all_field_names4.concat(env_package);
-      all_field_names4 = all_field_names4.concat(second_part_part_1);
-      all_field_names4 = all_field_names4.concat(second_part_part_2);
-      all_field_names4 = all_field_names4.concat(second_part_part_3);
-
-
-      var all_metadata = met_obj.create_all_metadata_form_new(rows, req, res, all_field_names, project_obj);
-      // all_metadata = { '485':
-      //     { project: [ 'MS_AAA_EHSSU', 'MS_AAA_EHSSU', 'MS_AAA_EHSSU' ],
-      //       dataset: ['', '', ''],
-      //       sample_name: ['', '', ''],
-      //       investigation_type: ['', '', ''],
-      //       domain: ['', '', ''],
-      //       first_name: [ 'Mohammadkarim', 'Mohammadkarim', 'Mohammadkarim' ],
-      // module.exports.render_edit_form(req, res, all_metadata, all_field_names4);
-
-      var all_field_units = MD_CUSTOM_UNITS[pid];
-
-      const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
-      show_new.render_edit_form();
-    }
-  }
+  // new_project_saved(err, rows) {
+  //
+  //   if (err) {
+  //     console.log('WWW0 err', err);
+  //     req.flash('fail', err);
+  //     module.exports.show_metadata_new_again(req, res);
+  //     // res.json(err);
+  //   }
+  //   else {
+  //     console.log('WWW rows', rows);
+  //     var pid = rows.insertId;
+  //     add_info_to_project_globals(project_obj, pid);
+  //
+  //     const met_obj = new new_metadata_controller.CreateDataObj(req, res, pid, []);
+  //
+  //     var all_field_names = met_obj.collect_field_names();
+  //
+  //     // var all_field_names = collect_field_names();
+  //     // TODO: add
+  //     //   funding_code: [ '0' ],
+  //     //   sample_concentration: [],
+  //     //   submit_code: [],
+  //     //   tube_label:
+  //     // d_region: 'Bacterial#v4v5#Bv4v5',
+  //     //   dataset_description: [],
+  //     //   dataset_name: [],
+  //     //   funding_code: '0',
+  //     //   pi_id_name: '1453#Amrani Said#Amrani#Said#said_amrani@yahoo.com',
+  //     //   project_description: 'sdf sdgfdsg sfgdf',
+  //     //   project_name1: 'SA',
+  //     //   project_name2: 'AAA',
+  //     //   project_title: 'AAA54645674',
+  //     //   sample_concentration: [],
+  //     //   samples_number: '2',
+  //     //   submit_code: [],
+  //     //   tube_label: [] }
+  //
+  //     // 14	  ['run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD'],
+  //
+  //     var all_field_names4     = [];
+  //     // var all_field_names4_temp = CONSTS.ORDERED_METADATA_NAMES;
+  //     var parameter            = CONSTS.ORDERED_METADATA_NAMES.slice(0, 1);
+  //     var new_user_submit      = [['', 'New submit info', '', '']];
+  //     var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
+  //     var dataset_description  = [['dataset_description', 'Dataset description', 'User Supplied', '']];
+  //     var tube_label           = [['tube_label', 'Tube label', 'User Supplied', '']];
+  //     var sample_concentration = [['sample_concentration', 'Sample concentration', 'User Supplied', 'ng/ul']];
+  //     var dna_quantitation     = CONSTS.ORDERED_METADATA_NAMES.slice(35, 36);
+  //     var env_package          = CONSTS.ORDERED_METADATA_NAMES.slice(16, 17);
+  //
+  //     var second_part_part_1 = CONSTS.ORDERED_METADATA_NAMES.slice(1, 16);
+  //     var second_part_part_2 = CONSTS.ORDERED_METADATA_NAMES.slice(18, 35);
+  //     var second_part_part_3 = CONSTS.ORDERED_METADATA_NAMES.slice(36);
+  //
+  //     // var general = CONSTS.ORDERED_METADATA_NAMES.slice(1,1);
+  //     // var funding_code = [['funding_code', 'Funding Code', 'User Supplied', 'numeric only']];
+  //     // var vamps_dataset_name = CONSTS.ORDERED_METADATA_NAMES.slice(2,2);
+  //     // var second_part_part = CONSTS.ORDERED_METADATA_NAMES.slice(3,5);
+  //     // var domain = CONSTS.ORDERED_METADATA_NAMES.slice(6,6);
+  //     // var target_gene = CONSTS.ORDERED_METADATA_NAMES.slice(7,7);
+  //     // var dna_region = CONSTS.ORDERED_METADATA_NAMES.slice(8,8);
+  //
+  //     //   submit_code: [],
+  //
+  //     // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
+  //
+  //     all_field_names4 = all_field_names4.concat(parameter);
+  //     all_field_names4 = all_field_names4.concat(new_user_submit);
+  //     all_field_names4 = all_field_names4.concat(user_sample_name);
+  //     all_field_names4 = all_field_names4.concat(dataset_description);
+  //     all_field_names4 = all_field_names4.concat(tube_label);
+  //     all_field_names4 = all_field_names4.concat(sample_concentration);
+  //     all_field_names4 = all_field_names4.concat(dna_quantitation);
+  //     all_field_names4 = all_field_names4.concat(env_package);
+  //     all_field_names4 = all_field_names4.concat(second_part_part_1);
+  //     all_field_names4 = all_field_names4.concat(second_part_part_2);
+  //     all_field_names4 = all_field_names4.concat(second_part_part_3);
+  //
+  //
+  //     var all_metadata = met_obj.create_all_metadata_form_new(rows, req, res, all_field_names, project_obj);
+  //     // all_metadata = { '485':
+  //     //     { project: [ 'MS_AAA_EHSSU', 'MS_AAA_EHSSU', 'MS_AAA_EHSSU' ],
+  //     //       dataset: ['', '', ''],
+  //     //       sample_name: ['', '', ''],
+  //     //       investigation_type: ['', '', ''],
+  //     //       domain: ['', '', ''],
+  //     //       first_name: [ 'Mohammadkarim', 'Mohammadkarim', 'Mohammadkarim' ],
+  //     // module.exports.render_edit_form(req, res, all_metadata, all_field_names4);
+  //
+  //     var all_field_units = MD_CUSTOM_UNITS[pid];
+  //
+  //     const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
+  //     show_new.render_edit_form();
+  //   }
+  // }
 
 }
 
