@@ -347,7 +347,7 @@ router.post('/metadata_new',
 
             var all_field_units = MD_CUSTOM_UNITS[project_obj.pid];
 
-            var show_new = module.exports.ShowObj(met_obj.req, met_obj.res, all_metadata, all_field_names4, all_field_units);
+            var show_new = new metadata_controller.ShowObj(met_obj.req, met_obj.res, all_metadata, all_field_names4, all_field_units);
             show_new.render_edit_form();
 //  }
 
