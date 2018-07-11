@@ -12,9 +12,8 @@ var config  = require(app_root + '/config/config');
 var nodeMailer              = require('nodemailer');
 var Project                 = require(app_root + '/models/project_model');
 // var User    = require(app_root + '/models/user_model');
-// var metadata_controller     = require(app_root + '/controllers/metadataController');
+var metadata_controller     = require(app_root + '/controllers/metadataController');
 var csv_files_controller    = require(app_root + '/controllers/csvFilesController');
-var new_metadata_controller = require(app_root + '/controllers/metadataController_copy');
 
 /* GET metadata page. */
 router.get('/metadata', function (req, res) {
@@ -207,7 +206,7 @@ function get_metadata_hash(md_selected) {
 // ?? render_edit_form(req, res, {}, {}, all_field_names)
 
 router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
-  const met_obj = new new_metadata_controller.CreateDataObj(req, res, "", "");
+  const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
 
   var pi_list         = met_obj.get_pi_list();
   req.session.pi_list = pi_list;
@@ -283,7 +282,7 @@ router.post('/metadata_new',
     // var inits         = full_name.split(" ");
 
     console.log("MMM2, req.form", req.form);
-    const show_new = new new_metadata_controller.ShowObj(req, res);
+    const show_new = new metadata_controller.ShowObj(req, res);
 
     if (!req.form.isValid) {
       console.log('!req.form.isValid');
@@ -310,7 +309,7 @@ router.post('/metadata_new',
             var pid = rows.insertId;
             new_project.add_info_to_project_globals(project_obj, pid);
 
-            const met_obj = new new_metadata_controller.CreateDataObj(req, res, pid, []);
+            const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
             console.trace("Show me");
             // met_obj.make_new_project_for_form(rows, project_obj);
 // make_new_project_for_form(rows, project_obj) {
@@ -522,7 +521,7 @@ function make_metadata_object_from_form(req, res) {
 
   //add project_abstract etc.
   //TODO: DRY with other such places.
-  const met_obj            = new new_metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
+  const met_obj            = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
 
   var normal_length = data['dataset'].length;
   for (var a in data) {
@@ -562,7 +561,7 @@ function make_metadata_object_from_form(req, res) {
 
   var all_field_units = MD_CUSTOM_UNITS[req.body.project_id];
 
-  const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units);
+  const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units);
   show_new.render_edit_form();
 
 
@@ -601,7 +600,7 @@ function make_metadata_object_from_csv(req, res) {
   // console.log("MMM0 dataset_ids");
   // console.log(dataset_ids);
 
-  const met_obj          = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+  const met_obj          = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
   var data_in_obj_of_arr = met_obj.from_obj_to_obj_of_arr(data, pid);
 
 // all_metadata
@@ -617,7 +616,7 @@ function make_metadata_object_from_csv(req, res) {
   // metadata_controller.render_edit_form(req, res, all_metadata, all_field_names4);
 
   var all_field_units = MD_CUSTOM_UNITS[pid];
-  const show_new      = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
+  const show_new      = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
   show_new.render_edit_form();
 
   console.timeEnd("TIME: make_metadata_object_from_csv");
@@ -654,7 +653,7 @@ function make_metadata_object_from_db(req, res) {
   }
   console.timeEnd("TIME: dataset_info");
 
-  const met_obj     = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+  const met_obj     = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
 
   // add missing info to AllMetadata_picked
   console.time("TIME: add missing info to AllMetadata_picked");
@@ -701,7 +700,7 @@ function make_metadata_object_from_db(req, res) {
   // console.log("DDD2 all_metadata");
   // console.log(JSON.stringify(all_metadata));
 
-  const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names4);
+  const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4);
   show_new.render_edit_form();
   console.timeEnd("TIME: make_metadata_object_from_db");
 }

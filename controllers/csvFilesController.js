@@ -2,7 +2,6 @@ var helpers                 = require(app_root + '/routes/helpers/helpers');
 var config                  = require(app_root + '/config/config');
 var fs                      = require("fs");
 var path                    = require("path");
-// var new_metadata_controller = require(app_root + '/controllers/metadataController_copy');
 
 // private
 
@@ -148,9 +147,6 @@ exports.convertArrayOfObjectsToCSV = function (args) {
 exports.make_csv = function (req) {
   var out_csv_file_name;
   console.time("TIME: make_csv");
-
-  // const met_obj    = new new_metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
-  // var all_metadata = met_obj.make_metadata_object(req, res, pid, data);
 
   var csv = module.exports.convertArrayOfObjectsToCSV({
     data: req.form,
