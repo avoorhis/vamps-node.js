@@ -786,7 +786,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                       else
                       {
                         console.log('Before RunAndCheck Matrix')
-                        var full_script     = script_path + ' > ' + scriptlog2
+                        var full_script     = script_path //+ ' > ' + scriptlog2
                         RunAndCheck(full_script, '', req, project, res, checkPid, ok_code_options);
                         status_params.status = status_params.statusSUCCESS;
                         status_params.msg = status_params.msgSUCCESS;
@@ -1750,7 +1750,7 @@ function gastTax(req, project_config, ref_db)
   var make_gast_script_txt = helpers.make_gast_script_txt(req, data_dir, project, opts);
   var scriptlog   = path.join(data_dir, 'cluster.log');
   
-  //make_gast_script_txt = helpers.get_qsub_script_text_only(scriptlog, data_dir, req.CONFIG.site, 'gastTax', cmd_list)
+  //make_gast_script_txt = helpers.get_qsub_script_text_only(req, scriptlog, data_dir, 'gastTax', cmd_list)
   //is_local = helpers.isLocal(req);
   // for tests: is_local = false;
   var new_info_filename_path = path.join(data_dir, req.CONSTS.CONFIG_FILE)
@@ -2734,7 +2734,8 @@ function GetScriptVars(req, data_repository, cmd_list, cmd_name)
   else
   {
     scriptlog   = path.join(data_repository, 'cluster.log');
-    script_text = helpers.get_qsub_script_text_only(req, scriptlog, data_repository, cmd_name, cmd_list);
+    //script_text = helpers.get_qsub_script_text_only(req, scriptlog, data_repository, cmd_name, cmd_list);
+    script_text = helpers.get_qsub_script_text(scriptlog,data_repository) = function(log, pwd, site, name, cmd_list) {
   }
   
   // console.log('111 scriptlog: ' + scriptlog);
@@ -2827,7 +2828,9 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
   var exec = require('child_process').exec;
   var opts = {env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH} }
   var child = exec(script_path, opts);
-  //var child = spawn(script_path, create_json_files_params, {
+  //var scriptlog1 = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+project, 'matrix_log1.txt');
+  
+  // var child = spawn(script_path, [], {
 //                             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
 //                             detached: true, stdio: 'pipe'
 //                         });

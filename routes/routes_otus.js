@@ -896,7 +896,7 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, function (req, res) {
               if(site.substring(0,5) == 'local'){
                   var script_text = helpers.get_local_script_text(script_commands)
               }else{
-                  var script_text = helpers.get_qsub_script_text(log, pwd, req.CONFIG.site, 'vmps_fasta', script_commands)
+                  var script_text = helpers.get_qsub_script_text(req, log, pwd, 'vmps_fasta', script_commands)
               }
               
               var mode = 0775; // executable
@@ -1038,7 +1038,7 @@ router.post('/create_otus_step2/:code', helpers.isLoggedIn, function (req, res) 
   if(site.substring(0,5) == 'local'){
     var script_text = helpers.get_local_script_text(script_commands)
   }else{
-    var script_text = helpers.get_qsub_script_text(log, pwd, req.CONFIG.site, 'vmps_otus', script_commands)
+    var script_text = helpers.get_qsub_script_text(req, log, pwd, 'vmps_otus', script_commands)
   }
   var mode = 0775;
   var oldmask = process.umask(0);
