@@ -502,8 +502,8 @@ function make_metadata_object_from_csv(req, res) {
   // console.log("MMM req.body from make_metadata_object_from_csv");
   // console.log(req.body);
   var file_name    = req.body.edit_metadata_file;
-  var project_name = req.body.project;
-  // metadata_controller.get_project_name(file_name);
+  const cur_project = new Project(req, res, 0, 0);
+  var project_name = req.body.project || cur_project.get_project_name_from_file_name(file_name);
   var pid          = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
 
 

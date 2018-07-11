@@ -193,7 +193,20 @@ class Project {
     return connection.query("update project set Title=?,Status=? where Id=?", [Project.Title, Project.Status, id], callback);
   }
 
+  get_project_name_from_file_name(edit_metadata_file) {
+    console.time('TIME: get_project_name_from_file_name');
 
+    var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
+    var edit_metadata_project    = '';
+
+    if (edit_metadata_file_parts.length >= 4) {
+
+      edit_metadata_project = edit_metadata_file_parts[1] + '_' + edit_metadata_file_parts[2] + '_' + edit_metadata_file_parts[3];
+    }
+
+    console.timeEnd('TIME: get_project_name_from_file_name');
+    return edit_metadata_project;
+  }
 
 }
 

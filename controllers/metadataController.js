@@ -621,21 +621,6 @@ class CreateDataObj {
     return primer_info;
   }
 
-  // get_project_name(edit_metadata_file) {
-  //   console.time('TIME: get_project_name');
-  //
-  //   var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
-  //   var edit_metadata_project    = '';
-  //
-  //   if (edit_metadata_file_parts.length >= 4) {
-  //
-  //     edit_metadata_project = edit_metadata_file_parts[1] + '_' + edit_metadata_file_parts[2] + '_' + edit_metadata_file_parts[3];
-  //   }
-  //
-  //   console.timeEnd('TIME: get_project_name');
-  //   return edit_metadata_project;
-  // }
-
   saveDataset(req, project_id) {
     console.log('TTT1 req.form from saveDataset = ', req.form);
     //dataset_id, dataset, dataset_description, project_id, created_at, updated_at,
