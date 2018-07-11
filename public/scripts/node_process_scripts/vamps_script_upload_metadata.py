@@ -68,10 +68,10 @@ def start_metadata_load_from_file(args):
     global mysql_conn, cur
     logging.info('CMD> '+' '.join(sys.argv))
     
-    if args.site == 'vamps':
+    if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':
         hostname = 'vampsdb'
-    elif args.site == 'vampsdev':
-        hostname = 'vampsdev'
+    elif args.site == 'vampsdev' or args.site == 'bpcweb7':
+        hostname = 'bpcweb7'
     else:
         hostname = 'localhost'
         args.NODE_DATABASE = 'vamps_development'

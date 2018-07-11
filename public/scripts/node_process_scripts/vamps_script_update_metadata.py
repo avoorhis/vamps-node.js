@@ -288,22 +288,25 @@ if __name__ == '__main__':
     args.datetime     = str(datetime.date.today())
 
     print "ARGS: dbhost  =",args.dbhost
-    if args.dbhost == 'vampsdb' or args.dbhost == 'vampsdb':
+    if args.dbhost == 'vamps' or args.dbhost == 'vampsdb' or args.dbhost == 'bpcweb8':
         args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
         args.NODE_DATABASE = 'vamps2'
-    elif args.dbhost == 'vampsdev':
+        hostname = 'vampsdb'
+    elif args.dbhost == 'vampsdev' or args.dbhost == 'bpcweb7':
         args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
         args.NODE_DATABASE = 'vamps2'
+        hostname = 'bpcweb7'
     else:
         args.json_file_path = os.path.join(args.process_dir,'public','json')
         args.NODE_DATABASE = args.db
+        hostname = 'localhost'
         if os.path.isdir(args.json_file_path):
             print 'json_file_path VALIDATED'
         else:
             print 'json_file_path DID NOT VALIDATE:',args.json_file_path
             sys.exit('Exiting')
 
-    db = MySQLdb.connect(db = args.NODE_DATABASE, host=args.dbhost, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
+    db = MySQLdb.connect(db = args.NODE_DATABASE, host=hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     cur = db.cursor()
     cur.execute("SHOW databases")
     dbs = []
