@@ -1750,7 +1750,7 @@ function gastTax(req, project_config, ref_db)
   var make_gast_script_txt = helpers.make_gast_script_txt(req, data_dir, project, opts);
   var scriptlog   = path.join(data_dir, 'cluster.log');
   
-  //make_gast_script_txt = helpers.get_qsub_script_text_only(req, scriptlog, data_dir, 'gastTax', cmd_list)
+  //make_gast_script_txt = helpers.get_qsub_script_text_only(scriptlog, data_dir, req.CONFIG.site, 'gastTax', cmd_list)
   //is_local = helpers.isLocal(req);
   // for tests: is_local = false;
   var new_info_filename_path = path.join(data_dir, req.CONSTS.CONFIG_FILE)
@@ -2735,7 +2735,7 @@ function GetScriptVars(req, data_repository, cmd_list, cmd_name)
   {
     scriptlog   = path.join(data_repository, 'cluster.log');
     //script_text = helpers.get_qsub_script_text_only(req, scriptlog, data_repository, cmd_name, cmd_list);
-    script_text = helpers.get_qsub_script_text(scriptlog,data_repository) = function(log, pwd, site, name, cmd_list) {
+    script_text = helpers.get_qsub_script_text(req, scriptlog, data_repository, cmd_name, cmd_list) // req, log, dir_path, cmd_name, cmd_list= function(log, pwd, site, name, cmd_list) {
   }
   
   // console.log('111 scriptlog: ' + scriptlog);
