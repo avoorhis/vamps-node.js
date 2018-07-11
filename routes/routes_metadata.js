@@ -9,11 +9,11 @@ var path    = require("path");
 var config  = require(app_root + '/config/config');
 // var validator           = require('validator');
 // var expressValidator = require('express-validator');
-var nodeMailer              = require('nodemailer');
-var Project                 = require(app_root + '/models/project_model');
+var nodeMailer           = require('nodemailer');
+var Project              = require(app_root + '/models/project_model');
 // var User    = require(app_root + '/models/user_model');
-var metadata_controller     = require(app_root + '/controllers/metadataController');
-var csv_files_controller    = require(app_root + '/controllers/csvFilesController');
+var metadata_controller  = require(app_root + '/controllers/metadataController');
+var csv_files_controller = require(app_root + '/controllers/csvFilesController');
 
 /* GET metadata page. */
 router.get('/metadata', function (req, res) {
@@ -242,118 +242,44 @@ router.post('/metadata_new',
     form.field("tube_label").trim().required().is(/^[a-zA-Z0-9_ -]+$/).entityEncode().array()
   ),
   function (req, res) {
-    console.log('in POST METADATA new form');
-    console.log('OOO post');
-    console.log("MMM1, req.body", req.body);
-
-    // MMM1, req.body { project_title: 'AAA title',
-    //   pi_id_name: '913#Shangpliang H. Nakibapher Jones#Shangpliang#H. Nakibapher Jones#nakibapher19@gmail.com',
-    //   pi_email: 'nakibapher19@gmail.com',
-    //   project_description: 'AAA description',
-    //   d_region: 'Eukaryal#v4#Ev4',
-    //   project_name1: 'HNJS',
-    //   project_name2: 'AAA',
-    //   project_name3: 'Ev4',
-    //   reference: '',
-    //   funding_code: '0',
-    //   samples_number: '2',
-    //   new_row_num: '',
-    //   new_row_length: '',
-    //   from_where: 'metadata_new_form',
-    //   done_editing: 'not_done_editing' }
-    // [2018/06/26 13:52:48.300] [LOG]   MMM2, req.form { adaptor: [],
-    //   d_region: 'Eukaryal#v4#Ev4',
-    //   dataset_description: [],
-    //   dataset_name: [],
-    //   funding_code: [ '0' ],
-    //   pi_id_name: '913#Shangpliang H. Nakibapher Jones#Shangpliang#H. Nakibapher Jones#nakibapher19@gmail.com',
-    //   project_description: [ 'AAA description' ],
-    //   project_name1: [ 'HNJS' ],
-    //   project_name2: [ 'AAA' ],
-    //   project_title: [ 'AAA title' ],
-    //   sample_concentration: [],
-    //   samples_number: [ '2' ],
-    //   submit_code: [],
-    //   tube_label: [] }
-
-    // var last_name     = this.value.split("#")[2];
-    // var first_name    = this.value.split("#")[3];
-    // var full_name     = first_name + " " + last_name;
-    // var inits         = full_name.split(" ");
-
-    console.log("MMM2, req.form", req.form);
+    console.time("TIME: in post /metadata_new");
+    // console.log("MMM1, req.body", req.body);
+    // console.log("MMM2, req.form", req.form);
     const show_new = new metadata_controller.ShowObj(req, res);
 
     if (!req.form.isValid) {
       console.log('!req.form.isValid');
       console.log("EEE req.form.errors", req.form.errors);
       show_new.show_metadata_new_again();
-
     }
     else {
       console.log("metadata_upload_new is valid");
       var user_id       = req.form.pi_id_name.split('#')[0];
       const new_project = new Project(req, res, 0, user_id);
-      var project_obj = new_project.project_obj;
+      var project_obj   = new_project.project_obj;
       console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
       new_project.addProject(project_obj, function (err, rows) {
+        console.time("TIME: in post /metadata_new, add project");
           if (err) {
             console.log('WWW0 err', err);
             req.flash('fail', err);
             show_new.show_metadata_new_again();
           }
           else {
+
             console.log('New project SAVED');
             console.log('WWW rows', rows);
             var pid = rows.insertId;
             new_project.add_info_to_project_globals(project_obj, pid);
 
             const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
-            console.trace("Show me");
             met_obj.make_new_project_for_form(rows, project_obj);
-// make_new_project_for_form(rows, project_obj) {
-
-            // var all_field_names = met_obj.all_field_names;
-            //
-            // var all_field_names4     = [];
-            // var parameter            = CONSTS.ORDERED_METADATA_NAMES.slice(0, 1);
-            // var new_user_submit      = [['', 'New submit info', '', '']];
-            // var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
-            // var dataset_description  = [['dataset_description', 'Dataset description', 'User Supplied', '']];
-            // var tube_label           = [['tube_label', 'Tube label', 'User Supplied', '']];
-            // var sample_concentration = [['sample_concentration', 'Sample concentration', 'User Supplied', 'ng/ul']];
-            // var dna_quantitation     = CONSTS.ORDERED_METADATA_NAMES.slice(35, 36);
-            // var env_package          = CONSTS.ORDERED_METADATA_NAMES.slice(16, 17);
-            //
-            // var second_part_part_1 = CONSTS.ORDERED_METADATA_NAMES.slice(1, 16);
-            // var second_part_part_2 = CONSTS.ORDERED_METADATA_NAMES.slice(18, 35);
-            // var second_part_part_3 = CONSTS.ORDERED_METADATA_NAMES.slice(36);
-            //
-            // all_field_names4 = all_field_names4.concat(parameter);
-            // all_field_names4 = all_field_names4.concat(new_user_submit);
-            // all_field_names4 = all_field_names4.concat(user_sample_name);
-            // all_field_names4 = all_field_names4.concat(dataset_description);
-            // all_field_names4 = all_field_names4.concat(tube_label);
-            // all_field_names4 = all_field_names4.concat(sample_concentration);
-            // all_field_names4 = all_field_names4.concat(dna_quantitation);
-            // all_field_names4 = all_field_names4.concat(env_package);
-            // all_field_names4 = all_field_names4.concat(second_part_part_1);
-            // all_field_names4 = all_field_names4.concat(second_part_part_2);
-            // all_field_names4 = all_field_names4.concat(second_part_part_3);
-            //
-            //
-            // var all_metadata = met_obj.create_all_metadata_form_new(rows, all_field_names, project_obj);
-            //
-            // var all_field_units = MD_CUSTOM_UNITS[project_obj.pid];
-            //
-            // var show_new = new metadata_controller.ShowObj(met_obj.req, met_obj.res, all_metadata, all_field_names4, all_field_units);
-            // show_new.render_edit_form();
-//  }
-
           }
+          console.timeEnd("TIME: in post /metadata_new, add project");
         }
-        );
-      }
+      );
+    }
+    console.timeEnd("TIME: in post /metadata_new");
   });
 
 // render edit form
@@ -492,7 +418,8 @@ router.post('/metadata_upload',
 
       make_metadata_object_from_form(req, res);
       console.log("III in form");
-      // csv_files_controller.make_csv(req, res);
+      const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
+      // csv_files_obj.make_csv(req, res);
 
       if (req.body.done_editing === "done_editing") {
         send_mail_finished(req, res);
@@ -520,7 +447,7 @@ function make_metadata_object_from_form(req, res) {
 
   //add project_abstract etc.
   //TODO: DRY with other such places.
-  const met_obj            = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
+  const met_obj = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
 
   var normal_length = data['dataset'].length;
   for (var a in data) {
@@ -576,7 +503,7 @@ function make_metadata_object_from_csv(req, res) {
   // console.log(req.body);
   var file_name    = req.body.edit_metadata_file;
   var project_name = req.body.project;
-        // metadata_controller.get_project_name(file_name);
+  // metadata_controller.get_project_name(file_name);
   var pid          = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
 
 
@@ -652,7 +579,7 @@ function make_metadata_object_from_db(req, res) {
   }
   console.timeEnd("TIME: dataset_info");
 
-  const met_obj     = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+  const met_obj = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
 
   // add missing info to AllMetadata_picked
   console.time("TIME: add missing info to AllMetadata_picked");
@@ -679,13 +606,13 @@ function make_metadata_object_from_db(req, res) {
 
   // as many values per field as there are datasets
 
-  var user_id     = PROJECT_INFORMATION_BY_PID[pid].oid;
+  var user_id = PROJECT_INFORMATION_BY_PID[pid].oid;
   // var user_obj = new User.getUserInfoFromGlobal(user_id);
 
   const new_project = new Project(req, res, pid, user_id);
   var project_obj   = new_project.project_obj;
 
-  var abstract_data =  project_obj.abstract_data;
+  var abstract_data = project_obj.abstract_data;
 
   var data_in_obj_of_arr                 = met_obj.from_obj_to_obj_of_arr(AllMetadata_picked, pid);
   data_in_obj_of_arr["project_abstract"] = met_obj.fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
@@ -771,7 +698,8 @@ function saveMetadata(req, res) {
   console.time("TIME: saveMetadata");
   console.log("SSS in saveMetadata");
 
-  csv_files_controller.make_csv(req, res);
+  const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
+  csv_files_obj.make_csv();
   // var pid = req.body.project_id;
   req.flash("success", "Success with the metadata submit!");
 
@@ -807,7 +735,8 @@ function saveMetadata(req, res) {
 router.get('/metadata_file_list', function (req, res) {
   console.time("TIME: get metadata_file_list");
   console.log('in metadata_file_list');
-  var user_metadata_csv_files = csv_files_controller.get_csv_files(req);
+  const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
+  var user_metadata_csv_files = csv_files_obj.get_csv_files();
 
   user_metadata_csv_files.sort(function sortByTime(a, b) {
     //reverse sort: recent-->oldest
@@ -832,12 +761,13 @@ router.post('/metadata_files',
 
     console.time("TIME: in post /metadata_files");
     var table_diff_html, sorted_files, files_to_compare;
-    sorted_files     = csv_files_controller.sorted_files_by_time(req);
-    files_to_compare = csv_files_controller.sorted_files_to_compare(req, sorted_files);
+    const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
+    sorted_files     = csv_files_obj.sorted_files_by_time();
+    files_to_compare = csv_files_obj.sorted_files_to_compare(sorted_files);
 
     if (typeof req.body.compare !== 'undefined' && req.body.compare.length === 2) {
 
-      table_diff_html = csv_files_controller.get_file_diff(req, files_to_compare);
+      table_diff_html = csv_files_obj.get_file_diff(files_to_compare);
       res.render("metadata/metadata_file_list", {
         title: "VAMPS: Metadata File List",
         user: req.user,
