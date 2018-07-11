@@ -746,8 +746,8 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                 info.num_of_datasets = datasets.length
                 var pid = 'none'
                 //==========================
-                var scriptlog1   = path.join(info.project_dir, 'matrix_log1.txt');
-                var cmd_list = matrixTax(req, info, scriptlog1);
+                
+                var cmd_list = matrixTax(req, info);
                 console.log(cmd_list)
                 var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': info.project_name, 'status': '', 'msg': '' };
                 status_params.statusOK = 'OK-MATRIX';
@@ -1622,7 +1622,7 @@ function checkPid(check_pid_options, last_line)
     console.log('checkPID ERROR pid is not an integer: ', pid);
   }
 }
-function matrixTax(req, info, log)
+function matrixTax(req, info)
 {
     var script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
     var units = 'matrix'
@@ -1630,9 +1630,9 @@ function matrixTax(req, info, log)
     var cmd1_opts = [ '-i',new_file_path,'-d',info.project_dir,'-host',req.CONFIG.hostname,'-p',info.project_name,'-u',req.user.username]    
     var cmd2_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',req.CONFIG.site,'--config',req.CONSTS.CONFIG_FILE ]
     var cmd3_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',req.CONSTS.CONFIG_FILE ]
-    var matrix_cmd1 = script_path + '/vamps_script_matrix_loader.py'                + ' '+cmd1_opts.join(' ')  + ' >> ' + log 
-    var matrix_cmd2 = script_path + '/vamps_script_upload_metadata.py'              + ' '+cmd2_opts.join(' ')  + ' >> ' + log
-    var matrix_cmd3 = script_path + '/vamps_script_create_json_dataset_files.py'    + ' '+cmd3_opts.join(' ')  + ' >> ' + log
+    var matrix_cmd1 = script_path + '/vamps_script_matrix_loader.py'                + ' '+cmd1_opts.join(' ')
+    var matrix_cmd2 = script_path + '/vamps_script_upload_metadata.py'              + ' '+cmd2_opts.join(' ')
+    var matrix_cmd3 = script_path + '/vamps_script_create_json_dataset_files.py'    + ' '+cmd3_opts.join(' ')
     var cmd_list = [ matrix_cmd1, matrix_cmd2, matrix_cmd3 ];
 
     return cmd_list
