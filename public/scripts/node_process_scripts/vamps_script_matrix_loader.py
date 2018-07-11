@@ -172,7 +172,7 @@ def check_project():
     if cur.rowcount > 0:
         row = cur.fetchone()
         print('ERR***'+str(row[0])+'-'+args.project)
-        sys.exit('Duplicate project name: '+q)
+        sys.exit('Duplicate project name:(id='+str(row[0])+') '+q)
            
 def parse_matrix_file():
     ifile = open(args.infile, 'r')
@@ -319,7 +319,7 @@ def push_taxonomy(args):
         #print('ds:'+ds)
         for tax in args.tax_data_by_ds[ds]:
             
-            (rank,rank_id) = get_rank_from_tax_string(tax)
+            #(rank,rank_id) = get_rank_from_tax_string(tax)
             seq_count = args.tax_data_by_ds[ds][tax]
             finish_tax(ds, seq_count, tax)
 
@@ -342,11 +342,12 @@ def push_taxonomy_info(args):  # was push_sequences
             q += " VALUES ('%s','%s','%s','%s')" % (str(did), str(tax_id), str(seq_count), str(rank_id))
             if args.verbose:
                 print(q)
-            cur.execute(q)
-            mysql_conn.commit()
+            if rank:
+                cur.execute(q)
+                mysql_conn.commit()
             
     mysql_conn.commit()
-    #print SEQ_COLLECTOR    
+    
 #
 #
 #
@@ -354,9 +355,12 @@ def get_rank_from_tax_string(tax):
     tax_items = tax.split(';')
     if args.verbose:
         print(tax_items)
-    rank =  ranks[len(tax_items) - 1]  #string
-    rank_id = RANK_COLLECTOR[rank]
-    return (rank,rank_id)
+    if 1 <= len(tax_items) <= 8:
+        rank =  ranks[len(tax_items) - 1]  #string
+        rank_id = RANK_COLLECTOR[rank]
+        return (rank,rank_id)
+    else:
+        return ('',0)
 
 
 
