@@ -301,7 +301,6 @@ router.post('/metadata_new',
             console.log('WWW0 err', err);
             req.flash('fail', err);
             show_new.show_metadata_new_again();
-            // res.json(err);
           }
           else {
             console.log('New project SAVED');
@@ -311,44 +310,44 @@ router.post('/metadata_new',
 
             const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
             console.trace("Show me");
-            // met_obj.make_new_project_for_form(rows, project_obj);
+            met_obj.make_new_project_for_form(rows, project_obj);
 // make_new_project_for_form(rows, project_obj) {
 
-            var all_field_names = met_obj.all_field_names;
-
-            var all_field_names4     = [];
-            var parameter            = CONSTS.ORDERED_METADATA_NAMES.slice(0, 1);
-            var new_user_submit      = [['', 'New submit info', '', '']];
-            var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
-            var dataset_description  = [['dataset_description', 'Dataset description', 'User Supplied', '']];
-            var tube_label           = [['tube_label', 'Tube label', 'User Supplied', '']];
-            var sample_concentration = [['sample_concentration', 'Sample concentration', 'User Supplied', 'ng/ul']];
-            var dna_quantitation     = CONSTS.ORDERED_METADATA_NAMES.slice(35, 36);
-            var env_package          = CONSTS.ORDERED_METADATA_NAMES.slice(16, 17);
-
-            var second_part_part_1 = CONSTS.ORDERED_METADATA_NAMES.slice(1, 16);
-            var second_part_part_2 = CONSTS.ORDERED_METADATA_NAMES.slice(18, 35);
-            var second_part_part_3 = CONSTS.ORDERED_METADATA_NAMES.slice(36);
-
-            all_field_names4 = all_field_names4.concat(parameter);
-            all_field_names4 = all_field_names4.concat(new_user_submit);
-            all_field_names4 = all_field_names4.concat(user_sample_name);
-            all_field_names4 = all_field_names4.concat(dataset_description);
-            all_field_names4 = all_field_names4.concat(tube_label);
-            all_field_names4 = all_field_names4.concat(sample_concentration);
-            all_field_names4 = all_field_names4.concat(dna_quantitation);
-            all_field_names4 = all_field_names4.concat(env_package);
-            all_field_names4 = all_field_names4.concat(second_part_part_1);
-            all_field_names4 = all_field_names4.concat(second_part_part_2);
-            all_field_names4 = all_field_names4.concat(second_part_part_3);
-
-
-            var all_metadata = met_obj.create_all_metadata_form_new(rows, all_field_names, project_obj);
-
-            var all_field_units = MD_CUSTOM_UNITS[project_obj.pid];
-
-            var show_new = new metadata_controller.ShowObj(met_obj.req, met_obj.res, all_metadata, all_field_names4, all_field_units);
-            show_new.render_edit_form();
+            // var all_field_names = met_obj.all_field_names;
+            //
+            // var all_field_names4     = [];
+            // var parameter            = CONSTS.ORDERED_METADATA_NAMES.slice(0, 1);
+            // var new_user_submit      = [['', 'New submit info', '', '']];
+            // var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
+            // var dataset_description  = [['dataset_description', 'Dataset description', 'User Supplied', '']];
+            // var tube_label           = [['tube_label', 'Tube label', 'User Supplied', '']];
+            // var sample_concentration = [['sample_concentration', 'Sample concentration', 'User Supplied', 'ng/ul']];
+            // var dna_quantitation     = CONSTS.ORDERED_METADATA_NAMES.slice(35, 36);
+            // var env_package          = CONSTS.ORDERED_METADATA_NAMES.slice(16, 17);
+            //
+            // var second_part_part_1 = CONSTS.ORDERED_METADATA_NAMES.slice(1, 16);
+            // var second_part_part_2 = CONSTS.ORDERED_METADATA_NAMES.slice(18, 35);
+            // var second_part_part_3 = CONSTS.ORDERED_METADATA_NAMES.slice(36);
+            //
+            // all_field_names4 = all_field_names4.concat(parameter);
+            // all_field_names4 = all_field_names4.concat(new_user_submit);
+            // all_field_names4 = all_field_names4.concat(user_sample_name);
+            // all_field_names4 = all_field_names4.concat(dataset_description);
+            // all_field_names4 = all_field_names4.concat(tube_label);
+            // all_field_names4 = all_field_names4.concat(sample_concentration);
+            // all_field_names4 = all_field_names4.concat(dna_quantitation);
+            // all_field_names4 = all_field_names4.concat(env_package);
+            // all_field_names4 = all_field_names4.concat(second_part_part_1);
+            // all_field_names4 = all_field_names4.concat(second_part_part_2);
+            // all_field_names4 = all_field_names4.concat(second_part_part_3);
+            //
+            //
+            // var all_metadata = met_obj.create_all_metadata_form_new(rows, all_field_names, project_obj);
+            //
+            // var all_field_units = MD_CUSTOM_UNITS[project_obj.pid];
+            //
+            // var show_new = new metadata_controller.ShowObj(met_obj.req, met_obj.res, all_metadata, all_field_names4, all_field_units);
+            // show_new.render_edit_form();
 //  }
 
           }
