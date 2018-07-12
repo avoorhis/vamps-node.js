@@ -4,10 +4,27 @@ class Dataset {
     this.req      = req || {};
     this.res      = res || {};
     this.pid      = pid;
-    this.project_obj = {};
-    this.make_project_obj();
+    this.dataset_obj = {};
+    this.make_dataset_obj();
   }
 
+  make_dataset_obj(){
+    if (dataset_id) {
+      this.make_dataset_obj_from_existing_data();
+    }
+    else {
+      this.save_new_samples();
+
+      // add check if exist, see project
+      this.make_dataset_obj_from_new_form_info();
+    }
+  }
+
+  make_dataset_obj_from_new_form_info() {
+    var temp_dataset_obj = {};
+
+  }
+  
   getAllDatasets(callback) {
 
     return connection.query("Select * from dataset", callback);
