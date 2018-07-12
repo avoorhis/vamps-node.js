@@ -144,7 +144,7 @@ class CreateDataObj {
     }
     return all_metadata_pid;
   }
-  
+
   make_metadata_object(req, res, pid, data_obj) {
     console.time('TIME: make_metadata_object');
 

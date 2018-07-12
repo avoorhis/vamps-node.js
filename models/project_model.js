@@ -136,9 +136,6 @@ class Project {
     return project_prefix;
   }
 
-  add_info_to_globals() {
-  }
-
   getAllProjects(callback) {
 
     return connection.query("Select * from project", callback);
