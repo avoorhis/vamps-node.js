@@ -11,6 +11,7 @@ var config  = require(app_root + '/config/config');
 // var expressValidator = require('express-validator');
 var nodeMailer           = require('nodemailer');
 var Project              = require(app_root + '/models/project_model');
+var Dataset              = require(app_root + '/models/dataset_model');
 // var User    = require(app_root + '/models/user_model');
 var metadata_controller  = require(app_root + '/controllers/metadataController');
 var csv_files_controller = require(app_root + '/controllers/csvFilesController');
@@ -419,7 +420,7 @@ router.post('/metadata_upload',
       make_metadata_object_from_form(req, res);
       console.log("III in form");
       const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
-      // csv_files_obj.make_csv(req, res);
+      csv_files_obj.make_csv(req, res);
 
       if (req.body.done_editing === "done_editing") {
         send_mail_finished(req, res);
@@ -438,13 +439,17 @@ router.post('/metadata_upload',
 
 function make_metadata_object_from_form(req, res) {
   console.time("TIME: make_metadata_object_from_form");
+  console.trace("Show me, I'm in make_metadata_object_from_form");
   var pid  = req.body.project_id;
   var data = req.form;
 
   // console.log("DDD9 req.form");
   // console.log(JSON.stringify(req.form));
 
+if (data['dataset_id'][0] === "") {
+  const dataset_obj = new Dataset(req, res, pid);
 
+}
   //add project_abstract etc.
   //TODO: DRY with other such places.
   const met_obj = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);

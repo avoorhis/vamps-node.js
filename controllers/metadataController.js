@@ -145,24 +145,24 @@ class CreateDataObj {
     return all_metadata_pid;
   }
 
-  transpose_2d_arr(data_arr, matrix_length) {
-    console.time('TIME: transpose_2d_arr');
-
-    //make an array with proper length, even if the first one is empty
-    // var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
-    var length_array = data_arr[0];
-    if (data_arr[0].length < matrix_length) {
-      length_array = this.fill_out_arr_doubles('', matrix_length);
-    }
-
-    var newArray = length_array.map(function (col, i) {
-      return data_arr.map(function (row) {
-        return row[i];
-      });
-    });
-    console.timeEnd('TIME: transpose_2d_arr');
-    return newArray;
-  }
+  // transpose_2d_arr(data_arr, matrix_length) {
+  //   console.time('TIME: transpose_2d_arr');
+  //
+  //   //make an array with proper length, even if the first one is empty
+  //   // var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
+  //   var length_array = data_arr[0];
+  //   if (data_arr[0].length < matrix_length) {
+  //     length_array = this.fill_out_arr_doubles('', matrix_length);
+  //   }
+  //
+  //   var newArray = length_array.map(function (col, i) {
+  //     return data_arr.map(function (row) {
+  //       return row[i];
+  //     });
+  //   });
+  //   console.timeEnd('TIME: transpose_2d_arr');
+  //   return newArray;
+  // }
 
 //   convertArrayOfObjectsToCSV(args) {
 //   console.time('TIME: convertArrayOfObjectsToCSV');

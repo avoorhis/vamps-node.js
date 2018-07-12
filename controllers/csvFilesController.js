@@ -125,7 +125,7 @@ class CsvFiles {
     data_arr = helpers.array_from_object(data);
 
     var matrix_length   = DATASET_IDS_BY_PID[project_id].length + 1;
-    transposed_data_arr = this.transpose_2d_arr(data_arr, matrix_length);
+    transposed_data_arr = helpers.transpose_2d_arr(data_arr, matrix_length);
 
     columnDelimiter = args.columnDelimiter || ',';
     lineDelimiter   = args.lineDelimiter || '\n';
