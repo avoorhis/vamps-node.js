@@ -144,74 +144,7 @@ class CreateDataObj {
     }
     return all_metadata_pid;
   }
-
-  // transpose_2d_arr(data_arr, matrix_length) {
-  //   console.time('TIME: transpose_2d_arr');
-  //
-  //   //make an array with proper length, even if the first one is empty
-  //   // var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
-  //   var length_array = data_arr[0];
-  //   if (data_arr[0].length < matrix_length) {
-  //     length_array = this.fill_out_arr_doubles('', matrix_length);
-  //   }
-  //
-  //   var newArray = length_array.map(function (col, i) {
-  //     return data_arr.map(function (row) {
-  //       return row[i];
-  //     });
-  //   });
-  //   console.timeEnd('TIME: transpose_2d_arr');
-  //   return newArray;
-  // }
-
-//   convertArrayOfObjectsToCSV(args) {
-//   console.time('TIME: convertArrayOfObjectsToCSV');
-//
-//   var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_id;
-//
-//   data = args.data || null;
-//   if (data === null) {
-//     return null;
-//   }
-//
-//   user_info = args.user_info || null;
-//   if (user_info === null) {
-//     return null;
-//   }
-//
-//   project_id = args.project_id || null;
-//   if (project_id === null) {
-//     return null;
-//   }
-//
-//   data_arr = helpers.array_from_object(data);
-//
-//   var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
-//   transposed_data_arr = this.transpose_2d_arr(data_arr, matrix_length);
-//
-//   columnDelimiter = args.columnDelimiter || ',';
-//   lineDelimiter   = args.lineDelimiter || '\n';
-//   cellEscape      = args.cellEscape || '"';
-//
-//   result = '';
-//   transposed_data_arr.map(function (row) {
-//     // TODO: to a function?
-//     // result = row.map(function (item) {
-//     var r1 = row.map(function (item) {
-//       // Wrap each element of the items array with quotes
-//       return cellEscape + item + cellEscape;
-//     }).join(columnDelimiter);
-//
-//     result += r1;
-//     result += lineDelimiter;
-//   });
-//
-//
-//   console.timeEnd('TIME: convertArrayOfObjectsToCSV');
-//
-//   return result;
-// };
-
+  
   make_metadata_object(req, res, pid, data_obj) {
     console.time('TIME: make_metadata_object');
 
