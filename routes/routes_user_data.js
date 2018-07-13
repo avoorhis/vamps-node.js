@@ -568,15 +568,15 @@ function save_cust_metadata(pid, mdname, data){
 router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
   console.log('in import_choices');
   var project = req.query.project || '' // url should always be like: /user_data/import_choices?project=andy003 
-  if(req.user.security_level > 1 && req.CONFIG.hostname == 'bpcweb8'){
-      req.flash('fail','Not coded yet')
-      res.render('user_data/your_data', {
-        title: 'VAMPS:Data Administration',
-        user: req.user, hostname: req.CONFIG.hostname,
-        
-      });
-      return;
-  }
+  // if(req.user.security_level > 1 && req.CONFIG.hostname == 'bpcweb8'){
+//       req.flash('fail','Not coded yet')
+//       res.render('user_data/your_data', {
+//         title: 'VAMPS:Data Administration',
+//         user: req.user, hostname: req.CONFIG.hostname,
+//         
+//       });
+//       return;
+//   }
   if (req.user.username == 'guest') {
        req.flash('fail', "The 'guest' user is not permitted to import data");
        res.redirect('/user_data/your_data');
@@ -627,27 +627,28 @@ router.get('/import_choices/biom', [helpers.isLoggedIn], function (req, res) {
 router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(req, res) {
     console.log('in POST test_upload')
     console.log(req.body)
-    
+    // project name validation/replace is in import.js
     var project = req.body.project_name
+    
     var file_type = req.body.file_type
     var timestamp = +new Date();  // millisecs since the epoch!
     var original_file_path = req.files[0].path
     var original_file_name = req.files[0].originalname
     
-    //
-   
-    var error_fxn = function(msg){
+    var error_fxn = function(req, res, msg){
         console.log('FAIL re-open import choices page2')
         req.flash('fail',msg)
+        //res.redirect('/');
         res.render('user_data/import_choices', {
           title: 'VAMPS:Import Choices',
           project: '',
           user: req.user, hostname: req.CONFIG.hostname
-          });
-        return
+        });
+        
     }
+    
     if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
-        error_fxn('That project name is not availible.')
+        error_fxn(req, res, 'That project name is not availible.')
         return
     }
     var info = {}
@@ -713,7 +714,8 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                 var split_on = '\t'
                 for(n in line_split_chunks){
                     if(n==0){
-                        datasets = line_split_chunks[n].trim().split(split_on)
+                        datasets = line_split_chunks[n].split(split_on)
+                        datasets.shift();  // removes col1 (whether text or not)
                         //console.log('datasets')
                         //console.log(datasets)
                         unique = helpers.unique_array(datasets)
@@ -736,7 +738,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                 
                 }
                 for(n in datasets){
-                    console.log('ds '+datasets[n])
+                    //console.log('ds '+datasets[n])
                     info.dataset[datasets[n]] = '0'
                     
                 }
@@ -753,11 +755,11 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                 status_params.msgOK = 'Finished MATRIX';
                 status_params.msgSUCCESS = 'MATRIX -Tax assignments';
                 var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'matrix');
-                var scriptlog   = script_vars[0];
-                var script_text = script_vars[1];
-                var script_path     = path.join(info.project_dir, 'matrix_script.sh');
-
-                var nodelog         = fs.openSync(path.join(info.project_dir, 'assignment.log'), 'a', 0664);
+                var scriptlog2   = script_vars[0]; //path.join(info.project_dir, 'matrix_log.txt');
+                var script_text = script_vars[1]; //helpers.get_qsub_script_text_only(req, scriptlog2, info.project_dir, 'matrix', cmd_list);
+                var script_path = path.join(info.project_dir, 'matrix_script.sh');
+                
+                //var nodelog         = fs.openSync(path.join(info.project_dir, 'assignment.log'), 'a', 0664);
                 var ok_code_options = ['matrix', status_params, res,''];
 
                 // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
@@ -768,8 +770,8 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                 
                 fs.writeFile(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }), {mode:0o664}, function writeConfigFile(err) {                                  
 					if(err){return console.log(err);} // => null
-					fs.chmodSync(new_info_filename_path, 0o664);
-					fs.chmodSync(new_file_path, 0o664);
+					fs.chmodSync(new_info_filename_path, 0o666);
+					fs.chmodSync(new_file_path, 0o666);
 					req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
 
 					fs.writeFile(script_path, 
@@ -784,7 +786,8 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                       else
                       {
                         console.log('Before RunAndCheck Matrix')
-                        RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
+                        var full_script     = script_path //+ ' > ' + scriptlog2
+                        RunAndCheck(full_script, '', req, project, res, checkPid, ok_code_options);
                         status_params.status = status_params.statusSUCCESS;
                         status_params.msg = status_params.msgSUCCESS;
                         helpers.update_status(status_params);
@@ -792,7 +795,6 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                         req.flash('success', 'Matrix' + " has been started for project: '" + info.project_name + "'");
                         //res.redirect("/user_data/your_projects");
                         process.umask(oldmask);
-                        console.log("1-The file was saved!");
                         res.render('user_data/import_choices/matrix', {
 					        title: 'VAMPS:Import Choices',
 					        def_name:'',
@@ -901,11 +903,17 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
                     first_item = line_items[0].substring(1,line_items[0].length)  // remove '>'
                     // now this is common M9Akey217.141086_98 last digits are 'count'
                     // need to be removed
-                    first_item = first_item.split('_')[0]  // if trailing number: remove it
-                    if(ds_counts.hasOwnProperty(first_item)){
-                        ds_counts[first_item] += 1
+                    items = first_item.split('_')
+                    if(helpers.isInt(items[items.length - 1])){
+                        dataset = first_item.split('_')[0]  // if trailing number: remove it
                     }else{
-                        ds_counts[first_item] = 1                        
+                        dataset = first_item
+                    }
+                    
+                    if(ds_counts.hasOwnProperty(dataset)){
+                        ds_counts[dataset] += 1
+                    }else{
+                        ds_counts[dataset] = 1                        
                     }                                   
                 }
             }
@@ -1317,7 +1325,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
       }
       if (delete_kind == 'data_only') {
             RunAndCheck(delete_cmd, '', req, project, res, checkPid, ['Unknown',{},res,'']);
-            console.log('Back from Del RunAndCheck')
+            console.log('1-Back from Del RunAndCheck')
             req.flash('success', msg);
             res.redirect("/user_data/your_projects");
       } else if (delete_kind == 'all') {
@@ -1333,14 +1341,12 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
 					console.log(err2); 
 				})
 			}
-			console.log('Successfully removed')
+			RunAndCheck(delete_cmd, '', req, project, res, checkPid, ['Unknown',{},res,'']);
+            console.log('2-Back from Del RunAndCheck')
 			req.flash('success', msg);
             res.redirect("/user_data/your_projects");
 		  })
-		  //helpers.deleteFolderRecursive(data_dir)
-		  
-         
-
+  
       } else {
         req.flash('success', msg);
         res.redirect("/user_data/your_projects");
@@ -1564,17 +1570,18 @@ function checkPid(check_pid_options, last_line)
   status_params = check_pid_options[1];
   res           = check_pid_options[2];
   ref_db    = check_pid_options[3];
-  console.log(' classifier CLCLCL: ' + classifier);
-  console.log(' last_line CLCLCL: ' + last_line);
-  console.log("status_params from checkPid: ");
-  console.log(check_pid_options);
-  console.log(util.inspect(status_params, false, null));
-
-  console.log(classifier.toUpperCase() + ' Success');
+  if(config.hostname.substring(0,7) != 'bpcweb8'){
+      console.log(' classifier CLCLCL: ' + classifier);
+      console.log(' last_line CLCLCL: ' + last_line);
+      console.log("status_params from checkPid: ");
+      console.log(check_pid_options);
+      console.log(util.inspect(status_params, false, null));
+      console.log(classifier.toUpperCase() + ' Success');
+  }
   //console.log('PID last line: ' + last_line)
   var ll = last_line.split('=');
   var pid = ll[1];
-  console.log('NEW PID=: ' + pid);
+  console.log('checkPID NEW PID=: ' + pid);
   //console.log('ALL_DATASETS: ' + JSON.stringify(ALL_DATASETS));
   if (helpers.isInt(pid))
   {
@@ -1612,7 +1619,7 @@ function checkPid(check_pid_options, last_line)
   }
   else
   { // end if int
-    console.log('ERROR pid is not an integer: ', pid);
+    console.log('checkPID ERROR pid is not an integer: ', pid);
   }
 }
 function matrixTax(req, info)
@@ -1623,7 +1630,7 @@ function matrixTax(req, info)
     var cmd1_opts = [ '-i',new_file_path,'-d',info.project_dir,'-host',req.CONFIG.hostname,'-p',info.project_name,'-u',req.user.username]    
     var cmd2_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',req.CONFIG.site,'--config',req.CONSTS.CONFIG_FILE ]
     var cmd3_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',req.CONSTS.CONFIG_FILE ]
-    var matrix_cmd1 = script_path + '/vamps_script_matrix_loader.py'                + ' '+cmd1_opts.join(' ')   
+    var matrix_cmd1 = script_path + '/vamps_script_matrix_loader.py'                + ' '+cmd1_opts.join(' ')
     var matrix_cmd2 = script_path + '/vamps_script_upload_metadata.py'              + ' '+cmd2_opts.join(' ')
     var matrix_cmd3 = script_path + '/vamps_script_create_json_dataset_files.py'    + ' '+cmd3_opts.join(' ')
     var cmd_list = [ matrix_cmd1, matrix_cmd2, matrix_cmd3 ];
@@ -1844,14 +1851,14 @@ function metadata_upload(req, options, data_dir, project)
 // YOUR PROJECTS
 //
 router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
-    if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
-      req.flash('fail','Not coded yet')
-      res.render('user_data/your_data', {
-        title: 'VAMPS:Data Administration',
-        user: req.user, hostname: req.CONFIG.hostname,
-      });
-      return;
-    }
+    // if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
+//       req.flash('fail','Not coded yet')
+//       res.render('user_data/your_data', {
+//         title: 'VAMPS:Data Administration',
+//         user: req.user, hostname: req.CONFIG.hostname,
+//       });
+//       return;
+//     }
     var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
    // AAV must find and list projects that 
    //   1) have no directory (DB only)
@@ -2727,7 +2734,8 @@ function GetScriptVars(req, data_repository, cmd_list, cmd_name)
   else
   {
     scriptlog   = path.join(data_repository, 'cluster.log');
-    script_text = helpers.get_qsub_script_text_only(req, scriptlog, data_repository, cmd_name, cmd_list);
+    //script_text = helpers.get_qsub_script_text_only(req, scriptlog, data_repository, cmd_name, cmd_list);
+    script_text = helpers.get_qsub_script_text(req, scriptlog, data_repository, cmd_name, cmd_list) // req, log, dir_path, cmd_name, cmd_list= function(log, pwd, site, name, cmd_list) {
   }
   
   // console.log('111 scriptlog: ' + scriptlog);
@@ -2819,8 +2827,10 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
 
   var exec = require('child_process').exec;
   var opts = {env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH} }
-  var child = exec(script_path,opts);
-  //var child = spawn(script_path, create_json_files_params, {
+  var child = exec(script_path, opts);
+  //var scriptlog1 = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+project, 'matrix_log1.txt');
+  
+  // var child = spawn(script_path, [], {
 //                             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
 //                             detached: true, stdio: 'pipe'
 //                         });
@@ -3423,7 +3433,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
                  for (var i in pid_list) {
                    //var pid = ll[1];
                    var pid = pid_list[i];
-                   console.log('NEW PID=: '+pid);
+                   console.log('TaxbySeq NEW PID=: '+pid);
                    //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
                    if (helpers.isInt(pid)) {
                      // TODO: Don't make functions within a loop.
@@ -3451,7 +3461,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
                      });
 
                        } else { // end if int
-                             console.log('ERROR pid is not an integer: '+pid.toString());
+                             console.log('TaxbySeq ERROR pid is not an integer: '+pid.toString());
                    }
                  } // end for pid in pid_list
               }

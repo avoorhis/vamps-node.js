@@ -69,10 +69,22 @@ function process_upload_form(file_type) {
     
     var file = document.getElementById('file_input').files[0];
     var project_name = document.getElementById('pname_input').value
+    pattern=/([^a-zA-Z0-9\.]+)/gi
+    
+    var new_pname = project_name.replace(pattern, '_')  // replace bad chars with underscore
+    if(new_pname.length > 30){
+        alert('Project name is too long (limit 30 characters)')
+        return
+    }
+    if(new_pname.length < 3){
+        alert('Project name is too short (minimum 3 characters)')
+        return
+    }
+    
     var formData = new FormData();
     formData.append('file', file);    
     formData.append('file_type', file_type);
-    formData.append("project_name", project_name);
+    formData.append("project_name", new_pname);
     var xmlhttp = new XMLHttpRequest();
     
     var url = "/user_data/upload_import_file"

@@ -13,30 +13,34 @@
 	<div class="container">
 
 	<div class="hero-unit">
-	       <h2>Assign Taxonomy: <%= project %></h2>    
+	       <h3>Assign Taxonomy: <%= project %></h3>   
+	       <h3>Choose Assignment Method Steps:</h3>   
 	</div>
 	<br>
   <div class="row">  
       <div class="col-lg-4">
-				<h4>1 - GAST vs RDP (are there others?)</h4> 
+				<h5>Step-1</h5>
+				<br>Choose GAST, RDP or SPINGO for the assignment method.
+				<br><br><a href='http://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1000255' target='_blank'>GAST citation</a>
+				(Silva v119)
+				<br><a href='http://aem.asm.org/content/73/16/5261' target='_blank'>RDP Classifier citation</a>
+				(Greengenes)
+				<br><a href='https://www.researchgate.net/publication/283155646_SPINGO_A_rapid_species-classifier_for_microbial_amplicon_sequences' target='_blank'>SPINGO citation</a>
+		        (Greengenes)
 		</div>
-        <div class="col-lg-4">
-            <h4>2 - </h4> 
-            <h4>if GAST: Choose full-length(refssu)(slow) or specific region(faster but primers may not mesh)</h4> 
-            <h4>if RDP: Choose Silva, Greengenes or ITS</h4>
+        <div class="col-lg-5">
+            <h5>Step-2</h5> 
+            <br><b>for GAST:</b> You will be asked to select the specific reference database which best fits your data. If you are unsure select the full-length RefSSU but be warned that it 
+            is a large database and slow if there are many sequences or if they are extra long (ie more that a single region). 
+            <br><b>for RDP:</b> Choose Silva, Greengenes or ITS
+            <br><b>for SPINGO:</b> RDP (11.2) Experimental
         </div>
-        <div class="col-lg-4">
-            <h4>3 There are two essential elements to VAMPS:</h4> 
+        <div class="col-lg-3">
+            <h5>Step-3</h5> 
+            <br>Press the start button
         </div>
 	</div>
 
-Region: v1,v3 v4 v5 v6  full-length(refssu)
-<br>
-Bacterial, Archaeal, Eukaryal, ITS
-<br>
-Silva, Greengenes
-<br>
-GAST vs RDP
 
 </div>
 <br>
@@ -46,12 +50,9 @@ GAST vs RDP
         <select onchange='get_ref_dbs("<%= project %>",this.value)'  >
         <option>choose</option>
         <% for(classifier in choices){ %>
-            <% if(hostname.substring(0,6) != 'bpcweb' && classifier == 'GAST'){ %>
-               <!-- GAST Not availible on localhost -->
-               <option disabled><%=  classifier %></option>
-            <% } else { %>
+           
                 <option><%=  classifier %></option>
-            <% } %>
+           
         <% } %>
         </select>
     </div>

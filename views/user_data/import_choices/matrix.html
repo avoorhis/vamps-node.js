@@ -62,9 +62,10 @@
         as a requirement before uploading successfully. 
         <li>The delimiter MUST be a TAB character. 
         <li>Column names are the dataset names. 
-        <li>The dataset names MUST start in Column #2.
+        <li>The dataset names MUST start in Column #2 and be alphanumeric (no spaces or special characters other than period '.' or underscore '_'). 
         <li>Column #1 will contain the taxonomy strings and will start in Row #2.
-        <li>Taxonomy strings cannot be more than eight ranks (domain..strain) and are separated by semi-colons(;).
+        <li>Taxonomy strings cannot be more than eight ranks (domain..strain) and are separated by semi-colons(';').
+        <li>domain;phylum;class;order;family;genus;species;strain
         
     <small><pre>
  SAMPLE Format :   
@@ -77,7 +78,6 @@ domain1;phylum3;class6;order4;family4;genus2	0	0	1	1	22
 domain2;phylum4;class4;order6;family5;genus4	0	1	0	0	0
 domain3;phylum6;class5;order5;family7;genus10	1	2	2	1	128
 domain3;phylum7	0	1	0	0	1
-
     </pre></small>
         
     </div>    

@@ -124,7 +124,17 @@ class Demultiplex:
       
   def make_file_name(self, id):
     # adjust to your specific defline
-    sampleName = id.split("|")[0].split('_')[0]
+    sampleName_items = id.split()[0].split('_')
+    test = sampleName_items[-1]
+    try:
+        int(test)
+        sampleName = '_'.join(sampleName_items[:-1])
+        #print('INT',sampleName_items[-1])
+    except:
+        sampleName = '_'.join(sampleName_items)
+        #print('NO INT',sampleName_items[-1])
+    
+    print(sampleName)
     fileName = sampleName + ".fa"
     self.sample_names.add(sampleName)
     #print(fileName)
@@ -139,12 +149,16 @@ class Demultiplex:
     while f_input.next():
       i += 1
       total_seq_count += 1
-      id = f_input.id.split()[1]  # remove ds and all after the <space>
-      #print(id)
+      
+      read_id = f_input.id.split()[1]  # remove ds and all after the <space>
+      
+      #>H34Kc.735939_0 HWI-ST753:99:C038WACXX:1:1101:1614:2150 1:N:0: orig_bc=ACTAGCTCCATA new_bc=ACTAGCTCCATA bc_diffs=0
+      print(f_input.id)
+      print(read_id)
       f_out_name = self.make_file_name(f_input.id)
       
       f_output   = self.out_files[f_out_name]
-      self.write_id(f_output, id)
+      self.write_id(f_output, read_id)
       self.write_seq(f_output, f_input.seq)
       if (i % 100000 == 0 or i == 1):
         sys.stderr.write('\r[demultiplex] Writing entries into files: %s\n' % (i))

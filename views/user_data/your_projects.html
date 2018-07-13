@@ -5,7 +5,7 @@
 
 
 <div class='pull-right'>
-    <a href="/user_data/add_project" class='btn btn-sm btn-primary'>Add New Project</a>
+    <a href="/user_data/import_choices" class='btn btn-sm btn-primary'>Add New Project</a>
 </div>
 
  <div class='title'>Projects (user: <%= user.username %>)</div>
@@ -62,7 +62,11 @@
     		
     		    
     <tr>
-        <td><%= p %></td>
+        <% if(ptype == 'matrix'){ %>
+            <td><%= p %> (<%= ptype %>)</td>
+        <% }else{ %>
+            <td><%= p %></td>
+        <% } %>
         <td><%= status %></td>
         <td><%= number_of_datasets %></td>
         <td><%= total_number_of_sequences %></td>
@@ -75,10 +79,13 @@
                         <span class="caret"></span>
                       </button>
                       <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
+                        <% if(ptype != 'matrix'){ %>
+                            <li role="presentation">    
+                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/data_only">Delete Taxonomy Only</a></li> 
+                        <% } %>
+                          
                         <li role="presentation">    
-                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/data_only">Delete Data from VAMPS</a></li>   
-                        <li role="presentation">    
-                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete Whole Project</a></li>             
+                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete Entire Project </a></li>             
                       </ul>
                 </div>
             </td>
@@ -114,31 +121,23 @@
                         <span class="caret"></span>
                       </button>
                       <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="edit_project/<%= project %>">View/Edit Project Information</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_info/<%= project %>">View Datasets and Counts</a></li> 
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_metadata/<%= project %>">View Metadata</a></li>
+                        <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="edit_project/<%= project %>">View/Edit Project Information</a></li> -->
+                        <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_info/<%= project %>">View Datasets and Counts</a></li> --> 
+                        <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_metadata/<%= project %>">View Metadata</a></li> -->
                         <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_validation/<%= project %>">Validate Project</a></li> -->
-                        <li role="presentation" class="divider"></li>                               
-                        <% if(classified_by){ %>
-                            <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="assign_taxonomy/<%= project %>">Assign Taxonomy</a></li>
-                            <li role="presentation" class="divider"></li>
-                        <% }else{ %>
-                            <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="#">Cluster</a></li>
-                            <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>
-                            <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/meta">Delete Metadata Only</a></li> 
-                            <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/select">Delete Datasets from Project</a></li>   
-                        <% } %>
-                            <!-- 
+                        <!-- <li role="presentation" class="divider"></li> -->                               
+                        <% if(ptype != 'matrix'){ %>
+                            <% if(classified_by){ %>
                                 <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="duplicate_project/<%= project %> ">Duplicate this Project</a></li>   
-             
-                            <li role="presentation" class="divider"></li>
-                            -->
+                                    <a role="menuitem" tabindex="-1" href="assign_taxonomy/<%= project %>">Assign Taxonomy</a></li>
+                                <li role="presentation" class="divider"></li>
+                            <% }else{ %>
+                            
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>
+                                <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/meta">Delete Metadata Only</a></li>  -->
+                                <!--  <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/select">Delete Datasets from Project</a></li> -->   
+                            <% } %>
+                         <% } %>   
                             <li role="presentation">    
                                 <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete Entire Project</a></li>                    
                       </ul>

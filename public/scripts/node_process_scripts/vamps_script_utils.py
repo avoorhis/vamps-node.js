@@ -43,7 +43,7 @@ def get_data(args):
     elif args.project != '':
         q = "select dataset_id,dataset,project_id,project from dataset JOIN project USING(project_id) where project='"+args.project+"'"
     else:
-        print("No project Found -- Exiting")
+        print("1-No project Found -- Exiting")
         sys.exit()
     print(q)
     cur.execute(q)
@@ -52,7 +52,8 @@ def get_data(args):
     dsets = []
     proj = ''
     if not cur.rowcount:
-        print("No project Found -- Exiting")
+        print("2-No datasets Found -- Exiting")
+        delete_project_only_queries(args)
         sys.exit()
     for row in cur.fetchall():
         did = str(row[0])
@@ -125,7 +126,6 @@ def delete_dids_from_metadata_bulk_file(args):
             if did in metadata:
                 print('deleting',did)
                 del metadata[did]
-                
     md_bulk_file2 = os.path.join(args.jsonfile_dir, args.NODE_DATABASE+'--metadata2.json')
     with open(md_bulk_file2, 'w') as outfile:
         json.dump(metadata, outfile)
@@ -160,16 +160,7 @@ def delete_tax_only(args):    # this should leave ONLY the project directory
     print(q)
     cur.execute(q)
     args.obj.commit()
-    q_drop = "DROP TABLE if exists %s"
-    q = q_drop % ('custom_metadata_'+str(args.pid))
-    print(q)
-    cur.execute(q)
-    args.obj.commit()
-    q = "DELETE from custom_metadata_fields"
-    q += " WHERE project_id = '"+str(args.pid)+"'"
-    print(q)
-    cur.execute(q)
-    args.obj.commit()
+    
     q = "DELETE from matrix_taxonomy_info"
     q += " WHERE dataset_id in ('"+ "','".join(args.dids) +"')"
     print(q)
@@ -180,17 +171,48 @@ def delete_tax_only(args):    # this should leave ONLY the project directory
     print(q)
     cur.execute(q)
     args.obj.commit()
+    
+    
     q = 'DELETE from dataset'
     q += " WHERE dataset_id in ('"+ "','".join(args.dids) +"')"
     print(q)
     cur.execute(q)
     args.obj.commit()
-    q = "DELETE from project WHERE project_id = '"+str(args.pid)+"'"
-    print(q)
-    cur.execute(q)        
-    args.obj.commit()
     
     delete_dids_from_metadata_bulk_file(args)
+    delete_project_only_queries(args)
+
+def delete_project_only_queries(args):
+    if int(args.pid) > 0:
+        q_drop = "DROP TABLE if exists %s"
+        q = q_drop % ('custom_metadata_'+str(args.pid))
+        print(q)
+        cur.execute(q)
+        args.obj.commit()
+        q_custom = "DELETE from custom_metadata_fields"
+        q = q_custom + " WHERE project_id = '"+str(args.pid)+"'"
+        print(q)
+        cur.execute(q)
+        args.obj.commit()
+        q = "DELETE from user_project_status WHERE project_id = '"+str(args.pid)+"'"
+        print(q)
+        cur.execute(q)        
+        args.obj.commit()
+        
+        q = "DELETE from project WHERE project_id = '"+str(args.pid)+"'"
+        print(q)
+        cur.execute(q)        
+        args.obj.commit()
+    elif args.project != '':
+        q = "DELETE from project WHERE project = '"+str(args.project)+"'"
+        print(q)
+        cur.execute(q)        
+        args.obj.commit()
+    
+    
+    
+    
+    
     
     
 def delete_metadata_and_tax(args):   

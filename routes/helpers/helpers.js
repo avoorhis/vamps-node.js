@@ -1224,9 +1224,15 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
   cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' '));
 
   if (req.CONFIG.cluster_available === true) {
+<<<<<<< HEAD
     qsub_script_text = this.get_qsub_script_text(log, req.CONFIG.TMP, site, code, cmd_list);
     qsub_file_name   = req.user.username + '_qsub_export_' + ts + '.sh';
     qsub_file_path   = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp', qsub_file_name);
+=======
+    qsub_script_text = this.get_qsub_script_text(req, log, req.CONFIG.TMP, code, cmd_list);
+    qsub_file_name = req.user.username+'_qsub_export_'+ts+'.sh';
+    qsub_file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp', qsub_file_name);
+>>>>>>> master
     console.log('RUNNING(via qsub):', cmd_list[0]);
     console.log('qsub_file_path:', qsub_file_path);
     fs.writeFile(qsub_file_path, qsub_script_text, function writeFile(err) {
@@ -1302,7 +1308,13 @@ module.exports.get_local_script_text = function (cmd_list) {
   return script_text;
 };
 
+<<<<<<< HEAD
 module.exports.get_qsub_script_text = function (log, pwd, site, name, cmd_list) {
+=======
+//module.exports.get_qsub_script_text = function(log, pwd, site, name, cmd_list) {
+module.exports.get_qsub_script_text = function(req, log, dir_path, cmd_name, cmd_list) {
+  
+>>>>>>> master
   /*
    #!/bin/sh
    # CODE:
@@ -1338,11 +1350,19 @@ module.exports.get_qsub_script_text = function (log, pwd, site, name, cmd_list) 
    submit_job
    */
   //### Create Cluster Script
+  var cmd_log = path.join(dir_path, 'cmd.log');
   script_text = "#!/bin/bash\n\n";
+<<<<<<< HEAD
   script_text += "# CODE:\t" + name + "\n\n";
   script_text += "# source environment:\n";
   script_text += "source /groups/vampsweb/" + site + "/seqinfobin/vamps_environment.sh\n\n";
   script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`' + "\n\n";
+=======
+  script_text += "# CODE:\t"+cmd_name+"\n\n";
+  script_text += "# source environment:\n";
+  script_text += "source /groups/vampsweb/"+req.CONFIG.site+"/seqinfobin/vamps_environment.sh\n\n";
+  script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
+>>>>>>> master
   script_text += "# Loading Module didn't work when testing:\n";
   //$script_text .= "LOGNAME=test-output-$TSTAMP.log\n";
   script_text += ". /usr/share/Modules/init/sh\n";
@@ -1360,8 +1380,13 @@ module.exports.get_qsub_script_text = function (log, pwd, site, name, cmd_list) 
   script_text += "cat<<END | qsub\n";
   script_text += "#!/bin/bash\n";
   script_text += "#$ -j y\n";
+<<<<<<< HEAD
   script_text += "#$ -o " + log + "\n";
   script_text += "#$ -N " + name + "\n";
+=======
+  script_text += "#$ -o "+log+"\n";
+  script_text += "#$ -N "+cmd_name+"\n";
+>>>>>>> master
   //script_text += "#$ -p 100\n";   // priority default is 0
   script_text += "#$ -cwd\n";
   script_text += "#$ -V\n";
@@ -1370,8 +1395,14 @@ module.exports.get_qsub_script_text = function (log, pwd, site, name, cmd_list) 
   script_text += 'echo -n "qsub: Current working directory: "' + "\n";
   script_text += "pwd\n\n";
 //     script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";
+  script_text += "touch "+cmd_log+"\n\n";
+  script_text += "chmod ugo+rw "+cmd_log+"\n\n";
   for (var i in cmd_list) {
+<<<<<<< HEAD
     script_text += cmd_list[i] + "\n";
+=======
+    script_text += cmd_list[i]+' >> '+cmd_log+"\n";
+>>>>>>> master
   }
 //
 //     //script_text += "chmod 666 "+log+"\n";
@@ -1392,7 +1423,7 @@ module.exports.get_qsub_script_text_only = function (req, scriptlog, dir_path, c
   script_text += "# source environment:\n"
   script_text += "source /groups/vampsweb/" + req.CONFIG.site + "/seqinfobin/vamps_environment.sh\n\n"
   script_text += "TSTAMP=\`date +%Y%m%d%H%M%S\`\n\n"
-  script_text += "# Loading Module didn work when testing:\n"
+  script_text += "# Loading Module didn't work when testing:\n"
   script_text += ". /usr/share/Modules/init/sh\n"
   script_text += "export MODULEPATH=/usr/local/www/vamps/software/modulefiles\n"
   script_text += "module load clusters/vamps\n\n"
@@ -1410,7 +1441,8 @@ module.exports.get_qsub_script_text_only = function (req, scriptlog, dir_path, c
 };
 
 module.exports.isLocal = function (req) {
-  return !(req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb');
+  var ext_hosts = ['vampsdev','bpcweb7','vamps','vampsdb']
+  return !(req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'bpcweb7' || req.CONFIG.dbhost == 'vampsdb'|| req.CONFIG.dbhost == 'vamps');
 };
 
 module.exports.deleteFolderRecursive = function (path) {
@@ -2056,6 +2088,7 @@ function region_valid(value, region_low, region_high) {
     throw new Error("'" + value + "' is not valid, %s should be between " + region_low + " and " + region_high);
   }
 }
+<<<<<<< HEAD
 
 exports.numbers_n_period = function (value) {
   // var regex = /^[0-9.]+$/;
@@ -2166,3 +2199,22 @@ exports.transpose_2d_arr = function (data_arr, matrix_length) {
   console.timeEnd('TIME: transpose_2d_arr');
   return newArray;
 }
+=======
+// module.exports.validate_name = function (name) {
+//     console.log('helpers.validate_name: '+name)
+//     pattern=/([^a-zA-Z0-9\.]+)/gi
+//     
+//     var new_pname = name.replace(pattern, '_')
+//     //console.log('xx: '+new_name)
+//     if(new_pname.length > 30){
+//         //console.log('too long')
+//         return false;
+//     }
+//     if(new_pname.length < 3){
+//         //console.log('too short')
+//         return false;
+//     }
+//     return new_pname;
+// }
+};
+>>>>>>> master

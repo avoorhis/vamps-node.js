@@ -135,13 +135,13 @@ def go_add(args):
     
     global mysql_conn, cur
     
-    if args.site == 'vamps' or args.site == 'vampsdb':
+    if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':
         hostname = 'vampsdb'
-    elif args.site == 'vampsdev':
-        hostname = 'vampsdev'
+    elif args.site == 'vampsdev' or args.site == 'bpcweb7':
+        hostname = 'bpcweb7'
     else:
         hostname = 'localhost'
-        args.NODE_DATABASE = 'vamps_development' 
+        args.NODE_DATABASE = 'vamps_development'
     
     mysql_conn = MySQLdb.connect(db = args.NODE_DATABASE, host=hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     cur = mysql_conn.cursor()

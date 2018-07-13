@@ -11,27 +11,29 @@
 		<div class='row'>
 
 			<%  	var span = 'col-sm-3'; %>
-					  <div class="<%= span %>">
-					            <div class="panel panel-default">
-					              <div class="panel-heading">
-			<% if(user.username == 'guest'){ %>
-			    <a class="btn btn-sm btn-primary disabled" href='' >Import Data</a>
-			<% }else if(user && user.security_level == 1 || hostname.substring(0,7) !== 'bpcweb8'){ %>
-					   <a class="btn btn-sm btn-primary" href='/user_data/import_choices' >Import Data</a>
-			<% }else{ %>
-					<a class="btn btn-sm btn-primary disabled" href='' >Import Data (TODO)</a>
-			<% } %>
-					              </div>
-					              <div class="panel-body">
-					                Validate and upload sequence and metadata to the VAMPS database
-					                for viewing in the community visualization pages.
-					              </div>
-					            </div>
-						</div>
+			
+			<div class="<%= span %>">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+			
+			        <% if(user.username == 'guest'){ %>
+			            <a disabled class="btn btn-sm btn-primary"  href='/user_data/import_choices' >Import Data</a>
+			        <% }else{ %>
+			            <a class="btn btn-sm btn-primary" href='/user_data/import_choices' >Import Data</a>
+			        <% } %>   
+                    </div>
+                    
+                    <div class="panel-body">
+                        Validate and upload sequence and metadata to the VAMPS database
+                        for viewing in the community visualization pages.
+                    </div>
+                </div>
+			</div>
+
 
 			<div class="<%= span %>">
-		            <div class="panel panel-default">
-		              <div class="panel-heading">
+		        <div class="panel panel-default">
+		            <div class="panel-heading">
 		              	<% if(user.username == 'guest'){ %>
 		              	    <button disabled type="submit" class='btn btn-sm btn-primary' name="" value="" >Download Data</button>
 		              	<% }else{ %>
@@ -41,13 +43,13 @@
                         <% } %>
 		               <!--  <a class="btn btn-sm btn-primary" href='/user_data/export_data'>Export Data</a> -->
 
-		              </div>
-		              <div class="panel-body">
+		            </div>
+		            <div class="panel-body">
 		              	Choose data from public projects and others you may have access to. Export sequences or metadata.
 		              	Also filter the selected data using metadata or taxonomy.
 
-		              </div>
 		            </div>
+		        </div>
 			</div>
 			<div class="<%= span %>">
 
@@ -62,11 +64,10 @@
 		              <div class="panel-body">
 		              	Links to a page of your files that are ready to be downloaded.
 		              </div>
-		            </div>
-		  </div>
+		        </div>
+		    </div>
 			<div class="<%= span %>">
-
-		            <div class="panel panel-default">
+		        <div class="panel panel-default">
 		              <div class="panel-heading">
 		                <% if(user.username == 'guest'){ %>
 		                    <a disabled class="btn btn-sm btn-primary" href=''>Saved Datasets & Configurations</a>
@@ -80,28 +81,25 @@
 						the data then save them on the following (unit_selection) page.
 
 		              </div>
-		            </div>
-		  </div>
-
+		        </div>
+		    </div>
 
 			<div class="<%= span %>">
-		          <div class="panel panel-default">
+		        <div class="panel panel-default">
 		              <div class="panel-heading">
 		                <% if(user.username == 'guest'){ %>
-		                    <a class="btn btn-sm btn-primary disabled" href='' >Your Projects</a>
-                        <% }else if(user && user.security_level == 1 || hostname.substring(0,7) !== 'bpcweb8'){ %>
+		                    <a disabled class="btn btn-sm btn-primary" href='' >Your Projects</a>
+                       <% }else{ %> 
                             <a class="btn btn-sm btn-primary" href='/user_data/your_projects'>Your Projects</a>
-                        <% }else{ %>
-                                    <a class="btn btn-sm btn-primary disabled" href='' >Your Projects (TODO)</a>
-                        <% } %>
+                        <% } %> 
 		              </div>
 		              <div class="panel-body">
 		              	Assign taxonomy, view or delete your uploaded project data.
 		              </div>
-		          </div>
+		        </div>
 		  </div>
 		  <div class="<%= span %>">
-		          <div class="panel panel-default">
+		        <div class="panel panel-default">
 		              <div class="panel-heading">
                         <% if(user.username == 'guest'){ %>
                             <a disabled class="btn btn-sm btn-primary" href=''>Your Oligotyping Runs</a>
@@ -112,7 +110,7 @@
 		              <div class="panel-body">
 		              	<a href='http://merenlab.org/software/oligotyping/' target='_blank'>Oligotyping Information</a>
 		              </div>
-		          </div>
+		        </div>
 		  </div>
       
 		  <div class="<%= span %>">

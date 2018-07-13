@@ -158,9 +158,11 @@ function load_initial_taxa_tree(unit_choice) {
   
   document.getElementById('unit_choice_id').value = unit_choice
   var xmlhttp2 = new XMLHttpRequest();
+  
   switch(unit_choice){
     case 'tax_silva119_simple':
       load_silva119_tax_simple();
+      
       // globals
       simple_loaded = true;  custom_loaded = false; rdp_loaded = false;generic_loaded=false;// fancytree_loaded = false;  dhtmlx_loaded = false
       document.getElementById('simple_treebox').style.display = 'block'
@@ -192,7 +194,7 @@ function load_initial_taxa_tree(unit_choice) {
       break;   
     case 'tax_generic_simple':
         
-      load_rdp_tax_simple()
+      load_generic_tax_simple()
       // globals
       simple_loaded = false;  custom_loaded = false; rdp_loaded = false;generic_loaded=true;
       document.getElementById('simple_treebox').style.display = 'none'
@@ -210,6 +212,7 @@ function load_initial_taxa_tree(unit_choice) {
 
 }
 function load_silva119_tax_simple() {
+      
       var xmlhttp1 = new XMLHttpRequest();
       xmlhttp1.open("GET", '/visuals/partials/tax_silva119_simple');
       xmlhttp1.onreadystatechange = function() {
@@ -306,7 +309,6 @@ function load_custom_tax_tree() {
 
 }
 function load_rdp_tax_simple() {
-      
       var xmlhttp = new XMLHttpRequest();
       xmlhttp.open("GET", '/visuals/partials/tax_rdp2.6_simple');
       xmlhttp.onreadystatechange = function() {
@@ -672,6 +674,7 @@ function show_tax_selection_box() {
             }
         }
   };
+  
   xmlhttp.send(JSON.stringify(args));
   
 }

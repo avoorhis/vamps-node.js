@@ -2822,19 +2822,28 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
 router.post('/check_units', function(req, res) {
   console.log('IN check_UNITS')
   console.log(req.body)
-  var files_prefix,path_to_file,jsonfile 
-  if(req.body.units == 'tax_silva119_simple'){
+  var files_prefix 
+  var path_to_file
+  var jsonfile;
+  
+  if(req.body.units == 'tax_silva119_simple' || req.body.units == 'tax_silva119_custom'){
         files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
   }else if(req.body.units == 'tax_rdp2.6_simple'){
         files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
   }else if(req.body.units == 'tax_generic_simple'){
         files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
   }else{
-    // ERROR
+        console.log('ERROR:Units not found: '+req.body.units)  // ERROR
   }
   var file_err = 'PASS'
-  for(i in chosen_id_name_hash.ids){
-        path_to_file = path.join(files_prefix, chosen_id_name_hash.ids[i] +'.json');
+  var dataset_ids = req.session.chosen_id_order;
+  // console.log('dataset_ids')
+//   console.log(dataset_ids)
+  
+  for(i in dataset_ids){
+        //console.log(dataset_ids[i]+' <> '+DATASET_NAME_BY_DID[dataset_ids[i]])
+        path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+        //console.log(path_to_file)
         try{
             jsonfile = require(path_to_file);
         }catch(e){
@@ -2842,8 +2851,6 @@ router.post('/check_units', function(req, res) {
             break
         }
   }
-  console.log('file_err')
-  console.log(file_err)
   res.send(file_err);
    
 });

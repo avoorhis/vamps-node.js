@@ -172,7 +172,7 @@ def check_project():
     if cur.rowcount > 0:
         row = cur.fetchone()
         print('ERR***'+str(row[0])+'-'+args.project)
-        sys.exit('Duplicate project name: '+q)
+        sys.exit('Duplicate project name:(id='+str(row[0])+') '+q)
            
 def parse_matrix_file():
     ifile = open(args.infile, 'r')
@@ -187,12 +187,16 @@ def parse_matrix_file():
             print('File delimiter expected to be a <tab>')
             sys.exit('File delimiter expected to be a <tab>')
         if n==0:
+            # May or may not be text in row1;col1
             datasets = row[1:]
             uniques = list(set(datasets))
             if len(datasets) != len(uniques):
                 sys.exit("datasets are not unique")
             for ds in datasets:
                 tax_data_by_ds[ds] = {}
+            #print(datasets)
+            #print(datasets)
+            
                      
         else:
             raw_tax_string = row[0]
@@ -204,7 +208,8 @@ def parse_matrix_file():
                 sys.exit("Row"+str(n)+": number of counts don't equal number of datasets") 
             for m,cnt in enumerate(counts):
                 tax = ';'.join(tax_array)
-                print(tax,cnt)
+                if args.verbose:
+                    print(tax,cnt)
                 if tax in tax_data_by_ds[datasets[m]]:  # in case of duplicate tax names: add counts
                     try:
                         tax_data_by_ds[datasets[m]][tax] += int(cnt)
@@ -261,10 +266,10 @@ def push_project():
     rev = args.project[::-1]
     fund = "Unknown"
     pub = 0  # private
-    fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public','matrix']
+    fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public','matrix','active']
     q = "INSERT into project ("+(',').join(fields)+")"
-    q += " VALUES('%s','%s','%s','%s','%s','%s','%s','%s')"
-    q = q % (args.project,title,desc,rev,fund,args.user_id,pub,'1')
+    q += " VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s')"
+    q = q % (args.project,title,desc,rev,fund,args.user_id,pub,'1','1')
     if args.verbose:
         print(q)
     logging.info(q)
@@ -314,7 +319,7 @@ def push_taxonomy(args):
         #print('ds:'+ds)
         for tax in args.tax_data_by_ds[ds]:
             
-            (rank,rank_id) = get_rank_from_tax_string(tax)
+            #(rank,rank_id) = get_rank_from_tax_string(tax)
             seq_count = args.tax_data_by_ds[ds][tax]
             finish_tax(ds, seq_count, tax)
 
@@ -335,23 +340,27 @@ def push_taxonomy_info(args):  # was push_sequences
             q = "INSERT ignore into matrix_taxonomy_info"            
             q += " (dataset_id, generic_taxonomy_id, seq_count, rank_id)"
             q += " VALUES ('%s','%s','%s','%s')" % (str(did), str(tax_id), str(seq_count), str(rank_id))
-            print(q)
             if args.verbose:
                 print(q)
-            cur.execute(q)
-            mysql_conn.commit()
+            if rank:
+                cur.execute(q)
+                mysql_conn.commit()
             
     mysql_conn.commit()
-    #print SEQ_COLLECTOR    
+    
 #
 #
 #
 def get_rank_from_tax_string(tax):
     tax_items = tax.split(';')
-    print(tax_items)
-    rank =  ranks[len(tax_items) - 1]  #string
-    rank_id = RANK_COLLECTOR[rank]
-    return (rank,rank_id)
+    if args.verbose:
+        print(tax_items)
+    if 1 <= len(tax_items) <= 8:
+        rank =  ranks[len(tax_items) - 1]  #string
+        rank_id = RANK_COLLECTOR[rank]
+        return (rank,rank_id)
+    else:
+        return ('',0)
 
 
 
@@ -467,7 +476,6 @@ def finish_tax(ds,  seq_count, tax_string):
         q5 = q5 + vals[0:-3] + ')'
         if args.verbose:
             print (q5)
-        logging.info(q5)
         cur.execute(q5)
         mysql_conn.commit() 
         row = cur.fetchone()
