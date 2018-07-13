@@ -376,7 +376,74 @@ ADD FOREIGN KEY (`sequencing_platform_id`) REFERENCES `sequencing_platform` (`se
 ADD FOREIGN KEY (`dna_region_id`) REFERENCES `dna_region` (`dna_region_id`) ON UPDATE CASCADE,
 ADD FOREIGN KEY (`domain_id`) REFERENCES `domain` (`domain_id`) ON UPDATE CASCADE
 
-  
+add table generic_taxonomy
+CREATE TABLE `generic_taxonomy` (
+  `generic_taxonomy_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `domain_id` int(11) unsigned DEFAULT NULL,
+  `phylum_id` int(11) unsigned DEFAULT NULL,
+  `klass_id` int(11) unsigned DEFAULT NULL,
+  `order_id` int(11) unsigned DEFAULT NULL,
+  `family_id` int(11) unsigned DEFAULT NULL,
+  `genus_id` int(11) unsigned NOT NULL,
+  `species_id` int(11) unsigned DEFAULT NULL,
+  `strain_id` int(11) unsigned DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`generic_taxonomy_id`),
+  UNIQUE KEY `all_names` (`domain_id`,`phylum_id`,`klass_id`,`order_id`,`family_id`,`genus_id`,`species_id`,`strain_id`),
+  KEY `taxonomy_fk_strain_id` (`strain_id`),
+  KEY `taxonomy_fk_klass_id` (`klass_id`),
+  KEY `taxonomy_fk_family_id` (`family_id`),
+  KEY `taxonomy_fk_genus_id` (`genus_id`),
+  KEY `taxonomy_fk_order_id` (`order_id`),
+  KEY `taxonomy_fk_phylum_id` (`phylum_id`),
+  KEY `taxonomy_fk_species_id` (`species_id`),
+  CONSTRAINT `generic_taxonomy_ibfk_1` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`strain_id`) ON UPDATE CASCADE,
+  CONSTRAINT `generic_taxonomy_ibfk_2` FOREIGN KEY (`genus_id`) REFERENCES `genus` (`genus_id`) ON UPDATE CASCADE,
+  CONSTRAINT `generic_taxonomy_ibfk_3` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`domain_id`) ON UPDATE CASCADE,
+  CONSTRAINT `generic_taxonomy_ibfk_4` FOREIGN KEY (`family_id`) REFERENCES `family` (`family_id`) ON UPDATE CASCADE,
+  CONSTRAINT `generic_taxonomy_ibfk_5` FOREIGN KEY (`klass_id`) REFERENCES `klass` (`klass_id`) ON UPDATE CASCADE,
+  CONSTRAINT `generic_taxonomy_ibfk_6` FOREIGN KEY (`order_id`) REFERENCES `order` (`order_id`) ON UPDATE CASCADE,
+  CONSTRAINT `generic_taxonomy_ibfk_7` FOREIGN KEY (`phylum_id`) REFERENCES `phylum` (`phylum_id`) ON UPDATE CASCADE,
+  CONSTRAINT `generic_taxonomy_ibfk_8` FOREIGN KEY (`species_id`) REFERENCES `species` (`species_id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1006135 DEFAULT CHARSET=latin1;  
+
+add table generic_taxonomy_info
+CREATE TABLE `generic_taxonomy_info` (
+  `generic_taxonomy_info_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `dataset_id` bigint(11) unsigned NOT NULL,
+  `generic_taxonomy_id` int(11) unsigned NOT NULL,
+  `seq_count` int(11) DEFAULT NULL,
+  `rank_id` tinyint(11) unsigned NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`generic_taxonomy_info_id`),
+  KEY `dataset_uniq_info_fk_rank_id` (`rank_id`),
+  KEY `dataset_uniq_info_fk_taxonomy_id_idx` (`generic_taxonomy_id`),
+  KEY `all_ids` (`generic_taxonomy_id`,`rank_id`),
+  CONSTRAINT `generic_taxonomy_info_ibfk_1` FOREIGN KEY (`rank_id`) REFERENCES `rank` (`rank_id`) ON UPDATE CASCADE,
+  CONSTRAINT `generic_taxonomy_info_ibfk_2` FOREIGN KEY (`generic_taxonomy_id`) REFERENCES `generic_taxonomy` (`generic_taxonomy_id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=154796 DEFAULT CHARSET=latin1;
+
+Add field `matrix` to project	(1,0)
+Add field `active` to project  (1,0)
+Add field `metagenomic` to project (1,0)
+
+add table user_group
+CREATE TABLE `user_group` (
+  `user_group_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) unsigned NOT NULL,
+  `group` varchar(20) NOT NULL DEFAULT '',
+  `notes` varchar(40) DEFAULT NULL,
+  PRIMARY KEY (`user_group_id`),
+  KEY `user_group_ibfk` (`user_id`),
+  CONSTRAINT `user_group_ibfk` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
+
+--- Project and Dataset naming ---
+Project:  Only alphanumeric and underscore (length limit 3-20 chars)
+Dataset: Alphanumeric, underscore and period (length limit 3-20 chars)
+
 --- Dir structure ---
 routes - server side logic
 views - html/ejs
@@ -388,6 +455,7 @@ sbin - additional scripts
 downloads - will contain user downloaded files for retrieval
 user_data - will hold projects,saved_datasets & configurations
 tmp - temporary files prefixed with username (deleted by username on each login)
+
 
 TODO
 ---------------
