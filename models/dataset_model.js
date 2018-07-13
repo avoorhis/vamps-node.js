@@ -1,10 +1,13 @@
 class Dataset {
 
   constructor(req, res, pid) {
-    this.req                    = req || {};
-    this.res                    = res || {};
-    this.pid                    = pid;
-    this.dataset_obj            = {};
+    this.req         = req || {};
+    this.res         = res || {};
+    this.pid         = pid;
+    this.dataset_obj = {};
+    this.DatasetInfo = {};
+    this.make_DatasetInfo();
+
     // this.dataset_info_from_form = this.get_dataset_info_from_form();
     this.make_dataset_obj();
   }
@@ -40,18 +43,13 @@ class Dataset {
     return [sample_name_arr, dataset_description_arr];
   }
 
-  make_DatasetInfo(value, index, array) {
-
-    console.log(value);
-    console.log(index);
-
-    const DatasetInfo               = {};
-    DatasetInfo.dataset_id          = 0;
-    DatasetInfo.dataset             = this.convert_dataset_name(value);
-    DatasetInfo.dataset_description = ""; // get from form
-    DatasetInfo.project_id          = this.pid;
-    DatasetInfo.created_at          = new Date();
-    DatasetInfo.updated_at          = new Date();
+  make_DatasetInfo() {
+    this.DatasetInfo.dataset_id          = 0;
+    this.DatasetInfo.dataset             = ""; //this.convert_dataset_name(value);
+    this.DatasetInfo.dataset_description = ""; // get from form
+    this.DatasetInfo.project_id          = this.pid;
+    this.DatasetInfo.created_at          = new Date();
+    this.DatasetInfo.updated_at          = new Date();
   }
 
   save_new_samples() {
@@ -61,34 +59,30 @@ class Dataset {
 
     // [2, 5, , 9].forEach(logArrayElements);
     // TODO: in method
-    var DatasetInfo = {};
-    var sample_name_arr = this.req.form["sample_name"];
+    var sample_name_arr         = this.req.form["sample_name"];
     var dataset_description_arr = this.req.form["dataset_description"];
 
     for (let i = 0; i < sample_name_arr.length; i++) {
-      DatasetInfo.dataset_id          = 0;
-      DatasetInfo.dataset             = this.convert_dataset_name(sample_name_arr[i]);
-      DatasetInfo.dataset_description = dataset_description_arr[i];
-      DatasetInfo.project_id          = this.pid;
-      DatasetInfo.created_at          = new Date();
-      DatasetInfo.updated_at          = new Date();
+      this.DatasetInfo.dataset             = this.convert_dataset_name(sample_name_arr[i]);
+      this.DatasetInfo.dataset_description = dataset_description_arr[i];
+      this.addDataset(this.DatasetInfo, this.after_dataset_saved);
     }
-    // var DatasetInfo = this.dataset_info_from_form[0].forEach(this.make_DatasetInfo);
+  }
 
-    this.addDataset(DatasetInfo, function (err, rows) {
-      if (err) {
-        console.log('WWW01 err', err);
-        this.req.flash('fail', err);
-        //  show same the form again
-      }
-      else {
-        console.log('New dataset SAVED');
-        console.log('WWW02 rows', rows);
-        var did = rows.insertId;
-      }
-      // this.make_dataset_obj_from_new_info();
-    });
-
+  after_dataset_saved(err, rows) {
+    if (err) {
+      console.log('WWW01 err', err);
+      this.req.flash('fail', err);
+      //  show same the form again
+    }
+    else {
+      console.log('New dataset SAVED');
+      console.log('WWW02 rows', rows);
+      var did                     = rows.insertId;
+      this.DatasetInfo.dataset_id = did;
+      this.add_info_to_dataset_globals(this.DatasetInfo);
+    }
+    // this.make_dataset_obj_from_new_info();
   }
 
   add_info_to_dataset_globals(object_to_add) {
