@@ -3,15 +3,16 @@
 class Dataset {
 
   constructor(req, res, pid) {
-    this.req         = req || {};
-    this.res         = res || {};
-    this.pid         = pid;
-    this.dataset_obj = {};
-    this.DatasetInfo = {};
+    this.req             = req || {};
+    this.res             = res || {};
+    this.pid             = pid;
+    this.dataset_obj     = {};
+    this.DatasetInfo     = {};
     this.make_DatasetInfo();
+    this.datasets_length = this.DatasetInfo.dataset_id.length || 0;
   }
 
-  slice_object_of_array(my_object, position) {
+  slice_object_of_arrays(my_object, position) {
     var sliced = [];
     for (var key in my_object) {
       var val_arr = my_object[key];
@@ -21,21 +22,31 @@ class Dataset {
   }
 
   add_all_new_datasets() {
-    for (let i = 0; i < this.DatasetInfo.dataset_id.length; i++) {
-      var curr_obj = this.slice_object_of_array(this.DatasetInfo, i);
+    for (let i = 0; i < this.datasets_length; i++) {
+      var curr_obj = this.slice_object_of_arrays(this.DatasetInfo, i);
       this.addDataset(curr_obj, function (err, res) {
-        console.log("RRR res", res);
+        console.log("RRR55 res", res);
       });
     }
   }
 
   updateDatasetInfo() {
+    //get from query
+    var did = 0;
     this.DatasetInfo.dataset_id = did;
   }
 
+  my_callback(err, res) {
+      console.log("RRR55 res", res);
+  }
+
   after_save() {
-    this.getDatasetByName(dataset, callback);
-    this.this.updateDatasetInfo();
+    for (let i = 0; i < this.datasets_length; i++) {
+      var dataset = this.DatasetInfo.dataset[i];
+      this.getDatasetByName(dataset, this.my_callback());
+    }
+
+    this.updateDatasetInfo();
     this.add_info_to_dataset_globals(this.DatasetInfo);
 
   }
@@ -121,14 +132,8 @@ class Dataset {
     return connection.query("select * from dataset where dataset = ?", [dataset], callback);
   }
 
-  addDataset(DatasetInfo, callback) {
-    return connection.query("INSERT INTO dataset VALUES(?,?,?,?,?,?) ON DUPLICATE KEY UPDATE dataset = VALUES(dataset), project_id = VALUES(project_id);", [DatasetInfo.dataset_id,
-      DatasetInfo.dataset,
-      DatasetInfo.dataset_description,
-      DatasetInfo.project_id,
-      DatasetInfo.created_at,
-      DatasetInfo.updated_at
-    ], callback);
+  addDataset(DatasetInfo_arr, callback) {
+    return connection.query("INSERT INTO dataset VALUES(?,?,?,?,?,?) ON DUPLICATE KEY UPDATE dataset = VALUES(dataset), project_id = VALUES(project_id);", DatasetInfo_arr, callback);
   }
 
 
