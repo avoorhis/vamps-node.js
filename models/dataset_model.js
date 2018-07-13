@@ -1,3 +1,5 @@
+var mysql = require('mysql2');
+
 class Dataset {
 
   constructor(req, res, pid) {
@@ -9,8 +11,55 @@ class Dataset {
     this.make_DatasetInfo();
 
     // this.dataset_info_from_form = this.get_dataset_info_from_form();
-    this.make_dataset_obj();
+    // this.make_dataset_obj();
   }
+
+  add_all_new_datasets() {
+    var sample_name_arr = this.req.form["sample_name"];
+
+
+    for (let i = 0; i < sample_name_arr.length; i++) {
+      var dataset_description_arr             = this.req.form["dataset_description"];
+      this.DatasetInfo[i].dataset             = this.convert_dataset_name(sample_name_arr[i]);
+      this.DatasetInfo[i].dataset_description = dataset_description_arr[i];
+    }
+  }
+
+
+  functionOne(callback) {
+    //QUERY TAKES A LONG TIME
+    console.log("DDD1 this.DatasetInfo", this.DatasetInfo);
+    var query = "INSERT INTO dataset VALUES(" + this.DatasetInfo.dataset_id +
+      ", " + this.DatasetInfo.dataset +
+      ", " + this.DatasetInfo.dataset_description +
+      ", " + this.DatasetInfo.project_id +
+      ", " + this.DatasetInfo.created_at +
+      ", " + this.DatasetInfo.updated_at + ") ON DUPLICATE KEY UPDATE dataset = VALUES(dataset), project_id = VALUES(project_id);";
+    // var values = [this.DatasetInfo.dataset_id,
+    //   this.DatasetInfo.dataset,
+    //   this.DatasetInfo.dataset_description,
+    //   this.DatasetInfo.project_id,
+    //   this.DatasetInfo.created_at,
+    //   this.DatasetInfo.updated_at ];
+    // console.log(query);
+    connection.query(query, function (err, result) {
+      console.log("RRR1 result", JSON.stringify(result));
+      callback(null, result);
+    });
+
+  }
+
+  functionTwo(err, result) {
+    console.log("HHH1 Here");
+    //call function done after long processing is finished with result
+    this.done(err, result);
+  }
+
+  done(err, result) {
+    //do your final processing here
+    console.log(result);
+  }
+
 
   make_dataset_obj() {
     if (parseInt(this.req.form['dataset_id'][0], 10) > 0) {
@@ -24,32 +73,53 @@ class Dataset {
     }
   }
 
+  // //start execution
+  //   functionOne (functionTwo);
+  //
+  //
+  //   function functionOne(callback) {
+  //         //QUERY TAKES A LONG TIME
+  //         client.query("[QUERY]", function(err, result) {
+  //                 callback(null, result);
+  //         });
+  //   }
+  //
+  //   function functionTwo(err, result) {
+  //        //call function done after long processing is finished with result
+  //        done(err,result);
+  //   }
+  //
+  //   function done(err,result){
+  //        //do your final processing here
+  //        console.log(result);
+  //   }
+
   convert_dataset_name(my_str) {
     // only letters, numbers, and underscore
     return my_str.replace(/[W_]+/g, "_");
   }
 
-  get_dataset_info_from_form() {
-    const info                  = this.req.form;
-    var sample_name_arr         = [];
-    var dataset_description_arr = [];
-
-    if (info.hasOwnProperty("sample_name")) {
-      sample_name_arr = info["sample_name"];
-    }
-    if (info.hasOwnProperty("dataset_description")) {
-      dataset_description_arr = info["dataset_description"];
-    }
-    return [sample_name_arr, dataset_description_arr];
-  }
+  // get_dataset_info_from_form() {
+  //   const info                  = this.req.form;
+  //   var sample_name_arr         = [];
+  //   var dataset_description_arr = [];
+  //
+  //   if (info.hasOwnProperty("sample_name")) {
+  //     sample_name_arr = info["sample_name"];
+  //   }
+  //   if (info.hasOwnProperty("dataset_description")) {
+  //     dataset_description_arr = info["dataset_description"];
+  //   }
+  //   return [sample_name_arr, dataset_description_arr];
+  // }
 
   make_DatasetInfo() {
-    this.DatasetInfo.dataset_id          = 0;
-    this.DatasetInfo.dataset             = ""; //this.convert_dataset_name(value);
-    this.DatasetInfo.dataset_description = ""; // get from form
-    this.DatasetInfo.project_id          = this.pid;
-    this.DatasetInfo.created_at          = new Date();
-    this.DatasetInfo.updated_at          = new Date();
+    this.DatasetInfo.dataset_id          = this.req.form.dataset_id;
+    this.DatasetInfo.dataset             = this.req.form.dataset; //this.convert_dataset_name(value);
+    this.DatasetInfo.dataset_description = this.req.form.dataset_description; // get from form
+    this.DatasetInfo.project_id          = Array(this.req.form["sample_name"].length).fill(this.pid, 0);
+    this.DatasetInfo.created_at          = Array(this.req.form["sample_name"].length).fill(new Date(), 0);
+    this.DatasetInfo.updated_at          = Array(this.req.form["sample_name"].length).fill(new Date(), 0);
   }
 
   save_new_samples() {

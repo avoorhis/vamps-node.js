@@ -450,6 +450,7 @@ function make_metadata_object_from_form(req, res) {
   //new
   if (data['dataset_id'][0] === "") {
     const new_dataset = new Dataset(req, res, pid);
+    // new_dataset.add_all_new_datasets();
     new_dataset.add_all_new_datasets();
     // new_dataset.addDataset(function (err, rows) {
     //   console.time("TIME: in make_metadata_object_from_form, add dataset");
