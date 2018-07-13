@@ -27,18 +27,10 @@
       <br>
       <div class='mdata_box'>
         <ul>
-        <li>Taxon_id (metagenome)<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href='https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Tree&id=12908&lvl=3&srchmode=1&keep=1&unlock' target='_blank'>see NCBI Taxonomy Browser</a><br>
-        <li>Description (of sample)<br>
-        <li>Common_name<br>
-        <li>Altitude<br>
-        <li>Assigned_from_geo ('y' or 'n')<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-from geographic source?<br>
+        
         <li>Collection_date <br>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Format: YYYY-MM-DD<br>
-        <li>depth (meters below surface)<br>
-        <li>elevation (meters above sea level)<br>
+        
         <li>latitude (decimal degrees)<br>
         <li>longitude (decimal degrees)<br>
         </ul>
@@ -56,17 +48,21 @@
 			</ul>
 	    </div></div>
     <div class="col-lg-3">
-        COUNTRY: (<a href='http://ols.wordvis.com/ont=GAZ' target='_blank'>OLSVis lookup: GAZ</a>)<br>
+        GEO_LOC_NAME: (<a href='http://ols.wordvis.com/ont=GAZ' target='_blank'>OLSVis lookup: GAZ</a>)<br>
         <div class='mdata_box'>
+            Gazatteer Examples:
             <ul>
             <% for(id in md_env_term){ %>
 				  <li><%= id %> - <%= md_env_term[id] %></li>
 			<% } %>
 			</ul>
+			Or
+			<li><a href='http://www.marineregions.org/sources.php#longhurst' target='_blank'>Longhurst Zones</a> (use abreviation)</li>
         </div></div>
     <div class="col-lg-3">
         ENV TERMS: (<a href='http://ols.wordvis.com/ont=ENVO' target='_blank'>OLSVis lookup: ENVO</a>)<br>
         <div class='mdata_box'>
+            Examples:
             <ul>
             <% for(id in md_env_term){ %>
 				  <li><%= id %> - <%= md_env_term[id] %></li>

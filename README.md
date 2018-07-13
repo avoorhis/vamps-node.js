@@ -440,6 +440,23 @@ CREATE TABLE `user_group` (
   CONSTRAINT `user_group_ibfk` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
 
+add table matrix_taxonomy_info
+CREATE TABLE `matrix_taxonomy_info` (
+  `matrix_taxonomy_info_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `generic_taxonomy_id` int(11) unsigned NOT NULL,
+  `dataset_id` int(11) DEFAULT NULL,
+  `seq_count` int(11) DEFAULT NULL,
+  `rank_id` tinyint(11) unsigned NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`matrix_taxonomy_info_id`),
+  KEY `dataset_uniq_info_fk_rank_id` (`rank_id`),
+  KEY `dataset_uniq_info_fk_taxonomy_id_idx` (`generic_taxonomy_id`),
+  KEY `all_ids` (`generic_taxonomy_id`,`rank_id`),
+  CONSTRAINT `matrix_taxonomy_info_ibfk_1` FOREIGN KEY (`rank_id`) REFERENCES `rank` (`rank_id`) ON UPDATE CASCADE,
+  CONSTRAINT `matrix_taxonomy_info_ibfk_2` FOREIGN KEY (`generic_taxonomy_id`) REFERENCES `generic_taxonomy` (`generic_taxonomy_id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=461057 DEFAULT CHARSET=latin1;
+
 --- Project and Dataset naming ---
 Project:  Only alphanumeric and underscore (length limit 3-20 chars)
 Dataset: Alphanumeric, underscore and period (length limit 3-20 chars)
