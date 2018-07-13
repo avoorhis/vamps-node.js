@@ -14,51 +14,51 @@ class Dataset {
     // this.make_dataset_obj();
   }
 
-  add_all_new_datasets() {
-    var sample_name_arr = this.req.form["sample_name"];
+  // add_all_new_datasets() {
+  //   var sample_name_arr = this.req.form["sample_name"];
+  //
+  //
+  //   for (let i = 0; i < sample_name_arr.length; i++) {
+  //     var dataset_description_arr             = this.req.form["dataset_description"];
+  //     this.DatasetInfo[i].dataset             = this.convert_dataset_name(sample_name_arr[i]);
+  //     this.DatasetInfo[i].dataset_description = dataset_description_arr[i];
+  //   }
+  // }
 
 
-    for (let i = 0; i < sample_name_arr.length; i++) {
-      var dataset_description_arr             = this.req.form["dataset_description"];
-      this.DatasetInfo[i].dataset             = this.convert_dataset_name(sample_name_arr[i]);
-      this.DatasetInfo[i].dataset_description = dataset_description_arr[i];
-    }
-  }
-
-
-  functionOne(callback) {
-    //QUERY TAKES A LONG TIME
-    console.log("DDD1 this.DatasetInfo", this.DatasetInfo);
-    var query = "INSERT INTO dataset VALUES(" + this.DatasetInfo.dataset_id +
-      ", " + this.DatasetInfo.dataset +
-      ", " + this.DatasetInfo.dataset_description +
-      ", " + this.DatasetInfo.project_id +
-      ", " + this.DatasetInfo.created_at +
-      ", " + this.DatasetInfo.updated_at + ") ON DUPLICATE KEY UPDATE dataset = VALUES(dataset), project_id = VALUES(project_id);";
-    // var values = [this.DatasetInfo.dataset_id,
-    //   this.DatasetInfo.dataset,
-    //   this.DatasetInfo.dataset_description,
-    //   this.DatasetInfo.project_id,
-    //   this.DatasetInfo.created_at,
-    //   this.DatasetInfo.updated_at ];
-    // console.log(query);
-    connection.query(query, function (err, result) {
-      console.log("RRR1 result", JSON.stringify(result));
-      callback(null, result);
-    });
-
-  }
-
-  functionTwo(err, result) {
-    console.log("HHH1 Here");
-    //call function done after long processing is finished with result
-    this.done(err, result);
-  }
-
-  done(err, result) {
-    //do your final processing here
-    console.log(result);
-  }
+  // functionOne(callback) {
+  //   //QUERY TAKES A LONG TIME
+  //   console.log("DDD1 this.DatasetInfo", this.DatasetInfo);
+  //   var query = "INSERT INTO dataset VALUES(" + this.DatasetInfo.dataset_id +
+  //     ", " + this.DatasetInfo.dataset +
+  //     ", " + this.DatasetInfo.dataset_description +
+  //     ", " + this.DatasetInfo.project_id +
+  //     ", " + this.DatasetInfo.created_at +
+  //     ", " + this.DatasetInfo.updated_at + ") ON DUPLICATE KEY UPDATE dataset = VALUES(dataset), project_id = VALUES(project_id);";
+  //   // var values = [this.DatasetInfo.dataset_id,
+  //   //   this.DatasetInfo.dataset,
+  //   //   this.DatasetInfo.dataset_description,
+  //   //   this.DatasetInfo.project_id,
+  //   //   this.DatasetInfo.created_at,
+  //   //   this.DatasetInfo.updated_at ];
+  //   // console.log(query);
+  //   connection.query(query, function (err, result) {
+  //     console.log("RRR1 result", JSON.stringify(result));
+  //     callback(null, result);
+  //   });
+  //
+  // }
+  //
+  // functionTwo(err, result) {
+  //   console.log("HHH1 Here");
+  //   //call function done after long processing is finished with result
+  //   this.done(err, result);
+  // }
+  //
+  // done(err, result) {
+  //   //do your final processing here
+  //   console.log(result);
+  // }
 
 
   make_dataset_obj() {
@@ -66,10 +66,15 @@ class Dataset {
       this.make_dataset_obj_from_existing_data();
     }
     else {
-      this.save_new_samples();
 
+      for (let i = 0; i < this.DatasetInfo.dataset_id.length; i++) {
+        this.addDataset();
+      }
+      for (let i = 0; i < this.DatasetInfo.dataset_id.length; i++) {
+        this.addDataset();
+      }
       // add check if exist, see project, get data from globals
-      this.make_dataset_obj_from_new_info();
+      // this.make_dataset_obj_from_new_info();
     }
   }
 
@@ -99,45 +104,41 @@ class Dataset {
     return my_str.replace(/[W_]+/g, "_");
   }
 
-  // get_dataset_info_from_form() {
-  //   const info                  = this.req.form;
-  //   var sample_name_arr         = [];
-  //   var dataset_description_arr = [];
-  //
-  //   if (info.hasOwnProperty("sample_name")) {
-  //     sample_name_arr = info["sample_name"];
-  //   }
-  //   if (info.hasOwnProperty("dataset_description")) {
-  //     dataset_description_arr = info["dataset_description"];
-  //   }
-  //   return [sample_name_arr, dataset_description_arr];
-  // }
+  convert_all_dataset_names(names_arr) {
+    var d_converted_arr = [];
+    for (var d in names_arr) {
+      var curr_name  = names_arr[d];
+      var clean_name = this.convert_dataset_name(curr_name);
+      d_converted_arr.push(clean_name);
+    }
+    return d_converted_arr;
+  }
 
   make_DatasetInfo() {
     this.DatasetInfo.dataset_id          = this.req.form.dataset_id;
-    this.DatasetInfo.dataset             = this.req.form.dataset; //this.convert_dataset_name(value);
+    this.DatasetInfo.dataset             = this.convert_all_dataset_names(this.req.form["sample_name"]); //this.convert_dataset_name(value);
     this.DatasetInfo.dataset_description = this.req.form.dataset_description; // get from form
     this.DatasetInfo.project_id          = Array(this.req.form["sample_name"].length).fill(this.pid, 0);
     this.DatasetInfo.created_at          = Array(this.req.form["sample_name"].length).fill(new Date(), 0);
     this.DatasetInfo.updated_at          = Array(this.req.form["sample_name"].length).fill(new Date(), 0);
   }
 
-  save_new_samples() {
-    // function logArrayElements(element, index, array) {
-    //   console.log('a[' + index + '] = ' + element);
-    // }
-
-    // [2, 5, , 9].forEach(logArrayElements);
-    // TODO: in method
-    var sample_name_arr         = this.req.form["sample_name"];
-    var dataset_description_arr = this.req.form["dataset_description"];
-
-    for (let i = 0; i < sample_name_arr.length; i++) {
-      this.DatasetInfo.dataset             = this.convert_dataset_name(sample_name_arr[i]);
-      this.DatasetInfo.dataset_description = dataset_description_arr[i];
-      this.addDataset(this.DatasetInfo, this.after_dataset_saved);
-    }
-  }
+  // save_new_samples() {
+  //   // function logArrayElements(element, index, array) {
+  //   //   console.log('a[' + index + '] = ' + element);
+  //   // }
+  //
+  //   // [2, 5, , 9].forEach(logArrayElements);
+  //   // TODO: in method
+  //   var sample_name_arr         = this.req.form["sample_name"];
+  //   var dataset_description_arr = this.req.form["dataset_description"];
+  //
+  //   for (let i = 0; i < sample_name_arr.length; i++) {
+  //     this.DatasetInfo.dataset             = this.convert_dataset_name(sample_name_arr[i]);
+  //     this.DatasetInfo.dataset_description = dataset_description_arr[i];
+  //     this.addDataset(this.DatasetInfo, this.after_dataset_saved);
+  //   }
+  // }
 
   after_dataset_saved(err, rows) {
     if (err) {
