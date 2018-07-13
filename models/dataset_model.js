@@ -65,8 +65,23 @@ class Dataset {
     for (let i = 0; i < sample_name_arr.length; i++) {
       this.DatasetInfo.dataset             = this.convert_dataset_name(sample_name_arr[i]);
       this.DatasetInfo.dataset_description = dataset_description_arr[i];
-      this.addDataset(this.DatasetInfo, this.after_dataset_saved);
+      this.addDataset(this.DatasetInfo).then();
+      // this.fetchData(array[i]).then(function () {
+      //   output.innerHTML += array[i]; // output: hello
+      // });
     }
+
+    // for (let i = 0; i < sample_name_arr.length; i++) {
+    //   this.DatasetInfo.dataset             = this.convert_dataset_name(sample_name_arr[i]);
+    //   this.DatasetInfo.dataset_description = dataset_description_arr[i];
+    //   this.addDataset(this.DatasetInfo, this.after_dataset_saved);
+    // }
+  }
+
+  fetchData () {
+    return new Promise(function (resolve, reject) {
+      resolve();
+    });
   }
 
   after_dataset_saved(err, rows) {
@@ -124,6 +139,11 @@ class Dataset {
     return connection.query("Select * from dataset", callback);
 
   }
+
+  getDatasetByName(dataset_name, callback) {
+
+  return connection.query("select * from dataset where dataset = ?", [dataset_name], callback);
+}
 
 // getDatasetById(id, callback) {
 //
