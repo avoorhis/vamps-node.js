@@ -3,11 +3,11 @@
 class Dataset {
 
   constructor(req, res, pid) {
-    this.req             = req || {};
-    this.res             = res || {};
-    this.pid             = pid;
-    this.dataset_obj     = {};
-    this.DatasetInfo     = {};
+    this.req         = req || {};
+    this.res         = res || {};
+    this.pid         = pid;
+    this.dataset_obj = {};
+    this.DatasetInfo = {};
     this.make_DatasetInfo();
     this.datasets_length = this.DatasetInfo.dataset_id.length || 0;
   }
@@ -22,32 +22,81 @@ class Dataset {
   }
 
   add_all_new_datasets() {
+    var promises = [];
     for (let i = 0; i < this.datasets_length; i++) {
       var curr_obj = this.slice_object_of_arrays(this.DatasetInfo, i);
-      this.addDataset(curr_obj, function (err, res) {
+
+      var promise = this.addDataset(curr_obj, function (err, res) {
         console.log("RRR55 res", res);
       });
+      promises.push(promise);
     }
+    Promise.all(promises)
+      .then(this.after_save());
+      // .then(this.updateDatasetInfo())
+      // .then(this.add_info_to_dataset_globals(this.DatasetInfo));
+
+
+    // Promise.all(promises)
+    //     .then(() => {
+    //         for(i=0;i<5;i+){
+    //             doSomeStuffOnlyWhenTheAsyncStuffIsFinish();
+    //         }
+    //     })
+    //     .catch((e) => {
+    //         // handle errors here
+    //     });
+
+    // for (let i = 0; i < this.datasets_length; i++) {
+    //   var curr_obj = this.slice_object_of_arrays(this.DatasetInfo, i);
+    //   this.addDataset(curr_obj, function (err, res) {
+    //     console.log("RRR55 res", res);
+    //   });
+    // }
   }
+
+  //var promises = [];
+  //
+  // for(i=0;i<5;i+){
+  //     promises.push(doSomeAsyncStuff());
+  // }
+  //
+  // Promise.all(promises)
+  //     .then(() => {
+  //         for(i=0;i<5;i+){
+  //             doSomeStuffOnlyWhenTheAsyncStuffIsFinish();
+  //         }
+  //     })
+  //     .catch((e) => {
+  //         // handle errors here
+  //     });
 
   updateDatasetInfo() {
     //get from query
-    var did = 0;
+    var did                     = 0;
     this.DatasetInfo.dataset_id = did;
   }
 
   my_callback(err, res) {
-      console.log("RRR55 res", res);
+    console.log("RRR55 res", res);
   }
 
   after_save() {
+    // for (let i = 0; i < this.datasets_length; i++) {
+    //   var dataset = this.DatasetInfo.dataset[i];
+    //   this.getDatasetByName(dataset, this.my_callback());
+    // }
+    var promises2 = [];
     for (let i = 0; i < this.datasets_length; i++) {
       var dataset = this.DatasetInfo.dataset[i];
-      this.getDatasetByName(dataset, this.my_callback());
-    }
+      // this.getDatasetByName(dataset, this.my_callback());
 
-    this.updateDatasetInfo();
-    this.add_info_to_dataset_globals(this.DatasetInfo);
+      var promise = this.getDatasetByName(dataset, this.my_callback());
+      promises2.push(promise);
+    }
+    Promise.all(promises2)
+      .then(this.updateDatasetInfo())
+      .then(this.add_info_to_dataset_globals(this.DatasetInfo));
 
   }
 
