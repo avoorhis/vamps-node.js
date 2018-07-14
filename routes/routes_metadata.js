@@ -463,12 +463,22 @@ function make_metadata_object_from_form(req, res) {
 
         console.log('New datasets SAVED');
         console.log('WWW rows', rows);
-        new_dataset.get_new_dataset_ids();
-        var did = rows.insertId;
-        new_dataset.add_info_to_dataset_globals(DatasetInfo, did);
+        new_dataset.get_new_dataset_by_name(
+          function (err, rows) {
+            if (err) {
+              console.log('WWW00 err', err);
+              req.flash('fail', err);
+              // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
+            }
+            else {
+              console.log('WWW rows', rows);
+              var updated_dataset_object = new_dataset.update_dataset_obj(rows);
+              new_dataset.add_info_to_dataset_globals(updated_dataset_object);
+            }
+          }
+        );
 
-        // const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
-        // met_obj.make_new_project_for_form(rows, dataset_obj);
+      //  then all from "existing"
       }
 
 
