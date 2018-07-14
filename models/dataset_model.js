@@ -9,22 +9,8 @@ class Dataset {
     this.datasets_length = this.req.form["dataset_id"].length || 0;
 
     this.make_DatasetInfo();
-
-    // this.dataset_info_from_form = this.get_dataset_info_from_form();
-    this.make_dataset_obj();
   }
 
-  make_dataset_obj() {
-    if (parseInt(this.req.form['dataset_id'][0], 10) > 0) {
-      this.make_dataset_obj_from_existing_data();
-    }
-    else {
-      this.save_new_samples();
-
-      // add check if exist, see project, get data from globals
-      // this.make_dataset_obj_from_new_info();
-    }
-  }
 
   convert_dataset_name(my_str) {
     // only letters, numbers, and underscore
@@ -49,12 +35,21 @@ class Dataset {
     else {
       dataset_ids = this.req.form.dataset_id;
     }
+
+    var starttime           = new Date();
+    var isotime             = new Date((new Date(starttime)).toISOString());
+    var fixedtime           = new Date(isotime.getTime() - (starttime.getTimezoneOffset() * 60000));
+    var formatedMysqlString = fixedtime.toISOString().slice(0, 19).replace('T', ' ');
+    console.log(formatedMysqlString);
+
+    // (new Date ((new Date((new Date(new Date())).toISOString() )).getTime() - ((new Date()).getTimezoneOffset()*60000))).toISOString().slice(0, 19).replace('T', ' ');
+
     this.DatasetInfo.dataset_id          = dataset_ids;
     this.DatasetInfo.dataset             = this.convert_all_dataset_names(this.req.form["sample_name"]);
-    this.DatasetInfo.dataset_description = this.req.form.dataset_description; // get from form
+    this.DatasetInfo.dataset_description = this.req.form.dataset_description;
     this.DatasetInfo.project_id          = Array(this.datasets_length).fill(this.pid, 0);
-    this.DatasetInfo.created_at          = Array(this.datasets_length).fill(new Date(), 0);
-    this.DatasetInfo.updated_at          = Array(this.datasets_length).fill(new Date(), 0);
+    this.DatasetInfo.created_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
+    this.DatasetInfo.updated_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
   }
 
 
@@ -68,7 +63,7 @@ class Dataset {
   }
 
 
-  save_new_samples() {
+  make_query() {
 
     var query     = "INSERT INTO dataset VALUES ";
     var query_end = " ON DUPLICATE KEY UPDATE dataset = VALUES(dataset), project_id = VALUES(project_id);";
@@ -81,43 +76,25 @@ class Dataset {
 
     query = query + "('" + vals_arr.join("'), ('") + "')";
     query = query + query_end;
-
-    connection.query(query, function (err, rows) {
-      console.trace("Show me, I'm in addDataset callback");
-
-      if (err) {
-          console.log('WWW01 err', err);
-          this.req.flash('fail', err);
-          //  show same the form again
-        }
-        else {
-          console.log('New dataset SAVED');
-          console.log('WWW02 rows', rows);
-          var did                     = rows.insertId;
-          this.DatasetInfo.dataset_id = did;
-          this.add_info_to_dataset_globals(this.DatasetInfo);
-        }
-        // this.make_dataset_obj_from_new_info();
-      }
-    );
+    return query;
   }
 
 
-  after_dataset_saved(err, rows) {
-    if (err) {
-      console.log('WWW01 err', err);
-      this.req.flash('fail', err);
-      //  show same the form again
-    }
-    else {
-      console.log('New dataset SAVED');
-      console.log('WWW02 rows', rows);
-      var did                     = rows.insertId;
-      this.DatasetInfo.dataset_id = did;
-      this.add_info_to_dataset_globals(this.DatasetInfo);
-    }
-    // this.make_dataset_obj_from_new_info();
-  }
+  // after_dataset_saved(err, rows) {
+  //   if (err) {
+  //     console.log('WWW01 err', err);
+  //     this.req.flash('fail', err);
+  //     //  show same the form again
+  //   }
+  //   else {
+  //     console.log('New dataset SAVED');
+  //     console.log('WWW02 rows', rows);
+  //     var did                     = rows.insertId;
+  //     this.DatasetInfo.dataset_id = did;
+  //     this.add_info_to_dataset_globals(this.DatasetInfo);
+  //   }
+  //   // this.make_dataset_obj_from_new_info();
+  // }
 
   add_info_to_dataset_globals(object_to_add) {
     const pid = this.pid;
@@ -180,7 +157,8 @@ class Dataset {
 //
 // }
 
-  addDataset(query, callback) {
+  addDataset(callback) {
+    var query = this.make_query();
     return connection.query(query, callback);
   }
 

@@ -450,25 +450,29 @@ function make_metadata_object_from_form(req, res) {
   //new
   if (data['dataset_id'][0] === "") {
     const new_dataset = new Dataset(req, res, pid);
-    // new_dataset.add_all_new_datasets();
-    // new_dataset.after_save();
-    // new_dataset.addDataset(function (err, rows) {
-    //   console.time("TIME: in make_metadata_object_from_form, add dataset");
-    //   if (err) {
-    //     console.log('WWW0 err', err);
-    //     req.flash('fail', err);
-    //   }
-    //   else {
-    //     console.log('New datasets SAVED');
-    //     console.log('WWW rows', rows);
-    //     // var did = rows.insertId;
-    //     // new_dataset.add_info_to_dataset_globals(dataset_obj, did);
-    //
-    //   }
+    var DatasetInfo   = new_dataset.DatasetInfo;
+    console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
+    new_dataset.addDataset(function (err, rows) {
+      console.time("TIME: in post /metadata_new, add dataset");
+      if (err) {
+        console.log('WWW0 err', err);
+        req.flash('fail', err);
+        show_new.show_metadata_new_again();
+      }
+      else {
 
-      // console.timeEnd("TIME: in make_metadata_object_from_form, add dataset");
-    // });
+        console.log('New datasets SAVED');
+        console.log('WWW rows', rows);
+        new_dataset.get_new_dataset_ids();
+        var did = rows.insertId;
+        new_dataset.add_info_to_dataset_globals(DatasetInfo, did);
 
+        // const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
+        // met_obj.make_new_project_for_form(rows, dataset_obj);
+      }
+
+
+    });
   }
   // existing
   //add project_abstract etc.
