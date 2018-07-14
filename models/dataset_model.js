@@ -27,22 +27,32 @@ class Dataset {
     return d_converted_arr;
   }
 
-  make_DatasetInfo() {
+  make_DatasetInfo(dat_obj) {
+    var curr_obj = dat_obj;
     var dataset_ids = [];
+    var formatedMysqlString = this.get_mysql_formatted_date();
+
     if (this.req.form.dataset_id[0] === "") {
       dataset_ids = Array(this.datasets_length).fill(0, 0);
+      curr_obj = this.req.form;
+      this.DatasetInfo.dataset             = this.convert_all_dataset_names(this.req.form["sample_name"]);
+      this.DatasetInfo.dataset_description = this.req.form.dataset_description;
+      this.DatasetInfo.project_id          = Array(this.datasets_length).fill(this.pid, 0);
+      this.DatasetInfo.created_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
+      this.DatasetInfo.updated_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
     }
     else {
-      dataset_ids = this.req.form.dataset_id;
+      dataset_ids = curr_obj.dataset_id;
+    //  WWW rows [ TextRow {
+      //     dataset_id: 10931,
+      //     dataset: 'test_dataset_1',
+      //     dataset_description: 'Test dataset 1 description',
+      //     project_id: 513,
+      //     created_at: 2018-07-14T19:36:40.000Z,
+      //     updated_at: 2018-07-14T19:36:40.000Z },
+      //   TextRow {
     }
 
-    var starttime           = new Date();
-    var isotime             = new Date((new Date(starttime)).toISOString());
-    var fixedtime           = new Date(isotime.getTime() - (starttime.getTimezoneOffset() * 60000));
-    var formatedMysqlString = fixedtime.toISOString().slice(0, 19).replace('T', ' ');
-    console.log(formatedMysqlString);
-
-    // (new Date ((new Date((new Date(new Date())).toISOString() )).getTime() - ((new Date()).getTimezoneOffset()*60000))).toISOString().slice(0, 19).replace('T', ' ');
 
     this.DatasetInfo.dataset_id          = dataset_ids;
     this.DatasetInfo.dataset             = this.convert_all_dataset_names(this.req.form["sample_name"]);
@@ -52,6 +62,18 @@ class Dataset {
     this.DatasetInfo.updated_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
   }
 
+  get_mysql_formatted_date() {
+    var starttime           = new Date();
+    var isotime             = new Date((new Date(starttime)).toISOString());
+    var fixedtime           = new Date(isotime.getTime() - (starttime.getTimezoneOffset() * 60000));
+    var formatedMysqlString = fixedtime.toISOString().slice(0, 19).replace('T', ' ');
+    console.log(formatedMysqlString);
+
+    // (new Date ((new Date((new Date(new Date())).toISOString() )).getTime() - ((new Date()).getTimezoneOffset()*60000))).toISOString().slice(0, 19).replace('T', ' ');
+
+    return formatedMysqlString;
+
+  }
 
   slice_object_of_array(my_object, position) {
     var sliced = [];
@@ -79,22 +101,11 @@ class Dataset {
     return query;
   }
 
-
-  // after_dataset_saved(err, rows) {
-  //   if (err) {
-  //     console.log('WWW01 err', err);
-  //     this.req.flash('fail', err);
-  //     //  show same the form again
-  //   }
-  //   else {
-  //     console.log('New dataset SAVED');
-  //     console.log('WWW02 rows', rows);
-  //     var did                     = rows.insertId;
-  //     this.DatasetInfo.dataset_id = did;
-  //     this.add_info_to_dataset_globals(this.DatasetInfo);
-  //   }
-  //   // this.make_dataset_obj_from_new_info();
-  // }
+  update_dataset_obj(rows) {
+    //     var did                     = rows.insertId;
+        console.log('WWW002 rows', rows);
+    return this.DatasetInfo;
+  }
 
   add_info_to_dataset_globals(object_to_add) {
     const pid = this.pid;
@@ -135,6 +146,12 @@ class Dataset {
   getDatasetByName(dataset_name, callback) {
 
     return connection.query("select * from dataset where dataset = ?", [dataset_name], callback);
+  }
+
+  get_new_dataset_by_name(callback) {
+    var dataset_names = "('" + this.req.form["sample_name"].join("', '") + "')";
+
+    return connection.query("select * from dataset where dataset in " + dataset_names + "AND project_id = ?", [this.pid], callback);
   }
 
 // getDatasetById(id, callback) {
