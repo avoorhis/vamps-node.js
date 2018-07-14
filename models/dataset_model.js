@@ -28,22 +28,23 @@ class Dataset {
   }
 
   make_DatasetInfo(dat_obj) {
-    var curr_obj = dat_obj;
-    var dataset_ids = [];
+    var curr_obj            = dat_obj;
+    var dataset_ids         = [];
     var formatedMysqlString = this.get_mysql_formatted_date();
 
     if (this.req.form.dataset_id[0] === "") {
-      dataset_ids = Array(this.datasets_length).fill(0, 0);
-      curr_obj = this.req.form;
-      this.DatasetInfo.dataset             = this.convert_all_dataset_names(this.req.form["sample_name"]);
-      this.DatasetInfo.dataset_description = this.req.form.dataset_description;
+      dataset_ids                          = Array(this.datasets_length).fill(0, 0);
+      curr_obj                             = this.req.form;
+      this.DatasetInfo.dataset_id = dataset_ids;
+      this.DatasetInfo.dataset             = this.convert_all_dataset_names(curr_obj["sample_name"]);
+      this.DatasetInfo.dataset_description = curr_obj.dataset_description;
       this.DatasetInfo.project_id          = Array(this.datasets_length).fill(this.pid, 0);
       this.DatasetInfo.created_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
       this.DatasetInfo.updated_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
     }
     else {
       dataset_ids = curr_obj.dataset_id;
-    //  WWW rows [ TextRow {
+      //  WWW rows [ TextRow {
       //     dataset_id: 10931,
       //     dataset: 'test_dataset_1',
       //     dataset_description: 'Test dataset 1 description',
@@ -53,13 +54,6 @@ class Dataset {
       //   TextRow {
     }
 
-
-    this.DatasetInfo.dataset_id          = dataset_ids;
-    this.DatasetInfo.dataset             = this.convert_all_dataset_names(this.req.form["sample_name"]);
-    this.DatasetInfo.dataset_description = this.req.form.dataset_description;
-    this.DatasetInfo.project_id          = Array(this.datasets_length).fill(this.pid, 0);
-    this.DatasetInfo.created_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
-    this.DatasetInfo.updated_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
   }
 
   get_mysql_formatted_date() {
@@ -103,7 +97,7 @@ class Dataset {
 
   update_dataset_obj(rows) {
     //     var did                     = rows.insertId;
-        console.log('WWW002 rows', rows);
+    console.log('WWW002 rows', rows);
     return this.DatasetInfo;
   }
 
