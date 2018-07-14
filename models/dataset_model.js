@@ -65,7 +65,9 @@ class Dataset {
     for (let i = 0; i < sample_name_arr.length; i++) {
       this.DatasetInfo.dataset             = this.convert_dataset_name(sample_name_arr[i]);
       this.DatasetInfo.dataset_description = dataset_description_arr[i];
-      this.addDataset(this.DatasetInfo).then();
+      var dataset = this.DatasetInfo.dataset;
+
+      this.fetchData(this.DatasetInfo).then(this.addDataset()).then(this.getDatasetByName(dataset));
       // this.fetchData(array[i]).then(function () {
       //   output.innerHTML += array[i]; // output: hello
       // });
@@ -129,10 +131,10 @@ class Dataset {
 
   }
 
-  make_dataset_obj_from_new_info() {
-    var temp_dataset_obj = {};
-
-  }
+  // make_dataset_obj_from_new_info() {
+  //   var temp_dataset_obj = {};
+  //
+  // }
 
   getAllDatasets(callback) {
 
