@@ -419,6 +419,7 @@ router.post('/metadata_upload',
       console.log('in post /metadata_upload, !req.form.isValid');
 
       make_metadata_object_from_form(req, res);
+      //TODO: include what below to callback for dataset upload, right now it saves what is in the form, no datasets etc.
       console.log("III in form");
       const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
       csv_files_obj.make_csv(req, res);
@@ -460,7 +461,6 @@ function make_metadata_object_from_form(req, res) {
         show_new.show_metadata_new_again();
       }
       else {
-
         console.log('New datasets SAVED');
         console.log('WWW rows', rows);
         new_dataset.get_new_dataset_by_name(
@@ -472,8 +472,10 @@ function make_metadata_object_from_form(req, res) {
             }
             else {
               console.log('WWW rows', rows);
-              var updated_dataset_object = new_dataset.update_dataset_obj(rows);
-              new_dataset.add_info_to_dataset_globals(updated_dataset_object);
+              new_dataset.update_dataset_obj(rows, pid);
+              // new_dataset.dataset_objects_arr;
+              new_dataset.add_info_to_dataset_globals();
+              existing_object_from_form(req, res, pid, data);
             }
           }
         );
@@ -484,6 +486,11 @@ function make_metadata_object_from_form(req, res) {
 
     });
   }
+
+  console.timeEnd("TIME: make_metadata_object_from_form");
+}
+
+function existing_object_from_form(req, res, pid, data) {
   // existing
   //add project_abstract etc.
   //TODO: DRY with other such places.
@@ -530,8 +537,6 @@ function make_metadata_object_from_form(req, res) {
   const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units);
   show_new.render_edit_form();
 
-
-  console.timeEnd("TIME: make_metadata_object_from_form");
 }
 
 // create form from a csv file

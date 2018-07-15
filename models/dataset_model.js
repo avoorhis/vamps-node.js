@@ -9,6 +9,7 @@ class Dataset {
     this.datasets_length = this.req.form["dataset_id"].length || 0;
 
     this.make_DatasetInfo();
+    this.dataset_objects_arr = [];
   }
 
 
@@ -35,7 +36,7 @@ class Dataset {
     if (this.req.form.dataset_id[0] === "") {
       dataset_ids                          = Array(this.datasets_length).fill(0, 0);
       curr_obj                             = this.req.form;
-      this.DatasetInfo.dataset_id = dataset_ids;
+      this.DatasetInfo.dataset_id          = dataset_ids;
       this.DatasetInfo.dataset             = this.convert_all_dataset_names(curr_obj["sample_name"]);
       this.DatasetInfo.dataset_description = curr_obj.dataset_description;
       this.DatasetInfo.project_id          = Array(this.datasets_length).fill(this.pid, 0);
@@ -98,15 +99,38 @@ class Dataset {
   update_dataset_obj(rows) {
     //     var did                     = rows.insertId;
     console.log('WWW002 rows', rows);
-    return this.DatasetInfo;
+
+    this.dataset_objects_arr[this.pid.toString()] = Object.assign(rows);
   }
 
-  add_info_to_dataset_globals(object_to_add) {
-    const pid = this.pid;
-    if (typeof DATASET_IDS_BY_PID[pid] === 'undefined') {
-      DATASET_IDS_BY_PID[pid]                       = object_to_add.dataset_id;
-      DATASET_NAME_BY_DID[object_to_add.dataset_id] = object_to_add.dataset;
+  add_info_to_dataset_globals() {
+    const pid          = this.pid.toString();
+    const project_info = PROJECT_INFORMATION_BY_PID[pid];
+    var temp_obj       = {};
+    temp_obj.name      = project_info.project;
+    temp_obj.pid       = this.pid;
+    temp_obj.title     = project_info.title;
+    temp_obj.datasets  = [];
+    ALL_DATASETS.projects.push(temp_obj);
+    DATASET_IDS_BY_PID[pid] = [];
+
+    for (let i = 0; i < this.datasets_length; i++) {
+      var dataset_info = this.dataset_objects_arr[pid][i];
+      if (typeof DATASET_IDS_BY_PID[pid] === 'undefined') {
+        DATASET_IDS_BY_PID[pid].push(dataset_info.dataset_id);
+        DATASET_NAME_BY_DID[dataset_info.dataset_id] = dataset_info.dataset;
+
+        var tt_obj      = {};
+        tt_obj["did"]   = dataset_info.dataset_id;
+        tt_obj["dname"] = dataset_info.dataset;
+        tt_obj["ddesc"] = dataset_info.dataset_description;
+        // temp_obj.datasets.push(tt_obj); // TODO: check below!
+        ALL_DATASETS.projects[projects.length - 1].push(tt_obj);
+
+        PROJECT_ID_BY_DID[dataset_info.dataset_id] = this.pid;
+      }
     }
+
     // 3) ALL_DATASETS.projects[0]
     // {
     //   "name": "DAH_CFRL_ITS1",
