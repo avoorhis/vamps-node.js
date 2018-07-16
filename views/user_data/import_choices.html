@@ -10,32 +10,24 @@
 <hr>
 <div id="import_choices">
   <div class="row"><div class="col-sm-3"></div>
-      <% if(hostname.substring(0,7) != 'bpcweb8'){ %>
+      
         <div class="col-sm-1"><a href="/user_data/import_choices/fasta">Fasta File</a></div>
         <div class="col-sm-6">Imports, Demultiplexes and Uniques the File (Taxonomy assignment is subsequent step)</div>
-      <% }else{ %>
-            Fasta File (In Development)
-        <br>Taxonomy Matrix File (In Development)
-        <br>Biom File  (In Development)
-      <% } %>
+      
       
   </div>
   <div class="row"><div class="col-sm-3"></div>
-      <% if(hostname.substring(0,7) != 'bpcweb8'){ %>
+      
         <div class="col-sm-1"><a href="/user_data/import_choices/matrix">Matrix File</a></div>
         <div class="col-sm-6">Load Taxonomy and Counts Directly into VAMPS</div>
-      <% }else{ %>
-        
-      <% } %>
+      
       
   </div>
   <div class="row"><div class="col-sm-3"></div>
-      <% if(hostname.substring(0,7) != 'bpcweb8'){ %> 
+      
         <div class="col-sm-1"><a href="/user_data/import_choices/biom">Biom File</a></div>
         <div class="col-sm-6">(In Development)</div>
-      <% }else{ %>
-        
-      <% } %>
+      
       
   </div>
 </div>

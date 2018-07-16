@@ -93,7 +93,6 @@ var api        = require('./routes/routes_api');
 var portals    = require('./routes/routes_portals');
 var metadata   = require('./routes/routes_metadata');
 var metagenome = require('./routes/routes_metagenome');
-var submissions = require('./routes/routes_submissions');
 //console.log('test')
 var visuals = require('./routes/visuals/routes_visualization');
 //console.log('test2')
@@ -208,7 +207,6 @@ app.use('/oligotyping', oligotyping);
 app.use('/otus', otus);
 app.use('/api', api);
 app.use('/metagenome', metagenome);
-app.use('/submissions', submissions);
 
 // for non-routing pages such as heatmap, counts and bar_charts
 app.get('/*', function(req, res, next){
@@ -513,7 +511,7 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     
     //console.log(MD_PRIMER_SUITE[34])
     //console.log(MD_SEQUENCING_PLATFORM)
-     
+    
     //console.log(AllMetadata[88])
 		//var mode = 0777 & ~process.umask();
 		//console.log('mode',mode)

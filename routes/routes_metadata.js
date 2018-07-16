@@ -9,12 +9,12 @@ var path    = require("path");
 var config  = require(app_root + '/config/config');
 // var validator           = require('validator');
 // var expressValidator = require('express-validator');
-var nodeMailer              = require('nodemailer');
-var Project                 = require(app_root + '/models/project_model');
-var User    = require(app_root + '/models/user_model');
-var metadata_controller     = require(app_root + '/controllers/metadataController');
-var csv_files_controller    = require(app_root + '/controllers/csvFilesController');
-var new_metadata_controller = require(app_root + '/controllers/metadataController_copy');
+var nodeMailer           = require('nodemailer');
+var Project              = require(app_root + '/models/project_model');
+var Dataset              = require(app_root + '/models/dataset_model');
+// var User    = require(app_root + '/models/user_model');
+var metadata_controller  = require(app_root + '/controllers/metadataController');
+var csv_files_controller = require(app_root + '/controllers/csvFilesController');
 
 /* GET metadata page. */
 router.get('/metadata', function (req, res) {
@@ -207,7 +207,7 @@ function get_metadata_hash(md_selected) {
 // ?? render_edit_form(req, res, {}, {}, all_field_names)
 
 router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
-  const met_obj = new new_metadata_controller.CreateDataObj(req, res, "", "");
+  const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
 
   var pi_list         = met_obj.get_pi_list();
   req.session.pi_list = pi_list;
@@ -243,60 +243,44 @@ router.post('/metadata_new',
     form.field("tube_label").trim().required().is(/^[a-zA-Z0-9_ -]+$/).entityEncode().array()
   ),
   function (req, res) {
-    console.log('in POST METADATA new form');
-    console.log('OOO post');
-    console.log("MMM1, req.body", req.body);
-
-    // MMM1, req.body { project_title: 'AAA title',
-    //   pi_id_name: '913#Shangpliang H. Nakibapher Jones#Shangpliang#H. Nakibapher Jones#nakibapher19@gmail.com',
-    //   pi_email: 'nakibapher19@gmail.com',
-    //   project_description: 'AAA description',
-    //   d_region: 'Eukaryal#v4#Ev4',
-    //   project_name1: 'HNJS',
-    //   project_name2: 'AAA',
-    //   project_name3: 'Ev4',
-    //   reference: '',
-    //   funding_code: '0',
-    //   samples_number: '2',
-    //   new_row_num: '',
-    //   new_row_length: '',
-    //   from_where: 'metadata_new_form',
-    //   done_editing: 'not_done_editing' }
-    // [2018/06/26 13:52:48.300] [LOG]   MMM2, req.form { adaptor: [],
-    //   d_region: 'Eukaryal#v4#Ev4',
-    //   dataset_description: [],
-    //   dataset_name: [],
-    //   funding_code: [ '0' ],
-    //   pi_id_name: '913#Shangpliang H. Nakibapher Jones#Shangpliang#H. Nakibapher Jones#nakibapher19@gmail.com',
-    //   project_description: [ 'AAA description' ],
-    //   project_name1: [ 'HNJS' ],
-    //   project_name2: [ 'AAA' ],
-    //   project_title: [ 'AAA title' ],
-    //   sample_concentration: [],
-    //   samples_number: [ '2' ],
-    //   submit_code: [],
-    //   tube_label: [] }
-
-    // var last_name     = this.value.split("#")[2];
-    // var first_name    = this.value.split("#")[3];
-    // var full_name     = first_name + " " + last_name;
-    // var inits         = full_name.split(" ");
-
-    console.log("MMM2, req.form", req.form);
-    const show_new = new new_metadata_controller.ShowObj(req, res);
+    console.time("TIME: in post /metadata_new");
+    // console.log("MMM1, req.body", req.body);
+    // console.log("MMM2, req.form", req.form);
+    const show_new = new metadata_controller.ShowObj(req, res);
 
     if (!req.form.isValid) {
-      // metadata_controller.show_metadata_new_again(req, res);
       console.log('!req.form.isValid');
       console.log("EEE req.form.errors", req.form.errors);
       show_new.show_metadata_new_again();
-
     }
     else {
-      // ?? render_edit_form(req, res, {}, {}, all_field_names)
       console.log("metadata_upload_new is valid");
-      show_new.saveProject(req, res);
+      var user_id       = req.form.pi_id_name.split('#')[0];
+      const new_project = new Project(req, res, 0, user_id);
+      var project_obj   = new_project.project_obj;
+      console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
+      new_project.addProject(project_obj, function (err, rows) {
+          console.time("TIME: in post /metadata_new, add project");
+          if (err) {
+            console.log('WWW0 err', err);
+            req.flash('fail', err);
+            show_new.show_metadata_new_again();
+          }
+          else {
+
+            console.log('New project SAVED');
+            console.log('WWW rows', rows);
+            var pid = rows.insertId;
+            new_project.add_info_to_project_globals(project_obj, pid);
+
+            const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
+            met_obj.make_new_project_for_form(rows, project_obj);
+          }
+          console.timeEnd("TIME: in post /metadata_new, add project");
+        }
+      );
     }
+    console.timeEnd("TIME: in post /metadata_new");
   });
 
 // render edit form
@@ -314,119 +298,120 @@ router.post('/metadata_edit_form',
 router.post('/metadata_upload',
   [helpers.isLoggedIn],
   form(
-    form.field("npoc", metadata_controller.get_second("npoc")).trim().entityEncode().array(),
-    form.field("access_point_type", metadata_controller.get_second("access_point_type")).trim().entityEncode().array(),
-    form.field("adapter_sequence", metadata_controller.get_second("adapter_sequence")).trim().required().entityEncode().array(),
-    form.field("alkalinity", metadata_controller.get_second("alkalinity")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("ammonium", metadata_controller.get_second("ammonium")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("bicarbonate", metadata_controller.get_second("bicarbonate")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("env_biome", metadata_controller.get_second("env_biome")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
-    form.field("biome_secondary", metadata_controller.get_second("biome_secondary")).trim().entityEncode().array(),
-    form.field("calcium", metadata_controller.get_second("calcium")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("carbonate", metadata_controller.get_second("carbonate")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("chloride", metadata_controller.get_second("chloride")).trim().entityEncode().array(),
-    form.field("clone_library_results", metadata_controller.get_second("clone_library_results")).trim().entityEncode().array(),
-    form.field("collection_date", metadata_controller.get_second("collection_date")).trim().required().isDate("Sample collection date format: YYYY-MM-DD").entityEncode().array(),
-    form.field("conductivity", metadata_controller.get_second("conductivity")).trim().custom(metadata_controller.numbers_n_period).required().entityEncode().array(),
-    form.field("dataset", metadata_controller.get_second("dataset")).trim().required().entityEncode().array(),
+    form.field("npoc", helpers.get_second("npoc")).trim().entityEncode().array(),
+    form.field("access_point_type", helpers.get_second("access_point_type")).trim().entityEncode().array(),
+    form.field("adapter_sequence", helpers.get_second("adapter_sequence")).trim().required().entityEncode().array(),
+    form.field("alkalinity", helpers.get_second("alkalinity")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("ammonium", helpers.get_second("ammonium")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("bicarbonate", helpers.get_second("bicarbonate")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("env_biome", helpers.get_second("env_biome")).trim().required().custom(helpers.env_items_validation).entityEncode().array(),
+    form.field("biome_secondary", helpers.get_second("biome_secondary")).trim().entityEncode().array(),
+    form.field("calcium", helpers.get_second("calcium")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("carbonate", helpers.get_second("carbonate")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("chloride", helpers.get_second("chloride")).trim().entityEncode().array(),
+    form.field("clone_library_results", helpers.get_second("clone_library_results")).trim().entityEncode().array(),
+    form.field("collection_date", helpers.get_second("collection_date")).trim().required().isDate("Sample collection date format: YYYY-MM-DD").entityEncode().array(),
+    form.field("conductivity", helpers.get_second("conductivity")).trim().custom(helpers.numbers_n_period).required().entityEncode().array(),
+    form.field("dataset", helpers.get_second("dataset")).trim().required().entityEncode().array(),
+    form.field("dataset_description").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
     form.field("dataset_id", "").trim().required().isInt().entityEncode().array(),
-    // form.field("del180_water", metadata_controller.get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("del180_water", metadata_controller.get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    // form.field("del180_water", helpers.get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("del180_water", helpers.get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
 
-    form.field("depth_in_core", metadata_controller.get_second("depth_in_core")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("depth_subseafloor", metadata_controller.get_second("depth_subseafloor")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("depth_subterrestrial", metadata_controller.get_second("depth_subterrestrial")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("diss_hydrogen", metadata_controller.get_second("diss_hydrogen")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("diss_inorg_carb", metadata_controller.get_second("diss_inorg_carb")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("diss_inorg_carbon_del13c", metadata_controller.get_second("diss_inorg_carbon_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("diss_org_carb", metadata_controller.get_second("diss_org_carb")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("diss_oxygen", metadata_controller.get_second("diss_oxygen")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("dna_extraction_meth", metadata_controller.get_second("dna_extraction_meth")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
-    form.field("dna_quantitation", metadata_controller.get_second("dna_quantitation")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
-    form.field("dna_region", metadata_controller.get_second("dna_region")).trim().required().entityEncode().array(),
-    form.field("domain", metadata_controller.get_second("domain")).trim().required().entityEncode().array(),
-    form.field("elevation", metadata_controller.get_second("elevation")).trim().required("", "Elevation is required (for terrestrial only)").custom(metadata_controller.numbers_n_period_n_minus).entityEncode().array(),
-    form.field("env_package", metadata_controller.get_second("env_package")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
-    form.field("enzyme_activities", metadata_controller.get_second("enzyme_activities")).trim().entityEncode().array(),
-    form.field("env_feature", metadata_controller.get_second("env_feature")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
-    form.field("fish_probe_name", metadata_controller.get_second("fish_probe_name")).trim().entityEncode().array(),
-    form.field("fish_probe_seq", metadata_controller.get_second("fish_probe_seq")).trim().is(/^$|[ATUGCYRSWKMBDHVN]/).entityEncode().array(),
-    form.field("feature_secondary", metadata_controller.get_second("feature_secondary")).trim().entityEncode().array(),
-    form.field("formation_name", metadata_controller.get_second("formation_name")).trim().entityEncode().array(),
-    form.field("forward_primer", metadata_controller.get_second("forward_primer")).trim().entityEncode().array(),
-    form.field("functional_gene_assays", metadata_controller.get_second("functional_gene_assays")).trim().entityEncode().array(),
-    form.field("geo_loc_name_continental", metadata_controller.get_second("geo_loc_name_continental")).trim().custom(metadata_controller.geo_loc_name_continental_filter).custom(metadata_controller.geo_loc_name_validation).custom(metadata_controller.geo_loc_name_continental_validation).entityEncode().array(),
-    form.field("geo_loc_name_marine", metadata_controller.get_second("geo_loc_name_marine")).trim().custom(metadata_controller.geo_loc_name_validation).custom(metadata_controller.geo_loc_name_marine_validation).entityEncode().array(),
-    form.field("illumina_index", metadata_controller.get_second("illumina_index")).trim().entityEncode().array(),
+    form.field("depth_in_core", helpers.get_second("depth_in_core")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("depth_subseafloor", helpers.get_second("depth_subseafloor")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("depth_subterrestrial", helpers.get_second("depth_subterrestrial")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("diss_hydrogen", helpers.get_second("diss_hydrogen")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("diss_inorg_carb", helpers.get_second("diss_inorg_carb")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("diss_inorg_carbon_del13c", helpers.get_second("diss_inorg_carbon_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("diss_org_carb", helpers.get_second("diss_org_carb")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("diss_oxygen", helpers.get_second("diss_oxygen")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("dna_extraction_meth", helpers.get_second("dna_extraction_meth")).trim().required().custom(helpers.env_items_validation).entityEncode().array(),
+    form.field("dna_quantitation", helpers.get_second("dna_quantitation")).trim().required().custom(helpers.env_items_validation).entityEncode().array(),
+    form.field("dna_region", helpers.get_second("dna_region")).trim().required().entityEncode().array(),
+    form.field("domain", helpers.get_second("domain")).trim().required().entityEncode().array(),
+    form.field("elevation", helpers.get_second("elevation")).trim().required("", "Elevation is required (for terrestrial only)").custom(helpers.numbers_n_period_n_minus).entityEncode().array(),
+    form.field("env_package", helpers.get_second("env_package")).trim().required().custom(helpers.env_items_validation).entityEncode().array(),
+    form.field("enzyme_activities", helpers.get_second("enzyme_activities")).trim().entityEncode().array(),
+    form.field("env_feature", helpers.get_second("env_feature")).trim().required().custom(helpers.env_items_validation).entityEncode().array(),
+    form.field("fish_probe_name", helpers.get_second("fish_probe_name")).trim().entityEncode().array(),
+    form.field("fish_probe_seq", helpers.get_second("fish_probe_seq")).trim().is(/^$|[ATUGCYRSWKMBDHVN]/).entityEncode().array(),
+    form.field("feature_secondary", helpers.get_second("feature_secondary")).trim().entityEncode().array(),
+    form.field("formation_name", helpers.get_second("formation_name")).trim().entityEncode().array(),
+    form.field("forward_primer", helpers.get_second("forward_primer")).trim().entityEncode().array(),
+    form.field("functional_gene_assays", helpers.get_second("functional_gene_assays")).trim().entityEncode().array(),
+    form.field("geo_loc_name_continental", helpers.get_second("geo_loc_name_continental")).trim().custom(helpers.geo_loc_name_continental_filter).custom(helpers.geo_loc_name_validation).custom(helpers.geo_loc_name_continental_validation).entityEncode().array(),
+    form.field("geo_loc_name_marine", helpers.get_second("geo_loc_name_marine")).trim().custom(helpers.geo_loc_name_validation).custom(helpers.geo_loc_name_marine_validation).entityEncode().array(),
+    form.field("illumina_index", helpers.get_second("illumina_index")).trim().entityEncode().array(),
     // Index sequence (required for Illumina)
-    form.field("intact_polar_lipid", metadata_controller.get_second("intact_polar_lipid")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("investigation_type", metadata_controller.get_second("investigation_type")).trim().required().entityEncode().array(),
-    form.field("iron", metadata_controller.get_second("iron")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("iron_ii", metadata_controller.get_second("iron_ii")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("iron_iii", metadata_controller.get_second("iron_iii")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("isol_growth_cond", metadata_controller.get_second("isol_growth_cond")).trim().entityEncode().array(),
-    // form.field("latitude", metadata_controller.get_second("latitude")).trim().custom(metadata_controller.latitude_valid).is(/^$|^[0-9.-]+$/).required().entityEncode().array(),
+    form.field("intact_polar_lipid", helpers.get_second("intact_polar_lipid")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("investigation_type", helpers.get_second("investigation_type")).trim().required().entityEncode().array(),
+    form.field("iron", helpers.get_second("iron")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("iron_ii", helpers.get_second("iron_ii")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("iron_iii", helpers.get_second("iron_iii")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("isol_growth_cond", helpers.get_second("isol_growth_cond")).trim().entityEncode().array(),
+    // form.field("latitude", helpers.get_second("latitude")).trim().custom(helpers.latitude_valid).is(/^$|^[0-9.-]+$/).required().entityEncode().array(),
     //, see <a href='https://www.latlong.net/degrees-minutes-seconds-to-decimal-degrees' target='_blank'>a converter</a>
-    form.field("latitude", metadata_controller.get_second("latitude")).trim().custom(metadata_controller.latitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
-    form.field("longitude", metadata_controller.get_second("longitude")).trim().custom(metadata_controller.longitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
-    form.field("magnesium", metadata_controller.get_second("magnesium")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("manganese", metadata_controller.get_second("manganese")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("env_material", metadata_controller.get_second("env_material")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
-    form.field("material_secondary", metadata_controller.get_second("material_secondary")).trim().entityEncode().array(),
-    form.field("methane", metadata_controller.get_second("methane")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("methane_del13c", metadata_controller.get_second("methane_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("microbial_biomass_fish", metadata_controller.get_second("microbial_biomass_fish")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    // form.field("microbial_biomass_avg_cell_number", metadata_controller.get_second("microbial_biomass_avg_cell_number")).trim().entityEncode().array(),
-    // form.field("microbial_biomass_intactpolarlipid", metadata_controller.get_second("microbial_biomass_intactpolarlipid")).trim().entityEncode().array(),
-    form.field("microbial_biomass_microscopic", metadata_controller.get_second("microbial_biomass_microscopic")).trim().entityEncode().array(),
-    // form.field("microbial_biomass_platecounts", metadata_controller.get_second("microbial_biomass_platecounts")).trim().entityEncode().array(),
-    form.field("microbial_biomass_qpcr", metadata_controller.get_second("microbial_biomass_qpcr")).trim().entityEncode().array(),
-    form.field("nitrate", metadata_controller.get_second("nitrate")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("nitrite", metadata_controller.get_second("nitrite")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("nitrogen_tot", metadata_controller.get_second("nitrogen_tot")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("noble_gas_chemistry", metadata_controller.get_second("noble_gas_chemistry")).trim().entityEncode().array(),
-    form.field("org_carb_nitro_ratio", metadata_controller.get_second("org_carb_nitro_ratio")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("ph", metadata_controller.get_second("ph")).trim().custom(metadata_controller.numbers_n_period).custom(metadata_controller.ph_valid).required().entityEncode().array(),
-    form.field("part_org_carbon_del13c", metadata_controller.get_second("part_org_carbon_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("phosphate", metadata_controller.get_second("phosphate")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("pi_email", metadata_controller.get_second("pi_email")).trim().isEmail().required().entityEncode().array(),
-    form.field("pi_name", metadata_controller.get_second("pi_name")).trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
-    form.field("plate_counts", metadata_controller.get_second("plate_counts")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("porosity", metadata_controller.get_second("porosity")).trim().custom(metadata_controller.numbers_n_period).custom(metadata_controller.percent_valid).entityEncode().array(),
-    form.field("potassium", metadata_controller.get_second("potassium")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("pressure", metadata_controller.get_second("pressure")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("project", metadata_controller.get_second("project")).trim().required().entityEncode().array(),
-    form.field("project_abstract", metadata_controller.get_second("project_abstract")).trim().required().entityEncode().array(),
-    form.field("project_title", metadata_controller.get_second("project_title")).trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
-    form.field("redox_potential", metadata_controller.get_second("redox_potential")).trim().custom(metadata_controller.numbers_n_period_n_minus).entityEncode().array(),
-    form.field("redox_state", metadata_controller.get_second("redox_state")).trim().is(/^$|^[a-zA-Z ]+$/).entityEncode().array(),
-    form.field("reference", metadata_controller.get_second("reference")).trim().entityEncode().array(),
-    form.field("resistivity", metadata_controller.get_second("resistivity")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("reverse_primer", metadata_controller.get_second("reverse_primer")).trim().entityEncode().array(),
-    form.field("rock_age", metadata_controller.get_second("rock_age")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("run", metadata_controller.get_second("run")).trim().required().entityEncode().array(),
-    form.field("salinity", metadata_controller.get_second("salinity")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("sample_collection_device", metadata_controller.get_second("sample_collection_device")).trim().entityEncode().array(),
-    form.field("samp_store_dur", metadata_controller.get_second("samp_store_dur")).trim().is(/^$|^[0-9a-zA-Z ]+$/).entityEncode().array(),
-    form.field("samp_store_temp", metadata_controller.get_second("samp_store_temp")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("sample_name", metadata_controller.get_second("sample_name")).trim().required().entityEncode().array(),
-    form.field("sample_size_mass", metadata_controller.get_second("sample_size_mass")).trim().custom(metadata_controller.positive).custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("sample_size_vol", metadata_controller.get_second("sample_size_vol")).trim().custom(metadata_controller.positive).custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("sample_type", metadata_controller.get_second("sample_type")).trim().required().custom(metadata_controller.env_items_validation).entityEncode().array(),
-    form.field("sequencing_meth", metadata_controller.get_second("sequencing_meth")).trim().required().entityEncode().array(),
-    form.field("silicate", metadata_controller.get_second("silicate")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("sodium", metadata_controller.get_second("sodium")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("sulfate", metadata_controller.get_second("sulfate")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("sulfide", metadata_controller.get_second("sulfide")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("sulfur_tot", metadata_controller.get_second("sulfur_tot")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("target_gene", metadata_controller.get_second("target_gene")).trim().required().entityEncode().array(),
-    form.field("temperature", metadata_controller.get_second("temperature")).trim().is(/^$|^[0-9.-]+$/).required().entityEncode().array(),
-    form.field("tot_carb", metadata_controller.get_second("tot_carb")).trim().custom(metadata_controller.numbers_n_period).custom(metadata_controller.percent_valid).entityEncode().array(),
-    form.field("tot_depth_water_col", metadata_controller.get_second("tot_depth_water_col")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array(),
-    form.field("tot_inorg_carb", metadata_controller.get_second("tot_inorg_carb")).trim().custom(metadata_controller.numbers_n_period).custom(metadata_controller.percent_valid).entityEncode().array(),
-    form.field("tot_org_carb", metadata_controller.get_second("tot_org_carb")).trim().custom(metadata_controller.numbers_n_period).custom(metadata_controller.percent_valid).entityEncode().array(),
-    form.field("trace_element_geochem", metadata_controller.get_second("trace_element_geochem")).trim().entityEncode().array(),
-    form.field("water_age", metadata_controller.get_second("water_age")).trim().custom(metadata_controller.numbers_n_period).entityEncode().array()
+    form.field("latitude", helpers.get_second("latitude")).trim().custom(helpers.latitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
+    form.field("longitude", helpers.get_second("longitude")).trim().custom(helpers.longitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
+    form.field("magnesium", helpers.get_second("magnesium")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("manganese", helpers.get_second("manganese")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("env_material", helpers.get_second("env_material")).trim().required().custom(helpers.env_items_validation).entityEncode().array(),
+    form.field("material_secondary", helpers.get_second("material_secondary")).trim().entityEncode().array(),
+    form.field("methane", helpers.get_second("methane")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("methane_del13c", helpers.get_second("methane_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("microbial_biomass_fish", helpers.get_second("microbial_biomass_fish")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    // form.field("microbial_biomass_avg_cell_number", helpers.get_second("microbial_biomass_avg_cell_number")).trim().entityEncode().array(),
+    // form.field("microbial_biomass_intactpolarlipid", helpers.get_second("microbial_biomass_intactpolarlipid")).trim().entityEncode().array(),
+    form.field("microbial_biomass_microscopic", helpers.get_second("microbial_biomass_microscopic")).trim().entityEncode().array(),
+    // form.field("microbial_biomass_platecounts", helpers.get_second("microbial_biomass_platecounts")).trim().entityEncode().array(),
+    form.field("microbial_biomass_qpcr", helpers.get_second("microbial_biomass_qpcr")).trim().entityEncode().array(),
+    form.field("nitrate", helpers.get_second("nitrate")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("nitrite", helpers.get_second("nitrite")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("nitrogen_tot", helpers.get_second("nitrogen_tot")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("noble_gas_chemistry", helpers.get_second("noble_gas_chemistry")).trim().entityEncode().array(),
+    form.field("org_carb_nitro_ratio", helpers.get_second("org_carb_nitro_ratio")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("ph", helpers.get_second("ph")).trim().custom(helpers.numbers_n_period).custom(helpers.ph_valid).required().entityEncode().array(),
+    form.field("part_org_carbon_del13c", helpers.get_second("part_org_carbon_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("phosphate", helpers.get_second("phosphate")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("pi_email", helpers.get_second("pi_email")).trim().isEmail().required().entityEncode().array(),
+    form.field("pi_name", helpers.get_second("pi_name")).trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
+    form.field("plate_counts", helpers.get_second("plate_counts")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("porosity", helpers.get_second("porosity")).trim().custom(helpers.numbers_n_period).custom(helpers.percent_valid).entityEncode().array(),
+    form.field("potassium", helpers.get_second("potassium")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("pressure", helpers.get_second("pressure")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("project", helpers.get_second("project")).trim().required().entityEncode().array(),
+    form.field("project_abstract", helpers.get_second("project_abstract")).trim().required().entityEncode().array(),
+    form.field("project_title", helpers.get_second("project_title")).trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
+    form.field("redox_potential", helpers.get_second("redox_potential")).trim().custom(helpers.numbers_n_period_n_minus).entityEncode().array(),
+    form.field("redox_state", helpers.get_second("redox_state")).trim().is(/^$|^[a-zA-Z ]+$/).entityEncode().array(),
+    form.field("reference", helpers.get_second("reference")).trim().entityEncode().array(),
+    form.field("resistivity", helpers.get_second("resistivity")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("reverse_primer", helpers.get_second("reverse_primer")).trim().entityEncode().array(),
+    form.field("rock_age", helpers.get_second("rock_age")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("run", helpers.get_second("run")).trim().required().entityEncode().array(),
+    form.field("salinity", helpers.get_second("salinity")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("sample_collection_device", helpers.get_second("sample_collection_device")).trim().entityEncode().array(),
+    form.field("samp_store_dur", helpers.get_second("samp_store_dur")).trim().is(/^$|^[0-9a-zA-Z ]+$/).entityEncode().array(),
+    form.field("samp_store_temp", helpers.get_second("samp_store_temp")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("sample_name", helpers.get_second("sample_name")).trim().required().entityEncode().array(),
+    form.field("sample_size_mass", helpers.get_second("sample_size_mass")).trim().custom(helpers.positive).custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("sample_size_vol", helpers.get_second("sample_size_vol")).trim().custom(helpers.positive).custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("sample_type", helpers.get_second("sample_type")).trim().required().custom(helpers.env_items_validation).entityEncode().array(),
+    form.field("sequencing_meth", helpers.get_second("sequencing_meth")).trim().required().entityEncode().array(),
+    form.field("silicate", helpers.get_second("silicate")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("sodium", helpers.get_second("sodium")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("sulfate", helpers.get_second("sulfate")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("sulfide", helpers.get_second("sulfide")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("sulfur_tot", helpers.get_second("sulfur_tot")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("target_gene", helpers.get_second("target_gene")).trim().required().entityEncode().array(),
+    form.field("temperature", helpers.get_second("temperature")).trim().is(/^$|^[0-9.-]+$/).required().entityEncode().array(),
+    form.field("tot_carb", helpers.get_second("tot_carb")).trim().custom(helpers.numbers_n_period).custom(helpers.percent_valid).entityEncode().array(),
+    form.field("tot_depth_water_col", helpers.get_second("tot_depth_water_col")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("tot_inorg_carb", helpers.get_second("tot_inorg_carb")).trim().custom(helpers.numbers_n_period).custom(helpers.percent_valid).entityEncode().array(),
+    form.field("tot_org_carb", helpers.get_second("tot_org_carb")).trim().custom(helpers.numbers_n_period).custom(helpers.percent_valid).entityEncode().array(),
+    form.field("trace_element_geochem", helpers.get_second("trace_element_geochem")).trim().entityEncode().array(),
+    form.field("water_age", helpers.get_second("water_age")).trim().custom(helpers.numbers_n_period).entityEncode().array()
   ),
   function (req, res) {
     console.time("TIME: post metadata_upload");
@@ -434,8 +419,10 @@ router.post('/metadata_upload',
       console.log('in post /metadata_upload, !req.form.isValid');
 
       make_metadata_object_from_form(req, res);
+      //TODO: include what below to callback for dataset upload, right now it saves what is in the form, no datasets etc.
       console.log("III in form");
-      csv_files_controller.make_csv(req, res);
+      const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
+      csv_files_obj.make_csv(req, res);
 
       if (req.body.done_editing === "done_editing") {
         send_mail_finished(req, res);
@@ -454,36 +441,80 @@ router.post('/metadata_upload',
 
 function make_metadata_object_from_form(req, res) {
   console.time("TIME: make_metadata_object_from_form");
+  console.trace("Show me, I'm in make_metadata_object_from_form");
   var pid  = req.body.project_id;
   var data = req.form;
 
   // console.log("DDD9 req.form");
   // console.log(JSON.stringify(req.form));
 
+  //new
+  if (data['dataset_id'][0] === "") {
+    const new_dataset = new Dataset(req, res, pid);
+    var DatasetInfo   = new_dataset.DatasetInfo;
+    console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
+    new_dataset.addDataset(function (err, rows) {
+      console.time("TIME: in post /metadata_new, add dataset");
+      if (err) {
+        console.log('WWW0 err', err);
+        req.flash('fail', err);
+        show_new.show_metadata_new_again();
+      }
+      else {
+        console.log('New datasets SAVED');
+        console.log('WWW rows', rows);
+        new_dataset.get_new_dataset_by_name(
+          function (err, rows) {
+            if (err) {
+              console.log('WWW00 err', err);
+              req.flash('fail', err);
+              // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
+            }
+            else {
+              console.log('WWW rows', rows);
+              new_dataset.update_dataset_obj(rows, pid);
+              // new_dataset.dataset_objects_arr;
+              new_dataset.add_info_to_dataset_globals();
+              existing_object_from_form(req, res, pid, data);
+            }
+          }
+        );
 
+      //  then all from "existing"
+      }
+
+
+    });
+  }
+
+  console.timeEnd("TIME: make_metadata_object_from_form");
+}
+
+function existing_object_from_form(req, res, pid, data) {
+  // existing
   //add project_abstract etc.
   //TODO: DRY with other such places.
+  const met_obj = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
 
   var normal_length = data['dataset'].length;
   for (var a in data) {
     if (data[a].length < normal_length && (typeof data[a][0] !== 'undefined')) {
-      data[a] = metadata_controller.fill_out_arr_doubles(data[a][0], normal_length);
+      data[a] = met_obj.fill_out_arr_doubles(data[a][0], normal_length);
     }
   }
-  const met_obj            = new new_metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
   var all_metadata         = met_obj.make_metadata_object(req, res, pid, data);
-  var all_field_names_orig = metadata_controller.make_all_field_names(data['dataset_id']);
+  var all_field_names_orig = met_obj.make_all_field_names(data['dataset_id']);
 
 
   //add_new
-  var all_field_names_with_new = metadata_controller.collect_new_rows(req, all_field_names_orig);
+  var all_field_names_with_new = met_obj.collect_new_rows(req, all_field_names_orig);
 
   // console.log("YYY3 all_field_names_with_new");
   // console.log(JSON.stringify(all_field_names_with_new));
 
-  var all_field_names_first_column = metadata_controller.get_first_column(all_field_names_with_new, 0);
+  var all_field_names_first_column = met_obj.get_first_column(all_field_names_with_new, 0);
   var all_new_names                = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
-  all_metadata[pid]                = metadata_controller.get_new_val(req, all_metadata[pid], all_new_names);
+  all_metadata[pid]                = met_obj.get_new_val(req, all_metadata[pid], all_new_names);
 
   //collect errors
   var myArray_fail = helpers.unique_array(req.form.errors);
@@ -503,11 +534,9 @@ function make_metadata_object_from_form(req, res) {
 
   var all_field_units = MD_CUSTOM_UNITS[req.body.project_id];
 
-  const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units);
+  const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units);
   show_new.render_edit_form();
 
-
-  console.timeEnd("TIME: make_metadata_object_from_form");
 }
 
 // create form from a csv file
@@ -517,14 +546,11 @@ function make_metadata_object_from_csv(req, res) {
 
   // console.log("MMM req.body from make_metadata_object_from_csv");
   // console.log(req.body);
+  var file_name     = req.body.edit_metadata_file;
+  const cur_project = new Project(req, res, 0, 0);
+  var project_name  = req.body.project || cur_project.get_project_name_from_file_name(file_name);
+  var pid           = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
 
-  var file_name    = req.body.edit_metadata_file;
-  var project_name = metadata_controller.get_project_name(file_name);
-  var pid          = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
-
-
-  // console.log("GGG1 project_name from metadata_controller.get_project_name");
-  // console.log(project_name);
   //data from file
   var inputPath    = path.join(config.USER_FILES_BASE, req.user.username, file_name);
   var file_content = fs.readFileSync(inputPath);
@@ -542,12 +568,12 @@ function make_metadata_object_from_csv(req, res) {
   // console.log("MMM0 dataset_ids");
   // console.log(dataset_ids);
 
-  const met_obj          = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+  const met_obj          = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
   var data_in_obj_of_arr = met_obj.from_obj_to_obj_of_arr(data, pid);
 
 // all_metadata
   var all_metadata     = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
-  var all_field_names4 = metadata_controller.make_all_field_names(dataset_ids);
+  var all_field_names4 = met_obj.make_all_field_names(dataset_ids);
 
   // console.log("DDD3 all_field_names from make_metadata_object_from_csv");
   // console.log(JSON.stringify(all_field_names));
@@ -555,10 +581,9 @@ function make_metadata_object_from_csv(req, res) {
   // console.log("DDD4 all_metadata from make_metadata_object_from_csv");
   // console.log(JSON.stringify(all_metadata));
   req.body.project_id = pid;
-  // metadata_controller.render_edit_form(req, res, all_metadata, all_field_names4);
 
   var all_field_units = MD_CUSTOM_UNITS[pid];
-  const show_new      = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
+  const show_new      = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
   show_new.render_edit_form();
 
   console.timeEnd("TIME: make_metadata_object_from_csv");
@@ -570,12 +595,12 @@ function make_metadata_object_from_db(req, res) {
   var pid         = req.body.project_id;
   //repeated!
   var dataset_ids = DATASET_IDS_BY_PID[pid];
-  var project     = PROJECT_INFORMATION_BY_PID[pid].project;
+  // var project     = PROJECT_INFORMATION_BY_PID[pid].project;
 
   // get_db_data
-  console.time("TIME: metadata_controller.slice_object");
-  var AllMetadata_picked = metadata_controller.slice_object(AllMetadata, dataset_ids);
-  console.timeEnd("TIME: metadata_controller.slice_object");
+  console.time("TIME: helpers.slice_object");
+  var AllMetadata_picked = helpers.slice_object(AllMetadata, dataset_ids);
+  console.timeEnd("TIME: helpers.slice_object");
 
   console.time("TIME: dataset_info");
   // get dataset_info
@@ -595,14 +620,16 @@ function make_metadata_object_from_db(req, res) {
   }
   console.timeEnd("TIME: dataset_info");
 
+  const met_obj = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+
   // add missing info to AllMetadata_picked
   console.time("TIME: add missing info to AllMetadata_picked");
   for (var d in dataset_ids) {
     var dataset_id = dataset_ids[d];
-    var ids_data   = metadata_controller.get_all_req_metadata(dataset_id);
+    var ids_data   = met_obj.get_all_req_metadata(dataset_id);
 
     Object.assign(AllMetadata_picked[dataset_id], ids_data);
-    var primers_info_by_dataset_id = metadata_controller.get_primers_info(dataset_id);
+    var primers_info_by_dataset_id = met_obj.get_primers_info(dataset_id);
 
     AllMetadata_picked[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
     AllMetadata_picked[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
@@ -620,32 +647,28 @@ function make_metadata_object_from_db(req, res) {
 
   // as many values per field as there are datasets
 
-  const met_obj     = new new_metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
-  var user_id     = PROJECT_INFORMATION_BY_PID[pid].oid;
+  var user_id = PROJECT_INFORMATION_BY_PID[pid].oid;
   // var user_obj = new User.getUserInfoFromGlobal(user_id);
 
   const new_project = new Project(req, res, pid, user_id);
   var project_obj   = new_project.project_obj;
 
-  var abstract_data =  project_obj.abstract_data;
+  var abstract_data = project_obj.abstract_data;
 
   var data_in_obj_of_arr                 = met_obj.from_obj_to_obj_of_arr(AllMetadata_picked, pid);
-  data_in_obj_of_arr["project_abstract"] = metadata_controller.fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
+  data_in_obj_of_arr["project_abstract"] = met_obj.fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
 
   var all_metadata = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
-  var all_field_names4 = metadata_controller.make_all_field_names(dataset_ids);
+  var all_field_names4 = met_obj.make_all_field_names(dataset_ids);
 
   // console.log("DDD2 all_field_names");
   // console.log(JSON.stringify(all_field_names));
   // console.log("DDD2 all_metadata");
   // console.log(JSON.stringify(all_metadata));
 
-  const show_new = new new_metadata_controller.ShowObj(req, res, all_metadata, all_field_names4);
+  const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4);
   show_new.render_edit_form();
-
-  // metadata_controller.render_edit_form(req, res, all_metadata, all_field_names4);
-
   console.timeEnd("TIME: make_metadata_object_from_db");
 }
 
@@ -716,7 +739,8 @@ function saveMetadata(req, res) {
   console.time("TIME: saveMetadata");
   console.log("SSS in saveMetadata");
 
-  csv_files_controller.make_csv(req, res);
+  const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
+  csv_files_obj.make_csv();
   // var pid = req.body.project_id;
   req.flash("success", "Success with the metadata submit!");
 
@@ -752,7 +776,8 @@ function saveMetadata(req, res) {
 router.get('/metadata_file_list', function (req, res) {
   console.time("TIME: get metadata_file_list");
   console.log('in metadata_file_list');
-  var user_metadata_csv_files = csv_files_controller.get_csv_files(req);
+  const csv_files_obj         = new csv_files_controller.CsvFiles(req, res);
+  var user_metadata_csv_files = csv_files_obj.get_csv_files();
 
   user_metadata_csv_files.sort(function sortByTime(a, b) {
     //reverse sort: recent-->oldest
@@ -777,12 +802,13 @@ router.post('/metadata_files',
 
     console.time("TIME: in post /metadata_files");
     var table_diff_html, sorted_files, files_to_compare;
-    sorted_files     = csv_files_controller.sorted_files_by_time(req);
-    files_to_compare = csv_files_controller.sorted_files_to_compare(req, sorted_files);
+    const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
+    sorted_files        = csv_files_obj.sorted_files_by_time();
+    files_to_compare    = csv_files_obj.sorted_files_to_compare(sorted_files);
 
     if (typeof req.body.compare !== 'undefined' && req.body.compare.length === 2) {
 
-      table_diff_html = csv_files_controller.get_file_diff(req, files_to_compare);
+      table_diff_html = csv_files_obj.get_file_diff(files_to_compare);
       res.render("metadata/metadata_file_list", {
         title: "VAMPS: Metadata File List",
         user: req.user,

@@ -317,10 +317,10 @@ var delete_previous_tmp_files = function(req, username){
     // for vamps and vampsdev qsub scripts:
     var temp_dir_path3 = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp');
     //console.log('Deleting old tmp files2:')
-    //console.log(temp_dir_path1)
-    //console.log(temp_dir_path2)
-    //console.log(temp_dir_path3)
-    fs.readdir(temp_dir_path1, function(err,files){
+    console.log(temp_dir_path1)
+    console.log(temp_dir_path2)
+    console.log(temp_dir_path3)
+    fs.readdir(temp_dir_path1, function(err, files){
         
         for (var i=0; i<files.length; i++) {
             file_pts = files[i].split('_')[0].split('-')
