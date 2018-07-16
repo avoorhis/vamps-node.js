@@ -355,25 +355,28 @@ or
           <p>Required metadata fields:
           	<div>
           	<table class='table'>
-          		<tr><td>Altitude</td><td>The distance between surface and point being sampled in meters<br>(for soil this is usually 0 different from elevation)</td></tr>
-          		<tr><td>Assigned_from_geo</td><td>Enter “y” or “n.”  Usually y (yes), (data assigned from a geographic source)</td></tr>
-          		<tr><td>Collection_date</td><td>Example: 2003-03-25</td></tr>
-          		<tr><td>Common_name</td><td></td></tr>
-          		<tr><td>Country</td><td>Choose from GAZ Ontology.<a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
-          		<tr><td>Depth</td><td>Distance from the surface in meters</td></tr>
-          		<tr><td>Description</td><td>Description of the sample—what is it?</td></tr>
-          		<tr><td>DNA_Region</td><td><a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
-          		<tr><td>Domain</td><td><a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
-          		<tr><td>Elevation</td><td></td></tr>
-          		<tr><td>Env_Biome; Env_Feature; Env_Matter</td><td><a href='http://www.ebi.ac.uk/ols/ontologies/envo' target='_blank'>Envo Ontology Browser</a> Biome: Description of the site;
+          		
+          		<tr><td>collection_date</td><td>Example: 2003-03-25</td></tr>
+          		<tr><td>geo_loc_name</td><td>name of country or longhurst zone</td></tr>
+          		<!-- 
+<tr><td>Country</td><td>Choose from GAZ Ontology.<a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
+          		
+ -->
+          		<tr><td>dna_Region</td><td><a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
+          		<tr><td>domain</td><td><a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
+          		
+          		<tr><td>env_biome; env_feature; env_material</td><td><a href='http://www.ebi.ac.uk/ols/ontologies/envo' target='_blank'>Envo Ontology Browser</a> Biome: Description of the site;
           			<br>Feature: Description of feature in the biome where sample was obtained;<a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a>
-          			<br>Matter: Description of material</td></tr>
-          		<tr><td>Env_Package</td><td><a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
-          		<tr><td>Fragment_name</td><td>Enter '16s' or '18s' for the section of the Small Subunit rRNA<a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
-          		<tr><td>Latitude</td><td>Geographical origin of sample in decimal degrees (WGS84  system), not DMS</td></tr>
-          		<tr><td>Longitude</td><td>Geographical origin of sample in decimal degrees (WGS84  system), not DMS</td></tr>
-          		<tr><td>Sequencing_platform</td><td>'454', 'illumina', 'ion-torrent', 'sanger' or 'unknown'<a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
-          		<tr><td>Taxon_ID</td><td><a href='https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Tree&id=12908&lvl=3&srchmode=1&keep=1&unlock' target='_blank'>NCBI Taxonomy Browser</a> Example: 410658 (Soil Metagenome)</td></tr>
+          			<br>Material: Description of material</td></tr>
+          		<tr><td>env_package</td><td><a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
+          		<tr><td>target_gene</td><td>Enter '16s' or '18s' for the section of the Small Subunit rRNA<a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
+          		<tr><td>latitude</td><td>Geographical origin of sample in decimal degrees (WGS84  system), not DMS</td></tr>
+          		<tr><td>longitude</td><td>Geographical origin of sample in decimal degrees (WGS84  system), not DMS</td></tr>
+          		<tr><td>sequencing_platform</td><td>'454', 'illumina', 'ion-torrent', 'sanger' or 'unknown'<a class='pull-right' href='/user_data/required_metadata_options' target='_blank'>View Allowed Terms</a></td></tr>
+          		<tr><td>adapter_sequence</td><td>illumina specific</td></tr>
+          		<tr><td>illumina_index</td><td>illumina specific</td></tr>
+          		<tr><td>primer_suite</td><td>MBL Specific</td></tr>
+          		<tr><td>run</td><td>MBL Specific</td></tr>
           	</table>
           </p>
         </div>
