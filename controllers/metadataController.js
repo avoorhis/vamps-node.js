@@ -28,7 +28,7 @@ class CreateDataObj {
     this.req             = req || {};
     this.res             = res || {};
     this.pid             = project_id || '';
-    this.dataset_ids     = dataset_ids || [];
+    this.dataset_ids     = dataset_ids || DATASET_IDS_BY_PID[this.pid] || [];
     this.all_field_names = this.collect_field_names();
     this.all_metadata    = {};
     this.prepare_empty_metadata_object();

@@ -70,7 +70,7 @@ class Dataset {
 
   }
 
-  slice_object_of_array(my_object, position) {
+  slice_object_of_arrays(my_object, position) {
     var sliced = [];
     for (var key in my_object) {
       var val_arr = my_object[key];
@@ -87,7 +87,7 @@ class Dataset {
     var vals_arr  = [];
 
     for (let i = 0; i < this.datasets_length; i++) {
-      var curr_dat_arr = this.slice_object_of_array(this.DatasetInfo, i);
+      var curr_dat_arr = this.slice_object_of_arrays(this.DatasetInfo, i);
       vals_arr.push(curr_dat_arr.join("', '"));
     }
 
@@ -116,7 +116,7 @@ class Dataset {
 
     for (let i = 0; i < this.datasets_length; i++) {
       var dataset_info = this.dataset_objects_arr[pid][i];
-      if (typeof DATASET_IDS_BY_PID[pid] === 'undefined') {
+      // if (typeof DATASET_IDS_BY_PID[pid] === 'undefined' || DATASET_IDS_BY_PID[pid].length === 0) {
         DATASET_IDS_BY_PID[pid].push(dataset_info.dataset_id);
         DATASET_NAME_BY_DID[dataset_info.dataset_id] = dataset_info.dataset;
 
@@ -125,10 +125,11 @@ class Dataset {
         tt_obj["dname"] = dataset_info.dataset;
         tt_obj["ddesc"] = dataset_info.dataset_description;
         // temp_obj.datasets.push(tt_obj); // TODO: check below!
-        ALL_DATASETS.projects[projects.length - 1].push(tt_obj);
+      var temp_datasets_arr = ALL_DATASETS.projects[ALL_DATASETS.projects.length - 1].datasets;
+      temp_datasets_arr.push(tt_obj);
 
         PROJECT_ID_BY_DID[dataset_info.dataset_id] = this.pid;
-      }
+      // }
     }
 
     // 3) ALL_DATASETS.projects[0]

@@ -458,7 +458,7 @@ function make_metadata_object_from_form(req, res) {
       if (err) {
         console.log('WWW0 err', err);
         req.flash('fail', err);
-        show_new.show_metadata_new_again();
+        // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
       }
       else {
         console.log('New datasets SAVED');
@@ -471,7 +471,7 @@ function make_metadata_object_from_form(req, res) {
               // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
             }
             else {
-              console.log('WWW rows', rows);
+              console.log('WWW22 rows', rows);
               new_dataset.update_dataset_obj(rows, pid);
               // new_dataset.dataset_objects_arr;
               new_dataset.add_info_to_dataset_globals();
