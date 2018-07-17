@@ -113,10 +113,13 @@ class Dataset {
     temp_obj.datasets  = [];
     ALL_DATASETS.projects.push(temp_obj);
     DATASET_IDS_BY_PID[pid] = [];
+    this.DatasetInfo.dataset_id = [];
 
     for (let i = 0; i < this.datasets_length; i++) {
       var dataset_info = this.dataset_objects_arr[pid][i];
-      // if (typeof DATASET_IDS_BY_PID[pid] === 'undefined' || DATASET_IDS_BY_PID[pid].length === 0) {
+      var myArray = this.DatasetInfo.dataset_id;
+      this.add_obj_to_arr(dataset_info.dataset_id, myArray);
+
       DATASET_IDS_BY_PID[pid].push(dataset_info.dataset_id);
       DATASET_NAME_BY_DID[dataset_info.dataset_id] = dataset_info.dataset;
 
@@ -124,55 +127,17 @@ class Dataset {
       tt_obj["did"]         = dataset_info.dataset_id;
       tt_obj["dname"]       = dataset_info.dataset;
       tt_obj["ddesc"]       = dataset_info.dataset_description;
-      // temp_obj.datasets.push(tt_obj); // TODO: check below!
-      // var temp_datasets_arr = ALL_DATASETS.projects[ALL_DATASETS.projects.length - 1].datasets;
-      // temp_datasets_arr.push(tt_obj);
-      this.add_obj_to_arr(tt_obj);
+
+      var myArray1 = ALL_DATASETS.projects[ALL_DATASETS.projects.length - 1].datasets;
+      this.add_obj_to_arr(tt_obj, myArray1);
 
       PROJECT_ID_BY_DID[dataset_info.dataset_id] = this.pid;
-      // }
+      // AllMetadata
     }
-
-    // var result = this.dataset_objects_arr[pid];
-    // Object.keys(result).forEach(function(key) {
-    //   var row = result[key];
-    //   console.log(row.name);
-    //   var tt_obj            = {};
-    //   tt_obj["did"]         = dataset_info.dataset_id;
-    //   tt_obj["dname"]       = dataset_info.dataset;
-    //   tt_obj["ddesc"]       = dataset_info.dataset_description;
-    //   // temp_obj.datasets.push(tt_obj); // TODO: check below!
-    //   this.add_obj_to_arr(tt_obj);
-    //   // ALL_DATASETS.projects[ALL_DATASETS.projects.length - 1].datasets.push(tt_obj);
-    // });
-
-
-
-    // 3) ALL_DATASETS.projects[0]
-    // {
-    //   "name": "DAH_CFRL_ITS1",
-    //   "pid": 481,
-    //   "title": "CF Regional Lavage ITS1",
-    //   "datasets": [
-    //     {
-    //       "did": 10894,
-    //       "dname": "CFRL6_f_ITS1",
-    //       "ddesc": "CFRL_ITS1"
-    //     },
-    // ...
-    //     {
-    //       "did": 10893,
-    //       "dname": "CFRL9_e_ITS1",
-    //       "ddesc": "CFRL_ITS1"
-    //     }
-    //   ]
-    // }
-
-
   }
 
-  add_obj_to_arr(obj) {
-    ALL_DATASETS.projects[ALL_DATASETS.projects.length - 1].datasets.push(obj);
+  add_obj_to_arr(obj, myArray) {
+    myArray[myArray.length] = obj;
   }
 
   // function appendOutput (item) {

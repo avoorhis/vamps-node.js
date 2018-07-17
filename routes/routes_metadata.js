@@ -480,17 +480,19 @@ function make_metadata_object_from_form(req, res) {
               new_dataset.update_dataset_obj(rows, pid);
               // new_dataset.dataset_objects_arr;
               new_dataset.add_info_to_dataset_globals();
+              data['dataset_id'] = new_dataset.DatasetInfo.dataset_id;
               existing_object_from_form(req, res, pid, data);
             }
           }
         );
 
-        //  then all from "existing"
+
       }
 
 
     });
-  }
+  } // data['dataset_id'][0] === ""
+  // else then all from "existing" existing_object_from_form
 
   console.timeEnd("TIME: make_metadata_object_from_form");
 }

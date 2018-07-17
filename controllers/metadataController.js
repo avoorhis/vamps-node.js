@@ -51,15 +51,18 @@ class CreateDataObj {
 
     var field_names_arr = [];
 
-    if (typeof dataset_ids === 'undefined' || this.dataset_ids.length === 0) {
-      field_names_arr = field_names_arr.concat(Object.keys(MD_CUSTOM_FIELDS_UNITS));
-    }
-    else {
-      for (var i = 0; i < this.dataset_ids.length; i++) {
-        var dataset_id  = this.dataset_ids[i];
+
+    // if (typeof dataset_ids === 'undefined' || this.dataset_ids.length === 0) {
+    field_names_arr = field_names_arr.concat(Object.keys(MD_CUSTOM_FIELDS_UNITS));
+    // }
+    // else {
+    for (var i = 0; i < this.dataset_ids.length; i++) {
+      var dataset_id = this.dataset_ids[i];
+      if (typeof AllMetadata[dataset_id] !== 'undefined') {
         field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
       }
     }
+    // }
     field_names_arr = helpers.unique_array(field_names_arr); // one level
     field_names_arr.sort();
 
