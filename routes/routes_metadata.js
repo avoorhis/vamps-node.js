@@ -419,10 +419,15 @@ router.post('/metadata_upload',
       console.log('in post /metadata_upload, !req.form.isValid');
 
       make_metadata_object_from_form(req, res);
-      //TODO: include what below to callback for dataset upload, right now it saves what is in the form, no datasets etc.
       console.log("III in form");
-      const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
-      csv_files_obj.make_csv(req, res);
+      //TODO: include what below to callback for dataset upload, right now it saves what is in the form, no datasets etc.
+      if ((typeof DATASET_IDS_BY_PID[req.body.project_id] !== 'undefined') && (DATASET_IDS_BY_PID[req.body.project_id].length > 0)) {
+        const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
+        csv_files_obj.make_csv(req, res);
+      }
+      else {
+        // do it after asynchronous make_metadata_object_from_form is done with global objects
+      }
 
       if (req.body.done_editing === "done_editing") {
         send_mail_finished(req, res);
@@ -480,7 +485,7 @@ function make_metadata_object_from_form(req, res) {
           }
         );
 
-      //  then all from "existing"
+        //  then all from "existing"
       }
 
 

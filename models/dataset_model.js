@@ -117,20 +117,36 @@ class Dataset {
     for (let i = 0; i < this.datasets_length; i++) {
       var dataset_info = this.dataset_objects_arr[pid][i];
       // if (typeof DATASET_IDS_BY_PID[pid] === 'undefined' || DATASET_IDS_BY_PID[pid].length === 0) {
-        DATASET_IDS_BY_PID[pid].push(dataset_info.dataset_id);
-        DATASET_NAME_BY_DID[dataset_info.dataset_id] = dataset_info.dataset;
+      DATASET_IDS_BY_PID[pid].push(dataset_info.dataset_id);
+      DATASET_NAME_BY_DID[dataset_info.dataset_id] = dataset_info.dataset;
 
-        var tt_obj      = {};
-        tt_obj["did"]   = dataset_info.dataset_id;
-        tt_obj["dname"] = dataset_info.dataset;
-        tt_obj["ddesc"] = dataset_info.dataset_description;
-        // temp_obj.datasets.push(tt_obj); // TODO: check below!
-      var temp_datasets_arr = ALL_DATASETS.projects[ALL_DATASETS.projects.length - 1].datasets;
-      temp_datasets_arr.push(tt_obj);
+      var tt_obj            = {};
+      tt_obj["did"]         = dataset_info.dataset_id;
+      tt_obj["dname"]       = dataset_info.dataset;
+      tt_obj["ddesc"]       = dataset_info.dataset_description;
+      // temp_obj.datasets.push(tt_obj); // TODO: check below!
+      // var temp_datasets_arr = ALL_DATASETS.projects[ALL_DATASETS.projects.length - 1].datasets;
+      // temp_datasets_arr.push(tt_obj);
+      this.add_obj_to_arr(tt_obj);
 
-        PROJECT_ID_BY_DID[dataset_info.dataset_id] = this.pid;
+      PROJECT_ID_BY_DID[dataset_info.dataset_id] = this.pid;
       // }
     }
+
+    // var result = this.dataset_objects_arr[pid];
+    // Object.keys(result).forEach(function(key) {
+    //   var row = result[key];
+    //   console.log(row.name);
+    //   var tt_obj            = {};
+    //   tt_obj["did"]         = dataset_info.dataset_id;
+    //   tt_obj["dname"]       = dataset_info.dataset;
+    //   tt_obj["ddesc"]       = dataset_info.dataset_description;
+    //   // temp_obj.datasets.push(tt_obj); // TODO: check below!
+    //   this.add_obj_to_arr(tt_obj);
+    //   // ALL_DATASETS.projects[ALL_DATASETS.projects.length - 1].datasets.push(tt_obj);
+    // });
+
+
 
     // 3) ALL_DATASETS.projects[0]
     // {
@@ -154,6 +170,19 @@ class Dataset {
 
 
   }
+
+  add_obj_to_arr(obj) {
+    ALL_DATASETS.projects[ALL_DATASETS.projects.length - 1].datasets.push(obj);
+  }
+
+  // function appendOutput (item) {
+  //   fetchData(item).then(function () {
+  //     output.innerHTML += item;
+  //   });
+  // }
+//   for (var i = 0; i < array.length; i++) {
+//   appendOutput(array[i]); // output: hello
+// }
 
 
   getAllDatasets(callback) {
