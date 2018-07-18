@@ -11,7 +11,6 @@ var config  = require(app_root + '/config/config');
 // var expressValidator = require('express-validator');
 var nodeMailer           = require('nodemailer');
 var Project              = require(app_root + '/models/project_model');
-var Dataset              = require(app_root + '/models/dataset_model');
 // var User    = require(app_root + '/models/user_model');
 var metadata_controller  = require(app_root + '/controllers/metadataController');
 var csv_files_controller = require(app_root + '/controllers/csvFilesController');
@@ -417,26 +416,9 @@ router.post('/metadata_upload',
     console.time("TIME: post metadata_upload");
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
-
-      make_metadata_object_from_form(req, res);
-      console.log("III in form");
-      //TODO: include what below to callback for dataset upload, right now it saves what is in the form, no datasets etc.
-      if ((typeof DATASET_IDS_BY_PID[req.body.project_id] !== 'undefined') && (DATASET_IDS_BY_PID[req.body.project_id].length > 0)) {
-        const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
-        csv_files_obj.make_csv(req, res);
-      }
-      else {
-        // do it after asynchronous make_metadata_object_from_form is done with global objects
-      }
-
-      if (req.body.done_editing === "done_editing") {
-        send_mail_finished(req, res);
-      }
-
-      // done_editing: 'not_done_editing' }
-
+      show_same_form_again(req, res);
     }
-    else {
+    else { // valid
       console.log('in post /metadata_upload');
       saveMetadata(req, res);
       res.redirect("/user_data/your_projects");
@@ -444,107 +426,122 @@ router.post('/metadata_upload',
     console.timeEnd("TIME: post metadata_upload");
   });
 
-function make_metadata_object_from_form(req, res) {
-  console.time("TIME: make_metadata_object_from_form");
-  console.trace("Show me, I'm in make_metadata_object_from_form");
-  var pid  = req.body.project_id;
-  var data = req.form;
+function show_same_form_again(req, res) {
+  var pid = req.body.project_id;
+  var dataset_ids = [];
+  if ((typeof DATASET_IDS_BY_PID[pid] !== 'undefined') && (DATASET_IDS_BY_PID[pid].length > 0)) {
+    dataset_ids = DATASET_IDS_BY_PID[pid];
+  }
+  const met_obj = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+  met_obj.make_metadata_object_from_form();
+  console.log("III in form");
 
-  // console.log("DDD9 req.form");
-  // console.log(JSON.stringify(req.form));
-
-  //new
-  if (data['dataset_id'][0] === "") {
-    const new_dataset = new Dataset(req, res, pid);
-    var DatasetInfo   = new_dataset.DatasetInfo;
-    console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
-    new_dataset.addDataset(function (err, rows) {
-      console.time("TIME: in post /metadata_new, add dataset");
-      if (err) {
-        console.log('WWW0 err', err);
-        req.flash('fail', err);
-        // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
-      }
-      else {
-        console.log('New datasets SAVED');
-        console.log('WWW rows', rows);
-        new_dataset.get_new_dataset_by_name(
-          function (err, rows) {
-            if (err) {
-              console.log('WWW00 err', err);
-              req.flash('fail', err);
-              // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
-            }
-            else {
-              console.log('WWW22 rows', rows);
-              new_dataset.update_dataset_obj(rows, pid);
-              // new_dataset.dataset_objects_arr;
-              new_dataset.add_info_to_dataset_globals();
-              data['dataset_id'] = new_dataset.DatasetInfo.dataset_id;
-              existing_object_from_form(req, res, pid, data);
-            }
-          }
-        );
-
-
-      }
-
-
-    });
-  } // data['dataset_id'][0] === ""
-  // else then all from "existing" existing_object_from_form
-
-  console.timeEnd("TIME: make_metadata_object_from_form");
+  if (req.body.done_editing === "done_editing") {
+    send_mail_finished(req, res);
+  }
 }
 
-function existing_object_from_form(req, res, pid, data) {
-  // existing
-  //add project_abstract etc.
-  //TODO: DRY with other such places.
-  const met_obj = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
+// function make_metadata_object_from_form(req, res) {
+//   console.time("TIME: make_metadata_object_from_form");
+//   console.trace("Show me, I'm in make_metadata_object_from_form");
+//   var pid  = req.body.project_id;
+//   var data = req.form;
+//
+//   // console.log("DDD9 req.form");
+//   // console.log(JSON.stringify(req.form));
+//
+//   //new
+//   if (data['dataset_id'][0] === "") {
+//     const new_dataset = new Dataset(req, res, pid);
+//     var DatasetInfo   = new_dataset.DatasetInfo;
+//     console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
+//     new_dataset.addDataset(function (err, rows) {
+//       console.time("TIME: in post /metadata_new, add dataset");
+//       if (err) {
+//         console.log('WWW0 err', err);
+//         req.flash('fail', err);
+//         // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
+//       }
+//       else {
+//         console.log('New datasets SAVED');
+//         console.log('WWW rows', rows);
+//         new_dataset.get_new_dataset_by_name(
+//           function (err, rows) {
+//             if (err) {
+//               console.log('WWW00 err', err);
+//               req.flash('fail', err);
+//               // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
+//             }
+//             else {
+//               console.log('WWW22 rows', rows);
+//               new_dataset.update_dataset_obj(rows, pid);
+//               // new_dataset.dataset_objects_arr;
+//               new_dataset.add_info_to_dataset_globals();
+//               data['dataset_id'] = new_dataset.DatasetInfo.dataset_id;
+//               existing_object_from_form(req, res, pid, data);
+//             }
+//           }
+//         );
+//
+//
+//       }
+//
+//
+//     });
+//   } // data['dataset_id'][0] === ""
+//   // else then all from "existing" existing_object_from_form
+//
+//   console.timeEnd("TIME: make_metadata_object_from_form");
+// }
 
-  var normal_length = data['dataset'].length;
-  for (var a in data) {
-    if (data[a].length < normal_length && (typeof data[a][0] !== 'undefined')) {
-      data[a] = met_obj.fill_out_arr_doubles(data[a][0], normal_length);
-    }
-  }
-  var all_metadata         = met_obj.make_metadata_object(req, res, pid, data);
-  var all_field_names_orig = met_obj.make_all_field_names(data['dataset_id']);
-
-
-  //add_new
-  var all_field_names_with_new = met_obj.collect_new_rows(req, all_field_names_orig);
-
-  // console.log("YYY3 all_field_names_with_new");
-  // console.log(JSON.stringify(all_field_names_with_new));
-
-  var all_field_names_first_column = met_obj.get_first_column(all_field_names_with_new, 0);
-  var all_new_names                = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
-  all_metadata[pid]                = met_obj.get_new_val(req, all_metadata[pid], all_new_names);
-
-  //collect errors
-  var myArray_fail = helpers.unique_array(req.form.errors);
-
-  if (helpers.has_duplicates(req.form.sample_name)) {
-    myArray_fail.push('Sample ID (user sample name) should be unique.');
-  }
-
-  myArray_fail.sort();
-  req.flash("fail", myArray_fail);
-
-  // ShowObj {
-  //
-  //   constructor(req, res, all_metadata, all_field_names_arr,
-  // done ordered_field_names_obj
-  // TODO: ??? all_field_units, ordered_field_names_obj, user, hostname)
-
-  var all_field_units = MD_CUSTOM_UNITS[req.body.project_id];
-
-  const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units);
-  show_new.render_edit_form();
-
-}
+// function existing_object_from_form(req, res, pid, data) {
+//   // existing
+//   //add project_abstract etc.
+//   //TODO: DRY with other such places.
+//   const met_obj = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
+//
+//   var normal_length = data['dataset'].length;
+//   for (var a in data) {
+//     if (data[a].length < normal_length && (typeof data[a][0] !== 'undefined')) {
+//       data[a] = met_obj.fill_out_arr_doubles(data[a][0], normal_length);
+//     }
+//   }
+//   var all_metadata         = met_obj.make_metadata_object(req, res, pid, data);
+//   var all_field_names_orig = met_obj.make_all_field_names(data['dataset_id']);
+//
+//
+//   //add_new
+//   var all_field_names_with_new = met_obj.collect_new_rows(req, all_field_names_orig);
+//
+//   // console.log("YYY3 all_field_names_with_new");
+//   // console.log(JSON.stringify(all_field_names_with_new));
+//
+//   var all_field_names_first_column = met_obj.get_first_column(all_field_names_with_new, 0);
+//   var all_new_names                = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
+//   all_metadata[pid]                = met_obj.get_new_val(req, all_metadata[pid], all_new_names);
+//
+//   //collect errors
+//   var myArray_fail = helpers.unique_array(req.form.errors);
+//
+//   if (helpers.has_duplicates(req.form.sample_name)) {
+//     myArray_fail.push('Sample ID (user sample name) should be unique.');
+//   }
+//
+//   myArray_fail.sort();
+//   req.flash("fail", myArray_fail);
+//
+//   // ShowObj {
+//   //
+//   //   constructor(req, res, all_metadata, all_field_names_arr,
+//   // done ordered_field_names_obj
+//   // TODO: ??? all_field_units, ordered_field_names_obj, user, hostname)
+//
+//   var all_field_units = MD_CUSTOM_UNITS[req.body.project_id];
+//
+//   const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units);
+//   show_new.render_edit_form();
+//
+// }
 
 // create form from a csv file
 

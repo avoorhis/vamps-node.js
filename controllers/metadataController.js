@@ -1,25 +1,10 @@
-var Project   = require(app_root + '/models/project_model');
-// var Dataset   = require(app_root + '/models/dataset_model');
-var User      = require(app_root + '/models/user_model');
-var helpers   = require(app_root + '/routes/helpers/helpers');
-var CONSTS    = require(app_root + '/public/constants');
-var validator = require('validator');
-// var config    = require(app_root + '/config/config');
-// var fs        = require('fs');
-// var path      = require('path');
-
-// 1 create data from
-// 1.1  db
-// 1.2  form
-// 1.3  file
-
-// 2 saved data to
-// 2.1  db
-// 2.2  form
-// 2.3  file
-
-// 3 show data
-// ===
+var Project              = require(app_root + '/models/project_model');
+var Dataset              = require(app_root + '/models/dataset_model');
+var User                 = require(app_root + '/models/user_model');
+var helpers              = require(app_root + '/routes/helpers/helpers');
+var CONSTS               = require(app_root + '/public/constants');
+var validator            = require('validator');
+var csv_files_controller = require(app_root + '/controllers/csvFilesController');
 
 // 1 create data
 class CreateDataObj {
@@ -146,6 +131,112 @@ class CreateDataObj {
       }
     }
     return all_metadata_pid;
+  }
+
+  make_metadata_object_from_form() {
+    console.time("TIME: make_metadata_object_from_form");
+    console.trace("Show me, I'm in make_metadata_object_from_form");
+    var data = this.req.form;
+
+    //new
+    if (data['dataset_id'][0] === "") {
+      this.show_with_new_datasets();
+    }
+    else {
+      this.existing_object_from_form(data);
+    }
+    console.timeEnd("TIME: make_metadata_object_from_form");
+  }
+
+  show_with_new_datasets() {
+    var pid  = this.req.body.project_id;
+    var data = this.req.form;
+
+    const new_dataset = new Dataset(this.req, this.res, this.pid);
+    var DatasetInfo   = new_dataset.DatasetInfo;
+    var that = this;
+    console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
+    new_dataset.addDataset(function (err, rows) {
+      console.time("TIME: in post /metadata_new, add dataset");
+      if (err) {
+        console.log('WWW0 err', err);
+        this.req.flash('fail', err);
+        // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
+      }
+      else {
+        console.log('New datasets SAVED');
+        console.log('WWW rows', rows);
+        new_dataset.get_new_dataset_by_name(
+          function (err, rows) {
+            if (err) {
+              console.log('WWW00 err', err);
+              this.req.flash('fail', err);
+              // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
+            }
+            else {
+              console.log('WWW22 rows', rows);
+              new_dataset.update_dataset_obj(rows, pid);
+              // new_dataset.dataset_objects_arr;
+              new_dataset.add_info_to_dataset_globals();
+              data['dataset_id'] = new_dataset.DatasetInfo.dataset_id;
+              that.existing_object_from_form(data);
+            }
+          }
+        );
+      }
+    });
+  }
+
+  existing_object_from_form(data) {
+    // existing
+    //add project_abstract etc.
+    //TODO: DRY with other such places.
+    // const met_obj = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
+
+    var normal_length = data['dataset'].length;
+    for (var a in data) {
+      if (data[a].length < normal_length && (typeof data[a][0] !== 'undefined')) {
+        data[a] = this.fill_out_arr_doubles(data[a][0], normal_length);
+      }
+    }
+    // var all_metadata         = this.make_metadata_object(req, res, pid, data);
+    var all_field_names_orig = this.make_all_field_names(data['dataset_id']);
+
+
+    //add_new
+    var all_field_names_with_new = this.collect_new_rows(this.req, all_field_names_orig);
+
+    // console.log("YYY3 all_field_names_with_new");
+    // console.log(JSON.stringify(all_field_names_with_new));
+
+    var all_field_names_first_column = this.get_first_column(all_field_names_with_new, 0);
+    var all_new_names                = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
+    this.all_metadata[this.pid]      = this.get_new_val(this.req, this.all_metadata[this.pid], all_new_names);
+
+    //collect errors
+    var myArray_fail = helpers.unique_array(this.req.form.errors);
+
+    if (helpers.has_duplicates(this.req.form.sample_name)) {
+      myArray_fail.push('Sample ID (user sample name) should be unique.');
+    }
+
+    myArray_fail.sort();
+    this.req.flash("fail", myArray_fail);
+
+    // ShowObj {
+    //
+    //   constructor(req, res, all_metadata, all_field_names_arr,
+    // done ordered_field_names_obj
+    // TODO: ??? all_field_units, ordered_field_names_obj, user, hostname)
+
+    var all_field_units = MD_CUSTOM_UNITS[this.req.body.project_id];
+
+    const show_new = new module.exports.ShowObj(this.req, this.res, this.all_metadata, all_field_names_with_new, all_field_units);
+    show_new.render_edit_form();
+
+    const csv_files_obj = new csv_files_controller.CsvFiles(this.req, this.res);
+    csv_files_obj.make_csv(this.req, this.res);
+
   }
 
   make_metadata_object(req, res, pid, data_obj) {

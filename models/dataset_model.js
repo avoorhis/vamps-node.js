@@ -117,8 +117,10 @@ class Dataset {
 
     for (let i = 0; i < this.datasets_length; i++) {
       var dataset_info = this.dataset_objects_arr[pid][i];
-      var myArray = this.DatasetInfo.dataset_id;
-      this.add_obj_to_arr(dataset_info.dataset_id, myArray);
+      var myArray_dataset_id = this.DatasetInfo.dataset_id;
+      this.add_obj_to_arr(dataset_info.dataset_id, myArray_dataset_id);
+      var myArray_dataset = this.DatasetInfo.dataset;
+      this.add_obj_to_arr(dataset_info.dataset, myArray_dataset);
 
       DATASET_IDS_BY_PID[pid].push(dataset_info.dataset_id);
       DATASET_NAME_BY_DID[dataset_info.dataset_id] = dataset_info.dataset;
