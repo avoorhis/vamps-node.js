@@ -183,7 +183,6 @@ class CreateDataObj {
     // existing
     //add project_abstract etc.
     //TODO: DRY with other such places.
-    // const met_obj = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
 
     var normal_length = data['dataset'].length;
     for (var a in data) {
@@ -191,7 +190,7 @@ class CreateDataObj {
         data[a] = this.fill_out_arr_doubles(data[a][0], normal_length);
       }
     }
-    var all_metadata         = this.make_metadata_object(req, res, pid, data);
+    var all_metadata         = this.make_metadata_object(req, res, pid, data); // if use this.all_metadata = wrong
     var all_field_names_orig = this.make_all_field_names(data['dataset_id']);
 
 
