@@ -206,12 +206,9 @@ def parse_matrix_file():
             temp = []
             for i,val in enumerate(tax_array):
                 if val == '':
-                    temp.append(ranks[i]+'_NA')
+                    temp.append(ranks[i]+'_NAx')
                 else:
                     temp.append(val.strip(']').strip('[').strip('"'))
-                    
-            print('temp')
-            print(temp)
             tax_array = temp
             #tax_array = [value for value in raw_tax_string.split(';') if value != '']
             counts = row[1:]

@@ -402,10 +402,10 @@ function update_gui_elements(result){
 //
 //
 //
-function download_data(type, ts) {
+function download_data(type, file_name) {
     var html = '';
     var args = {}
-    args.ts = ts;
+    args.ts = file_name;
     args.file_type = type;
     var xmlhttp = new XMLHttpRequest();
 
