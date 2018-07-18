@@ -3655,7 +3655,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
-router.get('/required_metadata_options', helpers.isLoggedIn, function(req, res) {
+router.get('/required_metadata_options', function(req, res) {
     console.log('in required_metadata_options')
     res.render('user_data/required_metadata_options', {
               title     :'VAMPS Validate Metadata',
