@@ -6,7 +6,6 @@ var CONSTS               = require(app_root + '/public/constants');
 var validator            = require('validator');
 var csv_files_controller = require(app_root + '/controllers/csvFilesController');
 
-// 1 create data
 class CreateDataObj {
 
   constructor(req, res, project_id, dataset_ids) {
@@ -17,8 +16,6 @@ class CreateDataObj {
     this.all_field_names = this.collect_field_names();
     this.all_metadata    = {};
     this.prepare_empty_metadata_object();
-    //
-    // this.project         = PROJECT_INFORMATION_BY_PID[project_id].project;
   }
 
   collect_field_names() {
@@ -37,17 +34,13 @@ class CreateDataObj {
     var field_names_arr = [];
 
 
-    // if (typeof dataset_ids === 'undefined' || this.dataset_ids.length === 0) {
     field_names_arr = field_names_arr.concat(Object.keys(MD_CUSTOM_FIELDS_UNITS));
-    // }
-    // else {
     for (var i = 0; i < this.dataset_ids.length; i++) {
       var dataset_id = this.dataset_ids[i];
       if (typeof AllMetadata[dataset_id] !== 'undefined') {
         field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
       }
     }
-    // }
     field_names_arr = helpers.unique_array(field_names_arr); // one level
     field_names_arr.sort();
 
@@ -176,7 +169,6 @@ class CreateDataObj {
             else {
               console.log('WWW22 rows', rows);
               new_dataset.update_dataset_obj(rows, pid);
-              // new_dataset.dataset_objects_arr;
               new_dataset.add_info_to_dataset_globals();
               data['dataset_id'] = new_dataset.DatasetInfo.dataset_id;
               that.existing_object_from_form(data);
@@ -191,16 +183,14 @@ class CreateDataObj {
     // existing
     //add project_abstract etc.
     //TODO: DRY with other such places.
-    // const met_obj = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
 
-    var normal_length = data['dataset'].length;
+    var normal_length = data['dataset'].length; // use dataset.datasets_length
     for (var a in data) {
       if (data[a].length < normal_length && (typeof data[a][0] !== 'undefined')) {
         data[a] = this.fill_out_arr_doubles(data[a][0], normal_length);
       }
     }
-    // var all_metadata         = this.make_metadata_object(req, res, pid, data);
-    var all_field_names_orig = this.make_all_field_names(data['dataset_id']);
+    var all_field_names_orig = this.make_all_field_names(data['dataset_id']); // ... [   "target_gene",   "Target gene name",   "MBL Supplied",   "16S rRNA, mcrA, etc" ] ...
 
 
     //add_new
@@ -223,10 +213,6 @@ class CreateDataObj {
     myArray_fail.sort();
     this.req.flash("fail", myArray_fail);
 
-    // ShowObj {
-    //
-    //   constructor(req, res, all_metadata, all_field_names_arr,
-    // done ordered_field_names_obj
     // TODO: ??? all_field_units, ordered_field_names_obj, user, hostname)
 
     var all_field_units = MD_CUSTOM_UNITS[this.req.body.project_id];
@@ -769,8 +755,6 @@ class ShowObj {
     this.ordered_field_names_obj = this.make_ordered_field_names_obj();
     this.hostname                = req.CONFIG.hostname;
     this.user                    = req.user;
-    // this.user                    = user || req.user.username;
-    // this.hostname                = hostname || req.headers.host;
   }
 
   make_ordered_field_names_obj() {
