@@ -42,8 +42,8 @@ router.get('/blast', helpers.isLoggedIn, function(req, res) {
     // separate dbs
     var db_collector = []
     for(n in blast_dbs){
-        var blast_db_test1 = path.join('public','blast', blast_dbs[n], blast_dbs[n]+'.nhr');
-        var blast_db_test2 = path.join('public','blast', blast_dbs[n], blast_dbs[n]+'.00.nhr');
+        var blast_db_test1 = path.join(req.CONFIG.PATH_TO_BLAST_DBS, blast_dbs[n], blast_dbs[n]+'.nhr');
+        var blast_db_test2 = path.join(req.CONFIG.PATH_TO_BLAST_DBS, blast_dbs[n], blast_dbs[n]+'.00.nhr');
         if(helpers.fileExists(blast_db_test1)){
             db_collector.push(blast_dbs[n])
         }
@@ -620,7 +620,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
     var db_collector_short = []
     for(n in req.CONSTS.blast_dbs){
         if(req.CONSTS.blast_dbs[n] in req.body){
-            var db_path = path.join(req.CONFIG.PROCESS_DIR, 'public', 'blast', req.CONSTS.blast_dbs[n], req.CONSTS.blast_dbs[n])
+            var db_path = path.join(req.CONFIG.PATH_TO_BLAST_DBS, req.CONSTS.blast_dbs[n], req.CONSTS.blast_dbs[n])
             db_collector.push(db_path)
             db_collector_short.push(req.CONSTS.blast_dbs[n])
         }
