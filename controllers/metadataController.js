@@ -126,7 +126,7 @@ class CreateDataObj {
     return all_metadata_pid;
   }
 
-  make_metadata_object_from_form() {
+  make_metadata_object_from_form(req, res) {
     console.time("TIME: make_metadata_object_from_form");
     console.trace("Show me, I'm in make_metadata_object_from_form");
     var data = this.req.form;
@@ -136,7 +136,7 @@ class CreateDataObj {
       this.show_with_new_datasets();
     }
     else {
-      this.existing_object_from_form(data);
+      this.existing_object_from_form(req, res, this.pid, data);
     }
     console.timeEnd("TIME: make_metadata_object_from_form");
   }
