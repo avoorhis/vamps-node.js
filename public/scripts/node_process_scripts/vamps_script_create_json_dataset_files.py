@@ -104,7 +104,8 @@ strain_queryB = where_part
 strain_queryB += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
 end_group_query = " ORDER BY NULL"
 
-required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_material", "latitude", "longitude", "public"];
+required_metadata_fields = [  "collection_date","env_biome_id", "env_feature_id", "env_material_id", "env_package_id","geo_loc_name_id","latitude", "longitude", "dna_region_id",'adapter_sequence_id','sequencing_platform_id','target_gene_id','domain_id','illumina_index_id','primer_suite_id', 'run_id'];
+
 req_query = "SELECT dataset_id, "+','.join(required_metadata_fields)+" from required_metadata_info WHERE dataset_id in ('%s')"
 cust_pquery = "SELECT project_id,field_name from custom_metadata_fields WHERE project_id = '%s'"
 
@@ -215,11 +216,11 @@ def go_add(args):
         print('counts_lookup')
         print(counts_lookup)
     metadata_lookup = {}
-    #logging.info('getting required metadata from db')
-    #metadata_lookup = go_required_metadata(did_sql)
-    #logging.info('getting custom metadata from db')
-    #metadata_lookup = go_custom_metadata(dids, pid, metadata_lookup)
-    #logging.info('writing individual json files')
+    print ('getting required metadata from db')
+    metadata_lookup = go_required_metadata(did_sql)
+    print ('getting custom metadata from db')
+    metadata_lookup = go_custom_metadata(dids, pid, metadata_lookup)
+    print ('writing individual json files')
     write_json_files(file_prefix, metadata_lookup, counts_lookup)
     
     print ('writing all metadata file')
