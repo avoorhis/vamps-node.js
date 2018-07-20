@@ -415,14 +415,10 @@ router.post('/metadata_upload',
   ),
   function (req, res) {
     console.time("TIME: post metadata_upload");
-    var pid  = req.body.project_id;
-    var data = req.form;
-
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
-      const met_obj = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
 
-      met_obj.make_metadata_object_from_form(req, res);
+      make_metadata_object_from_form(req, res);
       console.log("III in form");
       //TODO: include what below to callback for dataset upload, right now it saves what is in the form, no datasets etc.
       if ((typeof DATASET_IDS_BY_PID[req.body.project_id] !== 'undefined') && (DATASET_IDS_BY_PID[req.body.project_id].length > 0)) {
@@ -448,58 +444,58 @@ router.post('/metadata_upload',
     console.timeEnd("TIME: post metadata_upload");
   });
 
-// function make_metadata_object_from_form(req, res) {
-//   console.time("TIME: make_metadata_object_from_form");
-//   console.trace("Show me, I'm in make_metadata_object_from_form");
-//   var pid  = req.body.project_id;
-//   var data = req.form;
-//   const met_obj          = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
-//
-//   //new
-//   if (data['dataset_id'][0] === "") {
-//     const new_dataset = new Dataset(req, res, pid);
-//     var DatasetInfo   = new_dataset.DatasetInfo;
-//     console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
-//     new_dataset.addDataset(function (err, rows) {
-//       console.time("TIME: in post /metadata_new, add dataset");
-//       if (err) {
-//         console.log('WWW0 err', err);
-//         req.flash('fail', err);
-//         // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
-//       }
-//       else {
-//         console.log('New datasets SAVED');
-//         console.log('WWW rows', rows);
-//         new_dataset.get_new_dataset_by_name(
-//           function (err, rows) {
-//             if (err) {
-//               console.log('WWW00 err', err);
-//               req.flash('fail', err);
-//               // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
-//             }
-//             else {
-//               console.log('WWW22 rows', rows);
-//               new_dataset.update_dataset_obj(rows, pid);
-//               // new_dataset.dataset_objects_arr;
-//               new_dataset.add_info_to_dataset_globals();
-//               data['dataset_id'] = new_dataset.DatasetInfo.dataset_id;
-//               met_obj.existing_object_from_form(req, res, pid, data);
-//             }
-//           }
-//         );
-//
-//
-//       }
-//
-//
-//     });
-//   } // data['dataset_id'][0] === ""
-//   else {
-//     met_obj.existing_object_from_form(req, res, pid, data);
-//
-//   }
-//   console.timeEnd("TIME: make_metadata_object_from_form");
-// }
+function make_metadata_object_from_form(req, res) {
+  console.time("TIME: make_metadata_object_from_form");
+  console.trace("Show me, I'm in make_metadata_object_from_form");
+  var pid  = req.body.project_id;
+  var data = req.form;
+  const met_obj          = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
+
+  //new
+  if (data['dataset_id'][0] === "") {
+    const new_dataset = new Dataset(req, res, pid);
+    var DatasetInfo   = new_dataset.DatasetInfo;
+    console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
+    new_dataset.addDataset(function (err, rows) {
+      console.time("TIME: in post /metadata_new, add dataset");
+      if (err) {
+        console.log('WWW0 err', err);
+        req.flash('fail', err);
+        // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
+      }
+      else {
+        console.log('New datasets SAVED');
+        console.log('WWW rows', rows);
+        new_dataset.get_new_dataset_by_name(
+          function (err, rows) {
+            if (err) {
+              console.log('WWW00 err', err);
+              req.flash('fail', err);
+              // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
+            }
+            else {
+              console.log('WWW22 rows', rows);
+              new_dataset.update_dataset_obj(rows, pid);
+              // new_dataset.dataset_objects_arr;
+              new_dataset.add_info_to_dataset_globals();
+              data['dataset_id'] = new_dataset.DatasetInfo.dataset_id;
+              met_obj.existing_object_from_form(req, res, pid, data);
+            }
+          }
+        );
+
+
+      }
+
+
+    });
+  } // data['dataset_id'][0] === ""
+  else {
+    met_obj.existing_object_from_form(req, res, pid, data);
+
+  }
+  console.timeEnd("TIME: make_metadata_object_from_form");
+}
 
 // function existing_object_from_form(req, res, pid, data) {
 //   // existing

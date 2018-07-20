@@ -136,7 +136,7 @@ class CreateDataObj {
       this.show_with_new_datasets();
     }
     else {
-      this.existing_object_from_form(this.req, this.res, this.pid, data);
+      this.existing_object_from_form(data);
     }
     console.timeEnd("TIME: make_metadata_object_from_form");
   }
@@ -171,7 +171,7 @@ class CreateDataObj {
               new_dataset.update_dataset_obj(rows, pid);
               new_dataset.add_info_to_dataset_globals();
               data['dataset_id'] = new_dataset.DatasetInfo.dataset_id;
-              that.existing_object_from_form(this.req, this.res, pid, data);
+              that.existing_object_from_form(data);
             }
           }
         );
@@ -183,7 +183,6 @@ class CreateDataObj {
     // existing
     //add project_abstract etc.
     //TODO: DRY with other such places.
-    var req = req || this.req;
 
     var normal_length = data['dataset'].length;
     for (var a in data) {
@@ -250,7 +249,7 @@ class CreateDataObj {
     //3) special
 
     var owner_id      = PROJECT_INFORMATION_BY_PID[pid].oid;
-    const new_project = new Project(this.req, this.res, pid, owner_id);
+    const new_project = new Project(req, res, pid, owner_id);
     var project_info  = new_project.project_obj;
 
     // TODO: move to db creation?
@@ -394,7 +393,6 @@ class CreateDataObj {
 
   collect_new_rows(req, all_field_names) {
     console.time('TIME: collect_new_rows');
-    var req = req || this.req;
     var new_row_num               = req.body.new_row_num;
     var all_clean_field_names_arr = helpers.unique_array(this.get_first_column(all_field_names, 0));
 
@@ -575,7 +573,6 @@ class CreateDataObj {
   }
 
   get_new_val(req, all_metadata_pid, all_new_names) {
-    var req = req || this.req;
     var new_val = [];
     for (var new_name_idx in all_new_names) {
       var new_name = all_new_names[new_name_idx];
@@ -849,4 +846,3 @@ module.exports = {
   CreateDataObj: CreateDataObj,
   ShowObj: ShowObj
 };
-
