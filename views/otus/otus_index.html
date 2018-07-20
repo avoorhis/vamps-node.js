@@ -38,7 +38,28 @@
 
         <td>
 
+            <div class='clean_list' >
             
+            <li><button type="button" class="btn btn-sm btn-warning" name='Next' id="selection_btn_visuals">
+                &nbsp;Visualizations&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
+                </button>
+                Select how you want to view data.
+            &nbsp;&nbsp;&nbsp;
+                <% if(user.username == 'guest'){ %>
+                    <button type="button" disabled class="btn btn-sm btn-primary" name='Next' id="selection_btn_exports">
+                    &nbsp;Download Data&nbsp;
+                    <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
+                    </button>
+                <% }else{ %>
+                    <button type="button" class="btn btn-sm btn-primary" name='Next' id="selection_btn_exports">
+                    &nbsp;Download Data&nbsp;
+                    <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
+                    </button>
+                <% } %>
+                Download OTU data file.
+            </li>
+            </div>
         </td>
 
       </tr>
@@ -54,30 +75,10 @@
             </div>
         </td>
 
-		<td class='td_top' width="30%">
-          <div class='clean_list'>
-            <li><button type="button" class="btn btn-sm btn-warning" name='Next' id="selection_btn_visuals">
-                &nbsp;Visualizations&nbsp;&nbsp;&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
-                </button>
-                - Select how you want to view data.
-            </li>
-            <br>
-            <li>
-                <% if(user.username == 'guest'){ %>
-                    <button type="button" disabled class="btn btn-sm btn-primary" name='Next' id="selection_btn_exports">
-                    &nbsp;Download Data&nbsp;
-                    <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
-                    </button>
-                <% }else{ %>
-                    <button type="button" class="btn btn-sm btn-primary" name='Next' id="selection_btn_exports">
-                    &nbsp;Download Data&nbsp;
-                    <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
-                    </button>
-                <% } %>
-                - Download OTU data file.
-            </li>
-            <br>
+		<td class='td_top' width="50%">
+          <div class='clean_list' style='height:500px;overflow:auto;'>
+            
+           
            <li>
              The OTUs created for this section have been pre-calculated from VAMPS data as of November, 2010 which includes all of the public 
              <a href='http://icomm.mbl.edu/' target='_blank'>ICoMM and KCK</a> projects. 
@@ -85,6 +86,28 @@
               using clustering thresholds of 3%, 6% and 10%. 
              See <a href='/help/faq#clust' target='_blank'>"How are SLP clusters created"</a> in the FAQ for more information on the clustering method and the SLP citation.
            </li>
+            <br>           
+           <b>Taxonomy Definition Files:</b>
+            <br>The following files define the taxonomy of the new clustering method. 
+            Each file contains the representative sequences for that domain, clustered at 3%, 6% or 10%. 
+            Here is a full description of the fields in these files. 
+            Right-click on the following links to download these files.
+            <br>Archaea:	<a href='' onclick="download_data('slp_tax_def','Archaea.slp.pw.an.03.tax')">3%</a> (1.2MB)	<a href='' onclick="download_data('slp_tax_def','Archaea.slp.pw.an.06.tax')">6%</a> (0.7MB)	<a href='' onclick="download_data('slp_tax_def','Archaea.slp.pw.an.10.tax')">10%</a> (0.4MB)
+            <br>Bacteria:	<a href='' onclick="download_data('slp_tax_def','Bacteria.slp.pw.an.03.tax')">3%</a> (69.1MB)	<a href='' onclick="download_data('slp_tax_def','Bacteria.slp.pw.an.06.tax')">6%</a> (46.7MB)	<a href='' onclick="download_data('slp_tax_def','Bacteria.slp.pw.an.10.tax')">10%</a> (29.1MB)
+            <br>Eukarya:	<a href='' onclick="download_data('slp_tax_def','Eukarya.slp.pw.an.03.tax')">3%</a> (2.3MB)	<a href='' onclick="download_data('slp_tax_def','Eukarya.slp.pw.an.06.tax')">6%</a> (1.0MB)	<a href='' onclick="download_data('slp_tax_def','Eukarya.slp.pw.an.10.tax')">10%</a> (0.4MB)
+
+            <br><br><b>Representative Sequence Files (fasta format): </b>
+            <br>The following fasta files (compressed into tar/gzip archives) provide the most abundant sequence in each cluster, which can be used as a representative for that cluster. 
+
+            <br>For these files the fasta definition line includes: 
+            <br>1) The cluster ID, 2) an internal ID for a read containing that sequence, 3) the number of reads in that cluster having an exact match to the representative sequence (sequence abundance), and 4) the percent of all reads in that cluster which have an exact match to the representative sequence. These values date from when the clusters were initially created in March 2010.
+
+            <br><a href='' onclick="download_data('slp_repseqs','Archaea.repseqs.tar.gz')">Archaea_repseq</a> (0.3MB)	<a href='' onclick="download_data('slp_repseqs','Bacteria.repseqs.tar.gz')">Bacteria_repseq</a> (19.5MB)	<a href='' onclick="download_data('slp_repseqs','Eukarya.repseqs.tar.gz')">Eukarya_repseq</a> (1.0MB)
+            <br><br><b>OTU Membership Files:</b> 
+            <br>These files provide the OTU membership in the 3, 6, and 10% OTU clusters for all reads that were clustered. The format includes two columns per line separated by a tab. The first column is the OTU number and the second column is the list of comma-separated reads that comprise that OTU. Each line represents a different OTU.
+
+            <br><a href='' onclick="download_data('slp_otumember','Archaea.otureads.tgz')">Archaea_otu</a> (30.40MB)	<a href='' onclick="download_data('slp_otumember','Bacteria.otureads.tgz')">Bacteria_otu</a> (450.3MB)	<a href='' onclick="download_data('slp_otumember','Eukarya.otureads.tgz')">Eukarya_otu</a> (30.2MB)
+
           </div>
 		</td>
 

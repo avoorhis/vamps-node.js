@@ -3655,7 +3655,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
-router.get('/required_metadata_options', helpers.isLoggedIn, function(req, res) {
+router.get('/required_metadata_options', function(req, res) {
     console.log('in required_metadata_options')
     res.render('user_data/required_metadata_options', {
               title     :'VAMPS Validate Metadata',
@@ -4233,19 +4233,35 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
       old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.pdf';
     }else if (file_type == 'pdf-pcoa') {
-      old_file_name = old_ts+'_pcoa.pdf';
+       old_file_name = old_ts+'_pcoa.pdf';
        old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
-      new_file_name = file_type+'-'+timestamp+'.pdf';
+       new_file_name = file_type+'-'+timestamp+'.pdf';
     }else if (file_type == 'metadata') {
       old_file_name = old_ts+'_metadata.txt';
       old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.tsv';
     }else if (file_type == 'slp_otus') {
-      old_file_name = old_ts
+       old_file_name = old_ts
        old_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'clusters', old_file_name);
        console.log(old_file_path)
-      new_file_name = 'otus-'+old_ts;
-    }else{
+       new_file_name = 'otus-'+old_ts;
+    }else if (file_type == 'slp_tax_def') {
+       old_file_name = old_ts
+       old_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'clusters/tax_definitions', old_file_name);
+       console.log(old_file_path)
+       new_file_name = 'otus-tax_definitions-'+old_ts;
+    }else if (file_type == 'slp_repseqs') {
+       old_file_name = old_ts
+       old_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'clusters/repseqs', old_file_name);
+       console.log(old_file_path)
+       new_file_name = 'otus-repseqs-'+old_ts;
+    }else if (file_type == 'slp_otumember') {
+       old_file_name = old_ts
+       old_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'clusters/otumembership', old_file_name);
+       console.log(old_file_path)
+       new_file_name = 'otus-membership-'+old_ts;
+    }
+    else{
       console.log("In routes_user_data/copy_file_for_download and couldn't find file_type: ", file_type);
     }
     

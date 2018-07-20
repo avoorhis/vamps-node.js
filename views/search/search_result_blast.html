@@ -7,11 +7,20 @@
 		<div class='title'>BLAST Result</div>
 		<div class='subtitle'></div>
 
+
+
+
+
 		<%= report.program %> (Program: <%= report.version %>)
 		<br>Reference: <%= report.reference %>
 		<br>VAMPS Databases Searched: <%= dbs %>
 		<br>Query Sequence: <%= query %>
 		<br>Query Length: <%= report.results.search.query_len %>
+		
+        <div class='pull-right'>
+        <a href='/search/blast'>Back to Blast</a>
+        </div> 	
+        	
 		<% if(report.results.search.message == 'No hits found') { %>
 		    <hr><h3>No Hits Found</h3>
 		<% }else{ %>

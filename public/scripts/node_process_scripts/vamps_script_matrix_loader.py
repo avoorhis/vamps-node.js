@@ -201,7 +201,16 @@ def parse_matrix_file():
         else:
             raw_tax_string = row[0]
             # cleanup
-            tax_array = [value for value in raw_tax_string.split(';') if value != '']
+            # Bacteria;AD3;JG37-AG-4;;family_NA;genus_NA;species_NA  # order is omited!
+            tax_array =raw_tax_string.split(';')
+            temp = []
+            for i,val in enumerate(tax_array):
+                if val == '':
+                    temp.append(ranks[i]+'_NAx')
+                else:
+                    temp.append(val.strip(']').strip('[').strip('"'))
+            tax_array = temp
+            #tax_array = [value for value in raw_tax_string.split(';') if value != '']
             counts = row[1:]
             
             if len(datasets) != len(counts):

@@ -42,22 +42,21 @@
 			<ul>
 			<% for(id in md_env_pkg){ %>
 				<% if(md_env_pkg[id]){ %>
-				  <li><%= id %> - <%= md_env_pkg[id] %></li>
+				  <li><%= md_env_pkg[id] %></li>
 				<% } %>
 			<% } %>
 			</ul>
 	    </div></div>
     <div class="col-lg-3">
         GEO_LOC_NAME: (<a href='http://ols.wordvis.com/ont=GAZ' target='_blank'>OLSVis lookup: GAZ</a>)<br>
+        <a href='http://www.marineregions.org/sources.php#longhurst' target='_blank'>Longhurst Zones</a> (use abreviation)<br>
         <div class='mdata_box'>
             Gazatteer Examples:
             <ul>
             <% for(id in md_env_term){ %>
-				  <li><%= id %> - <%= md_env_term[id] %></li>
+				  <li><%= md_env_term[id] %></li>
 			<% } %>
 			</ul>
-			Or
-			<li><a href='http://www.marineregions.org/sources.php#longhurst' target='_blank'>Longhurst Zones</a> (use abreviation)</li>
         </div></div>
     <div class="col-lg-3">
         ENV TERMS: (<a href='http://ols.wordvis.com/ont=ENVO' target='_blank'>OLSVis lookup: ENVO</a>)<br>
@@ -65,7 +64,7 @@
             Examples:
             <ul>
             <% for(id in md_env_term){ %>
-				  <li><%= id %> - <%= md_env_term[id] %></li>
+				  <li><%= md_env_term[id] %></li>
 			<% } %>
 			</ul>
         </div></div>
@@ -81,7 +80,7 @@
         <div class='mdata_box'>
             <ul>
             <% for(id in md_sequencing_platform){ %>
-				  <li><%= id %> - <%= md_sequencing_platform[id] %></li>
+				  <li><%= md_sequencing_platform[id] %></li>
 			<% } %>
 			</ul>
         </div></div>
@@ -91,7 +90,7 @@
         <div class='mdata_box'>
             <ul>
 			        <% for(id in md_target_gene){ %>
-							  <li><%= id %> - <%= md_target_gene[id] %></li>
+							  <li><%= md_target_gene[id] %></li>
 							<% } %>
 						</ul>
         </div></div>
@@ -100,7 +99,7 @@
         <div class='mdata_box' >
             <ul>
 			        <% for(id in md_domain){ %>
-							  <li><%= id %> - <%= md_domain[id] %></li>
+							  <li><%= md_domain[id] %></li>
 						  <% } %>
 						</ul>
         </div></div>
@@ -110,7 +109,7 @@
             <ul>
             <% for(id in md_dna_region){ %>
 							<% if(md_dna_region[id]){ %>
-							  <li><%= id %> - <%= md_dna_region[id] %></li>
+							  <li><%= md_dna_region[id] %></li>
 							<% } %>
 						<% } %>
 						</ul>
