@@ -112,7 +112,7 @@ def start_metadata_load_from_file(args):
             
             q += "),"
         q = q[:-1]  # remove trailing comma
-        #print(q)
+        print(q)
         cur.execute(q)
     mysql_conn.commit()
 

@@ -69,7 +69,7 @@ class Demultiplex:
       sys.exit(2)
     self.fastaunique_cmd = None
     for opt, arg in opts:
-      print ('got',opt,arg)
+      #print ('got',opt,arg)
       if opt == '-h':
         self.usage()
         sys.exit()
@@ -134,7 +134,7 @@ class Demultiplex:
         sampleName = '_'.join(sampleName_items)
         #print('NO INT',sampleName_items[-1])
     
-    print(sampleName)
+    #print(sampleName)
     fileName = sampleName + ".fa"
     self.sample_names.add(sampleName)
     #print(fileName)
@@ -153,8 +153,8 @@ class Demultiplex:
       read_id = f_input.id.split()[1]  # remove ds and all after the <space>
       
       #>H34Kc.735939_0 HWI-ST753:99:C038WACXX:1:1101:1614:2150 1:N:0: orig_bc=ACTAGCTCCATA new_bc=ACTAGCTCCATA bc_diffs=0
-      print(f_input.id)
-      print(read_id)
+      #print(f_input.id)
+      #print(read_id)
       f_out_name = self.make_file_name(f_input.id)
       
       f_output   = self.out_files[f_out_name]
@@ -188,7 +188,7 @@ class Demultiplex:
         out_name = os.path.join(sample_dir,'seqfile.unique.name')
         
         fastaunique_cmd_list = [ self.fastaunique_cmd,'-o', out_fasta, '-n', out_name, infile]        
-        print(' '.join(fastaunique_cmd_list))
+        #print(' '.join(fastaunique_cmd_list))
         result = subprocess.check_output(' '.join(fastaunique_cmd_list), shell=True)
         
         sum_unique_seq_count += int(result.decode().strip())

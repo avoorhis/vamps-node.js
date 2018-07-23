@@ -625,6 +625,189 @@ router.get('/import_choices/biom', [helpers.isLoggedIn], function (req, res) {
 //
 //
 router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(req, res) {
+
+    console.log('in POST upload_import_file')
+    console.log(req.body)
+    // project name validation/replace is in import.js
+    var project = req.body.project_name
+    
+    var file_type = req.body.file_type
+    var timestamp = +new Date();  // millisecs since the epoch!
+    var original_file_path = req.files[0].path
+    var original_file_name = req.files[0].originalname
+    var error_fxn = function(req, res, msg){
+        console.log('FAIL re-open import choices page2')
+        req.flash('fail',msg)
+        //res.redirect('/');
+        res.render('user_data/import_choices', {
+          title: 'VAMPS:Import Choices',
+          project: '',
+          user: req.user, hostname: req.CONFIG.hostname
+        });
+        
+    }
+    
+    if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
+        error_fxn(req, res, 'That project name is not availible.')
+        return
+    }
+    var info = {}
+    info.project_name = project
+    info.total_seq_count = 0
+    info.owner = req.user.username
+    info.max_dataset_count = 0
+    info.num_of_datasets = 0
+    info.public = 1 
+    info.dataset = {}
+    info.project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+project);
+    var new_info_filename_path = path.join(info.project_dir, req.CONSTS.CONFIG_FILE)
+    var analysis_dir = path.join(info.project_dir, 'analysis')
+    if(file_type == 'fasta'){
+        var new_file_name = 'original_fasta.fna'
+    }else if(file_type == 'matrix'){
+        var new_file_name = 'original_matrix.csv'
+    }else{
+        console.log('Unknown file_type: '+file_type)
+        return
+    }
+    
+    var new_file_path = path.join(info.project_dir, new_file_name)
+    
+    fs.mkdir(info.project_dir, function ensureProjectDir(err) {
+        if(err){return console.log(err);} // => null
+        fs.chmodSync(info.project_dir, 0o775);
+        console.log('renaming file')
+        console.log(original_file_path)
+        console.log(new_file_path)
+        fs.rename(original_file_path, new_file_path, function (err) {
+            if(err) throw err;
+            if(file_type == 'matrix'){
+                var parse_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_parse.py')
+                var parse_params = ['-t','matrix','-d',info.project_dir,'-p',info.project_name,'-u',info.owner,'-f',new_file_path]
+                parse_cmd = parse_cmd + ' ' + parse_params.join(' ')
+                
+                //req.flash('success', 'Matrix' + " has been started for project: '" + info.project_name + "'");
+                var cmd_list = matrixTax(req, info)
+                cmd_list.unshift(parse_cmd)
+                
+                var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': info.project_name, 'status': '', 'msg': '' };
+                status_params.statusOK = 'OK-MATRIX';
+                status_params.statusSUCCESS = 'MATRIX-SUCCESS';
+                status_params.msgOK = 'Finished MATRIX';
+                status_params.msgSUCCESS = 'MATRIX -Tax assignments';
+                var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'matrix');
+                var scriptlog2   = script_vars[0]; //path.join(info.project_dir, 'matrix_log.txt');
+                var script_text = script_vars[1]; //helpers.get_qsub_script_text_only(req, scriptlog2, info.project_dir, 'matrix', cmd_list);
+                var script_path = path.join(info.project_dir, 'matrix_script.sh');
+                
+                //var nodelog         = fs.openSync(path.join(info.project_dir, 'assignment.log'), 'a', 0664);
+                var ok_code_options = ['matrix', status_params, res,''];
+
+                // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
+
+                var mode = 0775;
+                var oldmask = process.umask(0);
+                console.log("script_path2 = " + script_path);
+                fs.writeFile(script_path, 
+                    script_text, 
+                    {
+                      mode: mode
+                    }, 
+                    function(err) {
+                      if(err) {
+                          return console.log(err);
+                      }
+                      else
+                      {
+                        console.log('Before RunAndCheck Matrix')
+                        var full_script     = script_path //+ ' > ' + scriptlog2
+                        RunAndCheck(full_script, '', req, project, res, checkPid, ok_code_options);
+                        status_params.status = status_params.statusSUCCESS;
+                        status_params.msg = status_params.msgSUCCESS;
+                        helpers.update_status(status_params);
+                        console.log('After helpers.update_status Matrix')
+                        req.flash('success', 'Matrix' + " has been started for project: '" + info.project_name + "'");
+                        //res.redirect("/user_data/your_projects");
+                        process.umask(oldmask);
+                        res.render('user_data/import_choices/matrix', {
+					        title: 'VAMPS:Import Choices',
+					        def_name:'',
+					        user: req.user, hostname: req.CONFIG.hostname
+					    });
+					    return
+                      }
+                      //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
+					  
+                    }); 
+                
+            }else if(file_type == 'fasta'){
+                var parse_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_parse.py')
+                var parse_params = ['-t','fasta','-d',info.project_dir,'-p',info.project_name,'-u',info.owner,'-f',new_file_path]
+                parse_cmd = parse_cmd + ' ' + parse_params.join(' ')
+                var demultiplex_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'demultiplex.py')
+                var fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique')
+                var demultiplex_params = ['-i',new_file_path,'-d',info.project_dir,'-f',fastaunique_cmd]
+                //console.log(demultiplex_cmd + ' ' + demultiplex_params.join(' '))
+                demultiplex_cmd = demultiplex_cmd + ' ' + demultiplex_params.join(' ')
+                var cmd_list =[parse_cmd, demultiplex_cmd]
+                var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': info.project_name, 'status': '', 'msg': '' };
+                status_params.statusOK = 'OK-FASTA';
+                status_params.statusSUCCESS = 'FASTA-SUCCESS';
+                status_params.msgOK = 'Finished FASTA';
+                status_params.msgSUCCESS = 'FASTA -Tax assignments';
+                var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'fasta');
+                var scriptlog2   = script_vars[0]; //path.join(info.project_dir, 'matrix_log.txt');
+                var script_text = script_vars[1]; //helpers.get_qsub_script_text_only(req, scriptlog2, info.project_dir, 'matrix', cmd_list);
+                var script_path = path.join(info.project_dir, 'fasta_script.sh');
+                
+                //var nodelog         = fs.openSync(path.join(info.project_dir, 'assignment.log'), 'a', 0664);
+                var ok_code_options = ['fasta', status_params, res,''];
+
+                // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
+
+                var mode = 0775;
+                var oldmask = process.umask(0);
+                console.log("script_path2 = " + script_path);
+                fs.writeFile(script_path, 
+                    script_text, 
+                    {
+                      mode: mode
+                    }, 
+                    function(err) {
+                      if(err) {
+                          return console.log(err);
+                      }
+                      else
+                      {
+                        console.log('Before RunAndCheck Matrix')
+                        var full_script     = script_path //+ ' > ' + scriptlog2
+                        RunAndCheck(full_script, '', req, project, res, checkPid, ok_code_options);
+                        status_params.status = status_params.statusSUCCESS;
+                        status_params.msg = status_params.msgSUCCESS;
+                        helpers.update_status(status_params);
+                        console.log('After helpers.update_status FASta')
+                        req.flash('success', 'Fasta' + " has been started for project: '" + info.project_name + "'");
+                        //res.redirect("/user_data/your_projects");
+                        process.umask(oldmask);
+                        res.render('user_data/import_choices/fasta', {
+					        title: 'VAMPS:Import Choices',
+					        def_name:'',
+					        user: req.user, hostname: req.CONFIG.hostname
+					    });
+					    return
+                      }
+                      //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
+					  
+                    }); 
+            }
+            //res.redirect("/user_data/your_projects");
+            //process.umask(oldmask);
+           
+        });
+    });
+});
+
+router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], function(req, res) {
     console.log('in POST test_upload')
     console.log(req.body)
     // project name validation/replace is in import.js
@@ -703,6 +886,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
             //console.log(chunk.toString())
             //chunks.push(chunk.toString());
             var ch = chunk.toString()
+            console.log(ch)
             console.log('chlength')
             console.log(ch.length)
             chunkstr += ch
