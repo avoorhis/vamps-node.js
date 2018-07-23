@@ -684,10 +684,10 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
         var writeStream = fs.createWriteStream(new_file_path,{mode: 0o664});
         if(IsFileCompressed(req.files[0])){     
             var gunzip = zlib.createGunzip();
-            //console.log('File is gzip compressed')
+            console.log('File is gzip compressed')
             rs = readStream.pipe(gunzip)   //.pipe(writeStream);
         }else{
-            //console.log('Move file as is')
+            console.log('Move file as is')
             rs = readStream     //.pipe(writeStream);
         }
                 
@@ -702,7 +702,10 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
         rs.on('data', chunk => {
             //console.log(chunk.toString())
             //chunks.push(chunk.toString());
-            chunkstr += chunk.toString()
+            var ch = chunk.toString()
+            console.log('chlength')
+            console.log(ch.length)
+            chunkstr += ch
         });
 
         // File is done being read

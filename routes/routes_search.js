@@ -689,108 +689,118 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
                     user     : req.user,hostname: req.CONFIG.hostname,
             });
         });
-        console.log('1')
+        
     }
     });
-return
+
 //sh -c "echo -e TTTAGAGGGGTTTTGCGCAGCTAACGCG|/usr/local/ncbi/blast/bin//blastn -db \\"/Users/avoorhis/programming/vamps-node.js/public/blast/Bv6 /Users/avoorhis/programming/vamps-node.js/public/blast/Ev9\\" -outfmt 13 -out /Users/avoorhis/programming/vamps-node.js/tmp/avoorhis_1527702469368_blast_result.json"
-    blast_process.stdout.on('data', function (data) {
-        //console.log('stdout: ' + data);
-        data = data.toString().replace(/^\s+|\s+$/g, '');
-        var lines = data.split('\n');
-        for(var n in lines){
-            console.log('blastn line '+lines[n]);
-        }
-    });
-    blast_process.stderr.on('data', function (data) {
-        //console.log('stdout: ' + data);
-        console.log('stderr: ' + data);
-    });
-console.log('2')
-    // AAGTCTTGACATCCCGATGAAAGATCCTTAACCAGATTCCCTCTTCGGAGCATTGGAGAC
-    blast_process.on('close', function (code) {
-         console.log('blast_process process exited with code ' + code);
-         if(code === 0){
-           console.log('BLAST SUCCESS');
-           // now read file
-           fs.readFile(out_file_path1,'utf8', function(err, data){
-              if(err){
-                req.flash('fail', 'ERROR - Could not read blast outfile');
-                res.redirect('search_index');
-              }else{
-                var obj = JSON.parse(data);
-                console.log(out_file_path1);
-                console.log(data);
-                res.render('search/search_result_blast', {
-                    title    : 'VAMPS: BLAST Result',
-                    data     : data,
-                    show     : 'blast_result',
-                    user     : req.user,hostname: req.CONFIG.hostname,
-                });  //
-
-              }
-           });
-
-         }else{
-            req.flash('fail', 'ERROR - BLAST command exit code: '+code);
-            res.redirect('search_index');
-         }
-    });
+//     blast_process.stdout.on('data', function (data) {
+//         //console.log('stdout: ' + data);
+//         data = data.toString().replace(/^\s+|\s+$/g, '');
+//         var lines = data.split('\n');
+//         for(var n in lines){
+//             console.log('blastn line '+lines[n]);
+//         }
+//     });
+//     blast_process.stderr.on('data', function (data) {
+//         //console.log('stdout: ' + data);
+//         console.log('stderr: ' + data);
+//     });
+// 
+//     // AAGTCTTGACATCCCGATGAAAGATCCTTAACCAGATTCCCTCTTCGGAGCATTGGAGAC
+//     blast_process.on('close', function (code) {
+//          console.log('blast_process process exited with code ' + code);
+//          if(code === 0){
+//            console.log('BLAST SUCCESS');
+//            // now read file
+//            fs.readFile(out_file_path1,'utf8', function(err, data){
+//               if(err){
+//                 req.flash('fail', 'ERROR - Could not read blast outfile');
+//                 res.redirect('search_index');
+//               }else{
+//                 var obj = JSON.parse(data);
+//                 console.log(out_file_path1);
+//                 console.log(data);
+//                 res.render('search/search_result_blast', {
+//                     title    : 'VAMPS: BLAST Result',
+//                     data     : data,
+//                     show     : 'blast_result',
+//                     user     : req.user,hostname: req.CONFIG.hostname,
+//                 });  //
+// 
+//               }
+//            });
+// 
+//          }else{
+//             req.flash('fail', 'ERROR - BLAST command exit code: '+code);
+//             res.redirect('search_index');
+//          }
+//     });
 
 });
 //
 //
 //
-router.get('/seqs/:id', helpers.isLoggedIn, function(req, res) {
+
+//
+//
+//
+router.get('/seqs_hit/:seqid/:ds', helpers.isLoggedIn, function(req, res) {
+  console.log('in /seqs_hit/:seqid/:ds');
   console.log(req.params);
-  var seqid = req.params.id;
+  var seqid = req.params.seqid;
+  var ds    = req.params.ds;
 
-  q_tax = "SELECT domain,phylum,klass,`order`,family,genus";
-  q_tax += " from silva_taxonomy_info_per_seq";
-  q_tax += " JOIN silva_taxonomy using (silva_taxonomy_id)";
-  q_tax += " JOIN domain using (domain_id)";
-  q_tax += " JOIN phylum using (phylum_id)";
-  q_tax += " JOIN klass using (klass_id)";
-  q_tax += " JOIN `order` using (order_id)";
-  q_tax += " JOIN family using (family_id)";
-  q_tax += " JOIN genus using (genus_id)";
-  q_tax += " WHERE sequence_id='"+seqid+"'";
-
-  //we want to know the taxonomy AND which projects
-  q_ds = "SELECT dataset_id, seq_count from sequence_pdr_info";
-  q_ds += " WHERE sequence_id='"+seqid+"'";
-  console.log(q_ds);
-  connection.query(q_ds, function(err, rows, fields){
+ //  q_tax = "SELECT domain,phylum,klass,`order`,family,genus";
+//   q_tax += " from silva_taxonomy_info_per_seq";
+//   q_tax += " JOIN silva_taxonomy using (silva_taxonomy_id)";
+//   q_tax += " JOIN domain using (domain_id)";
+//   q_tax += " JOIN phylum using (phylum_id)";
+//   q_tax += " JOIN klass using (klass_id)";
+//   q_tax += " JOIN `order` using (order_id)";
+//   q_tax += " JOIN family using (family_id)";
+//   q_tax += " JOIN genus using (genus_id)";
+//   q_tax += " WHERE sequence_id='"+seqid+"'";
+    var q = "SELECT project, dataset, UNCOMPRESS(sequence_comp) as seq, seq_count, public from sequence_pdr_info"
+    q += " JOIN dataset using(dataset_id)"
+    q += " JOIN sequence using(sequence_id)"
+    q += " JOIN project using(project_id)"
+    q += " WHERE sequence_id='"+seqid+"'"
+  
+  console.log(q);
+  connection.query(q, function(err, rows, fields){
     if(err){
       console.log(err);
     }else{
       var obj = {};
 
       for(var i in rows){
-        did = rows[i].dataset_id;
+        console.log(rows[i])
+        p = rows[i].project
+        d = rows[i].dataset
+        pjds = p+'--'+d
         cnt = rows[i].seq_count;
-        ds  = DATASET_NAME_BY_DID[did];
-        pid = PROJECT_ID_BY_DID[did];
-        pj  = PROJECT_INFORMATION_BY_PID[pid].project;
-        //console.log(did)
-        //console.log(ds)
-        //console.log(pj)
-        if(pj in obj){
-          obj[pj][ds] = cnt;
+        pub = rows[i].public;
+        seq = rows[i].seq
+        console.log(seq.toString())
+       
+        if(pjds in obj){
+          obj[pjds]['count'] = cnt;
+          obj[pjds]['public'] = pub;
         }else{
-          obj[pj] = {};
-          obj[pj][ds] = cnt;
-
+          obj[pjds] = {};
+          obj[pjds]['count'] = cnt;
+          obj[pjds]['public'] = pub;            
         }
 
       }
       //console.log(obj);
       //console.log(JSON.stringify(obj));
       // AAGTCTTGACATCCCGATGAAAGATCCTTAACCAGATTCCCTCTTCGGAGCATTGGAGAC
-      res.render('search/search_result_blast', {
-                    title    : 'VAMPS: BLAST Result',
-                    show     : 'datasets',
+      res.render('search/search_result_blast_seq', {
+                    title    : 'VAMPS: BLAST Result',        
                     seqid    : seqid,
+                    seq      : seq.toString(),
                     obj      : JSON.stringify(obj),
                     user     : req.user,hostname: req.CONFIG.hostname,
                 });  //

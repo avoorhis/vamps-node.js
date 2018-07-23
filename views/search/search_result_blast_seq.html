@@ -1,0 +1,42 @@
+<% var seq_obj = JSON.parse(obj) %>
+<% include ../add_ins/begin.ejs %>
+
+
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+<% } %>
+	
+	
+<div class="container">
+
+	
+	<br>
+  <div class="row">  
+      <div class="col-lg-12">
+				<h4>Selected Sequence: <%= seq %></h4> 
+	  </div>
+	  
+	  This sequence is found in these datasets
+	  <table class='table'>
+	  <tr><th>project</th><th>dataset</th><th>seq count</th>
+	  <% for(pjds in seq_obj){ %>
+	  <% pitems = pjds.split('--') %>
+	  <tr><td><a href=''><%= pitems[0] %></a></td><td><%= pitems[1] %></td><td><%= seq_obj[pjds].count %></td></tr>
+	  <% } %>
+	  </table>
+			
+  </div>
+
+</div>
+
+
+
+
+
+	
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>
