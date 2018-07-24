@@ -798,7 +798,7 @@ if __name__ == '__main__':
     if args.site == 'vamps':
         args.hostname = 'vampsdb'
     elif args.site == 'vampsdev':
-        args.hostname = 'vampsdev'
+        args.hostname = 'bpcweb7'
     else:
         args.hostname = 'localhost'
         args.NODE_DATABASE = 'vamps_development'
