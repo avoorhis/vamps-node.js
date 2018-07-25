@@ -7,10 +7,10 @@
 
 import sys
 #import IlluminaUtils.lib.fastalib as u
-import fastalibAV as u
+import fastalibAV as fastalib
 def main(args):
     try:
-        input = u.SequenceSource(args.input_fasta, unique = True)
+        input = fastalib.SequenceSource(args.input_fasta, unique = True)
     except IOError:
         print('Error: File does not exist, or you do not have the right permissions to read it: "%s"'\
                     % args.input_fasta)
@@ -22,7 +22,7 @@ def main(args):
         output_file_path = args.input_fasta + '.unique'
     
     try:
-        output = u.FastaOutput(output_file_path)
+        output = fastalib.FastaOutput(output_file_path)
     except IOError:
         print('Error: You have no permission to write destination: "%s"'\
                     % output_file_path)

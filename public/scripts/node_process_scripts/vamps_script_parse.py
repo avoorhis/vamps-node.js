@@ -23,7 +23,7 @@ import random
 import logging
 import csv, json
 import configparser as ConfigParser
-
+import fastalibAV as fastalib
 import datetime
 today = str(datetime.date.today())
 import subprocess
@@ -32,49 +32,52 @@ import pymysql as MySQLdb
 """
 
 """
-class FastaReader:
-    def __init__(self,file_name=None):
-        self.file_name = file_name
-        self.h = open(self.file_name,'rb')
-        #self.h = open(self.file_name)
-        self.seq = ''
-        self.id = None
-
-    def next(self): 
-        def read_id():
-            return self.h.readline().decode('utf-8').strip()[1:]
-
-        def read_seq():
-            #ret = bytearray(b'')
-            ret = ''
-            #ret = ''
-            while True:
-                line = self.h.readline().decode('utf-8')
-                
-                while len(line) and not len(line.strip()):
-                    # found empty line(s)
-                    line = self.h.readline().decode('utf-8')
-                
-                if not len(line):
-                    # EOF
-                    break
-                
-                if line.startswith('>'):
-                    # found new defline: move back to the start
-                    self.h.seek(-len(line), os.SEEK_CUR)
-                    break
-                    
-                else:
-                    ret += line.strip()
-                    
-            return ret
-        
-        self.id = read_id()
-        self.seq = read_seq()
-        
-        if self.id:
-            return True
-    
+# class FastaReader:
+#     def __init__(self,file_name=None):
+#         self.file_name = file_name
+#         self.h = open(self.file_name, 'rb')
+#         #self.h = open(self.file_name)
+#         self.seq = ''
+#         self.id = None
+# 
+#     def next(self): 
+#         def read_id():
+#             #return self.h.readline().decode('utf-8').strip()[1:]
+#             #print(self.h.readline())
+#             return self.h.readline().strip()[1:]
+# 
+#         def read_seq():
+#             #ret = bytearray(b'')
+#             ret = ''
+#             #ret = ''
+#             while True:
+#                 line = self.h.readline()
+#                 print(str(line))
+#                 while len(line) and not len(line.strip()):
+#                     # found empty line(s)
+#                     
+#                     line = self.h.readline()
+#                     print(str(line))
+#                 if not len(line):
+#                     # EOF
+#                     break
+#                 
+#                 if str(line).startswith('>'):
+#                     # found new defline: move back to the start
+#                     self.h.seek(-len(line), os.SEEK_CUR)
+#                     break
+#                     
+#                 else:
+#                     ret += str(line).strip()
+#                     
+#             return ret
+#         
+#         self.id = read_id()
+#         self.seq = read_seq()
+#         
+#         if self.id:
+#             return True
+#     
 
     
 def get_data(args):
@@ -113,7 +116,8 @@ def parse_matrix(args):
     
 def parse_fasta(args):
     print('running fasta')
-    f = FastaReader(args.file)
+    f = fastalib.SequenceSource(args.file)
+    #f = FastaReader(args.file)
     datasets={}
     project_count = 0
     max_ds_count = 0

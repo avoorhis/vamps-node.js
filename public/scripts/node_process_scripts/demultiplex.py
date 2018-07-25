@@ -3,7 +3,7 @@ import sys, os, getopt
 import shutil
 import json
 #import IlluminaUtils.lib.fastalib as fastalib
-import fastalibAV as u
+import fastalibAV as fastalib
 class FastaReader:
     def __init__(self,file_name=None):
         self.file_name = file_name
@@ -92,7 +92,7 @@ class Demultiplex:
     print ("get_out_file_names")
     n = 0
     #f_input  = fastalib.SequenceSource(inputfile)
-    f_input = u.SequenceSource(inputfile)
+    f_input = fastalib.SequenceSource(inputfile)
     while f_input.next():
       n+=1
       if (n % 100000 == 0 or n == 1):
@@ -142,8 +142,8 @@ class Demultiplex:
   
   def demultiplex_input(self, inputfile):
     print ("demultiplex_input")
-    #f_input  = fastalib.SequenceSource(inputfile)
-    f_input = FastaReader(inputfile)
+    f_input  = fastalib.SequenceSource(inputfile)
+    #f_input = FastaReader(inputfile)
     i = 0
     total_seq_count = 0
     while f_input.next():
@@ -186,12 +186,9 @@ class Demultiplex:
         sample_dir = os.path.join(analysis_dir,sample)
         out_fasta = os.path.join(sample_dir,'seqfile.unique.fa')
         out_name = os.path.join(sample_dir,'seqfile.unique.name')
-        
         fastaunique_cmd_list = [ self.fastaunique_cmd,'-o', out_fasta, '-n', out_name, infile]        
-        #print(' '.join(fastaunique_cmd_list))
         result = subprocess.check_output(' '.join(fastaunique_cmd_list), shell=True)
-        
-        sum_unique_seq_count += int(result.decode().strip())
+        sum_unique_seq_count += int(result.strip())
         os.chmod(out_fasta, 0o664)
         os.chmod(out_name, 0o664)
         
