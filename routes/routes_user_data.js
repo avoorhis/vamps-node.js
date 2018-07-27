@@ -1961,10 +1961,11 @@ function gastTax(req, project_config, ref_db)
   //make_gast_script_txt = helpers.get_qsub_script_text_only(scriptlog, data_dir, req.CONFIG.site, 'gastTax', cmd_list)
   //is_local = helpers.isLocal(req);
   // for tests: is_local = false;
+  var cmd_log = data_dir+"/cmd.log"
   var new_info_filename_path = path.join(data_dir, req.CONSTS.CONFIG_FILE)
   var database_loader_args = ['-site',req.CONFIG.site,'-class','GAST','-project_dir',data_dir,'-config',new_info_filename_path]
   var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py' +' '+database_loader_args.join(' ') +' >> '+cmd_log
-  var cmd_log = data_dir+"/cmd.log"
+  
   var gast_ill_path = data_dir+"/clust_gast_ill_"+project+".sh"
   var metadata_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path]
   var metadata_loader   = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_upload_metadata.py' +' '+metadata_args.join(' ') +' >> '+cmd_log
