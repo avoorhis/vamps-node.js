@@ -1956,7 +1956,7 @@ function gastTax(req, project_config, ref_db)
   // create clust_gast_ill_PROJECT_NAME.sh
   // run it
   var gast_script_txt = helpers.make_gast_script_txt(req, data_dir, project, opts);
-  fs.writeFileSync(opts.gast_script_path, gast_script_txt)
+  fs.writeFileSync(path.join(data_dir, script_name), gast_script_txt)
   
   var scriptlog   = path.join(data_dir, 'cluster.log');
   
