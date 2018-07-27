@@ -1425,7 +1425,7 @@ module.exports.make_gast_script_txt = function(req, data_dir, project, opts) {
 
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
-  make_gast_script_txt += `FILE_NUMBER=\`wc -l < ${data_dir}/filenames.list\``;
+  make_gast_script_txt += `FILE_NUMBER=\`/usr/bin/wc -l < ${data_dir}/filenames.list\``;
   make_gast_script_txt += "\n";
 
   make_gast_script_txt += "echo \"total files = $FILE_NUMBER\" >> "+data_dir+"/clust_gast_ill_"+project+".sh.sge_script.sh.log\n"

@@ -1708,7 +1708,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
   else if (classifier == 'GAST')
   {
     // calls helpers.make_gast_script_txt
-    var script_name = 'gast_script.sh';
+    var script_name = 'gast_script2.sh';
     var cmd_list = gastTax(req, project_config, ref_db);
     
   }
@@ -1906,7 +1906,7 @@ function gastTax(req, project_config, ref_db)
   console.log('in routes_user_data::gastTax')
   var project  = project_config.MAIN.project_name;
   var data_dir = project_config.MAIN.project_dir;
-  var script_name = 'gast_script.sh';
+  var script_name = 'gast_script1.sh';
 
   // var oldmask = process.umask(0);
   // fs.closeSync(fs.openSync(`${data_dir}/clust_gast_ill_${project}.sh`, 'w', 0777));
@@ -1956,6 +1956,8 @@ function gastTax(req, project_config, ref_db)
   // create clust_gast_ill_PROJECT_NAME.sh
   // run it
   var gast_script_txt = helpers.make_gast_script_txt(req, data_dir, project, opts);
+  fs.writeFileSync(opts.gast_script_path, gast_script_txt)
+  
   var scriptlog   = path.join(data_dir, 'cluster.log');
   
   //make_gast_script_txt = helpers.get_qsub_script_text_only(scriptlog, data_dir, req.CONFIG.site, 'gastTax', cmd_list)
@@ -1979,7 +1981,7 @@ function gastTax(req, project_config, ref_db)
   status_params.msgSUCCESS    = 'GAST -Tax assignments';
   var oldmask = process.umask(0);
   //fs.closeSync(fs.openSync(data_dir+"/clust_gast_ill_"+project+".sh", 'w', 0777));
-  //fs.writeFileSync(gast_ill_path, gast_script_txt)
+  
   process.umask(oldmask);
   // TODO:
   // test db
@@ -1989,7 +1991,7 @@ function gastTax(req, project_config, ref_db)
   //    make_gast_script_txt, database_loader, metadata_loader, create_json_files
   //];
   cmd_list = [
-      gast_script_txt, '#'+database_loader, '#'+metadata_loader, '#'+create_json_files
+      '##', '#'+database_loader, '#'+metadata_loader, '#'+create_json_files
   ];
   console.log('GGG2: gastTax: cmd_list ');
   console.log(util.inspect(cmd_list, false, null));
