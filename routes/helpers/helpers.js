@@ -1304,7 +1304,7 @@ module.exports.get_qsub_script_text = function(req, log, dir_path, cmd_name, cmd
    submit_job
    */
   //### Create Cluster Script
-  var cmd_log = path.join(dir_path, 'cmd.log');
+  
   script_text = "#!/bin/bash\n\n";
   script_text += "# CODE:\t"+cmd_name+"\n\n";
   script_text += "# source environment:\n";
@@ -1340,7 +1340,7 @@ module.exports.get_qsub_script_text = function(req, log, dir_path, cmd_name, cmd
   script_text += "touch "+cmd_log+"\n\n";
   script_text += "chmod ugo+rw "+cmd_log+"\n\n";
   for (var i in cmd_list) {
-    script_text += cmd_list[i]+' >> '+cmd_log+"\n";
+    script_text += cmd_list[i]+"\n";
   }
 //
 //     //script_text += "chmod 666 "+log+"\n";

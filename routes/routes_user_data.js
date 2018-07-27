@@ -1737,7 +1737,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
   
   var script_path     = path.join(data_dir, script_name);
   
-  var nodelog         = fs.openSync(path.join(data_dir, 'assignment.log'), 'a', 0664);
+  //var nodelog         = fs.openSync(path.join(data_dir, 'assignment.log'), 'a', 0664);
   var ok_code_options = [classifier, status_params, res, ref_db];
 
   // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
@@ -1756,7 +1756,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
       }
       else
       {
-        RunAndCheck(script_path, nodelog, req, project, res, checkPid, ok_code_options);
+        RunAndCheck(script_path, '', req, project, res, checkPid, ok_code_options);
         status_params.status = status_params.statusSUCCESS;
         status_params.msg = status_params.msgSUCCESS;
         helpers.update_status(status_params);
@@ -1963,13 +1963,13 @@ function gastTax(req, project_config, ref_db)
   // for tests: is_local = false;
   var new_info_filename_path = path.join(data_dir, req.CONSTS.CONFIG_FILE)
   var database_loader_args = ['-site',req.CONFIG.site,'-class','GAST','-project_dir',data_dir,'-config',new_info_filename_path]
-  var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py' +' '+database_loader_args.join(' ')
-  
+  var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py' +' '+database_loader_args.join(' ') +' >> '+cmd_log
+  var cmd_log = data_dir+"/cmd.log"
   var gast_ill_path = data_dir+"/clust_gast_ill_"+project+".sh"
   var metadata_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path]
-  var metadata_loader   = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_upload_metadata.py' +' '+metadata_args.join(' ')
+  var metadata_loader   = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_upload_metadata.py' +' '+metadata_args.join(' ') +' >> '+cmd_log
   var create_json_files_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE]
-  var create_json_files = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_create_json_dataset_files.py' +' '+create_json_files_args.join(' ')
+  var create_json_files = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_create_json_dataset_files.py' +' '+create_json_files_args.join(' ') +' >> '+cmd_log
 
   var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
   status_params.statusOK      = 'OK-GAST';
@@ -1988,7 +1988,7 @@ function gastTax(req, project_config, ref_db)
   //    make_gast_script_txt, database_loader, metadata_loader, create_json_files
   //];
   cmd_list = [
-      gast_ill_path, database_loader, metadata_loader, create_json_files
+      'qsub '+gast_ill_path, '#'+database_loader, '#'+metadata_loader, '#'+create_json_files
   ];
   console.log('GGG2: gastTax: cmd_list ');
   console.log(util.inspect(cmd_list, false, null));
