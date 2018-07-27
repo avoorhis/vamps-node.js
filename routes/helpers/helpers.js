@@ -1410,7 +1410,6 @@ module.exports.deleteFolderRecursive = function(path) {
 //
 //
 module.exports.make_gast_script_txt = function(req, data_dir, project, opts) {
-
   console.log('OPTS: ')
   console.log(opts)
   make_gast_script_txt = "";

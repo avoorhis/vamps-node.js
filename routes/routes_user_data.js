@@ -745,6 +745,7 @@ function upload_finish(req,res,file_type,info,new_file_path){
                         status_params.status = status_params.statusSUCCESS;
                         status_params.msg = status_params.msgSUCCESS;
                         helpers.update_status(status_params);
+                        console.log('After helpers.update_status Matrix')
                         req.flash('success', 'Matrix' + " has been started for project: '" + info.project_name + "'");
                         //res.redirect("/user_data/your_projects");
                         process.umask(oldmask);
@@ -806,6 +807,7 @@ function upload_finish(req,res,file_type,info,new_file_path){
                         status_params.status = status_params.statusSUCCESS;
                         status_params.msg = status_params.msgSUCCESS;
                         helpers.update_status(status_params);
+                        
                         
                         req.flash('success', 'Fasta' + " has been started for project: '" + info.project_name + "'");
                         //res.redirect("/user_data/your_projects");
