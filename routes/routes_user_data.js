@@ -1966,7 +1966,7 @@ function gastTax(req, project_config, ref_db)
   var database_loader_args = ['-site',req.CONFIG.site,'-class','GAST','-project_dir',data_dir,'-config',new_info_filename_path]
   var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py' +' '+database_loader_args.join(' ') +' >> '+cmd_log
   
-  var gast_ill_path = data_dir+"/clust_gast_ill_"+project+".sh"
+  //var gast_ill_path = data_dir+"/clust_gast_ill_"+project+".sh"
   var metadata_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path]
   var metadata_loader   = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_upload_metadata.py' +' '+metadata_args.join(' ') +' >> '+cmd_log
   var create_json_files_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE]
@@ -1979,7 +1979,7 @@ function gastTax(req, project_config, ref_db)
   status_params.msgSUCCESS    = 'GAST -Tax assignments';
   var oldmask = process.umask(0);
   //fs.closeSync(fs.openSync(data_dir+"/clust_gast_ill_"+project+".sh", 'w', 0777));
-  fs.writeFileSync(gast_ill_path, gast_script_txt)
+  //fs.writeFileSync(gast_ill_path, gast_script_txt)
   process.umask(oldmask);
   // TODO:
   // test db
@@ -1989,7 +1989,7 @@ function gastTax(req, project_config, ref_db)
   //    make_gast_script_txt, database_loader, metadata_loader, create_json_files
   //];
   cmd_list = [
-      'qsub '+gast_ill_path, '#'+database_loader, '#'+metadata_loader, '#'+create_json_files
+      gast_script_txt, '#'+database_loader, '#'+metadata_loader, '#'+create_json_files
   ];
   console.log('GGG2: gastTax: cmd_list ');
   console.log(util.inspect(cmd_list, false, null));
