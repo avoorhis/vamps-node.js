@@ -1495,7 +1495,8 @@ module.exports.make_gast_script_txt = function(req, data_dir, project, opts) {
 
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
-
+  make_gast_script_txt += "export SGE_ROOT=/opt/sge\n";
+  make_gast_script_txt += "source /groups/vampsweb/"+req.CONFIG.site+"/seqinfobin/vamps_environment.sh\n\n"
   if (module.exports.isLocal(req))
   {
     // # TODO: make local version, iterate over (splited) files in LISTFILE instead of qsub

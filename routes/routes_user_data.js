@@ -715,7 +715,7 @@ function upload_finish(req,res,file_type,info,new_file_path){
                 status_params.statusSUCCESS = 'MATRIX-SUCCESS';
                 status_params.msgOK = 'Finished MATRIX';
                 status_params.msgSUCCESS = 'MATRIX -Tax assignments';
-                var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'matrix');
+                var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'matrix', {});
                 var scriptlog2   = script_vars[0]; //path.join(info.project_dir, 'matrix_log.txt');
                 var script_text = script_vars[1]; //helpers.get_qsub_script_text_only(req, scriptlog2, info.project_dir, 'matrix', cmd_list);
                 var script_path = path.join(info.project_dir, 'matrix_script.sh');
@@ -777,7 +777,7 @@ function upload_finish(req,res,file_type,info,new_file_path){
                 status_params.statusSUCCESS = 'FASTA-SUCCESS';
                 status_params.msgOK = 'Finished FASTA';
                 status_params.msgSUCCESS = 'FASTA -Tax assignments';
-                var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'fasta');
+                var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'fasta', {});
                 var scriptlog2   = script_vars[0]; //path.join(info.project_dir, 'matrix_log.txt');
                 var script_text = script_vars[1]; //helpers.get_qsub_script_text_only(req, scriptlog2, info.project_dir, 'matrix', cmd_list);
                 var script_path = path.join(info.project_dir, 'fasta_script.sh');
@@ -962,7 +962,7 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], function
                 status_params.statusSUCCESS = 'MATRIX-SUCCESS';
                 status_params.msgOK = 'Finished MATRIX';
                 status_params.msgSUCCESS = 'MATRIX -Tax assignments';
-                var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'matrix');
+                var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'matrix',{});
                 var scriptlog2   = script_vars[0]; //path.join(info.project_dir, 'matrix_log.txt');
                 var script_text = script_vars[1]; //helpers.get_qsub_script_text_only(req, scriptlog2, info.project_dir, 'matrix', cmd_list);
                 var script_path = path.join(info.project_dir, 'matrix_script.sh');
@@ -1708,14 +1708,16 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
   else if (classifier == 'GAST')
   {
     // calls helpers.make_gast_script_txt
-    var script_name = 'gast_script2.sh';
-    var cmd_list = gastTax(req, project_config, ref_db);
+    var script_name = 'gast_script.sh';
+    //var cmd_list = gastTax(req, project_config, ref_db);
+    var opts = gastTaxOpts(req, project_config, ref_db);
+    
     
   }
   //TODO: separate below as write and run, see also uploadData - DRY
   // var script_text = "";
 
-  var script_vars = GetScriptVars(req, data_dir, cmd_list, classifier);
+  var script_vars = GetScriptVars(req, data_dir, cmd_list, classifier, opts);
   var scriptlog   = script_vars[0];
   var script_text = script_vars[1];
   // TODO: test, should be:
@@ -1900,6 +1902,25 @@ function spingoTax(req, project_config, ref_db)
 
     return cmd_list
   
+}
+function gastTaxOpts(req, project_config, ref_db){
+	console.log('in routes_user_data::gastTaxOpts')
+	var project  = project_config.MAIN.project_name;
+	var data_dir = project_config.MAIN.project_dir;
+	var script_name = 'gast_script1.sh';
+
+	// var oldmask = process.umask(0);
+	// fs.closeSync(fs.openSync(`${data_dir}/clust_gast_ill_${project}.sh`, 'w', 0777));
+	// process.umask(oldmask);
+	var opts = {}
+	opts.full_option = '';
+	opts.file_suffix      = ".fa" //+ getSuffix(project_config.MAIN.dna_region);
+	//opts.ref_db_name      = chooseRefFile(req.params.classifier);  //req.body.classifier
+	opts.ref_db_name      = req.params.ref_db
+	opts.full_option      = getFullOption(req.params.classifier);
+	opts.gast_db_path     = config.GAST_DB_PATH;
+	opts.gast_script_path = config.GAST_SCRIPT_PATH;
+	return opts
 }
 function gastTax(req, project_config, ref_db)
 {
@@ -2939,7 +2960,7 @@ function CheckIfPID(data)
 // lines: PPPATH\n,/Users/ashipunova/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/TeX/texbin:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/ashipunova/BPC/vamps-node.js/public/scripts/bin:\n,for file in /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/*.fa; do fastaunique ; done\n
 //
 
-function GetScriptVars(req, data_repository, cmd_list, cmd_name)
+function GetScriptVars(req, data_repository, cmd_list, classifier, opts)
 {
   if (helpers.isLocal(req))
   {
@@ -2950,8 +2971,12 @@ function GetScriptVars(req, data_repository, cmd_list, cmd_name)
   else
   {
     scriptlog   = path.join(data_repository, 'cluster.log');
-    //script_text = helpers.get_qsub_script_text_only(req, scriptlog, data_repository, cmd_name, cmd_list);
-    script_text = helpers.get_qsub_script_text(req, scriptlog, data_repository, cmd_name, cmd_list) // req, log, dir_path, cmd_name, cmd_list= function(log, pwd, site, name, cmd_list) {
+    //script_text = helpers.get_qsub_script_text_only(req, scriptlog, data_repository, classifier, cmd_list);
+    if(classifier == 'GAST'){
+    	script_text = helpers.make_gast_script_txt(req, data_repository, req.params.project, opts)
+    }else{
+    	script_text = helpers.get_qsub_script_text(req, scriptlog, data_repository, classifier, cmd_list) // req, log, dir_path, cmd_name, cmd_list= function(log, pwd, site, name, cmd_list) {
+  	}
   }
   
   // console.log('111 scriptlog: ' + scriptlog);
@@ -3132,7 +3157,7 @@ function writeAndRunScript(req, res, project, options, data_repository)
         var cmd_list = CreateCmdList(req, options, data_repository);
         script_name     = 'load_script.sh';
         var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a', 0664);
-        var script_vars = GetScriptVars(req, data_repository, cmd_list, 'vampsupld');
+        var script_vars = GetScriptVars(req, data_repository, cmd_list, 'vampsupld',{});
         var scriptlog   = script_vars[0];
         var script_text = script_vars[1];
         var script_path = path.join(data_repository, script_name);
