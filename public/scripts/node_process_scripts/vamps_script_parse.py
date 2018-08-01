@@ -113,7 +113,24 @@ def parse_matrix(args):
         if datasets[ds] > max_ds_count:
             max_ds_count = datasets[ds]
     return(datasets, project_count, max_ds_count)
+
+def find_dataset_name(id):  
+    """
+    This should be the same fxn as in demultiplex
+    """
+    # adjust to your specific defline
+    sampleName_items = id.split()[0].split('_')
+    test = sampleName_items[-1]
+    try:
+        int(test)
+        sampleName = '_'.join(sampleName_items[:-1])
+        #print('INT',sampleName_items[-1])
+    except:
+        sampleName = '_'.join(sampleName_items)
+        #print('NO INT',sampleName_items[-1])
     
+    return sampleName   
+     
 def parse_fasta(args):
     print('running fasta')
     f = fastalib.SequenceSource(args.file)
@@ -126,7 +143,7 @@ def parse_fasta(args):
         #print(f.id)
         project_count += 1
         defline_pts = f.id.split()
-        dataset = defline_pts[0]
+        dataset = find_dataset_name(f.id)
         seq_id = defline_pts[1]
         if dataset in datasets:
             datasets[dataset] += 1
