@@ -1408,7 +1408,7 @@ module.exports.deleteFolderRecursive = function(path) {
 //
 //
 //
-module.exports.make_gast_script_txt = function(req, data_dir, project, opts) {
+module.exports.make_gast_script_txt = function(req, data_dir, project, cmd_list, opts) {
   console.log('OPTS: ')
   console.log(opts)
   make_gast_script_txt = "";
@@ -1505,6 +1505,9 @@ module.exports.make_gast_script_txt = function(req, data_dir, project, opts) {
   else
   {
     make_gast_script_txt += "qsub -sync y "+data_dir+"/clust_gast_ill_"+project+".sh\n";
+  }
+  for (var i in cmd_list) {
+    make_gast_script_txt += cmd_list[i]+"\n";
   }
   // qsub -cwd -sync y ${data_dir}/clust_gast_ill_${project}.sh`;
 

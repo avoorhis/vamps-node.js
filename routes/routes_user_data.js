@@ -1709,7 +1709,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
   {
     // calls helpers.make_gast_script_txt
     var script_name = 'gast_script.sh';
-    //var cmd_list = gastTax(req, project_config, ref_db);
+    var cmd_list = gastTax(req, project_config, ref_db);
     var opts = gastTaxOpts(req, project_config, ref_db);
     
     
@@ -2012,7 +2012,7 @@ function gastTax(req, project_config, ref_db)
   //    make_gast_script_txt, database_loader, metadata_loader, create_json_files
   //];
   cmd_list = [
-      '##', '#'+database_loader, '#'+metadata_loader, '#'+create_json_files
+      database_loader, metadata_loader, create_json_files
   ];
   console.log('GGG2: gastTax: cmd_list ');
   console.log(util.inspect(cmd_list, false, null));
@@ -2973,7 +2973,7 @@ function GetScriptVars(req, data_repository, cmd_list, classifier, opts)
     scriptlog   = path.join(data_repository, 'cluster.log');
     //script_text = helpers.get_qsub_script_text_only(req, scriptlog, data_repository, classifier, cmd_list);
     if(classifier == 'GAST'){
-    	script_text = helpers.make_gast_script_txt(req, data_repository, req.params.project, opts)
+    	script_text = helpers.make_gast_script_txt(req, data_repository, req.params.project, cmd_list, opts)
     }else{
     	script_text = helpers.get_qsub_script_text(req, scriptlog, data_repository, classifier, cmd_list) // req, log, dir_path, cmd_name, cmd_list= function(log, pwd, site, name, cmd_list) {
   	}
