@@ -1984,16 +1984,16 @@ function gastTax(req, project_config, ref_db)
   //make_gast_script_txt = helpers.get_qsub_script_text_only(scriptlog, data_dir, req.CONFIG.site, 'gastTax', cmd_list)
   //is_local = helpers.isLocal(req);
   // for tests: is_local = false;
-  var cmd_log = data_dir+"/cmd.log"
+  
   var new_info_filename_path = path.join(data_dir, req.CONSTS.CONFIG_FILE)
   var database_loader_args = ['-site',req.CONFIG.site,'-class','GAST','-project_dir',data_dir,'-config',new_info_filename_path]
-  var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py' +' '+database_loader_args.join(' ') +' >> '+cmd_log
+  var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py' +' '+database_loader_args.join(' ') +' >> '+scriptlog
   
   //var gast_ill_path = data_dir+"/clust_gast_ill_"+project+".sh"
   var metadata_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path]
-  var metadata_loader   = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_upload_metadata.py' +' '+metadata_args.join(' ') +' >> '+cmd_log
+  var metadata_loader   = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_upload_metadata.py' +' '+metadata_args.join(' ') +' >> '+scriptlog
   var create_json_files_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE]
-  var create_json_files = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_create_json_dataset_files.py' +' '+create_json_files_args.join(' ') +' >> '+cmd_log
+  var create_json_files = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_create_json_dataset_files.py' +' '+create_json_files_args.join(' ') +' >> '+scriptlog
 
   var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
   status_params.statusOK      = 'OK-GAST';
@@ -2001,7 +2001,7 @@ function gastTax(req, project_config, ref_db)
   status_params.msgOK         = 'Finished GAST';
   status_params.msgSUCCESS    = 'GAST -Tax assignments';
   var oldmask = process.umask(0);
-  //fs.closeSync(fs.openSync(data_dir+"/clust_gast_ill_"+project+".sh", 'w', 0777));
+  
   
   process.umask(oldmask);
   // TODO:

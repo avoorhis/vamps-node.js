@@ -1504,14 +1504,14 @@ module.exports.make_gast_script_txt = function(req, data_dir, project, cmd_list,
   }
   else
   {
+    // the -sync y tag means that the following install scripts will run AFTER the cluster gast scripts finish
     make_gast_script_txt += "qsub -sync y "+data_dir+"/clust_gast_ill_"+project+".sh\n";
   }
-  make_gast_script_txt +=  "echo \"Done with cluster_gast\"\n"
   make_gast_script_txt +=  "echo \"Done with cluster_gast\" >> "+data_dir+"/cluster.log\n"
-  for (var i in cmd_list) {
+  make_gast_script_txt +=  "echo \"Running install scripts (see cmd.log)\" >> "+data_dir+"/cluster.log\n"
+  for (var i in cmd_list) {    
     make_gast_script_txt += cmd_list[i]+"\n";
   }
-  // qsub -cwd -sync y ${data_dir}/clust_gast_ill_${project}.sh`;
 
   make_gast_script_txt += "\n";
   // make_gast_script_txt += "touch " + path.join(data_dir, "TEMP.tmp");
