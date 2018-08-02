@@ -761,11 +761,12 @@ router.get('/seqs_hit/:seqid/:ds', helpers.isLoggedIn, function(req, res) {
 //   q_tax += " JOIN family using (family_id)";
 //   q_tax += " JOIN genus using (genus_id)";
 //   q_tax += " WHERE sequence_id='"+seqid+"'";
-    var q = "SELECT project, dataset, UNCOMPRESS(sequence_comp) as seq, seq_count, public from sequence_pdr_info"
+    var q = "SELECT project_id, project, dataset, UNCOMPRESS(sequence_comp) as seq, seq_count, public from sequence_pdr_info"
     q += " JOIN dataset using(dataset_id)"
     q += " JOIN sequence using(sequence_id)"
     q += " JOIN project using(project_id)"
     q += " WHERE sequence_id='"+seqid+"'"
+    q += " AND seq_count > 0"
   
   console.log(q);
   connection.query(q, function(err, rows, fields){
@@ -782,16 +783,15 @@ router.get('/seqs_hit/:seqid/:ds', helpers.isLoggedIn, function(req, res) {
         cnt = rows[i].seq_count;
         pub = rows[i].public;
         seq = rows[i].seq
+        pid = rows[i].project_id
         console.log(seq.toString())
        
-        if(pjds in obj){
-          obj[pjds]['count'] = cnt;
-          obj[pjds]['public'] = pub;
-        }else{
-          obj[pjds] = {};
-          obj[pjds]['count'] = cnt;
-          obj[pjds]['public'] = pub;            
+        if(!obj.hasOwnProperty('pjds')){
+          obj[pjds] = {};          
         }
+        obj[pjds]['count'] = cnt;
+        obj[pjds]['public'] = pub;
+        obj[pjds]['pid'] = pid;
 
       }
       //console.log(obj);
