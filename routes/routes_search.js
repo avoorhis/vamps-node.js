@@ -64,8 +64,8 @@ router.get('/geo', helpers.isLoggedIn, function(req, res) {
 
 
     res.render('search/geo_area', { title: 'VAMPS:Search',
-        gekey :   req.CONFIG.GOOGLE_EARTH_KEY,
         user:     req.user,hostname: req.CONFIG.hostname,
+        token :   req.CONFIG.MAPBOX_TOKEN
     });
 });
 router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
