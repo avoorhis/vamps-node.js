@@ -19,58 +19,59 @@ var accessToken = '<%- token %>'
 
 <br><br>
 
+<form method='POST' action='geo_search'>
 
-<div class="col-lg-1"></div>
-<div class="col-lg-10">
-      <form method='POST' action='geo_search'>
-      <div id='geo_search_div' class='well'>
-				<h4>Drag the pin(s) in the map below to select a geographic range.</h4>
-        <h5>Or<br>Find datasets within a geographic range by entering latitude and longitude values here:<br>
-        <small>Values must be in decimal degrees (not degree;minutes;seconds) -- like '-10.2' or '45.23459'. Use the map below for help.</small></h5>
-        <li>Enter Latitude Range
-          &nbsp;&nbsp;&nbsp;Min: <input id='' name='lat_min' type='text' size='16' maxlength='10'>
-          &nbsp;&nbsp;&nbsp;Max: <input id='' name='lat_max' type='text' size='16' maxlength='10'>
-        </li>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>Latitude: negative numbers south of the equator and positive numbers north of the equator.</small>
-        <br>
-        <li>Enter Longitude Range
-          &nbsp;&nbsp;&nbsp;Min: <input id='' name='lon_min' type='text' size='16' maxlength='10'>
-          &nbsp;&nbsp;&nbsp;Max: <input id='' name='lon_max' type='text' size='16' maxlength='10'>
-        </li>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>Longitude: negative numbers west of the prime meridian and positive numbers east of the prime meridian.</small>
-        <input class='pull-right' type='button' value='Search' onclick='validate_lat_lon(this.form)'>
-      </div>
 
-      </form>
-</div>
-</div>
 
-<br>
 
-<div class="col-lg-1"></div>
-<div class="col-lg-11">
-				<table id='latlon_table' border='1' >
-				<tr><td nowrap>NW: <span id='NWbox'></span></td><td nowrap>NE: <span id='NEbox'></span></td></tr>
-        	    <tr><td nowrap>SW: <span id='SWbox'></span></td><td nowrap>SE: <span id='SEbox'></span></td></tr>
-				</table>
-        <div>Hover over map to show latitudes and longitudes <span id='coord'></span></div>
+<div class="col-lg-12">
+        <table border='0'>
+        <tr><td style='padding:3px;'>
+            <strong>Drag the pin(s) in the map below to select a geographic range.</strong>
+                    <table id='latlon_table' border='1' >
+                    <tr><td nowrap>NW: <span id='NWbox'></span></td><td nowrap>NE: <span id='NEbox'></span></td></tr>
+                    <tr><td nowrap>SW: <span id='SWbox'></span></td><td nowrap>SE: <span id='SEbox'></span></td></tr>
+                    </table>
+            <div>Hover over map to show latitudes and longitudes <br><span id='coord'></span></div>
+        </td>
+        <td style='padding:3px;'>
+            <div id='geo_search_div' class='well'>
+                Or Find datasets within a geographic range by entering latitude and longitude values here:<br>
+                <small>Values must be in decimal degrees (not degree;minutes;seconds) ~~ like '-10.2' or '45.23459'. Use the map below for help.</small>
+                <li>Enter Latitude Range
+                  &nbsp;&nbsp;&nbsp;Min: <input id='' name='lat_min' type='text' size='10' maxlength='10' style='height:20px'>
+                  &nbsp;&nbsp;&nbsp;Max: <input id='' name='lat_max' type='text' size='10' maxlength='10' style='height:20px'>
+                  <small>Lat: negative numbers south of the equator.</small>
+                </li>
+                
+                
+                <li>Enter Longitude Range
+                  &nbsp;&nbsp;&nbsp;Min: <input id='' name='lon_min' type='text' size='10' maxlength='10' style='height:20px'>
+                  &nbsp;&nbsp;&nbsp;Max: <input id='' name='lon_max' type='text' size='10' maxlength='10' style='height:20px'>
+                  <small>Long: negative numbers west of the prime meridian.</small>
+                </li>
+                
+                <input class='pull-right' type='button' value='Search' onclick='validate_lat_lon(this.form)'>
+                <br>
+            </div>    
+        </td>
         
-</div>
-
- 
-<div class="col-lg-1"></div>
-<div class="col-lg-11">
-<table>
-<tr>
-    <td><div id="mapid" style="height:600px;width:800px"></div></td>
-    <td valign="top"><div id='geo_result'></div></td>
-</tr>
-</table>
+        </tr>
+        </table>
 </div>
 
 
+<div class="col-lg-7">        
+        <div id="mapid" style="height:600px;" ></div>
+</div>
+<div class="col-lg-5">
+        <div id='geo_result'></div>
+</div>
+       
+</div> 
 
 
+</form>
 
 
 <% include ../add_ins/end.ejs %>
