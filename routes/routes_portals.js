@@ -139,7 +139,7 @@ router.get('/geomap/:portal', function(req, res) {
             portal      : portal,
             portal_info : JSON.stringify(portal_info[portal]),
             user: req.user,hostname: req.CONFIG.hostname,
-            gekey : req.CONFIG.GOOGLE_EARTH_KEY,
+            token       : req.CONFIG.MAPBOX_TOKEN,
         });
 
 });

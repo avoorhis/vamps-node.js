@@ -566,20 +566,9 @@ function initMap(data, token) {
         var clon = minlon + ((maxlon - minlon)/2)
         var center = {lat:clat,lng:clon}
         var z  // start close??
-       //  var map = new google.maps.Map(document.getElementById('map'), {
-//           //zoom: z,
-//           //center: center,
-//           mapTypeId: 'hybrid'
-//         });
-        
-        
-       
-        //var oms = new OverlappingMarkerSpiderfier(map);
 
         if(minlat==0 && maxlat==0 && minlon==0 && maxlon==0){
-              //mymap.setMapTypeId('roadmap');
-              //mymap.setZoom(2)
-              //mymap.setCenter({lat: 0, lng: 0})
+              
         }else{
           
           var southWest = L.latLng(minlat, minlon);
@@ -587,8 +576,6 @@ function initMap(data, token) {
           var northEast = L.latLng(maxlat, maxlon);
           
           var bounds = L.latLngBounds(southWest,northEast);
-          //console.log('bounds2')
-          //  console.log(bounds)
           mymap.fitBounds(bounds);
         }
         //markers.clearLayers()
@@ -619,30 +606,17 @@ function initMap(data, token) {
         })
         compass_markers = L.layerGroup([markerSW,markerSE,markerNW,markerNE]).addTo(mymap)
         
-
-//         var iw = new google.maps.InfoWindow();
-//         oms.addListener('click', function(marker, event) {
-//           iw.setContent(marker.link);
-//           iw.open(map, marker);
-//         });
-//         oms.addListener('spiderfy', function(markers) {
-//           iw.close();
-//         });
         if(typeof data_markers != 'undefined'){
             mymap.removeLayer(data_markers)
         }
         data_markers = L.layerGroup() 
         if(Object.keys(data.points).length > 0){
           for(did in data.points){
-            //loc = {lat: +data.points[did].latitude, lng: +data.points[did].longitude}
+            
             loc = L.latLng(+data.points[did].latitude, +data.points[did].longitude)
-            //console.log('loc')
-            //console.log(loc)
+            
             var html = "<a href='/projects/"+data.points[did].pid+"'>"+data.points[did].proj_dset+"</a>"
-            var data_point = L.marker(loc,{
-              //url: '/projects/'+data.points[did].pid,
-              //title: data.points[did].proj_dset
-            })
+            var data_point = L.marker(loc,{})
             data_markers.addLayer(data_point)
             data_point.bindPopup(html);
             data_point.on('mouseover', function (e) {
@@ -660,7 +634,7 @@ function initMap(data, token) {
         
         // markerSW
         markerSW.addEventListener( 'dragend', function (e) {
-            //console.log(e.target._latlng)
+            
             var lat = e.target._latlng.lat
             var lng = e.target._latlng.lng
             document.getElementById("SWbox").innerHTML = 'Lat: '+lat.toFixed(6)+'; Long: '+ lng.toFixed(6);
@@ -689,7 +663,7 @@ function initMap(data, token) {
             document.getElementById("NEbox").innerHTML = 'Lat: '+lat.toFixed(6) +'; Long: '+ lng.toFixed(6);
             NE = {lat: lat, lng: lng}
             adjust_boundry(mymap,'NE',SW,NW,NE,SE)
-            //alert(JSON.stringify(linePath.getPath()))
+           
         });
 }
 
@@ -701,20 +675,16 @@ function adjust_boundry(map, pt, SW, NW, NE, SE){
   }
   
   var BoundCoordinates = [   NW, NE, SE, SW   ];
-  //linePath.setLatLngs(BoundCoordinates);
+ 
   var new_bounds = get_new_bounds(pt,SW,NW,NE,SE)
-  //console.log('new_bounds')
-  //console.log(new_bounds)
+  
   get_bounded_ajax(new_bounds,[])
   var southWest = L.latLng(new_bounds.lat_min, new_bounds.lon_min);
-  //console.log('southWest')
-  //console.log(southWest)
+  
   var northEast = L.latLng(new_bounds.lat_max, new_bounds.lon_max);
-  //console.log(northEast)
+  
   var bounds = L.latLngBounds(southWest,northEast);
-  //console.log('bounds1')
-  //console.log(bounds._northEast)
-  //console.log(bounds._southWest)
+  
   NE = [bounds._northEast.lat,bounds._northEast.lng]
   SE = [bounds._southWest.lat,bounds._northEast.lng]
   SW = [bounds._southWest.lat,bounds._southWest.lng]
@@ -723,7 +693,7 @@ function adjust_boundry(map, pt, SW, NW, NE, SE){
 //   console.log(SE)
 //   console.log(SW)
 //   console.log(NW)
-  //linePath.setLatLngs([[new_bounds.lat_min,new_bounds.lat_max],[new_bounds.lon_min,new_bounds.lon_max]]);
+ 
   
   linePath = L.polyline([NW, NE, SE, SW, NW],{
           
@@ -769,7 +739,7 @@ function displayCoordinates(ev) {
         var lng = ev.latlng.lng;
         lng = lng.toFixed(4);
         document.getElementById("coord").innerHTML = '--Latitude: '+lat+' --Longitude: '+lng;
-        //console.log("Latitude: " + lat + "  Longitude: " + lng);
+        
 }
 function blast(){
     var query = document.getElementById("query").innerHTML

@@ -1117,11 +1117,10 @@ function create_fheatmap(ts, new_window) {
 //  CREATE GEOSPATIAL
 //
 function create_geospatial(new_window) {
-      //alert('in GEO')
+      console.log('In view_selection.js:create_geospatial()')
       if(new_window){
 
           var htmlstring = document.getElementById('geospatial_div').innerHTML;
-
 
           function openindex()
             {
@@ -1134,7 +1133,6 @@ function create_geospatial(new_window) {
 
           openindex()
           return
-
 
     }
       geospatial_created = true;
@@ -1182,7 +1180,6 @@ function create_geospatial(new_window) {
       var z = 1;
 
       for(latlon in lat_lon_collector){
-        //alert(latlon)
         ds = lat_lon_collector[latlon];
         var latlons =  latlon.split(';');
         loc_data.push([ds,latlons[0],latlons[1],z]);
@@ -1196,64 +1193,40 @@ function create_geospatial(new_window) {
             found_bad_data_counter += 1;
         }
       }
-//alert(JSON.stringify(loc_data))
       if (loc_data.length === 0 || found_bad_data_counter == loc_data.length){
           geospatial_div.innerHTML='No Lat/Lon Data Found (or Selected)';
       }else{
-        var center = new google.maps.LatLng(loc_data[0][1],loc_data[0][2]);
-        var mapCanvas = document.getElementById('geospatial_div');
-        var mapOptions = {
-          center : center,
-          zoom   : 3,
-          //zoom: 2,
-          //mapTypeId: google.maps.MapTypeId.ROADMAP
+        var mapOptions = {          
+          id: 'mapbox.streets-basic',
+          accessToken: token
         };
-        var map = new google.maps.Map(mapCanvas, mapOptions);
-        var infowindow =  new google.maps.InfoWindow({
-          content: ''
-        });
+        var mymap = L.map('geospatial_div').setView([41.5257, -70.672], 3)  // centered on Cape Cod
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}',mapOptions).addTo(mymap); 
         
-        setMarkers(map, loc_data, infowindow);
+        setMarkers(mymap, loc_data);
         document.getElementById('geospatial_dnld_btn').disabled = false
       }
 }
-//
-//
-//
-function bindInfoWindow(marker, map, infowindow, html) {
-  google.maps.event.addListener(marker, 'click', function() {
-    infowindow.setContent(html);
-    infowindow.open(map, marker);
-  });
-}
-//
-//
-//
-function setMarkers(map, loc_data, infowindow) {
-  for (var i = 0; i < loc_data.length; i++) {
-    // create a marker
-   // alert(locations[0])
-    //var data = loc_data[i];
 
-    var myLatLng = new google.maps.LatLng(loc_data[i][1],loc_data[i][2]);
-    var marker = new google.maps.Marker({
-      title: loc_data[i][0],
-      position: myLatLng,
-      map: map
-    });
-    //alert(data[0])
-    // add an event listener for this marker
+//
+//
+//
+function setMarkers(map, loc_data) {
+  for (var i = 0; i < loc_data.length; i++) {
+   
+    var marker = L.marker([loc_data[i][1],loc_data[i][2]], {}).addTo(map); 
     var ds_array = loc_data[i][0].split(';')
     var html = '';
     html += "<table  class='table table_striped' >"
-    html += '<tr><th>Dataset</th></tr>';
+    html += '<tr><th>Project--Dataset</th></tr>';
     for(d in ds_array){
-      //var pid = pid_collector[lines[l]].pid;
-      //var val = pid_collector[lines[l]].value;
       html += "<tr><td>" + ds_array[d] + "</td></tr>"
     }
     html += '</table>'
-    bindInfoWindow(marker, map, infowindow, "<p>" + html + "</p>");
+    marker.bindPopup(html);
+    marker.on('mouseover', function (e) {
+        this.openPopup();
+    });
 
   }
 
@@ -1836,6 +1809,9 @@ function new_window_skeleton(html){
   txt +='<link rel="stylesheet" href="/stylesheets/bootstrap.min.css" >'+"\n"
   txt +='<link rel="stylesheet" href="/stylesheets/bootstrap-theme.min.css">'+"\n"
   txt +='<link href="/stylesheets/bootstrap-responsive.css" rel="stylesheet" \>'+"\n"
+  txt +='<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css"'+"\n"
+   txt +='integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="'+"\n"
+   txt +='crossorigin=""/>'+"\n"
   txt +="</HEAD>"+"\n"
   txt +="<BODY>"+"\n"
   txt +="<div style='border:1px solid grey;padding:5px;background:lightgreen;'>"

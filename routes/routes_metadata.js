@@ -102,7 +102,7 @@ router.get('/geomap/:item', helpers.isLoggedIn, function(req, res) {
             user    : req.user,hostname: req.CONFIG.hostname,
             md_item : md_item_show,
             mdinfo  : JSON.stringify(metadata_info),
-            gekey   : req.CONFIG.GOOGLE_EARTH_KEY,
+            token   : req.CONFIG.MAPBOX_TOKEN,
         });
   });
 

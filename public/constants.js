@@ -305,7 +305,7 @@ constants.VISUAL_THUMBNAILS = {
       //link:'user_viz_data/heatmap',
       //id:'dheatmap_link_id',
       prefix:'dheatmap',
-      tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
+      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
     },
 
     {   name:'Stackbar Charts (d3/svg)',
@@ -329,7 +329,7 @@ constants.VISUAL_THUMBNAILS = {
       //link:'user_viz_data/frequency_heatmap',
       //id:'fheatmap_link_id',
       prefix:'fheatmap',
-      tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-R (https://www.r-project.org/)-|-pheatmap (R-package)-|-vegan (R-package)-|-jsonlite (R-package)-|-RColorBrewer (R-package)'
+      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-R (https://www.r-project.org/)-|-pheatmap (R-package)-|-vegan (R-package)-|-jsonlite (R-package)-|-RColorBrewer (R-package)'
     },
 
     {   name:'Data Browser (Krona)',
@@ -345,23 +345,23 @@ constants.VISUAL_THUMBNAILS = {
       //link:'user_viz_data/dendrogram',
       //id:'dendrogram1_link_id',
       prefix:'dendrogram01',
-      tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
+      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
     },
 
     //{name:'Dendrogram (d3-phylonator)', thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram2_link_id',
-    //     tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'   },
+    //     tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'   },
 
     {   name:'Dendrogram (d3/radial)',
       thumb:'/images/visuals/radial.png',
       //link:'user_viz_data/dendrogram',
       //id:'dendrogram3_link_id',
       prefix:'dendrogram03',
-      tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
+      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
     },
 
 
     // {name:'Dendrogram (py-pdf)',        thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram_pdf_link_id',
-    //     tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-matplotlib (python library)'},
+    //     tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-matplotlib (python library)'},
 
     {   name:'PCoA 2D Analyses (R/pdf)',
       thumb:'/images/visuals/pcoa.png',
@@ -376,7 +376,7 @@ constants.VISUAL_THUMBNAILS = {
       //link:'user_viz_data/pcoa',
       //id:'pcoa_3d_link_id',
       prefix:'pcoa3d',
-      tip:'Python2.7-|-scikit-bio (python library)-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-QIIME (http://qiime.org)'
+      tip:'Python3-|-scikit-bio (python library)-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-QIIME (http://qiime.org)'
     },
 
     {   name:'Geo Distribution',
@@ -392,7 +392,7 @@ constants.VISUAL_THUMBNAILS = {
       //link:'user_viz_data/alpha_diversity',
       //id:'adiversity_link_id',
       prefix:'adiversity',
-      tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-scikit-bio'
+      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-scikit-bio'
     },
 
     {   name:'Phyloseq Bars (R/svg)',

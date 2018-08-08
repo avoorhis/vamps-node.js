@@ -6,7 +6,7 @@
 <script>
   //var data = JSON.parse('<%- geodata %>');
   var md_local = JSON.parse('<%- geodata %>');
-  var accessToken = '<%- token %>'
+  var token = '<%- token %>'
   
 </script>
 
@@ -23,8 +23,7 @@
    
 </script>
 <script>    
-
-create_geospatial(accessToken)
+  create_geospatial()
 </script>
 </body>
 </html>

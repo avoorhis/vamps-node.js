@@ -1,6 +1,8 @@
 <% menu_section='VISUALS' %>
 <% include ../add_ins/begin.ejs %>
-
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css"
+   integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+   crossorigin=""/>
 <%  var cnsts  = JSON.parse(constants) %>
 <%  var mtx    = JSON.parse(matrix); %>
 <%  var pi     = JSON.parse(post_items); %>
@@ -18,6 +20,7 @@
   var cts_local  = JSON.parse('<%- constants %>');
   var user_local  = '<%= user.username %>';
   var image_to_rdr_local  = JSON.parse('<%- image_to_render %>');
+  var token = '<%- token %>'  // https://leafletjs.com
   //alert(image_to_rdr_local.image)
 
 </script>
@@ -643,7 +646,7 @@
 
 
 
-<!-- -------------------------------------------------- -->
+
 
   <div id='counts_tooltip_div' class=''></div>
   <div id='piebarcharts_tooltip_div' class=''></div>
@@ -652,8 +655,10 @@
 
 
   <% include ../add_ins/end.ejs %>
- <!-- <script src ="https://maps.googleapis.com/maps/api/js"></script> -->
- <script async defer src="https://maps.googleapis.com/maps/api/js?v=3&key=<%= gekey %>"></script>
+ <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"
+   integrity="sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q=="
+   crossorigin="">   
+ </script>
  <script type="text/javascript" src="/javascripts/tablesort.min.js"></script>
  <script type="text/javascript" src="/javascripts/jquery.scrollTo.min.js"></script>
  <script type="text/javascript" src="/javascripts/jquery.tablednd.js"></script>
