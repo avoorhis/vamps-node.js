@@ -559,6 +559,19 @@ class CreateDataObj {
     // constants.DOMAINS = {
     //   domains: [
     //     {id: 1, name: 'Archaea'},
+    // Array.prototype.findByValueOfObject = function(key, value) {
+    //   return this.filter(function(item) {
+    //     return (item[key] === value);
+    //   });
+    // };
+
+    var arr1 = CONSTS.DOMAINS.domains;
+    const current_domain_obj = arr1.filter(function(item) {
+      return (item['name'] === current_info.domain);
+    });
+
+    // arr1.findByValueOfObject('name', 'Archaea');
+    current_info.domain_id = current_domain_obj[0].id;
 
     for (var field_name in current_info) {
       all_metadata[pid][field_name] = [current_info[field_name]];
