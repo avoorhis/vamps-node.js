@@ -555,20 +555,7 @@ class CreateDataObj {
     current_info.dna_region = d_region_arr[1].split('_')[0];
     // target_gene:
 
-    // TODO: domain_id
-    // constants.DOMAINS = {
-    //   domains: [
-    //     {id: 1, name: 'Archaea'},
-    // Array.prototype.findByValueOfObject = function(key, value) {
-    //   return this.filter(function(item) {
-    //     return (item[key] === value);
-    //   });
-    // };
-
     var arr1 = CONSTS.DOMAINS.domains;
-    // const current_domain_obj = arr1.filter(function(item) {
-    //   return (item['name'] === current_info.domain);
-    // });
 
     const current_domain_obj = helpers.findByValueOfObject(arr1, 'name', current_info.domain);
     current_info.domain_id = current_domain_obj[0].id;
@@ -584,8 +571,6 @@ class CreateDataObj {
       }
     }
 
-    // obj1.concat(obj2);
-
     console.log('FFF1 all_metadata[pid] before');
     console.log(JSON.stringify(all_metadata[pid]));
 
@@ -598,7 +583,6 @@ class CreateDataObj {
       'dataset_description',
       'dataset_id',
       'dna_region_id',
-      'domain_id',
       'env_biome_id',
       'env_feature_id',
       'env_material_id',
