@@ -2153,11 +2153,11 @@ exports.slice_object = function (object, slice_keys) {
     }, {});
 };
 
-// exports.findByValueOfObject = function (arr, key, value) {
-//   return arr.filter(function(item) {
-//     return (item[key] === value);
-//   });
-// };
+exports.findByValueOfObject = function (arr, key, value) {
+  return arr.filter(function(item) {
+    return (item[key] === value);
+  });
+};
 
   exports.transpose_2d_arr = function (data_arr, matrix_length) {
   console.time('TIME: transpose_2d_arr');

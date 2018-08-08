@@ -566,11 +566,11 @@ class CreateDataObj {
     // };
 
     var arr1 = CONSTS.DOMAINS.domains;
-    const current_domain_obj = arr1.filter(function(item) {
-      return (item['name'] === current_info.domain);
-    });
+    // const current_domain_obj = arr1.filter(function(item) {
+    //   return (item['name'] === current_info.domain);
+    // });
 
-    // arr1.findByValueOfObject('name', 'Archaea');
+    const current_domain_obj = helpers.findByValueOfObject(arr1, 'name', current_info.domain);
     current_info.domain_id = current_domain_obj[0].id;
 
     for (var field_name in current_info) {
