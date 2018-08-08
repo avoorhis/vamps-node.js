@@ -1973,7 +1973,7 @@ module.exports.screen_pids_for_permissions = function (req, pids) {
       new_pid_list.push(pids[i])
     }
   }
-  return new_pid_list
+  return new_pid_list;
 };
 
 module.exports.unique_array = function (myArray) {

@@ -147,7 +147,7 @@ class CreateDataObj {
 
     const new_dataset = new Dataset(this.req, this.res, this.pid);
     var DatasetInfo   = new_dataset.DatasetInfo;
-    var that = this;
+    var that          = this;
     console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
     new_dataset.addDataset(function (err, rows) {
       console.time("TIME: in post /metadata_new, add dataset");
@@ -182,7 +182,7 @@ class CreateDataObj {
   make_metadata_object_with_new_datasets(req, res, pid, data) {
     const new_dataset = new Dataset(req, res, pid);
     var DatasetInfo   = new_dataset.DatasetInfo;
-    var that = this;
+    var that          = this;
     console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
     new_dataset.addDataset(function (err, rows) {
       console.time("TIME: in post /metadata_new, add dataset");
@@ -542,6 +542,26 @@ class CreateDataObj {
     var d_region_arr = req.form.d_region.split('#');
     console.log('DDD3, all_field_names', all_field_names);
 
+    var more_fields = ['adapter_sequence_id',
+      'dataset_description',
+      'dataset_id',
+      'dna_region_id',
+      'domain_id',
+      'env_biome_id',
+      'env_feature_id',
+      'env_material_id',
+      'env_package_id',
+      'geo_loc_name_id',
+      'illumina_index_id',
+      'primer_suite_id',
+      'run_id',
+      'sequencing_platform_id',
+      'target_gene_id'];
+
+    all_field_names = helpers.unique_array(all_field_names.concat(more_fields));
+
+    console.log('DDD3_1, all_field_names', all_field_names);
+
     this.prepare_empty_metadata_object(pid, all_field_names, {});
     var all_metadata = this.all_metadata;
     console.log('PPP01 all_metadata from create_all_metadata_form_new', all_metadata);
@@ -555,19 +575,23 @@ class CreateDataObj {
     current_info.dna_region = d_region_arr[1].split('_')[0];
     // target_gene:
 
-    var arr1 = CONSTS.DOMAINS.domains;
-
+    const arr1               = CONSTS.DOMAINS.domains;
     const current_domain_obj = helpers.findByValueOfObject(arr1, 'name', current_info.domain);
-    current_info.domain_id = current_domain_obj[0].id;
+    current_info.domain_id   = current_domain_obj[0].id;
 
-    for (var field_name in current_info) {
-      all_metadata[pid][field_name] = [current_info[field_name]];
+    for (var i = 0; i < all_field_names.length; i++) {
+      var field_name = all_field_names[i];
+      // for (var field_name in all_field_names) {
+      var val        = current_info[field_name] || '';
+      if (typeof current_info[field_name] !== 'undefined') {
+        all_metadata[pid][field_name] = [current_info[field_name]];
+      }
       //todo: split if, if length == dataset_ids.length - just use as is
-      if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
+      if ((typeof all_metadata[pid] !== 'undefined') && (typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
         all_metadata[pid][field_name] = this.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
       }
       else {
-        all_metadata[pid][field_name] = this.fill_out_arr_doubles(current_info[field_name], repeat_times);
+        all_metadata[pid][field_name] = this.fill_out_arr_doubles(val, repeat_times);
       }
     }
 
@@ -579,25 +603,25 @@ class CreateDataObj {
     console.log('FFF2 all_metadata[pid] before');
     console.log(JSON.stringify(all_metadata[pid]));
 
-    var more_fields = ['adapter_sequence_id',
-      'dataset_description',
-      'dataset_id',
-      'dna_region_id',
-      'env_biome_id',
-      'env_feature_id',
-      'env_material_id',
-      'env_package_id',
-      'geo_loc_name_id',
-      'illumina_index_id',
-      'primer_suite_id',
-      'run_id',
-      'sequencing_platform_id',
-      'target_gene_id'];
+    // var more_fields = ['adapter_sequence_id',
+    //   'dataset_description',
+    //   'dataset_id',
+    //   'dna_region_id',
+    //   'env_biome_id',
+    //   'env_feature_id',
+    //   'env_material_id',
+    //   'env_package_id',
+    //   'geo_loc_name_id',
+    //   'illumina_index_id',
+    //   'primer_suite_id',
+    //   'run_id',
+    //   'sequencing_platform_id',
+    //   'target_gene_id'];
 
-    for (var f in more_fields) {
-      all_metadata[pid][more_fields[f]] = this.fill_out_arr_doubles('', repeat_times);
-
-    }
+    // for (var f in more_fields) {
+    //   all_metadata[pid][more_fields[f]] = this.fill_out_arr_doubles('', repeat_times);
+    //
+    // }
 
     console.log('PPP02 all_metadata from create_all_metadata_form_new', all_metadata);
     console.timeEnd('TIME: create_all_metadata_form_new');
