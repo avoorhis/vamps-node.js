@@ -107,7 +107,7 @@ class CreateDataObj {
 
   // This function cyclomatic complexity is too high (6)
   add_project_abstract_info(all_metadata_pid, repeat_times) { // use project_obj.abstract_data instead
-    if ((all_metadata_pid['project_abstract'] === 'undefined') || (typeof all_metadata_pid['project_abstract'] === 'undefined') || (!all_metadata_pid.hasOwnProperty(['project_abstract']))) {
+    if ((all_metadata_pid['project_abstract'] === 'undefined') || (typeof all_metadata_pid['project_abstract'] === 'undefined') || (!all_metadata_pid.hasOwnProperty(['project_abstract'])) || (all_metadata_pid['project_abstract'].length === 0) ) {
       all_metadata_pid['project_abstract'] = this.fill_out_arr_doubles('', repeat_times);
     }
     else {
