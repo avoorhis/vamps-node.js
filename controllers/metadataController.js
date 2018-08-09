@@ -170,6 +170,7 @@ class CreateDataObj {
               console.log('WWW22 rows', rows);
               new_dataset.update_dataset_obj(rows, pid);
               new_dataset.add_info_to_dataset_globals();
+              data['dataset'] = new_dataset.DatasetInfo.dataset;
               data['dataset_id'] = new_dataset.DatasetInfo.dataset_id;
               that.existing_object_from_form(data);
             }
@@ -206,7 +207,8 @@ class CreateDataObj {
               new_dataset.update_dataset_obj(rows, pid);
               // new_dataset.dataset_objects_arr;
               new_dataset.add_info_to_dataset_globals();
-              data['dataset_id'] = new_dataset.DatasetInfo.dataset_id;
+              data['dataset_id'] = new_dataset.DatasetInfo.dataset_id; // duplicate
+              data['dataset'] = helpers.unique_array(new_dataset.DatasetInfo.dataset);  // duplicate
               that.existing_object_from_form(req, res, pid, data);
             }
           }
@@ -568,11 +570,10 @@ class CreateDataObj {
     var repeat_times = parseInt(req.form.samples_number, 10);
 
     var current_info         = Object.assign(project_obj);
-    current_info.domain      = d_region_arr[0].slice(0, -1);
+    // d_region_arr[0].slice(0, -1)
+    current_info.domain      = helpers.findByValueOfObject(CONSTS.DOMAIN_REGIONS.domain_regions, "domain", d_region_arr[0])[0].domain_show;
     current_info.dna_region  = d_region_arr[1].split('_')[0];
-    const domain_regions     = CONSTS.DOMAIN_REGIONS.domain_regions;
-    current_info.target_gene = helpers.findByValueOfObject(domain_regions, "domain_show", current_info.domain)[0].target_gene;
-    // target_gene:
+    current_info.target_gene = helpers.findByValueOfObject(CONSTS.TARGET_GENE, "domain", current_info.domain)[0].target_gene;
 
     const arr1               = CONSTS.DOMAINS.domains;
     const current_domain_obj = helpers.findByValueOfObject(arr1, 'name', current_info.domain);

@@ -156,7 +156,7 @@ class CsvFiles {
     var req = this.req;
 
     var csv = this.convertArrayOfObjectsToCSV({
-      data: req.form,
+      data: req.form, // if new datasets, add info from globals instead
       user_info: req.user, //use this.user
       project_id: req.body.project_id
     });

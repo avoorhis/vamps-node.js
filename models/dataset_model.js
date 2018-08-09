@@ -99,8 +99,12 @@ class Dataset {
   update_dataset_obj(rows) {
     //     var did                     = rows.insertId;
     console.log('WWW002 rows', rows);
-
     this.dataset_objects_arr[this.pid.toString()] = Object.assign(rows);
+    // this.dataset_objects_arr[482][0]
+    // dataset = "test_dataset_1"
+    // dataset_description = "Dataset_1 description"
+    // dataset_id = 10895
+    // project_id = 482
   }
 
   add_info_to_dataset_globals() {
@@ -111,6 +115,9 @@ class Dataset {
     temp_obj.pid       = this.pid;
     temp_obj.title     = project_info.title;
     temp_obj.datasets  = [];
+    // temp_obj.ddesc = "C6 Consortia Inoculum";
+    // temp_obj.did = 9347;
+    // temp_obj.dname = "23";
     ALL_DATASETS.projects.push(temp_obj);
     DATASET_IDS_BY_PID[pid] = [];
     this.DatasetInfo.dataset_id = [];
