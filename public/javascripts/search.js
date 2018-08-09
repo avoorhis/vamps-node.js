@@ -207,6 +207,7 @@ if (metadata_search_field3 !== null) {
 //
 //
 
+
 function change_comparison(comparison, item){
     var comparison_input;
     var minval;
@@ -743,4 +744,29 @@ function displayCoordinates(ev) {
 }
 function blast(){
     var query = document.getElementById("query").innerHTML
+}
+function get_taxa_name(rank){
+	console.log('in get_taxa_name')
+	console.log(rank)
+	args = 'rank='+ rank
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.open("POST", "all_taxa_by_rank", true);
+	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+
+		  var response = JSON.parse(xmlhttp.responseText);
+		  console.log('done')
+		  //console.log(response)
+		  var html = '<select>'
+		  for(i in response){
+		  	//console.log('AA '+response[i])
+		  	html += "<option>"+response[i]+"</option>"
+		  }
+		  html += '</select>'
+		  
+		  document.getElementById("availible_tax_names").innerHTML = html
+		}
+	}
+	xmlhttp.send(args);
 }

@@ -60,13 +60,47 @@ router.get('/blast', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.get('/geo', helpers.isLoggedIn, function(req, res) {
+router.get('/geo_by_tax', helpers.isLoggedIn, function(req, res) {
 
+    res.render('search/geo_by_tax', { title: 'VAMPS:Search',
+        user  :     req.user,hostname: req.CONFIG.hostname,
+        ranks :   JSON.stringify(req.CONSTS.RANKS),
+        token :   req.CONFIG.MAPBOX_TOKEN
+    });
+});
+//
+//
+//
+router.get('/geo', helpers.isLoggedIn, function(req, res) {
 
     res.render('search/geo_area', { title: 'VAMPS:Search',
         user:     req.user,hostname: req.CONFIG.hostname,
         token :   req.CONFIG.MAPBOX_TOKEN
     });
+});
+router.post('/all_taxa_by_rank', helpers.isLoggedIn, function(req, res) {
+	console.log('in all_taxa_by_rank');
+    console.log('req.body-->>');
+    console.log(req.body);
+    console.log('<<--req.body');
+    
+    var rank = req.body.rank
+    var qSelect = "SELECT `"+rank+"` FROM `"+rank+"`"
+    console.log(qSelect)
+    var result = []
+    var query = req.db.query(qSelect, function (err, rows, fields){
+    	if (err) return(err);
+    	for(i in rows){
+    		console.log(rows[i])
+    		if(rows[i][rank]){
+    			result.push(rows[i][rank])
+    		}
+    	}
+    	result.sort()
+    	console.log(result)
+    	res.json(result)
+    })
+    
 });
 router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
     console.log('in geo_search result');

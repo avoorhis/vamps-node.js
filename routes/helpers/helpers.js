@@ -2003,6 +2003,10 @@ module.exports.ensure_dir_exists = function(dir)
 module.exports.isEven = function (n) {
     return n == parseFloat(n)? !(n%2) : void 0;
 }
+function jsUcfirst(string) 
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 // module.exports.validate_name = function (name) {
 //     console.log('helpers.validate_name: '+name)
 //     pattern=/([^a-zA-Z0-9\.]+)/gi

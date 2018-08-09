@@ -495,7 +495,7 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     //	console.log(JSON.stringify(new_taxonomy.taxa_tree_dict[n]))
     //}
     //console.log("\ntaxa_tree_dict_map_by_id = " + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id[2266]));
-    //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
+    console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
     //console.log('taxa_tree_dict_map_by_db_id_n_rank["3_domain"] = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["3_domain"]));
 
     //console.log('1(silva)-taxa_tree_dict_map_by_db_id_n_rank["140108_domain"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["140108_domain"]));
