@@ -567,9 +567,11 @@ class CreateDataObj {
     console.log('PPP01 all_metadata from create_all_metadata_form_new', all_metadata);
     var repeat_times = parseInt(req.form.samples_number, 10);
 
-    var current_info        = Object.assign(project_obj);
-    current_info.domain     = d_region_arr[0].slice(0, -1);
-    current_info.dna_region = d_region_arr[1].split('_')[0];
+    var current_info         = Object.assign(project_obj);
+    current_info.domain      = d_region_arr[0].slice(0, -1);
+    current_info.dna_region  = d_region_arr[1].split('_')[0];
+    const domain_regions     = CONSTS.DOMAIN_REGIONS.domain_regions;
+    current_info.target_gene = helpers.findByValueOfObject(domain_regions, "domain_show", current_info.domain)[0].target_gene;
     // target_gene:
 
     const arr1               = CONSTS.DOMAINS.domains;

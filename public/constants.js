@@ -56,11 +56,11 @@ constants.DOMAINS = {
 
 constants.DOMAIN_REGIONS = {
   domain_regions: [
-    {d_r: ['Av4', 'Av6', 'Av4v5'], domain: "Archaeal", regions: ['v4', 'v6', 'v4v5'], domain_show: "Archaea"},
-    {d_r: ['Bv4', 'Bv6', 'Bv4v5'], domain: "Bacterial", regions: ['v4', 'v6', 'v4v5'], domain_show: "Bacteria"},
-    {d_r: ['Ev4', 'EHSSU', 'EHLSU'], domain: "Eukaryal", regions: ['v4', 'v4_hap_HSSU', 'v4_hap_HLSU'], domain_show: "Eukarya"},
-    {d_r: ["ITS1"], domain: "Fungal", regions: ['ITS1'], domain_show: "Fungi"},
-    {d_r: ["Sgun"], domain: "Shotgun", regions: ['Sgun'], domain_show: "Shotgun"},
+    {d_r: ['Av4', 'Av6', 'Av4v5'], domain: "Archaeal", regions: ['v4', 'v6', 'v4v5'], domain_show: "Archaea", "target_gene": "16s"},
+    {d_r: ['Bv4', 'Bv6', 'Bv4v5'], domain: "Bacterial", regions: ['v4', 'v6', 'v4v5'], domain_show: "Bacteria", "target_gene": "16s"},
+    {d_r: ['Ev4', 'EHSSU', 'EHLSU'], domain: "Eukaryal", regions: ['v4', 'v4_hap_HSSU', 'v4_hap_HLSU'], domain_show: "Eukarya", "target_gene": "18s"},
+    {d_r: ["ITS1"], domain: "Fungal", regions: ['ITS1'], domain_show: "Eukarya", "target_gene": "18s"},
+    {d_r: ["Sgun"], domain: "Shotgun", regions: ['Sgun'], domain_show: "Shotgun", "target_gene": ""},
   ]
 };
 
