@@ -566,9 +566,6 @@ class CreateDataObj {
     var all_metadata = this.all_metadata;
     console.log('PPP01 all_metadata from create_all_metadata_form_new', all_metadata);
     var repeat_times = parseInt(req.form.samples_number, 10);
-    console.log(typeof repeat_times);
-
-    // TODO: add to current_info fields from below and do all_metadata[pid][field_name] for all at once
 
     var current_info        = Object.assign(project_obj);
     current_info.domain     = d_region_arr[0].slice(0, -1);
@@ -581,7 +578,6 @@ class CreateDataObj {
 
     for (var i = 0; i < all_field_names.length; i++) {
       var field_name = all_field_names[i];
-      // for (var field_name in all_field_names) {
       var val        = current_info[field_name] || '';
       if (typeof current_info[field_name] !== 'undefined') {
         all_metadata[pid][field_name] = [current_info[field_name]];
@@ -602,26 +598,6 @@ class CreateDataObj {
 
     console.log('FFF2 all_metadata[pid] before');
     console.log(JSON.stringify(all_metadata[pid]));
-
-    // var more_fields = ['adapter_sequence_id',
-    //   'dataset_description',
-    //   'dataset_id',
-    //   'dna_region_id',
-    //   'env_biome_id',
-    //   'env_feature_id',
-    //   'env_material_id',
-    //   'env_package_id',
-    //   'geo_loc_name_id',
-    //   'illumina_index_id',
-    //   'primer_suite_id',
-    //   'run_id',
-    //   'sequencing_platform_id',
-    //   'target_gene_id'];
-
-    // for (var f in more_fields) {
-    //   all_metadata[pid][more_fields[f]] = this.fill_out_arr_doubles('', repeat_times);
-    //
-    // }
 
     console.log('PPP02 all_metadata from create_all_metadata_form_new', all_metadata);
     console.timeEnd('TIME: create_all_metadata_form_new');
