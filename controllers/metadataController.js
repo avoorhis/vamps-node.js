@@ -687,9 +687,6 @@ class CreateDataObj {
     dataset_obj.updated_at          = new Date();
 
     console.log('OOO1 JSON.stringify(dataset_obj) = ', JSON.stringify(dataset_obj));
-
-    // Dataset.addDataset(dataset_obj, function (err, rows) {
-
   }
 
   get_inits(arr) {
