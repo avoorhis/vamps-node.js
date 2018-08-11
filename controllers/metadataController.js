@@ -105,25 +105,14 @@ class CreateDataObj {
     };
   }
 
-  add_project_abstract_info(project_obj, repeat_times) { // use project_obj.abstract_data instead
-    // all_metadata[pid].project_abstract = Array[12]
-    //  0 = Array[2]
-    //   0 = "DCO_ORC_Orcutt_CoDL_11_02_14.pdf"
-    //   1 = "DCO_BOM_Bomberg_CoDL_16_09.pdf"
-    //new_project.project_obj.abstract_data = Object
-    //     //  pdfs = Array[0]
-    // from db, form and csv:
-    // new_project.project_obj.abstract_data = Object
-    //  id = "11121/3482-2884-1949-7794-CC"
-    //  pdfs = Array[2]
-    //   0 = "DCO_ORC_Orcutt_CoDL_11_02_14.pdf"
-    //   1 = "DCO_BOM_Bomberg_CoDL_16_09.pdf"
-    //   length = 2
-    //   __proto__ = Array[0]
+  add_project_abstract_info(project_obj, existing_all_metadata_pid, repeat_times) {
+    var to_repeat = project_obj.abstract_data.pdfs;
 
-
-    const pdfs = project_obj.abstract_data.pdfs;
-    return this.fill_out_arr_doubles(pdfs, repeat_times);
+    if ((typeof existing_all_metadata_pid['project_abstract'] !== 'undefined') && (!Array.isArray(existing_all_metadata_pid['project_abstract'][0]))) {
+      var project_abstract_correct_form = helpers.unique_array(existing_all_metadata_pid['project_abstract']);
+      to_repeat = project_abstract_correct_form[0].split(',');
+    }
+    return this.fill_out_arr_doubles(to_repeat, repeat_times);
   }
 
 
@@ -192,7 +181,7 @@ class CreateDataObj {
               console.log('WWW22 rows', rows);
               new_dataset.update_dataset_obj(rows, pid);
               new_dataset.add_info_to_dataset_globals();
-              data['dataset'] = new_dataset.DatasetInfo.dataset;
+              data['dataset']    = new_dataset.DatasetInfo.dataset;
               data['dataset_id'] = new_dataset.DatasetInfo.dataset_id;
               that.existing_object_from_form(data);
             }
@@ -230,7 +219,7 @@ class CreateDataObj {
               // new_dataset.dataset_objects_arr;
               new_dataset.add_info_to_dataset_globals();
               data['dataset_id'] = new_dataset.DatasetInfo.dataset_id; // duplicate
-              data['dataset'] = helpers.unique_array(new_dataset.DatasetInfo.dataset);  // duplicate
+              data['dataset']    = helpers.unique_array(new_dataset.DatasetInfo.dataset);  // duplicate
               that.existing_object_from_form(req, res, pid, data);
             }
           }
@@ -328,7 +317,7 @@ class CreateDataObj {
         all_metadata[pid][field_name] = this.fill_out_arr_doubles(project_info[field_name], repeat_times);
       }
     }
-    all_metadata[pid]['project_abstract'] = this.add_project_abstract_info(new_project.project_obj, repeat_times);
+    all_metadata[pid]['project_abstract'] = this.add_project_abstract_info(new_project.project_obj, all_metadata[pid], repeat_times);
     // from submission datasets: all_metadata[pid].project_abstract = Array[3]
     //  0 = ""
     //  1 = ""
@@ -342,7 +331,6 @@ class CreateDataObj {
     //   0 = "DCO_ORC_Orcutt_CoDL_11_02_14.pdf"
     //   1 = "DCO_BOM_Bomberg_CoDL_16_09.pdf"
     //  ...
-
 
 
     console.log('PPP project_obj.abstract_data');
