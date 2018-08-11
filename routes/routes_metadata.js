@@ -528,6 +528,7 @@ function make_metadata_object_from_db(req, res) {
   // get dataset_info
 
   var dataset_info;
+  // use helpers.findByValueOfObject(arr, key, value)
   for (var i in ALL_DATASETS.projects) {
     var item = ALL_DATASETS.projects[i];
     if (String(item.pid) === String(pid)) {
@@ -572,8 +573,8 @@ function make_metadata_object_from_db(req, res) {
   var user_id = PROJECT_INFORMATION_BY_PID[pid].oid;
   // var user_obj = new User.getUserInfoFromGlobal(user_id);
 
-  const new_project = new Project(req, res, pid, user_id);
-  var project_obj   = new_project.project_obj;
+  const this_project = new Project(req, res, pid, user_id);
+  var project_obj   = this_project.project_obj;
 
   var abstract_data = project_obj.abstract_data;
 
