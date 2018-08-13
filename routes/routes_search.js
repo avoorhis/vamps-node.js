@@ -61,11 +61,23 @@ router.get('/blast', helpers.isLoggedIn, function(req, res) {
 //
 //
 router.get('/geo_by_tax', helpers.isLoggedIn, function(req, res) {
-
-    res.render('search/geo_by_tax', { title: 'VAMPS:Search',
-        user  :     req.user,hostname: req.CONFIG.hostname,
-        ranks :   JSON.stringify(req.CONSTS.RANKS),
-        token :   req.CONFIG.MAPBOX_TOKEN
+    var phyla = []
+    var ranks_without_domain = req.CONSTS.RANKS.slice(1)
+    var qSelect = "select phylum from phylum order by phylum"
+    var query = req.db.query(qSelect, function (err, rows, fields){
+        
+        for(i in rows){
+            //console.log(rows[i])
+            phyla.push(rows[i].phylum)
+        }
+       
+        res.render('search/geo_by_tax', { title: 'VAMPS:Search',
+            user  :     req.user,hostname: req.CONFIG.hostname,
+            ranks :   JSON.stringify(ranks_without_domain),
+            //domains : JSON.stringify(req.CONSTS.DOMAINS.domains),
+            phyla :  JSON.stringify(phyla),
+        
+        });
     });
 });
 //
@@ -78,28 +90,147 @@ router.get('/geo', helpers.isLoggedIn, function(req, res) {
         token :   req.CONFIG.MAPBOX_TOKEN
     });
 });
+router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
+    console.log('in geo_by_tax_search');
+    console.log('req.body-->>');
+    console.log(req.body);
+    console.log('<<--req.body');
+    var rank = req.body.rank
+    var tax = req.body.tax
+    function finish_no_data(){
+        res.render('search/geo_by_tax', { title: 'VAMPS:Search',
+                    user  :     req.user,hostname: req.CONFIG.hostname,
+                    ranks :   JSON.stringify(req.CONSTS.RANKS),
+                    domains : JSON.stringify(req.CONSTS.DOMAINS.domains),
+                    
+        });
+    }
+    var qSelect = "select DISTINCT project,project_id,dataset,dataset_id,latitude,longitude,\n"
+    qSelect += " concat_ws(';',domain,phylum,klass,`order`,family,genus,species) as tax\n"
+    qSelect += " FROM sequence_pdr_info\n"
+    qSelect += " JOIN sequence_uniq_info using (sequence_id)\n"
+    qSelect += " JOIN silva_taxonomy_info_per_seq using(silva_taxonomy_info_per_seq_id)\n"
+    qSelect += " JOIN silva_taxonomy using(silva_taxonomy_id)\n"
+    qSelect += " JOIN dataset using(dataset_id)\n"
+    qSelect += " JOIN project using(project_id)\n"
+    qSelect += " JOIN required_metadata_info using(dataset_id)\n"
+    qSelect += " JOIN domain on(domain.domain_id=silva_taxonomy.domain_id)\n"
+    qSelect += " JOIN phylum using(phylum_id)\n"
+    qSelect += " JOIN klass using(klass_id)\n"
+    qSelect += " JOIN `order` using(order_id)\n"
+    qSelect += " JOIN family using(family_id)\n"
+    qSelect += " JOIN genus using(genus_id)\n"
+    qSelect += " JOIN species using(species_id)\n"
+    qSelect += " WHERE `"+rank+"`='"+tax+"'"
+    console.log(qSelect)
+    var latlon_datasets = {}
+    latlon_datasets.points = {}
+    taxa_collector = {}
+    var query = req.db.query(qSelect, function (err, rows, fields){
+            if (err) return(err);
+            console.log('Long Query Finished')
+            if(rows.length == 0){
+                req.flash('fail', 'No Lat-Lon Data Found');
+                //console.log('No Data Found')
+                finish_no_data() 
+                return;   
+            }else{
+                var null_counter = 0
+                for(i in rows){
+                    // if(rows[i].dataset_id == '815'){
+//                       console.log('pre 815')
+//                       console.log(rows[i])
+//                     }
+                    if(rows[i].latitude == null || rows[i].longitude == null){
+                        //console.log('Got null lat/lon')
+                        null_counter += 1
+                    }else{
+                      var pjds = rows[i].project+'--'+rows[i].dataset
+                      var did = rows[i].dataset_id
+                      if(!taxa_collector.hasOwnProperty(did)){
+                        //console.log('adding did '+did)
+                        taxa_collector[did] = {}
+                      }
+                      
+                      if(taxa_collector[did].hasOwnProperty('tax')){
+                        //console.log('found tax')
+                        taxa_collector[did]['tax'].push(rows[i].tax)
+                      }else{
+                        //console.log('new tax')
+                        taxa_collector[did]['tax'] = [rows[i].tax] 
+                      }
+                      latlon_datasets.points[did] = {}
+                    
+                      latlon_datasets.points[did].proj_dset = pjds
+                      latlon_datasets.points[did].pid = rows[i].project_id
+                      latlon_datasets.points[did].latitude = rows[i].latitude
+                      latlon_datasets.points[did].longitude = rows[i].longitude  
+                    }
+                    
+                }
+                // add tax array
+                for(did in latlon_datasets.points){
+                    latlon_datasets.points[did].tax = taxa_collector[did].tax
+                }
+                // console.log('815')
+//                 console.log(taxa_collector['815'].tax)
+                if(null_counter == rows.length){  // ie all the data is null
+                    req.flash('fail', 'No Lat-Lon Data Found');
+                    //console.log('No Good Data Found')
+                    finish_no_data() 
+                    return;   
+                      
+                }else{
+                    //`console.log(latlon_datasets)
+                    
+                    res.render('search/geo_by_tax_map', { title: 'VAMPS:Search',
+                        user  :     req.user,hostname: req.CONFIG.hostname,
+                        data :   JSON.stringify(latlon_datasets),
+                        tax_name : tax,
+                        rank: rank,
+                        token :   req.CONFIG.MAPBOX_TOKEN
+                    })
+                    return
+                }
+                
+                
+            }
+    }) 
+})
 router.post('/all_taxa_by_rank', helpers.isLoggedIn, function(req, res) {
 	console.log('in all_taxa_by_rank');
     console.log('req.body-->>');
     console.log(req.body);
     console.log('<<--req.body');
-    
+    function finish(result){
+        res.json(result)
+    }
     var rank = req.body.rank
-    var qSelect = "SELECT `"+rank+"` FROM `"+rank+"`"
-    console.log(qSelect)
     var result = []
-    var query = req.db.query(qSelect, function (err, rows, fields){
-    	if (err) return(err);
-    	for(i in rows){
-    		console.log(rows[i])
-    		if(rows[i][rank]){
-    			result.push(rows[i][rank])
-    		}
-    	}
-    	result.sort()
-    	console.log(result)
-    	res.json(result)
-    })
+    if(rank == 'domain'){
+        
+        for(i in req.CONSTS.DOMAINS.domains){
+            result.push(req.CONSTS.DOMAINS.domains[i].name)
+        }
+        console.log(result)
+        finish(result)
+    }else{
+        var qSelect = "SELECT `"+rank+"` FROM `"+rank+"`"
+        console.log(qSelect)
+       
+        var query = req.db.query(qSelect, function (err, rows, fields){
+            if (err) return(err);
+            for(i in rows){
+                console.log(rows[i])
+                if(rows[i][rank]){
+                    result.push(rows[i][rank])
+                }
+            }
+            result.sort()
+            console.log(result)
+            finish(result)
+        })
+    }
     
 });
 router.post('/geo_search', helpers.isLoggedIn, function(req, res) {

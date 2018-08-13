@@ -541,8 +541,54 @@ function check_selected(code){
     }
   }
 }
+function initMap_tax(data, token) {
+        //console.log('data')
+        //console.log(data)
+        
+        data_markers = L.layerGroup() 
+        var popup = new L.Popup();
+        oms.addListener('click', function(marker) {
+          popup.setContent(marker.desc);
+          popup.setLatLng(marker.getLatLng());
+          mymap.openPopup(popup);
+        });
 
-function initMap(data, token) {
+        var point_collector = {}
+        if(Object.keys(data.points).length > 0){
+          for(did in data.points){
+            
+            loc = L.latLng(+data.points[did].latitude, +data.points[did].longitude)
+            
+            var html = "<a href='/projects/"+data.points[did].pid+"'>"+data.points[did].proj_dset+"</a>" //:<br>"+data.points[did].tax
+            //console.log('start')
+            //console.log(did)
+            //console.log(data.points[did].tax)
+            for(i in data.points[did].tax){
+                if(i == 8){
+                    html += '<br>And More....'
+                    break
+                }
+                html += '<br>'+data.points[did].tax[i]
+            }
+            var data_point = L.marker(loc,{})
+            oms.addMarker(data_point);
+
+            data_markers.addLayer(data_point)
+            data_point.bindPopup(html,{maxWidth : 800});
+            data_point.on('mouseover', function (e) {
+                this.openPopup();
+            });
+            
+          }
+        }
+        
+        
+        data_markers.addTo(mymap)
+       
+        
+        
+}
+function initMap(data) {
         //console.log('data')
         //console.log(data)
         if(typeof data === 'undefined' || Object.keys(data).length == 0){
@@ -610,14 +656,22 @@ function initMap(data, token) {
         if(typeof data_markers != 'undefined'){
             mymap.removeLayer(data_markers)
         }
-        data_markers = L.layerGroup() 
+        data_markers = L.layerGroup()
+        var popup = new L.Popup();
+        oms.addListener('click', function(marker) {
+          popup.setContent(marker.desc);
+          popup.setLatLng(marker.getLatLng());
+          mymap.openPopup(popup);
+        }); 
+        var html = ''
         if(Object.keys(data.points).length > 0){
+          //var i = 0
           for(did in data.points){
             
             loc = L.latLng(+data.points[did].latitude, +data.points[did].longitude)
-            
-            var html = "<a href='/projects/"+data.points[did].pid+"'>"+data.points[did].proj_dset+"</a>"
+            html = "<a href='/projects/"+data.points[did].pid+"'>"+data.points[did].proj_dset+"</a><br>"
             var data_point = L.marker(loc,{})
+            oms.addMarker(data_point);
             data_markers.addLayer(data_point)
             data_point.bindPopup(html);
             data_point.on('mouseover', function (e) {
@@ -626,6 +680,7 @@ function initMap(data, token) {
             
           }
         }
+        
         data_markers.addTo(mymap)
         var BoundCoordinates = [  SW,NW,NE,SE,SW   ];        
         
@@ -758,7 +813,7 @@ function get_taxa_name(rank){
 		  var response = JSON.parse(xmlhttp.responseText);
 		  console.log('done')
 		  //console.log(response)
-		  var html = '<select>'
+		  var html = "<select name='tax'>"
 		  for(i in response){
 		  	//console.log('AA '+response[i])
 		  	html += "<option>"+response[i]+"</option>"
