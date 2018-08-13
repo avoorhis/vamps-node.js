@@ -75,11 +75,17 @@ function setMarkers(map, loc_data, pid_collector) {
     var marker = L.marker([data[1],data[2]],{}).addTo(map);
     
     lines = data[0].split(':::')
-    var html = '';
+    if(lines.length > 10){
+      var html = "<div style='height:200px;width:300px;overflow:auto;'>";
+    }else{
+      var html = "<div>";
+    }
+    
     for(l in lines){
-    	var pid = pid_collector[lines[l]];
+    	var pid = pid_collector[lines[l]];    	
     	html += "<a href='/projects/"+pid+"'>" + lines[l] + "</a><br>"
     }
+    html += "</div>";
     marker.bindPopup(html);
     marker.on('mouseover', function (e) {
         this.openPopup();
