@@ -15,7 +15,7 @@ class Dataset {
 
   convert_dataset_name(my_str) {
     // only letters, numbers, and underscore
-    return my_str.replace(/[W_]+/g, "_");
+    return my_str.replace(/[W_ ]+/g, "_");
   }
 
   convert_all_dataset_names(names_arr) {
@@ -38,7 +38,8 @@ class Dataset {
       curr_obj                             = this.req.form;
       this.DatasetInfo.dataset_id          = dataset_ids;
       this.DatasetInfo.dataset             = this.convert_all_dataset_names(curr_obj["sample_name"]);
-      this.DatasetInfo.dataset_description = curr_obj.dataset_description;
+      this.DatasetInfo.dataset_description = curr_obj.dataset_description || this.DatasetInfo.dataset;
+      this.DatasetInfo.tube_label          = this.convert_all_dataset_names(curr_obj["sample_name"]);
       this.DatasetInfo.project_id          = Array(this.datasets_length).fill(this.pid, 0);
       this.DatasetInfo.created_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
       this.DatasetInfo.updated_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
@@ -149,16 +150,6 @@ class Dataset {
     myArray[myArray.length] = obj;
   }
 
-  // function appendOutput (item) {
-  //   fetchData(item).then(function () {
-  //     output.innerHTML += item;
-  //   });
-  // }
-//   for (var i = 0; i < array.length; i++) {
-//   appendOutput(array[i]); // output: hello
-// }
-
-
   getAllDatasets(callback) {
 
     return connection.query("Select * from dataset", callback);
@@ -176,37 +167,10 @@ class Dataset {
     return connection.query("select * from dataset where dataset in " + dataset_names + "AND project_id = ?", [this.pid], callback);
   }
 
-// getDatasetById(id, callback) {
-//
-//   return connection.query("select * from dataset where dataset_id = ?", [dataset_id], callback);
-// }
-//dataset_id, dataset, dataset_description, project_id, created_at, updated_at,
-
-// new_dataset.addDataset(function (err, rows) {
-// console.time("TIME: in make_metadata_object_from_form, add dataset");
-// if (err) {
-//   console.log('WWW0 err', err);
-//   req.flash('fail', err);
-// }
-// else {
-//   console.log('New datasets SAVED');
-//   console.log('WWW rows', rows);
-//   // var did = rows.insertId;
-//   // new_dataset.add_info_to_dataset_globals(dataset_obj, did);
-//
-// }
-
   addDataset(callback) {
     var query = this.make_query();
     return connection.query(query, callback);
   }
-
-// deleteDataset(id, callback) {
-//   return connection.query("delete from dataset where Id=?", [id], callback);
-// }
-// updateDataset(id, Dataset, callback) {
-//   return connection.query("update dataset set Title=?,Status=? where Id=?", [Dataset.Title, Dataset.Status, id], callback);
-// }
 
 }
 
