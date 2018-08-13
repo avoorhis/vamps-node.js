@@ -910,14 +910,15 @@ showDatasets = function () {
     }
   });
 };
-
-showSampleNumber = function () {
-  $('#first_td_new').html('Sample #').show();
-  var $columnNo = $(this).closest('td').index();
-  $('#header_th_div').html($columnNo).show();
-  // var $this_tbl = $('table#fixed_table_base');
-
-};
+//
+// showSampleNumber = function () {
+//   alert("TTT");
+//   $('#first_td').html('Sample #').show();
+//   var $columnNo = $(this).closest('td').index();
+//   $('#header_th_div').html($columnNo).show();
+//   // var $this_tbl = $('table#fixed_table_base');
+//
+// };
 
 showSubmitMessage = function () {
   $('#add_project_form_submit_btn').click(function () {
@@ -1009,6 +1010,5 @@ $(document).ready(function () {
   // CopyColumn();
   addCopyFirst();
   copyFirst();
-  showSampleNumber();
   fnAdjustTable();
 });

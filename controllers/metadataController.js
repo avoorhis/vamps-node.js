@@ -592,7 +592,8 @@ class CreateDataObj {
       'primer_suite_id',
       'run_id',
       'sequencing_platform_id',
-      'target_gene_id'];
+      'target_gene_id',
+      'sample_num'];
 
     all_field_names = helpers.unique_array(all_field_names.concat(more_fields));
 
@@ -627,6 +628,8 @@ class CreateDataObj {
         all_metadata[pid][field_name] = this.fill_out_arr_doubles(val, repeat_times);
       }
     }
+
+    all_metadata[pid].sample_num  = Array.from(new Array(repeat_times), (val, index) => index + 1);
 
     console.log('FFF1 all_metadata[pid] before');
     console.log(JSON.stringify(all_metadata[pid]));
@@ -765,6 +768,7 @@ class CreateDataObj {
     // var all_field_names4_temp = CONSTS.ORDERED_METADATA_NAMES;
     var parameter            = CONSTS.ORDERED_METADATA_NAMES.slice(0, 1);
     var new_user_submit      = [['', 'New submit info', '', '']];
+    var sample_num           = [['sample_num', 'Sample Number', 'MBL Supplied', '']];
     var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
     var dataset_description  = [['dataset_description', 'Dataset description', 'User Supplied', '']];
     var tube_label           = [['tube_label', 'Tube label', 'User Supplied', '']];
@@ -790,6 +794,7 @@ class CreateDataObj {
 
     all_field_names4 = all_field_names4.concat(parameter);
     all_field_names4 = all_field_names4.concat(new_user_submit);
+    all_field_names4 = all_field_names4.concat(sample_num);
     all_field_names4 = all_field_names4.concat(user_sample_name);
     all_field_names4 = all_field_names4.concat(dataset_description);
     all_field_names4 = all_field_names4.concat(tube_label);
@@ -810,6 +815,7 @@ class CreateDataObj {
     //       domain: ['', '', ''],
     //       first_name: [ 'Mohammadkarim', 'Mohammadkarim', 'Mohammadkarim' ],
     // module.exports.render_edit_form(req, res, all_metadata, all_field_names4);
+
 
     var all_field_units = MD_CUSTOM_UNITS[project_obj.pid];
 
