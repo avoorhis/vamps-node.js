@@ -173,7 +173,7 @@ function bindInfoWindow(marker, map, infowindow, html) {
   google.maps.event.addListener(marker, 'mouseover', function () {
     infowindow.setContent(html);
     infowindow.open(map, marker);
-  });
+  })
 }
 
 //
@@ -908,8 +908,15 @@ showDatasets = function () {
       $('#table_div_header').hide();
       $('#firstTd').hide();
     }
-
   });
+};
+
+showSampleNumber = function () {
+  $('#first_td_new').html('Sample #').show();
+  var $columnNo = $(this).closest('td').index();
+  $('#header_th_div').html($columnNo).show();
+  // var $this_tbl = $('table#fixed_table_base');
+
 };
 
 showSubmitMessage = function () {
@@ -928,15 +935,30 @@ showSubmitMessage = function () {
 // console.log(req);
 // req.flash("fail", msg);
 
+// showUnits = function () {
+//   $('label').hover(function () {
+//     $field_name = $(this).attr('for').slice(0, -1);
+//
+//     $unit = all_field_units_js[$field_name];
+//     if ($unit) {
+//       result = $unit;
+//     }
+//     else {
+//       result = ordered_field_names_obj_js[$field_name][1][3];
+//     }
+//
+//     $(this).css('cursor', 'pointer').attr('title', result);
+//   }, function () {
+//     $(this).css('cursor', 'auto');
+//   });
+// };
+
 showUnits = function () {
   $('label').hover(function () {
-    $field_name = $(this).attr('for').slice(0, -1);
+    var $field_name = $(this).attr('for').slice(0, -1);
 
-    $unit = all_field_units_js[$field_name];
-    if ($unit) {
-      result = $unit;
-    }
-    else {
+    var result = all_field_units_js[$field_name];
+    if (!result) {
       result = ordered_field_names_obj_js[$field_name][1][3];
     }
 
@@ -945,6 +967,7 @@ showUnits = function () {
     $(this).css('cursor', 'auto');
   });
 };
+
 // ---
 
 //164#Amaral Zettler Linda#Amaral Zettler#Linda#amaral@mbl.edu
@@ -986,5 +1009,6 @@ $(document).ready(function () {
   // CopyColumn();
   addCopyFirst();
   copyFirst();
+  showSampleNumber();
   fnAdjustTable();
 });
