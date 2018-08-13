@@ -62,7 +62,7 @@ router.get('/blast', helpers.isLoggedIn, function(req, res) {
 //
 router.get('/geo_by_tax', helpers.isLoggedIn, function(req, res) {
     var phyla = []
-    var ranks_without_domain = req.CONSTS.RANKS.slice(1)
+    var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)
     var qSelect = "select phylum from phylum order by phylum"
     var query = req.db.query(qSelect, function (err, rows, fields){
         
@@ -100,7 +100,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
     function finish_no_data(){
         
         var phyla = []
-        var ranks_without_domain = req.CONSTS.RANKS.slice(1)
+        var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)
         var qSelect = "select phylum from phylum order by phylum"
         var query = req.db.query(qSelect, function (err, rows, fields){
         
