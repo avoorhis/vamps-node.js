@@ -16,10 +16,9 @@ router.get('/portals_index', function(req, res) {
 //
 router.get('/visuals_index/:portal', function(req, res) {
     console.log('in portals visuals_index')
-    console.log(ALL_DATASETS);
     
     var portal = req.params.portal;
-    console.log('visuals_index: '+portal);
+    //console.log('visuals_index: '+portal);
     
     var project_list = helpers.get_portal_projects(req, portal)
     
@@ -52,8 +51,7 @@ router.get('/projects/:portal', function(req, res) {
     project_list.sort(function(a, b){
           return helpers.compareStrings_alpha(a.project, b.project);
     });
-    console.log('project_list')
-    console.log(project_list)
+    
     res.render('portals/projects', { 
             title     : 'VAMPS:'+portal+'Portals',
             user      : req.user,hostname: req.CONFIG.hostname,
@@ -117,7 +115,7 @@ router.get('/:portal', function(req, res) {
     var pagetitle, maintitle, subtitle;
 
     var pi = req.CONSTS.PORTALS[portal]
-    console.log('pi',pi)
+    
     res.render('portals/home', { 
             title       : pi.pagetitle,
             maintitle   : pi.maintitle,
@@ -236,7 +234,7 @@ function get_portal_metadata(req, portal){
             for(p in pi.suffixes){
               //console.log('p3',p,pi.suffixes[p])
               if( pname.substring(pname.length - pi.suffixes[p].length) === pi.suffixes[p] ){
-                  console.log('FOUND in suffixes '+pname)
+                 // console.log('FOUND in suffixes '+pname)
                   pjds = pname+'--'+DATASET_NAME_BY_DID[did]
                   portal_info[portal].metadata[pjds] = {}
                   portal_info[portal].metadata[pjds].pid = pid

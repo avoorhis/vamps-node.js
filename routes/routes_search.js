@@ -98,11 +98,24 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
     var rank = req.body.rank
     var tax = req.body.tax
     function finish_no_data(){
-        res.render('search/geo_by_tax', { title: 'VAMPS:Search',
-                    user  :     req.user,hostname: req.CONFIG.hostname,
-                    ranks :   JSON.stringify(req.CONSTS.RANKS),
-                    domains : JSON.stringify(req.CONSTS.DOMAINS.domains),
-                    
+        
+        var phyla = []
+        var ranks_without_domain = req.CONSTS.RANKS.slice(1)
+        var qSelect = "select phylum from phylum order by phylum"
+        var query = req.db.query(qSelect, function (err, rows, fields){
+        
+            for(i in rows){
+                //console.log(rows[i])
+                phyla.push(rows[i].phylum)
+            }
+       
+            res.render('search/geo_by_tax', { title: 'VAMPS:Search',
+                user  :     req.user,hostname: req.CONFIG.hostname,
+                ranks :   JSON.stringify(ranks_without_domain),
+                //domains : JSON.stringify(req.CONSTS.DOMAINS.domains),
+                phyla :  JSON.stringify(phyla),
+        
+            });
         });
     }
     var qSelect = "select DISTINCT project,project_id,dataset,dataset_id,latitude,longitude,\n"
@@ -137,26 +150,23 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
             }else{
                 var null_counter = 0
                 for(i in rows){
-                    // if(rows[i].dataset_id == '815'){
-//                       console.log('pre 815')
-//                       console.log(rows[i])
-//                     }
+                    
                     if(rows[i].latitude == null || rows[i].longitude == null){
-                        //console.log('Got null lat/lon')
+                        
                         null_counter += 1
                     }else{
                       var pjds = rows[i].project+'--'+rows[i].dataset
                       var did = rows[i].dataset_id
                       if(!taxa_collector.hasOwnProperty(did)){
-                        //console.log('adding did '+did)
+                        
                         taxa_collector[did] = {}
                       }
                       
                       if(taxa_collector[did].hasOwnProperty('tax')){
-                        //console.log('found tax')
+                        
                         taxa_collector[did]['tax'].push(rows[i].tax)
                       }else{
-                        //console.log('new tax')
+                        
                         taxa_collector[did]['tax'] = [rows[i].tax] 
                       }
                       latlon_datasets.points[did] = {}
@@ -172,11 +182,10 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
                 for(did in latlon_datasets.points){
                     latlon_datasets.points[did].tax = taxa_collector[did].tax
                 }
-                // console.log('815')
-//                 console.log(taxa_collector['815'].tax)
+                
                 if(null_counter == rows.length){  // ie all the data is null
                     req.flash('fail', 'No Lat-Lon Data Found');
-                    //console.log('No Good Data Found')
+                    
                     finish_no_data() 
                     return;   
                       
@@ -212,7 +221,7 @@ router.post('/all_taxa_by_rank', helpers.isLoggedIn, function(req, res) {
         for(i in req.CONSTS.DOMAINS.domains){
             result.push(req.CONSTS.DOMAINS.domains[i].name)
         }
-        console.log(result)
+        
         finish(result)
     }else{
         var qSelect = "SELECT `"+rank+"` FROM `"+rank+"`"
@@ -221,13 +230,11 @@ router.post('/all_taxa_by_rank', helpers.isLoggedIn, function(req, res) {
         var query = req.db.query(qSelect, function (err, rows, fields){
             if (err) return(err);
             for(i in rows){
-                console.log(rows[i])
                 if(rows[i][rank]){
                     result.push(rows[i][rank])
                 }
             }
             result.sort()
-            console.log(result)
             finish(result)
         })
     }
@@ -409,7 +416,6 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
       datasets.ids = [];
       datasets.names = [];
       for(var n in rows){
-        console.log(rows[n]);
         did = rows[n]['did'];
         try{
           pid = PROJECT_ID_BY_DID[did];
@@ -462,7 +468,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
     }
   }
   var join_type = req.body.join_type;
-  console.log(searches);
+  //console.log(searches);
 
   var ds1, ds2, ds3 = [];
   var result = get_search_datasets(req.user, searches.search1);
@@ -470,9 +476,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
   searches.search1.datasets = result.datasets;
   searches.search1.dataset_count = searches.search1.datasets.length;
   searches.search1.ds_plus = get_dataset_search_info(result.datasets, searches.search1);
-  console.log('result1',result)
-
-
+  
   if('search2' in searches){
 
     result = get_search_datasets(req.user, searches.search2);
@@ -559,7 +563,7 @@ router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
 	}
 
 	var result = (hint === "") ? ("No Suggestions") : (hint);
-	console.log('result= '+result);
+	//console.log('result= '+result);
 	res.send(result);
 
 });
@@ -750,7 +754,7 @@ router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req
 
 
   this_item.full_string = tax_str;
-  console.log('sending tax_str',this_item);
+  //console.log('sending tax_str',this_item);
   res.json(this_item);
 
 });
@@ -830,7 +834,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
               args :       [ blast_cmd,"-db ",dbs_string,"-outfmt","15","-query",query_file_path,"-out",out_file_path,'-task',task ],
             };
             //var blastn_cmd = 'blastn -db '+blast_db+' -query '+query_file_path+' -outfmt 13 -out '+out_file_path0
-            console.log(blast_options.args.join(' '))
+            //console.log(blast_options.args.join(' '))
             //return   TTTAGAGGGGTTTTGCGCAGCTAACGCG
            //  var blast_process = exec( "sh",blast_options.args, {
         //             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
@@ -941,7 +945,6 @@ router.get('/seqs_hit/:seqid/:ds', helpers.isLoggedIn, function(req, res) {
       var obj = {};
 
       for(var i in rows){
-        console.log(rows[i])
         p = rows[i].project
         d = rows[i].dataset
         pjds = p+'--'+d
@@ -949,8 +952,7 @@ router.get('/seqs_hit/:seqid/:ds', helpers.isLoggedIn, function(req, res) {
         pub = rows[i].public;
         seq = rows[i].seq
         pid = rows[i].project_id
-        console.log(seq.toString())
-       
+               
         if(!obj.hasOwnProperty('pjds')){
           obj[pjds] = {};          
         }
@@ -1063,7 +1065,7 @@ function get_search_datasets_did(datasets, search, did, mdname, mdvalue){
               datasets.push(did);
             }
           }else if(search.hasOwnProperty('comparison') && search.comparison === 'greater_than'){
-            console.log('in gt')
+            
             search_value = Number(search['single-comparison-value']);
             if(Number(mdvalue) >= search_value){
               //console.log('greater_than: val '+mdname+' - '+mdvalue);

@@ -565,7 +565,7 @@ function initMap_tax(data, token) {
             //console.log(data.points[did].tax)
             for(i in data.points[did].tax){
                 if(i == 8){
-                    html += '<br>And More....'
+                    html += '<br>More....'
                     break
                 }
                 html += '<br>'+data.points[did].tax[i]
@@ -802,7 +802,7 @@ function blast(){
 }
 function get_taxa_name(rank){
 	console.log('in get_taxa_name')
-	console.log(rank)
+	//console.log(rank)
 	args = 'rank='+ rank
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.open("POST", "all_taxa_by_rank", true);
@@ -811,7 +811,7 @@ function get_taxa_name(rank){
 		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 
 		  var response = JSON.parse(xmlhttp.responseText);
-		  console.log('done')
+		  //console.log('done')
 		  //console.log(response)
 		  var html = "<select name='tax'>"
 		  for(i in response){
