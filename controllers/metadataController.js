@@ -767,7 +767,7 @@ class CreateDataObj {
     var all_field_names4     = [];
     // var all_field_names4_temp = CONSTS.ORDERED_METADATA_NAMES;
     var parameter            = CONSTS.ORDERED_METADATA_NAMES.slice(0, 1);
-    var new_user_submit      = [['', 'New submit info', '', '']];
+    var new_user_submit      = [['', 'Please fill in', '', '']];
     var sample_num           = [['sample_num', 'Sample Number', 'MBL Supplied', '']];
     var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
     var dataset_description  = [['dataset_description', 'Dataset description', 'User Supplied', '']];

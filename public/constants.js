@@ -884,7 +884,7 @@ constants.ORDERED_METADATA_DIVIDERS = ["Biological",
   "Enter either volume or mass",
   "General",
   "MBL generated laboratory metadata",
-  "New submit info",
+  "Please fill in",
   "Non-biological",
   "Parameter",
   "Sample handling",
@@ -982,6 +982,7 @@ constants.METADATA_FORM_REQUIRED_FIELDS = ["adapter_sequence",
   "sequencing_meth",
   "target_gene",
   "temperature",
+  "tube_label",
   "user_sample_name"
 ];
 
