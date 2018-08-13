@@ -901,7 +901,7 @@ showDatasets = function () {
   $('#table_div').on('scroll', function () {
     if ($('#table_div').scrollTop() > 0) {
       $('#table_div_header').show();
-      $('#firstTd').html('VAMPS dataset name').show();
+      $('#firstTd').html('VAMPS dataset').show();
     }
     $('#table_div_header').scrollLeft($('#table_div').scrollLeft());
     if ($('#table_div').scrollTop() === 0) {
