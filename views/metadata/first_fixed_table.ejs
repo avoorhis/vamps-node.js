@@ -1,90 +1,113 @@
 <% if (all_metadata) { %>
-
-<table #fixed_col_wrap>
-    <tbody>
-    <tr>
-        <th id="firstTd">
-        </th>
-        <td>
-            <div id="table_div_header" >
-                <table id="dataset_headers" >
-                    <tbody>
-                    <tr>
-                        <% for (var idx in all_metadata[pid]["dataset"]) { %>
-                            <td class="header_th"><div class="header_th_div"><%= all_metadata[pid]["dataset"][idx]%></div></td>
-                        <% } %>
-                    </tr>
-                    </tbody>
-
-                </table>
-            </div>
-        </td>
-    </tr>
-
-    <tr>
-        <td valign="top">
-            <div id="firstcol_div" >
-                <table id="first_col_table">
-                    <tbody>
-                    <!-- all_metadata -->
-                    <!-- for each project  -->
-                    <% for (var key in all_metadata) { %>
-                        <% if (all_field_names) { %>
-                        <!-- for each field name  -->
-                        <% for (var idx in all_field_names) {
-                            field_name = all_field_names[idx][0]
-                        %>
+    <table #fixed_col_wrap>
+        <tbody>
+        <tr>
+            <th id="firstTd">
+            </th>
+            <td>
+                <div id="table_div_header">
+                    <table id="dataset_headers">
+                        <tbody>
                         <tr>
-                        <!--first column  -->
-                        <% include first_column.ejs %>
-                        <!-- second column: MBL or user supplied -->
-                        <td><%= all_field_names[idx][2] %></td>
-                        <% } %>
-                        <% } %>
-                    <% } %>
-                    </tbody>
-                </table>
-            </div>
-        </td>
-        <td valign="top">
-            <div id="table_div">
+                            <% if (all_metadata[pid]["sample_num"]) { %>
+                                <% for (var idx in all_metadata[pid]["sample_num"]) { %>
+                                    <td class="header_th">
+                                        <div class="header_th_div"><%= all_metadata[pid]["sample_num"][idx] %></div>
+                                    </td>
+                                <% } %>
+                            <% } else { %>
+                                <% for (var idx in all_metadata[pid]["dataset"]) { %>
+                                    <td class="header_th">
+                                        <div class="header_th_div"><%= all_metadata[pid]["dataset"][idx] %></div>
+                                    </td>
+                                <% } %>
+                            <% } %>
 
-            <table id="fixed_table_base" >
-                <tbody>
-                    <% for (var key in all_metadata) { %>
-                        <% if (all_field_names) { %>
-                        <!-- for each field name  -->
-                            <% for (var idx in all_field_names) {
-                                field_name = all_field_names[idx][0]
-                            %>
-                            <tr>
-                                <% for (var did in all_metadata[pid]["dataset_id"]) { %>
-                                <%   include third_column.ejs %>
-                                <% } %> <!-- for (var did in all_metadata[pid]["dataset_id"])  -->
-                            </tr>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                <div id="firstcol_div">
+                    <table id="first_col_table">
+                        <tbody>
+                        <!-- all_metadata -->
+                        <!-- for each project  -->
+                        <% for (var key in all_metadata) { %>
+                            <% if (all_field_names) { %>
+                                <!-- for each field name  -->
+                                <% for (var idx in all_field_names) {
+                                    field_name = all_field_names[idx][0]
+                                %>
+                        <tr>
+                            <!--first column  -->
+                            <% include first_column.ejs %>
+                            <!-- second column: MBL or user supplied -->
+                            <td><%= all_field_names[idx][2] %></td>
+                            <% } %>
+                            <% } %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+            <td valign="top">
+                <div id="table_div">
+
+                    <table id="fixed_table_base">
+                        <tbody>
+                        <% for (var key in all_metadata) { %>
+                            <% if (all_field_names) { %>
+                                <!-- for each field name  -->
+                                <% for (var idx in all_field_names) {
+                                    field_name = all_field_names[idx][0]
+                                %>
+                                <tr>
+                                    <% for (var did in all_metadata[pid]["dataset_id"]) { %>
+                                        <% include third_column.ejs %>
+                                    <% } %>
+                                    <!-- for (var did in all_metadata[pid]["dataset_id"])  -->
+                                </tr>
+                                <% } %>
                             <% } %>
                         <% } %>
-                    <% } %>
-                    </tbody>
-                </table>
-            </div>
-    </tr>
-    <tfoot>
-    <tr>
-        <td colspan="<%= all_field_names.length%>" class="header_divider">
-            <ul>
-                <li>Custom data fields can be created here.  Please be aware that creating custom fields means that your data can not be compared with other data, and will be of less benefit to the greater community.</li>
-                <li>For IODP core sample identifier syntax, see <a href="http://www-odp.tamu.edu/publications/199_IR/chap_02/c2_.htm" target="_blank">ODP Publication Explanatory Notes.</a></li>
-                <li>If creating multiples of the same custom field, please use a numeral as part of the name, example FISH probe1, FISH probe2, FISH probe3, etc.</li>
-                <li>Please check the field name and units before submitting, it <strong>cannot</strong> be changed or removed after.</li>
-            </ul>
-        </td>
-    </tr>
-    <tr>
-        <td><button type="button" id="addrow">Add Row</button> <button type="button" id="removerow">Remove Row</button></td>
+                        </tbody>
+                    </table>
+                </div>
+        </tr>
+        <tfoot>
+        <tr>
+            <td colspan="<%= all_field_names.length %>" class="header_divider">
+                <ul>
+                    <li>Custom data fields can be created here. Please be aware that creating custom fields means that
+                        your data can not be compared with other data, and will be of less benefit to the greater
+                        community.
+                    </li>
+                    <li>For IODP core sample identifier syntax, see <a
+                                href="http://www-odp.tamu.edu/publications/199_IR/chap_02/c2_.htm" target="_blank">ODP
+                            Publication Explanatory Notes.</a></li>
+                    <li>If creating multiples of the same custom field, please use a numeral as part of the name,
+                        example FISH probe1, FISH probe2, FISH probe3, etc.
+                    </li>
+                    <li>Please check the field name and units before submitting, it <strong>cannot</strong> be changed
+                        or removed after.
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button type="button" id="addrow">Add Row</button>
+                <button type="button" id="removerow">Remove Row</button>
+            </td>
 
-    </tr>
-    </tfoot>
-    </tbody>
-</table>
+        </tr>
+        </tfoot>
+        </tbody>
+    </table>
 <% } %>
