@@ -124,6 +124,10 @@ class Dataset {
     this.DatasetInfo.dataset_id = [];
 
     for (let i = 0; i < this.datasets_length; i++) {
+      if (this.dataset_objects_arr[pid].length !== this.datasets_length) {
+        console.log("EEEE1 dataset_objects_arr[pid] = ", JSON.stringify(this.dataset_objects_arr[pid]));
+        console.log("this.datasets_length = ", this.datasets_length);
+      }
       var dataset_info = this.dataset_objects_arr[pid][i];
       var myArray_dataset_id = this.DatasetInfo.dataset_id;
       this.add_obj_to_arr(dataset_info.dataset_id, myArray_dataset_id);
@@ -150,16 +154,6 @@ class Dataset {
     myArray[myArray.length] = obj;
   }
 
-  // function appendOutput (item) {
-  //   fetchData(item).then(function () {
-  //     output.innerHTML += item;
-  //   });
-  // }
-//   for (var i = 0; i < array.length; i++) {
-//   appendOutput(array[i]); // output: hello
-// }
-
-
   getAllDatasets(callback) {
 
     return connection.query("Select * from dataset", callback);
@@ -177,37 +171,10 @@ class Dataset {
     return connection.query("select * from dataset where dataset in " + dataset_names + "AND project_id = ?", [this.pid], callback);
   }
 
-// getDatasetById(id, callback) {
-//
-//   return connection.query("select * from dataset where dataset_id = ?", [dataset_id], callback);
-// }
-//dataset_id, dataset, dataset_description, project_id, created_at, updated_at,
-
-// new_dataset.addDataset(function (err, rows) {
-// console.time("TIME: in make_metadata_object_from_form, add dataset");
-// if (err) {
-//   console.log('WWW0 err', err);
-//   req.flash('fail', err);
-// }
-// else {
-//   console.log('New datasets SAVED');
-//   console.log('WWW rows', rows);
-//   // var did = rows.insertId;
-//   // new_dataset.add_info_to_dataset_globals(dataset_obj, did);
-//
-// }
-
   addDataset(callback) {
     var query = this.make_query();
     return connection.query(query, callback);
   }
-
-// deleteDataset(id, callback) {
-//   return connection.query("delete from dataset where Id=?", [id], callback);
-// }
-// updateDataset(id, Dataset, callback) {
-//   return connection.query("update dataset set Title=?,Status=? where Id=?", [Dataset.Title, Dataset.Status, id], callback);
-// }
 
 }
 

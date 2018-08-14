@@ -571,6 +571,7 @@ class CreateDataObj {
       'run_id',
       'sequencing_platform_id',
       'target_gene_id',
+      'tube_label',
       'sample_num'];
 
     all_field_names = helpers.unique_array(all_field_names.concat(more_fields));
@@ -597,6 +598,9 @@ class CreateDataObj {
       var val        = current_info[field_name] || '';
       if (typeof current_info[field_name] !== 'undefined') {
         all_metadata[pid][field_name] = [current_info[field_name]];
+      }
+      if (typeof all_metadata[pid] === 'undefined') {
+        all_metadata[pid] = {};
       }
       //todo: split if, if length == dataset_ids.length - just use as is
       if ((typeof all_metadata[pid] !== 'undefined') && (typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
