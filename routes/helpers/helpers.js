@@ -2203,5 +2203,5 @@ function jsUcfirst(string)
 //     }
 //     return new_pname;
 // }
-};
->>>>>>> master
+
+
