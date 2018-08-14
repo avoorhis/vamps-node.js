@@ -115,28 +115,6 @@ class CreateDataObj {
     return this.fill_out_arr_doubles(to_repeat, repeat_times);
   }
 
-
-  // This function cyclomatic complexity is too high (6)
-  // add_project_abstract_info(all_metadata_pid, repeat_times) { // use project_obj.abstract_data instead
-  //   if ((all_metadata_pid['project_abstract'] === 'undefined') || (typeof all_metadata_pid['project_abstract'] === 'undefined') || (!all_metadata_pid.hasOwnProperty(['project_abstract'])) || (all_metadata_pid['project_abstract'].length === 0) ) {
-  //     all_metadata_pid['project_abstract'] = this.fill_out_arr_doubles('', repeat_times);
-  //   }
-  //   else {
-  //
-  //     if ((all_metadata_pid['project_abstract'][0] !== 'undefined') && (!Array.isArray(all_metadata_pid['project_abstract'][0]))) {
-  //
-  //       var project_abstract_correct_form = helpers.unique_array(all_metadata_pid['project_abstract']);
-  //
-  //       if (typeof project_abstract_correct_form[0] !== 'undefined') {
-  //
-  //         all_metadata_pid['project_abstract'] = this.fill_out_arr_doubles(project_abstract_correct_form[0].split(','), repeat_times);
-  //
-  //       }
-  //     }
-  //   }
-  //   return all_metadata_pid;
-  // }
-
   make_metadata_object_from_form() {
     console.time("TIME: make_metadata_object_from_form");
     console.trace("Show me, I'm in make_metadata_object_from_form");

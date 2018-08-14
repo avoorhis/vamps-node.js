@@ -15,7 +15,7 @@ class Dataset {
 
   convert_dataset_name(my_str) {
     // only letters, numbers, and underscore
-    return my_str.replace(/[W_]+/g, "_");
+    return my_str.replace(/[^A-z0-9]+/g, "_");
   }
 
   convert_all_dataset_names(names_arr) {
@@ -39,6 +39,7 @@ class Dataset {
       this.DatasetInfo.dataset_id          = dataset_ids;
       this.DatasetInfo.dataset             = this.convert_all_dataset_names(curr_obj["sample_name"]);
       this.DatasetInfo.dataset_description = curr_obj.dataset_description;
+      this.DatasetInfo.tube_label          = this.DatasetInfo.dataset;
       this.DatasetInfo.project_id          = Array(this.datasets_length).fill(this.pid, 0);
       this.DatasetInfo.created_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
       this.DatasetInfo.updated_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
