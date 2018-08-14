@@ -15,7 +15,7 @@ class Dataset {
 
   convert_dataset_name(my_str) {
     // only letters, numbers, and underscore
-    return my_str.replace(/[W_ ]+/g, "_");
+    return my_str.replace(/[^A-z0-9]+/g, "_");
   }
 
   convert_all_dataset_names(names_arr) {
@@ -124,6 +124,10 @@ class Dataset {
     this.DatasetInfo.dataset_id = [];
 
     for (let i = 0; i < this.datasets_length; i++) {
+      if (this.dataset_objects_arr[pid].length !== this.datasets_length) {
+        console.log("EEEE1 dataset_objects_arr[pid] = ", JSON.stringify(this.dataset_objects_arr[pid]));
+        console.log("this.datasets_length = ", this.datasets_length);
+      }
       var dataset_info = this.dataset_objects_arr[pid][i];
       var myArray_dataset_id = this.DatasetInfo.dataset_id;
       this.add_obj_to_arr(dataset_info.dataset_id, myArray_dataset_id);

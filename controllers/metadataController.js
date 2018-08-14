@@ -621,6 +621,9 @@ class CreateDataObj {
       if (typeof current_info[field_name] !== 'undefined') {
         all_metadata[pid][field_name] = [current_info[field_name]];
       }
+      if (typeof all_metadata[pid] === 'undefined') {
+        all_metadata[pid] = {};
+      }
       //todo: split if, if length == dataset_ids.length - just use as is
       if ((typeof all_metadata[pid] !== 'undefined') && (typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
         all_metadata[pid][field_name] = this.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
