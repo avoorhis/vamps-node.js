@@ -544,7 +544,6 @@ var geospatial_div = document.getElementById('geospatial_div');
 
 var pre_geospatial_div = document.getElementById('pre_geospatial_div');
 if (geospatial_link !== null) {
-  //google.maps.event.addDomListener(window, 'load', initialize);
   geospatial_link.addEventListener('click', function () {
       
     if(typeof geospatial_created == "undefined"){
@@ -585,7 +584,7 @@ var adiversity_div = document.getElementById('adiversity_div');
 
 var pre_adiversity_div = document.getElementById('pre_adiversity_div');
 if (adiversity_link !== null) {
-  //google.maps.event.addDomListener(window, 'load', initialize);
+  
   adiversity_link.addEventListener('click', function () {
       
     if(typeof adiversity_created == "undefined"){
@@ -593,7 +592,6 @@ if (adiversity_link !== null) {
         
       }else{
         if(adiversity_btn.value == 'hide'){        
-         // toggle_visual_element(adiversity_div,'show',adiversity_btn);
         }else{
           toggle_visual_element(adiversity_div,'hide',adiversity_btn);
         }
@@ -603,7 +601,6 @@ if (adiversity_link !== null) {
 }
 if (typeof adiversity_btn !== "undefined") {
   adiversity_btn.addEventListener('click', function () {
-      //alert('here in tt')
       if(adiversity_btn.value == 'hide'){        
         toggle_visual_element(adiversity_div,'show',adiversity_btn);
       }else{
@@ -626,7 +623,6 @@ var phyloseq_bars01_div = document.getElementById('phyloseq_bars01_div');
 
 var pre_phyloseq_bars01_div = document.getElementById('pre_phyloseq_bars01_div');
 if (phyloseq_bars01_link !== null) {
-  //google.maps.event.addDomListener(window, 'load', initialize);
   phyloseq_bars01_link.addEventListener('click', function () {
       
     if(typeof phyloseq_bars01_created == "undefined"){
@@ -634,7 +630,6 @@ if (phyloseq_bars01_link !== null) {
         
       }else{
         if(phyloseq_bars01_btn.value == 'hide'){        
-         // toggle_visual_element(adiversity_div,'show',adiversity_btn);
         }else{
           toggle_visual_element(phyloseq_bars01_div,'hide',phyloseq_bars01_btn);
         }
@@ -644,7 +639,6 @@ if (phyloseq_bars01_link !== null) {
 }
 if (typeof phyloseq_bars01_btn !== "undefined") {
   phyloseq_bars01_btn.addEventListener('click', function () {
-      //alert('here in tt')
       if(phyloseq_bars01_btn.value == 'hide'){        
         toggle_visual_element(phyloseq_bars01_div,'show',phyloseq_bars01_btn);
       }else{
@@ -667,7 +661,6 @@ var phyloseq_hm02_div = document.getElementById('phyloseq_hm02_div');
 
 var pre_phyloseq_hm02_div = document.getElementById('pre_phyloseq_hm02_div');
 if (phyloseq_hm02_link !== null) {
-  //google.maps.event.addDomListener(window, 'load', initialize);
   phyloseq_hm02_link.addEventListener('click', function () {
       
     if(typeof phyloseq_hm02_created == "undefined"){
@@ -685,7 +678,6 @@ if (phyloseq_hm02_link !== null) {
 }
 if (typeof phyloseq_hm02_btn !== "undefined") {
   phyloseq_hm02_btn.addEventListener('click', function () {
-      //alert('here in tt')
       if(phyloseq_hm02_btn.value == 'hide'){        
         toggle_visual_element(phyloseq_hm02_div,'show',phyloseq_hm02_btn);
       }else{
@@ -707,7 +699,6 @@ var phyloseq_nw03_btn = document.getElementById('phyloseq_nw03_hide_btn');
 var phyloseq_nw03_div = document.getElementById('phyloseq_nw03_div');
 var pre_phyloseq_nw03_div = document.getElementById('pre_phyloseq_nw03_div');
 if (phyloseq_nw03_link !== null) {
-  //google.maps.event.addDomListener(window, 'load', initialize);
   phyloseq_nw03_link.addEventListener('click', function () {
       
     if(typeof phyloseq_nw03_created == "undefined"){
@@ -715,7 +706,6 @@ if (phyloseq_nw03_link !== null) {
         
       }else{
         if(phyloseq_nw03_btn.value == 'hide'){        
-         // toggle_visual_element(adiversity_div,'show',adiversity_btn);
         }else{
           toggle_visual_element(phyloseq_nw03_div,'hide',phyloseq_nw03_btn);
         }
@@ -725,7 +715,6 @@ if (phyloseq_nw03_link !== null) {
 }
 if (typeof phyloseq_nw03_btn !== "undefined") {
   phyloseq_nw03_btn.addEventListener('click', function () {
-      //alert('here in tt')
       if(phyloseq_nw03_btn.value == 'hide'){        
         toggle_visual_element(phyloseq_nw03_div,'show',phyloseq_nw03_btn);
       }else{
@@ -748,15 +737,12 @@ var phyloseq_ord04_div = document.getElementById('phyloseq_ord04_div');
 
 var pre_phyloseq_ord04_div = document.getElementById('pre_phyloseq_ord04_div');
 if (phyloseq_ord04_link !== null) {
-  //google.maps.event.addDomListener(window, 'load', initialize);
   phyloseq_ord04_link.addEventListener('click', function () {
       
     if(typeof phyloseq_ord04_created == "undefined"){
         create_viz('phyloseq_ord04', pi_local.ts, false, cts_local);
-        
       }else{
         if(phyloseq_ord04_btn.value == 'hide'){        
-         // toggle_visual_element(adiversity_div,'show',adiversity_btn);
         }else{
           toggle_visual_element(phyloseq_ord04_div,'hide',phyloseq_ord04_btn);
         }
@@ -766,7 +752,6 @@ if (phyloseq_ord04_link !== null) {
 }
 if (typeof phyloseq_ord04_btn !== "undefined") {
   phyloseq_ord04_btn.addEventListener('click', function () {
-      //alert('here in tt')
       if(phyloseq_ord04_btn.value == 'hide'){        
         toggle_visual_element(phyloseq_ord04_div,'show',phyloseq_ord04_btn);
       }else{
@@ -789,15 +774,11 @@ var phyloseq_tree05_div = document.getElementById('phyloseq_tree05_div');
 
 var pre_phyloseq_tree05_div = document.getElementById('pre_phyloseq_tree05_div');
 if (phyloseq_tree05_link !== null) {
-  //google.maps.event.addDomListener(window, 'load', initialize);
   phyloseq_tree05_link.addEventListener('click', function () {
-      
     if(typeof phyloseq_tree05_created == "undefined"){
         create_viz('phyloseq_tree05', pi_local.ts, false, cts_local);
-        
       }else{
         if(phyloseq_tree05_btn.value == 'hide'){        
-         // toggle_visual_element(adiversity_div,'show',adiversity_btn);
         }else{
           toggle_visual_element(phyloseq_tree05_div,'hide',phyloseq_tree05_btn);
         }
@@ -807,7 +788,6 @@ if (phyloseq_tree05_link !== null) {
 }
 if (typeof phyloseq_tree05_btn !== "undefined") {
   phyloseq_tree05_btn.addEventListener('click', function () {
-      //alert('here in tt')
       if(phyloseq_tree05_btn.value == 'hide'){        
         toggle_visual_element(phyloseq_tree05_div,'show',phyloseq_tree05_btn);
       }else{
@@ -847,7 +827,7 @@ if (typeof phyloseq_tree05_open_btn !== "undefined") {
 var cytoscape_link = document.getElementById('cytoscape_link_id') || null;
 var cytoscape_btn = document.getElementById('cytoscape_hide_btn');
 var cytoscape_div = document.getElementById('cytoscape_div');
-//var cytoscape_download_btn = document.getElementById('cytoscape_download_btn');
+
 var pre_cytoscape_div = document.getElementById('pre_cytoscape_div');
 if (cytoscape_link !== null) {
   cytoscape_link.addEventListener('click', function () {
@@ -858,7 +838,7 @@ if (cytoscape_link !== null) {
         //cytoscape_download_btn.disabled = false;
       }else{
         if(cytoscape_btn.value == 'hide'){        
-         // toggle_visual_element(geospatial_div,'show',geospatial_btn);
+         
         }else{
           toggle_visual_element(cytoscape_div,'hide',cytoscape_btn);
         }
@@ -868,7 +848,7 @@ if (cytoscape_link !== null) {
 }
 if (typeof cytoscape_btn !== "undefined") {
   cytoscape_btn.addEventListener('click', function () {
-      //alert('here in tt')
+      
       if(cytoscape_btn.value == 'hide'){        
         toggle_visual_element(cytoscape_div,'show',cytoscape_btn);
       }else{

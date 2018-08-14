@@ -534,7 +534,6 @@ var adiversity_div = document.getElementById('adiversity_div');
 
 var pre_adiversity_div = document.getElementById('pre_adiversity_div');
 if (adiversity_link !== null) {
-  //google.maps.event.addDomListener(window, 'load', initialize);
   adiversity_link.addEventListener('click', function () {
       
     if(typeof adiversity_created == "undefined"){

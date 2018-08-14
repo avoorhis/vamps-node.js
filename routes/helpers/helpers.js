@@ -1339,7 +1339,7 @@ module.exports.get_qsub_script_text = function(req, log, dir_path, cmd_name, cmd
    submit_job
    */
   //### Create Cluster Script
-  var cmd_log = path.join(dir_path, 'cmd.log');
+  
   script_text = "#!/bin/bash\n\n";
   script_text += "# CODE:\t"+cmd_name+"\n\n";
   script_text += "# source environment:\n";
@@ -1372,10 +1372,9 @@ module.exports.get_qsub_script_text = function(req, log, dir_path, cmd_name, cmd
   script_text += 'echo -n "qsub: Current working directory: "' + "\n";
   script_text += "pwd\n\n";
 //     script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";
-  script_text += "touch "+cmd_log+"\n\n";
-  script_text += "chmod ugo+rw "+cmd_log+"\n\n";
+  
   for (var i in cmd_list) {
-    script_text += cmd_list[i]+' >> '+cmd_log+"\n";
+    script_text += cmd_list[i]+"\n";
   }
 //
 //     //script_text += "chmod 666 "+log+"\n";
@@ -1450,8 +1449,7 @@ module.exports.deleteFolderRecursive = function (path) {
 //
 //
 //
-module.exports.make_gast_script_txt = function (req, data_dir, project, opts) {
-
+module.exports.make_gast_script_txt = function(req, data_dir, project, cmd_list, opts) {
   console.log('OPTS: ')
   console.log(opts)
   make_gast_script_txt = "";
@@ -1467,7 +1465,7 @@ module.exports.make_gast_script_txt = function (req, data_dir, project, opts) {
 
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
-  make_gast_script_txt += `FILE_NUMBER=\`wc -l < ${data_dir}/filenames.list\``;
+  make_gast_script_txt += `FILE_NUMBER=\`/usr/bin/wc -l < ${data_dir}/filenames.list\``;
   make_gast_script_txt += "\n";
 
   make_gast_script_txt += "echo \"total files = $FILE_NUMBER\" >> " + data_dir + "/clust_gast_ill_" + project + ".sh.sge_script.sh.log\n"
@@ -1534,15 +1532,23 @@ module.exports.make_gast_script_txt = function (req, data_dir, project, opts) {
 
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
-
-  if (module.exports.isLocal(req)) {
+  make_gast_script_txt += "export SGE_ROOT=/opt/sge\n";
+  make_gast_script_txt += "source /groups/vampsweb/"+req.CONFIG.site+"/seqinfobin/vamps_environment.sh\n\n"
+  if (module.exports.isLocal(req))
+  {
     // # TODO: make local version, iterate over (splited) files in LISTFILE instead of qsub
     make_gast_script_txt += "bash " + data_dir + "/clust_gast_ill_" + project + ".sh\n";
   }
-  else {
-    make_gast_script_txt += "qsub -sync y " + data_dir + "/clust_gast_ill_" + project + ".sh\n";
+  else
+  {
+    // the -sync y tag means that the following install scripts will run AFTER the cluster gast scripts finish
+    make_gast_script_txt += "qsub -sync y "+data_dir+"/clust_gast_ill_"+project+".sh\n";
   }
-  // qsub -cwd -sync y ${data_dir}/clust_gast_ill_${project}.sh`;
+  make_gast_script_txt +=  "echo \"Done with cluster_gast\" >> "+data_dir+"/cluster.log\n"
+  make_gast_script_txt +=  "echo \"Running install scripts (see log)\" >> "+data_dir+"/cluster.log\n"
+  for (var i in cmd_list) {    
+    make_gast_script_txt += cmd_list[i]+"\n";
+  }
 
   make_gast_script_txt += "\n";
   // make_gast_script_txt += "touch " + path.join(data_dir, "TEMP.tmp");
@@ -2177,3 +2183,25 @@ exports.findByValueOfObject = function (arr, key, value) {
   console.timeEnd('TIME: transpose_2d_arr');
   return newArray;
 }
+function jsUcfirst(string)
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+// module.exports.validate_name = function (name) {
+//     console.log('helpers.validate_name: '+name)
+//     pattern=/([^a-zA-Z0-9\.]+)/gi
+//     
+//     var new_pname = name.replace(pattern, '_')
+//     //console.log('xx: '+new_name)
+//     if(new_pname.length > 30){
+//         //console.log('too long')
+//         return false;
+//     }
+//     if(new_pname.length < 3){
+//         //console.log('too short')
+//         return false;
+//     }
+//     return new_pname;
+// }
+};
+>>>>>>> master

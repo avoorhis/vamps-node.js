@@ -434,9 +434,10 @@ def push_taxonomy(args):
             if args.verbose:
                 print(f.id)
                 print('items',items)
-            id = items[0].split()[0]
+            (id, freq) = get_id_and_frequency(f.id)
+            #id = items[0].split()[0]
             tmp_seqs[id]={}
-            freq = items[1].split(':')[1]  # WILL have id|frequency:x
+            #freq = items[1].split(':')[1]  # WILL have id|frequency:x
             
             tmp_seqs[id]['freq'] = freq
             tmp_seqs[id]['seq']= f.seq
@@ -516,7 +517,7 @@ def run_gast_tax_file(args, ds, tax_file, seqs):
             if n==0: 
                 n = n+1
                 continue
-            read_id = items[0].split('|')[0]   # remove |frequency:1
+            (read_id, seq_count) = get_id_and_frequency(items[0])
             
             seq = seqs[read_id]['seq']
             if read_id not in seqs:
@@ -524,7 +525,7 @@ def run_gast_tax_file(args, ds, tax_file, seqs):
             if args.verbose:
                 print('line',line)
                 print('items',items)
-                
+              
             #if ds_file != ds:
             #    sys.exit('Dataset file--name mismatch -- Confused! Exiting!')
             tax_string = items[1]
@@ -534,7 +535,8 @@ def run_gast_tax_file(args, ds, tax_file, seqs):
             
             if rank == 'class': rank = 'klass'
             if rank == 'orderx': rank = 'order'
-            seq_count = items[4]
+            refssu_count = items[4]
+            
             refhvr_ids = items[10]
             tax_items = tax_string.split(';')
             if args.verbose:
@@ -780,6 +782,12 @@ def get_dataset_and_seqid_from_defline(defline):
     seqid = dlitems[1]
     return (dataset, seqid)
     
+def get_id_and_frequency(item_zero):
+    item_zero_items = item_zero.split('|')  # splits off |frequency:1
+    id = item_zero_items[0]   # remove |frequency:1
+    freq = item_zero_items[1].split(':')[1]
+    return (id,freq)
+
 if __name__ == '__main__':
     import argparse
     
@@ -846,7 +854,7 @@ if __name__ == '__main__':
     if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':
         args.hostname = 'vampsdb'
     elif args.site == 'vampsdev' or args.site == 'bpcweb7':
-        args.hostname = 'vampsdev'
+        args.hostname = 'bpcweb7'
     else:
         args.hostname = 'localhost'
         args.NODE_DATABASE = 'vamps_development'

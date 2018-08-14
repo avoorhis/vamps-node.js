@@ -4,12 +4,10 @@
 
 function create_geospatial() {
      
-     //  geospatial_created = true;
-     //  var geo_div = document.getElementById('map-canvas');
       var mapCanvas = document.getElementById('map-canvas');
-	    mapCanvas.innerHTML = '';
+	  mapCanvas.innerHTML = '';
       mapCanvas.style.display = 'block';
-	    mapCanvas.style.height = '900px';
+	  mapCanvas.style.height = '900px';
       
       var loc_data = [];
       var lat_lon_collector = {};
@@ -18,7 +16,6 @@ function create_geospatial() {
       
       for (var ds in md_local) {
       		//ds = md_local[ds]
-          //alert(ds)
           pid_collector[ds] = md_local[ds].pid
           var lat = '';
           var lon = '';
@@ -58,58 +55,43 @@ function create_geospatial() {
           mapCanvas.innerHTML='No Lat-Lon Data Found';
 
       }else{
-        var center = new google.maps.LatLng(loc_data[0][1],loc_data[0][2]); 
-        //alert(center)
-        //var mapCanvas = document.getElementById('map-canvas');
-        var mapOptions = {
-          center : center,
-          zoom   : parseInt(zoom_level),
-          //zoom: 2, for world view far out
-          //zoom 13 for marsh
-          mapTypeId: google.maps.MapTypeId.ROADMAP
+        var mapOptions = {       
+          id: 'mapbox.streets-basic',
+          accessToken: token
         };
-        var map = new google.maps.Map(mapCanvas, mapOptions);
-        var infowindow =  new google.maps.InfoWindow({
-          content: ''
-        });
-
-        setMarkers(map, loc_data, pid_collector, infowindow);
+        var mymap = L.map('map-canvas').setView([41.5257, -70.672], 3)  // centered on Cape Cod
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}',mapOptions).addTo(mymap); 
+        
+        setMarkers(mymap, loc_data, pid_collector);
       }  
 }
 //
 //
 //
-function setMarkers(map, loc_data, pid_collector, infowindow) {
+function setMarkers(map, loc_data, pid_collector) {
   for (var i = 0; i < loc_data.length; i++) {
-    // create a marker
-	 // alert(locations[0])
-    var data = loc_data[i];
-	
-    var myLatLng = new google.maps.LatLng(data[1],data[2]); 
-    var marker = new google.maps.Marker({
-      //title: data[0],
-      position: myLatLng,
-      map: map
-    });
     
-    // add an event listener for this marker
+    var data = loc_data[i];
+    var marker = L.marker([data[1],data[2]],{}).addTo(map);
+    
     lines = data[0].split(':::')
-    var html = '';
+    if(lines.length > 10){
+      var html = "<div style='height:200px;width:300px;overflow:auto;'>";
+    }else{
+      var html = "<div>";
+    }
+    
     for(l in lines){
-    	var pid = pid_collector[lines[l]];
+    	var pid = pid_collector[lines[l]];    	
     	html += "<a href='/projects/"+pid+"'>" + lines[l] + "</a><br>"
     }
-    bindInfoWindow(marker, map, infowindow, "<p>"+html+"</p>"); 
+    html += "</div>";
+    marker.bindPopup(html);
+    marker.on('mouseover', function (e) {
+        this.openPopup();
+    });
 
   }
 
 }
-//
-//
-//
-function bindInfoWindow(marker, map, infowindow, html) { 
-  google.maps.event.addListener(marker, 'mouseover', function() { 
-    infowindow.setContent(html); 
-    infowindow.open(map, marker); 
-  }); 
-} 
+

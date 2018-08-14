@@ -3,7 +3,7 @@ import sys, os, getopt
 import shutil
 import json
 #import IlluminaUtils.lib.fastalib as fastalib
-import fastalibAV as u
+import fastalibAV as fastalib
 class FastaReader:
     def __init__(self,file_name=None):
         self.file_name = file_name
@@ -69,7 +69,7 @@ class Demultiplex:
       sys.exit(2)
     self.fastaunique_cmd = None
     for opt, arg in opts:
-      print ('got',opt,arg)
+      #print ('got',opt,arg)
       if opt == '-h':
         self.usage()
         sys.exit()
@@ -92,13 +92,13 @@ class Demultiplex:
     print ("get_out_file_names")
     n = 0
     #f_input  = fastalib.SequenceSource(inputfile)
-    f_input = u.SequenceSource(inputfile)
+    f_input = fastalib.SequenceSource(inputfile)
     while f_input.next():
       n+=1
       if (n % 100000 == 0 or n == 1):
         sys.stderr.write('\r[demultiplex] Reading FASTA into memory: %s\n' % (n))
         sys.stderr.flush()
-      f_out_name = self.make_file_name(f_input.id)
+      f_out_name = self.find_dataset_name(f_input.id) + ".fa"
       self.out_file_names.add(f_out_name)
   # real  0m4.446s
   
@@ -122,7 +122,7 @@ class Demultiplex:
       [o_file[1].close() for o_file in self.out_files.items()] 
       return
       
-  def make_file_name(self, id):
+  def find_dataset_name(self, id):
     # adjust to your specific defline
     sampleName_items = id.split()[0].split('_')
     test = sampleName_items[-1]
@@ -134,16 +134,13 @@ class Demultiplex:
         sampleName = '_'.join(sampleName_items)
         #print('NO INT',sampleName_items[-1])
     
-    print(sampleName)
-    fileName = sampleName + ".fa"
-    self.sample_names.add(sampleName)
-    #print(fileName)
-    return fileName
+    self.sample_names.add(sampleName)  # only adds if not already there
+    return sampleName
   
   def demultiplex_input(self, inputfile):
     print ("demultiplex_input")
-    #f_input  = fastalib.SequenceSource(inputfile)
-    f_input = FastaReader(inputfile)
+    f_input  = fastalib.SequenceSource(inputfile)
+    #f_input = FastaReader(inputfile)
     i = 0
     total_seq_count = 0
     while f_input.next():
@@ -153,9 +150,9 @@ class Demultiplex:
       read_id = f_input.id.split()[1]  # remove ds and all after the <space>
       
       #>H34Kc.735939_0 HWI-ST753:99:C038WACXX:1:1101:1614:2150 1:N:0: orig_bc=ACTAGCTCCATA new_bc=ACTAGCTCCATA bc_diffs=0
-      print(f_input.id)
-      print(read_id)
-      f_out_name = self.make_file_name(f_input.id)
+      #print(f_input.id)
+      #print(read_id)
+      f_out_name = self.find_dataset_name(f_input.id) + ".fa"
       
       f_output   = self.out_files[f_out_name]
       self.write_id(f_output, read_id)
@@ -186,12 +183,9 @@ class Demultiplex:
         sample_dir = os.path.join(analysis_dir,sample)
         out_fasta = os.path.join(sample_dir,'seqfile.unique.fa')
         out_name = os.path.join(sample_dir,'seqfile.unique.name')
-        
         fastaunique_cmd_list = [ self.fastaunique_cmd,'-o', out_fasta, '-n', out_name, infile]        
-        print(' '.join(fastaunique_cmd_list))
         result = subprocess.check_output(' '.join(fastaunique_cmd_list), shell=True)
-        
-        sum_unique_seq_count += int(result.decode().strip())
+        sum_unique_seq_count += int(result.strip())
         os.chmod(out_fasta, 0o664)
         os.chmod(out_name, 0o664)
         

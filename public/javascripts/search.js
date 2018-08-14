@@ -207,6 +207,7 @@ if (metadata_search_field3 !== null) {
 //
 //
 
+
 function change_comparison(comparison, item){
     var comparison_input;
     var minval;
@@ -484,20 +485,21 @@ function get_bounded_ajax(bounds, msg){
             }
           }else{
             html += "<form id='' method='POST' action='/visuals/unit_selection'>"
-            html += "<div class='pull-right'>Dataset Count: "+Object.keys(data.points).length+"</div>"
             html += "Select <input type='radio' checked id='ds_select' name='ds_select' onclick=\"check_selected('all')\"> All&nbsp;&nbsp;&nbsp;"
             html += "<input type='radio' id='ds_select' name='ds_select' onclick=\"check_selected('none')\"> None&nbsp;&nbsp;&nbsp;&nbsp;"
             html += "<input type='button' class='btn btn-xs btn-primary' value='Use Selected' onclick='validate_geo_selected(this.form)'>"
+            html += "&nbsp;&nbsp;&nbsp;Dataset Count: "+Object.keys(data.points).length
             html += "<input type='hidden' name='from_geo_search' value='1'>"
             html += "<div id='geo_result_div' >"
-            html += "<table class='table'>"
+            html += "<table border='1' >"
+            html += "<tr><th></th><th>Project</th><th>Dataset</th><th>Latitude</th><th>Longitude</th></tr>"
             for(did in data.points){
               html += "<tr>"
               html +="<td><input checked type='checkbox' name='dids' value='"+did+"'></td>"
               html += "<td><a href='/projects/"+data.points[did].pid+"'>"+data.points[did].project+"</a></td>"
               html += "<td>"+data.points[did].dataset+"</td>"
-              html += "<td>Latitude:<br>"+data.points[did].latitude+"</td>"
-              html += "<td>Longitude:<br>"+data.points[did].longitude+"</td>"
+              html += "<td>"+data.points[did].latitude+"</td>"
+              html += "<td>"+data.points[did].longitude+"</td>"
               html += "</tr>"
             }
             html += "</table>"
@@ -539,10 +541,57 @@ function check_selected(code){
     }
   }
 }
+function initMap_tax(data, token) {
+        //console.log('data')
+        //console.log(data)
+        
+        data_markers = L.layerGroup() 
+        var popup = new L.Popup();
+        oms.addListener('click', function(marker) {
+          popup.setContent(marker.desc);
+          popup.setLatLng(marker.getLatLng());
+          mymap.openPopup(popup);
+        });
 
+        var point_collector = {}
+        if(Object.keys(data.points).length > 0){
+          for(did in data.points){
+            
+            loc = L.latLng(+data.points[did].latitude, +data.points[did].longitude)
+            
+            var html = "<a href='/projects/"+data.points[did].pid+"'>"+data.points[did].proj_dset+"</a>" //:<br>"+data.points[did].tax
+            //console.log('start')
+            //console.log(did)
+            //console.log(data.points[did].tax)
+            for(i in data.points[did].tax){
+                if(i == 8){
+                    html += '<br>More....'
+                    break
+                }
+                html += '<br>'+data.points[did].tax[i]
+            }
+            var data_point = L.marker(loc,{})
+            oms.addMarker(data_point);
+
+            data_markers.addLayer(data_point)
+            data_point.bindPopup(html,{maxWidth : 800});
+            data_point.on('mouseover', function (e) {
+                this.openPopup();
+            });
+            
+          }
+        }
+        
+        
+        data_markers.addTo(mymap)
+       
+        
+        
+}
 function initMap(data) {
-
-        if(typeof data === 'undefined'){
+        //console.log('data')
+        //console.log(data)
+        if(typeof data === 'undefined' || Object.keys(data).length == 0){
           data = {}
           data.points = []
           data.boundry = {lat_min:0,lat_max:0,lon_min:0,lon_max:0}
@@ -564,123 +613,154 @@ function initMap(data) {
         var clon = minlon + ((maxlon - minlon)/2)
         var center = {lat:clat,lng:clon}
         var z  // start close??
-        var map = new google.maps.Map(document.getElementById('map'), {
-          //zoom: z,
-          //center: center,
-          mapTypeId: 'hybrid'
-        });
-        var oms = new OverlappingMarkerSpiderfier(map);
 
         if(minlat==0 && maxlat==0 && minlon==0 && maxlon==0){
-              map.setMapTypeId('roadmap');
-              map.setZoom(2)
-              map.setCenter({lat: 0, lng: 0})
+              
         }else{
-          var southWest = new google.maps.LatLng(minlat, minlon);
-          var northEast = new google.maps.LatLng(maxlat, maxlon);
-          var bounds = new google.maps.LatLngBounds(southWest,northEast);
-          map.fitBounds(bounds);
+          
+          var southWest = L.latLng(minlat, minlon);
+          
+          var northEast = L.latLng(maxlat, maxlon);
+          
+          var bounds = L.latLngBounds(southWest,northEast);
+          mymap.fitBounds(bounds);
         }
-
-        var markerSW = new google.maps.Marker({
-          position: SW,
-          map: map,
+        //markers.clearLayers()
+        if(typeof compass_markers == 'object'){
+            compass_markers.clearLayers()
+        }
+        var markerSW = new L.marker(SW,{
           title:'SW',
-          draggable: true,
-          icon: '../images/blue_tilted_pin48x48.png'
-        });
-        var markerSE = new google.maps.Marker({
-          position: SE,
-          map: map,
+          draggable: true, 
+          icon: L.icon({iconUrl:'../images/blue_tilted_pin48x48.png',iconAnchor: [25, 45]})         
+        })
+        
+        var markerSE = new L.marker(SE,{          
           title:'SE',
           draggable: true,
-          icon: '../images/blue_tilted_pin48x48.png'
-        });
-        var markerNW = new google.maps.Marker({
-          position: NW,
-          map: map,
+          icon: L.icon({iconUrl:'../images/blue_tilted_pin48x48.png',iconAnchor: [25, 45]})
+        })
+        var markerNW = new L.marker(NW,{          
           title:'NW',
           draggable: true,
-          icon: '../images/blue_tilted_pin48x48.png'
-        });
-        var markerNE = new google.maps.Marker({
-          position: NE,
-          map: map,
+          icon: L.icon({iconUrl:'../images/blue_tilted_pin48x48.png',iconAnchor: [25, 45]})
+        })
+        var markerNE = new L.marker(NE,{          
           title:'NE',
           draggable: true,
-          icon: '../images/blue_tilted_pin48x48.png'
-        });
-        var iw = new google.maps.InfoWindow();
-        oms.addListener('click', function(marker, event) {
-          iw.setContent(marker.link);
-          iw.open(map, marker);
-        });
-        oms.addListener('spiderfy', function(markers) {
-          iw.close();
-        });
+          icon: L.icon({iconUrl:'../images/blue_tilted_pin48x48.png',iconAnchor: [25, 45]}),
+          
+        })
+        compass_markers = L.layerGroup([markerSW,markerSE,markerNW,markerNE]).addTo(mymap)
+        
+        if(typeof data_markers != 'undefined'){
+            mymap.removeLayer(data_markers)
+        }
+        data_markers = L.layerGroup()
+        var popup = new L.Popup();
+        oms.addListener('click', function(marker) {
+          popup.setContent(marker.desc);
+          popup.setLatLng(marker.getLatLng());
+          mymap.openPopup(popup);
+        }); 
+        var html = ''
         if(Object.keys(data.points).length > 0){
+          //var i = 0
           for(did in data.points){
-            //loc = {lat: +data.points[did].latitude, lng: +data.points[did].longitude}
-            loc = new google.maps.LatLng(+data.points[did].latitude, +data.points[did].longitude)
-            var data_point = new google.maps.Marker({
-              position: loc,
-              map: map,
-              url: '/projects/'+data.points[did].pid,
-              title: data.points[did].proj_dset
-            });
-            data_point.link = "<a href='/projects/"+data.points[did].pid+"'>"+data.points[did].proj_dset+"</a>"
+            
+            loc = L.latLng(+data.points[did].latitude, +data.points[did].longitude)
+            html = "<a href='/projects/"+data.points[did].pid+"'>"+data.points[did].proj_dset+"</a><br>"
+            var data_point = L.marker(loc,{})
             oms.addMarker(data_point);
-            //google.maps.event.addListener(data_point, 'click', function() {window.location.href = data_point.url;});
-
+            data_markers.addLayer(data_point)
+            data_point.bindPopup(html);
+            data_point.on('mouseover', function (e) {
+                this.openPopup();
+            });
+            
           }
         }
-        var BoundCoordinates = [  SW,NW,NE,SE,SW   ];
-        var linePath = new google.maps.Polyline({
-          path: BoundCoordinates,
-          geodesic: true,
+        
+        data_markers.addTo(mymap)
+        var BoundCoordinates = [  SW,NW,NE,SE,SW   ];        
+        
+        mymap.addEventListener('mousemove', function (event) {
+              displayCoordinates(event);
+        });
+        
+        // markerSW
+        markerSW.addEventListener( 'dragend', function (e) {
+            
+            var lat = e.target._latlng.lat
+            var lng = e.target._latlng.lng
+            document.getElementById("SWbox").innerHTML = 'Lat: '+lat.toFixed(6)+'; Long: '+ lng.toFixed(6);
+            SW = {lat: lat, lng: lng}
+            adjust_boundry(mymap,'SW',SW,NW,NE,SE)
+
+        });
+        
+        markerSE.addEventListener('dragend', function (e) {
+            var lat = e.target._latlng.lat
+            var lng = e.target._latlng.lng
+            document.getElementById("SEbox").innerHTML = 'Lat: '+lat.toFixed(6)+'; Long: '+ lng.toFixed(6);
+            SE = {lat: lat, lng: lng}
+            adjust_boundry(mymap,'SE',SW,NW,NE,SE)
+        });
+        markerNW.addEventListener('dragend', function (e) {
+            var lat = e.target._latlng.lat
+            var lng = e.target._latlng.lng
+            document.getElementById("NWbox").innerHTML = 'Lat: '+lat.toFixed(6)+'; Long: '+lng.toFixed(6);
+            NW = {lat: lat, lng: lng}
+            adjust_boundry(mymap,'NW',SW,NW,NE,SE)
+        });
+        markerNE.addEventListener( 'dragend', function (e) {
+            var lat = e.target._latlng.lat
+            var lng = e.target._latlng.lng
+            document.getElementById("NEbox").innerHTML = 'Lat: '+lat.toFixed(6) +'; Long: '+ lng.toFixed(6);
+            NE = {lat: lat, lng: lng}
+            adjust_boundry(mymap,'NE',SW,NW,NE,SE)
+           
+        });
+}
+
+function adjust_boundry(map, pt, SW, NW, NE, SE){
+  console.log('adjusting boundry')
+  //console.log(typeof linePath)
+  if(typeof linePath != 'undefined'){
+        map.removeLayer(linePath)
+  }
+  
+  var BoundCoordinates = [   NW, NE, SE, SW   ];
+ 
+  var new_bounds = get_new_bounds(pt,SW,NW,NE,SE)
+  
+  get_bounded_ajax(new_bounds,[])
+  var southWest = L.latLng(new_bounds.lat_min, new_bounds.lon_min);
+  
+  var northEast = L.latLng(new_bounds.lat_max, new_bounds.lon_max);
+  
+  var bounds = L.latLngBounds(southWest,northEast);
+  
+  NE = [bounds._northEast.lat,bounds._northEast.lng]
+  SE = [bounds._southWest.lat,bounds._northEast.lng]
+  SW = [bounds._southWest.lat,bounds._southWest.lng]
+  NW = [bounds._northEast.lat, bounds._southWest.lng]
+  // console.log(NE)
+//   console.log(SE)
+//   console.log(SW)
+//   console.log(NW)
+ 
+  
+  linePath = L.polyline([NW, NE, SE, SW, NW],{
+          
           strokeColor: '#FF0000',
           strokeOpacity: 1.0,
           strokeWeight: 1
-        });
-
-        linePath.setMap(map);
-        google.maps.event.addListener(map, 'mousemove', function (event) {
-              displayCoordinates(event.latLng);
-        });
-
-        google.maps.event.addListener(markerSW, 'dragend', function (event) {
-            document.getElementById("SWbox").innerHTML = 'Lat: '+event.latLng.lat().toFixed(6)+'; Long: '+ event.latLng.lng().toFixed(6);
-            SW = {lat: event.latLng.lat(), lng: event.latLng.lng()}
-            adjust_boundry(map,linePath,'SW',SW,NW,NE,SE)
-
-        });
-        google.maps.event.addListener(markerSE, 'dragend', function (event) {
-            document.getElementById("SEbox").innerHTML = 'Lat: '+event.latLng.lat().toFixed(6)+'; Long: '+ event.latLng.lng().toFixed(6);
-            SE = {lat: event.latLng.lat(), lng: event.latLng.lng()}
-            adjust_boundry(map,linePath,'SE',SW,NW,NE,SE)
-        });
-        google.maps.event.addListener(markerNW, 'dragend', function (event) {
-            document.getElementById("NWbox").innerHTML = 'Lat: '+event.latLng.lat().toFixed(6)+'; Long: '+ event.latLng.lng().toFixed(6);
-            NW = {lat: event.latLng.lat(), lng: event.latLng.lng()}
-            adjust_boundry(map,linePath,'NW',SW,NW,NE,SE)
-        });
-        google.maps.event.addListener(markerNE, 'dragend', function (event) {
-            document.getElementById("NEbox").innerHTML = 'Lat: '+event.latLng.lat().toFixed(6) +'; Long: '+ event.latLng.lng().toFixed(6);
-            NE = {lat: event.latLng.lat(), lng: event.latLng.lng()}
-            adjust_boundry(map,linePath,'NE',SW,NW,NE,SE)
-            //alert(JSON.stringify(linePath.getPath()))
-        });
-}
-function adjust_boundry(map, linePath, pt, SW, NW, NE, SE){
-  var BoundCoordinates = [   SW,NW,NE,SE,SW   ];
-  linePath.setPath(BoundCoordinates);
-  var new_bounds = get_new_bounds(pt,SW,NW,NE,SE)
-  get_bounded_ajax(new_bounds,[])
-  var southWest = new google.maps.LatLng(new_bounds.lat_min, new_bounds.lon_min);
-  var northEast = new google.maps.LatLng(new_bounds.lat_max, new_bounds.lon_max);
-  var bounds = new google.maps.LatLngBounds(southWest,northEast);
+        }).addTo(mymap)
+ 
   map.fitBounds(bounds);
 }
+
 function get_new_bounds(pt,SW,NW,NE,SE){
 
         var minlat = SW.lat
@@ -708,14 +788,40 @@ function get_new_bounds(pt,SW,NW,NE,SE){
         //console.log(JSON.stringify(bounds))
         return bounds
 }
-function displayCoordinates(pnt) {
-        var lat = pnt.lat();
+
+function displayCoordinates(ev) {
+        var lat = ev.latlng.lat
         lat = lat.toFixed(4);
-        var lng = pnt.lng();
+        var lng = ev.latlng.lng;
         lng = lng.toFixed(4);
-        document.getElementById("coord").innerHTML = 'Cursor location --Latitude: '+lat+' --Longitude: '+lng;
-        //console.log("Latitude: " + lat + "  Longitude: " + lng);
+        document.getElementById("coord").innerHTML = '--Latitude: '+lat+' --Longitude: '+lng;
+        
 }
 function blast(){
     var query = document.getElementById("query").innerHTML
+}
+function get_taxa_name(rank){
+	console.log('in get_taxa_name')
+	//console.log(rank)
+	args = 'rank='+ rank
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.open("POST", "all_taxa_by_rank", true);
+	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+
+		  var response = JSON.parse(xmlhttp.responseText);
+		  //console.log('done')
+		  //console.log(response)
+		  var html = "<select name='tax'>"
+		  for(i in response){
+		  	//console.log('AA '+response[i])
+		  	html += "<option>"+response[i]+"</option>"
+		  }
+		  html += '</select>'
+		  
+		  document.getElementById("availible_tax_names").innerHTML = html
+		}
+	}
+	xmlhttp.send(args);
 }

@@ -488,8 +488,8 @@ constants.VISUAL_THUMBNAILS = {
       thumb: '/images/visuals/heatmap.png',
       //link:'user_viz_data/heatmap',
       //id:'dheatmap_link_id',
-      prefix: 'dheatmap',
-      tip: 'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
+      prefix:'dheatmap',
+      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
     },
 
     {
@@ -515,8 +515,8 @@ constants.VISUAL_THUMBNAILS = {
       thumb: '/images/visuals/fheatmap.png',
       //link:'user_viz_data/frequency_heatmap',
       //id:'fheatmap_link_id',
-      prefix: 'fheatmap',
-      tip: 'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-R (https://www.r-project.org/)-|-pheatmap (R-package)-|-vegan (R-package)-|-jsonlite (R-package)-|-RColorBrewer (R-package)'
+      prefix:'fheatmap',
+      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-R (https://www.r-project.org/)-|-pheatmap (R-package)-|-vegan (R-package)-|-jsonlite (R-package)-|-RColorBrewer (R-package)'
     },
 
     {
@@ -533,25 +533,25 @@ constants.VISUAL_THUMBNAILS = {
       thumb: '/images/visuals/dendrogram.png',
       //link:'user_viz_data/dendrogram',
       //id:'dendrogram1_link_id',
-      prefix: 'dendrogram01',
-      tip: 'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
+      prefix:'dendrogram01',
+      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
     },
 
     //{name:'Dendrogram (d3-phylonator)', thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram2_link_id',
-    //     tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'   },
+    //     tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'   },
 
     {
       name: 'Dendrogram (d3/radial)',
       thumb: '/images/visuals/radial.png',
       //link:'user_viz_data/dendrogram',
       //id:'dendrogram3_link_id',
-      prefix: 'dendrogram03',
-      tip: 'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
+      prefix:'dendrogram03',
+      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
     },
 
 
     // {name:'Dendrogram (py-pdf)',        thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram_pdf_link_id',
-    //     tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-matplotlib (python library)'},
+    //     tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-matplotlib (python library)'},
 
     {
       name: 'PCoA 2D Analyses (R/pdf)',
@@ -567,8 +567,8 @@ constants.VISUAL_THUMBNAILS = {
       thumb: '/images/visuals/emperor.png',
       //link:'user_viz_data/pcoa',
       //id:'pcoa_3d_link_id',
-      prefix: 'pcoa3d',
-      tip: 'Python2.7-|-scikit-bio (python library)-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-QIIME (http://qiime.org)'
+      prefix:'pcoa3d',
+      tip:'Python3-|-scikit-bio (python library)-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-QIIME (http://qiime.org)'
     },
 
     {
@@ -585,8 +585,8 @@ constants.VISUAL_THUMBNAILS = {
       thumb: '/images/visuals/alpha.png',
       //link:'user_viz_data/alpha_diversity',
       //id:'adiversity_link_id',
-      prefix: 'adiversity',
-      tip: 'Python2.7-|-scipy (python library)-|-numpy (python library)-|-scikit-bio'
+      prefix:'adiversity',
+      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-scikit-bio'
     },
 
     {

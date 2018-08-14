@@ -60,13 +60,185 @@ router.get('/blast', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
+router.get('/geo_by_tax', helpers.isLoggedIn, function(req, res) {
+    var phyla = []
+    var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)
+    var qSelect = "select phylum from phylum order by phylum"
+    var query = req.db.query(qSelect, function (err, rows, fields){
+        
+        for(i in rows){
+            //console.log(rows[i])
+            phyla.push(rows[i].phylum)
+        }
+       
+        res.render('search/geo_by_tax', { title: 'VAMPS:Search',
+            user  :     req.user,hostname: req.CONFIG.hostname,
+            ranks :   JSON.stringify(ranks_without_domain),
+            //domains : JSON.stringify(req.CONSTS.DOMAINS.domains),
+            phyla :  JSON.stringify(phyla),
+        
+        });
+    });
+});
+//
+//
+//
 router.get('/geo', helpers.isLoggedIn, function(req, res) {
 
-
     res.render('search/geo_area', { title: 'VAMPS:Search',
-        gekey :   req.CONFIG.GOOGLE_EARTH_KEY,
         user:     req.user,hostname: req.CONFIG.hostname,
+        token :   req.CONFIG.MAPBOX_TOKEN
     });
+});
+router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
+    console.log('in geo_by_tax_search');
+    console.log('req.body-->>');
+    console.log(req.body);
+    console.log('<<--req.body');
+    var rank = req.body.rank
+    var tax = req.body.tax
+    function finish_no_data(){
+        
+        var phyla = []
+        var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)
+        var qSelect = "select phylum from phylum order by phylum"
+        var query = req.db.query(qSelect, function (err, rows, fields){
+        
+            for(i in rows){
+                //console.log(rows[i])
+                phyla.push(rows[i].phylum)
+            }
+       
+            res.render('search/geo_by_tax', { title: 'VAMPS:Search',
+                user  :     req.user,hostname: req.CONFIG.hostname,
+                ranks :   JSON.stringify(ranks_without_domain),
+                //domains : JSON.stringify(req.CONSTS.DOMAINS.domains),
+                phyla :  JSON.stringify(phyla),
+        
+            });
+        });
+    }
+    var qSelect = "select DISTINCT project,project_id,dataset,dataset_id,latitude,longitude,\n"
+    qSelect += " concat_ws(';',domain,phylum,klass,`order`,family,genus,species) as tax\n"
+    qSelect += " FROM sequence_pdr_info\n"
+    qSelect += " JOIN sequence_uniq_info using (sequence_id)\n"
+    qSelect += " JOIN silva_taxonomy_info_per_seq using(silva_taxonomy_info_per_seq_id)\n"
+    qSelect += " JOIN silva_taxonomy using(silva_taxonomy_id)\n"
+    qSelect += " JOIN dataset using(dataset_id)\n"
+    qSelect += " JOIN project using(project_id)\n"
+    qSelect += " JOIN required_metadata_info using(dataset_id)\n"
+    qSelect += " JOIN domain on(domain.domain_id=silva_taxonomy.domain_id)\n"
+    qSelect += " JOIN phylum using(phylum_id)\n"
+    qSelect += " JOIN klass using(klass_id)\n"
+    qSelect += " JOIN `order` using(order_id)\n"
+    qSelect += " JOIN family using(family_id)\n"
+    qSelect += " JOIN genus using(genus_id)\n"
+    qSelect += " JOIN species using(species_id)\n"
+    qSelect += " WHERE `"+rank+"`='"+tax+"'"
+    console.log(qSelect)
+    var latlon_datasets = {}
+    latlon_datasets.points = {}
+    taxa_collector = {}
+    var query = req.db.query(qSelect, function (err, rows, fields){
+            if (err) return(err);
+            console.log('Long Query Finished')
+            if(rows.length == 0){
+                req.flash('fail', 'No Lat-Lon Data Found');
+                //console.log('No Data Found')
+                finish_no_data() 
+                return;   
+            }else{
+                var null_counter = 0
+                for(i in rows){
+                    
+                    if(rows[i].latitude == null || rows[i].longitude == null){
+                        
+                        null_counter += 1
+                    }else{
+                      var pjds = rows[i].project+'--'+rows[i].dataset
+                      var did = rows[i].dataset_id
+                      if(!taxa_collector.hasOwnProperty(did)){
+                        
+                        taxa_collector[did] = {}
+                      }
+                      
+                      if(taxa_collector[did].hasOwnProperty('tax')){
+                        
+                        taxa_collector[did]['tax'].push(rows[i].tax)
+                      }else{
+                        
+                        taxa_collector[did]['tax'] = [rows[i].tax] 
+                      }
+                      latlon_datasets.points[did] = {}
+                    
+                      latlon_datasets.points[did].proj_dset = pjds
+                      latlon_datasets.points[did].pid = rows[i].project_id
+                      latlon_datasets.points[did].latitude = rows[i].latitude
+                      latlon_datasets.points[did].longitude = rows[i].longitude  
+                    }
+                    
+                }
+                // add tax array
+                for(did in latlon_datasets.points){
+                    latlon_datasets.points[did].tax = taxa_collector[did].tax
+                }
+                
+                if(null_counter == rows.length){  // ie all the data is null
+                    req.flash('fail', 'No Lat-Lon Data Found');
+                    
+                    finish_no_data() 
+                    return;   
+                      
+                }else{
+                    //`console.log(latlon_datasets)
+                    
+                    res.render('search/geo_by_tax_map', { title: 'VAMPS:Search',
+                        user  :     req.user,hostname: req.CONFIG.hostname,
+                        data :   JSON.stringify(latlon_datasets),
+                        tax_name : tax,
+                        rank: rank,
+                        token :   req.CONFIG.MAPBOX_TOKEN
+                    })
+                    return
+                }
+                
+                
+            }
+    }) 
+})
+router.post('/all_taxa_by_rank', helpers.isLoggedIn, function(req, res) {
+	console.log('in all_taxa_by_rank');
+    console.log('req.body-->>');
+    console.log(req.body);
+    console.log('<<--req.body');
+    function finish(result){
+        res.json(result)
+    }
+    var rank = req.body.rank
+    var result = []
+    if(rank == 'domain'){
+        
+        for(i in req.CONSTS.DOMAINS.domains){
+            result.push(req.CONSTS.DOMAINS.domains[i].name)
+        }
+        
+        finish(result)
+    }else{
+        var qSelect = "SELECT `"+rank+"` FROM `"+rank+"`"
+        console.log(qSelect)
+       
+        var query = req.db.query(qSelect, function (err, rows, fields){
+            if (err) return(err);
+            for(i in rows){
+                if(rows[i][rank]){
+                    result.push(rows[i][rank])
+                }
+            }
+            result.sort()
+            finish(result)
+        })
+    }
+    
 });
 router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
     console.log('in geo_search result');
@@ -244,7 +416,6 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
       datasets.ids = [];
       datasets.names = [];
       for(var n in rows){
-        console.log(rows[n]);
         did = rows[n]['did'];
         try{
           pid = PROJECT_ID_BY_DID[did];
@@ -297,7 +468,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
     }
   }
   var join_type = req.body.join_type;
-  console.log(searches);
+  //console.log(searches);
 
   var ds1, ds2, ds3 = [];
   var result = get_search_datasets(req.user, searches.search1);
@@ -305,9 +476,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
   searches.search1.datasets = result.datasets;
   searches.search1.dataset_count = searches.search1.datasets.length;
   searches.search1.ds_plus = get_dataset_search_info(result.datasets, searches.search1);
-  console.log('result1',result)
-
-
+  
   if('search2' in searches){
 
     result = get_search_datasets(req.user, searches.search2);
@@ -394,7 +563,7 @@ router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
 	}
 
 	var result = (hint === "") ? ("No Suggestions") : (hint);
-	console.log('result= '+result);
+	//console.log('result= '+result);
 	res.send(result);
 
 });
@@ -585,7 +754,7 @@ router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req
 
 
   this_item.full_string = tax_str;
-  console.log('sending tax_str',this_item);
+  //console.log('sending tax_str',this_item);
   res.json(this_item);
 
 });
@@ -665,7 +834,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
               args :       [ blast_cmd,"-db ",dbs_string,"-outfmt","15","-query",query_file_path,"-out",out_file_path,'-task',task ],
             };
             //var blastn_cmd = 'blastn -db '+blast_db+' -query '+query_file_path+' -outfmt 13 -out '+out_file_path0
-            console.log(blast_options.args.join(' '))
+            //console.log(blast_options.args.join(' '))
             //return   TTTAGAGGGGTTTTGCGCAGCTAACGCG
            //  var blast_process = exec( "sh",blast_options.args, {
         //             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
@@ -689,108 +858,116 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
                     user     : req.user,hostname: req.CONFIG.hostname,
             });
         });
-        console.log('1')
+        
     }
     });
-return
+
 //sh -c "echo -e TTTAGAGGGGTTTTGCGCAGCTAACGCG|/usr/local/ncbi/blast/bin//blastn -db \\"/Users/avoorhis/programming/vamps-node.js/public/blast/Bv6 /Users/avoorhis/programming/vamps-node.js/public/blast/Ev9\\" -outfmt 13 -out /Users/avoorhis/programming/vamps-node.js/tmp/avoorhis_1527702469368_blast_result.json"
-    blast_process.stdout.on('data', function (data) {
-        //console.log('stdout: ' + data);
-        data = data.toString().replace(/^\s+|\s+$/g, '');
-        var lines = data.split('\n');
-        for(var n in lines){
-            console.log('blastn line '+lines[n]);
-        }
-    });
-    blast_process.stderr.on('data', function (data) {
-        //console.log('stdout: ' + data);
-        console.log('stderr: ' + data);
-    });
-console.log('2')
-    // AAGTCTTGACATCCCGATGAAAGATCCTTAACCAGATTCCCTCTTCGGAGCATTGGAGAC
-    blast_process.on('close', function (code) {
-         console.log('blast_process process exited with code ' + code);
-         if(code === 0){
-           console.log('BLAST SUCCESS');
-           // now read file
-           fs.readFile(out_file_path1,'utf8', function(err, data){
-              if(err){
-                req.flash('fail', 'ERROR - Could not read blast outfile');
-                res.redirect('search_index');
-              }else{
-                var obj = JSON.parse(data);
-                console.log(out_file_path1);
-                console.log(data);
-                res.render('search/search_result_blast', {
-                    title    : 'VAMPS: BLAST Result',
-                    data     : data,
-                    show     : 'blast_result',
-                    user     : req.user,hostname: req.CONFIG.hostname,
-                });  //
-
-              }
-           });
-
-         }else{
-            req.flash('fail', 'ERROR - BLAST command exit code: '+code);
-            res.redirect('search_index');
-         }
-    });
+//     blast_process.stdout.on('data', function (data) {
+//         //console.log('stdout: ' + data);
+//         data = data.toString().replace(/^\s+|\s+$/g, '');
+//         var lines = data.split('\n');
+//         for(var n in lines){
+//             console.log('blastn line '+lines[n]);
+//         }
+//     });
+//     blast_process.stderr.on('data', function (data) {
+//         //console.log('stdout: ' + data);
+//         console.log('stderr: ' + data);
+//     });
+// 
+//     // AAGTCTTGACATCCCGATGAAAGATCCTTAACCAGATTCCCTCTTCGGAGCATTGGAGAC
+//     blast_process.on('close', function (code) {
+//          console.log('blast_process process exited with code ' + code);
+//          if(code === 0){
+//            console.log('BLAST SUCCESS');
+//            // now read file
+//            fs.readFile(out_file_path1,'utf8', function(err, data){
+//               if(err){
+//                 req.flash('fail', 'ERROR - Could not read blast outfile');
+//                 res.redirect('search_index');
+//               }else{
+//                 var obj = JSON.parse(data);
+//                 console.log(out_file_path1);
+//                 console.log(data);
+//                 res.render('search/search_result_blast', {
+//                     title    : 'VAMPS: BLAST Result',
+//                     data     : data,
+//                     show     : 'blast_result',
+//                     user     : req.user,hostname: req.CONFIG.hostname,
+//                 });  //
+// 
+//               }
+//            });
+// 
+//          }else{
+//             req.flash('fail', 'ERROR - BLAST command exit code: '+code);
+//             res.redirect('search_index');
+//          }
+//     });
 
 });
 //
 //
 //
-router.get('/seqs/:id', helpers.isLoggedIn, function(req, res) {
+
+//
+//
+//
+router.get('/seqs_hit/:seqid/:ds', helpers.isLoggedIn, function(req, res) {
+  console.log('in /seqs_hit/:seqid/:ds');
   console.log(req.params);
-  var seqid = req.params.id;
+  var seqid = req.params.seqid;
+  var ds    = req.params.ds;
 
-  q_tax = "SELECT domain,phylum,klass,`order`,family,genus";
-  q_tax += " from silva_taxonomy_info_per_seq";
-  q_tax += " JOIN silva_taxonomy using (silva_taxonomy_id)";
-  q_tax += " JOIN domain using (domain_id)";
-  q_tax += " JOIN phylum using (phylum_id)";
-  q_tax += " JOIN klass using (klass_id)";
-  q_tax += " JOIN `order` using (order_id)";
-  q_tax += " JOIN family using (family_id)";
-  q_tax += " JOIN genus using (genus_id)";
-  q_tax += " WHERE sequence_id='"+seqid+"'";
-
-  //we want to know the taxonomy AND which projects
-  q_ds = "SELECT dataset_id, seq_count from sequence_pdr_info";
-  q_ds += " WHERE sequence_id='"+seqid+"'";
-  console.log(q_ds);
-  connection.query(q_ds, function(err, rows, fields){
+ //  q_tax = "SELECT domain,phylum,klass,`order`,family,genus";
+//   q_tax += " from silva_taxonomy_info_per_seq";
+//   q_tax += " JOIN silva_taxonomy using (silva_taxonomy_id)";
+//   q_tax += " JOIN domain using (domain_id)";
+//   q_tax += " JOIN phylum using (phylum_id)";
+//   q_tax += " JOIN klass using (klass_id)";
+//   q_tax += " JOIN `order` using (order_id)";
+//   q_tax += " JOIN family using (family_id)";
+//   q_tax += " JOIN genus using (genus_id)";
+//   q_tax += " WHERE sequence_id='"+seqid+"'";
+    var q = "SELECT project_id, project, dataset, UNCOMPRESS(sequence_comp) as seq, seq_count, public from sequence_pdr_info"
+    q += " JOIN dataset using(dataset_id)"
+    q += " JOIN sequence using(sequence_id)"
+    q += " JOIN project using(project_id)"
+    q += " WHERE sequence_id='"+seqid+"'"
+    q += " AND seq_count > 0"
+  
+  console.log(q);
+  connection.query(q, function(err, rows, fields){
     if(err){
       console.log(err);
     }else{
       var obj = {};
 
       for(var i in rows){
-        did = rows[i].dataset_id;
+        p = rows[i].project
+        d = rows[i].dataset
+        pjds = p+'--'+d
         cnt = rows[i].seq_count;
-        ds  = DATASET_NAME_BY_DID[did];
-        pid = PROJECT_ID_BY_DID[did];
-        pj  = PROJECT_INFORMATION_BY_PID[pid].project;
-        //console.log(did)
-        //console.log(ds)
-        //console.log(pj)
-        if(pj in obj){
-          obj[pj][ds] = cnt;
-        }else{
-          obj[pj] = {};
-          obj[pj][ds] = cnt;
-
+        pub = rows[i].public;
+        seq = rows[i].seq
+        pid = rows[i].project_id
+               
+        if(!obj.hasOwnProperty('pjds')){
+          obj[pjds] = {};          
         }
+        obj[pjds]['count'] = cnt;
+        obj[pjds]['public'] = pub;
+        obj[pjds]['pid'] = pid;
 
       }
       //console.log(obj);
       //console.log(JSON.stringify(obj));
       // AAGTCTTGACATCCCGATGAAAGATCCTTAACCAGATTCCCTCTTCGGAGCATTGGAGAC
-      res.render('search/search_result_blast', {
-                    title    : 'VAMPS: BLAST Result',
-                    show     : 'datasets',
+      res.render('search/search_result_blast_seq', {
+                    title    : 'VAMPS: BLAST Result',        
                     seqid    : seqid,
+                    seq      : seq.toString(),
                     obj      : JSON.stringify(obj),
                     user     : req.user,hostname: req.CONFIG.hostname,
                 });  //
@@ -888,7 +1065,7 @@ function get_search_datasets_did(datasets, search, did, mdname, mdvalue){
               datasets.push(did);
             }
           }else if(search.hasOwnProperty('comparison') && search.comparison === 'greater_than'){
-            console.log('in gt')
+            
             search_value = Number(search['single-comparison-value']);
             if(Number(mdvalue) >= search_value){
               //console.log('greater_than: val '+mdname+' - '+mdvalue);

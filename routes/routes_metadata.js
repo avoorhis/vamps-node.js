@@ -95,22 +95,22 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, function (req, res) {
   });
 });
 
-router.get('/geomap/:item', helpers.isLoggedIn, function (req, res) {
-  console.log('in metadata - geomap');
-  var md_item = req.params.item;
-  if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_item.slice(0, md_item.length - 3)) !== -1) {
-    md_item_show = md_item.slice(0, md_item.length - 3);
-  } else {
-    md_item_show = md_item;
-  }
-  var metadata_info = get_metadata_hash(md_item);  // fxn: see below
-  //console.log('metadata_info')
-  res.render('metadata/geomap', {
-    title: 'VAMPS:Metadata Distribution',
-    user: req.user, hostname: req.CONFIG.hostname,
-    md_item: md_item_show,
-    mdinfo: JSON.stringify(metadata_info),
-    gekey: req.CONFIG.GOOGLE_EARTH_KEY,
+router.get('/geomap/:item', helpers.isLoggedIn, function(req, res) {
+      console.log('in metadata - geomap');
+      var md_item = req.params.item;
+      if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_item.slice(0,md_item.length-3)) !== -1){
+        md_item_show = md_item.slice(0,md_item.length-3);
+      }else{
+        md_item_show = md_item;
+      }
+      var metadata_info = get_metadata_hash(md_item);  // fxn: see below
+      //console.log('metadata_info')
+      res.render('metadata/geomap', { title: 'VAMPS:Metadata Distribution',
+            user    : req.user,hostname: req.CONFIG.hostname,
+            md_item : md_item_show,
+            mdinfo  : JSON.stringify(metadata_info),
+            token   : req.CONFIG.MAPBOX_TOKEN,
+        });
   });
 });
 

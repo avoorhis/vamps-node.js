@@ -33,19 +33,19 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 
 
 
-  /* GET Geo-Distribution page. */
+ 
+
   router.get('/geodistribution', function(req, res) {
 
-	  //console.log(DatasetsWithLatLong)
+	  console.log(DatasetsWithLatLong)
 	  res.render('geodistribution', { title: 'VAMPS:Geo_Distribution',
             user: req.user, 
             hostname: req.CONFIG.hostname,
 	        geodata: JSON.stringify(DatasetsWithLatLong),
-            gekey : req.CONFIG.GOOGLE_EARTH_KEY,
+	        token : req.CONFIG.MAPBOX_TOKEN
+           
         });
-  });
-
-  
+  });  
   //
   //
   //

@@ -37,8 +37,8 @@
                 <% var id_parts = (hit.description[0].id).split('|') %>
                 <tr>
                 <td><%= hit.num %></td>
-                <td><a href=''><%= id_parts[0] %></a>
-                <br>Seq_id: <%= id_parts[1] %>
+                <td>Dataset: <a href='/search/seqs_hit/<%= id_parts[1] %>/<%= id_parts[0] %>'><%= id_parts[0] %></a>
+                <br>Seq_id: <a href='/search/seqs_hit/<%= id_parts[1] %>/<%= id_parts[0] %>'><%= id_parts[1] %></a>
                 <br>Taxonomy: <%= id_parts[2] %>
                 <br><%= id_parts[3] %>
                 </td>

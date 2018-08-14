@@ -323,7 +323,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
                                 post_items      : JSON.stringify(visual_post_items),
                                 user            : req.user,
                                 hostname        : req.CONFIG.hostname,
-                                gekey           : req.CONFIG.GOOGLE_EARTH_KEY,
+                                token           : req.CONFIG.MAPBOX_TOKEN,
                                 image_to_render : JSON.stringify(image_to_open),
              });
 
