@@ -27,6 +27,14 @@ class Project {
     console.log("CCHH this.project_obj = ", this.project_obj);
   }
 
+  get_pid(project_name) {
+    var pid = this.pid;
+    if (typeof PROJECT_INFORMATION_BY_PNAME[project_name] !== 'undefined') {
+      pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
+    }
+    return pid;
+  }
+
   make_project_obj_with_existing_project_info_by_pid() {
     var temp_project_obj = Object.assign(PROJECT_INFORMATION_BY_PID[this.pid]);
 
