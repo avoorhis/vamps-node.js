@@ -472,7 +472,7 @@ function make_metadata_object_from_csv(req, res) {
   var file_name     = req.body.edit_metadata_file;
   const cur_project = new Project(req, res, 0, 0);
   var project_name  = req.body.project || cur_project.get_project_name_from_file_name(file_name);
-  var pid           = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
+  var pid           = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"] || 0;
 
   //data from file
   var inputPath    = path.join(config.USER_FILES_BASE, req.user.username, file_name);
