@@ -33,7 +33,6 @@ class CreateDataObj {
 
     var field_names_arr = [];
 
-
     field_names_arr = field_names_arr.concat(Object.keys(MD_CUSTOM_FIELDS_UNITS));
     for (var i = 0; i < this.dataset_ids.length; i++) {
       var dataset_id = this.dataset_ids[i];
@@ -108,7 +107,7 @@ class CreateDataObj {
   add_project_abstract_info(project_obj, existing_all_metadata_pid, repeat_times) {
     var to_repeat = project_obj.abstract_data.pdfs;
 
-    if ((typeof existing_all_metadata_pid['project_abstract'] !== 'undefined') && (!Array.isArray(existing_all_metadata_pid['project_abstract'][0]))) {
+    if ((typeof existing_all_metadata_pid['project_abstract'] !== 'undefined') && (typeof existing_all_metadata_pid['project_abstract'][0] !== 'undefined') && (!Array.isArray(existing_all_metadata_pid['project_abstract'][0]))) {
       var project_abstract_correct_form = helpers.unique_array(existing_all_metadata_pid['project_abstract']);
       to_repeat = project_abstract_correct_form[0].split(',');
     }
