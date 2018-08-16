@@ -3,7 +3,18 @@ var config  = require(app_root + '/config/config');
 var fs      = require("fs");
 var path    = require("path");
 
-class CsvFiles {
+class CsvFileRead {
+  constructor(req, res, file_name) {
+    this.inputPath   = path.join(config.USER_FILES_BASE, req.user.username, file_name);
+    var file_content = fs.readFileSync(this.inputPath);
+    var parse_sync   = require('csv-parse/lib/sync');
+    this.data_arr    = parse_sync(file_content, {columns: true, trim: true});
+  }
+
+
+}
+
+class CsvFilesWrite {
 
   constructor(req, res) {
     this.req      = req;
@@ -182,5 +193,6 @@ class CsvFiles {
 }
 
 module.exports = {
-  CsvFiles: CsvFiles
+  CsvFileRead: CsvFileRead,
+  CsvFiles: CsvFilesWrite
 };
