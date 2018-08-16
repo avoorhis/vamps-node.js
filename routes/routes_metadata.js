@@ -473,12 +473,7 @@ function make_metadata_object_from_csv(req, res) {
   const cur_project = new Project(req, res, 0, 0);
   var project_name  = req.body.project || cur_project.get_project_name_from_file_name(file_name);
   var pid           = cur_project.get_pid(project_name);
-
-  //data from file
-  // var inputPath    = path.join(config.USER_FILES_BASE, req.user.username, file_name);
-  // var file_content = fs.readFileSync(inputPath);
-  // var parse_sync   = require('csv-parse/lib/sync');
-  // var data_arr     = parse_sync(file_content, {columns: true, trim: true});
+  
   const csv_file_read = new csv_files_controller.CsvFileRead(req, res, file_name);
   var data_arr        = csv_file_read.data_arr;
 
