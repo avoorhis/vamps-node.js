@@ -82,10 +82,8 @@ class Project {
   }
 
 
-  make_project_obj_with_existing_project_info_by_pid() {
-    var temp_project_obj = Object.assign(PROJECT_INFORMATION_BY_PID[this.pid]);
-
-    var pid = this.pid;
+  make_project_obj_with_existing_project_info_by_pid(pid) {
+    var temp_project_obj = Object.assign(PROJECT_INFORMATION_BY_PID[pid]);
 
     temp_project_obj.project_description = PROJECT_INFORMATION_BY_PID[pid].description;
     temp_project_obj.pi_email            = PROJECT_INFORMATION_BY_PID[pid].email;
@@ -100,32 +98,6 @@ class Project {
 
     this.project_obj = temp_project_obj;
   }
-
-  // make_new_project_obj() {
-  //   var temp_project_obj = {};
-  //
-  //   temp_project_obj = {
-  //     active: 0,
-  //     created_at: new Date(),
-  //     email: this.user_obj.email,
-  //     first: this.user_obj.first_name,
-  //     first_name: this.user_obj.first_name,
-  //     institution: this.user_obj.institution,
-  //     last: this.user_obj.last_name,
-  //     last_name: this.user_obj.last_name,
-  //     matrix: 0,
-  //     oid: this.user_obj.user_id,
-  //     owner_user_id: this.user_obj.user_id,
-  //     permissions: [this.user_obj.user_id], // initially has only project owner_id
-  //     pi_email: this.user_obj.email,
-  //     pi_name: this.user_obj.first_name + ' ' + this.user_obj.last_name,
-  //     pid: 0,
-  //     project_id: 0,
-  //     public: 0,
-  //     updated_at: new Date(),
-  //     username: this.user_obj.username,
-  //   };
-  // }
 
   make_project_obj_from_new_form_info() {
     var temp_project_obj = {};

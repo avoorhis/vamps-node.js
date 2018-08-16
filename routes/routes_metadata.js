@@ -481,6 +481,8 @@ function make_metadata_object_from_csv(req, res) {
     cur_project.make_project_obj_from_new_csv(project_name, data_arr);
   }
   else {
+    cur_project.make_project_obj_with_existing_project_info_by_pid(pid);
+
     var data        = {};
     var dataset_ids = [];
     for (var dict_idx in data_arr) {
