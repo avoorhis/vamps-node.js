@@ -277,6 +277,7 @@ class CreateDataObj {
 
     var owner_id      = PROJECT_INFORMATION_BY_PID[pid].oid;
     const new_project = new Project(req, res, pid, owner_id);
+    new_project.make_project_obj_with_existing_project_info_by_pid(pid);
     var project_info  = new_project.project_obj;
 
     // TODO: move to db creation?

@@ -74,29 +74,30 @@ class Project {
   }
 
   make_project_obj_from_new_csv(project_name, data_arr) {
-    var temp_project_obj = {};
-    var matrix_length   = data_arr.length;
+    var temp_project_obj    = {};
+    var matrix_length       = data_arr.length;
     var transposed_data_arr = helpers.transpose_2d_arr(data_arr, matrix_length);
 
     this.project_obj = temp_project_obj;
   }
 
-
   make_project_obj_with_existing_project_info_by_pid(pid) {
-    var temp_project_obj = Object.assign(PROJECT_INFORMATION_BY_PID[pid]);
+    this.project_obj = Object.assign(PROJECT_INFORMATION_BY_PID[pid]);
+    const owner_id   = this.project_obj.oid;
+    this.user_obj    = User.getUserInfoFromGlobal(owner_id);
 
-    temp_project_obj.project_description = PROJECT_INFORMATION_BY_PID[pid].description;
-    temp_project_obj.pi_email            = PROJECT_INFORMATION_BY_PID[pid].email;
-    temp_project_obj.pi_name             = PROJECT_INFORMATION_BY_PID[pid].first + ' ' + PROJECT_INFORMATION_BY_PID[pid].last;
-    temp_project_obj.first_name          = PROJECT_INFORMATION_BY_PID[pid].first;
-    temp_project_obj.last_name           = PROJECT_INFORMATION_BY_PID[pid].last;
-    temp_project_obj.project_id          = PROJECT_INFORMATION_BY_PID[pid].pid;
-    temp_project_obj.rev_project_name    = helpers.reverseString(PROJECT_INFORMATION_BY_PID[pid].project);
-    temp_project_obj.project_title       = PROJECT_INFORMATION_BY_PID[pid].title;
-    temp_project_obj.abstract_data       = this.get_current_project_abstract_data(temp_project_obj.project);
-    // temp_project_obj.funding             = req.form.funding_code;
+    //renaming
+    this.project_obj.project_description = PROJECT_INFORMATION_BY_PID[pid].description;
+    this.project_obj.pi_email            = PROJECT_INFORMATION_BY_PID[pid].email;
+    this.project_obj.pi_name             = PROJECT_INFORMATION_BY_PID[pid].first + ' ' + PROJECT_INFORMATION_BY_PID[pid].last;
+    this.project_obj.first_name          = PROJECT_INFORMATION_BY_PID[pid].first;
+    this.project_obj.last_name           = PROJECT_INFORMATION_BY_PID[pid].last;
+    this.project_obj.project_id          = PROJECT_INFORMATION_BY_PID[pid].pid;
+    this.project_obj.rev_project_name    = helpers.reverseString(PROJECT_INFORMATION_BY_PID[pid].project);
+    this.project_obj.project_title       = PROJECT_INFORMATION_BY_PID[pid].title;
+    this.project_obj.abstract_data       = this.get_current_project_abstract_data(this.project_obj.project);
+    this.project_obj.permissions         = [this.user_obj.user_id]; // initially has only project owner_id
 
-    this.project_obj = temp_project_obj;
   }
 
   make_project_obj_from_new_form_info() {
