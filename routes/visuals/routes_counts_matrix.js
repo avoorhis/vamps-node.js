@@ -190,7 +190,7 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
             var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
             var taxonomy_object = new_generic_taxonomy
         }else{
-            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");  // default
+            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);  // default
             var taxonomy_object = new_taxonomy
         }
     	var unit_name_lookup = {};			
@@ -213,7 +213,7 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
                 //console.log(did)
                 rank = post_items.tax_depth;
                 //console.log('rank: '+rank)
-				  //if(post_items.unit_choice === 'tax_silva119_simple' || post_items.unit_choice === 'tax_rdp2.6_simple'|| post_items.unit_choice === 'tax_generic_simple') {
+				  //if(post_items.unit_choice === 'tax_'+C.default_taxonomy.name+'_simple' || post_items.unit_choice === 'tax_rdp2.6_simple'|| post_items.unit_choice === 'tax_generic_simple') {
 				if(post_items.unit_choice.substr(post_items.unit_choice.length - 6) === 'simple' ) {
 				  		
 				  		
@@ -313,7 +313,7 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 
 
 
-					}else if(post_items.unit_choice === 'tax_silva119_custom'){
+					}else if(post_items.unit_choice === 'tax_'+C.default_taxonomy.name+'_custom'){
 								// ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 								db_tax_id_list[did] = {};
 

@@ -13,6 +13,9 @@ var constants = {};
 //         'reguser'   : 50,   // public access plus other projects with permission
 //         'guest'     : 99    // public access
 //         }
+constants.default_taxonomy = {name:'silva119',curator:'SILVA (v119)',show:'Silva-119'}
+console.log('in constants')
+console.log(constants.default_taxonomy)
 constants.dataset_count_for_visuals_max     = 1100
 constants.dataset_count_for_visuals_cutoff  = 500
 constants.show_nas   = {"raw":false,"string":"--"};  // if raw==true will show class_NA, genus_NA etc; else show string (tax table only; not biom file)
@@ -55,8 +58,8 @@ constants.TARGETS = ["Av3", "Av3v5","Av4","Av4v5","Av5v6", "Av6", "Av6v4",
   "Bv1v2","Bv1v3","Bv1v4","Bv2","Bv3","Bv3v4","Bv3v5","Bv4","Bv4v5","Bv5","Bv5v6","Bv6", "Bv6v4",
   "Ev4","Ev9","ITS" ];
 constants.UNITSELECT = { units: [
-  {id : 'tax_silva119_simple',file: 'unit_selectors/taxa_silva119_simple.html', name : "Taxonomy (Silva-119) -Simple", subtext: 'Silva119'},
-  {id : 'tax_silva119_custom',file: 'unit_selectors/taxa_silva119_custom.html', name : "Taxonomy (Silva-119) -Custom", subtext: 'Silva119'},
+  {id : 'tax_'+constants.default_taxonomy.name+'_simple',file: 'unit_selectors/taxa_'+constants.default_taxonomy.name+'_simple.html', name : "Taxonomy ("+constants.default_taxonomy.show+") -Simple", subtext: constants.default_taxonomy.show},
+  {id : 'tax_'+constants.default_taxonomy.name+'_custom',file: 'unit_selectors/taxa_'+constants.default_taxonomy.name+'_custom.html', name : "Taxonomy ("+constants.default_taxonomy.show+") -Custom", subtext: constants.default_taxonomy.show},
   {id : 'tax_rdp2.6_simple',  file: 'unit_selectors/taxa_rdp2.6.html',          name : "Taxonomy RDP (v2.6)",     subtext: 'Release 2.6'},
   {id : 'tax_generic_simple', file: 'unit_selectors/taxa_generic.html',         name : "Generic (Matrix)",     subtext: ''},
 
@@ -73,22 +76,22 @@ constants.UNITSELECT = { units: [
 constants.UNIT_ASSIGNMENT_CHOICES2 = {
   'refRDP_2.12-16S': { taxonomy_curator:'RDP (2.12) 16S-rRNA', method:'RDP',  reference_db:'Default (no training)', availability:'available',     refdb:'2.12' },
   'refRDP_2.12-ITS': { taxonomy_curator:'RDP (2.12) ITS-UNITE', method:'RDP',  reference_db:'Default (no training)', availability:'available',     refdb:'2.12' },
-  'refssu':   { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'refssu (full-length)',  availability:'available',     refdb:'refssu' },
-  'refv1v3':  { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Bv1v3 (Bacterial)',     availability:'available', refdb:'refv1v3' },
-  'refv3a':   { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Av3 (Archaeal)',        availability:'available', refdb:'refv3a' },
-  'refv3':    { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Bv3 (Bacterial)',       availability:'available', refdb:'refv3' },
-  'refv3v5':  { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Bv3v5 (Bacterial)',     availability:'available', refdb:'refv3v5' },
-  'refv3v6':  { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Bv3v6 (Bacterial)',     availability:'available', refdb:'refv3v6' },
-  'refv4':    { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Bv4 (Bacterial)',       availability:'available', refdb:'refv4' },
-  'refv4v5a': { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Av4v5 (Archaeal)',      availability:'available', refdb:'refv4v5a' },
-  'refv4v5':  { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Bv4v5 (Bacterial)',     availability:'available', refdb:'refv4v5' },
-  'refv4v6a': { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Av4v6 (Archaeal)',      availability:'available', refdb:'refv4v6a' },
-  'refv4v6':  { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Bv4v6 (Bacterial)',     availability:'available', refdb:'refv4v6' },
-  'refv5':    { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Bv5 (Bacterial)',       availability:'available', refdb:'refv5' },
-  'refv5v6':  { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Bv5v6 (Bacterial)',     availability:'available', refdb:'refv5v6' },
-  'refv6a':   { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Av6 (Archaeal)',        availability:'available', refdb:'refv6a' },
-  'refv6':    { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Bv6 (Bacterial)',       availability:'available', refdb:'refv6' },
-  'refv9':    { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Ev9 (Eukaryal)',        availability:'available', refdb:'refv9' },
+  'refssu':   { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'refssu (full-length)',  availability:'available',     refdb:'refssu' },
+  'refv1v3':  { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Bv1v3 (Bacterial)',     availability:'available', refdb:'refv1v3' },
+  'refv3a':   { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Av3 (Archaeal)',        availability:'available', refdb:'refv3a' },
+  'refv3':    { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Bv3 (Bacterial)',       availability:'available', refdb:'refv3' },
+  'refv3v5':  { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Bv3v5 (Bacterial)',     availability:'available', refdb:'refv3v5' },
+  'refv3v6':  { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Bv3v6 (Bacterial)',     availability:'available', refdb:'refv3v6' },
+  'refv4':    { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Bv4 (Bacterial)',       availability:'available', refdb:'refv4' },
+  'refv4v5a': { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Av4v5 (Archaeal)',      availability:'available', refdb:'refv4v5a' },
+  'refv4v5':  { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Bv4v5 (Bacterial)',     availability:'available', refdb:'refv4v5' },
+  'refv4v6a': { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Av4v6 (Archaeal)',      availability:'available', refdb:'refv4v6a' },
+  'refv4v6':  { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Bv4v6 (Bacterial)',     availability:'available', refdb:'refv4v6' },
+  'refv5':    { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Bv5 (Bacterial)',       availability:'available', refdb:'refv5' },
+  'refv5v6':  { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Bv5v6 (Bacterial)',     availability:'available', refdb:'refv5v6' },
+  'refv6a':   { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Av6 (Archaeal)',        availability:'available', refdb:'refv6a' },
+  'refv6':    { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Bv6 (Bacterial)',       availability:'available', refdb:'refv6' },
+  'refv9':    { taxonomy_curator:constants.default_taxonomy.curator, method:'GAST', reference_db:'Ev9 (Eukaryal)',        availability:'available', refdb:'refv9' },
   'refits1':  { taxonomy_curator:'UNITE', method:'GAST', reference_db:'ITS1',                         availability:'available', refdb:'refits1' },
   'refGG_MAY2013': { taxonomy_curator:'GreenGenes (May2013)', method:'GAST', reference_db:'refssu',        availability:'not available', refdb:'GG_MAY2013' }
 };

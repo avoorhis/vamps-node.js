@@ -802,6 +802,7 @@ function blast(){
 }
 function get_taxa_name(rank){
 	console.log('in get_taxa_name')
+	document.getElementById("availible_tax_names").innerHTML = '-->Accessing Database<--'
 	//console.log(rank)
 	args = 'rank='+ rank
 	var xmlhttp = new XMLHttpRequest();

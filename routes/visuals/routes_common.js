@@ -3,7 +3,7 @@ var path = require('path');
 var fs = require('fs-extra');
 var extend = require('util')._extend;
 //var COMMON  = require('./routes_common');
-var CONSTS = require('../../public/constants');
+var C = require('../../public/constants');
 var config  = require(app_root + '/config/config');
 //var HMAP    = require('./routes_distance_heatmap');
 //var DEND    = require('./routes_dendrogram');
@@ -52,9 +52,9 @@ module.exports = {
     //  user: req.user
     html += "<form name='' method='GET'>";
     if( visual === 'heatmap' || visual === 'dendrogram' || visual === 'pcoa' ) {
-      //console.log(CONSTS.DISTANCECHOICES)
+      //console.log(C.DISTANCECHOICES)
       var viz_page = 'selected_distance';
-      var distrows = CONSTS.DISTANCECHOICES.choices;
+      var distrows = C.DISTANCECHOICES.choices;
       html += '<li>Change Distance Metric: ';
       html += "<select name='selected_distance' class='small_font'>";
       for (var d in distrows ) {
@@ -99,22 +99,22 @@ module.exports = {
     html += '<li>Limit view based on count percentage: &nbsp;&nbsp;&nbsp;';
 
      html += "MIN <select name='min_range' class='small_font'>";
-     for( var n=0;n < CONSTS.PCT_RANGE.length-1;n++ ) {
-       if(obj.min_range.toString() === CONSTS.PCT_RANGE[n].toString()) {
-         html += "<option value='"+CONSTS.PCT_RANGE[n]+"' selected='selected'>"+CONSTS.PCT_RANGE[n]+" %</option>";
+     for( var n=0;n < C.PCT_RANGE.length-1;n++ ) {
+       if(obj.min_range.toString() === C.PCT_RANGE[n].toString()) {
+         html += "<option value='"+C.PCT_RANGE[n]+"' selected='selected'>"+C.PCT_RANGE[n]+" %</option>";
        }else{
-         html += "<option value='"+CONSTS.PCT_RANGE[n]+"'>"+CONSTS.PCT_RANGE[n]+" %</option>";
+         html += "<option value='"+C.PCT_RANGE[n]+"'>"+C.PCT_RANGE[n]+" %</option>";
        }
      }
     html += "</select>";
     html += "&nbsp;&nbsp;&nbsp; MAX <select name='max_range' class='small_font'>";
     // TODO: "'n' is already defined."
-     for (var n1=1; n1 < CONSTS.PCT_RANGE.length; n1++ ) {
+     for (var n1=1; n1 < C.PCT_RANGE.length; n1++ ) {
 
-       if(obj.max_range.toString() === CONSTS.PCT_RANGE[n1].toString()) {
-         html += "<option value='"+CONSTS.PCT_RANGE[n1]+"' selected='selected'>"+CONSTS.PCT_RANGE[n1]+" %</option>";
+       if(obj.max_range.toString() === C.PCT_RANGE[n1].toString()) {
+         html += "<option value='"+C.PCT_RANGE[n1]+"' selected='selected'>"+C.PCT_RANGE[n1]+" %</option>";
        }else{
-         html += "<option value='"+CONSTS.PCT_RANGE[n1]+"'>"+CONSTS.PCT_RANGE[n1]+" %</option>";
+         html += "<option value='"+C.PCT_RANGE[n1]+"'>"+C.PCT_RANGE[n1]+" %</option>";
        }
      }
     html += "</select></li>";
@@ -132,7 +132,7 @@ module.exports = {
   //
   default_post_items: function() {
     var post_hash = {
-        unit_choice: 'tax_silva119_simple',
+        unit_choice: 'tax_'+C.default_taxonomy.name+'_simple',
         no_of_datasets: undefined,
         normalization: 'none',
         visuals: undefined,
@@ -173,7 +173,7 @@ module.exports = {
           post_hash.selected_distance            = req.body.selected_distance || 'morisita_horn';
           post_hash.tax_depth                    = req.body.tax_depth    || 'custom';
 
-          if(post_hash.unit_choice === 'tax_silva119_simple'){
+          if(post_hash.unit_choice === 'tax_'+C.default_taxonomy.name+'_simple'){
             post_hash.domains                    = req.body.domains      || ['NA'];
           }else if( post_hash.unit_choice === 'tax_rdp2.6_simple' || post_hash.unit_choice === 'tax_generic_simple'){
             post_hash.domains                    = req.body['domains']      || ['NA'];
@@ -206,7 +206,7 @@ module.exports = {
           // in the unusual event that a single custom checkbox is selected --> must change from string to list:
 
           if(typeof post_hash.custom_taxa !== 'object') {post_hash.custom_taxa = [post_hash.custom_taxa]; }
-          if(post_hash.unit_choice === 'tax_silva119_custom' && post_hash.custom_taxa != ['NA']){
+          if(post_hash.unit_choice === 'tax_'+C.default_taxonomy.name+'_custom' && post_hash.custom_taxa != ['NA']){
             post_hash.custom_taxa = this.clean_custom_tax(post_hash.custom_taxa);
           }
 
@@ -259,7 +259,7 @@ module.exports = {
 
     var header = "\tDomain"
     for(r = 1; r <= rank_num; r++){
-      rank = CONSTS.RANKS[r]
+      rank = C.RANKS[r]
       if(rank == 'klass'){ rank = 'Class'}
       rank = rank[0].toUpperCase() + rank.slice(1)
       header += "\t"+rank;
@@ -436,7 +436,7 @@ create_new_chosen_id_name_hash: function(dataset_list, pjds_lookup) {
 //
 
 get_metadata_selection: function(dataset_ids, type) {
-    req_metadata = CONSTS.REQ_METADATA_FIELDS;
+    req_metadata = C.REQ_METADATA_FIELDS;
     //console.log('req_metadata '+req_metadata)
     fields_lookup = {};
     for (var i in dataset_ids) {

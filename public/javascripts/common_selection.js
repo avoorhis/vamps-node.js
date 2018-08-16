@@ -295,7 +295,6 @@ function create_barcharts(imagetype, ts, mtx, new_order) {
         });
 
     if(imagetype == 'group'){
-
         if(new_order.orderby == 'alpha'){
           if(new_order.alpha_value == 'a'){
             alpha_name = "Taxa Names <span class=\"glyphicon glyphicon-chevron-up\"></span>"

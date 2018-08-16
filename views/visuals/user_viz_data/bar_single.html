@@ -18,19 +18,24 @@
   <div class='pull-left'>
     Ordering:
     <a class='btn btn-xs btn-success' href='/visuals/bar_single?did=<%= mtx.did %>&ts=<%= ts %>&orderby=alpha&val=<%= order.alpha_value %>'>Taxa Names 
-    <% if(order.alpha_value == 'a'){ %>
-      <span class="glyphicon glyphicon-chevron-down"></span>
-    <% }else{ %>
-      <span class="glyphicon glyphicon-chevron-up"></span>
-    <% } %>
-      </a>
+        <% if(order.count_value == ''){ %>
+            <% if(order.alpha_value == 'a'){ %>
+              <span class="glyphicon glyphicon-chevron-down"></span>
+            <% }else{ %>
+              <span class="glyphicon glyphicon-chevron-up"></span>
+            <% } %>
+        <% } %>
+        
+    </a>
     <a class='btn btn-xs btn-success' href='/visuals/bar_single?did=<%= mtx.did %>&ts=<%= ts %>&orderby=count&val=<%= order.count_value %>'>Count
-      <% if(order.count_value == 'min'){ %>
-      <span class="glyphicon glyphicon-chevron-down"></span>
-    <% }else{ %>
-      <span class="glyphicon glyphicon-chevron-up"></span>
-    <% } %>
-      </a>
+        <% if(order.alpha_value == ''){ %>
+            <% if(order.count_value == 'max'){ %>
+              <span class="glyphicon glyphicon-chevron-down"></span>
+            <% }else{ %>
+              <span class="glyphicon glyphicon-chevron-up"></span>
+            <% } %>
+        <% } %>
+    </a>
   </div>
   
   <br><br>

@@ -1,4 +1,4 @@
-var CONSTS = require(app_root + '/public/constants');
+var C = require(app_root + '/public/constants');
 var queries = require(app_root + '/routes/queries');
 var config  = require(app_root + '/config/config');
 
@@ -74,7 +74,7 @@ module.exports.isAdmin = function(req, res, next) {
 module.exports.start = process.hrtime();
 
 function check_file_formats(filename) {
-  var file_formats = CONSTS.download_file_formats;
+  var file_formats = C.download_file_formats;
   var file_first_part = filename.split('-')[0];
   return file_formats.indexOf(file_first_part) !== -1;
 }
@@ -112,7 +112,7 @@ function format_time(mtime){
 }
 
 function walk_recursively(dir, done) {
-// var file_formats = CONSTS.download_file_formats;
+// var file_formats = C.download_file_formats;
   var results = [];
   fs.readdir(dir, function(err, list) {
     if (err) return done(err);
@@ -186,7 +186,7 @@ module.exports.elapsed_time = function(note){
   console.log(process.hrtime(module.exports.start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note);
 };
 
-var ranks = CONSTS.RANKS;
+var ranks = C.RANKS;
 
 // todo: use in file instead of those in the class
 module.exports.check_if_rank = function(field_name)
@@ -571,7 +571,7 @@ module.exports.get_metadata_from_file = function (){
 };
 
 module.exports.write_metadata_to_files = function (did){
-  var dataset_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--datasets_silva119',did+'.json');
+  var dataset_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--datasets_'+C.default_taxonomy.name, did+'.json');
  
   
   fs.readFile(dataset_file, 'utf8', function (err, data) {
@@ -694,7 +694,7 @@ module.exports.sort_json_matrix = function(mtx, fxn_obj) {
 module.exports.get_portal_projects = function(req, portal) {
 
   projects = [];
-  var cnsts_basis = req.CONSTS.PORTALS[portal];
+  var cnsts_basis = C.PORTALS[portal];
   //switch (portal) {
   //console.log('ALL_DATASETS-PORTAL', ALL_DATASETS);
   //console.log('JSON.stringify(cnsts_basis)');
@@ -722,7 +722,7 @@ module.exports.get_portal_projects = function(req, portal) {
 module.exports.get_public_projects = function(req) {
 
   projects = [];
-  //var basis = req.CONSTS.PORTALS[portal]
+  //var basis = C.PORTALS[portal]
   //switch (portal) {
   //console.log('ALL_DATASETS--get_public_projects', ALL_DATASETS);
   //console.log(JSON.stringify(basis))
@@ -1591,7 +1591,7 @@ module.exports.filter_projects = function(req, prj_obj, filter_obj) {
     NewPROJECT_TREE_OBJ4 = NewPROJECT_TREE_OBJ3
   }else{
     //console.log('Filtering for PORTAL')
-    portal = req.CONSTS.PORTALS[filter_obj.portal]
+    portal = C.PORTALS[filter_obj.portal]
     NewPROJECT_TREE_OBJ3.forEach(function(prj) {
       if(prj.hasOwnProperty('name')){
         pname = prj.name

@@ -29,7 +29,9 @@
 </div>
 
 <br>
-
+<%= order.alpha_value %>
+<br>
+<%= order.count_value %>
 <div id='my_div' class='well' style="height: 180px;">
   <div id='info_box' class='pull-right' style='padding:5px;background:lightgrey'>
     Distance Metric: <%= pi.selected_distance %>
@@ -42,19 +44,23 @@
 
     <a class='btn btn-xs btn-success' href='/visuals/bar_double?did1=<%= did1 %>&did2=<%= did2 %>&ts=<%= ts %>&dist=<%= dist %>&orderby=alpha&val=<%= order.alpha_value %>'>
       Taxa Names
-        <% if(order.alpha_value == 'a'){ %>
-          <span class="glyphicon glyphicon-chevron-down"></span>
-        <% }else{ %>
-          <span class="glyphicon glyphicon-chevron-up"></span>
+        <% if(order.count_value == ''){ %>
+            <% if(order.alpha_value == 'a'){ %>
+              <span class="glyphicon glyphicon-chevron-down"></span>
+            <% }else{ %>
+              <span class="glyphicon glyphicon-chevron-up"></span>
+            <% } %>
         <% } %>
     </a>
     
     <a class='btn btn-xs btn-success' href='/visuals/bar_double?did1=<%= did1 %>&did2=<%= did2 %>&ts=<%= ts %>&dist=<%= dist %>&orderby=count&val=<%= order.count_value %>'>
       Count
-         <% if(order.count_value == 'min'){ %>
-          <span class="glyphicon glyphicon-chevron-down"></span>
-        <% }else{ %>
-          <span class="glyphicon glyphicon-chevron-up"></span>
+         <% if(order.alpha_value == ''){ %>
+             <% if(order.count_value == 'min'){ %>
+              <span class="glyphicon glyphicon-chevron-down"></span>
+             <% }else{ %>
+              <span class="glyphicon glyphicon-chevron-up"></span>
+            <% } %>
         <% } %>
     </a>
     
