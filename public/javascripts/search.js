@@ -605,10 +605,10 @@ function initMap(data) {
         var SE = {lat: minlat, lng: maxlon}
         var NW = {lat: maxlat, lng: minlon}
         var NE = {lat: maxlat, lng: maxlon}
-        document.getElementById("SWbox").innerHTML = 'Lat: '+minlat.toFixed(6)+'; Long: '+ minlon.toFixed(6);
-        document.getElementById("SEbox").innerHTML = 'Lat: '+minlat.toFixed(6) +'; Long: '+maxlon.toFixed(6);
-        document.getElementById("NWbox").innerHTML = 'Lat: '+maxlat.toFixed(6) +'; Long: '+minlon.toFixed(6);
-        document.getElementById("NEbox").innerHTML = 'Lat: '+maxlat.toFixed(6)+'; Long: '+ maxlon.toFixed(6);
+        document.getElementById("SWbox").innerHTML = minlat.toFixed(6)+'; '+ minlon.toFixed(6);
+        document.getElementById("SEbox").innerHTML = minlat.toFixed(6) +'; '+maxlon.toFixed(6);
+        document.getElementById("NWbox").innerHTML = maxlat.toFixed(6) +'; '+minlon.toFixed(6);
+        document.getElementById("NEbox").innerHTML = maxlat.toFixed(6)+'; '+ maxlon.toFixed(6);
         var clat = minlat + ((maxlat - minlat)/2)
         var clon = minlon + ((maxlon - minlon)/2)
         var center = {lat:clat,lng:clon}
@@ -693,7 +693,7 @@ function initMap(data) {
             
             var lat = e.target._latlng.lat
             var lng = e.target._latlng.lng
-            document.getElementById("SWbox").innerHTML = 'Lat: '+lat.toFixed(6)+'; Long: '+ lng.toFixed(6);
+            document.getElementById("SWbox").innerHTML = lat.toFixed(6)+'; '+ lng.toFixed(6);
             SW = {lat: lat, lng: lng}
             adjust_boundry(mymap,'SW',SW,NW,NE,SE)
 
@@ -702,21 +702,21 @@ function initMap(data) {
         markerSE.addEventListener('dragend', function (e) {
             var lat = e.target._latlng.lat
             var lng = e.target._latlng.lng
-            document.getElementById("SEbox").innerHTML = 'Lat: '+lat.toFixed(6)+'; Long: '+ lng.toFixed(6);
+            document.getElementById("SEbox").innerHTML = lat.toFixed(6)+'; '+ lng.toFixed(6);
             SE = {lat: lat, lng: lng}
             adjust_boundry(mymap,'SE',SW,NW,NE,SE)
         });
         markerNW.addEventListener('dragend', function (e) {
             var lat = e.target._latlng.lat
             var lng = e.target._latlng.lng
-            document.getElementById("NWbox").innerHTML = 'Lat: '+lat.toFixed(6)+'; Long: '+lng.toFixed(6);
+            document.getElementById("NWbox").innerHTML = lat.toFixed(6)+'; '+lng.toFixed(6);
             NW = {lat: lat, lng: lng}
             adjust_boundry(mymap,'NW',SW,NW,NE,SE)
         });
         markerNE.addEventListener( 'dragend', function (e) {
             var lat = e.target._latlng.lat
             var lng = e.target._latlng.lng
-            document.getElementById("NEbox").innerHTML = 'Lat: '+lat.toFixed(6) +'; Long: '+ lng.toFixed(6);
+            document.getElementById("NEbox").innerHTML = lat.toFixed(6) +'; '+ lng.toFixed(6);
             NE = {lat: lat, lng: lng}
             adjust_boundry(mymap,'NE',SW,NW,NE,SE)
            
