@@ -13,19 +13,57 @@ class Project {
     this.user_obj = User.getUserInfoFromGlobal(owner_id);
 
     this.project_obj = {};
-    this.make_project_obj();
+    this.make_empty_project_obj();
+    // this.make_project_obj();
   }
 
-  make_project_obj() {
-    if ((helpers.isInt(this.pid)) && this.pid > 0) {
-      this.make_project_obj_with_existing_project_info_by_pid();
-    }
-    else {
-      this.make_project_obj_from_new_form_info();
-    }
+  make_empty_project_obj() {
+    var temp_project_obj = {};
 
-    console.log("CCHH this.project_obj = ", this.project_obj);
+    temp_project_obj = {
+      abstract_data: {},
+      active: 0,
+      created_at: new Date(),
+      d_region_arr: [],
+      description: "",
+      email: "",
+      first: "",
+      first_name: "",
+      funding: 0,
+      institution: "",
+      last: "",
+      last_name: "",
+      matrix: 0,
+      metagenomic: 0,
+      oid: 0,
+      owner_user_id: 0,
+      permissions: [0], // initially has only project owner_id
+      pi_email: "",
+      pi_name: "",
+      pid: 0,
+      project: "",
+      project_description: "",
+      project_id: 0,
+      project_title: "",
+      public: 0,
+      rev_project_name: "",
+      title: "",
+      updated_at: new Date(),
+      username: "",
+    };
+    this.project_obj = temp_project_obj;
   }
+
+  // make_project_obj() {
+  //   if ((helpers.isInt(this.pid)) && this.pid > 0) {
+  //     this.make_project_obj_with_existing_project_info_by_pid();
+  //   }
+  //   else {
+  //     this.make_project_obj_from_new_form_info();
+  //   }
+  //
+  //   console.log("CCHH this.project_obj = ", this.project_obj);
+  // }
 
   get_pid(project_name) {
     var pid = this.pid;
@@ -35,10 +73,19 @@ class Project {
     return pid;
   }
 
+  make_project_obj_from_new_csv(project_name, data_arr) {
+    var temp_project_obj = {};
+    var matrix_length   = data_arr.length;
+    var transposed_data_arr = helpers.transpose_2d_arr(data_arr, matrix_length);
+
+    this.project_obj = temp_project_obj;
+  }
+
+
   make_project_obj_with_existing_project_info_by_pid() {
     var temp_project_obj = Object.assign(PROJECT_INFORMATION_BY_PID[this.pid]);
 
-    var pid               = this.pid;
+    var pid = this.pid;
 
     temp_project_obj.project_description = PROJECT_INFORMATION_BY_PID[pid].description;
     temp_project_obj.pi_email            = PROJECT_INFORMATION_BY_PID[pid].email;
@@ -54,31 +101,31 @@ class Project {
     this.project_obj = temp_project_obj;
   }
 
-  make_new_project_obj() {
-    var temp_project_obj = {};
-
-    temp_project_obj = {
-      active: 0,
-      created_at: new Date(),
-      email: this.user_obj.email,
-      first: this.user_obj.first_name,
-      first_name: this.user_obj.first_name,
-      institution: this.user_obj.institution,
-      last: this.user_obj.last_name,
-      last_name: this.user_obj.last_name,
-      matrix: 0,
-      oid: this.user_obj.user_id,
-      owner_user_id: this.user_obj.user_id,
-      permissions: [this.user_obj.user_id], // initially has only project owner_id
-      pi_email: this.user_obj.email,
-      pi_name: this.user_obj.first_name + ' ' + this.user_obj.last_name,
-      pid: 0,
-      project_id: 0,
-      public: 0,
-      updated_at: new Date(),
-      username: this.user_obj.username,
-    };
-  }
+  // make_new_project_obj() {
+  //   var temp_project_obj = {};
+  //
+  //   temp_project_obj = {
+  //     active: 0,
+  //     created_at: new Date(),
+  //     email: this.user_obj.email,
+  //     first: this.user_obj.first_name,
+  //     first_name: this.user_obj.first_name,
+  //     institution: this.user_obj.institution,
+  //     last: this.user_obj.last_name,
+  //     last_name: this.user_obj.last_name,
+  //     matrix: 0,
+  //     oid: this.user_obj.user_id,
+  //     owner_user_id: this.user_obj.user_id,
+  //     permissions: [this.user_obj.user_id], // initially has only project owner_id
+  //     pi_email: this.user_obj.email,
+  //     pi_name: this.user_obj.first_name + ' ' + this.user_obj.last_name,
+  //     pid: 0,
+  //     project_id: 0,
+  //     public: 0,
+  //     updated_at: new Date(),
+  //     username: this.user_obj.username,
+  //   };
+  // }
 
   make_project_obj_from_new_form_info() {
     var temp_project_obj = {};
@@ -147,7 +194,7 @@ class Project {
   get_current_project_abstract_data(project) {
     var all_abstract_data = this.get_projects_abstract_data(project, this.req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
     var project_prefix    = this.get_project_prefix(project);
-    var current_abstr = all_abstract_data[project_prefix];
+    var current_abstr     = all_abstract_data[project_prefix];
     if (typeof current_abstr === 'undefined') {
       current_abstr      = {};
       current_abstr.pdfs = [];

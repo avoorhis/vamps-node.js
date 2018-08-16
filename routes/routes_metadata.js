@@ -462,10 +462,87 @@ function make_metadata_object_from_form(req, res) {
   console.timeEnd("TIME: make_metadata_object_from_form");
 }
 
-// create form from a csv file
-
+// create form from a csv file: old
 function make_metadata_object_from_csv(req, res) {
   console.time("TIME: make_metadata_object_from_csv");
+
+  // console.log("MMM req.body from make_metadata_object_from_csv");
+  // console.log(req.body);
+  //       var user_id       = req.form.pi_id_name.split('#')[0];
+
+  var file_name       = req.body.edit_metadata_file;
+  const csv_file_read = new csv_files_controller.CsvFileRead(req, res, file_name);
+  var data_arr        = csv_file_read.data_arr;
+  const cur_project   = new Project(req, res, 0, 0);
+  var project_name    = req.body.project || cur_project.get_project_name_from_file_name(file_name);
+  var pid             = cur_project.get_pid(project_name);
+
+  if (pid === 0) { // new csv
+    cur_project.make_project_obj_from_new_csv(project_name, data_arr);
+  }
+  else {
+    var data        = {};
+    var dataset_ids = [];
+    for (var dict_idx in data_arr) {
+      var dataset_id   = data_arr[dict_idx]['dataset_id'];
+      data[dataset_id] = data_arr[dict_idx];
+      dataset_ids.push(dataset_id);
+    }
+
+    // console.log("MMM0 dataset_ids");
+    // console.log(dataset_ids);
+
+    const met_obj          = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+    var data_in_obj_of_arr = met_obj.from_obj_to_obj_of_arr(data, pid);
+
+// all_metadata
+    var all_metadata     = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
+    var all_field_names4 = met_obj.make_all_field_names(dataset_ids);
+
+    // console.log("DDD3 all_field_names from make_metadata_object_from_csv");
+    // console.log(JSON.stringify(all_field_names));
+    //
+    // console.log("DDD4 all_metadata from make_metadata_object_from_csv");
+    // console.log(JSON.stringify(all_metadata));
+    req.body.project_id = pid;
+
+    var all_field_units = MD_CUSTOM_UNITS[pid];
+    const show_new      = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
+    show_new.render_edit_form();
+  }
+  console.timeEnd("TIME: make_metadata_object_from_csv");
+}
+
+function make_metadata_object_from_csv_new_pr(req, res) {
+  console.time("TIME: make_metadata_object_from_csv");
+
+  //     else {
+  //       console.log("metadata_upload_new is valid");
+  //       var user_id       = req.form.pi_id_name.split('#')[0];
+  //       const new_project = new Project(req, res, 0, user_id);
+  //       var project_obj   = new_project.project_obj;
+  //       console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
+  //       new_project.addProject(project_obj, function (err, rows) {
+  //           console.time("TIME: in post /metadata_new, add project");
+  //           if (err) {
+  //             console.log('WWW0 err', err);
+  //             req.flash('fail', err);
+  //             show_new.show_metadata_new_again();
+  //           }
+  //           else {
+  //
+  //             console.log('New project SAVED');
+  //             console.log('WWW rows', rows);
+  //             var pid = rows.insertId;
+  //             new_project.add_info_to_project_globals(project_obj, pid);
+  //
+  //             const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
+  //             met_obj.make_new_project_for_form(rows, project_obj);
+  //           }
+  //           console.timeEnd("TIME: in post /metadata_new, add project");
+  //         }
+  //       );
+  //     }
 
   // console.log("MMM req.body from make_metadata_object_from_csv");
   // console.log(req.body);
@@ -473,7 +550,7 @@ function make_metadata_object_from_csv(req, res) {
   const cur_project = new Project(req, res, 0, 0);
   var project_name  = req.body.project || cur_project.get_project_name_from_file_name(file_name);
   var pid           = cur_project.get_pid(project_name);
-  
+
   const csv_file_read = new csv_files_controller.CsvFileRead(req, res, file_name);
   var data_arr        = csv_file_read.data_arr;
 
@@ -508,6 +585,7 @@ function make_metadata_object_from_csv(req, res) {
 
   console.timeEnd("TIME: make_metadata_object_from_csv");
 }
+
 
 // create form from db
 function make_metadata_object_from_db(req, res) {
