@@ -100,7 +100,8 @@ class Project {
 
   }
 
-  make_project_obj_from_new_form_info() {
+  make_project_obj_from_new_form_info(owner_id) {
+    this.user_obj    = User.getUserInfoFromGlobal(owner_id);
     var temp_project_obj = {};
     var req              = this.req;
     var d_region_arr     = [];
@@ -108,23 +109,23 @@ class Project {
     var project_name3    = "";
 
     temp_project_obj = {
-      active: 0,
-      created_at: new Date(),
+      // active: 0,
+      // created_at: new Date(),
       email: this.user_obj.email,
       first: this.user_obj.first_name,
       first_name: this.user_obj.first_name,
       institution: this.user_obj.institution,
       last: this.user_obj.last_name,
       last_name: this.user_obj.last_name,
-      matrix: 0,
+      // matrix: 0,
       oid: this.user_obj.user_id,
       owner_user_id: this.user_obj.user_id,
       permissions: [this.user_obj.user_id], // initially has only project owner_id
       pi_email: this.user_obj.email,
       pi_name: this.user_obj.first_name + ' ' + this.user_obj.last_name,
-      pid: 0,
-      project_id: 0,
-      public: 0,
+      // pid: 0,
+      // project_id: 0,
+      // public: 0,
       updated_at: new Date(),
       username: this.user_obj.username,
     };
@@ -150,7 +151,7 @@ class Project {
       // env_package_id
 
     }
-    else { // no req, e.g. from csv
+    else { // no req, e.g. from new csv; remove if not used (separate method)
       temp_project_obj.funding             = 0;
       temp_project_obj.metagenomic         = 0;
       temp_project_obj.project             = "";

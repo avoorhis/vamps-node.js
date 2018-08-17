@@ -258,6 +258,8 @@ router.post('/metadata_new',
       console.log("metadata_upload_new is valid");
       var user_id       = req.form.pi_id_name.split('#')[0];
       const new_project = new Project(req, res, 0, user_id);
+      new_project.make_project_obj_from_new_form_info(user_id);
+
       var project_obj   = new_project.project_obj;
       console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
       new_project.addProject(project_obj, function (err, rows) {
@@ -578,6 +580,7 @@ function make_metadata_object_from_db(req, res) {
   // var user_obj = new User.getUserInfoFromGlobal(user_id);
 
   const this_project = new Project(req, res, pid, user_id);
+  this_project.make_project_obj_with_existing_project_info_by_pid(pid);
   var project_obj    = this_project.project_obj;
 
   var abstract_data = project_obj.abstract_data;
