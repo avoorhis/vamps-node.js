@@ -252,7 +252,7 @@ router.post('/metadata_new',
     if (!req.form.isValid) {
       console.log('!req.form.isValid');
       console.log("EEE req.form.errors", req.form.errors);
-      show_new.show_metadata_new_again();
+      show_new.show_metadata_new_again(req, res);
     }
     else {
       console.log("metadata_upload_new is valid");
@@ -267,7 +267,7 @@ router.post('/metadata_new',
           if (err) {
             console.log('WWW0 err', err);
             req.flash('fail', err);
-            show_new.show_metadata_new_again();
+            show_new.show_metadata_new_again(req, res);
           }
           else {
 

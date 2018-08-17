@@ -101,68 +101,48 @@ class Project {
   }
 
   make_project_obj_from_new_form_info(owner_id) {
-    this.user_obj    = User.getUserInfoFromGlobal(owner_id);
+    this.user_obj        = User.getUserInfoFromGlobal(owner_id);
     var temp_project_obj = {};
     var req              = this.req;
     var d_region_arr     = [];
     var project_name     = "";
     var project_name3    = "";
 
-    temp_project_obj = {
-      // active: 0,
-      // created_at: new Date(),
-      email: this.user_obj.email,
-      first: this.user_obj.first_name,
-      first_name: this.user_obj.first_name,
-      institution: this.user_obj.institution,
-      last: this.user_obj.last_name,
-      last_name: this.user_obj.last_name,
-      // matrix: 0,
-      oid: this.user_obj.user_id,
-      owner_user_id: this.user_obj.user_id,
-      permissions: [this.user_obj.user_id], // initially has only project owner_id
-      pi_email: this.user_obj.email,
-      pi_name: this.user_obj.first_name + ' ' + this.user_obj.last_name,
-      // pid: 0,
-      // project_id: 0,
-      // public: 0,
-      updated_at: new Date(),
-      username: this.user_obj.username,
-    };
-
-    if ((typeof req.form !== 'undefined') && (typeof req.form.d_region !== 'undefined')) {
-      d_region_arr = req.form.d_region.split('#');
-      if (d_region_arr[0] === 'Shotgun') {
-        temp_project_obj.metagenomic = 1;
-        project_name3                = 'Sgun';
-      }
-      project_name3                        = d_region_arr[2];
-      temp_project_obj.funding             = req.form.funding_code;
-      temp_project_obj.metagenomic         = 0;
-      project_name                         = req.form.project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
-      temp_project_obj.project             = project_name;
-      temp_project_obj.project_description = req.form.project_description;
-      temp_project_obj.description         = req.form.project_description;
-      temp_project_obj.rev_project_name    = helpers.reverseString(project_name);
-      temp_project_obj.title               = req.form.project_title;
-      temp_project_obj.project_title       = req.form.project_title;
-      temp_project_obj.abstract_data       = this.get_current_project_abstract_data(temp_project_obj.project);
-
-      // env_package_id
-
+    d_region_arr = req.form.d_region.split('#');
+    if (d_region_arr[0] === 'Shotgun') {
+      temp_project_obj.metagenomic = 1;
+      project_name3                = 'Sgun';
     }
-    else { // no req, e.g. from new csv; remove if not used (separate method)
-      temp_project_obj.funding             = 0;
-      temp_project_obj.metagenomic         = 0;
-      temp_project_obj.project             = "";
-      temp_project_obj.project_description = "";
-      temp_project_obj.description         = "";
-      temp_project_obj.rev_project_name    = "";
-      temp_project_obj.title               = "";
-      temp_project_obj.project_title       = "";
-      temp_project_obj.abstract_data       = "";
-    }
-    this.project_obj = temp_project_obj;
+    project_name3 = d_region_arr[2];
+    project_name                         = req.form.project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
+    this.project_obj.abstract_data       = this.get_current_project_abstract_data(this.project_obj.project);
+    this.project_obj.description         = req.form.project_description;
+    this.project_obj.email               = this.user_obj.email;
+    this.project_obj.first               = this.user_obj.first_name;
+    this.project_obj.first_name          = this.user_obj.first_name;
+    this.project_obj.funding             = req.form.funding_code;
+    this.project_obj.institution         = this.user_obj.institution;
+    this.project_obj.last                = this.user_obj.last_name;
+    this.project_obj.last_name           = this.user_obj.last_name;
+    this.project_obj.metagenomic         = 0;
+    this.project_obj.oid                 = this.user_obj.user_id;
+    this.project_obj.owner_user_id       = this.user_obj.user_id;
+    this.project_obj.permissions         = [this.user_obj.user_id]; // initially has only project owner_id
+    this.project_obj.pi_email            = this.user_obj.email;
+    this.project_obj.pi_name             = this.user_obj.first_name + ' ' + this.user_obj.last_name;
+    this.project_obj.project             = project_name;
+    this.project_obj.project_description = req.form.project_description;
+    this.project_obj.project_title       = req.form.project_title;
+    this.project_obj.rev_project_name    = helpers.reverseString(project_name);
+    this.project_obj.title               = req.form.project_title;
+    this.project_obj.updated_at          = new Date();
+    this.project_obj.username            = this.user_obj.username;
+    // this.project_obj.active: 0,
+// this.project_obj.created_at: new Date(),
+// this.project_obj.matrix: 0,
+// this.project_obj.pid: 0,
+// this.project_obj.project_id: 0,
+// this.project_obj.public: 0,
   }
 
   get_current_project_abstract_data(project) {
