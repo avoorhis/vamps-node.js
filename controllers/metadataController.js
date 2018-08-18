@@ -1,10 +1,10 @@
 var Project              = require(app_root + '/models/project_model');
 var Dataset              = require(app_root + '/models/dataset_model');
-var User                 = require(app_root + '/models/user_model');
+// var User                 = require(app_root + '/models/user_model');
 var helpers              = require(app_root + '/routes/helpers/helpers');
 var CONSTS               = require(app_root + '/public/constants');
 var validator            = require('validator');
-var csv_files_controller = require(app_root + '/controllers/csvFilesController');
+// var csv_files_controller = require(app_root + '/controllers/csvFilesController');
 
 class CreateDataObj {
 

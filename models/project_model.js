@@ -7,11 +7,12 @@ var path    = require('path');
 class Project {
 
   constructor(req, res, pid, owner_id) {
-    this.req      = req || {};
-    this.res      = res || {};
-    this.pid      = pid;
-    this.user_obj = User.getUserInfoFromGlobal(owner_id);
-
+    this.req       = req || {};
+    this.res       = res || {};
+    this.pid       = pid;
+    this.this_user = new User();
+    this.this_user.getUserInfoFromGlobal(owner_id);
+    this.user_obj    = this.this_user.User_obj;
     this.project_obj = {};
     this.make_empty_project_obj();
     // this.make_project_obj();
@@ -78,11 +79,12 @@ class Project {
     // var matrix_length       = data_arr.length;
     // var transposed_data_arr = helpers.transpose_2d_arr(data_arr, matrix_length);
 
-    var first_name   = data_arr[0].first_name;
-    var last_name    = data_arr[0].last_name;
-    var email        = data_arr[0].pi_email;
-    var institution  = data_arr[0].institution;
-    this.user_obj    = User.getUserInfoFromGlobalbyUniqKey(first_name, last_name, email, institution);
+    var first_name                       = data_arr[0].first_name;
+    var last_name                        = data_arr[0].last_name;
+    var email                            = data_arr[0].pi_email;
+    var institution                      = data_arr[0].institution;
+    this.this_user.getUserInfoFromGlobalbyUniqKey(first_name, last_name, email, institution);
+    this.user_obj                        = this.this_user.User_obj;
     this.project_obj.abstract_data       = this.get_current_project_abstract_data(project_name);
     this.project_obj.description         = data_arr[0].project_description;
     this.project_obj.email               = email;
@@ -116,9 +118,10 @@ class Project {
   make_project_obj_with_existing_project_info_by_pid(pid) {
     this.project_obj = Object.assign(PROJECT_INFORMATION_BY_PID[pid]);
     const owner_id   = this.project_obj.oid;
-    this.user_obj    = User.getUserInfoFromGlobal(owner_id);
+    this.this_user.getUserInfoFromGlobal(owner_id);
+    this.user_obj    = this.this_user.User_obj;
 
-    //renaming
+      //renaming
     this.project_obj.project_description = PROJECT_INFORMATION_BY_PID[pid].description;
     this.project_obj.pi_email            = PROJECT_INFORMATION_BY_PID[pid].email;
     this.project_obj.pi_name             = PROJECT_INFORMATION_BY_PID[pid].first + ' ' + PROJECT_INFORMATION_BY_PID[pid].last;
@@ -133,7 +136,8 @@ class Project {
   }
 
   make_project_obj_from_new_form_info(owner_id) {
-    this.user_obj        = User.getUserInfoFromGlobal(owner_id);
+    this.this_user.getUserInfoFromGlobal(owner_id);
+    this.user_obj        = this.this_user.User_obj;
     var temp_project_obj = {};
     var req              = this.req;
     var d_region_arr     = [];
