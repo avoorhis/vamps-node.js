@@ -24,6 +24,7 @@ module.exports.get_datasets = function(callback){
   AllMetadataNames            = [];
   ALL_DATASETS.projects       = [];
   ALL_USERS_BY_UID            = {};
+  ALL_USERS_BY_UnK            = {};
   ALL_DCOUNTS_BY_DID          = {};    // GLOBAL  
   ALL_PCOUNTS_BY_PID          = {};    // GLOBAL 
   ALL_CLASSIFIERS_BY_PID      = {};
@@ -78,8 +79,8 @@ module.exports.get_datasets = function(callback){
       } else {
         
         for (var i=0; i < rows.length; i++) {
-          var uid = rows[i].uid
-          ALL_USERS_BY_UID[uid] = {}
+          var uid = rows[i].uid;
+          ALL_USERS_BY_UID[uid] = {};
           ALL_USERS_BY_UID[uid].email       = rows[i].email;
           ALL_USERS_BY_UID[uid].username    = rows[i].username;
           ALL_USERS_BY_UID[uid].last_name   = rows[i].last_name;
@@ -87,6 +88,17 @@ module.exports.get_datasets = function(callback){
           ALL_USERS_BY_UID[uid].institution = rows[i].institution;
           ALL_USERS_BY_UID[uid].status      = rows[i].security_level;
           ALL_USERS_BY_UID[uid].groups = [];
+
+          var uniq_key = rows[i].first_name + "#" + rows[i].last_name + "#" + rows[i].email + "#" + rows[i].institution;
+          ALL_USERS_BY_UnK[uniq_key] = {};
+          ALL_USERS_BY_UnK[uniq_key].user_id     = rows[i].uid;
+          ALL_USERS_BY_UnK[uniq_key].email       = rows[i].email;
+          ALL_USERS_BY_UnK[uniq_key].username    = rows[i].username;
+          ALL_USERS_BY_UnK[uniq_key].last_name   = rows[i].last_name;
+          ALL_USERS_BY_UnK[uniq_key].first_name  = rows[i].first_name;
+          ALL_USERS_BY_UnK[uniq_key].institution = rows[i].institution;
+          ALL_USERS_BY_UnK[uniq_key].status      = rows[i].security_level;
+          ALL_USERS_BY_UnK[uniq_key].groups = [];
         }
         connection.query(queries.get_all_user_groups(), function(err, rows, fields){     
           if (err)  {
@@ -106,7 +118,7 @@ module.exports.get_datasets = function(callback){
         })
         
       }
-      console.log(' INITIALIZING ALL_USERS_BY_UID');      
+      console.log(' INITIALIZING ALL_USERS_BY_UID and ALL_USERS_BY_UnK');
   });
 
   connection.query(queries.get_select_classifier_query(), function(err, rows, fields){     
