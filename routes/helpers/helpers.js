@@ -78,11 +78,11 @@ module.exports.array_from_object = function (data) {
 module.exports.get_second = function (element) {
   console.time('TIME: get_second');
 
-  for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES) {
-    if (CONSTS.ORDERED_METADATA_NAMES[met_names_row].includes(element)) {
+  for (var met_names_row in C.ORDERED_METADATA_NAMES) {
+    if (C.ORDERED_METADATA_NAMES[met_names_row].includes(element)) {
       // console.log('ETET met_names_row[1]');
-      // console.log(CONSTS.ORDERED_METADATA_NAMES[met_names_row][1]);
-      return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
+      // console.log(C.ORDERED_METADATA_NAMES[met_names_row][1]);
+      return C.ORDERED_METADATA_NAMES[met_names_row][1];
     }
   }
   console.timeEnd('TIME: get_second');
@@ -2115,9 +2115,9 @@ exports.geo_loc_name_validation = function (value, source) {
 
 exports.geo_loc_name_continental_filter = function (value) {
   console.time('geo_loc_name_continental_filter');
-  for (var key in CONSTS.GAZ_SPELLING) {
-    if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
-      var curr = CONSTS.GAZ_SPELLING[key];
+  for (var key in C.GAZ_SPELLING) {
+    if (C.GAZ_SPELLING.hasOwnProperty(key)) {
+      var curr = C.GAZ_SPELLING[key];
       if (curr.indexOf(value.toLowerCase()) > -1) {
         return key;
       }
