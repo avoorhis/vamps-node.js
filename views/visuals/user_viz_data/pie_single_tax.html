@@ -29,8 +29,10 @@
  $(document).ready(function() {  
     
   // function is where?  common_selection
+  // PIE CHART
   create_piecharts('single', <%= ts %>, mtx_local);
   
+  // TABLE:  user_viz_data.js
   piecharts_table_div.innerHTML = get_single_pie_html(mtx_local);
 
         
@@ -43,7 +45,8 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
       if (event.type == 'mouseover') {
         tip.id = link.id;
         link.id = '';
-        id_items = tip.id.split('/');
+        
+        var id_items = tip.id.split('/');
         html = "<table><tr>";
         // barcharts and piecharts            
         html += "<td>"+id_items[1]+"</td>";

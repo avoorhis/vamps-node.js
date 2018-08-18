@@ -54,7 +54,7 @@ if (download_fasta_btn !== null) {
 
 
 function get_single_bar_html(obj, ts){
-  
+  console.log('in get_single_bar_html')
   var total = 0;
   var html ='';
   var tax_col_count = 0;
@@ -178,7 +178,7 @@ function get_double_bar_html(obj, ts){
 //
 //
 function get_single_pie_html(obj){
-  
+  //console.log('in get_single_pie_html  -TABLE')
   var total = 0;
   var html ='';
   var tax_col_count = 0;
@@ -214,12 +214,11 @@ function get_single_pie_html(obj){
       color = string_to_color_code(obj.rows[n].id)
       //color = colorsX[obj.rows[n].id]
       var pct = ((obj.data[n] / total)*100).toFixed(2);
-      var id = 'barcharts/' + obj.rows[n].id + '/'+ obj.data[n] + '/' + pct;
+      
+      var id = 'piecharts/' + obj.rows[n].id + '/'+ obj.data[n] + '/' + pct;
+      //var id = ''
       html += "<tr class='tooltip_viz' id='"+id+"' ><td style='background-color:"+color+"'></td>";
-      
-      //html += "<td><a href='"+link+"'>"+ordered_taxa[n][i]+'</a></td>'
       html += "<td>"+ordered_ds[n]+'</td>'
-      
       html += '<td>'+obj.data[n]+"</td></tr>";
     //}
   }

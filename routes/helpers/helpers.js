@@ -1,4 +1,4 @@
-var CONSTS  = require(app_root + '/public/constants');
+var C       = require(app_root + '/public/constants');
 var queries = require(app_root + '/routes/queries');
 var config  = require(app_root + '/config/config');
 
@@ -101,7 +101,7 @@ module.exports.get_second = function (element) {
 module.exports.start = process.hrtime();
 
 function check_file_formats(filename) {
-  var file_formats    = CONSTS.download_file_formats;
+  var file_formats    = C.download_file_formats;
   var file_first_part = filename.split('-')[0];
   return file_formats.indexOf(file_first_part) !== -1;
 }
@@ -139,7 +139,7 @@ function format_time(mtime) {
 }
 
 function walk_recursively(dir, done) {
-// var file_formats = CONSTS.download_file_formats;
+// var file_formats = C.download_file_formats;
   var results = [];
   fs.readdir(dir, function (err, list) {
     if (err) return done(err);
@@ -217,7 +217,7 @@ module.exports.elapsed_time = function (note) {
   console.log(process.hrtime(module.exports.start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note);
 };
 
-var ranks = CONSTS.RANKS;
+var ranks = C.RANKS;
 
 // todo: use in file instead of those in the class
 module.exports.check_if_rank = function (field_name) {
@@ -610,8 +610,7 @@ module.exports.get_metadata_from_file = function () {
 };
 
 module.exports.write_metadata_to_files = function (did) {
-  var dataset_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--datasets_silva119', did + '.json');
-
+  var dataset_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--datasets_' + C.default_taxonomy.name, did + '.json');
 
   fs.readFile(dataset_file, 'utf8', function (err, data) {
     if (err) throw err;
@@ -731,9 +730,8 @@ module.exports.sort_json_matrix     = function (mtx, fxn_obj) {
 
 };
 module.exports.get_portal_projects  = function (req, portal) {
-
   projects        = [];
-  var cnsts_basis = req.CONSTS.PORTALS[portal];
+  var cnsts_basis = C.PORTALS[portal];
   //switch (portal) {
   //console.log('ALL_DATASETS-PORTAL', ALL_DATASETS);
   //console.log('JSON.stringify(cnsts_basis)');
@@ -761,7 +759,7 @@ module.exports.get_portal_projects  = function (req, portal) {
 module.exports.get_public_projects  = function (req) {
 
   projects = [];
-  //var basis = req.CONSTS.PORTALS[portal]
+  //var basis = C.PORTALS[portal]
   //switch (portal) {
   //console.log('ALL_DATASETS--get_public_projects', ALL_DATASETS);
   //console.log(JSON.stringify(basis))
@@ -1303,7 +1301,7 @@ module.exports.get_local_script_text = function (cmd_list) {
 };
 
 //module.exports.get_qsub_script_text = function(log, pwd, site, name, cmd_list) {
-module.exports.get_qsub_script_text = function(req, log, dir_path, cmd_name, cmd_list) {
+module.exports.get_qsub_script_text = function (req, log, dir_path, cmd_name, cmd_list) {
   /*
    #!/bin/sh
    # CODE:
@@ -1339,12 +1337,12 @@ module.exports.get_qsub_script_text = function(req, log, dir_path, cmd_name, cmd
    submit_job
    */
   //### Create Cluster Script
-  
+
   script_text = "#!/bin/bash\n\n";
-  script_text += "# CODE:\t"+cmd_name+"\n\n";
+  script_text += "# CODE:\t" + cmd_name + "\n\n";
   script_text += "# source environment:\n";
-  script_text += "source /groups/vampsweb/"+req.CONFIG.site+"/seqinfobin/vamps_environment.sh\n\n";
-  script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
+  script_text += "source /groups/vampsweb/" + req.CONFIG.site + "/seqinfobin/vamps_environment.sh\n\n";
+  script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`' + "\n\n";
   script_text += "# Loading Module didn't work when testing:\n";
   //$script_text .= "LOGNAME=test-output-$TSTAMP.log\n";
   script_text += ". /usr/share/Modules/init/sh\n";
@@ -1362,8 +1360,8 @@ module.exports.get_qsub_script_text = function(req, log, dir_path, cmd_name, cmd
   script_text += "cat<<END | qsub\n";
   script_text += "#!/bin/bash\n";
   script_text += "#$ -j y\n";
-  script_text += "#$ -o "+log+"\n";
-  script_text += "#$ -N "+cmd_name+"\n";
+  script_text += "#$ -o " + log + "\n";
+  script_text += "#$ -N " + cmd_name + "\n";
   //script_text += "#$ -p 100\n";   // priority default is 0
   script_text += "#$ -cwd\n";
   script_text += "#$ -V\n";
@@ -1372,9 +1370,9 @@ module.exports.get_qsub_script_text = function(req, log, dir_path, cmd_name, cmd
   script_text += 'echo -n "qsub: Current working directory: "' + "\n";
   script_text += "pwd\n\n";
 //     script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";
-  
+
   for (var i in cmd_list) {
-    script_text += cmd_list[i]+"\n";
+    script_text += cmd_list[i] + "\n";
   }
 //
 //     //script_text += "chmod 666 "+log+"\n";
@@ -1413,8 +1411,8 @@ module.exports.get_qsub_script_text_only = function (req, scriptlog, dir_path, c
 };
 
 module.exports.isLocal = function (req) {
-  var ext_hosts = ['vampsdev','bpcweb7','vamps','vampsdb']
-  return !(req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'bpcweb7' || req.CONFIG.dbhost == 'vampsdb'|| req.CONFIG.dbhost == 'vamps');
+  var ext_hosts = ['vampsdev', 'bpcweb7', 'vamps', 'vampsdb']
+  return !(req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'bpcweb7' || req.CONFIG.dbhost == 'vampsdb' || req.CONFIG.dbhost == 'vamps');
 };
 
 module.exports.deleteFolderRecursive = function (path) {
@@ -1449,7 +1447,7 @@ module.exports.deleteFolderRecursive = function (path) {
 //
 //
 //
-module.exports.make_gast_script_txt = function(req, data_dir, project, cmd_list, opts) {
+module.exports.make_gast_script_txt = function (req, data_dir, project, cmd_list, opts) {
   console.log('OPTS: ')
   console.log(opts)
   make_gast_script_txt = "";
@@ -1533,21 +1531,19 @@ module.exports.make_gast_script_txt = function(req, data_dir, project, cmd_list,
   make_gast_script_txt += "\n";
   make_gast_script_txt += "\n";
   make_gast_script_txt += "export SGE_ROOT=/opt/sge\n";
-  make_gast_script_txt += "source /groups/vampsweb/"+req.CONFIG.site+"/seqinfobin/vamps_environment.sh\n\n"
-  if (module.exports.isLocal(req))
-  {
+  make_gast_script_txt += "source /groups/vampsweb/" + req.CONFIG.site + "/seqinfobin/vamps_environment.sh\n\n"
+  if (module.exports.isLocal(req)) {
     // # TODO: make local version, iterate over (splited) files in LISTFILE instead of qsub
     make_gast_script_txt += "bash " + data_dir + "/clust_gast_ill_" + project + ".sh\n";
   }
-  else
-  {
+  else {
     // the -sync y tag means that the following install scripts will run AFTER the cluster gast scripts finish
-    make_gast_script_txt += "qsub -sync y "+data_dir+"/clust_gast_ill_"+project+".sh\n";
+    make_gast_script_txt += "qsub -sync y " + data_dir + "/clust_gast_ill_" + project + ".sh\n";
   }
-  make_gast_script_txt +=  "echo \"Done with cluster_gast\" >> "+data_dir+"/cluster.log\n"
-  make_gast_script_txt +=  "echo \"Running install scripts (see log)\" >> "+data_dir+"/cluster.log\n"
-  for (var i in cmd_list) {    
-    make_gast_script_txt += cmd_list[i]+"\n";
+  make_gast_script_txt += "echo \"Done with cluster_gast\" >> " + data_dir + "/cluster.log\n"
+  make_gast_script_txt += "echo \"Running install scripts (see log)\" >> " + data_dir + "/cluster.log\n"
+  for (var i in cmd_list) {
+    make_gast_script_txt += cmd_list[i] + "\n";
   }
 
   make_gast_script_txt += "\n";
@@ -1632,12 +1628,12 @@ module.exports.filter_projects  = function (req, prj_obj, filter_obj) {
     NewPROJECT_TREE_OBJ4 = NewPROJECT_TREE_OBJ3
   } else {
     //console.log('Filtering for PORTAL')
-    portal = req.CONSTS.PORTALS[filter_obj.portal]
+    portal = C.PORTALS[filter_obj.portal]
     NewPROJECT_TREE_OBJ3.forEach(function (prj) {
       if (prj.hasOwnProperty('name')) {
-        pname = prj.name
+        pname = prj.name;
       } else {
-        pname = prj.project
+        pname = prj.project;
       }
       pparts = pname.split('_');
       prefix = pparts[0]
@@ -1991,7 +1987,7 @@ module.exports.has_duplicates = function (myArray) {
   return ((parseInt(new Set(myArray).size)) !== parseInt(myArray.length));
 };
 
-module.exports.log_timestamp      = function () {
+module.exports.log_timestamp = function () {
   var date = new Date();
   // console.log("date.toDateString():");
   // console.log(date.toDateString());
@@ -2100,7 +2096,7 @@ exports.percent_valid = function (value) {
   region_valid(value, 0, 100);
 };
 
-exports.positive = function (value) {
+exports.positive             = function (value) {
   if (value !== '' && parseInt(value) < 0) {
     throw new Error("'" + value + "' is not valid, %s should be greater then 0.");
   }
@@ -2160,12 +2156,12 @@ exports.slice_object = function (object, slice_keys) {
 };
 
 exports.findByValueOfObject = function (arr, key, value) {
-  return arr.filter(function(item) {
+  return arr.filter(function (item) {
     return (item[key] === value);
   });
 };
 
-  exports.transpose_2d_arr = function (data_arr, matrix_length) {
+exports.transpose_2d_arr = function (data_arr, matrix_length) {
   console.time('TIME: transpose_2d_arr');
 
   //make an array with proper length, even if the first one is empty
@@ -2183,10 +2179,11 @@ exports.findByValueOfObject = function (arr, key, value) {
   console.timeEnd('TIME: transpose_2d_arr');
   return newArray;
 }
-function jsUcfirst(string)
-{
-    return string.charAt(0).toUpperCase() + string.slice(1);
+
+function jsUcfirst(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
 // module.exports.validate_name = function (name) {
 //     console.log('helpers.validate_name: '+name)
 //     pattern=/([^a-zA-Z0-9\.]+)/gi

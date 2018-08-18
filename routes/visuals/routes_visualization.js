@@ -19,6 +19,7 @@ var helpers = require('../helpers/helpers');
 var QUERY = require('../queries');
 
 var COMMON  = require('./routes_common');
+var C = require('../../public/constants');
 var META    = require('./routes_visuals_metadata');
 var IMAGES = require('../routes_images');
 //var PCOA    = require('./routes_pcoa');
@@ -75,8 +76,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     var visual_post_items = {}
   //}
   // if(req.body.unit_choice == 'tax_rdp2.6_simple'){
-//     delete req.body['silva119_domains']
-//   }else if(req.body.unit_choice == 'tax_silva119_simple'){
+//     delete req.body[C.default_taxonomy.name+'_domains']
+//   }else if(req.body.unit_choice == 'tax_'+C.default_taxonomy.name+'_simple'){
 //     delete req.body['rdp2.6_domains']
 //   }
   console.log(req.user.username+' req.body: view_selection body-->>');
@@ -319,7 +320,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
                                 referer         : 'unit_selection',
                                 matrix          : JSON.stringify(biom_matrix),
                                 metadata        : JSON.stringify(metadata),
-                                constants       : JSON.stringify(req.CONSTS),
+                                constants       : JSON.stringify(C),
                                 post_items      : JSON.stringify(visual_post_items),
                                 user            : req.user,
                                 hostname        : req.CONFIG.hostname,
@@ -380,7 +381,7 @@ function load_configuration_file(req, res, config_file_data )
             if(visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
             }else{
-                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
+                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
             }
             var path_to_file = path.join(files_prefix, did.toString() +'.json');
             
@@ -458,7 +459,7 @@ function create_clean_config(req, upld_obj)
           }else{
             clean_obj.metadata = upld_obj.metadata
           }
-          clean_obj.unit_choice = 'tax_silva119_simple'
+          clean_obj.unit_choice = 'tax_'+C.default_taxonomy.name+'_simple'
           clean_obj.custom_taxa = ["NA"]
           var allowed_norms = ['none','maximum','frequency']
           if(! upld_obj.hasOwnProperty('normalization') || allowed_norms.indexOf(upld_obj.normalization) == -1){
@@ -472,7 +473,7 @@ function create_clean_config(req, upld_obj)
           }else{
             clean_obj.selected_distance = upld_obj.selected_distance
           }
-          var allowed_ranks = req.CONSTS.RANKS
+          var allowed_ranks = C.RANKS
           if(! upld_obj.hasOwnProperty('tax_depth') || allowed_ranks.indexOf(upld_obj.tax_depth) == -1){
             clean_obj.tax_depth = 'phylum'
           }else{
@@ -485,7 +486,7 @@ function create_clean_config(req, upld_obj)
             clean_obj.include_nas = upld_obj.include_nas
           }
           // DOMAINS
-          var allowed_domains = req.CONSTS.DOMAINS.domains
+          var allowed_domains = C.DOMAINS.domains
           if(! upld_obj.hasOwnProperty('domains') || upld_obj.domains.length == 0){
             clean_obj.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
           }else{
@@ -537,7 +538,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }
   console.log('req.body: unit_selection');
   if(typeof  unit_choice === 'undefined'){
-    var unit_choice = 'tax_silva119_simple';
+    var unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
   }
   console.log(unit_choice);
   //var this_session_metadata = {}
@@ -558,7 +559,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
                                     title       : 'VAMPS: Select Datasets',
                                     subtitle    : 'Dataset Selection Page',
                                     proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-                                    constants   : JSON.stringify(req.CONSTS),
+                                    constants   : JSON.stringify(C),
                                     md_env_package : JSON.stringify(MD_ENV_PACKAGE),
                                     md_names    : AllMetadataNames,
                                     filtering   : 0,
@@ -587,7 +588,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }else{
 	    
 	   
-        var available_units = req.CONSTS.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
+        var available_units = C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
 	    // GLOBAL Variable
 	    
@@ -607,7 +608,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
         chosen_dataset_order.push( { did:did, name:pname+'--'+dname } )  // send this to client
         
         // !!!use default taxonomy here (may choose other on this page)
-        var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
+        var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
         var path_to_file = path.join(files_prefix, did +'.json');
         var error_msg = ''
         try{
@@ -645,7 +646,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	                    title: 'VAMPS: Units Selection',
                         referer: 'visuals_index',
 	                    chosen_datasets: JSON.stringify(chosen_dataset_order),
-	                    constants    : JSON.stringify(req.CONSTS),
+	                    constants    : JSON.stringify(C),
 	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
 		  				md_req       : JSON.stringify(required_metadata_headers),   //
                         unit_choice  : unit_choice,
@@ -682,7 +683,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
     SHOW_DATA = ALL_DATASETS;
     TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
     METADATA  = {};
-    unit_choice = 'tax_silva119_simple';
+    unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
     // GLOBAL
     DATA_TO_OPEN = {};
     if(req.body.data_to_open){
@@ -705,7 +706,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
                                   title       : 'VAMPS: Select Datasets',
                                   subtitle    : 'Dataset Selection Page',
                                   proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-                                  constants   : JSON.stringify(req.CONSTS),
+                                  constants   : JSON.stringify(C),
                                   md_env_package : JSON.stringify(MD_ENV_PACKAGE),
                                   md_names    : AllMetadataNames,
                                   filtering   : 0,
@@ -737,7 +738,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   SHOW_DATA = ALL_DATASETS;
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
-  unit_choice = 'tax_silva119_simple';
+  unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
   // GLOBAL
   DATA_TO_OPEN = {};
   if(req.body.data_to_open){
@@ -760,7 +761,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
                                 title       : 'VAMPS: Select Datasets',
                                 subtitle    : 'Dataset Selection Page',
                                 proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-                                constants   : JSON.stringify(req.CONSTS),
+                                constants   : JSON.stringify(C),
                                 md_env_package : JSON.stringify(MD_ENV_PACKAGE),
                                 md_names    : AllMetadataNames,
                                 filtering   : 0,
@@ -793,7 +794,7 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
     res.render('visuals/reorder_datasets', {
                                 title   : 'VAMPS: Reorder Datasets',
                                 selected_datasets: JSON.stringify(selected_dataset_order),
-                                constants    : JSON.stringify(req.CONSTS),
+                                constants    : JSON.stringify(C),
 								                referer: req.body.referer,
                                 ts : ts,
                                 user: req.user, hostname: req.CONFIG.hostname,
@@ -1432,7 +1433,7 @@ function get_sumator(req, biom_matrix){
         //console.log(tax_items);
         for(t in tax_items){
            var taxa = tax_items[t];
-           var rank = req.CONSTS.RANKS[t];
+           var rank = C.RANKS[t];
            if(rank=='domain'){
                d = tax_items[t]
                for(i in req.session.chosen_id_order){
@@ -1634,14 +1635,14 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
       }else{
         new_order.alpha_value = 'a'
       }
-      new_order.count_value = 'min'
+      new_order.count_value = ''
     }else{
       if(order.value == 'min'){
         new_order.count_value = 'max'
       }else{
         new_order.count_value = 'min'
       }
-      new_order.alpha_value = 'a'
+      new_order.alpha_value = ''
     }
 
     console.log('order')
@@ -1791,14 +1792,14 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
       }else{
         new_order.alpha_value = 'a'
       }
-      new_order.count_value = 'min'
+      new_order.count_value = ''
     }else{
       if(order.value == 'min'){
         new_order.count_value = 'max'
       }else{
         new_order.count_value = 'min'
       }
-      new_order.alpha_value = 'a'
+      new_order.alpha_value = ''
     }
     
     var timestamp = +new Date();  // millisecs since the epoch!
@@ -2017,9 +2018,9 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 *      and are shown via ajax depending on user selection in combo box
 *       on that page.  AAV
 */
-router.get('/partials/tax_silva119_simple', helpers.isLoggedIn,  function(req, res) {
-    res.render('visuals/partials/tax_silva119_simple', {
-        doms: req.CONSTS.DOMAINS
+router.get('/partials/tax_'+C.default_taxonomy.name+'_simple', helpers.isLoggedIn,  function(req, res) {
+    res.render('visuals/partials/tax_'+C.default_taxonomy.name+'_simple', {
+        doms: C.DOMAINS
     });
 });
 //
@@ -2042,17 +2043,17 @@ router.get('/partials/load_metadata', helpers.isLoggedIn,  function(req, res) {
 //
 //
 //
-router.get('/partials/tax_silva119_custom', helpers.isLoggedIn,  function(req, res) {
-  res.render('visuals/partials/tax_silva119_custom',  { title   : 'Silva(v119) Custom Taxonomy Selection'});
+router.get('/partials/tax_'+C.default_taxonomy.name+'_custom', helpers.isLoggedIn,  function(req, res) {
+  res.render('visuals/partials/tax_'+C.default_taxonomy.name+'_custom',  { title   : C.default_taxonomy.show+' Custom Taxonomy Selection'});
 });
 router.get('/partials/tax_rdp2.6_simple', helpers.isLoggedIn,  function(req, res) {
     res.render("visuals/partials/tax_rdp26_simple", {
-        doms: req.CONSTS.DOMAINS
+        doms: C.DOMAINS
     });
 });
 router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, res) {
     res.render("visuals/partials/tax_generic_simple", {
-        doms: req.CONSTS.DOMAINS
+        doms: C.DOMAINS
     });
 });
 router.get('/partials/tax_gg_custom', helpers.isLoggedIn,  function(req, res) {
@@ -2826,8 +2827,8 @@ router.post('/check_units', function(req, res) {
   var path_to_file
   var jsonfile;
   
-  if(req.body.units == 'tax_silva119_simple' || req.body.units == 'tax_silva119_custom'){
-        files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
+  if(req.body.units == 'tax_'+C.default_taxonomy.name+'_simple' || req.body.units == 'tax_'+C.default_taxonomy.name+'_custom'){
+        files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
   }else if(req.body.units == 'tax_rdp2.6_simple'){
         files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
   }else if(req.body.units == 'tax_generic_simple'){

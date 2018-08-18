@@ -13,8 +13,11 @@ var constants = {};
 //         'reguser'   : 50,   // public access plus other projects with permission
 //         'guest'     : 99    // public access
 //         }
-constants.dataset_count_for_visuals_max    = 1100
-constants.dataset_count_for_visuals_cutoff = 500
+constants.default_taxonomy = {name: 'silva119', curator: 'SILVA (v119)', show: 'Silva-119'};
+console.log('in constants');
+console.log(constants.default_taxonomy);
+constants.dataset_count_for_visuals_max    = 1100;
+constants.dataset_count_for_visuals_cutoff = 500;
 constants.show_nas                         = {"raw": false, "string": "--"};  // if raw==true will show class_NA, genus_NA etc; else show string (tax table only; not biom file)
 // blast dbs are in public/blast
 constants.blast_dbs = ['Bv3v5', 'Bv4v5', 'Av4v5', 'Bv4', 'Bv6', 'Bv6v4', 'Av6v4', 'Av6', 'Ev9', 'Misc']; // leave 'Misc' as last item
@@ -58,20 +61,28 @@ constants.DOMAIN_REGIONS = {
   domain_regions: [
     {d_r: ['Av4', 'Av6', 'Av4v5'], domain: "Archaeal", regions: ['v4', 'v6', 'v4v5'], domain_show: "Archaea"},
     {d_r: ['Bv4', 'Bv6', 'Bv4v5'], domain: "Bacterial", regions: ['v4', 'v6', 'v4v5'], domain_show: "Bacteria"},
-    {d_r: ['Ev4', 'EHSSU', 'EHLSU'], domain: "Eukaryal", regions: ['v4', 'v4_hap_HSSU', 'v4_hap_HLSU'], domain_show: "Eukarya"},
+    {
+      d_r: ['Ev4', 'EHSSU', 'EHLSU'],
+      domain: "Eukaryal",
+      regions: ['v4', 'v4_hap_HSSU', 'v4_hap_HLSU'],
+      domain_show: "Eukarya"
+    },
     {d_r: ["ITS1"], domain: "Fungal", regions: ['ITS1'], domain_show: "Eukarya"},
     {d_r: ["Sgun"], domain: "Shotgun", regions: ['Sgun'], domain_show: "Shotgun"},
   ]
 };
 
-constants.TARGET_GENE = [{domain: "Eukarya", target_gene: "18s"}, {domain: "Archaea", target_gene: "16s"}, {domain: "Bacteria", target_gene: "16s"}];
+constants.TARGET_GENE = [{domain: "Eukarya", target_gene: "18s"}, {
+  domain: "Archaea",
+  target_gene: "16s"
+}, {domain: "Bacteria", target_gene: "16s"}];
 
 
 constants.TARGETS = ["Av3", "Av3v5", "Av4", "Av4v5", "Av5v6", "Av6", "Av6v4",
   "Bv1v2", "Bv1v3", "Bv1v4", "Bv2", "Bv3", "Bv3v4", "Bv3v5", "Bv4", "Bv4v5", "Bv5", "Bv5v6", "Bv6", "Bv6v4",
   "Ev4", "Ev9", "ITS"];
 
-constants.UNITSELECT = {
+constants.UNITSELECT               = {
   units: [
     {
       id: 'tax_silva119_simple',
@@ -488,8 +499,8 @@ constants.VISUAL_THUMBNAILS = {
       thumb: '/images/visuals/heatmap.png',
       //link:'user_viz_data/heatmap',
       //id:'dheatmap_link_id',
-      prefix:'dheatmap',
-      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
+      prefix: 'dheatmap',
+      tip: 'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
     },
 
     {
@@ -515,8 +526,8 @@ constants.VISUAL_THUMBNAILS = {
       thumb: '/images/visuals/fheatmap.png',
       //link:'user_viz_data/frequency_heatmap',
       //id:'fheatmap_link_id',
-      prefix:'fheatmap',
-      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-R (https://www.r-project.org/)-|-pheatmap (R-package)-|-vegan (R-package)-|-jsonlite (R-package)-|-RColorBrewer (R-package)'
+      prefix: 'fheatmap',
+      tip: 'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-R (https://www.r-project.org/)-|-pheatmap (R-package)-|-vegan (R-package)-|-jsonlite (R-package)-|-RColorBrewer (R-package)'
     },
 
     {
@@ -533,8 +544,8 @@ constants.VISUAL_THUMBNAILS = {
       thumb: '/images/visuals/dendrogram.png',
       //link:'user_viz_data/dendrogram',
       //id:'dendrogram1_link_id',
-      prefix:'dendrogram01',
-      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
+      prefix: 'dendrogram01',
+      tip: 'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
     },
 
     //{name:'Dendrogram (d3-phylonator)', thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram2_link_id',
@@ -545,8 +556,8 @@ constants.VISUAL_THUMBNAILS = {
       thumb: '/images/visuals/radial.png',
       //link:'user_viz_data/dendrogram',
       //id:'dendrogram3_link_id',
-      prefix:'dendrogram03',
-      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
+      prefix: 'dendrogram03',
+      tip: 'Python3-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'
     },
 
 
@@ -567,8 +578,8 @@ constants.VISUAL_THUMBNAILS = {
       thumb: '/images/visuals/emperor.png',
       //link:'user_viz_data/pcoa',
       //id:'pcoa_3d_link_id',
-      prefix:'pcoa3d',
-      tip:'Python3-|-scikit-bio (python library)-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-QIIME (http://qiime.org)'
+      prefix: 'pcoa3d',
+      tip: 'Python3-|-scikit-bio (python library)-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-QIIME (http://qiime.org)'
     },
 
     {
@@ -585,8 +596,8 @@ constants.VISUAL_THUMBNAILS = {
       thumb: '/images/visuals/alpha.png',
       //link:'user_viz_data/alpha_diversity',
       //id:'adiversity_link_id',
-      prefix:'adiversity',
-      tip:'Python3-|-scipy (python library)-|-numpy (python library)-|-scikit-bio'
+      prefix: 'adiversity',
+      tip: 'Python3-|-scipy (python library)-|-numpy (python library)-|-scikit-bio'
     },
 
     {

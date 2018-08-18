@@ -95,7 +95,7 @@ var save_datasets_list = function(ds_local, user)
 //
 function create_piecharts(imagetype, ts, mtx) {
     //alert(imagetype)  // this is single only: per taxonomy
-    
+    //console.log('in create_piecharts  -PIE')
       var unit_list = [];
       for (var n in mtx.rows){
           unit_list.push(mtx.rows[n].id);
@@ -172,15 +172,7 @@ function create_piecharts(imagetype, ts, mtx) {
             return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
         })
 
-//       .append("a")
-//           //.attr("xlink:xlink:href", function(d, i) { return 'bar_single?did='+myjson_obj.dids[i]+'&ts='+ts;} )
-//           .attr("xlink:xlink:href", function(d, i) {
-//             //if(imagetype == 'group'){
-//               return '/visuals/bar_single?did='+mtx.rows[i].did+'&ts='+ts+'&orderby=alpha&val=z';
-//             //}else{
-//             //  return null
-//             //}
-//           }).attr("target", '_blank' );
+
 
   pies.append("text")
         .attr("dx", -(r+m))
@@ -205,11 +197,6 @@ function create_piecharts(imagetype, ts, mtx) {
         
         .attr("id",function(d, i) {
             var cnt = d.value;
-            var total = 0;
-            for (var k in this.parentNode.__data__){
-              total += this.parentNode.__data__[k];
-            }
-
             var ds = ''; // PLACEHOLDER for TT
             var pct = (cnt * 100 / total).toFixed(2);
             var id = 'pc/'+unit_list[i]+'/'+cnt.toString()+'/'+pct;
@@ -295,7 +282,6 @@ function create_barcharts(imagetype, ts, mtx, new_order) {
         });
 
     if(imagetype == 'group'){
-
         if(new_order.orderby == 'alpha'){
           if(new_order.alpha_value == 'a'){
             alpha_name = "Taxa Names <span class=\"glyphicon glyphicon-chevron-up\"></span>"

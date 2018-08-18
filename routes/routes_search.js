@@ -62,7 +62,7 @@ router.get('/blast', helpers.isLoggedIn, function(req, res) {
 //
 router.get('/geo_by_tax', helpers.isLoggedIn, function(req, res) {
     var phyla = []
-    var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)
+    var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
     var qSelect = "select phylum from phylum order by phylum"
     var query = req.db.query(qSelect, function (err, rows, fields){
         
@@ -100,7 +100,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
     function finish_no_data(){
         
         var phyla = []
-        var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)
+        var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
         var qSelect = "select phylum from phylum order by phylum"
         var query = req.db.query(qSelect, function (err, rows, fields){
         
@@ -234,7 +234,9 @@ router.post('/all_taxa_by_rank', helpers.isLoggedIn, function(req, res) {
                     result.push(rows[i][rank])
                 }
             }
-            result.sort()
+            result.sort(function (a, b) {
+                return a.toLowerCase().localeCompare(b.toLowerCase());
+            });
             finish(result)
         })
     }
@@ -363,8 +365,9 @@ router.get('/metadata/:type', helpers.isLoggedIn, function(req, res) {
           metadata_fields[tmp_name] = {"min":min,"max":max};
         }
       }
-      //console.log(metadata_fields)
-      metadata_fields_array.sort();
+      metadata_fields_array.sort(function (a, b) {
+        return a.toLowerCase().localeCompare(b.toLowerCase());
+      });
 
       //console.log(JSON.stringify(metadata_fields))
       res.render('search/metadata', { title: 'VAMPS:Search',
