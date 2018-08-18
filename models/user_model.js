@@ -33,14 +33,14 @@ class User {
     var uniq_key = first_name + "#" + last_name + "#" + email + "#" + institution;
 
     if (typeof ALL_USERS_BY_UnK[uniq_key] !== 'undefined') {
-      this.User_obj.User_obj.user_id        = ALL_USERS_BY_UnK[uniq_key].user_id;
-      this.User_obj.User_obj.username       = ALL_USERS_BY_UnK[uniq_key].username;
-      this.User_obj.User_obj.email          = ALL_USERS_BY_UnK[uniq_key].email;
-      this.User_obj.User_obj.institution    = ALL_USERS_BY_UnK[uniq_key].institution;
-      this.User_obj.User_obj.first_name     = ALL_USERS_BY_UnK[uniq_key].first_name;
-      this.User_obj.User_obj.last_name      = ALL_USERS_BY_UnK[uniq_key].last_name;
-      this.User_obj.User_obj.security_level = ALL_USERS_BY_UnK[uniq_key].status;
-      this.User_obj.User_obj.groups         = ALL_USERS_BY_UnK[uniq_key].groups;
+     this.User_obj.user_id        = ALL_USERS_BY_UnK[uniq_key].user_id;
+     this.User_obj.username       = ALL_USERS_BY_UnK[uniq_key].username;
+     this.User_obj.email          = ALL_USERS_BY_UnK[uniq_key].email;
+     this.User_obj.institution    = ALL_USERS_BY_UnK[uniq_key].institution;
+     this.User_obj.first_name     = ALL_USERS_BY_UnK[uniq_key].first_name;
+     this.User_obj.last_name      = ALL_USERS_BY_UnK[uniq_key].last_name;
+     this.User_obj.security_level = ALL_USERS_BY_UnK[uniq_key].status;
+     this.User_obj.groups         = ALL_USERS_BY_UnK[uniq_key].groups;
     }
   }
 
