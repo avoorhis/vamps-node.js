@@ -74,11 +74,43 @@ class Project {
   }
 
   make_project_obj_from_new_csv(project_name, data_arr) {
-    var temp_project_obj    = {};
-    var matrix_length       = data_arr.length;
-    var transposed_data_arr = helpers.transpose_2d_arr(data_arr, matrix_length);
+    // TODO: transpose and unique data_arr
+    // var matrix_length       = data_arr.length;
+    // var transposed_data_arr = helpers.transpose_2d_arr(data_arr, matrix_length);
 
-    this.project_obj = temp_project_obj;
+    var first_name   = data_arr[0].first_name;
+    var last_name    = data_arr[0].last_name;
+    var email        = data_arr[0].pi_email;
+    var institution  = data_arr[0].institution;
+    this.user_obj    = User.getUserInfoFromGlobalbyUniqKey(first_name, last_name, email, institution);
+    this.project_obj.abstract_data       = this.get_current_project_abstract_data(project_name);
+    this.project_obj.description         = data_arr[0].project_description;
+    this.project_obj.email               = email;
+    this.project_obj.first               = first_name;
+    this.project_obj.first_name          = first_name;
+    this.project_obj.funding             = data_arr[0].funding_code;
+    this.project_obj.institution         = institution;
+    this.project_obj.last                = last_name;
+    this.project_obj.last_name           = last_name;
+    this.project_obj.metagenomic         = 0;
+    this.project_obj.oid                 = this.user_obj.user_id;
+    this.project_obj.owner_user_id       = this.user_obj.user_id;
+    this.project_obj.permissions         = [this.user_obj.user_id]; // initially has only project owner_id
+    this.project_obj.pi_email            = email;
+    this.project_obj.pi_name             = first_name + ' ' + last_name;
+    this.project_obj.project             = project_name || data_arr[0].project;
+    this.project_obj.project_description = data_arr[0].project_description;
+    this.project_obj.project_title       = data_arr[0].project_title;
+    this.project_obj.rev_project_name    = helpers.reverseString(this.project_obj.project);
+    this.project_obj.title               = data_arr[0].project_title;
+    this.project_obj.updated_at          = new Date();
+    this.project_obj.username            = this.user_obj.username;
+    // this.project_obj.active: 0,
+// this.project_obj.created_at: new Date(),
+// this.project_obj.matrix: 0,
+// this.project_obj.pid: 0,
+// this.project_obj.project_id: 0,
+// this.project_obj.public: 0,
   }
 
   make_project_obj_with_existing_project_info_by_pid(pid) {
@@ -113,7 +145,7 @@ class Project {
       temp_project_obj.metagenomic = 1;
       project_name3                = 'Sgun';
     }
-    project_name3 = d_region_arr[2];
+    project_name3                        = d_region_arr[2];
     project_name                         = req.form.project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
     this.project_obj.abstract_data       = this.get_current_project_abstract_data(this.project_obj.project);
     this.project_obj.description         = req.form.project_description;
