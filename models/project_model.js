@@ -79,10 +79,10 @@ class Project {
     // var matrix_length       = data_arr.length;
     // var transposed_data_arr = helpers.transpose_2d_arr(data_arr, matrix_length);
 
-    var first_name                       = data_arr[0].first_name;
-    var last_name                        = data_arr[0].last_name;
-    var email                            = data_arr[0].pi_email;
-    var institution                      = data_arr[0].institution;
+    var first_name  = data_arr[0].first_name;
+    var last_name   = data_arr[0].last_name;
+    var email       = data_arr[0].pi_email;
+    var institution = data_arr[0].institution;
     this.this_user.getUserInfoFromGlobalbyUniqKey(first_name, last_name, email, institution);
     this.user_obj                        = this.this_user.User_obj;
     this.project_obj.abstract_data       = this.get_current_project_abstract_data(project_name);
@@ -119,9 +119,9 @@ class Project {
     this.project_obj = Object.assign(PROJECT_INFORMATION_BY_PID[pid]);
     const owner_id   = this.project_obj.oid;
     this.this_user.getUserInfoFromGlobal(owner_id);
-    this.user_obj    = this.this_user.User_obj;
+    this.user_obj = this.this_user.User_obj;
 
-      //renaming
+    //renaming
     this.project_obj.project_description = PROJECT_INFORMATION_BY_PID[pid].description;
     this.project_obj.pi_email            = PROJECT_INFORMATION_BY_PID[pid].email;
     this.project_obj.pi_name             = PROJECT_INFORMATION_BY_PID[pid].first + ' ' + PROJECT_INFORMATION_BY_PID[pid].last;
@@ -220,13 +220,13 @@ class Project {
 
   getAllProjects(callback) {
 
-    return connection.query("Select * from project", callback);
+    return connection.query("SELECT * FROM project", callback);
 
   }
 
   getProjectById(project_id, callback) {
 
-    return connection.query("select * from project where project_id = ?", [project_id], callback);
+    return connection.query("SELECT * FROM project WHERE project_id = ?", [project_id], callback);
   }
 
   add_info_to_project_globals(object_to_add, pid) {
@@ -261,15 +261,18 @@ class Project {
   }
 
   getProjectByName(project_name, callback) {
-    return connection.query("select * from project where project_name = ?", [project_name], callback);
+    // const query_getProjectByName = "SELECT * FROM project WHERE project = ?", [project_name];
+    // const query_getProjectByName = "SELECT * FROM project WHERE project = 'DCO_BRZ_Av6'";
+    const query_getProjectByName = "SELECT * FROM project WHERE project = " + connection.escape(project_name);
+    return connection.query(query_getProjectByName, callback);
   }
 
   deleteProject(id, callback) {
-    return connection.query("delete from project where Id=?", [id], callback);
+    return connection.query("DELETE FROM project WHERE project_id = ?", [id], callback);
   }
 
   updateProject(id, Project, callback) {
-    return connection.query("update project set Title=?,Status=? where Id=?", [Project.Title, Project.Status, id], callback);
+    return connection.query("UPDATE project SET Title = ?, Status = ? WHERE project_id = ?", [Project.Title, Project.Status, id], callback);
   }
 
   get_project_name_from_file_name(edit_metadata_file) {

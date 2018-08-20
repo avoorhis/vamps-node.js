@@ -133,7 +133,7 @@ class CreateDataObj {
     var pid  = this.req.body.project_id;
     var data = this.req.form;
 
-    const new_dataset = new Dataset(this.req, this.res, this.pid);
+    const new_dataset = new Dataset(this.req, this.res, this.pid, data);
     var DatasetInfo   = new_dataset.DatasetInfo;
     var that          = this;
     console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
@@ -169,7 +169,8 @@ class CreateDataObj {
   }
 
   make_metadata_object_with_new_datasets(req, res, pid, data) {
-    const new_dataset = new Dataset(req, res, pid);
+    // var dataset_count =
+    const new_dataset = new Dataset(req, res, pid, data);
     var DatasetInfo   = new_dataset.DatasetInfo;
     var that          = this;
     console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));

@@ -32,6 +32,7 @@ module.exports.isLoggedIn = function (req, res, next) {
   res.redirect('/users/login');
   // return;
 };
+
 // module.exports.isLoggedInAPI = function(req, res) {
 //   if (req.isAuthenticated()) {
 //     console.log("Hurray! API User isLoggedInAPI.req.isAuthenticated:", req.user.username);
@@ -43,6 +44,7 @@ module.exports.isLoggedIn = function (req, res, next) {
 //   
 // };
 // route middleware to make sure a user is an aministrator
+
 module.exports.isAdmin = function (req, res, next) {
   if (req.user.security_level === 1) {
     console.log("Hurray! USER is an Admin:", req.user.username);
@@ -2161,7 +2163,7 @@ exports.findByValueOfObject = function (arr, key, value) {
   });
 };
 
-exports.transpose_2d_arr = function (data_arr, matrix_length) {
+exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
   console.time('TIME: transpose_2d_arr');
 
   //make an array with proper length, even if the first one is empty
@@ -2179,6 +2181,49 @@ exports.transpose_2d_arr = function (data_arr, matrix_length) {
   console.timeEnd('TIME: transpose_2d_arr');
   return newArray;
 }
+
+// exports.transpose = function (array) {
+//   console.time('TIME: transpose');
+//
+//   array[0].map((col, i) => array.map(row => row[i]));
+//
+//   console.timeEnd('TIME: transpose');
+//   return array;
+// };
+
+
+exports.transpose_arr_of_obj = transpose_arr_of_obj;
+
+function transpose_arr_of_obj(a) {
+  console.timeEnd('TIME: transpose_arr_of_obj');
+
+  var array_width = a.length || 0;
+  var headers     = a[0] instanceof Object ? Object.keys(a[0]) : [];
+  var h           = headers.length;
+
+  // In case it is a zero matrix, no transpose routine needed.
+  if (h === 0 || array_width === 0) {
+    return [];
+  }
+
+  var transposed_object = {};
+
+  for (var i = 0; i < array_width; i++) {
+
+    for (var k in headers) {
+      header = headers[k];
+      if (a[i].hasOwnProperty(header)) {
+        if (!transposed_object.hasOwnProperty(header)) {
+          transposed_object[header] = [];
+        }
+        transposed_object[header].push(a[i][header]);
+      }
+    }
+  }
+
+  return transposed_object;
+}
+
 
 function jsUcfirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);

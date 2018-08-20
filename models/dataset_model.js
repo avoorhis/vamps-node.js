@@ -1,14 +1,20 @@
 class Dataset {
 
-  constructor(req, res, pid) {
+  constructor(req, res, pid, data) {
     this.req             = req || {};
     this.res             = res || {};
     this.pid             = pid;
     this.dataset_obj     = {};
     this.DatasetInfo     = {};
-    this.datasets_length = this.req.form["dataset_id"].length || 0;
-
-    this.make_DatasetInfo();
+    if (typeof this.req.form !== 'undefined') {
+      this.datasets_length = this.req.form["dataset_id"].length;
+      this.make_DatasetInfo(data);
+    }
+    else {
+      //TODO: get datasets_length from csv
+      this.datasets_length = data.length;
+      this.make_empty_DatasetInfo(data);
+    }
     this.dataset_objects_arr = [];
   }
 
@@ -28,8 +34,19 @@ class Dataset {
     return d_converted_arr;
   }
 
-  make_DatasetInfo(dat_obj) {
-    var curr_obj            = dat_obj;
+  make_empty_DatasetInfo() {
+    var formatedMysqlString = this.get_mysql_formatted_date();
+      this.DatasetInfo.dataset_id          = Array(this.datasets_length).fill(0, 0);
+      this.DatasetInfo.dataset             = "";
+      this.DatasetInfo.dataset_description = "";
+      this.DatasetInfo.tube_label          = "";
+      this.DatasetInfo.project_id          = Array(this.datasets_length).fill(this.pid, 0);
+      this.DatasetInfo.created_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
+      this.DatasetInfo.updated_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
+  }
+
+  make_DatasetInfo(data) {
+    var curr_obj            = data;
     var dataset_ids         = [];
     var formatedMysqlString = this.get_mysql_formatted_date();
 
@@ -156,19 +173,19 @@ class Dataset {
 
   getAllDatasets(callback) {
 
-    return connection.query("Select * from dataset", callback);
+    return connection.query("SELECT * FROM dataset", callback);
 
   }
 
   getDatasetByName(dataset_name, callback) {
 
-    return connection.query("select * from dataset where dataset = ?", [dataset_name], callback);
+    return connection.query("SELECT * FROM dataset WHERE dataset = ?", [dataset_name], callback);
   }
 
   get_new_dataset_by_name(callback) {
     var dataset_names = "('" + this.DatasetInfo["dataset"].join("', '") + "')";
 
-    return connection.query("select * from dataset where dataset in " + dataset_names + "AND project_id = ?", [this.pid], callback);
+    return connection.query("SELECT * FROM dataset WHERE dataset in " + dataset_names + "AND project_id = ?", [this.pid], callback);
   }
 
   addDataset(callback) {

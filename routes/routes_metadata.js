@@ -485,6 +485,12 @@ function make_metadata_object_from_csv(req, res) {
   var file_name       = req.body.edit_metadata_file;
   const csv_file_read = new csv_files_controller.CsvFileRead(req, res, file_name);
   var data_arr        = csv_file_read.data_arr;
+  const transposed = helpers.transpose_arr_of_obj(data_arr);
+  const headers = transposed.shift();
+  const result_csv = transposed.map(row => row.reduce((acc, col, ind) => {acc[headers[ind]] = col; return acc}, {}))
+
+
+
   const cur_project   = new Project(req, res, 0, 0);
   var project_name    = req.body.project || cur_project.get_project_name_from_file_name(file_name);
   var pid             = cur_project.get_pid(project_name);
@@ -505,6 +511,8 @@ function make_metadata_object_from_csv(req, res) {
         console.log('New project SAVED');
         console.log('WWW rows', rows);
         var pid = rows.insertId;
+        // callback_for_add_project_from_new_csv(req, res, cur_project, data_arr);
+
         if ((pid === 0) && (rows.affectedRows === 1)) {
           // TODO: existing_project: as show_with_new_datasets
           cur_project.getProjectByName(project_name, function (err, rows) {
