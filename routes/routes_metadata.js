@@ -486,13 +486,10 @@ function make_metadata_object_from_csv(req, res) {
   const csv_file_read = new csv_files_controller.CsvFileRead(req, res, file_name);
   var data_arr        = csv_file_read.data_arr;
   const transposed = helpers.transpose_arr_of_obj(data_arr);
-  const headers = transposed.shift();
-  const result_csv = transposed.map(row => row.reduce((acc, col, ind) => {acc[headers[ind]] = col; return acc}, {}))
-
-
+  const headers = Object.keys(transposed);
 
   const cur_project   = new Project(req, res, 0, 0);
-  var project_name    = req.body.project || cur_project.get_project_name_from_file_name(file_name);
+  var project_name    = req.body.project || cur_project.get_project_name_from_file_name(file_name) || helpers.unique_array(transposed.project)[0];
   var pid             = cur_project.get_pid(project_name);
 
   if (pid === 0) { // new csv
