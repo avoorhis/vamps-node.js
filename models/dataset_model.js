@@ -1,11 +1,11 @@
 class Dataset {
 
   constructor(req, res, pid, data) {
-    this.req             = req || {};
-    this.res             = res || {};
-    this.pid             = pid;
-    this.dataset_obj     = {};
-    this.DatasetInfo     = {};
+    this.req         = req || {};
+    this.res         = res || {};
+    this.pid         = pid;
+    this.dataset_obj = {};
+    this.DatasetInfo = {};
     if (typeof this.req.form !== 'undefined') {
       this.datasets_length = this.req.form["dataset_id"].length;
       this.make_DatasetInfo(data);
@@ -34,15 +34,15 @@ class Dataset {
     return d_converted_arr;
   }
 
-  make_empty_DatasetInfo() {
-    var formatedMysqlString = this.get_mysql_formatted_date();
-      this.DatasetInfo.dataset_id          = Array(this.datasets_length).fill(0, 0);
-      this.DatasetInfo.dataset             = "";
-      this.DatasetInfo.dataset_description = "";
-      this.DatasetInfo.tube_label          = "";
-      this.DatasetInfo.project_id          = Array(this.datasets_length).fill(this.pid, 0);
-      this.DatasetInfo.created_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
-      this.DatasetInfo.updated_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
+  make_empty_DatasetInfo(data) {
+    var formatedMysqlString              = this.get_mysql_formatted_date();
+    this.DatasetInfo.dataset_id          = Array(this.datasets_length).fill(0, 0);
+    this.DatasetInfo.dataset             = data.dataset;
+    this.DatasetInfo.dataset_description = data.dataset_description || Array(this.datasets_length).fill("", 0);
+    this.DatasetInfo.tube_label          = data.tube_label || data.dataset || Array(this.datasets_length).fill("", 0);
+    this.DatasetInfo.project_id          = Array(this.datasets_length).fill(this.pid, 0);
+    this.DatasetInfo.created_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
+    this.DatasetInfo.updated_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
   }
 
   make_DatasetInfo(data) {
@@ -137,7 +137,7 @@ class Dataset {
     // temp_obj.did = 9347;
     // temp_obj.dname = "23";
     ALL_DATASETS.projects.push(temp_obj);
-    DATASET_IDS_BY_PID[pid] = [];
+    DATASET_IDS_BY_PID[pid]     = [];
     this.DatasetInfo.dataset_id = [];
 
     for (let i = 0; i < this.datasets_length; i++) {
@@ -145,7 +145,7 @@ class Dataset {
         console.log("EEEE1 dataset_objects_arr[pid] = ", JSON.stringify(this.dataset_objects_arr[pid]));
         console.log("this.datasets_length = ", this.datasets_length);
       }
-      var dataset_info = this.dataset_objects_arr[pid][i];
+      var dataset_info       = this.dataset_objects_arr[pid][i];
       var myArray_dataset_id = this.DatasetInfo.dataset_id;
       this.add_obj_to_arr(dataset_info.dataset_id, myArray_dataset_id);
       var myArray_dataset = this.DatasetInfo.dataset;
@@ -154,10 +154,10 @@ class Dataset {
       DATASET_IDS_BY_PID[pid].push(dataset_info.dataset_id);
       DATASET_NAME_BY_DID[dataset_info.dataset_id] = dataset_info.dataset;
 
-      var tt_obj            = {};
-      tt_obj["did"]         = dataset_info.dataset_id;
-      tt_obj["dname"]       = dataset_info.dataset;
-      tt_obj["ddesc"]       = dataset_info.dataset_description;
+      var tt_obj      = {};
+      tt_obj["did"]   = dataset_info.dataset_id;
+      tt_obj["dname"] = dataset_info.dataset;
+      tt_obj["ddesc"] = dataset_info.dataset_description;
 
       var myArray1 = ALL_DATASETS.projects[ALL_DATASETS.projects.length - 1].datasets;
       this.add_obj_to_arr(tt_obj, myArray1);
