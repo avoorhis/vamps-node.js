@@ -260,7 +260,7 @@ router.post('/metadata_new',
       const new_project = new Project(req, res, 0, user_id);
       new_project.make_project_obj_from_new_form_info(user_id);
 
-      var project_obj   = new_project.project_obj;
+      var project_obj = new_project.project_obj;
       console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
       new_project.addProject(project_obj, function (err, rows) {
           console.time("TIME: in post /metadata_new, add project");
@@ -464,6 +464,16 @@ function make_metadata_object_from_form(req, res) {
   console.timeEnd("TIME: make_metadata_object_from_form");
 }
 
+function callback_for_add_project_from_new_csv(req, res, cur_project, data_arr) {
+  cur_project.add_info_to_project_globals(cur_project.project_obj, cur_project.project_obj.pid);
+  //   insertId: 1117,
+  //  TODO: save new datasets
+  const met_obj = new metadata_controller.CreateDataObj(req, res, cur_project.project_obj.pid, []);
+
+  //new
+  met_obj.make_metadata_object_with_new_datasets(req, res, cur_project.project_obj.pid, data_arr);
+}
+
 // create form from a csv file: old
 function make_metadata_object_from_csv(req, res) {
   console.time("TIME: make_metadata_object_from_csv");
@@ -481,7 +491,7 @@ function make_metadata_object_from_csv(req, res) {
 
   if (pid === 0) { // new csv
     cur_project.make_project_obj_from_new_csv(project_name, data_arr);
-  //  TODO: save new project
+    //  TODO: save new project
     var project_obj = cur_project.project_obj;
     cur_project.addProject(project_obj, function (err, rows) {
       console.time("TIME: in post /metadata_new, add project");
@@ -489,16 +499,24 @@ function make_metadata_object_from_csv(req, res) {
         console.log('WWW0 err', err);
         req.flash('fail', err);
         // show_new.show_metadata_new_again(req, res);
-      //  TODO show the same page again
+        //  TODO show the same page again
       }
       else {
         console.log('New project SAVED');
         console.log('WWW rows', rows);
         var pid = rows.insertId;
-        cur_project.add_info_to_project_globals(project_obj, pid);
-        //   insertId: 1117,
-        //  TODO: save new datasets
-        // make_metadata_object_with_new_datasets(req, res, pid, data_arr)
+        if ((pid === 0) && (rows.affectedRows === 1)) {
+          // TODO: existing_project: as show_with_new_datasets
+          cur_project.getProjectByName(project_name, function (err, rows) {
+            console.log("RRR1, rows from getProjectByName", rows);
+            cur_project.project_obj.pid = rows["0"].project_id;
+            callback_for_add_project_from_new_csv(req, res, cur_project, data_arr);
+          });
+        }
+        else {
+          callback_for_add_project_from_new_csv(req, res, cur_project, data_arr);
+        }
+
 
         // const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
         // met_obj.make_new_project_for_form(rows, project_obj);
@@ -605,7 +623,7 @@ function make_metadata_object_from_db(req, res) {
 
   const this_project = new Project(req, res, pid, user_id);
   this_project.make_project_obj_with_existing_project_info_by_pid(pid);
-  var project_obj    = this_project.project_obj;
+  var project_obj = this_project.project_obj;
 
   var abstract_data = project_obj.abstract_data;
 
