@@ -481,8 +481,30 @@ function make_metadata_object_from_csv(req, res) {
 
   if (pid === 0) { // new csv
     cur_project.make_project_obj_from_new_csv(project_name, data_arr);
-  //  TODO: save ne project
-  //  TODO: save new datasets
+  //  TODO: save new project
+    var project_obj = cur_project.project_obj;
+    cur_project.addProject(project_obj, function (err, rows) {
+      console.time("TIME: in post /metadata_new, add project");
+      if (err) {
+        console.log('WWW0 err', err);
+        req.flash('fail', err);
+        // show_new.show_metadata_new_again(req, res);
+      //  TODO show the same page again
+      }
+      else {
+        console.log('New project SAVED');
+        console.log('WWW rows', rows);
+        var pid = rows.insertId;
+        cur_project.add_info_to_project_globals(project_obj, pid);
+        //   insertId: 1117,
+        //  TODO: save new datasets
+        // make_metadata_object_with_new_datasets(req, res, pid, data_arr)
+
+        // const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
+        // met_obj.make_new_project_for_form(rows, project_obj);
+      }
+      console.timeEnd("TIME: in post /metadata_new, add project");
+    });
   }
   else {
     cur_project.make_project_obj_with_existing_project_info_by_pid(pid);

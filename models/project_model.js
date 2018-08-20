@@ -86,25 +86,25 @@ class Project {
     this.this_user.getUserInfoFromGlobalbyUniqKey(first_name, last_name, email, institution);
     this.user_obj                        = this.this_user.User_obj;
     this.project_obj.abstract_data       = this.get_current_project_abstract_data(project_name);
-    this.project_obj.description         = data_arr[0].project_description;
+    this.project_obj.description         = data_arr[0].project_description || this.project_obj.description;
     this.project_obj.email               = email;
     this.project_obj.first               = first_name;
     this.project_obj.first_name          = first_name;
-    this.project_obj.funding             = data_arr[0].funding_code;
+    this.project_obj.funding             = data_arr[0].funding_code || this.project_obj.funding;
     this.project_obj.institution         = institution;
     this.project_obj.last                = last_name;
     this.project_obj.last_name           = last_name;
-    this.project_obj.metagenomic         = 0;
+    this.project_obj.metagenomic         = data_arr[0].metagenomic || this.project_obj.metagenomic;
     this.project_obj.oid                 = this.user_obj.user_id;
     this.project_obj.owner_user_id       = this.user_obj.user_id;
     this.project_obj.permissions         = [this.user_obj.user_id]; // initially has only project owner_id
     this.project_obj.pi_email            = email;
     this.project_obj.pi_name             = first_name + ' ' + last_name;
-    this.project_obj.project             = project_name || data_arr[0].project;
-    this.project_obj.project_description = data_arr[0].project_description;
-    this.project_obj.project_title       = data_arr[0].project_title;
+    this.project_obj.project             = data_arr[0].project || project_name;
+    this.project_obj.project_description = this.project_obj.description;
+    this.project_obj.project_title       = data_arr[0].project_title || this.project_obj.title;
     this.project_obj.rev_project_name    = helpers.reverseString(this.project_obj.project);
-    this.project_obj.title               = data_arr[0].project_title;
+    this.project_obj.title               = this.project_obj.title;
     this.project_obj.updated_at          = new Date();
     this.project_obj.username            = this.user_obj.username;
     // this.project_obj.active: 0,
