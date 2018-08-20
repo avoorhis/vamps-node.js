@@ -508,14 +508,13 @@ function make_metadata_object_from_csv(req, res) {
         console.log('New project SAVED');
         console.log('WWW rows', rows);
         var pid = rows.insertId;
-        // callback_for_add_project_from_new_csv(req, res, cur_project, data_arr);
 
         if ((pid === 0) && (rows.affectedRows === 1)) {
           // TODO: existing_project: as show_with_new_datasets
           cur_project.getProjectByName(project_name, function (err, rows) {
             console.log("RRR1, rows from getProjectByName", rows);
             cur_project.project_obj.pid = rows["0"].project_id;
-            callback_for_add_project_from_new_csv(req, res, cur_project, data_arr);
+            callback_for_add_project_from_new_csv(req, res, cur_project, transposed);
           });
         }
         else {

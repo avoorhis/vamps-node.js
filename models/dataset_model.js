@@ -12,7 +12,7 @@ class Dataset {
     }
     else {
       //TODO: get datasets_length from csv
-      this.datasets_length = data.length;
+      this.datasets_length = data.dataset.length;
       this.make_empty_DatasetInfo(data);
     }
     this.dataset_objects_arr = [];
