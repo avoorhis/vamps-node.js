@@ -76,33 +76,33 @@ class Project {
 
   make_project_obj_from_new_csv(project_name, data_arr) {
     // TODO: transpose and unique data_arr
-    // var matrix_length       = data_arr.length;
-    // var transposed_data_arr = helpers.transpose_2d_arr(data_arr, matrix_length);
+    // That assumes one project per submission.
+    // TODO: print a warning
 
-    var first_name  = data_arr[0].first_name;
-    var last_name   = data_arr[0].last_name;
-    var email       = data_arr[0].pi_email;
-    var institution = data_arr[0].institution;
+    var first_name  = helpers.unique_array(data_arr.first_name)[0];
+    var last_name   = helpers.unique_array(data_arr.last_name)[0];
+    var email       = helpers.unique_array(data_arr.pi_email)[0];
+    var institution = helpers.unique_array(data_arr.institution)[0];
     this.this_user.getUserInfoFromGlobalbyUniqKey(first_name, last_name, email, institution);
     this.user_obj                        = this.this_user.User_obj;
     this.project_obj.abstract_data       = this.get_current_project_abstract_data(project_name);
-    this.project_obj.description         = data_arr[0].project_description || this.project_obj.description;
+    this.project_obj.description         = helpers.unique_array(data_arr.project_description)[0] || this.project_obj.description;
     this.project_obj.email               = email;
     this.project_obj.first               = first_name;
     this.project_obj.first_name          = first_name;
-    this.project_obj.funding             = data_arr[0].funding_code || this.project_obj.funding;
+    this.project_obj.funding             = helpers.unique_array(data_arr.funding_code)[0] || this.project_obj.funding;
     this.project_obj.institution         = institution;
     this.project_obj.last                = last_name;
     this.project_obj.last_name           = last_name;
-    this.project_obj.metagenomic         = data_arr[0].metagenomic || this.project_obj.metagenomic;
+    this.project_obj.metagenomic         = helpers.unique_array(data_arr.metagenomic)[0] || this.project_obj.metagenomic;
     this.project_obj.oid                 = this.user_obj.user_id;
     this.project_obj.owner_user_id       = this.user_obj.user_id;
     this.project_obj.permissions         = [this.user_obj.user_id]; // initially has only project owner_id
     this.project_obj.pi_email            = email;
     this.project_obj.pi_name             = first_name + ' ' + last_name;
-    this.project_obj.project             = data_arr[0].project || project_name;
+    this.project_obj.project             = helpers.unique_array(data_arr.project)[0] || project_name;
     this.project_obj.project_description = this.project_obj.description;
-    this.project_obj.project_title       = data_arr[0].project_title || this.project_obj.title;
+    this.project_obj.project_title       = helpers.unique_array(data_arr.project_title)[0] || this.project_obj.title;
     this.project_obj.rev_project_name    = helpers.reverseString(this.project_obj.project);
     this.project_obj.title               = this.project_obj.title;
     this.project_obj.updated_at          = new Date();

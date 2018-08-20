@@ -2195,7 +2195,7 @@ exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
 exports.transpose_arr_of_obj = transpose_arr_of_obj;
 
 function transpose_arr_of_obj(a) {
-  console.timeEnd('TIME: transpose_arr_of_obj');
+  console.time('TIME: transpose_arr_of_obj');
 
   var array_width = a.length || 0;
   var headers     = a[0] instanceof Object ? Object.keys(a[0]) : [];
@@ -2220,7 +2220,7 @@ function transpose_arr_of_obj(a) {
       }
     }
   }
-
+  console.timeEnd('TIME: transpose_arr_of_obj');
   return transposed_object;
 }
 

@@ -485,15 +485,15 @@ function make_metadata_object_from_csv(req, res) {
   var file_name       = req.body.edit_metadata_file;
   const csv_file_read = new csv_files_controller.CsvFileRead(req, res, file_name);
   var data_arr        = csv_file_read.data_arr;
-  const transposed = helpers.transpose_arr_of_obj(data_arr);
-  const headers = Object.keys(transposed);
+  const transposed    = helpers.transpose_arr_of_obj(data_arr);
+  const headers       = Object.keys(transposed);
 
-  const cur_project   = new Project(req, res, 0, 0);
-  var project_name    = req.body.project || cur_project.get_project_name_from_file_name(file_name) || helpers.unique_array(transposed.project)[0];
-  var pid             = cur_project.get_pid(project_name);
+  const cur_project = new Project(req, res, 0, 0);
+  var project_name  = req.body.project || cur_project.get_project_name_from_file_name(file_name) || helpers.unique_array(transposed.project)[0];
+  var pid           = cur_project.get_pid(project_name);
 
   if (pid === 0) { // new csv
-    cur_project.make_project_obj_from_new_csv(project_name, data_arr);
+    cur_project.make_project_obj_from_new_csv(project_name, transposed);
     //  TODO: save new project
     var project_obj = cur_project.project_obj;
     cur_project.addProject(project_obj, function (err, rows) {
