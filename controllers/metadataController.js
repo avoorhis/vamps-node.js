@@ -233,8 +233,10 @@ class CreateDataObj {
     all_metadata[pid]                = this.get_new_val(req, all_metadata[pid], all_new_names);
 
     //collect errors
-    var myArray_fail = helpers.unique_array(req.form.errors);
+    var myArray_fail = typeof req.form === 'undefined' ? [] : helpers.unique_array(req.form.errors);
+    // var myArray_fail = helpers.unique_array(req.form.errors);
 
+    // TODO: if from csv there is no req.form., skip it
     if (helpers.has_duplicates(req.form.sample_name)) {
       myArray_fail.push('Sample ID (user sample name) should be unique.');
     }
@@ -248,11 +250,11 @@ class CreateDataObj {
     // done ordered_field_names_obj
     // TODO: ??? all_field_units, ordered_field_names_obj, user, hostname)
 
+    // TODO: if from csv there is no req.body!
     var all_field_units = MD_CUSTOM_UNITS[req.body.project_id];
 
     const show_new = new module.exports.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units);
     show_new.render_edit_form();
-
   }
 
 
