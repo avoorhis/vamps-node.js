@@ -104,7 +104,7 @@ class Project {
     this.project_obj.project_description = this.project_obj.description;
     this.project_obj.project_title       = helpers.unique_array(data_arr.project_title)[0] || this.project_obj.title;
     this.project_obj.rev_project_name    = helpers.reverseString(this.project_obj.project);
-    this.project_obj.title               = this.project_obj.title;
+    this.project_obj.title               = this.project_obj.project_title;
     this.project_obj.updated_at          = new Date();
     this.project_obj.username            = this.user_obj.username;
     // this.project_obj.active: 0,
