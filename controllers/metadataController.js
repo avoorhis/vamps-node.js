@@ -1,9 +1,10 @@
-var Project              = require(app_root + '/models/project_model');
-var Dataset              = require(app_root + '/models/dataset_model');
+var Project   = require(app_root + '/models/project_model');
+var Dataset   = require(app_root + '/models/dataset_model');
 // var User                 = require(app_root + '/models/user_model');
-var helpers              = require(app_root + '/routes/helpers/helpers');
-var CONSTS               = require(app_root + '/public/constants');
-var validator            = require('validator');
+var helpers   = require(app_root + '/routes/helpers/helpers');
+var CONSTS    = require(app_root + '/public/constants');
+var validator = require('validator');
+
 // var csv_files_controller = require(app_root + '/controllers/csvFilesController');
 
 class CreateDataObj {
@@ -80,8 +81,8 @@ class CreateDataObj {
 
     // TODO: use with new
     // if (typeof project_name_or_pid === 'undefined') {
-      // const new_project = new Project(req, res, "", user_obj);
-      // var project_obj   = new_project.project_obj;
+    // const new_project = new Project(req, res, "", user_obj);
+    // var project_obj   = new_project.project_obj;
     // }
 
     if (helpers.isInt(project_name_or_pid)) {
@@ -109,7 +110,7 @@ class CreateDataObj {
 
     if ((typeof existing_all_metadata_pid['project_abstract'] !== 'undefined') && (typeof existing_all_metadata_pid['project_abstract'][0] !== 'undefined') && (!Array.isArray(existing_all_metadata_pid['project_abstract'][0]))) {
       var project_abstract_correct_form = helpers.unique_array(existing_all_metadata_pid['project_abstract']);
-      to_repeat = project_abstract_correct_form[0].split(',');
+      to_repeat                         = project_abstract_correct_form[0].split(',');
     }
     return this.fill_out_arr_doubles(to_repeat, repeat_times);
   }
@@ -206,7 +207,6 @@ class CreateDataObj {
     });
   }
 
-
   existing_object_from_form(req, res, pid, data) {
     // existing
     //add project_abstract etc.
@@ -232,17 +232,7 @@ class CreateDataObj {
     var all_new_names                = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
     all_metadata[pid]                = this.get_new_val(req, all_metadata[pid], all_new_names);
 
-    //collect errors
-    var myArray_fail = typeof req.form === 'undefined' ? [] : helpers.unique_array(req.form.errors);
-    // var myArray_fail = helpers.unique_array(req.form.errors);
-
-    // TODO: if from csv there is no req.form., skip it
-    if (helpers.has_duplicates(req.form.sample_name)) {
-      myArray_fail.push('Sample ID (user sample name) should be unique.');
-    }
-
-    myArray_fail.sort();
-    req.flash("fail", myArray_fail);
+    req = this.collect_errors(req);
 
     // ShowObj {
     //
@@ -257,6 +247,21 @@ class CreateDataObj {
     show_new.render_edit_form();
   }
 
+  collect_errors(req) {
+    var myArray_fail = [];
+
+    if (typeof req.form !== 'undefined') {
+      myArray_fail = helpers.unique_array(req.form.errors);
+      if (helpers.has_duplicates(req.form.sample_name)) {
+        myArray_fail.push('Sample ID (user sample name) should be unique.');
+      }
+      myArray_fail.sort();
+      req.flash("fail", myArray_fail);
+    }
+
+    return req;
+
+  }
 
   make_metadata_object(req, res, pid, data_obj) {
     console.time('TIME: make_metadata_object');
@@ -281,7 +286,7 @@ class CreateDataObj {
     var owner_id      = PROJECT_INFORMATION_BY_PID[pid].oid;
     const new_project = new Project(req, res, pid, owner_id);
     new_project.make_project_obj_with_existing_project_info_by_pid(pid);
-    var project_info  = new_project.project_obj;
+    var project_info = new_project.project_obj;
 
     // TODO: move to db creation?
     // console.log('MMM33 all_metadata[pid]');
@@ -614,7 +619,7 @@ class CreateDataObj {
       }
     }
 
-    all_metadata[pid].sample_num  = Array.from(new Array(repeat_times), (val, index) => index + 1);
+    all_metadata[pid].sample_num = Array.from(new Array(repeat_times), (val, index) => index + 1);
 
     console.log('FFF1 all_metadata[pid] before');
     console.log(JSON.stringify(all_metadata[pid]));
