@@ -560,7 +560,8 @@ function callback_for_add_project_from_new_csv(req, res, cur_project, data_arr) 
   //  TODO: save new datasets
   const met_obj = new metadata_controller.CreateDataObj(req, res, cur_project.project_obj.pid, []);
 
-  //new
+  //new,
+  // TODO: call only after get the pid!!!
   met_obj.make_metadata_object_with_new_datasets(req, res, cur_project.project_obj.pid, data_arr);
 }
 
@@ -574,6 +575,7 @@ function new_csv(req, res, cur_project, project_name, transposed) {
     console.log('New project SAVED');
     console.log('WWW rows', rows);
     var pid = rows.insertId;
+    cur_project.project_obj.pid = pid;
 
     if ((pid === 0) && (rows.affectedRows === 1)) {
       // TODO: existing_project: as show_with_new_datasets
