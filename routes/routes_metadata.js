@@ -428,9 +428,7 @@ router.post('/metadata_upload',
         const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
         csv_files_obj.make_csv(req, res);
       }
-      // else {
-      // do it after asynchronous make_metadata_object_from_form is done with global objects
-      // }
+
 
       if (req.body.done_editing === "done_editing") {
         send_mail_finished(req, res);
@@ -464,13 +462,10 @@ function make_metadata_object_from_form(req, res) {
   console.timeEnd("TIME: make_metadata_object_from_form");
 }
 
-// create form from a csv file: old
 function make_metadata_object_from_csv(req, res) {
   console.time("TIME: make_metadata_object_from_csv");
 
   // console.log("MMM req.body from make_metadata_object_from_csv");
-  // console.log(req.body);
-  //       var user_id       = req.form.pi_id_name.split('#')[0];
 
   var file_name       = req.body.edit_metadata_file;
   const csv_file_read = new csv_files_controller.CsvFileRead(req, res, file_name);
@@ -483,41 +478,6 @@ function make_metadata_object_from_csv(req, res) {
 
   if (typeof req.form === 'undefined') {
     new_csv(req, res, cur_project, project_name, transposed);
-    // // if (pid === 0) { // new csv
-    // cur_project.make_project_obj_from_new_csv(project_name, transposed);
-    // //  TODO: save new project
-    // var project_obj = cur_project.project_obj;
-    // cur_project.addProject(project_obj, function (err, rows) {
-    //   console.time("TIME: in post /metadata_new, add project");
-    //   if (err) {
-    //     console.log('WWW0 err', err);
-    //     req.flash('fail', err);
-    //     // show_new.show_metadata_new_again(req, res);
-    //     //  TODO show the same page again
-    //   }
-    //   else {
-    //     console.log('New project SAVED');
-    //     console.log('WWW rows', rows);
-    //     var pid = rows.insertId;
-    //
-    //     if ((pid === 0) && (rows.affectedRows === 1)) {
-    //       // TODO: existing_project: as show_with_new_datasets
-    //       cur_project.getProjectByName(project_name, function (err, rows) {
-    //         console.log("RRR1, rows from getProjectByName", rows);
-    //         cur_project.project_obj.pid = rows["0"].project_id;
-    //         callback_for_add_project_from_new_csv(req, res, cur_project, transposed);
-    //       });
-    //     }
-    //     else {
-    //       callback_for_add_project_from_new_csv(req, res, cur_project, data_arr);
-    //     }
-    //
-    //
-    //     // const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
-    //     // met_obj.make_new_project_for_form(rows, project_obj);
-    //   }
-    //   console.timeEnd("TIME: in post /metadata_new, add project");
-    // });
   }
   else {
     cur_project.make_project_obj_with_existing_project_info_by_pid(pid);
@@ -540,11 +500,6 @@ function make_metadata_object_from_csv(req, res) {
     var all_metadata     = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
     var all_field_names4 = met_obj.make_all_field_names(dataset_ids);
 
-    // console.log("DDD3 all_field_names from make_metadata_object_from_csv");
-    // console.log(JSON.stringify(all_field_names));
-    //
-    // console.log("DDD4 all_metadata from make_metadata_object_from_csv");
-    // console.log(JSON.stringify(all_metadata));
     req.body.project_id = pid;
 
     var all_field_units = MD_CUSTOM_UNITS[pid];

@@ -848,8 +848,8 @@ class ShowObj {
     console.log('JJJ1 all_metadata from render_edit_form');
     console.log(JSON.stringify(this.all_metadata));
 
-    console.log('JJJ2 all_field_names from render_edit_form');
-    console.log(JSON.stringify(this.all_field_names_arr));
+    // console.log('JJJ2 all_field_names from render_edit_form');
+    // console.log(JSON.stringify(this.all_field_names_arr));
 
     this.res.render('metadata/metadata_edit_form', {
       title: 'VAMPS: Metadata_upload',
