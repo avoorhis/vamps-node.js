@@ -112,7 +112,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
             }
             var new_dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids)
             var dataset_ids = new_dataset_ids
-            visual_post_items.ds_order = dataset_ids
+            req.session.chosen_id_order = visual_post_items.ds_order = dataset_ids
         }else if( (req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project) ){
             console.log('Found api project ',req.body.project)
             var pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid
@@ -120,7 +120,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
             visual_post_items.ds_order = new_dataset_ids
             console.log(PROJECT_INFORMATION_BY_PNAME[req.body.project])
             console.log(visual_post_items.ds_order)
-            dataset_ids = visual_post_items.ds_order;
+            req.session.chosen_id_order = dataset_ids = visual_post_items.ds_order;
             console.log('dids',dataset_ids)
         }else{
             console.log('API ALERT - no dids or project')
