@@ -953,7 +953,7 @@ $('input:radio[name="d_region"]').change(
 // ---
 
 $(document).ready(function () {
-  showSubmitMessage();
+  // showSubmitMessage();
   showUnits();
   showDatasets();
   // addCopyBtns();
