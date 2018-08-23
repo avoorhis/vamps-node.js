@@ -185,7 +185,10 @@ def run_fasta(args, fmt):
     if args.function == 'otus':
         out_file = os.path.join(args.base,'fasta.fa')
     else:
-        out_file = os.path.join(args.base,'fasta-'+args.runcode+'.fasta')
+        if fmt == 'MED':
+            out_file = os.path.join(args.base,'fasta-'+args.runcode+'.MED.fasta')
+        else:
+            out_file = os.path.join(args.base,'fasta-'+args.runcode+'.fasta')
     cursor = args.obj.cursor()
     dids = "','".join(args.dids)
     sql = get_fasta_sql(args,dids)
