@@ -49,14 +49,21 @@ Normalization:
             <tbody>
               <tr>
                 <td>
-                 <input type="checkbox" name='fasta' value="1"> Sequences File (fasta)
+                 <input type="checkbox" name='fasta' value="1"> Sequences File (Standard Format FASTA)
                 </td>
                 <td></td>
-                <td>Unique sequences with raw frequency count in defline: ">read_id|dataset|frequency"</td>
+                <td>Uniqued sequences with raw frequency count in defline: ">readID|dataset|frequency"</td>
               </tr>
               <tr>
                 <td>
-                 <input type="checkbox" name='biom' value="1"> Biom-Format File (json)
+                 <input type="checkbox" name='fastaMED' value="1"> Sequences File (MED Format FASTA) 
+                </td>
+                <td></td>
+                <td>Non-Uniqued sequences: ">dataset_readID";  <a href='http://merenlab.org/software/med/'>Read about Minumum Entropy Decomposition (MED)</a></td>
+              </tr>
+              <tr>
+                <td>
+                 <input type="checkbox" name='biom' value="1"> Biom-Format File (JSON)
                 </td>
                 <td></td>
                 <td>See <a href='http://biom-format.org/documentation/format_versions/biom-1.0.html' target='_blank'>http://biom-format.org/documentation/format_versions/biom-1.0.html</a></td>

@@ -1,0 +1,102 @@
+<% md = JSON.parse(md) %>
+
+<% include ../add_ins/begin.ejs %>
+<script>  
+  var mi_local  = JSON.parse('<%- metadata_items %>');
+</script>
+<link rel="stylesheet" type="text/css" href="/stylesheets/search.css">
+
+
+
+
+<p class='title'>Search</p>
+<% if (messages.success) { %>
+	<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+<% } %>
+
+
+<a href='/search/search_index'>Back to Available Searches</a>
+<!-- METADATA SEARCH --><a name="geo_by_md"></a>
+<br><br>
+<div class='container'>
+  <div class='row'>
+    <div class="col-lg-12">
+<form id='' name='' method='POST' action='geo_by_md_search'>
+<div  class='well'>
+
+		    <strong>Metadata</strong>
+
+				
+		    <ul>
+		       <li>Select the metadata parameter and the value range:
+		    </ul>
+	
+			<div class="row">	
+				
+
+				<div class="col-md-7">
+				  <table>
+				  <tr><td style='padding:10px;'>Select Name:<br>
+				  <select  name='rank' onchange="get_md_values(this.value)">
+                      <% for(i in md){ %>
+                         <option><%= md[i] %></option>
+                      <% } %>
+				  </select>
+				  </td>
+				  
+				  <td style='padding:10px;'>Values: 
+					<div id='availible_md_values'>
+					
+					</div>
+				  </td></tr>
+				  </table>	
+				</div>
+					
+								
+		  </div>
+		  
+		  
+		  
+		  
+		  <form id='metadata_search_form' name='' method='POST' action='/search/metadata_search_result' >	
+                    
+                <strong>Metadata -- Search by Name</strong> (limited by permissions)
+                <br>
+                Select Field(s) to Search:<br>
+                
+                <table><tr>
+                        <td>
+                        <select id='field1_metadata_search'  data-style="btn-primary" name='search1_metadata-item'>
+                            <option value='NONE'>select</option>						
+                            <% for (i = 0; i < mkeys.length; i++) { %>	
+                                <option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
+                            <% } %> 
+                        </select>
+                        </td>
+                       
+                    </tr>
+                </table>
+                
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+		  <div  style='padding-left:400px;'>
+            <input type='submit' value='Submit'>
+          </div>
+</div>
+</form>
+</div>
+</div>
+</div>
+	
+<% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/global.js"></script>
+<script type="text/javascript" src="/javascripts/search.js"></script>   
+ </body>
+ </html>

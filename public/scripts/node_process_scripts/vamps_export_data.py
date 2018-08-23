@@ -179,7 +179,7 @@ def write_file_txt(args, out_file, file_txt):
         with open(out_file, 'w') as f:
             f.write(file_txt)
 
-def run_fasta(args):
+def run_fasta(args, fmt):
     print ("""running fasta --->>>""")
     # args.datasets is a list of p--d pairs
     if args.function == 'otus':
@@ -204,8 +204,14 @@ def run_fasta(args):
 #                 id = row['project']+'--'+row['dataset']+'--'+str(row['sequence_id'])+'_'+str(n)+'_'+str(seq_count)
 #                 file_txt += '>'+str(id)+'\n'+str(seq)+'\n'
 #         else:
-        my_id = str(row['sequence_id'])+'|'+row['project']+'--'+row['dataset']+'|frequency:'+str(seq_count)
-        file_txt += '>'+str(my_id)+'\n'+str(seq)+'\n'
+        if fmt == 'MED':
+            #  >ds_seqid  (not uniqued)
+            for i in range(int(seq_count)):
+                my_id = (row['project']+'--'+row['dataset']).replace('_','-')+'_'+ str(row['sequence_id']) + '-'+str(i+1)
+                file_txt += '>'+str(my_id)+'\n'+seq.decode('UTF-8')+'\n'
+        else:
+            my_id = str(row['sequence_id'])+'|'+row['project']+'--'+row['dataset']+'|frequency:'+str(seq_count)
+            file_txt += '>'+str(my_id)+'\n'+seq.decode('UTF-8')+'\n'
 
 
     file_txt += "\n"
@@ -898,6 +904,8 @@ if __name__ == '__main__':
                                                     help="")
     parser.add_argument("-fasta_file", "--fasta_file",        required=False,  action="store_true",   dest = "fasta", default=False,
                                                     help="")
+    parser.add_argument("-fasta_fileMED", "--fasta_fileMED",        required=False,  action="store_true",   dest = "fastaMED", default=False,
+                                                    help="For Linda AZ")
     parser.add_argument("-metadata_file1", "--metadata_file1",   required=False,  action="store_true",   dest = "metadata1", default=False,
                                                     help="Datasets as rows/Metadata as columns")
     parser.add_argument("-metadata_file2", "--metadata_file2",   required=False,  action="store_true",   dest = "metadata2", default=False,
@@ -991,7 +999,9 @@ if __name__ == '__main__':
         if args.metadata2:
             run_metadata(args, 'metadata_as_rows')
         if args.fasta:
-            run_fasta(args)
+            run_fasta(args,'reg')
+        if args.fastaMED:
+            run_fasta(args,'MED')
         if args.taxbytax:
             run_taxbytax(args)
         if args.taxbyref:
