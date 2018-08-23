@@ -2164,7 +2164,7 @@ exports.findByValueOfObject = function (arr, key, value) {
 };
 
 exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
-  console.time('TIME: transpose_2d_arr');
+  console.time('TIME: transpose_2d_arr_and_fill');
 
   //make an array with proper length, even if the first one is empty
   // var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
@@ -2178,7 +2178,7 @@ exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
       return row[i];
     });
   });
-  console.timeEnd('TIME: transpose_2d_arr');
+  console.timeEnd('TIME: transpose_2d_arr_and_fill');
   return newArray;
 }
 
