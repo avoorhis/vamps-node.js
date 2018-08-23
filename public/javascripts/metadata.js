@@ -870,6 +870,7 @@ showDatasets = function () {
 //
 // };
 
+//TODO: on text validate - nothing, on text Submit - show
 showSubmitMessage = function () {
   $('#add_project_form_submit_btn').click(function () {
     alert('Your information was saved in a csv file, please notify the Site administration if you have finished editing.');
