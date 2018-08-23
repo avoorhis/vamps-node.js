@@ -95,14 +95,14 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         console.log('From: API-API-API')
         visual_post_items = COMMON.default_post_items();
         // Change defaults:
-        visual_post_items.normalization = req.body.normalization          || "none"
-        visual_post_items.selected_distance = req.body.selected_distance  || "morisita_horn"
-        visual_post_items.tax_depth = req.body.tax_depth                  || "phylum"
-        visual_post_items.domains = req.body.domains                      || ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
-        visual_post_items.include_nas = req.body.include_nas              || "yes"
-        visual_post_items.min_range = req.body.min_range                  || '0'
-        visual_post_items.max_range = req.body.max_range                  || '100'
-
+        req.session.normalization = visual_post_items.normalization = req.body.normalization          || "none"
+        req.session.selected_distance = visual_post_items.selected_distance = req.body.selected_distance  || "morisita_horn"
+        req.session.tax_depth   = visual_post_items.tax_depth = req.body.tax_depth                  || "phylum"
+        req.session.domains     = visual_post_items.domains = req.body.domains                      || ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
+        req.session.include_nas = visual_post_items.include_nas = req.body.include_nas              || "yes"
+        req.session.min_range   = visual_post_items.min_range = req.body.min_range                  || '0'
+        req.session.max_range   = visual_post_items.max_range = req.body.max_range                  || '100'
+        
         if((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length != 0){
             console.log('Found api dids ',req.body.ds_order)
             try{
@@ -130,7 +130,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         visual_post_items.update_data = req.body.update_data              || '1'   // fires changes
 
 
-        visual_post_items.no_of_datasets = dataset_ids.length
+        req.session.no_of_datasets  = visual_post_items.no_of_datasets = dataset_ids.length
         
         // for API select ALL metadata with these datasets
         var md = {} // hash lookup unique
@@ -140,7 +140,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
                 md[item] =1
             }
         }
-        visual_post_items.metadata = Object.keys(md)
+        req.session.metadata  = visual_post_items.metadata = Object.keys(md)
 
   }else if(req.body.restore_image === '1'){
         console.log('in view_selection RESTORE IMAGE')
