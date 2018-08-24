@@ -46,7 +46,7 @@ Filter Projects
                     <select  id='portal_select'>
                       <option>.....</option>
                       <% for(n in portals) { %>
-                        <option value='<%= n %>'>(<%= n %>) <%= portals[n].name %></option>
+                        <option value='<%= n %>'><pre><%= n %> --<%= portals[n].name %></pre></option>
                       <% } %>
                     </select>
                     <span id='portal_on_id' class='pull-right filter_note'></span>
