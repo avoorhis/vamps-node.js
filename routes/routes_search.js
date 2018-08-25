@@ -288,6 +288,47 @@ router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
     res.json(dids_in_range)
 
 });
+//
+//
+
+//
+router.get('/geo_by_meta_values', helpers.isLoggedIn, function(req, res) {
+    // var phyla = []
+//     var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
+//     var qSelect = "select phylum from phylum order by phylum"
+//     
+       var if_in = req.CONSTS.REQ_METADATA_FIELDS_wIDs
+       var temp =[]
+       for(i in AllMetadataNames){
+        
+        if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(AllMetadataNames[i].slice(0,-3)) == -1){
+            temp.push(AllMetadataNames[i])            
+        }else{
+            temp.push(AllMetadataNames[i].slice(0,-3))
+            console.log(AllMetadataNames[i].slice(0,-3))
+        }
+       }
+       
+        XX = get_metadata_values()
+        res.render('search/geo_by_meta_values', { title: 'VAMPS:Search',
+            user  :  req.user,hostname: req.CONFIG.hostname,
+            metadata_items:       JSON.stringify(XX.metadata_fields),
+            mkeys:                XX.metadata_fields_array,
+            md    :  JSON.stringify(temp),
+        });
+    
+});
+//
+//
+//
+router.post('/all_md_vals_by_name', helpers.isLoggedIn, function(req, res) {
+	console.log('in search/all_md_vals_by_name');
+    console.log('req.body-->>');
+    console.log(req.body);
+    console.log('<<--req.body');
+    
+    
+});
 router.post('/accept_latlon_datasets', helpers.isLoggedIn, function(req, res) {
   console.log('in accept_latlon_datasets');
   console.log('req.body-->>');
@@ -309,74 +350,59 @@ router.get('/taxonomy', helpers.isLoggedIn, function(req, res) {
 router.get('/metadata/:type', helpers.isLoggedIn, function(req, res) {
 
       console.log('in by '+req.params.type)
-
-      var tmp_metadata_fields = {};
-      var metadata_fields = {};
-      var metadata_fields_array = [];
-
-      if(HDF5_MDATA == ''){
-            for (var did in AllMetadata){
-                for (var name in AllMetadata[did]){
-                    val = AllMetadata[did][name];
-                    if(name in tmp_metadata_fields){
-                      tmp_metadata_fields[name].push(val);
-                    }else{
-                      if(IsNumeric(val)){
-                        tmp_metadata_fields[name]=[];
-                      }else{
-                        tmp_metadata_fields[name]=['non-numeric'];
-                      }
-                      tmp_metadata_fields[name].push(val);
-                    }
-                }
-            }
-      }else{
-
-          for(did in DATASET_NAME_BY_DID){
-            var group = HDF5_MDATA.openGroup(did+"/metadata");
-            group.refresh()
-            Object.getOwnPropertyNames(group).forEach(function(mdname, idx, array) {
-              if(mdname != 'id'){
-                if(mdname in tmp_metadata_fields){
-                  tmp_metadata_fields[mdname].push(group[mdname]);
-                }else{
-                  if(IsNumeric(group[mdname])){
-                    tmp_metadata_fields[mdname]=[];
-                  }else{
-                    tmp_metadata_fields[mdname]=['non-numeric'];
-                  }
-                  tmp_metadata_fields[mdname].push(group[mdname]);
-                }
-              }
-            });
-          }
-      }
-
-
-
-      for (var tmp_name in tmp_metadata_fields){
-        metadata_fields_array.push(tmp_name);
-        if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
-          tmp_metadata_fields[tmp_name].shift(); //.filter(onlyUnique);
-          metadata_fields[tmp_name] = tmp_metadata_fields[tmp_name].filter(onlyUnique);
-        }else{
-          var min = Math.min.apply(null, tmp_metadata_fields[tmp_name]);
-          var max = Math.max.apply(null, tmp_metadata_fields[tmp_name]);
-          metadata_fields[tmp_name] = {"min":min,"max":max};
-        }
-      }
-      metadata_fields_array.sort(function (a, b) {
-        return a.toLowerCase().localeCompare(b.toLowerCase());
-      });
+      XX = get_metadata_values()
+      
+      
 
       //console.log(JSON.stringify(metadata_fields))
       res.render('search/metadata', { title: 'VAMPS:Search',
-        metadata_items:       JSON.stringify(metadata_fields),
+        metadata_items:       JSON.stringify(XX.metadata_fields),
         metadata_search_type: req.params.type,
-        mkeys:                metadata_fields_array,
+        mkeys:                XX.metadata_fields_array,
         user:                 req.user,hostname: req.CONFIG.hostname,
       });
 })
+
+function get_metadata_values(){
+
+     var MD_items = new Object()
+     var tmp_metadata_fields = {};
+     MD_items.metadata_fields_array = []
+     MD_items.metadata_fields       = {}
+      
+     for (var did in AllMetadata){
+        for (var name in AllMetadata[did]){
+            val = AllMetadata[did][name];
+            if(name in tmp_metadata_fields){
+              tmp_metadata_fields[name].push(val);
+            }else{
+              if(IsNumeric(val)){
+                tmp_metadata_fields[name]=[];
+              }else{
+                tmp_metadata_fields[name]=['non-numeric'];
+              }
+              tmp_metadata_fields[name].push(val);
+            }
+        }
+     }
+      
+     for (var tmp_name in tmp_metadata_fields){
+        MD_items.metadata_fields_array.push(tmp_name);
+        if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
+          tmp_metadata_fields[tmp_name].shift(); //.filter(onlyUnique);
+          MD_items.metadata_fields[tmp_name] = tmp_metadata_fields[tmp_name].filter(onlyUnique);
+        }else{
+          var min = Math.min.apply(null, tmp_metadata_fields[tmp_name]);
+          var max = Math.max.apply(null, tmp_metadata_fields[tmp_name]);
+          MD_items.metadata_fields[tmp_name] = {"min":min,"max":max};
+        }
+     }
+     MD_items.metadata_fields_array.sort(function (a, b) {
+        return a.toLowerCase().localeCompare(b.toLowerCase());
+     });
+      
+     return MD_items
+}
 //
 //  TAXONOMY SEARCH
 //

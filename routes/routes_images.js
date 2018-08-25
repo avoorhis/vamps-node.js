@@ -234,7 +234,7 @@ counts_matrix: function(req, res) {
 //
 dheatmap: function(req, res){
     console.log('In routes_images/function: images/dheatmap')
-
+console.log(req.session)
     var ts = req.session.ts
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
