@@ -5,6 +5,8 @@
 *.svg
 *.png
 .vagrant
+.vscode
+.idea
 
 public/scripts/*.pyc
 public/scripts/gast/VSEARCH2.6.1
