@@ -476,12 +476,11 @@ function make_metadata_object_from_csv(req, res) {
   var project_name  = req.body.project || cur_project.get_project_name_from_file_name(file_name) || helpers.unique_array(transposed.project)[0];
   var pid           = cur_project.get_pid(project_name);
 
-  if (typeof req.form === 'undefined') {
+  if (typeof req.body.project === 'undefined' || pid === 0 ) {
     new_csv(req, res, cur_project, project_name, transposed);
   }
   else {
     cur_project.make_project_obj_with_existing_project_info_by_pid(pid);
-
     var data        = {};
     var dataset_ids = [];
     for (var dict_idx in data_arr) {
