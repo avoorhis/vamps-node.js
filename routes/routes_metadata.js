@@ -207,6 +207,32 @@ function get_metadata_hash(md_selected) {
 
 // ?? render_edit_form(req, res, {}, {}, all_field_names)
 
+// metadata_new_csv
+router.get('/metadata_new_csv', helpers.isLoggedIn, function (req, res) {
+  const template_name = 'metadata-template.csv';
+  const meatadata_csv_template_path = path.join(config.PROCESS_DIR, '/files/', template_name);
+  res.download(meatadata_csv_template_path, template_name, function(err){
+    if (err) {
+      // if the file download fails, we throw an error
+      throw err;
+    }
+  });
+
+  // res.render('metadata/metadata_new_csv', {
+  //   title: 'VAMPS: New Metadata',
+  //   user: req.user,
+  //   hostname: req.CONFIG.hostname
+  // });
+});
+
+// router.post('/metadata_new_csv',
+//   [helpers.isLoggedIn],
+//   function (req, res) {
+//     console.time("TIME: in post /metadata_new_csv");
+//   }
+// );
+
+
 router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
   const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
 
@@ -476,7 +502,7 @@ function make_metadata_object_from_csv(req, res) {
   var project_name  = req.body.project || cur_project.get_project_name_from_file_name(file_name) || helpers.unique_array(transposed.project)[0];
   var pid           = cur_project.get_pid(project_name);
 
-  if (typeof req.body.project === 'undefined' || pid === 0 ) {
+  if (typeof req.body.project === 'undefined' || pid === 0) {
     new_csv(req, res, cur_project, project_name, transposed);
   }
   else {
@@ -528,7 +554,7 @@ function new_csv(req, res, cur_project, project_name, transposed) {
     console.time("TIME: in post /metadata_new, add project");
     console.log('New project SAVED');
     console.log('WWW rows', rows);
-    var pid = rows.insertId;
+    var pid                     = rows.insertId;
     cur_project.project_obj.pid = pid;
 
     if ((pid === 0) && (rows.affectedRows === 1)) {
