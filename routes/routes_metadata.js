@@ -233,7 +233,18 @@ router.post('/metadata_new_csv_upload',
   [helpers.isLoggedIn],
   function (req, res) {
     console.time("TIME: in post /metadata_new_csv_upload");
-    res.send('Complete!');
+    const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
+    var pi_list         = met_obj.get_pi_list();
+    req.session.pi_list = pi_list;
+    res.render('metadata/metadata_new', {
+      title: 'VAMPS: New Metadata',
+      user: req.user,
+      hostname: req.CONFIG.hostname,
+      button_name: "Validate",
+      domain_regions: CONSTS.DOMAIN_REGIONS,
+      samples_number: "",
+      pi_list: pi_list
+    });
     console.timeEnd("TIME: in post /metadata_new_csv_upload");
   }
 );
@@ -241,7 +252,6 @@ router.post('/metadata_new_csv_upload',
 
 router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
   const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
-
   var pi_list         = met_obj.get_pi_list();
   req.session.pi_list = pi_list;
   res.render('metadata/metadata_new', {
