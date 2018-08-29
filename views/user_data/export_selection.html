@@ -38,7 +38,7 @@
     Get Files <span class="glyphicon glyphicon-circle-arrow-right" ></span>
 </button>
 
-Normalization:
+**Normalization:
                 <input type="radio" checked name='normalization' value="not_normalized"> none&nbsp;&nbsp;
                 <input type="radio" name='normalization' value="normalized_to_maximum"> to the Maximum Sample Count&nbsp;&nbsp;
                 <input type="radio" name='normalization' value="normalized_by_percent"> by Percent (frequency)
@@ -66,18 +66,18 @@ Normalization:
                  <input type="checkbox" name='fastaVAMPS' value="1"> Sequences File (VAMPS Format FASTA) 
                 </td>
                 <td></td>
-                <td>Non-Uniqued sequences: ">dataset_(index) readID" (For re-upload to VAMPS)</td>
+                <td>Non-Uniqued sequences: ">dataset_(index) readID" (Useful for re-upload to VAMPS)</td>
               </tr>
               <tr>
                 <td>
-                 <input type="checkbox" name='biom' value="1"> Biom-Format File (JSON)
+                 <input type="checkbox" name='biom' value="1"> Biom-Format File (JSON)<sup>**</sup>
                 </td>
                 <td></td>
                 <td>See <a href='http://biom-format.org/documentation/format_versions/biom-1.0.html' target='_blank'>http://biom-format.org/documentation/format_versions/biom-1.0.html</a></td>
               </tr>
               <tr>
                 <td>
-                <input type="checkbox" name='matrix' value="1"> Taxonomy Matrix File (counts matrix)
+                <input type="checkbox" name='matrix' value="1"> Taxonomy Matrix File (counts matrix)<sup>**</sup>
                 </td>
                 <td>
                 </td>
@@ -94,7 +94,7 @@ Normalization:
 -->
               <tr>
                 <td>
-                <input type="checkbox" name='taxbyseq' value="1"> TaxBySeq File (counts matrix)</td>
+                <input type="checkbox" name='taxbyseq' value="1"> TaxBySeq File (counts matrix)<sup>**</sup></td>
                 <td></td>
 
                 <td>Tab-separated. Includes taxonomy and sequences (Reads having the exact same sequence are grouped --finest grouping).
@@ -102,7 +102,7 @@ Normalization:
               </tr>
               <tr>
                 <td>
-                <input type="checkbox" name='taxbytax' value="1"> TaxByTax File (counts matrix)</td>
+                <input type="checkbox" name='taxbytax' value="1"> TaxByTax File (counts matrix)<sup>**</sup></td>
                 <td></td>
 
                 <td>Tab-separated. Includes taxonomy ( Reads having the same taxonomic assignment are grouped --coarsest grouping).
@@ -122,16 +122,7 @@ Normalization:
                 <td>Tab-separated metadata file with sample names as columns</td>
               </tr>
 
-              <tr>
-                <td>
-                <button disabled class='btn btn-link'>Filter Datasets using Taxonomy</button> <span style='color:red'>not available yet</span></td>
-                <td></td><td></td>
-              </tr>
-              <tr>
-                <td>
-                <button disabled class='btn btn-link'>Filter Datasets using Metadata</button> <span style='color:red'>not available yet</span></td>
-                <td></td><td></td>
-              </tr>
+              
             </tbody>
           </table>
     </td>

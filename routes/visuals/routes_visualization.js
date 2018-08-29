@@ -121,7 +121,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
             console.log(PROJECT_INFORMATION_BY_PNAME[req.body.project])
             console.log(visual_post_items.ds_order)
             req.session.chosen_id_order = dataset_ids = visual_post_items.ds_order;
-            console.log('dids',dataset_ids)
+            //console.log('dids',dataset_ids)
         }else{
             console.log('API ALERT - no dids or project')
             return;
@@ -186,7 +186,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         // populate visual_post_items from ?????
         var config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
         var upld_obj = JSON.parse(fs.readFileSync(config_file_path, 'utf8'))
-        console.log(upld_obj)
+        //console.log(upld_obj)
         var config_file_data = create_clean_config(req, upld_obj) // put into req.session
         if(Object.keys(config_file_data).length == 0){
             //error
@@ -250,8 +250,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         // DONE Direct from unit_select
         console.log('DEFAULT req.body')
         visual_post_items = COMMON.save_post_items(req);
-        console.log('visual_post_items')
-        console.log(visual_post_items)
+        //console.log('visual_post_items')
+        //console.log(visual_post_items)
         var dataset_ids = req.session.chosen_id_order
         req.session.no_of_datasets = dataset_ids.length
         req.session.metadata = visual_post_items.metadata
@@ -302,9 +302,9 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   console.log('<<VS--visual_post_items');
   console.log('entering MTX.get_biom_matrix')
   var biom_matrix = MTX.get_biom_matrix(req, visual_post_items);
-  console.log('8')
+  //console.log('8')
   visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
-  console.log('9')
+  //console.log('9')
   if(visual_post_items.metadata.indexOf('primer_suite') != -1){
       visual_post_items.metadata.push('primers')
   }
@@ -1085,7 +1085,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
         });  // stdin, stdout, stderr
 
         pcoa_process.stdout.on('data', function pcoaProcessStdout(data) { 
-            console.log('1stdout: ' + data);  
+            //console.log('1stdout: ' + data);  
         });
         stderr1='';
         pcoa_process.stderr.on('data', function pcoaProcessStderr(data) {
@@ -1596,10 +1596,10 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     var value = myurl.query.val || 'z'; // a,z, min, max
     var order = {orderby:orderby, value:value} // orderby: alpha: a,z or count: min,max
     //var ds_items = pjds.split('--');
-     console.log('myurl.query')
-     console.log(myurl.query)
-     console.log('bar_single:session')
-     console.log(req.session)
+     //console.log('myurl.query')
+     //console.log(myurl.query)
+     //console.log('bar_single:session')
+     //console.log(req.session)
     
     var pi = {}
     var selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did]
@@ -1645,10 +1645,10 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
       new_order.alpha_value = ''
     }
 
-    console.log('order')
-    console.log(order)
-    console.log('new_order')
-    console.log(new_order)
+    //console.log('order')
+    //console.log(order)
+    //console.log('new_order')
+    //console.log(new_order)
     var timestamp = +new Date();  // millisecs since the epoch!
     var filename = req.user.username+'_'+selected_did+'_'+timestamp+'_sequences.json'
     var file_path = path.join('tmp',filename);
@@ -1760,7 +1760,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     
     //var ds_items = pjds.split('--');
 
-    console.log(ds1, ds2)
+    //console.log(ds1, ds2)
 
     var pi = {}
     pi.chosen_datasets = [{did:did1, name:ds1},{did:did2, name:ds2}]
@@ -1776,8 +1776,8 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     pi.selected_distance = metric
     var write_file = false;  // DO NOT OVERWRITE The Matrix File
     var new_matrix = MTX.get_biom_matrix(req, pi, write_file);
-    console.log('new_matrix')
-    console.log(new_matrix)
+    //console.log('new_matrix')
+    //console.log(new_matrix)
 
 
 
@@ -2222,7 +2222,7 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
   html += "<table id='drag_table' class='table table-condensed' >"
   html += "<thead></thead>";
   html += "  <tbody>";
-  console.log(req.session)
+  //console.log(req.session)
   var names = [] 
   var ids = [] 
   
@@ -2259,7 +2259,7 @@ router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
   console.log('in reverse_ds_order')
   var ids = JSON.parse(req.body.ids);
   var html = '';
-  console.log(req.session)
+  //console.log(req.session)
   html += "<table id='drag_table' class='table table-condensed' >"
   html += "<thead></thead>";
   html += "  <tbody>";
