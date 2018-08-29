@@ -187,6 +187,8 @@ def run_fasta(args, fmt):
     else:
         if fmt == 'MED':
             out_file = os.path.join(args.base,'fasta-'+args.runcode+'.MED.fasta')
+        if fmt == 'VAMPS':
+            out_file = os.path.join(args.base,'fasta-'+args.runcode+'.VAMPS.fasta')
         else:
             out_file = os.path.join(args.base,'fasta-'+args.runcode+'.fasta')
     cursor = args.obj.cursor()
@@ -211,6 +213,10 @@ def run_fasta(args, fmt):
             #  >ds_seqid  (not uniqued)
             for i in range(int(seq_count)):
                 my_id = (row['project']+'--'+row['dataset']).replace('_','-')+'_'+ str(row['sequence_id']) + '-'+str(i+1)
+                file_txt += '>'+str(my_id)+'\n'+seq.decode('UTF-8')+'\n'
+        elif fmt == 'VAMPS':
+            for i in range(int(seq_count)):
+                my_id = (row['project']+'--'+row['dataset'])+'_'+str(i+1)+' '+ str(row['sequence_id'])
                 file_txt += '>'+str(my_id)+'\n'+seq.decode('UTF-8')+'\n'
         else:
             my_id = str(row['sequence_id'])+'|'+row['project']+'--'+row['dataset']+'|frequency:'+str(seq_count)
@@ -909,6 +915,8 @@ if __name__ == '__main__':
                                                     help="")
     parser.add_argument("-fasta_fileMED", "--fasta_fileMED",        required=False,  action="store_true",   dest = "fastaMED", default=False,
                                                     help="For Linda AZ")
+    parser.add_argument("-fasta_fileVAMPS", "--fasta_fileVAMPS",        required=False,  action="store_true",   dest = "fastaVAMPS", default=False,
+                                                    help="For Re-Upload to VAMPS")                                                
     parser.add_argument("-metadata_file1", "--metadata_file1",   required=False,  action="store_true",   dest = "metadata1", default=False,
                                                     help="Datasets as rows/Metadata as columns")
     parser.add_argument("-metadata_file2", "--metadata_file2",   required=False,  action="store_true",   dest = "metadata2", default=False,
@@ -1005,6 +1013,8 @@ if __name__ == '__main__':
             run_fasta(args,'reg')
         if args.fastaMED:
             run_fasta(args,'MED')
+        if args.fastaVAMPS:
+            run_fasta(args,'VAMPS')
         if args.taxbytax:
             run_taxbytax(args)
         if args.taxbyref:

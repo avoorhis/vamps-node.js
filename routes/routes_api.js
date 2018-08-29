@@ -47,7 +47,7 @@ router.post('/get_dids_from_project', function(req, res){
         console.log('No Datasets Found')
         res.send(JSON.stringify('No Datasets Found - (do you have the correct access permissions?)'))
       }else{
-          console.log(new_dataset_ids)
+          //console.log(new_dataset_ids)
           res.send(JSON.stringify(new_dataset_ids))
       }
     }else{
@@ -360,7 +360,7 @@ router.post('/find_projects_by_metadata_str',  function(req, res){
     for(pid in PROJECT_INFORMATION_BY_PID){
       
       var dids = DATASET_IDS_BY_PID[pid]
-      console.log('dids',dids)
+      //console.log('dids',dids)
       for(n in dids){
         var did = dids[n]
         var mdobj = AllMetadata[did]
@@ -405,7 +405,7 @@ function test_piecharts(req, res){
 	//if(!outputLocation) outputLocation = 'test.svg';
   var chartWidth = 500
   var chartHeight = 500;
-  console.log('1')
+  //console.log('1')
   //console.log(d3.svg)
   var arc = d3.arc()
     .outerRadius(chartWidth/2 - 10)
@@ -417,7 +417,7 @@ function test_piecharts(req, res){
     html:'',
     features:{ QuerySelector:true },
     done:function(errors, window){
-      console.log('inwin ')
+      //console.log('inwin ')
       window.d3 = d3.select(window.document); //get d3 into the dom
       //  <svg><g transform="translate(250,250)"><path></path><path></path></g></svg>
       var svg = window.d3.select('body')
@@ -442,7 +442,7 @@ function test_piecharts(req, res){
 
 
       //fs.writeFileSync('test.svg', window.d3.select('.container').html()) //using sync to keep the code simple
-      console.log('inwin2 ',window.d3.select('.container').html())
+      //console.log('inwin2 ',window.d3.select('.container').html())
       var html = window.d3.select('.container').html()
       var outfile_name = ts + '-barcharts-api.html'
       outfile_path = path.join('tmp', outfile_name);  // file name save to user_location
