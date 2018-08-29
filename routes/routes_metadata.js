@@ -208,7 +208,7 @@ function get_metadata_hash(md_selected) {
 // ?? render_edit_form(req, res, {}, {}, all_field_names)
 
 // metadata_new_csv
-router.get('/metadata_new_csv', helpers.isLoggedIn, function (req, res) {
+router.get('/metadata_new_csv_download', helpers.isLoggedIn, function (req, res) {
   const template_name = 'metadata-template.csv';
   const meatadata_csv_template_path = path.join(config.PROCESS_DIR, '/files/', template_name);
   res.download(meatadata_csv_template_path, template_name, function(err){
@@ -217,20 +217,26 @@ router.get('/metadata_new_csv', helpers.isLoggedIn, function (req, res) {
       throw err;
     }
   });
-
-  // res.render('metadata/metadata_new_csv', {
-  //   title: 'VAMPS: New Metadata',
-  //   user: req.user,
-  //   hostname: req.CONFIG.hostname
-  // });
+});
+router.get('/metadata_new_csv_upload', helpers.isLoggedIn, function (req, res) {
+  console.time("TIME: in get /metadata_new_csv_upload");
+  res.render('metadata/metadata_new_csv_upload', {
+    title: 'VAMPS: New Metadata CSV Upload',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    button_name: "Validate"
+  });
+  console.timeEnd("TIME: in get /metadata_new_csv_upload");
 });
 
-// router.post('/metadata_new_csv',
-//   [helpers.isLoggedIn],
-//   function (req, res) {
-//     console.time("TIME: in post /metadata_new_csv");
-//   }
-// );
+router.post('/metadata_new_csv_upload',
+  [helpers.isLoggedIn],
+  function (req, res) {
+    console.time("TIME: in post /metadata_new_csv_upload");
+    res.send('Complete!');
+    console.timeEnd("TIME: in post /metadata_new_csv_upload");
+  }
+);
 
 
 router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {

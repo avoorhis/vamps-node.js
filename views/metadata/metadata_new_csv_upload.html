@@ -1,0 +1,41 @@
+<% include ../add_ins/begin.ejs %>
+
+<br>
+<div class='title'>Metadata</div>
+<div class='subtitle'></div>
+
+<% if (all_metadata) { %>
+<%
+} else {
+var all_metadata = {}
+} %>
+
+<div id="postresult">
+</div>
+
+
+<% if (messages.success){ %>
+<div class="alert_flash_message_success"><%- messages.success %></div>
+<% } if(messages.fail) { %>
+<div class="alert_flash_message_fail">
+    <ul>
+        <% messages.fail.forEach(function(value){ %>
+        <li>
+            <%= value %>
+        </li>
+        <% }) %>
+    </ul>
+</div>
+<% }%>
+<br>
+
+<form action="/metadata/metadata_new_csv_upload" enctype="multipart/form-data" method="POST">
+    <input type="file" name="new_csv" />
+    <input type="submit" value="Upload CSV"/>
+</form>
+
+<% include ../add_ins/end.ejs %>
+<script type='text/javascript' src='/javascripts/global.js'></script>
+<script type='text/javascript' src='/javascripts/metadata.js'></script>
+<script type='text/javascript' src='/javascripts/bootstrap-select.js'></script>
+</script>
