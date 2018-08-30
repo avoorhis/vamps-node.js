@@ -236,50 +236,25 @@ router.get('/metadata_new_csv_upload', helpers.isLoggedIn, function (req, res) {
 // });
 
 
-router.post('/metadata_new_csv_upload', upload.single('new_csv'), (req, res) => {
-  console.log(req.body);
-  // console.log(req.files);
-  res.redirect('/');
-});
-
-
-// router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('upload_files', 12)], function(req, res) {
-//   console.time("TIME: in get /metadata_new_csv_upload");
-//   res.render('metadata/metadata_new_csv_upload', {
-//     title: 'VAMPS: New Metadata CSV Upload',
-//     user: req.user,
-//     hostname: req.CONFIG.hostname,
-//     button_name: "Validate"
-//   });
-//   console.timeEnd("TIME: in get /metadata_new_csv_upload");
+// router.post('/metadata_new_csv_upload', upload.single('new_csv'), (req, res) => {
+//   console.log(req.body);
+//   // console.log(req.files);
+//   res.redirect('/');
 // });
 
-// router.post('/metadata_new_csv_upload',
-//   [helpers.isLoggedIn],
-//   form(
-//     form.field("new_csv")
-//   ),
-//   function (req, res) {
-//     console.log(req.body);
-//     console.log(req.files);
-//   });
 
+router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_csv')], function(req, res) {
 
-// router.post('/metadata_new_csv_upload',
-//   [helpers.isLoggedIn],
-//   function (req, res) {
-//     console.time("TIME: in post /metadata_new_csv_upload");
-//     // file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,  file_name);
-//
-//     var file_name       = req.body.edit_metadata_file;
-//     const csv_file_read = new csv_files_controller.CsvFileRead(req, res, file_name);
-//     var data_arr        = csv_file_read.data_arr;
-//     const transposed    = helpers.transpose_arr_of_obj(data_arr);
-//
-//     const cur_project = new Project(req, res, 0, 0);
-//     var project_name  = req.body.project || cur_project.get_project_name_from_file_name(file_name) || helpers.unique_array(transposed.project)[0];
-//     var pid           = cur_project.get_pid(project_name);
-//
+    console.time("TIME: in post /metadata_new_csv_upload");
+    var full_file_name       = req.file.path;
+    const csv_file_read = new csv_files_controller.CsvFileRead(req, res, full_file_name);
+    var data_arr        = csv_file_read.data_arr;
+    const transposed    = helpers.transpose_arr_of_obj(data_arr);
+
+    const cur_project = new Project(req, res, 0, 0);
+    var project_name  = req.body.project || cur_project.get_project_name_from_file_name(full_file_name) || helpers.unique_array(transposed.project)[0];
+    var pid           = cur_project.get_pid(project_name);
+
 //     if (typeof req.body.project === 'undefined' || pid === 0) {
 //       new_csv(req, res, cur_project, project_name, transposed);
 //     }
@@ -298,8 +273,8 @@ router.post('/metadata_new_csv_upload', upload.single('new_csv'), (req, res) => 
 //     //   pi_list: pi_list
 //     // });
 //     console.timeEnd("TIME: in post /metadata_new_csv_upload");
-//   }
-// );
+  }
+);
 
 
 router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {

@@ -4,8 +4,8 @@ var fs      = require("fs");
 var path    = require("path");
 
 class CsvFileRead {
-  constructor(req, res, file_name) {
-    this.inputPath   = path.join(config.USER_FILES_BASE, req.user.username, file_name);
+  constructor(req, res, file_name, full_file_name) {
+    this.inputPath   = full_file_name;
     var file_content = fs.readFileSync(this.inputPath);
     var parse_sync   = require('csv-parse/lib/sync');
     this.data_arr    = parse_sync(file_content, {columns: true, trim: true});
