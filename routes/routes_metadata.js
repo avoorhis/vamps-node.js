@@ -238,38 +238,6 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
   }
 );
 
-// router.get('/metadata_new_csv_download', helpers.isLoggedIn, function (req, res) {
-//   const template_name = 'metadata-template.csv';
-//   req.flash('success', 'Downloaded: ' + template_name);
-//   const meatadata_csv_template_path = path.join(config.PROCESS_DIR, '/files/', template_name);
-//
-//   res.download(meatadata_csv_template_path, template_name);
-//   // res.redirect("/");
-// });
-
-// router.get('/metadata_new_csv_download', helpers.isLoggedIn, function (req, res) {
-//   const template_name               = 'metadata-template.csv';
-//   const meatadata_csv_template_path = path.join(config.PROCESS_DIR, '/files/', template_name);
-//
-//   res.download(meatadata_csv_template_path, template_name, function (err) {
-//     if (err) {
-//       // if the file download fails, we throw an error
-//       throw err;
-//     }
-//     else {
-//       req.flash('success', 'Downloaded: ' + meatadata_csv_template_path);
-//       // res.redirect('metadata/metadata_new_csv_upload');
-//       // res.render('metadata/metadata_new_csv_upload', {
-//       //   title: 'VAMPS: New Metadata CSV Upload',
-//       //   user: req.user,
-//       //   hostname: req.CONFIG.hostname,
-//       //   button_name: "Validate"
-//       // });
-//     }
-//   });
-// });
-
-
 router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
   const met_obj       = new metadata_controller.CreateDataObj(req, res, "", "");
   var pi_list         = met_obj.get_pi_list();
