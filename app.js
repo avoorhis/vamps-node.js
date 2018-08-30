@@ -113,6 +113,7 @@ app.set(express.static(__dirname + 'tmp'));
 app.use(favicon( path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 //app.use(bodyParser({limit: 1024000000 })); // 1024MB
+// app.use(bodyParser({uploadDir:'./uploads'}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true,         // allows for richer json like experience https://www.npmjs.com/package/qs#readme

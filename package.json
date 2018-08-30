@@ -52,7 +52,7 @@
     "ini": "",
     "iniparser": "",
     "morgan": "",
-    "multer": "^1.3.0",
+    "multer": "^1.3.1",
     "mysql2": "",
     "newrelic": "^2.4.1",
     "node-json-minify": "^0.1.4-a",
