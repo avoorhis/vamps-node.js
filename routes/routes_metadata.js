@@ -243,10 +243,10 @@ router.get('/metadata_new_csv_upload', helpers.isLoggedIn, function (req, res) {
 // });
 
 
-router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_csv')], function(req, res) {
+router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_csv')], function (req, res) {
 
     console.time("TIME: in post /metadata_new_csv_upload");
-    var full_file_name       = req.file.path;
+    var full_file_name  = req.file.path;
     const csv_file_read = new csv_files_controller.CsvFileRead(req, res, full_file_name);
     var data_arr        = csv_file_read.data_arr;
     const transposed    = helpers.transpose_arr_of_obj(data_arr);
@@ -255,24 +255,10 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     var project_name  = req.body.project || cur_project.get_project_name_from_file_name(full_file_name) || helpers.unique_array(transposed.project)[0];
     var pid           = cur_project.get_pid(project_name);
 
-//     if (typeof req.body.project === 'undefined' || pid === 0) {
-//       new_csv(req, res, cur_project, project_name, transposed);
-//     }
-//     // res.redirect('metadata/metadata_new');
-//     //
-//     // const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
-//     // var pi_list         = met_obj.get_pi_list();
-//     // req.session.pi_list = pi_list;
-//     // res.render('metadata/metadata_new', {
-//     //   title: 'VAMPS: New Metadata',
-//     //   user: req.user,
-//     //   hostname: req.CONFIG.hostname,
-//     //   button_name: "Validate",
-//     //   domain_regions: CONSTS.DOMAIN_REGIONS,
-//     //   samples_number: "",
-//     //   pi_list: pi_list
-//     // });
-//     console.timeEnd("TIME: in post /metadata_new_csv_upload");
+    if (typeof req.body.project === 'undefined' || pid === 0) {
+      new_csv(req, res, cur_project, project_name, transposed);
+    }
+    console.timeEnd("TIME: in post /metadata_new_csv_upload");
   }
 );
 
@@ -537,7 +523,8 @@ function make_metadata_object_from_csv(req, res) {
   // console.log("MMM req.body from make_metadata_object_from_csv");
 
   var file_name       = req.body.edit_metadata_file;
-  const csv_file_read = new csv_files_controller.CsvFileRead(req, res, file_name);
+  var full_file_name  = path.join(config.USER_FILES_BASE, req.user.username, file_name);
+  const csv_file_read = new csv_files_controller.CsvFileRead(req, res, full_file_name);
   var data_arr        = csv_file_read.data_arr;
   const transposed    = helpers.transpose_arr_of_obj(data_arr);
 
