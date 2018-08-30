@@ -211,37 +211,13 @@ function get_metadata_hash(md_selected) {
 
 // metadata_new_csv
 router.get('/metadata_new_csv_upload', helpers.isLoggedIn, function (req, res) {
-  // const template_name               = 'metadata-template.csv';
-  // const meatadata_csv_template_path = path.join(config.PROCESS_DIR, '/files/', template_name);
-  console.log("LLL __dirname", __dirname);
-  console.log("LLL1 req", req);
   res.render('metadata/metadata_new_csv_upload', {
     title: 'VAMPS: New Metadata CSV Upload',
     user: req.user,
     hostname: req.CONFIG.hostname,
     button_name: "Validate"
   });
-  // res.sendFile(meatadata_csv_template_path + '/index.html');
-
-  // res.download(meatadata_csv_template_path, template_name, function (err) {
-  //   if (err) {
-  //     // if the file download fails, we throw an error
-  //     throw err;
-  //   }
-  // });
 });
-
-// app.post('/', upload.single('file-to-upload'), (req, res) => {
-//   res.redirect('/');
-// });
-
-
-// router.post('/metadata_new_csv_upload', upload.single('new_csv'), (req, res) => {
-//   console.log(req.body);
-//   // console.log(req.files);
-//   res.redirect('/');
-// });
-
 
 router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_csv')], function (req, res) {
 
@@ -261,6 +237,28 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     console.timeEnd("TIME: in post /metadata_new_csv_upload");
   }
 );
+
+router.get('/metadata_new_csv_download', helpers.isLoggedIn, function (req, res) {
+  const template_name               = 'metadata-template.csv';
+  const meatadata_csv_template_path = path.join(config.PROCESS_DIR, '/files/', template_name);
+
+  res.download(meatadata_csv_template_path, template_name, function (err) {
+    if (err) {
+      // if the file download fails, we throw an error
+      throw err;
+    }
+    else {
+      req.flash('success', 'Downloaded: ' + meatadata_csv_template_path);
+      // res.redirect('metadata/metadata_new_csv_upload');
+      // res.render('metadata/metadata_new_csv_upload', {
+      //   title: 'VAMPS: New Metadata CSV Upload',
+      //   user: req.user,
+      //   hostname: req.CONFIG.hostname,
+      //   button_name: "Validate"
+      // });
+    }
+  });
+});
 
 
 router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
