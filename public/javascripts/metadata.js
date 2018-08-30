@@ -877,6 +877,16 @@ showSubmitMessage = function () {
     $('#add_project_form').submit();
   });
 };
+
+showDownloadedMessage = function () {
+  $('#metadata_new_csv_download').click(function () {
+    alert('Metadata template was downloaded.');
+    return false;
+  });
+};
+//
+
+
 //  console.log("RRR1 req");
 // console.log(req);
 // req.flash("success", 'file ' + out_csv_file_name + ' saved.');
@@ -955,6 +965,7 @@ $('input:radio[name="d_region"]').change(
 
 $(document).ready(function () {
   // showSubmitMessage();
+  showDownloadedMessage();
   showUnits();
   showDatasets();
   // addCopyBtns();
