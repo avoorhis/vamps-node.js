@@ -92,13 +92,13 @@ function create_geospatial() {
     mapCanvas.innerHTML='No Lat-Lon Data Found';
 
   }else{
-    var mapOptions = {     
-          id: 'mapbox.streets-basic',
-          accessToken: token
+    var mapOptions = {
+      id: 'mapbox.streets-basic',
+      accessToken: token
     };
     var mymap = L.map('map-canvas').setView([41.5257, -70.672], 3)  // centered on Cape Cod
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}',mapOptions).addTo(mymap); 
-    
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}',mapOptions).addTo(mymap);
+
     setMarkers(mymap, loc_data, pid_collector);
   }
 }
@@ -117,17 +117,17 @@ function setMarkers(map, loc_data, pid_collector) {
       var html = "<div style='width:300px;'>";
     }
     html += "<table  class='table table_striped' >";
-    html += '<tr><th>Dataset</th><th>'+mditem+'</th></tr>';    
+    html += '<tr><th>Dataset</th><th>'+mditem+'</th></tr>';
     for(l in lines){
-    	var pid = pid_collector[lines[l]].pid;
-        var val = pid_collector[lines[l]].value;
-        html += "<tr><td><a href='/projects/"+pid+"'>" + lines[l] + "</a></td><td>"+val+"</td></tr>";
+      var pid = pid_collector[lines[l]].pid;
+      var val = pid_collector[lines[l]].value;
+      html += "<tr><td><a href='/projects/"+pid+"'>" + lines[l] + "</a></td><td>"+val+"</td></tr>";
     }
     html += '</table>';
     html += "</div>";
     marker.bindPopup(html);
     marker.on('mouseover', function (e) {
-        this.openPopup();
+      this.openPopup();
     });
   }
 
