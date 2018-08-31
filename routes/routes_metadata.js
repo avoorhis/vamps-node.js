@@ -276,7 +276,7 @@ router.post('/metadata_new',
   function (req, res) {
     console.time("TIME: in post /metadata_new");
     // console.log("MMM1, req.body", req.body);
-    // console.log("MMM2, req.form", req.form);
+    console.log("MMM2, req.form", req.form);
     const show_new = new metadata_controller.ShowObj(req, res);
 
     if (!req.form.isValid) {
@@ -556,7 +556,7 @@ function new_csv(req, res, cur_project, project_name, transposed) {
   //  TODO: save new project
   var project_obj = cur_project.project_obj;
   cur_project.addProject(project_obj, function (err, rows) {
-    console.time("TIME: in post /metadata_new, add project");
+    console.time("TIME: new_csv");
     console.log('New project SAVED');
     console.log('WWW rows', rows);
     var pid                     = rows.insertId;
@@ -577,7 +577,7 @@ function new_csv(req, res, cur_project, project_name, transposed) {
 
     // const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
     // met_obj.make_new_project_for_form(rows, project_obj);
-    console.timeEnd("TIME: in post /metadata_new, add project");
+    console.timeEnd("TIME: in new_csv");
   });
 }
 

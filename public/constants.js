@@ -68,14 +68,15 @@ constants.DOMAIN_REGIONS = {
       domain_show: "Eukarya"
     },
     {d_r: ["ITS1"], domain: "Fungal", regions: ['ITS1'], domain_show: "Eukarya"},
-    {d_r: ["Sgun"], domain: "Shotgun", regions: ['Sgun'], domain_show: "Shotgun"},
+    {d_r: ["Sgun"], domain: "Shotgun", regions: ['random'], domain_show: "Shotgun"},
   ]
 };
 
 constants.TARGET_GENE = [{domain: "Eukarya", target_gene: "18s"}, {
   domain: "Archaea",
   target_gene: "16s"
-}, {domain: "Bacteria", target_gene: "16s"}];
+}, {domain: "Bacteria", target_gene: "16s"},
+  {domain: "Shotgun", target_gene: "metagenome" }];
 
 
 constants.TARGETS = ["Av3", "Av3v5", "Av4", "Av4v5", "Av5v6", "Av6", "Av6v4",

@@ -554,6 +554,24 @@ class CreateDataObj {
     return obj_of_arr;
   }
 
+  get_dna_region(d_region_arr) {
+    return d_region_arr[1].split('_')[0];
+  }
+
+  get_domain(d_region_arr) {
+    return helpers.findByValueOfObject(CONSTS.DOMAIN_REGIONS.domain_regions, "domain", d_region_arr[0])[0].domain_show;
+  }
+
+  get_domain_id(domain) {
+    var domain_id = 0;
+    const arr1               = CONSTS.DOMAINS.domains;
+    const current_domain_obj = helpers.findByValueOfObject(arr1, 'name', domain);
+    if (typeof current_domain_obj[0] !== 'undefined') {
+      domain_id   = current_domain_obj[0].id;
+    }
+    return domain_id;
+  }
+
   create_all_metadata_form_new(rows, all_field_names, project_obj) {
     console.time('TIME: create_all_metadata_form_new');
 
@@ -592,14 +610,12 @@ class CreateDataObj {
     var repeat_times = parseInt(req.form.samples_number, 10);
 
     var current_info         = Object.assign(project_obj);
-    // d_region_arr[0].slice(0, -1)
-    current_info.domain      = helpers.findByValueOfObject(CONSTS.DOMAIN_REGIONS.domain_regions, "domain", d_region_arr[0])[0].domain_show;
-    current_info.dna_region  = d_region_arr[1].split('_')[0];
+
+    current_info.domain      = this.get_domain(d_region_arr);
+    current_info.dna_region  = this.get_dna_region(d_region_arr);
     current_info.target_gene = helpers.findByValueOfObject(CONSTS.TARGET_GENE, "domain", current_info.domain)[0].target_gene;
 
-    const arr1               = CONSTS.DOMAINS.domains;
-    const current_domain_obj = helpers.findByValueOfObject(arr1, 'name', current_info.domain);
-    current_info.domain_id   = current_domain_obj[0].id;
+    current_info.domain_id = this.get_domain_id(current_info.domain);
 
     for (var i = 0; i < all_field_names.length; i++) {
       var field_name = all_field_names[i];
