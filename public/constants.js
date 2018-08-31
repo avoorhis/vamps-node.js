@@ -47,13 +47,16 @@ constants.download_file_formats = ['metadata', 'fasta', 'taxbytax', 'taxbyref', 
 // 		 140: "indoor"
 //     };
 // This is required for the simple taxonomy selection box
+// should be taken from database each time (AS)
 constants.DOMAINS = {
   domains: [
-    {id: 1, name: "Archaea"},
-    {id: 2, name: "Bacteria"},
-    {id: 3, name: "Eukarya"},
-    {id: 4, name: "Organelle"},
-    {id: 5, name: "Unknown"}
+    {id: 10, name: "All"}, // for shotgun
+    {id: 2, name: "Archaea"},
+    {id: 3, name: "Bacteria"},
+    {id: 4, name: "Eukarya"},
+    {id: 5, name: "Organelle"},
+    {id: 6, name: "Fungi"},
+    {id: 1, name: "Unknown"}
   ]
 };
 
