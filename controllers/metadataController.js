@@ -572,6 +572,14 @@ class CreateDataObj {
     return domain_id;
   }
 
+  get_target_gene(domain, all_field_names) {
+    var target_gene = helpers.findByValueOfObject(CONSTS.TARGET_GENE, "domain", domain)[0].target_gene;
+    if (typeof target_gene === "object" && target_gene.length > 1) {
+
+    }
+
+  }
+
   create_all_metadata_form_new(rows, all_field_names, project_obj) {
     console.time('TIME: create_all_metadata_form_new');
 
@@ -613,7 +621,7 @@ class CreateDataObj {
 
     current_info.domain      = this.get_domain(d_region_arr);
     current_info.dna_region  = this.get_dna_region(d_region_arr);
-    current_info.target_gene = helpers.findByValueOfObject(CONSTS.TARGET_GENE, "domain", current_info.domain)[0].target_gene;
+    // current_info.target_gene = helpers.findByValueOfObject(CONSTS.TARGET_GENE, "domain", current_info.domain)[0].target_gene;
 
     current_info.domain_id = this.get_domain_id(current_info.domain);
 
@@ -878,6 +886,9 @@ class ShowObj {
       dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
       dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
       dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+      target_gene_options: CONSTS.TARGET_GENE.map(function (t) {
+        return t.target_gene;
+      }),
       biome_primary_options: CONSTS.BIOME_PRIMARY,
       feature_primary_options: CONSTS.FEATURE_PRIMARY,
       material_primary_options: CONSTS.MATERIAL_PRIMARY,
@@ -886,6 +897,10 @@ class ShowObj {
       investigation_type_options: CONSTS.INVESTIGATION_TYPE,
       sample_type_options: CONSTS.SAMPLE_TYPE
     });
+  }
+
+  get_target_gene_options(all_metadata) {
+
   }
 
   show_metadata_new_again(req, res) {
