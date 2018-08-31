@@ -563,21 +563,21 @@ class CreateDataObj {
   }
 
   get_domain_id(domain) {
-    var domain_id = 0;
+    var domain_id            = 0;
     const arr1               = CONSTS.DOMAINS.domains;
     const current_domain_obj = helpers.findByValueOfObject(arr1, 'name', domain);
     if (typeof current_domain_obj[0] !== 'undefined') {
-      domain_id   = current_domain_obj[0].id;
+      domain_id = current_domain_obj[0].id;
     }
     return domain_id;
   }
 
-  get_target_gene(domain, all_field_names) {
+  get_target_gene(domain) {
     var target_gene = helpers.findByValueOfObject(CONSTS.TARGET_GENE, "domain", domain)[0].target_gene;
-    if (typeof target_gene === "object" && target_gene.length > 1) {
-
-    }
-
+    // if (typeof target_gene === "object" && target_gene.length > 1) {
+    //
+    // }
+    return target_gene;
   }
 
   create_all_metadata_form_new(rows, all_field_names, project_obj) {
@@ -617,13 +617,12 @@ class CreateDataObj {
     console.log('PPP01 all_metadata from create_all_metadata_form_new', all_metadata);
     var repeat_times = parseInt(req.form.samples_number, 10);
 
-    var current_info         = Object.assign(project_obj);
+    var current_info = Object.assign(project_obj);
 
     current_info.domain      = this.get_domain(d_region_arr);
     current_info.dna_region  = this.get_dna_region(d_region_arr);
-    // current_info.target_gene = helpers.findByValueOfObject(CONSTS.TARGET_GENE, "domain", current_info.domain)[0].target_gene;
-
-    current_info.domain_id = this.get_domain_id(current_info.domain);
+    current_info.target_gene = this.get_target_gene(current_info.domain);
+    current_info.domain_id   = this.get_domain_id(current_info.domain);
 
     for (var i = 0; i < all_field_names.length; i++) {
       var field_name = all_field_names[i];
@@ -902,7 +901,7 @@ class ShowObj {
     var arr1 = CONSTS.TARGET_GENE.map(function (t) {
       return [].concat(t.target_gene);
     });
-    arr1 = helpers.unique_array(helpers.flat_array(arr1));
+    arr1     = helpers.unique_array(helpers.flat_array(arr1));
     return ["Please choose one"].concat(arr1);
   }
 
