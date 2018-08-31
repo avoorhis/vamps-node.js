@@ -1985,6 +1985,10 @@ module.exports.unique_array = function (myArray) {
   return [...uSet];
 };
 
+module.exports.flat_array = function (myArray) {
+  return myArray.reduce((acc, val) => acc.concat(val), []);
+};
+
 module.exports.has_duplicates = function (myArray) {
   return ((parseInt(new Set(myArray).size)) !== parseInt(myArray.length));
 };
@@ -2103,7 +2107,8 @@ exports.positive             = function (value) {
     throw new Error("'" + value + "' is not valid, %s should be greater then 0.");
   }
 };
-exports.env_items_validation = function (value) {
+
+exports.dropdown_items_validation = function (value) {
   if (value === 'Please choose one') {
     throw new Error('%s is required. Please choose one value from the dropdown menu');
   }
