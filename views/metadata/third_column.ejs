@@ -177,11 +177,11 @@
 
         <select id="target_gene<%- did %>" name="target_gene" class="target_gene">
             <% target_gene_options.forEach(function(value){ %>
-                <option value="<%= value[0] %>"
-                <% if (value[0] == selected_val) { %>
+                <option value="<%= value %>"
+                <% if (value == selected_val) { %>
                         selected
                         <% } %>
-                ><%= value[0] %></option>
+                ><%= value %></option>
             <% }) %>
         </select>
     </td>

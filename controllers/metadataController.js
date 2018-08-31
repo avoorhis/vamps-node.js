@@ -872,6 +872,7 @@ class ShowObj {
     console.log('JJJ1 all_metadata from render_edit_form');
     console.log(JSON.stringify(this.all_metadata));
 
+    const target_gene_options = this.get_target_gene_options();
     // console.log('JJJ2 all_field_names from render_edit_form');
     // console.log(JSON.stringify(this.all_field_names_arr));
 
@@ -886,9 +887,7 @@ class ShowObj {
       dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
       dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
       dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-      target_gene_options: CONSTS.TARGET_GENE.map(function (t) {
-        return t.target_gene;
-      }),
+      target_gene_options: target_gene_options,
       biome_primary_options: CONSTS.BIOME_PRIMARY,
       feature_primary_options: CONSTS.FEATURE_PRIMARY,
       material_primary_options: CONSTS.MATERIAL_PRIMARY,
@@ -899,8 +898,12 @@ class ShowObj {
     });
   }
 
-  get_target_gene_options(all_metadata) {
-
+  get_target_gene_options() {
+    var arr1 = CONSTS.TARGET_GENE.map(function (t) {
+      return [].concat(t.target_gene);
+    });
+    arr1 = helpers.unique_array(helpers.flat_array(arr1));
+    return ["Please choose one"].concat(arr1);
   }
 
   show_metadata_new_again(req, res) {
