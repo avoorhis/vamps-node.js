@@ -826,3 +826,29 @@ function get_taxa_name(rank){
 	}
 	xmlhttp.send(args);
 }
+function get_md_values(name){
+    console.log('in get_md_values')
+	document.getElementById("availible_md_values").innerHTML = '-->Accessing Database<--'
+	//console.log(rank)
+	args = 'name='+ name
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.open("POST", "all_md_vals_by_name", true);
+	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+
+		  var response = JSON.parse(xmlhttp.responseText);
+		  //console.log('done')
+		  console.log(response)
+		  var html = "<select name='tax'>"
+		  for(i in response){
+		  	//console.log('AA '+response[i])
+		  	html += "<option>"+response[i]+"</option>"
+		  }
+		  html += '</select>'
+		  
+		  document.getElementById("availible_md_values").innerHTML = html
+		}
+	}
+	xmlhttp.send(args);
+}

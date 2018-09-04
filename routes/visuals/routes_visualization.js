@@ -95,14 +95,14 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         console.log('From: API-API-API')
         visual_post_items = COMMON.default_post_items();
         // Change defaults:
-        visual_post_items.normalization = req.body.normalization          || "none"
-        visual_post_items.selected_distance = req.body.selected_distance  || "morisita_horn"
-        visual_post_items.tax_depth = req.body.tax_depth                  || "phylum"
-        visual_post_items.domains = req.body.domains                      || ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
-        visual_post_items.include_nas = req.body.include_nas              || "yes"
-        visual_post_items.min_range = req.body.min_range                  || '0'
-        visual_post_items.max_range = req.body.max_range                  || '100'
-
+        req.session.normalization = visual_post_items.normalization = req.body.normalization          || "none"
+        req.session.selected_distance = visual_post_items.selected_distance = req.body.selected_distance  || "morisita_horn"
+        req.session.tax_depth   = visual_post_items.tax_depth = req.body.tax_depth                  || "phylum"
+        req.session.domains     = visual_post_items.domains = req.body.domains                      || ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
+        req.session.include_nas = visual_post_items.include_nas = req.body.include_nas              || "yes"
+        req.session.min_range   = visual_post_items.min_range = req.body.min_range                  || '0'
+        req.session.max_range   = visual_post_items.max_range = req.body.max_range                  || '100'
+        
         if((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length != 0){
             console.log('Found api dids ',req.body.ds_order)
             try{
@@ -112,7 +112,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
             }
             var new_dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids)
             var dataset_ids = new_dataset_ids
-            visual_post_items.ds_order = dataset_ids
+            req.session.chosen_id_order = visual_post_items.ds_order = dataset_ids
         }else if( (req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project) ){
             console.log('Found api project ',req.body.project)
             var pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid
@@ -120,8 +120,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
             visual_post_items.ds_order = new_dataset_ids
             console.log(PROJECT_INFORMATION_BY_PNAME[req.body.project])
             console.log(visual_post_items.ds_order)
-            dataset_ids = visual_post_items.ds_order;
-            console.log('dids',dataset_ids)
+            req.session.chosen_id_order = dataset_ids = visual_post_items.ds_order;
+            //console.log('dids',dataset_ids)
         }else{
             console.log('API ALERT - no dids or project')
             return;
@@ -130,7 +130,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         visual_post_items.update_data = req.body.update_data              || '1'   // fires changes
 
 
-        visual_post_items.no_of_datasets = dataset_ids.length
+        req.session.no_of_datasets  = visual_post_items.no_of_datasets = dataset_ids.length
         
         // for API select ALL metadata with these datasets
         var md = {} // hash lookup unique
@@ -140,7 +140,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
                 md[item] =1
             }
         }
-        visual_post_items.metadata = Object.keys(md)
+        req.session.metadata  = visual_post_items.metadata = Object.keys(md)
 
   }else if(req.body.restore_image === '1'){
         console.log('in view_selection RESTORE IMAGE')
@@ -186,7 +186,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         // populate visual_post_items from ?????
         var config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
         var upld_obj = JSON.parse(fs.readFileSync(config_file_path, 'utf8'))
-        console.log(upld_obj)
+        //console.log(upld_obj)
         var config_file_data = create_clean_config(req, upld_obj) // put into req.session
         if(Object.keys(config_file_data).length == 0){
             //error
@@ -250,8 +250,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         // DONE Direct from unit_select
         console.log('DEFAULT req.body')
         visual_post_items = COMMON.save_post_items(req);
-        console.log('visual_post_items')
-        console.log(visual_post_items)
+        //console.log('visual_post_items')
+        //console.log(visual_post_items)
         var dataset_ids = req.session.chosen_id_order
         req.session.no_of_datasets = dataset_ids.length
         req.session.metadata = visual_post_items.metadata
@@ -302,9 +302,9 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   console.log('<<VS--visual_post_items');
   console.log('entering MTX.get_biom_matrix')
   var biom_matrix = MTX.get_biom_matrix(req, visual_post_items);
-  console.log('8')
+  //console.log('8')
   visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
-  console.log('9')
+  //console.log('9')
   if(visual_post_items.metadata.indexOf('primer_suite') != -1){
       visual_post_items.metadata.push('primers')
   }
@@ -1085,7 +1085,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
         });  // stdin, stdout, stderr
 
         pcoa_process.stdout.on('data', function pcoaProcessStdout(data) { 
-            console.log('1stdout: ' + data);  
+            //console.log('1stdout: ' + data);  
         });
         stderr1='';
         pcoa_process.stderr.on('data', function pcoaProcessStderr(data) {
@@ -1596,10 +1596,10 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     var value = myurl.query.val || 'z'; // a,z, min, max
     var order = {orderby:orderby, value:value} // orderby: alpha: a,z or count: min,max
     //var ds_items = pjds.split('--');
-     console.log('myurl.query')
-     console.log(myurl.query)
-     console.log('bar_single:session')
-     console.log(req.session)
+     //console.log('myurl.query')
+     //console.log(myurl.query)
+     //console.log('bar_single:session')
+     //console.log(req.session)
     
     var pi = {}
     var selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did]
@@ -1645,10 +1645,10 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
       new_order.alpha_value = ''
     }
 
-    console.log('order')
-    console.log(order)
-    console.log('new_order')
-    console.log(new_order)
+    //console.log('order')
+    //console.log(order)
+    //console.log('new_order')
+    //console.log(new_order)
     var timestamp = +new Date();  // millisecs since the epoch!
     var filename = req.user.username+'_'+selected_did+'_'+timestamp+'_sequences.json'
     var file_path = path.join('tmp',filename);
@@ -1760,7 +1760,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     
     //var ds_items = pjds.split('--');
 
-    console.log(ds1, ds2)
+    //console.log(ds1, ds2)
 
     var pi = {}
     pi.chosen_datasets = [{did:did1, name:ds1},{did:did2, name:ds2}]
@@ -1776,8 +1776,8 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     pi.selected_distance = metric
     var write_file = false;  // DO NOT OVERWRITE The Matrix File
     var new_matrix = MTX.get_biom_matrix(req, pi, write_file);
-    console.log('new_matrix')
-    console.log(new_matrix)
+    //console.log('new_matrix')
+    //console.log(new_matrix)
 
 
 
@@ -2222,7 +2222,7 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
   html += "<table id='drag_table' class='table table-condensed' >"
   html += "<thead></thead>";
   html += "  <tbody>";
-  console.log(req.session)
+  //console.log(req.session)
   var names = [] 
   var ids = [] 
   
@@ -2259,7 +2259,7 @@ router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
   console.log('in reverse_ds_order')
   var ids = JSON.parse(req.body.ids);
   var html = '';
-  console.log(req.session)
+  //console.log(req.session)
   html += "<table id='drag_table' class='table table-condensed' >"
   html += "<thead></thead>";
   html += "  <tbody>";

@@ -93,6 +93,8 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
     
     var id_name_order           = COMMON.create_chosen_id_name_order(req.session.chosen_id_order);
     if (req.body.fasta === undefined
+        && req.body.fastaMED === undefined
+        && req.body.fastaVAMPS === undefined
         && req.body.taxbyseq === undefined
         && req.body.taxbyref === undefined
         && req.body.taxbytax === undefined
@@ -127,6 +129,12 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
     for (var key in req.body) {
       if (key === 'fasta') {
         requested_files.push('-fasta_file');
+      }
+      if (key === 'fastaMED') {
+        requested_files.push('-fasta_fileMED');
+      }
+      if (key === 'fastaVAMPS') {
+        requested_files.push('-fasta_fileVAMPS');
       }
       if (key === 'matrix') {
         requested_files.push('-matrix_file');

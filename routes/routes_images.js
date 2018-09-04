@@ -234,7 +234,7 @@ counts_matrix: function(req, res) {
 //
 dheatmap: function(req, res){
     console.log('In routes_images/function: images/dheatmap')
-
+    //console.log(req.session)
     var ts = req.session.ts
     matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
     console.log(matrix_file_path)
@@ -732,7 +732,7 @@ metadata_csv: function(req, res){
         var ds_order = req.body.ds_order
     }
     mdobj = helpers.get_metadata_obj_from_dids(ds_order)
-    console.log(ds_order)
+    //console.log(ds_order)
     var html = 'VAMPS Metadata\n'
     var item_obj = {}
     var sep = '\t'
@@ -748,12 +748,12 @@ metadata_csv: function(req, res){
     }
     html += '\n\r'
     // sort
-    console.log('item_obj',item_obj)
+    //console.log('item_obj',item_obj)
 
     item_list = Object.keys(item_obj)
 
     item_list.sort()
-    console.log(item_list)
+    //console.log(item_list)
     // make a csv table
     for(var i = 0; i < item_list.length; i++){
         item = item_list[i]
@@ -776,7 +776,7 @@ metadata_csv: function(req, res){
     outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
     console.log('outfile_path:',outfile_path)
     result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
-    console.log(result)
+    //console.log(result)
     data = {}
     data.html = html
     data.filename = outfile_name
@@ -817,7 +817,7 @@ adiversity: function(req, res){
 
     alphadiv_process.stdout.on('data', function adiversityProcessStdout(data) {
           data = data.toString().trim();
-          console.log(data)
+          //console.log(data)
           output += data;
 
     });
@@ -825,7 +825,7 @@ adiversity: function(req, res){
     stderr = '';
     alphadiv_process.stderr.on('data', function adiversityProcessStderr(data) {
         data = data.toString();
-        console.log(data)
+        //console.log(data)
         stderr += data;
 
     });
@@ -860,7 +860,7 @@ adiversity: function(req, res){
             outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
             console.log('outfile_path:',outfile_path)
             result = save_file(output, outfile_path) // this saved file should now be downloadable from jupyter notebook
-            console.log(result)
+            //console.log(result)
             data = {}
             data.html = html
             data.filename = outfile_name
@@ -904,7 +904,7 @@ dendrogram: function(req, res){
 
     var output = '';
     dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
-        console.log('stdout: ' + data);
+        //console.log('stdout: ' + data);
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         data = data.toString();
         output += data;
@@ -1001,7 +1001,7 @@ phyloseq: function(req,res){
 
 
           }else{
-            console.log('ERROR-2');
+            //console.log('ERROR-2');
             html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's"
           }
 
@@ -1191,7 +1191,7 @@ create_hm_table_from_csv: function(req, dm, metadata){
 },
 create_hm_table: function(req, dm, metadata){
     console.log('in create_hm_table2')
-    console.log(metadata)
+    //console.log(metadata)
     var id_order = req.session.chosen_id_order
     
     
