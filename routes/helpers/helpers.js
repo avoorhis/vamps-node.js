@@ -2024,14 +2024,16 @@ module.exports.get_key_from_value = function (obj, value) {
   console.log('4 -key - ' + found_key)
   return found_key;
 };
-module.exports.ensure_dir_exists  = function (dir) {
-  fs.ensureDir(dir, function (err) {
-    if (err) {
-      console.log('2');
-      console.log(err);
-    } // => null
-    else {
-      console.log(dir + ' Guaranteed to exist on login')
+
+module.exports.ensure_dir_exists = function(dir)
+{
+    fs.ensureDir(dir, function (err) {
+    if(err) {console.log('2');console.log(err);} // => null
+    else{
+        fs.chmod(dir, 0777, function (err) {
+            if(err) {console.log(err);} // ug+rwx
+        });
+        console.log(dir+' Guaranteed to exist on login')
     }        // dir has now been created, including the directory it is to be placed in
 
   });
