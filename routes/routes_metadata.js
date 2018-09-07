@@ -561,19 +561,26 @@ function new_csv(req, res, cur_project, project_name, transposed) {
   cur_project.make_project_obj_from_new_csv(project_name, transposed);
   //  TODO: save new project
   var project_obj = cur_project.project_obj;
+  console.log('PPP00 project_obj', project_obj);
+  console.log('PPP01 JSON.stringify(project_obj)', JSON.stringify(project_obj));
+
   cur_project.addProject(project_obj, function (err, rows) {
     console.log('New project SAVED');
     console.log('WWW rows', rows);
-    let pid = 0;
+    let pid           = 0;
+    let affected_rows = 0;
     if (typeof rows !== "undefined") {
-      pid = rows.insertId;
+      pid           = rows.insertId;
+      affected_rows = rows.affectedRows;
     }
     else {
       console.log("Problems with Project.addProject, rows == undefined!");
     }
     cur_project.project_obj.pid = pid;
+    console.log('RRR0 project_name', project_name);
 
-    if ((pid === 0) && (rows.affectedRows === 1)) {
+    // if ((pid === 0) && (rows.affectedRows === 1)) {
+    if (pid === 0) {
       // TODO: existing_project: as show_with_new_datasets
       cur_project.getProjectByName(project_name, function (err, rows) {
         console.log("RRR1, rows from getProjectByName", rows);

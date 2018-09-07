@@ -245,6 +245,8 @@ class Project {
 
   addProject(project_obj, callback) {
     console.log("IN: Project:addProject");
+    console.log('PPP0 project_obj', project_obj);
+    console.log('PPP1 JSON.stringify(project_obj)', JSON.stringify(project_obj));
 
     return connection.query("INSERT INTO project VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE project = VALUES(project), rev_project_name = VALUES(rev_project_name);", [project_obj.project_id,
       project_obj.project,
