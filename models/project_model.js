@@ -258,7 +258,7 @@ class Project {
       project_obj.public + "', '" +
       project_obj.metagenomic + "', '" +
       project_obj.matrix + "', '" +
-      project_obj.created_at + "', '" +
+      project_obj.created_at + "', '" + // TODO: change to valid format
       project_obj.updated_at + "', '" +
       project_obj.active + "') ON DUPLICATE KEY UPDATE project = VALUES(project), rev_project_name = VALUES(rev_project_name);";
     console.log("QQQ0 query1", query1);
@@ -282,7 +282,9 @@ class Project {
   getProjectByName(project_name, callback) {
     // const query_getProjectByName = "SELECT * FROM project WHERE project = ?", [project_name];
     // const query_getProjectByName = "SELECT * FROM project WHERE project = 'DCO_BRZ_Av6'";
+
     const query_getProjectByName = "SELECT * FROM project WHERE project = " + connection.escape(project_name);
+    console.log("FROM getProjectByName: query_getProjectByName", query_getProjectByName);
     return connection.query(query_getProjectByName, callback);
   }
 
