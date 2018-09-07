@@ -228,17 +228,11 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     const transposed    = helpers.transpose_arr_of_obj(data_arr);
 
     const cur_project = new Project(req, res, 0, 0);
-    console.log("FFF1: helpers.unique_array(transposed.project)", helpers.unique_array(transposed.project));
-    console.log("FFF2: transposed.project", transposed.project);
-    console.log("FFF3: helpers.unique_array(transposed.project)[0]", helpers.unique_array(transposed.project)[0]);
-  console.log("I'M HEREEEE!");
-    console.log("FFF4: cur_project.get_project_name_from_file_name(full_file_name) ", cur_project.get_project_name_from_file_name(full_file_name));
-
     var project_name = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0];
-    console.log("FFF5: project_name", project_name);
+    console.log("PPP0: project_name", project_name);
 
     var pid = cur_project.get_pid(project_name);
-    console.log("FFF6: pid", pid);
+    console.log("PPP1: pid", pid);
 
     if (typeof req.body.project === 'undefined' || pid === 0) {
       new_csv(req, res, cur_project, project_name, transposed);
@@ -561,6 +555,8 @@ function callback_for_add_project_from_new_csv(req, res, cur_project, data_arr) 
 
 function new_csv(req, res, cur_project, project_name, transposed) {
   console.time("TIME: new_csv");
+  console.log("IN: new_csv");
+
 // if (pid === 0) { // new csv
   cur_project.make_project_obj_from_new_csv(project_name, transposed);
   //  TODO: save new project
@@ -568,7 +564,7 @@ function new_csv(req, res, cur_project, project_name, transposed) {
   cur_project.addProject(project_obj, function (err, rows) {
     console.log('New project SAVED');
     console.log('WWW rows', rows);
-    var pid                     = rows.insertId;
+    var pid                     = rows.insertId || 0;
     cur_project.project_obj.pid = pid;
 
     if ((pid === 0) && (rows.affectedRows === 1)) {
