@@ -280,9 +280,10 @@ class Project {
 
     console.log('IN: get_project_name_from_file_name');
     console.log('FFF01: edit_metadata_file.split(\'-\')', edit_metadata_file.split('-'));
-    console.log('FFF02: edit_metadata_file.split(\'-\')[1]', edit_metadata_file.split('-')[1]);
     var edit_metadata_file_parts = [];
     if (edit_metadata_file.split('-').length > 0) {
+      console.log('FFF001: edit_metadata_file.split(\'-\').length)', edit_metadata_file.split('-').length);
+      console.log('FFF02: edit_metadata_file.split(\'-\')[1]', edit_metadata_file.split('-')[1]);
       console.log('FFF03: edit_metadata_file.split(\'-\')[1].split(\'_\')', edit_metadata_file.split('-')[1].split('_'));
       edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_') || '';
     }
