@@ -234,7 +234,7 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
   console.log("I'M HEREEEE!");
     console.log("FFF4: cur_project.get_project_name_from_file_name(full_file_name) ", cur_project.get_project_name_from_file_name(full_file_name));
 
-    var project_name = req.body.project || helpers.unique_array(transposed.project)[0] || cur_project.get_project_name_from_file_name(full_file_name);
+    var project_name = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0];
     console.log("FFF5: project_name", project_name);
 
     var pid = cur_project.get_pid(project_name);
