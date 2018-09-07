@@ -247,7 +247,7 @@ class Project {
     console.log("IN: Project:addProject");
     console.log('PPP0 project_obj', project_obj);
     // console.log('PPP1 JSON.stringify(project_obj)', JSON.stringify(project_obj));
-    const query1 = "INSERT INTO project (project_id, project, title, project_description, rev_project_name, funding, owner_user_id, public, metagenomic, matrix, created_at, updated_at, active) VALUES('" +
+    const query1 = "INSERT INTO project (project_id, project, title, project_description, rev_project_name, funding, owner_user_id, public, metagenomic, matrix, active) VALUES('" +
       project_obj.project_id + "', '" +
       project_obj.project + "', '" +
       project_obj.title + "', '" +
@@ -258,12 +258,10 @@ class Project {
       project_obj.public + "', '" +
       project_obj.metagenomic + "', '" +
       project_obj.matrix + "', '" +
-      project_obj.created_at + "', '" + // TODO: change to valid format
-      project_obj.updated_at + "', '" +
       project_obj.active + "') ON DUPLICATE KEY UPDATE project = VALUES(project), rev_project_name = VALUES(rev_project_name);";
     console.log("QQQ0 query1", query1);
 
-    return connection.query("INSERT INTO project VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE project = VALUES(project), rev_project_name = VALUES(rev_project_name);", [project_obj.project_id,
+    return connection.query("INSERT INTO project (project_id, project, title, project_description, rev_project_name, funding, owner_user_id, public, metagenomic, matrix, active) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE project = VALUES(project), rev_project_name = VALUES(rev_project_name);", [project_obj.project_id,
       project_obj.project,
       project_obj.title,
       project_obj.project_description,
@@ -273,8 +271,6 @@ class Project {
       project_obj.public,
       project_obj.metagenomic,
       project_obj.matrix,
-      project_obj.created_at,
-      project_obj.updated_at,
       project_obj.active
     ], callback);
   }
