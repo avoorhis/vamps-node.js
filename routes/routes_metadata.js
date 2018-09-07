@@ -228,7 +228,7 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     const transposed    = helpers.transpose_arr_of_obj(data_arr);
 
     const cur_project = new Project(req, res, 0, 0);
-    var project_name = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0];
+    var project_name  = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0];
     console.log("PPP0: project_name", project_name);
 
     var pid = cur_project.get_pid(project_name);
@@ -564,7 +564,13 @@ function new_csv(req, res, cur_project, project_name, transposed) {
   cur_project.addProject(project_obj, function (err, rows) {
     console.log('New project SAVED');
     console.log('WWW rows', rows);
-    var pid                     = rows.insertId || 0;
+    let pid = 0;
+    if (typeof rows !== "undefined") {
+      pid = rows.insertId;
+    }
+    else {
+      console.log("Problems with Project.addProject, rows == undefined!");
+    }
     cur_project.project_obj.pid = pid;
 
     if ((pid === 0) && (rows.affectedRows === 1)) {
