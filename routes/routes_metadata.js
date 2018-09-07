@@ -554,7 +554,7 @@ function callback_for_add_project_from_new_csv(req, res, cur_project, data_arr) 
 }
 
 function new_csv(req, res, cur_project, project_name, transposed) {
-  console.time("TIME: new_csv");
+  console.time("TIME: in new_csv");
   console.log("IN: new_csv");
 
 // if (pid === 0) { // new csv
@@ -584,7 +584,12 @@ function new_csv(req, res, cur_project, project_name, transposed) {
       // TODO: existing_project: as show_with_new_datasets
       cur_project.getProjectByName(project_name, function (err, rows) {
         console.log("RRR1, rows from getProjectByName", rows);
-        cur_project.project_obj.pid = rows["0"].project_id;
+        if (typeof rows !== "undefined") {
+          cur_project.project_obj.pid = rows["0"].project_id;
+        }
+        else {
+          console.log("Problems with Project.getProjectByName, rows == undefined!");
+        }
         callback_for_add_project_from_new_csv(req, res, cur_project, transposed);
       });
     }
