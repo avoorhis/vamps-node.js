@@ -565,7 +565,10 @@ function new_csv(req, res, cur_project, project_name, transposed) {
   console.log('PPP01 JSON.stringify(project_obj)', JSON.stringify(project_obj));
 
   if (project_obj.oid === 0) {
-    req.flash('fail', "There is no such user.", project_obj);
+    req.flash('fail', 'There is no such user: first_name: ' + project_obj.first_name +
+    ', last_name: ' + project_obj.last_name +
+    ', email: ' + project_obj.email +
+    ', institution: ' + project_obj.institution);
     res.redirect("/");
   } else {
     cur_project.addProject(project_obj, function (err, rows) {
