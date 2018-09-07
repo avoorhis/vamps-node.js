@@ -551,8 +551,8 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-f', family,
                       g,
-                      req.CONFIG.PATH_TO_OLIGOTYPING+'/vamps_scripts/otu_id_to_greengenes.txt',
-                      req.CONFIG.PATH_TO_OLIGOTYPING+'/vamps_scripts/gg_97_otus_6oct2010_aligned.fasta.txt',
+                      path.join(req.CONFIG.PATH_TO_SCRIPTS,'oligotyping','vamps_scripts','otu_id_to_greengenes.txt'),
+                      path.join(req.CONFIG.PATH_TO_SCRIPTS,'oligotyping','vamps_scripts','gg_97_otus_6oct2010_aligned.fasta.txt'),
                       '-o', tmpl_file,
                       '>', alignmentlog
                     ],
@@ -578,7 +578,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
       //scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
 
       exec : 'entropy-analysis',
-      scriptPath : req.CONFIG.PATH_TO_OLIGOTYPING+'/bin',
+      scriptPath : path.join(req.CONFIG.PATH_TO_SCRIPTS,'oligotyping','bin'),
 
 
       args :       [ min_align_fasta_file,
@@ -724,7 +724,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
       //exec : 'oligotype_start',
       //scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
       exec : 'oligotype',
-      scriptPath : req.CONFIG.PATH_TO_OLIGOTYPING+'/bin',
+      scriptPath : path.join(req.CONFIG.PATH_TO_SCRIPTS,'oligotyping','bin'),
       args :       [ min_align_fasta_file, entropy_file,
                     '--skip-check-input-file',
                     '-o', out_oligotype_path,
