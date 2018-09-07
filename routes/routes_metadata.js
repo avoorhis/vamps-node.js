@@ -228,12 +228,16 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     const transposed    = helpers.transpose_arr_of_obj(data_arr);
 
     const cur_project = new Project(req, res, 0, 0);
-    console.log("FFF1: full_file_name", full_file_name);
-  console.log("FFF2: req.body.project", req.body.project);
-  console.log("FFF3: helpers.unique_array(transposed.project)[0]", helpers.unique_array(transposed.project)[0]);
-    var project_name  = req.body.project || cur_project.get_project_name_from_file_name(full_file_name) || helpers.unique_array(transposed.project)[0];
-    var pid           = cur_project.get_pid(project_name);
-  console.log("FFF4: pid", pid);
+    console.log("FFF1: helpers.unique_array(transposed.project)", helpers.unique_array(transposed.project));
+    console.log("FFF2: transposed.project", transposed.project);
+    console.log("FFF3: helpers.unique_array(transposed.project)[0]", helpers.unique_array(transposed.project)[0]);
+    console.log("FFF4: cur_project.get_project_name_from_file_name(full_file_name) ", cur_project.get_project_name_from_file_name(full_file_name));
+
+    var project_name = req.body.project || cur_project.get_project_name_from_file_name(full_file_name) || helpers.unique_array(transposed.project)[0];
+    console.log("FFF5: project_name", project_name);
+
+    var pid = cur_project.get_pid(project_name);
+    console.log("FFF6: pid", pid);
 
     if (typeof req.body.project === 'undefined' || pid === 0) {
       new_csv(req, res, cur_project, project_name, transposed);
