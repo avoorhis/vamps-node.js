@@ -231,6 +231,7 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     console.log("FFF1: helpers.unique_array(transposed.project)", helpers.unique_array(transposed.project));
     console.log("FFF2: transposed.project", transposed.project);
     console.log("FFF3: helpers.unique_array(transposed.project)[0]", helpers.unique_array(transposed.project)[0]);
+  console.log("I'M HEREEEE!");
     console.log("FFF4: cur_project.get_project_name_from_file_name(full_file_name) ", cur_project.get_project_name_from_file_name(full_file_name));
 
     var project_name = req.body.project || cur_project.get_project_name_from_file_name(full_file_name) || helpers.unique_array(transposed.project)[0];
