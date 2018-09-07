@@ -246,7 +246,22 @@ class Project {
   addProject(project_obj, callback) {
     console.log("IN: Project:addProject");
     console.log('PPP0 project_obj', project_obj);
-    console.log('PPP1 JSON.stringify(project_obj)', JSON.stringify(project_obj));
+    // console.log('PPP1 JSON.stringify(project_obj)', JSON.stringify(project_obj));
+    const query1 = "INSERT INTO project (project_id, project, title, project_description, rev_project_name, funding, owner_user_id, public, metagenomic, matrix, created_at, updated_at, active) VALUES('" +
+      project_obj.project_id + "', '" +
+      project_obj.project + "', '" +
+      project_obj.title + "', '" +
+      project_obj.project_description + "', '" +
+      project_obj.rev_project_name + "', '" +
+      project_obj.funding + "', '" +
+      project_obj.owner_user_id + "', '" +
+      project_obj.public + "', '" +
+      project_obj.metagenomic + "', '" +
+      project_obj.matrix + "', '" +
+      project_obj.created_at + "', '" +
+      project_obj.updated_at + "', '" +
+      project_obj.active + "') ON DUPLICATE KEY UPDATE project = VALUES(project), rev_project_name = VALUES(rev_project_name);";
+    console.log("QQQ0 query1", query1);
 
     return connection.query("INSERT INTO project VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE project = VALUES(project), rev_project_name = VALUES(rev_project_name);", [project_obj.project_id,
       project_obj.project,
@@ -283,16 +298,24 @@ class Project {
     console.time('TIME: get_project_name_from_file_name');
     console.log('IN: get_project_name_from_file_name');
     var edit_metadata_file_parts = [];
-    if (edit_metadata_file.split('-').length > 1) {
-      edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_') || '';
-    }
-    console.log('FFF04: edit_metadata_file_parts', edit_metadata_file_parts);
     var edit_metadata_project    = '';
 
-    if (edit_metadata_file_parts.length >= 4) {
+    var name_no_path_arr = edit_metadata_file.split('/');
+    var name_no_path     = name_no_path_arr[name_no_path_arr.length - 1];
+    console.log('FFF05: name_no_path', name_no_path);
 
-      edit_metadata_project = edit_metadata_file_parts[1] + '_' + edit_metadata_file_parts[2] + '_' + edit_metadata_file_parts[3];
+    if (name_no_path.includes("-")) {
+      // valid file project name
+      edit_metadata_file_parts = name_no_path.split('-')[1].split('_') || '';
+      console.log('FFF04: edit_metadata_file_parts', edit_metadata_file_parts);
+
+      if (edit_metadata_file_parts.length >= 4) {
+        edit_metadata_project = edit_metadata_file_parts[1] + '_' + edit_metadata_file_parts[2] + '_' + edit_metadata_file_parts[3];
+      }
     }
+    // else {
+    // tmp file name, e.g. 38992e2fdc27e34fb1dd4231fc680504
+    // }
 
     console.timeEnd('TIME: get_project_name_from_file_name');
     return edit_metadata_project;
