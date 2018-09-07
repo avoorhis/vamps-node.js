@@ -564,44 +564,49 @@ function new_csv(req, res, cur_project, project_name, transposed) {
   console.log('PPP00 project_obj', project_obj);
   console.log('PPP01 JSON.stringify(project_obj)', JSON.stringify(project_obj));
 
-  cur_project.addProject(project_obj, function (err, rows) {
-    console.log('New project SAVED');
-    console.log('WWW rows', rows);
-    let pid           = 0;
-    let affected_rows = 0;
-    if (typeof rows !== "undefined") {
-      pid           = rows.insertId;
-      affected_rows = rows.affectedRows;
-    }
-    else {
-      console.log("Problems with Project.addProject, rows == undefined!");
-    }
-    cur_project.project_obj.pid = pid;
-    console.log('RRR0 project_name', project_name);
+  if (project_obj.oid === 0) {
+    req.flash('fail', "There is no such user.", project_obj);
+    res.redirect("/");
+  } else {
+    cur_project.addProject(project_obj, function (err, rows) {
+      console.log('New project SAVED');
+      console.log('WWW rows', rows);
+      let pid           = 0;
+      let affected_rows = 0;
+      if (typeof rows !== "undefined") {
+        pid           = rows.insertId;
+        affected_rows = rows.affectedRows;
+      }
+      else {
+        console.log("Problems with Project.addProject, rows == undefined!");
+      }
+      cur_project.project_obj.pid = pid;
+      console.log('RRR0 project_name', project_name);
 
-    // if ((pid === 0) && (rows.affectedRows === 1)) {
-    if (pid === 0) {
-      // TODO: existing_project: as show_with_new_datasets
-      cur_project.getProjectByName(project_name, function (err, rows) {
-        console.log("RRR1, rows from getProjectByName", rows);
-        if (typeof rows !== "undefined") {
-          cur_project.project_obj.pid = rows["0"].project_id;
-        }
-        else {
-          console.log("Problems with Project.getProjectByName, rows == undefined!");
-        }
+      // if ((pid === 0) && (rows.affectedRows === 1)) {
+      if (pid === 0) {
+        // TODO: existing_project: as show_with_new_datasets
+        cur_project.getProjectByName(project_name, function (err, rows) {
+          console.log("RRR1, rows from getProjectByName", rows);
+          if (typeof rows !== "undefined") {
+            cur_project.project_obj.pid = rows["0"].project_id;
+          }
+          else {
+            console.log("Problems with Project.getProjectByName, rows == undefined!");
+          }
+          callback_for_add_project_from_new_csv(req, res, cur_project, transposed);
+        });
+      }
+      else {
         callback_for_add_project_from_new_csv(req, res, cur_project, transposed);
-      });
-    }
-    else {
-      callback_for_add_project_from_new_csv(req, res, cur_project, transposed);
-    }
+      }
 
 
-    // const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
-    // met_obj.make_new_project_for_form(rows, project_obj);
-    console.timeEnd("TIME: in new_csv");
-  });
+      // const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
+      // met_obj.make_new_project_for_form(rows, project_obj);
+      console.timeEnd("TIME: in new_csv");
+    });
+  }
 }
 
 // create form from db

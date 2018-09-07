@@ -42,6 +42,9 @@ class User {
      this.User_obj.security_level = ALL_USERS_BY_UnK[uniq_key].status;
      this.User_obj.groups         = ALL_USERS_BY_UnK[uniq_key].groups;
     }
+    else {
+      console.log("ERR from getUserInfoFromGlobalbyUniqKey. No such user: ALL_USERS_BY_UnK[uniq_key]", uniq_key);
+    }
   }
 
   getUserInfoFromGlobal(user_id) {
