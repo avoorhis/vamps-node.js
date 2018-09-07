@@ -560,7 +560,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
 
   var cmd_options2 = {
       exec: 'pynast',
-      scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
+      scriptPath : path.join(req.CONFIG.PATH_TO_SCRIPTS,'bin'),
       args :       [ '-t', tmpl_file,
                       '-i', fasta_file,
                       '-a', aligned_file,
