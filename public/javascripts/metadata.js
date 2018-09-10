@@ -752,7 +752,8 @@ var metadata_dropdown_fields = ["biome_secondary",
   "feature_secondary",
   "investigation_type",
   "material_secondary",
-  "sample_type"
+  "sample_type",
+  "target_gene"
 ];
 
 addCopyFirst = function () {
