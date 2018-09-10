@@ -212,7 +212,8 @@ def run_fasta(args, fmt):
         if fmt == 'MED':
             #  >ds_seqid  (not uniqued)
             for i in range(int(seq_count)):
-                my_id = (row['project']+'--'+row['dataset']).replace('_','-')+'_'+ str(row['sequence_id']) + '-'+str(i+1)
+                #my_id = (row['project']+'--'+row['dataset']).replace('_','-')+'_'+ str(row['sequence_id']) + '-'+str(i+1)
+                my_id = (row['project']+'--'+row['dataset'])+' '+ str(row['sequence_id']) + '-'+str(i+1)
                 file_txt += '>'+str(my_id)+'\n'+seq.decode('UTF-8')+'\n'
         elif fmt == 'VAMPS':
             for i in range(int(seq_count)):
