@@ -1339,7 +1339,7 @@ module.exports.get_qsub_script_text = function(req, log, dir_path, cmd_name, cmd
 //     script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";
   
   for (var i in cmd_list) {
-    script_text += cmd_list[i]+"\n";
+    script_text += cmd_list[i]+"\n\n";
   }
 //
 //     //script_text += "chmod 666 "+log+"\n";
@@ -1368,7 +1368,7 @@ module.exports.get_qsub_script_text_only = function(req, scriptlog, dir_path, cm
   script_text += "echo \"PATH is \$PATH\"\n"
 
   for (var i in cmd_list) {
-    script_text += cmd_list[i]+"\n";
+    script_text += cmd_list[i]+"\n\n";
   }
 
   console.log("script_text from get_qsub_script_text_only: ")
@@ -1510,7 +1510,7 @@ module.exports.make_gast_script_txt = function(req, data_dir, project, cmd_list,
   make_gast_script_txt +=  "echo \"Done with cluster_gast\" >> "+data_dir+"/cluster.log\n"
   make_gast_script_txt +=  "echo \"Running install scripts (see log)\" >> "+data_dir+"/cluster.log\n"
   for (var i in cmd_list) {    
-    make_gast_script_txt += cmd_list[i]+"\n";
+    make_gast_script_txt += cmd_list[i]+"\n\n";
   }
 
   make_gast_script_txt += "\n";

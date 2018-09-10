@@ -180,14 +180,14 @@ def write_file_txt(args, out_file, file_txt):
             f.write(file_txt)
 
 def run_fasta(args, fmt):
-    print ("""running fasta --->>>""")
+    print ("""running fasta --->>>"""+fmt)
     # args.datasets is a list of p--d pairs
     if args.function == 'otus':
         out_file = os.path.join(args.base,'fasta.fa')
     else:
         if fmt == 'MED':
             out_file = os.path.join(args.base,'fasta-'+args.runcode+'.MED.fasta')
-        if fmt == 'VAMPS':
+        elif fmt == 'VAMPS':
             out_file = os.path.join(args.base,'fasta-'+args.runcode+'.VAMPS.fasta')
         else:
             out_file = os.path.join(args.base,'fasta-'+args.runcode+'.fasta')
