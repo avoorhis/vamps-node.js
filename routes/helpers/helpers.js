@@ -2124,9 +2124,9 @@ module.exports.target_gene_validation = function (gene, source) {
   let this_domain_tg_object = helpers.findByValueOfObject(const_target_gene, "domain", curr_domain);
   let curr_target_genes     = this_domain_tg_object[0]['target_gene'];
   let target_gene_correct   = curr_target_genes.includes(gene);
-  let curr_target_genes_str = curr_target_genes.join(", ");
+  let curr_target_genes_str = curr_target_genes.join(" or ");
   if (!target_gene_correct) {
-    throw new Error('For domain ' + curr_domain + ' please choose ' + curr_target_genes_str);
+    throw new Error('For domain ' + curr_domain + ' please choose ' + curr_target_genes_str + ' from Target gene name.');
   }
 };
 
