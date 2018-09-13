@@ -75,7 +75,7 @@ constants.DOMAIN_REGIONS = {
   ]
 };
 
-constants.TARGET_GENE = [{domain: "Eukarya", target_gene: ["18s"]}, {
+constants.TARGET_GENE = [{domain: "Eukarya", target_gene: ["18s"]}, {domain: "Fungi", target_gene: ["ITS1"]}, {
   domain: "Archaea",
   target_gene: ["16s"]
 }, {domain: "Bacteria", target_gene: ["16s"]},
