@@ -1544,7 +1544,7 @@ module.exports.make_gast_script_txt = function (req, data_dir, project, cmd_list
   }
   make_gast_script_txt +=  "echo \"Done with cluster_gast\" >> "+data_dir+"/cluster.log\n"
   make_gast_script_txt +=  "echo \"Running install scripts (see log)\" >> "+data_dir+"/cluster.log\n"
-  for (var i in cmd_list) {    
+  for (var i in cmd_list) {
     make_gast_script_txt += cmd_list[i]+"\n\n";
   }
 
@@ -2118,19 +2118,16 @@ exports.dropdown_items_validation = function (value) {
 
 const const_target_gene = C.TARGET_GENE;
 module.exports.target_gene_validation = function (gene, source) {
-  var u_domains_set = new Set(source.domain);
-  var u_domains_arr = [...u_domains_set];
-  // if (gene === 'Please choose one') {
-  // gene = Target gene name. source = %s
-  // qq[0]['target_gene']
-  // found = qq[0]['target_gene'].find(function(element) {   return element == gene; })
-  //qq[0]['target_gene'].includes(gene)
-  var this_domain_tg_object = helpers.findByValueOfObject(const_target_gene, "domain", u_domains_arr[0]);
-  var target_gene_correct = this_domain_tg_object[0]['target_gene'].includes(gene);
-  console.log("VVV9 target_gene_correct = ", target_gene_correct);
-
-  throw new Error('gene = %s.\n source = %s');
-  // }
+  let u_domains_set = new Set(source.domain);
+  let u_domains_arr         = [...u_domains_set];
+  let curr_domain           = u_domains_arr[0];
+  let this_domain_tg_object = helpers.findByValueOfObject(const_target_gene, "domain", curr_domain);
+  let curr_target_genes     = this_domain_tg_object[0]['target_gene'];
+  let target_gene_correct   = curr_target_genes.includes(gene);
+  let curr_target_genes_str = curr_target_genes.join(", ");
+  if (!target_gene_correct) {
+    throw new Error('For domain ' + curr_domain + ' please choose ' + curr_target_genes_str);
+  }
 };
 
 exports.geo_loc_name_validation = function (value, source) {
