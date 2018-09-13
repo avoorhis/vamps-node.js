@@ -180,14 +180,14 @@ def write_file_txt(args, out_file, file_txt):
             f.write(file_txt)
 
 def run_fasta(args, fmt):
-    print ("""running fasta --->>>""")
+    print ("""running fasta --->>>"""+fmt)
     # args.datasets is a list of p--d pairs
     if args.function == 'otus':
         out_file = os.path.join(args.base,'fasta.fa')
     else:
         if fmt == 'MED':
             out_file = os.path.join(args.base,'fasta-'+args.runcode+'.MED.fasta')
-        if fmt == 'VAMPS':
+        elif fmt == 'VAMPS':
             out_file = os.path.join(args.base,'fasta-'+args.runcode+'.VAMPS.fasta')
         else:
             out_file = os.path.join(args.base,'fasta-'+args.runcode+'.fasta')
@@ -212,7 +212,8 @@ def run_fasta(args, fmt):
         if fmt == 'MED':
             #  >ds_seqid  (not uniqued)
             for i in range(int(seq_count)):
-                my_id = (row['project']+'--'+row['dataset']).replace('_','-')+'_'+ str(row['sequence_id']) + '-'+str(i+1)
+                #my_id = (row['project']+'--'+row['dataset']).replace('_','-')+'_'+ str(row['sequence_id']) + '-'+str(i+1)
+                my_id = (row['project']+'--'+row['dataset'])+' '+ str(row['sequence_id']) + '-'+str(i+1)
                 file_txt += '>'+str(my_id)+'\n'+seq.decode('UTF-8')+'\n'
         elif fmt == 'VAMPS':
             for i in range(int(seq_count)):
