@@ -2116,6 +2116,23 @@ exports.dropdown_items_validation = function (value) {
   }
 };
 
+const const_target_gene = C.TARGET_GENE;
+module.exports.target_gene_validation = function (gene, source) {
+  var u_domains_set = new Set(source.domain);
+  var u_domains_arr = [...u_domains_set];
+  // if (gene === 'Please choose one') {
+  // gene = Target gene name. source = %s
+  // qq[0]['target_gene']
+  // found = qq[0]['target_gene'].find(function(element) {   return element == gene; })
+  //qq[0]['target_gene'].includes(gene)
+  var this_domain_tg_object = helpers.findByValueOfObject(const_target_gene, "domain", u_domains_arr[0]);
+  var target_gene_correct = this_domain_tg_object[0]['target_gene'].includes(gene);
+  console.log("VVV9 target_gene_correct = ", target_gene_correct);
+
+  throw new Error('gene = %s.\n source = %s');
+  // }
+};
+
 exports.geo_loc_name_validation = function (value, source) {
   if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
     throw new Error("Either 'Country' or 'Longhurst Zone' are required"); // jshint ignore:line
@@ -2187,7 +2204,7 @@ exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
   });
   console.timeEnd('TIME: transpose_2d_arr_and_fill');
   return newArray;
-}
+};
 
 // exports.transpose = function (array) {
 //   console.time('TIME: transpose');
