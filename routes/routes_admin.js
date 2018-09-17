@@ -592,9 +592,9 @@ router.get('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, res
 //
 //
 router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
-    console.log('in new_user --POST')
+    console.log('in new_user --POST');
     
-    var new_user = {}
+    var new_user = {};
     new_user.email = req.body.useremail;
     new_user.firstname = req.body.userfirstname;
     new_user.lastname = req.body.userlastname;
