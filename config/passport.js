@@ -237,6 +237,60 @@ function login_auth_user(req, username, password, done, db) {
 //
 //
 //
+var validator = require('validator');
+
+function validate_new_user(req, new_user, confirm_password, done) {
+  err = 0;
+  // validator.isEmail(new_user.firstname);
+  if (!validator.equals(new_user.password, confirm_password))
+  // if (new_user.password !== confirm_password)
+  {
+    req.flash('fail', 'Passwords do not match!.');
+    err = 1;
+    // return done(null, false, req.flash('fail', 'Passwords do not match!.'));
+  }
+  if (new_user.password.length < 3 || new_user.password.length > 12) {
+    req.flash('fail', 'Password must be between 3 and 20 characters.');
+    // return done(null, false, req.flash('fail', 'Password must be between 3 and 20 characters.'));
+    err = 1;
+
+  }
+
+  if (helpers.checkUserName(new_user.username)) {
+    req.flash('fail', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only.")
+    // return done(null, false, req.flash('fail', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only."));
+    err = 1;
+  }
+
+  if (new_user.username.length < 3 || new_user.username.length > 15) {
+    req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.')
+    // return done(null, false, req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.'));
+    err = 1;
+  }
+  if (!validator.isEmail(new_user.email)) {
+  // if (new_user.email.indexOf("@") === -1 || new_user.email.length < 3 || new_user.email.length > 100) {
+  //   return done(null, false, req.flash('fail', 'Email address is empty or the wrong format.'));
+    req.flash('fail', 'Email address is empty or the wrong format.')
+    err = 1;
+  }
+
+  if (new_user.firstname.length < 1 || new_user.firstname.length > 20 || new_user.lastname.length < 1 || new_user.lastname.length > 20) {
+    // return done(null, false, req.flash('fail', 'Both first and last names are required.'));
+    req.flash('fail', 'Both first and last names are required.')
+    err = 1;
+  }
+
+  if (new_user.institution.length < 1 || new_user.institution.length > 128) {
+    // return done(null, false, req.flash('fail', 'Institution name is required.'));
+    req.flash('fail', 'Institution name is required.');
+    err = 1;
+  }
+  if (err === 1) {
+    return [err, req];
+  }
+
+}
+
 function signup_user(req, username, password, done, db) {
   // validate all 6 entries here
   // 1- check for empty fields and long lengths
@@ -247,32 +301,39 @@ function signup_user(req, username, password, done, db) {
   var new_user      = this_user_obj.newUser(req.body, username, password);
   var confirm_password = req.body.password_confirm;
   //console.log('XXXXXX')
-  if (new_user.password !== confirm_password) {
-    return done(null, false, req.flash('fail', 'Passwords do not match!.'));
-  }
-  if (new_user.password.length < 3 || new_user.password.length > 12) {
-    return done(null, false, req.flash('fail', 'Password must be between 3 and 20 characters.'));
+  // validator.isEmail(new_user.firstname);
+  var vaildate_res = validate_new_user(req, new_user, confirm_password);
+
+  if (vaildate_res[0] === 1) {
+    return done(null, false, vaildate_res[1]);
   }
 
-  if (helpers.checkUserName(new_user.username)) {
-    return done(null, false, req.flash('fail', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only."));
-  }
-
-  if (new_user.username.length < 3 || new_user.username.length > 15) {
-    return done(null, false, req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.'));
-  }
-
-  if (new_user.email.indexOf("@") === -1 || new_user.email.length < 3 || new_user.email.length > 100) {
-    return done(null, false, req.flash('fail', 'Email address is empty or the wrong format.'));
-  }
-
-  if (new_user.firstname.length < 1 || new_user.firstname.length > 20 || new_user.lastname.length < 1 || new_user.lastname.length > 20) {
-    return done(null, false, req.flash('fail', 'Both first and last names are required.'));
-  }
-
-  if (new_user.institution.length < 1 || new_user.institution.length > 128) {
-    return done(null, false, req.flash('fail', 'Institution name is required.'));
-  }
+  // if (new_user.password !== confirm_password) {
+  //   return done(null, false, req.flash('fail', 'Passwords do not match!.'));
+  // }
+  // if (new_user.password.length < 3 || new_user.password.length > 12) {
+  //   return done(null, false, req.flash('fail', 'Password must be between 3 and 20 characters.'));
+  // }
+  //
+  // if (helpers.checkUserName(new_user.username)) {
+  //   return done(null, false, req.flash('fail', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only."));
+  // }
+  //
+  // if (new_user.username.length < 3 || new_user.username.length > 15) {
+  //   return done(null, false, req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.'));
+  // }
+  //
+  // if (new_user.email.indexOf("@") === -1 || new_user.email.length < 3 || new_user.email.length > 100) {
+  //   return done(null, false, req.flash('fail', 'Email address is empty or the wrong format.'));
+  // }
+  //
+  // if (new_user.firstname.length < 1 || new_user.firstname.length > 20 || new_user.lastname.length < 1 || new_user.lastname.length > 20) {
+  //   return done(null, false, req.flash('fail', 'Both first and last names are required.'));
+  // }
+  //
+  // if (new_user.institution.length < 1 || new_user.institution.length > 128) {
+  //   return done(null, false, req.flash('fail', 'Institution name is required.'));
+  // }
   db.query(queries.get_user_by_name(new_user.username, new_user.password), function (err, select_rows) {
     if (err) {
       console.log(err);
