@@ -29,7 +29,7 @@ module.exports = function (passport, db) {
 
   // used to serialize the user for the session
   passport.serializeUser(function (user, done) {
-    console.log('in serialize: user_id=' + user.user_id)
+    console.log('in serialize: user_id=' + user.user_id);
     done(null, user.user_id);
   });
 
@@ -107,7 +107,6 @@ module.exports = function (passport, db) {
         {
           return done(null, false, req.flash('fail', 'The password must be between 3 and 20 characters.'))
         }
-        ;
       }
 
       return reset_password_auth(req, username, password, newpass1, done, db);
@@ -142,7 +141,7 @@ module.exports = function (passport, db) {
 //
 // }
 function reset_password_auth(req, username, password, newpass, done, db) {
-  var qSelectUser = queries.get_user_by_name(username, password)
+  var qSelectUser = queries.get_user_by_name(username, password);
   db.query(qSelectUser, function (err, rows) {
     if (err) {
       return done(null, false, {message: err});
@@ -162,7 +161,7 @@ function reset_password_auth(req, username, password, newpass, done, db) {
 
     //if ( validatePassword(password, rows[0].encrypted_password, db) )
     if (rows[0].encrypted_password === rows[0].entered_pw) {
-      update_password(req, username, newpass, db)
+      update_password(req, username, newpass, db);
       return done(null, rows[0], req.flash('success', 'Success.'));
 
     }
@@ -178,7 +177,7 @@ function reset_password_auth(req, username, password, newpass, done, db) {
 
 function login_auth_user(req, username, password, done, db) {
 
-  var qSelectUser = queries.get_user_by_name(username, password)
+  var qSelectUser = queries.get_user_by_name(username, password);
 
   db.query(qSelectUser, function (err, rows) {
     if (err)
@@ -202,9 +201,9 @@ function login_auth_user(req, username, password, done, db) {
     //Wed Feb 11 2015 15:05:29 GMT-0500 (EST)
     //if ( validatePassword(password, rows[0].encrypted_password, db) )
     if (rows[0].encrypted_password === rows[0].entered_pw) {
-      console.log('returned TRUE')
+      console.log('returned TRUE');
       var new_count        = parseInt(rows[0].sign_in_count) + 1;
-      var qResetUserSignin = queries.reset_user_signin(new_count, rows[0].current_sign_in_at, rows[0].user_id)
+      var qResetUserSignin = queries.reset_user_signin(new_count, rows[0].current_sign_in_at, rows[0].user_id);
       //var q = "update user set sign_in_count='"+new_count+"', current_sign_in_at=CURRENT_TIMESTAMP(), last_sign_in_at='"+rows[0].current_sign_in_at+"' where user_id='"+rows[0].user_id+"'"
       //console.log(q);
       db.query(qResetUserSignin, function (err, rows) {
@@ -214,17 +213,17 @@ function login_auth_user(req, username, password, done, db) {
       });
       // helpers
       var user_data_dir = path.join(req.CONFIG.USER_FILES_BASE, username);
-      console.log('Validating/Creating User Data Directory: ' + user_data_dir)
-      helpers.ensure_dir_exists(user_data_dir)
+      console.log('Validating/Creating User Data Directory: ' + user_data_dir);
+      helpers.ensure_dir_exists(user_data_dir);
       // Here on login we delete the users tmp/* files from previous sessions.
       // This seems better than on logout bacause users are less likely to manually logout.
       try {
-        console.log('On Login: Deleting old tmp files:')
+        console.log('On Login: Deleting old tmp files:');
         delete_previous_tmp_files(req, username);
       } catch (e) {
         console.log(e)
       }
-      console.log('login_auth_user-2')
+      console.log('login_auth_user-2');
       return done(null, rows[0]);
     }
 
@@ -245,14 +244,7 @@ function signup_user(req, username, password, done, db) {
   // find a user whose email is the same as the forms email
   // we are checking to see if the user trying to login already exists
   var this_user_obj = new User();
-  var new_user = this_user_obj.newUser(req.body, username, password)
-  // var new_user         = {};
-  // new_user.email       = req.body.useremail.trim();
-  // new_user.firstname   = req.body.userfirstname.trim();
-  // new_user.lastname    = req.body.userlastname.trim();
-  // new_user.institution = req.body.userinstitution.trim();
-  // new_user.password    = password;
-  // new_user.username    = username.trim();
+  var new_user      = this_user_obj.newUser(req.body, username, password);
   var confirm_password = req.body.password_confirm;
   //console.log('XXXXXX')
   if (new_user.password !== confirm_password) {
@@ -305,7 +297,7 @@ function signup_user(req, username, password, done, db) {
       // todo: why this is in two places? See routes/routes_admin.js:552
 
       //var insertQuery = queries.insert_new_user(username, password, first, last, email, inst)
-      var insertQuery = queries.insert_new_user(newUserMysql)
+      var insertQuery = queries.insert_new_user(newUserMysql);
 
       db.query(insertQuery, function (err, insert_rows) {
         if (err) {  // error usually if contact-email-inst index is not unique
@@ -320,10 +312,10 @@ function signup_user(req, username, password, done, db) {
             last_name: new_user.lastname,
             first_name: new_user.firstname,
             institution: new_user.institution,
-          }
+          };
           var user_data_dir                  = path.join(req.CONFIG.USER_FILES_BASE, username);
-          console.log('Validating/Creating User Data Directory: ' + user_data_dir)
-          helpers.ensure_dir_exists(user_data_dir)
+          console.log('Validating/Creating User Data Directory: ' + user_data_dir);
+          helpers.ensure_dir_exists(user_data_dir);
           return done(null, new_user);
         }
       });
@@ -345,13 +337,13 @@ var delete_previous_tmp_files = function (req, username) {
   // for vamps and vampsdev qsub scripts:
   var temp_dir_path3 = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp');
   //console.log('Deleting old tmp files2:')
-  console.log(temp_dir_path1)
-  console.log(temp_dir_path2)
-  console.log(temp_dir_path3)
+  console.log(temp_dir_path1);
+  console.log(temp_dir_path2);
+  console.log(temp_dir_path3);
   fs.readdir(temp_dir_path1, function (err, files) {
 
     for (var i = 0; i < files.length; i++) {
-      file_pts = files[i].split('_')[0].split('-')
+      file_pts = files[i].split('_')[0].split('-');
       //console.log('PP1',file_pts[0])
       if (file_pts[0] === username) {
         var curPath = temp_dir_path1 + "/" + files[i];
@@ -360,7 +352,7 @@ var delete_previous_tmp_files = function (req, username) {
     }
     fs.readdir(temp_dir_path2, function (err, files) {
       for (var i = 0; i < files.length; i++) {
-        file_pts = files[i].split('_')[0].split('-')
+        file_pts = files[i].split('_')[0].split('-');
         //console.log('PP2',file_pts[0])
         if (file_pts[0] === username) {
           var curPath = temp_dir_path2 + "/" + files[i];
@@ -369,7 +361,7 @@ var delete_previous_tmp_files = function (req, username) {
       }
       fs.readdir(temp_dir_path3, function (err, files) {
         for (var i = 0; i < files.length; i++) {
-          file_pts = files[i].split('_')[0].split('-')
+          file_pts = files[i].split('_')[0].split('-');
           //console.log('PP3',file_pts[0])
           if (file_pts[0] === username) {
             var curPath = temp_dir_path3 + "/" + files[i];
@@ -385,13 +377,13 @@ var delete_previous_tmp_files = function (req, username) {
 };
 
 var update_password = function (req, username, newpass, db) {
-  console.log('in update_password')
-  console.log(queries.reset_user_password_by_uname(newpass, username))
+  console.log('in update_password');
+  console.log(queries.reset_user_password_by_uname(newpass, username));
   db.query(queries.reset_user_password_by_uname(newpass, username), function (err, rows) {
     if (err) {
       return (null, false, {message: err});
     } else {
-      console.log('logging out')
+      console.log('logging out');
       //req.session.destroy()
       req.logout()
 
