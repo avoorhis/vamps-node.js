@@ -27,7 +27,16 @@
     <% if (messages.success) { %>
         <div class='alert_flash_message_success' style='margin:-7px'><%= messages.success %></div>
     <% }else if(messages.fail){ %>
-        <div class='alert_flash_message_fail' style='margin:-7px'><%= messages.fail %></div>
+    <% var myArray = messages.fail %>
+    <div class="alert_flash_message_fail" >
+        <ul>
+            <% myArray.forEach(function(value){ %>
+            <li>
+                <%= value %>
+            </li>
+            <% }) %>
+        </ul>
+    </div>
     <% } %>
 
 
