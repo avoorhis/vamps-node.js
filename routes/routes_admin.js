@@ -597,15 +597,10 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, r
 
   var this_user_obj    = new User();
   var new_user         = this_user_obj.newUser(req.body);
-  // var vaildate_res     = this_user_obj.validate_new_user(req, new_user, confirm_password);
+  // var confirm_password = req.body.password_confirm;
 
-  // var new_user         = {}
-  // new_user.email       = req.body.useremail;
-  // new_user.firstname   = req.body.userfirstname;
-  // new_user.lastname    = req.body.userlastname;
-  // new_user.institution = req.body.userinstitution;
-  // new_user.password    = req.body.password;
-  // new_user.username    = req.body.username;
+  var vaildate_res     = this_user_obj.validate_new_user(req, new_user);
+
 
   var finish = function (nuser) {
     res.render('admin/new_user', {
@@ -616,28 +611,34 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, r
     });
 
   };
-  if (new_user.password.length < 3 || new_user.password.length > 12) {
-    req.flash('fail', 'Password must be between 3 and 20 characters.');
+  // if (new_user.password.length < 3 || new_user.password.length > 12) {
+  //   req.flash('fail', 'Password must be between 3 and 20 characters.');
+  //   finish(new_user);
+  // } else if (helpers.checkUserName(new_user.username)) {
+  //   req.flash('fail', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only.");
+  //   finish(new_user);
+  // } else if (new_user.username.length < 3 || new_user.username.length > 15) {
+  //   req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.');
+  //   new_user.username = ''
+  //   finish(new_user);
+  // } else if (new_user.email.indexOf("@") == -1 || new_user.email.length < 3 || new_user.email.length > 100) {
+  //   req.flash('fail', 'Email address is empty or the wrong format.');
+  //   finish(new_user);
+  // } else if (new_user.firstname.length < 1 || new_user.firstname.length > 20) {
+  //   req.flash('fail', 'Both first and last names are required (limit 20 characters).');
+  //   finish(new_user);
+  // } else if (new_user.lastname.length < 1 || new_user.lastname.length > 20) {
+  //   req.flash('fail', 'Both first and last names are required (limit 20 characters).');
+  //   finish(new_user);
+  // } else if (new_user.institution.length < 1 || new_user.institution.length > 128) {
+  //   req.flash('fail', 'Institution name is required.');
+  //   finish(new_user);
+
+  if (vaildate_res[0] === 1) {
+    // return done(null, false, vaildate_res[1]);
+    req = vaildate_res[1];
     finish(new_user);
-  } else if (helpers.checkUserName(new_user.username)) {
-    req.flash('fail', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only.");
-    finish(new_user);
-  } else if (new_user.username.length < 3 || new_user.username.length > 15) {
-    req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.');
-    new_user.username = ''
-    finish(new_user);
-  } else if (new_user.email.indexOf("@") == -1 || new_user.email.length < 3 || new_user.email.length > 100) {
-    req.flash('fail', 'Email address is empty or the wrong format.');
-    finish(new_user);
-  } else if (new_user.firstname.length < 1 || new_user.firstname.length > 20) {
-    req.flash('fail', 'Both first and last names are required (limit 20 characters).');
-    finish(new_user);
-  } else if (new_user.lastname.length < 1 || new_user.lastname.length > 20) {
-    req.flash('fail', 'Both first and last names are required (limit 20 characters).');
-    finish(new_user);
-  } else if (new_user.institution.length < 1 || new_user.institution.length > 128) {
-    req.flash('fail', 'Institution name is required.');
-    finish(new_user);
+
   } else {
 
     req.db.query(queries.get_user_by_name(new_user.username), function (err, rows) {

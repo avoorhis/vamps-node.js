@@ -101,8 +101,10 @@ class User {
     return (new_user);
   }
 
-  validate_new_user(req, new_user, confirm_password) {
+  validate_new_user(req, new_user, confirm_password0) {
     var err = 0;
+    var confirm_password = confirm_password0 || new_user.password;
+
     if (!validator.equals(new_user.password, confirm_password)) {
       req.flash('fail', 'Passwords do not match!');
       err = 1;
