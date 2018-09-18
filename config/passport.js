@@ -5,7 +5,7 @@ var queries       = require('../routes/queries_admin');
 var LocalStrategy = require('passport-local').Strategy;
 var path          = require('path');
 var User          = require(app_root + '/models/user_model');
-var validator = require('validator');
+var validator     = require('validator');
 
 //var bcrypt        = require('bcrypt-nodejs');
 
@@ -267,8 +267,8 @@ function validate_new_user(req, new_user, confirm_password, done) {
     err = 1;
   }
   if (!validator.isEmail(new_user.email)) {
-  // if (new_user.email.indexOf("@") === -1 || new_user.email.length < 3 || new_user.email.length > 100) {
-  //   return done(null, false, req.flash('fail', 'Email address is empty or the wrong format.'));
+    // if (new_user.email.indexOf("@") === -1 || new_user.email.length < 3 || new_user.email.length > 100) {
+    //   return done(null, false, req.flash('fail', 'Email address is empty or the wrong format.'));
     req.flash('fail', 'Email address is empty or the wrong format.')
     err = 1;
   }
@@ -294,10 +294,10 @@ function signup_user(req, username, password, done, db) {
   // username -> no spaces or 'funny' chars
   // find a user whose email is the same as the forms email
   // we are checking to see if the user trying to login already exists
-  var this_user_obj = new User();
-  var new_user      = this_user_obj.newUser(req.body, username, password);
+  var this_user_obj    = new User();
+  var new_user         = this_user_obj.newUser(req.body, username, password);
   var confirm_password = req.body.password_confirm;
-  var vaildate_res = validate_new_user(req, new_user, confirm_password);
+  var vaildate_res     = validate_new_user(req, new_user, confirm_password);
 
   if (vaildate_res[0] === 1) {
     return done(null, false, vaildate_res[1]);
