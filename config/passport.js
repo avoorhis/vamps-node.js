@@ -240,13 +240,10 @@ function login_auth_user(req, username, password, done, db) {
 //
 function validate_new_user(req, new_user, confirm_password, done) {
   err = 0;
-  // validator.isEmail(new_user.firstname);
   if (!validator.equals(new_user.password, confirm_password))
-  // if (new_user.password !== confirm_password)
   {
     req.flash('fail', 'Passwords do not match!.');
     err = 1;
-    // return done(null, false, req.flash('fail', 'Passwords do not match!.'));
   }
   if (new_user.password.length < 3 || new_user.password.length > 12) {
     req.flash('fail', 'Password must be between 3 and 20 characters.');
@@ -267,15 +264,13 @@ function validate_new_user(req, new_user, confirm_password, done) {
     err = 1;
   }
   if (!validator.isEmail(new_user.email)) {
-    // if (new_user.email.indexOf("@") === -1 || new_user.email.length < 3 || new_user.email.length > 100) {
-    //   return done(null, false, req.flash('fail', 'Email address is empty or the wrong format.'));
-    req.flash('fail', 'Email address is empty or the wrong format.')
+    req.flash('fail', 'Email address is empty or the wrong format.');
     err = 1;
   }
-
-  if (new_user.firstname.length < 1 || new_user.firstname.length > 20 || new_user.lastname.length < 1 || new_user.lastname.length > 20) {
+  if ((!validator.isLength(new_user.firstname, {min:1, max: 20})) || (!validator.isLength(new_user.lastname, {min:1, max: 20}))) {
+  // if (new_user.firstname.length < 1 || new_user.firstname.length > 20 || new_user.lastname.length < 1 || new_user.lastname.length > 20) {
     // return done(null, false, req.flash('fail', 'Both first and last names are required.'));
-    req.flash('fail', 'Both first and last names are required.')
+    req.flash('fail', 'Both first and last names are required and should be not longer then 20 characters.');
     err = 1;
   }
 
