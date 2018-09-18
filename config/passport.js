@@ -5,7 +5,6 @@ var queries       = require('../routes/queries_admin');
 var LocalStrategy = require('passport-local').Strategy;
 var path          = require('path');
 var User          = require(app_root + '/models/user_model');
-var validator     = require('validator');
 
 //var bcrypt        = require('bcrypt-nodejs');
 
@@ -238,40 +237,40 @@ function login_auth_user(req, username, password, done, db) {
 //
 //
 //
-function validate_new_user(req, new_user, confirm_password, done) {
-  err = 0;
-  if (!validator.equals(new_user.password, confirm_password))
-  {
-    req.flash('fail', 'Passwords do not match!');
-    err = 1;
-  }
-  if (!validator.isLength(new_user.password, {min: 6, max: 12})) {
-    req.flash('fail', 'Password must be between 6 and 12 characters.');
-    err = 1;
-  }
-  if ((!validator.isLength(new_user.username, {min: 3, max: 15})) || (!validator.isAlphanumeric(new_user.username, 'en-US'))) {
-    req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.');
-    err = 1;
-  }
-  if (!validator.isEmail(new_user.email)) {
-    req.flash('fail', 'Email address is empty or the wrong format.');
-    err = 1;
-  }
-  
-  if ((!validator.isLength(new_user.firstname, {min: 1, max: 20})) || (!validator.isLength(new_user.lastname, {min: 1, max: 20}))) {
-    req.flash('fail', 'Both first and last names are required and should be not longer then 20 characters.');
-    err = 1;
-  }
-  if ((!validator.matches(new_user.firstname, /^[a-zA-Z- ]+$/)) || (!validator.matches(new_user.lastname, /^[a-zA-Z- ]+$/))) {
-    req.flash('fail', 'Both first and last names should have alphanumeric characters, dash and underscore only.');
-    err = 1;
-  }
-    if (validator.isEmpty(new_user.institution)) {
-    req.flash('fail', 'Institution name is required.');
-    err = 1;
-  }
-  return [err, req];
-}
+// function validate_new_user(req, new_user, confirm_password, done) {
+//   err = 0;
+//   if (!validator.equals(new_user.password, confirm_password))
+//   {
+//     req.flash('fail', 'Passwords do not match!');
+//     err = 1;
+//   }
+//   if (!validator.isLength(new_user.password, {min: 6, max: 12})) {
+//     req.flash('fail', 'Password must be between 6 and 12 characters.');
+//     err = 1;
+//   }
+//   if ((!validator.isLength(new_user.username, {min: 3, max: 15})) || (!validator.isAlphanumeric(new_user.username, 'en-US'))) {
+//     req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.');
+//     err = 1;
+//   }
+//   if (!validator.isEmail(new_user.email)) {
+//     req.flash('fail', 'Email address is empty or the wrong format.');
+//     err = 1;
+//   }
+//
+//   if ((!validator.isLength(new_user.firstname, {min: 1, max: 20})) || (!validator.isLength(new_user.lastname, {min: 1, max: 20}))) {
+//     req.flash('fail', 'Both first and last names are required and should be not longer then 20 characters.');
+//     err = 1;
+//   }
+//   if ((!validator.matches(new_user.firstname, /^[a-zA-Z- ]+$/)) || (!validator.matches(new_user.lastname, /^[a-zA-Z- ]+$/))) {
+//     req.flash('fail', 'Both first and last names should have alphanumeric characters, dash and underscore only.');
+//     err = 1;
+//   }
+//     if (validator.isEmpty(new_user.institution)) {
+//     req.flash('fail', 'Institution name is required.');
+//     err = 1;
+//   }
+//   return [err, req];
+// }
 
 function signup_user(req, username, password, done, db) {
   // validate all 6 entries here
@@ -282,7 +281,7 @@ function signup_user(req, username, password, done, db) {
   var this_user_obj    = new User();
   var new_user         = this_user_obj.newUser(req.body, username, password);
   var confirm_password = req.body.password_confirm;
-  var vaildate_res     = validate_new_user(req, new_user, confirm_password);
+  var vaildate_res     = this_user_obj.validate_new_user(req, new_user, confirm_password);
 
   if (vaildate_res[0] === 1) {
     return done(null, false, vaildate_res[1]);
