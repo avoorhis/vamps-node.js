@@ -251,16 +251,8 @@ function validate_new_user(req, new_user, confirm_password, done) {
     err = 1;
 
   }
-
-  if (helpers.checkUserName(new_user.username)) {
-    req.flash('fail', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only.")
-    // return done(null, false, req.flash('fail', "Username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only."));
-    err = 1;
-  }
-
-  if (new_user.username.length < 3 || new_user.username.length > 15) {
-    req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.')
-    // return done(null, false, req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.'));
+  if ((!validator.isLength(new_user.username, {min:3, max: 15})) || (!validator.isAlphanumeric(new_user.username, 'en-US'))) {
+    req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.');
     err = 1;
   }
   if (!validator.isEmail(new_user.email)) {
@@ -268,8 +260,6 @@ function validate_new_user(req, new_user, confirm_password, done) {
     err = 1;
   }
   if ((!validator.isLength(new_user.firstname, {min:1, max: 20})) || (!validator.isLength(new_user.lastname, {min:1, max: 20}))) {
-  // if (new_user.firstname.length < 1 || new_user.firstname.length > 20 || new_user.lastname.length < 1 || new_user.lastname.length > 20) {
-    // return done(null, false, req.flash('fail', 'Both first and last names are required.'));
     req.flash('fail', 'Both first and last names are required and should be not longer then 20 characters.');
     err = 1;
   }
