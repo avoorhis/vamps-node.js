@@ -146,10 +146,6 @@ class Project {
 
     d_region_arr  = req.form.d_region.split('#');
     project_name3 = d_region_arr[2];
-    if (d_region_arr[0] === 'Shotgun') {
-      temp_project_obj.metagenomic = 1;
-      project_name3                = 'Sgun';
-    }
     project_name                         = req.form.project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
     this.project_obj.abstract_data       = this.get_current_project_abstract_data(this.project_obj.project);
     this.project_obj.description         = req.form.project_description;
@@ -173,6 +169,10 @@ class Project {
     this.project_obj.title               = req.form.project_title;
     this.project_obj.updated_at          = new Date();
     this.project_obj.username            = this.user_obj.username;
+    if (d_region_arr[0] === 'Shotgun') {
+      this.project_obj.metagenomic = 1;
+      project_name3                = 'Sgun';
+    }
     // this.project_obj.active: 0,
 // this.project_obj.created_at: new Date(),
 // this.project_obj.matrix: 0,
