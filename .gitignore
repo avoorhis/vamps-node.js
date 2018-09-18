@@ -5,7 +5,7 @@
 *.svg
 *.png
 .vagrant
-
+package.json
 public/scripts/*.pyc
 public/scripts/gast/VSEARCH2.6.1
 old_2_new_vamps_by_project.py
