@@ -224,10 +224,10 @@ def push_project():
     fund = "Unknown"
     id = CONFIG_ITEMS['owner_id']
     pub = 0 if CONFIG_ITEMS['public'] else 1
-    fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public','active']
+    fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public','active','permanent','user_project']
     q = "INSERT into project ("+(',').join(fields)+")"
-    q += " VALUES('%s','%s','%s','%s','%s','%s','%s','%s')"
-    q = q % (proj,title,desc,rev,fund,id,pub,'1')
+    q += " VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"
+    q = q % (proj,title,desc,rev,fund,id,pub,'1','0','1')
     if args.verbose:
         print(q)
     logging.info(q)
