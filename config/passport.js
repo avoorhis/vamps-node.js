@@ -242,16 +242,14 @@ function validate_new_user(req, new_user, confirm_password, done) {
   err = 0;
   if (!validator.equals(new_user.password, confirm_password))
   {
-    req.flash('fail', 'Passwords do not match!.');
+    req.flash('fail', 'Passwords do not match!');
     err = 1;
   }
-  if (new_user.password.length < 3 || new_user.password.length > 12) {
-    req.flash('fail', 'Password must be between 3 and 20 characters.');
-    // return done(null, false, req.flash('fail', 'Password must be between 3 and 20 characters.'));
+  if (!validator.isLength(new_user.password, {min: 6, max: 12})) {
+    req.flash('fail', 'Password must be between 6 and 12 characters.');
     err = 1;
-
   }
-  if ((!validator.isLength(new_user.username, {min:3, max: 15})) || (!validator.isAlphanumeric(new_user.username, 'en-US'))) {
+  if ((!validator.isLength(new_user.username, {min: 3, max: 15})) || (!validator.isAlphanumeric(new_user.username, 'en-US'))) {
     req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.');
     err = 1;
   }
@@ -259,17 +257,19 @@ function validate_new_user(req, new_user, confirm_password, done) {
     req.flash('fail', 'Email address is empty or the wrong format.');
     err = 1;
   }
-  if ((!validator.isLength(new_user.firstname, {min:1, max: 20})) || (!validator.isLength(new_user.lastname, {min:1, max: 20}))) {
+  
+  if ((!validator.isLength(new_user.firstname, {min: 1, max: 20})) || (!validator.isLength(new_user.lastname, {min: 1, max: 20}))) {
     req.flash('fail', 'Both first and last names are required and should be not longer then 20 characters.');
     err = 1;
   }
-
-  if (new_user.institution.length < 1 || new_user.institution.length > 128) {
-    // return done(null, false, req.flash('fail', 'Institution name is required.'));
+  if ((!validator.matches(new_user.firstname, /^[a-zA-Z- ]+$/)) || (!validator.matches(new_user.lastname, /^[a-zA-Z- ]+$/))) {
+    req.flash('fail', 'Both first and last names should have alphanumeric characters, dash and underscore only.');
+    err = 1;
+  }
+    if (validator.isEmpty(new_user.institution)) {
     req.flash('fail', 'Institution name is required.');
     err = 1;
   }
-
   return [err, req];
 }
 
