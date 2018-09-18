@@ -70,7 +70,7 @@ insert_new_user: function(mysql_new_user){
     //console.log(qInsertUser)
     return qInsertUser
 },
-get_user_by_name: function(uname,passwd){
+get_user_by_name: function(uname, passwd){
     var q = "SELECT user_id, username, email, institution, first_name, last_name, active, security_level,"
      q += " encrypted_password, PASSWORD('"+passwd+"') as entered_pw, sign_in_count,"
      q += " DATE_FORMAT(current_sign_in_at,'%Y-%m-%d %T') as current_sign_in_at,last_sign_in_at FROM user"
