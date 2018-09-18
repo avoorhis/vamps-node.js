@@ -593,17 +593,19 @@ router.get('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, re
 //
 //
 router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
-  console.log('in new_user --POST')
+  console.log('in new_user --POST');
 
-  // var this_user_obj    = new User();
-  // var new_user         = this_user_obj.newUser(req.body, username, password);
-  var new_user         = {}
-  new_user.email       = req.body.useremail;
-  new_user.firstname   = req.body.userfirstname;
-  new_user.lastname    = req.body.userlastname;
-  new_user.institution = req.body.userinstitution;
-  new_user.password    = req.body.password;
-  new_user.username    = req.body.username;
+  var this_user_obj    = new User();
+  var new_user         = this_user_obj.newUser(req.body);
+  // var vaildate_res     = this_user_obj.validate_new_user(req, new_user, confirm_password);
+
+  // var new_user         = {}
+  // new_user.email       = req.body.useremail;
+  // new_user.firstname   = req.body.userfirstname;
+  // new_user.lastname    = req.body.userlastname;
+  // new_user.institution = req.body.userinstitution;
+  // new_user.password    = req.body.password;
+  // new_user.username    = req.body.username;
 
   var finish = function (nuser) {
     res.render('admin/new_user', {

@@ -89,13 +89,15 @@ class User {
   }
 
   newUser(req_body, username, password) {
+    var this_username    = username || req_body.username;
+    var this_password    = password || req_body.password;
     var new_user         = {};
     new_user.email       = req_body.useremail.trim();
     new_user.firstname   = req_body.userfirstname.trim();
     new_user.lastname    = req_body.userlastname.trim();
     new_user.institution = req_body.userinstitution.trim();
-    new_user.password    = password;
-    new_user.username    = username.trim();
+    new_user.password    = this_password;
+    new_user.username    = this_username.trim();
     return (new_user);
   }
 
