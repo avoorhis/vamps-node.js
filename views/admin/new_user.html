@@ -27,7 +27,16 @@
     <% if (messages.success) { %>
         <div class='alert_flash_message_success' style='margin:-7px'><%= messages.success %></div>
     <% }else if(messages.fail){ %>
-        <div class='alert_flash_message_fail' style='margin:-7px'><%= messages.fail %></div>
+    <% var myArray = messages.fail %>
+    <div class="alert_flash_message_fail" >
+        <ul>
+            <% myArray.forEach(function(value){ %>
+            <li>
+                <%= value %>
+            </li>
+            <% }) %>
+        </ul>
+    </div>
     <% } %>
 
 
@@ -36,7 +45,7 @@
         <form id='' name='newuser_form' method='POST' action='new_user' >          
           <ul>
           <li> <input id='username'       name='username'       type="text"  value='<%= uname %>'     \> Username <span class='tiny_font'>(alphanumeric only. no spaces.)</span></li>
-          <li> <input id='password'       name='password'       type="passwordX"  value='<%= pass %>' \> Password <span class='tiny_font'>(between 3 and 20 characters.)</span></li>
+          <li> <input id='password'       name='password'       type="passwordX"  value='<%= pass %>' \> Password <span class='tiny_font'>(between 6 and 12 characters.)</span></li>
           <li> <input id='userfirstname'  name='userfirstname'  type="text"  value='<%= fname %>'     \> First Name</li>
           <li> <input id='userlastname'   name='userlastname'   type="text"  value='<%= lname %>'     \> Last Name</li>
           <li> <input id='useremail'      name='useremail'      type="text"  value='<%= email %>'     \> Email <span class='tiny_font'>(must be correct email format)</span></li>  

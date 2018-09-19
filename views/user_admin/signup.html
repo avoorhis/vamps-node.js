@@ -20,16 +20,26 @@
 <% if (messages.success) { %>
   	<div class="alert_flash_message_success" style='margin:-7px'><%= messages.success %></div>
 <% }else if(messages.fail){ %>
-    <div class="alert_flash_message_fail" style='margin:-7px'><%= messages.fail %></div>
+    <% var myArray = messages.fail %>
+    <div class="alert_flash_message_fail" >
+        <ul>
+            <% myArray.forEach(function(value){ %>
+            <li>
+                <%= value %>
+            </li>
+            <% }) %>
+        </ul>
+    </div>
 <% } %>
   <br>
+
   <div id='new_user_div' class='table' >All fields are required -- <a class='button' href='new_user'>Clear Form</a>
     <form id='' name='newuser_form' method='POST' action='/users/signup' >
       <ul>
       <li> <input id='username'       name='username'       type="text"   value='<%= uname %>'  \> Username <span class='tiny_font'>(alphanumeric only. no spaces.)</span>
 
       </li>
-      <li> <input id='password'         name='password'         type="password" value='' \> Password <span class='tiny_font'>(between 3 and 20 characters.)</span></li>
+      <li> <input id='password'         name='password'         type="password" value='' \> Password <span class='tiny_font'>(between 6 and 12 characters.)</span></li>
       <li> <input id='password_confirm' name='password_confirm' type="password" value='' \> Confirm Password</li>
       <li> <input id='userfirstname'  name='userfirstname'  type="text"  value='<%= fname %>'   \> First Name</li>
       <li> <input id='userlastname'   name='userlastname'   type="text"  value='<%= lname %>'   \> Last Name</li>

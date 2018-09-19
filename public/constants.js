@@ -729,7 +729,7 @@ constants.REQ_METADATA_FIELDS_wIDs = ["geo_loc_name",     // name of country or 
 //                                   {  "name":"index_sequence",       "units":"alpha_numeric","format":""},
 //                                   {  "name":"primer_suite",         "units":"alpha_numeric","format":""}
 //                                 ];
-constants.CONTACT_US_SUBJECTS = ["Account Request", "Report a Problem", "Announce a Publication", "Other"];
+constants.CONTACT_US_SUBJECTS = ["Account Request", "Report a Problem", "Announce a Publication","Request Project Permanency", "Other"];
 
 // duplicate in metadta.js!
 constants.ORDERED_METADATA_NAMES = [
