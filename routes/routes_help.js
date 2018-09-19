@@ -47,9 +47,11 @@ var spawn = require('child_process').spawn;
   //
   router.post('/contact', function (req, res) {
     console.log(req.body)
+    var msg = encodeURI(req.body.message)
+    console.log(msg)
     var mailOptions = {
         scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-        args :       [ '-to', req.CONFIG.CONTACT_EMAIL, '-from', req.body.email, '-name', '"'+req.body.name+'"', '-sub', '"'+req.body.subject+'"', '-msg', '"'+req.body.message+'"' ],
+        args :       [ '-to', req.CONFIG.CONTACT_EMAIL, '-from', req.body.email, '-name', '"'+req.body.name+'"', '-sub', '"'+req.body.subject+'"', '-msg', '"'+msg+'"' ],
     };
     console.log(mailOptions.scriptPath+'/send_email.py '+mailOptions.args.join(' '))
     var mail_process = spawn( mailOptions.scriptPath+'/send_email.py', mailOptions.args, {
