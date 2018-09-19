@@ -917,6 +917,7 @@ class ShowObj {
     var d_region_arr   = req.form.d_region.split('#');
     var pi_id_name_arr = req.form.pi_id_name.split('#');
     var full_name      = pi_id_name_arr[3] + ' ' + pi_id_name_arr[2];
+    var pi_name_reversed = pi_id_name_arr[2] + ' ' + pi_id_name_arr[3];
     var project_name1  = req.form.project_name1;
     if (project_name1 === '') {
       project_name1 = this.get_inits(full_name.split(' '));
@@ -933,7 +934,7 @@ class ShowObj {
       hostname: req.CONFIG.hostname,
       pi_email: pi_id_name_arr[4],
       pi_list: req.session.pi_list,
-      pi_name: full_name,
+      pi_name: pi_name_reversed,
       project_name: project_name,
       project_title: req.form.project_title,
       samples_number: req.form.samples_number,

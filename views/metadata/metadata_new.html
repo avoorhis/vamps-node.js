@@ -139,7 +139,7 @@ reference:
             <option selected="true" disabled>Select&hellip;</option>
             <% pi_list.forEach(function(val){ %>
             <option value="<%= val.pi_id %>#<%= val.PI %>#<%= val.last_name %>#<%= val.first_name %>#<%= val.pi_email %>"
-            <% if ((typeof pi_id !== 'undefined') && (val.PI == pi_name)) {%>
+            <% if (val.PI == pi_name) {%>
             selected
             <% } %>
             ><%= val.PI %></option>
@@ -147,6 +147,7 @@ reference:
         </select>
         </div>
         <br/>
+
 
         <div class="metadata">
         <label class="col-sm-5" for="pi_email">PI's email address:</label>
@@ -210,8 +211,7 @@ reference:
 
         <div class="metadata">
         <label class="col-sm-5" for="reference">References for selected manuscripts published:</label>
-        <textarea class="textarea_long" id="reference" name="reference"
-                  placeholder=''><%= reference %></textarea>
+            <textarea class="textarea_long" id="reference" name="reference"  placeholder='<%= reference %>'><%= reference %></textarea>
         </div>
 
         <div class="metadata">
