@@ -41,11 +41,11 @@ samples_number;
 <% } else { %>
 <% samples_number = "" %>
 <% } %><br/>
-d_region_arr:
-<% if (typeof d_region_arr !== 'undefined') { %>
-<%= JSON.stringify(d_region_arr) %>
+d_region:
+<% if (typeof d_region !== 'undefined') { %>
+<%= JSON.stringify(d_region) %>
 <% } else { %>
-<% d_region_arr = "" %>
+<% d_region = "" %>
 <% } %></br>
 funding_code:
 <% if (typeof funding_code !== 'undefined') { %>
@@ -182,7 +182,13 @@ reference:
                         <tr>
                             <td>
                                 <input id="d_region" name="d_region" type='radio'
-                                       value=<%= cur_domain %>#<%= cur_region %>#<%= short_d_r %>> <%= regions[k] %>
+                                       value=<%= cur_domain %>#<%= cur_region %>#<%= short_d_r %>
+                                <% curr_value = cur_domain + "#" + cur_region + "#" + short_d_r %>
+                                <% if (curr_value == d_region) {%>
+                                checked="checked"
+                                <% } %>
+                                > <%= regions[k] %>
+
                                 </input>
                             </td>
                         </tr>
