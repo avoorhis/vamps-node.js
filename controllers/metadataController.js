@@ -921,11 +921,13 @@ class ShowObj {
     if (project_name1 === '') {
       project_name1 = this.get_inits(full_name.split(' '));
     }
+    var project_name2 = req.form.project_name2;
     var project_name3 = d_region_arr[2];
     var project_name  = project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
 
     res.render('metadata/metadata_new', {
       // TODO: object created separately in Imp.
+      // TODO just use form
       button_name: 'Validate',
       domain_regions: CONSTS.DOMAIN_REGIONS,
       hostname: req.CONFIG.hostname,
@@ -937,6 +939,13 @@ class ShowObj {
       samples_number: req.form.samples_number,
       title: 'VAMPS: New Metadata',
       user: req.user,
+      d_region: req.form.d_region,
+      funding_code: req.form.funding_code,
+      project_description: req.form.project_description,
+      project_name1: project_name1,
+      project_name2: project_name2,
+      project_name3: project_name3,
+      reference: req.form.reference,
     });
   }
 

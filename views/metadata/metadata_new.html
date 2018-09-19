@@ -10,6 +10,81 @@
 var all_metadata = {}
 } %>
 
+<br/>
+pi_email
+<% if (typeof pi_email !== 'undefined') { %>
+<%= JSON.stringify(pi_email) %>
+<% } else { %>
+<% pi_email = "" %>
+<% } %><br/>
+pi_name
+<% if (typeof pi_name !== 'undefined') { %>
+<%= JSON.stringify(pi_name) %>
+<% } else { %>
+<% pi_name = "" %>
+<% } %><br/>
+project_name
+<% if (typeof project_name !== 'undefined') { %>
+<%= JSON.stringify(project_name) %>
+<% } else { %>
+<% project_name = "" %>
+<% } %><br/>
+project_title:
+<% if (typeof project_title !== 'undefined') { %>
+<%= JSON.stringify(project_title) %>
+<% } else { %>
+<% project_title = "" %>
+<% } %><br/>
+samples_number;
+<% if (typeof samples_number !== 'undefined') { %>
+<%= JSON.stringify(samples_number) %>
+<% } else { %>
+<% samples_number = "" %>
+<% } %><br/>
+d_region_arr:
+<% if (typeof d_region_arr !== 'undefined') { %>
+<%= JSON.stringify(d_region_arr) %>
+<% } else { %>
+<% d_region_arr = "" %>
+<% } %></br>
+funding_code:
+<% if (typeof funding_code !== 'undefined') { %>
+<%= JSON.stringify(funding_code) %>
+<% } else { %>
+<% funding_code = "" %>
+<% } %></br>
+project_description:
+<% if (typeof project_description !== 'undefined') { %>
+<%= JSON.stringify(project_description) %>
+<% } else { %>
+<% project_description = "" %>
+<% } %></br>
+project_name1:
+<% if (typeof project_name1 !== 'undefined') { %>
+<%= JSON.stringify(project_name1) %>
+<% } else { %>
+<% project_name1 = "" %>
+<% } %></br>
+project_name2:
+<% if (typeof project_name2 !== 'undefined') { %>
+<%= JSON.stringify(project_name2) %>
+<% } else { %>
+<% project_name2 = "" %>
+<% } %></br>
+project_name3:
+<% if (typeof project_name3 !== 'undefined') { %>
+<%= JSON.stringify(project_name3) %>
+<% } else { %>
+<% project_name3 = "" %>
+<% } %></br>
+reference:
+<% if (typeof reference !== 'undefined') { %>
+<%= JSON.stringify(reference) %>
+<% } else { %>
+<% reference = "" %>
+<% } %></br>
+
+
 <div id="postresult">
 </div>
 
@@ -54,7 +129,7 @@ var all_metadata = {}
 
         <div class="metadata">
         <label class="col-sm-5" for="project_title">Title of Project:</label>
-        <input type="text" class="long_input" id="project_title" name="project_title" value=''/>
+        <input type="text" class="long_input" id="project_title" name="project_title" value='<%= project_title %>'/>
         </div>
 
         <div class="metadata">
@@ -64,7 +139,7 @@ var all_metadata = {}
             <option selected="true" disabled>Select&hellip;</option>
             <% pi_list.forEach(function(val){ %>
             <option value="<%= val.pi_id %>#<%= val.PI %>#<%= val.last_name %>#<%= val.first_name %>#<%= val.pi_email %>"
-            <% if ((typeof(pi_id) !== 'undefined') && (val.pi_id == pi_id)) {%>
+            <% if ((typeof pi_id !== 'undefined') && (val.PI == pi_name)) {%>
             selected
             <% } %>
             ><%= val.PI %></option>
@@ -75,14 +150,18 @@ var all_metadata = {}
 
         <div class="metadata">
         <label class="col-sm-5" for="pi_email">PI's email address:</label>
-        <input type="email" id="pi_email" name="pi_email" value=''/>
+        <input type="email" id="pi_email" name="pi_email" value='<%= pi_email %>'/>
         </div>
 
 
         <div class="metadata">
         <label class="col-sm-5" for="project_description">Project Description:</label>
         <textarea class="textarea_long" id="project_description" name="project_description"
-                  placeholder="max length: 1000 chars"></textarea>
+                  placeholder="max length: 1000 chars">
+            <% if (typeof project_description !== 'undefined') { %>
+                <%= project_description %>
+            <% } %>
+        </textarea>
         </div>
 
         <div class="metadata">
@@ -117,33 +196,33 @@ var all_metadata = {}
         <div class="metadata">
         <label class="col-sm-5">Project Name (Please add the middle part)</label>
         <input class="uppercase" type="text" id="project_name1" name="project_name1" maxlength="4" size="5"
-               value="">_<input
+               value="<%= project_name1 %>">_<input
             class="uppercase"
             type="text"
             id="project_name2"
             name="project_name2"
             maxlength="4"
             size="4"
-            value="">_<input
+            value="<%= project_name2 %>">_<input
             type="text" id="project_name3" readonly name="project_name3" maxlength="4" size="5"
-            value="">
+            value="<%= project_name3 %>">
         </div>
 
         <div class="metadata">
         <label class="col-sm-5" for="reference">References for selected manuscripts published:</label>
         <textarea class="textarea_long" id="reference" name="reference"
-                  placeholder=''></textarea>
+                  placeholder=''><%= reference %></textarea>
         </div>
 
         <div class="metadata">
         <label class="col-sm-5" for="funding_code">Funding Code (numeric only)</label>
-        <input type="number" id="funding_code" name="funding_code" maxlength="10" size="10" value="">
+        <input type="number" id="funding_code" name="funding_code" maxlength="10" size="10" value="<%= funding_code %>">
         </div>
 
         <div class="metadata">
         <label class="col-sm-5" for="samples_number">How many individual samples will be
             submitted?</label>
-        <input type="number" id="samples_number" name="samples_number" size="3" value="">
+        <input type="number" id="samples_number" name="samples_number" size="3" value="<%= samples_number %>">
         </div>
 
 
