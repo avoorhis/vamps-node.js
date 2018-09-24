@@ -26,12 +26,17 @@
         <br>
         Studies included in the CMP (most denote ‘CMP’ in project name):
             <% for(i in proj){ %>
-            
-            <%  if(info.hasOwnProperty(proj[i].project) == true) { %>
+            <% var prefix = (proj[i].project).slice(0,(proj[i].project).lastIndexOf('_')) %>
+            <% prefix %>
+            <%   if(info.hasOwnProperty(proj[i].project) == true) { %>
                      <br><br>
                      <strong><a href='/projects/<%= proj[i].pid %>'><%= proj[i].project %></a></strong> -- <%= info[proj[i].project].citation %>
                      <br><strong>Description</strong>: <%= info[proj[i].project].description %>
-            <%  } %>
+            <%   }else if(info.hasOwnProperty(prefix) == true){ %>
+                    <br><br>
+                     <strong><a href='/projects/<%= proj[i].pid %>'><%= proj[i].project %></a></strong> -- <%= info[prefix].citation %>
+                     <br><strong>Description</strong>: <%= info[prefix].description %>
+            <%   } %>
             <% } %>
             
             

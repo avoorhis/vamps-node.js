@@ -152,10 +152,10 @@ router.get('/:portal', function(req, res) {
     project_list.sort(function(a, b){
           return helpers.compareStrings_alpha(a.project, b.project);
     });
-    console.log('project_list')
-    console.log(project_list)
-    console.log('info')
-    console.log(info_data)
+    //console.log('project_list')
+    //console.log(project_list)
+    //console.log('info')
+    //console.log(info_data)
     var pi = req.CONSTS.PORTALS[portal]
     
     res.render('portals/home', { 
