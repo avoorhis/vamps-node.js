@@ -1,5 +1,7 @@
 <% proj = JSON.parse(projects) %>
 <% info = JSON.parse(info) %>
+<% var groups = {} %>
+
 
 <div class="container">	
 	<center><a href='/portals/CMP'><img src='/images/portals/CMP.jpg' width='600'></a></center>
@@ -14,7 +16,6 @@
     </p>
         <p>
           	<ul>
-              	
                 <!-- <li><a href='/portals/coral_microbiome/background'>Project Background and Collaborators</a> -->
                 <li><a href='/portals/abstracts/CMP'>CMP Project Abstracts</a>	- The individual projects with descriptions and metadata.
                 <li><a href='/portals/visuals_index/<%= portal %>'>Visualization and Analysis</a>	- Dataset selection.														
@@ -22,22 +23,33 @@
                 <!-- <li>Protocol for uploading your data to the CMP and VAMPS (hyperlink to Upload protocol_CMP_09.2015 file) -->
 		    </ul>
 		</p>
-		
         <br>
-        Studies included in the CMP (most denote ‘CMP’ in project name):
-            <% for(i in proj){ %>
-            <% var prefix = (proj[i].project).slice(0,(proj[i].project).lastIndexOf('_')) %>
-            <% prefix %>
-            <%   if(info.hasOwnProperty(proj[i].project) == true) { %>
-                     <br><br>
-                     <strong><a href='/projects/<%= proj[i].pid %>'><%= proj[i].project %></a></strong> -- <%= info[proj[i].project].citation %>
-                     <br><strong>Description</strong>: <%= info[proj[i].project].description %>
-            <%   }else if(info.hasOwnProperty(prefix) == true){ %>
-                    <br><br>
-                     <strong><a href='/projects/<%= proj[i].pid %>'><%= proj[i].project %></a></strong> -- <%= info[prefix].citation %>
-                     <br><strong>Description</strong>: <%= info[prefix].description %>
-            <%   } %>
-            <% } %>
+        
+Studies included in the CMP (most denote ‘CMP’ in project name):
+<% for(i in proj){ %>
+<%    var prefix = (proj[i].project).slice(0,(proj[i].project).lastIndexOf('_')) %>
+
+<%   if(info.hasOwnProperty(proj[i].project) == true) { %>
+         <br><br>
+         <strong><a href='/projects/<%= proj[i].pid %>'><%= proj[i].project %></a></strong> -- <%= info[proj[i].project].citation %>
+         <br><strong>Description</strong>: <%= info[proj[i].project].description %>
+<%   }else if(info.hasOwnProperty(prefix) == true){ %>
+<%       if(groups.hasOwnProperty(prefix) == true){ %>
+<%          (groups[prefix].projects).push("<a href='/projects/"+ proj[i].pid+"'>"+proj[i].project+"</a>") %>                           
+<%       }else{ %>
+            <% groups[prefix] = {} %>  
+            <% groups[prefix].projects = ["<a href='/projects/"+ proj[i].pid+"'>"+proj[i].project+"</a>"] %> 
+            <% groups[prefix].citation = info[prefix].citation %> 
+            <% groups[prefix].description = info[prefix].description %> 
+<%       } %>
+<%   } %>
+<% } %>
+
+<% for(p in groups){ %>
+    <br><br>
+    <strong><%- groups[p].projects.join(", ") %></strong> -- <%= groups[p].citation %>
+    <br><strong>Description</strong>: <%= groups[p].description %>
+<%  } %>
             
             
     </div>

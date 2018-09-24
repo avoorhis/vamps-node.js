@@ -1,6 +1,7 @@
 <% include ../../add_ins/begin.ejs %>
 <% proj = JSON.parse(projects) %>
 <% info = JSON.parse(info) %>
+<% var groups = {} %>
 
   <% if (messages.success) { %>
   	<div class="alert_flash_message_success"><%= messages.success %></div>
@@ -22,15 +23,31 @@
 <div id='project_list_div' class='' >
 
 <% for(i in proj){ %>
-    
+    <%  var prefix = (proj[i].project).slice(0,(proj[i].project).lastIndexOf('_')) %>
     <%  if(info.hasOwnProperty(proj[i].project) == true) { %>
-        <br><br>
-        <strong><a href='/projects/<%= proj[i].pid %>'><%= proj[i].project %></a></strong> -- <%= info[proj[i].project].citation %>
-        <br><strong>Description</strong>: <%= info[proj[i].project].description %>
-        <br><strong>Abstract</strong>: <%= info[proj[i].project].abstract %>
-    <%  } %>
+            <br><br>
+            <strong><a href='/projects/<%= proj[i].pid %>'><%= proj[i].project %></a></strong> -- <%= info[proj[i].project].citation %>
+            <br><strong>Description</strong>: <%= info[proj[i].project].description %>
+            <br><strong>Abstract</strong>: <%= info[proj[i].project].abstract %>
+    <%   }else if(info.hasOwnProperty(prefix) == true){ %>
+    <%       if(groups.hasOwnProperty(prefix) == true){ %>
+    <%          (groups[prefix].projects).push("<a href='/projects/"+ proj[i].pid+"'>"+proj[i].project+"</a>") %>                           
+    <%       }else{ %>
+                <% groups[prefix] = {} %>  
+                <% groups[prefix].projects = ["<a href='/projects/"+ proj[i].pid+"'>"+proj[i].project+"</a>"] %> 
+                <% groups[prefix].citation = info[prefix].citation %> 
+                <% groups[prefix].description = info[prefix].description %> 
+                <% groups[prefix].abstract = info[prefix].abstract %> 
+    <%       } %>
+    <%   } %>
 <% } %>
-            
+<% for(p in groups){ %>
+    <br><br>
+    <strong><%- groups[p].projects.join(", ") %></strong> -- <%= groups[p].citation %>
+    <br><strong>Description</strong>: <%= groups[p].description %>
+    <br><strong>Abstract</strong>: <%= groups[p].abstract %>
+    
+<%  } %>            
  
  
 </div>
