@@ -1,0 +1,45 @@
+<% include ../../add_ins/begin.ejs %>
+<% proj = JSON.parse(projects) %>
+<% info = JSON.parse(info) %>
+
+  <% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+  <% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+  <% } %>
+	<a href='/portals/CMP'>&lt;&lt;-CMP Home</a>
+
+
+<div class="container">
+		<div class="hero-unit">
+		       <center><a href='/portals/CMP'><img src='/images/portals/CMP.jpg' width='600'></a></center>
+                <p class='title'>Coral Microbiome Project Abstracts</p>	
+		</div>
+
+
+<div class="row">  
+<div class="col-lg-12">
+<div id='project_list_div' class='' >
+
+<% for(i in proj){ %>
+    <br><br>
+    <%  if(info.hasOwnProperty(proj[i].project) == true) { %>
+             <strong><a href='/projects/<%= proj[i].pid %>'><%= proj[i].project %></a></strong> -- <%= info[proj[i].project].citation %>
+             <br><strong>Description</strong>: <%= info[proj[i].project].description %>
+             <br><strong>Abstract</strong>: <%= info[proj[i].project].abstract %>
+    <%  } %>
+<% } %>
+            
+ 
+ 
+</div>
+</div>
+</div>
+</div>
+
+
+	
+<% include ../../add_ins/end.ejs %>
+   
+ </body>
+ </html>
