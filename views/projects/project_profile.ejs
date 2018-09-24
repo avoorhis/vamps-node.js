@@ -181,15 +181,22 @@
                 <% } %>
                 
                 <!-- ABSTRACT -->
-                <% if(abstract_data.hasOwnProperty(project_prefix)){ %>
+                <% var key = false %>
+                <% if(abstract_data.hasOwnProperty(project_prefix)){ %>   <!-- // DCO -->
+                    <% key = project_prefix %>
+                <% }else if(abstract_data.hasOwnProperty(data.project)){ %>  <!-- // CMP (others?) -->
+                    <% key = data.project %>
+                <% } %>
+                <% if(key){ %>
                     <tr><td>Abstract</td><td>
-                        <% for(n in abstract_data[project_prefix].pdfs){ %>
-                        <a href='/static/abstracts/<%= abstract_data[project_prefix].pdfs[n] %>' target='_blank'>
-                            <%= abstract_data[project_prefix].pdfs[n] %></a>
+                        <% for(n in abstract_data[key].pdfs){ %>
+                        <a href='/static/abstracts/<%= abstract_data[key].pdfs[n] %>' target='_blank'>
+                            <%= abstract_data[key].pdfs[n] %></a>
                         <br>
                         <% } %>
                     </td></tr>
                 <% } %>
+                
                 <!-- NOTES -->
                 <% if(pnotes.length > 0){ %>
                     <tr><td>Notes:</td>

@@ -72,8 +72,10 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //  MD_ENV_LZC     longhurst zone code
 
       var ProjectProfileFinishRequest = function (req, pnotes) {
-            console.log('info')
-            console.log(info)
+            // console.log('abstract_data')
+//             console.log(abstract_data)
+//             console.log('info')
+//             console.log(info)
               res.render('projects/profile', {
               title  : 'VAMPS Project',
               info: JSON.stringify(info),
