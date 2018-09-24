@@ -22,11 +22,12 @@
 <div id='project_list_div' class='' >
 
 <% for(i in proj){ %>
-    <br><br>
+    
     <%  if(info.hasOwnProperty(proj[i].project) == true) { %>
-             <strong><a href='/projects/<%= proj[i].pid %>'><%= proj[i].project %></a></strong> -- <%= info[proj[i].project].citation %>
-             <br><strong>Description</strong>: <%= info[proj[i].project].description %>
-             <br><strong>Abstract</strong>: <%= info[proj[i].project].abstract %>
+        <br><br>
+        <strong><a href='/projects/<%= proj[i].pid %>'><%= proj[i].project %></a></strong> -- <%= info[proj[i].project].citation %>
+        <br><strong>Description</strong>: <%= info[proj[i].project].description %>
+        <br><strong>Abstract</strong>: <%= info[proj[i].project].abstract %>
     <%  } %>
 <% } %>
             

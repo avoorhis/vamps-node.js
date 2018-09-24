@@ -26,8 +26,9 @@
         <br>
         Studies included in the CMP (most denote ‘CMP’ in project name):
             <% for(i in proj){ %>
-            <br><br>
+            
             <%  if(info.hasOwnProperty(proj[i].project) == true) { %>
+                     <br><br>
                      <strong><a href='/projects/<%= proj[i].pid %>'><%= proj[i].project %></a></strong> -- <%= info[proj[i].project].citation %>
                      <br><strong>Description</strong>: <%= info[proj[i].project].description %>
             <%  } %>
