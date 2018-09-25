@@ -2208,15 +2208,6 @@ exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
   return newArray;
 };
 
-// exports.transpose = function (array) {
-//   console.time('TIME: transpose');
-//
-//   array[0].map((col, i) => array.map(row => row[i]));
-//
-//   console.timeEnd('TIME: transpose');
-//   return array;
-// };
-
 exports.collect_errors = collect_errors;
 function collect_errors(req) {
   var myArray_fail = [];
