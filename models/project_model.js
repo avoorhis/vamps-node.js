@@ -3,6 +3,7 @@ var helpers = require(app_root + '/routes/helpers/helpers');
 var User    = require(app_root + '/models/user_model');
 var fs      = require('fs');
 var path    = require('path');
+var config  = require(app_root + '/config/config');
 
 class Project {
 
@@ -138,7 +139,6 @@ class Project {
   make_project_obj_from_new_form_info(owner_id) {
     this.this_user.getUserInfoFromGlobal(owner_id);
     this.user_obj        = this.this_user.User_obj;
-    var temp_project_obj = {};
     var req              = this.req;
     var d_region_arr     = [];
     var project_name     = "";
@@ -148,6 +148,7 @@ class Project {
     project_name3 = d_region_arr[2];
     project_name                         = req.form.project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
     this.project_obj.abstract_data       = this.get_current_project_abstract_data(this.project_obj.project);
+    this.project_obj.d_region_arr        = d_region_arr;
     this.project_obj.description         = req.form.project_description;
     this.project_obj.email               = this.user_obj.email;
     this.project_obj.first               = this.user_obj.first_name;
@@ -181,8 +182,49 @@ class Project {
 // this.project_obj.public: 0,
   }
 
+  make_project_obj_from_db(owner_id, rows) {
+    this.this_user.getUserInfoFromGlobal(owner_id);
+    this.user_obj    = this.this_user.User_obj;
+    var pr_data      = rows[0];
+    var project_name = pr_data.project;
+
+    this.project_obj.abstract_data       = this.get_current_project_abstract_data(pr_data.project);
+    this.project_obj.active              = pr_data.active;
+    this.project_obj.description         = pr_data.project_description;
+    this.project_obj.created_at          = pr_data.created_at;
+    this.project_obj.email               = this.user_obj.email;
+    this.project_obj.first               = this.user_obj.first_name;
+    this.project_obj.first_name          = this.user_obj.first_name;
+    this.project_obj.funding             = pr_data.funding_code;
+    this.project_obj.institution         = this.user_obj.institution;
+    this.project_obj.last                = this.user_obj.last_name;
+    this.project_obj.last_name           = this.user_obj.last_name;
+    this.project_obj.matrix              = pr_data.matrix;
+    this.project_obj.metagenomic         = pr_data.metagenomic;
+    this.project_obj.oid                 = this.user_obj.user_id;
+    this.project_obj.owner_user_id       = this.user_obj.user_id;
+    this.project_obj.permanent           = pr_data.permanent;
+    this.project_obj.permissions         = [this.user_obj.user_id]; // initially has only project owner_id
+    this.project_obj.pi_email            = this.user_obj.email;
+    this.project_obj.pi_name             = this.user_obj.first_name + ' ' + this.user_obj.last_name;
+    this.project_obj.pid                 = pr_data.project_id;
+    this.project_obj.project             = project_name;
+    this.project_obj.project_description = pr_data.project_description;
+    this.project_obj.project_id          = pr_data.project_id;
+    this.project_obj.project_name        = project_name;
+    this.project_obj.project_title       = pr_data.title;
+    this.project_obj.public              = pr_data.public;
+    this.project_obj.rev_project_name    = helpers.reverseString(project_name);
+    this.project_obj.title               = pr_data.title;
+    this.project_obj.updated_at          = new Date();
+    this.project_obj.user_project        = pr_data.user_project;
+    this.project_obj.username            = this.user_obj.username;
+  }
+
   get_current_project_abstract_data(project) {
-    var all_abstract_data = this.get_projects_abstract_data(project, this.req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
+    // var all_abstract_data = this.get_projects_abstract_data(project, this.req.CONFIG.PATH_TO_STATIC_DOWNLOADS);
+    var static_addr = config.PATH_TO_STATIC_DOWNLOADS || this.req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
+    var all_abstract_data = this.get_projects_abstract_data(project, static_addr);
     var project_prefix    = this.get_project_prefix(project);
     var current_abstr     = all_abstract_data[project_prefix];
     if (typeof current_abstr === 'undefined') {
