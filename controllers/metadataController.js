@@ -232,7 +232,7 @@ class CreateDataObj {
     var all_new_names                = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
     all_metadata[pid]                = this.get_new_val(req, all_metadata[pid], all_new_names);
 
-    req = this.collect_errors(req);
+    req = helpers.collect_errors(req);
 
     // ShowObj {
     //
@@ -246,23 +246,7 @@ class CreateDataObj {
     const show_new = new module.exports.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units);
     show_new.render_edit_form();
   }
-
-  collect_errors(req) {
-    var myArray_fail = [];
-
-    if (typeof req.form !== 'undefined') {
-      myArray_fail = helpers.unique_array(req.form.errors);
-      if (helpers.has_duplicates(req.form.sample_name)) {
-        myArray_fail.push('Sample ID (user sample name) should be unique.');
-      }
-      myArray_fail.sort();
-      req.flash("fail", myArray_fail);
-    }
-
-    return req;
-
-  }
-
+  
   make_metadata_object(req, res, pid, data_obj) {
     console.time('TIME: make_metadata_object');
 

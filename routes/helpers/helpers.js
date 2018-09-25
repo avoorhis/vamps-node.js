@@ -2217,6 +2217,21 @@ exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
 //   return array;
 // };
 
+exports.collect_errors = collect_errors;
+function collect_errors(req) {
+  var myArray_fail = [];
+
+  if (typeof req.form !== 'undefined') {
+    myArray_fail = helpers.unique_array(req.form.errors);
+    if ((typeof req.form.sample_name !== "undefined") && (helpers.has_duplicates(req.form.sample_name))) {
+      myArray_fail.push('Sample ID (user sample name) should be unique.');
+    }
+    myArray_fail.sort();
+    req.flash("fail", myArray_fail);
+  }
+
+  return req;
+}
 
 exports.transpose_arr_of_obj = transpose_arr_of_obj;
 
