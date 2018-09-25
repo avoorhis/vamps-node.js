@@ -72,7 +72,10 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //  MD_ENV_LZC     longhurst zone code
 
       var ProjectProfileFinishRequest = function (req, pnotes) {
-          
+            // console.log('abstract_data')
+//             console.log(abstract_data)
+//             console.log('info')
+//             console.log(info)
               res.render('projects/profile', {
               title  : 'VAMPS Project',
               info: JSON.stringify(info),
@@ -185,7 +188,16 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
 
         }
+        if(info.project.substring(0,3) == 'CMP'){
 
+            try{
+                info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','CMP_info.json');
+                abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+            }catch(e){
+                abstract_data = {};
+            }
+
+        }
         var user_metadata_csv_files = get_csv_files(req);
         var project_file_names = filter_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
 

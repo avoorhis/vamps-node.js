@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var helpers = require('./helpers/helpers');
 var path  = require('path');
+var fs   = require('fs-extra');
 
 /* GET Portals page. */
 router.get('/portals_index', function(req, res) {
@@ -52,12 +53,38 @@ router.get('/projects/:portal', function(req, res) {
           return helpers.compareStrings_alpha(a.project, b.project);
     });
     
-    res.render('portals/projects', { 
+        res.render('portals/projects', { 
             title     : 'VAMPS:'+portal+'Portals',
             user      : req.user,hostname: req.CONFIG.hostname,
             portal    : req.CONSTS.PORTALS[portal].pagetitle,
             projects  : JSON.stringify(project_list),
         });
+    
+});
+router.get('/abstracts/CMP', function(req, res) {
+    
+    var portal = 'CMP'
+    console.log('in abstracts/CMP')
+    var info_data = {}
+    if(portal == 'CMP'){
+        var cmp_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','CMP_info.json')
+        //info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','DCO_info.json');
+        info_data = JSON.parse(fs.readFileSync(cmp_file, 'utf8'));
+    }
+    var project_list = helpers.get_portal_projects(req, portal)
+    
+    project_list.sort(function(a, b){
+          return helpers.compareStrings_alpha(a.project, b.project);
+    });
+    
+        res.render('portals/coral_microbiome/abstracts', { 
+            title     : 'VAMPS:'+portal+'Portals',
+            user      : req.user,hostname: req.CONFIG.hostname,
+            portal    : req.CONSTS.PORTALS[portal].pagetitle,
+            projects  : JSON.stringify(project_list),
+            info      : JSON.stringify(info_data),
+        });
+    
 });
 //
 // METADATA
@@ -113,7 +140,22 @@ router.get('/:portal', function(req, res) {
     var portal = req.params.portal;
     console.log('in /:portal -'+portal)
     var pagetitle, maintitle, subtitle;
-
+    var info_data = {}
+    if(portal == 'CMP'){
+        var cmp_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','CMP_info.json')
+        //info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','DCO_info.json');
+        info_data = JSON.parse(fs.readFileSync(cmp_file, 'utf8'));
+    }
+    
+    var project_list = helpers.get_portal_projects(req, portal)
+    
+    project_list.sort(function(a, b){
+          return helpers.compareStrings_alpha(a.project, b.project);
+    });
+    //console.log('project_list')
+    //console.log(project_list)
+    //console.log('info')
+    //console.log(info_data)
     var pi = req.CONSTS.PORTALS[portal]
     
     res.render('portals/home', { 
@@ -121,6 +163,8 @@ router.get('/:portal', function(req, res) {
             maintitle   : pi.maintitle,
             subtitle    : pi.subtitle,
             portal      : portal,
+            projects  : JSON.stringify(project_list),
+            info : JSON.stringify(info_data),
             user: req.user,hostname: req.CONFIG.hostname,
         });
     
@@ -142,6 +186,20 @@ router.get('/geomap/:portal', function(req, res) {
 
 });
 
+// router.get('/coral_microbiome/background', function(req, res) {
+//     console.log('in /coral_microbiome/background')
+//     // var portal = req.params.portal;
+// // 
+// //     var portal_info = get_portal_metadata(req, portal)
+// //     portal_info[portal].zoom = req.CONSTS.PORTALS[portal].zoom
+// //     //console.log('FOUND '+JSON.stringify(portal_info))
+//     res.render('portals/coral_microbiome/background', { 
+//             title       : 'VAMPS: Background',
+//             user: req.user,hostname: req.CONFIG.hostname,
+//             
+//         });
+// 
+// });
 
 module.exports = router;
 
