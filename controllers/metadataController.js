@@ -246,7 +246,7 @@ class CreateDataObj {
     const show_new = new module.exports.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units);
     show_new.render_edit_form();
   }
-  
+
   make_metadata_object(req, res, pid, data_obj) {
     console.time('TIME: make_metadata_object');
 
