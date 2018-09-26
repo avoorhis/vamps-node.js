@@ -15,27 +15,34 @@
 # Please read the COPYING file.
 #
 
-import os
-
-
+import os,sys
 from stat import * # ST_SIZE etc
-import sys
+
+#print(sys.path)
+
 import shutil
 import types
 from smtplib import SMTP
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.header import Header
 from urllib.parse import unquote
 import string
+
 
 def send_email(args):
     
     TO          = "To: %s" % args.toemail
     MESSAGE     = str(args.message) + '\n\nFrom: '+ str(args.name)
-    
-    error = False
-    msg = MIMEMultipart()
-    
+    bodymsg = str( unquote(args.message) ) 
+    #print(bodymsg) 
+    #text = "VAMPS Query Message:\n"+"\n\nFrom: "+ args.name+"\n"+args.fromemail
+    #text = "VAMPS Query Message: "+"\n\nFrom: "+ args.name+" "+args.fromemail
+    text = "VAMPS Query Message:\n"+bodymsg+"\n\nFrom: "+ args.name+"\n"+args.fromemail
+    #print(text)
+    #error = False
+    #msg = MIMEMultipart()
+    msg = MIMEText(text)
     SUBJECT = "VAMPS Query: %s" % args.subject
     HOST = "smtp.mbl.edu"
     #HOST = "mail.mbl.edu"
@@ -44,24 +51,23 @@ def send_email(args):
     #print(BODY) 
     msg['From'] = args.fromemail
     msg['To'] = args.toemail
-    msg['Subject'] = SUBJECT      
-    text = "VAMPS Query Message:\n"+args.message+"\n\nFrom: "+ args.name+"\n"+args.fromemail
+    msg['Subject'] = Header(SUBJECT,'utf-8')  
     
-    part1 = MIMEText(unquote(text.strip('"')), 'plain')   #.encode('utf-8', 'surrogateescape')
+    #print(type(text))
+    #part1 = MIMEText(text.encode('utf-8', 'surrogateescape'), 'plain')   #.encode('utf-8', 'surrogateescape')
     #part2 = MIMEText(html, 'html')
-    msg.attach(part1)
+    #msg.attach(part1)
     #msg.attach(part2)
     server = SMTP(host=HOST) 
     #server.sendmail(args.fromemail, args.toemail, BODY.encode('utf-8', 'surrogateescape'))
     #server.sendmail(args.fromemail, args.toemail, BODY.replace(u'\xa0', u' '))
-    server.sendmail(args.fromemail, args.toemail, msg.as_string())
+    server.sendmail(args.fromemail, [args.toemail], msg.as_string())
     server.quit()
     
 if __name__ == '__main__':
 
     import argparse  
 
-    
     myusage = """usage: send_email.py -email email_address -sub "Subject Text" -msg "Message Text" 
          
          Sends email to address

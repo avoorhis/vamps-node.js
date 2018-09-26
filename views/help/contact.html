@@ -14,7 +14,7 @@
 <div class="col-lg-6">
 
 <div class="well">
-	<form  name="contact-form" id="contact-form" method='POST' target="contact">
+	<form  name="contact-form" id="contact-form" method='POST' action="contact">
 
 	  <div class="form-group">
 	    <label for="contact-form-name">Your Name</label>
@@ -22,19 +22,21 @@
 	        <% var valname = '' %>
 	        <% var valemail = '' %>
 	    <% }else{ %>
-	        <% var valname = user.first_name +"&nbsp;"+ user.last_name + "&nbsp;("+user.username+")" %>
+	        <% //var valname = escape(`${user.first_name} `+ `${user.last_name}`+ ` ${user.username})`) %>
+	        <% var valname = user.first_name +" "+ user.last_name+" ("+user.username+")" %>
+	        
 	        <% var valemail = user.email %>
 	    <% } %>
-	    <input type="text" class="form-control" name='name' id="contact-form-name" placeholder="enter name" value=<%- valname %> >
+	    <input type="text" class="form-control" name='name' id="contact-form-name" placeholder="enter name" value='<%= valname %>' >
 	  </div>
 
 	  <div class="form-group">
 	    <label for="contact-form-mail">Email address</label>
-	    <input type="email" class="form-control" name='email' id="exampleInputEmail1" placeholder="enter email" value=<%- valemail %> >
+	    <input type="email" class="form-control" name='email' id="exampleInputEmail1" placeholder="enter email" value='<%- valemail %>' >
 	  </div>
 	  <div class="form-group">
 	    <label for="contact-form-subject">Subject</label>
-	      <select name='subject' class="XXselectpicker">
+	      <select name='subject' >
 				  <option>Select</option>
 				  <% for(i in choices){ %>
 				  <option><%= choices[i] %></option>
