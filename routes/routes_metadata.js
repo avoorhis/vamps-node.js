@@ -325,7 +325,7 @@ router.post('/metadata_new',
                 new_project.add_info_to_project_globals(project_obj, pid);
 
                 const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
-                met_obj.make_new_project_for_form(rows, project_obj);
+                met_obj.make_new_project_for_form(project_obj);
               }
               console.timeEnd("TIME: in post /metadata_new, add project");
             }
@@ -622,10 +622,6 @@ function new_csv(req, res, cur_project, project_name, transposed) {
       else {
         callback_for_add_project_from_new_csv(req, res, cur_project, transposed);
       }
-
-
-      // const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
-      // met_obj.make_new_project_for_form(rows, project_obj);
       console.timeEnd("TIME: in new_csv");
     });
   }
