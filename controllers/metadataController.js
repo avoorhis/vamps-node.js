@@ -901,11 +901,7 @@ class ShowObj {
 
     var d_region_arr   = req.form.d_region.split('#');
     var pi_id_name_arr = req.form.pi_id_name.split('#');
-    if (pi_id_name_arr.includes("")) {
-      myArray_fail.push("Please select PI name");
-      myArray_fail.push("Please provide project name");
-    }
-    else {
+    if (!pi_id_name_arr.includes("")) {
       var full_name     = pi_id_name_arr[3] + ' ' + pi_id_name_arr[2];
       pi_name_reversed  = pi_id_name_arr[2] + ' ' + pi_id_name_arr[3];
       project_name1     = req.form.project_name1;
@@ -919,11 +915,9 @@ class ShowObj {
     }
 
     //collect errors
-
     myArray_fail.sort();
     console.log('myArray_fail = ', myArray_fail);
     req.flash('fail', myArray_fail);
-
 
     res.render('metadata/metadata_new', {
       // TODO: object created separately in Imp.
