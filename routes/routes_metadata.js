@@ -293,29 +293,47 @@ router.post('/metadata_new',
       var user_id       = req.form.pi_id_name.split('#')[0];
       const new_project = new Project(req, res, 0, user_id);
       new_project.make_project_obj_from_new_form_info(user_id);
-
       var project_obj = new_project.project_obj;
-      console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
-      new_project.addProject(project_obj, function (err, rows) {
-          console.time("TIME: in post /metadata_new, add project");
-          if (err) {
-            console.log('WWW0 err', err);
-            req.flash('fail', err);
-            show_new.show_metadata_new_again(req, res);
-          }
-          else {
 
-            console.log('New project SAVED');
-            console.log('WWW rows', rows);
-            var pid = rows.insertId;
-            new_project.add_info_to_project_globals(project_obj, pid);
+      new_project.getProjectByName(project_obj.project, function(err, rows){
+        console.log("RRR1 rows from getProjectByName", rows);
+        if ((typeof rows[0] !== "undefined") && (typeof rows[0].project_id !== "undefined") && (rows[0].project_id > 0)) {
+        //  use rows to populate project obj
+          console.log("rows project_id?");
+          var pid = rows[0].project_id;
+          project_obj.project_id = pid;
+          project_obj.pid = pid;
+          new_project.add_info_to_project_globals(project_obj, pid);
 
-            const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
-            met_obj.make_new_project_for_form(rows, project_obj);
-          }
-          console.timeEnd("TIME: in post /metadata_new, add project");
+          const met_obj = new metadata_controller.CreateDataObj(req, res, pid, user_id);
+          met_obj.make_new_project_for_form(project_obj);
         }
-      );
+        else {
+          console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
+          new_project.addProject(project_obj, function (err, rows) {
+              console.time("TIME: in post /metadata_new, add project");
+              if (err) {
+                console.log('WWW0 err', err);
+                req.flash('fail', err);
+                show_new.show_metadata_new_again(req, res);
+              }
+              else {
+
+                console.log('New project SAVED');
+                console.log('WWW rows', rows);
+                var pid = rows.insertId;
+                new_project.add_info_to_project_globals(project_obj, pid);
+
+                const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
+                met_obj.make_new_project_for_form(rows, project_obj);
+              }
+              console.timeEnd("TIME: in post /metadata_new, add project");
+            }
+          );
+        }
+
+      }.bind());
+
     }
     console.timeEnd("TIME: in post /metadata_new");
   });

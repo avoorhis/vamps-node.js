@@ -564,11 +564,10 @@ class CreateDataObj {
     return target_gene;
   }
 
-  create_all_metadata_form_new(rows, all_field_names, project_obj) {
+  create_all_metadata_form_new(all_field_names, project_obj) {
     console.time('TIME: create_all_metadata_form_new');
 
     var req = this.req;
-    var res = this.res;
     var pid = project_obj.pid;
     console.log('DDD pid', pid);
     var d_region_arr = req.form.d_region.split('#');
@@ -631,7 +630,6 @@ class CreateDataObj {
     console.log('FFF1 all_metadata[pid] before');
     console.log(JSON.stringify(all_metadata[pid]));
 
-    // all_metadata[pid] = this.add_project_abstract_info(all_metadata[pid], repeat_times);
     all_metadata[pid]['project_abstract'] = this.add_project_abstract_info(project_obj, repeat_times);
 
     console.log('PPP project_obj.abstract_data'); // arr0
@@ -727,7 +725,7 @@ class CreateDataObj {
     console.log('OOO1 JSON.stringify(dataset_obj) = ', JSON.stringify(dataset_obj));
   }
 
-  make_new_project_for_form(rows, project_obj) {
+  make_new_project_for_form(project_obj) {
 
     var all_field_names = this.all_field_names;
 
@@ -794,7 +792,7 @@ class CreateDataObj {
     all_field_names4 = all_field_names4.concat(second_part_part_3);
 
 
-    var all_metadata = this.create_all_metadata_form_new(rows, all_field_names, project_obj);
+    var all_metadata = this.create_all_metadata_form_new(all_field_names, project_obj);
     // all_metadata = { '485':
     //     { project: [ 'MS_AAA_EHSSU', 'MS_AAA_EHSSU', 'MS_AAA_EHSSU' ],
     //       dataset: ['', '', ''],
