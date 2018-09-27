@@ -727,15 +727,6 @@ class CreateDataObj {
     console.log('OOO1 JSON.stringify(dataset_obj) = ', JSON.stringify(dataset_obj));
   }
 
-  get_inits(arr) {
-    var inits_len     = arr.length;
-    var project_name1 = '';
-    for (var i = 0; i < inits_len; i++) {
-      project_name1 = project_name1 + arr[i][0];
-    }
-    return project_name1;
-  }
-
   make_new_project_for_form(rows, project_obj) {
 
     var all_field_names = this.all_field_names;
@@ -835,6 +826,15 @@ class ShowObj {
     this.user                    = req.user;
   }
 
+  get_inits(arr) {
+    var inits_len     = arr.length;
+    var project_name1 = '';
+    for (var i = 0; i < inits_len; i++) {
+      project_name1 = project_name1 + arr[i][0];
+    }
+    return project_name1;
+  }
+
   make_ordered_field_names_obj() {
     console.time('TIME: make_ordered_field_names_obj');
     var ordered_field_names_obj = {};
@@ -890,25 +890,40 @@ class ShowObj {
   }
 
   show_metadata_new_again(req, res) {
-    //collect errors
     var myArray_fail = helpers.unique_array(req.form.errors);
+
+    // TODO: send to object creation in Imp
+    var project_name     = "";
+    var pi_name_reversed = "";
+    var project_name1    = "";
+    var project_name2    = "";
+    var project_name3    = "";
+
+    var d_region_arr   = req.form.d_region.split('#');
+    var pi_id_name_arr = req.form.pi_id_name.split('#');
+    if (pi_id_name_arr.includes("")) {
+      myArray_fail.push("Please select PI name");
+      myArray_fail.push("Please provide project name");
+    }
+    else {
+      var full_name     = pi_id_name_arr[3] + ' ' + pi_id_name_arr[2];
+      pi_name_reversed  = pi_id_name_arr[2] + ' ' + pi_id_name_arr[3];
+      project_name1     = req.form.project_name1;
+      var full_name_arr = full_name.split(' ');
+      if (project_name1 === '') {
+        project_name1 = this.get_inits(full_name_arr);
+      }
+      project_name2 = req.form.project_name2;
+      project_name3 = d_region_arr[2];
+      project_name  = project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
+    }
+
+    //collect errors
 
     myArray_fail.sort();
     console.log('myArray_fail = ', myArray_fail);
     req.flash('fail', myArray_fail);
 
-    // TODO: send to object creation in Imp
-    var d_region_arr   = req.form.d_region.split('#');
-    var pi_id_name_arr = req.form.pi_id_name.split('#');
-    var full_name      = pi_id_name_arr[3] + ' ' + pi_id_name_arr[2];
-    var pi_name_reversed = pi_id_name_arr[2] + ' ' + pi_id_name_arr[3];
-    var project_name1  = req.form.project_name1;
-    if (project_name1 === '') {
-      project_name1 = this.get_inits(full_name.split(' '));
-    }
-    var project_name2 = req.form.project_name2;
-    var project_name3 = d_region_arr[2];
-    var project_name  = project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
 
     res.render('metadata/metadata_new', {
       // TODO: object created separately in Imp.
