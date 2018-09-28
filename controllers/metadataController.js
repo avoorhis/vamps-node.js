@@ -604,7 +604,8 @@ class CreateDataObj {
     var repeat_times = parseInt(req.form.samples_number, 10) || parseInt(req.form.dataset.length, 10);
     var current_info = Object.assign(project_obj);
 
-    if (d_region_arr.length > 0) { // brand new project not in db    current_info.domain      = this.get_domain(d_region_arr);
+    if (d_region_arr.length > 0) { // brand new project not in db
+      current_info.domain      = this.get_domain(d_region_arr);
       current_info.dna_region  = this.get_dna_region(d_region_arr);
       current_info.target_gene = this.get_target_gene(current_info.domain);
       current_info.domain_id   = this.get_domain_id(current_info.domain);
