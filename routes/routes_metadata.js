@@ -476,7 +476,7 @@ router.post('/metadata_upload',
       make_metadata_object_from_form(req, res);
       console.log("III in form");
       //TODO: include what below to callback for dataset upload, right now it saves what is in the form, no datasets etc.
-      if ((typeof DATASET_IDS_BY_PID[req.body.project_id] !== 'undefined') && (DATASET_IDS_BY_PID[req.body.project_id].length > 0)) {
+      if ((typeof DATASET_IDS_BY_PID[req.body.project_id] !== 'undefined') && (DATASET_IDS_BY_PID[req.body.project_id].length > 0)) {// TODO: add comment what's this
         const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
         csv_files_obj.make_csv(req, res);
       }
@@ -505,7 +505,19 @@ function make_metadata_object_from_form(req, res) {
   const met_obj = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
 
   //new
-  if (data['dataset_id'][0] === "") {
+  // if (data['dataset_id'][0] === "") {
+  if (data['dataset'].includes("")) //new empty datasets
+  {
+    var user_id           = PROJECT_INFORMATION_BY_PID[pid].oid;
+    const new_cur_project = new Project(req, res, pid, user_id);
+    new_cur_project.make_project_obj_with_existing_project_info_by_pid(pid);
+
+    var project_obj = new_cur_project.project_obj;
+    const met_obj   = new metadata_controller.CreateDataObj(req, res, pid, []);
+    met_obj.make_new_project_for_form(project_obj);
+  }
+  else if (data['dataset_id'].includes("")) //new datasets
+  {
     met_obj.make_metadata_object_with_new_datasets(req, res, pid, data);
   } // data['dataset_id'][0] === ""
   else {

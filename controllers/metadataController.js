@@ -570,7 +570,10 @@ class CreateDataObj {
     var req = this.req;
     var pid = project_obj.pid;
     console.log('DDD pid', pid);
-    var d_region_arr = req.form.d_region.split('#');
+    var d_region_arr = [];
+    if ((typeof req.form !== "undefined") && (typeof req.form.d_region !== "undefined")) {
+      d_region_arr = req.form.d_region.split('#');
+    }
     console.log('DDD3, all_field_names', all_field_names);
 
     var more_fields = ['adapter_sequence_id',
@@ -598,14 +601,14 @@ class CreateDataObj {
     this.prepare_empty_metadata_object(pid, all_field_names, {});
     var all_metadata = this.all_metadata;
     console.log('PPP01 all_metadata from create_all_metadata_form_new', all_metadata);
-    var repeat_times = parseInt(req.form.samples_number, 10);
-
+    var repeat_times = parseInt(req.form.samples_number, 10) || parseInt(req.form.dataset.length, 10);
     var current_info = Object.assign(project_obj);
 
-    current_info.domain      = this.get_domain(d_region_arr);
-    current_info.dna_region  = this.get_dna_region(d_region_arr);
-    current_info.target_gene = this.get_target_gene(current_info.domain);
-    current_info.domain_id   = this.get_domain_id(current_info.domain);
+    if (d_region_arr.length > 0) { // brand new project not in db    current_info.domain      = this.get_domain(d_region_arr);
+      current_info.dna_region  = this.get_dna_region(d_region_arr);
+      current_info.target_gene = this.get_target_gene(current_info.domain);
+      current_info.domain_id   = this.get_domain_id(current_info.domain);
+    }
 
     for (var i = 0; i < all_field_names.length; i++) {
       var field_name = all_field_names[i];
