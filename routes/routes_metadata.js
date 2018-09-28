@@ -504,8 +504,12 @@ function make_metadata_object_from_form(req, res) {
   var data      = req.form;
   const met_obj = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
 
+  //collect errors
+  var myArray_fail = helpers.unique_array(req.form.errors);
+  myArray_fail.sort();
+  console.log('myArray_fail = ', myArray_fail);
+  req.flash('fail', myArray_fail);
   //new
-  // if (data['dataset_id'][0] === "") {
   if (data['dataset'].includes("")) //new empty datasets
   {
     var user_id           = PROJECT_INFORMATION_BY_PID[pid].oid;
