@@ -510,7 +510,7 @@ function make_metadata_object_from_form(req, res) {
   console.log('myArray_fail = ', myArray_fail);
   req.flash('fail', myArray_fail);
   //new
-  if (data['dataset'].includes("")) //new empty datasets
+  if ((data['dataset'].includes("")) && (data['sample_name'].includes(""))) //new empty datasets
   {
     var user_id           = PROJECT_INFORMATION_BY_PID[pid].oid;
     const new_cur_project = new Project(req, res, pid, user_id);
