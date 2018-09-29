@@ -1150,8 +1150,9 @@ module.exports.fetchInfo = function (query, values, callback) {
 //
 //
 function htmlEntities(str) {
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+
 //
 //
 //
@@ -1379,7 +1380,7 @@ module.exports.get_qsub_script_text = function (req, log, dir_path, cmd_name, cm
 //     script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";
 
   for (var i in cmd_list) {
-    script_text += cmd_list[i]+"\n\n";
+    script_text += cmd_list[i] + "\n\n";
   }
 //
 //     //script_text += "chmod 666 "+log+"\n";
@@ -1408,7 +1409,7 @@ module.exports.get_qsub_script_text_only = function (req, scriptlog, dir_path, c
   script_text += "echo \"PATH is \$PATH\"\n"
 
   for (var i in cmd_list) {
-    script_text += cmd_list[i]+"\n\n";
+    script_text += cmd_list[i] + "\n\n";
   }
 
   console.log("script_text from get_qsub_script_text_only: ")
@@ -1547,10 +1548,10 @@ module.exports.make_gast_script_txt = function (req, data_dir, project, cmd_list
     // the -sync y tag means that the following install scripts will run AFTER the cluster gast scripts finish
     make_gast_script_txt += "qsub -sync y " + data_dir + "/clust_gast_ill_" + project + ".sh\n";
   }
-  make_gast_script_txt +=  "echo \"Done with cluster_gast\" >> "+data_dir+"/cluster.log\n"
-  make_gast_script_txt +=  "echo \"Running install scripts (see log)\" >> "+data_dir+"/cluster.log\n"
+  make_gast_script_txt += "echo \"Done with cluster_gast\" >> " + data_dir + "/cluster.log\n"
+  make_gast_script_txt += "echo \"Running install scripts (see log)\" >> " + data_dir + "/cluster.log\n"
   for (var i in cmd_list) {
-    make_gast_script_txt += cmd_list[i]+"\n\n";
+    make_gast_script_txt += cmd_list[i] + "\n\n";
   }
 
   make_gast_script_txt += "\n";
@@ -2030,15 +2031,19 @@ module.exports.get_key_from_value = function (obj, value) {
   return found_key;
 };
 
-module.exports.ensure_dir_exists = function(dir)
-{
-    fs.ensureDir(dir, function (err) {
-    if(err) {console.log('2');console.log(err);} // => null
-    else{
-        fs.chmod(dir, 0777, function (err) {
-            if(err) {console.log(err);} // ug+rwx
-        });
-        console.log(dir+' Guaranteed to exist on login')
+module.exports.ensure_dir_exists = function (dir) {
+  fs.ensureDir(dir, function (err) {
+    if (err) {
+      console.log('2');
+      console.log(err);
+    } // => null
+    else {
+      fs.chmod(dir, 0777, function (err) {
+        if (err) {
+          console.log(err);
+        } // ug+rwx
+      });
+      console.log(dir + ' Guaranteed to exist on login')
     }        // dir has now been created, including the directory it is to be placed in
 
   });
@@ -2109,7 +2114,7 @@ exports.percent_valid = function (value) {
   region_valid(value, 0, 100);
 };
 
-exports.positive             = function (value) {
+exports.positive = function (value) {
   if (value !== '' && parseInt(value) < 0) {
     throw new Error("'" + value + "' is not valid, %s should be greater then 0.");
   }
@@ -2121,9 +2126,9 @@ exports.dropdown_items_validation = function (value) {
   }
 };
 
-const const_target_gene = C.TARGET_GENE;
+const const_target_gene               = C.TARGET_GENE;
 module.exports.target_gene_validation = function (gene, source) {
-  let u_domains_set = new Set(source.domain);
+  let u_domains_set         = new Set(source.domain);
   let u_domains_arr         = [...u_domains_set];
   let curr_domain           = u_domains_arr[0];
   let this_domain_tg_object = helpers.findByValueOfObject(const_target_gene, "domain", curr_domain);
@@ -2209,17 +2214,31 @@ exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
 };
 
 exports.collect_errors = collect_errors;
+
 function collect_errors(req) {
-  var myArray_fail = [];
+  var myArray_fail    = [];
+  var success_msgs    = req.flash("success") || [];
+  var flash_msgs_sess = req.session.flash || {};
+  var fail_msgs       = req.flash("fail") || [];
+  console.log("LLL01 success_msgs", success_msgs);
+  console.log("LLL02 flash_msgs_sess", flash_msgs_sess);
+  console.log("LLL03 fail_msgs", fail_msgs);
+  req.session.flash = [];
 
   if ((typeof req.form !== 'undefined') && (req.form.errors.length > 0)) {
-    myArray_fail = helpers.unique_array(req.form.errors);
+    var combine_err   = [].concat(flash_msgs_sess.error);
+    combine_err = combine_err.concat(flash_msgs_sess.fail);
+    combine_err = combine_err.concat(fail_msgs);
+    combine_err = combine_err.concat(req.form.errors);
+    combine_err = combine_err.filter(x => x); //removing null, undefined, 0, -0, NaN, "", false, document.all
+    myArray_fail = helpers.unique_array(combine_err);
     if ((typeof req.form.sample_name !== "undefined") && (helpers.has_duplicates(req.form.sample_name))) {
       myArray_fail.push('Sample ID (user sample name) should be unique.');
     }
     myArray_fail.sort();
     req.flash("fail", myArray_fail);
   }
+  req.session.flash = {"fail": myArray_fail, "success": success_msgs};
 
   return req;
 }
