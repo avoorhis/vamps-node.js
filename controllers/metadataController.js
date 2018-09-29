@@ -819,6 +819,7 @@ class CreateDataObj {
 class ShowObj {
 
   constructor(req, res, all_metadata, all_field_names_arr, all_field_units) {
+    this.req                     = req;
     this.res                     = res;
     this.all_metadata            = all_metadata;
     this.all_field_names_arr     = all_field_names_arr;
@@ -853,6 +854,7 @@ class ShowObj {
 
   render_edit_form() {
     console.trace("Show me, I'm in render_edit_form");
+    this.req = helpers.collect_errors(this.req);
 
     console.log('JJJ1 all_metadata from render_edit_form');
     console.log(JSON.stringify(this.all_metadata));
@@ -892,8 +894,6 @@ class ShowObj {
   }
 
   show_metadata_new_again(req, res) {
-    var myArray_fail = helpers.unique_array(req.form.errors);
-
     // TODO: send to object creation in Imp
     var project_name     = "";
     var pi_name_reversed = "";
@@ -916,10 +916,8 @@ class ShowObj {
       project_name  = project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
     }
 
-    //collect errors
-    myArray_fail.sort();
-    console.log('myArray_fail = ', myArray_fail);
-    req.flash('fail', myArray_fail);
+    req = helpers.collect_errors(req);
+    this.req = req;
 
     res.render('metadata/metadata_new', {
       // TODO: object created separately in Imp.
