@@ -2209,19 +2209,19 @@ exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
 };
 
 exports.collect_errors = collect_errors;
-function collect_errors(this_req) {
+function collect_errors(req) {
   var myArray_fail = [];
 
-  if ((typeof this_req.form !== 'undefined') && (this_req.form.errors.length > 0)) {
-    myArray_fail = helpers.unique_array(this_req.form.errors);
-    if ((typeof this_req.form.sample_name !== "undefined") && (helpers.has_duplicates(this_req.form.sample_name))) {
+  if ((typeof req.form !== 'undefined') && (req.form.errors.length > 0)) {
+    myArray_fail = helpers.unique_array(req.form.errors);
+    if ((typeof req.form.sample_name !== "undefined") && (helpers.has_duplicates(req.form.sample_name))) {
       myArray_fail.push('Sample ID (user sample name) should be unique.');
     }
     myArray_fail.sort();
-    this_req.flash("fail", myArray_fail);
+    req.flash("fail", myArray_fail);
   }
 
-  return this_req;
+  return req;
 }
 
 exports.transpose_arr_of_obj = transpose_arr_of_obj;
