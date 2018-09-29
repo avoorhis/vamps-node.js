@@ -1,5 +1,6 @@
 var Project   = require(app_root + '/models/project_model');
 var Dataset   = require(app_root + '/models/dataset_model');
+var csv_files_controller = require(app_root + '/controllers/csvFilesController');
 // var User                 = require(app_root + '/models/user_model');
 var helpers   = require(app_root + '/routes/helpers/helpers');
 var CONSTS    = require(app_root + '/public/constants');
@@ -232,7 +233,7 @@ class CreateDataObj {
     var all_new_names                = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
     all_metadata[pid]                = this.get_new_val(req, all_metadata[pid], all_new_names);
 
-    req = helpers.collect_errors(req);
+    // req = helpers.collect_errors(req);
 
     // ShowObj {
     //
@@ -862,6 +863,11 @@ class ShowObj {
     const target_gene_options = this.get_target_gene_options();
     // console.log('JJJ2 all_field_names from render_edit_form');
     // console.log(JSON.stringify(this.all_field_names_arr));
+    var pid = Object.keys(this.all_metadata)[0] || this.req.body.project_id;
+    if ((typeof DATASET_IDS_BY_PID[pid] !== 'undefined') && (DATASET_IDS_BY_PID[pid].length > 0)) {// TODO: add comment what's this
+      const csv_files_obj = new csv_files_controller.CsvFiles(this.req, this.res);
+      csv_files_obj.make_csv(this.req, this.res);
+    }
 
     this.res.render('metadata/metadata_edit_form', {
       title: 'VAMPS: Metadata_upload',

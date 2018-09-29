@@ -476,10 +476,10 @@ router.post('/metadata_upload',
       make_metadata_object_from_form(req, res);
       console.log("III in form");
       //TODO: include what below to callback for dataset upload, right now it saves what is in the form, no datasets etc.
-      if ((typeof DATASET_IDS_BY_PID[req.body.project_id] !== 'undefined') && (DATASET_IDS_BY_PID[req.body.project_id].length > 0)) {// TODO: add comment what's this
-        const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
-        csv_files_obj.make_csv(req, res);
-      }
+      // if ((typeof DATASET_IDS_BY_PID[req.body.project_id] !== 'undefined') && (DATASET_IDS_BY_PID[req.body.project_id].length > 0)) {// TODO: add comment what's this
+      //   const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
+      //   csv_files_obj.make_csv(req, res);
+      // }
 
 
       if (req.body.done_editing === "done_editing") {
