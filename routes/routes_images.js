@@ -608,14 +608,8 @@ barcharts: function(req, res){
   d3 = require('d3');
   // see: https://bl.ocks.org/tomgp/c99a699587b5c5465228
   //console.log('getting jsdom')
-  var jsdom = require('jsdom');
-  // var jsdom;
-//     try {
-//       jsdom = require("jsdom/lib/old-api.js"); // jsdom >= 10.x
-//     } catch (e) {
-//       jsdom = require("jsdom"); // jsdom <= 9.x
-//     }
-  //console.log('got jsdom')
+  var jsdom = require('jsdom');  // NEED version <10 for jsdom.env
+ 
   var ts = req.session.ts
 
   var imagetype = 'group'
