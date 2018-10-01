@@ -866,7 +866,7 @@ class ShowObj {
     var pid = Object.keys(this.all_metadata)[0] || this.req.body.project_id;
     if ((typeof DATASET_IDS_BY_PID[pid] !== 'undefined') && (DATASET_IDS_BY_PID[pid].length > 0)) {// TODO: add comment what's this
       const csv_files_obj = new csv_files_controller.CsvFiles(this.req, this.res);
-      csv_files_obj.make_csv(this.req, this.res);
+      csv_files_obj.make_csv();
     }
 
     this.res.render('metadata/metadata_edit_form', {

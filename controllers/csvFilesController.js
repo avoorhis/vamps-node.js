@@ -116,33 +116,31 @@ class CsvFilesWrite {
   convertArrayOfObjectsToCSV(args) {
     console.time('TIME: convertArrayOfObjectsToCSV');
 
-    var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_id;
-
-    data = args.data || null;
-    if (data === null) {
+    var data_copy = Object.assign({}, args.data) || null;
+    if (data_copy === null) {
       return null;
     }
 
-    user_info = args.user_info || null;
+    var user_info = args.user_info || null;
     if (user_info === null) {
       return null;
     }
 
-    project_id = args.project_id || null;
+    var project_id = args.project_id || null;
     if (project_id === null) {
       return null;
     }
 
-    data_arr = helpers.array_from_object(data);
+    var data_arr = helpers.array_from_object(data_copy);
 
     var matrix_length   = DATASET_IDS_BY_PID[project_id].length + 1;
-    transposed_data_arr = helpers.transpose_2d_arr_and_fill(data_arr, matrix_length);
+    var transposed_data_arr = helpers.transpose_2d_arr_and_fill(data_arr, matrix_length);
 
-    columnDelimiter = args.columnDelimiter || ',';
-    lineDelimiter   = args.lineDelimiter || '\n';
-    cellEscape      = args.cellEscape || '"';
+    var columnDelimiter = args.columnDelimiter || ',';
+    var lineDelimiter   = args.lineDelimiter || '\n';
+    var cellEscape      = args.cellEscape || '"';
 
-    result = '';
+    var result = '';
     transposed_data_arr.map(function (row) {
       // TODO: to a function?
       // result = row.map(function (item) {
@@ -164,12 +162,13 @@ class CsvFilesWrite {
   make_csv() {
     var out_csv_file_name;
     console.time("TIME: make_csv");
-    var req = this.req;
+    // var req = this.req;
 
+    let req_copy = Object.assign({}, this.req);
     var csv = this.convertArrayOfObjectsToCSV({
-      data: req.form, // if new datasets, add info from globals instead
-      user_info: req.user, //use this.user
-      project_id: req.body.project_id
+      data: req_copy.form, // if new datasets, add info from globals instead
+      user_info: req_copy.user, //use this.user
+      project_id: req_copy.body.project_id
     });
 
     var time_stamp = new Date().getTime();

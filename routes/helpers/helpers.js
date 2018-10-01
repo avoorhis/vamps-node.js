@@ -64,7 +64,7 @@ module.exports.isAdmin = function (req, res, next) {
 module.exports.array_from_object = function (data) {
   var data_arr = [];
   for (var key in data) {
-    var value_arr;
+    var value_arr = {};
     if (typeof data[key] === 'object') {
       value_arr = data[key];
     }
