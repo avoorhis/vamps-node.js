@@ -129,7 +129,6 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 
         visual_post_items.update_data = req.body.update_data              || '1'   // fires changes
 
-
         req.session.no_of_datasets  = visual_post_items.no_of_datasets = dataset_ids.length
         
         // for API select ALL metadata with these datasets
@@ -150,7 +149,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         var dataset_ids = JSON.parse(req.body.ds_order);
         
   }else if(req.body.update_data === '1'){  // from 'Update' button on view_selection.html
-        console.log('UpDaTe DaTa')
+        console.log('Update Data')
         // populate req.session and visual_post_items from req.body(post)
         var dataset_ids = req.session.chosen_id_order;
         visual_post_items = COMMON.save_post_items(req);
