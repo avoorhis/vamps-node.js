@@ -72,7 +72,8 @@ module.exports.array_from_object = function (data) {
       value_arr = [data[key]];
     }
     // value_arr.unshift(key);
-    value_arr = key.concat(value_arr);
+
+    value_arr = [key].concat(value_arr);
     data_arr.push(value_arr);
   }
   return data_arr;

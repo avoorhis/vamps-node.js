@@ -162,13 +162,12 @@ class CsvFilesWrite {
   make_csv() {
     var out_csv_file_name;
     console.time("TIME: make_csv");
-    // var req = this.req;
+    var req = this.req;
 
-    let req_copy = Object.assign({}, this.req);
     var csv = this.convertArrayOfObjectsToCSV({
-      data: req_copy.form, // if new datasets, add info from globals instead
-      user_info: req_copy.user, //use this.user
-      project_id: req_copy.body.project_id
+      data: req.form, // if new datasets, add info from globals instead
+      user_info: req.user, //use this.user
+      project_id: req.body.project_id
     });
 
     var time_stamp = new Date().getTime();
