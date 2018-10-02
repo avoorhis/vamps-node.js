@@ -243,7 +243,7 @@ function transfer_file_for_download(script, ts) {
 var norm_counts_radios = document.getElementsByName('normalization');
 if (typeof norm_counts_radios[1] !=="undefined") {
   norm_counts_radios[1].addEventListener('click', function () {
-    val = norm_counts_radios[1].value
+    //val = norm_counts_radios[1].value
     //alert('1 '+val)
     document.getElementById('output_choices_submit_btn').disabled = false;
     document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
@@ -252,7 +252,7 @@ if (typeof norm_counts_radios[1] !=="undefined") {
 }
 if (typeof norm_counts_radios[2] !=="undefined") {
   norm_counts_radios[2].addEventListener('click', function () {
-    val = norm_counts_radios[2].value
+    //val = norm_counts_radios[2].value
     //alert('2 '+val)
     document.getElementById('output_choices_submit_btn').disabled = false;
     document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
@@ -313,8 +313,94 @@ if (max_range_combo !== null) {
     document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
 }
+// Domains
+var domain_ckbxs = document.getElementsByName('domains[]') || null;
+if (domain_ckbxs !== null) {
+    //alert(typeof domain_ckbxs[0])
+    domain_ckbxs[0].addEventListener('change', function () {
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+    });
+    domain_ckbxs[1].addEventListener('change', function () {
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+    });
+    domain_ckbxs[2].addEventListener('change', function () {
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+    });
+    domain_ckbxs[3].addEventListener('change', function () {
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+    });
+    domain_ckbxs[4].addEventListener('change', function () {
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+}
 
+// Tax Depth Radios
+var tax_depth_radios = document.getElementsByName('tax_depth') || null;
+if (tax_depth_radios !== null) {
+  tax_depth_radios[1].addEventListener('click', function () {
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
 
+  tax_depth_radios[2].addEventListener('click', function () {
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+
+  tax_depth_radios[3].addEventListener('click', function () {
+    //alert('3')
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+
+  tax_depth_radios[4].addEventListener('click', function () {
+    //alert('3')
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+
+  tax_depth_radios[5].addEventListener('click', function () {
+    //alert('3')
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+
+  tax_depth_radios[6].addEventListener('click', function () {
+    //alert('3')
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+
+  tax_depth_radios[7].addEventListener('click', function () {
+    //alert('3')
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+
+  tax_depth_radios[8].addEventListener('click', function () {
+    //alert('3')
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+}
 
 function toggle_visual_element(table_div, tog, btn){
   if(tog == 'show') {

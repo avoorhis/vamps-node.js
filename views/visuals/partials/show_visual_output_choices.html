@@ -1,12 +1,15 @@
-<%   var rows      = JSON.parse(constants).VISUALOUTPUTCHOICES.choices; %>
-<%   var distrows  = JSON.parse(constants).DISTANCECHOICES.choices; %>
-<%   var rows      = JSON.parse(constants).NORMALIZATIONCHOICES.choices %>
-<%   var pct_range = JSON.parse(constants).PCT_RANGE  %>
+<%   var rows      = cnsts.VISUALOUTPUTCHOICES.choices; %>
+<%   var distrows  = cnsts.DISTANCECHOICES.choices; %>
+<%   var rows      = cnsts.NORMALIZATIONCHOICES.choices %>
+<%   var pct_range = cnsts.PCT_RANGE  %>
+<%   var ranks     = cnsts.RANKS  %>
 
-Screening/Options:<br>
-<div id='screening_options_div' class='small_font' style='height:250px;'>
+Screening/Options: <%= pi.unit_choice %><br>
+<div id='screening_options_div' class='small_font' style='height:250px'>
 <form id='' name='' method='POST' action='view_selection'>
-<table class='small_font table table-striped'>
+<table>
+<tr><td>
+<table class='small_font table table-striped' style='width:90%'>
    
    
     <tr>
@@ -87,8 +90,44 @@ Screening/Options:<br>
 
 
 </table>
-<input type='hidden' name='domains' value='<%= pi.domains %>'>
-<input type='hidden' name='tax_depth' value='<%= pi.tax_depth %>'>
+</td><td valign='top'>
+<% if(pi.unit_choice == 'tax_silva119_simple' || pi.unit_choice == 'tax_rdp2.6_simple'){ %>
+    <table border='1' style=''>
+    <tr><td valign='top' style='padding:5px'>
+        <span class='bold_font'><span style='color:red;'>NEW<br></span> Included Domains:</span>
+        <% for (i in cnsts.DOMAINS.domains) { %>
+        <%      domain = cnsts.DOMAINS.domains[i].name %>
+        <%      if((pi.domains).includes(domain)){ %>
+                    <br><input type='checkbox'  class='simple_taxa_silva_ckbx' checked='checked' value='<%= domain %>' name='domains[]' \>
+            
+        <%      }else{ %> 
+                    <br><input type='checkbox'  class='simple_taxa_silva_ckbx'  value='<%= domain %>' name='domains[]' \>
+        <%      } %>
+        <%= domain %>        
+        <% } %>
+    </td>
+    <td valign='top' style='padding:5px'>
+    
+    
+        <span class='bold_font'><span style='color:red;'>NEW<br></span> Taxonomic Depth:</span>
+        <% for(n in ranks) { %>
+            <% if(pi.tax_depth == ranks[n]){ %>
+                <br><input type='radio' checked='checked' id='' name='tax_depth' value='<%= ranks[n] %>'  \> <%= ranks[n].replace(/^\w/, c => c.toUpperCase()) %></li>
+            <% }else{ %>   
+                <br><input type='radio' id='' name='tax_depth' value='<%= ranks[n] %>'  \> <%= ranks[n].replace(/^\w/, c => c.toUpperCase()) %></li>
+            <% } %>   
+        <% } %>  
+    
+    
+    </td></tr>
+    </table>
+<% }else{ %>
+    <input type='hidden' name='domains' value='<%= pi.domains %>'>
+    <input type='hidden' name='tax_depth' value='<%= pi.tax_depth %>'>
+<% } %>
+</td></tr>
+</table>
+
 <input type='hidden' name='unit_choice' value='<%= pi.unit_choice %>'>
 <input type='hidden' name='selected_metadata' value='<%= pi.metadata %>'>
 <input type='hidden' name='update_data' value='1'>
