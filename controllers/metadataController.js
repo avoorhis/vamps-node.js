@@ -814,6 +814,15 @@ class CreateDataObj {
     show_new.render_edit_form();
   }
 
+  project_already_in_db(req, res, rows, new_project) {
+    var project_obj = new_project.project_obj;
+    // console.log("rows project_id?");
+    project_obj.project_id = this.pid;
+    project_obj.pid = this.pid;
+    new_project.add_info_to_project_globals(project_obj, this.pid);
+
+    this.make_new_project_for_form(project_obj);
+  }
 
 }
 

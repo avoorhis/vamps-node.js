@@ -297,18 +297,10 @@ router.post('/metadata_new',
 
       new_project.getProjectByName(project_obj.project, function(err, rows){
         console.log("RRR1 rows from getProjectByName", rows);
-        if ((typeof rows[0] !== "undefined") && (typeof rows[0].project_id !== "undefined") && (rows[0].project_id > 0)) {project_already_in_db(req, res, rows, new_project)}
-        // {
-        // //  use rows to populate project obj
-        //   console.log("rows project_id?");
-        //   var pid = rows[0].project_id;
-        //   project_obj.project_id = pid;
-        //   project_obj.pid = pid;
-        //   new_project.add_info_to_project_globals(project_obj, pid);
-        //
-        //   const met_obj = new metadata_controller.CreateDataObj(req, res, pid, user_id);
-        //   met_obj.make_new_project_for_form(project_obj);
-        // }
+        if ((typeof rows[0] !== "undefined") && (typeof rows[0].project_id !== "undefined") && (rows[0].project_id > 0)) {
+          const met_obj = new metadata_controller.CreateDataObj(req, res, rows[0].project_id, user_id);
+          met_obj.project_already_in_db(req, res, rows, new_project);
+        }
         else {
           console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
           new_project.addProject(project_obj, function (err, rows) {
@@ -338,20 +330,6 @@ router.post('/metadata_new',
     }
     console.timeEnd("TIME: in post /metadata_new");
   });
-
-function project_already_in_db(req, res, rows, new_project) {
-  var project_obj = new_project.project_obj;
-  var user_id = new_project.user_obj.user_id;
-  //  use rows to populate project obj
-  console.log("rows project_id?");
-  var pid = rows[0].project_id;
-  project_obj.project_id = pid;
-  project_obj.pid = pid;
-  new_project.add_info_to_project_globals(project_obj, pid);
-
-  const met_obj = new metadata_controller.CreateDataObj(req, res, pid, user_id);
-  met_obj.make_new_project_for_form(project_obj);
-}
 
 // render edit form
 router.post('/metadata_edit_form',
