@@ -599,7 +599,7 @@ class CreateDataObj {
 
     console.log('DDD3_1, all_field_names', all_field_names);
 
-    // this.prepare_empty_metadata_object(pid, all_field_names, {});
+    this.prepare_empty_metadata_object(pid, all_field_names, {});
     var all_metadata = this.all_metadata;
     console.log('PPP01 all_metadata from create_all_metadata_form_new', all_metadata);
     var repeat_times = parseInt(req.form.samples_number, 10) || parseInt(req.form.dataset.length, 10);
@@ -824,29 +824,30 @@ class CreateDataObj {
     this.make_new_project_for_form(project_obj);
   }
 
-  req_form_isValid(req, res, new_project) {
+  req_form_isValid_and_new_project_added(req, res, new_project) {
     var project_obj = new_project.project_obj;
-    var that = this;
+
     console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
     new_project.addProject(project_obj, function (err, rows) {
         console.time("TIME: in post /metadata_new, add project");
         if (err) {
           console.log('WWW0 err', err);
-          that.req.flash('fail', err);
-          var show_new = new module.exports.ShowObj(that.req, that.res, that.all_metadata, that.all_field_names4, that.all_field_units);
-          show_new.show_metadata_new_again(that.req, that.res);
+          req.flash('fail', err);
+          var show_new = new module.exports.ShowObj(req, this.res, this.all_metadata, this.all_field_names4, this.all_field_units);
+          show_new.show_metadata_new_again(this.req, this.res);
         }
         else {
 
           console.log('New project SAVED');
           console.log('WWW rows', rows);
-          this.pid = rows.insertId;
-          new_project.add_info_to_project_globals(project_obj, this.pid);
-          // const met_obj = new module.exports.CreateDataObj(req, res, pid, []);
-          this.make_new_project_for_form(project_obj);
+          var pid = rows.insertId;
+          new_project.add_info_to_project_globals(project_obj, pid);
+          const met_obj = new module.exports.CreateDataObj(req, res, pid, []);
+          met_obj.make_new_project_for_form(project_obj);
         }
         console.timeEnd("TIME: in post /metadata_new, add project");
-      }.bind(that)
+      }
+      // .bind()
     );
   }
 

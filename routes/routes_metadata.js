@@ -303,29 +303,7 @@ router.post('/metadata_new',
         }
         else {
           const met_obj = new metadata_controller.CreateDataObj(req, res, 0, user_id);
-          met_obj.req_form_isValid(req, res, new_project);
-
-          // console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
-          // new_project.addProject(project_obj, function (err, rows) {
-          //     console.time("TIME: in post /metadata_new, add project");
-          //     if (err) {
-          //       console.log('WWW0 err', err);
-          //       req.flash('fail', err);
-          //       show_new.show_metadata_new_again(req, res);
-          //     }
-          //     else {
-          //
-          //       console.log('New project SAVED');
-          //       console.log('WWW rows', rows);
-          //       var pid = rows.insertId;
-          //       new_project.add_info_to_project_globals(project_obj, pid);
-          //
-          //       const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
-          //       met_obj.make_new_project_for_form(project_obj);
-          //     }
-          //     console.timeEnd("TIME: in post /metadata_new, add project");
-          //   }
-          // );
+          met_obj.req_form_isValid_and_new_project_added(req, res, new_project);
         }
 
       }.bind());
