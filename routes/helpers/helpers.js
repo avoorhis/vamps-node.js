@@ -2218,22 +2218,22 @@ exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
 exports.collect_errors = collect_errors;
 
 function collect_errors(req) {
-  var myArray_fail    = [];
   var success_msgs    = req.flash("success") || [];
   var flash_msgs_sess = req.session.flash || {};
   var fail_msgs       = req.flash("fail") || [];
+  var myArray_fail    = fail_msgs;
   console.log("LLL01 success_msgs", success_msgs);
   console.log("LLL02 flash_msgs_sess", flash_msgs_sess);
   console.log("LLL03 fail_msgs", fail_msgs);
   req.session.flash = [];
 
   if ((typeof req.form !== 'undefined') && (req.form.errors.length > 0)) {
-    var combine_err   = [].concat(flash_msgs_sess.error);
-    combine_err = combine_err.concat(flash_msgs_sess.fail);
-    combine_err = combine_err.concat(fail_msgs);
-    combine_err = combine_err.concat(req.form.errors);
-    combine_err = combine_err.filter(x => x); //removing null, undefined, 0, -0, NaN, "", false, document.all
-    myArray_fail = helpers.unique_array(combine_err);
+    var combine_err = [].concat(flash_msgs_sess.error);
+    combine_err     = combine_err.concat(flash_msgs_sess.fail);
+    combine_err     = combine_err.concat(fail_msgs);
+    combine_err     = combine_err.concat(req.form.errors);
+    combine_err     = combine_err.filter(x => x); //removing null, undefined, 0, -0, NaN, "", false, document.all
+    myArray_fail    = helpers.unique_array(combine_err);
     if ((typeof req.form.sample_name !== "undefined") && (helpers.has_duplicates(req.form.sample_name))) {
       myArray_fail.push('Sample ID (user sample name) should be unique.');
     }

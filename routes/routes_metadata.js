@@ -303,7 +303,7 @@ router.post('/metadata_new',
         }
         else {
           const met_obj = new metadata_controller.CreateDataObj(req, res, 0, user_id);
-          met_obj.req_form_isValid_and_new_project_added(req, res, new_project);
+          met_obj.req_form_isValid_and_new_project(req, res, new_project);
         }
 
       }.bind());

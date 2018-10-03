@@ -142,7 +142,7 @@ class CreateDataObj {
     new_dataset.addDataset(function (err, rows) {
       console.time("TIME: in post /metadata_new, add dataset");
       if (err) {
-        console.log('WWW0 err', err);
+        console.log('WWW000 err', err);
         this.req.flash('fail', err);
         // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
       }
@@ -824,17 +824,20 @@ class CreateDataObj {
     this.make_new_project_for_form(project_obj);
   }
 
-  req_form_isValid_and_new_project_added(req, res, new_project) {
+  req_form_isValid_and_new_project(req, res, new_project) {
     var project_obj = new_project.project_obj;
 
     console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
+    // var that = this;
     new_project.addProject(project_obj, function (err, rows) {
         console.time("TIME: in post /metadata_new, add project");
+        // console.log("WWW", that.all_metadata);
         if (err) {
           console.log('WWW0 err', err);
           req.flash('fail', err);
-          var show_new = new module.exports.ShowObj(req, this.res, this.all_metadata, this.all_field_names4, this.all_field_units);
-          show_new.show_metadata_new_again(this.req, this.res);
+          const met_obj = new module.exports.CreateDataObj(req, res, 0, []);
+          var show_new = new module.exports.ShowObj(req, res, met_obj.all_metadata, met_obj.all_field_names4, met_obj.all_field_units);
+          show_new.show_metadata_new_again(req, res);
         }
         else {
 
@@ -847,7 +850,7 @@ class CreateDataObj {
         }
         console.timeEnd("TIME: in post /metadata_new, add project");
       }
-      // .bind()
+      // .bind(that)
     );
   }
 
