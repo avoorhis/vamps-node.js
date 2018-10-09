@@ -1264,7 +1264,9 @@ module.exports.get_local_script_text = function(cmd_list) {
   script_text += "hostname\n";
   script_text += 'echo -n "Current working directory: "'+"\n";
   script_text += "pwd\n\n";
-  
+  if(config.site == 'vamps' || config.site == 'vampsdev'){
+    script_text += "source /groups/vampsweb/"+config.site+"/seqinfobin/vamps_environment.sh\n\n";
+  }
   for (var i in cmd_list) {
     script_text += cmd_list[i]+"\n\n";
   }
