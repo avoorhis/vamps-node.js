@@ -160,16 +160,13 @@
 </form>		
 		<td>
 			<div id='html_link_div'>
-			<% if(fasta_status == 'COMPLETED' && entropy_status == 'COMPLETED' && oligo_status == 'COMPLETED'){ %>
-				<% link = "/user_projects/"+user.username+"/"+directory+"/OLIGOTYPE/HTML-OUTPUT/index.html" %>
-				<!-- <a id='html_link' href='<%= link %>' onclick='window.open(this.href+"?rando="+rando,"_blank");return false;' target='_blank'>Open HTML</a> -->
-				
-			<% }else{ %>
-							
-			<% } %>
+                <% if(oligo_status == 'COMPLETED'){ %>
+                    ** <a href='<%= html_link %>' target='_blank'>Open HTML</a> **
+                <% }else{ %>            
+                  View HTML            
+                <% } %>
+
 			</div>
-			<div id='html_link'>View HTML</div>
-			<div id='html_link_info'></div>	
 		</td>
 			
 	

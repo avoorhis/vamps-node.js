@@ -242,17 +242,17 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
                     fs.writeFile(config_file_path, config_text, function writeConfigFile(err) {
                         if(err) { return console.log(err); }
                         console.log("The Config file was saved!");
-                        //res.send('OK')
+                        
                         return
-                        //res.redirect('project_list')
+                        
                     })
                   });  // on
               }) // chmod
           })
           //res.send('OK')
-          //res.redirect('project_list')
-          res.send('OK')
-        return
+          res.redirect('project_list')
+          //res.send('OK')
+        //return
           
         }
       }
@@ -400,7 +400,7 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
 //
 router.get('/project_list', helpers.isLoggedIn, function (req, res) {
     //console.log(PROJECT_INFORMATION_BY_PNAME);
-    console.log('in oligo : project_list')
+    console.log('GET in oligo : project_list')
     //var pwd = req.CONFIG.PROCESS_DIR;
     var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     //var user_dir_path = path.join(pwd,','user_projects');
@@ -408,7 +408,6 @@ router.get('/project_list', helpers.isLoggedIn, function (req, res) {
 console.log('user_dir_path '+user_dir_path)
     var project_info = {};
     var file_info = [];
-
      fs.readdir(user_dir_path, function readProjectsDir(err, items) {
             if (err) { return console.log(err); }
             project_info = {}
@@ -419,7 +418,6 @@ console.log('user_dir_path '+user_dir_path)
                     var oligo_code = pts[1];
                     project_info[oligo_code] = {};
                     var stat = fs.statSync(path.join(user_dir_path, items[d]));
-
                     if (stat.isDirectory()) {
                         // stat.mtime.getTime() is for sorting to list in oreder
 
@@ -431,7 +429,6 @@ console.log('user_dir_path '+user_dir_path)
                         project_info[oligo_code].fasta_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-FASTA')) ? 'COMPLETED' : ''
                         project_info[oligo_code].entropy_status = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-ENTROPY')) ? 'COMPLETED' : ''
                         project_info[oligo_code].oligo_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-OLIGO')) ? 'COMPLETED' : ''
-
                         try{
                             var config = iniparser.parseSync(config_file);
 
@@ -448,9 +445,10 @@ console.log('user_dir_path '+user_dir_path)
                             project_info[oligo_code].start_date = stat.mtime.toISOString().substring(0,10);
                             project_info[oligo_code].directory = items[d];
                             project_info[oligo_code].cutoff = config['MAIN']['pynast_cutoff_length'];
+                           
                         }
                         catch(e){
-                          console.log('Config file ERROR',data_repo_path)
+                          console.log('Config file ERROR',data_repo_path)                     
                         }
 
                     }
@@ -462,7 +460,7 @@ console.log('user_dir_path '+user_dir_path)
               return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
             });
             //console.log(project_info)
-            //console.log(file_info)
+            //console.log(file_info)            
             res.render('oligotyping/oligotyping_project_list',
                 { title: 'User Projects',
                   pinfo: JSON.stringify(project_info),
@@ -494,7 +492,16 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   fasta_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-FASTA')) ? 'COMPLETED' : ''
   entropy_status = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-ENTROPY')) ? 'COMPLETED' : ''
   oligo_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-OLIGO')) ? 'COMPLETED' : ''
-
+  var html_link_path = path.join(data_repo_path, 'html_link.txt');
+  var html_link = ''
+  if(fs.existsSync(html_link_path) && oligo_status == 'COMPLETED'){
+    html_link = String(fs.readFileSync(html_link_path))
+    console.log('html_link')
+    console.log(html_link)
+  }else{
+    console.log('no html_link')
+  }
+  
   console.log(config)
   console.log(fasta_status,' - ',entropy_status,' - ',oligo_status)
   res.render('oligotyping/oligotyping_project',
@@ -504,6 +511,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
                   fasta_status   : fasta_status,
                   entropy_status : entropy_status,
                   oligo_status   : oligo_status,
+                  html_link      : html_link,
                   directory : config['MAIN']['directory'],
                   path :      config['MAIN']['path'],
                   rank :      config['MAIN']['rank'],
@@ -884,10 +892,12 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
                        });
                        //var link = "/oligotyping/projects/"+req.user.username+"_OLIGOTYPING_"+oligo_code+"/HTML-OUTPUT/index.html?rando="+rando.toString()
                        var link = '/user_projects/'+req.user.username+'_oligotyping-'+oligo_code+'_'+rando.toString()+'/index.html'
-                       var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **"
+                       var html_link_file = path.join(data_repo_path, 'html_link.txt');
+                       fs.writeFileSync(html_link_file, link)
+                       //var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **"
                        console.log(link)
-                       console.log(html)
-                       res.send(html);
+                      
+                       res.send(link);
                        //res.redirect('/oligotyping/project/'+oligo_code)
                     });
                     // var rando = helpers.getRandomInt(10000,99999)
@@ -970,9 +980,22 @@ router.get('/delete/:code', helpers.isLoggedIn, function (req, res) {
   var oligo_code = req.params.code
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
   var olig_dir = 'oligotyping-'+oligo_code
-  var data_repo_path = path.join(user_dir_path, olig_dir);
-  console.log('path: '+data_repo_path)
-  helpers.deleteFolderRecursive(data_repo_path)
+  var data_repo_path1 = path.join(user_dir_path, olig_dir);
+  // path.join(req.CONFIG.PROCESS_DIR,'public','user_projects',req.user.username+'_'+olig_dir+'_'+rando.toString())
+  
+  console.log('path: '+data_repo_path1)
+  helpers.deleteFolderRecursive(data_repo_path1)
+  
+  
+  //var data_repo_path2 = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects',req.user.username+'_'+olig_dir)
+  var data_repo_path2 = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects')
+  fs.readdirSync(data_repo_path2).forEach(function(dir,index){
+        if(dir.includes(olig_dir)){
+            var curPath = data_repo_path2 + "/" + dir;
+            helpers.deleteFolderRecursive(curPath)
+        }
+        
+      });
   console.log('done')
   //res.send('OK')
   res.send('done')
