@@ -240,8 +240,8 @@ function transfer_file_for_download(script, ts) {
 
 
 // normalization radio-buttons
-var norm_counts_radios = document.getElementsByName('normalization');
-if (typeof norm_counts_radios[1] !=="undefined") {
+var norm_counts_radios = document.getElementsByName('normalization') || null;
+if (norm_counts_radios !== null) {
   norm_counts_radios[1].addEventListener('click', function () {
     //val = norm_counts_radios[1].value
     //alert('1 '+val)
@@ -249,8 +249,6 @@ if (typeof norm_counts_radios[1] !=="undefined") {
     document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
     document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
-}
-if (typeof norm_counts_radios[2] !=="undefined") {
   norm_counts_radios[2].addEventListener('click', function () {
     //val = norm_counts_radios[2].value
     //alert('2 '+val)
@@ -258,8 +256,6 @@ if (typeof norm_counts_radios[2] !=="undefined") {
     document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
     document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
-}
-if (typeof norm_counts_radios[3] !=="undefined") {
   norm_counts_radios[3].addEventListener('click', function () {
     //alert('3')
     document.getElementById('output_choices_submit_btn').disabled = false;
@@ -268,18 +264,14 @@ if (typeof norm_counts_radios[3] !=="undefined") {
   });
 }
 // include_nas radio-buttons
-var include_nas_radios = document.getElementsByName('include_nas');
-if (typeof include_nas_radios[1] !=="undefined") {
+var include_nas_radios = document.getElementsByName('include_nas') || null;
+if (include_nas_radios !== null) {
   include_nas_radios[1].addEventListener('click', function () {
-    //alert('1')
     document.getElementById('output_choices_submit_btn').disabled = false;
     document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
     document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
-}
-if (typeof include_nas_radios[2] !=="undefined") {
   include_nas_radios[2].addEventListener('click', function () {
-    //alert('2')
     document.getElementById('output_choices_submit_btn').disabled = false;
     document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
     document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
@@ -313,7 +305,7 @@ if (max_range_combo !== null) {
     document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
 }
-// Domains
+// Domains CheckBoxes
 var domain_ckbxs = document.getElementsByName('domains[]') || null;
 if (domain_ckbxs !== null) {
     //alert(typeof domain_ckbxs[0])

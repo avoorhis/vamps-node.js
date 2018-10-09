@@ -4,16 +4,16 @@
 <%   var pct_range = cnsts.PCT_RANGE  %>
 <%   var ranks     = cnsts.RANKS  %>
 
-Screening/Options: <%= pi.unit_choice %><br>
-<div id='screening_options_div' class='small_font' style='height:250px'>
+Screening/Options (<b><%= pi.unit_choice %></b>):<br>
+<div id='screening_options_div' class='small_font' style=''>
 <form id='' name='' method='POST' action='view_selection'>
 <table>
 <tr><td>
-<table class='small_font table table-striped' style='width:90%'>
+<table class='small_font table table-striped' style=''>
    
    
     <tr>
-        <td>Normalization of Counts:<br>
+        <td style=''><b>Normalization of Counts:</b><br>
             <% for (i in rows) { %>
             <%    if (rows[i].id === pi.normalization) { %>
                     <span title='<%= rows[i].brief %>'>
@@ -29,7 +29,7 @@ Screening/Options: <%= pi.unit_choice %><br>
         </td>
     </tr>
     <tr>
-        <td>Distance Metric:  &nbsp;&nbsp;          
+        <td><b>Distance Metric:</b>  &nbsp;&nbsp;          
             
             <select id='selected_distance' name='selected_distance' class='selectpicker'  data-style="btn btn-xs btn-info"  data-size="200" size='100' style='height:50px;'>
             <% for(d in distrows ) { %>
@@ -44,9 +44,8 @@ Screening/Options: <%= pi.unit_choice %><br>
         </td>
     </tr>
     <tr>
-        <td>Filter Matrix Rows by Frequency: Will remove rows if min/max exceded for ALL the datasets.<br>
-
-		  MIN: <select id='min_range' name='min_range' class='small_font'>
+        <td><b>Filter Matrix Rows by Frequency:</b> Will remove rows if min/max exceded for ALL the datasets.
+		  <br>MIN: <select id='min_range' name='min_range' class='small_font'>
 		    <% for( var n=0; n < pct_range.length-1; n++ ) {  %>
 		    <%    if(pi.min_range.toString() === pct_range[n].toString()) { %>
 		            <option value='<%= pct_range[n]  %>' selected='selected' ><%= pct_range[n] %>%</option>&nbsp;&nbsp; 
@@ -71,7 +70,7 @@ Screening/Options: <%= pi.unit_choice %><br>
     </tr>
 
     <tr>
-        <td>Include NAs (taxonomy not available)<br>
+        <td><b>Include NAs</b> (taxonomy <u>N</u>ot <u>A</u>vailable)
 <%      if(cnsts.show_nas.raw != 'true' ) { %>
             (represented in frequency table by '<%= cnsts.show_nas.string %>'):<br>  
 <%      } %>
@@ -92,6 +91,7 @@ Screening/Options: <%= pi.unit_choice %><br>
 </table>
 </td><td valign='top'>
 <% if(pi.unit_choice == 'tax_silva119_simple' || pi.unit_choice == 'tax_rdp2.6_simple'){ %>
+  <div id='' style='padding-left:25px;'>
     <table border='1' style=''>
     <tr><td valign='top' style='padding:5px'>
         <span class='bold_font'><span style='color:red;'>NEW<br></span> Included Domains:</span>
@@ -121,6 +121,7 @@ Screening/Options: <%= pi.unit_choice %><br>
     
     </td></tr>
     </table>
+  </div>
 <% }else{ %>
     <input type='hidden' name='domains' value='<%= pi.domains %>'>
     <input type='hidden' name='tax_depth' value='<%= pi.tax_depth %>'>

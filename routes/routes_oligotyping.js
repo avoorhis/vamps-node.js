@@ -143,7 +143,15 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
     q += " join dataset using (dataset_id)\n"
     q += " join project using (project_id)\n"
     q += " join family using(family_id)\n"
-    q += " where family_id='"+tax_obj.db_id+"'\n"
+    if(tax_obj.rank == 'family'){
+        q += " where family_id='"+tax_obj.db_id+"'\n"
+    }else if(tax_obj.rank == 'genus'){
+        q += " join genus using(genus_id)\n"
+        q += " where genus_id='"+tax_obj.db_id+"'\n"
+    }else{
+        console.log('OLIGOTYPE error: no usable rank')
+    }
+    
     q += " and dataset_id in('"+sql_dids+"') \n"
     console.log('query',q);
     var dataset_lookup = {}
@@ -156,7 +164,9 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
           throw err;
       } else {
         if(rows.length == 0){
-            res.json({res:'ZERO'})
+            //res.json({res:'ZERO'})
+            req.flash('fail', 'No DATA');
+            res.send(JSON.stringify({msg: 'No DATA Found'}))
         }else{
             
           
@@ -232,13 +242,17 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
                     fs.writeFile(config_file_path, config_text, function writeConfigFile(err) {
                         if(err) { return console.log(err); }
                         console.log("The Config file was saved!");
-                        
+                        //res.send('OK')
+                        return
+                        //res.redirect('project_list')
                     })
                   });  // on
               }) // chmod
           })
           //res.send('OK')
-          res.redirect('project_list')
+          //res.redirect('project_list')
+          res.send('OK')
+        return
           
         }
       }
@@ -386,7 +400,7 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
 //
 router.get('/project_list', helpers.isLoggedIn, function (req, res) {
     //console.log(PROJECT_INFORMATION_BY_PNAME);
-
+    console.log('in oligo : project_list')
     //var pwd = req.CONFIG.PROCESS_DIR;
     var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     //var user_dir_path = path.join(pwd,','user_projects');
@@ -561,6 +575,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
   var cmd_options2 = {
       exec: 'pynast',
       scriptPath : path.join(req.CONFIG.PATH_TO_PYNAST,'bin'),
+      //scriptPath : '',
       args :       [ '-t', tmpl_file,
                       '-i', fasta_file,
                       '-a', aligned_file,
@@ -603,7 +618,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
       fs.chmod(script_file_path, '0775', function chmodFile(err) {
           if (err) { return console.log(err);}
             var entropy_process = spawn( script_file_path, {}, {
-                               env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
+                               env:{ 'PATH':req.CONFIG.PATH2_7, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
                                detached: true,
                                stdio:['pipe', 'pipe', 'pipe']
                                  //stdio: [ 'ignore', null, log ]
@@ -630,7 +645,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
               // if present then update config file
 
               var minaligned_file = path.join(data_repo_path,'minaligned.fa-ENTROPY')
-              var pdf_file        = path.join(data_repo_path,'minaligned.fa-ENTROPY.pdf')
+              var pdf_file            = path.join(data_repo_path,'minaligned.fa-ENTROPY.pdf')
               var new_pdf_file        = path.join(data_repo_path,'minaligned.fa-ENTROPY.pdf')
               //var new_pdf_file = path.join(pwd,'tmp',req.user.username+'_'+oligo_code+'_minaligned.fa-ENTROPY.pdf');
               var ENTROPY_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-ENTROPY')
@@ -638,9 +653,9 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
                 if(err){return console.log(err) }
                 if (stats.isFile()) {
                   fs.stat(pdf_file, function checkFilePresence(err,stats){
-                    if(err){return console.log(err) }
+                    if(err){ return console.log(err) }
                     //fs.copy(pdf_file, new_pdf_file, {}, function(err){
-                    //  if(err){return console.log(err) }
+                      //if(err){return console.log(err) }
                       console.log('COPIED')
                       if (stats.isFile()) {
                         status = 'entropy_status=COMPLETE\n'
@@ -669,9 +684,64 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
+
+router.post('/view_pdf', function(req, res, next) {
+  console.log('in oligo - view_pdf-->>')
+  console.log(req.body);
+  console.log('<<--in oligo - view_pdf')
+  var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+  var olig_dir = 'oligotyping-'+req.body.oligo_code
+  var data_repo_path = path.join(user_dir_path, olig_dir);
+  var pdf_file_path = path.join(data_repo_path,'minaligned.fa-ENTROPY.pdf')
+  console.log(pdf_file_path)
+  //var stream = fs.readStream(pdf_file);
+  // var rs = new Readable();
+  // var stream = fs.createReadStream(pdf_file_path, 'binary');
+//   var data = fs.readFileSync(pdf_file_path);
+  //var filename = "minaligned.fa-ENTROPY.pdf"; 
+  //res.setHeader('Content-disposition', 'inline; filename="' + filename + '"');
+  //res.setHeader('Content-type', 'application/pdf');
+  //var link = '/user_projects/'+req.user.username+'_oligotyping-'+oligo_code+'_'+'/index.html'
+  //var html = "** <a href='"+pdf_file_path+"' target='_blank'>Open PDF</a> **"
+   //console.log(link)
+   //console.log(html)
+   //stream.pipe(res);
+   //res.send(pdf_file_path);
+   fs.readFile(pdf_file_path, function (err,data){
+        res.contentType("application/pdf");
+        res.send(data);
+    });
+   
+//res.contentType("application/pdf");
+//res.end(data);
+  //res.send()
+})
+//
+//
+//
+router.post('/open_html', function(req, res, next) {
+    console.log('in oligo - open_html-->>')
+    console.log(req.body);
+    console.log('<<--in oligo - open_html')
+    
+    //var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+    //var olig_dir = 'oligotyping-'+req.body.oligo_code
+    //var data_repo_path = path.join(user_dir_path, olig_dir);
+   
+    //var html = path.join(data_repo_path,'OLIGOTYPING','HTML-OUTPUT','index.html')
+    var html = path.join('tmp','avoorhis_oligo_1538593525362','index.html')
+    console.log(html)
+    window.open(html,'_blank')
+    
+    
+})
+//
+//
+//
 router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
   console.log('in oligo - oligo-->>')
   console.log(req.body);
+  console.log(req.params);
   console.log('<<--in oligo - oligo')
 
   var oligo_code = req.params.code
@@ -713,7 +783,8 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
   var out_dir  = 'OLIGOTYPE'
   var out_oligotype_path  = path.join(data_repo_path, out_dir);
 
-  var page_title = '"('+family+')-'+req.body.directory+'"'
+  //var page_title = '"('+family+')-'+req.body.directory+'"'
+  var page_title = '"'+req.user.username+' run code: '+oligo_code+'"'
   //var cutoff = req.body.cutoff
   if(genus != 'none'){
     g = '-g '+ genus
@@ -783,15 +854,42 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
               //var minaligned_file = path.join(data_repository,'minaligned.fa-ENTROPY')
               //var pdf_file        = path.join(data_repository,'minaligned.fa-ENTROPY.pdf')
               var OLIGO_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-OLIGO')
-              fs.stat(out_oligotype_path, function checkDirPresence(err,stats){
-                if(err){return console.log(err) }
-                if (stats.isDirectory()) {
+              var html_dir = path.join(out_oligotype_path,'HTML-OUTPUT')
+              //var destination = path.join(req.CONFIG.PROCESS_DIR,'tmp',req.user.username+'_'+olig_dir)
+              var rando = helpers.getRandomInt(10000,99999)
+              var destination = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects',req.user.username+'_'+olig_dir+'_'+rando.toString())
+              
+              fs.stat(html_dir, function checkDirPresence(err, stats){
+                if(err){
+                    status = 'oligo_status=FAIL\n'
+                    console.log('FAIL fs.stat no html_dir')
+                    //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
+                    res.send('ERROR - HTML-OUTPUT not found:<br>Most likely because no remaining oligotypes.<br>Try changing tags (-a,-A,-M or -s)');
+                }else if (stats.isDirectory()) {
                     status = 'oligo_status=COMPLETE\n'
+                    console.log('SUCCESS fs.stat html_dir found')
                     //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
                     fs.closeSync(fs.openSync(OLIGO_SUCCESS_FILE, 'w'));
-
-                    console.log('redirecting back to project page')
-                    res.redirect('/oligotyping/project/'+oligo_code)
+                    var ncp = require('ncp').ncp;
+                    var chmodr = require('chmodr');
+                    ncp(html_dir, destination, function (err) {
+                       if (err) {   return console.error(err);  }
+                       console.log('redirecting back to project page')
+                       chmodr(destination, 0o777, (err) => {
+                        if (err) {
+                            console.log('Failed to execute chmodr', err);
+                        } else {
+                            console.log('Success');
+                        }
+                       });
+                       //var link = "/oligotyping/projects/"+req.user.username+"_OLIGOTYPING_"+oligo_code+"/HTML-OUTPUT/index.html?rando="+rando.toString()
+                       var link = '/user_projects/'+req.user.username+'_oligotyping-'+oligo_code+'_'+rando.toString()+'/index.html'
+                       var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **"
+                       console.log(link)
+                       console.log(html)
+                       res.send(html);
+                       //res.redirect('/oligotyping/project/'+oligo_code)
+                    });
                     // var rando = helpers.getRandomInt(10000,99999)
                     // var link = "/oligotyping/projects/"+req.user.username+"_OLIGOTYPING_"+oligo_code+"/HTML-OUTPUT/index.html?rando="+rando.toString()
                     // var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **"
@@ -800,7 +898,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
                 }else{
                   status = 'oligo_status=FAIL\n'
                   //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
-                  res.send('ERROR');
+                  res.send('ERROR - unknown error');
                 }
 
 
