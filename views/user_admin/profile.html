@@ -1,0 +1,60 @@
+<% menu_section='MORE' %>
+<% include ../add_ins/begin.ejs %>
+<div class="title fa fa-anchor">User Profile</div>
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+<% } %>
+  <br>
+  <!-- USER INFORMATION -->
+  <div class="row">
+    <div class="col-lg-3"></div>
+      <div class="col-lg-6">
+    <div class="well">
+      <h3><span class="fa fa-user"></span></h3>
+
+        <p>
+          <strong>UserID</strong>: <%= user.user_id %>
+          <% if(user.username !== 'guest'){ %>
+            <a class='pull-right' href='change_password'>Change Password</a><br>
+          <% } %>
+          <strong>username</strong>: <%= user.username %><br>
+          <strong>First Name</strong>: <%= user.first_name %><br>
+          <strong>Last Name</strong>: <%= user.last_name %><br>
+          <strong>Email</strong>: <%= user.email %><br>
+          <strong>Institution</strong>: <%= user.institution %><br>
+          <% if(user.security_level === 1) { %>
+            <strong>Security Level</strong>: <%= user.security_level %> (Administrator) -- Access to all the data and administrative pages.<br>
+          <% }else if(user.security_level === 10) { %>
+            <strong>Security Level</strong>: <%= user.security_level %> (MBL User) -- Access to all the projects public and private.<br>
+          <% }else if(user.security_level === 45) { %>
+            <strong>Security Level</strong>: <%= user.security_level %> (CoDL Metadata Editor) -- Access to Edit CoDL (DCO) Metadata.<br>  
+          <% }else if(user.security_level === 50) { %>
+            <strong>Security Level</strong>: <%= user.security_level %> (Registered User) -- Public project access plus other projects with permission.<br>
+          <% }else { %>
+            <strong>Security Level</strong>: <%= user.security_level %> (Guest) -- Public project access only<br>
+          <% } %> 
+          <% if(user.security_level == 1 || user.username == 'apprill') { %>          
+                <div style='padding-left:20px;'>
+                _________________________________
+                <br>
+                <strong>Upload File</strong>:<input id='myFile' type="file" name="upload_files" class=""  >
+                <input  type="SUBMIT" onclick="upload_file('<%= user.username %>')" style='margin-top:5px'>
+                </div>
+                <br>
+                <div id='bar_div' class="progress" style='display:none'>
+                  <div id='bar' class="progress-bar progress-bar-success" role="progressbar" aria-valuenow=""
+                            aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                  </div>
+                </div>
+          <% } %>
+        </p>
+    </div>
+  </div>
+
+</div>
+<% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/user_data.js"></script> 
+ </body>
+ </html>
