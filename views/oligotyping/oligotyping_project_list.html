@@ -1,21 +1,19 @@
 <% include ../add_ins/begin.ejs %>
 <% var oligo_info = JSON.parse(pinfo) %>
 <% var sort_info = JSON.parse(finfo) %>
-<%= console.log(messages) %>
+
 <% if (messages.success) { %>
   	<div class="alert_flash_message_success"><%= messages.success %></div>
 <% }else if(messages.fail){ %>
     <div class="alert_flash_message_fail"><%= messages.fail %></div>
 <% } %>
 
-
 <div class='pull-right'>
  		<br><a id='' href='/visuals/visuals_index' class='btn btn-sm btn-primary'>New Oligotyping Project</a>
 </div>
 
-
 <div class="hero-unit">
-	       <h2>Oligotyping Project Status</h2>
+	       <h2>Oligotyping Project Status <small>[<a href='project_list'>Refresh List</a>]</small></h2>
 </div>
 	<% for(n in sort_info){ %>
 		<%	var code = sort_info[n].oligo_code  %>
@@ -74,7 +72,6 @@
 	</table>
 </div>
 <% } %>
-
 
 <% include ../add_ins/end.ejs %>
 

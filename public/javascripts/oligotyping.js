@@ -63,33 +63,39 @@ function get_oligotype_seqs(){
 //   xmlhttp.send(JSON.stringify(args));
 }
 
-function search_for_sequences(){
-    var form = document.getElementById("export_data_form")
-    var tax_obj = form.elements['tax_obj'].value
-    // /oligotyping/project_list2
-    var args = {'tax_obj':tax_obj}
-    args.tax_string = form.elements['tax_string'].value
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("POST", "/oligotyping/project_list2", true);
-    xmlhttp.setRequestHeader("Content-type","application/json");
-    xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-          //alert(xmlhttp.responseText)
-          console.log('home')
-          try{
-            var response = JSON.parse(xmlhttp.responseText);
-            alert(response.msg)
-          }catch(e){
-            console.log('in try:err')
-            var xmlhttp2 = new XMLHttpRequest();
-            xmlhttp2.open("GET", "/oligotyping/project_list", true);
-            xmlhttp2.send()
-          }
-                
-        }
-    }
-    xmlhttp.send(JSON.stringify(args));
-}
+// function search_for_sequences(){
+//     var form = document.getElementById("export_data_form")
+//     var tax_obj = form.elements['tax_obj'].value
+//     // /oligotyping/project_list2
+//     var args = {'tax_obj':tax_obj}
+//     args.tax_string = form.elements['tax_string'].value
+//     var xmlhttp = new XMLHttpRequest();
+//     xmlhttp.open("POST", "/oligotyping/project_list2", true);
+//     xmlhttp.setRequestHeader("Content-type","application/json");
+//     xmlhttp.onreadystatechange = function() {
+//         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+//           //alert(xmlhttp.responseText)
+//           //console.log('home')
+//           try{
+//             var response = JSON.parse(xmlhttp.responseText);
+//             alert(response.msg)
+//           }catch(e){
+//             console.log('in try:err')
+//             var xmlhttp2 = new XMLHttpRequest();
+//             xmlhttp2.onreadystatechange=function() {
+//                 if (xmlhttp2.readyState==4 && xmlhttp2.status==200) {
+//                         var response = xmlhttp2.responseText;
+//                         console.log(response)
+//                 }
+//             }
+//             xmlhttp2.open("GET", "/oligotyping/project_list", true);
+//             xmlhttp2.send()
+//           }
+//                 
+//         }
+//     }
+//     xmlhttp.send(JSON.stringify(args));
+// }
 function get_oligotype_seqs2(){
 
 	var tax_string = document.getElementById("livesearch_result_div").value
@@ -148,7 +154,7 @@ function view_entropy(code){
                 alert(response)
                 //document.getElementById('pdf_link').innerHTML = response
                 window.open(response)
-                //document.getElementById('html_link_info').innerHTML = ''
+                //document.getElementById('html_link_div').innerHTML = ''
         }
     }
     xmlhttp.send(JSON.stringify(args));
@@ -157,8 +163,8 @@ function run_oligotyping(btn, code){
 	
 
 	var form = document.getElementById("oligotyping_form_id")
-	document.getElementById("html_link_info").innerHTML = 'Status: Running'
-	//document.getElementById("html_link").disabled = true
+	document.getElementById("html_link_div").innerHTML = 'Status: Running'
+	//document.getElementById("html_link_div").disabled = true
 	var html_dir = "/oligotyping/projects/"+form.elements['username'].value+'_'+'OLIGOTYPING_'+code
 	var args = {'code':code}
 	args.family = form.elements['family'].value
@@ -171,7 +177,7 @@ function run_oligotyping(btn, code){
     //alert(args.MIN_PERCENT_ABUNDANCE)
 	if(btn =='rerun'){
 		var c_el = document.getElementById("largeC")
-		//document.getElementById("html_link_btn").disabled = true
+		//document.getElementById("html_link_div").disabled = true
 		args.SELECTED_COMPONENTS = form.elements['SELECTED_COMPONENTS'].value
 		var oligo_text = "To re-run:<br>Enter Selected Components \
 												<br>(a comma separated list of base locations). \
@@ -198,9 +204,22 @@ function run_oligotyping(btn, code){
     xmlhttp.onreadystatechange=function() {
         if (xmlhttp.readyState==4 && xmlhttp.status==200) {
                 var response = xmlhttp.responseText;
-                //alert(response)
-                document.getElementById('html_link').innerHTML = response
-                document.getElementById('html_link_info').innerHTML = ''
+                var html = "** <a href='"+response+"' target='_blank'>Open HTML</a> **"
+                document.getElementById('html_link_div').innerHTML = html
+                // 2 change button to Re-Run (from run)
+                var rerun_button_text = "To re-run:<br>Enter Selected Components"
+                rerun_button_text += "<br>(a comma separated list of base locations)."
+                rerun_button_text += "<br>For help choosing use either the<br>entropy graph or the Oligotyping HTML Page.<br>"
+                                        
+                rerun_button_text += "<input type='button' id=''  class='btn btn-xs btn-primary' value='re-Run Oligo' onclick=\"run_oligotyping('rerun','"+ code +"')\" />"
+                                        
+                rerun_button_text += "( <a href='/oligotyping/rewind/"+ code +"/oligo' class='btn btn-xs btn-link' >Re-wind to here</a> )"
+                //var rerun_button_text = "<input type='button' id=''  class='btn btn-xs btn-primary' value='re-Run Oligo' onclick=\"run_oligotyping('rerun','"+ code +"')\" />"
+                
+                document.getElementById('rerun_btn').innerHTML = rerun_button_text
+                // ** change -c to -C
+                var rerun_C = "-C <input id='largeC' type='text' name='SELECTED_COMPONENTS' value='' maxlength='30' size='10'> SELECTED_COMPONENTS [ no default ]"
+                document.getElementById('rerun_C').innerHTML = rerun_C
         }
     }
     xmlhttp.send(JSON.stringify(args));
