@@ -205,9 +205,21 @@ function run_oligotyping(btn, code){
         if (xmlhttp.readyState==4 && xmlhttp.status==200) {
                 var response = xmlhttp.responseText;
                 var html = "** <a href='"+response+"' target='_blank'>Open HTML</a> **"
-                //alert(response)
                 document.getElementById('html_link_div').innerHTML = html
+                // 2 change button to Re-Run (from run)
+                var rerun_button_text = "To re-run:<br>Enter Selected Components"
+                rerun_button_text += "<br>(a comma separated list of base locations)."
+                rerun_button_text += "<br>For help choosing use either the<br>entropy graph or the Oligotyping HTML Page.<br>"
+                                        
+                rerun_button_text += "<input type='button' id=''  class='btn btn-xs btn-primary' value='re-Run Oligo' onclick=\"run_oligotyping('rerun','"+ code +"')\" />"
+                                        
+                rerun_button_text += "( <a href='/oligotyping/rewind/"+ code +"/oligo' class='btn btn-xs btn-link' >Re-wind to here</a> )"
+                //var rerun_button_text = "<input type='button' id=''  class='btn btn-xs btn-primary' value='re-Run Oligo' onclick=\"run_oligotyping('rerun','"+ code +"')\" />"
                 
+                document.getElementById('rerun_btn').innerHTML = rerun_button_text
+                // ** change -c to -C
+                var rerun_C = "-C <input id='largeC' type='text' name='SELECTED_COMPONENTS' value='' maxlength='30' size='10'> SELECTED_COMPONENTS [ no default ]"
+                document.getElementById('rerun_C').innerHTML = rerun_C
         }
     }
     xmlhttp.send(JSON.stringify(args));
