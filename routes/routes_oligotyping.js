@@ -483,6 +483,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   //var pwd = req.CONFIG.PROCESS_DIR;
   //var user_dir_path = path.join(pwd,'public','user_projects');
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+  var real_html_path = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects') //,req.user.username+'_'+olig_dir+'_'+rando.toString())
   var olig_dir = 'oligotyping-'+oligo_code
   var data_repo_path = path.join(user_dir_path, olig_dir);
   var config_file = path.join(data_repo_path, 'config.ini');
@@ -493,17 +494,31 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   entropy_status = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-ENTROPY')) ? 'COMPLETED' : ''
   oligo_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-OLIGO')) ? 'COMPLETED' : ''
   var html_link_path = path.join(data_repo_path, 'html_link.txt');
-  var html_link = ''
+  var current_html_link = ''
   if(fs.existsSync(html_link_path) && oligo_status == 'COMPLETED'){
-    html_link = String(fs.readFileSync(html_link_path))
-    console.log('html_link')
-    console.log(html_link)
+    current_html_link = String(fs.readFileSync(html_link_path))
+    console.log('current_html_link')
+    console.log(current_html_link)
   }else{
-    console.log('no html_link')
+    console.log('no current_html_link')
   }
   
   console.log(config)
   console.log(fasta_status,' - ',entropy_status,' - ',oligo_status)
+  var link_path
+  var processed_oligo_runs = []
+  fs.readdir(real_html_path, (err, files) => {
+    files.forEach(file => {
+        if(file.includes(olig_dir)){
+            link_path = path.join('/user_projects',file,'index.html')
+            console.log('FOUND '+link_path)
+            processed_oligo_runs.push({"name":file,"link":link_path})
+        }
+        
+        
+    });
+    
+  
   res.render('oligotyping/oligotyping_project',
                 { title: 'Oligotype Project',
 
@@ -511,7 +526,8 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
                   fasta_status   : fasta_status,
                   entropy_status : entropy_status,
                   oligo_status   : oligo_status,
-                  html_link      : html_link,
+                  html_link      : current_html_link,
+                  runs           : JSON.stringify(processed_oligo_runs),
                   directory : config['MAIN']['directory'],
                   path :      config['MAIN']['path'],
                   rank :      config['MAIN']['rank'],
@@ -522,7 +538,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
                   user: req.user, hostname: req.CONFIG.hostname
   });
 
-
+  })  // end readdir
 
 
 
@@ -895,9 +911,9 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
                        var html_link_file = path.join(data_repo_path, 'html_link.txt');
                        fs.writeFileSync(html_link_file, link)
                        //var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **"
-                       console.log(link)
+                       console.log({"link":link,"rando":rando.toString()})
                       
-                       res.send(link);
+                       res.json({"link":link,"rando":rando.toString()});
                        //res.redirect('/oligotyping/project/'+oligo_code)
                     });
                     // var rando = helpers.getRandomInt(10000,99999)

@@ -203,27 +203,50 @@ function run_oligotyping(btn, code){
     xmlhttp.setRequestHeader("Content-type","application/json");
     xmlhttp.onreadystatechange=function() {
         if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-                var response = xmlhttp.responseText;
-                var html = "** <a href='"+response+"' target='_blank'>Open HTML</a> **"
-                document.getElementById('html_link_div').innerHTML = html
-                // 2 change button to Re-Run (from run)
-                var rerun_button_text = "To re-run:<br>Enter Selected Components"
-                rerun_button_text += "<br>(a comma separated list of base locations)."
-                rerun_button_text += "<br>For help choosing use either the<br>entropy graph or the Oligotyping HTML Page.<br>"
-                                        
-                rerun_button_text += "<input type='button' id=''  class='btn btn-xs btn-primary' value='re-Run Oligo' onclick=\"run_oligotyping('rerun','"+ code +"')\" />"
-                                        
-                rerun_button_text += "( <a href='/oligotyping/rewind/"+ code +"/oligo' class='btn btn-xs btn-link' >Re-wind to here</a> )"
-                //var rerun_button_text = "<input type='button' id=''  class='btn btn-xs btn-primary' value='re-Run Oligo' onclick=\"run_oligotyping('rerun','"+ code +"')\" />"
-                
-                document.getElementById('rerun_btn').innerHTML = rerun_button_text
-                // ** change -c to -C
-                var rerun_C = "-C <input id='largeC' type='text' name='SELECTED_COMPONENTS' value='' maxlength='30' size='10'> SELECTED_COMPONENTS [ no default ]"
-                document.getElementById('rerun_C').innerHTML = rerun_C
+            var resp = JSON.parse(xmlhttp.responseText);
+            var link = resp.link;
+            var rando =    resp.rando;
+
+            var html = "<form id='oligotyping_form_id' class='' method='post' action='/oligotyping/oligo/"+code+"'>"		
+            html += "<table class='table' border='0'><tr><td>Oligotyping</td><td>COMPLETED</td><td><table><tr><td>"
+            html += "-C <input id='largeC' type='text' name='SELECTED_COMPONENTS' value='' maxlength='30' size='10'> SELECTED_COMPONENTS [ no default ]"
+            html += "</td></tr>"
+            html += "<tr><td>-a <input id='' type='text' name='MIN_PERCENT_ABUNDANCE' value='"+ args.MIN_PERCENT_ABUNDANCE +"' maxlength='3' size='2'> MIN_PERCENT_ABUNDANCE [ Default: 0.0 ]</td>"
+            html += "</tr>"
+            html += "<tr><td>-A <input id='' type='text' name='MIN_ACTUAL_ABUNDANCE' value='"+ args.MIN_ACTUAL_ABUNDANCE +"' maxlength='3' size='2'> MIN_ACTUAL_ABUNDANCE [ Default: 0 ]</td>"
+            html += "</tr>"
+            html += "<tr><td>-M <input id='' type='text' name='MIN_SUBSTANTIVE_ABUNDANCE' value='"+ args.MIN_SUBSTANTIVE_ABUNDANCE +"' maxlength='3' size='2'> MIN_SUBSTANTIVE_ABUNDANCE [ Default: 0 ]</td>"
+            html += "</tr>"
+            html += "<tr><td>-s <input id='' type='text' name='MIN_NUMBER_OF_SAMPLES' value='"+ args.MIN_NUMBER_OF_SAMPLES +"' maxlength='3' size='2'> MIN_NUMBER_OF_SAMPLES [ Default: 5 ]</td>"
+            html += "</tr>"
+            html += "</table>"
+            html += "</td>"
+            html += "<td>"
+            html += "To re-run:<br>Enter Selected Components"
+            html += "<br>(a comma separated list of base locations)."
+            html += "<br>For help choosing use either the<br>entropy graph or the Oligotyping HTML Page."
+            html += "<br>"
+            html += "<input type='button' id=''  class='btn btn-xs btn-primary' value='re-Run Oligo' onclick=\"run_oligotyping('rerun','"+code+"')\" />"
+            html += "( <a href='/oligotyping/rewind/"+code+"/oligo' class='btn btn-xs btn-link' >Re-wind to here</a> )"
+            html += "</td>"
+            html += "<td>"
+            html += "<div id='html_link_div'>"
+            html += "** <a href='"+ link +"' target='_blank'>Open Current HTML: "+rando+"</a> **"
+            html += "</div></td></tr></table>"
+            html += "<input type='hidden' name='directory' value='"+form.elements['directory'].value+"' />"
+            html += "<input type='hidden' name='code' value='"+code+"' />"
+            html += "<input type='hidden' name='rank' value='"+form.elements['rank'].value+"' />"
+            html += "<input type='hidden' name='family' value='"+ args.family +"' />"
+            html += "<input type='hidden' name='genus' value='"+ args.genus +"' />"
+            html += "<input type='hidden' name='cutoff' value='"+form.elements['cutoff'].value+"' />"
+            html += "<input type='hidden' name='username' value='"+form.elements['username'].value+"' />"
+            html += "</form>"			
+
+            document.getElementById('rerun_div').innerHTML = html
         }
     }
     xmlhttp.send(JSON.stringify(args));
-	//form.submit()
+	
  
 }
 function open_html(code){
