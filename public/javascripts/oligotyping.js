@@ -127,19 +127,21 @@ function get_oligotype_seqs2(){
 //
 function delete_project(code){
 	var resp = confirm('are you sure?')
-	if(resp){		
-		var xmlhttp = new XMLHttpRequest();
-		xmlhttp.onreadystatechange=function() {
-            if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-                    var response = xmlhttp.responseText;
-                    document.getElementById(code).style.display = 'none';
-            }
-        }
-        xmlhttp.open("GET", "/oligotyping/delete/" + code, true);
-	    xmlhttp.send();
-    }else{
-		return
-	}
+	if(resp){
+	    var f = document.createElement("form");
+        //f.setAttribute('method',"GET");
+        f.setAttribute('action',"/oligotyping/delete/"+code);
+
+        
+        var submit = document.createElement('input');
+        submit.setAttribute('type', "submit");
+        f.appendChild(submit);
+        document.body.appendChild(f);
+
+        f.submit();
+        document.body.removeChild(f);
+
+    }
 
 }
 function view_entropy(code){

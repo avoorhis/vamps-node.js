@@ -495,6 +495,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   oligo_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-OLIGO')) ? 'COMPLETED' : ''
   var html_link_path = path.join(data_repo_path, 'html_link.txt');
   var current_html_link = ''
+  
   if(fs.existsSync(html_link_path) && oligo_status == 'COMPLETED'){
     current_html_link = String(fs.readFileSync(html_link_path))
     console.log('current_html_link')
@@ -994,6 +995,7 @@ router.get('/rewind/:code/:level', helpers.isLoggedIn, function (req, res) {
 router.get('/delete/:code', helpers.isLoggedIn, function (req, res) {
   console.log('in oligotyping delete')
   var oligo_code = req.params.code
+  console.log('code: '+oligo_code)
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
   var olig_dir = 'oligotyping-'+oligo_code
   var data_repo_path1 = path.join(user_dir_path, olig_dir);
@@ -1011,21 +1013,13 @@ router.get('/delete/:code', helpers.isLoggedIn, function (req, res) {
             helpers.deleteFolderRecursive(curPath)
         }
         
-      });
+  });
   console.log('done')
   //res.send('OK')
-  res.send('done')
+  //res.send('done')
+  res.redirect('/oligotyping/project_list')
   
 });
-// router.post('/go', helpers.isLoggedIn, function (req, res) {
-//   console.log('in go')
-//   var code = req.body.code
-//   var html = "** <a href='/tmp/projects/"+req.user.username+"_OLIGOTYPING_"+code+"/HTML-OUTPUT/index' target='_blank'>Open Emperor</a> **"
-//   console.log(html)
-
-//   res.send(html);
-//   return;
-// });
 
 //
 //
