@@ -20,6 +20,7 @@
 	       <h2>Oligotyping Project: <%= code %></h2>  
 	</div>
 	<a href='/oligotyping/project_list/'><<--back</a>&nbsp;&nbsp;<a href='/oligotyping/project/<%= code %>' class='btn btn-xs btn-primary ' >Refresh Page</a>
+	<button class='btn btn-xs btn-warning pull-right' onclick="delete_project('<%= code %>')" width='30'>&nbsp;&nbsp;Delete&nbsp;&nbsp;&nbsp;</button>
 	<br>
 	<br>Family: <%= family %>
 	<br>Genus: <%= genus %>
