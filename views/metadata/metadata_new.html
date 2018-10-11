@@ -130,16 +130,6 @@ var all_metadata = {}
 
 
         <div class="metadata">
-        <label class="col-sm-5" for="project_description">Project Description:</label>
-        <textarea class="textarea_long" id="project_description" name="project_description"
-                  placeholder="max length: 1000 chars">
-            <% if (typeof project_description !== 'undefined') { %>
-                <%= project_description %>
-            <% } %>
-        </textarea>
-        </div>
-
-        <div class="metadata">
         <label class="col-sm-5" id="domain_regions-legend">Domain and Region:</label>
         <table class="domain_regions">
             <% for (var i in domain_regions["domain_regions"]){ %>
@@ -190,11 +180,23 @@ var all_metadata = {}
         </div>
 
         <div class="metadata">
-            <label class="col-sm-5" for="reference">Project Description:</label>
+            <label class="col-sm-5" for="project_description">Project Description:</label>
+            <textarea class="textarea_long" id="project_description" name="project_description"
+                      placeholder="max length: 1000 chars">
+            <% if (typeof project_description !== 'undefined') { %>
+                <%= project_description %>
+            <% } %>
+        </textarea>
+        </div>
+
+        <div class="metadata">
+            <label class="col-sm-5" for="reference">Project Reference:</label>
             <textarea class="textarea_long" id="reference" name="reference"
-                      placeholder="">
-        <%= reference %>
-            </textarea>
+                      placeholder="max length: 1000 chars">
+            <% if (typeof reference !== 'undefined') { %>
+                <%= reference %>
+            <% } %>
+        </textarea>
         </div>
 
         <div class="metadata">

@@ -1,5 +1,5 @@
 <% include ../add_ins/begin.ejs %>
-
+<% runs = JSON.parse(runs) %>
 
 <% if (messages.success) { %>
   	<div class="alert_flash_message_success"><%= messages.success %></div>
@@ -20,9 +20,13 @@
 	       <h2>Oligotyping Project: <%= code %></h2>  
 	</div>
 	<a href='/oligotyping/project_list/'><<--back</a>&nbsp;&nbsp;<a href='/oligotyping/project/<%= code %>' class='btn btn-xs btn-primary ' >Refresh Page</a>
-	<br><br>
+	<button class='btn btn-xs btn-warning pull-right' onclick="delete_project('<%= code %>')" width='30'>&nbsp;&nbsp;Delete&nbsp;&nbsp;&nbsp;</button>
+	<br>
+	<br>Family: <%= family %>
+	<br>Genus: <%= genus %>
 <table class='table'>
 	<tr><th>Process</th><th>Status</th><th>Variables</th><th>Controls</th><th></th></tr>
+<!-- -------- fasta row ------------------------------------------------------------------------------------ -->
 	<tr>
 		<td>Fasta</td>
 		<td><%= fasta_status %></td>
@@ -38,6 +42,7 @@
 		</td>
 		<td>Download File</td>
 	</tr>
+<!-- -------- entropy row ------------------------------------------------------------------------------------ -->
 	<tr>
 		<td>Entropy</td>
 		<td><%= entropy_status %></td>
@@ -48,9 +53,14 @@
 					(<a href='/oligotyping/rewind/<%= code %>/entropy'  class='btn btn-xs btn-link' >Re-wind to here</a>)
 			</td>
 			<td>View Entropy Graph: 
-				<a href="/user_projects/<%= directory %>/minaligned.fa-ENTROPY.pdf" target='_blank'>click-to-open
-					
-				</a>
+				<!-- <a href="/user_projects/<%= user.username %>/<%= directory %>/minaligned.fa-ENTROPY.pdf" target='_blank'>click-to-open -->
+				<form method='POST' action='/oligotyping/view_pdf'>
+				  <input type='hidden' name='oligo_code' value='<%= code %>'>
+				  <!-- <input type='button' value='Click-To-View' onclick="view_entropy('<%= code %>')"> -->
+				  <input type='submit' value='Click-To-View' >
+				
+				</form>	
+				
 			</td>		
 			<!--
 			<td>View Entropy Graph: 
@@ -85,91 +95,122 @@
 		
 	<% } %>
 	</tr>
-	<!-- -------------------------------------------------------------------------------------------- -->
-	<form id='oligotyping_form_id' class='' method='post' action='/oligotyping/oligo/<%= code %>'>
+<!-- -------- oligotyping row ------------------------------------------------------------------------------------ -->
+
 	<tr>
-		<td>Oligotyping</td>
+		<td colspan='5'>
+<div id='rerun_div'>	
+<form id='oligotyping_form_id' class='' method='post' action='/oligotyping/oligo/<%= code %>'>			
+<table class='table' border='0'><tr><td>Oligotyping</td>
 		<td><%= oligo_status %></td>
+
 		<td>
-				<table>
-<% 			if(oligo_status == 'COMPLETED'){ %>
-				<tr>
-					<td>-C</td><td><input id='largeC' type='text' name='SELECTED_COMPONENTS' value='<%= SELECTED_COMPONENTS %>' maxlength='30' size='10'></td>
-					<td>SELECTED_COMPONENTS</td><td>[ no default ]</td>
-				</tr>
-<% 			}else{ %>
-						<tr><td>-c</td><td><input id='smallc' type='text' name='NUMBER_OF_AUTO_COMPONENTS' value='<%= NUMBER_OF_AUTO_COMPONENTS %>' maxlength='3' size='2'></td>
-							<td> NUMBER_OF_AUTO_COMPONENTS</td><td>[ Default: 2 ]</td>
-						</tr>
-<% 			} %>
-				<tr><td>-a</td><td> <input id='' type='text' name='MIN_PERCENT_ABUNDANCE' value='<%= MIN_PERCENT_ABUNDANCE %>' maxlength='3' size='2'></td>
-					<td> MIN_PERCENT_ABUNDANCE</td><td>[ Default: 0.0 ]</td>
-				</tr>
-				<tr><td>-A</td><td> <input id='' type='text' name='MIN_ACTUAL_ABUNDANCE' value='<%= MIN_ACTUAL_ABUNDANCE %>' maxlength='3' size='2'></td>
-					<td> MIN_ACTUAL_ABUNDANCE</td><td>[ Default: 0 ]</td>
-				</tr>
-				<tr><td>-M</td><td> <input id='' type='text' name='MIN_SUBSTANTIVE_ABUNDANCE' value='<%= MIN_SUBSTANTIVE_ABUNDANCE %>' maxlength='3' size='2'></td>
-					<td> MIN_SUBSTANTIVE_ABUNDANCE</td><td>[ Default: 0 ]</td>
-				</tr>
-				<tr><td>-s</td><td> <input id='' type='text' name='MIN_NUMBER_OF_SAMPLES' value='<%= MIN_NUMBER_OF_SAMPLES %>' maxlength='3' size='2'></td>
-					<td> MIN_NUMBER_OF_SAMPLES</td><td>[ Default: 5 ]</td>
-				</tr>
-		</table>
+
+	
+          <table>
+                
+            
+    <% 			if(oligo_status == 'COMPLETED'){ %>
+                    
+                        <tr><td>
+                          -C <input id='largeC' type='text' name='SELECTED_COMPONENTS' value='<%= SELECTED_COMPONENTS %>' maxlength='30' size='10'> SELECTED_COMPONENTS [ no default ]
+                        </td></tr>
+                    
+    <% 			}else{ %>
+                   
+                        <tr><td>
+                         -c <input id='smallc' type='text' name='NUMBER_OF_AUTO_COMPONENTS' value='<%= NUMBER_OF_AUTO_COMPONENTS %>' maxlength='3' size='2'> NUMBER_OF_AUTO_COMPONENTS [ Default: 2 ]
+                        </td></tr>
+                    
+    <% 			} %>
+
+
+                    <tr><td>-a <input id='' type='text' name='MIN_PERCENT_ABUNDANCE' value='<%= MIN_PERCENT_ABUNDANCE %>' maxlength='3' size='2'> MIN_PERCENT_ABUNDANCE [ Default: 0.0 ]</td>
+                    </tr>
+                    <tr><td>-A <input id='' type='text' name='MIN_ACTUAL_ABUNDANCE' value='<%= MIN_ACTUAL_ABUNDANCE %>' maxlength='3' size='2'> MIN_ACTUAL_ABUNDANCE [ Default: 0 ]</td>
+                    </tr>
+                    <tr><td>-M <input id='' type='text' name='MIN_SUBSTANTIVE_ABUNDANCE' value='<%= MIN_SUBSTANTIVE_ABUNDANCE %>' maxlength='3' size='2'> MIN_SUBSTANTIVE_ABUNDANCE [ Default: 0 ]</td>
+                    </tr>
+                    <tr><td>-s <input id='' type='text' name='MIN_NUMBER_OF_SAMPLES' value='<%= MIN_NUMBER_OF_SAMPLES %>' maxlength='3' size='2'> MIN_NUMBER_OF_SAMPLES [ Default: 5 ]</td>
+                    </tr>
+            </table>
+
 
 		</td>
+		
 		<td>
 						<% if(fasta_status === 'COMPLETED' && entropy_status === 'COMPLETED'){ %>
 									
-									<input type='hidden' name='directory' value='<%= directory %>' />
-									<input type='hidden' name='code' value='<%= code %>' />
-									<input type='hidden' name='rank' value='<%= rank %>' />
-									<input type='hidden' name='family' value='<%= family %>' />
-									<input type='hidden' name='genus' value='<%= genus %>' />
-									<input type='hidden' name='cutoff' value='<%= cutoff %>' />
-									<input type='hidden' name='username' value='<%= user.username %>' />
-								<div id='oligo_text'>
-											<% if(oligo_status === 'COMPLETED'){ %>
-												
-												To re-run:<br>Enter Selected Components
-												<br>(a comma separated list of base locations).
-												<br>For help choosing use either the<br>entropy graph or the Oligotyping HTML Page.
-												<br><input type='button' id=''  class='btn btn-xs btn-primary' value='re-Run Oligo' onclick="run_oligotyping('rerun','<%= code %>')" />
-												
-												( <a href='/oligotyping/rewind/<%= code %>/oligo' class='btn btn-xs btn-link' >Re-wind to here</a> )
-											<% }else{ %>
-												
-												Enter values for the command line parameters shown to the left
-												<br>or leave the defaults. The '-c' value should be<br>changed to be less than or equal to the number<br> of tall peaks from the entropy graph.
-												<br><input type='button' id=''  class='btn btn-xs btn-primary' value='Run Oligo' onclick="run_oligotyping('run','<%= code %>')" />
-											
-											<% } %>
-							 </div>
+									
+								
+                                    
+                                    <% if(oligo_status === 'COMPLETED'){ %>
+                                        
+                                        To re-run:<br>Enter Selected Components
+                                        <br>(a comma separated list of base locations).
+                                        <br>For help choosing use either the<br>entropy graph or the Oligotyping HTML Page.
+                                        <br>
+                                        
+                                          <input type='button' id=''  class='btn btn-xs btn-primary' value='re-Run Oligo' onclick="run_oligotyping('rerun','<%= code %>')" />
+                                        
+                                        ( <a href='/oligotyping/rewind/<%= code %>/oligo' class='btn btn-xs btn-link' >Re-wind to here</a> )
+                                    <% }else{ %>
+                                        
+                                        Enter values for the command line parameters shown to the left
+                                        <br>or leave the defaults. The '-c' value should be<br>changed to be less than or equal to the number<br> of tall peaks of interest from the entropy graph.
+                                        <br><input type='button' id=''  class='btn btn-xs btn-primary' value='Run Oligo' onclick="run_oligotyping('run','<%= code %>')" />
+                                    
+                                    <% } %>
+							 
 						<% }else{ %>
 							<a id=''  disabled class='btn btn-xs btn-primary' >Run Oligo</a>
 						<% } %>
 						
 		</td>
+
 		<td>
 			<div id='html_link_div'>
-			<% if(fasta_status == 'COMPLETED' && entropy_status == 'COMPLETED' && oligo_status == 'COMPLETED'){ %>
-				<% link = "/user_projects/"+directory+"/OLIGOTYPE/HTML-OUTPUT/index.html" %>
-				<a id='html_link' href='<%= link %>' onclick='window.open(this.href+"?rando="+rando,"_blank");return false;' target='_blank'>Open HTML</a>
-			<% }else{ %>
-							View HTML
-			<% } %>
-			</div>
-						<div id='html_link_info'></div>	
-		</td>
+                <% if(oligo_status == 'COMPLETED'){ %>
+                    <% var current_rando = html_link.substring(html_link.lastIndexOf('_')+1,html_link.lastIndexOf('/')) %>
+                    ** <a href='<%= html_link %>' target='_blank'>Open Current HTML: <%= current_rando %></a> **
+                    
+                    
+                <% }else{ %>            
+                  View HTML Here            
+                <% } %>
+            </div>
+            <% if(runs.length > 0){ %>
+                <br>
+                Previous Runs:<br>
+                <div id='' style='height:100px;overflow:auto; border-style:solid;border-width: 1px;'>
+                <% for (n in runs){ %>
+                    <br><a href='<%= runs[n].link %>' target='_blank'><%= runs[n].name %></a>
+                <% } %>
+                </div>
+                
+            <% } %>
 			
-	
+        </td>
+</tr></table>
+<input type='hidden' name='directory' value='<%= directory %>' />
+<input type='hidden' name='code' value='<%= code %>' />
+<input type='hidden' name='rank' value='<%= rank %>' />
+<input type='hidden' name='family' value='<%= family %>' />
+<input type='hidden' name='genus' value='<%= genus %>' />
+<input type='hidden' name='cutoff' value='<%= cutoff %>' />
+<input type='hidden' name='username' value='<%= user.username %>' />
+</form>	
+</div>   <!-- id='rerun_div' -->
+</td>	
 </tr>
-</form>
+
 	
 	
 </table>
 
 	
 <% include ../add_ins/end.ejs %>
- <script type="text/javascript" src="/javascripts/oligotyping.js"></script>  
+ <script type="text/javascript" src="/javascripts/oligotyping.js"></script> 
+ <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script> 
  </body>
  </html>
