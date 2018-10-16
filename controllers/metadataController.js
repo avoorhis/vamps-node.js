@@ -1,10 +1,10 @@
-var Project   = require(app_root + '/models/project_model');
-var Dataset   = require(app_root + '/models/dataset_model');
+var Project              = require(app_root + '/models/project_model');
+var Dataset              = require(app_root + '/models/dataset_model');
 var csv_files_controller = require(app_root + '/controllers/csvFilesController');
 // var User                 = require(app_root + '/models/user_model');
-var helpers   = require(app_root + '/routes/helpers/helpers');
-var CONSTS    = require(app_root + '/public/constants');
-var validator = require('validator');
+var helpers              = require(app_root + '/routes/helpers/helpers');
+var CONSTS               = require(app_root + '/public/constants');
+var validator            = require('validator');
 
 // var csv_files_controller = require(app_root + '/controllers/csvFilesController');
 
@@ -815,46 +815,42 @@ class CreateDataObj {
   }
 
   project_already_in_db(req, res, rows, new_project) {
-    var project_obj = new_project.project_obj;
+    var project_obj        = new_project.project_obj;
     // console.log("rows project_id?");
     project_obj.project_id = this.pid;
-    project_obj.pid = this.pid;
+    project_obj.pid        = this.pid;
     new_project.add_info_to_project_globals(project_obj, this.pid);
 
     this.make_new_project_for_form(project_obj);
   }
 
   req_form_isValid_and_new_project(req, res, new_project) {
-    var project_obj = new_project.project_obj;
+    const project_obj = new_project.project_obj;
 
     console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
-    // var that = this;
     new_project.addProject(project_obj, function (err, rows) {
         console.time("TIME: in post /metadata_new, add project");
-        // console.log("WWW", that.all_metadata);
         if (err) {
           console.log('WWW0 err', err);
           req.flash('fail', err);
-          const met_obj = new module.exports.CreateDataObj(req, res, 0, []);
-          var show_new = new module.exports.ShowObj(req, res, met_obj.all_metadata, met_obj.all_field_names4, met_obj.all_field_units);
+          const met_obj  = new module.exports.CreateDataObj(req, res, 0, []);
+          const show_new = new module.exports.ShowObj(req, res, met_obj.all_metadata, met_obj.all_field_names4, met_obj.all_field_units);
           show_new.show_metadata_new_again(req, res);
         }
         else {
-
           console.log('New project SAVED');
           console.log('WWW rows', rows);
-          var pid = rows.insertId;
+          const pid = rows.insertId;
           new_project.add_info_to_project_globals(project_obj, pid);
           const met_obj = new module.exports.CreateDataObj(req, res, pid, []);
           met_obj.make_new_project_for_form(project_obj);
         }
         console.timeEnd("TIME: in post /metadata_new, add project");
       }
-      // .bind(that)
     );
   }
 
-  }
+}
 
 class ShowObj {
 
@@ -961,7 +957,7 @@ class ShowObj {
       project_name  = project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
     }
 
-    req = helpers.collect_errors(req);
+    req      = helpers.collect_errors(req);
     this.req = req;
 
     res.render('metadata/metadata_new', {
