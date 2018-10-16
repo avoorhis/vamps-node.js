@@ -1232,7 +1232,7 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
   cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' '));
 
   if (req.CONFIG.cluster_available === true) {
-    qsub_script_text = this.get_qsub_script_text(log, req.CONFIG.TMP, site, code, cmd_list);
+    qsub_script_text = this.get_qsub_script_text(req, log, req.CONFIG.TMP, code, cmd_list);
     qsub_file_name   = req.user.username + '_qsub_export_' + ts + '.sh';
     qsub_file_path   = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp', qsub_file_name);
     console.log('RUNNING(via qsub):', cmd_list[0]);
@@ -1312,8 +1312,7 @@ module.exports.get_local_script_text = function (cmd_list) {
   return script_text;
 };
 
-//module.exports.get_qsub_script_text = function(log, pwd, site, name, cmd_list) {
-module.exports.get_qsub_script_text = function (req, log, dir_path, cmd_name, cmd_list) {
+module.exports.get_qsub_script_text = function (req, scriptlog, dir_path, cmd_name, cmd_list) {
   /*
    #!/bin/sh
    # CODE:
@@ -1331,7 +1330,7 @@ module.exports.get_qsub_script_text = function (req, log, dir_path, cmd_name, cm
    cat<<END | qsub
    #!/bin/bash
    #$ -j y
-   #$ -o "+log+"
+   #$ -o "+scriptlog+"
    #$ -N "+name+"
    #$ -cwd
    #$ -V
@@ -1372,7 +1371,7 @@ module.exports.get_qsub_script_text = function (req, log, dir_path, cmd_name, cm
   script_text += "cat<<END | qsub\n";
   script_text += "#!/bin/bash\n";
   script_text += "#$ -j y\n";
-  script_text += "#$ -o " + log + "\n";
+  script_text += "#$ -o " + scriptlog + "\n";
   script_text += "#$ -N " + cmd_name + "\n";
   //script_text += "#$ -p 100\n";   // priority default is 0
   script_text += "#$ -cwd\n";

@@ -1989,7 +1989,7 @@ function gastTax(req, project_config, ref_db)
   
   var scriptlog   = path.join(data_dir, 'cluster.log');
   
-  //make_gast_script_txt = helpers.get_qsub_script_text_only(scriptlog, data_dir, req.CONFIG.site, 'gastTax', cmd_list)
+  //make_gast_script_txt = helpers.get_qsub_script_text_only(req, scriptlog, data_dir, 'gastTax', cmd_list)
   //is_local = helpers.isLocal(req);
   // for tests: is_local = false;
   
