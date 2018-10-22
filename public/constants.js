@@ -14,8 +14,8 @@ var constants = {};
 //         'guest'     : 99    // public access
 //         }
 constants.default_taxonomy = {name: 'silva119', curator: 'SILVA (v119)', show: 'Silva-119'};
-console.log('in constants');
-console.log(constants.default_taxonomy);
+//console.log('in constants');
+//console.log(constants.default_taxonomy);
 constants.dataset_count_for_visuals_max    = 1100;
 constants.dataset_count_for_visuals_cutoff = 500;
 constants.show_nas                         = {"raw": false, "string": "--"};  // if raw==true will show class_NA, genus_NA etc; else show string (tax table only; not biom file)

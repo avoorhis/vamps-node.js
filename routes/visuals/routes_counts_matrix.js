@@ -268,7 +268,7 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 											// SCREEN DOMAINS
 											if( domain == 'Bacteria'
  													&& (post_items.domains.indexOf('Organelle') == -1) // Organelle has been de-selected
- 													&& tax_long_name.includes('Chloroplast')) {
+ 													&& tax_long_name.toLowerCase().includes('chloroplast')) {
  													//&& (tax_long_name.substring(0,20) == 'Bacteria;Chloroplast' || tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast')){
  														console.log('Excluding',tax_long_name)
  											}else{
@@ -284,7 +284,7 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 										// SCREEN DOMAINS
 										if( domain == 'Bacteria'
  													&& (post_items.domains.indexOf('Organelle') == -1) // Organelle has been de-selected
- 													&& tax_long_name.includes('Chloroplast')) {
+ 													&& tax_long_name.toLowerCase().includes('chloroplast')) {
  													//&& (tax_long_name.substring(0,20) == 'Bacteria;Chloroplast' || tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast')){
  														console.log('Excluding',tax_long_name)
             							}else{
