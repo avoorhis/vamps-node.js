@@ -156,13 +156,13 @@ module.exports.get_datasets = function(callback){
     //console.log('gp',gp)
     USER_GROUPS[gp] = []
     //ug_array.push(config.user_groups[gp])
-    console.log(config.user_groups[gp])
-    if(Array.isArray(config.user_groups[gp])){
-        console.log('UG is array')
-
-    }else{
-        console.log('UG is not Array')
-    }
+    // console.log(config.user_groups[gp])
+//     if(Array.isArray(config.user_groups[gp])){
+//         console.log('UG is array')
+// 
+//     }else{
+//         console.log('UG is not Array')
+//     }
     var q = 'SELECT project_id FROM project '+ config.user_groups[gp]
     ug_array.push({'q':q,'gp':gp})
   }
