@@ -91,12 +91,18 @@ Screening/Options (<b><%= pi.unit_choice %></b>):<br>
 </table>
 </td><td valign='top'>
 <% if(pi.unit_choice == 'tax_silva119_simple' || pi.unit_choice == 'tax_rdp2.6_simple'){ %>
+  <% if(pi.unit_choice == 'tax_silva119_simple'){ %>
+  <%      domains = cnsts.UNITSELECT.silva119_simple.domains %>
+  <% }else{ %>
+  <%      domains = cnsts.UNITSELECT.rdp2_6_simple.domains %>
+  <% } %>
   <div id='' style='padding-left:25px;'>
     <table border='1' style=''>
     <tr><td valign='top' style='padding:5px'>
         <span class='bold_font'><span style='color:red;'>NEW<br></span> Included Domains:</span>
-        <% for (i in cnsts.DOMAINS.domains) { %>
-        <%      domain = cnsts.DOMAINS.domains[i].name %>
+        
+        <% for (i in domains) { %>
+        <%      domain = domains[i] %>
         <%      if((pi.domains).includes(domain)){ %>
                     <br><input type='checkbox'  class='simple_taxa_silva_ckbx' checked='checked' value='<%= domain %>' name='domains[]' \>
             
@@ -111,10 +117,15 @@ Screening/Options (<b><%= pi.unit_choice %></b>):<br>
     
         <span class='bold_font'><span style='color:red;'>NEW<br></span> Taxonomic Depth:</span>
         <% for(n in ranks) { %>
+            <% if(ranks[n].substr(0,5) == 'klass'){ %>
+                <% rank = 'Class' %>
+            <% }else{ %>
+                <% rank = ranks[n].replace(/^\w/, c => c.toUpperCase()) %>
+            <% } %>
             <% if(pi.tax_depth == ranks[n]){ %>
-                <br><input type='radio' checked='checked' id='' name='tax_depth' value='<%= ranks[n] %>'  \> <%= ranks[n].replace(/^\w/, c => c.toUpperCase()) %></li>
+                <br><input type='radio' checked='checked' id='' name='tax_depth' value='<%= ranks[n] %>'  \> <%= rank %></li>
             <% }else{ %>   
-                <br><input type='radio' id='' name='tax_depth' value='<%= ranks[n] %>'  \> <%= ranks[n].replace(/^\w/, c => c.toUpperCase()) %></li>
+                <br><input type='radio' id='' name='tax_depth' value='<%= ranks[n] %>'  \> <%= rank %></li>
             <% } %>   
         <% } %>  
     
@@ -122,6 +133,7 @@ Screening/Options (<b><%= pi.unit_choice %></b>):<br>
     </td></tr>
     </table>
   </div>
+  
 <% }else{ %>
     <input type='hidden' name='domains' value='<%= pi.domains %>'>
     <input type='hidden' name='tax_depth' value='<%= pi.tax_depth %>'>

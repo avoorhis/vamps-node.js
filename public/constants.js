@@ -86,47 +86,42 @@ constants.TARGETS = ["Av3", "Av3v5", "Av4", "Av4v5", "Av5v6", "Av6", "Av6v4",
   "Ev4", "Ev9", "ITS1"];
 
 constants.UNITSELECT               = {
-  units: [
-    {
+  silva119_simple   : {
       id: 'tax_silva119_simple',
       file: 'unit_selectors/taxa_silva119_simple.html',
       name: "Taxonomy (Silva-119) -Simple",
-      subtext: 'Silva119'
+      subtext: 'Silva119',
+      domains: ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]  // these should be the only selections available
     },
-    {
+  silva119_custom   : {
       id: 'tax_silva119_custom',
       file: 'unit_selectors/taxa_silva119_custom.html',
       name: "Taxonomy (Silva-119) -Custom",
       subtext: 'Silva119'
     },
-    {
+  rdp2_6_simple     : {
       id: 'tax_rdp2.6_simple',
       file: 'unit_selectors/taxa_rdp2.6.html',
       name: "Taxonomy RDP (v2.6)",
-      subtext: 'Release 2.6'
+      subtext: 'Release 2.6',
+      domains: ["Archaea","Bacteria","Eukarya","Fungi","Organelle","Unknown"] // these should be the only selections available
     },
-    {id: 'tax_generic_simple', file: 'unit_selectors/taxa_generic.html', name: "Generic", subtext: ''},
-
-    //   {id : 'tax_silva108_custom_fancytree',file: 'unit_selectors/taxa_silva108_custom_fancytree.json', name : "Taxonomy -Custom_fancytree", subtext: 'Silva108'},
-    //   {id : 'tax_silva108_custom_dhtmlx',file: 'unit_selectors/taxa_silva108_custom_dhtmlx.json', name : "Taxonomy -Custom_dhtmlx", subtext: 'Silva108'},
-    {
+  generic_simple    : {id: 'tax_generic_simple', file: 'unit_selectors/taxa_generic.html', name: "Generic", subtext: ''},
+  gg_simple         : {
       id: 'tax_gg_simple',
       file: 'unit_selectors/taxa_gg_simple.html',
       name: "TODO-Taxonomy (Greengenes-13.5) -Simple",
       subtext: 'Greengenes v13.5'
     },
-    {
+  gg_custom         : {
       id: 'tax_gg_custom',
       file: 'unit_selectors/taxa_gg_cust.html',
       name: "TODO-Taxonomy (Greengenes-13.5) -Custom",
       subtext: 'Greengenes v13.5'
     },
-
-    //{id : 'TODO-otus',               file: 'unit_selectors/otus.html',                 name : "OTUs",             subtext: 'ClosedRef GG v13.5'},
-    //{id : 'TODO-otus',               file: 'unit_selectors/otus.html',                 name : "OTUs",             subtext: 'UCLUST'},
-    {id: 'otus', file: 'unit_selectors/otus.html', name: "TODO-OTUs", subtext: 'SLP'},
-    {id: 'med_nodes', file: 'unit_selectors/med_nodes.html', name: "TODO-MED Nodes", subtext: ''}
-  ]
+  otus              : {id: 'otus', file: 'unit_selectors/otus.html', name: "TODO-OTUs", subtext: 'SLP'},
+  med_nodes         : {id: 'med_nodes', file: 'unit_selectors/med_nodes.html', name: "TODO-MED Nodes", subtext: ''}
+  
 };
 constants.UNIT_ASSIGNMENT_CHOICES2 = {
   'refRDP_2.12-16S': {

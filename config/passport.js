@@ -292,7 +292,7 @@ function signup_user(req, username, password, done, db) {
           };
           var user_data_dir                  = path.join(req.CONFIG.USER_FILES_BASE, username);
           console.log('Validating/Creating User Data Directory: ' + user_data_dir);
-          helpers.ensure_dir_exists(user_data_dir);
+          helpers.ensure_dir_exists(user_data_dir);  // also chmod to 0777 (ug+rwx)
           return done(null, new_user);
         }
       });

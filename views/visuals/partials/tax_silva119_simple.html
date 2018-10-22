@@ -1,10 +1,8 @@
 
-
 <% if (typeof doms === 'undefined') { %>
-<%   var domains = JSON.parse(constants).DOMAINS.domains; %>
-<% } else { %>
-<%   domains = doms.domains %>
+<%   var doms = JSON.parse(constants).UNITSELECT.silva_simple.domains %>
 <% } %>
+
 
 <span class='lg_font'>Silva(v119)<br>&nbsp;&nbsp;Simple Taxonomy Selection</span>
   <table class='table'>
@@ -15,8 +13,8 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' id='toggle_taxa_silva_btn' name='taxa_ckbx_toggle'  value='all' \> Toggle
     </span>
     </li>
-    <% for (i in domains) { %>
-      <% domain = domains[i].name %>
+    <% for (i in doms) { %>
+      <% domain = doms[i] %>
       <li>
       <label class='taxa-select'>
         <input type='checkbox'  class='simple_taxa_silva_ckbx' checked='checked' value='<%= domain %>' name='domains[]' \>
