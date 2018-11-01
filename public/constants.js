@@ -91,6 +91,7 @@ constants.UNITSELECT               = {
       file: 'unit_selectors/taxa_silva119_simple.html',
       name: "Taxonomy (Silva-119) -Simple",
       subtext: 'Silva119',
+      // This list from:: "SELECT DISTINCT domain FROM silva_taxonomy JOIN domain USING(domain_id)";
       domains: ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]  // these should be the only selections available
     },
   silva119_custom   : {
@@ -104,6 +105,7 @@ constants.UNITSELECT               = {
       file: 'unit_selectors/taxa_rdp2.6.html',
       name: "Taxonomy RDP (v2.6)",
       subtext: 'Release 2.6',
+      // This list from:: "SELECT DISTINCT domain FROM rdp_taxonomy JOIN domain USING(domain_id)";
       domains: ["Archaea","Bacteria","Eukarya","Fungi","Organelle","Unknown"] // these should be the only selections available
     },
   generic_simple    : {id: 'tax_generic_simple', file: 'unit_selectors/taxa_generic.html', name: "Generic", subtext: ''},
@@ -111,7 +113,8 @@ constants.UNITSELECT               = {
       id: 'tax_gg_simple',
       file: 'unit_selectors/taxa_gg_simple.html',
       name: "TODO-Taxonomy (Greengenes-13.5) -Simple",
-      subtext: 'Greengenes v13.5'
+      subtext: 'Greengenes v13.5',
+      domains:[]
     },
   gg_custom         : {
       id: 'tax_gg_custom',
