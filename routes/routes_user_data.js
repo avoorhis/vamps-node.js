@@ -4382,8 +4382,8 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
         outfile = path.join( user_dir, 'heatmap-image-'+ts+'.pdf' );
 
         var n = 1;
-        distance_matrix_file = path.join(config.SYSTEM_FILES_BASE,'tmp',ts+'_distance.json')
-        //console.log(distance_matrix_file);
+        distance_matrix_file = path.join(req.CONFIG.PROCESS_DIR,'tmp',ts+'_distance.json')
+        console.log(distance_matrix_file);
         fs.readFile(distance_matrix_file, 'utf-8', function(err, data){
             distance_matrix = JSON.parse(data)
             html += "<center><table border='1'>  <tr><td></td><td>dataset <span class='blue'>Similar</span>&nbsp;<span class='red'>Dissimilar</span></td>";
