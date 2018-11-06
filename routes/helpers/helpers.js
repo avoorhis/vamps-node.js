@@ -12,7 +12,6 @@ var path        = require('path');
 //var crypto = require('crypto');
 var mysql       = require('mysql2');
 var spawn       = require('child_process').spawn;
-var helpers     = require(app_root + '/routes/helpers/helpers');
 
 // module.exports = {
 // route middleware to make sure a user is logged in
@@ -20,7 +19,7 @@ module.exports.isLoggedIn = function (req, res, next) {
   // if user is authenticated in the session, carry on
 
   if (req.isAuthenticated()) {
-    console.log(helpers.log_timestamp());
+    console.log(module.exports.log_timestamp());
     console.log("Hurray! isLoggedIn.req.isAuthenticated:", req.user.username);
     return next();
   }
@@ -566,7 +565,7 @@ module.exports.assignment_finish_request = function (res, rows1, rows2, status_p
   //console.log('query ok1 '+JSON.stringify(rows1));
   //console.log('query ok2 '+JSON.stringify(rows2));
 
-  this.run_select_datasets_query(rows1);
+  module.exports.run_select_datasets_query(rows1);
   console.log(' UPDATING ALL_DATASETS');
   console.log(' UPDATING PROJECT_ID_BY_DID');
   console.log(' UPDATING PROJECT_INFORMATION_BY_PID');
@@ -860,8 +859,8 @@ module.exports.update_project_information_global_object = function (pid, form, u
     return;
   }
   console.log('Creating new PROJECT_INFORMATION_BY_PID[pid]');
-  var ca                                              = this.convertJSDateToString(rows[i].created_at)
-  var ua                                              = this.convertJSDateToString(rows[i].updated_at)
+  var ca                                              = module.exports.convertJSDateToString(rows[i].created_at)
+  var ua                                              = module.exports.convertJSDateToString(rows[i].updated_at)
   PROJECT_INFORMATION_BY_PID[pid]                     = {};
   PROJECT_INFORMATION_BY_PID[pid]                     = {
     "last": user_obj.last_name,
@@ -928,8 +927,8 @@ module.exports.run_select_datasets_query = function (rows) {
       var envpkgid = '1';
     }
 
-    var ca = this.convertJSDateToString(rows[i].created_at)
-    var ua = this.convertJSDateToString(rows[i].updated_at)
+    var ca = module.exports.convertJSDateToString(rows[i].created_at)
+    var ua = module.exports.convertJSDateToString(rows[i].updated_at)
 
     if (!PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid)) {
       var public                      = rows[i].public;
@@ -1232,7 +1231,7 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
   cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' '));
 
   if (req.CONFIG.cluster_available === true) {
-    qsub_script_text = this.get_qsub_script_text(req, log, req.CONFIG.TMP, code, cmd_list);
+    qsub_script_text = module.exports.get_qsub_script_text(req, log, req.CONFIG.TMP, code, cmd_list);
     qsub_file_name   = req.user.username + '_qsub_export_' + ts + '.sh';
     qsub_file_path   = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp', qsub_file_name);
     console.log('RUNNING(via qsub):', cmd_list[0]);
@@ -1937,7 +1936,7 @@ module.exports.get_metadata_obj_from_dids = function (dids) {
     metadata[dids[n]] = {}
     mdobj             = AllMetadata[dids[n].toString()]
     for (key in mdobj) {
-      md                         = helpers.required_metadata_names_from_ids(mdobj, key)
+      md                         = module.exports.required_metadata_names_from_ids(mdobj, key)
       metadata[dids[n]][md.name] = md.value
     }
   }
@@ -2134,7 +2133,7 @@ module.exports.target_gene_validation = function (gene, source) {
   let u_domains_set         = new Set(source.domain);
   let u_domains_arr         = [...u_domains_set];
   let curr_domain           = u_domains_arr[0];
-  let this_domain_tg_object = helpers.findByValueOfObject(const_target_gene, "domain", curr_domain);
+  let this_domain_tg_object = module.exports.findByValueOfObject(const_target_gene, "domain", curr_domain);
   let curr_target_genes     = this_domain_tg_object[0]['target_gene'];
   let target_gene_correct   = curr_target_genes.includes(gene);
   let curr_target_genes_str = curr_target_genes.join(" or ");
@@ -2204,7 +2203,7 @@ exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
   // var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
   var length_array = data_arr[0];
   if (data_arr[0].length < matrix_length) {
-    length_array = this.fill_out_arr_doubles('', matrix_length);
+    length_array = module.exports.fill_out_arr_doubles('', matrix_length);
   }
 
   var newArray = length_array.map(function (col, i) {
@@ -2234,8 +2233,8 @@ function collect_errors(req) {
     combine_err     = combine_err.concat(fail_msgs);
     combine_err     = combine_err.concat(req.form.errors);
     combine_err     = combine_err.filter(x => x); //removing null, undefined, 0, -0, NaN, "", false, document.all
-    myArray_fail    = helpers.unique_array(combine_err);
-    if ((typeof req.form.sample_name !== "undefined") && (helpers.has_duplicates(req.form.sample_name))) {
+    myArray_fail    = module.exports.unique_array(combine_err);
+    if ((typeof req.form.sample_name !== "undefined") && (module.exports.has_duplicates(req.form.sample_name))) {
       myArray_fail.push('Sample ID (user sample name) should be unique.');
     }
     myArray_fail.sort();

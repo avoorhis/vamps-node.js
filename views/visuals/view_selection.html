@@ -24,6 +24,7 @@
   //alert(image_to_rdr_local.image)
 
 </script>
+
 <div id='ts_for_bs' style='visibility:hidden'><%= pi.ts %></div>
 <div id='found_data' style='visibility:hidden'><%= Object.keys(items) %></div>
 <div id='info_bar' class='navbar-fixed-top ' >
@@ -569,11 +570,11 @@
               <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('dheatmap','<%= pi.ts %>')">JSON Image Config File</button></li>
               <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('dheatmap','<%= pi.ts %>')">Image as PDF</button></li>
             <% }else if(prefix == 'barcharts') { %>
-              <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('barcharts','<%= pi.ts %>')">Image as PDF</button></li>
+              <!-- <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('barcharts','<%= pi.ts %>')">Image as PDF</button></li> -->
               <li><button type="button" class="btn-link dropdown_btn" onclick="download_svg('barcharts','<%= pi.ts %>')">Image as SVG</button></li>
               <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('barcharts','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'piecharts') { %>
-              <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('piecharts','<%= pi.ts %>')">Image as PDF</button></li>
+              <!-- <li><button type="button" class="btn-link dropdown_btn" onclick="recreate_image_from_html('piecharts','<%= pi.ts %>')">Image as PDF</button></li> -->
               <li><button type="button" class="btn-link dropdown_btn" onclick="download_svg('piecharts','<%= pi.ts %>')">Image as SVG</button></li>
               <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('piecharts','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'fheatmap') { %>
@@ -681,6 +682,8 @@
 
  <script type="text/javascript" src="/javascripts/cytoscape.min.js"></script>
  <script type="text/javascript" src="/javascripts/tooltipster.bundle.min.js"></script>
+ <script type="text/javascript" src="/javascripts/he.js"></script>
+ 
 
 <script>
 //         $(document).ready(function() {
