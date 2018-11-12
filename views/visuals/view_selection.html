@@ -578,7 +578,8 @@
               <li><button type="button" class="btn-link dropdown_btn" onclick="download_svg('piecharts','<%= pi.ts %>')">Image as SVG</button></li>
               <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('piecharts','<%= pi.ts %>')">JSON Image Config File</button></li>
             <% }else if(prefix == 'fheatmap') { %>
-              <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('pdf-fheatmap','<%= pi.ts %>')">PDF Image File</button></li>
+              <!-- <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('pdf-fheatmap','<%= pi.ts %>')">PDF Image File</button></li> -->
+              <li><button type="button" class="btn-link dropdown_btn" onclick="download_svg('fheatmap','<%= pi.ts %>')">Image as SVG</button></li>
               <li><button type="button" class="btn-link dropdown_btn" onclick="save_image_as_json('fheatmap','<%= pi.ts %>')">JSON Image Config File</button></li>
               <li><button type="button" class="btn-link dropdown_btn" onclick="transfer_file_for_download('distance-R','<%= pi.ts %>')">Distance File</button></li>
             <% }else if(prefix == 'dbrowser') { %>

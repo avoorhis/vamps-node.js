@@ -4501,7 +4501,7 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
       old_file_name = old_ts+'.pc';
       old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
     }else if (file_type == 'pdf-fheatmap') {
-      old_file_name = old_ts+'_fheatmap.pdf';
+      old_file_name = old_ts+'_fheatmap.svg';
       old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.pdf';
     }else if (file_type == 'pdf-pcoa') {

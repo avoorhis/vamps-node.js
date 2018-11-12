@@ -1068,6 +1068,8 @@ function download_svg(image, ts) {
         svgData = document.getElementById('barcharts_div').innerHTML;
     }else if(image == 'piecharts'){
         svgData = document.getElementById('piecharts_div').innerHTML;
+    }else if(image == 'fheatmap'){
+        svgData = document.getElementById('fheatmap_div').innerHTML;
     }else{
         return
     }
@@ -1746,9 +1748,9 @@ function create_phyloseq(ts, code, new_window) {
 //
 function myWaitFunction(div) {
     if(showDots === '..........'){ showDots = ''; }
-    showDots = showDots || '.';
+    showDots = showDots || '#';
     div.innerHTML = showDots;
-    showDots += '.';
+    showDots += '#';
 }
 //
 //
