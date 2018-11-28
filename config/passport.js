@@ -355,14 +355,20 @@ var delete_previous_tmp_files = function (req, username) {
 
 var update_password = function (req, username, newpass, db) {
   console.log('in update_password');
-  console.log(queries.reset_user_password_by_uname(newpass, username));
-  db.query(queries.reset_user_password_by_uname(newpass, username), function (err, rows) {
-    if (err) {
-      return (null, false, {message: err});
-    } else {
-      console.log('logging out');
-      //req.session.destroy()
-      req.logout();
-    }
-  });
+  if (newpass.length < 3 || newpass.length > 12) {
+    return (null, false, {message:'FAILED: The password must be between 3 and 20 characters.'});
+  } else if (username == '') {
+    return (null, false, {message:'FAILED: You must select a user.'});
+  } else {
+      console.log(queries.reset_user_password_by_uname(newpass, username));
+      db.query(queries.reset_user_password_by_uname(newpass, username), function (err, rows) {
+        if (err) {
+          return (null, false, {message: err});
+        } else {
+          console.log('logging out');
+          //req.session.destroy()
+          req.logout();
+        }
+      });
+   }
 };

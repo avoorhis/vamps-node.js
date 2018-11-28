@@ -677,6 +677,9 @@ router.get('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], functi
     hostname: req.CONFIG.hostname, // get the user out of session and pass to template
   });
 });
+//
+//
+//
 router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
   console.log('in reset_user_password --POST');
   console.log(req.body)
