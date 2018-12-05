@@ -120,7 +120,8 @@ my $gast_table;
 
 # USearch variables
 # my $usearch_cmd = "usearch6";
-my $usearch_cmd = "module load vsearch; vsearch";
+# my $usearch_cmd = "module load vsearch; vsearch";
+my $usearch_cmd = "vsearch";
 my $min_pctid   = 0.80;
 my $max_accepts = 15;
 my $max_rejects = 0;
