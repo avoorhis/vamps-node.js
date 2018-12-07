@@ -64,7 +64,9 @@ router.post('/login',  passport.authenticate('local-login', {
                     //console.log('pushing uid '+uid+' to pid '+pid)
                     //console.log(PROJECT_INFORMATION_BY_PID[pid].permissions)
                     //console.log('pushing uid2')
-                    if(PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(parseInt(uid)) == -1){
+                    //if(PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(parseInt(uid)) == -1){
+                    if(PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid) && PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(parseInt(uid)) == -1){
+
                         //console.log('2pushing uid '+uid+' to pid '+pid)
                         PROJECT_INFORMATION_BY_PID[pid].permissions.push(parseInt(uid))
                     }
