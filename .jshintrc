@@ -1,4 +1,5 @@
 {
+  "esversion": 6,
   "maxcomplexity": 3,
   "maxdepth": 3,
   "maxerr": 300,
@@ -6,5 +7,8 @@
   "nonbsp": true,
   "notypeof": true,
   "predef": [ "ALL_DATASETS", "DATA_TO_OPEN", "SHOW_DATA", "PROJECT_INFORMATION_BY_PID", "PROJECT_INFORMATION_BY_PNAME", "ALL_CLASSIFIERS_BY_PID", "DATASET_NAME_BY_DID" ],
-  "unused": true
+  "unused": true,
+  "globals": {
+    "MY_GLOBAL": true
+  }
 }

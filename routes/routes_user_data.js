@@ -64,8 +64,9 @@ router.get('/your_data', helpers.isLoggedIn, function get_your_data(req, res) {
 //
 /* GET Export Data page. */
 router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(req, res) {
+  console.log('in file_retrieval')
+  // see constants.js for file types to display
   var export_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-  
   helpers.walk(export_dir, function(err, files) {
     if (err) throw err;
     files.sort(function sortByTime(a, b) {
@@ -1989,7 +1990,7 @@ function gastTax(req, project_config, ref_db)
   
   var scriptlog   = path.join(data_dir, 'cluster.log');
   
-  //make_gast_script_txt = helpers.get_qsub_script_text_only(scriptlog, data_dir, req.CONFIG.site, 'gastTax', cmd_list)
+  //make_gast_script_txt = helpers.get_qsub_script_text_only(req, scriptlog, data_dir, 'gastTax', cmd_list)
   //is_local = helpers.isLocal(req);
   // for tests: is_local = false;
   
@@ -4331,90 +4332,112 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function (req, res)
 //
 //
 router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
-
-    req.on('readable', function(){
-      console.log(req.read());
-    });
-
     console.log('in copy_html_to_image');
-    console.log(req.body);
+    //console.log(req.body);
+    var he = require('he')
+    var webshot = require('webshot');
+    var id_name_order           = COMMON.create_chosen_id_name_order(req.session.chosen_id_order);
+    // req.on('readable', function(){
+//       console.log(req.read());
+//     });
+    //console.log(req.session)
     // Lint: "Unreachable 'var' after 'return'."
     var ts = req.body.ts;
+    var w = id_name_order.length;
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-    var html, outfile;
-    if(req.body.image == 'barcharts'){
-      html = req.body.html;
-      outfile = path.join( user_dir, 'barcharts-image-'+ts+'.png' );
-      
-    }else if(req.body.image == 'piecharts'){
-      html = req.body.html;
-      outfile = path.join( user_dir, 'piecharts-image-'+ts+'.png' );
-    }else if(req.body.image == 'dheatmap'){
-        outfile = path.join( user_dir, 'heatmap-image-'+ts+'.pdf' );
-
-        html = "<center><table border='1'>  <tr><td></td><td>dataset <span class='blue'>Similar</span>&nbsp;<span class='red'>Dissimilar</span></td>";
-        for(i=1; i<=Object.keys(distance_matrix).length; i++) {
-          html += "<td></td>";
-        }
-        html += "</tr>";
-        var n = 1;
-        console.log(distance_matrix);
-        var id_name_order           = COMMON.create_chosen_id_name_order(req.session.chosen_id_order);
-        
-        var w = id_name_order.length;
-        console.log(w);
-        for(var x in id_name_order) {
-          var x_dname = id_name_order[x].name;
-          html += "<tr id='"+x_dname+"'>";
-          html += "<td  id='"+x_dname+"' class='dragHandle ds_cell'>"+n.toString()+"</td>";
-          html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+id_order[x]+"' >"+ x_dname +"</td>";
-          for(var y in id_name_order) {
-            var y_dname = id_name_order[y].name;
-              var dist = distance_matrix[x_dname][y_dname].toFixed(5);
-              if(x_dname === y_dname){
-                html += "<td id='' class='heat_map_td' bgcolor='#000'></td>";
-              }else{
-                var id = 'dheatmap/'+x_dname+'/'+y_dname+'/'+dist;
-                var svalue = Math.round( distance_matrix[x_dname][y_dname] * 15 );
-                html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+req.CONSTS.HEATMAP_COLORS[svalue]+"'>";
-                html += "&nbsp;&nbsp;&nbsp;";
-                html += "</td>";
-              }
-          }
-        html += "</tr>";
-        n++;
-        }
-        html += "</table></center>";
-
-        console.log(html);
-
-        var options = { format: 'Letter' };
-        pdf.create(html, {}).toFile(outfile, function createPDF(err, res2) {
-          if (err) return console.log(err);
-          console.log(res2); // { filename: '/app/businesscard.pdf' }
-          res.send('OK');
-        });
-    }
-    console.log('outfile');
-    console.log(outfile);
-    console.log(html);
-    var webshot = require('webshot');
+    var image = req.body.image
+    var html = ''
+    var outfile;
     var options = {
       siteType: 'html',
-      //screenSize: { width: w*20, height: w*14 },   // size of window
-
+      screenSize: { width: w*20, height: w*14 },   // size of window
       customCSS: 'table {background:#F5F5DC;border-collapse: collapse;} .red {color:white;background:red;} .blue {color:white;background:blue;} td {padding:0 5px;}'
     };
-    webshot(html, outfile, options, function createWebshotFromHTML(err) {
+    
+    if(image == 'barcharts'){
+      html = he.decode(req.body.html);
+      //console.log(html)
+      outfile = path.join( user_dir, 'barcharts-image-'+ts+'.png' );
+      webshot(html, outfile, options, function (err) {
       // screenshot now saved to <>.png
-      if(err){
-        console.log("err 10: ");
-        console.log(err);
-      }
-      else {
-        res.send('OK');
-      }
-    });
+          if(err){
+            console.log("err 10: ");
+            console.log(err);
+          }
+          
+      });
+    }else if(image == 'piecharts'){
+      html = he.decode(req.body.html);
+      outfile = path.join( user_dir, 'piecharts-image-'+ts+'.png' );
+      // for svg files    
+      webshot(html, outfile, options, function (err) {
+      // screenshot now saved to <>.png
+          if(err){
+            console.log("err 10: ");
+            console.log(err);
+          }
+          
+      });
+    }else if(image == 'dheatmap'){
+        outfile = path.join( user_dir, 'heatmap-image-'+ts+'.pdf' );
+
+        var n = 1;
+        distance_matrix_file = path.join(req.CONFIG.PROCESS_DIR,'tmp',ts+'_distance.json')
+        console.log(distance_matrix_file);
+        fs.readFile(distance_matrix_file, 'utf-8', function(err, data){
+            distance_matrix = JSON.parse(data)
+            html += "<center><table border='1'>  <tr><td></td><td>dataset <span class='blue'>Similar</span>&nbsp;<span class='red'>Dissimilar</span></td>";
+            for(i=1; i<=Object.keys(distance_matrix).length; i++) {
+              html += "<td></td>";
+            }
+            html += "</tr>";
+            //console.log(distance_matrix);
+        
+            //console.log(w);
+            //console.log(id_name_order);
+            for(var x in id_name_order) {
+              var x_dname = id_name_order[x].name;
+              //console.log('xname '+x_dname)
+              html += "<tr id='"+x_dname+"'>";
+              html += "<td  id='"+x_dname+"' class='dragHandle ds_cell'>"+n.toString()+"</td>";
+              html += "<td nowrap class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+id_name_order[x].did+"' >"+ x_dname +"</td>";
+              //console.log(html)
+              for(var y in id_name_order) {
+                var y_dname = id_name_order[y].name;
+                //console.log('yname '+y_dname)
+                var dist = distance_matrix[x_dname][y_dname].toFixed(5);
+                //console.log('xname '+x_dname+' yname '+y_dname+' dist '+dist)
+                if(x_dname === y_dname){
+                    html += "<td id='' class='heat_map_td' bgcolor='#000'></td>";
+                }else{
+                    var id = 'dheatmap/'+x_dname+'/'+y_dname+'/'+dist;
+                    var svalue = Math.round( distance_matrix[x_dname][y_dname] * 15 );
+                    html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+req.CONSTS.HEATMAP_COLORS[svalue]+"'>";
+                    html += "&nbsp;&nbsp;&nbsp;";
+                    html += "</td>";
+                }
+              }
+              html += "</tr>";
+              n++;
+            }
+            html += "</table></center>";
+
+            //console.log(html);
+            // https://www.npmjs.com/package/html-pdf
+            // w == ds count
+            //var options = { width: ((w*30)+100).toString()+'px', border:"2cm" };
+            var options = { format:"Tabloid" };
+            //html = he.decode(req.body.html);
+            pdf.create(html, options).toFile(outfile, function createPDF(err, res2) {
+              if (err) return console.log(err);
+              console.log('Success!!'); // { filename: '/app/businesscard.pdf' }
+          
+            });
+        });    
+        
+    }
+    
+    res.send('OK');
 
 
 });
@@ -4478,7 +4501,7 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
       old_file_name = old_ts+'.pc';
       old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
     }else if (file_type == 'pdf-fheatmap') {
-      old_file_name = old_ts+'_fheatmap.pdf';
+      old_file_name = old_ts+'_fheatmap.svg';
       old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
       new_file_name = file_type+'-'+timestamp+'.pdf';
     }else if (file_type == 'pdf-pcoa') {

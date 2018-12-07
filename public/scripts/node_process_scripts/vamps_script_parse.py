@@ -86,20 +86,25 @@ def get_data(args):
             
 def parse_matrix(args):
     print('running matrix')
-    n = 1
+    n = 0
     datasets={}
     project_count = 0
     max_ds_count = 0
     with open(args.file, mode='r') as infile:
         for line in infile:            
-            if n==1:
-                ds_items = line.strip('\n').split('\t')[1:]
-                print(ds_items)
+            items = line.strip('\n').split('\t')
+            #print('items',items)
+            if not line or items[0][:5] == 'VAMPS':
+                print('found vamps')
+                continue
+            if n==0:
+                ds_items = items[1:]   #line.strip('\n').split('\t')[1:] # stip original line on '\n' only to retain first '\t' ip present
+                #print('ds_items',ds_items)
                 for ds in ds_items:
                     datasets[ds] = 0                
             else:                
-                line_items = line.strip().split('\t')
-                print(line_items)
+                line_items = items   #line.strip().split('\t')
+                #print('line_items',line_items)
                 counts = line_items[1:]
                 for i,cnt in enumerate(counts):
                     print(i,cnt)

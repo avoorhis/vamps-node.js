@@ -1,14 +1,13 @@
-<%    var CONSTS = JSON.parse(constants) %> 
-<%    var rows = CONSTS.UNITSELECT.units; %>    
+<%    var units = JSON.parse(constants).UNITSELECT; %>    
 
     <span class='lg_font'>Select Other Units:</span>
     
     <select id='unit_choice_id' name='unit_choice'  data-size="100">
-<%    for (var i in rows) { %>
-<%      var file_id  = rows[i].id; %>
-<%      var name     = rows[i].name; %>
-<%      var file     = rows[i].file; %>
-<%      var subtxt     = rows[i].subtext; %>
+<%    for (var i in units) { %>
+<%      var file_id  = units[i].id; %>
+<%      var name     = units[i].name; %>
+<%      var file     = units[i].file; %>
+<%      var subtxt     = units[i].subtext; %>
             <option   value='<%= file_id %>' ><%= name %> </option>
 <%		}  %>
     </select>

@@ -644,6 +644,9 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, r
             req.flash('fail', 'Username "' + new_user.username + '" is already taken.');
           } else {
             new_user.user_id                   = rows.insertId;
+            var user_data_dir                  = path.join(req.CONFIG.USER_FILES_BASE, new_user.username);
+            console.log('Admin:Validating/Creating User Data Directory: ' + user_data_dir);
+            helpers.ensure_dir_exists(user_data_dir);  // also chmod to 0777 (ug+rwx)
             ALL_USERS_BY_UID[new_user.user_id] = {
               email: new_user.email,
               username: new_user.username,
@@ -674,6 +677,9 @@ router.get('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], functi
     hostname: req.CONFIG.hostname, // get the user out of session and pass to template
   });
 });
+//
+//
+//
 router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
   console.log('in reset_user_password --POST');
   console.log(req.body)

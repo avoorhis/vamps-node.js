@@ -19,7 +19,7 @@
 </div>
 
 
-<% if(messages.success){ %>
+<% if (messages.success){ %>
   <div class="alert_flash_message_success" ><%- messages.success %> </div>
 <% } if(messages.fail) { %>
 <div class="alert_flash_message_fail" >
@@ -93,7 +93,7 @@
   <label for="pi_email">PI's email address:</label>
   <input type="email" id="pi_email" name="pi_email"  value='<%= pi_email %>'/>
   <br />
-  <label for="project_abstract">CoDL project abstract:</label>
+  <label for="project_abstract">Project abstract:</label>
     <% if ((typeof(project_abstracts[0]) !== 'undefined') && (project_abstracts[0].length > 0)) { %>
       <div class="white_box readonly">
         <% for (var n in project_abstracts[0]) { %>

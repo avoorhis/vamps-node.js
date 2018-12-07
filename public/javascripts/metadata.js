@@ -8,31 +8,30 @@ if (toggle_metadata !== null) {
 //
 // TOGGLE_METADATA_VIEW
 //
-function toggle_metadata_view()
-{
+function toggle_metadata_view() {
   // page: metadata_table
   // toggles all/selected metadata
 
   var ckbx = document.getElementById('toggle_metadata');
   var load;
   if (ckbx.checked === true) {
-    ckbx.checked = true;
+    ckbx.checked                                           = true;
     document.getElementById('md_select_phrase1').innerHTML = "Showing All Metadata";
     document.getElementById('md_select_phrase2').innerHTML = "Show Selected Metadata Only?";
-    load = 'all';
+    load                                                   = 'all';
   } else {
-    ckbx.checked = false;
+    ckbx.checked                                           = false;
     document.getElementById('md_select_phrase1').innerHTML = "Showing Selected Metadata Only";
     document.getElementById('md_select_phrase2').innerHTML = "Show All Metadata?";
-    load = 'selected';
+    load                                                   = 'selected';
   }
 
   var xmlhttp = new XMLHttpRequest();
-  xmlhttp.open("GET", '/visuals/partials/load_metadata?load='+load);
-  xmlhttp.onreadystatechange = function() {
+  xmlhttp.open("GET", '/visuals/partials/load_metadata?load=' + load);
+  xmlhttp.onreadystatechange = function () {
 
-    if (xmlhttp.readyState === 4 ) {
-      var string = xmlhttp.responseText;
+    if (xmlhttp.readyState === 4) {
+      var string                                              = xmlhttp.responseText;
       document.getElementById('metadata_table_div').innerHTML = string;
       new Tablesort(document.getElementById('metadata_table'));
     }
@@ -42,43 +41,40 @@ function toggle_metadata_view()
 }
 
 
-
-
-
 function create_geospatial() {
   console.log('IN metadata.js:create_geospatial()')
   var mapCanvas = document.getElementById('map-canvas');
   mapCanvas.innerHTML = '';
   mapCanvas.style.display = 'block';
-  mapCanvas.style.height = '900px';
+  mapCanvas.style.height  = '900px';
 
-  var loc_data = [];
+  var loc_data          = [];
   var lat_lon_collector = {};
-  var pid_collector = {};
+  var pid_collector     = {};
   var latlon;
 
   for (var ds in md_local) {
     pid_collector[ds]       = {};
     pid_collector[ds].pid   = md_local[ds].pid;
     pid_collector[ds].value = md_local[ds].value;
-    var lat = '';
-    var lon = '';
+    var lat                 = '';
+    var lon                 = '';
     for (var k in md_local[ds]) {
       md_item = k;
-      if(md_item === 'latitude') {
+      if (md_item === 'latitude') {
         lat = Number(md_local[ds][k]);
       }
-      if(md_item === 'longitude'){
+      if (md_item === 'longitude') {
         lon = Number(md_local[ds][k]);
       }
     }
 
-    if(typeof lat === 'number' && typeof lon === 'number'){
-      latlon = lat.toString() +';'+ lon.toString();
+    if (typeof lat === 'number' && typeof lon === 'number') {
+      latlon = lat.toString() + ';' + lon.toString();
       if (latlon in lat_lon_collector) {
-        var newds = lat_lon_collector[latlon] + ":::" + ds;
+        var newds                 = lat_lon_collector[latlon] + ":::" + ds;
         lat_lon_collector[latlon] = newds;
-      }else{
+      } else {
         lat_lon_collector[latlon] = ds;
       }
     }
@@ -89,23 +85,24 @@ function create_geospatial() {
     ds = lat_lon_collector[latlon];
     var latlons =  latlon.split(';');
     loc_data.push([ds, latlons[0], latlons[1], z]);
-    z+=1;
+    z += 1;
 
   }
   if (loc_data.length === 0){
     mapCanvas.innerHTML='No Lat-Lon Data Found';
 
   }else{
-    var mapOptions = {     
-          id: 'mapbox.streets-basic',
-          accessToken: token
+    var mapOptions = {
+      id: 'mapbox.streets-basic',
+      accessToken: token
     };
     var mymap = L.map('map-canvas').setView([41.5257, -70.672], 3)  // centered on Cape Cod
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}',mapOptions).addTo(mymap); 
-    
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}',mapOptions).addTo(mymap);
+
     setMarkers(mymap, loc_data, pid_collector);
   }
 }
+
 //
 //
 //
@@ -120,22 +117,21 @@ function setMarkers(map, loc_data, pid_collector) {
       var html = "<div style='width:300px;'>";
     }
     html += "<table  class='table table_striped' >";
-    html += '<tr><th>Dataset</th><th>'+mditem+'</th></tr>';    
+    html += '<tr><th>Dataset</th><th>'+mditem+'</th></tr>';
     for(l in lines){
-    	var pid = pid_collector[lines[l]].pid;
-        var val = pid_collector[lines[l]].value;
-        html += "<tr><td><a href='/projects/"+pid+"'>" + lines[l] + "</a></td><td>"+val+"</td></tr>";
+      var pid = pid_collector[lines[l]].pid;
+      var val = pid_collector[lines[l]].value;
+      html += "<tr><td><a href='/projects/"+pid+"'>" + lines[l] + "</a></td><td>"+val+"</td></tr>";
     }
     html += '</table>';
     html += "</div>";
     marker.bindPopup(html);
     marker.on('mouseover', function (e) {
-        this.openPopup();
+      this.openPopup();
     });
-
   }
 
-}
+};
 
 
 var biome_seq_options = {
@@ -322,7 +318,6 @@ var feature_seq_options = {
 };
 
 
-
 var material_seq_options = {
   "sediment": ["none",
     "anaerobic",
@@ -362,7 +357,6 @@ var material_seq_options = {
     "sea water",
     "underground water"
   ],
-
 
 
   "fluid": ["none",
@@ -500,14 +494,14 @@ var material_seq_options = {
 };
 
 function populate_secondary_select(args) {
-  var id_base = arguments[0][0];
+  var id_base     = arguments[0][0];
   var sec_options = arguments[0][1];
 
   var did = this.id.replace("env_" + id_base, '');
 
   var id2 = id_base + "_secondary";
 
-  var B = document.getElementById(id2+did);
+  var B = document.getElementById(id2 + did);
 
 
   //---
@@ -530,14 +524,13 @@ function populate_secondary_select(args) {
   for (var i in sec_options[_val]) {
 
     //create option tag
-    var op = document.createElement('option');
+    var op   = document.createElement('option');
     //set its value
     op.value = sec_options[_val][i];
     // .setAttribute('selected','selected');
 
-    if (op.value === sel_val)
-    {
-      op.setAttribute('selected','selected');
+    if (op.value === sel_val) {
+      op.setAttribute('selected', 'selected');
     }
 
     //set the display label
@@ -548,55 +541,55 @@ function populate_secondary_select(args) {
   }
 }
 
-fnAdjustTable = function(){
+fnAdjustTable = function () {
 
   var colCount = $('#firstTr').find('td').length; //get total number of column
   // var colCount = $('#fixed_table_base').find('tr:first').find('td.header_divider').length; //get total number of column
-  var m = 0;
-  var n = 0;
-  var brow = 'mozilla';
+  var m            = 0;
+  var n            = 0;
+  var brow         = 'mozilla';
   var table_div_el = $('#table_div');
 
-  jQuery.each(jQuery.browser, function(i, val) {
-    if(val === true){
+  jQuery.each(jQuery.browser, function (i, val) {
+    if (val === true) {
       brow = i.toString();
     }
   });
 
-  $('.tableHeader').each(function(i){
-    if (m < colCount){
+  $('.tableHeader').each(function (i) {
+    if (m < colCount) {
 
-      var td_el = table_div_el.find('td:eq('+m+')');
-      if (brow === 'mozilla'){
-        $('#firstTd').css("width",$('.tableFirstCol').innerWidth());//for adjusting first td
+      var td_el = table_div_el.find('td:eq(' + m + ')');
+      if (brow === 'mozilla') {
+        $('#firstTd').css("width", $('.tableFirstCol').innerWidth());//for adjusting first td
         $(this).css('width', td_el.innerWidth());//for assigning width to table Header div
       }
-      else if (brow === 'msie'){
-        $('#firstTd').css("width",$('.tableFirstCol').width());
-        $(this).css('width', td_el.width()-2);//In IE there is difference of 2 px
+      else if (brow === 'msie') {
+        $('#firstTd').css("width", $('.tableFirstCol').width());
+        $(this).css('width', td_el.width() - 2);//In IE there is difference of 2 px
       }
-      else if (brow === 'safari'){
-        $('#firstTd').css("width",$('.tableFirstCol').width());
+      else if (brow === 'safari') {
+        $('#firstTd').css("width", $('.tableFirstCol').width());
         $(this).css('width', td_el.width());
       }
       else {
-        $('#firstTd').css("width",$('.tableFirstCol').width());
+        $('#firstTd').css("width", $('.tableFirstCol').width());
         $(this).css('width', td_el.innerWidth());
       }
     }
     m++;
   });
 
-  $('.tableFirstCol').each(function(i){
-    var cur_td_colCount_el = table_div_el.find('td:eq('+colCount*n+')');
-    if(brow === 'mozilla'){
-      $(this).css('height',cur_td_colCount_el.outerHeight());//for providing height using scrollable table column height
+  $('.tableFirstCol').each(function (i) {
+    var cur_td_colCount_el = table_div_el.find('td:eq(' + colCount * n + ')');
+    if (brow === 'mozilla') {
+      $(this).css('height', cur_td_colCount_el.outerHeight());//for providing height using scrollable table column height
     }
-    else if(brow === 'msie'){
-      $(this).css('height',cur_td_colCount_el.innerHeight()-2);
+    else if (brow === 'msie') {
+      $(this).css('height', cur_td_colCount_el.innerHeight() - 2);
     }
     else {
-      $(this).css('height',cur_td_colCount_el.height());
+      $(this).css('height', cur_td_colCount_el.height());
     }
     n++;
   });
@@ -604,7 +597,7 @@ fnAdjustTable = function(){
 };
 
 //function to support scrolling of title and first column
-fnScroll = function(){
+fnScroll = function () {
   var table_div_el = $('#table_div');
   $('#divHeader').scrollLeft(table_div_el.scrollLeft());
   $('#firstcol_div').scrollTop(table_div_el.scrollTop());
@@ -615,7 +608,7 @@ var rowIndex = 0;
 
 function firstColTableAddRow(args) {
   var currRowIndex = arguments[0][0];
-  var row_id_base = arguments[0][1];
+  var row_id_base  = arguments[0][1];
 
   // alert(row_id_base);
 
@@ -629,8 +622,8 @@ function firstColTableAddRow(args) {
 }
 
 function fixedTableBaseAddRow(args) {
-  var currRowIndex = arguments[0][0];
-  var row_id_base = arguments[0][1];
+  var currRowIndex        = arguments[0][0];
+  var row_id_base         = arguments[0][1];
   var fixed_table_base_el = $('#fixed_table_base');
 
   var rowLength = fixed_table_base_el.find('tbody').find('tr:last').children('td').length;
@@ -643,29 +636,29 @@ function fixedTableBaseAddRow(args) {
   var newRow2 = '<tr id="' + row_id_base + '_fixed_table_base">' + cells + '</tr>';
 
   fixed_table_base_el.find('tbody').find('tr:last').after(newRow2);
-  $('#new_row_length').val( rowLength );
+  $('#new_row_length').val(rowLength);
 
 }
 
-$("#addrow").on('click', function() {
+$("#addrow").on('click', function () {
   rowIndex++;
 
   var row_id_base = 'new_row' + rowIndex;
   firstColTableAddRow.call(this, [rowIndex, row_id_base]);
   fixedTableBaseAddRow.call(this, [rowIndex, row_id_base]);
 
-  $('#new_row_num').val( rowIndex );
+  $('#new_row_num').val(rowIndex);
 
-  $("#" + row_id_base + "_fixed_table_base" )[0].scrollIntoView();
-  $( "#" + row_id_base + "_first_col_table" )[0].scrollIntoView();
+  $("#" + row_id_base + "_fixed_table_base")[0].scrollIntoView();
+  $("#" + row_id_base + "_first_col_table")[0].scrollIntoView();
   window.scrollBy(-100, 0);
 
 });
 
 
-$("#removerow").on('click', function() {
+$("#removerow").on('click', function () {
 
-  if (rowIndex > 0){
+  if (rowIndex > 0) {
 
     var last_row_id_base = "new_row" + rowIndex;
     // alert(last_row_id + " was removed");
@@ -675,7 +668,7 @@ $("#removerow").on('click', function() {
     $('table#fixed_table_base tr#' + last_row_id_base + "_fixed_table_base").remove();
 
     rowIndex--;
-    $('#new_row_num').val( rowIndex );
+    $('#new_row_num').val(rowIndex);
 
   }
   else {
@@ -683,8 +676,8 @@ $("#removerow").on('click', function() {
   }
 });
 
-copyFirst = function() {
-  $('a.td_clone_add').on('click', function() {
+copyFirst = function () {
+  $('a.td_clone_add').on('click', function () {
     var first_input_value;
     var input_row;
     var first_td;
@@ -694,48 +687,48 @@ copyFirst = function() {
     input_row = $('table#fixed_table_base tr').eq(trIndex);
     first_td  = input_row.find('td:first');
 
-    first_input_value = first_td.children( ':input' ).val();
+    first_input_value = first_td.children(':input').val();
 
     // alert(first_input_value);
 
-    input_row.find('td').each(function() {
+    input_row.find('td').each(function () {
       $(this).children(':input').val(first_input_value).change();
       // .css('background-color','blue');
     });
 
-    return(false);
+    return (false);
   });
 };
 
 
-$('.env_biome').change(function(){
+$('.env_biome').change(function () {
   populate_secondary_select.call(this, ['biome', biome_seq_options]);
-}).each(function(){
+}).each(function () {
 
-  if($(this).val() !== "Please choose one") {
+  if ($(this).val() !== "Please choose one") {
     populate_secondary_select.call(this, ['biome', biome_seq_options]);
   }
 
 });
 
 
-$('.env_feature').change(function(){
+$('.env_feature').change(function () {
   populate_secondary_select.call(this, ['feature', feature_seq_options]);
-}).each(function(){
+}).each(function () {
 
-  if($(this).val() !== "Please choose one") {
+  if ($(this).val() !== "Please choose one") {
     populate_secondary_select.call(this, ['feature', feature_seq_options]);
   }
 
 });
 
-$('.env_material').change(function(){
+$('.env_material').change(function () {
   // alert("On change");
   populate_secondary_select.call(this, ['material', material_seq_options]);
-}).each(function(){
+}).each(function () {
   // alert("on each")
 
-  if($(this).val() !== "Please choose one") {
+  if ($(this).val() !== "Please choose one") {
     // this.style.backgroundColor = "green";
 
     populate_secondary_select.call(this, ['material', material_seq_options]);
@@ -745,7 +738,7 @@ $('.env_material').change(function(){
   // }
 });
 
-$('#table_div').scroll(function(){
+$('#table_div').scroll(function () {
   fnScroll();
 });
 
@@ -759,7 +752,8 @@ var metadata_dropdown_fields = ["biome_secondary",
   "feature_secondary",
   "investigation_type",
   "material_secondary",
-  "sample_type"
+  "sample_type",
+  "target_gene"
 ];
 
 addCopyFirst = function () {
@@ -770,19 +764,18 @@ addCopyFirst = function () {
     .find("tr td:nth-child(" + (columnNo + 1) + "):not('.header_divider')");
 
   $tdsInColumnCurrent.each(function () {
-    var $label = $(this).find("label[for]");
-    var $forAttr = $label.attr('for').slice(0,-1);
-    if (jQuery.inArray($forAttr, metadata_dropdown_fields) !== -1)
-    {
+    var $label   = $(this).find("label[for]");
+    var $forAttr = $label.attr('for').slice(0, -1);
+    if (jQuery.inArray($forAttr, metadata_dropdown_fields) !== -1) {
       $(this).wrapInner('<span class="makeLeft"></span>')
         .append('<span class="makeRight"><a href="#" class="td_clone_add">Copy 1st</a></span>');
     }
   });
 
-  $(".makeRight").hover(function(){
-    $(this).css('cursor','pointer').attr('title', 'Copy the first column value to all the following columns in this row.');
-  }, function() {
-    $(this).css('cursor','auto');
+  $(".makeRight").hover(function () {
+    $(this).css('cursor', 'pointer').attr('title', 'Copy the first column value to all the following columns in this row.');
+  }, function () {
+    $(this).css('cursor', 'auto');
   });
 
 
@@ -820,29 +813,29 @@ addCopyFirst = function () {
 //   });
 // };
 
-addCopyBtns = function() {
-  $('table#fixed_table_base').find('tr').eq(1).find('td').each(function() {
+addCopyBtns = function () {
+  $('table#fixed_table_base').find('tr').eq(1).find('td').each(function () {
     $(this).append('<input type="button" value="Copy to next" class="cp_clmn"/>');
   });
-  $(".cp_clmn").hover(function(){
-    $(this).css('cursor','pointer').attr('title', 'Copies the values from this column to the next column only if the next column is empty.');
-  }, function() {
-    $(this).css('cursor','auto');
+  $(".cp_clmn").hover(function () {
+    $(this).css('cursor', 'pointer').attr('title', 'Copies the values from this column to the next column only if the next column is empty.');
+  }, function () {
+    $(this).css('cursor', 'auto');
   });
 };
 
 $not_exist = ["None", "none", "undefined", "Please choose one", ""];
 
-CopyColumn = function() {
-  $(".cp_clmn").click(function(){
-    var $columnNo = $(this).closest('td').index();
-    var $this_tbl = $('table#fixed_table_base');
+CopyColumn = function () {
+  $(".cp_clmn").click(function () {
+    var $columnNo           = $(this).closest('td').index();
+    var $this_tbl           = $('table#fixed_table_base');
     var $tdsInColumnCurrent = $this_tbl
       .find("tr td:nth-child(" + ($columnNo + 1) + ")");
 
     $tdsInColumnCurrent.each(function () {
-      var $current_val = $(this).children( ':input' ).val();
-      var $next_cell = $(this).siblings().not('.readonly_td').eq($columnNo).children( ':input' );
+      var $current_val = $(this).children(':input').val();
+      var $next_cell   = $(this).siblings().not('.readonly_td').eq($columnNo).children(':input');
       if (($current_val) && (jQuery.inArray($next_cell.val(), $not_exist) !== -1)) {
         // alert("current_val = " + $current_val);
         // alert("next_cell_val = " + $next_cell_val);
@@ -852,25 +845,34 @@ CopyColumn = function() {
   });
 };
 
-showDatasets = function() {
+showDatasets = function () {
   $('#table_div_header').hide();
   $('#firstTd').hide();
 
   $('#table_div').on('scroll', function () {
     if ($('#table_div').scrollTop() > 0) {
       $('#table_div_header').show();
-      $('#firstTd').html('VAMPS dataset name').show();
+      $('#firstTd').html('VAMPS dataset').show();
     }
     $('#table_div_header').scrollLeft($('#table_div').scrollLeft());
     if ($('#table_div').scrollTop() === 0) {
       $('#table_div_header').hide();
       $('#firstTd').hide();
     }
-
   });
 };
+//
+// showSampleNumber = function () {
+//   alert("TTT");
+//   $('#first_td').html('Sample #').show();
+//   var $columnNo = $(this).closest('td').index();
+//   $('#header_th_div').html($columnNo).show();
+//   // var $this_tbl = $('table#fixed_table_base');
+//
+// };
 
-showSubmitMessage = function() {
+//TODO: on text validate - nothing, on text Submit - show
+showSubmitMessage = function () {
   $('#add_project_form_submit_btn').click(function () {
     alert('Your information was saved in a csv file, please notify the Site administration if you have finished editing.');
     $('#add_project_form').submit();
@@ -886,27 +888,74 @@ showSubmitMessage = function() {
 // console.log(req);
 // req.flash("fail", msg);
 
-showUnits = function() {
-    $('label').hover(function () {
-      $field_name = $(this).attr('for').slice(0,-1);
+// showUnits = function () {
+//   $('label').hover(function () {
+//     $field_name = $(this).attr('for').slice(0, -1);
+//
+//     $unit = all_field_units_js[$field_name];
+//     if ($unit) {
+//       result = $unit;
+//     }
+//     else {
+//       result = ordered_field_names_obj_js[$field_name][1][3];
+//     }
+//
+//     $(this).css('cursor', 'pointer').attr('title', result);
+//   }, function () {
+//     $(this).css('cursor', 'auto');
+//   });
+// };
 
-      $unit = all_field_units_js[$field_name];
-      if ($unit) {
-        result = $unit;
-      }
-      else {
-        result = ordered_field_names_obj_js[$field_name][1][3];
-      }
+showUnits = function () {
+  $('label').hover(function () {
+    var $field_name = $(this).attr('for').slice(0, -1);
 
-      $(this).css('cursor', 'pointer').attr('title', result);
-    }, function () {
-      $(this).css('cursor', 'auto');
-    });
+    var result = all_field_units_js[$field_name];
+    if (!result) {
+      result = ordered_field_names_obj_js[$field_name][1][3];
+    }
+
+    $(this).css('cursor', 'pointer').attr('title', result);
+  }, function () {
+    $(this).css('cursor', 'auto');
+  });
 };
+
 // ---
 
-$(document).ready(function(){
-  showSubmitMessage();
+//164#Amaral Zettler Linda#Amaral Zettler#Linda#amaral@mbl.edu
+
+$('#pi_id_name').change(function () {
+  // alert(this.value);
+  var last_name     = this.value.split("#")[2];
+  var first_name    = this.value.split("#")[3];
+  var pi_email      = this.value.split("#")[4];
+  var full_name     = first_name + " " + last_name;
+  var inits         = full_name.split(" ");
+  var inits_len     = inits.length;
+  var project_name1 = "";
+  for (var i = 0; i < inits_len; i++) {
+    project_name1 = project_name1 + inits[i][0];
+  }
+  // alert(project_name1);
+  $('input#project_name1').val(project_name1);
+  $('input#pi_email').val(pi_email);
+
+});
+
+$('input:radio[name="d_region"]').change(
+  function () {
+    if ($(this).is(':checked')) {
+      var project_name3 = this.value.split("#")[2];
+      $('input#project_name3').val(project_name3);
+    }
+  });
+
+
+// ---
+
+$(document).ready(function () {
+  // showSubmitMessage();
   showUnits();
   showDatasets();
   // addCopyBtns();

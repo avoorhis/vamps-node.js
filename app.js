@@ -93,7 +93,6 @@ var api        = require('./routes/routes_api');
 var portals    = require('./routes/routes_portals');
 var metadata   = require('./routes/routes_metadata');
 var metagenome = require('./routes/routes_metagenome');
-var submissions = require('./routes/routes_submissions');
 //console.log('test')
 var visuals = require('./routes/visuals/routes_visualization');
 //console.log('test2')
@@ -114,6 +113,7 @@ app.set(express.static(__dirname + 'tmp'));
 app.use(favicon( path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 //app.use(bodyParser({limit: 1024000000 })); // 1024MB
+// app.use(bodyParser({uploadDir:'./uploads'}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true,         // allows for richer json like experience https://www.npmjs.com/package/qs#readme
@@ -147,6 +147,7 @@ app.use(express.static('tmp'));
 
 app.use('public/javascripts', express.static(path.join(__dirname, 'public', 'javascripts')));
 app.use('public/stylesheets', express.static(path.join(__dirname, 'public', 'stylesheets')));
+app.use('public/help_pages', express.static(path.join(__dirname, 'public', 'help_pages')));
 app.use('/static', express.static(config.PATH_TO_STATIC_DOWNLOADS));   // path for static downloadable files
 // app.use('views/add_ins', express.static(path.join(__dirname, '/views/add_ins')));
 // required for passport
@@ -207,7 +208,6 @@ app.use('/oligotyping', oligotyping);
 app.use('/otus', otus);
 app.use('/api', api);
 app.use('/metagenome', metagenome);
-app.use('/submissions', submissions);
 
 // for non-routing pages such as heatmap, counts and bar_charts
 app.get('/*', function(req, res, next){

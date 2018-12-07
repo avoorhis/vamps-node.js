@@ -64,9 +64,7 @@ router.post('/login',  passport.authenticate('local-login', {
                     //console.log('pushing uid '+uid+' to pid '+pid)
                     //console.log(PROJECT_INFORMATION_BY_PID[pid].permissions)
                     //console.log('pushing uid2')
-                    //if(PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(parseInt(uid)) == -1){
                     if(PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid) && PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(parseInt(uid)) == -1){
-
                         //console.log('2pushing uid '+uid+' to pid '+pid)
                         PROJECT_INFORMATION_BY_PID[pid].permissions.push(parseInt(uid))
                     }
@@ -112,9 +110,9 @@ router.post('/login',  passport.authenticate('local-login', {
 // =====================================
 // show the signup form
 router.get('/signup', function(req, res) {
-        new_user = {}
+        new_user = {};
         // render the page and pass in any flash data if it exists
-        console.log('new_user--signup')
+        console.log('new_user--signup');
         //console.log(new_user)
         res.render('user_admin/signup', { 
                             title   : 'VAMPS:signup',
