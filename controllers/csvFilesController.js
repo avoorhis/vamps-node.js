@@ -10,8 +10,6 @@ class CsvFileRead {
     var parse_sync   = require('csv-parse/lib/sync');
     this.data_arr    = parse_sync(file_content, {columns: true, trim: true});
   }
-
-
 }
 
 class CsvFilesWrite {
@@ -172,7 +170,9 @@ class CsvFilesWrite {
 
     var time_stamp = new Date().getTime();
 
-    var base_name     = "metadata-project" + '_' + req.body.project + '_' + this.user.username + '_' + time_stamp + ".csv";
+    var file_name_project_part = helpers.unique_array(req.body.project)
+
+    var base_name     = "metadata-project" + '_' + file_name_project_part + '_' + this.user.username + '_' + time_stamp + ".csv";
     out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
 
     //TODO: more robust project!
