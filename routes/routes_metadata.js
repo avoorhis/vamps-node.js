@@ -624,11 +624,25 @@ function make_metadata_object_from_db(req, res) {
   //repeated!
   var dataset_ids = DATASET_IDS_BY_PID[pid];
   // var project     = PROJECT_INFORMATION_BY_PID[pid].project;
+  const met_obj = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
 
   // get_db_data
   console.time("TIME: helpers.slice_object");
   var AllMetadata_picked = helpers.slice_object(AllMetadata, dataset_ids);
   console.timeEnd("TIME: helpers.slice_object");
+  var all_metadata_picked_len = Object.keys(AllMetadata_picked).length;
+  if (all_metadata_picked_len === 0) // there is no metadata
+  {
+    console.log("There is no metadata for this project and datasets");
+    met_obj.all_metadata[pid]['dataset_id'] = dataset_ids;
+    // const show_new = met_obj.ShowObj(req, res, met_obj.all_metadata, met_obj.all_field_names4);
+    // const show_new = new module.exports.ShowObj(req, res, met_obj.all_metadata, met_obj.all_field_names4, met_obj.all_field_units);
+    show_new.show_metadata_new_again(req, res);
+    show_new.render_edit_form();
+
+
+  }
+
 
   console.time("TIME: dataset_info");
   // get dataset_info
@@ -649,7 +663,6 @@ function make_metadata_object_from_db(req, res) {
   }
   console.timeEnd("TIME: dataset_info");
 
-  const met_obj = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
 
   // add missing info to AllMetadata_picked
   console.time("TIME: add missing info to AllMetadata_picked");
@@ -657,6 +670,7 @@ function make_metadata_object_from_db(req, res) {
     var dataset_id = dataset_ids[d];
     var ids_data   = met_obj.get_all_req_metadata(dataset_id);
 
+    // TODO: what if requered metadata are missing?
     Object.assign(AllMetadata_picked[dataset_id], ids_data);
     var primers_info_by_dataset_id = met_obj.get_primers_info(dataset_id);
 

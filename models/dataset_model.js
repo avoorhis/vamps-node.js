@@ -182,6 +182,12 @@ class Dataset {
     return connection.query("SELECT * FROM dataset WHERE dataset = ?", [dataset_name], callback);
   }
 
+  getDatasetById(dataset_ids, callback) {
+
+    var dataset_ids_str = "('" + dataset_ids.join("', '") + "')";
+    return connection.query("SELECT * FROM dataset WHERE dataset_id in ?", [dataset_ids_str], callback);
+  }
+
   get_new_dataset_by_name(callback) {
     var dataset_names = "('" + this.DatasetInfo["dataset"].join("', '") + "')";
 
