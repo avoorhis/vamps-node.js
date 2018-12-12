@@ -915,6 +915,8 @@ class ShowObj {
       csv_files_obj.make_csv();
     }
 
+    var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
+
     this.res.render('metadata/metadata_edit_form', {
       title: 'VAMPS: Metadata_upload',
       user: this.user,
@@ -922,7 +924,7 @@ class ShowObj {
       all_metadata: this.all_metadata,
       all_field_names: this.all_field_names_arr,
       ordered_field_names_obj: this.ordered_field_names_obj,
-      all_field_units: this.all_field_units,
+      all_field_units: all_field_units,
       dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
       dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
       dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
