@@ -696,12 +696,10 @@ function get_db_data (req, res, met_obj) { // move to met_obj?
 }
 
 function add_abstract_data(req, res, met_obj) {
-  var user_id = PROJECT_INFORMATION_BY_PID[met_obj.pid].oid;
-// var user_obj = new User.getUserInfoFromGlobal(user_id);
-
+  const user_id = PROJECT_INFORMATION_BY_PID[met_obj.pid].oid;
   const this_project = new Project(req, res, met_obj.pid, user_id);
   this_project.make_project_obj_with_existing_project_info_by_pid(met_obj.pid);
-  var project_obj = this_project.project_obj;
+  const project_obj = this_project.project_obj;
 
   return project_obj.abstract_data;
 }
