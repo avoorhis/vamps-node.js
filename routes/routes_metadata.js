@@ -627,10 +627,7 @@ function make_metadata_object_from_db(req, res) {
   const met_obj = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
 
   // get_db_data
-  console.time("TIME: helpers.slice_object");
-  var AllMetadata_picked = create_AllMetadata_picked(dataset_ids)
-  console.timeEnd("TIME: helpers.slice_object");
-  has_metadata_in_db(req, res, met_obj, AllMetadata_picked);
+  get_db_data(req, res, met_obj, dataset_ids);
 }
 
 function create_AllMetadata_picked(dataset_ids) {
@@ -646,19 +643,15 @@ function create_AllMetadata_picked(dataset_ids) {
   return AllMetadata_picked;
 }
 
-// function no_metadata(req, res, met_obj) { // move to met_obj?
-//   console.log("There is no metadata for this project and datasets");
-//   var all_field_names4 = CONSTS.ORDERED_METADATA_NAMES; // move to initial in met_obj
-//   const show_new = new metadata_controller.ShowObj(req, res, met_obj.all_metadata, all_field_names4);
-//   show_new.render_edit_form();
-// }
-
-function has_metadata_in_db(req, res, met_obj, AllMetadata_picked) { // move to met_obj?
+function get_db_data (req, res, met_obj, dataset_ids_in) { // move to met_obj?
+  console.time("TIME: helpers.slice_object");
+  var AllMetadata_picked = create_AllMetadata_picked(dataset_ids);
+  console.timeEnd("TIME: helpers.slice_object");
 
   console.time("TIME: dataset_info");
   // get dataset_info
   var pid = met_obj.pid;
-  var dataset_ids = met_obj.dataset_ids;
+  var dataset_ids = dataset_ids_in || met_obj.dataset_ids;
 
   var dataset_info = [];
   // use helpers.findByValueOfObject(arr, key, value)
