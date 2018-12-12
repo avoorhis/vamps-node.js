@@ -257,7 +257,7 @@ class CreateDataObj {
     console.time('TIME: make_metadata_object');
 
     // var all_metadata = {};
-    var dataset_ids  = DATASET_IDS_BY_PID[pid];
+    var dataset_ids  = DATASET_IDS_BY_PID[pid] || data_obj['dataset_id'];
     var repeat_times = dataset_ids.length;
 
     // 0) get field_names
@@ -273,8 +273,8 @@ class CreateDataObj {
 
     //3) special
 
-    var owner_id      = PROJECT_INFORMATION_BY_PID[pid].oid;
-    const new_project = new Project(req, res, pid, owner_id);
+    var owner_id      = PROJECT_INFORMATION_BY_PID[pid].oid; // TODO: already have?
+    const new_project = new Project(req, res, pid, owner_id);  // TODO: already have?
     new_project.make_project_obj_with_existing_project_info_by_pid(pid);
     var project_info = new_project.project_obj;
 
