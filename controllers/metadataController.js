@@ -678,7 +678,7 @@ class CreateDataObj {
       // data[key] = [];
       if (typeof AllMetadata[dataset_id] === 'undefined' )
       {
-        console.log('There is no ' + key + ' metadata for dataset_id = ' + dataset_id + ' in metadataController.get_all_req_metadata');
+        console.log('There is no ' + key + ' metadata for dataset_id = ' + dataset_id + ' in metadataController.get_all_req_metadata'); //TODO: add to all errors!!!
         data[key] = [];
       }
       else {

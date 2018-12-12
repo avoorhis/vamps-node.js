@@ -667,49 +667,32 @@ function get_db_data (req, res, met_obj) { // move to met_obj?
   console.timeEnd("TIME: helpers.slice_object");
 
   console.time("TIME: dataset_info");
-  const dataset_info = get_dataset_info(met_obj);
-
-  // var pid = met_obj.pid;
-  // var dataset_ids = dataset_ids_in || met_obj.dataset_ids;
-  //
-  // var dataset_info = [];
-  // // use helpers.findByValueOfObject(arr, key, value)
-  // for (var i in ALL_DATASETS.projects) {
-  //   var item = ALL_DATASETS.projects[i];
-  //   if (String(item.pid) === String(pid)) {
-  //     dataset_info = item.datasets;
-  //     break;
-  //   }
-  // }
-
-  var dataset_info_by_did = {};
-  for (var idx in dataset_info) {
-    dataset_info_by_did[dataset_info[idx]["did"]] = dataset_info[idx];
-  }
+  const dataset_info        = get_dataset_info(met_obj);
+  const dataset_info_by_did = make_dataset_info_by_did(dataset_info);
   console.timeEnd("TIME: dataset_info");
 
-  // add missing info to AllMetadata_picked
-  var dataset_ids = met_obj.dataset_ids;
   console.time("TIME: add missing info to AllMetadata_picked");
-  for (var d in dataset_ids) { //TODO: split here instead
-    var dataset_id = dataset_ids[d];
-    var ids_data   = met_obj.get_all_req_metadata(dataset_id);
-
-    // TODO: what if requered metadata are missing?
-    var all_metadata_picked_len = Object.keys(AllMetadata_picked).length;
-    if (all_metadata_picked_len !== 0) { // there is no metadata
-      Object.assign(AllMetadata_picked[dataset_id], ids_data);
-    }
-    var primers_info_by_dataset_id = met_obj.get_primers_info(dataset_id);
-
-    AllMetadata_picked[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
-    AllMetadata_picked[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
-
-    AllMetadata_picked[dataset_id]["dataset"]             = dataset_info_by_did[dataset_id]["dname"];
-    AllMetadata_picked[dataset_id]["dataset_description"] = dataset_info_by_did[dataset_id]["ddesc"];
-
-    AllMetadata_picked[dataset_id]["dataset_id"] = dataset_id;
-  }
+  const AllMetadata_picked_full = add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked, dataset_info_by_did);
+  // var dataset_ids = met_obj.dataset_ids;
+  // for (var d in dataset_ids) { //TODO: split here instead if no metadata
+  //   var dataset_id = dataset_ids[d];
+  //   var ids_data   = met_obj.get_all_req_metadata(dataset_id);
+  //
+  //   // TODO: what if requered metadata are missing?
+  //   var all_metadata_picked_len = Object.keys(AllMetadata_picked).length;
+  //   if (all_metadata_picked_len !== 0) { // there are metadata
+  //     Object.assign(AllMetadata_picked[dataset_id], ids_data);
+  //   }
+  //   var primers_info_by_dataset_id = met_obj.get_primers_info(dataset_id);
+  //
+  //   AllMetadata_picked[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
+  //   AllMetadata_picked[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
+  //
+  //   AllMetadata_picked[dataset_id]["dataset"]             = dataset_info_by_did[dataset_id]["dname"];
+  //   AllMetadata_picked[dataset_id]["dataset_description"] = dataset_info_by_did[dataset_id]["ddesc"];
+  //
+  //   AllMetadata_picked[dataset_id]["dataset_id"] = dataset_id;
+  // }
   console.timeEnd("TIME: add missing info to AllMetadata_picked");
 
   // var data_in_obj_of_arr = metadata_controller.from_obj_to_obj_of_arr(AllMetadata_picked, pid);
@@ -718,21 +701,21 @@ function get_db_data (req, res, met_obj) { // move to met_obj?
 
   // as many values per field as there are datasets
 
-  var user_id = PROJECT_INFORMATION_BY_PID[pid].oid;
+  var user_id = PROJECT_INFORMATION_BY_PID[met_obj.pid].oid;
   // var user_obj = new User.getUserInfoFromGlobal(user_id);
 
-  const this_project = new Project(req, res, pid, user_id);
-  this_project.make_project_obj_with_existing_project_info_by_pid(pid);
+  const this_project = new Project(req, res, met_obj.pid, user_id);
+  this_project.make_project_obj_with_existing_project_info_by_pid(met_obj.pid);
   var project_obj = this_project.project_obj;
 
   var abstract_data = project_obj.abstract_data;
 
-  var data_in_obj_of_arr                 = met_obj.from_obj_to_obj_of_arr(AllMetadata_picked, pid, dataset_ids);
-  data_in_obj_of_arr["project_abstract"] = met_obj.fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
+  var data_in_obj_of_arr                 = met_obj.from_obj_to_obj_of_arr(AllMetadata_picked_full, met_obj.pid, met_obj.dataset_ids);
+  data_in_obj_of_arr["project_abstract"] = met_obj.fill_out_arr_doubles(abstract_data.pdfs, met_obj.dataset_ids.length);
 
-  var all_metadata = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
+  var all_metadata = met_obj.make_metadata_object(req, res, met_obj.pid, data_in_obj_of_arr);
 
-  var all_field_names4 = met_obj.make_all_field_names(dataset_ids);
+  var all_field_names4 = met_obj.make_all_field_names(met_obj.dataset_ids);
 
   // console.log("DDD2 all_field_names");
   // console.log(JSON.stringify(all_field_names));
@@ -744,6 +727,39 @@ function get_db_data (req, res, met_obj) { // move to met_obj?
   console.timeEnd("TIME: make_metadata_object_from_db");
 }
 
+function make_dataset_info_by_did(dataset_info) {
+  var dataset_info_by_did = {};
+  for (var idx in dataset_info) {
+    dataset_info_by_did[dataset_info[idx]["did"]] = dataset_info[idx];
+  }
+  return dataset_info_by_did;
+}
+
+function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, dataset_info_by_did) {
+  var dataset_ids = met_obj.dataset_ids;
+  var AllMetadata_picked_out = AllMetadata_picked_in;
+  console.time("TIME: add missing info to AllMetadata_picked");
+  for (var d in dataset_ids) { //TODO: split here instead if no metadata
+    var dataset_id = dataset_ids[d];
+    var ids_data   = met_obj.get_all_req_metadata(dataset_id);
+
+    // TODO: what if requered metadata are missing?
+    var all_metadata_picked_len = Object.keys(AllMetadata_picked_in).length;
+    if (all_metadata_picked_len !== 0) { // there are metadata
+      Object.assign(AllMetadata_picked_out[dataset_id], ids_data);
+    }
+    var primers_info_by_dataset_id = met_obj.get_primers_info(dataset_id);
+
+    AllMetadata_picked_out[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
+    AllMetadata_picked_out[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
+
+    AllMetadata_picked_out[dataset_id]["dataset"]             = dataset_info_by_did[dataset_id]["dname"];
+    AllMetadata_picked_out[dataset_id]["dataset_description"] = dataset_info_by_did[dataset_id]["ddesc"];
+
+    AllMetadata_picked_out[dataset_id]["dataset_id"] = dataset_id;
+  }
+  return AllMetadata_picked_out;
+}
 
 
 
