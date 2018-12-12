@@ -646,17 +646,19 @@ function create_AllMetadata_picked(dataset_ids) {
 function get_dataset_info(met_obj)
 {
 
-  var pid = met_obj.pid;
+  const pid = met_obj.pid;
 
   var dataset_info = [];
   // use helpers.findByValueOfObject(arr, key, value)
   for (var i in ALL_DATASETS.projects) {
+    // doesn't work var project_info = helpers.findByValueOfObject(ALL_DATASETS.projects[i], 'pid', String(pid));
     var item = ALL_DATASETS.projects[i];
     if (String(item.pid) === String(pid)) {
       dataset_info = item.datasets;
       break;
     }
   }
+  return dataset_info;
 }
 
 function get_db_data (req, res, met_obj) { // move to met_obj?
