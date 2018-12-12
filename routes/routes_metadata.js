@@ -627,7 +627,7 @@ function make_metadata_object_from_db(req, res) {
   const met_obj = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
 
   // get_db_data
-  get_db_data(req, res, met_obj, dataset_ids);
+  get_db_data(req, res, met_obj);
 }
 
 function create_AllMetadata_picked(dataset_ids) {
@@ -643,15 +643,10 @@ function create_AllMetadata_picked(dataset_ids) {
   return AllMetadata_picked;
 }
 
-function get_db_data (req, res, met_obj, dataset_ids_in) { // move to met_obj?
-  console.time("TIME: helpers.slice_object");
-  var AllMetadata_picked = create_AllMetadata_picked(dataset_ids);
-  console.timeEnd("TIME: helpers.slice_object");
+function get_dataset_info(met_obj)
+{
 
-  console.time("TIME: dataset_info");
-  // get dataset_info
   var pid = met_obj.pid;
-  var dataset_ids = dataset_ids_in || met_obj.dataset_ids;
 
   var dataset_info = [];
   // use helpers.findByValueOfObject(arr, key, value)
@@ -662,6 +657,28 @@ function get_db_data (req, res, met_obj, dataset_ids_in) { // move to met_obj?
       break;
     }
   }
+}
+
+function get_db_data (req, res, met_obj) { // move to met_obj?
+  console.time("TIME: helpers.slice_object");
+  var AllMetadata_picked = create_AllMetadata_picked(met_obj.dataset_ids);
+  console.timeEnd("TIME: helpers.slice_object");
+
+  console.time("TIME: dataset_info");
+  const dataset_info = get_dataset_info(met_obj);
+
+  // var pid = met_obj.pid;
+  // var dataset_ids = dataset_ids_in || met_obj.dataset_ids;
+  //
+  // var dataset_info = [];
+  // // use helpers.findByValueOfObject(arr, key, value)
+  // for (var i in ALL_DATASETS.projects) {
+  //   var item = ALL_DATASETS.projects[i];
+  //   if (String(item.pid) === String(pid)) {
+  //     dataset_info = item.datasets;
+  //     break;
+  //   }
+  // }
 
   var dataset_info_by_did = {};
   for (var idx in dataset_info) {
@@ -670,6 +687,7 @@ function get_db_data (req, res, met_obj, dataset_ids_in) { // move to met_obj?
   console.timeEnd("TIME: dataset_info");
 
   // add missing info to AllMetadata_picked
+  var dataset_ids = met_obj.dataset_ids;
   console.time("TIME: add missing info to AllMetadata_picked");
   for (var d in dataset_ids) { //TODO: split here instead
     var dataset_id = dataset_ids[d];
