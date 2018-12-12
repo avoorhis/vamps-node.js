@@ -504,11 +504,11 @@ class CreateDataObj {
     return pi_list;
   }
 
-  from_obj_to_obj_of_arr(data, pid) {
+  from_obj_to_obj_of_arr(data, pid, dataset_ids_in) {
     console.time('TIME: from_obj_to_obj_of_arr');
     var obj_of_arr = {};
 
-    var dataset_ids = DATASET_IDS_BY_PID[pid];
+    var dataset_ids = DATASET_IDS_BY_PID[pid] || dataset_ids_in;
 
     var all_field_names = this.all_field_names;
 
@@ -678,13 +678,13 @@ class CreateDataObj {
       // data[key] = [];
       if (typeof AllMetadata[dataset_id] === 'undefined' )
       {
-        console.log('There is no metadata for dataset_id = ' + dataset_id + 'in metadataController.get_all_req_metadata');
+        console.log('There is no ' + key + ' metadata for dataset_id = ' + dataset_id + ' in metadataController.get_all_req_metadata');
+        data[key] = [];
       }
       else {
         var val_hash = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + '_id');
         data[key] = val_hash.value;
       }
-
     }
     console.time('TIME: 5) get_all_req_metadata');
 
@@ -694,11 +694,23 @@ class CreateDataObj {
   // This function cyclomatic complexity is too high (68)
   get_primers_info(dataset_id) {
     console.time('TIME: get_primers_info');
-    var primer_suite_id = AllMetadata[dataset_id]['primer_suite_id'];
-    var primer_info     = {};
+    var primer_info = {
+      'F': [],
+      'R': [],
+    };
+    var primer_suite_id;
 
-    if (typeof primer_suite_id === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id] === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined') {
-      return {};
+    if (typeof AllMetadata[dataset_id] !== 'undefined') {
+      primer_suite_id = AllMetadata[dataset_id]['primer_suite_id'];
+    }
+    else {
+      return primer_info;
+    }
+
+    if (typeof primer_suite_id === 'undefined' ||
+      typeof MD_PRIMER_SUITE[primer_suite_id] === 'undefined' ||
+      typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined') {
+      return primer_info;
     }
     else {
       try {
