@@ -568,7 +568,6 @@ function new_csv(req, res, cur_project, project_name, transposed) {
 
 // if (pid === 0) { // new csv
   cur_project.make_project_obj_from_new_csv(project_name, transposed);
-  //  TODO: save new project
   var project_obj = cur_project.project_obj;
   console.log('PPP00 project_obj', project_obj);
   console.log('PPP01 JSON.stringify(project_obj)', JSON.stringify(project_obj));
@@ -672,8 +671,11 @@ function get_db_data (req, res, met_obj) { // move to met_obj?
   console.timeEnd("TIME: dataset_info");
 
   console.time("TIME: add missing info to AllMetadata_picked");
-  const AllMetadata_picked_full = add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked, dataset_info_by_did);
+  const AllMetadata_picked_new = add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked, dataset_info_by_did);
   console.timeEnd("TIME: add missing info to AllMetadata_picked");
+  const AllMetadata_picked_full = AllMetadata_picked_new.AllMetadata_picked_full;
+  const fail_msg = AllMetadata_picked_new.fail_msg;
+  req.flash('fail', fail_msg);
 
   var abstract_data = add_abstract_data(req, res, met_obj);
 
@@ -713,19 +715,21 @@ function make_dataset_info_by_did(dataset_info) {
 }
 
 function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, dataset_info_by_did) {
-  var dataset_ids = met_obj.dataset_ids;
+  const dataset_ids = met_obj.dataset_ids;
   var AllMetadata_picked_out = AllMetadata_picked_in;
+  var fail_msg = [];
   console.time("TIME: add missing info to AllMetadata_picked");
-  for (var d in dataset_ids) { //TODO: split here instead if no metadata
-    var dataset_id = dataset_ids[d];
-    var ids_data   = met_obj.get_all_req_metadata(dataset_id);
+  for (var d_idx in dataset_ids) { //TODO: split here instead if no metadata
+    const dataset_id = dataset_ids[d_idx];
+    const all_req_metadata = met_obj.get_all_req_metadata(dataset_id);
+    const ids_data = all_req_metadata.data;
+    fail_msg.push(all_req_metadata.fail_msg);
 
-    // TODO: what if requered metadata are missing?
-    var all_metadata_picked_len = Object.keys(AllMetadata_picked_in).length;
+    const all_metadata_picked_len = Object.keys(AllMetadata_picked_in).length;
     if (all_metadata_picked_len !== 0) { // there are metadata
       Object.assign(AllMetadata_picked_out[dataset_id], ids_data);
     }
-    var primers_info_by_dataset_id = met_obj.get_primers_info(dataset_id);
+    const primers_info_by_dataset_id = met_obj.get_primers_info(dataset_id);
 
     AllMetadata_picked_out[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
     AllMetadata_picked_out[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
@@ -735,10 +739,8 @@ function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, 
 
     AllMetadata_picked_out[dataset_id]["dataset_id"] = dataset_id;
   }
-  return AllMetadata_picked_out;
+  return {'AllMetadata_picked_full': AllMetadata_picked_out, 'fail_msg': fail_msg};
 }
-
-
 
 // from form to a csv file
 
@@ -813,29 +815,7 @@ function saveMetadata(req, res) {
   req.flash("success", "Success with the metadata submit!");
 
   res.redirect("/projects/" + req.body.project_id);
-  // res.redirect("/metadata/metadata_file_list");
-  // /help/contact
 
-  // res.render('help/contact', {
-  //
-  //   title: 'VAMPS:Contact Us',
-  //   choices : req.CONSTS.CONTACT_US_SUBJECTS,
-  //   user: req.user,
-  //
-  //   hostname: req.CONFIG.hostname
-  // });
-
-  // editMetadata(req, res);
-  // if(!req.form.isValid){
-  //   // TODO: remove here, should be after validation only
-  //   make_csv(req, res);
-  //   editMetadata(req, res);
-  // }else{
-  //   make_csv(req, res);
-  //   saveToDb(req.metadata);
-  //   // TODO: change
-  //   res.redirect("/metadata"+req.metadata.id+"/edit");
-  // }
   console.timeEnd("TIME: saveMetadata");
 
 }

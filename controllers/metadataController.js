@@ -671,7 +671,7 @@ class CreateDataObj {
 
   get_all_req_metadata(dataset_id) {
     console.time('TIME: 5) get_all_req_metadata');
-
+    var fail_msg = [];
     var data = {};
     for (var idx = 0; idx < CONSTS.REQ_METADATA_FIELDS_wIDs.length; idx++) {
       var key      = CONSTS.REQ_METADATA_FIELDS_wIDs[idx];
@@ -679,6 +679,7 @@ class CreateDataObj {
       if (typeof AllMetadata[dataset_id] === 'undefined' )
       {
         console.log('There is no ' + key + ' metadata for dataset_id = ' + dataset_id + ' in metadataController.get_all_req_metadata'); //TODO: add to all errors!!!
+        fail_msg.push('There is no ' + key + ' metadata for dataset ' + DATASET_NAME_BY_DID[dataset_id]);
         data[key] = [];
       }
       else {
@@ -688,7 +689,7 @@ class CreateDataObj {
     }
     console.time('TIME: 5) get_all_req_metadata');
 
-    return data;
+    return {'data': data, 'fail_msg': fail_msg};
   }
 
   // This function cyclomatic complexity is too high (68)
