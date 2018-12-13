@@ -273,10 +273,10 @@ class CreateDataObj {
 
     //3) special
 
-    var owner_id      = PROJECT_INFORMATION_BY_PID[pid].oid; // TODO: already have?
+    const owner_id = PROJECT_INFORMATION_BY_PID[pid].oid; // TODO: already have?
     const new_project = new Project(req, res, pid, owner_id);  // TODO: already have?
     new_project.make_project_obj_with_existing_project_info_by_pid(pid);
-    var project_info = new_project.project_obj;
+    const project_info = new_project.project_obj;
 
     // TODO: move to db creation?
     // console.log('MMM33 all_metadata[pid]');
@@ -678,7 +678,7 @@ class CreateDataObj {
       // data[key] = [];
       if (typeof AllMetadata[dataset_id] === 'undefined' )
       {
-        console.log('There is no ' + key + ' metadata for dataset_id = ' + dataset_id + ' in metadataController.get_all_req_metadata'); //TODO: add to all errors!!!
+        console.log('There is no ' + key + ' metadata for dataset_id = ' + dataset_id + ' in metadataController.get_all_req_metadata');
         fail_msg.push('There is no ' + key + ' metadata for dataset ' + DATASET_NAME_BY_DID[dataset_id]);
         data[key] = [];
       }
