@@ -73,7 +73,7 @@ constants.DOMAIN_REGIONS = {
       domain_show: "Eukarya"
     },
     {d_r: ["ITS1"], domain: "Fungal", regions: ['ITS1'], domain_show: "Eukarya"},
-    {d_r: ["Sgun"], domain: "Shotgun", regions: ['random'], domain_show: "All"},
+    {d_r: ["Sgun"], domain: "Shotgun", regions: [''], domain_show: "All"},
   ]
 };
 
