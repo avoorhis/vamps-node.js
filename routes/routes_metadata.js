@@ -740,10 +740,11 @@ function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, 
     AllMetadata_picked_out[dataset_id]["dataset_id"] = dataset_id;
   }
   var errs = helpers.flat_array(fail_msg);
+  var fail_msg_out = errs;
   if (typeof errs !== 'undefined' && errs.length === 0) {
-    fail_msg = "";
+    fail_msg_out = "";
   }
-  return {'AllMetadata_picked_full': AllMetadata_picked_out, 'fail_msg': fail_msg};
+  return {'AllMetadata_picked_full': AllMetadata_picked_out, 'fail_msg': fail_msg_out};
 }
 
 // from form to a csv file
