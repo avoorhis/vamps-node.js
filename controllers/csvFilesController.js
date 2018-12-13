@@ -33,8 +33,7 @@ class CsvFilesWrite {
     console.timeEnd("sorted_files_by_time");
     return f_info;
   }
-
-
+  
   sorted_files_to_compare(sorted_files) {
     console.time("sorted_files_to_compare");
 
@@ -179,16 +178,6 @@ class CsvFilesWrite {
       user_info: req.user, //use this.user
       project_id: req.body.project_id
     });
-
-    // var time_stamp = new Date().getTime();
-    //
-    // var file_name_project_part = req.body.project;
-    // if (typeof req.body.project !== "string") {
-    //   file_name_project_part = helpers.unique_array(file_name_project_part);
-    // }
-    //
-    // var base_name     = "metadata-project" + '_' + file_name_project_part + '_' + this.user.username + '_' + time_stamp + ".csv";
-    // out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
 
     const base_name = this.make_out_file_base_name(req);
     const out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
