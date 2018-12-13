@@ -157,8 +157,20 @@ class CsvFilesWrite {
     return result;
   }
 
+  make_out_file_base_name(req){
+    const time_stamp = new Date().getTime();
+
+    var file_name_project_part = req.body.project;
+    if (typeof req.body.project !== "string") {
+      file_name_project_part = helpers.unique_array(file_name_project_part);
+    }
+    const base_name = "metadata-project" + '_' + file_name_project_part + '_' + this.user.username + '_' + time_stamp + ".csv";
+
+    return base_name;
+
+  }
+
   make_csv() {
-    var out_csv_file_name;
     console.time("TIME: make_csv");
     var req = this.req;
 
@@ -168,14 +180,18 @@ class CsvFilesWrite {
       project_id: req.body.project_id
     });
 
-    var time_stamp = new Date().getTime();
+    // var time_stamp = new Date().getTime();
+    //
+    // var file_name_project_part = req.body.project;
+    // if (typeof req.body.project !== "string") {
+    //   file_name_project_part = helpers.unique_array(file_name_project_part);
+    // }
+    //
+    // var base_name     = "metadata-project" + '_' + file_name_project_part + '_' + this.user.username + '_' + time_stamp + ".csv";
+    // out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
 
-    var file_name_project_part = helpers.unique_array(req.body.project)
-
-    var base_name     = "metadata-project" + '_' + file_name_project_part + '_' + this.user.username + '_' + time_stamp + ".csv";
-    out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
-
-    //TODO: more robust project!
+    const base_name = this.make_out_file_base_name(req);
+    const out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
 
     fs.writeFile(out_csv_file_name, csv, function (err) {
       if (err) throw err;
