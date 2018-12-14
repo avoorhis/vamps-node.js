@@ -52,8 +52,10 @@
 </ol>
 <form name='add_project_form' method='POST' action='/metadata/metadata_upload'>
 <!-- <form action="" method="post" enctype="multipart/form-data"> -->
-  <fieldset id="general" class="required_fields" >
+  <fieldset id="general" >
   <legend id="general-legend">General sample description</legend>
+    <div class="required_fields">
+
     <% for (var pid in all_metadata) { %>
       <% if (typeof(all_metadata[pid]) !== 'undefined') { %>
         <% pi_email = all_metadata[pid]["pi_email"][0] %>
@@ -106,7 +108,9 @@
     <% } %> <!-- if else (all_metadata[pid]["project_abstract"]) -->
 
     <br />
-  <label for="reference">References for selected manuscripts published that describe the location:</label>
+    </div> <!-- End of required yellow-->
+
+    <label for="reference">References for selected manuscripts published that describe the location:</label>
     <textarea class="textarea_long" id="reference" name="reference"  placeholder='<%= reference %>'><%= reference %></textarea>
   <br />
   </fieldset>
