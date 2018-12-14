@@ -200,6 +200,28 @@ var all_metadata = {}
         <input type="number" id="samples_number" name="samples_number" size="3" value="<%= samples_number %>">
         </div>
 
+        ---
+        <div class="metadata">
+            <label class="col-sm-5" for="package">Please choose a portal or an environmental package:</label>
+            <select id="package" name="package">
+                <option selected="true" disabled>Select&hellip;</option>
+                <!-- TODO constants.PACKAGES_AND_PORTALS instead-->
+                <% pi_list.forEach(function(val){ %>
+                <option value="<%= val.pi_id %>#<%= val.PI %>#<%= val.last_name %>#<%= val.first_name %>#<%= val.pi_email %>"
+                <% if (val.PI == pi_name) {%>
+                selected
+                <% } %>
+                ><%= val.PI %></option>
+                <% }); %>
+            </select>
+        </div>
+        <br/>
+        ---
+        <div class="metadata">
+            <label class="col-sm-5" for="packages">Please choose a portal or an environmental package</label>
+            <input type="number" id="packages" name="packages" size="3" value="<%= packages %>">
+        </div>
+
 
     </fieldset>
     <fieldset id="parameters">
