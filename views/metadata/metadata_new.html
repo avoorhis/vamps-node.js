@@ -190,16 +190,6 @@ var all_metadata = {}
         </div>
 
         <div class="metadata">
-            <label class="col-sm-5" for="reference">Project Reference:</label>
-            <textarea class="textarea_long" id="reference" name="reference"
-                      placeholder="max length: 1000 chars">
-            <% if (typeof reference !== 'undefined') { %>
-                <%= reference %>
-            <% } %>
-        </textarea>
-        </div>
-
-        <div class="metadata">
         <label class="col-sm-5" for="funding_code">Funding Code (numeric only)</label>
         <input type="number" id="funding_code" name="funding_code" maxlength="10" size="10" value="<%= funding_code %>">
         </div>
