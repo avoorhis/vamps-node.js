@@ -697,6 +697,7 @@ constants.REQ_METADATA_FIELDS      = [
 //  "reverse_primer",
   "run"
 ];
+
 constants.REQ_METADATA_FIELDS_wIDs = ["geo_loc_name",     // name of country or longhurst zone
   "dna_region",       // v6, v4v5 v6v4 .... (from mysql table)
   "domain",           // Bacteria, Archaea or Eukarya (from mysql table)
@@ -731,7 +732,7 @@ constants.REQ_METADATA_FIELDS_wIDs = ["geo_loc_name",     // name of country or 
 //                                 ];
 constants.CONTACT_US_SUBJECTS = ["Account Request", "Report a Problem", "Announce a Publication","Request Project Permanency", "Other"];
 
-// duplicate in metadta.js!
+// duplicate in metadata.js!
 constants.ORDERED_METADATA_NAMES = [
   ["structured comment name", "Parameter", "", ""], //MBL Supplied or Optional
   ["", "General", "", ""],
@@ -1029,5 +1030,33 @@ constants.SAMPLE_TYPE = ["Please choose one",
   "isolate"];
 
 constants.GAZ_SPELLING = {"United States": ["usa", "united states of america"]};
+
+// TODO: add fields_names for each
+constants.PACKAGES_AND_PORTALS = ['air',
+  'built environment',
+  'host-associated',
+  'human-associated',
+  'human-gut',
+  'human-oral',
+  'human-skin',
+  'human-vaginal',
+  'microbial mat/biofilm',
+  'miscellaneous natural or artificial environment',
+  'plant-associated',
+  'sediment',
+  'soil',
+  'wastewater/sludge',
+  'water',
+  // constants.PORTALS.keys:
+'CMP',
+  'CODL',
+  'NIHHMP',
+  'UC',
+  'ICOMM',
+  'LTER',
+  'MBE',
+  'PSPHERE',
+  'RARE',
+  'UNIEUK'];
 
 module.exports = constants;
