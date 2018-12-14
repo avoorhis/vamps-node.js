@@ -819,7 +819,9 @@ class CreateDataObj {
     all_field_names4 = all_field_names4.concat(second_part_part_1);
     all_field_names4 = all_field_names4.concat(second_part_part_2);
     all_field_names4 = all_field_names4.concat(second_part_part_3);
-
+    // TODO: use all_field_names4 first column to order fields in csv
+    // console.log('RRRRR all_field_names4 from make_new_project_for_form');
+    // console.log(JSON.stringify(all_field_names4));
 
     var all_metadata = this.create_all_metadata_form_new(all_field_names, project_obj);
     // all_metadata = { '485':
