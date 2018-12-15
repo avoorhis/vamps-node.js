@@ -252,7 +252,8 @@ router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
     button_name: "Validate",
     domain_regions: CONSTS.DOMAIN_REGIONS,
     samples_number: "",
-    pi_list: pi_list
+    pi_list: pi_list,
+    packages_and_portals: CONSTS.PACKAGES_AND_PORTALS
   });
 });
 
