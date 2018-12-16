@@ -95,24 +95,26 @@
   <label for="pi_email">PI's email address:</label>
   <input type="email" id="pi_email" name="pi_email"  value='<%= pi_email %>'/>
   <br />
-  <label for="project_abstract">Project abstract:</label>
+    </div> <!-- End of required yellow-->
+
+    <label for="project_abstract">Project abstract:</label>
     <% if ((typeof(project_abstracts[0]) !== 'undefined') && (project_abstracts[0].length > 0)) { %>
-      <div class="white_box readonly">
-        <% for (var n in project_abstracts[0]) { %>
-          <a href='/static/abstracts/<%= project_abstracts[0][n] %>' target='_blank'><%= project_abstracts[0][n] %></a><br/>
-        <% } %> <!-- for (var pid in all_metadata)-->
-        <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= project_abstracts[0] %>'/>
-      </div>
-      <% } else { %> <!-- if not (all_metadata[pid]["project_abstract"]) -->
-    <textarea class="textarea_long" class="readonly" readonly id="project_abstract" name="project_abstract" placeholder="Please send the abstract to VAMPS"></textarea>
+    <div class="white_box readonly">
+      <% for (var n in project_abstracts[0]) { %>
+      <a href='/static/abstracts/<%= project_abstracts[0][n] %>' target='_blank'><%= project_abstracts[0][n] %></a><br/>
+      <% } %> <!-- for (var pid in all_metadata)-->
+      <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= project_abstracts[0] %>'/>
+    </div>
+    <% } else { %> <!-- if not (all_metadata[pid]["project_abstract"]) -->
+    <textarea class="textarea_long" id="project_abstract" name="project_abstract" placeholder="Please send the abstract to VAMPS"></textarea>
     <% } %> <!-- if else (all_metadata[pid]["project_abstract"]) -->
 
     <br />
-    </div> <!-- End of required yellow-->
 
     <label for="reference">References for selected manuscripts published that describe the location:</label>
     <textarea class="textarea_long" id="reference" name="reference"  placeholder='<%= reference %>'><%= reference %></textarea>
   <br />
+
   </fieldset>
   <fieldset id="parameters">
     <legend id="parameters-legend">Table of metadata parameters</legend>
