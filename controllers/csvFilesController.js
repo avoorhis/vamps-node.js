@@ -159,7 +159,11 @@ class CsvFilesWrite {
   make_out_file_base_name(req){
     const time_stamp = new Date().getTime();
 
-    var file_name_project_part = req.body.project || PROJECT_INFORMATION_BY_PID[req.body.project_id].project;
+    var file_name_project_part = req.body.project;
+    if (typeof PROJECT_INFORMATION_BY_PID[req.body.project_id] !== 'undefined') {
+        file_name_project_part = PROJECT_INFORMATION_BY_PID[req.body.project_id].project;
+    }
+
     if (typeof req.body.project !== "string") {
       file_name_project_part = helpers.unique_array(file_name_project_part);
     }
