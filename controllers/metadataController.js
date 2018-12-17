@@ -988,27 +988,29 @@ class ShowObj {
     req      = helpers.collect_errors(req);
     this.req = req;
 
+    //TODO: move all renders to route_metadata
     res.render('metadata/metadata_new', {
       // TODO: object created separately in Imp.
       // TODO just use form
       button_name: 'Validate',
+      d_region: req.form.d_region,
       domain_regions: CONSTS.DOMAIN_REGIONS,
+      funding_code: req.form.funding_code,
       hostname: req.CONFIG.hostname,
+      packages_and_portals: CONSTS.PACKAGES_AND_PORTALS,
       pi_email: pi_id_name_arr[4],
       pi_list: req.session.pi_list,
       pi_name: pi_name_reversed,
-      project_name: project_name,
-      project_title: req.form.project_title,
-      samples_number: req.form.samples_number,
-      title: 'VAMPS: New Metadata',
-      user: req.user,
-      d_region: req.form.d_region,
-      funding_code: req.form.funding_code,
       project_description: req.form.project_description,
       project_name1: project_name1,
       project_name2: project_name2,
       project_name3: project_name3,
+      project_name: project_name,
+      project_title: req.form.project_title,
       reference: req.form.reference,
+      samples_number: req.form.samples_number,
+      title: 'VAMPS: New Metadata',
+      user: req.user,
     });
   }
 
