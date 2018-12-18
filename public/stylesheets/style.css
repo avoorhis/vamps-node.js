@@ -375,7 +375,6 @@ td.left_justify {
     padding-top: 1ex;
 }
 
-
 .header_divider {
   background: #C6D7E9;
 }
@@ -616,4 +615,8 @@ td.left_justify {
 
 .metadata {
     margin-left: 0.5ex;
+}
+
+.long_label {
+    word-wrap: break-word;
 }
