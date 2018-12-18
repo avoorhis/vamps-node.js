@@ -860,16 +860,19 @@ CopyColumnToAll = function () {
       var $tdsInColumnCurrent = $this_tbl
         .find("tr td:nth-child(" + ($col_cnt + 1) + ")");
 
-      $tdsInColumnCurrent.each(function () {
-        var $current_val = $(this).children(':input').val();
-        var $next_cell   = $(this).siblings().not('.readonly_td').eq($col_cnt).children(':input');
-        if (($current_val) && (jQuery.inArray($next_cell.val(), $not_exist) !== -1)) {
-          // alert("current_val = " + $current_val);
-          $next_cell.val($current_val).change();
-        }
-      });
+      // use parameters, see populate_secondary_select.call(this, ['biome', biome_seq_options]);
+      $tdsInColumnCurrent.each(copyCellValToNext());
     } //for columns_left
   });
+};
+
+copyCellValToNext = function () {
+  var $current_val = $(this).children(':input').val();
+  var $next_cell   = $(this).siblings().not('.readonly_td').eq($col_cnt).children(':input');
+  if (($current_val) && (jQuery.inArray($next_cell.val(), $not_exist) !== -1)) {
+    // alert("current_val = " + $current_val);
+    $next_cell.val($current_val).change();
+  }
 };
 
 showDatasets = function () {
