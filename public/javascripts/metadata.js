@@ -1003,7 +1003,7 @@ $(document).ready(function () {
   // CopyColumn();
   addAllCopyBtn();
   CopyColumnToAll();
-  addCopyFirst();
-  copyFirst();
+  // addCopyFirst();
+  // copyFirst();
   fnAdjustTable();
 });
