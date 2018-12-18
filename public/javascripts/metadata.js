@@ -958,8 +958,8 @@ $(document).ready(function () {
   // showSubmitMessage();
   showUnits();
   showDatasets();
-  // addCopyBtns();
-  // CopyColumn();
+  addCopyBtns();
+  CopyColumn();
   addCopyFirst();
   copyFirst();
   fnAdjustTable();
