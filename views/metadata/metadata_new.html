@@ -207,11 +207,7 @@ var all_metadata = {}
                 <option selected="true" disabled>Select&hellip;</option>
                 <!-- TODO constants.PACKAGES_AND_PORTALS instead-->
                 <% packages_and_portals.forEach(function(val){ %>
-                <option value="<%= val %>"
-                <% if (val) {%>
-                selected
-                <% } %>
-                ><%= val %></option>
+                <option value="<%= val %>"><%= val %></option>
                 <% }); %>
             </select>
         </div>

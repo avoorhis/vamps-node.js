@@ -997,7 +997,7 @@ class ShowObj {
       domain_regions: CONSTS.DOMAIN_REGIONS,
       funding_code: req.form.funding_code,
       hostname: req.CONFIG.hostname,
-      packages_and_portals: CONSTS.PACKAGES_AND_PORTALS,
+      packages_and_portals: Object.keys(CONSTS.PACKAGES_AND_PORTALS),
       pi_email: pi_id_name_arr[4],
       pi_list: req.session.pi_list,
       pi_name: pi_name_reversed,

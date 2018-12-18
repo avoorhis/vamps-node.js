@@ -253,7 +253,7 @@ router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
     domain_regions: CONSTS.DOMAIN_REGIONS,
     samples_number: "",
     pi_list: pi_list,
-    packages_and_portals: CONSTS.PACKAGES_AND_PORTALS
+    packages_and_portals: Object.keys(CONSTS.PACKAGES_AND_PORTALS),
   });
 });
 
