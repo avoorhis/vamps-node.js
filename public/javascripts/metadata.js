@@ -824,6 +824,15 @@ addCopyBtns = function () {
   });
 };
 
+addAllCopyBtn = function () {
+  $('table#fixed_table_base').find('tr').eq(1).find('td').eq(0).append('<input type="button" value="Copy to all" class="cp_clmn"/>');
+  $(".cp_clmn").hover(function () {
+    $(this).css('cursor', 'pointer').attr('title', 'Copies the values from the first column to all empty columns.');
+  }, function () {
+    $(this).css('cursor', 'auto');
+  });
+};
+
 $not_exist = ["None", "none", "undefined", "Please choose one", ""];
 
 CopyColumn = function () {
@@ -990,8 +999,9 @@ $(document).ready(function () {
   // showSubmitMessage();
   showUnits();
   showDatasets();
-  addCopyBtns();
+  // addCopyBtns();
   // CopyColumn();
+  addAllCopyBtn();
   CopyColumnToAll();
   addCopyFirst();
   copyFirst();
