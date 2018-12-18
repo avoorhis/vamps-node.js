@@ -847,24 +847,20 @@ CopyColumn = function () {
 
 CopyColumnToAll = function () {
   $(".cp_clmn").click(function () {
-    var $columnNo           = $(this).closest('td').index();
-    var $this_tbl           = $('table#fixed_table_base');
-    //get total number of column
-    var $total_columns      = $this_tbl.find("tr")[0].cells.length;
+    var $column_No     = $(this).closest('td').index();
+    var $this_tbl      = $('table#fixed_table_base');
+    // get total number of column
+    var $total_columns = $this_tbl.find("tr")[0].cells.length;
     // or   var colCount = $('#firstTr').find('td').length;
-    var $columns_left       = $total_columns - $columnNo;
+    var $columns_left  = $total_columns - $column_No;
 
     for (var $col_cnt = 0; $col_cnt < $columns_left; $col_cnt++) {
-      alert("$col_cnt = " + $col_cnt);
+      // alert("$col_cnt = " + $col_cnt);
 
-      var $tdsInColumnCurrent = $this_tbl
+      var $tds_in_column_current = $this_tbl
         .find("tr td:nth-child(" + ($col_cnt + 1) + ")");
 
-      // use parameters
-      // $('.env_biome').change(function () {
-      //   populate_secondary_select.call(this, ['biome', biome_seq_options]);
-      //   var id_base     = arguments[0][0];
-      $tdsInColumnCurrent.each(function () {
+      $tds_in_column_current.each(function () {
         copyCellValToNext.call(this, [$col_cnt]);
       });
     } //for columns_left
@@ -872,14 +868,14 @@ CopyColumnToAll = function () {
 };
 
 function copyCellValToNext(args) {
-  var $col_cnt = arguments[0][0];
+  var $col_cnt     = arguments[0][0];
   var $current_val = $(this).children(':input').val();
   var $next_cell   = $(this).siblings().not('.readonly_td').eq($col_cnt).children(':input');
   if (($current_val) && (jQuery.inArray($next_cell.val(), $not_exist) !== -1)) {
     // alert("current_val = " + $current_val);
     $next_cell.val($current_val).change();
   }
-};
+}
 
 showDatasets = function () {
   $('#table_div_header').hide();
