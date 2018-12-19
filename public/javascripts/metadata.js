@@ -833,7 +833,7 @@ addAllCopyBtn = function () {
   });
 };
 
-$not_exist = ["None", "none", "undefined", "Please choose one", ""];
+$not_exist = ["None", "none", "undefined", "Please choose one", "Select...", ""];
 
 CopyColumn = function () {
   $(".cp_clmn").click(function () {
@@ -880,6 +880,9 @@ function copyCellValToNext(args) {
   var $col_cnt     = arguments[0][0];
   var $current_val = $(this).children(':input').val();
   var $next_cell   = $(this).siblings().not('.readonly_td').eq($col_cnt).children(':input');
+  // alert("current_val = " + $current_val);
+  // alert("$next_cell.val() = " + $next_cell.val());
+
   if (($current_val) && (jQuery.inArray($next_cell.val(), $not_exist) !== -1)) {
     // alert("current_val = " + $current_val);
     $next_cell.val($current_val).change();
