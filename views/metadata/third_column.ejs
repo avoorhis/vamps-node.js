@@ -187,6 +187,22 @@
     </td>
     <!-- target_gene_options end -->
 
+    <!-- country_options start -->
+<% } else if (all_field_names[idx][0] === "geo_loc_name_continental") { %>
+    <td>
+        <% selected_val = get_selected_val(pid, did, "country") %>
+
+        <select id="country<%- did %>" name="country" class="country">
+            <% country_options.forEach(function(value){ %>
+                <option value="<%= value %>"
+                <% if (value == selected_val) { %>
+                        selected
+                        <% } %>
+                ><%= value %></option>
+            <% }) %>
+        </select>
+    </td>
+    <!-- country_options end -->
 
 <% } else { %>
     <!-- regular field with data -->

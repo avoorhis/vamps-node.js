@@ -201,7 +201,6 @@ var all_metadata = {}
             <label class="col-sm-5 long_label" for="package">Environmental package / portal:</label>
             <select id="package" name="package">
                 <option selected="true" disabled>Select&hellip;</option>
-                <!-- TODO constants.PACKAGES_AND_PORTALS instead-->
                 <% packages_and_portals.forEach(function(val){ %>
                 <option value="<%= val %>"><%= val %></option>
                 <% }); %>

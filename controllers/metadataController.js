@@ -924,6 +924,8 @@ class ShowObj {
     const target_gene_options = this.get_target_gene_options();
     // console.log('JJJ2 all_field_names from render_edit_form');
     // console.log(JSON.stringify(this.all_field_names_arr));
+
+    const country_options = this.get_country_options();
     var pid = Object.keys(this.all_metadata)[0] || this.req.body.project_id;
     if ((typeof DATASET_IDS_BY_PID[pid] !== 'undefined') && (DATASET_IDS_BY_PID[pid].length > 0) && this.req.url !== "/metadata_new_csv_upload" && (typeof this.req.form !== 'undefined')) {// TODO: add comment what's this
       const csv_files_obj = new csv_files_controller.CsvFiles(this.req, this.res);
@@ -943,6 +945,7 @@ class ShowObj {
       dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
       dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
       dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
+      country_options: country_options,
       target_gene_options: target_gene_options,
       biome_primary_options: CONSTS.BIOME_PRIMARY,
       feature_primary_options: CONSTS.FEATURE_PRIMARY,
@@ -953,6 +956,13 @@ class ShowObj {
       sample_type_options: CONSTS.SAMPLE_TYPE
     });
   }
+
+  get_country_options() {
+    var country_options = [];
+    country_options = Object.keys(MD_ENV_CNTRY).map((k) => MD_ENV_CNTRY[k]).sort();
+    return ["Select..."].concat(country_options);
+  }
+
 
   get_target_gene_options() {
     var arr1 = CONSTS.TARGET_GENE.map(function (t) {
