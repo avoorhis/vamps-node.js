@@ -190,9 +190,9 @@
     <!-- country_options start -->
 <% } else if (all_field_names[idx][0] === "geo_loc_name_continental") { %>
     <td>
-        <% selected_val = get_selected_val(pid, did, "country") %>
+        <% selected_val = get_selected_val(pid, did, "geo_loc_name_continental") %>
 
-        <select id="country<%- did %>" name="country" class="country">
+        <select id="geo_loc_name_continental<%- did %>" name="geo_loc_name_continental" class="geo_loc_name_continental">
             <% country_options.forEach(function(value){ %>
                 <option value="<%= value %>"
                 <% if (value == selected_val) { %>
@@ -207,9 +207,9 @@
     <!-- marine_zone_options start -->
 <% } else if (all_field_names[idx][0] === "geo_loc_name_marine") { %>
     <td>
-        <% selected_val = get_selected_val(pid, did, "marine_zone") %>
+        <% selected_val = get_selected_val(pid, did, "geo_loc_name_marine") %>
 
-        <select id="marine_zone<%- did %>" name="marine_zone" class="marine_zone">
+        <select id="geo_loc_name_marine<%- did %>" name="geo_loc_name_marine" class="geo_loc_name_marine">
             <% marine_zone_options.forEach(function(value){ %>
                 <option value="<%= value %>"
                 <% if (value == selected_val) { %>
