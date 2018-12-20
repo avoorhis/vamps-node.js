@@ -1,12 +1,12 @@
 <% menu_section='MORE' %>
 <% include ../add_ins/begin.ejs %>
 
-<div class="title fa fa-anchor">Metadata</div>
-<div class="row">
-    <div class="col-lg-3"></div>
-    <div class="col-lg-6">
+<div class='title fa fa-anchor'>Metadata</div>
+<div class='row'>
+    <div class='col-lg-3'></div>
+    <div class='col-lg-6'>
         <br>
-        <div class="well metadata_menu_links">
+        <div class='well metadata_menu_links'>
             <!--<li>-->
                 <!--<a href='/user_data/export_data'>Download</a>-->
                  <!--metadata by project/dataset (In Progress)-->
@@ -33,12 +33,19 @@
             </li>
             <!--<li><a href='metadata_list'>Add/Edit Submission Metadata</a></li>-->
             <!--                -Add submission metadata (MBL)-->
-            <li><a href='/metadata/metadata_file_list'>Manage Saved Metadata</a> (download, compare, edit, delete) </li><!-- (link to your data/...)-->
+            <% if (user) { %>
+            <li><a href='/metadata/metadata_file_list'>Manage Saved Metadata</a> (download, compare, edit, delete csv files) </li><!-- (link to your data/...)-->
+            <% } %>
             <li>
                 Get <a href='/static/metadata_template.csv'>Metadata Template</a> for uploading metadata to VAMPS.
             </li>
-            <li><a href='metadata_list'>Upload</a> Metadata Template CSV file</li>
-            <li><a href="https://vampsdev.jbpc-np.mbl.edu/submissions/illumina/submission/" target='_blank'>Illumina Submissions (currently on vampsdev)</a></li>
+            <li><a href='/metadata/metadata_new_csv_upload'>Upload</a> Metadata Template CSV file</li>
+            <li><a href='https://vampsdev.jbpc-np.mbl.edu/submissions/illumina/submission/' target='_blank'>Illumina Submissions</a> (currently on vampsdev)</li>
+    <!-- if user from 'power' group-->
+            <% if (user && user.security_level <= 10) { %>
+            <h5>Admin users</h5>
+            <li><a href='/static/metadata_template_for_processing.csv'>Download CSV file</a> for the pipeline processing</li>
+            <% } %>
         </div>
     </div>
 </div>
