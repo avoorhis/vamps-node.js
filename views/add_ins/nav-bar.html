@@ -132,20 +132,6 @@
                     <%  //} %>
                 <%  } %>
 
-
-
-                  <% if(user && user.security_level <= 10){ %>
-                  <li class="divider"></li>
-                  <li class="dropdown-header">Metadata Submissions</li>
-                  <li><a href="/metadata/metadata_new">New Submission Form</a></li>
-                  <li><a href="/static/metadata_template.csv">New Submission CSV file template download</a></li>
-                  <li><a href="/metadata/metadata_new_csv_upload">New Submission CSV file upload</a></li>
-                  
-                  <li><a href="https://vampsdev.jbpc-np.mbl.edu/submissions/illumina/submission/" target='_blank'>Illumina Submissions (currently on vampsdev)</a></li>
-                     <!-- https://vampsdev.jbpc-np.mbl.edu/submissions/illumina/submission/ -->
-                  
-                  <% } %>
-
                 <li class="divider"></li>                
                 <li class="dropdown-header">Resources</li>
                 <li><a href='/resources/reference_data'>Reference Data</a></li>
