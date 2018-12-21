@@ -181,14 +181,16 @@ def parse_matrix_file():
     tax_data_by_ds = {}  # tax_data[ds][tax] = count 
     temp = {}
     for row in reader:
-        if not row:
-            continue
+        #print(row)
+        if not row or row[0][:5] == 'VAMPS':
+            continue        
         if len(row) == 1:
             print('File delimiter expected to be a <tab>')
             sys.exit('File delimiter expected to be a <tab>')
         if n==0:
             # May or may not be text in row1;col1
             datasets = row[1:]
+            print('datasets',datasets)
             uniques = list(set(datasets))
             if len(datasets) != len(uniques):
                 sys.exit("datasets are not unique")

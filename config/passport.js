@@ -26,7 +26,6 @@ module.exports = function (passport, db) {
   // required for persistent login sessions
   // passport needs ability to serialize and unserialize users out of session
 
-
   // used to serialize the user for the session
   passport.serializeUser(function (user, done) {
     console.log('in serialize: user_id=' + user.user_id);
@@ -163,7 +162,6 @@ function reset_password_auth(req, username, password, newpass, done, db) {
     if (rows[0].encrypted_password === rows[0].entered_pw) {
       update_password(req, username, newpass, db);
       return done(null, rows[0], req.flash('success', 'Success.'));
-
     }
 
     // if the user is found but the password is wrong:
@@ -237,41 +235,6 @@ function login_auth_user(req, username, password, done, db) {
 //
 //
 //
-// function validate_new_user(req, new_user, confirm_password, done) {
-//   err = 0;
-//   if (!validator.equals(new_user.password, confirm_password))
-//   {
-//     req.flash('fail', 'Passwords do not match!');
-//     err = 1;
-//   }
-//   if (!validator.isLength(new_user.password, {min: 6, max: 12})) {
-//     req.flash('fail', 'Password must be between 6 and 12 characters.');
-//     err = 1;
-//   }
-//   if ((!validator.isLength(new_user.username, {min: 3, max: 15})) || (!validator.isAlphanumeric(new_user.username, 'en-US'))) {
-//     req.flash('fail', 'Username must be between 3 and 15 characters. Alphanumeric only.');
-//     err = 1;
-//   }
-//   if (!validator.isEmail(new_user.email)) {
-//     req.flash('fail', 'Email address is empty or the wrong format.');
-//     err = 1;
-//   }
-//
-//   if ((!validator.isLength(new_user.firstname, {min: 1, max: 20})) || (!validator.isLength(new_user.lastname, {min: 1, max: 20}))) {
-//     req.flash('fail', 'Both first and last names are required and should be not longer then 20 characters.');
-//     err = 1;
-//   }
-//   if ((!validator.matches(new_user.firstname, /^[a-zA-Z- ]+$/)) || (!validator.matches(new_user.lastname, /^[a-zA-Z- ]+$/))) {
-//     req.flash('fail', 'Both first and last names should have alphanumeric characters, dash and underscore only.');
-//     err = 1;
-//   }
-//     if (validator.isEmpty(new_user.institution)) {
-//     req.flash('fail', 'Institution name is required.');
-//     err = 1;
-//   }
-//   return [err, req];
-// }
-
 function signup_user(req, username, password, done, db) {
   // validate all 6 entries here
   // 1- check for empty fields and long lengths
@@ -329,7 +292,7 @@ function signup_user(req, username, password, done, db) {
           };
           var user_data_dir                  = path.join(req.CONFIG.USER_FILES_BASE, username);
           console.log('Validating/Creating User Data Directory: ' + user_data_dir);
-          helpers.ensure_dir_exists(user_data_dir);
+          helpers.ensure_dir_exists(user_data_dir);  // also chmod to 0777 (ug+rwx)
           return done(null, new_user);
         }
       });
@@ -392,15 +355,20 @@ var delete_previous_tmp_files = function (req, username) {
 
 var update_password = function (req, username, newpass, db) {
   console.log('in update_password');
-  console.log(queries.reset_user_password_by_uname(newpass, username));
-  db.query(queries.reset_user_password_by_uname(newpass, username), function (err, rows) {
-    if (err) {
-      return (null, false, {message: err});
-    } else {
-      console.log('logging out');
-      //req.session.destroy()
-      req.logout()
-
-    }
-  });
+  if (newpass.length < 3 || newpass.length > 12) {
+    return (null, false, {message:'FAILED: The password must be between 3 and 20 characters.'});
+  } else if (username == '') {
+    return (null, false, {message:'FAILED: You must select a user.'});
+  } else {
+      console.log(queries.reset_user_password_by_uname(newpass, username));
+      db.query(queries.reset_user_password_by_uname(newpass, username), function (err, rows) {
+        if (err) {
+          return (null, false, {message: err});
+        } else {
+          console.log('logging out');
+          //req.session.destroy()
+          req.logout();
+        }
+      });
+   }
 };

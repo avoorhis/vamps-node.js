@@ -158,7 +158,7 @@ function load_initial_taxa_tree(unit_choice) {
   
   document.getElementById('unit_choice_id').value = unit_choice
   var xmlhttp2 = new XMLHttpRequest();
-  
+  //alert(unit_choice)
   switch(unit_choice){
     case 'tax_silva119_simple':
       load_silva119_tax_simple();
@@ -212,13 +212,12 @@ function load_initial_taxa_tree(unit_choice) {
 
 }
 function load_silva119_tax_simple() {
-      
+      //alert('in load_silva119_tax_simple1')
       var xmlhttp1 = new XMLHttpRequest();
       xmlhttp1.open("GET", '/visuals/partials/tax_silva119_simple');
       xmlhttp1.onreadystatechange = function() {
 
              if (xmlhttp1.readyState == 4 ) {
-
                 var data = xmlhttp1.responseText;
                 
                 //alert(file_id)
@@ -227,6 +226,7 @@ function load_silva119_tax_simple() {
                 
                 document.getElementById('simple_treebox').innerHTML = data;
                 disable_or_enable_chbxs(document.getElementsByClassName('simple_taxa_rdp_ckbx'), document.getElementsByClassName('simple_taxa_silva_ckbx')) // so won't be sent to server
+                
                 toggle_taxa_btn = document.getElementById('toggle_taxa_silva_btn') || null;
                 if (toggle_taxa_btn !== null) {
                   toggle_taxa_btn.addEventListener('click', function () {
@@ -252,7 +252,7 @@ function load_generic_tax_simple() {
                 //show_custom_taxa_tree();
                 
                 document.getElementById('generic_treebox').innerHTML = data;
-                disable_or_enable_chbxs(document.getElementsByClassName('simple_taxa_silva_ckbx'), document.getElementsByClassName('simple_taxa_generic_ckbx')) // so won't be sent to server
+                
                 toggle_taxa_btn = document.getElementById('toggle_taxa_generic_btn') || null;
                 if (toggle_taxa_btn !== null) {
                   toggle_taxa_btn.addEventListener('click', function () {
@@ -324,6 +324,7 @@ function load_rdp_tax_simple() {
                 document.getElementById('rdp_treebox').innerHTML = data;
                 
                 disable_or_enable_chbxs(document.getElementsByClassName('simple_taxa_silva_ckbx'), document.getElementsByClassName('simple_taxa_rdp_ckbx')) // so won't be sent to server
+                
                 toggle_taxa_btn = document.getElementById('toggle_taxa_rdp_btn') || null;
                 if (toggle_taxa_btn !== null) {
                   toggle_taxa_btn.addEventListener('click', function () {
@@ -609,12 +610,14 @@ function show_tax_selection_box() {
   target = this.value
   
   //alert(target)
+  //alert(simple_loaded)
   document.getElementById('unit_choice_id').value = target
   switch(target){
     case 'tax_silva119_simple':
         if(!simple_loaded){
           load_silva119_tax_simple()
         }
+        disable_or_enable_chbxs(document.getElementsByClassName('simple_taxa_rdp_ckbx'), document.getElementsByClassName('simple_taxa_silva_ckbx')) // so won't be sent to server
         document.getElementById('generic_treebox').style.display = 'none'
         document.getElementById('rdp_treebox').style.display     = 'none'
         document.getElementById('simple_treebox').style.display  = 'block'
@@ -635,6 +638,7 @@ function show_tax_selection_box() {
         if(!rdp_loaded){
           load_rdp_tax_simple()
         }
+        disable_or_enable_chbxs(document.getElementsByClassName('simple_taxa_silva_ckbx'), document.getElementsByClassName('simple_taxa_rdp_ckbx')) // so won't be sent to server
         document.getElementById('generic_treebox').style.display = 'none'
         document.getElementById('rdp_treebox').style.display     = 'block'
         document.getElementById('simple_treebox').style.display = 'none'

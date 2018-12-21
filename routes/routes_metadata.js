@@ -2,151 +2,162 @@ var express = require("express");
 var router  = express.Router();
 var helpers = require("./helpers/helpers");
 var form    = require("express-form");
-var queries = require(app_root + "/routes/queries");
+// var queries = require(app_root + "/routes/queries");
 var CONSTS  = require(app_root + "/public/constants");
-var fs = require("fs");
-var path = require("path");
+var fs      = require("fs");
+var path    = require("path");
 var config  = require(app_root + '/config/config');
-var validator = require('validator');
+// var validator           = require('validator');
 // var expressValidator = require('express-validator');
-var nodeMailer = require('nodemailer');
-
+var nodeMailer           = require('nodemailer');
+var Project              = require(app_root + '/models/project_model');
+var Dataset              = require(app_root + '/models/dataset_model');
+// var User    = require(app_root + '/models/user_model');
+var metadata_controller  = require(app_root + '/controllers/metadataController');
+var csv_files_controller = require(app_root + '/controllers/csvFilesController');
+const multer             = require('multer');
+var upload               = multer({dest: config.TMP, limits: {fileSize: config.UPLOAD_FILE_SIZE.bytes}});
 
 /* GET metadata page. */
- router.get('/metadata', function(req, res) {
-      console.log('in metadata');
-      res.render('metadata/metadata', { title: 'VAMPS:Metadata',
-            user: req.user,
-            hostname: req.CONFIG.hostname
-        });
+router.get('/metadata', function (req, res) {
+  console.log('in metadata');
+  res.render('metadata/metadata', {
+    title: 'VAMPS:Metadata',
+    user: req.user,
+    hostname: req.CONFIG.hostname
   });
-
-router.get('/metadata_list', helpers.isLoggedIn, function(req, res) {
-      console.log('in metadata');
-      var mdata_w_latlon = {};
-      console.log(DatasetsWithLatLong);
-      //console.log(DatasetsWithLatLong)  // json
-      //console.log(AllMetadataNames)  // list (req w _ids)
-      for(var n in AllMetadataNames){
-        md_selected = AllMetadataNames[n];
-        mdata_w_latlon[md_selected] = 0;
-
-        //console.log(md_selected)
-        for(var did in DatasetsWithLatLong){
-        //console.log(AllMetadata[did])
-        //if(AllMetadata.hasOwnProperty(did)){
-            //console.log('found1',did)
-            //var mdata = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected)
-            mdata = AllMetadata[did];   // has ids
-
-            pid = PROJECT_ID_BY_DID[did];
-            //console.log('pid',pid)
-            pname = PROJECT_INFORMATION_BY_PID[pid].project;
-
-            if(mdata.hasOwnProperty(md_selected)){
-                    mdata_w_latlon[md_selected] = 1;
-            }
-        }
-      }
-      //console.log(mdata_w_latlon)
-      res.render("metadata/metadata_list", { title: "VAMPS:Metadata List",
-            user:         req.user,hostname: req.CONFIG.hostname,
-            metadata:     AllMetadataNames,
-            req_mdata_names: JSON.stringify(req.CONSTS.REQ_METADATA_FIELDS_wIDs),
-            mdata_latlon: JSON.stringify(mdata_w_latlon),
-            names_by_did: JSON.stringify(DATASET_NAME_BY_DID),
-            pid_by_did:   JSON.stringify(PROJECT_ID_BY_DID),
-            pinfo_by_pid: JSON.stringify(PROJECT_INFORMATION_BY_PID)
-        });
 });
 
-router.get('/list_result/:mditem', helpers.isLoggedIn, function(req, res) {
-      console.log('in metadatalist result');
-      var md_selected = req.params.mditem;
-      console.log(md_selected);
-      var mdvalues = {};
-      for(var did in DATASET_NAME_BY_DID){
-        if(did in AllMetadata){
-        if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_selected.slice(0,md_selected.length-3)) !== -1){
-            var data = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected);  // send _id
-            mdvalues[did] = data.value;
-            md_selected_show = data.name;
-        }else if(AllMetadata[did].hasOwnProperty(md_selected)){
-             mdvalues[did] = AllMetadata[did][md_selected];
-             md_selected_show = md_selected;
+router.get('/metadata_list', helpers.isLoggedIn, function (req, res) {
+  console.log('in metadata');
+  var mdata_w_latlon = {};
+  console.log(DatasetsWithLatLong);
+  //console.log(DatasetsWithLatLong)  // json
+  //console.log(AllMetadataNames)  // list (req w _ids)
+  for (var n in AllMetadataNames) {
+    md_selected                 = AllMetadataNames[n];
+    mdata_w_latlon[md_selected] = 0;
 
-        }
-       }
-      }
-      res.render('metadata/list_result', { title: 'VAMPS:Metadata List Result',
-            user:           req.user,hostname: req.CONFIG.hostname,
-            vals:     		JSON.stringify(mdvalues),
-            names_by_did:   JSON.stringify(DATASET_NAME_BY_DID),
-            pid_by_did:     JSON.stringify(PROJECT_ID_BY_DID),
-            pinfo_by_pid:   JSON.stringify(PROJECT_INFORMATION_BY_PID),
-            item:           md_selected_show
-        });
-  });
+    //console.log(md_selected)
+    for (var did in DatasetsWithLatLong) {
+      //console.log(AllMetadata[did])
+      //if(AllMetadata.hasOwnProperty(did)){
+      //console.log('found1',did)
+      //var mdata = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected)
+      mdata = AllMetadata[did];   // has ids
 
-router.get('/geomap/:item', helpers.isLoggedIn, function(req, res) {
-      console.log('in metadata - geomap');
-      var md_item = req.params.item;
-      if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_item.slice(0,md_item.length-3)) !== -1){
-        md_item_show = md_item.slice(0,md_item.length-3);
-      }else{
-        md_item_show = md_item;
+      pid   = PROJECT_ID_BY_DID[did];
+      //console.log('pid',pid)
+      pname = PROJECT_INFORMATION_BY_PID[pid].project;
+
+      if (mdata.hasOwnProperty(md_selected)) {
+        mdata_w_latlon[md_selected] = 1;
       }
-      var metadata_info = get_metadata_hash(md_item);  // fxn: see below
-      //console.log('metadata_info')
-      res.render('metadata/geomap', { title: 'VAMPS:Metadata Distribution',
-            user    : req.user,hostname: req.CONFIG.hostname,
-            md_item : md_item_show,
-            mdinfo  : JSON.stringify(metadata_info),
-            token   : req.CONFIG.MAPBOX_TOKEN,
-        });
+    }
+  }
+  //console.log(mdata_w_latlon)
+  res.render("metadata/metadata_list", {
+    title: "VAMPS:Metadata List",
+    user: req.user, hostname: req.CONFIG.hostname,
+    metadata: AllMetadataNames,
+    req_mdata_names: JSON.stringify(req.CONSTS.REQ_METADATA_FIELDS_wIDs),
+    mdata_latlon: JSON.stringify(mdata_w_latlon),
+    names_by_did: JSON.stringify(DATASET_NAME_BY_DID),
+    pid_by_did: JSON.stringify(PROJECT_ID_BY_DID),
+    pinfo_by_pid: JSON.stringify(PROJECT_INFORMATION_BY_PID)
   });
+});
+
+router.get('/list_result/:mditem', helpers.isLoggedIn, function (req, res) {
+  console.log('in metadatalist result');
+  var md_selected = req.params.mditem;
+  console.log(md_selected);
+  var mdvalues = {};
+  for (var did in DATASET_NAME_BY_DID) {
+    if (did in AllMetadata) {
+      if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_selected.slice(0, md_selected.length - 3)) !== -1) {
+        var data         = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected);  // send _id
+        mdvalues[did]    = data.value;
+        md_selected_show = data.name;
+      } else if (AllMetadata[did].hasOwnProperty(md_selected)) {
+        mdvalues[did]    = AllMetadata[did][md_selected];
+        md_selected_show = md_selected;
+
+      }
+    }
+  }
+  res.render('metadata/list_result', {
+    title: 'VAMPS:Metadata List Result',
+    user: req.user, hostname: req.CONFIG.hostname,
+    vals: JSON.stringify(mdvalues),
+    names_by_did: JSON.stringify(DATASET_NAME_BY_DID),
+    pid_by_did: JSON.stringify(PROJECT_ID_BY_DID),
+    pinfo_by_pid: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+    item: md_selected_show
+  });
+});
+
+router.get('/geomap/:item', helpers.isLoggedIn, function (req, res) {
+  console.log('in metadata - geomap');
+  var md_item = req.params.item;
+  if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_item.slice(0, md_item.length - 3)) !== -1) {
+    md_item_show = md_item.slice(0, md_item.length - 3);
+  } else {
+    md_item_show = md_item;
+  }
+  var metadata_info = get_metadata_hash(md_item);  // fxn: see below
+  //console.log('metadata_info')
+  res.render('metadata/geomap', {
+    title: 'VAMPS:Metadata Distribution',
+    user: req.user, hostname: req.CONFIG.hostname,
+    md_item: md_item_show,
+    mdinfo: JSON.stringify(metadata_info),
+    token: req.CONFIG.MAPBOX_TOKEN,
+  });
+});
+
 
 module.exports = router;
 
 //////////////////////////////
-function get_metadata_hash(md_selected){
-    var md_info = {};
-    //md_info[md_item] = {}
-    md_info.metadata = {};
-    var got_lat, got_lon;
-    //console.log('PROJECT_ID_BY_DID.length')
-    //console.log(PROJECT_ID_BY_DID)
-    //console.log(Object.keys(PROJECT_ID_BY_DID).length)
-    for(var did in PROJECT_ID_BY_DID){
+function get_metadata_hash(md_selected) {
+  var md_info      = {};
+  //md_info[md_item] = {}
+  md_info.metadata = {};
+  var got_lat, got_lon;
+  //console.log('PROJECT_ID_BY_DID.length')
+  //console.log(PROJECT_ID_BY_DID)
+  //console.log(Object.keys(PROJECT_ID_BY_DID).length)
+  for (var did in PROJECT_ID_BY_DID) {
 
-        if(AllMetadata.hasOwnProperty(did)){
-            //console.log('found1',did)
-            var mdata = AllMetadata[did];
-            var pid = PROJECT_ID_BY_DID[did];
-            //console.log('pid',pid)
-            pname = PROJECT_INFORMATION_BY_PID[pid].project;
-            if(mdata.hasOwnProperty(md_selected) && mdata.hasOwnProperty('latitude') && mdata.hasOwnProperty('longitude')){
-                if(mdata['latitude'] !== 'None' && mdata['longitude'] !== 'None'){
-                    //console.log('found2',md_selected)
-                    var pjds = pname+'--'+DATASET_NAME_BY_DID[did];
-                    md_info.metadata[pjds] ={};
-                    md_info.metadata[pjds].pid = pid;
-                    md_info.metadata[pjds].did = did;
-                    var data = helpers.required_metadata_names_from_ids(mdata, md_selected);
-                    md_info.metadata[pjds].value = data.value;
-                    //md_info.metadata[pjds].value = mdata[md_selected]
-                    md_info.metadata[pjds].latitude = mdata['latitude'];
-                    md_info.metadata[pjds].longitude = mdata['longitude'];
-                }
-
-            }
-        }else{
-            //console.log('did '+did+' not found in PROJECT_ID_BY_DID')
+    if (AllMetadata.hasOwnProperty(did)) {
+      //console.log('found1',did)
+      var mdata = AllMetadata[did];
+      var pid   = PROJECT_ID_BY_DID[did];
+      //console.log('pid',pid)
+      pname     = PROJECT_INFORMATION_BY_PID[pid].project;
+      if (mdata.hasOwnProperty(md_selected) && mdata.hasOwnProperty('latitude') && mdata.hasOwnProperty('longitude')) {
+        if (mdata['latitude'] !== 'None' && mdata['longitude'] !== 'None') {
+          //console.log('found2',md_selected)
+          var pjds                         = pname + '--' + DATASET_NAME_BY_DID[did];
+          md_info.metadata[pjds]           = {};
+          md_info.metadata[pjds].pid       = pid;
+          md_info.metadata[pjds].did       = did;
+          var data                         = helpers.required_metadata_names_from_ids(mdata, md_selected);
+          md_info.metadata[pjds].value     = data.value;
+          //md_info.metadata[pjds].value = mdata[md_selected]
+          md_info.metadata[pjds].latitude  = mdata['latitude'];
+          md_info.metadata[pjds].longitude = mdata['longitude'];
         }
 
+      }
+    } else {
+      //console.log('did '+did+' not found in PROJECT_ID_BY_DID')
     }
 
-    return md_info;
+  }
+
+  return md_info;
 
 }
 
@@ -187,7 +198,119 @@ function get_metadata_hash(md_selected){
 */
 
 // render new form
+// if not valid show again with errors
+// if valid
+// save project to vamps2
+// save the rest into vamps_submissions
+// run the "normal" edit metadata with samples_number datasets
+// save datasets to vamps2?
+// <% if (samples_number > 0){ %>
+// <% for (var i = 0; i < Number(samples_number); i++) { %>
+
 // ?? render_edit_form(req, res, {}, {}, all_field_names)
+
+// metadata_new_csv
+router.get('/metadata_new_csv_upload', helpers.isLoggedIn, function (req, res) {
+  res.render('metadata/metadata_new_csv_upload', {
+    title: 'VAMPS: New Metadata CSV Upload',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    button_name: "Validate"
+  });
+});
+
+router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_csv')], function (req, res) {
+
+    console.time("TIME: in post /metadata_new_csv_upload");
+    var full_file_name  = req.file.path;
+    const csv_file_read = new csv_files_controller.CsvFileRead(req, res, full_file_name);
+    var data_arr        = csv_file_read.data_arr;
+    const transposed    = helpers.transpose_arr_of_obj(data_arr);
+
+    const cur_project = new Project(req, res, 0, 0);
+    var project_name  = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0];
+    console.log("PPP0: project_name", project_name);
+
+    var pid = cur_project.get_pid(project_name);
+    console.log("PPP1: pid", pid);
+
+    if (typeof req.body.project === 'undefined' || pid === 0) {
+      new_csv(req, res, cur_project, project_name, transposed);
+    }
+    console.timeEnd("TIME: in post /metadata_new_csv_upload");
+  }
+);
+
+router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
+  const met_obj       = new metadata_controller.CreateDataObj(req, res, "", "");
+  var pi_list         = met_obj.get_pi_list();
+  req.session.pi_list = pi_list;
+  res.render('metadata/metadata_new', {
+    title: 'VAMPS: New Metadata',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    button_name: "Validate",
+    domain_regions: CONSTS.DOMAIN_REGIONS,
+    samples_number: "",
+    pi_list: pi_list
+  });
+});
+
+router.post('/metadata_new',
+  [helpers.isLoggedIn],
+  form(
+    // form.field("pi_id").trim().required().is(/^[0-9]+$/).entityEncode().array(),
+    // form.field("pi_name").trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
+    form.field("adaptor", "Adaptor").trim().required().is(/^[a-zA-Z0-9]+$/).entityEncode().array(),
+    form.field("d_region", "Domain and region").trim().required("", "%s are required").entityEncode(),
+    form.field("dataset_description", "Dataset description").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
+    form.field("dataset_name", "Dataset name").trim().is(/^[a-zA-Z0-9_]+$/).entityEncode().array(),
+    form.field("funding_code", "Funding code").trim().required().is(/^[0-9]+$/).entityEncode(),
+    form.field("pi_id_name", "PI name").trim().required("", "%s is required").entityEncode(),
+    form.field("project_description", "Project description").trim().required().entityEncode(),
+    form.field("project_name1").trim().entityEncode(),
+    form.field("project_name2", "Project name").trim().required("", "%s is required").entityEncode(),
+    form.field("project_title", "Project title").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode(),
+    form.field("reference", "Reference").trim().entityEncode(),
+    form.field("sample_concentration", "Sample concentration").trim().required().isInt().entityEncode().array(),
+    form.field("samples_number", "Samples number").trim().required().is(/^[0-9]+$/).entityEncode(),
+    form.field("submit_code", "Submit code").trim().entityEncode().array(),
+    form.field("tube_label", "Tube label").trim().required().is(/^[a-zA-Z0-9_ -]+$/).entityEncode().array()
+),
+  function (req, res) {
+    console.time("TIME: in post /metadata_new");
+    // console.log("MMM1, req.body", req.body);
+    console.log("MMM2, req.form", req.form);
+    const show_new = new metadata_controller.ShowObj(req, res);
+
+    if (!req.form.isValid) {
+      console.log('!req.form.isValid');
+      console.log("EEE req.form.errors", req.form.errors);
+      show_new.show_metadata_new_again(req, res);
+    }
+    else {
+      console.log("metadata_upload_new is valid");
+      var user_id       = req.form.pi_id_name.split('#')[0];
+      const new_project = new Project(req, res, 0, user_id);
+      new_project.make_project_obj_from_new_form_info(user_id);
+      var project_obj = new_project.project_obj;
+
+      new_project.getProjectByName(project_obj.project, function(err, rows){
+        console.log("RRR1 rows from getProjectByName", rows);
+        if ((typeof rows[0] !== "undefined") && (typeof rows[0].project_id !== "undefined") && (rows[0].project_id > 0)) {
+          const met_obj = new metadata_controller.CreateDataObj(req, res, rows[0].project_id, user_id);
+          met_obj.project_already_in_db(req, res, rows, new_project);
+        }
+        else {
+          const met_obj = new metadata_controller.CreateDataObj(req, res, 0, user_id);
+          met_obj.req_form_isValid_and_new_project(req, res, new_project);
+        }
+
+      }.bind());
+
+    }
+    console.timeEnd("TIME: in post /metadata_new");
+  });
 
 // render edit form
 router.post('/metadata_edit_form',
@@ -199,387 +322,125 @@ router.post('/metadata_edit_form',
     console.timeEnd("TIME: 1) in post /metadata_edit_form");
   });
 
-function render_edit_form(req, res, all_metadata, all_field_names) {
-  // console.log("JJJ1 all_metadata");
-  // console.log(JSON.stringify(all_metadata));
-  //
-  // console.log("JJJ2 all_field_names");
-  // console.log(JSON.stringify(all_field_names));
-
-  MD_ENV_CNTRY_vals = get_object_vals(MD_ENV_CNTRY);
-  MD_ENV_LZC_vals   = get_object_vals(MD_ENV_LZC);
-  var ordered_field_names_obj = make_ordered_field_names_obj();
-
-  res.render("metadata/metadata_edit_form", {
-    title: "VAMPS: Metadata_upload",
-    user: req.user,
-    hostname: req.CONFIG.hostname,
-    all_metadata: all_metadata,
-    all_field_names: all_field_names,
-    ordered_field_names_obj: ordered_field_names_obj,
-    all_field_units: MD_CUSTOM_UNITS[req.body.project_id],
-    dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
-    dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
-    dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-    biome_primary_options: CONSTS.BIOME_PRIMARY,
-    feature_primary_options: CONSTS.FEATURE_PRIMARY,
-    material_primary_options: CONSTS.MATERIAL_PRIMARY,
-    metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
-    env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
-    investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-    sample_type_options: CONSTS.SAMPLE_TYPE
-  });
-}
-
-function get_all_field_units(req){
-  var current_field_units = MD_CUSTOM_UNITS[req.body.project_id];
-}
-
 // create form from req.form
-//TODO: benchmark
-function get_second(element) {
-  console.time("TIME: get_second");
-
-  for (var met_names_row in CONSTS.ORDERED_METADATA_NAMES)
-  {
-    if (CONSTS.ORDERED_METADATA_NAMES[met_names_row].includes(element))
-    {
-      // console.log("ETET met_names_row[1]");
-      // console.log(CONSTS.ORDERED_METADATA_NAMES[met_names_row][1]);
-      return CONSTS.ORDERED_METADATA_NAMES[met_names_row][1];
-    }
-  }
-  console.timeEnd("TIME: get_second");
-
-}
-
-function env_items_validation(value) {
-  if (value === "Please choose one") {
-    throw new Error("%s is required. Please choose one value from the dropdown menu");
-  }
-}
-
-function checkArray(my_arr){
-  for (var i = 0; my_arr.length > i; i++) {
-  if (my_arr[i] === "")
-    return false;
-}
-  return true;
-}
-
-function geo_loc_name_validation(value, source) {
-  if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
-      throw new Error("Either 'Country' or 'Longhurst Zone' are required");
-  }
-}
-
-function geo_loc_name_continental_filter(value) {
-  console.time("geo_loc_name_continental_filter");
-  for (var key in CONSTS.GAZ_SPELLING) {
-    if (CONSTS.GAZ_SPELLING.hasOwnProperty(key)) {
-      var curr = CONSTS.GAZ_SPELLING[key];
-      if (curr.indexOf(value.toLowerCase()) > -1) {
-        return key;
-      }
-    }
-  }
-  console.timeEnd("geo_loc_name_continental_filter");
-}
-
-function get_object_vals(object_name) {
-  return Object.keys(object_name).map(function (key) {
-    return object_name[key];
-  });
-}
-
-function geo_loc_name_marine_validation(value) {
-  if(MD_ENV_LZC_vals.indexOf(value) < 0 && (value !== '')) {
-    throw new Error("There is no Longhurst Zone '" + value + "', please check the spelling");
-  }
-}
-
-function geo_loc_name_continental_validation(value) {
-  if(MD_ENV_CNTRY_vals.indexOf(value) < 0 && (value !== '')) {
-    throw new Error("There is no Country '" + value + "', please check the spelling");
-  }
-}
-
-function check_regexp(reg_exp, value, err_msg) {
-  var result = value.match(reg_exp);
-
-  // if (value !== "" && result === null) {
-  if (value !== "" && result !== null) {
-    throw new Error("'" + value + "' is not allowed in '%s'" + err_msg);
-  }
-}
-
-function numbers_n_period(value) {
-  // var regex = /^[0-9.]+$/;
-  //[^0-9.] faster
-  var reg_exp = /[^0-9.]/;
-  var err_msg = ", please use only numbers and periods.";
-  check_regexp(reg_exp, value, err_msg);
-}
-
-function numbers_n_period_n_minus(value) {
-  // var regex = /^[0-9.]+$/;
-  //[^0-9.] faster
-  var reg_exp = /[^0-9.-]/;
-  var err_msg = ", please use only numbers, periods and minus.";
-  check_regexp(reg_exp, value, err_msg);
-}
-
-function region_valid(value, region_low, region_high) {
-  if ((value !== '') && (parseInt(value) < parseInt(region_low) || parseInt(value) > parseInt(region_high))) {
-  throw new Error("'" + value + "' is not valid, %s should be between " + region_low + " and " + region_high);
-}
-}
-
-function longitude_valid(value) {
-  region_valid(value, -180, 180);
-}
-
-function latitude_valid(value) {
-  region_valid(value, -90, 90);
-}
-
-function ph_valid(value) {
-  region_valid(value, 0, 14);
-}
-
-function percent_valid(value) {
-  region_valid(value, 0, 100);
-}
-
-function positive(value) {
-  if (value !== '' && parseInt(value) < 0) {
-    throw new Error("'" + value + "' is not valid, %s should be greater then 0.");
-  }
-}
-
-function new_row_field_validation(req, field_name) {
-  console.time("TIME: new_row_field_validation");
-  var err_msg = '';
-
-  //todo: send a value instead of "req.body[field_name]"?
-  var field_val_trimmed = validator.escape(req.body[field_name] + "");
-  field_val_trimmed = validator.trim(field_val_trimmed + "");
-  var field_val_not_valid = validator.isEmpty(field_val_trimmed + "");
-
-  if (field_val_not_valid) {
-    console.log("ERROR: an empty user's " + field_name);
-    err_msg = 'User added field "' + field_name + '" must be not empty and have only alpha numeric characters';
-    req.form.errors.push(err_msg);
-  }
-
-  console.timeEnd("TIME: new_row_field_validation");
-  return field_val_trimmed;
-}
-
-function get_column_name(row_idx, req) {
-  console.time("TIME: get_column_name");
-
-  var units_field_name  = new_row_field_validation(req, "Units" + row_idx);
-
-  var users_column_name = new_row_field_validation(req, "Column Name" + row_idx);
-
-  // console.log("LLL1 units_field_name");
-  // console.log(units_field_name);
-  //
-  // console.log("LLL2 users_column_name");
-  // console.log(users_column_name);
-
-  if (units_field_name !== "" && users_column_name !== "") {
-    return [users_column_name, units_field_name];
-  }
-  console.timeEnd("TIME: get_column_name");
-}
-
-function collect_new_rows(req, all_field_names) {
-  console.time("TIME: collect_new_rows");
-  // var new_rows_hash = {};
-  var new_row_num = req.body.new_row_num;
-  var all_clean_field_names_arr = helpers.unique_array(get_first_column(all_field_names, 0));
-  // console.log("JSON.stringify(unique_array.all_clean_field_names_arr)");
-  // console.log(JSON.stringify(helpers.unique_array(all_clean_field_names_arr)));
-
-  for (var row_idx = 1; row_idx < parseInt(new_row_num) + 1; row_idx++) {
-    var column_n_unit_names = get_column_name(row_idx, req);
-
-    if (column_n_unit_names) {
-
-      var users_column_name = column_n_unit_names[0];
-      var units_field_name  = column_n_unit_names[1];
-      var column_name = users_column_name + ' (' + units_field_name + ')';
-      var re = / /g;
-      var clean_column_name = users_column_name.toLowerCase().replace(re, '_') + '--UNITS--' + units_field_name.toLowerCase().replace(re, '_');
-
-
-      if (column_name && isUnique(all_clean_field_names_arr, clean_column_name)) {
-        // [ 'run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD' ],
-        all_field_names.push([clean_column_name, column_name, '', units_field_name]);
-        req.form[clean_column_name] = [];
-        req.form[clean_column_name] = get_cell_val_by_row(row_idx, req);
-      }
-      else if (! isUnique(all_clean_field_names_arr, clean_column_name)) {
-        var err_msg = 'User added field with units "' + column_name + '" must be unique and have only alpha numeric characters';
-        req.form.errors.push(err_msg);
-      }
-    }
-  }
-
-
-  console.timeEnd("TIME: collect_new_rows");
-
-  return all_field_names;
-
-}
-
-function get_cell_val_by_row(row_idx, req) {
-  console.time("TIME: get_cell_val_by_row");
-  var new_row_length = req.body.new_row_length;
-  var new_row_val = [];
-
-  for (var cell_idx = 0; cell_idx < parseInt(new_row_length); cell_idx++) {
-    var cell_name = "new_row" + row_idx.toString() + "cell" + cell_idx.toString();
-    var clean_val = validator.escape(req.body[cell_name] + "");
-    clean_val = validator.trim(clean_val + "");
-
-    new_row_val.push(clean_val);
-  }
-  console.timeEnd("TIME: get_cell_val_by_row");
-
-  return new_row_val;
-}
-
-function get_first_column(matrix, col) {
-  console.time("TIME: get_first_column");
-  var column = [];
-  for (var i=0; i < matrix.length; i++) {
-    column.push(matrix[i][col]);
-  }
-  console.timeEnd("TIME: get_first_column");
-
-  return column;
-}
-
 // TODO: update field names from https://docs.google.com/spreadsheets/d/1adAtGc9DdY2QBQZfd1oaRdWBzjOv4t-PF1hBfO8mAoA/edit#gid=1223926458
 router.post('/metadata_upload',
   [helpers.isLoggedIn],
   form(
-    form.field("npoc", get_second("npoc")).trim().entityEncode().array(),
-    form.field("access_point_type", get_second("access_point_type")).trim().entityEncode().array(),
-    form.field("adapter_sequence", get_second("adapter_sequence")).trim().required().entityEncode().array(),
-    form.field("alkalinity", get_second("alkalinity")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("ammonium", get_second("ammonium")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("bicarbonate", get_second("bicarbonate")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("env_biome", get_second("env_biome")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("biome_secondary", get_second("biome_secondary")).trim().entityEncode().array(),
-    form.field("calcium", get_second("calcium")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("carbonate", get_second("carbonate")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("chloride", get_second("chloride")).trim().entityEncode().array(),
-    form.field("clone_library_results", get_second("clone_library_results")).trim().entityEncode().array(),
-    form.field("collection_date", get_second("collection_date")).trim().required().isDate("Sample collection date format: YYYY-MM-DD").entityEncode().array(),
-    form.field("conductivity", get_second("conductivity")).trim().custom(numbers_n_period).required().entityEncode().array(),
-    form.field("dataset", get_second("dataset")).trim().required().entityEncode().array(),
-    form.field("dataset_id", "").trim().required().isInt().entityEncode().array(),
-    // form.field("del180_water", get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("del180_water", get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("npoc", helpers.get_second("npoc")).trim().entityEncode().array(),
+    form.field("access_point_type", helpers.get_second("access_point_type")).trim().entityEncode().array(),
+    form.field("adapter_sequence", helpers.get_second("adapter_sequence")).trim().required().entityEncode().array(),
+    form.field("alkalinity", helpers.get_second("alkalinity")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("ammonium", helpers.get_second("ammonium")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("bicarbonate", helpers.get_second("bicarbonate")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("env_biome", helpers.get_second("env_biome")).trim().required().custom(helpers.dropdown_items_validation).entityEncode().array(),
+    form.field("biome_secondary", helpers.get_second("biome_secondary")).trim().entityEncode().array(),
+    form.field("calcium", helpers.get_second("calcium")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("carbonate", helpers.get_second("carbonate")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("chloride", helpers.get_second("chloride")).trim().entityEncode().array(),
+    form.field("clone_library_results", helpers.get_second("clone_library_results")).trim().entityEncode().array(),
+    form.field("collection_date", helpers.get_second("collection_date")).trim().required().isDate("Sample collection date format: YYYY-MM-DD").entityEncode().array(),
+    form.field("conductivity", helpers.get_second("conductivity")).trim().custom(helpers.numbers_n_period).required().entityEncode().array(),
+    form.field("dataset", helpers.get_second("dataset")).trim().required().entityEncode().array(),
+    form.field("dataset_description").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
+    form.field("dataset_id", "Dataset_id").trim().required().isInt().entityEncode().array(),
+    // form.field("del180_water", helpers.get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("del180_water", helpers.get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
 
-    form.field("depth_in_core", get_second("depth_in_core")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("depth_subseafloor", get_second("depth_subseafloor")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("depth_subterrestrial", get_second("depth_subterrestrial")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("diss_hydrogen", get_second("diss_hydrogen")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("diss_inorg_carb", get_second("diss_inorg_carb")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("diss_inorg_carbon_del13c", get_second("diss_inorg_carbon_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("diss_org_carb", get_second("diss_org_carb")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("diss_oxygen", get_second("diss_oxygen")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("dna_extraction_meth", get_second("dna_extraction_meth")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("dna_quantitation", get_second("dna_quantitation")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("dna_region", get_second("dna_region")).trim().required().entityEncode().array(),
-    form.field("domain", get_second("domain")).trim().required().entityEncode().array(),
-    form.field("elevation", get_second("elevation")).trim().required("", "Elevation is required (for terrestrial only)").custom(numbers_n_period_n_minus).entityEncode().array(),
-    form.field("env_package", get_second("env_package")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("enzyme_activities", get_second("enzyme_activities")).trim().entityEncode().array(),
-    form.field("env_feature", get_second("env_feature")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("fish_probe_name", get_second("fish_probe_name")).trim().entityEncode().array(),
-    form.field("fish_probe_seq", get_second("fish_probe_seq")).trim().is(/^$|[ATUGCYRSWKMBDHVN]/).entityEncode().array(),
-    form.field("feature_secondary", get_second("feature_secondary")).trim().entityEncode().array(),
-    form.field("formation_name", get_second("formation_name")).trim().entityEncode().array(),
-    form.field("forward_primer", get_second("forward_primer")).trim().entityEncode().array(),
-    form.field("functional_gene_assays", get_second("functional_gene_assays")).trim().entityEncode().array(),
-    form.field("geo_loc_name_continental", get_second("geo_loc_name_continental")).trim().custom(geo_loc_name_continental_filter).custom(geo_loc_name_validation).custom(geo_loc_name_continental_validation).entityEncode().array(),
-    form.field("geo_loc_name_marine", get_second("geo_loc_name_marine")).trim().custom(geo_loc_name_validation).custom(geo_loc_name_marine_validation).entityEncode().array(),
-    form.field("illumina_index", get_second("illumina_index")).trim().entityEncode().array(),
+    form.field("depth_in_core", helpers.get_second("depth_in_core")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("depth_subseafloor", helpers.get_second("depth_subseafloor")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("depth_subterrestrial", helpers.get_second("depth_subterrestrial")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("diss_hydrogen", helpers.get_second("diss_hydrogen")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("diss_inorg_carb", helpers.get_second("diss_inorg_carb")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("diss_inorg_carbon_del13c", helpers.get_second("diss_inorg_carbon_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("diss_org_carb", helpers.get_second("diss_org_carb")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("diss_oxygen", helpers.get_second("diss_oxygen")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("dna_extraction_meth", helpers.get_second("dna_extraction_meth")).trim().required().custom(helpers.dropdown_items_validation).entityEncode().array(),
+    form.field("dna_quantitation", helpers.get_second("dna_quantitation")).trim().required().custom(helpers.dropdown_items_validation).entityEncode().array(),
+    form.field("dna_region", helpers.get_second("dna_region")).trim().required().entityEncode().array(),
+    form.field("domain", helpers.get_second("domain")).trim().required().entityEncode().array(),
+    form.field("elevation", helpers.get_second("elevation")).trim().required("", "%s is required (for terrestrial only)").custom(helpers.numbers_n_period_n_minus).entityEncode().array(),
+    form.field("env_package", helpers.get_second("env_package")).trim().required().custom(helpers.dropdown_items_validation).entityEncode().array(),
+    form.field("enzyme_activities", helpers.get_second("enzyme_activities")).trim().entityEncode().array(),
+    form.field("env_feature", helpers.get_second("env_feature")).trim().required().custom(helpers.dropdown_items_validation).entityEncode().array(),
+    form.field("fish_probe_name", helpers.get_second("fish_probe_name")).trim().entityEncode().array(),
+    form.field("fish_probe_seq", helpers.get_second("fish_probe_seq")).trim().is(/^$|[ATUGCYRSWKMBDHVN]/).entityEncode().array(),
+    form.field("feature_secondary", helpers.get_second("feature_secondary")).trim().entityEncode().array(),
+    form.field("formation_name", helpers.get_second("formation_name")).trim().entityEncode().array(),
+    form.field("forward_primer", helpers.get_second("forward_primer")).trim().entityEncode().array(),
+    form.field("functional_gene_assays", helpers.get_second("functional_gene_assays")).trim().entityEncode().array(),
+    form.field("geo_loc_name_continental", helpers.get_second("geo_loc_name_continental")).trim().custom(helpers.geo_loc_name_continental_filter).custom(helpers.geo_loc_name_validation).custom(helpers.geo_loc_name_continental_validation).entityEncode().array(),
+    form.field("geo_loc_name_marine", helpers.get_second("geo_loc_name_marine")).trim().custom(helpers.geo_loc_name_validation).custom(helpers.geo_loc_name_marine_validation).entityEncode().array(),
+    form.field("illumina_index", helpers.get_second("illumina_index")).trim().entityEncode().array(),
     // Index sequence (required for Illumina)
-    form.field("intact_polar_lipid", get_second("intact_polar_lipid")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("investigation_type", get_second("investigation_type")).trim().required().entityEncode().array(),
-    form.field("iron", get_second("iron")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("iron_ii", get_second("iron_ii")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("iron_iii", get_second("iron_iii")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("isol_growth_cond", get_second("isol_growth_cond")).trim().entityEncode().array(),
-    // form.field("latitude", get_second("latitude")).trim().custom(latitude_valid).is(/^$|^[0-9.-]+$/).required().entityEncode().array(),
+    form.field("intact_polar_lipid", helpers.get_second("intact_polar_lipid")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("investigation_type", helpers.get_second("investigation_type")).trim().required().entityEncode().array(),
+    form.field("iron", helpers.get_second("iron")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("iron_ii", helpers.get_second("iron_ii")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("iron_iii", helpers.get_second("iron_iii")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("isol_growth_cond", helpers.get_second("isol_growth_cond")).trim().entityEncode().array(),
+    // form.field("latitude", helpers.get_second("latitude")).trim().custom(helpers.latitude_valid).is(/^$|^[0-9.-]+$/).required().entityEncode().array(),
     //, see <a href='https://www.latlong.net/degrees-minutes-seconds-to-decimal-degrees' target='_blank'>a converter</a>
-    form.field("latitude", get_second("latitude")).trim().custom(latitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
-    form.field("longitude", get_second("longitude")).trim().custom(longitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
-    form.field("magnesium", get_second("magnesium")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("manganese", get_second("manganese")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("env_material", get_second("env_material")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("material_secondary", get_second("material_secondary")).trim().entityEncode().array(),
-    form.field("methane", get_second("methane")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("methane_del13c", get_second("methane_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("microbial_biomass_fish", get_second("microbial_biomass_fish")).trim().custom(numbers_n_period).entityEncode().array(),
-    // form.field("microbial_biomass_avg_cell_number", get_second("microbial_biomass_avg_cell_number")).trim().entityEncode().array(),
-    // form.field("microbial_biomass_intactpolarlipid", get_second("microbial_biomass_intactpolarlipid")).trim().entityEncode().array(),
-    form.field("microbial_biomass_microscopic", get_second("microbial_biomass_microscopic")).trim().entityEncode().array(),
-    // form.field("microbial_biomass_platecounts", get_second("microbial_biomass_platecounts")).trim().entityEncode().array(),
-    form.field("microbial_biomass_qpcr", get_second("microbial_biomass_qpcr")).trim().entityEncode().array(),
-    form.field("nitrate", get_second("nitrate")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("nitrite", get_second("nitrite")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("nitrogen_tot", get_second("nitrogen_tot")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("noble_gas_chemistry", get_second("noble_gas_chemistry")).trim().entityEncode().array(),
-    form.field("org_carb_nitro_ratio", get_second("org_carb_nitro_ratio")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("ph", get_second("ph")).trim().custom(numbers_n_period).custom(ph_valid).required().entityEncode().array(),
-    form.field("part_org_carbon_del13c", get_second("part_org_carbon_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("phosphate", get_second("phosphate")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("pi_email", get_second("pi_email")).trim().isEmail().required().entityEncode().array(),
-    form.field("pi_name", get_second("pi_name")).trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
-    form.field("plate_counts", get_second("plate_counts")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("porosity", get_second("porosity")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
-    form.field("potassium", get_second("potassium")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("pressure", get_second("pressure")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("project", get_second("project")).trim().required().entityEncode().array(),
-    form.field("project_abstract", get_second("project_abstract")).trim().required().entityEncode().array(),
-    form.field("project_title", get_second("project_title")).trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
-    form.field("redox_potential", get_second("redox_potential")).trim().custom(numbers_n_period_n_minus).entityEncode().array(),
-    form.field("redox_state", get_second("redox_state")).trim().is(/^$|^[a-zA-Z ]+$/).entityEncode().array(),
-    form.field("reference", get_second("reference")).trim().entityEncode().array(),
-    form.field("resistivity", get_second("resistivity")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("reverse_primer", get_second("reverse_primer")).trim().entityEncode().array(),
-    form.field("rock_age", get_second("rock_age")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("run", get_second("run")).trim().required().entityEncode().array(),
-    form.field("salinity", get_second("salinity")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("sample_collection_device", get_second("sample_collection_device")).trim().entityEncode().array(),
-    form.field("samp_store_dur", get_second("samp_store_dur")).trim().is(/^$|^[0-9a-zA-Z ]+$/).entityEncode().array(),
-    form.field("samp_store_temp", get_second("samp_store_temp")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("sample_name", get_second("sample_name")).trim().required().entityEncode().array(),
-    form.field("sample_size_mass", get_second("sample_size_mass")).trim().custom(positive).custom(numbers_n_period).entityEncode().array(),
-    form.field("sample_size_vol", get_second("sample_size_vol")).trim().custom(positive).custom(numbers_n_period).entityEncode().array(),
-    form.field("sample_type", get_second("sample_type")).trim().required().custom(env_items_validation).entityEncode().array(),
-    form.field("sequencing_meth", get_second("sequencing_meth")).trim().required().entityEncode().array(),
-    form.field("silicate", get_second("silicate")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("sodium", get_second("sodium")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("sulfate", get_second("sulfate")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("sulfide", get_second("sulfide")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("sulfur_tot", get_second("sulfur_tot")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("target_gene", get_second("target_gene")).trim().required().entityEncode().array(),
-    form.field("temperature", get_second("temperature")).trim().is(/^$|^[0-9.-]+$/).required().entityEncode().array(),
-    form.field("tot_carb", get_second("tot_carb")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
-    form.field("tot_depth_water_col", get_second("tot_depth_water_col")).trim().custom(numbers_n_period).entityEncode().array(),
-    form.field("tot_inorg_carb", get_second("tot_inorg_carb")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
-    form.field("tot_org_carb", get_second("tot_org_carb")).trim().custom(numbers_n_period).custom(percent_valid).entityEncode().array(),
-    form.field("trace_element_geochem", get_second("trace_element_geochem")).trim().entityEncode().array(),
-    form.field("water_age", get_second("water_age")).trim().custom(numbers_n_period).entityEncode().array()
+    form.field("latitude", helpers.get_second("latitude")).trim().custom(helpers.latitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
+    form.field("longitude", helpers.get_second("longitude")).trim().custom(helpers.longitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
+    form.field("magnesium", helpers.get_second("magnesium")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("manganese", helpers.get_second("manganese")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("env_material", helpers.get_second("env_material")).trim().required().custom(helpers.dropdown_items_validation).entityEncode().array(),
+    form.field("material_secondary", helpers.get_second("material_secondary")).trim().entityEncode().array(),
+    form.field("methane", helpers.get_second("methane")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("methane_del13c", helpers.get_second("methane_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("microbial_biomass_fish", helpers.get_second("microbial_biomass_fish")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    // form.field("microbial_biomass_avg_cell_number", helpers.get_second("microbial_biomass_avg_cell_number")).trim().entityEncode().array(),
+    // form.field("microbial_biomass_intactpolarlipid", helpers.get_second("microbial_biomass_intactpolarlipid")).trim().entityEncode().array(),
+    form.field("microbial_biomass_microscopic", helpers.get_second("microbial_biomass_microscopic")).trim().entityEncode().array(),
+    // form.field("microbial_biomass_platecounts", helpers.get_second("microbial_biomass_platecounts")).trim().entityEncode().array(),
+    form.field("microbial_biomass_qpcr", helpers.get_second("microbial_biomass_qpcr")).trim().entityEncode().array(),
+    form.field("nitrate", helpers.get_second("nitrate")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("nitrite", helpers.get_second("nitrite")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("nitrogen_tot", helpers.get_second("nitrogen_tot")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("noble_gas_chemistry", helpers.get_second("noble_gas_chemistry")).trim().entityEncode().array(),
+    form.field("org_carb_nitro_ratio", helpers.get_second("org_carb_nitro_ratio")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("ph", helpers.get_second("ph")).trim().custom(helpers.numbers_n_period).custom(helpers.ph_valid).required().entityEncode().array(),
+    form.field("part_org_carbon_del13c", helpers.get_second("part_org_carbon_del13c")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("phosphate", helpers.get_second("phosphate")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("pi_email", helpers.get_second("pi_email")).trim().isEmail().required().entityEncode().array(),
+    form.field("pi_name", helpers.get_second("pi_name")).trim().required().is(/^[a-zA-Z- ]+$/).entityEncode().array(),
+    form.field("plate_counts", helpers.get_second("plate_counts")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("porosity", helpers.get_second("porosity")).trim().custom(helpers.numbers_n_period).custom(helpers.percent_valid).entityEncode().array(),
+    form.field("potassium", helpers.get_second("potassium")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("pressure", helpers.get_second("pressure")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("project", helpers.get_second("project")).trim().required().entityEncode().array(),
+    form.field("project_abstract", helpers.get_second("project_abstract")).trim().required().entityEncode().array(),
+    form.field("project_title", helpers.get_second("project_title")).trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
+    form.field("redox_potential", helpers.get_second("redox_potential")).trim().custom(helpers.numbers_n_period_n_minus).entityEncode().array(),
+    form.field("redox_state", helpers.get_second("redox_state")).trim().is(/^$|^[a-zA-Z ]+$/).entityEncode().array(),
+    form.field("reference", helpers.get_second("reference")).trim().entityEncode().array(),
+    form.field("resistivity", helpers.get_second("resistivity")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("reverse_primer", helpers.get_second("reverse_primer")).trim().entityEncode().array(),
+    form.field("rock_age", helpers.get_second("rock_age")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("run", helpers.get_second("run")).trim().required().entityEncode().array(),
+    form.field("salinity", helpers.get_second("salinity")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("sample_collection_device", helpers.get_second("sample_collection_device")).trim().entityEncode().array(),
+    form.field("samp_store_dur", helpers.get_second("samp_store_dur")).trim().is(/^$|^[0-9a-zA-Z ]+$/).entityEncode().array(),
+    form.field("samp_store_temp", helpers.get_second("samp_store_temp")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
+    form.field("sample_name", helpers.get_second("sample_name")).trim().required().entityEncode().array(),
+    form.field("sample_size_mass", helpers.get_second("sample_size_mass")).trim().custom(helpers.positive).custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("sample_size_vol", helpers.get_second("sample_size_vol")).trim().custom(helpers.positive).custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("sample_type", helpers.get_second("sample_type")).trim().required().custom(helpers.dropdown_items_validation).entityEncode().array(),
+    form.field("sequencing_meth", helpers.get_second("sequencing_meth")).trim().required().entityEncode().array(),
+    form.field("silicate", helpers.get_second("silicate")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("sodium", helpers.get_second("sodium")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("sulfate", helpers.get_second("sulfate")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("sulfide", helpers.get_second("sulfide")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("sulfur_tot", helpers.get_second("sulfur_tot")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("target_gene", helpers.get_second("target_gene")).trim().required().custom(helpers.dropdown_items_validation).custom(helpers.target_gene_validation).entityEncode().array(),
+    form.field("temperature", helpers.get_second("temperature")).trim().is(/^$|^[0-9.-]+$/).required().entityEncode().array(),
+    form.field("tot_carb", helpers.get_second("tot_carb")).trim().custom(helpers.numbers_n_period).custom(helpers.percent_valid).entityEncode().array(),
+    form.field("tot_depth_water_col", helpers.get_second("tot_depth_water_col")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("tot_inorg_carb", helpers.get_second("tot_inorg_carb")).trim().custom(helpers.numbers_n_period).custom(helpers.percent_valid).entityEncode().array(),
+    form.field("tot_org_carb", helpers.get_second("tot_org_carb")).trim().custom(helpers.numbers_n_period).custom(helpers.percent_valid).entityEncode().array(),
+    form.field("trace_element_geochem", helpers.get_second("trace_element_geochem")).trim().entityEncode().array(),
+    form.field("water_age", helpers.get_second("water_age")).trim().custom(helpers.numbers_n_period).entityEncode().array()
   ),
   function (req, res) {
     console.time("TIME: post metadata_upload");
@@ -587,9 +448,15 @@ router.post('/metadata_upload',
       console.log('in post /metadata_upload, !req.form.isValid');
 
       make_metadata_object_from_form(req, res);
-      make_csv(req, res);
+      console.log("III in form");
+      //TODO: include what below to callback for dataset upload, right now it saves what is in the form, no datasets etc.
+      // if ((typeof DATASET_IDS_BY_PID[req.body.project_id] !== 'undefined') && (DATASET_IDS_BY_PID[req.body.project_id].length > 0)) {// TODO: add comment what's this
+      //   const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
+      //   csv_files_obj.make_csv(req, res);
+      // }
 
-      if (req.body.done_editing === "done_editing"){
+
+      if (req.body.done_editing === "done_editing") {
         send_mail_finished(req, res);
       }
 
@@ -604,466 +471,285 @@ router.post('/metadata_upload',
     console.timeEnd("TIME: post metadata_upload");
   });
 
-function get_new_val(req, all_metadata_pid, all_new_names) {
-  var new_val = [];
-  for (var new_name_idx in all_new_names) {
-    var new_name = all_new_names[new_name_idx];
-    if (new_name !== '')
-    {
-      new_val = req.body[new_name];
-    }
-    if (typeof new_val !== 'undefined' && new_val.length !== 0) {
-      all_metadata_pid[new_name] = new_val;
-    }
-  }
-  return all_metadata_pid;
-}
-
 function make_metadata_object_from_form(req, res) {
   console.time("TIME: make_metadata_object_from_form");
-  var pid = req.body.project_id;
-  var data = req.form;
-
-  // console.log("DDD9 req.form");
-  // console.log(JSON.stringify(req.form));
-
-
-  //add project_abstract etc.
-  //TODO: DRY with other such places.
-
-  var normal_length = data['dataset'].length;
-  for (var a in data)
-  {
-    if (data[a].length < normal_length && (typeof data[a][0] !== 'undefined'))
-    {
-      data[a] = fill_out_arr_doubles(data[a][0], normal_length);
-    }
-  }
-
-  var all_metadata = make_metadata_object(req, res, pid, data);
-  var all_field_names_orig = make_all_field_names(data['dataset_id']);
-
-  //add_new
-  var all_field_names_with_new = collect_new_rows(req, all_field_names_orig);
-
-  // console.log("YYY3 all_field_names_with_new");
-  // console.log(JSON.stringify(all_field_names_with_new));
-
-  var all_field_names_first_column = get_first_column(all_field_names_with_new, 0);
-  var all_new_names = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
-  all_metadata[pid] = get_new_val(req, all_metadata[pid], all_new_names);
+  console.trace("Show me, I'm in make_metadata_object_from_form");
+  var pid       = req.body.project_id;
+  var data      = req.form;
+  const met_obj = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
 
   //collect errors
   var myArray_fail = helpers.unique_array(req.form.errors);
-
-  if (helpers.has_duplicates(req.form.sample_name))
-  {
-    myArray_fail.push('Sample ID (user sample name) should be unique.');
-  }
-
   myArray_fail.sort();
-  req.flash("fail", myArray_fail);
+  console.log('myArray_fail = ', myArray_fail);
+  req.flash('fail', myArray_fail);
+  //new
+  if ((data['dataset'].includes("")) && (data['sample_name'].includes(""))) //new empty datasets
+  {
+    var user_id           = PROJECT_INFORMATION_BY_PID[pid].oid;
+    const new_cur_project = new Project(req, res, pid, user_id);
+    new_cur_project.make_project_obj_with_existing_project_info_by_pid(pid);
 
-  render_edit_form(req, res, all_metadata, all_field_names_with_new);
-
-  console.timeEnd("TIME: make_metadata_object_from_form");
-}
-
-// create form from a csv file
-
-function slice_object(object, slice_keys) {
-  console.time("TIME: convert to string");
-  for(var i=0; i<slice_keys.length;i++) slice_keys[i] = String(slice_keys[i]);
-  console.timeEnd("TIME: convert to string");
-
-  return Object.keys(object)
-    .filter(function (key) {
-      return slice_keys.indexOf(key) >= 0;
-    })
-    .reduce(function (acc, key) {
-      acc[key] = object[key];
-      return acc;
-    }, {});
-
-}
-
-function get_project_name(edit_metadata_file) {
-  console.time("TIME: get_project_name");
-
-  // console.log("GGG edit_metadata_file from get_project_name");
-  // console.log(edit_metadata_file);
-  // var edit_metadata_file = "metadata-project_DCO_GAI_Bv3v5_65982.csv";
-  var edit_metadata_file_parts = edit_metadata_file.split('-')[1].split('_');
-  var edit_metadata_project = "";
-
-  if(edit_metadata_file_parts.length >= 4 ) {
-
-    edit_metadata_project = edit_metadata_file_parts[1] + "_" + edit_metadata_file_parts[2] + "_" + edit_metadata_file_parts[3];
+    var project_obj = new_cur_project.project_obj;
+    const met_obj   = new metadata_controller.CreateDataObj(req, res, pid, []);
+    met_obj.make_new_project_for_form(project_obj);
   }
-
-  console.timeEnd("TIME: get_project_name");
-  return edit_metadata_project;
+  else if (data['dataset_id'].includes("")) //new datasets
+  {
+    met_obj.make_metadata_object_with_new_datasets(req, res, pid, data);
+  } // data['dataset_id'][0] === ""
+  else {
+    met_obj.existing_object_from_form(req, res, pid, data);
+  }
+  console.timeEnd("TIME: make_metadata_object_from_form");
 }
 
 function make_metadata_object_from_csv(req, res) {
   console.time("TIME: make_metadata_object_from_csv");
 
   // console.log("MMM req.body from make_metadata_object_from_csv");
-  // console.log(req.body);
 
-  var file_name = req.body.edit_metadata_file;
-  var project_name = get_project_name(file_name);
-  var pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
+  var file_name       = req.body.edit_metadata_file;
+  var full_file_name  = path.join(config.USER_FILES_BASE, req.user.username, file_name);
+  const csv_file_read = new csv_files_controller.CsvFileRead(req, res, full_file_name);
+  var data_arr        = csv_file_read.data_arr;
+  const transposed    = helpers.transpose_arr_of_obj(data_arr);
 
+  const cur_project = new Project(req, res, 0, 0);
+  var project_name  = req.body.project || cur_project.get_project_name_from_file_name(file_name) || helpers.unique_array(transposed.project)[0];
+  var pid           = cur_project.get_pid(project_name);
 
-  // console.log("GGG1 project_name from get_project_name");
-  // console.log(project_name);
-  //data from file
-  var inputPath = path.join(config.USER_FILES_BASE, req.user.username, file_name);
-  var file_content = fs.readFileSync(inputPath);
-  var parse_sync = require('csv-parse/lib/sync');
-  var data_arr = parse_sync(file_content, {columns: true, trim: true});
-
-  var data = {};
-  var dataset_ids = [];
-  for (var dict_idx in data_arr)
-  {
-    var dataset_id = data_arr[dict_idx]['dataset_id'];
-    data[dataset_id] = data_arr[dict_idx];
-    dataset_ids.push(dataset_id);
+  if (typeof req.body.project === 'undefined' || pid === 0) {
+    new_csv(req, res, cur_project, project_name, transposed);
   }
+  else {
+    cur_project.make_project_obj_with_existing_project_info_by_pid(pid);
+    var data        = {};
+    var dataset_ids = [];
+    for (var dict_idx in data_arr) {
+      var dataset_id   = data_arr[dict_idx]['dataset_id'];
+      data[dataset_id] = data_arr[dict_idx];
+      dataset_ids.push(dataset_id);
+    }
 
-  // console.log("MMM0 dataset_ids");
-  // console.log(dataset_ids);
+    // console.log("MMM0 dataset_ids");
+    // console.log(dataset_ids);
 
-  var data_in_obj_of_arr = from_obj_to_obj_of_arr(data, pid);
+    const met_obj          = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
+    var data_in_obj_of_arr = met_obj.from_obj_to_obj_of_arr(data, pid, dataset_ids);
 
-  // all_metadata
-  var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
-  var all_field_names = make_all_field_names(dataset_ids);
+// all_metadata
+    var all_metadata     = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
+    var all_field_names4 = met_obj.make_all_field_names(dataset_ids);
 
-  // console.log("DDD3 all_field_names from make_metadata_object_from_csv");
-  // console.log(JSON.stringify(all_field_names));
-  //
-  // console.log("DDD4 all_metadata from make_metadata_object_from_csv");
-  // console.log(JSON.stringify(all_metadata));
-  req.body.project_id = pid;
-  render_edit_form(req, res, all_metadata, all_field_names);
+    req.body.project_id = pid;
 
+    var all_field_units = MD_CUSTOM_UNITS[pid];
+    const show_new      = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
+    show_new.render_edit_form();
+  }
   console.timeEnd("TIME: make_metadata_object_from_csv");
 }
 
-// create form from db
+function callback_for_add_project_from_new_csv(req, res, cur_project, data_arr) {
+  cur_project.add_info_to_project_globals(cur_project.project_obj, cur_project.project_obj.pid);
+  //   insertId: 1117,
+  //  TODO: save new datasets
+  const met_obj = new metadata_controller.CreateDataObj(req, res, cur_project.project_obj.pid, []);
 
-function get_primers_info(dataset_id) {
-  console.time("TIME: get_primers_info");
-  var primer_suite_id = AllMetadata[dataset_id]["primer_suite_id"];
-  var primer_info = {};
+  //new,
+  // TODO: call only after get the pid!!!
+  met_obj.make_metadata_object_with_new_datasets(req, res, cur_project.project_obj.pid, data_arr);
+}
 
-  if (typeof primer_suite_id === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id] === 'undefined' || typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined' ) {
-    return {};
-  }
-  else {
-    try {
-      for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
+function new_csv(req, res, cur_project, project_name, transposed) {
+  console.time("TIME: in new_csv");
+  console.log("IN: new_csv");
 
-        var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
+// if (pid === 0) { // new csv
+  cur_project.make_project_obj_from_new_csv(project_name, transposed);
+  var project_obj = cur_project.project_obj;
+  console.log('PPP00 project_obj', project_obj);
+  console.log('PPP01 JSON.stringify(project_obj)', JSON.stringify(project_obj));
 
-        if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
-          primer_info[curr_direction] = [];
-        }
-
-        primer_info[curr_direction].push(MD_PRIMER_SUITE[primer_suite_id].primer[i].sequence);
+  if (project_obj.oid === 0) {
+    req.flash('fail', 'There is no such user: first_name: ' + project_obj.first_name +
+    ', last_name: ' + project_obj.last_name +
+    ', email: ' + project_obj.email +
+    ', institution: ' + project_obj.institution);
+    res.redirect("/");
+  } else {
+    cur_project.addProject(project_obj, function (err, rows) {
+      console.log('New project SAVED');
+      console.log('WWW rows', rows);
+      let pid           = 0;
+      let affected_rows = 0;
+      if (typeof rows !== "undefined") {
+        pid           = rows.insertId;
+        affected_rows = rows.affectedRows;
       }
-    } catch (err) {
-      // Handle the error here.
-      return {};
-    }
+      else {
+        console.log("Problems with Project.addProject, rows == undefined!");
+      }
+      cur_project.project_obj.pid = pid;
+      console.log('RRR0 project_name', project_name);
 
+      // if ((pid === 0) && (rows.affectedRows === 1)) {
+      if (pid === 0) {
+        // TODO: existing_project: as show_with_new_datasets
+        cur_project.getProjectByName(project_name, function (err, rows) {
+          console.log("RRR1, rows from getProjectByName", rows);
+          if (typeof rows !== "undefined") {
+            cur_project.project_obj.pid = rows["0"].project_id;
+          }
+          else {
+            console.log("Problems with Project.getProjectByName, rows == undefined!");
+          }
+          callback_for_add_project_from_new_csv(req, res, cur_project, transposed);
+        });
+      }
+      else {
+        callback_for_add_project_from_new_csv(req, res, cur_project, transposed);
+      }
+      console.timeEnd("TIME: in new_csv");
+    });
   }
-  // console.log("DDD primer_info");
-  // console.log(JSON.stringify(primer_info));
-  // {"F":["CCTACGGGAGGCAGCAG","CCTACGGG.GGC[AT]GCAG","TCTACGGAAGGCTGCAG"],"R":["GGATTAG.TACCC"]}
-
-  console.timeEnd("TIME: get_primers_info");
-  return primer_info;
 }
 
-function get_all_req_metadata(dataset_id) {
-  console.time("TIME: 5) get_all_req_metadata");
-
-  var data = {};
-  for (var idx = 0; idx < CONSTS.REQ_METADATA_FIELDS_wIDs.length; idx++) {
-    var key  = CONSTS.REQ_METADATA_FIELDS_wIDs[idx];
-    // data[key] = [];
-    var val_hash = helpers.required_metadata_names_from_ids(AllMetadata[dataset_id], key + "_id");
-
-    data[key] = val_hash.value;
-  }
-  console.time("TIME: 5) get_all_req_metadata");
-
-  return data;
-}
-
+// create form from db
 function make_metadata_object_from_db(req, res) {
   console.time("TIME: make_metadata_object_from_db");
-  var pid          = req.body.project_id;
+  var pid         = req.body.project_id;
   //repeated!
-  var dataset_ids  = DATASET_IDS_BY_PID[pid];
-  var project      = PROJECT_INFORMATION_BY_PID[pid].project;
+  var dataset_ids = DATASET_IDS_BY_PID[pid];
+  // var project     = PROJECT_INFORMATION_BY_PID[pid].project;
+  const met_obj = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
 
   // get_db_data
-  console.time("TIME: slice_object");
-  var AllMetadata_picked = slice_object(AllMetadata, dataset_ids);
-  console.timeEnd("TIME: slice_object");
+  get_db_data(req, res, met_obj);
+}
 
-  console.time("TIME: dataset_info");
-  // get dataset_info
+function create_AllMetadata_picked(dataset_ids) {
+  var AllMetadata_picked;
+  AllMetadata_picked            = helpers.slice_object(AllMetadata, dataset_ids);
+  const all_metadata_picked_len = Object.keys(AllMetadata_picked).length;
+  if (all_metadata_picked_len === 0) // there is no metadata
+  {
+    for (var d_id in dataset_ids) {
+      AllMetadata_picked[dataset_ids[d_id]] = [];
+    }
+  }
+  return AllMetadata_picked;
+}
 
-  var dataset_info;
-  for(var i in ALL_DATASETS.projects){
+function get_dataset_info(met_obj)
+{
+
+  const pid = met_obj.pid;
+
+  var dataset_info = [];
+  // use helpers.findByValueOfObject(arr, key, value)
+  for (var i in ALL_DATASETS.projects) {
+    // doesn't work var project_info = helpers.findByValueOfObject(ALL_DATASETS.projects[i], 'pid', String(pid));
     var item = ALL_DATASETS.projects[i];
-    if(String(item.pid) === String(pid)){
+    if (String(item.pid) === String(pid)) {
       dataset_info = item.datasets;
       break;
     }
   }
+  return dataset_info;
+}
 
-  var dataset_info_by_did = {};
-  for (var idx in dataset_info) {
-    dataset_info_by_did[dataset_info[idx]["did"]] = dataset_info[idx];
-  }
+function get_db_data (req, res, met_obj) { // move to met_obj?
+  console.time("TIME: helpers.slice_object");
+  var AllMetadata_picked = create_AllMetadata_picked(met_obj.dataset_ids);
+  console.timeEnd("TIME: helpers.slice_object");
+
+  console.time("TIME: dataset_info");
+  const dataset_info        = get_dataset_info(met_obj);
+  const dataset_info_by_did = make_dataset_info_by_did(dataset_info);
   console.timeEnd("TIME: dataset_info");
 
-  // add missing info to AllMetadata_picked
   console.time("TIME: add missing info to AllMetadata_picked");
-  for (var d in dataset_ids) {
-    var dataset_id = dataset_ids[d];
-    var ids_data = get_all_req_metadata(dataset_id);
-
-    Object.assign(AllMetadata_picked[dataset_id], ids_data);
-    var primers_info_by_dataset_id = get_primers_info(dataset_id);
-
-    AllMetadata_picked[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
-    AllMetadata_picked[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
-
-    AllMetadata_picked[dataset_id]["dataset"] = dataset_info_by_did[dataset_id]["dname"];
-    AllMetadata_picked[dataset_id]["dataset_description"] = dataset_info_by_did[dataset_id]["ddesc"];
-
-    AllMetadata_picked[dataset_id]["dataset_id"] = dataset_id;
-  }
+  const AllMetadata_picked_new = add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked, dataset_info_by_did);
   console.timeEnd("TIME: add missing info to AllMetadata_picked");
+  const AllMetadata_picked_full = AllMetadata_picked_new.AllMetadata_picked_full;
+  const fail_msg = AllMetadata_picked_new.fail_msg;
+  req.flash('fail', fail_msg);
 
-  var data_in_obj_of_arr = from_obj_to_obj_of_arr(AllMetadata_picked, pid);
+  var abstract_data = add_abstract_data(req, res, met_obj);
 
-  // add abstract_data
-  var abstract_data = get_project_abstract_data(project, req.CONFIG.PATH_TO_STATIC_DOWNLOADS)[get_project_prefix(project)];
-  if (typeof abstract_data === 'undefined') {
-    abstract_data = {};
-    abstract_data.pdfs = [];
-  }
+  var data_in_obj_of_arr                 = met_obj.from_obj_to_obj_of_arr(AllMetadata_picked_full, met_obj.pid, met_obj.dataset_ids);
+  data_in_obj_of_arr["project_abstract"] = met_obj.fill_out_arr_doubles(abstract_data.pdfs, met_obj.dataset_ids.length);
 
-  data_in_obj_of_arr["project_abstract"] = fill_out_arr_doubles(abstract_data.pdfs, dataset_ids.length);
+  var all_metadata = met_obj.make_metadata_object(req, res, met_obj.pid, data_in_obj_of_arr);
 
-  var all_metadata = make_metadata_object(req, res, pid, data_in_obj_of_arr);
-
-  var all_field_names = make_all_field_names(dataset_ids);
+  // as many values per field as there are datasets
+  var all_field_names4 = met_obj.make_all_field_names(met_obj.dataset_ids);
 
   // console.log("DDD2 all_field_names");
   // console.log(JSON.stringify(all_field_names));
   // console.log("DDD2 all_metadata");
   // console.log(JSON.stringify(all_metadata));
 
-  render_edit_form(req, res, all_metadata, all_field_names);
-
+  const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4);
+  show_new.render_edit_form();
   console.timeEnd("TIME: make_metadata_object_from_db");
 }
 
-function make_all_field_names(dataset_ids) {
-  var ordered_metadata_names_only = get_names_from_ordered_const();
+function add_abstract_data(req, res, met_obj) {
+  const user_id = PROJECT_INFORMATION_BY_PID[met_obj.pid].oid;
+  const this_project = new Project(req, res, met_obj.pid, user_id);
+  this_project.make_project_obj_with_existing_project_info_by_pid(met_obj.pid);
+  const project_obj = this_project.project_obj;
 
-  var structured_field_names0 = get_field_names(dataset_ids);
-  var diff_names = structured_field_names0.filter(function(x) { return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0; });
-      diff_names = diff_names.filter(function(item) { return /^((?!_id).)*$/.test(item); });
-      diff_names = diff_names.filter(function(x) { return ordered_metadata_names_only.indexOf(x) < 0; });
+  return project_obj.abstract_data;
+}
 
-  // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES
-  // TODO: add units from db
-  var big_arr_diff_names = [];
-  for (var i2 = 0; i2 < diff_names.length; i2++) {
-    var temp_arr = [diff_names[i2], diff_names[i2], "", ""];
-    big_arr_diff_names.push(temp_arr);
+function make_dataset_info_by_did(dataset_info) {
+  var dataset_info_by_did = {};
+  for (var idx in dataset_info) {
+    dataset_info_by_did[dataset_info[idx]["did"]] = dataset_info[idx];
   }
-
-  return helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
-
+  return dataset_info_by_did;
 }
 
-function filterItems(arr, query) {
-  return arr.filter(function(el) {
-    return el.toLowerCase().indexOf(query.toLowerCase()) < 0;
-  });
-}
+function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, dataset_info_by_did) {
+  const dataset_ids = met_obj.dataset_ids;
+  var AllMetadata_picked_out = AllMetadata_picked_in;
+  var fail_msg = [];
+  console.time("TIME: add missing info to AllMetadata_picked");
+  for (var d_idx in dataset_ids) { //TODO: split here instead if no metadata
+    const dataset_id = dataset_ids[d_idx];
+    const all_req_metadata = met_obj.get_all_req_metadata(dataset_id);
+    const ids_data = all_req_metadata.data;
+    fail_msg.push(all_req_metadata.fail_msg);
 
-function from_obj_to_obj_of_arr(data, pid) {
-  console.time("TIME: from_obj_to_obj_of_arr");
-  var obj_of_arr = {};
-
-  var dataset_ids  = DATASET_IDS_BY_PID[pid];
-
-  // var all_field_names = helpers.unique_array(CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids)));
-  //TODO: make field_names collection a separate function
-  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
-  all_field_names = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  all_field_names = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
-  all_field_names = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
-
-  all_field_names = helpers.unique_array(all_field_names);
-
-  // console.log("HHH0 AllMetadataNames");
-  // console.log(JSON.stringify(AllMetadataNames));
-  //
-  // console.log("HHH2 all_field_names");
-  // console.log(JSON.stringify(all_field_names));
-
-  for (var did_idx in dataset_ids) {
-    var did = dataset_ids[did_idx];
-    for (var field_name_idx in all_field_names) {
-
-      var field_name = all_field_names[field_name_idx];
-      if (!(obj_of_arr.hasOwnProperty(field_name))) {
-        obj_of_arr[field_name] = [];
-      }
-      obj_of_arr[field_name].push(data[did][field_name]);
+    const all_metadata_picked_len = Object.keys(AllMetadata_picked_in).length;
+    if (all_metadata_picked_len !== 0) { // there are metadata
+      Object.assign(AllMetadata_picked_out[dataset_id], ids_data);
     }
+    const primers_info_by_dataset_id = met_obj.get_primers_info(dataset_id);
+
+    AllMetadata_picked_out[dataset_id]["forward_primer"] = primers_info_by_dataset_id['F'];
+    AllMetadata_picked_out[dataset_id]["reverse_primer"] = primers_info_by_dataset_id['R'];
+
+    AllMetadata_picked_out[dataset_id]["dataset"]             = dataset_info_by_did[dataset_id]["dname"];
+    AllMetadata_picked_out[dataset_id]["dataset_description"] = dataset_info_by_did[dataset_id]["ddesc"];
+
+    AllMetadata_picked_out[dataset_id]["dataset_id"] = dataset_id;
   }
-
-  // console.log("HHH3 obj_of_arr from from_obj_to_obj_of_arr");
-  // console.log(JSON.stringify(obj_of_arr));
-
-  console.timeEnd("TIME: from_obj_to_obj_of_arr");
-  return obj_of_arr;
+  var errs = helpers.flat_array(fail_msg);
+  var fail_msg_out = errs;
+  if (typeof errs !== 'undefined' && errs.length === 0) {
+    fail_msg_out = "";
+  }
+  return {'AllMetadata_picked_full': AllMetadata_picked_out, 'fail_msg': fail_msg_out};
 }
 
 // from form to a csv file
 
-function make_csv(req) {
-  var out_csv_file_name;
-  console.time("TIME: make_csv");
-
-  // var csv = convertArrayOfObjectsToCSV({
-  //   data: req.form,
-  //   user_info: req.user
-  // });
-
-  var csv = convertArrayOfObjectsToCSV({
-    data: req.form,
-    user_info: req.user,
-    project_id: req.body.project_id
-  });
-
-  time_stamp = new Date().getTime();
-
-  var base_name = "metadata-project" + '_' + req.body.project + '_' + req.user.username + '_' + time_stamp + ".csv";
-  out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
-
-  //TODO: more robust project!
-
-  fs.writeFile(out_csv_file_name, csv, function (err) {
-    if (err) throw err;
-  });
-
-  console.log('file ' + out_csv_file_name + ' saved');
-
-  var msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.';
-  req.flash("success", msg);
-
-  console.timeEnd("TIME: make_csv");
-}
-
-function array_from_object(data) {
-  var data_arr = [];
-  for (var key in data) {
-    var value_arr;
-    if (typeof data[key] === "object") {
-      value_arr = data[key];
-    }
-    else {
-      value_arr = [data[key]];
-    }
-    value_arr.unshift(key);
-    data_arr.push(value_arr);
-  }
-  return data_arr;
-}
-
-function transpose_2d_arr(data_arr, project_id) {
-  console.time("TIME: transpose_2d_arr");
-
-  //make an array with proper length, even if the first one is empty
-  var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
-  var length_array = data_arr[0];
-  if (data_arr[0].length < matrix_length ) {
-    length_array = fill_out_arr_doubles('', matrix_length);
-  }
-
-  var newArray = length_array.map(function(col, i) {
-    return data_arr.map(function(row) {
-      return row[i];
-    });
-  });
-  console.timeEnd("TIME: transpose_2d_arr");
-  return newArray;
-}
-
-function convertArrayOfObjectsToCSV(args) {
-  console.time("TIME: convertArrayOfObjectsToCSV");
-
-  var result, columnDelimiter, lineDelimiter, data, cellEscape, data_arr, transposed_data_arr, user_info, project_id;
-
-  data = args.data || null;
-  if (data === null) {
-    return null;
-  }
-
-  user_info = args.user_info || null;
-  if (user_info === null) {
-    return null;
-  }
-
-  project_id = args.project_id || null;
-  if (project_id === null) {
-    return null;
-  }
-
-  data_arr = array_from_object(data);
-
-  transposed_data_arr = transpose_2d_arr(data_arr, project_id);
-
-  columnDelimiter = args.columnDelimiter || ',';
-  lineDelimiter = args.lineDelimiter || '\n';
-  cellEscape = args.cellEscape || '"';
-
-  result = '';
-  transposed_data_arr.map(function(row) {
-    // TODO: to a function?
-    var r1 = row.map(function(item){
-      // Wrap each element of the items array with quotes
-      return cellEscape + item + cellEscape;
-    }).join(columnDelimiter);
-
-    result += r1;
-    result += lineDelimiter;
-  });
-
-  console.timeEnd("TIME: convertArrayOfObjectsToCSV");
-
-  return result;
-}
-
 // from a csv file to db
-
-// ??
 
 // TODO: mv to helpers and refactor (see also in admin & user_data
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
@@ -1079,7 +765,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
     file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
-  } else if (req.query.fxn == 'download' &&  req.query.type=='pcoa') {
+  } else if (req.query.fxn == 'download' && req.query.type == 'pcoa') {
     file = path.join(req.CONFIG.PROCESS_DIR, 'tmp', req.query.filename);
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
@@ -1100,7 +786,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
           console.log(err);
           req.flash('fail', err);
         } else {
-          req.flash('success', 'Deleted: '+req.query.filename);
+          req.flash('success', 'Deleted: ' + req.query.filename);
           res.redirect("/visuals/saved_elements");
         }
       }); //
@@ -1111,7 +797,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
           console.log("err 9: ");
           console.log(err);
         } else {
-          req.flash('success', 'Deleted: '+req.query.filename);
+          req.flash('success', 'Deleted: ' + req.query.filename);
           res.redirect("/metadata/metadata_file_list");
         }
       });
@@ -1124,45 +810,27 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 
 // save from form to db ??
 
-function saveMetadata(req, res){
+function saveMetadata(req, res) {
   console.time("TIME: saveMetadata");
-  make_csv(req, res);
+  console.log("SSS in saveMetadata");
+
+  const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
+  csv_files_obj.make_csv();
   // var pid = req.body.project_id;
   req.flash("success", "Success with the metadata submit!");
 
   res.redirect("/projects/" + req.body.project_id);
-  // res.redirect("/metadata/metadata_file_list");
-  // /help/contact
 
-  // res.render('help/contact', {
-  //
-  //   title: 'VAMPS:Contact Us',
-  //   choices : req.CONSTS.CONTACT_US_SUBJECTS,
-  //   user: req.user,
-  //
-  //   hostname: req.CONFIG.hostname
-  // });
-
-  // editMetadata(req, res);
-  // if(!req.form.isValid){
-  //   // TODO: remove here, should be after validation only
-  //   make_csv(req, res);
-  //   editMetadata(req, res);
-  // }else{
-  //   make_csv(req, res);
-  //   saveToDb(req.metadata);
-  //   // TODO: change
-  //   res.redirect("/metadata"+req.metadata.id+"/edit");
-  // }
   console.timeEnd("TIME: saveMetadata");
 
 }
 
 // if csv files: show a list and compare
-router.get('/metadata_file_list', function(req, res) {
+router.get('/metadata_file_list', function (req, res) {
   console.time("TIME: get metadata_file_list");
   console.log('in metadata_file_list');
-  var user_metadata_csv_files = get_csv_files(req);
+  const csv_files_obj         = new csv_files_controller.CsvFiles(req, res);
+  var user_metadata_csv_files = csv_files_obj.get_csv_files();
 
   user_metadata_csv_files.sort(function sortByTime(a, b) {
     //reverse sort: recent-->oldest
@@ -1170,7 +838,8 @@ router.get('/metadata_file_list', function(req, res) {
   });
 
 
-  res.render('metadata/metadata_file_list', { title: 'VAMPS:Metadata',
+  res.render('metadata/metadata_file_list', {
+    title: 'VAMPS:Metadata',
     user: req.user,
     hostname: req.CONFIG.hostname,
     finfo: JSON.stringify(user_metadata_csv_files),
@@ -1180,28 +849,19 @@ router.get('/metadata_file_list', function(req, res) {
 
 });
 
-function get_csv_files(req) {
-  console.time("TIME: get_csv_files");
-
-  var user_csv_dir = path.join(config.USER_FILES_BASE, req.user.username);
-  var all_my_files = helpers.walk_sync(user_csv_dir);
-
-  console.timeEnd("TIME: get_csv_files");
-  return all_my_files;
-}
-
 router.post('/metadata_files',
   [helpers.isLoggedIn],
   function (req, res) {
 
     console.time("TIME: in post /metadata_files");
     var table_diff_html, sorted_files, files_to_compare;
-    sorted_files = sorted_files_by_time(req);
-    files_to_compare = sorted_files_to_compare(req, sorted_files);
+    const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
+    sorted_files        = csv_files_obj.sorted_files_by_time();
+    files_to_compare    = csv_files_obj.sorted_files_to_compare(sorted_files);
 
     if (typeof req.body.compare !== 'undefined' && req.body.compare.length === 2) {
 
-      table_diff_html = get_file_diff(req, files_to_compare);
+      table_diff_html = csv_files_obj.get_file_diff(files_to_compare);
       res.render("metadata/metadata_file_list", {
         title: "VAMPS: Metadata File List",
         user: req.user,
@@ -1224,238 +884,13 @@ router.post('/metadata_files',
     console.timeEnd("TIME: in post /metadata_files");
   });
 
-function sorted_files_by_time(req) {
-  console.time("sorted_files_by_time");
-  var f_info = JSON.parse(req.body.file_info);
-  var dir = path.join(config.USER_FILES_BASE, req.user.username);
-  f_info.sort(function(a, b) {
-    return fs.statSync(path.join(dir, a.filename)).mtime.getTime() -
-      fs.statSync(path.join(dir, b.filename)).mtime.getTime();
-  });
-
-  console.timeEnd("sorted_files_by_time");
-  return f_info;
-}
-
-function sorted_files_to_compare(req, sorted_files) {
-  console.time("sorted_files_to_compare");
-
-  var file_names_array = req.body.compare;
-  var files = [];
-
-  if (typeof file_names_array === 'undefined' || file_names_array.length === 0) {
-    return null;
-  }
-  sorted_files.filter(function (el) {
-    if (file_names_array.includes(el.filename)) {
-      files.push(el);
-    }
-  });
-  console.timeEnd("sorted_files_to_compare");
-  return files;
-}
-
-function get_file_diff(req, files) {
-  var coopy = require('coopyhx');
-  var inputPath1 = path.join(config.USER_FILES_BASE, req.user.username, files[0]["filename"]);
-  var inputPath2 = path.join(config.USER_FILES_BASE, req.user.username, files[1]["filename"]);
-
-  // console.log("PPP1 inputPath1");
-  // console.log(inputPath1);
-
-  var columnDelimiter = ',';
-  var lineDelimiter = '\n';
-  var cellEscape = '"';
-
-  var data1 = String(fs.readFileSync(inputPath1));
-  var data2 = String(fs.readFileSync(inputPath2));
-  // console.log("AAA7 data1");
-  // console.log(data1);
-  // todo: async?
-  // var parse = require('csv-parse');
-  // var parser = parse({delimiter: columnDelimiter, trim: true}, function(err, data){
-  //   console.log("AAA7 data");
-  //   console.log(data);
-  // });
-  // fs.createReadStream(inputPath1).pipe(parser);
-
-
-  var parse_sync = require('csv-parse/lib/sync');
-  var records1 = parse_sync(data1, {trim: true});
-  var records2 = parse_sync(data2, {trim: true});
-
-  var table1 = new coopy.CoopyTableView(records1);
-  var table2 = new coopy.CoopyTableView(records2);
-
-  var alignment = coopy.compareTables(table1,table2).align();
-
-  var data_diff = [];
-  var table_diff = new coopy.CoopyTableView(data_diff);
-
-  var flags = new coopy.CompareFlags();
-  var highlighter = new coopy.TableDiff(alignment, flags);
-  highlighter.hilite(table_diff);
-
-  var diff2html = new coopy.DiffRender();
-  diff2html.render(table_diff);
-  var table_diff_html = diff2html.html();
-
-  return "<div class = 'highlighter'>" + table_diff_html + "</div>";
-
-}
-// common functions
-function isUnique(all_clean_field_names_arr, column_name) {
-  return (all_clean_field_names_arr.indexOf(column_name) < 0);
-}
-
-function get_project_info(project_name_or_pid) {
-  var project_info;
-
-  if (helpers.isInt(project_name_or_pid)) {
-    project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
-  }
-  else {
-    project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
-  }
-
-  return {
-    project: project_info.project,
-    first_name: project_info.first,
-    institution: project_info.institution,
-    last_name: project_info.last,
-    pi_email: project_info.email,
-    pi_name: project_info.first + " " + project_info.last,
-    project_title: project_info.title,
-    public: project_info.public,
-    username: project_info.username
-  };
-
-}
-
-function get_project_abstract_data(project, path_to_static)
-{
-  console.time("TIME: get_project_abstract_data");
-
-  var info_file = '';
-  var abstract_data = {};
-  if (project.substring(0,3) === 'DCO'){
-    info_file = path.join(path_to_static, 'abstracts', 'DCO_info.json');
-    abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
-  }
-  console.timeEnd("TIME: get_project_abstract_data");
-  return abstract_data;
-}
-
-// TODO: move to helpers, use here and for project_profile
-function get_project_prefix(project) {
-  console.time("TIME: get_project_prefix");
-  var project_parts = project.split('_');
-  var project_prefix = project;
-
-  if(project_parts.length >= 2 ){
-    project_prefix = project_parts[0] + '_' + project_parts[1];
-  }
-  console.timeEnd("TIME: get_project_prefix");
-  return project_prefix;
-}
-
-function add_all_val_by_key(my_key_hash, my_val_hash, all_metadata_pid) {
-  console.time("TIME: 6) add_all_val_by_key");
-
-  for (var i1 = 0, len1 = my_key_hash.length; i1 < len1; i1++) {
-    var key = my_key_hash[i1];
-    var val = my_val_hash[key];
-
-    if (!(all_metadata_pid.hasOwnProperty(key))) {
-      all_metadata_pid[key] = [];
-    }
-    all_metadata_pid[key].push(val);
-
-  }
-  console.timeEnd("TIME: 6) add_all_val_by_key");
-  return all_metadata_pid;
-}
-
-
-function prepare_empty_metadata_object(pid, field_names_arr, all_metadata) {
-  console.time("TIME: prepare_empty_metadata_object");
-  all_metadata = all_metadata || {};
-  if (!(all_metadata.hasOwnProperty(pid))) {
-    all_metadata[pid] = {};
-  }
-
-  for (var i = 0; i < field_names_arr.length; i++) {
-    var field_name = field_names_arr[i];
-    if (!(all_metadata[pid].hasOwnProperty(field_name))) {
-      all_metadata[pid][field_name] = [];
-    }
-  }
-
-  console.timeEnd("TIME: prepare_empty_metadata_object");
-  return all_metadata;
-}
-
-function get_field_names(dataset_ids){
-  var field_names_arr = [];
-  // field_names_arr = field_names_arr.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  // field_names_arr = field_names_arr.concat(CONSTS.PROJECT_INFO_FIELDS);
-
-  for (var i = 0; i < dataset_ids.length; i++) {
-    var dataset_id = dataset_ids[i];
-
-    field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
-
-    field_names_arr = helpers.unique_array(field_names_arr);
-    field_names_arr.sort();
-  }
-
-  // console.log("MMM0 AllMetadataNames");
-  // console.log(JSON.stringify(AllMetadataNames));
-  //
-  // console.log("MMM1 field_names_arr");
-  // console.log(JSON.stringify(field_names_arr));
-
-  return field_names_arr;
-}
-
-function get_names_from_ordered_const() {
-  console.time("time: ordered_metadata_names_only");
-
-  const arraycolumn = (arr, n) => arr.map(x => x[n]);
-  // var ordered_metadata_names_only = consts.metadata_form_required_fields.concat(arraycolumn(consts.ordered_metadata_names, 0));
-
-  console.timeEnd("time: ordered_metadata_names_only");
-  return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
-}
-
-function fill_out_arr_doubles(value, repeat_times) {
-  var arr_temp = Array(repeat_times);
-
-  arr_temp.fill(value, 0, repeat_times);
-
-  return arr_temp;
-}
-
-function make_ordered_field_names_obj() {
-  console.time("TIME: make_ordered_field_names_obj");
-  var ordered_field_names_obj = {};
-
-  for (var i in CONSTS.ORDERED_METADATA_NAMES) {
-    // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
-    var temp_arr = [i];
-    temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
-    ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
-  }
-  console.timeEnd("TIME: make_ordered_field_names_obj");
-  return ordered_field_names_obj;
-}
-
+// doesn't work from controller
 function send_mail_finished(req, res) {
   console.time("TIME: send_mail_finished");
 
   let transporter = nodeMailer.createTransport(config.smtp_connection_obj);
 
-  var d = new Date();
+  var d            = new Date();
   var timeReadable = d.toDateString();
 
   var text_msg = req.user.first_name + " " + req.user.last_name + " (" + req.user.email + ")" + " finished submitting available metadata to " + req.body.project + " on " + timeReadable + ".";
@@ -1476,94 +911,10 @@ function send_mail_finished(req, res) {
       return console.log(error);
     }
     console.log('Message %s sent: %s', info.messageId, info.response);
-  // res.render('index');
+    // res.render('index');
   });
 
   console.timeEnd("TIME: send_mail_finished");
-}
-
-function make_metadata_object(req, res, pid, info) {
-  console.time("TIME: make_metadata_object");
-
-  var all_metadata = {};
-  var dataset_ids  = DATASET_IDS_BY_PID[pid];
-  var project      = PROJECT_INFORMATION_BY_PID[pid].project;
-  var repeat_times = dataset_ids.length;
-
-  // 0) get field_names
-  //TODO: DRY
-  var all_field_names = CONSTS.METADATA_FORM_REQUIRED_FIELDS.concat(get_field_names(dataset_ids));
-  all_field_names = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-  all_field_names = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
-  all_field_names = helpers.unique_array(all_field_names);
-
-  // console.log("HHH3 all_field_names");
-  // console.log(JSON.stringify(all_field_names));
-
-
-  // console.log("QQQ0 AllMetadataNames");
-  // console.log(JSON.stringify(AllMetadataNames));
-  //
-  // console.log("QQQ1 all_field_names");
-  // console.log(JSON.stringify(all_field_names));
-
-
-
-  // 1)
-  // TODO: don't send all_metadata?
-  all_metadata = prepare_empty_metadata_object(pid, all_field_names, all_metadata);
-  // console.log("MMM2 all_metadata");
-  // console.log(all_metadata);
-
-  //2) all
-  // console.log("HHH info object in make_metadata_object");
-  // console.log(JSON.stringify(info));
-
-  all_metadata[pid] = info;
-
-  //3) special
-
-  // TODO: move to db creation?
-  var project_info = get_project_info(pid);
-  // console.log("MMM33 all_metadata[pid]");
-  // console.log(JSON.stringify(all_metadata[pid]));
-
-  for (var idx in CONSTS.PROJECT_INFO_FIELDS) {
-    var field_name = CONSTS.PROJECT_INFO_FIELDS[idx];
-
-    //todo: split if, if length == dataset_ids.length - just use as is
-    if ((typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
-      all_metadata[pid][field_name] = fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
-    }
-    else {
-      all_metadata[pid][field_name] = fill_out_arr_doubles(project_info[field_name], repeat_times);
-    }
-  }
-
-  if ((all_metadata[pid]["project_abstract"] === 'undefined') || (! all_metadata[pid].hasOwnProperty(["project_abstract"])))
-  {
-    all_metadata[pid]["project_abstract"] = fill_out_arr_doubles("", repeat_times);
-  }
-  else {
-
-    if ((all_metadata[pid]["project_abstract"][0] !== 'undefined') && (! Array.isArray(all_metadata[pid]["project_abstract"][0]) )) {
-
-      var project_abstract_correct_form = helpers.unique_array(all_metadata[pid]["project_abstract"]);
-
-      if ( typeof project_abstract_correct_form[0] !== 'undefined' ) {
-
-        all_metadata[pid]["project_abstract"] = fill_out_arr_doubles(project_abstract_correct_form[0].split(","), repeat_times);
-
-      }
-    }
-  }
-
-  // console.log("MMM9 all_metadata[pid][\"reference\"]");
-  // console.log(JSON.stringify(all_metadata[pid]["reference"]));
-
-
-  console.timeEnd("TIME: make_metadata_object");
-  return all_metadata;
 }
 
 // ---- metadata_upload end ----

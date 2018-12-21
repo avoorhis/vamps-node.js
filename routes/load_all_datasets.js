@@ -24,10 +24,11 @@ module.exports.get_datasets = function(callback){
   AllMetadataNames            = [];
   ALL_DATASETS.projects       = [];
   ALL_USERS_BY_UID            = {};
-  ALL_DCOUNTS_BY_DID          = {};    // GLOBAL
-  ALL_PCOUNTS_BY_PID          = {};    // GLOBAL
+  ALL_USERS_BY_UnK            = {};
+  ALL_DCOUNTS_BY_DID          = {};    // GLOBAL  
+  ALL_PCOUNTS_BY_PID          = {};    // GLOBAL 
   ALL_CLASSIFIERS_BY_PID      = {};
-    USER_GROUPS          = {};
+  USER_GROUPS                 = {};
   // Metadata ids and values lookups
   MD_ENV_ENVO                 = {};
   MD_ENV_CNTRY                = {};
@@ -42,6 +43,7 @@ module.exports.get_datasets = function(callback){
   MD_PRIMER_SUITE             = {};
   MD_RUN                      = {};
   MD_CUSTOM_UNITS             = {};
+  MD_CUSTOM_FIELDS_UNITS      = {};
 
 
   connection.query(queries.get_select_datasets_query(), function(err, rows, fields){
@@ -77,8 +79,8 @@ module.exports.get_datasets = function(callback){
       } else {
 
         for (var i=0; i < rows.length; i++) {
-          var uid = rows[i].uid
-          ALL_USERS_BY_UID[uid] = {}
+          var uid = rows[i].uid;
+          ALL_USERS_BY_UID[uid] = {};
           ALL_USERS_BY_UID[uid].email       = rows[i].email;
           ALL_USERS_BY_UID[uid].username    = rows[i].username;
           ALL_USERS_BY_UID[uid].last_name   = rows[i].last_name;
@@ -86,6 +88,17 @@ module.exports.get_datasets = function(callback){
           ALL_USERS_BY_UID[uid].institution = rows[i].institution;
           ALL_USERS_BY_UID[uid].status      = rows[i].security_level;
           ALL_USERS_BY_UID[uid].groups = [];
+
+          var uniq_key = rows[i].first_name + "#" + rows[i].last_name + "#" + rows[i].email + "#" + rows[i].institution;
+          ALL_USERS_BY_UnK[uniq_key] = {};
+          ALL_USERS_BY_UnK[uniq_key].user_id     = rows[i].uid;
+          ALL_USERS_BY_UnK[uniq_key].email       = rows[i].email;
+          ALL_USERS_BY_UnK[uniq_key].username    = rows[i].username;
+          ALL_USERS_BY_UnK[uniq_key].last_name   = rows[i].last_name;
+          ALL_USERS_BY_UnK[uniq_key].first_name  = rows[i].first_name;
+          ALL_USERS_BY_UnK[uniq_key].institution = rows[i].institution;
+          ALL_USERS_BY_UnK[uniq_key].status      = rows[i].security_level;
+          ALL_USERS_BY_UnK[uniq_key].groups = [];
         }
         connection.query(queries.get_all_user_groups(), function(err, rows, fields){
           if (err)  {
@@ -105,7 +118,7 @@ module.exports.get_datasets = function(callback){
         })
 
       }
-      console.log(' INITIALIZING ALL_USERS_BY_UID');
+      console.log(' INITIALIZING ALL_USERS_BY_UID and ALL_USERS_BY_UnK');
   });
 
   connection.query(queries.get_select_classifier_query(), function(err, rows, fields){
@@ -143,13 +156,13 @@ module.exports.get_datasets = function(callback){
     //console.log('gp',gp)
     USER_GROUPS[gp] = []
     //ug_array.push(config.user_groups[gp])
-    console.log(config.user_groups[gp])
-    if(Array.isArray(config.user_groups[gp])){
-        console.log('UG is array')
-
-    }else{
-        console.log('UG is not Array')
-    }
+    // console.log(config.user_groups[gp])
+//     if(Array.isArray(config.user_groups[gp])){
+//         console.log('UG is array')
+// 
+//     }else{
+//         console.log('UG is not Array')
+//     }
     var q = 'SELECT project_id FROM project '+ config.user_groups[gp]
     ug_array.push({'q':q,'gp':gp})
   }
@@ -282,7 +295,6 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING ALL_PCOUNTS_BY_PID');
       console.log(' INITIALIZING ALL_CLASSIFIERS_BY_PID');
   });
-
 
   connection.query(queries.get_select_custom_units_query(), function(err, rows, fields){
     console.time("TIME: connection queries.get_select_custom_units_query");

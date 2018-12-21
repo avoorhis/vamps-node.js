@@ -1,0 +1,260 @@
+<% include ../add_ins/begin.ejs %>
+
+<br>
+<div class='title'>Metadata</div>
+<div class='subtitle'></div>
+
+<% if (all_metadata) { %>
+<%
+} else {
+var all_metadata = {}
+} %>
+
+<% if (typeof pi_email !== 'undefined') { %>
+<% } else { %>
+<% pi_email = "" %>
+<% } %><br/>
+<% if (typeof pi_name !== 'undefined') { %>
+<% } else { %>
+<% pi_name = "" %>
+<% } %><br/>
+<% if (typeof project_name !== 'undefined') { %>
+<% } else { %>
+<% project_name = "" %>
+<% } %><br/>
+<% if (typeof project_title !== 'undefined') { %>
+<% } else { %>
+<% project_title = "" %>
+<% } %><br/>
+<% if (typeof samples_number !== 'undefined') { %>
+<% } else { %>
+<% samples_number = "" %>
+<% } %><br/>
+<% if (typeof d_region !== 'undefined') { %>
+<% } else { %>
+<% d_region = "" %>
+<% } %>
+<% if (typeof funding_code !== 'undefined') { %>
+<% } else { %>
+<% funding_code = "" %>
+<% } %>
+<% if (typeof project_description !== 'undefined') { %>
+<% } else { %>
+<% project_description = "" %>
+<% } %>
+<% if (typeof project_name1 !== 'undefined') { %>
+<% } else { %>
+<% project_name1 = "" %>
+<% } %>
+<% if (typeof project_name2 !== 'undefined') { %>
+<% } else { %>
+<% project_name2 = "" %>
+<% } %>
+<% if (typeof project_name3 !== 'undefined') { %>
+<% } else { %>
+<% project_name3 = "" %>
+<% } %>
+<% if (typeof reference !== 'undefined') { %>
+<% } else { %>
+<% reference = "" %>
+<% } %>
+
+<div id="postresult">
+</div>
+
+
+<% if (messages.success){ %>
+<div class="alert_flash_message_success"><%- messages.success %></div>
+<% } if(messages.fail) { %>
+<div class="alert_flash_message_fail">
+    <ul>
+        <% messages.fail.forEach(function(value){ %>
+        <li>
+            <%= value %>
+        </li>
+        <% }) %>
+    </ul>
+</div>
+<% }%>
+<br>
+
+
+<H3>Instructions:</H3>
+<ol>
+    <li>
+        Fields in yellow are mandatory; other unknown entries may be left blank.
+    </li>
+    <li>
+        The parameter names listed below are from the MIGS/MIMS/MIMARKS project of the Genomic Standards Consortium.
+    </li>
+    <li class="message">
+        A range is not permitted for any value.
+    </li>
+    <li>
+        <a href='/metadata/FormTutorial_083117.pdf' target='_blank'>For further questions see the Tutorial.</a>
+    </li>
+</ol>
+
+<form name='add_project_form' method='POST' action='/metadata/metadata_new'>
+    <!-- <form action="" method="post" enctype="multipart/form-data"> -->
+    <fieldset id="general" class="required_fields">
+        <legend id="general-legend">General sample description</legend>
+        <!-- dataset_id project title username email institution first_name last_name public -->
+
+        <div class="metadata">
+        <label class="col-sm-5" for="project_title">Title of Project:</label>
+        <input type="text" class="long_input" id="project_title" name="project_title" value='<%= project_title %>'/>
+        </div>
+
+        <div class="metadata">
+        <label class="col-sm-5" for="pi_id_name">Select PI for submission to be submitted
+            under:</label>
+        <select id="pi_id_name" name="pi_id_name">
+            <option selected="true" disabled>Select&hellip;</option>
+            <% pi_list.forEach(function(val){ %>
+            <option value="<%= val.pi_id %>#<%= val.PI %>#<%= val.last_name %>#<%= val.first_name %>#<%= val.pi_email %>"
+            <% if (val.PI == pi_name) {%>
+            selected
+            <% } %>
+            ><%= val.PI %></option>
+            <% }); %>
+        </select>
+        </div>
+        <br/>
+
+
+        <div class="metadata">
+        <label class="col-sm-5" for="pi_email">PI's email address:</label>
+        <input type="email" id="pi_email" name="pi_email" value='<%= pi_email %>'/>
+        </div>
+
+
+        <div class="metadata">
+        <label class="col-sm-5" id="domain_regions-legend">Domain and Region:</label>
+        <table class="domain_regions">
+            <% for (var i in domain_regions["domain_regions"]){ %>
+            <% var cur_domain = domain_regions["domain_regions"][i]["domain"] %>
+            <tr>
+                <th><%= cur_domain %></th>
+                <td>
+                    <table>
+                        <% var regions = domain_regions["domain_regions"][i]["regions"] %>
+
+                        <% for (var k in regions){ %>
+                        <% var short_d_r = domain_regions.domain_regions[i].d_r[k] %>
+                        <% var cur_region = regions[k] %>
+                        <tr>
+                            <td>
+                                <input id="d_region" name="d_region" type='radio'
+                                       value=<%= cur_domain %>#<%= cur_region %>#<%= short_d_r %>
+                                <% curr_value = cur_domain + "#" + cur_region + "#" + short_d_r %>
+                                <% if (curr_value == d_region) {%>
+                                checked="checked"
+                                <% } %>
+                                > <%= regions[k] %>
+
+                                </input>
+                            </td>
+                        </tr>
+                        <% }; %>
+                    </table>
+                </td>
+            </tr>
+            <% }; %>
+        </table>
+        </div>
+
+        <div class="metadata">
+        <label class="col-sm-5">Project Name (Please add the middle part)</label>
+        <input class="uppercase" type="text" id="project_name1" name="project_name1" maxlength="4" size="5"
+               value="<%= project_name1 %>">_<input
+            class="uppercase"
+            type="text"
+            id="project_name2"
+            name="project_name2"
+            maxlength="4"
+            size="4"
+            value="<%= project_name2 %>">_<input
+            type="text" id="project_name3" readonly name="project_name3" maxlength="4" size="5"
+            value="<%= project_name3 %>">
+        </div>
+
+        <div class="metadata">
+            <label class="col-sm-5" for="project_description">Project Description:</label>
+            <textarea class="textarea_long" id="project_description" name="project_description"
+                      placeholder="max length: 1000 chars">
+            <% if (typeof project_description !== 'undefined') { %>
+                <%= project_description %>
+            <% } %>
+        </textarea>
+        </div>
+
+        <div class="metadata">
+            <label class="col-sm-5" for="reference">Project Reference:</label>
+            <textarea class="textarea_long" id="reference" name="reference"
+                      placeholder="max length: 1000 chars">
+            <% if (typeof reference !== 'undefined') { %>
+                <%= reference %>
+            <% } %>
+        </textarea>
+        </div>
+
+        <div class="metadata">
+        <label class="col-sm-5" for="funding_code">Funding Code (numeric only)</label>
+        <input type="number" id="funding_code" name="funding_code" maxlength="10" size="10" value="<%= funding_code %>">
+        </div>
+
+        <div class="metadata">
+        <label class="col-sm-5" for="samples_number">How many individual samples will be
+            submitted?</label>
+        <input type="number" id="samples_number" name="samples_number" size="3" value="<%= samples_number %>">
+        </div>
+
+
+    </fieldset>
+    <fieldset id="parameters">
+        <legend id="parameters-legend">Table of metadata parameters</legend>
+        <div class="Headers">
+            <table class="NewHeader">
+                <tr>
+                    <td class="empty1"></td>
+                    <td class="empty1"></td>
+                </tr>
+            </table>
+        </div>
+      <% if ((typeof(all_metadata) !== 'undefined') && all_metadata.length > 0) { %>
+        <%= JSON.stryngify(all_metadata) %>
+        <% include first_fixed_table.ejs %>
+      <% } %>
+    </fieldset>
+    <br>
+
+    <!-- center -->
+
+    <input type='hidden' name='new_row_num' id='new_row_num' value=''/>
+    <input type='hidden' name='new_row_length' id='new_row_length' value=''/>
+    <!--<input name='new_row_num' id='new_row_num' value='' />-->
+    <!--<input name='new_row_length' id='new_row_length' value='' />-->
+
+    <input type='hidden' name='from_where' value='metadata_new_form'/>
+
+
+    <p>
+        <label for="done_editing">Notify the website management that I have finished submitting available metadata to
+            this project.</label>
+
+        Yes <input type="radio" id="done_editing" name="done_editing" value="done_editing">
+        No <input type="radio" id="not_done_editing" name="done_editing" value="not_done_editing" checked="checked">
+
+    </p>
+
+    <button id='add_project_form_new_btn' class='btn btn-sm btn-primary' type='submit'><%= button_name %></button>
+
+</form>
+
+
+<% include ../add_ins/end.ejs %>
+<script type='text/javascript' src='/javascripts/global.js'></script>
+<script type='text/javascript' src='/javascripts/metadata.js'></script>
+<script type='text/javascript' src='/javascripts/bootstrap-select.js'></script>
+</script>

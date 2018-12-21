@@ -1032,33 +1032,47 @@ function recreate_image_from_html(image, ts) {
   //var str = htmlstring.replace(/\r?\n|\r/g,'')
   //alert(encodeURIComponent(str))
   //var args = 'html='+encodeURIComponent(htmlstring)
-  var args = ''
-  args += 'ts='+ts
-  args += '&image='+image
+  
+  //alert('he')
+  var args = {}
+  args.ts = ts
+  args.image = image
   if(image == 'barcharts'){
     htmlstring = document.getElementById('barcharts_div').innerHTML;
-    args += '&html='+encodeURIComponent(htmlstring)
+    args.html = he.encode(htmlstring)
   }else if(image == 'piecharts'){
     htmlstring = document.getElementById('piecharts_div').innerHTML;
-    args += '&html='+encodeURIComponent(htmlstring)
+    args.html = he.encode(htmlstring)
   }else{
-    htmlstring = document.getElementById('dheatmap_div').innerHTML;
+    htmlstring = he.encode(document.getElementById('dheatmap_div').innerHTML);
   }
   //alert(args)
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.open("POST", '/user_data/copy_html_to_image', true);
-  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xmlhttp.setRequestHeader("Content-type","application/json");
   xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
             html = 'Saved!\n\n(File available from the "File Retrieval" button on the "Your Data" page)'
             alert(html)
         }
       };
-  xmlhttp.send(args);
+  xmlhttp.send(JSON.stringify(args));
 }
+//
+//
+//
 function download_svg(image, ts) {
     var id = image+'_'+ts
-    var svgData = $("#"+id)[0].outerHTML;
+    //var svgData = $("#"+id)[0].outerHTML;
+    if(image == 'barcharts'){
+        svgData = document.getElementById('barcharts_div').innerHTML;
+    }else if(image == 'piecharts'){
+        svgData = document.getElementById('piecharts_div').innerHTML;
+    }else if(image == 'fheatmap'){
+        svgData = document.getElementById('fheatmap_div').innerHTML;
+    }else{
+        return
+    }
     var svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
     var svgUrl = URL.createObjectURL(svgBlob);
     var downloadLink = document.createElement("a");
@@ -1734,9 +1748,9 @@ function create_phyloseq(ts, code, new_window) {
 //
 function myWaitFunction(div) {
     if(showDots === '..........'){ showDots = ''; }
-    showDots = showDots || '.';
+    showDots = showDots || '#';
     div.innerHTML = showDots;
-    showDots += '.';
+    showDots += '#';
 }
 //
 //

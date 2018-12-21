@@ -2018,8 +2018,9 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 *       on that page.  AAV
 */
 router.get('/partials/tax_'+C.default_taxonomy.name+'_simple', helpers.isLoggedIn,  function(req, res) {
+    console.log("in '/partials/tax_'+C.default_taxonomy.name+'_simple'")
     res.render('visuals/partials/tax_'+C.default_taxonomy.name+'_simple', {
-        doms: C.DOMAINS
+        doms : C.UNITSELECT.silva119_simple.domains
     });
 });
 //
@@ -2047,7 +2048,9 @@ router.get('/partials/tax_'+C.default_taxonomy.name+'_custom', helpers.isLoggedI
 });
 router.get('/partials/tax_rdp2.6_simple', helpers.isLoggedIn,  function(req, res) {
     res.render("visuals/partials/tax_rdp26_simple", {
-        doms: C.DOMAINS
+        
+        doms : C.UNITSELECT.rdp2_6_simple.domains,
+        
     });
 });
 router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, res) {

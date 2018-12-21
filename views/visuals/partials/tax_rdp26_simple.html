@@ -1,9 +1,8 @@
 <span class='lg_font'>RDP<br>&nbsp;&nbsp;Taxonomy Selection</span>
 <% if (typeof doms === 'undefined') { %>
-<%   var domains = JSON.parse(constants).DOMAINS.domains; %>
-<% } else { %>
-<%   domains = doms.domains %>
+<%   var doms = JSON.parse(constants).UNITSELECT.rdp_2_6_simple.domains %>
 <% } %>
+
   <table class='table'>
   <tr><td>
   <ul>
@@ -12,8 +11,8 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' id='toggle_taxa_rdp_btn' name='taxa_ckbx_toggle'  value='all' \> Toggle
     </span>
     </li>
-    <% for (i in domains) { %>
-      <% domain = domains[i].name %>
+    <% for (i in doms) { %>
+      <% domain = doms[i] %>
       <li>
       <label class='taxa-select'>
         <input type='checkbox' class='simple_taxa_rdp_ckbx' checked='checked' value='<%= domain %>' name='domains[]' \>

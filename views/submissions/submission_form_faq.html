@@ -1,0 +1,232 @@
+<% include ../add_ins/begin.ejs %>
+
+<link href="/stylesheets/submissions.css" rel="stylesheet" \>
+<% if (messages.success) { %>
+<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+<div class="alert_flash_message_fail"><%= messages.fail %></div>
+<% } %>
+
+<div class="row">
+
+    <h4>How do I fill out the submission form?</h4>
+
+    <p class="paragraph_no_pad">
+        The submission form process starts on the project_submit page. You select the primary investigator for the
+        new
+        project you are creating, then using the guidelines below fill out the project name, title and description.
+        as well
+        as selecting the domain and region for your experiment.
+        Also enter the funding code for the experiment and how many sample will be submitted.
+    </p>
+
+    <p class="paragraph_no_pad">
+        When you press the 'Validate' button it will check your entries for format and ask you to fix any errors
+        before you
+        are able to download it.
+    </p>
+
+    <ul>
+
+        <li>Primary Investigator <span class="inline_bold_header">(do not leave empty)</span>
+            <ul>
+                <li>
+                    Select an investigator from our database who will be the Primary Scientist associated with this
+                    project.
+                    If that person is not on this list they should request an account at vamps@mbl.edu.
+                </li>
+            </ul>
+        </li>
+
+        <li>
+            Project Name <span class="inline_bold_header">(do not leave empty)</span>
+
+            <ul>
+                <li class="no_bullets_list">Format:</li>
+
+                <li>
+                    The project names in VAMPS have three parts. The first part is usually the Primary
+                    Investigator's
+                    initials, but can be some other identifier. It is only 2-3 characters (alphabet with no digits)
+                </li>
+
+                <li>
+                    The second part is 3-4 characters (also alphabet with no digits) and is usually some abreviation
+                    or
+                    acronym identifing your project.
+                </li>
+
+                <li>
+                    The third part is determined by the type of analysis requested. It is in the form of Bv6 or
+                    Av4v5. where
+                    the 'B' and 'A' stand for Bacteria and Archaea respectively. Eukarya may also occur if you
+                    choose the
+                    ITS1 region.
+                    <br/>
+                    Currently for HiSEQ and MiSeq the dna_regions are v6 and v4v5 (or ITS1). The three parts are
+                    joined by
+                    an underscore to create the VAMPS project name. The submission form will report if the project
+                    name is
+                    already chosen and we reserve the right to change a submitted name.
+                </li>
+            </ul>
+        </li>
+
+        <li>
+            Project Title <span class="inline_bold_header">(do not leave empty)</span>
+            <ul>
+                <li>
+                    This is a short statement about your project (one line - 60 characters).
+                </li>
+            </ul>
+        </li>
+
+        <li>
+            Project Description (~1000 characters do not leave empty)
+            <ul>
+                <li>
+                    This is similar to an abstract about your project.
+                </li>
+            </ul>
+        </li>
+
+
+        <li>
+            Domain and Region <span class="inline_bold_header">(do not leave empty)</span>
+            <ul>
+                <li>
+                    Here is where you tell us what domain and DNA region should be analysed for this project.
+                </li>
+            </ul>
+        </li>
+
+        <li>
+            Funding Code <span class="inline_bold_header">(do not leave empty)</span>
+            <ul>
+                <li>
+                    This is the numeric code indicating the funding source for this project.
+                </li>
+            </ul>
+        </li>
+
+        <li>
+            Number of Samples to be Submitted <span class="inline_bold_header">(do not leave empty)</span>
+            <ul>
+                <li>
+                    Here you enter the number of sample tubes you will be submitting.
+                    When you download the form an empty row will be created for each row indicated.
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <h4>Download and Fill in sample (dataset) information:</h4>
+    <p class="paragraph_no_pad">
+        When it validates you should download the file and open it on you local machine.
+    </p>
+    <p class="paragraph_no_pad">
+        The downloaded file is a Comma Separated Values (csv) file and it should be saved as a csv text file with no
+        formatting,
+        We recommend OpenOffice or Excel to edit the file.</p>
+    <p class="paragraph_no_pad">Once open you need to fill in the fields for your samples (datasets).</p>
+    <p class="paragraph_no_pad">When filling out the form be cautious not to change any of the headers as this will
+        cause the validation to
+        fail.</p>
+
+    <ul>
+        <li>Tube Number <span class="inline_bold_header">(do not leave empty)</span></li>
+        <ul>
+            <li>This is filled in already and is just a sequential number starting from one.
+            </li>
+        </ul>
+
+        <li>Dataset Name <span class="inline_bold_header">(do not leave empty)</span></li>
+        <ul>
+            <li>Less than 30 characters (alphanumeric and '_' only and must start with a letter)</li>
+            <li> This is how datasets will be named in VAMPS</li>
+        </ul>
+
+        <li>Dataset Description <span class="inline_bold_header">(do not leave empty)</span></li>
+        <ul>
+            <li>A short (1-2 sentances) description of the sample.</li>
+        </ul>
+
+        <li>Tube Label <span class="inline_bold_header">(do not leave empty)</span></li>
+        <ul>
+            <li>What is written on the sample tube for identification.</li>
+        </ul>
+
+        <li>Sample Concentration <span class="inline_bold_header">(do not leave empty)</span></li>
+        <ul>
+            <li>Numeric only (ng/ul)</li>
+            <!--<li>Numeric only (ng/&micro;l)</li>-->
+
+        </ul>
+
+        <li>Quantitation Method <span class="inline_bold_header">(do not leave empty)</span></li>
+
+        <li class="no_bullets_list">can ONLY be one of:</li>
+
+        <ul>
+            <li>nanodrop</li>
+            <li>picogreen</li>
+            <li>qubit</li>
+            <li>other</li>
+        </ul>
+
+        <li>
+            Platform <span class="inline_bold_header">(do not leave empty)</span></li>
+        <li class="no_bullets_list">can ONLY be one of:</li>
+
+        <ul>
+            <li>454</li>
+            <li>ion-torrent</li>
+            <li>hiseq</li>
+            <li>miseq</li>
+            <li>nextseq</li>
+        </ul>
+
+        <li>Adaptor</li>
+        <ul>
+            <li>For illumina: A01 through H24 (okay to leave empty)</li>
+
+            <li>For v4_hap: A25 through H36 (okay to leave empty)</li>
+        </ul>
+
+
+        <li>Environmental Source id <span class="inline_bold_header">(do not leave empty)</span></li>
+        <ul>
+            <li>
+                Enter the ID associated with the environmental source from the table below:
+            </li>
+            <!--TODO: get from db-->
+            <!--http://localhost:3000/submissions/submission_form_faq-->
+            <span class="inline_bold_header">ID Sample Source</span>
+            <br/>10 Air
+            <br/>20 Extreme Habitat
+            <br/>30 Host Associated
+            <br/>40 Human Associated
+            <br/>41 Human - Skin
+            <br/>42 Human - Oral
+            <br/>43 Human - Gut
+            <br/>44 Human - Vaginal
+            <br/>45 Human - Amniotic Fluid
+            <br/>46 Human - Urine
+            <br/>47 Human - Blood
+            <br/>50 Microbial Mat or Biofilm
+            <br/>60 Miscellaneous or Artificial
+            <br/>70 Plant Associated
+            <br/>80 Sediment
+            <br/>90 Soil or Sand
+            <br/>100 Unknown
+            <br/>110 Wastewater or Sludge
+            <br/>120 Water - Freshwater
+            <br/>130 Water - Marine
+            <br/>140 Indoor
+        </ul>
+    </ul>
+</div>
+
+<% include ../add_ins/end.ejs %>
+
+</body>
+</html>

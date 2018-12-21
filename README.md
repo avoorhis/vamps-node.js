@@ -457,6 +457,11 @@ CREATE TABLE `matrix_taxonomy_info` (
   CONSTRAINT `matrix_taxonomy_info_ibfk_2` FOREIGN KEY (`generic_taxonomy_id`) REFERENCES `generic_taxonomy` (`generic_taxonomy_id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=461057 DEFAULT CHARSET=latin1;
 
+Aug 20 2018
+ALTER TABLE project ADD COLUMN `active` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'if 0 the project is invisible on VAMPS2';
+UPDATE project SET active = 1;
+ALTER TABLE dataset ADD COLUMN `tube_label` VARCHAR(64) NOT NULL DEFAULT dataset AFTER dataset_description;
+
 --- Project and Dataset naming ---
 Project:  Only alphanumeric and underscore (length limit 3-20 chars)
 Dataset: Alphanumeric, underscore and period (length limit 3-20 chars)
