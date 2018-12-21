@@ -65,31 +65,95 @@ if (use_original_names !== null) {
 //
 //
 //
+function process_upload_metadata_form(file_type) {
+    document.getElementById('data_holder').style.display = 'block';
+    document.getElementById('result_table').innerHTML = 'Loading'
+    var file = document.getElementById('file_input').files[0];
+    //alert(file == undefined)
+    var project_id = document.getElementById('pid_select').value
+    if(file == undefined){
+        alert('You must attach a file!')
+        return;
+    }
+    //var args = {}
+    //args.pid_select = project_id
+    //args.file = file
+    //alert(project_id)
+    var formData = new FormData();
+    formData.append('file', file);    
+    formData.append("pid_select", project_id);
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", '/user_data/upload_metadata_fileAV', true);
+    //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    //xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+        
+        //var data = JSON.parse(xmlhttp.response)
+        //var data = JSON.parse(xmlhttp.response)
+        var html = "<a href='/user_data/import_choices/metadata'>Delete and Start Over</a>" 
+        var result = JSON.parse(xmlhttp.response)
+        //alert(result.errors)
+        html += result.html
+        if( result.errors == '1'){            
+            html += "Edit your CSV file and try again."
+        }else{
+            html += "<a href=''>Accept and Re-Write Project Metadata</a>" 
+        }
+        //alert(data)
+        // var html = "<table border='1' >"
+//         
+//         for(i in data){
+//             html += "<tr>"
+//             for(m in data[i]){
+//                 html += "<td>"+data[i][m]+"</td>"
+//             }
+//             html += "</tr>"
+//         }
+//         html += "</table>"
+        document.getElementById('result_table').innerHTML = html;
+        
+      }
+    };
+
+    xmlhttp.send(formData);
+}
 function process_upload_form(file_type) {
     
+    var new_pname = ''
+    var project_id = ''
     var file = document.getElementById('file_input').files[0];
-    var project_name = document.getElementById('pname_input').value
-    pattern=/([^a-zA-Z0-9\.]+)/gi
+    if(file_type == 'metadata'){
+        //project_id = document.getElementById('pid_select').value
+        //var url = "/user_data/upload_metadata_fileAV"
+    }else{
+        var url = "/user_data/upload_import_file"
+        var project_name = document.getElementById('pname_input').value
+        pattern=/([^a-zA-Z0-9\.]+)/gi
     
-    var new_pname = project_name.replace(pattern, '_')  // replace bad chars with underscore
-    if(new_pname.length > 30){
-        alert('Project name is too long (limit 30 characters)')
-        return
-    }
-    if(new_pname.length < 3){
-        alert('Project name is too short (minimum 3 characters)')
-        return
+        new_pname = project_name.replace(pattern, '_')  // replace bad chars with underscore
+        if(new_pname.length > 30){
+            alert('Project name is too long (limit 30 characters)')
+            return
+        }
+        if(new_pname.length < 3){
+            alert('Project name is too short (minimum 3 characters)')
+            return
+        }
     }
     
     var formData = new FormData();
     formData.append('file', file);    
     formData.append('file_type', file_type);
     formData.append("project_name", new_pname);
+    formData.append("project_id", project_id);
+    
     var xmlhttp = new XMLHttpRequest();
     
-    var url = "/user_data/upload_import_file"
+    
     
     xmlhttp.open("POST", url, true);
+    //xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.upload.onprogress = function(e) {
       document.getElementById('bar_div').style.display = 'block'
       if (e.lengthComputable) {
@@ -98,6 +162,7 @@ function process_upload_form(file_type) {
         console.log(percentage + "%");
         document.getElementById('bar').style.width = percentage + "%"
         document.getElementById('bar').innerHTML = percentage.toFixed(0) + "%"
+        
         
       }
     };
@@ -112,6 +177,15 @@ function process_upload_form(file_type) {
         document.getElementById('bar').innerHTML = 'Finished Uploading'
       }
     };
+    // xmlhttp.onreadystatechange = function() {
+//         if (xmlhttp.readyState == 4 ) {
+//             
+//             //var resp = JSON.parse(xmlhttp.response)
+//             var resp = xmlhttp.response
+//             alert(resp)
+//             
+//         }
+//       };
     xmlhttp.send(formData);
     
 }

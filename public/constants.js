@@ -14,7 +14,7 @@ var constants = {};
 //         'guest'     : 99    // public access
 //         }
 constants.default_taxonomy = {name:'silva119',curator:'SILVA (v119)',show:'Silva-119'}
-console.log('in constants')
+console.log('in constants: default taxonomy')
 console.log(constants.default_taxonomy)
 constants.dataset_count_for_visuals_max     = 1100
 constants.dataset_count_for_visuals_cutoff  = 500
