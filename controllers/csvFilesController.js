@@ -12,7 +12,7 @@ class CsvFileRead {
   }
 }
 
-class CsvFilesWrite {
+class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data")
 
   constructor(req, res) {
     this.req      = req;
@@ -149,7 +149,6 @@ class CsvFilesWrite {
       result += r1;
       result += lineDelimiter;
     });
-
 
     console.timeEnd('TIME: convertArrayOfObjectsToCSV');
 
