@@ -263,12 +263,8 @@ module.exports.isInt        = function (value) {
     return (x | 0) === x;
   })(parseFloat(value));
 };
-<<<<<<< HEAD
 
-module.exports.IsJsonString = function(str) {
-=======
 module.exports.IsJsonString = function (str) {
->>>>>>> 87529c6f2ef289ef008f6ff8d7033ffb60ea5544
   try {
     JSON.parse(str);
   } catch (e) {
@@ -1708,12 +1704,9 @@ module.exports.isValidMySQLDate = function (dateString) {
   // First check for the pattern
   //if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateString))
   //    return false;
-<<<<<<< HEAD
+
   // MUST be of this format: YYYY-MM-DD (only 2 digit days and months)
   if(!/^\d{4}\-\d{2}\-\d{2}$/.test(dateString))
-=======
-  if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(dateString))
->>>>>>> 87529c6f2ef289ef008f6ff8d7033ffb60ea5544
     return false;
   // Parse the date parts to integers
   var parts = dateString.split("-");
@@ -1721,13 +1714,9 @@ module.exports.isValidMySQLDate = function (dateString) {
   var month = parseInt(parts[1], 10);
   var day   = parseInt(parts[2], 10);
 
-<<<<<<< HEAD
+
   // Check the ranges of month and year (no future years allowed)
   if(year < 1000 || year > (new Date()).getFullYear() || month == 0 || month > 12)
-=======
-  // Check the ranges of month and year
-  if (year < 1000 || year > 3000 || month == 0 || month > 12)
->>>>>>> 87529c6f2ef289ef008f6ff8d7033ffb60ea5544
     return false;
 
   var monthLength = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
