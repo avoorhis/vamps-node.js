@@ -2277,7 +2277,6 @@ function transpose_arr_of_obj(a) {
   return transposed_object;
 }
 
-
 function jsUcfirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }

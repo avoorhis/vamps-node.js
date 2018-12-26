@@ -222,21 +222,17 @@ router.get('/metadata_new_csv_upload', helpers.isLoggedIn, function (req, res) {
 router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_csv')], function (req, res) {
 
     console.time("TIME: in post /metadata_new_csv_upload");
-    const full_file_name  = req.file.path;
-    const csv_file_read = new csv_files_controller.CsvFileRead(req, res, full_file_name);
-    const data_arr        = csv_file_read.data_arr;
-    // TODO: after transposed do map 'structured_comment_name' to 'Information by project' for all datasets?
-    const transposed    = helpers.transpose_arr_of_obj(data_arr);
-    const dataset_num   = Object.keys(transposed).length - 2;
-    var csv_template_in_data = {};
-    for (let i = 0; i <= (dataset_num); i++) {
-      csv_template_in_data[i] = transposed['structured_comment_name'][i];
-
-    }
-
+    const full_file_name = req.file.path;
+    const csv_file_read  = new csv_files_controller.CsvFileRead(req, res, full_file_name);
+    const data_arr_no_head = csv_file_read.data_arr_no_head;
+    var transposed = csv_file_read.make_obj_from_template_csv(data_arr_no_head);
 
     const cur_project = new Project(req, res, 0, 0);
-    var project_name  = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0] || helpers.findByValueOfObject(data_arr, "structured_comment_name", "project")[0]['Information by project'];
+    // TODO get user info from global by user_name, email
+  // There is no such user: first_name: undefined, last_name: undefined, email: mallamuneer123@gmail.com, institution: undefined
+
+  var project_name  = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0];
+      // || helpers.findByValueOfObject(data_arr, "structured_comment_name", "project")[0]['Information by project'];
     console.log("PPP0: project_name", project_name);
 
     var pid = cur_project.get_pid(project_name);

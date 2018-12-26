@@ -8,8 +8,58 @@ class CsvFileRead {
     this.inputPath   = full_file_name;
     var file_content = fs.readFileSync(this.inputPath);
     var parse_sync   = require('csv-parse/lib/sync');
-    this.data_arr    = parse_sync(file_content, {columns: true, trim: true});
+    this.data_arr    = parse_sync(file_content, {columns: true, trim: true}); //
+    this.data_arr_no_head = parse_sync(file_content, {trim: true}); //columns: true,
+
   }
+
+  get_structured_names(parsed_csv_obj) {
+    // const metadata_name_field = "structured_comment_name";
+    let structured_names = [];
+    var array_width = parsed_csv_obj.length || 0;
+
+    for (var i = 0; i < array_width; i++) {
+      structured_names.push(parsed_csv_obj[i][0]);
+    }
+    return structured_names;
+  }
+
+  make_obj_from_template_csv(parsed_csv_obj) {
+    console.time('TIME: make_obj_from_template_csv');
+
+    var array_width = parsed_csv_obj.length || 0;
+    var column_num  = parsed_csv_obj[0] instanceof Object ? Object.keys(parsed_csv_obj[0]) : [];
+    var headers_len = column_num.length;
+
+    // const structured_names = this.get_structured_names(parsed_csv_obj);
+
+    // In case it is a zero matrix, no transpose routine needed.
+    if (headers_len === 0 || array_width === 0) {
+      return [];
+    }
+
+    const key_const      = ['structured_comment_name', 'Metadata name'].length;
+    const dataset_num    = headers_len - key_const;
+    var transposed_object = {};
+
+    for (var i = 0; i < array_width; i++) {
+      let metadata_name = parsed_csv_obj[i][0];
+      let dataset_ord_num  = 0;
+      for (var n = 0; n < dataset_num; n++) {
+        dataset_ord_num = key_const + n;
+        let val = parsed_csv_obj[i][dataset_ord_num];
+          if (!transposed_object.hasOwnProperty(metadata_name)) {// separate function - create an empty obj
+            transposed_object[metadata_name] = [];
+          }
+        transposed_object[metadata_name].push(val);
+      }
+    }
+
+    console.timeEnd('TIME: make_obj_from_template_csv');
+    return transposed_object;
+  }
+
+
 }
 
 class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data")
