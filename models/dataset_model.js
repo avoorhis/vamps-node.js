@@ -34,15 +34,35 @@ class Dataset {
     return d_converted_arr;
   }
 
+  make_dataset_name(data){
+    let datasets = [];
+    if (data.dataset[0].length === 0 && data.sample_name[0].length > 0)
+    {
+      datasets.dataset = this.convert_all_dataset_names(data["sample_name"]);
+    }
+    else {
+      datasets.dataset = this.convert_all_dataset_names(data["dataset"]);
+    }
+    return datasets;
+  }
+
+  make_tube_label(data) {
+    let tube_labels = this.convert_all_dataset_names(data["dataset"]) || Array(this.datasets_length).fill("", 0);
+    if (tube_labels[0].length === 0 && data["tube_label"][0].length >0 ) {
+      tube_labels = this.convert_all_dataset_names(data["tube_label"]);
+    }
+    return tube_labels;
+  }
+
   make_empty_DatasetInfo(data) {
-    var formatedMysqlString              = this.get_mysql_formatted_date();
-    this.DatasetInfo.dataset_id          = Array(this.datasets_length).fill(0, 0);
-    this.DatasetInfo.dataset             = data.dataset;
+    var formatedMysqlString     = this.get_mysql_formatted_date();
+    this.DatasetInfo.dataset_id = Array(this.datasets_length).fill(0, 0);
+    this.DatasetInfo.dataset    = this.make_dataset_name(data);
     this.DatasetInfo.dataset_description = data.dataset_description || Array(this.datasets_length).fill("", 0);
-    this.DatasetInfo.tube_label          = data.tube_label || data.dataset || Array(this.datasets_length).fill("", 0);
-    this.DatasetInfo.project_id          = Array(this.datasets_length).fill(this.pid, 0);
-    this.DatasetInfo.created_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
-    this.DatasetInfo.updated_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
+    this.DatasetInfo.tube_label = this.make_tube_label(data);
+    this.DatasetInfo.project_id = Array(this.datasets_length).fill(this.pid, 0);
+    this.DatasetInfo.created_at = Array(this.datasets_length).fill(formatedMysqlString, 0);
+    this.DatasetInfo.updated_at = Array(this.datasets_length).fill(formatedMysqlString, 0);
   }
 
   make_DatasetInfo(data) {

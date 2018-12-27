@@ -63,7 +63,7 @@ class CreateDataObj {
       all_metadata[pid] = {};
     }
 
-    for (var i = 0; i < field_names_arr.length; i++) {
+    for (var i = 0; i < field_names_arr.length; i++) {// combine with create_an_empty...
       var field_name = field_names_arr[i];
       if (!(all_metadata[pid].hasOwnProperty(field_name))) {
         all_metadata[pid][field_name] = [];
