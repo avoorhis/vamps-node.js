@@ -38,17 +38,17 @@ class Dataset {
     let datasets = [];
     if (data.dataset[0].length === 0 && data.sample_name[0].length > 0)
     {
-      datasets.dataset = this.convert_all_dataset_names(data["sample_name"]);
+      datasets = this.convert_all_dataset_names(data["sample_name"]);
     }
     else {
-      datasets.dataset = this.convert_all_dataset_names(data["dataset"]);
+      datasets = this.convert_all_dataset_names(data["dataset"]);
     }
     return datasets;
   }
 
   make_tube_label(data) {
     let tube_labels = this.convert_all_dataset_names(data["dataset"]) || Array(this.datasets_length).fill("", 0);
-    if (tube_labels[0].length === 0 && data["tube_label"][0].length >0 ) {
+    if (tube_labels[0].length === 0 && data["tube_label"][0].length > 0 ) {
       tube_labels = this.convert_all_dataset_names(data["tube_label"]);
     }
     return tube_labels;
@@ -74,9 +74,11 @@ class Dataset {
       dataset_ids                          = Array(this.datasets_length).fill(0, 0);
       curr_obj                             = this.req.form;
       this.DatasetInfo.dataset_id          = dataset_ids;
-      this.DatasetInfo.dataset             = this.convert_all_dataset_names(curr_obj["sample_name"]);
+      this.DatasetInfo.dataset             = this.make_dataset_name(curr_obj);
+        // this.convert_all_dataset_names(curr_obj["sample_name"]);
       this.DatasetInfo.dataset_description = curr_obj.dataset_description;
-      this.DatasetInfo.tube_label          = this.DatasetInfo.dataset;
+      this.DatasetInfo.tube_label          = this.make_tube_label(curr_obj);
+        // this.DatasetInfo.dataset;
       this.DatasetInfo.project_id          = Array(this.datasets_length).fill(this.pid, 0);
       this.DatasetInfo.created_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
       this.DatasetInfo.updated_at          = Array(this.datasets_length).fill(formatedMysqlString, 0);
