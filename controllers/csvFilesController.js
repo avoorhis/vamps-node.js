@@ -24,6 +24,25 @@ class CsvFileRead {
     return structured_names;
   }
 
+  create_an_empty_fixed_length_array(number_of_datasets) {
+    var data_arr = [];
+    var length = number_of_datasets;
+
+    for (var i = 0; i < length; i++) {
+      data_arr.push("");
+    }
+    return data_arr;
+  }
+
+  create_an_empty_transposed_object_for_template(parsed_csv_obj, dataset_num) {
+    const structured_names = this.get_structured_names(parsed_csv_obj);
+    const empty_fixed_length_array = this.create_an_empty_fixed_length_array(dataset_num);
+    if (!transposed_object.hasOwnProperty(metadata_name)) {// separate function - create an empty obj
+      transposed_object[metadata_name] = [];
+    }
+
+  }
+
   make_obj_from_template_csv(parsed_csv_obj) {
     console.time('TIME: make_obj_from_template_csv');
 
@@ -48,9 +67,9 @@ class CsvFileRead {
       for (var n = 0; n < dataset_num; n++) {
         dataset_ord_num = key_const + n;
         let val = parsed_csv_obj[i][dataset_ord_num];
-          if (!transposed_object.hasOwnProperty(metadata_name)) {// separate function - create an empty obj
-            transposed_object[metadata_name] = [];
-          }
+        if (!transposed_object.hasOwnProperty(metadata_name)) {// separate function - create an empty obj
+          transposed_object[metadata_name] = [];
+        }
         transposed_object[metadata_name].push(val);
       }
     }
@@ -58,8 +77,6 @@ class CsvFileRead {
     console.timeEnd('TIME: make_obj_from_template_csv');
     return transposed_object;
   }
-
-
 }
 
 class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data")
