@@ -34,13 +34,13 @@ class CsvFileRead {
     return data_arr;
   }
 
-  create_an_empty_transposed_object_for_template(parsed_csv_obj, dataset_num) {
+  create_an_empty_transposed_object_for_template(parsed_csv_obj) {
+    var empty_transposed_object = {};
     const structured_names = this.get_structured_names(parsed_csv_obj);
-    const empty_fixed_length_array = this.create_an_empty_fixed_length_array(dataset_num);
-    if (!transposed_object.hasOwnProperty(metadata_name)) {// separate function - create an empty obj
-      transposed_object[metadata_name] = [];
+    for (var id in structured_names) {
+      empty_transposed_object[structured_names[id]] = [];
     }
-
+    return empty_transposed_object;
   }
 
   make_obj_from_template_csv(parsed_csv_obj) {
@@ -59,18 +59,21 @@ class CsvFileRead {
 
     const key_const      = ['structured_comment_name', 'Metadata name'].length;
     const dataset_num    = headers_len - key_const;
-    var transposed_object = {};
+    var transposed_object = this.create_an_empty_transposed_object_for_template(parsed_csv_obj);
+
+    const empty_fixed_length_array = this.create_an_empty_fixed_length_array(dataset_num);
 
     for (var i = 0; i < array_width; i++) {
       let metadata_name = parsed_csv_obj[i][0];
       let dataset_ord_num  = 0;
+      transposed_object[metadata_name] = empty_fixed_length_array.slice(); // must be "slice" to make a copy
+
       for (var n = 0; n < dataset_num; n++) {
         dataset_ord_num = key_const + n;
         let val = parsed_csv_obj[i][dataset_ord_num];
-        if (!transposed_object.hasOwnProperty(metadata_name)) {// separate function - create an empty obj
-          transposed_object[metadata_name] = [];
+        if (val.length > 0) {
+          transposed_object[metadata_name][n] = val;
         }
-        transposed_object[metadata_name].push(val);
       }
     }
 
