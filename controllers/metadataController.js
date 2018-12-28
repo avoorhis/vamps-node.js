@@ -308,7 +308,6 @@ class CreateDataObj {
     //   1 = "DCO_BOM_Bomberg_CoDL_16_09.pdf"
     //  ...
 
-
     console.log('PPP project_obj.abstract_data');
     console.log(JSON.stringify(new_project.project_obj.abstract_data));
     // from submission datasets: new_project.project_obj.abstract_data = Object

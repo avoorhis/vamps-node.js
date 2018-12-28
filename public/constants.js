@@ -1029,7 +1029,7 @@ constants.SAMPLE_TYPE = ["Please choose one",
   "environmental sample",
   "isolate"];
 
-constants.GAZ_SPELLING = {"United States": ["usa", "united states of america"]};
+constants.GAZ_SPELLING = {"United States": ["usa", "united states", "united states of america"]};
 
 // TODO: add fields_names for each
 constants.PACKAGES_AND_PORTALS = {

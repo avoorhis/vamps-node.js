@@ -231,12 +231,25 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     // TODO get user info from global by user_name, email
   // There is no such user: first_name: undefined, last_name: undefined, email: mallamuneer123@gmail.com, institution: undefined
 
-  var project_name  = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0];
+    var project_name  = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0];
       // || helpers.findByValueOfObject(data_arr, "structured_comment_name", "project")[0]['Information by project'];
     console.log("PPP0: project_name", project_name);
 
     var pid = cur_project.get_pid(project_name);
     console.log("PPP1: pid", pid);
+
+    //TODO: helpers.geo_loc_name_continental_filter
+    // const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
+    const curr_country = transposed["geo_loc_name_continental"];
+    for (var n in curr_country) {
+      var diff_spelling = "";
+      diff_spelling = helpers.geo_loc_name_continental_filter(curr_country[n]);
+      if (typeof diff_spelling !== 'undefined') {
+        transposed["geo_loc_name_continental"][n] = diff_spelling;
+      }
+    }
+
+    console.log(transposed["geo_loc_name_continental"]);
 
     if (typeof req.body.project === 'undefined' || pid === 0) {
       new_csv(req, res, cur_project, project_name, transposed);

@@ -2150,9 +2150,9 @@ exports.geo_loc_name_validation = function (value, source) {
 
 exports.geo_loc_name_continental_filter = function (value) {
   console.time('geo_loc_name_continental_filter');
-  for (var key in C.GAZ_SPELLING) {
+  for (const key in C.GAZ_SPELLING) {
     if (C.GAZ_SPELLING.hasOwnProperty(key)) {
-      var curr = C.GAZ_SPELLING[key];
+      const curr = C.GAZ_SPELLING[key];
       if (curr.indexOf(value.toLowerCase()) > -1) {
         return key;
       }
