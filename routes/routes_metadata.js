@@ -239,15 +239,18 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     console.log("PPP1: pid", pid);
 
     //TODO: helpers.geo_loc_name_continental_filter
-    // const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
-    const curr_country = transposed["geo_loc_name_continental"];
-    for (var n in curr_country) {
-      var diff_spelling = "";
-      diff_spelling = helpers.geo_loc_name_continental_filter(curr_country[n]);
-      if (typeof diff_spelling !== 'undefined') {
-        transposed["geo_loc_name_continental"][n] = diff_spelling;
-      }
-    }
+    const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
+    const curr_country = met_obj.unify_us_names(transposed["geo_loc_name_continental"]);
+    transposed["geo_loc_name_continental"] = curr_country;
+
+    // const curr_country = transposed["geo_loc_name_continental"];
+    // for (var n in curr_country) {
+    //   var diff_spelling = "";
+    //   diff_spelling = helpers.geo_loc_name_continental_filter(curr_country[n]);
+    //   if (typeof diff_spelling !== 'undefined') {
+    //     transposed["geo_loc_name_continental"][n] = diff_spelling;
+    //   }
+    // }
 
     console.log(transposed["geo_loc_name_continental"]);
 

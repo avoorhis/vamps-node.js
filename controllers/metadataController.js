@@ -875,6 +875,18 @@ class CreateDataObj {
     );
   }
 
+  unify_us_names(curr_country_in) {
+    let curr_country_out = curr_country_in.slice();
+    for (var n in curr_country_in) {
+      let diff_spelling = "";
+      diff_spelling = helpers.geo_loc_name_continental_filter(curr_country_in[n]);
+      if (typeof diff_spelling !== 'undefined') {
+        curr_country_out[n] = diff_spelling;
+      }
+    }
+    return curr_country_out;
+  }
+
 }
 
 class ShowObj {
