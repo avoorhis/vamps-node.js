@@ -31,12 +31,11 @@
 	  <div class="col-sm-5">          
        <!--  <input type="text" name="project" class="form-control" id="pname_input"  value="" > -->
         <select class='' id='pid_select' name='pid_select'>
-            <option id='0' value='0'>Choose...</option>
+            <option id='0' value='0'>Choose from your projects...</option>
             <% for(i in keys){ %>
                 <option id='<%= porder[keys[i]] %>' value='<%= porder[keys[i]] %>'><%= keys[i] %> <%= porder[keys[i]] %></option>
             <% } %>
-        </select>
-        
+        </select>        
       </div>    
     </div>
     
@@ -53,18 +52,11 @@
 	       <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
       </div>
     </div>
+   
     
-    <div id='bar_div'  class="form-group" style='display:none'>
-        <label class="control-label col-sm-3" for="metadata">Upload Progress:</label>
-        <div class="col-sm-5">
-          <div id='bar' class="progress-bar progress-bar-success" role="progressbar" aria-valuenow=""
-                    aria-valuemin="0" aria-valuemax="100" style="width:0%">
-          </div>
-        </div>
-    </div>
     
-<div id='data_holder' style='display:none;height:200px;overflow:auto;'>    
-<div id='result_table'></div> 
+<div id='data_holder' style='display:none;'>    
+    <div style='' id='result_table'></div> 
 </div>
 <div class="form-group">
     <label class="control-label col-sm-3" for="metadata">CSV file Format:<br><a href="#example">(See example format)</a></label>
@@ -75,12 +67,12 @@
         <li>It must be a text file with the FIRST (header) row containing the metadata names and the fields separated by commas (no other commas are allowed!)
         <li>The first column MUST contain the exact dataset (sample) names from the project selected above and the column header should be 'dataset'.
         <li>Each row has to have the same number of columns as the header row.
-        <li><b>REQUIRED FIELDS</b> (all data must be filled in):
+        <li><b>REQUIRED FIELDS</b> (blank entry is okay, but any entries must be from the lists shown or the correct format):
         <ul>
             <li><b>dataset</b> -- MUST be first column and must match exactly (spelling and case) what is already in the VAMPS database.
-            <li><b>latitude</b>  -- Must be <a href='https://en.wikipedia.org/wiki/Decimal_degrees' target='_blank'>decimal degrees</a>. No degree symbol and use minus sign for below equator. NOTE: Do not use zero '0' here unless you really mean it.
-            <li><b>longitude</b>  -- Must be <a href='https://en.wikipedia.org/wiki/Decimal_degrees' target='_blank'>decimal degrees</a>. No degree symbol and use minus sign for west of PM. NOTE: Do not use zero '0' here unless you really mean it.
             <li><b>collection_date</b>  -- Format: YYYY-MM-DD (example: 2017-03-01 for March 1st, 2017).
+            <li><b>latitude</b>  -- Format: Must be <a href='https://en.wikipedia.org/wiki/Decimal_degrees' target='_blank'>decimal degrees</a>. No degree symbol and use minus sign for below equator. NOTE: Do not use zero '0' here unless you sampled at the equator!
+            <li><b>longitude</b>  -- Format: Must be <a href='https://en.wikipedia.org/wiki/Decimal_degrees' target='_blank'>decimal degrees</a>. No degree symbol and use minus sign for west of PM. NOTE: Do not use zero '0' here unless you sampled along the Prime Meridian!
             <li><b>geo_loc_name</b>  -- Name of country or sea region. Choose names from this <a href='country_list' target='_blank'>country list</a> or short name from the <a href='lzt_list' target='_blank'>Longhurst Zones</a> sea regions.
             <li><b>env_package</b>   -- Environmental Source (Choose one from this list that fits best for each sample): 
                                                                                                                         <select>
@@ -90,10 +82,10 @@
                                                                                                                         <% } %>
                                                                                                                         </select>
         </ul>
-        <li>In addition we <b>highly recommend</b> the following fields be included (It's okay to leave some entries blank but do not include words such as 'NaN', 'none' or 'Unknown'): 
+        <li>In addition we <b>highly recommend</b> the following fields be included (blank entry is okay): 
         <ul>   
             <li><b>sequencing_platform</b>  -- One of: 454, illumina, ion_torrent, unknown
-            <li><b>domain</b> -- One of: Archaea, Bacteria, Eukarya, Fungi
+            <li><b>domain</b> -- One of: Archaea, Bacteria, Eukarya, Fungi, Unknown
             
             
             

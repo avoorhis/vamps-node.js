@@ -70,18 +70,18 @@ function process_upload_metadata_form(file_type) {
     document.getElementById('result_table').innerHTML = 'Loading'
     var file = document.getElementById('file_input').files[0];
     //alert(file == undefined)
-    var project_id = document.getElementById('pid_select').value
+    var pid = document.getElementById('pid_select').value
     if(file == undefined){
         alert('You must attach a file!')
         return;
     }
     //var args = {}
-    //args.pid_select = project_id
+    //args.pid_select = pid
     //args.file = file
-    //alert(project_id)
+    //alert(pid)
     var formData = new FormData();
     formData.append('file', file);    
-    formData.append("pid_select", project_id);
+    formData.append("pid_select", pid);
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", '/user_data/upload_metadata_fileAV', true);
     //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -95,11 +95,17 @@ function process_upload_metadata_form(file_type) {
         var result = JSON.parse(xmlhttp.response)
         //alert(result.errors)
         html += result.html
+        html += "<br>"
         if( result.errors == '1'){            
-            html += "Edit your CSV file and try again."
+            html += "<b style='color:red;'>Not Validated:</b>"
+            html += "&nbsp;&nbsp;Edit your CSV file and try again."
         }else{
-            html += "<a href=''>Accept and Re-Write Project Metadata</a>" 
+            html += "<b style='color:green;'>Validated!!</b>"
+            html += "&nbsp;&nbsp;Select one: [ <input type='radio' name='data_handling' value='replace'> Delete and Replace"
+            html += "&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='data_handling' value='add'> Add to Existing ]"
+            html += "&nbsp;&nbsp;&nbsp;&nbsp;<a class='button' href='' onclick=\"write_metadata('"+pid+"','"+result.metadata_dir+"','"+result.filename+"')\">Accept this data and write project metadata to database</a>"            
         }
+        html += "<br><br>"
         //alert(data)
         // var html = "<table border='1' >"
 //         
@@ -121,10 +127,10 @@ function process_upload_metadata_form(file_type) {
 function process_upload_form(file_type) {
     
     var new_pname = ''
-    var project_id = ''
+    var pid = ''
     var file = document.getElementById('file_input').files[0];
     if(file_type == 'metadata'){
-        //project_id = document.getElementById('pid_select').value
+        //pid = document.getElementById('pid_select').value
         //var url = "/user_data/upload_metadata_fileAV"
     }else{
         var url = "/user_data/upload_import_file"
@@ -146,7 +152,7 @@ function process_upload_form(file_type) {
     formData.append('file', file);    
     formData.append('file_type', file_type);
     formData.append("project_name", new_pname);
-    formData.append("project_id", project_id);
+    formData.append("project_id", pid);
     
     var xmlhttp = new XMLHttpRequest();
     
@@ -189,7 +195,41 @@ function process_upload_form(file_type) {
     xmlhttp.send(formData);
     
 }
-
+//
+//
+//
+function write_metadata(pid, md_file_path, md_file_name){
+    data_handling = document.getElementsByName('data_handling')
+    var args = {}
+    args.pid = pid
+    args.metadata_dir  = md_file_path
+    args.metadata_file = md_file_name
+    //alert(pid)
+    if(data_handling[0].checked == true){
+        //alert('delete and replace')
+        args.type = 'replace'
+    }else if(data_handling[1].checked == true){
+        //alert('add to existing')
+        args.type = 'add'
+    }else{
+        alert("You must select either to 'replace' or 'add' the new metadata to the old (if present).")
+        return
+    }
+    console.log('pid='+(args.pid).toString())
+    var xmlhttp = new XMLHttpRequest();
+    
+    xmlhttp.open("POST", '/user_data/loadDB_from_metadata_fileAV', true);
+    //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+        var resp = xmlhttp.response
+        alert('response '+resp)
+      }
+    }
+    xmlhttp.send(JSON.stringify(args));
+    
+}
 
 
 

@@ -206,7 +206,7 @@ def split_cust_from_req(args, data):
             else:
                 cust_metadata[did][name] = data[did][name]
     print(req_metadata)
-    sys.exit()
+    #sys.exit()
     #req_names = [  "collection_date","env_biome", "env_feature", "env_material", "env_package","geo_loc_name","latitude", "longitude", "dna_region",'adapter_sequence','sequencing_platform','target_gene','domain','illumina_index','primer_suite', 'run'];
     for did in req_metadata:
         keys = req_metadata[did]

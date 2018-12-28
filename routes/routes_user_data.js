@@ -766,7 +766,29 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
 //
 //
 //
-      
+router.post('/loadDB_from_metadata_fileAV', helpers.isLoggedIn, function(req, res) {
+    console.log('in POST loadDB_from_metadata_fileAV')
+    console.log(req.body)
+    var pid = req.body.pid
+    // dir = req.body.metadata_dir
+    // filename = req.body.metadata_file
+    
+    var info = {}
+    info.project_name = PROJECT_INFORMATION_BY_PID[pid].project
+    info.pid = pid
+    info.total_seq_count = 0
+    info.owner = req.user.username
+    info.max_dataset_count = 0
+    info.num_of_datasets = 0
+    info.public = 1 
+    info.dataset = {}    
+    info.project_dir = req.body.metadata_dir
+    md_file_path = path.join(req.body.metadata_dir,req.body.metadata_file)
+    
+    console.log(JSON.stringify(info))
+    upload_finish(req, res, 'metadata', info, md_file_path)
+    //res.send('ok')
+})      
 router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], function(req, res) {
 
     console.log('in POST upload_metadata_fileAV')
@@ -801,9 +823,9 @@ router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], funct
     
     
     
-    info.project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project_metadata-'+info.project_name + '_'+ timestamp);
+    info.metadata_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project_metadata-'+info.project_name + '_'+ timestamp);
     
-    var new_info_filename_path = path.join(info.project_dir, req.CONSTS.CONFIG_FILE)
+    var new_info_filename_path = path.join(info.metadata_dir, req.CONSTS.CONFIG_FILE)
     
     if(file_type == 'metadata'){
         var new_file_name = 'original_metadata.csv'
@@ -812,11 +834,11 @@ router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], funct
         return
     }
     console.log('2')
-    var new_file_path = path.join(info.project_dir, new_file_name)
+    var new_file_path = path.join(info.metadata_dir, new_file_name)
     
-    fs.mkdir(info.project_dir, function ensureProjectDir(err) {
+    fs.mkdir(info.metadata_dir, function ensureProjectDir(err) {
         if(err){return console.log(err);} // => null
-        fs.chmodSync(info.project_dir, 0o775);
+        fs.chmodSync(info.metadata_dir, 0o775);
         
         console.log(original_file_path)
         console.log(new_file_path)
@@ -857,7 +879,7 @@ router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], funct
                         var errors;
                         if(return_obj.error_return){
                             
-                            html += "<div style='border:1px solid black; width:50%;margin:2px;'>Error List:<br>"
+                            html += "<div style='border:1px solid black; width:50%;height:200px;overflow:auto;margin:2px;'>Error List:<br>"
                             html += "<ol style='color:red;'>"
                             for(n in return_obj.msgs){
                                 html += '<li>'+return_obj.msgs[n]+'</li>'                            
@@ -865,7 +887,7 @@ router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], funct
                             html += '</ol></div>'
                         }else{
                             // otherwise send html table
-                            html += "<table border='1'>"                            
+                            html += "<table class='table' border='1'>"                            
                             html += '<tr>'
                             for(n in header_array){
                                 html += '<th>'+header_array[n]+'</th>'                                
@@ -882,7 +904,7 @@ router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], funct
                             html += '</table>'
                         }                   
                         
-                        res.send(JSON.stringify({'errors':return_obj.error_return,'html':html}))
+                        res.send(JSON.stringify({'errors':return_obj.error_return,'html':html,'metadata_dir':info.metadata_dir,'filename':new_file_name}))
                    
                   });
                 
@@ -916,13 +938,20 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
     for(i in dids){
         all_dataset_names.push(DATASET_NAME_BY_DID[dids[i]])  // ALL dataset names in project
     }
-    
+    // check for duplicate headers
+    var unique = helpers.unique_array(headers)
+    if(headers.length != unique.length){
+        return_msg_array.push("There is a duplicated header name.")  
+        error_return = 1     
+    }
     if(headers[0] != 'dataset'){  // This is soo important it gets its own return
         return {'error_return':1,'msgs':['The first column must be the "dataset" column to continue.'],'data':{}}
     }
+    
     var required_fields = ['dataset','latitude','longitude','collection_date','geo_loc_name','env_package']
     got_em_all = true
     missing = []
+    // MISSING Required Metadata Fields
     for(n in required_fields){
         r = required_fields[n]
         if(headers.indexOf(r) == -1){
@@ -930,9 +959,11 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
             missing.push('Missing Required Field: '+r)
         }
     }
+    
     if( ! got_em_all){
         return {'error_return':1,'msgs':missing,'data':{}}
     }
+    
     var we_have_date = false
     if(headers.indexOf('collection_date') >= 0){
         we_have_date = true
@@ -946,33 +977,39 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
         we_have_geo_loc = true
     }
     var we_have_env = false
-    if(headers.indexOf('geo_loc_name') >= 0){
+    if(headers.indexOf('env_package') >= 0){
         we_have_env = true
     }
     var we_have_platform = false
-    if(headers.indexOf('geo_loc_name') >= 0){
+    if(headers.indexOf('sequencing_platform') >= 0){
         we_have_platform = true
     }
     var we_have_domain = false
-    if(headers.indexOf('geo_loc_name') >= 0){
+    if(headers.indexOf('domain') >= 0){
         we_have_domain = true
     }
+    
     for(i in list_obj){
-        dname = list_obj[i][0]
+        var dname = list_obj[i][0]
+        if(data_obj.hasOwnProperty(dname)){
+            return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -Dataset Name: "+list_obj[i][0]+" is duplicated on this row.")  
+            error_return = 1 
+        }
+        // MUST come after above block
         data_obj[dname] = {}
         if(list_obj[i].length != headers.length){
             return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -The numer of columns isn't the same as the header row.")  
             error_return = 1 
         }
         if( all_dataset_names.indexOf(dname) == -1 ){
-            return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -Dataset Name: "+list_obj[i][0]+" was not found on VAMPS.")  
+            return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -Dataset Name: "+list_obj[i][0]+" was not found for this project on VAMPS.")  
             error_return = 1 
         }
         for(n=1;n<list_obj[i].length;n++){
             val = list_obj[i][n]
             mdname = headers[n]
             data_obj[dname][mdname] = val 
-            
+            // collection_date format
             if(we_have_date && mdname == 'collection_date' && val != ''){
                 // validate date (javascript date??)
                 if( ! helpers.isValidMySQLDate(val)){
@@ -980,13 +1017,15 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
                     error_return = 1 
                 }
             } 
+            // lat/lon format
             if(we_have_latlon && (mdname == 'latitude' || mdname == 'longitude') && val != ''){
                 // validate decimal float data
                 if( isNaN(val) ){
                     return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -"+mdname+": "+val+" is not valid.")  
                     error_return = 1 
                 }
-            }            
+            }   
+            // geo_loc_name values         
             if(we_have_geo_loc && mdname == 'geo_loc_name' && val != ''){
                 // need array of values for  MD_ENV_CNTRY and MD_ENV_LZC
                 geo_values = []
@@ -1002,15 +1041,25 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
                     error_return = 1 
                 }
             } 
+            // env_package values
             if(we_have_env && mdname == 'env_package' && val != ''){
-                
+                pkg_values = []
+                for( key in MD_ENV_PACKAGE){
+                    pkg_values.push(MD_ENV_PACKAGE[key].toLowerCase())
+                }
+                if( pkg_values.indexOf(val.toLowerCase()) == -1 ){
+                    return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -env_package: "+val+" is not valid.")  
+                    error_return = 1 
+                }
             }
+            // sequencing_platform values
             if(we_have_platform && mdname == 'sequencing_platform' && val != ''){
                 if(['454', 'illumina', 'ion_torrent', 'unknown'].indexOf(val.toLowerCase()) == -1){
                     return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -sequencing_platform: "+val+" is not valid.")  
                     error_return = 1 
                 }
             } 
+            // domain values
             if(we_have_domain && mdname == 'domain' && val != ''){
                 if(['archaea', 'bacteria', 'eukarya', 'fungi', 'unknown'].indexOf(val.toLowerCase()) == -1){
                     return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -domain: "+val+" is not valid.")  
@@ -1033,56 +1082,57 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
 function upload_finish(req, res, file_type, info, new_file_path){       
             console.log('in upload_finish()')
             if(file_type == 'metadata'){
-                // console.log('in upload_finish:metadata')
-//                 var load_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_load_metadata.py')
-//                 var load_params = ['-host',req.CONFIG.dbhost,'-pid',info.pid,'-f',new_file_path,'-g']
-//                 load_cmd = load_cmd + ' ' + load_params.join(' ')
-//                 
-//                 var cmd_list = [] //matrixTax(req, info)
-//                 cmd_list.unshift(load_cmd)
-//                 var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': info.project_name, 'status': '', 'msg': '' };
-//                 status_params.statusOK = 'OK-META';
-//                 status_params.statusSUCCESS = 'META-SUCCESS';
-//                 status_params.msgOK = 'Finished META';
-//                 status_params.msgSUCCESS = 'META -add metadata';
-//                 var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'metadata', {});
-//                 var scriptlog2   = script_vars[0]; //path.join(info.project_dir, 'matrix_log.txt');
-//                 var script_text = script_vars[1]; //helpers.get_qsub_script_text_only(req, scriptlog2, info.project_dir, 'matrix', cmd_list);
-//                 var script_path = path.join(info.project_dir, 'metadata_script.sh');
-//                 var ok_code_options = ['metadata', status_params, res,''];
-//                 var mode = 0775;
-//                 var oldmask = process.umask(0);
-//                 fs.writeFile(script_path, 
-//                     script_text, 
-//                     {
-//                       mode: mode
-//                     }, 
-//                     function(err) {
-//                       if(err) {
-//                           return console.log(err);
-//                       }
-//                       else
-//                       {
-//                         console.log('Before RunAndCheck Metadata')
-//                         var full_script     = script_path //+ ' > ' + scriptlog2
-//                         RunAndCheck(full_script, '', req, info.project_name, res, checkPid, ok_code_options);
-//                         status_params.status = status_params.statusSUCCESS;
-//                         status_params.msg = status_params.msgSUCCESS;
-//                         helpers.update_status(status_params);
-//                         console.log('After helpers.update_status Metadata')
-//                         req.flash('success', 'Metadata Load' + " has been started for project: '" + info.project_name + "'");
-//                         //res.redirect("/user_data/your_projects");
-//                         process.umask(oldmask);
-//                         res.render('user_data/show_metadata', {
-// 					        title: 'VAMPS:Import Choices',
-// 					        def_name:'',
-// 					        user: req.user, hostname: req.CONFIG.hostname
-// 					    });
-// 					    return
-//                       }
-//                       //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
-// 					  
-//                     }); 
+                console.log('in upload_finish:metadata')
+                var load_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_load_metadata.py')
+                var load_params = ['-host',req.CONFIG.dbhost,'-pid',info.pid,'-f',new_file_path,'-g']
+                load_cmd = load_cmd + ' ' + load_params.join(' ')
+                
+                var cmd_list = [] //matrixTax(req, info)
+                cmd_list.unshift(load_cmd)
+                var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': info.project_name, 'status': '', 'msg': '' };
+                status_params.statusOK = 'OK-META';
+                status_params.statusSUCCESS = 'META-SUCCESS';
+                status_params.msgOK = 'Finished META';
+                status_params.msgSUCCESS = 'META -add metadata';
+                var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'metadata', {});
+                var scriptlog2   = script_vars[0]; //path.join(info.project_dir, 'matrix_log.txt');
+                var script_text = script_vars[1]; //helpers.get_qsub_script_text_only(req, scriptlog2, info.project_dir, 'matrix', cmd_list);
+                var script_path = path.join(info.project_dir, 'metadata_script.sh');
+                var ok_code_options = ['metadata', status_params, res,''];
+                var mode = 0775;
+                var oldmask = process.umask(0);
+                fs.writeFile(script_path, 
+                    script_text, 
+                    {
+                      mode: mode
+                    }, 
+                    function(err) {
+                      if(err) {
+                          return console.log(err);
+                      }
+                      else
+                      {
+                        console.log('Before RunAndCheck Metadata')
+                        var full_script     = script_path //+ ' > ' + scriptlog2
+                        RunAndCheck(full_script, '', req, info.project_name, res, checkPid, ok_code_options);
+                        status_params.status = status_params.statusSUCCESS;
+                        status_params.msg = status_params.msgSUCCESS;
+                        helpers.update_status(status_params);
+                        console.log('After helpers.update_status Metadata')
+                        req.flash('success', 'Metadata Load' + " has been started for project: '" + info.project_name + "'");
+                        //res.redirect("/user_data/your_projects");
+                        process.umask(oldmask);
+                        console.log('Rendering import_choices!')
+                        res.render('user_data/import_choices', {
+					        title: 'VAMPS:Import Choices',
+					        def_name:'',
+					        user: req.user, hostname: req.CONFIG.hostname
+					    });
+					    //return
+                      }
+                      //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
+					  
+                    }); 
             }else if(file_type == 'matrix'){
                 var parse_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_parse.py')
                 var parse_params = ['-t','matrix','-d',info.project_dir,'-p',info.project_name,'-u',info.owner,'-f',new_file_path]
