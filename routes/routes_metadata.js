@@ -230,16 +230,14 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     const cur_project = new Project(req, res, 0, 0);
     // TODO get user info from global by user_name, email
     var project_name  = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0];
-    console.log("PPP0: project_name", project_name);
+    // console.log("PPP0: project_name", project_name);
 
     var pid = cur_project.get_pid(project_name);
-    console.log("PPP1: pid", pid);
+    // console.log("PPP1: pid", pid);
 
     const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
     const curr_country = met_obj.unify_us_names(transposed["geo_loc_name_continental"]);
     transposed["geo_loc_name_continental"] = curr_country;
-
-    console.log(transposed["geo_loc_name_continental"]);
 
     if (typeof req.body.project === 'undefined' || pid === 0) {
       new_csv(req, res, cur_project, project_name, transposed);
