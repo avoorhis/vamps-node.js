@@ -17,7 +17,24 @@ class CreateDataObj {
     this.dataset_ids     = DATASET_IDS_BY_PID[this.pid] || dataset_ids || [];
     this.all_field_names = this.collect_field_names();
     this.all_metadata    = {};
+    this.metadata_new_form_fields = [
+      "d_region",
+      "full_name",
+      "funding_code",
+      "pi_email",
+      "pi_name",
+      "pi_name_reversed",
+      "project_description",
+      "project_name",
+      "project_name1",
+      "project_name2",
+      "project_name3",
+      "project_title",
+      "reference",
+      "samples_number",
+    ];
     this.prepare_empty_metadata_object();
+
   }
 
   collect_field_names() {
@@ -149,7 +166,6 @@ class CreateDataObj {
       if (err) {
         console.log('WWW000 err', err);
         this.req.flash('fail', err);
-        // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
       }
       else {
         console.log('New datasets SAVED');
@@ -159,7 +175,6 @@ class CreateDataObj {
             if (err) {
               console.log('WWW00 err', err);
               this.req.flash('fail', err);
-              // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
             }
             else {
               console.log('WWW22 rows', rows);
@@ -186,7 +201,6 @@ class CreateDataObj {
       if (err) {
         console.log('WWW0 err', err);
         req.flash('fail', err);
-        // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
       }
       else {
         console.log('New datasets SAVED');
@@ -196,7 +210,6 @@ class CreateDataObj {
             if (err) {
               console.log('WWW00 err', err);
               req.flash('fail', err);
-              // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
             }
             else {
               // console.log('WWW22 rows', rows);
@@ -887,6 +900,14 @@ class CreateDataObj {
     return curr_country_out;
   }
 
+  clean_up_metadata_new_form() {
+    let metadata_new_form_vals = {};
+    for (var i in this.metadata_new_form_fields) {
+      metadata_new_form_vals[this.metadata_new_form_fields[i]] = "";
+    }
+    return metadata_new_form_vals;
+  }
+
 }
 
 class ShowObj {
@@ -996,28 +1017,41 @@ class ShowObj {
     return ["Please choose one"].concat(arr1);
   }
 
+  make_metadata_new_form_values(req) {
+    let metadata_new_form_values = {};
+    metadata_new_form_values.project_name     = "";
+    metadata_new_form_values.pi_name_reversed = "";
+    metadata_new_form_values.project_name1    = "";
+    metadata_new_form_values.project_name2    = "";
+    metadata_new_form_values.project_name3    = "";
+    metadata_new_form_values.project_description = req.form.project_description;
+    metadata_new_form_values.d_region = req.form.d_region;
+    metadata_new_form_values.funding_code = req.form.funding_code;
+    metadata_new_form_values.project_title = req.form.project_title;
+    metadata_new_form_values.reference = req.form.reference;
+    metadata_new_form_values.samples_number = req.form.samples_number;
+
+    let d_region_arr   = req.form.d_region.split('#');
+    let pi_id_name_arr = req.form.pi_id_name.split('#');
+    if (!pi_id_name_arr.includes("")) {
+      metadata_new_form_values.full_name        = pi_id_name_arr[3] + ' ' + pi_id_name_arr[2];
+      metadata_new_form_values.pi_email         = pi_id_name_arr[4];
+      metadata_new_form_values.pi_name_reversed = pi_id_name_arr[2] + ' ' + pi_id_name_arr[3];
+      metadata_new_form_values.project_name1    = req.form.project_name1;
+      let full_name_arr = metadata_new_form_values.full_name.split(' ');
+      if (metadata_new_form_values.project_name1 === '') {
+        metadata_new_form_values.project_name1  = this.get_inits(full_name_arr);
+      }
+      metadata_new_form_values.project_name2 = req.form.project_name2;
+      metadata_new_form_values.project_name3 = d_region_arr[2];
+      metadata_new_form_values.project_name  = metadata_new_form_values.project_name1 + '_' + req.form.project_name2 + '_' + metadata_new_form_values.project_name3;
+    }
+    return metadata_new_form_values;
+  }
+
   show_metadata_new_again(req, res) {
     // TODO: send to object creation in Imp
-    var project_name     = "";
-    var pi_name_reversed = "";
-    var project_name1    = "";
-    var project_name2    = "";
-    var project_name3    = "";
-
-    var d_region_arr   = req.form.d_region.split('#');
-    var pi_id_name_arr = req.form.pi_id_name.split('#');
-    if (!pi_id_name_arr.includes("")) {
-      var full_name     = pi_id_name_arr[3] + ' ' + pi_id_name_arr[2];
-      pi_name_reversed  = pi_id_name_arr[2] + ' ' + pi_id_name_arr[3];
-      project_name1     = req.form.project_name1;
-      var full_name_arr = full_name.split(' ');
-      if (project_name1 === '') {
-        project_name1 = this.get_inits(full_name_arr);
-      }
-      project_name2 = req.form.project_name2;
-      project_name3 = d_region_arr[2];
-      project_name  = project_name1 + '_' + req.form.project_name2 + '_' + project_name3;
-    }
+    let metadata_new_form_values = this.make_metadata_new_form_values(req);
 
     req      = helpers.collect_errors(req);
     this.req = req;
@@ -1027,22 +1061,23 @@ class ShowObj {
       // TODO: object created separately in Imp.
       // TODO just use form
       button_name: 'Validate',
-      d_region: req.form.d_region,
+      // d_region: req.form.d_region,
       domain_regions: CONSTS.DOMAIN_REGIONS,
-      funding_code: req.form.funding_code,
+      // funding_code: req.form.funding_code,
       hostname: req.CONFIG.hostname,
+      metadata_new_form_values: metadata_new_form_values,
       packages_and_portals: Object.keys(CONSTS.PACKAGES_AND_PORTALS),
-      pi_email: pi_id_name_arr[4],
+      // pi_email: pi_id_name_arr[4],
       pi_list: req.session.pi_list,
-      pi_name: pi_name_reversed,
-      project_description: req.form.project_description,
-      project_name1: project_name1,
-      project_name2: project_name2,
-      project_name3: project_name3,
-      project_name: project_name,
-      project_title: req.form.project_title,
-      reference: req.form.reference,
-      samples_number: req.form.samples_number,
+      // pi_name: pi_name_reversed,
+      // project_description: req.form.project_description,
+      // project_name1: project_name1,
+      // project_name2: project_name2,
+      // project_name3: project_name3,
+      // project_name: project_name,
+      // project_title: req.form.project_title,
+      // reference: req.form.reference,
+      // samples_number: req.form.samples_number,
       title: 'VAMPS: New Metadata',
       user: req.user,
     });

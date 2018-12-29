@@ -10,54 +10,11 @@
 var all_metadata = {}
 } %>
 
-<% if (typeof pi_email !== 'undefined') { %>
+metadata_new_form_values
+<% if (typeof metadata_new_form_values !== 'undefined') { %>
 <% } else { %>
-<% pi_email = "" %>
+<% var metadata_new_form_values = {} %>
 <% } %><br/>
-<% if (typeof pi_name !== 'undefined') { %>
-<% } else { %>
-<% pi_name = "" %>
-<% } %><br/>
-<% if (typeof project_name !== 'undefined') { %>
-<% } else { %>
-<% project_name = "" %>
-<% } %><br/>
-<% if (typeof project_title !== 'undefined') { %>
-<% } else { %>
-<% project_title = "" %>
-<% } %><br/>
-<% if (typeof samples_number !== 'undefined') { %>
-<% } else { %>
-<% samples_number = "" %>
-<% } %><br/>
-<% if (typeof d_region !== 'undefined') { %>
-<% } else { %>
-<% d_region = "" %>
-<% } %>
-<% if (typeof funding_code !== 'undefined') { %>
-<% } else { %>
-<% funding_code = "" %>
-<% } %>
-<% if (typeof project_description !== 'undefined') { %>
-<% } else { %>
-<% project_description = "" %>
-<% } %>
-<% if (typeof project_name1 !== 'undefined') { %>
-<% } else { %>
-<% project_name1 = "" %>
-<% } %>
-<% if (typeof project_name2 !== 'undefined') { %>
-<% } else { %>
-<% project_name2 = "" %>
-<% } %>
-<% if (typeof project_name3 !== 'undefined') { %>
-<% } else { %>
-<% project_name3 = "" %>
-<% } %>
-<% if (typeof reference !== 'undefined') { %>
-<% } else { %>
-<% reference = "" %>
-<% } %>
 
 <div id="postresult">
 </div>
@@ -102,7 +59,7 @@ var all_metadata = {}
 
         <div class="metadata">
         <label class="col-sm-5 long_label" for="project_title">Title of Project:</label>
-        <input type="text" class="long_input" id="project_title" name="project_title" value='<%= project_title %>'/>
+        <input type="text" class="long_input" id="project_title" name="project_title" value='<%= metadata_new_form_values.project_title %>'/>
         </div>
         <br/>
 
@@ -113,7 +70,7 @@ var all_metadata = {}
             <option selected="true" disabled>Select&hellip;</option>
             <% pi_list.forEach(function(val){ %>
             <option value="<%= val.pi_id %>#<%= val.PI %>#<%= val.last_name %>#<%= val.first_name %>#<%= val.pi_email %>"
-            <% if (val.PI == pi_name) {%>
+            <% if (val.PI == metadata_new_form_values.pi_name) {%>
             selected
             <% } %>
             ><%= val.PI %></option>
@@ -124,7 +81,7 @@ var all_metadata = {}
 
         <div class="metadata">
         <label class="col-sm-5 long_label" for="pi_email">PI's email address:</label>
-        <input type="email" id="pi_email" name="pi_email" value='<%= pi_email %>'/>
+        <input type="email" id="pi_email" name="pi_email" value='<%= metadata_new_form_values.pi_email %>'/>
         </div>
         <br/>
 
@@ -147,7 +104,7 @@ var all_metadata = {}
                                 <input id="d_region" name="d_region" type='radio'
                                        value=<%= cur_domain %>#<%= cur_region %>#<%= short_d_r %>
                                 <% curr_value = cur_domain + "#" + cur_region + "#" + short_d_r %>
-                                <% if (curr_value == d_region) {%>
+                                <% if (curr_value == metadata_new_form_values.d_region) {%>
                                 checked="checked"
                                 <% } %>
                                 > <%= regions[k] %>
@@ -167,16 +124,16 @@ var all_metadata = {}
         <div class="metadata">
             <label class="col-sm-5 long_label">Project Name (Please fill fields above and the middle field here):</label>
             <input class="uppercase" type="text" id="project_name1" name="project_name1" maxlength="4" size="5"
-                   value="<%= project_name1 %>">_<input
+                   value="<%= metadata_new_form_values.project_name1 %>">_<input
                 class="uppercase"
                 type="text"
                 id="project_name2"
                 name="project_name2"
                 maxlength="4"
                 size="4"
-                value="<%= project_name2 %>">_<input
+                value="<%= metadata_new_form_values.project_name2 %>">_<input
                 type="text" id="project_name3" readonly name="project_name3" maxlength="4" size="5"
-                value="<%= project_name3 %>">
+                value="<%= metadata_new_form_values.project_name3 %>">
         </div>
         <br/>
 
@@ -185,7 +142,7 @@ var all_metadata = {}
             <textarea class="textarea_long" id="project_description" name="project_description"
                       placeholder="max length: 1000 chars">
             <% if (typeof project_description !== 'undefined') { %>
-                <%= project_description %>
+                <%= metadata_new_form_values.project_description %>
             <% } %>
         </textarea>
         </div>
@@ -193,7 +150,7 @@ var all_metadata = {}
 
         <div class="metadata">
             <label class="col-sm-5 long_label" for="funding_code">Funding Code (numeric only):</label>
-            <input type="number" id="funding_code" name="funding_code" maxlength="10" size="10" value="<%= funding_code %>">
+            <input type="number" id="funding_code" name="funding_code" maxlength="10" size="10" value="<%= metadata_new_form_values.funding_code %>">
         </div>
         <br/>
 
@@ -211,7 +168,7 @@ var all_metadata = {}
         <div class="metadata">
         <label class="col-sm-5 long_label" for="samples_number">How many individual samples will be
             submitted?</label>
-        <input type="number" id="samples_number" name="samples_number" size="3" value="<%= samples_number %>">
+        <input type="number" id="samples_number" name="samples_number" size="3" value="<%= metadata_new_form_values.samples_number %>">
         </div>
         <br/>
 

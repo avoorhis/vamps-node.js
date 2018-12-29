@@ -250,6 +250,7 @@ router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
   const met_obj       = new metadata_controller.CreateDataObj(req, res, "", "");
   var pi_list         = met_obj.get_pi_list();
   req.session.pi_list = pi_list;
+  var clean_metadata_new_form = met_obj.clean_up_metadata_new_form();
   res.render('metadata/metadata_new', {
     title: 'VAMPS: New Metadata',
     user: req.user,
@@ -259,6 +260,7 @@ router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
     samples_number: "",
     pi_list: pi_list,
     packages_and_portals: Object.keys(CONSTS.PACKAGES_AND_PORTALS),
+    metadata_new_form_values: clean_metadata_new_form,
   });
 });
 
