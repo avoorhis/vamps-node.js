@@ -199,7 +199,7 @@ class CreateDataObj {
               // show_new.show_metadata_new_again(); TODO: show the same form with empty datasets again
             }
             else {
-              console.log('WWW22 rows', rows);
+              // console.log('WWW22 rows', rows);
               new_dataset.update_dataset_obj(rows, pid);
               // new_dataset.dataset_objects_arr;
               new_dataset.add_info_to_dataset_globals();
@@ -925,6 +925,14 @@ class ShowObj {
     return ordered_field_names_obj;
   }
 
+  get_mbl_edit() {
+    let mbl_edit = "no_edit";
+    if (this.user.security_level <= 10) {
+      mbl_edit = "can_edit";
+    }
+    return mbl_edit;
+  }
+
   render_edit_form() {
     console.trace("Show me, I'm in render_edit_form");
     this.req = helpers.collect_errors(this.req);
@@ -947,6 +955,8 @@ class ShowObj {
 
     var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
 
+    let mbl_edit = this.get_mbl_edit();
+
     this.res.render('metadata/metadata_edit_form', {
       title: 'VAMPS: Metadata_upload',
       user: this.user,
@@ -967,7 +977,8 @@ class ShowObj {
       metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
       env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
       investigation_type_options: CONSTS.INVESTIGATION_TYPE,
-      sample_type_options: CONSTS.SAMPLE_TYPE
+      sample_type_options: CONSTS.SAMPLE_TYPE,
+      mbl_edit: mbl_edit
     });
   }
 

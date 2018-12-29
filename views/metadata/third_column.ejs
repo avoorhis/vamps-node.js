@@ -225,8 +225,8 @@
     <!-- regular field with data -->
     <% selected_val = get_selected_val(pid, did, field_name) %>
 
-    <% if (all_field_names[idx][2] === "MBL Supplied") { %>
-    <td class="readonly_td">
+    <% if ((all_field_names[idx][2] === "MBL Supplied") && mbl_edit == "no_edit") { %>
+    <td class="readonly_td>">
         <div class="short"> <%= selected_val %> </div>
         <input type='hidden' type="text" id="<%= field_name %><%- did %>" name="<%= field_name %>"
                value="<%= selected_val %>"/>
