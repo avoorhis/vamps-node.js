@@ -57,7 +57,8 @@ class CreateDataObj {
     console.time('TIME: prepare_empty_metadata_object');
     var pid             = this.pid;
     var field_names_arr = this.all_field_names;
-    var all_metadata    = this.all_metadata || {};
+    // var all_metadata    = {};
+    var all_metadata    = JSON.parse(JSON.stringify(this.all_metadata)) || {};
 
     if (!(all_metadata.hasOwnProperty(this.pid))) {
       all_metadata[pid] = {};
@@ -76,7 +77,7 @@ class CreateDataObj {
     }
 
     console.timeEnd('TIME: prepare_empty_metadata_object');
-    this.all_metadata = all_metadata;
+    this.all_metadata = JSON.parse(JSON.stringify(all_metadata));
   }
 
   get_project_info(req, res, project_name_or_pid) {
@@ -265,7 +266,7 @@ class CreateDataObj {
 
     // 1)
     //   // TODO: don't send all_metadata?
-    var all_metadata = this.all_metadata;
+    var all_metadata = JSON.parse(JSON.stringify(this.all_metadata)); //deep copy
 
     //2) all
 
