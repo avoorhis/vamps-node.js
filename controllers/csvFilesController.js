@@ -10,7 +10,6 @@ class CsvFileRead {
     var parse_sync   = require('csv-parse/lib/sync');
     this.data_arr    = parse_sync(file_content, {columns: true, trim: true}); //
     this.data_arr_no_head = parse_sync(file_content, {trim: true}); //columns: true,
-
   }
 
   get_structured_names(parsed_csv_obj) {
@@ -89,6 +88,34 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     this.res      = res;
     this.hostname = req.CONFIG.hostname;
     this.user     = req.user;
+    this.fields_for_pipeline_csv = {"adaptor": ["adapter_sequence"],
+      "amp_operator": ["amp_operator"],
+      "barcode": ["barcode"],
+      "barcode_index": ["barcode_index"],
+      "data_owner": ["username"],
+      "dataset": ["dataset"],
+      "dataset_description": ["dataset_description"],
+      "dna_region": ["dna_region"],
+      "email": ["pi_email"],
+      "env_source_name": ["env_package"],
+      "first_name": ["first_name"],
+      "funding": ["funding"],
+      "insert_size": ["insert_size"],
+      "institution": ["institution"],
+      "lane": ["lane"],
+      "last_name": ["last_name"],
+      "overlap": ["overlap"],
+      "platform": ["MBL_platform"],
+      "primer_suite": ["primer_suite"],
+      "project": ["project"],
+      "project_description": ["project_description"],
+      "project_title": ["project_title"],
+      "read_length": ["read_length"],
+      "run": ["run"],
+      "run_key": ["run_key"],
+      "seq_operator": ["seq_operator"],
+      "tubelabel": ["tubelabel"],
+    };
   }
 
   sorted_files_by_time() {
@@ -145,7 +172,6 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     //   console.log(data);
     // });
     // fs.createReadStream(inputPath1).pipe(parser);
-
 
     var parse_sync = require('csv-parse/lib/sync');
     var records1   = parse_sync(data1, {trim: true});
@@ -239,6 +265,37 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     const base_name = "metadata-project" + '_' + file_name_project_part + '_' + this.user.username + '_' + time_stamp + ".csv";
 
     return base_name;
+  }
+
+  make_csv_to_upload_to_pipeline(req) {
+    this.fields_for_pipeline_csv = {"adaptor": ["adapter_sequence"],
+      "amp_operator": ["amp_operator"],
+      "barcode": ["barcode"],
+      "barcode_index": ["barcode_index"],
+      "data_owner": ["username"],
+      "dataset": ["dataset"],
+      "dataset_description": ["dataset_description"],
+      "dna_region": ["dna_region"],
+      "email": ["pi_email"],
+      "env_source_name": ["env_package"],
+      "first_name": ["first_name"],
+      "funding": ["funding"],
+      "insert_size": ["insert_size"],
+      "institution": ["institution"],
+      "lane": ["lane"],
+      "last_name": ["last_name"],
+      "overlap": ["overlap"],
+      "platform": ["MBL_platform"],
+      "primer_suite": ["primer_suite"],
+      "project": ["project"],
+      "project_description": ["project_description"],
+      "project_title": ["project_title"],
+      "read_length": ["read_length"],
+      "run": ["run"],
+      "run_key": ["run_key"],
+      "seq_operator": ["seq_operator"],
+      "tubelabel": ["tubelabel"],
+    };
 
   }
 
