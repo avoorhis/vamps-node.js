@@ -48,7 +48,7 @@ class Dataset {
 
   make_tube_label(data) {
     let tube_labels = this.convert_all_dataset_names(data["dataset"]) || Array(this.datasets_length).fill("", 0);
-    if (tube_labels[0].length === 0 && data["tube_label"][0].length > 0 ) {
+    if ((tube_labels[0].length === 0) && (typeof data["tube_label"] !== 'undefined') && (data["tube_label"][0].length > 0) ) {
       tube_labels = this.convert_all_dataset_names(data["tube_label"]);
     }
     return tube_labels;
