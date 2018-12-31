@@ -69,7 +69,7 @@ var all_metadata = {}
             <option selected="true" disabled>Select&hellip;</option>
             <% pi_list.forEach(function(val){ %>
             <option value="<%= val.pi_id %>#<%= val.PI %>#<%= val.last_name %>#<%= val.first_name %>#<%= val.pi_email %>"
-            <% if (val.PI == metadata_new_form_values.pi_name) {%>
+            <% if (val.PI == metadata_new_form_values.pi_name_reversed) {%>
             selected
             <% } %>
             ><%= val.PI %></option>

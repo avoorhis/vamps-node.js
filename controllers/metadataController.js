@@ -22,6 +22,7 @@ class CreateDataObj {
       "full_name",
       "funding_code",
       "pi_email",
+      "pi_id_name",
       "pi_name",
       "pi_name_reversed",
       "project_description",
@@ -1024,12 +1025,14 @@ class ShowObj {
     metadata_new_form_values.project_name1    = "";
     metadata_new_form_values.project_name2    = "";
     metadata_new_form_values.project_name3    = "";
+    metadata_new_form_values.d_region            = req.form.d_region;
+    metadata_new_form_values.funding_code        = req.form.funding_code;
+    metadata_new_form_values.pi_id_name          = req.form.pi_id_name;
     metadata_new_form_values.project_description = req.form.project_description;
-    metadata_new_form_values.d_region = req.form.d_region;
-    metadata_new_form_values.funding_code = req.form.funding_code;
-    metadata_new_form_values.project_title = req.form.project_title;
-    metadata_new_form_values.reference = req.form.reference;
-    metadata_new_form_values.samples_number = req.form.samples_number;
+    metadata_new_form_values.project_title       = req.form.project_title;
+    metadata_new_form_values.reference           = req.form.reference;
+    metadata_new_form_values.samples_number      = req.form.samples_number;
+
 
     let d_region_arr   = req.form.d_region.split('#');
     let pi_id_name_arr = req.form.pi_id_name.split('#');
