@@ -554,6 +554,9 @@ function make_metadata_object_from_csv(req, res) {
 
     var all_field_units = MD_CUSTOM_UNITS[pid];
     const show_new      = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
+    const csv_file_write = new csv_files_controller.CsvFilesWrite(req, res);
+    csv_file_write.make_csv_to_upload_to_pipeline(this.req);
+
     show_new.render_edit_form();
   }
   console.timeEnd("TIME: make_metadata_object_from_csv");

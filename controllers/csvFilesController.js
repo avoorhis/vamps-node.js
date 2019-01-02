@@ -268,6 +268,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
   }
 
   make_csv_to_upload_to_pipeline(req) {
+
     this.fields_for_pipeline_csv = {"adaptor": ["adapter_sequence"],
       "amp_operator": ["amp_operator"],
       "barcode": ["barcode"],
