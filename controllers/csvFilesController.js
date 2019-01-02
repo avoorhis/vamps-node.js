@@ -268,6 +268,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
   }
 
   make_csv_to_upload_to_pipeline(req) {
+    console.time("TIME: make_csv_to_upload_to_pipeline");
 
     this.fields_for_pipeline_csv = {"adaptor": ["adapter_sequence"],
       "amp_operator": ["amp_operator"],
@@ -278,7 +279,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
       "dataset_description": ["dataset_description"],
       "dna_region": ["dna_region"],
       "email": ["pi_email"],
-      "env_source_name": ["env_package"],
+      "env_source_name": ["env_package"], //env_sample_source_id?
       "first_name": ["first_name"],
       "funding": ["funding"],
       "insert_size": ["insert_size"],
@@ -298,19 +299,36 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
       "tubelabel": ["tubelabel"],
     };
 
+    let pipeline_template_file = {};
+    for (var template_name in this.fields_for_pipeline_csv) {
+      let form_name = this.fields_for_pipeline_csv[template_name][0];
+      if (typeof req.form[form_name] === 'undefined' ) {
+        pipeline_template_file[template_name] = [];
+      }
+      else {
+        pipeline_template_file[template_name] = req.form[form_name];
+      }
+    }
+
+    const base_name = "pipeline_metadata_"  + helpers.unique_array(this.req.form['project']) + "_" + helpers.unique_array(this.req.form['run']) + "_" + helpers.unique_array(this.req.form['platform']) + "_" + helpers.unique_array(this.req.form['lane']) + "_" + helpers.unique_array(this.req.form['domain']) + "_.csv";
+    const msg = 'File ' + base_name + ' was saved.';
+
+    this.make_csv(base_name, pipeline_template_file, msg);
+
+    console.timeEnd("TIME: make_csv_to_upload_to_pipeline");
+
   }
 
-  make_csv() {
+  make_csv(base_name, data, msg) {
     console.time("TIME: make_csv");
     var req = this.req;
 
     var csv = this.convertArrayOfObjectsToCSV({
-      data: req.form, // if new datasets, add info from globals instead
+      data: data, // if new datasets, add info from globals instead
       user_info: req.user, //use this.user
       project_id: req.body.project_id
     });
 
-    const base_name = this.make_out_file_base_name(req);
     const out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
 
     fs.writeFile(out_csv_file_name, csv, function (err) {
@@ -319,7 +337,6 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
 
     console.log('file ' + out_csv_file_name + ' saved');
 
-    var msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.';
     req.flash("success", msg);
 
     console.timeEnd("TIME: make_csv");
@@ -328,5 +345,5 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
 
 module.exports = {
   CsvFileRead: CsvFileRead,
-  CsvFiles: CsvFilesWrite
+  CsvFilesWrite: CsvFilesWrite
 };

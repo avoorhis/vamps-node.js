@@ -970,9 +970,16 @@ class ShowObj {
     const marine_zone_options = this.get_options_from_global_obj(MD_ENV_LZC);
 
     var pid = Object.keys(this.all_metadata)[0] || this.req.body.project_id;
+
     if ((typeof DATASET_IDS_BY_PID[pid] !== 'undefined') && (DATASET_IDS_BY_PID[pid].length > 0) && this.req.url !== "/metadata_new_csv_upload" && (typeof this.req.form !== 'undefined')) {// TODO: add comment what's this
-      const csv_files_obj = new csv_files_controller.CsvFiles(this.req, this.res);
-      csv_files_obj.make_csv();
+      const csv_files_obj = new csv_files_controller.CsvFilesWrite(this.req, this.res);
+      let base_name = csv_files_obj.make_out_file_base_name(this.req);
+      const msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.\n<br/>';
+
+      csv_files_obj.make_csv(base_name, this.req.form, msg);
+      // if (this.req.user.security_level <= 10) {
+        csv_files_obj.make_csv_to_upload_to_pipeline(this.req);
+      // }
     }
 
     var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};

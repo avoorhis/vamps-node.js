@@ -555,7 +555,6 @@ function make_metadata_object_from_csv(req, res) {
     var all_field_units = MD_CUSTOM_UNITS[pid];
     const show_new      = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
     const csv_file_write = new csv_files_controller.CsvFilesWrite(req, res);
-    csv_file_write.make_csv_to_upload_to_pipeline(this.req);
 
     show_new.render_edit_form();
   }
@@ -825,8 +824,11 @@ function saveMetadata(req, res) {
   console.time("TIME: saveMetadata");
   console.log("SSS in saveMetadata");
 
-  const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
-  csv_files_obj.make_csv();
+  const csv_file_write = new csv_files_controller.CsvFilesWrite(req, res);
+  const base_name = csv_file_write.make_out_file_base_name(req);
+  const msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.\n<br/>';
+
+  csv_file_write.make_csv(base_name, req.form, msg);
   // var pid = req.body.project_id;
   req.flash("success", "Success with the metadata submit!");
 
@@ -840,7 +842,7 @@ function saveMetadata(req, res) {
 router.get('/metadata_file_list', function (req, res) {
   console.time("TIME: get metadata_file_list");
   console.log('in metadata_file_list');
-  const csv_files_obj         = new csv_files_controller.CsvFiles(req, res);
+  const csv_files_obj         = new csv_files_controller.CsvFilesWrite(req, res);
   var user_metadata_csv_files = csv_files_obj.get_csv_files();
 
   user_metadata_csv_files.sort(function sortByTime(a, b) {
@@ -866,7 +868,7 @@ router.post('/metadata_files',
 
     console.time("TIME: in post /metadata_files");
     var table_diff_html, sorted_files, files_to_compare;
-    const csv_files_obj = new csv_files_controller.CsvFiles(req, res);
+    const csv_files_obj = new csv_files_controller.CsvFilesWrite(req, res);
     sorted_files        = csv_files_obj.sorted_files_by_time();
     files_to_compare    = csv_files_obj.sorted_files_to_compare(sorted_files);
 
