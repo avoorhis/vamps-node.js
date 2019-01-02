@@ -156,7 +156,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         for(item in visual_post_items){
             req.session[item] = visual_post_items[item]
         }
-        
+        //console.log('XXXXXXXXXXX-VPI')
+        //console.log(visual_post_items)
         
     
         

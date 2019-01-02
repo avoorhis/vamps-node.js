@@ -103,9 +103,10 @@ function process_upload_metadata_form(file_type) {
             html += "<b style='color:green;'>Validated!!</b>"
             html += "&nbsp;&nbsp;Select one: [ <input type='radio' name='data_handling' value='replace'> Delete and Replace"
             html += "&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='data_handling' value='add'> Add to Existing ]"
-            html += "&nbsp;&nbsp;&nbsp;&nbsp;<a class='button' href='' onclick=\"write_metadata('"+pid+"','"+result.metadata_dir+"','"+result.filename+"')\">Accept this data and write project metadata to database</a>"            
+            //html += "&nbsp;&nbsp;&nbsp;&nbsp;<a class='button' href='' onclick=\"write_metadata('"+pid+"','"+result.metadata_dir+"','"+result.filename+"')\">Accept this data and write project metadata to database</a>"  
+            html += "&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' onclick=\"write_metadata('"+pid+"','"+result.metadata_dir+"','"+result.filename+"')\" value='Accept this data and write project metadata to database.'"            
         }
-        html += "<br><br>"
+        html += "<br><br><br><br>"
         //alert(data)
         // var html = "<table border='1' >"
 //         
@@ -224,7 +225,7 @@ function write_metadata(pid, md_file_path, md_file_name){
     xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 ) {
         var resp = xmlhttp.response
-        alert('response '+resp)
+        //alert('response '+resp)
       }
     }
     xmlhttp.send(JSON.stringify(args));

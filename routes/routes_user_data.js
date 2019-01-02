@@ -1040,6 +1040,7 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
                     return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -geo_loc_name: "+val+" is not valid.")  
                     error_return = 1 
                 }
+                
             } 
             // env_package values
             if(we_have_env && mdname == 'env_package' && val != ''){
@@ -1051,6 +1052,7 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
                     return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -env_package: "+val+" is not valid.")  
                     error_return = 1 
                 }
+                data_obj[dname][mdname] = val.toLowerCase()
             }
             // sequencing_platform values
             if(we_have_platform && mdname == 'sequencing_platform' && val != ''){
@@ -1058,6 +1060,7 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
                     return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -sequencing_platform: "+val+" is not valid.")  
                     error_return = 1 
                 }
+                data_obj[dname][mdname] = val.toLowerCase()
             } 
             // domain values
             if(we_have_domain && mdname == 'domain' && val != ''){
@@ -1065,6 +1068,8 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
                     return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -domain: "+val+" is not valid.")  
                     error_return = 1 
                 }
+                data_obj[dname][mdname] = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase()
+                
                 
             }       
         }
@@ -1119,20 +1124,23 @@ function upload_finish(req, res, file_type, info, new_file_path){
                         status_params.msg = status_params.msgSUCCESS;
                         helpers.update_status(status_params);
                         console.log('After helpers.update_status Metadata')
-                        req.flash('success', 'Metadata Load' + " has been started for project: '" + info.project_name + "'");
+                        
                         //res.redirect("/user_data/your_projects");
                         process.umask(oldmask);
                         console.log('Rendering import_choices!')
-                        res.render('user_data/import_choices', {
-					        title: 'VAMPS:Import Choices',
-					        def_name:'',
-					        user: req.user, hostname: req.CONFIG.hostname
-					    });
+                        
+                        // res.render('user_data/import_choices', {
+// 					        title: 'VAMPS:Import Choices',
+// 					        def_name:'',
+// 					        user: req.user, hostname: req.CONFIG.hostname
+// 					    });
 					    //return
                       }
                       //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
 					  
-                    }); 
+                    });
+                req.flash('success', 'Metadata Load' + " has been started for project: '" + info.project_name + "'"); 
+                res.redirect('/')
             }else if(file_type == 'matrix'){
                 var parse_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_parse.py')
                 var parse_params = ['-t','matrix','-d',info.project_dir,'-p',info.project_name,'-u',info.owner,'-f',new_file_path]
