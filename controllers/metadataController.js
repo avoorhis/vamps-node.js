@@ -977,9 +977,9 @@ class ShowObj {
       const msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.\n<br/>';
 
       csv_files_obj.make_csv(base_name, this.req.form, msg);
-      // if (this.req.user.security_level <= 10) {
+      if (this.req.user.security_level <= 10) {
         csv_files_obj.make_csv_to_upload_to_pipeline(this.req);
-      // }
+      }
     }
 
     var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
