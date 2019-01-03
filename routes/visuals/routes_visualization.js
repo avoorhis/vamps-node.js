@@ -2882,6 +2882,8 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
         //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
         for( n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
             node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
+            //console.log('node')
+            //console.log(node)
             if(node.children_ids.length === 0){
                 json.item.push({id:node.node_id,text:node.taxon,tooltip:node.rank,checked:true,child:0})
             }else{
