@@ -251,7 +251,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     return result;
   }
 
-  make_out_file_base_name(req){
+  make_out_file_base_name(req, prefix){
     const time_stamp = new Date().getTime();
 
     var file_name_project_part = req.body.project;
@@ -262,7 +262,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     if (typeof req.body.project !== "string") {
       file_name_project_part = helpers.unique_array(file_name_project_part);
     }
-    const base_name = "metadata-project" + '_' + file_name_project_part + '_' + this.user.username + '_' + time_stamp + ".csv";
+    const base_name = prefix + "-project" + '_' + file_name_project_part + '_' + this.user.username + '_' + time_stamp + ".csv";
 
     return base_name;
   }
@@ -310,7 +310,9 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
       }
     }
 
-    const base_name = "pipeline_metadata_"  + helpers.unique_array(this.req.form['project']) + "_" + helpers.unique_array(this.req.form['run']) + "_" + helpers.unique_array(this.req.form['platform']) + "_" + helpers.unique_array(this.req.form['lane']) + "_" + helpers.unique_array(this.req.form['domain']) + "_.csv";
+    const base_name = this.make_out_file_base_name(this.req, "pipeline_metadata");
+
+    // const base_name = "pipeline_metadata-"  + helpers.unique_array(this.req.form['project']) + "_" + helpers.unique_array(this.req.form['run']) + "_" + helpers.unique_array(this.req.form['platform']) + "_" + helpers.unique_array(this.req.form['lane']) + "_" + helpers.unique_array(this.req.form['domain']) + "_.csv";
     const msg = 'File ' + base_name + ' was saved.';
 
     this.make_csv(base_name, pipeline_template_file, msg);

@@ -825,7 +825,7 @@ function saveMetadata(req, res) {
   console.log("SSS in saveMetadata");
 
   const csv_file_write = new csv_files_controller.CsvFilesWrite(req, res);
-  const base_name = csv_file_write.make_out_file_base_name(req);
+  const base_name = csv_file_write.make_out_file_base_name(req, "metadata");
   const msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.\n<br/>';
 
   csv_file_write.make_csv(base_name, req.form, msg);

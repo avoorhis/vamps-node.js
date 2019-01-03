@@ -973,7 +973,7 @@ class ShowObj {
 
     if ((typeof DATASET_IDS_BY_PID[pid] !== 'undefined') && (DATASET_IDS_BY_PID[pid].length > 0) && this.req.url !== "/metadata_new_csv_upload" && (typeof this.req.form !== 'undefined')) {// TODO: add comment what's this
       const csv_files_obj = new csv_files_controller.CsvFilesWrite(this.req, this.res);
-      let base_name = csv_files_obj.make_out_file_base_name(this.req);
+      const base_name = csv_files_obj.make_out_file_base_name(this.req, "metadata");
       const msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.\n<br/>';
 
       csv_files_obj.make_csv(base_name, this.req.form, msg);
