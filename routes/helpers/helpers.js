@@ -1549,7 +1549,9 @@ module.exports.make_gast_script_txt = function (req, data_dir, project, cmd_list
   }
   else {
     // the -sync y tag means that the following install scripts will run AFTER the cluster gast scripts finish
-    make_gast_script_txt += "qsub -sync y " + data_dir + "/clust_gast_ill_" + project + ".sh\n";
+    var sync_tag = '-sync y' // forces qsub to wait until all jobs finish before exiting
+    var parallel_env_tag = '-pe smp 5'  // req to work on vamps cluster 2019-01
+    make_gast_script_txt += "qsub "+parallel_env_tag+" "+sync_tag+" " + data_dir + "/clust_gast_ill_" + project + ".sh\n";
   }
   make_gast_script_txt += "echo \"Done with cluster_gast\" >> " + data_dir + "/cluster.log\n"
   make_gast_script_txt += "echo \"Running install scripts (see log)\" >> " + data_dir + "/cluster.log\n"
