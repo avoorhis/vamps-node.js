@@ -272,7 +272,7 @@ def run_matrix(args):
         taxa = tax.split(';')
         dom = taxa[0]
         
-        if dom in args.domains:  #461 vs 25
+        if dom in args.domains:
             # exclude Chloroplasts if Organelle not in
             if dom == 'Bacteria' and 'Organelle' not in args.domains and 'Chloroplast' in tax:
                 print('Chloroplast - Excluding',tax)
