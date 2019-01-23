@@ -1,11 +1,11 @@
 
 <% if (typeof doms === 'undefined') { %>
-<%   var domains = JSON.parse(constants).DOMAINS.domains; %>
+<%   var domains = JSON.parse(constants).UNITSELECT.silva119_simple.domains; %>
 <% } else { %>
 <%   domains = doms.domains %>
 <% } %>
 
-  <table class='table' >
+  <table class='table' border='0'>
   
   <tr><td>These apply only to the Biom and Taxonomy Matrix files:</td><td></td></tr>
   <tr><td>
@@ -16,7 +16,7 @@
     </span>
     </li>
     <% for (i in domains) { %>
-      <% domain = domains[i].name %>
+      <% domain = domains[i] %>
       <li class='normal_weight'>
         <% if(selected_domains.indexOf(domain) != -1){ %>
             <input type='checkbox' class='simple_taxa_ckbx' checked='checked' value='<%= domain %>' name='domains[]' \>
@@ -25,8 +25,14 @@
             <input type='checkbox' class='simple_taxa_ckbx'  value='<%= domain %>' name='domains[]' \>
         <% } %>
         <%= domain %>
+        
+        
+        
+        
       </li>
+      
     <% } %>
+    <small>(If 'Organelle' is de-selected 'Chloroplast' taxa and counts will also be removed from 'Bacteria'<br>but only when the taxonomic depth is greater than 'Phylum')</small>
     <br>
 <!--
     <li><span class='bold_font'>Include NAs</span> <span class='small_font'>(taxonomy not available):</span></li>

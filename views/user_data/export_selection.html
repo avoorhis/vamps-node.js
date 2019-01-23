@@ -77,11 +77,11 @@
               </tr>
               <tr>
                 <td>
-                <input type="checkbox" name='matrix' value="1"> Taxonomy Matrix File (counts matrix)<sup>**</sup>
+                <input type="checkbox" name='matrix' value="1"> Taxonomy Matrix File (TaxByTax -- counts matrix)<sup>**</sup>
                 </td>
                 <td>
                 </td>
-                <td>Tab-separated. Reads having the same taxonomic assignment are grouped (--coarsest grouping).</td>
+                <td>Tab-separated. Includes taxonomy (Reads having the same taxonomic assignment are grouped --coarse grouping).</td>
               </tr>
 <!--
               <tr>
@@ -94,20 +94,22 @@
 -->
               <tr>
                 <td>
-                <input type="checkbox" name='taxbyseq' value="1"> TaxBySeq File (counts matrix)<sup>**</sup></td>
+                <input type="checkbox" name='taxbyseq' value="1"> Sequence Matrix File (TaxBySeq -- counts matrix)<sup>**</sup></td>
                 <td></td>
 
-                <td>Tab-separated. Includes taxonomy and sequences (Reads having the exact same sequence are grouped --finest grouping).
+                <td>Tab-separated. Includes taxonomy and sequences (Reads having the exact same sequence are grouped --fine grouping).
                 </td>
               </tr>
-              <tr>
+              <!-- 
+<tr>
                 <td>
                 <input type="checkbox" name='taxbytax' value="1"> TaxByTax File (counts matrix)<sup>**</sup></td>
                 <td></td>
 
-                <td>Tab-separated. Includes taxonomy ( Reads having the same taxonomic assignment are grouped --coarsest grouping).
+                <td>Tab-separated. Includes taxonomy ( Reads having the same taxonomic assignment are grouped ~~coarsest grouping).
                 </td>
               </tr>
+ -->
               <tr>
                 <td>
                 <input type="checkbox" name='metadata1' value="1"> Metadata File (Datasets/samples as rows)</td>
