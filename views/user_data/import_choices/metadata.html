@@ -1,0 +1,132 @@
+
+<% porder = JSON.parse(pjs) %>
+<% var keys = Object.keys(porder) %>
+<% keys.sort() %>
+<% ENV = JSON.parse(ENV) %>
+<% include ../../add_ins/begin.ejs %>
+
+
+<p class="title">Import MetaData (In Development)</p>
+<% if(messages.success){ %>
+  <div class="alert_flash_message_success" ><%- messages.success %> </div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail" ><%- messages.fail %> </div>
+<% } %>
+<br>
+
+
+<!-- ========== SIMPLE / SINGLE FASTA ============================================================================================== 
+    Todo later: raw data processing (illumina -hiseq -miseq -newseq; 454)
+    -->	
+ 
+ <a href="/user_data/import_choices" >&lt;&lt;--back</a>
+    
+  <form class="form-horizontal" role="form" method="POST" action="meta">
+    
+	<h4>Import Metadata Form: <small>(All fields are required)</small></h4>
+<input id='submit_btn' type="button" class="btn btn-default pull-right" value='Submit & Validate' onclick="process_upload_metadata_form('metadata')">
+	
+	<div class="form-group">
+      <label class="control-label col-sm-3" for="project">Project Name (required):</label>
+	  <div class="col-sm-5">          
+       <!--  <input type="text" name="project" class="form-control" id="pname_input"  value="" > -->
+        <select class='' id='pid_select' name='pid_select'>
+            <option id='0' value='0'>Choose from your projects...</option>
+            <% for(i in keys){ %>
+                <option id='<%= porder[keys[i]] %>' value='<%= porder[keys[i]] %>'><%= keys[i] %> <%= porder[keys[i]] %></option>
+            <% } %>
+        </select>        
+      </div>    
+    </div>
+    
+
+	<div class="form-group">
+      <label class="control-label col-sm-3" for="metadata">CSV File <small>(required)</small>:</label>
+      <div class="col-sm-2">
+
+        <input type="file" name="upload_files" class="" id="file_input" >
+
+      </div>
+      <div class="col-sm-5">
+        File should be plain text and not compressed.
+	       <a href="/help/faq#formats" target="_blank" title="format"><span class="glyphicon glyphicon-question-sign"></span></a>
+      </div>
+    </div>
+   
+    
+    
+<div id='data_holder' style='display:none;'>    
+    <div style='' id='result_table'></div> 
+</div>
+<div class="form-group">
+    <label class="control-label col-sm-3" for="metadata">CSV file Format:<br><a href="#example">(See example format)</a></label>
+    <div class="col-sm-8">
+        
+        The input CSV file has to be formatted in a certain way
+        as a requirement before uploading successfully.  
+        <li>It must be a text file with the FIRST (header) row containing the metadata names and the fields separated by commas (no other commas are allowed!)
+        <li>The first column MUST contain the exact dataset (sample) names from the project selected above and the column header should be 'dataset'.
+        <li>Each row has to have the same number of columns as the header row.
+        <li><b>REQUIRED FIELDS</b> (blank entry is okay, but any entries must be from the lists shown or the correct format):
+        <ul>
+            <li><b>dataset</b> -- MUST be first column and must match exactly (spelling and case) what is already in the VAMPS database.
+            <br>Order is not important for the following required fields:
+            <li><b>collection_date</b>  -- Format: YYYY-MM-DD (example: 2017-03-01 for March 1st, 2017).
+            <li><b>latitude</b>  -- Format: Must be <a href='https://en.wikipedia.org/wiki/Decimal_degrees' target='_blank'>decimal degrees</a>. No degree symbol and use minus sign for below equator. NOTE: Do not use zero '0' here unless you sampled at the equator!
+            <li><b>longitude</b>  -- Format: Must be <a href='https://en.wikipedia.org/wiki/Decimal_degrees' target='_blank'>decimal degrees</a>. No degree symbol and use minus sign for west of PM. NOTE: Do not use zero '0' here unless you sampled along the Prime Meridian!
+            <li><b>geo_loc_name</b>  -- Name of country or sea region. Choose names from this <a href='country_list' target='_blank'>country list</a> or short name from the <a href='lzt_list' target='_blank'>Longhurst Zones</a> sea regions.
+            <li><b>env_package</b>   -- Environmental Source (Choose one from this list that fits best for each sample): 
+                                                                                                                        <select>
+                                                                                                                            <option>Available Choices</option>
+                                                                                                                        <% for(n in ENV){ %>
+                                                                                                                            <option><%= ENV[n] %></option>
+                                                                                                                        <% } %>
+                                                                                                                        </select>
+        </ul>
+        <li>In addition we <b>highly recommend</b> the following fields be included (blank entry is okay): 
+        <ul>   
+            <li><b>sequencing_platform</b>  -- One of: 454, illumina, ion_torrent, unknown
+            <li><b>domain</b> -- One of: Archaea, Bacteria, Eukarya, Fungi, Unknown
+            
+            
+            
+            
+            
+        </ul> 
+        
+    <a name='example'></a>
+    <small><pre>
+ Example Format:
+ 
+dataset,temperature,latitude,longitude,depth (meters),geo_loc_name,env_package,Phosphate,collection_date
+ds01,6.5,30.345,-130.3,70,Spain,indoor,34,2018-01-23
+ds02,6.23,30.345,-130.3,0,Brazil,plant_associated,40.3,2018-01-23
+ds03,4.8,30.345,-130.3,0.5,Mexico,water-marine,4.55,2018-01-25
+ds04,4.8,30.345,-130.3,1.98,INDW,water-marine,32,2018-01-25
+ds05,4.7,30.345,-130.3,34,Canada,water-marine,6.0,2018-01-25
+    </pre></small>
+       
+    </div>    
+</div>
+    
+    
+    
+    
+    <br><br>
+    
+    
+	<input type="hidden" name="type" value="secret">
+
+</form>
+
+	
+<% include ../../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/import.js"></script>
+<script type='text/javascript' src='/javascripts/bootstrap-select.js'></script>
+<script>
+  $(document).ready(function(){
+    $('.selectpicker').selectpicker({showSubtext:true, tickIcon: '',});
+  });
+</script>
+ </body>
+ </html>

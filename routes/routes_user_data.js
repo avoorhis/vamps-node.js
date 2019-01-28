@@ -631,6 +631,62 @@ router.get('/import_choices/biom', [helpers.isLoggedIn], function (req, res) {
     });
           
 });
+router.get('/import_choices/lzt_list', function (req, res) {
+    var list = {}
+    q = "SELECT term_name, definition from term where ontology_id='3' order by term_name"
+    connection.query(q, function update_req_metadata(err, rows, fields) {
+           if (err) {
+             console.log(err);return;
+           } else {
+             
+             for( n in rows){
+                list[rows[n]['term_name']] = rows[n]['definition']
+             }   
+             res.setHeader('Content-Type', 'application/json');
+             res.send(JSON.stringify(list,null,3))      
+           }
+    });           
+    
+});
+router.get('/import_choices/country_list', function (req, res) {
+    var list = {}
+    q = "SELECT term_name from term where ontology_id='4' order by term_name"
+    connection.query(q, function update_req_metadata(err, rows, fields) {
+           if (err) {
+             console.log(err);return;
+           } else {             
+             for( n in rows){
+                list[n] = rows[n]['term_name']
+             }   
+             res.setHeader('Content-Type', 'application/json');
+             res.send(JSON.stringify(list,null,3))      
+           }
+    });
+});
+router.get('/import_choices/metadata', [helpers.isLoggedIn], function (req, res) {
+    console.log('in GET import_choices/metadata')
+    // need user projects to send to GUI
+    
+    console.log(req.user)
+    //var my_projects = []
+    var my_projects = {}
+    for( i in PROJECT_INFORMATION_BY_PID ){
+        var pj = PROJECT_INFORMATION_BY_PID[i]
+        //console.log(PROJECT_INFORMATION_BY_PID[i])
+        if(pj.oid == req.user.user_id){
+            //my_projects.push(pj)
+            my_projects[pj.project] = pj.pid
+        }
+    }
+    console.log(my_projects)
+    res.render('user_data/import_choices/metadata', {
+          title: 'VAMPS:Import Data:metadata',
+          ENV : JSON.stringify(MD_ENV_PACKAGE),
+          pjs  : JSON.stringify(my_projects),
+          user: req.user, hostname: req.CONFIG.hostname
+    });
+          
+});
 //
 //
 router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(req, res) {
@@ -668,7 +724,8 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
     info.num_of_datasets = 0
     info.public = 1 
     info.dataset = {}
-    info.project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+project);
+    info.project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+info.project_name);
+    
     var new_info_filename_path = path.join(info.project_dir, req.CONSTS.CONFIG_FILE)
     var analysis_dir = path.join(info.project_dir, 'analysis')
     if(file_type == 'fasta'){
@@ -705,12 +762,386 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
         }
          
     });
+}); 
+//
+//
+//
+router.post('/loadDB_from_metadata_fileAV', helpers.isLoggedIn, function(req, res) {
+    console.log('in POST loadDB_from_metadata_fileAV')
+    console.log(req.body)
+    var pid = req.body.pid
+    // dir = req.body.metadata_dir
+    // filename = req.body.metadata_file
+    
+    var info = {}
+    info.project_name = PROJECT_INFORMATION_BY_PID[pid].project
+    info.pid = pid
+    info.total_seq_count = 0
+    info.owner = req.user.username
+    info.max_dataset_count = 0
+    info.num_of_datasets = 0
+    info.public = 1 
+    info.dataset = {}    
+    info.project_dir = req.body.metadata_dir
+    md_file_path = path.join(req.body.metadata_dir,req.body.metadata_file)
+    
+    console.log(JSON.stringify(info))
+    upload_finish(req, res, 'metadata', info, md_file_path)
+    //res.send('ok')
+})      
+router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], function(req, res) {
+
+    console.log('in POST upload_metadata_fileAV')
+    console.log(req.body)
+    
+    // project name validation/replace is in import.js
+    var pid = req.body.pid_select
+    var project = PROJECT_INFORMATION_BY_PID[pid].project
+    var file_type = 'metadata'
+    var timestamp = +new Date();  // millisecs since the epoch!
+    console.log('1a')
+    var original_file_path = req.files[0].path
+    var original_file_name = req.files[0].originalname
+    var error_fxn = function(req, res, msg){
+        console.log('FAIL re-open import choices page2')
+        req.flash('fail',msg)
+        //res.redirect('/');
+        res.render('user_data/import_choices', {
+          title: 'VAMPS:Import Choices',
+          project: '',
+          user: req.user, hostname: req.CONFIG.hostname
+        });
+        
+    }
+    
+    console.log('1')
+    console.log(original_file_path)
+    var info = {}
+    info.project_name = project
+    info.pid = pid
+    info.owner = req.user.username
+    
+    
+    
+    info.metadata_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project_metadata-'+info.project_name + '_'+ timestamp);
+    
+    var new_info_filename_path = path.join(info.metadata_dir, req.CONSTS.CONFIG_FILE)
+    
+    if(file_type == 'metadata'){
+        var new_file_name = 'original_metadata.csv'
+    }else{
+        console.log('Unknown file_type: '+file_type)
+        return
+    }
+    console.log('2')
+    var new_file_path = path.join(info.metadata_dir, new_file_name)
+    
+    fs.mkdir(info.metadata_dir, function ensureProjectDir(err) {
+        if(err){return console.log(err);} // => null
+        fs.chmodSync(info.metadata_dir, 0o775);
+        
+        console.log(original_file_path)
+        console.log(new_file_path)
+        if(IsFileCompressed(req.files[0])){     
+            gunzip = require('gunzip-file')
+            console.log('File is gzip compressed')
+            gunzip(original_file_path, new_file_path, function (err) {
+                if(err) throw err;
+                //upload_finish(req, res, file_type, info, new_file_path)
+            })
+        }else{
+            console.log('Move file as is')
+            fs.rename(original_file_path, new_file_path, function (err) {
+                if(err) throw err;
+                //upload_finish(req, res, file_type, info, new_file_path)
+                var parse = require('csv-parse');
+                var csvData=[];
+                fs.createReadStream(new_file_path)
+                  .pipe(parse({delimiter: ','}))
+                  .on('data', function(csvrow) {
+                     //console.log(csvrow);
+                     //do something with csvrow
+                     if(csvrow.length > 0){
+                        csvData.push(csvrow);     
+                     }   
+                  })
+                  .on('end',function() {
+                       //do something wiht csvData
+                       // var data = {}
+                        var header_array = csvData[0]
+                  
+                       console.log('header_array')
+                       console.log(header_array)
+                        var return_obj = validate_metadataAV(csvData,info.pid)
+                        //console.log(return_obj)
+                        // PLAN if error: send html error list
+                        var html= ''
+                        var errors;
+                        if(return_obj.error_return){
+                            
+                            html += "<div style='border:1px solid black; width:50%;height:200px;overflow:auto;margin:2px;'>Error List:<br>"
+                            html += "<ol style='color:red;'>"
+                            for(n in return_obj.msgs){
+                                html += '<li>'+return_obj.msgs[n]+'</li>'                            
+                            }
+                            html += '</ol></div>'
+                        }else{
+                            // otherwise send html table
+                            html += "<table class='table' border='1'>"                            
+                            html += '<tr>'
+                            for(n in header_array){
+                                html += '<th>'+header_array[n]+'</th>'                                
+                            }
+                            html += '</tr>'   
+                            for(ds in return_obj.data){
+                                html += '<tr>'
+                                html += '<td>'+ds+'</td>'                             
+                                for(n=1;n<header_array.length;n++){
+                                    html += '<td>'+return_obj.data[ds][header_array[n]]+'</td>'                                 
+                                }
+                                html += '</tr>'
+                            }
+                            html += '</table>'
+                        }                   
+                        
+                        res.send(JSON.stringify({'errors':return_obj.error_return,'html':html,'metadata_dir':info.metadata_dir,'filename':new_file_name}))
+                   
+                  });
+                
+            });
+            //rs = readStream     //.pipe(writeStream);
+        }
+         
+    });
 });       
-        //fs.rename(original_file_path, new_file_path, function (err) {
-            //if(err) throw err;
-function upload_finish(req,res,file_type,info,new_file_path){       
+//
+//
+//
+function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
+    // validate data:
+    // 'dataset' in first column --
+    // all rows contain same number of cols --
+    // datasets names match those in project (no extras) - however missing datasets are okay.
+    // collection date -- if present is in correct format --
+    // for every required field (with ids) the values should match with whats in the database  
+    // lat/lon -if present contain only float data and are within correct ranges
+    //  
+    error_return = 0
+    return_msg_array = []
+    var html = '';
+    var data_obj = {}  // data_obj[ds][md] = val
+    var headers = list_obj.shift()  // first row
+    
+    var dids = DATASET_IDS_BY_PID[pid]
+    all_dataset_names = []
+    
+    for(i in dids){
+        all_dataset_names.push(DATASET_NAME_BY_DID[dids[i]])  // ALL dataset names in project
+    }
+    // check for duplicate headers
+    var unique = helpers.unique_array(headers)
+    if(headers.length != unique.length){
+        return_msg_array.push("There is a duplicated header name.")  
+        error_return = 1     
+    }
+    if(headers[0] != 'dataset'){  // This is soo important it gets its own return
+        return {'error_return':1,'msgs':['The first column must be the "dataset" column to continue.'],'data':{}}
+    }
+    
+    var required_fields = ['dataset','latitude','longitude','collection_date','geo_loc_name','env_package']
+    got_em_all = true
+    missing = []
+    // MISSING Required Metadata Fields
+    for(n in required_fields){
+        r = required_fields[n]
+        if(headers.indexOf(r) == -1){
+            got_em_all = false
+            missing.push('Missing Required Field: '+r)
+        }
+    }
+    
+    if( ! got_em_all){
+        return {'error_return':1,'msgs':missing,'data':{}}
+    }
+    
+    var we_have_date = false
+    if(headers.indexOf('collection_date') >= 0){
+        we_have_date = true
+    }
+    var we_have_latlon = false
+    if(headers.indexOf('latitude') >= 0 || headers.indexOf('longitude') >= 0){
+        we_have_latlon = true
+    }
+    var we_have_geo_loc = false
+    if(headers.indexOf('geo_loc_name') >= 0){
+        we_have_geo_loc = true
+    }
+    var we_have_env = false
+    if(headers.indexOf('env_package') >= 0){
+        we_have_env = true
+    }
+    var we_have_platform = false
+    if(headers.indexOf('sequencing_platform') >= 0){
+        we_have_platform = true
+    }
+    var we_have_domain = false
+    if(headers.indexOf('domain') >= 0){
+        we_have_domain = true
+    }
+    
+    for(i in list_obj){
+        var dname = list_obj[i][0]
+        if(data_obj.hasOwnProperty(dname)){
+            return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -Dataset Name: "+list_obj[i][0]+" is duplicated on this row.")  
+            error_return = 1 
+        }
+        // MUST come after above block
+        data_obj[dname] = {}
+        if(list_obj[i].length != headers.length){
+            return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -The numer of columns isn't the same as the header row.")  
+            error_return = 1 
+        }
+        if( all_dataset_names.indexOf(dname) == -1 ){
+            return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -Dataset Name: "+list_obj[i][0]+" was not found for this project on VAMPS.")  
+            error_return = 1 
+        }
+        for(n=1;n<list_obj[i].length;n++){
+            val = list_obj[i][n]
+            mdname = headers[n]
+            data_obj[dname][mdname] = val 
+            // collection_date format
+            if(we_have_date && mdname == 'collection_date' && val != ''){
+                // validate date (javascript date??)
+                if( ! helpers.isValidMySQLDate(val)){
+                    return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -collection_date: "+val+" is not a valid date.")  
+                    error_return = 1 
+                }
+            } 
+            // lat/lon format
+            if(we_have_latlon && (mdname == 'latitude' || mdname == 'longitude') && val != ''){
+                // validate decimal float data
+                if( isNaN(val) ){
+                    return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -"+mdname+": "+val+" is not valid.")  
+                    error_return = 1 
+                }
+            }   
+            // geo_loc_name values         
+            if(we_have_geo_loc && mdname == 'geo_loc_name' && val != ''){
+                // need array of values for  MD_ENV_CNTRY and MD_ENV_LZC
+                geo_values = []
+                for( key in MD_ENV_CNTRY){
+                    geo_values.push(MD_ENV_CNTRY[key].toLowerCase())
+                }
+                for( key in MD_ENV_LZC){
+                    geo_values.push(MD_ENV_LZC[key].toLowerCase())
+                }                
+                // validate date (javascript date??)
+                if( geo_values.indexOf(val.toLowerCase()) == -1 ){
+                    return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -geo_loc_name: "+val+" is not valid.")  
+                    error_return = 1 
+                }
+                
+            } 
+            // env_package values
+            if(we_have_env && mdname == 'env_package' && val != ''){
+                pkg_values = []
+                for( key in MD_ENV_PACKAGE){
+                    pkg_values.push(MD_ENV_PACKAGE[key].toLowerCase())
+                }
+                if( pkg_values.indexOf(val.toLowerCase()) == -1 ){
+                    return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -env_package: "+val+" is not valid.")  
+                    error_return = 1 
+                }
+                data_obj[dname][mdname] = val.toLowerCase()
+            }
+            // sequencing_platform values
+            if(we_have_platform && mdname == 'sequencing_platform' && val != ''){
+                if(['454', 'illumina', 'ion_torrent', 'unknown'].indexOf(val.toLowerCase()) == -1){
+                    return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -sequencing_platform: "+val+" is not valid.")  
+                    error_return = 1 
+                }
+                data_obj[dname][mdname] = val.toLowerCase()
+            } 
+            // domain values
+            if(we_have_domain && mdname == 'domain' && val != ''){
+                if(['archaea', 'bacteria', 'eukarya', 'fungi', 'unknown'].indexOf(val.toLowerCase()) == -1){
+                    return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -domain: "+val+" is not valid.")  
+                    error_return = 1 
+                }
+                data_obj[dname][mdname] = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase()
+                
+                
+            }       
+        }
+        
+    }
+    
+    console.log(MD_ENV_PACKAGE)
+    //console.log(data_obj)
+    return {'error_return':error_return,'msgs':return_msg_array,'data':data_obj}
+    
+}
+//
+//
+//
+function upload_finish(req, res, file_type, info, new_file_path){       
             console.log('in upload_finish()')
-            if(file_type == 'matrix'){
+            if(file_type == 'metadata'){
+                console.log('in upload_finish:metadata')
+                var load_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_load_metadata.py')
+                var load_params = ['-host',req.CONFIG.dbhost,'-pid',info.pid,'-f',new_file_path,'-g']
+                load_cmd = load_cmd + ' ' + load_params.join(' ')
+                
+                var cmd_list = [] //matrixTax(req, info)
+                cmd_list.unshift(load_cmd)
+                var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': info.project_name, 'status': '', 'msg': '' };
+                status_params.statusOK = 'OK-META';
+                status_params.statusSUCCESS = 'META-SUCCESS';
+                status_params.msgOK = 'Finished META';
+                status_params.msgSUCCESS = 'META -add metadata';
+                var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'metadata', {});
+                var scriptlog2   = script_vars[0]; //path.join(info.project_dir, 'matrix_log.txt');
+                var script_text = script_vars[1]; //helpers.get_qsub_script_text_only(req, scriptlog2, info.project_dir, 'matrix', cmd_list);
+                var script_path = path.join(info.project_dir, 'metadata_script.sh');
+                var ok_code_options = ['metadata', status_params, res,''];
+                var mode = 0775;
+                var oldmask = process.umask(0);
+                fs.writeFile(script_path, 
+                    script_text, 
+                    {
+                      mode: mode
+                    }, 
+                    function(err) {
+                      if(err) {
+                          return console.log(err);
+                      }
+                      else
+                      {
+                        console.log('Before RunAndCheck Metadata')
+                        var full_script     = script_path //+ ' > ' + scriptlog2
+                        RunAndCheck(full_script, '', req, info.project_name, res, checkPid, ok_code_options);
+                        status_params.status = status_params.statusSUCCESS;
+                        status_params.msg = status_params.msgSUCCESS;
+                        helpers.update_status(status_params);
+                        console.log('After helpers.update_status Metadata')
+                        
+                        //res.redirect("/user_data/your_projects");
+                        process.umask(oldmask);
+                        console.log('Rendering import_choices!')
+                        
+                        // res.render('user_data/import_choices', {
+// 					        title: 'VAMPS:Import Choices',
+// 					        def_name:'',
+// 					        user: req.user, hostname: req.CONFIG.hostname
+// 					    });
+					    //return
+                      }
+                      //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
+					  
+                    });
+                req.flash('success', 'Metadata Load' + " has been started for project: '" + info.project_name + "'"); 
+                res.redirect('/')
+            }else if(file_type == 'matrix'){
                 var parse_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_parse.py')
                 var parse_params = ['-t','matrix','-d',info.project_dir,'-p',info.project_name,'-u',info.owner,'-f',new_file_path]
                 parse_cmd = parse_cmd + ' ' + parse_params.join(' ')
@@ -1789,15 +2220,15 @@ function checkPid(check_pid_options, last_line)
   status_params = check_pid_options[1];
   res           = check_pid_options[2];
   ref_db    = check_pid_options[3];
-  if(config.hostname.substring(0,7) != 'bpcweb8'){
-      console.log(' classifier CLCLCL: ' + classifier);
-      console.log(' last_line CLCLCL: ' + last_line);
-      console.log("status_params from checkPid: ");
-      console.log(check_pid_options);
-      console.log(util.inspect(status_params, false, null));
-      console.log(classifier.toUpperCase() + ' Success');
-  }
-  //console.log('PID last line: ' + last_line)
+  // if(config.hostname.substring(0,7) != 'bpcweb8'){
+//       console.log(' classifier CLCLCL: ' + classifier);
+//       console.log(' last_line CLCLCL: ' + last_line);
+//       console.log("status_params from checkPid: ");
+//       console.log(check_pid_options);
+//       console.log(util.inspect(status_params, false, null));
+//       console.log(classifier.toUpperCase() + ' Success');
+//   }
+  console.log('PID last line: ' + last_line)
   var ll = last_line.split('=');
   var pid = ll[1];
   console.log('checkPID NEW PID=: ' + pid);
@@ -1926,7 +2357,7 @@ function gastTaxOpts(req, project_config, ref_db){
 	opts.file_suffix      = ".fa" //+ getSuffix(project_config.MAIN.dna_region);
 	//opts.ref_db_name      = chooseRefFile(req.params.classifier);  //req.body.classifier
 	opts.ref_db_name      = req.params.ref_db
-	opts.full_option      = getFullOption(req.params.classifier);
+	opts.full_option      = getFullOption(req.params.ref_db);
 	opts.gast_db_path     = config.GAST_DB_PATH;
 	opts.gast_script_path = config.GAST_SCRIPT_PATH;
 	return opts
@@ -1946,7 +2377,7 @@ function gastTax(req, project_config, ref_db)
   opts.file_suffix      = ".fa" //+ getSuffix(project_config.MAIN.dna_region);
   //opts.ref_db_name      = chooseRefFile(req.params.classifier);  //req.body.classifier
   opts.ref_db_name      = req.params.ref_db
-  opts.full_option      = getFullOption(req.params.classifier);
+  opts.full_option      = getFullOption(req.params.ref_db);
   opts.gast_db_path     = config.GAST_DB_PATH;
   opts.gast_script_path = config.GAST_SCRIPT_PATH;
   
@@ -2080,18 +2511,18 @@ function getFastaExtensions(data_dir)
 }
 
 
-function metadata_upload(req, options, data_dir, project)
-{
-  // TODO: separate metadata upload from gast!
-  // metadata must go in after the projects and datasets:
-  // Should go into db after we have project and datasets in the db
-  // Should go in as entire project (w all datasets) -- not dataset by dataset
-  // PROBLEM: Here we dont have datasets yet in db
-  // Andy, Where is metadata_loader.py??? ASh
-  return options.scriptPath + '/metadata_loader.py -site ' + req.CONFIG.site + 
-    ' -indir ' + data_dir + 
-    ' -p '     + project;
-}
+// function metadata_upload(req, options, data_dir, project)
+// {
+//   // TODO: separate metadata upload from gast!
+//   // metadata must go in after the projects and datasets:
+//   // Should go into db after we have project and datasets in the db
+//   // Should go in as entire project (w all datasets) -- not dataset by dataset
+//   // PROBLEM: Here we dont have datasets yet in db
+//   // Andy, Where is metadata_loader.py??? ASh
+//   return options.scriptPath + '/metadata_loader.py -site ' + req.CONFIG.site + 
+//     ' -indir ' + data_dir + 
+//     ' -p '     + project;
+// }
 
 //
 // YOUR PROJECTS

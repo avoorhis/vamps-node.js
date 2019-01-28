@@ -1,0 +1,27 @@
+<% include ../add_ins/begin.ejs %>
+<% data_as_rows = JSON.parse(mdata_rows) %>
+<% data_as_obj = JSON.parse(mdata_obj) %>
+
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+<% } %>
+<br><br>
+<table border='1' >
+
+<% for(i in data){ %>
+    <tr>
+    <% for(m in data[i]){ %>
+        <td><%= data[i][m] %></td>
+    <% } %>
+    </tr>
+<% } %>
+
+
+
+
+</table>
+
+<% include ../add_ins/end.ejs %>
+

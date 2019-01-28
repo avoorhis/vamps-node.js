@@ -207,5 +207,17 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
     }
 
 });
+//
+//
+//
+router.get('/forgotten_password', function(req, res) {
+    console.log('IN forgotten_password')
+    res.render('user_admin/reset_password', {
+          title     :'VAMPS:re-set password',
+          //projects  : rows,
+          //user_info : JSON.stringify(ALL_USERS_BY_UID),
+          user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
+        });
+});
 
 module.exports = router;
