@@ -2357,7 +2357,7 @@ function gastTaxOpts(req, project_config, ref_db){
 	opts.file_suffix      = ".fa" //+ getSuffix(project_config.MAIN.dna_region);
 	//opts.ref_db_name      = chooseRefFile(req.params.classifier);  //req.body.classifier
 	opts.ref_db_name      = req.params.ref_db
-	opts.full_option      = getFullOption(req.params.classifier);
+	opts.full_option      = getFullOption(req.params.ref_db);
 	opts.gast_db_path     = config.GAST_DB_PATH;
 	opts.gast_script_path = config.GAST_SCRIPT_PATH;
 	return opts
@@ -2377,7 +2377,7 @@ function gastTax(req, project_config, ref_db)
   opts.file_suffix      = ".fa" //+ getSuffix(project_config.MAIN.dna_region);
   //opts.ref_db_name      = chooseRefFile(req.params.classifier);  //req.body.classifier
   opts.ref_db_name      = req.params.ref_db
-  opts.full_option      = getFullOption(req.params.classifier);
+  opts.full_option      = getFullOption(req.params.ref_db);
   opts.gast_db_path     = config.GAST_DB_PATH;
   opts.gast_script_path = config.GAST_SCRIPT_PATH;
   
