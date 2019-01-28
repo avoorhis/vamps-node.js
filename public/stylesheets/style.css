@@ -371,6 +371,11 @@ td.left_justify {
   background: yellow;
 }
 
+.add_on_top {
+    padding-top: 1ex;
+}
+
+
 .header_divider {
   background: #C6D7E9;
 }
