@@ -270,6 +270,12 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
     }
 
 });
+<<<<<<< HEAD
+=======
+//
+//
+//
+>>>>>>> 2456995ec9a01ca8ce6dd4331befc0efe25809b0
 
 
 module.exports = router;
