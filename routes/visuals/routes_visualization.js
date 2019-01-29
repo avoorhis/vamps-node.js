@@ -314,12 +314,14 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 //console.log('biom_matrix',biom_matrix);
   // function see below
   //render_view_selection(res, req, metadata, image_to_open)
+  var needed_constants = helpers.retrieve_needed_constants(C,'view_selection')
+  
   res.render('visuals/view_selection', {
                                 title           : 'VAMPS: Visuals Select',
                                 referer         : 'unit_selection',
                                 matrix          : JSON.stringify(biom_matrix),
                                 metadata        : JSON.stringify(metadata),
-                                constants       : JSON.stringify(C),
+                                constants       : JSON.stringify(needed_constants),
                                 post_items      : JSON.stringify(visual_post_items),
                                 user            : req.user,
                                 hostname        : req.CONFIG.hostname,
@@ -552,13 +554,14 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }else{
     var dataset_ids = JSON.parse(req.body.dataset_ids);
   }
+  var needed_constants = helpers.retrieve_needed_constants(C,'unit_selection')
   var LoadFailureRequest = function (req, res) {
         // return to
         res.render('visuals/visuals_index', {
                                     title       : 'VAMPS: Select Datasets',
                                     subtitle    : 'Dataset Selection Page',
                                     proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-                                    constants   : JSON.stringify(C),
+                                    constants   : JSON.stringify(needed_constants),
                                     md_env_package : JSON.stringify(MD_ENV_PACKAGE),
                                     md_names    : AllMetadataNames,
                                     filtering   : 0,
@@ -645,7 +648,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	                    title: 'VAMPS: Units Selection',
                         referer: 'visuals_index',
 	                    chosen_datasets: JSON.stringify(chosen_dataset_order),
-	                    constants    : JSON.stringify(C),
+	                    constants    : JSON.stringify(needed_constants),
 	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
 		  				md_req       : JSON.stringify(required_metadata_headers),   //
                         unit_choice  : unit_choice,
@@ -700,12 +703,12 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
     console.log('DATA_TO_OPEN');
     console.log(DATA_TO_OPEN);
 
-
+    var needed_constants = helpers.retrieve_needed_constants(C,'visuals_index')
     res.render('visuals/visuals_index', {
                                   title       : 'VAMPS: Select Datasets',
                                   subtitle    : 'Dataset Selection Page',
                                   proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-                                  constants   : JSON.stringify(C),
+                                  constants   : JSON.stringify(needed_constants),
                                   md_env_package : JSON.stringify(MD_ENV_PACKAGE),
                                   md_names    : AllMetadataNames,
                                   filtering   : 0,

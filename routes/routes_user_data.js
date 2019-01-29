@@ -90,7 +90,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
     console.log(req.body);
     //console.log(req.session);
     console.log('req.body: <<--export_confirm');
-    
+    var needed_constants = helpers.retrieve_needed_constants(req.CONSTS,'export')
     
     var id_name_order           = COMMON.create_chosen_id_name_order(req.session.chosen_id_order);
     if (req.body.fasta === undefined
@@ -109,7 +109,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
           title					: 'VAMPS: Export Choices',
           referer				: 'export_data',
           chosen_id_name_hash	: JSON.stringify(id_name_order),
-          constants				: JSON.stringify(req.CONSTS),
+          constants				: JSON.stringify(needed_constants),
           selected_rank			: req.body.tax_depth,
           selected_domains		: JSON.stringify(req.body.domains),
           user: req.user, hostname: req.CONFIG.hostname
@@ -177,12 +177,13 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
             'yes',   // include_nas
             true );
     }
+	
 	req.flash('success', "Your file(s) are being created -- <a href='/user_data/file_retrieval' >when ready they will be accessible here: File Retrieval</a>");
     res.render('user_data/export_selection', {
           title: 'VAMPS: Export Choices',
           referer: 'export_data',
           chosen_id_name_hash 	: JSON.stringify(id_name_order),
-          constants				: JSON.stringify(req.CONSTS),
+          constants				: JSON.stringify(needed_constants),
           selected_rank			: req.body.tax_depth,
           selected_domains		: JSON.stringify(req.body.domains),
           user: req.user, hostname: req.CONFIG.hostname
@@ -233,11 +234,11 @@ router.post('/export_selection', helpers.isLoggedIn, function (req, res) {
   } else {
    // GLOBAL Variable
   var id_name_order           = COMMON.create_chosen_id_name_order(dataset_ids);
- 
+  var needed_constants = helpers.retrieve_needed_constants(req.CONSTS,'export')
     res.render('user_data/export_selection', {
           title: 'VAMPS: Export Choices',
           referer: 'export_data',
-          constants: JSON.stringify(req.CONSTS),
+          constants: JSON.stringify(needed_constants),
           chosen_id_name_hash: JSON.stringify(id_name_order),
           selected_rank:'phylum', // initial condition
           selected_domains:JSON.stringify(req.CONSTS.DOMAINS.domains), // initial condition

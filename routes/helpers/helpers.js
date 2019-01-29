@@ -2280,7 +2280,30 @@ function transpose_arr_of_obj(a) {
 function jsUcfirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
-
+//
+//
+//
+exports.retrieve_needed_constants = function(cnsts, view)
+{
+    var obj = {}
+    obj.UNITSELECT = cnsts.UNITSELECT
+    if(view == 'view_selection'){
+        obj.VISUAL_THUMBNAILS = cnsts.VISUAL_THUMBNAILS
+        obj.VISUALOUTPUTCHOICES = cnsts.VISUALOUTPUTCHOICES
+        obj.DISTANCECHOICES = cnsts.DISTANCECHOICES
+        obj.NORMALIZATIONCHOICES = cnsts.NORMALIZATIONCHOICES 
+        obj.show_nas = cnsts.show_nas
+        obj.PCT_RANGE = cnsts.PCT_RANGE 
+    }else if(view == 'unit_selection') {  // unit_selection
+    
+    }else if(view == 'visuals_index'){  // visuals_index
+        obj.TARGETS = cnsts.TARGETS
+        obj.PORTALS = cnsts.PORTALS
+    }else if(view == 'export'){
+        obj.DOMAINS = cnsts.DOMAINS
+    }
+    return obj    
+}
 // module.exports.validate_name = function (name) {
 //     console.log('helpers.validate_name: '+name)
 //     pattern=/([^a-zA-Z0-9\.]+)/gi
