@@ -270,9 +270,12 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
     }
 
 });
+<<<<<<< HEAD
 //
 //
 //
 
+=======
+>>>>>>> parent of cc6f3428... Merge branch 'master' into submissions
 
 module.exports = router;

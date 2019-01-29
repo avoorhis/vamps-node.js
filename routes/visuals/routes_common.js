@@ -190,8 +190,7 @@ module.exports = {
             console.log(req.body.custom_taxa)
             console.log(typeof req.body.custom_taxa)
           }
-          //post_hash.custom_taxa   = req.body.custom_taxa  || ['NA'];
-          post_hash.custom_taxa   = req.session.custom_taxa || ['NA'];
+          post_hash.custom_taxa   = req.body.custom_taxa  || ['NA'];
           // html: [ '1', '60', '2120', '2261' ], object
           // fancy & dhtmlx:  1,60,2120,2260,2261,2266  string
           if(typeof req.body.custom_taxa === 'string'){
@@ -207,7 +206,6 @@ module.exports = {
           // in the unusual event that a single custom checkbox is selected --> must change from string to list:
 
           if(typeof post_hash.custom_taxa !== 'object') {post_hash.custom_taxa = [post_hash.custom_taxa]; }
-          
           if(post_hash.unit_choice === 'tax_'+C.default_taxonomy.name+'_custom' && post_hash.custom_taxa != ['NA']){
             post_hash.custom_taxa = this.clean_custom_tax(post_hash.custom_taxa);
           }
@@ -542,12 +540,8 @@ clean_custom_tax: function(custom_tax_ids){
     console.log('cleaning custom tax')
     cleaned_id_list = []
     nodes_to_delete = []
-    //console.log('custom_tax_ids')
-    //console.log(custom_tax_ids)
     for(index in custom_tax_ids){
       node_id = custom_tax_ids[index]
-      //console.log('node_id')
-      //console.log(node_id)
       node = new_taxonomy.taxa_tree_dict_map_by_id[node_id]
       //console.log('nodes ',node)
       parent_id = node.parent_id.toString()

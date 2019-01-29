@@ -100,8 +100,7 @@ constants.UNITSELECT               = {
       id: 'tax_silva119_custom',
       file: 'unit_selectors/taxa_silva119_custom.html',
       name: "Taxonomy (Silva-119) -Custom",
-      subtext: 'Silva119',
-      domains: ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]  // these should be the only selections available
+      subtext: 'Silva119'
     },
   rdp2_6_simple     : {
       id: 'tax_rdp2.6_simple',

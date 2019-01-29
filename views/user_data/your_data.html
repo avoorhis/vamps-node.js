@@ -129,28 +129,22 @@
 		          </div>
 		          
 		  </div>
-		
 		  <div class="<%= span %>">
 		          <div class="panel panel-default">
 		              <div class="panel-heading">
-		             
 		                <% if(user.username == 'guest'){ %>
 		                    <a disabled class="btn btn-sm btn-primary" href='/metadata/metadata_file_list'>Update Metadata</a>
 		                <% }else{ %>
 		                    <a class="btn btn-sm btn-primary" href='/metadata/metadata_file_list'>Update Metadata</a>
 		                <% } %>
-		               
+		                
 		                    
 		              </div>
 		              <div class="panel-body">
 		              	Upload or edit metadata for your projects.
-		              	<% if(user.security_level == '1'){ %>
-		              	    <br><br><b>ANNA</b>: I've set this note to Administrator-only viewing and can be deleted once you see it. I get a list of almost all my files not just the metadata files so it is very confusing.
-		              	<% } %> 
 		              </div>
 		          </div>
 		  </div>
-		 
 		</div>
 	</div>
 

@@ -1,6 +1,6 @@
 /* jshint multistr: true */
 
-var C = require('../public/constants');
+
 
 var taxa_query_pt1 = "SELECT DISTINCT domain, phylum, klass, `order`, family, genus, species, strain, \
  domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id \
@@ -14,11 +14,8 @@ var taxa_query_pt1 = "SELECT DISTINCT domain, phylum, klass, `order`, family, ge
  JOIN genus AS gen USING(genus_id) \
  JOIN species AS spe USING(species_id) \
  JOIN strain AS str USING(strain_id)";
- var sqldomains = (C.UNITSELECT.silva119_custom.domains).join("','")
- taxa_query_pt2 += " WHERE domain in ('"+sqldomains+"')";
+ //console.log('running custom tax query short-2');
  
- console.log('running custom tax query short-2');
- console.log(taxa_query_pt2);
 console.log('SILVA: running dataset_taxa_counts query from models/silva_taxonomy.js');
 
 module.exports = silvaTaxonomy;

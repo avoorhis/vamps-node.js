@@ -166,17 +166,12 @@ def check_project():
     global CONFIG_ITEMS
     global mysql_conn, cur
     proj = CONFIG_ITEMS['project_name']
-    q1 = "SELECT project, project_id from project WHERE project='%s'" % (proj)
-    cur.execute(q1)
+    q = "SELECT project, project_id from project WHERE project='%s'" % (proj)
+    cur.execute(q)
     if cur.rowcount > 0:
-        row = cur.fetchone()        
+        row = cur.fetchone()
+        
         return ('ERROR','Duplicate project name1: '+CONFIG_ITEMS['project_name']+' PID:'+str(row[1]))
-    rev = proj[::-1]
-    q2 = "SELECT rev_project_name, project_id from project WHERE rev_project_name='%s'" % (rev)
-    cur.execute(q2)
-    if cur.rowcount > 0:
-        row = cur.fetchone()        
-        return ('ERROR','Duplicate reverse project name1: '+rev+' PID:'+str(row[1]))
     return ('OK','')
            
 # def create_env_package():
