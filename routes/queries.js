@@ -262,32 +262,7 @@ get_select_seq_count_query: function(){
     //console.log(q)
     return q;
   },
-// <<<<<<< HEAD
-//   get_metagenomic_projects_query: function() {
-//
-//         var qSelectProjects = "SELECT project, title, project_id as pid, project_description, ";
-//         qSelectProjects += " username, email, institution, first_name, last_name, owner_user_id, public, metagenomic";
-//         qSelectProjects += " FROM project";
-//         qSelectProjects += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
-//         qSelectProjects += " WHERE metagenomic='1'";
-//         qSelectProjects += " AND project.active = 1";
-//         qSelectProjects += " ORDER BY project";
-//         //console.log(qSelectProjects);
-//         return qSelectProjects;
-//   },
-//   get_metagenomic_datasets_query: function() {
-//
-//         var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description,";
-//         qSelectDatasets += " username, email, institution, first_name, last_name, owner_user_id, public, metagenomic";
-//         qSelectDatasets += " FROM project";
-//         qSelectDatasets += " LEFT JOIN dataset USING(project_id)";
-//         qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
-//         qSelectDatasets += " WHERE metagenomic='1'";
-//         qSelectDatasets += " AND project.active = 1";
-//         qSelectDatasets += " ORDER BY project, dataset";
-//         //console.log(qSelectDatasets);
-//         return qSelectDatasets;
-// =======
+
   get_metagenomic_projects_query: function() {
 
     var qSelectProjects = "SELECT project, title, project_id as pid, project_description, ";
