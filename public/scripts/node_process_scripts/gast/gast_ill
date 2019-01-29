@@ -9,24 +9,24 @@
 # Date: Fri Feb 25 11:41:10 EST 2011
 #
 # Copyright (C) 2011 Marine Biological Laborotory, Woods Hole, MA
-# 
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # For a copy of the GNU General Public License, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 # or visit http://www.gnu.org/copyleft/gpl.html
 #
-# Keywords: gast taxonomy refssu 
-# 
-# Assumptions: 
+# Keywords: gast taxonomy refssu
+#
+# Assumptions:
 #
 # Revisions: ASh, add illumina changes
 #
@@ -39,6 +39,7 @@
 # Load the file into the database
 
 ########################################
+use lib '/groups/vampsweb/seqinfobin/perlmodules';
 use strict;
 use warnings;
 use Taxonomy;
@@ -61,19 +62,19 @@ my $usage = "
            gast -in mydata.trimmed.fa -ref refv3v5 -rtax refv3v5.tax -mp 0.80 -m 100 -out mydata.gast
    Illumina ex:
            gast_ill -saveuc -nodup  -in reference_uniques_fasta -db /xraid2-2/g454/blastdbs/gast_distributions/refv4v5.fa -rtax /xraid2-2/g454/blastdbs/gast_distributions/refv4v5.tax -out mydata.gast
-   ITS1 ex:         
+   ITS1 ex:
    (use -ignoregaps)
    gast_ill -ignoregaps -saveuc -nodup  -in my.fasta -db /xraid2-2/g454/blastdbs/gast_distributions/refits1.fa -rtax /xraid2-2/g454/blastdbs/gast_distributions/refits1.tax -out my.gast
 
- Options:  
+ Options:
            -in     input fasta file
            -ref/-db    reference fasta file containing unique sequences of known taxonomy
                    The definition line should include the ID used in the reference taxonomy file.
                    Any other information on the definition line should be separated by a space or a \"|\" symbol.
            -rtax   reference taxa file with taxonomy for all copies of the sequences in the reference fasta file
                    This is a tab-delimited file, three columns, describing the taxonomy of the reference sequences
-                   The ID matching the reference fasta, the taxonomy and the number of reference sequences with this 
-                      this same taxonomy.  
+                   The ID matching the reference fasta, the taxonomy and the number of reference sequences with this
+                      this same taxonomy.
            -out    output filename
            -terse  minimal output, includes only ID, taxonomy, and distance
                    See GAST manual for description of other fields
@@ -101,7 +102,7 @@ my $usage = "
 #######################################
 my $verbose = 0;
 my $self_cmd = join(" ", $0, @ARGV);
-my $log_filename = "gast.log";
+my $log_filename = "/groups/vampsweb/vamps_gast.log";
 my $in_filename;
 my $in_prefix;
 my $ref_filename = '';
@@ -120,7 +121,6 @@ my $gast_table;
 
 # USearch variables
 # my $usearch_cmd = "usearch6";
-# my $usearch_cmd = "module load vsearch; vsearch";
 my $usearch_cmd = "vsearch";
 my $min_pctid   = 0.80;
 my $max_accepts = 15;
@@ -144,16 +144,16 @@ my $majority = 66;
 #
 #######################################
 
-if (! $ARGV[0] ) 
+if (! $ARGV[0] )
 {
 	print $script_help;
 	print $usage;
 	exit -1;
-} 
+}
 
-while ((scalar @ARGV > 0) && ($ARGV[0] =~ /^-/)) 
+while ((scalar @ARGV > 0) && ($ARGV[0] =~ /^-/))
 {
-	if ($ARGV[0] =~ /-h/) 
+	if ($ARGV[0] =~ /-h/)
 	{
 		print $script_help;
 		print $usage;
@@ -187,7 +187,7 @@ while ((scalar @ARGV > 0) && ($ARGV[0] =~ /^-/))
 		$majority = shift @ARGV;
 	} elsif ($ARGV[0] eq "-uc") {
 		shift @ARGV;
-		$uclust_filename = shift @ARGV;    
+		$uclust_filename = shift @ARGV;
 	} elsif ($ARGV[0] eq "-full") {
 		shift @ARGV;
 		$use_full_length = 1;
@@ -241,22 +241,22 @@ while ((scalar @ARGV > 0) && ($ARGV[0] =~ /^-/))
 #
 #######################################
 
-if ( (! $in_filename) || ( (! $ref_filename) && (! $udb_filename) ) ) 
+if ( (! $in_filename) || ( (! $ref_filename) && (! $udb_filename) ) )
 {
 	print "Incorrect number of arguments.\n";
 	print "$usage\n";
 	exit;
-} 
+}
 
 if ( ( ($out_filename) && ($gast_table) ) || ( (! $out_filename) && (! $gast_table) ) )
 {
 	print "Please specify either an output file or a database table.\n";
 	print "$usage\n";
 	exit;
-} 
+}
 
 #Test validity of commandline arguments
-if (! -f $in_filename) 
+if (! -f $in_filename)
 {
 	print "Unable to locate input fasta file: $in_filename.\n";
 	exit -1;
@@ -283,7 +283,7 @@ open(LOG, ">>$log_filename") || die("Unable to write to output log file: $log_fi
 print LOG "$self_cmd (" . (localtime) . ")\n";
 
 # if no outfilename, then writing to database, create tmp file to store the data
-if (! $out_filename) 
+if (! $out_filename)
 {
     $out_filename = $gast_table . int(rand(9999)) . ".txt";
 }
@@ -299,7 +299,7 @@ $file_suffix =~ s/^.*\.//;
 my $uniques_filename = $file_prefix . ".unique." . $file_suffix;
 my $names_filename = $file_prefix . ".names";
 
-if (! $uclust_filename) 
+if (! $uclust_filename)
 {
   $uclust_filename = $uniques_filename . ".uc";
 }
@@ -332,7 +332,7 @@ else
 # old version
 #my $uclust_cmd = "uclust --iddef 3 --input $uniques_filename --lib $ref_filename --uc $uclust_filename --libonly --allhits --maxaccepts $max_accepts --maxrejects $max_rejects --id $min_pctid";
 
-if ($ref_filename) 
+if ($ref_filename)
 {
     $usearch_cmd .= " --db $ref_filename ";
 } else {
@@ -390,7 +390,7 @@ sub run_command
     print LOG "$command\n";
     if ($verbose) {print "$command\n";}
     my $command_err = system($command);
-    if ($command_err) 
+    if ($command_err)
     {
         my $err_msg = "Error $command_err encountered while running: \"$command\".  Exiting.";
         print LOG "$err_msg\n";
@@ -411,7 +411,7 @@ sub parse_uclust
     my %uc_aligns;
     my %refs_at_pctid;
     my %results;
-    
+
     # read in the data
     open(UC, $uc_file);
     while (my $line = <UC>)
@@ -419,15 +419,15 @@ sub parse_uclust
         if ($line =~ /^H/)
         {
             #It has a valid hit
-            chomp $line; 
-          
+            chomp $line;
+
             my @data;
             #  0=Type, 1=ClusterNr, 2=SeqLength, 3=PctId, 4=Strand, 5=QueryStart, 6=SeedStart, 7=Alignment, 8=Sequence ID, 9= Reference ID
             if ($nodup) # for illumina a header contains spaces
             {
               @data = split(/\t+/, $line);
             }
-            else 
+            else
             {
               @data = split(/\s+/, $line);
             }
@@ -435,23 +435,23 @@ sub parse_uclust
             my $tax = $data[9];
             $ref =~ s/\|.*$//;
             $tax =~ s/^.*\|//;
-    
+
             # store the alignment for each read / ref
             $uc_aligns{$data[8]}{$ref} = $data[7];
-    
+
             # create a look up for refs of a given pctID for each read
             push (@{$refs_at_pctid{$data[8]}{$data[3]}}, $ref);
 
         }
     }
-    
+
     #
     # For each read
     #
     foreach my $read (keys %uc_aligns)
     {
         my $found_hit = 0;
-    
+
         # for each read, start with the max PctID
         foreach my $pctid ( sort {$b<=>$a} keys %{$refs_at_pctid{$read}} )
         {
@@ -459,10 +459,10 @@ sub parse_uclust
             {
                 #
                 # Check the alignment for large gaps and/or remove terminal gaps
-                # 
+                #
                 my $original_align = $uc_aligns{$read}{$ref};
                 my $align = $original_align; # Use this to remove terminal gaps
-    
+
                 if ( ($ignore_terminal_gaps) || ($ignore_all_gaps) )
                 {
                     $align =~ s/^[0-9]*[DI]//;
@@ -473,50 +473,50 @@ sub parse_uclust
                     $align =~ s/^[0-9]*[I]//;
                     $align =~ s/[0-9]*[I]$//;
                 }
-        
+
                 $found_hit = 1;
 
                 # has internal gaps
-                if ( ($use_full_length) || (! $ignore_all_gaps) ) 
+                if ( ($use_full_length) || (! $ignore_all_gaps) )
                 {
                     while ($align =~ /[DI]/)
                     {
-                        $align =~ s/^[0-9]*[M]//;  # leading remove matches 
+                        $align =~ s/^[0-9]*[M]//;  # leading remove matches
                         $align =~ s/^[ID]//; # remove singleton indels
-        
+
                         if ($align =~ /^[0-9]*[ID]/)
                         {
                             my $gap = $align;
                             $align =~ s/^[0-9]*[ID]//;  # remove gap from aligment
                             $gap =~ s/[ID]$align//;     # remove alignment from gap
-    
+
                             # if too large a gap, tends to be indicative of chimera or other non-matches
                             # then skip to the next ref
-                            if ($gap > $max_gap) 
+                            if ($gap > $max_gap)
                             {
-                                if ($verbose) { print "Skip $ref of $read at $pctid pctid for $gap gap.  \n";} 
+                                if ($verbose) { print "Skip $ref of $read at $pctid pctid for $gap gap.  \n";}
                                 $found_hit = 0;
-                                last; 
+                                last;
                             }
                         }
                     }
                     if (! $found_hit) {next;} #don't print this one out.
                 }
-    
+
                 #
                 # convert from percent identity to distance
                 #
-                my $dist = (int((10* (100 -$pctid)) + 0.5)) / 1000; 
-        
+                my $dist = (int((10* (100 -$pctid)) + 0.5)) / 1000;
+
                 #
                 # print out the data
                 #
                 if ($verbose) {print join ("\t", $read, $ref, $pctid, $dist, $original_align) . "\n"; }
                 push ( @{$results{$read}},  [ $ref, $dist, $original_align] ) ;
             }
-    
+
             # Don't go to lower PctIDs if found a hit at this PctID.
-            if ($found_hit) {last;} 
+            if ($found_hit) {last;}
         }
 
     }
@@ -535,7 +535,7 @@ sub load_reftaxa
     my %taxa;
     my $no_freq = 0;
     open(TAX, "<$tax_file") || die ("Unable to open reference taxonomy file: $tax_file.  Exiting\n");
-    while (my $line = <TAX>) 
+    while (my $line = <TAX>)
     {
         chomp $line;
 
@@ -548,7 +548,7 @@ sub load_reftaxa
         {
           $data[2] = 1;
 	  $no_freq = 1;
-        } 
+        }
 
         # foreach instance of that taxa
         for my $i (1 .. $data[2])
@@ -568,7 +568,7 @@ sub load_reftaxa
      #  print "ERROR: There is no frequency in the .tax file! Use 1.\n";
      #}
      return \%taxa;
-} 
+}
 
 #######################################
 #
@@ -591,7 +591,7 @@ sub assign_taxonomy
     # print the field header lines, but not if loading table to the database
     if (! $gast_table)
     {
-        if ($terse) 
+        if ($terse)
         {
             print OUT join("\t", "read_id", "taxonomy", "distance", "rank") . "\n";
         } else {
@@ -599,20 +599,20 @@ sub assign_taxonomy
         }
     }
     open(NAMES, "<$names_file") || die ("Unable to open names file: $names_file.  Exiting\n");
-    
+
     while (my $line = <NAMES>)
     {
-    
+
         # Parse the names information
         chomp $line;
         my @data = split(/\t/, $line);
         my @dupes = split(/,/, $data[1]);
         my $read = $data[0];
-    
+
         my @taxObjects;
         my $distance;
         my %refs_for;
-          
+
         if (! exists $results{$read})
         {
             # No valid hit in the reference database
@@ -624,19 +624,19 @@ sub assign_taxonomy
             # Create an array of taxonomy objects for all the associated refssu_ids.
             for my $i ( 0 .. $#{$results{$read}} )
             {
-                # %{$results{$read}} is a hash of an array of arrays, so use index $i to step through each array, 
+                # %{$results{$read}} is a hash of an array of arrays, so use index $i to step through each array,
                 ### 0= $ref, 1= $dist, 2= $original_align, 3= $taxonomy_of{$ref} ];
                 my $ref = $results{$read}[$i][0];
 
                 # grab all the taxa assigned to that ref in the database, and add to the taxObjects to be used for consensus
                 foreach my $t (@{$ref_taxa{$ref}})
                 {
-                    push ( @taxObjects, Taxonomy->new($t) ); 
+                    push ( @taxObjects, Taxonomy->new($t) );
                 }
 
                 # maintain the list of references hit
                 push ( @{$refs_for{$read}}, $results{$read}[$i][0] );
-                
+
                 # should all be the same distance
                 $distance = $results{$read}[$i][1];
             }
@@ -648,7 +648,7 @@ sub assign_taxonomy
             my $taxon = $taxReturn[0]->taxstring;
             my $rank = $taxReturn[0]->depth;
             if (! $taxon) {$taxon = "Unknown";}
-        
+
             # (taxonomy, distance, rank, refssu_count, vote, minrank, taxa_counts, max_pcts, na_pcts)
             $results{$read} = [ $taxon, $distance, $rank, scalar @taxObjects, $taxReturn[1], $taxReturn[2], $taxReturn[3], $taxReturn[4], $taxReturn[5] ] ;
         }
@@ -657,11 +657,14 @@ sub assign_taxonomy
         for my $d (@dupes)
         {
             # @dupes includes the original as well, not just its copies
-            if ($terse) 
+            if ($terse)
             {
                 print OUT join("\t", $d, $results{$read}[0], $results{$read}[1], $results{$read}[2]) . "\n";
             } else {
                 print OUT join("\t", $d, @{$results{$read}}, join(",", sort @{$refs_for{$read}})) . "\n";
+                # returns wrong results:
+                # my $temp_res = @{$results{$read}};                                
+                # print OUT join("\t", $d, $$temp_res, join(",", sort @{$refs_for{$read}})) . "\n";
             }
         }
 

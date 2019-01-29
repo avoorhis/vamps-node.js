@@ -44,7 +44,9 @@
       <p>Guest Account (limited functionality): User: 'guest'; Password: 'guest'</p>
       <p>Need an account? <a href="/users/signup">Signup</a></p>
       <!-- <p>Forgot your password? <a href="/users/reset">Reset</a></p> -->
-      <!-- <p><a href="/users/forgotten_password">Forgot your password?</a></p> -->
+      <% if(hostname.substring(0,5) == 'local'){ %>
+        <p><a href="/users/forgotten_password">Forgot your password?</a></p>      
+      <% } %>
       <p>Account help? email: <a href="mailto:vamps@mbl.edu">vamps@mbl.edu</a> (Including forgotten passwords.)</p>
       
 

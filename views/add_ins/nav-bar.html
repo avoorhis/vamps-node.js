@@ -52,7 +52,7 @@
 
           <div class="navbar-text pull-right" >
             <small>
-              <% if (user === undefined) { %>
+              <% if (typeof user === 'undefined' ) { %>
                   <a href='/users/login' class="navbar-link" >login</a> or
                   <a href='/users/signup' class="navbar-link" >register</a>
               <% } else { %>
@@ -88,7 +88,7 @@
             <li class='<%= active_class_ydata %>'><a href="/user_data/your_data">Your Data</a></li>
             <li class='<%= active_class_search %>'><a href="/search/search_index">Search</a></li>
             <li class='<%= active_class_contact %>'><a href="/help/contact">Contact Us</a></li>
-          <% if (user !== undefined && user.security_level === 1) { %>
+          <% if (typeof user !== 'undefined' && user.security_level === 1) { %>
               <li class='<%= active_class_admin %>'><a href="/admin/admin_index">Admin</a></li>
           <% } %>
             <li class="<%= active_class_more %> dropdown">
@@ -96,7 +96,7 @@
 
 
               <ul class="dropdown-menu" role="menu">
-                <% if (user === undefined) { %>
+                <% if (typeof user === 'undefined') { %>
                   <li><a href="/users/signup">Register</a></li>
                 <% }else{ %>
                   <li><a href="/users/profile">Your Account</a></li>
@@ -126,8 +126,8 @@
                 <li><a href='/otus/otus_index'>Precompiled OTUs</a></li>
 
 
-                <% if (user !== undefined) { %>
-                    <%  //if (user.security_level <=10) { %>
+                <% if (typeof user !== 'undefined') { %>
+                    <%  //if (typeof user !== 'undefined' && user.security_level <=10) { %>
                             <li><a href='/metagenome/index'>Metagenomic Projects</a></li>
                     <%  //} %>
                 <%  } %>

@@ -1,0 +1,37 @@
+<% include ../add_ins/begin.ejs %>
+
+
+  <% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+  <% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+  <% } %>
+	
+	
+    <div class="container">
+        <br><br>
+            <div class="hero-unit">
+                   <h3>Update Account Information Form</h3>   
+            </div>
+        <br><br>
+        <form method='POST' action='update_account'>
+          <fieldset class="form-group">
+            <label for="">Change Email Address</label>
+            <input type="text" class="form-control" name="new_email" value='<%= user.email %>'>
+          </fieldset>
+          <fieldset class="form-group">
+            <label for="">Change Institution</label>
+            <input type="text" class="form-control" name="new_institution" value='<%= user.institution %>'>
+          </fieldset>
+          
+          <input type="hidden" class="form-control" name="username" value="<%= user.username %>">
+          <input type="hidden" class="form-control" name="uid" value="<%= user.user_id %>">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>

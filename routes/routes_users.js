@@ -158,10 +158,12 @@ router.get('/change_password', helpers.isLoggedIn, function(req, res) {
 
 
   res.render('user_admin/change_password', {
-              title     :'VAMPS:change_password',
+              title     :'VAMPS:change-password',
+              form_type : 'update',
               user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
             });  
 });
+
 //
 //
 //
@@ -171,6 +173,67 @@ router.post('/change_password',  passport.authenticate('local-reset', {
                                  })
 );
 //
+//
+//
+router.get('/update_account', helpers.isLoggedIn, function(req, res) {
+  console.log('In GET::update_account');
+
+
+  res.render('user_admin/update_account', {
+              title     :'VAMPS:update-account',
+              user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
+            });  
+});
+router.post('/update_account', helpers.isLoggedIn, function(req, res) {
+    console.log('In POST::update_account');
+    console.log(req.body)
+    console.log(ALL_USERS_BY_UID[req.body.uid])
+    if(req.body.uid != req.user.user_id){
+        console.log('No match - get out of here.')
+        req.flash('fail', 'Something went wrong - exiting');
+        res.redirect('/users/update_account');
+        return;
+    }
+    if(req.body.new_email == ALL_USERS_BY_UID[req.body.uid].email && req.body.new_institution == ALL_USERS_BY_UID[req.body.uid].institution){
+        console.log('No Update Needed')
+        req.flash('success', 'No Update Needed');
+        res.redirect('/users/update_account');
+    }else{
+        // NEEDS VALIDATION!!!
+        var query = "UPDATE user set email='"+req.body.new_email+"', institution='"+req.body.new_institution+"' where user_id='"+req.body.uid+"'"
+        req.db.query(query, function (err, rows, fields){
+            if (err)  {
+                req.flash('fail', 'Something went wrong with update - exiting');
+                res.redirect('/users/update_account');
+                return;
+            }else{
+                req.flash('success', 'Update Success');
+                ALL_USERS_BY_UID[req.body.uid].email        = req.body.new_email
+                ALL_USERS_BY_UID[req.body.uid].institution  = req.body.new_institution
+                res.redirect('/users/update_account');
+            }
+        })
+    }
+    
+});
+//
+//
+router.get('/forgotten_password', function(req, res) {
+    console.log('IN GET::forgotten_password')
+    res.render('user_admin/change_password', {
+          title     :'VAMPS:forgotten-password',
+          form_type : 'forgotten',
+           hostname: req.CONFIG.hostname // get the user out of session and pass to template
+        });
+});
+router.post('/reset_password', function(req, res) {
+    console.log('IN POST::reset_password')
+    console.log(req.body);
+    //{ username: 'avoorhis', email: 'avoorhis@mbl.edu' }
+    // create new password and send via email to user
+    req.flash('success', 'Email Sent To: '+req.body.email);
+    res.redirect('/users/forgotten_password')
+});
 //
 //
 router.get('/:id', helpers.isLoggedIn, function(req, res) {
@@ -210,14 +273,6 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.get('/forgotten_password', function(req, res) {
-    console.log('IN forgotten_password')
-    res.render('user_admin/reset_password', {
-          title     :'VAMPS:re-set password',
-          //projects  : rows,
-          //user_info : JSON.stringify(ALL_USERS_BY_UID),
-          user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
-        });
-});
+
 
 module.exports = router;

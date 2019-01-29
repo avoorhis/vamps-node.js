@@ -17,7 +17,10 @@
         <p>
           <strong>UserID</strong>: <%= user.user_id %>
           <% if(user.username !== 'guest'){ %>
-            <a class='pull-right' href='change_password'>Change Password</a><br>
+            <div class='pull-right'>
+            <a href='change_password'>Change Password</a><br>
+            <a href='update_account'>Update Email or Institution</a><br>
+            </div>
           <% } %>
           <strong>username</strong>: <%= user.username %><br>
           <strong>First Name</strong>: <%= user.first_name %><br>
