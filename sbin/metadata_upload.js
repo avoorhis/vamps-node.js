@@ -29,7 +29,7 @@ connection = require('../config/database-dev');
 
 var fs = require('fs');
 var parse = require('csv-parse');
-var constants = require('../public/constants');
+var constants = require('../public/constants_metadata');
 
 var req_fields = constants.REQ_METADATA_FIELDS;
 
