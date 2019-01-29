@@ -263,6 +263,7 @@ module.exports.isInt        = function (value) {
     return (x | 0) === x;
   })(parseFloat(value));
 };
+
 module.exports.IsJsonString = function (str) {
   try {
     JSON.parse(str);
@@ -1548,7 +1549,9 @@ module.exports.make_gast_script_txt = function (req, data_dir, project, cmd_list
   }
   else {
     // the -sync y tag means that the following install scripts will run AFTER the cluster gast scripts finish
-    make_gast_script_txt += "qsub -sync y " + data_dir + "/clust_gast_ill_" + project + ".sh\n";
+    var sync_tag = '-sync y' // forces qsub to wait until all jobs finish before exiting
+    var parallel_env_tag = '-pe smp 5'  // req to work on vamps cluster 2019-01
+    make_gast_script_txt += "qsub "+parallel_env_tag+" "+sync_tag+" " + data_dir + "/clust_gast_ill_" + project + ".sh\n";
   }
   make_gast_script_txt += "echo \"Done with cluster_gast\" >> " + data_dir + "/cluster.log\n"
   make_gast_script_txt += "echo \"Running install scripts (see log)\" >> " + data_dir + "/cluster.log\n"
@@ -1703,7 +1706,9 @@ module.exports.isValidMySQLDate = function (dateString) {
   // First check for the pattern
   //if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateString))
   //    return false;
-  if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(dateString))
+
+  // MUST be of this format: YYYY-MM-DD (only 2 digit days and months)
+  if(!/^\d{4}\-\d{2}\-\d{2}$/.test(dateString))
     return false;
   // Parse the date parts to integers
   var parts = dateString.split("-");
@@ -1711,8 +1716,9 @@ module.exports.isValidMySQLDate = function (dateString) {
   var month = parseInt(parts[1], 10);
   var day   = parseInt(parts[2], 10);
 
-  // Check the ranges of month and year
-  if (year < 1000 || year > 3000 || month == 0 || month > 12)
+
+  // Check the ranges of month and year (no future years allowed)
+  if(year < 1000 || year > (new Date()).getFullYear() || month == 0 || month > 12)
     return false;
 
   var monthLength = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];

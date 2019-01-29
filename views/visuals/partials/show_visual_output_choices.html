@@ -99,7 +99,7 @@ Screening/Options (<b><%= pi.unit_choice %></b>):<br>
   <div id='' style='padding-left:25px;'>
     <table border='1' style=''>
     <tr><td valign='top' style='padding:5px'>
-        <span class='bold_font'><span style='color:red;'>NEW<br></span> Included Domains:</span>
+        <span class='bold_font'>Included Domains:</span>
         
         <% for (i in domains) { %>
         <%      domain = domains[i] %>
@@ -115,7 +115,7 @@ Screening/Options (<b><%= pi.unit_choice %></b>):<br>
     <td valign='top' style='padding:5px'>
     
     
-        <span class='bold_font'><span style='color:red;'>NEW<br></span> Taxonomic Depth:</span>
+        <span class='bold_font'>Taxonomic Depth:</span>
         <% for(n in ranks) { %>
             <% if(ranks[n].substr(0,5) == 'klass'){ %>
                 <% rank = 'Class' %>
