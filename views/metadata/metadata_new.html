@@ -139,11 +139,9 @@ var all_metadata = {}
         <div class="metadata">
             <label class="col-sm-5 long_label" for="project_description">Project Description:</label>
             <textarea class="textarea_long" id="project_description" name="project_description"
-                      placeholder="max length: 1000 chars">
-            <% if (typeof project_description !== 'undefined') { %>
+                      placeholder="max length: 1000 chars"><% if (typeof project_description !== 'undefined') { %>
                 <%= metadata_new_form_values.project_description %>
-            <% } %>
-        </textarea>
+            <% } %></textarea>
         </div>
         <br/>
 
