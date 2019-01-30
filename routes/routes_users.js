@@ -270,11 +270,9 @@ router.post('/reset_password', function(req, res) {
       return;
     }
     
-    let transporter = nodemailer.createTransport({
-        host: "smtp.mbl.edu",
-        //port: 587,  //defaults to 587 if is secure is false or 465 if true
-        secure: false, // upgrade later with STARTTLS
-    });
+    let transporter = nodemailer.createTransport(req.CONFIG.smtp_connection_obj) 
+    
+      
     // verify connection configuration
     //create unique link: vamps2.mbl.edu/users/change_password?123xyz
     var message = {
@@ -282,7 +280,7 @@ router.post('/reset_password', function(req, res) {
       to:  email,
       subject: "Reset VAMPS Password",
       text: "Plaintext version of the message",
-      html: "<p><a href=\"https://vamps2.mbl.edu/users/change_password2?123xyz\">link to re-set password</a></p>"
+      html: "<p><a href=\"https://vamps2.mbl.edu/users/change_password2/123xyz\">link to re-set password</a></p>"
     };
     //console.log(message)
     transporter.verify(function(error, success) {
