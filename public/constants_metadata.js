@@ -236,6 +236,7 @@ constants_metadata.DNA_QUANTITATION_OPTIONS = ["Please choose one",
   "NanoQuant",
   "Perfluorocarbon Tracers",
   "PicoGreen",
+  "Qubit",
   "Other"];
 
 // "subseafloor",
