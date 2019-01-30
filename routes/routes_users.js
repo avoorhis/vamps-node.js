@@ -83,7 +83,7 @@ router.post('/login',  passport.authenticate('local-login', {
         if(err) {console.log(err);} // => null
         else{
             console.log('Checking USER_FILES_BASE: '+data_dir+' Exists - yes');
-            fs.chmod(data_dir, 0775, function (err) {
+            fs.chmod(data_dir, 0777, function (err) {
                 if(err) {console.log(err);} // ug+rwx
                 else{
                     console.log('Setting USER_FILES_BASE permissions to 0775');
