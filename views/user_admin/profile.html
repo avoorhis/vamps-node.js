@@ -20,6 +20,9 @@
             <div class='pull-right'>
             <a href='change_password'>Change Password</a><br>
             <a href='update_account'>Update Email or Institution</a><br>
+            <% if(user.username == 'avoorhis'){ %>
+                <p><a href="/users/forgotten_password">TESTing -->Forgot your password?</a></p>      
+            <% } %>
             </div>
           <% } %>
           <strong>username</strong>: <%= user.username %><br>

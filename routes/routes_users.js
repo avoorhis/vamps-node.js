@@ -4,9 +4,10 @@ var passport = require('passport');
 var helpers = require('./helpers/helpers');
 var fs = require('fs-extra');
 var async = require('async');
+var validator = require('validator');
 //var crypto = require('crypto')
 var path = require('path');
-//var nodemailer = require('nodemailer');
+var nodemailer = require('nodemailer');
 //var session   = require('express-session')
 //var flash    = require('connect-flash');
 //var LocalStrategy = require('passport-local').Strategy;
@@ -163,7 +164,16 @@ router.get('/change_password', helpers.isLoggedIn, function(req, res) {
               user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
             });  
 });
-
+router.get('/change_password2/:id', function(req, res) {
+    console.log('In change_password2 For forgotten passwords');
+    // should be private but not logged in
+    console.log(req.params)
+    res.render('user_admin/change_password', {
+              title     :'VAMPS:change-password',
+              form_type : 'update',
+              user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
+            });  
+});
 //
 //
 //
@@ -178,7 +188,6 @@ router.post('/change_password',  passport.authenticate('local-reset', {
 router.get('/update_account', helpers.isLoggedIn, function(req, res) {
   console.log('In GET::update_account');
 
-
   res.render('user_admin/update_account', {
               title     :'VAMPS:update-account',
               user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
@@ -187,20 +196,33 @@ router.get('/update_account', helpers.isLoggedIn, function(req, res) {
 router.post('/update_account', helpers.isLoggedIn, function(req, res) {
     console.log('In POST::update_account');
     console.log(req.body)
-    console.log(ALL_USERS_BY_UID[req.body.uid])
+    
+    //console.log(ALL_USERS_BY_UID[req.body.uid])
+    var inst  = req.body.new_institution
+    var email = req.body.new_email
+    
+    if (!validator.isEmail(email)) {
+      req.flash('fail', 'Email address is empty or the wrong format.');
+      res.redirect('/users/update_account');
+      return;
+    }
+    if (validator.isEmpty(inst) || inst.length > 100) {
+      req.flash('fail', 'Institution name is required. (size limit=100chars)');
+      res.redirect('/users/update_account');
+      return;
+    }
     if(req.body.uid != req.user.user_id){
         console.log('No match - get out of here.')
         req.flash('fail', 'Something went wrong - exiting');
         res.redirect('/users/update_account');
         return;
     }
-    if(req.body.new_email == ALL_USERS_BY_UID[req.body.uid].email && req.body.new_institution == ALL_USERS_BY_UID[req.body.uid].institution){
+    if(email == ALL_USERS_BY_UID[req.body.uid].email && inst == ALL_USERS_BY_UID[req.body.uid].institution){
         console.log('No Update Needed')
-        req.flash('success', 'No Update Needed');
+        req.flash('success', 'No Update Needed - Exiting');
         res.redirect('/users/update_account');
     }else{
-        // NEEDS VALIDATION!!!
-        var query = "UPDATE user set email='"+req.body.new_email+"', institution='"+req.body.new_institution+"' where user_id='"+req.body.uid+"'"
+        var query = "UPDATE user set email='"+email+"', institution='"+inst+"' where user_id='"+req.body.uid+"'"
         req.db.query(query, function (err, rows, fields){
             if (err)  {
                 req.flash('fail', 'Something went wrong with update - exiting');
@@ -208,8 +230,8 @@ router.post('/update_account', helpers.isLoggedIn, function(req, res) {
                 return;
             }else{
                 req.flash('success', 'Update Success');
-                ALL_USERS_BY_UID[req.body.uid].email        = req.body.new_email
-                ALL_USERS_BY_UID[req.body.uid].institution  = req.body.new_institution
+                ALL_USERS_BY_UID[req.body.uid].email        = email
+                ALL_USERS_BY_UID[req.body.uid].institution  = inst
                 res.redirect('/users/update_account');
             }
         })
@@ -226,12 +248,66 @@ router.get('/forgotten_password', function(req, res) {
            hostname: req.CONFIG.hostname // get the user out of session and pass to template
         });
 });
+//
+//
 router.post('/reset_password', function(req, res) {
     console.log('IN POST::reset_password')
     console.log(req.body);
     //{ username: 'avoorhis', email: 'avoorhis@mbl.edu' }
     // create new password and send via email to user
-    req.flash('success', 'Email Sent To: '+req.body.email);
+    //if username empty or not in users throw error
+    // if email not email format or not in users throw error
+    var email = req.body.email
+    var username = req.body.username
+    if (validator.isEmpty(username) || username.length > 30) {
+      req.flash('fail', 'username is required.');
+      res.redirect('/users/forgotten_password');
+      return;
+    }
+    if (!validator.isEmail(email)) {
+      req.flash('fail', 'Email address is empty or the wrong format.');
+      res.redirect('/users/forgotten_password');
+      return;
+    }
+    
+    let transporter = nodemailer.createTransport({
+        host: "smtp.mbl.edu",
+        //port: 587,  //defaults to 587 if is secure is false or 465 if true
+        secure: false, // upgrade later with STARTTLS
+    });
+    // verify connection configuration
+    //create unique link: vamps2.mbl.edu/users/change_password?123xyz
+    var message = {
+      from: "vamps@mbl.edu",
+      to:  email,
+      subject: "Reset VAMPS Password",
+      text: "Plaintext version of the message",
+      html: "<p><a href=\"https://vamps2.mbl.edu/users/change_password2?123xyz\">link to re-set password</a></p>"
+    };
+    //console.log(message)
+    transporter.verify(function(error, success) {
+        if (error) {
+            console.log(error);
+            req.flash('fail', 'Something went wrong with request. Please send an email to: vamps@mbl.edu');
+            res.redirect('/users/forgotten_password');
+            return;
+        } else {
+            console.log("Server is ready to take our messages");
+        }
+    });
+    transporter.sendMail(message, (error, info) => {
+        if (error) {
+            console.log('Error occurred');
+            console.log(error.message);            
+            req.flash('fail', 'Something went wrong with request. Please send an email to: vamps@mbl.edu');
+            res.redirect('/users/forgotten_password');
+            return;
+        }
+
+        console.log('Message sent successfully!');
+        
+    });
+    req.flash('success', 'Email Sent To: '+email);
     res.redirect('/users/forgotten_password')
 });
 //
