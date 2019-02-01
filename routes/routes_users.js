@@ -418,7 +418,7 @@ router.post('/reset_password2', function(req, res) {
         req.db.query(queries.reset_user_password_by_uid(new_password, req.body.uid), function(err, rows, fields){
             if(err){ console.log(err);return }
             console.log('Success -- password Updated')
-            req.flash('success', 'Password updated!');
+            req.flash('success', 'Password updated! Password updated! Password updated! Password updated! Password updated!');
             res.redirect('/users/login')
             return
         })
