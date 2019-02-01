@@ -1,6 +1,6 @@
 var C       = require(app_root + '/public/constants');
 var queries = require(app_root + '/routes/queries');
-var config  = require(app_root + '/config/config');
+const config  = require(app_root + '/config/config');
 
 var express     = require('express');
 var router      = express.Router();
@@ -1422,8 +1422,17 @@ module.exports.get_qsub_script_text_only = function (req, scriptlog, dir_path, c
 };
 
 module.exports.isLocal = function (req) {
-  var ext_hosts = ['vampsdev', 'bpcweb7', 'vamps', 'vampsdb']
-  return !(req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'bpcweb7' || req.CONFIG.dbhost == 'vampsdb' || req.CONFIG.dbhost == 'vamps');
+  var conf = "";
+  if (typeof req.CONFIG === 'undefined') {
+    conf  = require(app_root + '/config/config');
+  }
+  else {
+    conf = req.CONFIG;
+  }
+
+  var ext_hosts = ['vampsdev', 'bpcweb7', 'vamps', 'vampsdb'];
+  
+    return !(conf.dbhost === 'vampsdev' || conf.dbhost === 'bpcweb7' || conf.dbhost === 'vampsdb' || conf.dbhost === 'vamps');
 };
 
 module.exports.local_log = function (req, msg) {
