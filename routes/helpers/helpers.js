@@ -1431,8 +1431,11 @@ module.exports.isLocal = function (req) {
   }
 
   var ext_hosts = ['vampsdev', 'bpcweb7', 'vamps', 'vampsdb'];
-  
-    return !(conf.dbhost === 'vampsdev' || conf.dbhost === 'bpcweb7' || conf.dbhost === 'vampsdb' || conf.dbhost === 'vamps');
+
+  var not_ext_hosts = !(ext_hosts.includes(conf.dbhost));
+  return not_ext_hosts;
+
+    // return !(conf.dbhost === 'vampsdev' || conf.dbhost === 'bpcweb7' || conf.dbhost === 'vampsdb' || conf.dbhost === 'vamps');
 };
 
 module.exports.local_log = function (req, msg) {
