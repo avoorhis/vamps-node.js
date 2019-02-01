@@ -211,7 +211,7 @@ function login_auth_user(req, username, password, done, db) {
       });
       // helpers
       var user_data_dir = path.join(req.CONFIG.USER_FILES_BASE, username);
-      console.log('Validating/Creating User Data Directory: ' + user_data_dir);
+      //console.log('Validating/Creating User Data Directory: ' + user_data_dir);
       //helpers.ensure_dir_exists(user_data_dir);
       //helpers.ensure_dir_exists(user_data_dir);  // also chmod to 0777 (ug+rwx)
       // Here on login we delete the users tmp/* files from previous sessions.
