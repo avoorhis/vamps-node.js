@@ -13,8 +13,8 @@ var config  = require(app_root + '/config/config');
 // var expressValidator = require('express-validator');
 var nodeMailer           = require('nodemailer');
 var Project              = require(app_root + '/models/project_model');
-var Dataset              = require(app_root + '/models/dataset_model');
-// var User    = require(app_root + '/models/user_model');
+// var Dataset              = require(app_root + '/models/dataset_model');
+var User                 = require(app_root + '/models/user_model');
 var metadata_controller  = require(app_root + '/controllers/metadataController');
 var csv_files_controller = require(app_root + '/controllers/csvFilesController');
 const multer             = require('multer');
@@ -229,7 +229,16 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     const data_arr_no_head = csv_file_read.data_arr_no_head;
     let transposed = csv_file_read.make_obj_from_template_csv(data_arr_no_head);
 
-    const cur_project = new Project(req, res, 0, 0);
+    //TODO: move to a controller
+    const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
+    const [first_name, last_name] = met_obj.get_user_name_from_new_type_csv(transposed);
+    let this_user = new User();
+    let email = transposed['pi_email'][0];
+    let institution = transposed['pi_institution'][0];
+    this_user.getUserInfoFromGlobalbyUniqKey(first_name, last_name, email, institution);
+    let owner_id = this_user.User_obj.user_id;
+
+    const cur_project = new Project(req, res, 0, owner_id);
     // TODO get user info from global by user_name, email
     var project_name  = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0];
     helpers.local_log("PPP0: project_name", project_name);
@@ -237,7 +246,6 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     var pid = cur_project.get_pid(project_name);
     helpers.local_log("PPP1: pid", pid);
 
-    const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
     const curr_country = met_obj.unify_us_names(transposed["geo_loc_name_continental"]);
     transposed["geo_loc_name_continental"] = curr_country;
 

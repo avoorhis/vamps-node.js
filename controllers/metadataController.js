@@ -911,6 +911,14 @@ class CreateDataObj {
     return metadata_new_form_vals;
   }
 
+  get_user_name_from_new_type_csv(transposed) {
+    let pi_name = transposed['pi_name'][0];
+    let [first_name, last_name] = pi_name.split(" ");
+    console.log("first_name: ", first_name);
+    console.log("last_name: ", last_name);
+    return [first_name, last_name];
+  }
+
 }
 
 class ShowObj {
