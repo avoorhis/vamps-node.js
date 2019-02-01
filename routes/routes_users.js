@@ -155,7 +155,7 @@ router.get('/logout', function(req, res) {
 // CHANGE PASSWORD =====================
 // =====================================
 router.get('/change_password', helpers.isLoggedIn, function(req, res) {
-  console.log('In change_password');
+  console.log('In change_password for logged in users');
 
 
   res.render('user_admin/change_password', {
@@ -164,15 +164,32 @@ router.get('/change_password', helpers.isLoggedIn, function(req, res) {
               user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
             });  
 });
-router.get('/change_password2/:id', function(req, res) {
-    console.log('In change_password2 For forgotten passwords');
+router.get('/change_password/:id', function(req, res) {
+    console.log('In change_password for forgotten passwords');
     // should be private but not logged in
     console.log(req.params)
-    res.render('user_admin/change_password', {
-              title     :'VAMPS:change-password',
-              form_type : 'update',
-              user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
-            });  
+    var file_code_path = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp',req.params.id+'.json')
+    console.log(file_code_path)
+    // if file exists then valid? (or confirm some file content?) -- delete file after success
+    //if(helpers.fileExists(file_code_path)){
+    fs.readFile(file_code_path, function(err,data){
+        if(err){
+            console.log('No file exists -- does not validate -1!!')
+            res.redirect('/')
+            return
+        }
+        var data = JSON.parse(data)
+        console.log('File exists -- Validated!!')
+        res.render('user_admin/change_password', {
+              title     : 'VAMPS:change-password',
+              form_type : 'forgotten2',
+              code      : req.params.id,
+              username  : data.username,
+              uid       : data.uid,
+              hostname  : req.CONFIG.hostname // get the user out of session and pass to template
+        });  
+    })
+    
 });
 //
 //
@@ -244,19 +261,20 @@ router.get('/forgotten_password', function(req, res) {
     console.log('IN GET::forgotten_password')
     res.render('user_admin/change_password', {
           title     :'VAMPS:forgotten-password',
-          form_type : 'forgotten',
+          form_type : 'forgotten1',
            hostname: req.CONFIG.hostname // get the user out of session and pass to template
         });
 });
 //
 //
-router.post('/reset_password', function(req, res) {
-    console.log('IN POST::reset_password')
+router.post('/reset_password1', function(req, res) {
+    console.log('IN POST::reset_password1')
     console.log(req.body);
     //{ username: 'avoorhis', email: 'avoorhis@mbl.edu' }
     // create new password and send via email to user
     //if username empty or not in users throw error
     // if email not email format or not in users throw error
+    
     var email = req.body.email
     var username = req.body.username
     if (validator.isEmpty(username) || username.length > 30) {
@@ -269,47 +287,144 @@ router.post('/reset_password', function(req, res) {
       res.redirect('/users/forgotten_password');
       return;
     }
-    
-    let transporter = nodemailer.createTransport(req.CONFIG.smtp_connection_obj) 
-    
+    var query = "SELECT user_id from user where username='"+username+"' and email ='"+email+"'"
+    console.log(query)
+    req.db.query(query, function(err, rows, fields){
+        if (err)  {
+                req.flash('fail', 'We cannot find that username--email combination. Please contact us [vamps@mbl.edu] for assistance.');
+                res.redirect('/users/forgotten_password');
+                return;
+        }else{
+                if(rows.length !== 1){
+                    req.flash('fail', 'We cannot find that username--email combination. Please contact us [vamps@mbl.edu] for assistance.');
+                    res.redirect('/users/forgotten_password');
+                    return;
+                }
+                let transporter = nodemailer.createTransport(req.CONFIG.smtp_connection_obj) 
+                console.log(rows)
+                var uid = rows[0].user_id
       
-    // verify connection configuration
-    //create unique link: vamps2.mbl.edu/users/change_password?123xyz
-    var message = {
-      from: "vamps@mbl.edu",
-      to:  email,
-      subject: "Reset VAMPS Password",
-      text: "Plaintext version of the message",
-      html: "<p><a href=\"https://vamps2.mbl.edu/users/change_password2/123xyz\">link to re-set password</a></p>"
-    };
-    //console.log(message)
-    transporter.verify(function(error, success) {
-        if (error) {
-            console.log(error);
-            req.flash('fail', 'Something went wrong with request. Please send an email to: vamps@mbl.edu');
-            res.redirect('/users/forgotten_password');
-            return;
-        } else {
-            console.log("Server is ready to take our messages");
-        }
-    });
-    transporter.sendMail(message, (error, info) => {
-        if (error) {
-            console.log('Error occurred');
-            console.log(error.message);            
-            req.flash('fail', 'Something went wrong with request. Please send an email to: vamps@mbl.edu');
-            res.redirect('/users/forgotten_password');
-            return;
-        }
+                // verify connection configuration
+                //create unique link: vamps2.mbl.edu/users/change_password?123xyz
+                //var link;
+                var rando = Math.floor((Math.random() * (999999 - 100000 + 1)) + 100000);
+                var link = req.CONFIG.server_url+'/users/change_password/'+rando
+                // if(req.CONFIG.hostname == 'localhost'){
+//                     link = req.CONFIG.server_url+'/users/change_password/'+rando
+//                 }else{
+//                     link = 'https://vamps2.mbl.edu/users/change_password/'+rando
+//                 }
+                // write json file to 
+                var file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp',rando+'.json')
+                console.log(file_path)
+                var file_text = { "username":username, "uid":uid, "email":email }
+                var message = {
+                  from: "vamps@mbl.edu",
+                  to:  email,
+                  subject: "Reset VAMPS Password",
+                  text: link +" <-- Follow this link to re-set your password.",
+                  html: "<p>To reset your VAMPS password follow the link below:<br><br><a href=\""+link+"\">"+link+"</a></p>"
+                };
+                //console.log(message)
+                fs.writeFile(file_path, JSON.stringify(file_text), {mode: 0775}, function(err) {
+                      if(err) {return console.log(err);}
+                      else{
+          
+                        transporter.verify(function(error, success) {
+                            if (error) {
+                                console.log(error);
+                                req.flash('fail', 'Something went wrong with request. Please send an email to: vamps@mbl.edu');
+                                res.redirect('/users/forgotten_password');
+                                return;
+                            } else {
+                                console.log("Server is ready to take our messages");
+                            }
+                        });
+                        transporter.sendMail(message, (error, info) => {
+                            if (error) {
+                                console.log('Error occurred');
+                                console.log(error.message);            
+                                req.flash('fail', 'Something went wrong with request. Please send an email to: vamps@mbl.edu');
+                                res.redirect('/users/forgotten_password');
+                                return;
+                            }
 
-        console.log('Message sent successfully!');
+                            console.log('Message sent successfully!');
         
-    });
-    req.flash('success', 'Email Sent To: '+email);
-    res.redirect('/users/forgotten_password')
+                        });
+                        req.flash('success', 'Email Sent To: '+email);
+                        res.redirect('/users/forgotten_password')
+                 }
+                })
+                
+                
+                
+        }
+    })
+    
+    
 });
 //
 //
+//
+router.post('/reset_password2', function(req, res) {
+    console.log('IN POST::reset_password2')
+    console.log(req.body);
+    var queries       = require('../routes/queries_admin');
+    var new_password = req.body.new_password
+    var confirm_password = req.body.confirm_password
+    if (!validator.equals(new_password, confirm_password)) {
+      req.flash('fail', 'Passwords do not match!');
+      res.render('user_admin/change_password', {
+              title     : 'VAMPS:change-password',
+              form_type : 'forgotten2',
+              code      : req.body.code,
+              username  : req.body.username,
+              uid       : req.body.uid,
+              hostname  : req.CONFIG.hostname // get the user out of session and pass to template
+        }); 
+        return 
+    }
+    if (!validator.isLength(new_password, {min: 6, max: 12})) {
+      req.flash('fail', 'Password must be between 6 and 12 characters.');
+      res.render('user_admin/change_password', {
+              title     : 'VAMPS:change-password',
+              form_type : 'forgotten2',
+              code      : req.body.code,
+              username  : req.body.username,
+              uid       : req.body.uid,
+              hostname  : req.CONFIG.hostname // get the user out of session and pass to template
+        }); 
+        return 
+    }
+    // validate existence of file -- then delete it
+    // file has been validated and deleted in router.get('/change_password/:id', function(req, res) {
+    var file_code_path = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp',req.body.code+'.json')
+    //read file and validate username & email
+    fs.readFile(file_code_path, function(err,data){
+        if(err){
+            console.log('No file exists -- does not validate -2!!')
+            res.redirect('/')
+            return
+        }
+        var data = JSON.parse(data)
+        // now delete file
+        console.log('Deleting: '+file_code_path)
+        fs.unlinkSync(file_code_path);
+       
+        // now valid must enter new PW in database and return user to logon screen
+    
+        console.log('Trying: '+queries.reset_user_password_by_uid(new_password, req.body.uid))
+        req.db.query(queries.reset_user_password_by_uid(new_password, req.body.uid), function(err, rows, fields){
+            if(err){ console.log(err);return }
+            console.log('Success -- password Updated')
+            req.flash('success', 'Password updated!');
+            res.redirect('/users/login')
+            return
+        })
+    }); 
+    
+});
 router.get('/:id', helpers.isLoggedIn, function(req, res) {
    
    var uid = req.params.id
