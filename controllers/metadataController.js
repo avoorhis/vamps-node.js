@@ -338,9 +338,18 @@ class CreateDataObj {
     //   __proto__ = Array[0]
     //  url = "https://deepcarbon.net/dco_project_summary?uri=http://info.deepcarbon.net/individual/n2434"
 
+    // check_pi_name(all_metadata[pid]);
+
     console.timeEnd('TIME: make_metadata_object');
     return all_metadata;
   }
+
+  // check_pi_name(all_metadata_pid) {
+  //   for (var val in all_metadata_pid.pi_name) {
+  //     new_project.user_obj.first_name
+  //   }
+  //
+  // }
 
   get_names_from_ordered_const() {
     console.time('time: ordered_metadata_names_only');
