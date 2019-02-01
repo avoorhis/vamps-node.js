@@ -1426,6 +1426,12 @@ module.exports.isLocal = function (req) {
   return !(req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'bpcweb7' || req.CONFIG.dbhost == 'vampsdb' || req.CONFIG.dbhost == 'vamps');
 };
 
+module.exports.local_log = function (req, msg) {
+  if (module.exports.isLocal(req)) {
+    console.log(msg);
+  }
+};
+
 module.exports.deleteFolderRecursive = function (path) {
   if (fs.existsSync(path)) {
     if (fs.lstatSync(path).isFile()) {
@@ -2228,9 +2234,7 @@ function collect_errors(req) {
   var flash_msgs_sess = req.session.flash || {};
   var fail_msgs       = req.flash("fail") || [];
   var myArray_fail    = fail_msgs;
-  console.log("LLL01 success_msgs", success_msgs);
-  console.log("LLL02 flash_msgs_sess", flash_msgs_sess);
-  console.log("LLL03 fail_msgs", fail_msgs);
+
   req.session.flash = [];
 
   if ((typeof req.form !== 'undefined') && (req.form.errors.length > 0)) {
