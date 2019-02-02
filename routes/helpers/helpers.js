@@ -1380,6 +1380,7 @@ module.exports.get_qsub_script_text = function (req, scriptlog, dir_path, cmd_na
   script_text += "hostname\n";
   script_text += 'echo -n "qsub: Current working directory: "' + "\n";
   script_text += "pwd\n\n";
+  script_text += "source /groups/vampsweb/" + req.CONFIG.site + "/seqinfobin/vamps_environment.sh\n\n"
 //     script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";
 
   for (var i in cmd_list) {
