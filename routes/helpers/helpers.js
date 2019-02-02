@@ -2221,6 +2221,16 @@ exports.findByValueOfObject = function (arr, key, value) {
   });
 };
 
+exports.check_for_undefined0 = function (req, to_check, err_msg) {
+  {
+    let exists = (typeof to_check !== 'undefined');
+    if (!exists) {
+      req.flash('fail', err_msg);
+    }
+    return exists;
+  }
+};
+
 exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
   console.time('TIME: transpose_2d_arr_and_fill');
 

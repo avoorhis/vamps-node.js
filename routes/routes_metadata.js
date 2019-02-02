@@ -231,10 +231,22 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
 
     //TODO: move to a controller
     const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
-    const [first_name, last_name] = met_obj.get_user_name_from_new_type_csv(transposed);
+    const [first_name, last_name] = met_obj.get_user_name_from_new_type_csv(req, transposed);
     let this_user = new User();
-    let email = transposed['pi_email'][0];
-    let institution = transposed['pi_institution'][0];
+    if (typeof transposed['pi_email'] !== 'undefined') {
+      let email = transposed['pi_email'][0];
+    }
+    else {
+      err = "Please check PI email";
+      req.flash('fail', err);
+    }
+    if (typeof transposed['pi_institution'] !== 'undefined') {
+      let institution = transposed['pi_institution'][0];
+    }
+    else {
+      err = "Please check PI institution";
+      req.flash('fail', err);
+    }
     this_user.getUserInfoFromGlobalbyUniqKey(first_name, last_name, email, institution);
     let owner_id = this_user.User_obj.user_id;
 
