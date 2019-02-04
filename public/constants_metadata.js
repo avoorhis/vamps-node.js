@@ -337,7 +337,7 @@ constants_metadata.SAMPLE_TYPE = ["Please choose one",
   "environmental sample",
   "isolate"];
 
-constants_metadata.GAZ_SPELLING = {"United States": ["usa", "united states", "united states of america"]};
+constants_metadata.GAZ_SPELLING = {"United States": ["usa", "us", "united states", "united states of america"]};
 
 // TODO: add fields_names for each
 constants_metadata.PACKAGES_AND_PORTALS = {
