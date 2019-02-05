@@ -231,14 +231,8 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
 
     //TODO: move to a controller
     const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
-    const [first_name, last_name] = met_obj.get_user_name_from_new_type_csv(req, transposed);
     let this_user = new User();
-
-    let email = met_obj.get_email_from_new_type_csv(req, transposed);
-    let institution = met_obj.get_institution_from_new_type_csv(req, transposed);
-
-    this_user.getUserInfoFromGlobalbyUniqKey(first_name, last_name, email, institution);
-    let owner_id = this_user.User_obj.user_id;
+    let owner_id = met_obj.get_owner_id_with_new_type_csv(req, transposed, this_user);
 
     const cur_project = new Project(req, res, 0, owner_id);
     // TODO get user info from global by user_name, email

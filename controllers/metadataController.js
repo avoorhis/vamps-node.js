@@ -942,7 +942,6 @@ class CreateDataObj {
     return email;
   }
 
-
   get_institution_from_new_type_csv(req, transposed) {
     let pi_institution_exists = helpers.check_for_undefined0(req, transposed['pi_institution'], "Please check PI institution in the CSV");
 
@@ -953,7 +952,18 @@ class CreateDataObj {
     return institution;
   }
 
+  get_owner_id_with_new_type_csv(req, transposed, this_user) {
+    const [first_name, last_name] = this.get_user_name_from_new_type_csv(req, transposed);
+
+    let email = this.get_email_from_new_type_csv(req, transposed);
+    let institution = this.get_institution_from_new_type_csv(req, transposed);
+
+    this_user.getUserInfoFromGlobalbyUniqKey(first_name, last_name, email, institution);
+    let owner_id = this_user.User_obj.user_id;
+    return owner_id;
   }
+
+}
 
 
 
