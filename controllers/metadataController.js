@@ -928,11 +928,34 @@ class CreateDataObj {
       return [first_name, last_name];
     }
     else {
-      return ["", ""];
+      return ["", ""]; //TODO: stop and show error or write into log
     }
   }
 
-}
+  get_email_from_new_type_csv(req, transposed) {
+    let email = "";
+    let email_exists = helpers.check_for_undefined0(req, transposed['pi_email'], "Please check PI email in the CSV");
+
+    if (email_exists) {
+      email = transposed['pi_email'][0];
+    }
+    return email;
+  }
+
+
+  get_institution_from_new_type_csv(req, transposed) {
+    let pi_institution_exists = helpers.check_for_undefined0(req, transposed['pi_institution'], "Please check PI institution in the CSV");
+
+    let institution = "";
+    if (pi_institution_exists) {
+      institution = transposed['pi_institution'][0];
+    }
+    return institution;
+  }
+
+  }
+
+
 
 class ShowObj {
 
