@@ -229,21 +229,18 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     const data_arr_no_head = csv_file_read.data_arr_no_head;
     let transposed = csv_file_read.make_obj_from_template_csv(data_arr_no_head);
 
-    //TODO: move to a controller
     const met_obj = new metadata_controller.CreateDataObj(req, res, "", "");
-    let this_user = new User();
-    let owner_id = met_obj.get_owner_id_with_new_type_csv(req, transposed, this_user);
+    const this_user = new User();
+    const owner_id = met_obj.get_owner_id_with_new_type_csv(req, transposed, this_user);
 
     const cur_project = new Project(req, res, 0, owner_id);
-    // TODO get user info from global by user_name, email
-    var project_name  = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0];
+    const project_name  = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0];
     helpers.local_log("PPP0: project_name", project_name);
 
-    var pid = cur_project.get_pid(project_name);
+    const pid = cur_project.get_pid(project_name);
     helpers.local_log("PPP1: pid", pid);
 
-    const curr_country = met_obj.unify_us_names(transposed["geo_loc_name_continental"]);
-    transposed["geo_loc_name_continental"] = curr_country;
+    met_obj.get_curr_country_from_new_type_csv(transposed);
 
     if (typeof req.body.project === 'undefined' || pid === 0) {
       new_csv(req, res, cur_project, project_name, transposed);

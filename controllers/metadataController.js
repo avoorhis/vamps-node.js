@@ -963,6 +963,13 @@ class CreateDataObj {
     return owner_id;
   }
 
+  get_curr_country_from_new_type_csv(transposed) {
+    const curr_country = this.unify_us_names(transposed["geo_loc_name_continental"]);
+    transposed["geo_loc_name_continental"] = curr_country;
+    return transposed;
+  }
+
+
 }
 
 
