@@ -338,9 +338,18 @@ class CreateDataObj {
     //   __proto__ = Array[0]
     //  url = "https://deepcarbon.net/dco_project_summary?uri=http://info.deepcarbon.net/individual/n2434"
 
+    // check_pi_name(all_metadata[pid]);
+
     console.timeEnd('TIME: make_metadata_object');
     return all_metadata;
   }
+
+  // check_pi_name(all_metadata_pid) {
+  //   for (var val in all_metadata_pid.pi_name) {
+  //     new_project.user_obj.first_name
+  //   }
+  //
+  // }
 
   get_names_from_ordered_const() {
     console.time('time: ordered_metadata_names_only');
@@ -911,7 +920,59 @@ class CreateDataObj {
     return metadata_new_form_vals;
   }
 
+  get_user_name_from_new_type_csv(req, transposed) {
+    let pi_name_exists = helpers.check_for_undefined0(req, transposed['pi_name'], "Please check PI name in the CSV");
+    if (pi_name_exists) {
+      let pi_name                 = transposed['pi_name'][0];
+      let [first_name, last_name] = pi_name.split(" ");
+      return [first_name, last_name];
+    }
+    else {
+      return ["", ""]; //TODO: stop and show error or write into log
+    }
+  }
+
+  get_email_from_new_type_csv(req, transposed) {
+    let email = "";
+    let email_exists = helpers.check_for_undefined0(req, transposed['pi_email'], "Please check PI email in the CSV");
+
+    if (email_exists) {
+      email = transposed['pi_email'][0];
+    }
+    return email;
+  }
+
+  get_institution_from_new_type_csv(req, transposed) {
+    let pi_institution_exists = helpers.check_for_undefined0(req, transposed['pi_institution'], "Please check PI institution in the CSV");
+
+    let institution = "";
+    if (pi_institution_exists) {
+      institution = transposed['pi_institution'][0];
+    }
+    return institution;
+  }
+
+  get_owner_id_with_new_type_csv(req, transposed, this_user) {
+    const [first_name, last_name] = this.get_user_name_from_new_type_csv(req, transposed);
+
+    let email = this.get_email_from_new_type_csv(req, transposed);
+    let institution = this.get_institution_from_new_type_csv(req, transposed);
+
+    this_user.getUserInfoFromGlobalbyUniqKey(first_name, last_name, email, institution);
+    let owner_id = this_user.User_obj.user_id;
+    return owner_id;
+  }
+
+  get_curr_country_from_new_type_csv(transposed) {
+    const curr_country = this.unify_us_names(transposed["geo_loc_name_continental"]);
+    transposed["geo_loc_name_continental"] = curr_country;
+    return transposed;
+  }
+
+
 }
+
+
 
 class ShowObj {
 

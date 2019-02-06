@@ -61,12 +61,15 @@ class CsvFileRead {
     var transposed_object = this.create_an_empty_transposed_object_for_template(parsed_csv_obj);
 
     const empty_fixed_length_array = this.create_an_empty_fixed_length_array(dataset_num);
+    let skip_val = ["structured_comment_name", ""];
 
     for (var i = 0; i < array_width; i++) {
       let metadata_name = parsed_csv_obj[i][0];
       let dataset_ord_num  = 0;
       transposed_object[metadata_name] = empty_fixed_length_array.slice(); // must be "slice" to make a copy
 
+      let bad_val = skip_val.includes(metadata_name);
+      if (bad_val) { continue; }
       for (var n = 0; n < dataset_num; n++) {
         dataset_ord_num = key_const + n;
         let val = parsed_csv_obj[i][dataset_ord_num];
