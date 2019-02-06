@@ -1577,7 +1577,7 @@ module.exports.make_gast_script_txt = function (req, data_dir, project, cmd_list
   make_gast_script_txt += "echo \"Running install scripts (see log)\" >> " + data_dir + "/cluster.log\n"
   for (var i in cmd_list) {
     make_gast_script_txt += cmd_list[i] + "\n";
-    make_gast_script_txt += "DONE-"+i.toString() + "\n";
+    make_gast_script_txt += "echo \"DONE-"+i.toString()+"\" >> " + data_dir + "/cluster.log\n"
   }
 
   make_gast_script_txt += "\n";
