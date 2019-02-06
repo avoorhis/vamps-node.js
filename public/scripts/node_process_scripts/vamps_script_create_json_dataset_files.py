@@ -5,7 +5,7 @@
 
 
 """
-
+print('3)-->files')
 import sys,os
 import argparse
 import pymysql as MySQLdb
@@ -131,7 +131,7 @@ DATASET_ID_BY_NAME = {}
 #
 
 def go_add(args):
-    
+    print ("Starting "+os.path.basename(__file__))
     logging.info('CMD> '+' '.join(sys.argv))
     
     global mysql_conn, cur
@@ -230,6 +230,7 @@ def go_add(args):
     #logging.info('writing all taxcouts file')
     #write_all_taxcounts_file(args,counts_lookup)
     # print 'DONE (must now move file into place)'
+    print ("Finished "+os.path.basename(__file__))
 
 def write_all_metadata_file(args,metadata_lookup):
     original_metadata_lookup = read_original_metadata(args)

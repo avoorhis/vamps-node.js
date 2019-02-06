@@ -1384,7 +1384,8 @@ module.exports.get_qsub_script_text = function (req, scriptlog, dir_path, cmd_na
 //     script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";
 
   for (var i in cmd_list) {
-    script_text += cmd_list[i] + "\n\n";
+    script_text += cmd_list[i] + "\n";
+    script_text += "DONE-"+i.toString() + "\n";
   }
 //
 //     //script_text += "chmod 666 "+log+"\n";

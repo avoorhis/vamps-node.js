@@ -12,7 +12,7 @@
 #
 # Please read the COPYING file.
 #
-
+print('2)-->metadata')
 import os
 from stat import * # ST_SIZE etc
 import sys
@@ -65,6 +65,7 @@ id_queries = [
 
 
 def start_metadata_load_from_file(args):
+    print ("Starting "+os.path.basename(__file__))
     global mysql_conn, cur
     logging.info('CMD> '+' '.join(sys.argv))
     
@@ -115,6 +116,7 @@ def start_metadata_load_from_file(args):
         print(q)
         cur.execute(q)
     mysql_conn.commit()
+    print ("Finished "+os.path.basename(__file__))
 
 def get_null_ids():
     global mysql_conn, cur
