@@ -359,6 +359,7 @@ router.post('/metadata_upload',
   form(
     form.field("npoc", helpers.get_second("npoc")).trim().entityEncode().array(),
     form.field("access_point_type", helpers.get_second("access_point_type")).trim().entityEncode().array(),
+    form.field("adapter_3letter", helpers.get_second("adapter_3letter")).trim().required().entityEncode().array(),
     form.field("adapter_sequence", helpers.get_second("adapter_sequence")).trim().required().entityEncode().array(),
     form.field("alkalinity", helpers.get_second("alkalinity")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
     form.field("ammonium", helpers.get_second("ammonium")).trim().custom(helpers.numbers_n_period).entityEncode().array(),

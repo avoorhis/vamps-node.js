@@ -2153,6 +2153,19 @@ exports.dropdown_items_validation = function (value) {
   }
 };
 
+exports.adapter_3letter_filter = function (value) {
+  console.time('adapter_3letter_filter');
+  for (const key in C.GAZ_SPELLING) {
+    if (C.GAZ_SPELLING.hasOwnProperty(key)) {
+      const curr = C.GAZ_SPELLING[key];
+      if (curr.indexOf(value.toLowerCase()) > -1) {
+        return key;
+      }
+    }
+  }
+  console.timeEnd('adapter_3letter_filter');
+};
+
 const const_target_gene               = C.TARGET_GENE;
 module.exports.target_gene_validation = function (gene, source) {
   let u_domains_set         = new Set(source.domain);
