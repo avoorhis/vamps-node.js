@@ -211,15 +211,15 @@ get_select_seq_count_query: function(){
     return q;
   },
   get_select_domain_query: function() {
-    var q = "SELECT domain_id, domain\n"
-    q += " FROM `domain`\n"
-    // where domain in('Archaea','Bacteria','Eukarya','Organelle','Unknown')
+    var q = "SELECT domain_id, domain\n";
+    q += " FROM `domain`\n";
+    q += "where domain in ('Archaea', 'Bacteria', 'Eukarya', 'Fungi', 'Organelle', 'Unknown', 'all')";
     //console.log(q)
     return q;
   },
   get_select_dna_region_query: function() {
-    var q = "SELECT dna_region_id, dna_region\n"
-    q += " FROM `dna_region`\n"
+    var q = "SELECT dna_region_id, dna_region\n";
+    q += " FROM `dna_region`\n";
     //console.log(q)
     return q;
   },
