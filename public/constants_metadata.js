@@ -45,6 +45,7 @@ constants_metadata.ORDERED_METADATA_NAMES = [
   ["structured comment name", "Parameter", "", ""], //MBL Supplied or Optional
   ["", "General", "", ""],
   // ["project","VAMPS project name","MBL Supplied", ""],
+  ["sample_name", "Sample ID (user sample name)", "User supplied", ""],
   ["dataset", "VAMPS dataset name", "MBL Supplied", ""],
   ["geo_loc_name_continental", "Country (if not international waters)", "User Supplied", ""],
   ["geo_loc_name_marine", "Longhurst Zone (if marine)", "User Supplied", ""],
@@ -62,7 +63,6 @@ constants_metadata.ORDERED_METADATA_NAMES = [
   ["run", "Sequencing run date", "MBL Supplied", "YYYY-MM-DD"],
   ["", "User supplied metadata", "", ""],
   ["env_package", "Environmental Package", "User supplied", ""],
-  ["sample_name", "Sample ID (user sample name)", "User supplied", ""],
   ["investigation_type", "Investigation Type", "User supplied", ""],
   ["sample_type", "Sample Type", "User supplied", ""],
   ["collection_date", "Sample collection date", "User supplied", "YYYY-MM-DD"],
