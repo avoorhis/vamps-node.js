@@ -12,7 +12,7 @@
 #
 # Please read the COPYING file.
 #
-
+print('1)-->database')
 import os
 from stat import * # ST_SIZE etc
 import sys
@@ -53,6 +53,7 @@ accepted_domains = ['bacteria','archaea','eukarya','fungi','organelle','unknown'
 
 
 def start(args):
+    print ("Starting "+os.path.basename(__file__))
     global CONFIG_ITEMS
     
     #global IDS_BY_TAX
@@ -863,6 +864,6 @@ if __name__ == '__main__':
     else:
         args.hostname = 'localhost'
         args.NODE_DATABASE = 'vamps_development'
-    print ('db host',args.hostname,'db name',args.NODE_DATABASE)
+    print ('db-host:',args.hostname,'db-name:',args.NODE_DATABASE)
     start(args)
     
