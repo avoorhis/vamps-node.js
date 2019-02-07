@@ -103,7 +103,7 @@ get_select_seq_count_query: function(){
 
     //var sql_dids = dids.join(',')
     var seqQuery = "SELECT dataset_id, UNCOMPRESS(sequence_comp) as seq, seq_count, gast_distance, classifier\n"
-    seqQuery += ",domain_id,phylum_id,klass_id,order_id,family_id,genus_id,species_id,strain_id FROM `sequence`\n"
+    seqQuery += ",domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id FROM `sequence`\n"
     seqQuery += " JOIN sequence_pdr_info as t1 USING(sequence_id)\n"
     seqQuery += " JOIN sequence_uniq_info as t2 USING(sequence_id)\n"
     seqQuery += " JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n"
@@ -120,7 +120,7 @@ get_select_seq_count_query: function(){
     var tax_items  = taxa.split(';');
 
     var seqQuery = "SELECT UNCOMPRESS(sequence_comp) as seq, seq_count, gast_distance, classifier\n"
-    seqQuery += ",domain_id,phylum_id,klass_id,order_id,family_id,genus_id,species_id,strain_id FROM `sequence`\n"
+    seqQuery += ", domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id FROM `sequence`\n"
     seqQuery += " JOIN sequence_pdr_info as t1 USING(sequence_id)\n"
     seqQuery += " JOIN sequence_uniq_info as t2 USING(sequence_id)\n"
     seqQuery += " JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n"
@@ -211,15 +211,15 @@ get_select_seq_count_query: function(){
     return q;
   },
   get_select_domain_query: function() {
-    var q = "SELECT domain_id, domain\n"
-    q += " FROM `domain`\n"
-    // where domain in('Archaea','Bacteria','Eukarya','Organelle','Unknown')
+    var q = "SELECT domain_id, domain\n";
+    q += " FROM `domain`\n";
+    q += "where domain in ('Archaea', 'Bacteria', 'Eukarya', 'Fungi', 'Organelle', 'Unknown', 'all')";
     //console.log(q)
     return q;
   },
   get_select_dna_region_query: function() {
-    var q = "SELECT dna_region_id, dna_region\n"
-    q += " FROM `dna_region`\n"
+    var q = "SELECT dna_region_id, dna_region\n";
+    q += " FROM `dna_region`\n";
     //console.log(q)
     return q;
   },
@@ -230,14 +230,21 @@ get_select_seq_count_query: function(){
     return q;
   },
   get_select_sequencing_platform_query: function() {
-    var q = "SELECT sequencing_platform_id, sequencing_platform\n"
-    q += " FROM `sequencing_platform`\n"
+    var q = "SELECT sequencing_platform_id, sequencing_platform\n";
+    q += " FROM `sequencing_platform`\n";
     //console.log(q)
     return q;
   },
+
+  get_select_Illumina_3letter_adapter_query: function() {
+  var q = "SELECT illumina_adaptor_id, illumina_adaptor\n";
+  q += " FROM `illumina_adaptor`\n";
+  //console.log(q)
+  return q;
+},
   get_select_adapter_sequence_query: function() {
-    var q = "SELECT run_key_id, run_key\n"
-    q += " FROM `run_key`\n"
+    var q = "SELECT run_key_id, run_key\n";
+    q += " FROM `run_key`\n";
     //console.log(q)
     return q;
   },
@@ -255,10 +262,10 @@ get_select_seq_count_query: function(){
   },
   get_select_primer_suite_query: function() {
 
-    var q = "SELECT primer, primer_id, primer_suite, primer_suite_id,  direction, sequence, region, domain"
-    q += " FROM ref_primer_suite_primer"
-    q += " JOIN primer_suite USING(primer_suite_id)"
-    q += " JOIN primer USING(primer_id)"
+    var q = "SELECT primer, primer_id, primer_suite, primer_suite_id,  direction, sequence, region, domain";
+    q += " FROM ref_primer_suite_primer";
+    q += " JOIN primer_suite USING(primer_suite_id)";
+    q += " JOIN primer USING(primer_id)";
     //console.log(q)
     return q;
   },

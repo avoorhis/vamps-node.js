@@ -38,6 +38,7 @@ module.exports.get_datasets = function(callback){
   MD_DNA_REGION               = {};
   MD_TARGET_GENE              = {};
   MD_SEQUENCING_PLATFORM      = {};
+  MD_3LETTER_ADAPTER          = {};
   MD_ADAPTER_SEQUENCE         = {};
   MD_ILLUMINA_INDEX           = {};
   MD_PRIMER_SUITE             = {};
@@ -234,6 +235,18 @@ module.exports.get_datasets = function(callback){
       }
       console.log(' INITIALIZING MD_SEQUENCING_PLATFORM');
   });
+
+  connection.query(queries.get_select_Illumina_3letter_adapter_query(), function(err, rows, fields){
+    if (err)  {
+      console.log('Query error: ' + err);
+      console.log(err.stack);
+      process.exit(1);
+    } else {
+      helpers.get_select_Illumina_3letter_adapter_query(rows);
+    }
+    console.log(' INITIALIZING MD_3LETTER_ADAPTER');
+  });
+
     connection.query(queries.get_select_adapter_sequence_query(), function(err, rows, fields){
       if (err)  {
         console.log('Query error: ' + err);

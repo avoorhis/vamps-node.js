@@ -448,11 +448,19 @@ module.exports.get_select_sequencing_platform_query = function (rows) {
     MD_SEQUENCING_PLATFORM[rows[i].sequencing_platform_id] = rows[i].sequencing_platform;
   }
 };
+
+module.exports.get_select_3letter_adapter_query    = function (rows) {
+  for (var i = 0; i < rows.length; i++) {
+    MD_3LETTER_ADAPTER[rows[i].run_key_id] = rows[i].run_key;
+  }
+};
+
 module.exports.get_select_adapter_sequence_query    = function (rows) {
   for (var i = 0; i < rows.length; i++) {
     MD_ADAPTER_SEQUENCE[rows[i].run_key_id] = rows[i].run_key;
   }
 };
+
 module.exports.get_select_illumina_index_query      = function (rows) {
   for (var i = 0; i < rows.length; i++) {
     MD_ILLUMINA_INDEX[rows[i].illumina_index_id] = rows[i].illumina_index;
