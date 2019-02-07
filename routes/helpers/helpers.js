@@ -449,9 +449,9 @@ module.exports.get_select_sequencing_platform_query = function (rows) {
   }
 };
 
-module.exports.get_select_3letter_adapter_query    = function (rows) {
+module.exports.get_select_Illumina_3letter_adapter_query    = function (rows) {
   for (var i = 0; i < rows.length; i++) {
-    MD_3LETTER_ADAPTER[rows[i].run_key_id] = rows[i].run_key;
+    MD_3LETTER_ADAPTER[rows[i].illumina_adaptor_id] = rows[i].illumina_adaptor;
   }
 };
 
@@ -2163,18 +2163,18 @@ exports.dropdown_items_validation = function (value) {
   }
 };
 
-exports.adapter_3letter_filter = function (value) {
-  console.time('adapter_3letter_filter');
-  for (const key in C.GAZ_SPELLING) {
-    if (C.GAZ_SPELLING.hasOwnProperty(key)) {
-      const curr = C.GAZ_SPELLING[key];
-      if (curr.indexOf(value.toLowerCase()) > -1) {
-        return key;
-      }
-    }
-  }
-  console.timeEnd('adapter_3letter_filter');
-};
+// exports.adapt_3letter_filter = function (value) {
+//   console.time('adapt_3letter_filter');
+//   for (const key in C.GAZ_SPELLING) {
+//     if (C.GAZ_SPELLING.hasOwnProperty(key)) {
+//       const curr = C.GAZ_SPELLING[key];
+//       if (curr.indexOf(value.toLowerCase()) > -1) {
+//         return key;
+//       }
+//     }
+//   }
+//   console.timeEnd('adapt_3letter_filter');
+// };
 
 const const_target_gene               = C.TARGET_GENE;
 module.exports.target_gene_validation = function (gene, source) {

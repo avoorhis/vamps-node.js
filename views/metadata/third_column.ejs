@@ -187,6 +187,23 @@
     </td>
     <!-- target_gene_options end -->
 
+    <!-- adapt_3letter_options start -->
+<% } else if (all_field_names[idx][0] === "adapt_3letter") { %>
+    <td>
+        <% selected_val = get_selected_val(pid, did, "adapt_3letter") %>
+
+        <select id="adapt_3letter<%- did %>" name="adapt_3letter" class="adapt_3letter">
+            <% adapt_3letter_options.forEach(function(value){ %>
+                <option value="<%= value %>"
+                <% if (value == selected_val) { %>
+                        selected
+                        <% } %>
+                ><%= value %></option>
+            <% }) %>
+        </select>
+    </td>
+    <!-- adapt_3letter_options end -->        
+
     <!-- country_options start -->
 <% } else if (all_field_names[idx][0] === "geo_loc_name_continental") { %>
     <td>

@@ -1026,6 +1026,7 @@ class ShowObj {
     helpers.local_log(JSON.stringify(this.all_metadata));
 
     const target_gene_options = this.get_target_gene_options();
+    const adapt_3letter_options = this.get_options_from_global_obj(MD_3LETTER_ADAPTER);
     // helpers.local_log('JJJ2 all_field_names from render_edit_form');
     // helpers.local_log(JSON.stringify(this.all_field_names_arr));
 
@@ -1053,24 +1054,26 @@ class ShowObj {
       title: 'VAMPS: Metadata_upload',
       user: this.user,
       hostname: this.hostname,
-      all_metadata: this.all_metadata,
       all_field_names: this.all_field_names_arr,
-      ordered_field_names_obj: this.ordered_field_names_obj,
       all_field_units: all_field_units,
+      all_metadata: this.all_metadata,
       dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
+      mbl_edit: mbl_edit,
+      metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+      ordered_field_names_obj: this.ordered_field_names_obj,
+      //options:
+      adapt_3letter_options: adapt_3letter_options,
+      biome_primary_options: CONSTS.BIOME_PRIMARY,
+      country_options: country_options,
       dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
       dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-      country_options: country_options,
-      marine_zone_options: marine_zone_options,
-      target_gene_options: target_gene_options,
-      biome_primary_options: CONSTS.BIOME_PRIMARY,
-      feature_primary_options: CONSTS.FEATURE_PRIMARY,
-      material_primary_options: CONSTS.MATERIAL_PRIMARY,
-      metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
       env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+      feature_primary_options: CONSTS.FEATURE_PRIMARY,
       investigation_type_options: CONSTS.INVESTIGATION_TYPE,
+      marine_zone_options: marine_zone_options,
+      material_primary_options: CONSTS.MATERIAL_PRIMARY,
       sample_type_options: CONSTS.SAMPLE_TYPE,
-      mbl_edit: mbl_edit
+      target_gene_options: target_gene_options
     });
   }
 

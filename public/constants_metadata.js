@@ -56,7 +56,7 @@ constants_metadata.ORDERED_METADATA_NAMES = [
   ["sequencing_platform", "Sequencing method", "MBL Supplied", ""],
   ["forward_primer", "Forward PCR Primer", "MBL Supplied", ""],
   ["reverse_primer", "Reverse PCR Primer", "MBL Supplied", ""],
-  ["adapter_3letter", "Adapter name 3 letters", "MBL Supplied", ""],
+  ["adapt_3letter", "Adapter name 3 letters", "MBL Supplied", ""],
   ["illumina_index", "Index sequence (for Illumina)", "MBL Supplied", ""],
   ["adapter_sequence", "Adapter sequence", "MBL Supplied", ""],
   ["run", "Sequencing run date", "MBL Supplied", "YYYY-MM-DD"],
