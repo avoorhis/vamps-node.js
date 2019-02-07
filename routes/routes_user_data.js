@@ -2452,8 +2452,11 @@ function gastTax(req, project_config, ref_db)
   //cmd_list = [
   //    make_gast_script_txt, database_loader, metadata_loader, create_json_files
   //];
+  //cmd_list = [
+  //    database_loader, metadata_loader, create_json_files
+  //];
   cmd_list = [
-      database_loader, metadata_loader, create_json_files
+      database_loader
   ];
   console.log('GGG2: gastTax: cmd_list ');
   console.log(util.inspect(cmd_list, false, null));
