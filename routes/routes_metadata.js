@@ -435,7 +435,7 @@ router.post('/metadata_upload',
     form.field("sample_collection_device", helpers.get_second("sample_collection_device")).trim().entityEncode().array(),
     form.field("samp_store_dur", helpers.get_second("samp_store_dur")).trim().is(/^$|^[0-9a-zA-Z ]+$/).entityEncode().array(),
     form.field("samp_store_temp", helpers.get_second("samp_store_temp")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("sample_name", helpers.get_second("sample_name")).trim().required().entityEncode().array(),
+    form.field("sample_name", helpers.get_second("sample_name")).trim().required("", "Attention! Files can't be saved with an empty Sample Name").entityEncode().array(),
     form.field("sample_size_mass", helpers.get_second("sample_size_mass")).trim().custom(helpers.positive).custom(helpers.numbers_n_period).entityEncode().array(),
     form.field("sample_size_vol", helpers.get_second("sample_size_vol")).trim().custom(helpers.positive).custom(helpers.numbers_n_period).entityEncode().array(),
     form.field("sample_type", helpers.get_second("sample_type")).trim().required().custom(helpers.dropdown_items_validation).entityEncode().array(),
@@ -495,8 +495,10 @@ function make_metadata_object_from_form(req, res) {
   myArray_fail.sort();
   console.log('myArray_fail = ', myArray_fail);
   req.flash('fail', myArray_fail);
+
   //new
-  if ((data['dataset'].includes("")) && (data['sample_name'].includes(""))) //new empty datasets
+  let has_new_empty_datasets = ((data['dataset'].includes("")) && (data['sample_name'].includes("")));
+  if (has_new_empty_datasets)
   {
     var user_id           = PROJECT_INFORMATION_BY_PID[pid].oid;
     const new_cur_project = new Project(req, res, pid, user_id);
