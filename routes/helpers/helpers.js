@@ -2181,7 +2181,7 @@ exports.adapt_3letter_validation = function (value, source) {
   let has_index_and_runkey = checkArray(source.illumina_index) && checkArray(source.adapter_sequence);
   let has_adapt_3letter = checkArray(remove_dummy_entries(source.adapt_3letter));
 
-  if (!has_index_and_runkey || !has_adapt_3letter ) {
+  if (!has_index_and_runkey && !has_adapt_3letter) {
     throw new Error("Either 'Index sequence (for Illumina) and Adapter sequence' or 'Adapter name 3 letters' are required"); // jshint ignore:line
     }
   console.timeEnd('adapt_3letter_filter');
