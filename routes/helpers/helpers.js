@@ -2105,6 +2105,10 @@ function check_regexp(reg_exp, value, err_msg) {
 
 
 function checkArray(my_arr) {
+  if (my_arr.length === 0) {
+    return false;
+  }
+
   for (var i = 0; my_arr.length > i; i++) {
     if (my_arr[i] === '') {
       return false;
@@ -2163,18 +2167,25 @@ exports.dropdown_items_validation = function (value) {
   }
 };
 
-// exports.adapt_3letter_filter = function (value) {
-//   console.time('adapt_3letter_filter');
-//   for (const key in C.GAZ_SPELLING) {
-//     if (C.GAZ_SPELLING.hasOwnProperty(key)) {
-//       const curr = C.GAZ_SPELLING[key];
-//       if (curr.indexOf(value.toLowerCase()) > -1) {
-//         return key;
-//       }
-//     }
-//   }
-//   console.timeEnd('adapt_3letter_filter');
-// };
+function hasElement(array, value){
+  return array.indexOf( value ) !== -1;
+}
+
+remove_dummy_entries = function(arr){
+  let bad_values = ["Select..."];
+  return arr.filter(n => !bad_values.includes(n));
+};
+
+exports.adapt_3letter_validation = function (value, source) {
+  console.time('adapt_3letter_filter');
+  let has_index_and_runkey = checkArray(source.illumina_index) && checkArray(source.adapter_sequence);
+  let has_adapt_3letter = checkArray(remove_dummy_entries(source.adapt_3letter));
+
+  if (!has_index_and_runkey || !has_adapt_3letter ) {
+    throw new Error("Either 'Index sequence (for Illumina) and Adapter sequence' or 'Adapter name 3 letters' are required"); // jshint ignore:line
+    }
+  console.timeEnd('adapt_3letter_filter');
+};
 
 const const_target_gene               = C.TARGET_GENE;
 module.exports.target_gene_validation = function (gene, source) {

@@ -1088,7 +1088,7 @@ class ShowObj {
       return [].concat(t.target_gene);
     });
     arr1     = helpers.unique_array(helpers.flat_array(arr1));
-    return ["Please choose one"].concat(arr1);
+    return ["Select..."].concat(arr1);
   }
 
   make_metadata_new_form_values(req) {
