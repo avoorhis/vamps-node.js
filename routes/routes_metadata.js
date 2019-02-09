@@ -355,7 +355,7 @@ router.post('/metadata_upload',
     form.field("conductivity", helpers.get_second("conductivity")).trim().custom(helpers.numbers_n_period).required().entityEncode().array(),
     form.field("dataset", helpers.get_second("dataset")).trim().required().entityEncode().array(),
     form.field("dataset_description").trim().required().is(/^[a-zA-Z0-9,_ -]+$/).entityEncode().array(),
-    form.field("dataset_id", "Dataset_id").trim().required().isInt().entityEncode().array(),
+    form.field("dataset_id", "Dataset_id").trim().entityEncode().array(),
     // form.field("del180_water", helpers.get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
     form.field("del180_water", helpers.get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
 
