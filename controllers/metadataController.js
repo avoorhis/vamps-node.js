@@ -1042,8 +1042,9 @@ class ShowObj {
       const msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.\n<br/>';
 
       csv_files_obj.make_csv(base_name, this.req.form, msg);
-      let is_outer_user = (this.req.user.security_level > 10);
-      if (!is_outer_user) {
+      let mbl_edit = this.get_mbl_edit();
+      // let is_outer_user = (this.req.user.security_level > 10);
+      if (mbl_edit === "can_edit") {
         csv_files_obj.make_csv_to_upload_to_pipeline(this.req);
       }
     }

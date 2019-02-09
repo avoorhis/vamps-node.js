@@ -341,7 +341,7 @@ router.post('/metadata_upload',
     form.field("npoc", helpers.get_second("npoc")).trim().entityEncode().array(),
     form.field("access_point_type", helpers.get_second("access_point_type")).trim().entityEncode().array(),
     form.field("adapt_3letter", helpers.get_second("adapt_3letter")).trim().custom(helpers.adapt_3letter_validation).entityEncode().array(),
-    form.field("adapter_sequence", helpers.get_second("adapter_sequence")).trim().required().entityEncode().array(),
+    form.field("adapter_sequence", helpers.get_second("adapter_sequence")).trim().entityEncode().array(),
     form.field("alkalinity", helpers.get_second("alkalinity")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
     form.field("ammonium", helpers.get_second("ammonium")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
     form.field("bicarbonate", helpers.get_second("bicarbonate")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
@@ -497,8 +497,9 @@ function make_metadata_object_from_form(req, res) {
   req.flash('fail', myArray_fail);
 
   //new
-  let has_new_empty_datasets = ((data['dataset'].includes("")) && (data['sample_name'].includes("")));
-  if (has_new_empty_datasets)
+  let has_new_project = ((data['dataset'].includes("")) && (data['sample_name'].includes("")));
+  let has_new_datasets = (data['dataset_id'].includes(""));
+  if (has_new_project)
   {
     var user_id           = PROJECT_INFORMATION_BY_PID[pid].oid;
     const new_cur_project = new Project(req, res, pid, user_id);
@@ -508,7 +509,7 @@ function make_metadata_object_from_form(req, res) {
     const met_obj   = new metadata_controller.CreateDataObj(req, res, pid, []);
     met_obj.make_new_project_for_form(project_obj);
   }
-  else if (data['dataset_id'].includes("")) //new datasets
+  else if (has_new_datasets) //new datasets
   {
     met_obj.make_metadata_object_with_new_datasets(req, res, pid, data);
   } // data['dataset_id'][0] === ""

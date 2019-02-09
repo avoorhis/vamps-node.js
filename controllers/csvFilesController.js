@@ -273,10 +273,10 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
   make_csv_to_upload_to_pipeline(req) {
     console.time("TIME: make_csv_to_upload_to_pipeline");
 
-    this.fields_for_pipeline_csv = {"adaptor": ["adapter_sequence"],
+    this.pipeline_csv_template_names_with_form_names = {"adaptor": ["adapt_3letter"],
       "amp_operator": ["amp_operator"],
       "barcode": ["barcode"],
-      "barcode_index": ["barcode_index"],
+      "barcode_index": ["illumina_index"],
       "data_owner": ["username"],
       "dataset": ["dataset"],
       "dataset_description": ["dataset_description"],
@@ -297,19 +297,22 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
       "project_title": ["project_title"],
       "read_length": ["read_length"],
       "run": ["run"],
-      "run_key": ["run_key"],
+      "run_key": ["adapter_sequence"],
       "seq_operator": ["seq_operator"],
       "tubelabel": ["tubelabel"],
     };
 
     let pipeline_template_file = {};
-    for (var template_name in this.fields_for_pipeline_csv) {
-      let form_name = this.fields_for_pipeline_csv[template_name][0];
-      if (typeof req.form[form_name] === 'undefined' ) {
-        pipeline_template_file[template_name] = [];
+    let pipeline_csv_names = Object.keys(this.pipeline_csv_template_names_with_form_names);
+    for (var ind in pipeline_csv_names) {
+      let pipeline_csv_name = pipeline_csv_names[ind];
+      let form_name_first = this.pipeline_csv_template_names_with_form_names[pipeline_csv_name][0];
+      // TODO: add remove_dummy_entries for adaptors
+      if (typeof req.form[form_name_first] === 'undefined' ) {
+        pipeline_template_file[pipeline_csv_name] = [];
       }
       else {
-        pipeline_template_file[template_name] = req.form[form_name];
+        pipeline_template_file[pipeline_csv_name] = req.form[form_name_first];
       }
     }
 
