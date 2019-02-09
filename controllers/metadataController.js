@@ -1012,7 +1012,8 @@ class ShowObj {
 
   get_mbl_edit() {
     let mbl_edit = "no_edit";
-    if (this.user.security_level <= 10) {
+    let is_outer_user = (this.req.user.security_level > 10);
+    if (!is_outer_user) {
       mbl_edit = "can_edit";
     }
     return mbl_edit;
@@ -1041,7 +1042,8 @@ class ShowObj {
       const msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.\n<br/>';
 
       csv_files_obj.make_csv(base_name, this.req.form, msg);
-      if (this.req.user.security_level <= 10) {
+      let is_outer_user = (this.req.user.security_level > 10);
+      if (!is_outer_user) {
         csv_files_obj.make_csv_to_upload_to_pipeline(this.req);
       }
     }
