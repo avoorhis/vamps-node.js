@@ -10,7 +10,7 @@ import sys,os
 import argparse
 import pymysql as MySQLdb
 import json
-import logging
+
 import configparser as ConfigParser
 
 """
@@ -129,13 +129,24 @@ DATASET_ID_BY_NAME = {}
 #
 #
 #
-
+class Dict2Obj(object):
+    """
+    Turns a dictionary into a class
+    """
+    #----------------------------------------------------------------------
+    def __init__(self, dictionary):
+        """Constructor"""
+        for key in dictionary:
+            setattr(self, key, dictionary[key])
+            
 def go_add(args):
     print ("Starting "+os.path.basename(__file__))
-    logging.info('CMD> '+' '.join(sys.argv))
+   
+    print('Changing dict to obj')
+    args = Dict2Obj(args) 
+    print(type(args))
     
     global mysql_conn, cur
-    
     if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':
         hostname = 'vampsdb'
     elif args.site == 'vampsdev' or args.site == 'bpcweb7':
@@ -146,7 +157,7 @@ def go_add(args):
     
     mysql_conn = MySQLdb.connect(db = args.NODE_DATABASE, host=hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     cur = mysql_conn.cursor()
-
+    
     get_config_data(args)
     
     pid = CONFIG_ITEMS['project_id']
@@ -221,18 +232,16 @@ def go_add(args):
     print ('getting custom metadata from db')
     metadata_lookup = go_custom_metadata(dids, pid, metadata_lookup)
     print ('writing individual json files')
-    write_json_files(file_prefix, metadata_lookup, counts_lookup)
+    write_json_files(args, file_prefix, metadata_lookup, counts_lookup)
     
     print ('writing all metadata file')
-    logging.info('writing all metadata file')
-    write_all_metadata_file(args,metadata_lookup)
+    
+    write_all_metadata_file(args, metadata_lookup)
     print ('writing all taxcount file')
-    #logging.info('writing all taxcouts file')
-    #write_all_taxcounts_file(args,counts_lookup)
-    # print 'DONE (must now move file into place)'
+   
     print ("Finished "+os.path.basename(__file__))
 
-def write_all_metadata_file(args,metadata_lookup):
+def write_all_metadata_file(args, metadata_lookup):
     original_metadata_lookup = read_original_metadata(args)
     md_file = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+"--metadata.json")
     #print md_file
@@ -244,35 +253,14 @@ def write_all_metadata_file(args,metadata_lookup):
     f.write(json_str+"\n")
     f.close() 
     
-# def write_all_taxcounts_file(args,counts_lookup):
-#     original_counts_lookup = read_original_taxcounts(args)
-#     tc_file = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+"--taxcounts.json")
-#     for did in counts_lookup:
-#         original_counts_lookup[did] = counts_lookup[did]
-#     json_str = json.dumps(original_counts_lookup)		
-#     #print(json_str)
-#     f = open(tc_file,'w')
-#     f.write(json_str+"\n")
-#     f.close()
+
       
-def write_json_files(file_prefix, metadata_lookup, counts_lookup):
+def write_json_files(args, file_prefix, metadata_lookup, counts_lookup):
     print ("In write_json_files")
-    #print counts_lookup
-    #json_str = json.dumps(counts_lookup)    
-    # print('Re-Writing JSON file (REMEMBER to move new file to ../json/)')
-    # f = open(outfile,'w')
-    # f.write(json_str+"\n")
-    # f.close()
-    # for did in counts_lookup:
-#         file_path = os.path.join(prefix,str(did)+'.json')
-#         f = open(file_path,'w')
-#         mystr = json.dumps(counts_lookup[did])
-#         print mystr
-#         f.write('{"'+str(did)+'":'+mystr+"}\n")
-#         f.close()
+    
     for did in counts_lookup:
          file_path = os.path.join(file_prefix,str(did)+'.json')
-         logging.info('file_path: '+file_path)
+        
          if args.verbose:
             print('file_path: '+file_path)
          f = open(file_path,'w') 
@@ -282,10 +270,10 @@ def write_json_files(file_prefix, metadata_lookup, counts_lookup):
              my_metadata_str = json.dumps(metadata_lookup[did]) 
          else:
              print ('WARNING -- no metadata for dataset: '+str(did))
-             logging.info('WARNING -- no metadata for dataset: '+str(did))
+             
              my_metadata_str = json.dumps({})
          #f.write('{"'+str(did)+'":'+mystr+"}\n") 
-         logging.debug('writing to fh: '+my_counts_str)
+         
          f.write('{"taxcounts":'+my_counts_str+',"metadata":'+my_metadata_str+'}'+"\n")
          f.close()  
           
@@ -363,7 +351,7 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
                 
     except:
         print ('could not find or read',table,'Skipping')
-        logging.info('could not find or read '+table+' --Skipping')
+       
     print()
     #print 'metadata_lookup2',metadata_lookup
     #sys.exit()
@@ -394,7 +382,7 @@ def get_config_data(args):
     global mysql_conn, cur
     config_path = os.path.join(args.project_dir, args.config_file)
     print (config_path)
-    logging.info(config_path)
+    
     config = ConfigParser.ConfigParser()
     config.optionxform=str
     config.read(config_path)    
@@ -407,7 +395,7 @@ def get_config_data(args):
     #print ('project',CONFIG_ITEMS['project'])
     q = "SELECT project_id FROM project"
     q += " WHERE project = '"+CONFIG_ITEMS['project_name']+"'" 
-    logging.info(q)
+    
     cur.execute(q)
     
     row = cur.fetchone()     
@@ -415,7 +403,7 @@ def get_config_data(args):
         
     q = "SELECT dataset,dataset_id from dataset"
     q += " WHERE dataset in('"+"','".join(CONFIG_ITEMS['datasets'])+"')"
-    logging.info(q)
+    
     cur.execute(q)     
     for row in cur.fetchall():        
         DATASET_ID_BY_NAME[row[0]] = row[1]
@@ -492,8 +480,7 @@ if __name__ == '__main__':
     # THIS MUST BE THE LAST PRINT!!!!
     print ("PID="+str(CONFIG_ITEMS['project_id']))
     ##
-    logging.info("ALL DONE: (PID="+str(CONFIG_ITEMS['project_id'])+')')
-    #sys.exit('END: vamps_script_create_json_dataset_files.py')
+    
 
         
 

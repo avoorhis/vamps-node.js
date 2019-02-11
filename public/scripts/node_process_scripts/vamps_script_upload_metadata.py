@@ -20,7 +20,6 @@ import shutil
 import types
 import time
 import random
-import logging
 import csv
 from time import sleep
 import configparser as ConfigParser
@@ -63,12 +62,25 @@ id_queries = [
     {"table":"run","query": "SELECT run_id FROM run WHERE run = 'unknown'"}
 ]
 
-
+class Dict2Obj(object):
+    """
+    Turns a dictionary into a class
+    """
+    #----------------------------------------------------------------------
+    def __init__(self, dictionary):
+        """Constructor"""
+        for key in dictionary:
+            setattr(self, key, dictionary[key])
+            
 def start_metadata_load_from_file(args):
-    print ("Starting "+os.path.basename(__file__))
-    global mysql_conn, cur
-    logging.info('CMD> '+' '.join(sys.argv))
+    print("Starting1 "+os.path.basename(__file__))
     
+    print('Changing dict to obj')
+    args = Dict2Obj(args) 
+    print(type(args))
+    
+    global mysql_conn, cur
+   
     if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':
         hostname = 'vampsdb'
     elif args.site == 'vampsdev' or args.site == 'bpcweb7':
@@ -146,7 +158,6 @@ def put_required_metadata():
                 vals += "'',"
         q2 = q + vals[:-1] + ")"  
         print(q2)
-        logging.info(q2)
         #cur.execute(q2)
     #mysql_conn.commit()
             
@@ -161,14 +172,14 @@ def put_custom_metadata():
     print ('CUST_METADATA_ITEMS',CUST_METADATA_ITEMS)
     print ('REQ_METADATA_ITEMS',REQ_METADATA_ITEMS)
     for key in CUST_METADATA_ITEMS:
-        logging.debug(key)
+        
         q2 = "INSERT IGNORE into custom_metadata_fields(project_id,field_name,example)"
         q2 += " VALUES("
         q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
         q2 += "'"+key+"',"
         
         q2 += "'"+str(CUST_METADATA_ITEMS[key][0])+"')"
-        logging.info(q2)
+        
         cur.execute(q2)
     
     # TABLE-2 === custom_metadata_<pid>
@@ -197,7 +208,7 @@ def put_custom_metadata():
     q += " CONSTRAINT `"+custom_table+"_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE,\n"
     q += " CONSTRAINT `"+custom_table+"_ibfk_2` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE\n"
     q += " ) ENGINE=InnoDB DEFAULT CHARSET=latin1;"
-    logging.info(q)
+    
     cur.execute(q)
     
     for i,did in enumerate(CUST_METADATA_ITEMS['dataset_id']):
@@ -217,7 +228,7 @@ def put_custom_metadata():
         q2 = q2[:-1] + ")"    # remove trailing comma
 
         print(q2)
-        logging.info(q2)
+        
         cur.execute(q2)
     
     mysql_conn.commit()
@@ -226,7 +237,7 @@ def get_metadata(indir, csv_infile):
     
     
     print ('csv',csv_infile)
-    logging.info('csv '+csv_infile)
+    
     lol = list(csv.reader(open(csv_infile, 'rb'), delimiter='\t'))
    
     TMP_METADATA_ITEMS = {}
@@ -309,7 +320,7 @@ def get_config_data(args):
     global mysql_conn, cur
     config_path = os.path.join(args.project_dir, args.config_file)
     print (config_path)
-    logging.info(config_path)
+   
     config = ConfigParser.ConfigParser()
     config.optionxform=str
     config.read(config_path)    
@@ -322,7 +333,7 @@ def get_config_data(args):
     #print 'project',CONFIG_ITEMS['project']
     q = "SELECT project_id FROM project"
     q += " WHERE project = '"+CONFIG_ITEMS['project_name']+"'" 
-    logging.info(q)
+    
     print(q)
     cur.execute(q)
     
@@ -331,7 +342,7 @@ def get_config_data(args):
         
     q = "SELECT dataset,dataset_id from dataset"
     q += " WHERE dataset in('"+"','".join(CONFIG_ITEMS['datasets'])+"')"
-    logging.info(q)
+    
     cur.execute(q)     
     for row in cur.fetchall():        
         DATASET_ID_BY_NAME[row[0]] = row[1]

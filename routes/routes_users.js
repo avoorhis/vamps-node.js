@@ -168,7 +168,7 @@ router.get('/change_password/:id', function(req, res) {
     console.log('In change_password for forgotten passwords');
     // should be private but not logged in
     console.log(req.params)
-    var file_code_path = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp',req.params.id+'.json')
+    var file_code_path = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp','resetPW-'+req.params.id+'.json')
     console.log(file_code_path)
     // if file exists then valid? (or confirm some file content?) -- delete file after success
     //if(helpers.fileExists(file_code_path)){
@@ -315,7 +315,7 @@ router.post('/reset_password1', function(req, res) {
 //                     link = 'https://vamps2.mbl.edu/users/change_password/'+rando
 //                 }
                 // write json file to 
-                var file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp',rando+'.json')
+                var file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp','resetPW-'+rando+'.json')
                 console.log(file_path)
                 var file_text = { "username":username, "uid":uid, "email":email }
                 var message = {
@@ -399,7 +399,7 @@ router.post('/reset_password2', function(req, res) {
     }
     // validate existence of file -- then delete it
     // file has been validated and deleted in router.get('/change_password/:id', function(req, res) {
-    var file_code_path = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp',req.body.code+'.json')
+    var file_code_path = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp','resetPW-'+req.body.code+'.json')
     //read file and validate username & email
     fs.readFile(file_code_path, function(err,data){
         if(err){
@@ -410,7 +410,8 @@ router.post('/reset_password2', function(req, res) {
         var data = JSON.parse(data)
         // now delete file
         console.log('Deleting: '+file_code_path)
-        fs.unlinkSync(file_code_path);
+        // This will delete file leaving no trace....
+        //fs.unlinkSync(file_code_path);
        
         // now valid must enter new PW in database and return user to logon screen
     
