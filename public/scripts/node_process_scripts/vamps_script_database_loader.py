@@ -26,7 +26,7 @@ import configparser as ConfigParser
 #from IlluminaUtils.lib import fastalib
 import fastalibAV as fastalib
 import datetime
-import logging
+
 today = str(datetime.date.today())
 import subprocess
 import pymysql as MySQLdb
@@ -66,7 +66,7 @@ def start(args):
     RANK_COLLECTOR={}
    # TAX_ID_BY_RANKID_N_TAX = {}
     #SUMMED_TAX_COLLECTOR = {} 
-    logging.info('CMD> '+' '.join(sys.argv))
+    
     if args.verbose:
         print('CMD> ',sys.argv)
 
@@ -81,15 +81,15 @@ def start(args):
     cur = mysql_conn.cursor()
     
     
-    logging.info("running get_config_data")
+    
     print ("running get_config_data")
     get_config_data(args)
     
-    logging.info("checking user")
+    
     print ("checking user")
     check_user()  ## script dies if user not in db
     
-    logging.info("checking project")
+    
     print ("checking project")
     res = check_project()  ## script dies if project is in db
     
@@ -97,45 +97,38 @@ def start(args):
         print ("1ERROR res[0] -- Exiting (project name is already in use)")
         sys.exit(res[1])
     
-    logging.info("recreating ranks")
+    
     print ("recreating ranks")
     recreate_ranks()
 
-    # logging.info("env sources")
-#     print "env sources"
-#     create_env_package()
-
-    logging.info("classifier")
+   
     print("classifier")
     create_classifier()
 
-    logging.info("starting taxonomy")
+   
     print ("starting taxonomy")
     push_taxonomy(args)
 
-    logging.info("starting sequences")
+   
     print ("starting sequences")
     push_sequences(args)
     #sys.exit()
         
-    logging.info("projects")
+    
     print ("projects")
     push_project()
 
-    logging.info("datasets")
+    
     print ("datasets")
     push_dataset()
 
-    #push_summed_counts()
-    logging.info("starting push_pdr_seqs")
+    
     print ("starting push_pdr_seqs")
     push_pdr_seqs(args)
 
-    #pp.pprint(CONFIG_ITEMS)
-    logging.info("Finished "+os.path.basename(__file__))
+    
     
     print ("Finished "+os.path.basename(__file__))
-    print (CONFIG_ITEMS['project_id'])
     print ('Writing pid to pid.txt')
     fp = open(os.path.join(args.project_dir,'pid.txt'),'w')
     fp.write(str(CONFIG_ITEMS['project_id']))
@@ -207,12 +200,12 @@ def recreate_ranks():
     for i,rank in enumerate(ranks):
         
         q = "INSERT IGNORE into rank (rank,rank_number) VALUES('%s','%s')" % (rank,str(i))
-        logging.info(q)
+        
         cur.execute(q)
         rank_id = cur.lastrowid
         if rank_id==0:
             q = "SELECT rank_id from rank where rank='%s'" % (rank)
-            logging.info(q)
+            
             cur.execute(q)
             row = cur.fetchone()
             RANK_COLLECTOR[rank] = row[0]
@@ -236,7 +229,7 @@ def push_project():
     q = q % (proj,title,desc,rev,fund,id,pub,'1','0','1')
     if args.verbose:
         print(q)
-    logging.info(q)
+    
     #print cur.lastrowid
     ## should have already checked 
     cur.execute(q)
@@ -260,7 +253,7 @@ def push_dataset():
         desc = ds+'_description'
         #print ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id']
         q4 = q % (ds,desc,CONFIG_ITEMS['project_id'])
-        logging.info(q4)
+       
         if args.verbose:
             print(q4)
         #try:
@@ -329,11 +322,7 @@ def push_pdr_seqs(args):
             if args.verbose:
                 print(q)
             cur.execute(q)
-           #  except:
-#                 logging.error(q)
-#                 print ("ERROR Exiting: "+ds +"; Query: "+q)
-#                 print (args.DATASET_ID_BY_NAME)
-#                 sys.exit()
+          
             mysql_conn.commit()
     
 def push_sequences(args):
@@ -351,7 +340,7 @@ def push_sequences(args):
             seqid = cur.lastrowid
             if seqid == 0:
                 q2 = "select sequence_id from sequence where sequence_comp = COMPRESS('%s')" % (seq)
-                logging.info('DUP SEQ FOUND')
+                
                 cur.execute(q2)
                 mysql_conn.commit() 
                 row = cur.fetchone()
@@ -360,9 +349,9 @@ def push_sequences(args):
             args.SEQ_COLLECTOR[ds][seq]['sequence_id'] = seqid
             tax_id = str(args.SEQ_COLLECTOR[ds][seq]['tax_id'])
             
-            #logging.info( ds,seq, tax_id)
+            
             rank_id = str(args.SEQ_COLLECTOR[ds][seq]['rank_id'])
-            logging.info( rank_id)
+           
             
             if args.classifier.upper() == 'GAST':
                 distance = str(args.SEQ_COLLECTOR[ds][seq]['distance'])
@@ -405,7 +394,7 @@ def push_sequences(args):
         
             q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
             q4 += " VALUES('%s','%s')" % (str(seqid), str(tax_seq_id))
-            logging.info(q4)
+           
             cur.execute(q4)
             mysql_conn.commit()
         ## don't see that we need to save uniq_ids
@@ -657,7 +646,7 @@ def finish_tax(ds, refhvr_ids, rank, distance, seq, seq_count, tax_items):
     row = cur.fetchone()
     
     args.SEQ_COLLECTOR[ds][seq]['rank_id'] = row[0]          
-    logging.info(rank+' - '+tax_string)
+    
     
    
     sumtax = ''
@@ -699,27 +688,20 @@ def finish_tax(ds, refhvr_ids, rank, distance, seq, seq_count, tax_items):
             
                 
             q2 = "INSERT ignore into `"+rank_name+"` (`"+rank_name+"`) VALUES('"+t+"')"
-            logging.info(q2)
+           
             cur.execute(q2)
             mysql_conn.commit() 
             tax_id = cur.lastrowid
             if tax_id == 0:
                 q3 = "select "+rank_name+"_id from `"+rank_name+"` where `"+rank_name+"` = '"+t+"'"
-                logging.info( q3 )
+                
                 cur.execute(q3)
                 mysql_conn.commit() 
                 row = cur.fetchone()
                 tax_id=row[0]
             ids_by_rank.append(str(tax_id))
-            #else:
-            #logging.info( 'rank_id,t,tax_id',rank_id,t,tax_id  )  
-            # if rank_id in TAX_ID_BY_RANKID_N_TAX:
-#                 TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
-#             else:
-#                 TAX_ID_BY_RANKID_N_TAX[rank_id]={}
-#                 TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
-            #ids_by_rank.append('1')
-        logging.info(  ids_by_rank )  
+           
+        
         if args.classifier.upper() == 'GAST':
             q4 =  "INSERT ignore into silva_taxonomy ("+','.join(eight_cats)+",created_at)"
             q5 = "SELECT silva_taxonomy_id from silva_taxonomy where ("
@@ -865,5 +847,23 @@ if __name__ == '__main__':
         args.hostname = 'localhost'
         args.NODE_DATABASE = 'vamps_development'
     print ('db-host:',args.hostname,'db-name:',args.NODE_DATABASE)
-    start(args)
+    pid = start(args)
+    print("Finished; PID=" + str(pid))
+    
+    # delete the big unneeded key
+    del args.SEQ_COLLECTOR 
+    
+    # convert args to a dict for passing to fxn
+    my_args = vars(args)
+    
+    import vamps_script_upload_metadata as md
+    my_args["project"] = CONFIG_ITEMS['project_name']
+    md.start_metadata_load_from_file(my_args)
+    print(my_args)
+    
+    import vamps_script_create_json_dataset_files as file_maker
+    my_args["jsonfile_dir"] = '/groups/vampsweb/vamps_node_data/json/'
+    my_args["units"] = 'silva119'
+    file_maker.go_add(my_args)
+    print("FINISHED -- LOAD -- METADATA -- FILES")
     
