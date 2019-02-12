@@ -262,9 +262,11 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     const bad_characters = [","];
 
     let project_name_has_bad_ch = false;
-
     for (let ind in bad_characters) {
       project_name_has_bad_ch = project_name.includes(bad_characters[ind]);//interrupt if even one
+      if (project_name_has_bad_ch) {
+        break;
+      }
     }
 
     if (short_project_name || project_name_has_bad_ch) {
@@ -351,11 +353,18 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     }
 
     const base_name = this.make_out_file_base_name(this.req, "pipeline_metadata");
+    const min_name_length = "pipeline_metadata-project__1550002967099.csv".length;
+    const good_file_name = (base_name.length > min_name_length);
+
+    if (good_file_name) {
+      const msg = 'File ' + base_name + ' was saved.';
+      this.make_csv(base_name, pipeline_template_file, msg);
+    }
+    else {
+      console.log("From make_csv_to_upload_to_pipeline: Somethinf is wrong with the file name. ", base_name);
+    }
 
     // const base_name = "pipeline_metadata-"  + helpers.unique_array(this.req.form['project']) + "_" + helpers.unique_array(this.req.form['run']) + "_" + helpers.unique_array(this.req.form['platform']) + "_" + helpers.unique_array(this.req.form['lane']) + "_" + helpers.unique_array(this.req.form['domain']) + "_.csv";
-    const msg = 'File ' + base_name + ' was saved.';
-
-    this.make_csv(base_name, pipeline_template_file, msg);
 
     console.timeEnd("TIME: make_csv_to_upload_to_pipeline");
 
