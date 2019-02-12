@@ -680,7 +680,6 @@ module.exports.checkUserName = function (username) {   // SAME FXN IN PASSPORT
 // Sort list of json objects alphabetically
 module.exports.compareStrings_alpha = function (a, b) {
   // Assuming you want case-insensitive comparison
-  console.log('in compareStrings_alpha')
   a = a.toLowerCase();
   b = b.toLowerCase();
   return (a < b) ? -1 : (a > b) ? 1 : 0;
