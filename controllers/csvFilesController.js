@@ -254,18 +254,52 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     return result;
   }
 
+  test_project_name(project_name) {
+    let project_name_is_good = true;
+
+    const short_project_name = project_name.length < 2;
+
+    const bad_characters = [","];
+
+    let project_name_has_bad_ch = false;
+
+    for (let ind in bad_characters) {
+      project_name_has_bad_ch = project_name.includes(bad_characters[ind]);//interrupt if even one
+    }
+
+    if (short_project_name || project_name_has_bad_ch) {
+      project_name_is_good = false;
+      console.log("Something is wrong with the project name!");
+    }
+
+    return project_name_is_good;
+  }
+
   make_out_file_base_name(req, prefix){
     const time_stamp = new Date().getTime();
+    let file_name_project_part = "";
 
-    var file_name_project_part = req.body.project;
     if (typeof PROJECT_INFORMATION_BY_PID[req.body.project_id] !== 'undefined') {
-        file_name_project_part = PROJECT_INFORMATION_BY_PID[req.body.project_id].project;
+      file_name_project_part = PROJECT_INFORMATION_BY_PID[req.body.project_id].project;
     }
 
-    if (typeof req.body.project !== "string") {
-      file_name_project_part = helpers.unique_array(file_name_project_part);
+    let project_name_is_good = this.test_project_name(file_name_project_part);
+
+    if (!project_name_is_good && (typeof req.body.project !== 'undefined')) {
+      let is_array = (typeof req.body.project !== "string");
+      if (is_array) {
+        file_name_project_part = helpers.unique_array(file_name_project_part);
+      }
+      else {
+        file_name_project_part = req.body.project;
+      }
+      project_name_is_good = this.test_project_name(file_name_project_part);
     }
-    const base_name = prefix + "-project" + '_' + file_name_project_part + '_' + this.user.username + '_' + time_stamp + ".csv";
+
+    let base_name = "";
+    if (project_name_is_good) {
+      base_name = prefix + "-project" + '_' + file_name_project_part + '_' + this.user.username + '_' + time_stamp + ".csv";
+    }
 
     return base_name;
   }
@@ -329,26 +363,40 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
 
   make_csv(base_name, data, msg) {
     console.time("TIME: make_csv");
-    var req = this.req;
+    let req = this.req;
 
-    var csv = this.convertArrayOfObjectsToCSV({
+    let csv = this.convertArrayOfObjectsToCSV({
       data: data, // if new datasets, add info from globals instead
       user_info: req.user, //use this.user
       project_id: req.body.project_id
     });
 
-    const out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
+    const full_out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
 
-    fs.writeFile(out_csv_file_name, csv, function (err) {
+    fs.writeFile(full_out_csv_file_name, csv, function (err) {
       if (err) throw err;
     });
 
-    console.log('file ' + out_csv_file_name + ' saved');
+    console.log('file ' + full_out_csv_file_name + ' saved');
 
     req.flash("success", msg);
 
     console.timeEnd("TIME: make_csv");
   }
+
+  create_metadata_project_csv(req) {
+    const base_name = this.make_out_file_base_name(req, "metadata");
+    const min_name_length = "metadata-project__1550002967099.csv".length;
+    const good_project_name = (base_name.length > min_name_length);
+
+    if (good_project_name) {
+      const msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.\n<br/>';
+
+      this.make_csv(base_name, req.form, msg);
+    }
+
+  }
+
 }
 
 module.exports = {

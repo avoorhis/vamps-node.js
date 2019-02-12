@@ -1022,6 +1022,7 @@ class ShowObj {
   render_edit_form() {
     console.trace("Show me, I'm in render_edit_form");
     this.req = helpers.collect_errors(this.req);
+    let mbl_edit = this.get_mbl_edit();
 
     helpers.local_log('JJJ1 all_metadata from render_edit_form');
     helpers.local_log(JSON.stringify(this.all_metadata));
@@ -1034,16 +1035,24 @@ class ShowObj {
     const country_options = this.get_options_from_global_obj(MD_ENV_CNTRY);
     const marine_zone_options = this.get_options_from_global_obj(MD_ENV_LZC);
 
-    var pid = Object.keys(this.all_metadata)[0] || this.req.body.project_id;
+    let pid = Object.keys(this.all_metadata)[0] || this.req.body.project_id;
+    let has_datasets = (typeof DATASET_IDS_BY_PID[pid] !== 'undefined') && (DATASET_IDS_BY_PID[pid].length > 0);
+    let form_exists = (typeof this.req.form !== 'undefined');
 
-    if ((typeof DATASET_IDS_BY_PID[pid] !== 'undefined') && (DATASET_IDS_BY_PID[pid].length > 0) && this.req.url !== "/metadata_new_csv_upload" && (typeof this.req.form !== 'undefined')) {// TODO: add comment what's this
+    if (has_datasets && this.req.url !== "/metadata_new_csv_upload" && form_exists) {
       const csv_files_obj = new csv_files_controller.CsvFilesWrite(this.req, this.res);
-      const base_name = csv_files_obj.make_out_file_base_name(this.req, "metadata");
-      const msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.\n<br/>';
+      csv_files_obj.create_metadata_project_csv(this.req);
 
-      csv_files_obj.make_csv(base_name, this.req.form, msg);
-      let mbl_edit = this.get_mbl_edit();
-      // let is_outer_user = (this.req.user.security_level > 10);
+      // const base_name = csv_files_obj.make_out_file_base_name(this.req, "metadata");
+      //
+      // const min_name_length = "metadata-project__1550002967099.csv".length;
+      // const good_project_name = (base_name.length > min_name_length);
+      // if (good_project_name) {
+      //   const msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.\n<br/>';
+      //
+      //   csv_files_obj.make_csv(base_name, this.req.form, msg);
+      // }
+
       if (mbl_edit === "can_edit") {
         csv_files_obj.make_csv_to_upload_to_pipeline(this.req);
       }
@@ -1051,7 +1060,6 @@ class ShowObj {
 
     var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
 
-    let mbl_edit = this.get_mbl_edit();
 
     this.res.render('metadata/metadata_edit_form', {
       title: 'VAMPS: Metadata_upload',
