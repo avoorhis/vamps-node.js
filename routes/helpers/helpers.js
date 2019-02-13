@@ -1980,6 +1980,15 @@ module.exports.get_metadata_obj_from_dids = function (dids) {
 }
 //
 //
+
+user_is_admin = function(req) {
+  return ( parseInt(req.user.security_level, 10) === parseInt(C.user_security_level.admin, 10));
+};
+
+user_is_mbl_user = function(req) {
+  return ( parseInt(req.user.security_level, 10) === parseInt(C.user_security_level.mbl_user, 10));
+};
+
 module.exports.screen_dids_for_permissions = function (req, dids) {
   // This is called from unit_select and view_select (others?)  to catch and remove dids that
   // are found through searches such as geo_search and go to unit_select directly
@@ -1989,7 +1998,7 @@ module.exports.screen_dids_for_permissions = function (req, dids) {
   for (var i in dids) {
     if (PROJECT_ID_BY_DID.hasOwnProperty(dids[i]) && PROJECT_INFORMATION_BY_PID.hasOwnProperty(PROJECT_ID_BY_DID[dids[i]])) {
       pinfo = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[dids[i]]];
-      project_is_public = (pinfo.public === parseInt("1", 10))
+      project_is_public = (pinfo.public === parseInt("1", 10));
       // if (pinfo.public === 1 || pinfo.public === '1') {
       if (project_is_public) {
         new_did_list.push(dids[i]);
@@ -1997,10 +2006,9 @@ module.exports.screen_dids_for_permissions = function (req, dids) {
         // allow if user is owner (should have uid in permissions but check anyway)
         user_is_owner = (req.user.user_id === pinfo.oid);
         // allow if user is admin
-        user_is_admin = (req.user.security_level <= 10);
         // allow if user is in pinfo.permissions
         user_has_permission = pinfo.permissions.includes(req.user.user_id); // same as (pinfo.permissions.indexOf(req.user.user_id) !== -1);
-        if (user_is_owner || user_is_admin || user_has_permission) {
+        if (user_is_owner || user_is_admin(req) || user_is_mbl_user(req) || user_has_permission) {
           new_did_list.push(dids[i]);
         }
       }
@@ -2008,6 +2016,7 @@ module.exports.screen_dids_for_permissions = function (req, dids) {
   }
   return new_did_list
 };
+
 module.exports.screen_pids_for_permissions = function (req, pids) {
   // This is called from unit_select and view_select (others?)  to catch and remove dids that
   // are found through searches such as geo_search and go to unit_select directly
