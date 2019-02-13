@@ -2010,21 +2010,6 @@ module.exports.screen_dids_for_permissions = function (req, dids) {
       if (user_has_project_permissions(req, pinfo)) {
         new_did_list.push(dids[i]);
       }
-
-      // project_is_public = (pinfo.public === parseInt("1", 10));
-      // if (pinfo.public === 1 || pinfo.public === '1') {
-      // if (project_is_public) {
-
-      // } else {
-        // allow if user is owner (should have uid in permissions but check anyway)
-        // user_is_owner = (req.user.user_id === pinfo.oid);
-        // allow if user is admin
-        // allow if user is in pinfo.permissions
-        // user_has_permission = pinfo.permissions.includes(req.user.user_id); // same as (pinfo.permissions.indexOf(req.user.user_id) !== -1);
-        // if (user_is_owner || user_is_admin(req) || user_is_mbl_user(req) || user_has_permission) {
-        //   new_did_list.push(dids[i]);
-        // }
-      // }
     }
   }
   return new_did_list;
