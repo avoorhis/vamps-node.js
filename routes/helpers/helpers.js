@@ -2020,16 +2020,11 @@ module.exports.screen_pids_for_permissions = function (req, pids) {
   // are found through searches such as geo_search and go to unit_select directly
   // bypassing the usual tree filter 'filter_project_tree_for_permissions' (fxn above)
   // permissions are in PROJECT_INFORMATION_BY_PID
-  var new_pid_list = []
-  for (i in pids) {
-    pinfo = PROJECT_INFORMATION_BY_PID[pids[i]]
-    // allow if user is owner (should have uid in permissions but check anyway)
-    // allow if user is admin
-    // allow if user is in pinfo.permission
-    if (pinfo.public == 1 || pinfo.public == '1') {
-      new_pid_list.push(pids[i])
-    } else if (req.user.user_id == pinfo.oid || req.user.security_level <= 10 || pinfo.permissions.indexOf(req.user.user_id) != -1) {
-      new_pid_list.push(pids[i])
+  var new_pid_list = [];
+  for (var i in pids) {
+    pinfo = PROJECT_INFORMATION_BY_PID[pids[i]];
+    if (user_has_project_permissions(req, pinfo)) {
+      new_pid_list.push(pids[i]);
     }
   }
   return new_pid_list;
