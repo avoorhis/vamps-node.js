@@ -1989,6 +1989,15 @@ user_is_mbl_user = function(req) {
   return ( parseInt(req.user.security_level, 10) === parseInt(C.user_security_level.mbl_user, 10));
 };
 
+user_has_project_permissions = function(req, pinfo) {
+  user_has_permissions = false;
+  project_is_public = (pinfo.public === parseInt("1", 10));
+  user_is_owner = (req.user.user_id === pinfo.oid);
+  user_has_spec_permission = pinfo.permissions.includes(req.user.user_id);
+  user_has_permissions = (project_is_public || user_is_owner || user_is_admin(req) || user_is_mbl_user(req) || user_has_spec_permission);
+  return user_has_permissions;
+};
+
 module.exports.screen_dids_for_permissions = function (req, dids) {
   // This is called from unit_select and view_select (others?)  to catch and remove dids that
   // are found through searches such as geo_search and go to unit_select directly
@@ -1998,23 +2007,27 @@ module.exports.screen_dids_for_permissions = function (req, dids) {
   for (var i in dids) {
     if (PROJECT_ID_BY_DID.hasOwnProperty(dids[i]) && PROJECT_INFORMATION_BY_PID.hasOwnProperty(PROJECT_ID_BY_DID[dids[i]])) {
       pinfo = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[dids[i]]];
-      project_is_public = (pinfo.public === parseInt("1", 10));
-      // if (pinfo.public === 1 || pinfo.public === '1') {
-      if (project_is_public) {
+      if (user_has_project_permissions(req, pinfo)) {
         new_did_list.push(dids[i]);
-      } else {
+      }
+
+      // project_is_public = (pinfo.public === parseInt("1", 10));
+      // if (pinfo.public === 1 || pinfo.public === '1') {
+      // if (project_is_public) {
+
+      // } else {
         // allow if user is owner (should have uid in permissions but check anyway)
-        user_is_owner = (req.user.user_id === pinfo.oid);
+        // user_is_owner = (req.user.user_id === pinfo.oid);
         // allow if user is admin
         // allow if user is in pinfo.permissions
-        user_has_permission = pinfo.permissions.includes(req.user.user_id); // same as (pinfo.permissions.indexOf(req.user.user_id) !== -1);
-        if (user_is_owner || user_is_admin(req) || user_is_mbl_user(req) || user_has_permission) {
-          new_did_list.push(dids[i]);
-        }
-      }
+        // user_has_permission = pinfo.permissions.includes(req.user.user_id); // same as (pinfo.permissions.indexOf(req.user.user_id) !== -1);
+        // if (user_is_owner || user_is_admin(req) || user_is_mbl_user(req) || user_has_permission) {
+        //   new_did_list.push(dids[i]);
+        // }
+      // }
     }
   }
-  return new_did_list
+  return new_did_list;
 };
 
 module.exports.screen_pids_for_permissions = function (req, pids) {
