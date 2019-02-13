@@ -25,6 +25,13 @@ constants.blast_dbs = ['Bv3v5', 'Bv4v5', 'Av4v5', 'Bv4', 'Bv6', 'Bv6v4', 'Av6v4'
 constants.download_file_formats = [
   'metadata', 'pipeline_metadata', 'fasta', 'taxbytax', 'taxbyref', 'taxbyseq', 'biom', 'matrix', 'phyloseq', 'distance', 'emperor', 'pdf', 'tree', 'heatmap', 'otus', 'piecharts', 'barcharts'
 ];
+constants.user_security_level = {
+  "admin": 1,
+  "mbl_user": 10,
+  "dco_editor": 45,
+  "regular_user": 50
+};
+
 // constants.ENV_SOURCE = {
 //         10: "air",
 //          20: "extreme habitat",
