@@ -4,8 +4,8 @@ var csv_files_controller = require(app_root + '/controllers/csvFilesController')
 // var User                 = require(app_root + '/models/user_model');
 const helpers            = require(app_root + '/routes/helpers/helpers');
 const constants_metadata = require(app_root + '/public/constants_metadata');
-const constants = require(app_root + '/public/constants');
-const CONSTS = Object.assign(constants, constants_metadata);
+const constants          = require(app_root + '/public/constants');
+const CONSTS             = Object.assign(constants, constants_metadata);
 var validator            = require('validator');
 
 // var csv_files_controller = require(app_root + '/controllers/csvFilesController');
@@ -18,6 +18,8 @@ class CreateDataObj {
     this.pid             = project_id || '';
     this.dataset_ids     = DATASET_IDS_BY_PID[this.pid] || dataset_ids || [];
     this.all_field_names = this.collect_field_names();
+    this.env_filters(req);
+
     this.all_metadata    = {};
     this.metadata_new_form_fields = [
       "d_region",
@@ -36,6 +38,7 @@ class CreateDataObj {
       "reference",
       "samples_number",
     ];
+
     this.prepare_empty_metadata_object();
 
   }
@@ -49,6 +52,56 @@ class CreateDataObj {
 
     all_field_names = helpers.unique_array(all_field_names);
     return all_field_names;
+  }
+
+  unify_env_name(env_package) {
+    let re1               = / /gi;
+    let re2               = /-/gi;
+    let re3               = /\//gi;
+    let env_package_unified_name = env_package.toLowerCase().replace(re1, '_').replace(re2, '_').replace(re3, '_');
+    return env_package_unified_name;
+  }
+
+  get_all_fields(env_package) {
+    let env_package_unified_name = this.unify_env_name(env_package);
+    return CONSTS.FIELDS_BY_ENV[env_package_unified_name];
+  }
+
+  get_env_proper_name(env_package) {
+    let name = "";
+    let obj_name = CONSTS.PACKAGES_AND_PORTALS_ALIASES;
+    let unified_name = this.unify_env_name(env_package);
+    for (var key in obj_name) {
+      let value_arr = obj_name[key];
+      if (value_arr.includes(unified_name)) {
+        name = key;
+        break;
+      }
+    }
+    // Object.keys(obj_name).forEach(function(key) {
+    //
+    // });
+    return name;
+  }
+
+  filter_field_names_by_env(req) {
+    // console.log(req.body);
+
+    let req_body_exists = ((typeof req.body !== 'undefined') && (typeof req.body.package !== 'undefined')) ;
+    let req_form_exists = ((typeof req.form !== 'undefined') && (typeof req.form.package !== 'undefined'));
+    let env_package = "unknown";
+    let proper_env_name = env_package;
+    let field_names = [];
+    if (req_body_exists || req_form_exists) {
+      env_package = req.body.package || req.form.package;
+      proper_env_name = this.get_env_proper_name(env_package);
+      field_names = this.get_all_fields(env_package);
+    }
+    return field_names;
+  }
+
+  env_filters(req) { //TODO: remove outer layer or expand
+    let field_names_for_env = this.filter_field_names_by_env(req);
   }
 
   get_field_names_by_dataset_ids() {
@@ -969,7 +1022,6 @@ class CreateDataObj {
     transposed["geo_loc_name_continental"] = curr_country;
     return transposed;
   }
-
 
 }
 
