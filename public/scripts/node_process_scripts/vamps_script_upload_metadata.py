@@ -76,7 +76,10 @@ def start_metadata_load_from_file(args):
     print("Starting1 "+os.path.basename(__file__))
     
     print('Changing dict to obj')
-    args = Dict2Obj(args) 
+    try:
+        args = Dict2Obj(args) 
+    except:
+        pass
     print(type(args))
     
     global mysql_conn, cur

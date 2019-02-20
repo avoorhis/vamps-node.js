@@ -17,18 +17,18 @@
 		 <div  class="col-xs-6 col-sm-3 sidebar-offcanvas pull-right" id="sidebar" style='position:fixed;right: 10px;top:80px'>
 		  <div class="list-group">
 		  	<a href="#clustering" 			class="list-group-item list-group-item-warning">Clustering and Diversity</a>
-		  	<a href="#processing" 			class="list-group-item list-group-item-warning">Sequence Processing</a>
-		  	<a href="#export_counts" 		class="list-group-item list-group-item-warning">Exporting Taxonomic Counts</a>
-		  	<a href="#export_sequences" class="list-group-item list-group-item-warning">Exporting Sequences</a>
+		  	<a href="#tag_generation" 	class="list-group-item list-group-item-warning">Tag Generation / Sequence Processing</a>
+		  	<a href="#export_data" 		class="list-group-item list-group-item-warning">Exporting (Downloading) Data</a>
+		  	
 		    <a href="#import_data" 			class="list-group-item list-group-item-warning">Importing Data</a>
 		    <a href="#phyloseq" 				class="list-group-item list-group-item-warning">What are the Phyloseq Files</a>
 		    <a href="#databases" 				class="list-group-item list-group-item-warning">Reference Databases</a>
 		    <a href="#submissions" 			class="list-group-item list-group-item-warning">Sample Submission Process</a>
-		    <a href="#tag_generation" 	class="list-group-item list-group-item-warning">Tag Generation</a>
+		    
 		    <a href="#metadata" 				class="list-group-item list-group-item-warning">Metadata</a>
 		    <a href="#formats" 			    class="list-group-item list-group-item-warning">Format Definitions</a>
 		    <a href="#definitions" 			class="list-group-item list-group-item-warning">Definitions</a>
-		    <a href="#" class="list-group-item list-group-item-warning">Link</a>
+		    
 		  </div>
 		</div><!--/.sidebar-offcanvas-->
 </div>
@@ -68,32 +68,177 @@
 </pre>
         </div>
       </div>
-
-<!-- DATA PROCESSING -->       <a name='processing'></a>
+      
+<!-- TAG GENERATION -->        <a name='tag_generation'></a>
       <hr>
       <div class="row">
         <div class="col-md-12">
-          <h4><center>Sequence Processing</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+
+          <h4><center>Tag Generation/Sequence Processing</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <p class='standard'>In October of 2018, we switched from using the Invitrogen Platinum Taq DNA Polymerase High Fidelity (Cat. No. 11304102) 
+          to the Invitrogen Platinum SuperFi DNA Polymerase (Cat. #12351-050). High Fidelity polymerase offers 6X fidelity vs Taq, whereas SuperFi 
+          polymerase offers 100X fidelity vs Taq. Modified PCR master mix recipe is as follows:
+          </p> 
+            <a name='illumina'></a>
+            <strong>Illumina Amplicon Generation</strong>
+
+            <br><br><u>Fusion PCR recipe (125 uL):</u>
+            <ul>
+            <li class="standard">91.25 uL of water</li>
+            <li class="standard">25 uL of 5X SuperFi Buffer</li>
+            <li class="standard">2.5 uL of 10 mM dNTP Mix</li>
+            <li class="standard">1.25 uL of Platinum SuperFi Polymerase</li>
+            <li class="standard">4 uL of 10 uM Fusion Primer Mix</li>
+            <li class="standard">1 uL of template*</li>
+            </ul>
+            *More template can be used in place of water if sample concentration is low (< 1 ng).
+            <br>
+            Prior to addition of template, 25 uL of master mix is removed to serve as a negative control. After addition of template, master mix is divided into 3 reactions of 33 uL each.
+            <br><br>
+            <u>v4v5 Program:</u>
+            <ul>
+            <li class="standard">94&deg;C for 3 min</li>
+            <li class="standard">30 cycles of:</li>
+                <ul>
+                <li class="standard">94&deg;C for 30 sec</li>
+                <li class="standard">57&deg;C for 45 sec</li>
+                <li class="standard">72&deg;C for 1 min</li>
+                </ul>
+            <li class="standard">72&deg;C for 2 min</li>
+            <li class="standard">Hold at 4&deg;C</li>
+            </ul>
+            <u>Supplies:</u>
+            <br>Invitrogen Platinum SuperFi DNA Polymerase (Cat. #12351-050)
+            <br>Thermo Scientific 10 mM dNTP Mixes (Cat. # FERR0192)
+            
+<hr> 
+             <p class='standard'>
+				     In 2013 we switched to using <strong>Illumina</strong> platforms for 16S sequencing. Similar to the strategy for 454, we use fusion primers composed
+				     of the Illumina adaptors, multiplexing identifiers, and domain-specific primers.
+				     Thermocycling and reaction mixtures are different from 454 sequencing for Illumina amplicon PCR.
+				    </p>
+				    <p class='standard'>
+				       <strong>For Archaeal V6:</strong></p>
+
+				    <ul>
+				        <li class="standard">94C for 2 min</li>
+				        <li class="standard">30 cycles of (94C for 30sec, 60C for 45sec, 72C for 1min)</li>
+				        <li class="standard">72C for 2 min</li>
+				        <li class="standard">Hold at 4C</li>
+				    </ul>
+
+				    <p class='standard'>
+				       <strong>For Bacterial and Archaeal V4V5:</strong></p>
+
+				    <ul>
+				        <li class="standard">94C for 2 min</li>
+				        <li class="standard">30 cycles of (94C for 30sec, 57C for 45sec, 72C for 1min)</li>
+				        <li class="standard">72C for 2 min</li>
+				        <li class="standard">Hold at 4C</li>
+				    </ul>
+
+				    <p class='standard'>
+				    Bacterial V6 uses first the domain-specific primers for 25 cycles, then the products are cleaned and used in a second 5-cycle PCR with fusion primers.
+				    </p>
+				    <p class='standard'>
+				       <strong>For Bacterial V6:</strong></p>
+
+				    <ul>
+				        <li class="standard">94C for 2 min</li>
+				        <li class="standard">25 cycles of (94C for 30sec, 60C for 45sec, 72C for 1min)</li>
+				        <li class="standard">72C for 2 min</li>
+				        <li class="standard">Hold at 4C</li>
+				        <li class="standard">Visualize and quantitate the amplicons in the BioAnalyzer or Caliper.</li>
+				        <li class="standard">Purify the amplicons using Qiagen MinElute columns.</li>
+				        <li class="standard">Use product in second PCR:</li>
+				        <ul>
+				          <li class="standard">94C for 2 min</li>
+					      	<li class="standard">5 cycles of (94C for 30sec, 60C for 45sec, 72C for 1min)</li>
+					      	<li class="standard">72C for 2 min</li>
+					      	<li class="standard">Hold at 4C</li>
+					    	</ul>
+						</ul>
+				    <p class='standard'>
+				    After we produce amplicons, we can clean and/or size-select for the target products using Agencourt AMPure XP beads.
+				    Then we quantitate products with an Invitrogen Picogreen assay, pool at desired concentrations (e.g. equimolar), and quantitate the final pool with qPCR.
+				    </p>
+
+<hr>                   
+          <a name='454'></a>
+          <p class='standard'>Conserved sequences that flank the hypervariable V6-V4 region of rRNAs serve as primer sites to generate PCR
+				   amplicons. Each PCR reaction produces products that can be informatically identified using a unique "key" incorporated between
+				   the 454 Life Sciences primer A or B and the 5' flanking rRNA primer. The use of a 5-bp key allows for the synthesis of as many as 81
+				   oligonucleotides that differ by at least two sites. Our multiplexing strategy allows the concurrent collection of 10,000-50,000
+				   tags from each of 8-40 samples in a single nine- hour sequencing run without use of partitioning gaskets that reduce the number
+				   of sequencing wells on the PicoTiterPlate<small><sup>TM</sup></small>. Amplicons can be pooled before the emPCR step and each
+				   pool is run on a large region of the plate.
+				   </p>
+				   <p class='standard'>
+				       <strong>454 Amplicon PCR</strong> (Christina Holmes/Ekaterina Andreishcheva) for four reactions:</p>
+				       <ul>
+				         <li class="standard">96 ul water</li>
+				        <li class="standard">13.4 ul 10X Platinum buffer</li>
+				        <li class="standard">9.4 ul 50 mM MgSO4</li>
+				        <li class="standard">2.6 ul 10 mM Pure Peak dNTPs</li>
+				        <li class="standard">4 ul 10uM Fusion Primer A </li>
+				        <li class="standard">4 ul 10uM Fusion Primer B</li>
+				        <li class="standard">2.6 ul 2.5 U/ul Platinum HiFi Pol</li>
+				        <li class="standard">[2 ul template (~5-25 ng)*]</li>
+				        <li class="standard">33 ul total volume/reaction</li>
+				       </ul>
+
+				     <p class='standard'>*If template stock is dilute or otherwise resistant to amplification, more template can be added in place of water.
+				     </p>
+				     <p class='standard'>
+				     The 5 reactions are the three replicates of the environmental template, positive control, and negative control.
+				     Template (plasmid pool for positive control; water for negative control) is added as final step.
+				     </p>
+				     <p class='standard'>
+				       <strong>Program:</strong></p>
+				       <ul>
+				        <li class="standard">94C for 2 min</li>
+				        <li class="standard">30 cycles of (94C for 30sec, 60C for 45sec, 72C for 1min)</li>
+				        <li class="standard">72C for 2 min</li>
+				        <li class="standard">Hold at 4C</li>
+				        <li class="standard">Visualize and quantitate the amplicons in the BioAnalyzer or Caliper.
+				        <li class="standard">Purify the amplicons using Agencourt AMPure XP beads as described in 454 Sequencing Technical Bulletin 2011-007, and resuspend in 100 uL of Buffer EB.</li>
+				        <li class="standard">Store purified amplicons at -20C.</li>
+				       </ul>
+				     <br />
+
+				      <p class='standard'><strong>Supplies:</strong></p>
+				     <ul>
+				        <li class="standard">DNA 1000 Kit, Agilent, 5067-1504, 25 chips. $372</li>
+					    	<li class="standard">Agencourt AMPure XP, 60 mL, A63881. $1050</li>
+					    	<li class="standard">PurePeak DNA Polymerization Mix 10 mM 1 ml, Pierce/ThermoFisher, NU606001, $115</li>
+					    	<li class="standard">Platinum HiFi Taq polymerase plus buffer and MgSO4, Invitrogen.</li>
+				     </ul>
+
+				   
         </div>
       </div>
 
-<!-- EXPORT COUNTS DATA -->       <a name='export_counts'></a>
+<!-- EXPORT  DATA -->       <a name='export_data'></a>
       <hr>
       <div class="row">
         <div class="col-md-12">
-          <h4><center>Exporting Taxonomic Counts</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-        </div>
-      </div>
-
-<!-- EXPORT SEQS DATA -->       <a name='export_sequences'></a>
-      <hr>
-      <div class="row">
-        <div class="col-md-12">
-          <h4><center>Exporting Data</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
-          </p>
+          <h4><center>Exporting (Downloading) Data</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <p><strong>There is no raw sequence data available on VAMPS.</strong></p>
+          <p>The primary way to export data from VAMPS is to use the 'Download Data' page which
+          is accessed from the <a href='/visuals/visuals_index'>main 'Sample Selection' page</a>. After you've selected the datasets you want to include in your download
+          select the blue 'Download Data' button.
+          <br>You can download data from VAMPS in various formats. Listed on the download page are the formats (with descriptions) available to you.
+          <ul>
+          <li><strong>Fasta</strong> (3 formats available)
+          <li><strong>Counts Matrix</strong> (2 formats available)
+          <li><strong>Metadata</strong> (2 formats available)
+          <li><strong>Biom</strong> (Modified JSON format)
+          
+          </ul>
+            </p>
+            
+        
+        There are other downloading opportunities available for data and images on the Visualization pages.
 
         </div>
       </div>
@@ -104,24 +249,15 @@
         <div class="col-md-12">
           <h4><center>Importing Data</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
           <p class='standard'><strong>Description of Import Options</strong></p>
-          <p>There are currently two fasta file formats that are accepted for uploading sequences to VAMPS. Both of these methods require processed
-          	data. Raw data is not accepted yet but we intend to have the MBL trimming pipeline included in the future.
+          <a href='/user_data/import_choices'>To upload data to VAMPS go here.</a>
+          <br><br><p>Fasta files and count matrix files can be uploaded to VAMPS as long as they conform to the correct format which is described
+          on the upload page for each type.           
           </p>
-          <a name='single_dataset_import'></a>
-          <p class='standard'><strong>Single-Dataset Fasta File</strong></p>
-          <p>The defline should include the uniqueId after the '&gt;' symbol. If there is anything else on the line it must be separated from the uniqueId
-          	by a space or pipe '|':
-<pre>
->uniqueId
-or
->uniqueId|any_other_information
-</pre>
-          	Like any other fasta style file the sequence is on the line immediately following the defline.
-          </p>
+          
           <p class='standard'><strong>Multiple-Dataset fasta file</strong></p>
           <p>
           </p>
-          <p class='standard'><strong>Metadata file</strong></p>
+          <p class='standard'><strong>Metadata file (for projects already in VAMPS)</strong></p>
           <p>This is a csv (comma separated values) file but the data are actually separated by &lt;TABS&gt; to make it more human readable.
           	These files must conform to the <a href='http://qiime.org/documentation/file_formats.html' target='_blank'>qiime mapping file format</a>.
           	Since these are processed (trimmed) data that are being uploaded, the 'BarcodeSequence' and 'LinkerPrimerSequence' fields can be left empty
@@ -129,28 +265,8 @@ or
           	The Description field must also be present and must be the last field. There is a handy 'validate_mapping_file.py' script available
           	in qiime to assist you with this file.
           </p>
-          <a name='legacy_vamps_import'></a>
-          <p class='standard'><strong>TaxBySeq File</strong></p>
-          <p>This is a file that has to be downloaded from the old VAMPS (legacy) program on its <a href='https://vamps.mbl.edu/exporter/export_data.php'>export_data page</a>.
-          On that page you can choose your data by whole project or mix together datasets from different projects. Select the 'TaxBySeq File' option and make sure
-          you are selecting raw counts (Not Normalized). When the data is ready you can download the compressed file at the<a href='https://vamps.mbl.edu/exporter/downloads.php'>
-          data retrieval page</a>. To get the data into New VAMPS the TaxBySeq file should be on your harddrive and not compressed. From the New VAMPS page 'import_choices'
-          choose the TaxBySeq radio button. Now you can choose to upload all the data under a new single project name of your choice or to keep the original VAMPS
-          names (the data will separate into multiple projects if selected that way origially).
-          </p>
-
-          <p class='standard'><strong>How to convert data from the old vamps </strong> <small>(for administrators)</small></p>
-          <p> If you have access to the old (legacy) vamps or vampsdev database you can run these two mysql commands to create separate sequence and metadata
-          	files for import into the new vamps database. Alter the commands below to include the desired project name and if the project is a user uploaded
-          	project change 'vamps_sequences' to 'vamps_sequences_pipe'. Also if you are using vampsdev change 'vampsdb' to 'vampsdev'.
-          	<ul>
-	          	<li>mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='projectName';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" &gt; metadata.csv
-	        		<li>mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='projectName';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"  &gt; sequences.csv
-        		</ul>
-    			  There is a script named 'convert_old_vamps_project.py' in the public/scripts directory that will convert the csv files and install the data into the new vamps
-    			  database.
-
-       		</p>
+                  
+          
         </div>
       </div>
 <!-- PHYLOSEQ -->      <a name='phyloseq'></a>
@@ -238,115 +354,7 @@ or
         </div>
       </div>
 
-<!-- TAG GENERATION -->        <a name='tag_generation'></a>
-      <hr>
-      <div class="row">
-        <div class="col-md-12">
 
-          <h4><center>Tag Generation</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
-          <p class='standard'>Conserved sequences that flank the hypervariable V6-V4 region of rRNAs serve as primer sites to generate PCR
-				   amplicons. Each PCR reaction produces products that can be informatically identified using a unique "key" incorporated between
-				   the 454 Life Sciences primer A or B and the 5' flanking rRNA primer. The use of a 5-bp key allows for the synthesis of as many as 81
-				   oligonucleotides that differ by at least two sites. Our multiplexing strategy allows the concurrent collection of 10,000-50,000
-				   tags from each of 8-40 samples in a single nine- hour sequencing run without use of partitioning gaskets that reduce the number
-				   of sequencing wells on the PicoTiterPlate<small><sup>TM</sup></small>. Amplicons can be pooled before the emPCR step and each
-				   pool is run on a large region of the plate.
-				   </p>
-				   <p class='standard'>
-				       <strong>454 Amplicon PCR</strong> (Christina Holmes/Ekaterina Andreishcheva) for four reactions:</p>
-				       <ul>
-				         <li class="standard">96 ul water</li>
-				        <li class="standard">13.4 ul 10X Platinum buffer</li>
-				        <li class="standard">9.4 ul 50 mM MgSO4</li>
-				        <li class="standard">2.6 ul 10 mM Pure Peak dNTPs</li>
-				        <li class="standard">4 ul 10uM Fusion Primer A </li>
-				        <li class="standard">4 ul 10uM Fusion Primer B</li>
-				        <li class="standard">2.6 ul 2.5 U/ul Platinum HiFi Pol</li>
-				        <li class="standard">[2 ul template (~5-25 ng)*]</li>
-				        <li class="standard">33 ul total volume/reaction</li>
-				       </ul>
-
-				     <p class='standard'>*If template stock is dilute or otherwise resistant to amplification, more template can be added in place of water.
-				     </p>
-				     <p class='standard'>
-				     The 5 reactions are the three replicates of the environmental template, positive control, and negative control.
-				     Template (plasmid pool for positive control; water for negative control) is added as final step.
-				     </p>
-				     <p class='standard'>
-				       <strong>Program:</strong></p>
-				       <ul>
-				        <li class="standard">94C for 2 min</li>
-				        <li class="standard">30 cycles of (94C for 30sec, 60C for 45sec, 72C for 1min)</li>
-				        <li class="standard">72C for 2 min</li>
-				        <li class="standard">Hold at 4C</li>
-				        <li class="standard">Visualize and quantitate the amplicons in the BioAnalyzer or Caliper.
-				        <li class="standard">Purify the amplicons using Agencourt AMPure XP beads as described in 454 Sequencing Technical Bulletin 2011-007, and resuspend in 100 uL of Buffer EB.</li>
-				        <li class="standard">Store purified amplicons at -20C.</li>
-				       </ul>
-				     <br />
-
-				      <p class='standard'><strong>Supplies:</strong></p>
-				     <ul>
-				        <li class="standard">DNA 1000 Kit, Agilent, 5067-1504, 25 chips. $372</li>
-					    	<li class="standard">Agencourt AMPure XP, 60 mL, A63881. $1050</li>
-					    	<li class="standard">PurePeak DNA Polymerization Mix 10 mM 1 ml, Pierce/ThermoFisher, NU606001, $115</li>
-					    	<li class="standard">Platinum HiFi Taq polymerase plus buffer and MgSO4, Invitrogen.</li>
-				     </ul>
-
-				    <p class='standard'>
-				     In 2013 we switched to using <strong>Illumina</strong> platforms for 16S sequencing. Similar to the strategy for 454, we use fusion primers composed
-				     of the Illumina adaptors, multiplexing identifiers, and domain-specific primers.
-				     Thermocycling and reaction mixtures are different from 454 sequencing for Illumina amplicon PCR.
-				    </p>
-				    <p class='standard'>
-				       <strong>For Archaeal V6:</strong></p>
-
-				    <ul>
-				        <li class="standard">94C for 2 min</li>
-				        <li class="standard">30 cycles of (94C for 30sec, 60C for 45sec, 72C for 1min)</li>
-				        <li class="standard">72C for 2 min</li>
-				        <li class="standard">Hold at 4C</li>
-				    </ul>
-
-				    <p class='standard'>
-				       <strong>For Bacterial and Archaeal V4V5:</strong></p>
-
-				    <ul>
-				        <li class="standard">94C for 2 min</li>
-				        <li class="standard">30 cycles of (94C for 30sec, 57C for 45sec, 72C for 1min)</li>
-				        <li class="standard">72C for 2 min</li>
-				        <li class="standard">Hold at 4C</li>
-				    </ul>
-
-				    <p class='standard'>
-				    Bacterial V6 uses first the domain-specific primers for 25 cycles, then the products are cleaned and used in a second 5-cycle PCR with fusion primers.
-				    </p>
-				    <p class='standard'>
-				       <strong>For Bacterial V6:</strong></p>
-
-				    <ul>
-				        <li class="standard">94C for 2 min</li>
-				        <li class="standard">25 cycles of (94C for 30sec, 60C for 45sec, 72C for 1min)</li>
-				        <li class="standard">72C for 2 min</li>
-				        <li class="standard">Hold at 4C</li>
-				        <li class="standard">Visualize and quantitate the amplicons in the BioAnalyzer or Caliper.</li>
-				        <li class="standard">Purify the amplicons using Qiagen MinElute columns.</li>
-				        <li class="standard">Use product in second PCR:</li>
-				        <ul>
-				          <li class="standard">94C for 2 min</li>
-					      	<li class="standard">5 cycles of (94C for 30sec, 60C for 45sec, 72C for 1min)</li>
-					      	<li class="standard">72C for 2 min</li>
-					      	<li class="standard">Hold at 4C</li>
-					    	</ul>
-						</ul>
-				    <p class='standard'>
-				    After we produce amplicons, we can clean and/or size-select for the target products using Agencourt AMPure XP beads.
-				    Then we quantitate products with an Invitrogen Picogreen assay, pool at desired concentrations (e.g. equimolar), and quantitate the final pool with qPCR.
-				    </p>
-
-
-        </div>
-      </div>
 <!-- METADATA -->        <a name='metadata'></a>
       <hr>
       <div class="row">
