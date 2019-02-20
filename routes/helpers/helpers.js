@@ -1977,7 +1977,7 @@ module.exports.get_metadata_obj_from_dids = function (dids) {
   }
   //console.log(metadata)
   return metadata
-}
+};
 //
 //
 
