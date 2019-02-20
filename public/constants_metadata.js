@@ -539,33 +539,75 @@ constants_metadata.PACKAGES_AND_PORTALS_ALIASES = {
 };
 
 constants_metadata.FIELDS_BY_ENV = {
-  "air": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*altitude", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*lat_lon", "elev", "temp", "description"],
+  "air": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*altitude", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name",
+   "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+  "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+   "elevation", "temperature", "description"],
 
-  "built_environment": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*abs_air_humidity", "*air_temp", "*build_occup_type", "*building_setting", "*carb_dioxide", "*lat_lon", "*env_broad_scale", "*env_local_scale", "description", "*env_medium", "*filter_type", "*geo_loc_name", "*heat_cool_type", "*indoor_space", "*light_type", "*occup_samp", "*occupant_dens_samp", "*organism_count", "*rel_air_humidity", "*space_typ_state", "*typ_occupant_dens", "*ventilation_type"],
+  "built_environment": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*abs_air_humidity", "*air_temp", "*build_occup_type", "*building_setting", "*carb_dioxide",
+   "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+  "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+   "*env_broad_scale", "*env_local_scale", "description", "*env_medium", "*filter_type", "*geo_loc_name", "*heat_cool_type", "*indoor_space", "*light_type", "*occup_samp", "*occupant_dens_samp", "*organism_count", "*rel_air_humidity", "*space_typ_state", "*typ_occupant_dens", "*ventilation_type"],
 
-  "human_associated": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host", "*lat_lon", "description"],
+  "human_associated": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host",
+   "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+  "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+   "description"],
 
-  "human_gut": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host", "*lat_lon", "temp", "description"],
+  "human_gut": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host",
+   "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+  "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+   "temperature", "description"],
 
-  "human_oral": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host", "*lat_lon", "temp", "description"],
+  "human_oral": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host",
+   "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+  "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+   "temperature", "description"],
 
-  "human_skin": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host", "*lat_lon", "temp", "description"],
+  "human_skin": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host",
+   "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+  "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+   "temperature", "description"],
 
-  "human_vaginal": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host", "*lat_lon", "temp", "description"],
+  "human_vaginal": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host",
+   "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+  "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+   "temperature", "description"],
 
-  "microbial_mat_biofilm": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*depth", "*elev", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*lat_lon", "ph", "temp", "description"],
+  "microbial_mat_biofilm": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*depth", "*elev", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name",
+   "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+  "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+   "ph", "temperature", "description"],
 
-  "miscellaneous_natural_or_artificial_environment": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*lat_lon", "depth", "elev", "isolation_source", "ph", "temp", "description"],
+  "miscellaneous_natural_or_artificial_environment": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name",
+   "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+  "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+   "depth", "elevation", "isolation_source", "ph", "temperature", "description"],
 
-  "plant_associated": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host", "*lat_lon", "depth", "elev", "host_taxid", "plant_body_site", "temp", "description"],
+  "plant_associated": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host",
+   "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+  "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+   "depth", "elevation", "host_taxid", "plant_body_site", "temperature", "description"],
 
-  "sediment": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*depth", "*elev", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*lat_lon", "ph", "temp", "description"],
+  "sediment": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*depth", "*elev", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name",
+   "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+  "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+   "ph", "temperature", "description"],
 
-  "soil": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*depth", "*elev", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*lat_lon", "ph", "description"],
+  "soil": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*depth", "*elev", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name",
+   "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+  "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+   "ph", "description"],
 
-  "wastewater_sludge": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*lat_lon", "depth", "ph", "temp", "description"],
+  "wastewater_sludge": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name",
+   "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+  "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+   "depth", "ph", "temperature", "description"],
 
-  "water": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*depth", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*lat_lon", "elev", "ph", "temp", "tot_depth_water_col", "description"],
+  "water": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*depth", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name",
+   "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+  "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
+   "elevation", "ph", "temperature", "tot_depth_water_col", "description"],
 
 };
 

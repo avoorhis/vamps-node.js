@@ -18,7 +18,7 @@ class CreateDataObj {
     this.pid             = project_id || '';
     this.dataset_ids     = DATASET_IDS_BY_PID[this.pid] || dataset_ids || [];
     this.all_field_names = this.collect_field_names();
-    this.env_filters(req);
+    this.filtered_field_names_for_env = this.env_filters(req);
 
     this.all_metadata    = {};
     this.metadata_new_form_fields = [
@@ -78,9 +78,6 @@ class CreateDataObj {
         break;
       }
     }
-    // Object.keys(obj_name).forEach(function(key) {
-    //
-    // });
     return name;
   }
 
@@ -100,8 +97,11 @@ class CreateDataObj {
     return field_names;
   }
 
-  env_filters(req) { //TODO: remove outer layer or expand
-    let field_names_for_env = this.filter_field_names_by_env(req);
+  env_filters(req) { //TODO: remove the outer layer or expand
+    console.log(this.all_field_names);
+    let field_names_by_env = this.filter_field_names_by_env(req);
+    // let filtered_names =
+
   }
 
   get_field_names_by_dataset_ids() {
