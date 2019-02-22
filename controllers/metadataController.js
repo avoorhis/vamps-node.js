@@ -830,16 +830,16 @@ class CreateDataObj {
     var all_field_names = this.all_field_names;
 
     var all_field_names4     = [];
-    // var all_field_names4_temp = CONSTS.ORDERED_METADATA_NAMES;
-    var parameter            = CONSTS.ORDERED_METADATA_NAMES.slice(0, 1);
+    var parameter            = [CONSTS.ORDERED_METADATA_NAMES_OBJ["structured comment name"]];
+    // var parameter            = CONSTS.ORDERED_METADATA_NAMES.slice(0, 1);
     var new_user_submit      = [['', 'Please fill in', '', '']];
     var sample_num           = [['sample_num', 'Sample Number', 'MBL Supplied', '']];
-    var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
+    var user_sample_name     = [CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_name"]];
     var dataset_description  = [['dataset_description', 'Dataset description', 'User Supplied', '']];
     var tube_label           = [['tube_label', 'Tube label', 'User Supplied', '']];
     var sample_concentration = [['sample_concentration', 'Sample concentration', 'User Supplied', 'ng/ul']];
-    var dna_quantitation     = CONSTS.ORDERED_METADATA_NAMES.slice(35, 36);
-    var env_package          = CONSTS.ORDERED_METADATA_NAMES.slice(16, 17);
+    var dna_quantitation     = [CONSTS.ORDERED_METADATA_NAMES_OBJ["dna_quantitation"]];
+    var env_package          = [CONSTS.ORDERED_METADATA_NAMES_OBJ["env_package"]];
 
     var second_part_part_1 = CONSTS.ORDERED_METADATA_NAMES.slice(1, 16);
     var second_part_part_2 = CONSTS.ORDERED_METADATA_NAMES.slice(18, 35);
