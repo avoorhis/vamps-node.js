@@ -18,26 +18,11 @@ class CreateDataObj {
     this.pid             = project_id || '';
     this.dataset_ids     = DATASET_IDS_BY_PID[this.pid] || dataset_ids || [];
     this.all_field_names = this.collect_field_names();
-    this.filtered_field_names_for_env = this.env_filters(req);
+    let field_names_by_env = this.filter_field_names_by_env(req);
+    this.required_field_names_for_env = this.env_req_filters(field_names_by_env);
 
     this.all_metadata    = {};
-    this.metadata_new_form_fields = [
-      "d_region",
-      "full_name",
-      "funding_code",
-      "pi_email",
-      "pi_id_name",
-      "pi_name",
-      "pi_name_reversed",
-      "project_description",
-      "project_name",
-      "project_name1",
-      "project_name2",
-      "project_name3",
-      "project_title",
-      "reference",
-      "samples_number",
-    ];
+    this.metadata_new_form_fields = CONSTS.METADATA_NEW_FORM_FIELDS;
 
     this.prepare_empty_metadata_object();
 
@@ -97,11 +82,17 @@ class CreateDataObj {
     return field_names;
   }
 
-  env_filters(req) { //TODO: remove the outer layer or expand
-    console.log(this.all_field_names);
-    let field_names_by_env = this.filter_field_names_by_env(req);
-    // let filtered_names =
-
+  env_req_filters(field_names_by_env) { //TODO: remove the outer layer or expand
+    console.log("In env_req_filters");
+    let required_names = [];
+    for (var i in field_names_by_env) {
+      let current_field_name = field_names_by_env[i];
+      if (current_field_name.includes("*")) {
+        let cleaned_f_name = current_field_name.replace("*", "");
+        required_names.push(cleaned_f_name);
+      }
+    }
+    return required_names;
   }
 
   get_field_names_by_dataset_ids() {
@@ -688,7 +679,8 @@ class CreateDataObj {
     var repeat_times = parseInt(req.form.samples_number, 10) || parseInt(req.form.dataset.length, 10);
     var current_info = Object.assign(project_obj);
 
-    if (d_region_arr.length > 0) { // brand new project not in db
+    let brand_new_project_not_in_db = (d_region_arr.length > 0);
+    if (brand_new_project_not_in_db) {
       current_info.domain      = this.get_domain(d_region_arr);
       current_info.dna_region  = this.get_dna_region(d_region_arr);
       current_info.target_gene = this.get_target_gene(current_info.domain);
@@ -705,7 +697,8 @@ class CreateDataObj {
         all_metadata[pid] = {};
       }
       //todo: split if, if length == dataset_ids.length - just use as is
-      if ((typeof all_metadata[pid] !== 'undefined') && (typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
+      let field_has_value = ((typeof all_metadata[pid] !== 'undefined') && (typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1);
+      if (field_has_value) {
         all_metadata[pid][field_name] = this.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
       }
       else {
@@ -836,27 +829,6 @@ class CreateDataObj {
 
     var all_field_names = this.all_field_names;
 
-    // TODO: add
-    //   funding_code: [ '0' ],
-    //   sample_concentration: [],
-    //   submit_code: [],
-    //   tube_label:
-    // d_region: 'Bacterial#v4v5#Bv4v5',
-    //   dataset_description: [],
-    //   dataset_name: [],
-    //   funding_code: '0',
-    //   pi_id_name: '1453#Amrani Said#Amrani#Said#said_amrani@yahoo.com',
-    //   project_description: 'sdf sdgfdsg sfgdf',
-    //   project_name1: 'SA',
-    //   project_name2: 'AAA',
-    //   project_title: 'AAA54645674',
-    //   sample_concentration: [],
-    //   samples_number: '2',
-    //   submit_code: [],
-    //   tube_label: [] }
-
-    // 14	  ['run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD'],
-
     var all_field_names4     = [];
     // var all_field_names4_temp = CONSTS.ORDERED_METADATA_NAMES;
     var parameter            = CONSTS.ORDERED_METADATA_NAMES.slice(0, 1);
@@ -872,16 +844,6 @@ class CreateDataObj {
     var second_part_part_1 = CONSTS.ORDERED_METADATA_NAMES.slice(1, 16);
     var second_part_part_2 = CONSTS.ORDERED_METADATA_NAMES.slice(18, 35);
     var second_part_part_3 = CONSTS.ORDERED_METADATA_NAMES.slice(36);
-
-    // var general = CONSTS.ORDERED_METADATA_NAMES.slice(1,1);
-    // var funding_code = [['funding_code', 'Funding Code', 'User Supplied', 'numeric only']];
-    // var vamps_dataset_name = CONSTS.ORDERED_METADATA_NAMES.slice(2,2);
-    // var second_part_part = CONSTS.ORDERED_METADATA_NAMES.slice(3,5);
-    // var domain = CONSTS.ORDERED_METADATA_NAMES.slice(6,6);
-    // var target_gene = CONSTS.ORDERED_METADATA_NAMES.slice(7,7);
-    // var dna_region = CONSTS.ORDERED_METADATA_NAMES.slice(8,8);
-
-    //   submit_code: [],
 
     // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
 
@@ -1103,6 +1065,8 @@ class ShowObj {
 
     var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
 
+    // this.filtered_field_names_for_env
+    //get required fields by env
 
     this.res.render('metadata/metadata_edit_form', {
       title: 'VAMPS: Metadata_upload',
@@ -1155,6 +1119,7 @@ class ShowObj {
     metadata_new_form_values.d_region            = req.form.d_region;
     metadata_new_form_values.funding_code        = req.form.funding_code;
     metadata_new_form_values.pi_id_name          = req.form.pi_id_name;
+    metadata_new_form_values.package             = req.form.package;
     metadata_new_form_values.project_description = req.form.project_description;
     metadata_new_form_values.project_title       = req.form.project_title;
     metadata_new_form_values.reference           = req.form.reference;
@@ -1168,10 +1133,12 @@ class ShowObj {
       metadata_new_form_values.pi_email         = pi_id_name_arr[4];
       metadata_new_form_values.pi_name_reversed = pi_id_name_arr[2] + ' ' + pi_id_name_arr[3];
       metadata_new_form_values.project_name1    = req.form.project_name1;
+
       let full_name_arr = metadata_new_form_values.full_name.split(' ');
       if (metadata_new_form_values.project_name1 === '') {
         metadata_new_form_values.project_name1  = this.get_inits(full_name_arr);
       }
+
       metadata_new_form_values.project_name2 = req.form.project_name2;
       metadata_new_form_values.project_name3 = d_region_arr[2];
       metadata_new_form_values.project_name  = metadata_new_form_values.project_name1 + '_' + req.form.project_name2 + '_' + metadata_new_form_values.project_name3;
@@ -1191,23 +1158,11 @@ class ShowObj {
       // TODO: object created separately in Imp.
       // TODO just use form
       button_name: 'Validate',
-      // d_region: req.form.d_region,
       domain_regions: CONSTS.DOMAIN_REGIONS,
-      // funding_code: req.form.funding_code,
       hostname: req.CONFIG.hostname,
       metadata_new_form_values: metadata_new_form_values,
       packages_and_portals: Object.keys(CONSTS.PACKAGES_AND_PORTALS),
-      // pi_email: pi_id_name_arr[4],
       pi_list: req.session.pi_list,
-      // pi_name: pi_name_reversed,
-      // project_description: req.form.project_description,
-      // project_name1: project_name1,
-      // project_name2: project_name2,
-      // project_name3: project_name3,
-      // project_name: project_name,
-      // project_title: req.form.project_title,
-      // reference: req.form.reference,
-      // samples_number: req.form.samples_number,
       title: 'VAMPS: New Metadata',
       user: req.user,
     });
