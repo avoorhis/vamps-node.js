@@ -206,6 +206,8 @@ constants_metadata.METADATA_FORM_REQUIRED_FIELDS = ["adapter_sequence",
 constants_metadata.ORDERED_METADATA_NAMES_OBJ = {
   "structured comment name": ["structured comment name", "Parameter", "", ""], //MBL Supplied or Optional
   "header General": ["", "General", "", ""],
+  "header new_user_submit": ['', 'Please fill in', '', ''],
+  "sample_num": ['sample_num', 'Sample Number', 'MBL Supplied', ''],
   "sample_name": ["sample_name", "Sample ID (user sample name)", "User supplied", ""],
   "dataset": ["dataset", "VAMPS dataset name", "MBL Supplied", ""],
   "dataset_description": ['dataset_description', 'Dataset description', 'User Supplied', ''],
