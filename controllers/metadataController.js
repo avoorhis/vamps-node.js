@@ -829,22 +829,25 @@ class CreateDataObj {
 
     var all_field_names = this.all_field_names;
 
+    // reorder field names for new project/dataset form
     var all_field_names4     = [];
     var parameter            = [CONSTS.ORDERED_METADATA_NAMES_OBJ["structured comment name"]];
     var new_user_submit      = [CONSTS.ORDERED_METADATA_NAMES_OBJ["header new_user_submit"]];
-    // var new_user_submit      = [['', 'Please fill in', '', '']];
     var sample_num           = [CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_num"]];
-    // var sample_num           = [['sample_num', 'Sample Number', 'MBL Supplied', '']];
     var user_sample_name     = [CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_name"]];
-    var dataset_description  = [['dataset_description', 'Dataset description', 'User Supplied', '']];
-    var tube_label           = [['tube_label', 'Tube label', 'User Supplied', '']];
-    var sample_concentration = [['sample_concentration', 'Sample concentration', 'User Supplied', 'ng/ul']];
+    var dataset_description  = [CONSTS.ORDERED_METADATA_NAMES_OBJ["dataset_description"]];
+    var tube_label           = [CONSTS.ORDERED_METADATA_NAMES_OBJ["tube_label"]];
+    var sample_concentration  = [CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_concentration"]];
     var dna_quantitation     = [CONSTS.ORDERED_METADATA_NAMES_OBJ["dna_quantitation"]];
     var env_package          = [CONSTS.ORDERED_METADATA_NAMES_OBJ["env_package"]];
 
-    var second_part_part_1 = CONSTS.ORDERED_METADATA_NAMES.slice(1, 16);
+    // CONSTS.ORDERED_METADATA_NAMES_OBJ.length = Object.keys(CONSTS.ORDERED_METADATA_NAMES_OBJ).length;
+    var second_part_part_1 = helpers.slice_object(CONSTS.ORDERED_METADATA_NAMES_OBJ, 1, 16)
+          // Array.prototype.slice.call(CONSTS.ORDERED_METADATA_NAMES_OBJ, 1, 16);
+
+    var second_part_part_1_1 = CONSTS.ORDERED_METADATA_NAMES.slice(1, 16);
     var second_part_part_2 = CONSTS.ORDERED_METADATA_NAMES.slice(18, 35);
-    var second_part_part_3 = CONSTS.ORDERED_METADATA_NAMES.slice(36);
+    var second_part_part_3 = CONSTS.ORDERED_METADATA_NAMES.slice(36); // everything else till the end
 
     // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
 
@@ -1035,6 +1038,20 @@ class ShowObj {
     return mbl_edit;
   }
 
+  write_csv(pid) {
+    let mbl_edit = this.get_mbl_edit();
+    let has_datasets = (typeof DATASET_IDS_BY_PID[pid] !== 'undefined') && (DATASET_IDS_BY_PID[pid].length > 0);
+    let form_exists = (typeof this.req.form !== 'undefined');
+    if (has_datasets && (this.req.url !== "/metadata_new_csv_upload") && form_exists) {
+      const csv_files_obj = new csv_files_controller.CsvFilesWrite(this.req, this.res);
+      csv_files_obj.create_metadata_project_csv(this.req);
+
+      if (mbl_edit === "can_edit") {
+        csv_files_obj.make_csv_to_upload_to_pipeline(this.req);
+      }
+    }
+  }
+
   render_edit_form() {
     console.trace("Show me, I'm in render_edit_form");
     this.req = helpers.collect_errors(this.req);
@@ -1053,18 +1070,21 @@ class ShowObj {
 
     let pid = Object.keys(this.all_metadata)[0] || this.req.body.project_id;
 
-    let has_datasets = (typeof DATASET_IDS_BY_PID[pid] !== 'undefined') && (DATASET_IDS_BY_PID[pid].length > 0);
-    let form_exists = (typeof this.req.form !== 'undefined');
-    if (has_datasets && (this.req.url !== "/metadata_new_csv_upload") && form_exists) {
-      const csv_files_obj = new csv_files_controller.CsvFilesWrite(this.req, this.res);
-      csv_files_obj.create_metadata_project_csv(this.req);
+    this.write_csv(pid);
 
-      if (mbl_edit === "can_edit") {
-        csv_files_obj.make_csv_to_upload_to_pipeline(this.req);
-      }
-    }
+    // let has_datasets = (typeof DATASET_IDS_BY_PID[pid] !== 'undefined') && (DATASET_IDS_BY_PID[pid].length > 0);
+    // let form_exists = (typeof this.req.form !== 'undefined');
+    // if (has_datasets && (this.req.url !== "/metadata_new_csv_upload") && form_exists) {
+    //   const csv_files_obj = new csv_files_controller.CsvFilesWrite(this.req, this.res);
+    //   csv_files_obj.create_metadata_project_csv(this.req);
+    //
+    //   if (mbl_edit === "can_edit") {
+    //     csv_files_obj.make_csv_to_upload_to_pipeline(this.req);
+    //   }
+    // }
 
     var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
+    var metadata_form_required_fields = CONSTS.METADATA_FORM_REQUIRED_FIELDS;
 
     // this.filtered_field_names_for_env
     //get required fields by env: metadata_form_required_fields =
@@ -1078,7 +1098,7 @@ class ShowObj {
       all_metadata: this.all_metadata,
       dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
       mbl_edit: mbl_edit,
-      metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+      metadata_form_required_fields: metadata_form_required_fields,
       ordered_field_names_obj: this.ordered_field_names_obj,
       //options:
       adapt_3letter_options: adapt_3letter_options,

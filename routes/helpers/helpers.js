@@ -2344,6 +2344,34 @@ function transpose_arr_of_obj(a) {
   return transposed_object;
 }
 
+// if (!Object.entries)
+//   Object.entries = function( obj ){
+//     var ownProps = Object.keys( obj ),
+//         i = ownProps.length,
+//         resArray = new Array(i); // preallocate the Array
+//
+//     while (i--)
+//       resArray[i] = [ownProps[i], obj[ownProps[i]]];
+//     return resArray;
+//   };
+
+exports.slice_object = function(my_object, begin_ind, end_ind) {
+  // let obj_length = Object.keys(my_object).length;
+  let sliced = [];
+  sliced = Object.entries(my_object).slice(begin_ind, end_ind).map(entry => entry[1]);
+
+  // for (var k in my_object) {
+  //   let v = my_object[k];
+  // }
+
+  // for (var i=0; i < obj_length; i++) {
+  //   if ((begin_ind <= i) && (i <= end_ind)) {
+  //     sliced[i] = my_object[i];
+  //   }
+  // }
+  return sliced;
+};
+
 function jsUcfirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
