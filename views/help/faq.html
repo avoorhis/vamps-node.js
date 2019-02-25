@@ -249,24 +249,15 @@
         <div class="col-md-12">
           <h4><center>Importing Data</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
           <p class='standard'><strong>Description of Import Options</strong></p>
-          <p>There are currently two fasta file formats that are accepted for uploading sequences to VAMPS. Both of these methods require processed
-          	data. Raw data is not accepted yet but we intend to have the MBL trimming pipeline included in the future.
+          <a href='/user_data/import_choices'>To upload data to VAMPS go here.</a>
+          <br><br><p>Fasta files and count matrix files can be uploaded to VAMPS as long as they conform to the correct format which is described
+          on the upload page for each type.           
           </p>
-          <a name='single_dataset_import'></a>
-          <p class='standard'><strong>Single-Dataset Fasta File</strong></p>
-          <p>The defline should include the uniqueId after the '&gt;' symbol. If there is anything else on the line it must be separated from the uniqueId
-          	by a space or pipe '|':
-<pre>
->uniqueId
-or
->uniqueId|any_other_information
-</pre>
-          	Like any other fasta style file the sequence is on the line immediately following the defline.
-          </p>
+          
           <p class='standard'><strong>Multiple-Dataset fasta file</strong></p>
           <p>
           </p>
-          <p class='standard'><strong>Metadata file</strong></p>
+          <p class='standard'><strong>Metadata file (for projects already in VAMPS)</strong></p>
           <p>This is a csv (comma separated values) file but the data are actually separated by &lt;TABS&gt; to make it more human readable.
           	These files must conform to the <a href='http://qiime.org/documentation/file_formats.html' target='_blank'>qiime mapping file format</a>.
           	Since these are processed (trimmed) data that are being uploaded, the 'BarcodeSequence' and 'LinkerPrimerSequence' fields can be left empty
@@ -274,28 +265,8 @@ or
           	The Description field must also be present and must be the last field. There is a handy 'validate_mapping_file.py' script available
           	in qiime to assist you with this file.
           </p>
-          <a name='legacy_vamps_import'></a>
-          <p class='standard'><strong>TaxBySeq File</strong></p>
-          <p>This is a file that has to be downloaded from the old VAMPS (legacy) program on its <a href='https://vamps.mbl.edu/exporter/export_data.php'>export_data page</a>.
-          On that page you can choose your data by whole project or mix together datasets from different projects. Select the 'TaxBySeq File' option and make sure
-          you are selecting raw counts (Not Normalized). When the data is ready you can download the compressed file at the<a href='https://vamps.mbl.edu/exporter/downloads.php'>
-          data retrieval page</a>. To get the data into New VAMPS the TaxBySeq file should be on your harddrive and not compressed. From the New VAMPS page 'import_choices'
-          choose the TaxBySeq radio button. Now you can choose to upload all the data under a new single project name of your choice or to keep the original VAMPS
-          names (the data will separate into multiple projects if selected that way origially).
-          </p>
-
-          <p class='standard'><strong>How to convert data from the old vamps </strong> <small>(for administrators)</small></p>
-          <p> If you have access to the old (legacy) vamps or vampsdev database you can run these two mysql commands to create separate sequence and metadata
-          	files for import into the new vamps database. Alter the commands below to include the desired project name and if the project is a user uploaded
-          	project change 'vamps_sequences' to 'vamps_sequences_pipe'. Also if you are using vampsdev change 'vampsdb' to 'vampsdev'.
-          	<ul>
-	          	<li>mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='projectName';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" &gt; metadata.csv
-	        		<li>mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='projectName';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"  &gt; sequences.csv
-        		</ul>
-    			  There is a script named 'convert_old_vamps_project.py' in the public/scripts directory that will convert the csv files and install the data into the new vamps
-    			  database.
-
-       		</p>
+                  
+          
         </div>
       </div>
 <!-- PHYLOSEQ -->      <a name='phyloseq'></a>

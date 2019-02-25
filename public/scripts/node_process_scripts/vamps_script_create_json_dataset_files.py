@@ -143,7 +143,10 @@ def go_add(args):
     print ("Starting "+os.path.basename(__file__))
    
     print('Changing dict to obj')
-    args = Dict2Obj(args) 
+    try:
+        args = Dict2Obj(args) 
+    except:
+        pass 
     print(type(args))
     
     global mysql_conn, cur
