@@ -1977,47 +1977,54 @@ module.exports.get_metadata_obj_from_dids = function (dids) {
   }
   //console.log(metadata)
   return metadata
-}
+};
 //
 //
+
+user_is_admin = function(req) {
+  return ( parseInt(req.user.security_level, 10) === parseInt(C.user_security_level.admin, 10));
+};
+
+user_is_mbl_user = function(req) {
+  return ( parseInt(req.user.security_level, 10) === parseInt(C.user_security_level.mbl_user, 10));
+};
+
+user_has_project_permissions = function(req, pinfo) {
+  user_has_permissions = false;
+  project_is_public = (pinfo.public === parseInt("1", 10));
+  user_is_owner = (req.user.user_id === pinfo.oid);
+  user_has_spec_permission = pinfo.permissions.includes(req.user.user_id);
+  user_has_permissions = (project_is_public || user_is_owner || user_is_admin(req) || user_is_mbl_user(req) || user_has_spec_permission);
+  return user_has_permissions;
+};
+
 module.exports.screen_dids_for_permissions = function (req, dids) {
   // This is called from unit_select and view_select (others?)  to catch and remove dids that
   // are found through searches such as geo_search and go to unit_select directly
   // bypassing the usual tree filter 'filter_project_tree_for_permissions' (fxn above)
   // permissions are in PROJECT_INFORMATION_BY_PID
-  var new_did_list = []
-  for (i in dids) {
+  var new_did_list = [];
+  for (var i in dids) {
     if (PROJECT_ID_BY_DID.hasOwnProperty(dids[i]) && PROJECT_INFORMATION_BY_PID.hasOwnProperty(PROJECT_ID_BY_DID[dids[i]])) {
-      pinfo = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[dids[i]]]
-      if (pinfo.public == 1 || pinfo.public == '1') {
-        new_did_list.push(dids[i])
-      } else {
-        // allow if user is owner (should have uid in permissions but check anyway)
-        // allow if user is admin
-        // allow if user is in pinfo.permission
-        if (req.user.user_id == pinfo.oid || req.user.security_level <= 10 || pinfo.permissions.indexOf(req.user.user_id) != -1) {
-          new_did_list.push(dids[i])
-        }
+      pinfo = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[dids[i]]];
+      if (user_has_project_permissions(req, pinfo)) {
+        new_did_list.push(dids[i]);
       }
     }
   }
-  return new_did_list
+  return new_did_list;
 };
+
 module.exports.screen_pids_for_permissions = function (req, pids) {
   // This is called from unit_select and view_select (others?)  to catch and remove dids that
   // are found through searches such as geo_search and go to unit_select directly
   // bypassing the usual tree filter 'filter_project_tree_for_permissions' (fxn above)
   // permissions are in PROJECT_INFORMATION_BY_PID
-  var new_pid_list = []
-  for (i in pids) {
-    pinfo = PROJECT_INFORMATION_BY_PID[pids[i]]
-    // allow if user is owner (should have uid in permissions but check anyway)
-    // allow if user is admin
-    // allow if user is in pinfo.permission
-    if (pinfo.public == 1 || pinfo.public == '1') {
-      new_pid_list.push(pids[i])
-    } else if (req.user.user_id == pinfo.oid || req.user.security_level <= 10 || pinfo.permissions.indexOf(req.user.user_id) != -1) {
-      new_pid_list.push(pids[i])
+  var new_pid_list = [];
+  for (var i in pids) {
+    pinfo = PROJECT_INFORMATION_BY_PID[pids[i]];
+    if (user_has_project_permissions(req, pinfo)) {
+      new_pid_list.push(pids[i]);
     }
   }
   return new_pid_list;
