@@ -211,6 +211,8 @@ constants_metadata.ORDERED_METADATA_NAMES_OBJ = {
   "sample_name": ["sample_name", "Sample ID (user sample name)", "User supplied", ""],
   "dataset": ["dataset", "VAMPS dataset name", "MBL Supplied", ""],
   "dataset_description": ['dataset_description', 'Dataset description', 'User Supplied', ''],
+  "tube_label": ['tube_label', 'Tube label', 'User Supplied', ''],
+  "sample_concentration": ['sample_concentration', 'Sample concentration', 'User Supplied', 'ng/ul'],
   "geo_loc_name_continental": ["geo_loc_name_continental", "Country (if not international waters)", "User Supplied", ""],
   "geo_loc_name_marine": ["geo_loc_name_marine", "Longhurst Zone (if marine)", "User Supplied", ""],
   "header MBL generated laboratory metadata": ["", "MBL generated laboratory metadata", "", ""],
