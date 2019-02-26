@@ -16,18 +16,21 @@
 <div  class="row row-offcanvas row-offcanvas-right" >
 		 <div  class="col-xs-6 col-sm-3 sidebar-offcanvas pull-right" id="sidebar" style='position:fixed;right: 10px;top:80px'>
 		  <div class="list-group">
-		  	<a href="#clustering" 			class="list-group-item list-group-item-warning">Clustering and Diversity</a>
-		  	<a href="#tag_generation" 	class="list-group-item list-group-item-warning">Tag Generation / Sequence Processing</a>
-		  	<a href="#export_data" 		class="list-group-item list-group-item-warning">Exporting (Downloading) Data</a>
 		  	
-		    <a href="#import_data" 			class="list-group-item list-group-item-warning">Importing Data</a>
-		    <a href="#phyloseq" 				class="list-group-item list-group-item-warning">What are the Phyloseq Files</a>
-		    <a href="#databases" 				class="list-group-item list-group-item-warning">Reference Databases</a>
-		    <a href="#submissions" 			class="list-group-item list-group-item-warning">Sample Submission Process</a>
+		  	<a href="#tag_generation" 	class="list-group-item list-group-item-warning">Tag Generation / Sequence Processing</a>
+		  	<a href="#pipeline" 	    class="list-group-item list-group-item-warning">Sequencing Pipeline</a>
+		  	<a href="#quality_control" 	class="list-group-item list-group-item-warning">Quality Control</a>
+		  	<a href="#gast" 	        class="list-group-item list-group-item-warning">What is GAST?</a>
+		  	<a href="#export_data" 		class="list-group-item list-group-item-warning">Exporting (Downloading) Data</a>		  	
+		    <a href="#import_data" 		class="list-group-item list-group-item-warning">Importing Data</a>
+		    <a href="#clustering" 		class="list-group-item list-group-item-warning">Clustering and Diversity</a>
+		    <a href="#phyloseq" 		class="list-group-item list-group-item-warning">What are the Phyloseq Files</a>
+		    <a href="#databases" 		class="list-group-item list-group-item-warning">Reference Databases</a>
+		    <a href="#submissions" 		class="list-group-item list-group-item-warning">Sample Submission Process</a>
 		    
-		    <a href="#metadata" 				class="list-group-item list-group-item-warning">Metadata</a>
-		    <a href="#formats" 			    class="list-group-item list-group-item-warning">Format Definitions</a>
-		    <a href="#definitions" 			class="list-group-item list-group-item-warning">Definitions</a>
+		    <a href="#metadata" 		class="list-group-item list-group-item-warning">Metadata</a>
+		    <a href="#formats" 			class="list-group-item list-group-item-warning">Format Definitions</a>
+		    <a href="#definitions" 		class="list-group-item list-group-item-warning">Definitions</a>
 		    
 		  </div>
 		</div><!--/.sidebar-offcanvas-->
@@ -35,46 +38,14 @@
 
 <div class="col-lg-9">
 
- <!-- CLUSTERING -->      <a name='clustering'></a>
-      <hr>
-      <div class="row">
-        <div class="col-lg-12">
-          <h4><center>Clustering and Diversity</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
 
-          <strong><a name="clust">How are SLP clusters created?</a></strong> 
-        <br />
-        <br />
-        A combination of ESPRIT, SLP and mothur computes taxonomic independent clusters (Operational Taxonomic Units - OTUs) <br />
-        using the total collection of available V6 sequences in VAMPS. The sequences were binned into separate datasets for the <br />
-        Archaeal or Eukaryal domains, and into Bacterial phylum- or Proteobacterial class-level datasets.  For each bin, the unique.seqs <br />
-        function in mothur, eliminated duplicate sequences but retained information about observed frequencies for each unique read. <br />
-        The kmerdist module of ESPRIT (with default values) identified all sequence pairs within each bin that are predicted to be at<br /> 
-        least 90% similar.  The needledist module in ESPRIT generated a sparse matrix of pairwise distances by performing a Needleman-Wunsch <br />
-        alignment on the sequence pairs and calculating pairwise distances using quickdist. The algorithm SLP uses the pairwise distances<br /> 
-        to perform a modified single-linkage preclustering at 2% to reduce noise in the sequence data.  Initially SLP orders sequences <br />
-        according to their rank abundance and then steps through the ordered sequences assigning them to clusters.  The most abundant<br /> 
-        sequence defines the first cluster.   Each subsequent sequence is tested against the growing list of clusters using the <br />
-        single-linkage algorithm.  If the sequence has a pairwise distance less than 0.02 (equivalent to a single difference in the V6 region)<br /> 
-        to any of the sequences already in the cluster, the new sequence will be added to the cluster and not tested against subsequent clusters.<br />  
-        If the sequence is not within a distance of 0.02 from any read in any of the existing clusters, it will establish a new cluster. <br />
-        Once all sequences have been assigned to clusters, sequences in the low abundance clusters (< 10 tags) are tested against <br />
-        the larger clusters and added to those clusters if possible.  For each precluster, SLP uses the sequence with the highest <br />
-        frequency and the count of all tags in the precluster for average linkage clustering by mothur. Taxonomy for each cluster <br />
-        relies upon on a two-thirds majority of the taxonomy for each cluster member; CATCHALL estimates the estimate richness. 
-<br><br>Citation:
-<pre>
-  Huse, S.M., D. Mark Welch, H.G Morrison, and M.L. Sogin. (2010) <a href='http://www3.interscience.wiley.com/cgi-bin/fulltext/123320293/HTMLSTART' target='_blank'>
-  Ironing out the wrinkles in the rare biosphere</a>. <i>Environmental Microbiology</i> early view.
-</pre>
-        </div>
-      </div>
       
 <!-- TAG GENERATION -->        <a name='tag_generation'></a>
       <hr>
       <div class="row">
         <div class="col-md-12">
 
-          <h4><center>Tag Generation/Sequence Processing</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <h4><center>Tag Generation/Sequence Processing</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
           <p class='standard'>In October of 2018, we switched from using the Invitrogen Platinum Taq DNA Polymerase High Fidelity (Cat. No. 11304102) 
           to the Invitrogen Platinum SuperFi DNA Polymerase (Cat. #12351-050). High Fidelity polymerase offers 6X fidelity vs Taq, whereas SuperFi 
           polymerase offers 100X fidelity vs Taq. Modified PCR master mix recipe is as follows:
@@ -217,12 +188,131 @@
 				   
         </div>
       </div>
+<!-- PIPELINE -->        <a name='pipeline'></a>
+      <hr>
+      <div class="row">
+        <div class="col-md-12">
+            <h4><center>Sequencing Pipeline</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
+            <p><strong>Our sequencing pipeline is public and the details are stored on GitHub. The links are here:</strong></p>
+            <ul>
+            <li><a href='https://github.com/annaship/py_mbl_sequencing_pipeline' target='_blank'>https://github.com/annaship/py_mbl_sequencing_pipeline</a>
+            <li><a href='https://github.com/annaship/py_mbl_sequencing_pipeline/blob/master/pipeline/illumina_files.py' target='_blank'>https://github.com/annaship/py_mbl_sequencing_pipeline/blob/master/pipeline/illumina_files.py</a>
+            </ul>
+            
+            <p>The Steps in order are: Demultiplexing, Merging, Uniqueing, Chimera Checking and Taxonomy Assignment</p>
+    
+            <p>We use <a href='http://merenlab.org/' target='_blank'>Meren's</a> scripts to perform some of these steps. You can find them here on his GitHub site: <a href='https://github.com/merenlab/illumina-utils/tree/master/scripts' target='_blank'>https://github.com/merenlab/illumina-utils/tree/master/scripts</a></p>
+            <ol>
+                <li><strong>Demultiplexing</strong></li>
+                <ul>
+                  <li><a href='https://github.com/merenlab/illumina-utils/blob/master/scripts/iu-demultiplex' target='_blank'>https://github.com/merenlab/illumina-utils/blob/master/scripts/iu-demultiplex</a></li>
+                </ul>
+                
+                
+                <br><li><strong>Merging (with <a href='#quality_control'>Quality Control</a>)</strong></li>
+                <ul>
+                  <li>From <a href='https://github.com/merenlab/illumina-utils/tree/master/scripts' target='_blank'>https://github.com/merenlab/illumina-utils/tree/master/scripts</a></li>
+                  <ul>
+                    <li>overlap: iu-merge-pairs</li>
+                    <li>filter mismatches: iu-filter-merged-reads</li>
+                    <li>for v6 only: iu-trim-V6-primers</li>
+                  </ul>
+                </ul>
+                
+                
+                <br><li><strong>Uniqueing</strong></li>
+                <ul>
+                <li><a href='https://gist.github.com/meren/abd5c6f014da9aa554a4' target='_blank'>https://gist.github.com/meren/abd5c6f014da9aa554a4</a></li>
+                </ul>
+                
+                
+                <br><li><strong>Chimera Checking</strong></li>
+                <ul>
+                  <li>We use <a href='https://github.com/torognes/vsearch' target='_blank'>vsearch</a> for chimera checking (combining result from both ref and denovo)</li>
+                 
+                    <li>[<b>sample ref:</b>] vsearch -uchime_ref ACAGTG_ACTGC_1_MERGED-MAX-MISMATCH-3.unique.chg -db rRNA16S.gold.fasta -uchimeout ACAGTG_ACTGC_1_MERGED-MAX-MISMATCH-3.unique.chimeras.db -chimeras ACAGTG_ACTGC_1_MERGED-MAX-MISMATCH-3.unique.chimeras.db.chimeric.fa -strand plus -notrunclabel</li>
+                    <li>[<b>sample denovo:</b>] vsearch -uchime_denovo TTAGGC_NNNNCGACG_1_MERGED-MAX-MISMATCH-3.unique.chg -uchimeout TTAGGC_NNNNCGACG_1_MERGED-MAX-MISMATCH-3.unique.chimeras.txt -chimeras TTAGGC_NNNNCGACG_1_MERGED-MAX-MISMATCH-3.unique.chimeras.txt.chimeric.fa -notrunclabels</li>
+                    
+                </ul>
+                
+                
+                <br><li><strong>Taxonomy Assignment (using GAST)</strong></li>
+                <ul>
+                <li>gast_ill (<a href='https://github.com/annaship/BPC-scripts/blob/master/gast_ill' target='_blank'>https://github.com/annaship/BPC-scripts/blob/master/gast_ill</a>)</li>
+                <li>You also will need <a href='https://github.com/annaship/BPC-scripts/blob/master/Taxonomy.pm' target='_blank'>Taxonomy.pm</a> and taxonomy reference database files.</li>
+                </ul>
+            </ol>
+        </div>
+      </div>
+<!-- QUALITY CONTROL -->        <a name='quality_control'></a>
+      <hr>
+      <div class="row">
+        <div class="col-md-12">
+            <h4><center>Quality Control</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
+            <p><strong></strong></p>
+            <ul>
+              <li>There are several steps in the quality control process. Some of these steps are tied up in other pipeline steps (See <a href='#pipeline'>Sequencing Pipeline</a> above).</li>
+              <li>While demultiplexing we check if barcodes and indexes are the same as in provided metadata, if not reads are discarded.</li>
+              <li>Merging read 1 and read 2 into fasta files. At this point we also discard low quality reads. Primers and barcodes are striped out.</li>
+              <li>For part of it "iu-merge-pairs" and "iu-filter-merged-reads" <a href='http://merenlab.org/' target='_blank'>Meren's</a> utilities are used. (See <a href='#pipeline'>Sequencing Pipeline</a> above)</li>
+              <ul>
+                      
+             
+             <li>Filters used during merging (sequence will be discarded if it fails any of these tests):</li>
+                <ol>
+                  <li>Is the prefix correct for read_1 and read_2?</li>
+                  <li>P value? (P value is the ratio of the number of mismatches and the length of the overlap. Merged sequences can be discarded based on this ratio)</li>
+                  <li>Does the read have less than the maximum number of mismatches?</li>
+                  <li>Does the read have any 'N's?</li>
+                  <li>Better than Q30? (Phred quality score, if Phred assigns a Q score of 30 (Q30) to a base, this is equivalent to the probability of an incorrect base call 1 in 1000 times)</li>
+                  <li>More than minimum expected overlap?</li>
 
+                </ol> 
+              <br>    
+              <li>Default filter values:</li>
+                <pre>
+"P" value .................................................   0.300000
+Maximum number of mismatches in the overlapped region ......  None
+Minimum overlap size .......................................  15
+Minimum Q-score for mismatches .............................  15
+Q30 enforced? ..............................................  True
+                </pre>          
+              
+              </ul>
+            <li>Chimera checking using vsearch, both denovo and reference based.</li>  
+            </ul>
+        </div>
+      </div>
+      
+<!-- GAST -->       <a name='gast'></a>
+      <hr>
+      <div class="row">
+        <div class="col-md-12">
+          <h4><center>What is GAST?</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
+          <p><strong>GAST stands for <u>G</u>lobal <u>A</u>lignment for <u>S</u>equence <u>T</u>axonomy</strong>.</p>
+          <p>It uses a reference database of SSU sequences to determine the taxonomy of hypervariable region tags. The specifics are described in the citation below.</p>
+          <ul>
+          <li><a href='https://github.com/annaship/BPC-scripts/blob/master/gast_ill' target='_blank'>GAST Code on GitHub</a></li>
+          <li><a href='https://github.com/annaship/BPC-scripts/blob/master/Taxonomy.pm' target='_blank'>Taxonomy.pm perl module</a></li>
+          <li>Available GAST-formatted SSU <a href='https://vamps2.mbl.edu/resources/reference_data' target='_blank'>Reference Sets</a>.</li>
+          </ul>
+          
+          Citation:
+          <a href='https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1000255' target='_blank'>
+          <pre>
+Huse SM, Dethlefsen L, Huber JA, Welch DM, Relman DA, Sogin ML (2008) 
+Exploring Microbial Diversity and Taxonomy Using SSU rRNA Hypervariable Tag Sequencing. 
+PLoS Genet 4(11): e1000255. https://doi.org/10.1371/journal.pgen.1000255        
+          </pre>
+          </a>
+        </div>
+      </div>      
+      
 <!-- EXPORT  DATA -->       <a name='export_data'></a>
       <hr>
       <div class="row">
         <div class="col-md-12">
-          <h4><center>Exporting (Downloading) Data</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <h4><center>Exporting (Downloading) Data</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
           <p><strong>There is no raw sequence data available on VAMPS.</strong></p>
           <p>The primary way to export data from VAMPS is to use the 'Download Data' page which
           is accessed from the <a href='/visuals/visuals_index'>main 'Sample Selection' page</a>. After you've selected the datasets you want to include in your download
@@ -247,7 +337,7 @@
       <hr>
       <div class="row">
         <div class="col-md-12">
-          <h4><center>Importing Data</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <h4><center>Importing Data</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
           <p class='standard'><strong>Description of Import Options</strong></p>
           <a href='/user_data/import_choices'>To upload data to VAMPS go here.</a>
           <br><br><p>Fasta files and count matrix files can be uploaded to VAMPS as long as they conform to the correct format which is described
@@ -269,11 +359,45 @@
           
         </div>
       </div>
+      
+ <!-- CLUSTERING -->      <a name='clustering'></a>
+      <hr>
+      <div class="row">
+        <div class="col-lg-12">
+          <h4><center>Clustering and Diversity</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
+
+          <strong><a name="clust">How are SLP clusters created?</a></strong> 
+        <br />
+        <br />
+        A combination of ESPRIT, SLP and mothur computes taxonomic independent clusters (Operational Taxonomic Units - OTUs) <br />
+        using the total collection of available V6 sequences in VAMPS. The sequences were binned into separate datasets for the <br />
+        Archaeal or Eukaryal domains, and into Bacterial phylum- or Proteobacterial class-level datasets.  For each bin, the unique.seqs <br />
+        function in mothur, eliminated duplicate sequences but retained information about observed frequencies for each unique read. <br />
+        The kmerdist module of ESPRIT (with default values) identified all sequence pairs within each bin that are predicted to be at<br /> 
+        least 90% similar.  The needledist module in ESPRIT generated a sparse matrix of pairwise distances by performing a Needleman-Wunsch <br />
+        alignment on the sequence pairs and calculating pairwise distances using quickdist. The algorithm SLP uses the pairwise distances<br /> 
+        to perform a modified single-linkage preclustering at 2% to reduce noise in the sequence data.  Initially SLP orders sequences <br />
+        according to their rank abundance and then steps through the ordered sequences assigning them to clusters.  The most abundant<br /> 
+        sequence defines the first cluster.   Each subsequent sequence is tested against the growing list of clusters using the <br />
+        single-linkage algorithm.  If the sequence has a pairwise distance less than 0.02 (equivalent to a single difference in the V6 region)<br /> 
+        to any of the sequences already in the cluster, the new sequence will be added to the cluster and not tested against subsequent clusters.<br />  
+        If the sequence is not within a distance of 0.02 from any read in any of the existing clusters, it will establish a new cluster. <br />
+        Once all sequences have been assigned to clusters, sequences in the low abundance clusters (< 10 tags) are tested against <br />
+        the larger clusters and added to those clusters if possible.  For each precluster, SLP uses the sequence with the highest <br />
+        frequency and the count of all tags in the precluster for average linkage clustering by mothur. Taxonomy for each cluster <br />
+        relies upon on a two-thirds majority of the taxonomy for each cluster member; CATCHALL estimates the estimate richness. 
+<br><br>Citation:
+<pre>
+  Huse, S.M., D. Mark Welch, H.G Morrison, and M.L. Sogin. (2010) <a href='http://www3.interscience.wiley.com/cgi-bin/fulltext/123320293/HTMLSTART' target='_blank'>
+  Ironing out the wrinkles in the rare biosphere</a>. <i>Environmental Microbiology</i> early view.
+</pre>
+        </div>
+      </div>
 <!-- PHYLOSEQ -->      <a name='phyloseq'></a>
 	<hr>
       <div class="row">
         <div class="col-md-12">
-          <h4><center>Phyloseq</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <h4><center>Phyloseq</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
 
 					<p class='standard'><strong>What is Phyloseq?</strong></p>
 					<p>Phyloseq is an R library for microbiome data: (<a href='https://joey711.github.io/phyloseq/' target='_blank'>https://joey711.github.io/phyloseq/</a>).
@@ -303,7 +427,7 @@
       <hr>
       <div class="row">
         <div class="col-md-12">
-          <h4><center>Reference Databases</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <h4><center>Reference Databases</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
 
 					<p class='standard'><strong>How are the reference databases created? </strong></p>
 					<p>We create Ref16S, a reference database of aligned full-length sequences based on all available sequences
@@ -348,7 +472,7 @@
       <hr>
       <div class="row">
         <div class="col-md-12">
-          <h4><center>Sample Submission Process</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <h4><center>Sample Submission Process</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
           <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
           </p>
         </div>
@@ -359,7 +483,7 @@
       <hr>
       <div class="row">
         <div class="col-md-12">
-          <h4><center>Metadata</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <h4><center>Metadata</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
           <p>Required metadata fields:
           	<div>
           	<table class='table'>
@@ -395,7 +519,7 @@
       <div class="row">
         <div class="col-md-12">
 
-          <h4><center>File and Name Formats</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <h4><center>File and Name Formats</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
           <p>
 
 						<p class='standard'><strong>Project Name</strong></p>
@@ -478,7 +602,7 @@ SAMPLE:
       <div class="row">
         <div class="col-md-12">
 
-          <h4><center>Definitions</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <h4><center>Definitions</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
           <p>
 
 						<p class='standard'><strong>Project</strong></p>
@@ -506,16 +630,7 @@ SAMPLE:
         </div>
       </div>
 
-<!-- TEMPLATE -->        <a name='template'></a>
-      <hr>
-      <div class="row">
-        <div class="col-md-12">
 
-          <h4><center>Template</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
-          </p>
-        </div>
-      </div>
 
 <% include ../add_ins/end.ejs %>
 
