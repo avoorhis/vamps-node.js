@@ -825,42 +825,54 @@ class CreateDataObj {
     helpers.local_log('OOO1 JSON.stringify(dataset_obj) = ', JSON.stringify(dataset_obj));
   }
 
-  make_new_project_for_form(project_obj) {
-
-    var all_field_names = this.all_field_names;
-
+  reorder_field_names_for_new_project_dataset_form() {
     // reorder field names for new project/dataset form
     var all_field_names4     = [];
-
-    let mbl_header_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "header MBL generated laboratory metadata");
-    // var second_part_part_1 = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, num1, num16);
-    // var second_part_part_2 = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, num18, num35);
-    var second_part_part = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, (mbl_header_ind));
-
-
-    // var second_part_part_1_1 = CONSTS.ORDERED_METADATA_NAMES.slice(1, 16);
-    // var second_part_part_2_1 = CONSTS.ORDERED_METADATA_NAMES.slice(18, 35);
-    // var second_part_part_3_1 = CONSTS.ORDERED_METADATA_NAMES.slice(36); // everything else till the end
 
     // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
 
     all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["structured comment name"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["header new_user_submit"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["Please fill in"]]);
     all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_num"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["header User supplied metadata"]]);
+    // ? var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
+    // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["env_package"]]);
+
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_name"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dataset"]]);
     all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dataset_description"]]);
     all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["tube_label"]]);
     all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_concentration"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dna_extraction_meth"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["run"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["header General"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dna_quantitation"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["env_package"]]);
     all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dataset"]]);
     all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["geo_loc_name_continental"]]);
     all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["geo_loc_name_marine"]]);
-    all_field_names4 = all_field_names4.concat(second_part_part);
+
+    let general_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "General");
+    let run_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "run");
+    var second_part_1 = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, general_ind, run_ind);
+    all_field_names4 = all_field_names4.concat(second_part_1);
+
+    let investigation_type_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "investigation_type");
+    let dna_extraction_meth_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "dna_extraction_meth");
+    var second_part_2 = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, investigation_type_ind, dna_extraction_meth_ind);
+    all_field_names4 = all_field_names4.concat(second_part_2);
+
+    let either_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "Enter either volume or mass");
+    let second_part_3 = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, either_ind);
+    all_field_names4 = all_field_names4.concat(second_part_3);
 
     // console.log('RRRRR all_field_names4 from make_new_project_for_form');
     // console.log(JSON.stringify(all_field_names4));
+
+    return all_field_names4;
+  }
+
+  make_new_project_for_form(project_obj) {
+
+    var all_field_names = this.all_field_names;
+
+    var all_field_names4 = this.reorder_field_names_for_new_project_dataset_form();
 
     var all_metadata = this.create_all_metadata_form_new(all_field_names, project_obj);
     // all_metadata = { '485':
