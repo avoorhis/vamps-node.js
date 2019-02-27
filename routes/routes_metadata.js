@@ -649,7 +649,7 @@ function make_metadata_object_from_db(req, res) {
 
 function create_AllMetadata_picked(dataset_ids) {
   var AllMetadata_picked;
-  AllMetadata_picked            = helpers.slice_object(AllMetadata, dataset_ids);
+  AllMetadata_picked            = helpers.slice_object_by_keys(AllMetadata, dataset_ids);
   const all_metadata_picked_len = Object.keys(AllMetadata_picked).length;
   if (all_metadata_picked_len === 0) // there is no metadata
   {
@@ -679,9 +679,9 @@ function get_dataset_info(met_obj)
 }
 
 function get_db_data (req, res, met_obj) { // move to met_obj?
-  console.time("TIME: helpers.slice_object");
+  console.time("TIME: helpers.slice_object_by_keys");
   var AllMetadata_picked = create_AllMetadata_picked(met_obj.dataset_ids);
-  console.timeEnd("TIME: helpers.slice_object");
+  console.timeEnd("TIME: helpers.slice_object_by_keys");
 
   console.time("TIME: dataset_info");
   const dataset_info        = get_dataset_info(met_obj);

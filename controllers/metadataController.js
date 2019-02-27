@@ -831,39 +831,34 @@ class CreateDataObj {
 
     // reorder field names for new project/dataset form
     var all_field_names4     = [];
-    var parameter            = [CONSTS.ORDERED_METADATA_NAMES_OBJ["structured comment name"]];
-    var new_user_submit      = [CONSTS.ORDERED_METADATA_NAMES_OBJ["header new_user_submit"]];
-    var sample_num           = [CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_num"]];
-    var user_sample_name     = [CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_name"]];
-    var dataset_description  = [CONSTS.ORDERED_METADATA_NAMES_OBJ["dataset_description"]];
-    var tube_label           = [CONSTS.ORDERED_METADATA_NAMES_OBJ["tube_label"]];
-    var sample_concentration  = [CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_concentration"]];
-    var dna_quantitation     = [CONSTS.ORDERED_METADATA_NAMES_OBJ["dna_quantitation"]];
-    var env_package          = [CONSTS.ORDERED_METADATA_NAMES_OBJ["env_package"]];
 
-    // CONSTS.ORDERED_METADATA_NAMES_OBJ.length = Object.keys(CONSTS.ORDERED_METADATA_NAMES_OBJ).length;
-    var second_part_part_1 = helpers.slice_object(CONSTS.ORDERED_METADATA_NAMES_OBJ, 1, 16)
-          // Array.prototype.slice.call(CONSTS.ORDERED_METADATA_NAMES_OBJ, 1, 16);
+    let mbl_header_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "header MBL generated laboratory metadata");
+    // var second_part_part_1 = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, num1, num16);
+    // var second_part_part_2 = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, num18, num35);
+    var second_part_part = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, (mbl_header_ind));
 
-    var second_part_part_1_1 = CONSTS.ORDERED_METADATA_NAMES.slice(1, 16);
-    var second_part_part_2 = CONSTS.ORDERED_METADATA_NAMES.slice(18, 35);
-    var second_part_part_3 = CONSTS.ORDERED_METADATA_NAMES.slice(36); // everything else till the end
+
+    // var second_part_part_1_1 = CONSTS.ORDERED_METADATA_NAMES.slice(1, 16);
+    // var second_part_part_2_1 = CONSTS.ORDERED_METADATA_NAMES.slice(18, 35);
+    // var second_part_part_3_1 = CONSTS.ORDERED_METADATA_NAMES.slice(36); // everything else till the end
 
     // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
 
-    all_field_names4 = all_field_names4.concat(parameter);
-    all_field_names4 = all_field_names4.concat(new_user_submit);
-    all_field_names4 = all_field_names4.concat(sample_num);
-    all_field_names4 = all_field_names4.concat(user_sample_name);
-    all_field_names4 = all_field_names4.concat(dataset_description);
-    all_field_names4 = all_field_names4.concat(tube_label);
-    all_field_names4 = all_field_names4.concat(sample_concentration);
-    all_field_names4 = all_field_names4.concat(dna_quantitation);
-    all_field_names4 = all_field_names4.concat(env_package);
-    all_field_names4 = all_field_names4.concat(second_part_part_1);
-    all_field_names4 = all_field_names4.concat(second_part_part_2);
-    all_field_names4 = all_field_names4.concat(second_part_part_3);
-    // TODO: use all_field_names4 first column to order fields in csv
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["structured comment name"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["header new_user_submit"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_num"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["header User supplied metadata"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dataset_description"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["tube_label"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_concentration"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dna_extraction_meth"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["run"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["header General"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dataset"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["geo_loc_name_continental"]]);
+    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["geo_loc_name_marine"]]);
+    all_field_names4 = all_field_names4.concat(second_part_part);
+
     // console.log('RRRRR all_field_names4 from make_new_project_for_form');
     // console.log(JSON.stringify(all_field_names4));
 
