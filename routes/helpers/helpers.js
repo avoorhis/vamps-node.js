@@ -2239,7 +2239,7 @@ exports.geo_loc_name_continental_validation = function (value) {
   }
 };
 
-exports.slice_object = function (object, slice_keys) {
+exports.slice_object_by_keys = function (object, slice_keys) {
   console.time('TIME: convert to string');
   for (var i = 0; i < slice_keys.length; i++) {
     slice_keys[i] = String(slice_keys[i]);
@@ -2254,6 +2254,29 @@ exports.slice_object = function (object, slice_keys) {
       acc[key] = object[key];
       return acc;
     }, {});
+};
+
+if (!Object.entries)
+  Object.entries = function( obj ){
+    var ownProps = Object.keys( obj ),
+        i = ownProps.length,
+        resArray = new Array(i); // preallocate the Array
+
+    while (i--)
+      resArray[i] = [ownProps[i], obj[ownProps[i]]];
+    return resArray;
+  };
+
+exports.slice_object_by_positions = function(my_object, begin_ind, end_ind) {
+  let sliced = [];
+  sliced = Object.entries(my_object).slice(begin_ind, end_ind).map(entry => entry[1]);
+  return sliced;
+};
+
+exports.get_key_index = function(my_obj, my_key) {
+  my_ind = Object.keys(my_obj).indexOf(my_key);
+  my_ind += 1;
+  return my_ind;
 };
 
 exports.findByValueOfObject = function (arr, key, value) {
@@ -2350,34 +2373,6 @@ function transpose_arr_of_obj(a) {
   console.timeEnd('TIME: transpose_arr_of_obj');
   return transposed_object;
 }
-
-// if (!Object.entries)
-//   Object.entries = function( obj ){
-//     var ownProps = Object.keys( obj ),
-//         i = ownProps.length,
-//         resArray = new Array(i); // preallocate the Array
-//
-//     while (i--)
-//       resArray[i] = [ownProps[i], obj[ownProps[i]]];
-//     return resArray;
-//   };
-
-exports.slice_object = function(my_object, begin_ind, end_ind) {
-  // let obj_length = Object.keys(my_object).length;
-  let sliced = [];
-  sliced = Object.entries(my_object).slice(begin_ind, end_ind).map(entry => entry[1]);
-
-  // for (var k in my_object) {
-  //   let v = my_object[k];
-  // }
-
-  // for (var i=0; i < obj_length; i++) {
-  //   if ((begin_ind <= i) && (i <= end_ind)) {
-  //     sliced[i] = my_object[i];
-  //   }
-  // }
-  return sliced;
-};
 
 function jsUcfirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
