@@ -831,36 +831,154 @@ class CreateDataObj {
 
     // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
 
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["structured comment name"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["Please fill in"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_num"]]);
-    // ? var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
+    let correct_order_for_new_datasets_form = ["structured comment name",
+      "Please fill in",
+      "sample_num",
+      "sample_name",
+      "dataset_description",
+      "tube_label",
+      "sample_concentration",
+      "dna_quantitation",
+      "env_package",
+      "dataset",
+      "geo_loc_name_continental",
+      "geo_loc_name_marine",
+      "domain",
+      "target_gene",
+      "dna_region",
+      "sequencing_platform",
+      "forward_primer",
+      "reverse_primer",
+      "illumina_index",
+      "adapter_sequence",
+      "run",
+      "investigation_type",
+      "sample_type",
+      "collection_date",
+      "latitude",
+      "longitude",
+      "env_biome",
+      "biome_secondary",
+      "env_feature",
+      "feature_secondary",
+      "env_material",
+      "material_secondary",
+      "depth_subseafloor",
+      "depth_subterrestrial",
+      "tot_depth_water_col",
+      "elevation",
+      "dna_extraction_meth",
+      "sample_size_vol",
+      "sample_size_mass",
+      "sample_collection_device",
+      "formation_name",
+      "samp_store_dur",
+      "samp_store_temp",
+      "isol_growth_cond",
+      "ph",
+      "temperature",
+      "conductivity",
+      "resistivity",
+      "salinity",
+      "pressure",
+      "redox_state",
+      "redox_potential",
+      "diss_oxygen",
+      "diss_hydrogen",
+      "diss_org_carb",
+      "diss_inorg_carb",
+      "tot_org_carb",
+      "npoc",
+      "tot_inorg_carb",
+      "tot_carb",
+      "carbonate",
+      "bicarbonate",
+      "silicate",
+      "del180_water",
+      "part_org_carbon_del13c",
+      "diss_inorg_carbon_del13c",
+      "methane_del13c",
+      "alkalinity",
+      "calcium",
+      "sodium",
+      "ammonium",
+      "nitrate",
+      "nitrite",
+      "nitrogen_tot",
+      "org_carb_nitro_ratio",
+      "sulfate",
+      "sulfide",
+      "sulfur_tot",
+      "chloride",
+      "phosphate",
+      "potassium",
+      "iron",
+      "iron_ii",
+      "iron_iii",
+      "magnesium",
+      "manganese",
+      "methane",
+      "noble_gas_chemistry",
+      "trace_element_geochem",
+      "porosity",
+      "rock_age",
+      "water_age",
+      "microbial_biomass_microscopic",
+      "n_acid_for_cell_cnt",
+      "microbial_biomass_fish",
+      "fish_probe_name",
+      "fish_probe_seq",
+      "intact_polar_lipid",
+      "microbial_biomass_qpcr",
+      "biomass_wet_weight",
+      "biomass_dry_weight",
+      "plate_counts",
+      "functional_gene_assays",
+      "clone_library_results",
+      "enzyme_activities",
+      "host_name"
+    ]; // and the rest as in ORDERED_METADATA_NAMES_OBJ
+
+    let next_f_name = "";
+    for (var n in correct_order_for_new_datasets_form) {
+      next_f_name = correct_order_for_new_datasets_form[n];
+      all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
+    }
+
+    let non_biological_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "Non-biological");
+    let second_part = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, (non_biological_ind + 1));
+    all_field_names4 = all_field_names4.concat(second_part);
+
+    // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["structured comment name"]]);
+    // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["Please fill in"]]);
+    // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_num"]]);
+    // // ? var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
+    // // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["env_package"]]);
+    //
+    // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_name"]]);
+    // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dataset"]]);
+    // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dataset_description"]]);
+    // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["tube_label"]]);
+    // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_concentration"]]);
+    // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dna_quantitation"]]);
     // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["env_package"]]);
+    // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dataset"]]);
+    // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["geo_loc_name_continental"]]);
+    // all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["geo_loc_name_marine"]]);
 
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_name"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dataset"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dataset_description"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["tube_label"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["sample_concentration"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dna_quantitation"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["env_package"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["dataset"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["geo_loc_name_continental"]]);
-    all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ["geo_loc_name_marine"]]);
+    // let general_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "General");
+    // let run_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "run");
+    // var second_part_1 = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, general_ind, run_ind);
+    // all_field_names4 = all_field_names4.concat(second_part_1);
 
-    let general_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "General");
-    let run_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "run");
-    var second_part_1 = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, general_ind, run_ind);
-    all_field_names4 = all_field_names4.concat(second_part_1);
-
-    let investigation_type_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "investigation_type");
-    let dna_extraction_meth_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "dna_extraction_meth");
-    var second_part_2 = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, investigation_type_ind, dna_extraction_meth_ind);
-    all_field_names4 = all_field_names4.concat(second_part_2);
-
-    let either_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "Enter either volume or mass");
-    let second_part_3 = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, either_ind);
-    all_field_names4 = all_field_names4.concat(second_part_3);
+    // let investigation_type_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "investigation_type");
+    // let dna_extraction_meth_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "dna_extraction_meth");
+    // var second_part_2 = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, investigation_type_ind, dna_extraction_meth_ind);
+    // all_field_names4 = all_field_names4.concat(second_part_2);
+    //
+    // let either_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "Enter either volume or mass");
+    // let second_part_3 = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, either_ind);
+    // all_field_names4 = all_field_names4.concat(second_part_3);
 
     // console.log('RRRRR all_field_names4 from make_new_project_for_form');
     // console.log(JSON.stringify(all_field_names4));
