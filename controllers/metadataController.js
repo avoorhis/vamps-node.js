@@ -1059,11 +1059,7 @@ class ShowObj {
     this.write_csv(pid);
 
     var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
-    // var metadata_form_required_fields = this.required_fields;
-          // CONSTS.METADATA_FORM_REQUIRED_FIELDS;
-
-    // this.filtered_field_names_for_env
-    //get required fields by env: metadata_form_required_fields =
+    var env_package_options = Object.keys(CONSTS.PACKAGES_AND_PORTALS);
 
     this.res.render('metadata/metadata_edit_form', {
       title: 'VAMPS: Metadata_upload',
@@ -1082,7 +1078,7 @@ class ShowObj {
       country_options: country_options,
       dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
       dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-      env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+      env_package_options: env_package_options, //DCO_ENVIRONMENTAL_PACKAGES,
       feature_primary_options: CONSTS.FEATURE_PRIMARY,
       investigation_type_options: CONSTS.INVESTIGATION_TYPE,
       marine_zone_options: marine_zone_options,

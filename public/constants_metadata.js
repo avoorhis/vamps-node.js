@@ -72,10 +72,18 @@ constants_metadata.METADATA_NAMES_SUBSTRACT = [
 ];
 
 constants_metadata.FIELDS_BY_ENV = {
-  "air": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*altitude", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name",
+  "air": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*altitude",
+    "*env_biome",
+    "*env_feature",
+    "*env_material",
+    //     "*env_biome",
+    "*env_feature",
+    "*env_material",
+    // "*geo_loc_name",
+    "geo_loc_name_continental", "geo_loc_name_marine",
     "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
     "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-    "elevation", "temperature", "description"],
+    "elevation", "temperature", "dataset_description"],
 
   "built_environment": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*abs_air_humidity",
     "*temperature", // air_temp
@@ -83,67 +91,157 @@ constants_metadata.FIELDS_BY_ENV = {
     "*carb_dioxide", // carbon_dioxide?
     "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
     "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-    "*env_broad_scale", "*env_local_scale", "description", "*env_medium", "*filter_type", "*geo_loc_name", "*heat_cool_type", "*indoor_space", "*light_type", "*occup_samp", "*occupant_dens_samp", "*organism_count", "*rel_air_humidity", "*space_typ_state", "*typ_occupant_dens", "*ventilation_type"],
+    // "*env_broad_scale", "*env_local_scale",  "*env_medium",
+    "*env_biome",
+    "*env_feature",
+    "*env_material",
+    "dataset_description", "*filter_type",
+    //"*geo_loc_name"
+    "*geo_loc_name_continental", "*geo_loc_name_marine",
+ "*heat_cool_type", "*indoor_space", "*light_type", "*occup_samp", "*occupant_dens_samp", "*organism_count", "*rel_air_humidity", "*space_typ_state", "*typ_occupant_dens", "*ventilation_type"],
 
-  "human_associated": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host",
+  "human_associated": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date",
+    "*env_biome",
+    "*env_feature",
+    "*env_material",
+    //"*geo_loc_name",
+    "*geo_loc_name_continental", "*geo_loc_name_marine",
+    "*host",
     "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
     "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-    "description"],
+    "dataset_description"],
 
-  "human_gut": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host",
+  "human_gut": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date",
+    "*env_biome",
+    "*env_feature",
+    "*env_material",
+		//"*geo_loc_name",
+		"*geo_loc_name_continental", "*geo_loc_name_marine",
+    "*host",
     "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
     "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-    "temperature", "description"],
+    "temperature", "dataset_description"],
 
-  "human_oral": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host",
+  "human_oral": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date",
+    "*env_biome",
+    "*env_feature",
+    "*env_material",
+		//"*geo_loc_name",
+		"*geo_loc_name_continental", "*geo_loc_name_marine",
+    "*host",
     "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
     "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-    "temperature", "description"],
+    "temperature", "dataset_description"],
 
-  "human_skin": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host",
+  "human_skin": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date",
+    "*env_biome",
+    "*env_feature",
+    "*env_material",
+		//"*geo_loc_name",
+		"*geo_loc_name_continental", "*geo_loc_name_marine",
+    "*host",
     "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
     "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-    "temperature", "description"],
+    "temperature", "dataset_description"],
 
-  "human_vaginal": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host",
+  "human_vaginal": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date",
+    "*env_biome",
+    "*env_feature",
+    "*env_material",
+		//"*geo_loc_name",
+		"*geo_loc_name_continental", "*geo_loc_name_marine",
+    "*host",
     "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
     "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-    "temperature", "description"],
+    "temperature", "dataset_description"],
 
-  "microbial_mat_biofilm": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*depth", "*elev", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name",
+  "microbial_mat_biofilm": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date",
+    // "*depth",
+    "Enter depth values in one or more categories", "depth_subseafloor", "depth_subterrestrial", "tot_depth_water_col",
+    "*elevation",
+    "*env_biome",
+    "*env_feature",
+    "*env_material",
+		//"*geo_loc_name",
+		"*geo_loc_name_continental", "*geo_loc_name_marine",
     "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
     "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-    "ph", "temperature", "description"],
+    "ph", "temperature", "dataset_description"],
 
-  "miscellaneous_natural_or_artificial_environment": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name",
+  "miscellaneous_natural_or_artificial_environment": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date",
+    "*env_biome",
+    "*env_feature",
+    "*env_material",
+		//"*geo_loc_name",
+		"*geo_loc_name_continental", "*geo_loc_name_marine",
     "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
     "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-    "depth", "elevation", "isolation_source", "ph", "temperature", "description"],
+    // "depth",
+    "Enter depth values in one or more categories", "depth_subseafloor", "depth_subterrestrial", "tot_depth_water_col",
+    "elevation", "isolation_source", "ph", "temperature", "dataset_description"],
 
-  "plant_associated": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name", "*host",
+  "plant_associated": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date",
+    "*env_biome",
+    "*env_feature",
+    "*env_material",
+		//"*geo_loc_name",
+		"*geo_loc_name_continental", "*geo_loc_name_marine",
+    "*host",
     "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
     "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-    "depth", "elevation", "host_taxid", "plant_body_site", "temperature", "description"],
+    // "depth",
+    "Enter depth values in one or more categories", "depth_subseafloor", "depth_subterrestrial", "tot_depth_water_col",
+    "elevation", "host_taxid", "plant_body_site", "temperature", "dataset_description"],
 
-  "sediment": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*depth", "*elev", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name",
+  "sediment": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date",
+    // "*depth",
+    "Enter depth values in one or more categories", "depth_subseafloor", "depth_subterrestrial", "tot_depth_water_col",
+    "*elevation",
+    "*env_biome",
+    "*env_feature",
+    "*env_material",
+		//"*geo_loc_name",
+		"*geo_loc_name_continental", "*geo_loc_name_marine",
     "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
     "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-    "ph", "temperature", "description"],
+    "ph", "temperature", "dataset_description"],
 
-  "soil": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*depth", "*elev", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name",
+  "soil": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date",
+    // "*depth",
+    "Enter depth values in one or more categories", "depth_subseafloor", "depth_subterrestrial", "tot_depth_water_col",
+    "*elevation",
+    "*env_biome",
+    "*env_feature",
+    "*env_material",
+		//"*geo_loc_name",
+		"*geo_loc_name_continental", "*geo_loc_name_marine",
     "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
     "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-    "ph", "description"],
+    "ph", "dataset_description"],
 
-  "wastewater_sludge": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name",
+  "wastewater_sludge": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date",
+    "*env_biome",
+    "*env_feature",
+    "*env_material",
+		//"*geo_loc_name",
+		"*geo_loc_name_continental", "*geo_loc_name_marine",
     "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
     "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-    "depth", "ph", "temperature", "description"],
+    // "depth",
+    "Enter depth values in one or more categories", "depth_subseafloor", "depth_subterrestrial", "tot_depth_water_col",
+    "ph", "temperature", "dataset_description"],
 
-  "water": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date", "*depth", "*env_broad_scale", "*env_local_scale", "*env_medium", "*geo_loc_name",
+  "water": ["*sample_name", "sample_title", "bioproject_accession", "*organism", "*collection_date",
+    // "*depth",
+    "Enter depth values in one or more categories", "depth_subseafloor", "depth_subterrestrial", "tot_depth_water_col",
+    "*env_biome",
+    "*env_feature",
+    "*env_material",
+		//"*geo_loc_name",
+		"*geo_loc_name_continental", "*geo_loc_name_marine",
     "*latitude",         // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
     "*longitude",        // decimal degrees  (https://en.wikipedia.org/wiki/Decimal_degrees)
-    "elevation", "ph", "temperature", "tot_depth_water_col", "description"],
+    "elevation", "ph", "temperature", "dataset_description"],
 
 };
 
@@ -818,7 +916,7 @@ constants_metadata.SAMPLE_TYPE = ["Please choose one",
 
 constants_metadata.GAZ_SPELLING = {"United States": ["usa", "us", "united states", "united states of america"]};
 
-// TODO: remove everywhere, use name normalization instead
+// TODO: remove everywhere, use name normalization instead?
 constants_metadata.PACKAGES_AND_PORTALS = {
   'air': ['air'],
   'built environment': ['built_environment', 'indoor', 'MBE', 'MOBE'],
