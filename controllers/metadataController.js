@@ -1058,9 +1058,10 @@ class ShowObj {
     let pid = Object.keys(this.all_metadata)[0] || this.req.body.project_id;
 
     this.write_csv(pid);
-    
+
     var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
-    var metadata_form_required_fields = CONSTS.METADATA_FORM_REQUIRED_FIELDS;
+    var metadata_form_required_fields = "";
+          // CONSTS.METADATA_FORM_REQUIRED_FIELDS;
 
     // this.filtered_field_names_for_env
     //get required fields by env: metadata_form_required_fields =
