@@ -2275,7 +2275,7 @@ exports.slice_object_by_positions = function(my_object, begin_ind, end_ind) {
 
 exports.get_key_index = function(my_obj, my_key) {
   my_ind = Object.keys(my_obj).indexOf(my_key);
-  my_ind += 1;
+  // my_ind += 1;
   return my_ind;
 };
 

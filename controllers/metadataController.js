@@ -82,14 +82,14 @@ class CreateDataObj {
     return field_names;
   }
 
-  env_req_filters(field_names_by_env) { //TODO: remove the outer layer or expand
+  env_req_filters(field_names_by_env) {
     console.log("In env_req_filters");
     let required_names = [];
     for (var i in field_names_by_env) {
       let current_field_name = field_names_by_env[i];
       if (current_field_name.includes("*")) {
         let cleaned_f_name = current_field_name.replace("*", "");
-        required_names.push(cleaned_f_name);
+        required_names.push(cleaned_f_name); // TODO: check if name exists in CONSTS
       }
     }
     return required_names;
@@ -309,7 +309,7 @@ class CreateDataObj {
     // TODO: if from csv there is no req.body!
     var all_field_units = MD_CUSTOM_UNITS[req.body.project_id];
 
-    const show_new = new module.exports.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units);
+    const show_new = new module.exports.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units, this.required_field_names_for_env);
     show_new.render_edit_form();
   }
 
@@ -867,7 +867,7 @@ class CreateDataObj {
 
     var all_field_units = MD_CUSTOM_UNITS[project_obj.pid];
 
-    var show_new = new module.exports.ShowObj(this.req, this.res, all_metadata, all_field_names4, all_field_units);
+    var show_new = new module.exports.ShowObj(this.req, this.res, all_metadata, all_field_names4, all_field_units, this.required_field_names_for_env);
     show_new.render_edit_form();
   }
 
@@ -891,7 +891,7 @@ class CreateDataObj {
           helpers.local_log('WWW0 err', err);
           req.flash('fail', err);
           const met_obj  = new module.exports.CreateDataObj(req, res, 0, []);
-          const show_new = new module.exports.ShowObj(req, res, met_obj.all_metadata, met_obj.all_field_names4, met_obj.all_field_units);
+          const show_new = new module.exports.ShowObj(req, res, met_obj.all_metadata, met_obj.all_field_names4, met_obj.all_field_units, met_obj.required_field_names_for_env);
           show_new.show_metadata_new_again(req, res);
         }
         else {
@@ -975,14 +975,12 @@ class CreateDataObj {
     transposed["geo_loc_name_continental"] = curr_country;
     return transposed;
   }
-
 }
-
 
 
 class ShowObj {
 
-  constructor(req, res, all_metadata, all_field_names_arr, all_field_units) {
+  constructor(req, res, all_metadata, all_field_names_arr, all_field_units, required_fields) {
     this.req                     = req;
     this.res                     = res;
     this.all_metadata            = all_metadata;
@@ -991,6 +989,7 @@ class ShowObj {
     this.ordered_field_names_obj = this.make_ordered_field_names_obj();
     this.hostname                = req.CONFIG.hostname;
     this.user                    = req.user;
+    this.required_fields         = required_fields || "";
   }
 
   get_inits(arr) {
@@ -1060,7 +1059,7 @@ class ShowObj {
     this.write_csv(pid);
 
     var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
-    var metadata_form_required_fields = "";
+    // var metadata_form_required_fields = this.required_fields;
           // CONSTS.METADATA_FORM_REQUIRED_FIELDS;
 
     // this.filtered_field_names_for_env
@@ -1075,7 +1074,7 @@ class ShowObj {
       all_metadata: this.all_metadata,
       dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
       mbl_edit: mbl_edit,
-      metadata_form_required_fields: metadata_form_required_fields,
+      metadata_form_required_fields: this.required_fields,
       ordered_field_names_obj: this.ordered_field_names_obj,
       //options:
       adapt_3letter_options: adapt_3letter_options,
