@@ -831,124 +831,17 @@ class CreateDataObj {
 
     // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
 
-    let correct_order_for_new_datasets_form = ["structured comment name",
-      "Please fill in",
-      "sample_num",
-      "sample_name",
-      "dataset_description",
-      "tube_label",
-      "sample_concentration",
-      "dna_quantitation",
-      "env_package",
-      "dataset",
-      "geo_loc_name_continental",
-      "geo_loc_name_marine",
-      "domain",
-      "target_gene",
-      "dna_region",
-      "sequencing_platform",
-      "forward_primer",
-      "reverse_primer",
-      "illumina_index",
-      "adapter_sequence",
-      "run",
-      "investigation_type",
-      "sample_type",
-      "collection_date",
-      "latitude",
-      "longitude",
-      "env_biome",
-      "biome_secondary",
-      "env_feature",
-      "feature_secondary",
-      "env_material",
-      "material_secondary",
-      "depth_subseafloor",
-      "depth_subterrestrial",
-      "tot_depth_water_col",
-      "elevation",
-      "dna_extraction_meth",
-      "sample_size_vol",
-      "sample_size_mass",
-      "sample_collection_device",
-      "formation_name",
-      "samp_store_dur",
-      "samp_store_temp",
-      "isol_growth_cond",
-      "ph",
-      "temperature",
-      "conductivity",
-      "resistivity",
-      "salinity",
-      "pressure",
-      "redox_state",
-      "redox_potential",
-      "diss_oxygen",
-      "diss_hydrogen",
-      "diss_org_carb",
-      "diss_inorg_carb",
-      "tot_org_carb",
-      "npoc",
-      "tot_inorg_carb",
-      "tot_carb",
-      "carbonate",
-      "bicarbonate",
-      "silicate",
-      "del180_water",
-      "part_org_carbon_del13c",
-      "diss_inorg_carbon_del13c",
-      "methane_del13c",
-      "alkalinity",
-      "calcium",
-      "sodium",
-      "ammonium",
-      "nitrate",
-      "nitrite",
-      "nitrogen_tot",
-      "org_carb_nitro_ratio",
-      "sulfate",
-      "sulfide",
-      "sulfur_tot",
-      "chloride",
-      "phosphate",
-      "potassium",
-      "iron",
-      "iron_ii",
-      "iron_iii",
-      "magnesium",
-      "manganese",
-      "methane",
-      "noble_gas_chemistry",
-      "trace_element_geochem",
-      "porosity",
-      "rock_age",
-      "water_age",
-      "microbial_biomass_microscopic",
-      "n_acid_for_cell_cnt",
-      "microbial_biomass_fish",
-      "fish_probe_name",
-      "fish_probe_seq",
-      "intact_polar_lipid",
-      "microbial_biomass_qpcr",
-      "biomass_wet_weight",
-      "biomass_dry_weight",
-      "plate_counts",
-      "functional_gene_assays",
-      "clone_library_results",
-      "enzyme_activities",
-      "host_name"
-    ]; // and the rest as in ORDERED_METADATA_NAMES_OBJ
 
     let next_f_name = "";
-    for (var n in correct_order_for_new_datasets_form) {
-      next_f_name = correct_order_for_new_datasets_form[n];
+    for (var n in CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM) {
+      next_f_name = CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM[n];
       all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
     }
 
     let non_biological_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "Non-biological");
     let second_part = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, (non_biological_ind + 1));
     all_field_names4 = all_field_names4.concat(second_part);
-    
+
     // console.log('RRRRR all_field_names4 from make_new_project_for_form');
     // console.log(JSON.stringify(all_field_names4));
 
@@ -1165,18 +1058,7 @@ class ShowObj {
     let pid = Object.keys(this.all_metadata)[0] || this.req.body.project_id;
 
     this.write_csv(pid);
-
-    // let has_datasets = (typeof DATASET_IDS_BY_PID[pid] !== 'undefined') && (DATASET_IDS_BY_PID[pid].length > 0);
-    // let form_exists = (typeof this.req.form !== 'undefined');
-    // if (has_datasets && (this.req.url !== "/metadata_new_csv_upload") && form_exists) {
-    //   const csv_files_obj = new csv_files_controller.CsvFilesWrite(this.req, this.res);
-    //   csv_files_obj.create_metadata_project_csv(this.req);
-    //
-    //   if (mbl_edit === "can_edit") {
-    //     csv_files_obj.make_csv_to_upload_to_pipeline(this.req);
-    //   }
-    // }
-
+    
     var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
     var metadata_form_required_fields = CONSTS.METADATA_FORM_REQUIRED_FIELDS;
 
