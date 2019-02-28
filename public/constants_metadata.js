@@ -209,6 +209,8 @@ constants_metadata.ORDERED_METADATA_NAMES_OBJ = {
   "dataset_description": ["dataset_description", "Dataset description", "User Supplied", ""],
   "tube_label": ["tube_label", "Tube label", "User Supplied", ""],
   "sample_concentration": ["sample_concentration", "Sample concentration", "User Supplied", "ng/ul"],
+  "host_name": ["host_name", "Host name", "User Supplied", ""],
+  "bioproject_accession": ["bioproject_accession", "Bioproject accession", "User Supplied", ""],
   // old part
   "structured comment name": ["structured comment name", "Parameter", "", ""],
   "General": ["", "General", "", ""],
