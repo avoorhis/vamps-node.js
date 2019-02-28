@@ -38,7 +38,18 @@ router.post('/get_dids_from_project', function(req, res){
     }
     console.log(req.body)
     var project = req.body.project
-    
+    var return_type;
+    if(req.body.hasOwnProperty("return_type") ){
+        if(["json_list","did_list",'text_list'].indexOf(req.body.return_type) == -1){
+            return_type = "did_list"
+        }else{
+            return_type = req.body.return_type
+        }
+    }else{
+        return_type = "did_list"
+    }
+    console.log('ret_type')
+    console.log(return_type)
     if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
       var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
       var dids = DATASET_IDS_BY_PID[pid]
@@ -48,12 +59,81 @@ router.post('/get_dids_from_project', function(req, res){
         res.send(JSON.stringify('No Datasets Found - (do you have the correct access permissions?)'))
       }else{
           //console.log(new_dataset_ids)
-          res.send(JSON.stringify(new_dataset_ids))
+          if(return_type == 'text_list'){
+            var txt = ''
+            for(n in new_dataset_ids){
+                txt += project+','+DATASET_NAME_BY_DID[new_dataset_ids[n]] +','+ALL_DCOUNTS_BY_DID[new_dataset_ids[n]].toString()+"\n"              
+            }
+            res.send(JSON.stringify(txt))
+          }else if(return_type == 'json_list'){
+            var json_list = []
+            for(n in new_dataset_ids){
+                var obj = {}
+                obj.project = project
+                obj.project_id = pid
+                obj.dataset_name = DATASET_NAME_BY_DID[new_dataset_ids[n]]
+                obj.dataset_id   = new_dataset_ids[n]
+                obj.seq_count    = ALL_DCOUNTS_BY_DID[new_dataset_ids[n]]
+                json_list.push(obj)
+            }
+            res.send(JSON.stringify(json_list))
+          }else{
+            res.send(JSON.stringify(new_dataset_ids))
+          }
       }
     }else{
       res.send(JSON.stringify('Project Not Found'))
     }
 });
+//
+// API: GET DATASETS and COUNTS from PROJECT NAME
+//          Must be logged in through API!
+//      'project': Gets dataset IDs from the projects that the user has permissions to access.
+//
+// router.post('/get_datasets_and_counts', function(req, res){
+//     console.log('HERE in routes_api.js --> get_datasets_and_counts ')
+//     if( ! req.isAuthenticated() ){
+//         res.send(JSON.stringify('Failed Authentication -- Please login first'))
+//         return
+//     }
+//     console.log(req.body)
+//     var project = req.body.project
+//     
+//     if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
+//       var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
+//       var dids = DATASET_IDS_BY_PID[pid]
+//       var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
+//       if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
+//         console.log('No Datasets Found')
+//         res.send(JSON.stringify('No Datasets Found - (do you have the correct access permissions?)'))
+//         return;
+//       }else{
+//           //console.log(new_dataset_ids)
+//           outfile_name = ts+'_counts.txt'
+//           
+//           outfile_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+//           var txt = ''
+//           for(n in new_dataset_ids){
+//             did = new_dataset_ids[n]
+//             dname = DATASET_NAME_BY_DID[did]
+//             tot_dcount = ALL_DCOUNTS_BY_DID[did]
+//             console.log('dataset= '+dname+' (count='+tot_dcount.toString()+')')
+//             txt += dname+' = '+tot_dcount.toString()+"\n"
+//             console.log('txt-'+txt)
+//             
+//           }
+//     
+//           result = save_file(txt, outfile_path) // this saved file should now be downloadable from jupyter notebook
+//           console.log(result)
+//           res.send(JSON.stringify({'filename':outfile_name}))
+//           
+//           
+//           
+//       }
+//     }else{
+//       res.send(JSON.stringify('Project Not Found'))
+//     }
+// });
 //
 // API: GET METADATA FROM PROJECT NAME
 //
@@ -458,6 +538,9 @@ function test_piecharts(req, res){
 }
 
 
-
-
 module.exports = router;
+
+function save_file(data, file_path){
+    fs.writeFileSync(file_path, data)
+    return 'Success'
+}
