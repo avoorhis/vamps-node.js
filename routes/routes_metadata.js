@@ -561,6 +561,9 @@ function make_metadata_object_from_csv(req, res) {
     req.body.project_id = pid;
 
     var all_field_units = MD_CUSTOM_UNITS[pid];
+    console.log("AAALLL4 all_field_names4");
+    console.log(all_field_names4.filter(function(item){return item === "conductivity"}));
+
     const show_new      = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
     const csv_file_write = new csv_files_controller.CsvFilesWrite(req, res);
 
@@ -709,6 +712,9 @@ function get_db_data (req, res, met_obj) { // move to met_obj?
   // console.log(JSON.stringify(all_field_names));
   // console.log("DDD2 all_metadata");
   // console.log(JSON.stringify(all_metadata));
+
+  console.log("AAALLL5 all_field_names4");
+  console.log(all_field_names4.filter(function(item){return item === "conductivity"}));
 
   const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4);
   show_new.render_edit_form();

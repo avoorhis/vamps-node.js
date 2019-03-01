@@ -309,6 +309,9 @@ class CreateDataObj {
     // TODO: if from csv there is no req.body!
     var all_field_units = MD_CUSTOM_UNITS[req.body.project_id];
 
+    console.log("AAALLL1 all_field_names_with_new");
+    console.log(all_field_names_with_new.filter(function(item){return item === "conductivity"}));
+
     const show_new = new module.exports.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units, this.required_field_names_for_env);
     show_new.render_edit_form();
   }
@@ -649,7 +652,7 @@ class CreateDataObj {
     if ((typeof req.form !== "undefined") && (typeof req.form.d_region !== "undefined")) {
       d_region_arr = req.form.d_region.split('#');
     }
-    helpers.local_log('DDD3, all_field_names', all_field_names);
+    helpers.local_log('DDD3, all_field_names', JSON.stringify(all_field_names));
 
     var more_fields = ['adapter_sequence_id', // TODO: clarify, why here and what for
       'dataset_description',
@@ -671,7 +674,7 @@ class CreateDataObj {
 
     all_field_names = helpers.unique_array(all_field_names.concat(more_fields));
 
-    helpers.local_log('DDD3_1, all_field_names', all_field_names);
+    helpers.local_log('DDD3_1, all_field_names', JSON.stringify(all_field_names));
 
     this.prepare_empty_metadata_object(pid, all_field_names, {});
     var all_metadata = this.all_metadata;
@@ -826,11 +829,9 @@ class CreateDataObj {
   }
 
   reorder_field_names_for_new_project_dataset_form() {
-    // reorder field names for new project/dataset form
     var all_field_names4     = [];
 
     // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
-
 
     let next_f_name = "";
     for (var n in CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM) {
@@ -867,6 +868,9 @@ class CreateDataObj {
 
     var all_field_units = MD_CUSTOM_UNITS[project_obj.pid];
 
+    console.log("AAALLL2 all_field_names4");
+    console.log(all_field_names4.filter(function(item){return item === "conductivity"}));
+
     var show_new = new module.exports.ShowObj(this.req, this.res, all_metadata, all_field_names4, all_field_units, this.required_field_names_for_env);
     show_new.render_edit_form();
   }
@@ -891,6 +895,9 @@ class CreateDataObj {
           helpers.local_log('WWW0 err', err);
           req.flash('fail', err);
           const met_obj  = new module.exports.CreateDataObj(req, res, 0, []);
+          console.log("AAALLL3 met_obj.all_field_names4");
+          console.log(met_obj.all_field_names4.filter(function(item){return item === "conductivity"}));
+
           const show_new = new module.exports.ShowObj(req, res, met_obj.all_metadata, met_obj.all_field_names4, met_obj.all_field_units, met_obj.required_field_names_for_env);
           show_new.show_metadata_new_again(req, res);
         }
@@ -984,12 +991,12 @@ class ShowObj {
     this.req                     = req;
     this.res                     = res;
     this.all_metadata            = all_metadata;
-    this.all_field_names_arr     = all_field_names_arr;
-    this.all_field_units         = all_field_units;
+    this.all_field_names_arr     = all_field_names_arr || [];
+    this.all_field_units         = all_field_units || [];
     this.ordered_field_names_obj = this.make_ordered_field_names_obj();
     this.hostname                = req.CONFIG.hostname;
     this.user                    = req.user;
-    this.required_fields         = required_fields || "";
+    this.required_fields         = required_fields || [];
   }
 
   get_inits(arr) {
@@ -1048,8 +1055,6 @@ class ShowObj {
 
     const target_gene_options = this.get_target_gene_options();
     const adapt_3letter_options = this.get_options_from_global_obj(MD_3LETTER_ADAPTER);
-    // helpers.local_log('JJJ2 all_field_names from render_edit_form');
-    // helpers.local_log(JSON.stringify(this.all_field_names_arr));
 
     const country_options = this.get_options_from_global_obj(MD_ENV_CNTRY);
     const marine_zone_options = this.get_options_from_global_obj(MD_ENV_LZC);
@@ -1060,6 +1065,20 @@ class ShowObj {
 
     var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
     var env_package_options = Object.keys(CONSTS.PACKAGES_AND_PORTALS);
+
+    console.log('JJJ2 all_field_names from render_edit_form');
+    console.log(JSON.stringify(this.all_field_names_arr));
+    //Double!
+
+    console.log('JJJMMM all_metadata from render_edit_form');
+    console.log(JSON.stringify(this.all_metadata));
+
+    console.log('JJJLLL all_metadata from render_edit_form');
+    console.log(JSON.stringify(this.required_fields));
+
+    console.log('JJJRRR all_metadata from render_edit_form');
+    console.log(JSON.stringify(this.ordered_field_names_obj));
+
 
     this.res.render('metadata/metadata_edit_form', {
       title: 'VAMPS: Metadata_upload',
