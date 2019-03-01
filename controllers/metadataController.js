@@ -394,63 +394,6 @@ class CreateDataObj {
     return all_metadata;
   }
 
-  // check_pi_name(all_metadata_pid) {
-  //   for (var val in all_metadata_pid.pi_name) {
-  //     new_project.user_obj.first_name
-  //   }
-  //
-  // }
-
-//   get_names_from_ordered_const() {
-//     console.time('time: ordered_metadata_names_only');
-//
-//     const arraycolumn = (arr, n) =>
-//       arr.map(x => x[n]
-//       )
-//     ;
-//
-//     console.timeEnd('time: ordered_metadata_names_only');
-//     return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
-//   }
-//
-//   make_array4(field_names_arr) {
-// // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [field_names_arr[i2], field_names_arr[i2], '', '']
-//     var new_arr = [];
-//     for (var i2 = 0; i2 < field_names_arr.length; i2++) {
-//       var temp_arr = [field_names_arr[i2], field_names_arr[i2], '', ''];
-//       new_arr.push(temp_arr);
-//     }
-//     return new_arr;
-//   }
-//
-//   make_all_field_names(dataset_ids) {
-//     var ordered_metadata_names_only = this.get_names_from_ordered_const();
-//
-//     // why get_field_names_by_dataset_ids again? 1) substract METADATA_NAMES_SUBSTRACT, 2) substract '_id', 3) substract ordered_metadata_names_only
-//     var structured_field_names0 = this.get_field_names_by_dataset_ids(dataset_ids);
-//     var diff_names              = structured_field_names0.filter(function (x) {
-//       return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0;
-//     });
-//     diff_names                  = diff_names.filter(function (item) {
-//       return /^((?!_id).)*$/.test(item);
-//     });
-//     diff_names                  = diff_names.filter(function (x) {
-//       return ordered_metadata_names_only.indexOf(x) < 0;
-//     });
-//
-//     // // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [diff_names[i2], diff_names[i2], '', '']
-//     // // TODO: add units from db
-//     // var big_arr_diff_names = [];
-//     // for (var i2 = 0; i2 < diff_names.length; i2++) {
-//     //   var temp_arr = [diff_names[i2], diff_names[i2], '', ''];
-//     //   big_arr_diff_names.push(temp_arr);
-//     // }
-//
-//     var big_arr_diff_names = this.make_array4(diff_names);
-//     return helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
-//
-//   }
-
   // new rows
   new_row_field_validation(req, field_name) {
     console.time('TIME: new_row_field_validation');
@@ -831,27 +774,6 @@ class CreateDataObj {
     helpers.local_log('OOO1 JSON.stringify(dataset_obj) = ', JSON.stringify(dataset_obj));
   }
 
-  // reorder_field_names_for_new_project_dataset_form() {
-  //   var all_field_names4     = [];
-  //
-  //   // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
-  //
-  //   let next_f_name = "";
-  //   for (var n in CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM) {
-  //     next_f_name = CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM[n];
-  //     all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
-  //   }
-  //
-  //   let non_biological_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "Non-biological");
-  //   let second_part = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, (non_biological_ind + 1));
-  //   all_field_names4 = all_field_names4.concat(second_part);
-  //
-  //   // console.log('RRRRR all_field_names4 from make_new_project_for_form');
-  //   // console.log(JSON.stringify(all_field_names4));
-  //
-  //   return all_field_names4;
-  // }
-
   make_new_project_for_form(project_obj) {
 
     var all_field_names = this.all_field_names;
@@ -917,17 +839,17 @@ class CreateDataObj {
     );
   }
 
-  // unify_us_names(curr_country_in) {
-  //   let curr_country_out = curr_country_in.slice();
-  //   for (var n in curr_country_in) {
-  //     let diff_spelling = "";
-  //     diff_spelling = helpers.geo_loc_name_continental_filter(curr_country_in[n]);
-  //     if (typeof diff_spelling !== 'undefined') {
-  //       curr_country_out[n] = diff_spelling;
-  //     }
-  //   }
-  //   return curr_country_out;
-  // }
+  unify_us_names(curr_country_in) {
+    let curr_country_out = curr_country_in.slice();
+    for (var n in curr_country_in) {
+      let diff_spelling = "";
+      diff_spelling = helpers.geo_loc_name_continental_filter(curr_country_in[n]);
+      if (typeof diff_spelling !== 'undefined') {
+        curr_country_out[n] = diff_spelling;
+      }
+    }
+    return curr_country_out;
+  }
 
   clean_up_metadata_new_form() {
     let metadata_new_form_vals = {};
@@ -1011,20 +933,6 @@ class ShowObj {
     }
     return project_name1;
   }
-
-  // make_ordered_field_names_obj() {
-  //   console.time('TIME: make_ordered_field_names_obj');
-  //   var ordered_field_names_obj = {};
-  //
-  //   for (var i in CONSTS.ORDERED_METADATA_NAMES) {
-  //     // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
-  //     var temp_arr = [i];
-  //     temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
-  //     ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
-  //   }
-  //   console.timeEnd('TIME: make_ordered_field_names_obj');
-  //   return ordered_field_names_obj;
-  // }
 
   get_mbl_edit() {
     let mbl_edit = "no_edit";
@@ -1372,17 +1280,6 @@ class FieldNames {
   }
 
   // misc
-  unify_us_names(curr_country_in) {
-    let curr_country_out = curr_country_in.slice();
-    for (var n in curr_country_in) {
-      let diff_spelling = "";
-      diff_spelling = helpers.geo_loc_name_continental_filter(curr_country_in[n]);
-      if (typeof diff_spelling !== 'undefined') {
-        curr_country_out[n] = diff_spelling;
-      }
-    }
-    return curr_country_out;
-  }
 
   make_array4(field_names_arr) {
 // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [field_names_arr[i2], field_names_arr[i2], '', '']

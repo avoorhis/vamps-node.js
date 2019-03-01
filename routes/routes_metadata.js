@@ -520,7 +520,8 @@ function make_metadata_object_from_form(req, res) {
   console.timeEnd("TIME: make_metadata_object_from_form");
 }
 
-function make_metadata_object_from_csv(req, res) {
+// JSHint: This function's cyclomatic complexity is too high. (6) (W074)
+function make_metadata_object_from_csv(req, res) {// move to met_obj?
   console.time("TIME: make_metadata_object_from_csv");
 
   helpers.local_log("MMM req.body from make_metadata_object_from_csv");
@@ -556,7 +557,9 @@ function make_metadata_object_from_csv(req, res) {
 
 // all_metadata
     var all_metadata     = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
-    var all_field_names4 = met_obj.make_all_field_names(dataset_ids);
+
+    const field_names    = new metadata_controller.FieldNames(req, dataset_ids);
+    var all_field_names4 = field_names.make_all_field_names(dataset_ids);
 
     req.body.project_id = pid;
 
@@ -705,8 +708,9 @@ function get_db_data (req, res, met_obj) { // move to met_obj?
 
   var all_metadata = met_obj.make_metadata_object(req, res, met_obj.pid, data_in_obj_of_arr);
 
-  // as many values per field as there are datasets
-  var all_field_names4 = met_obj.make_all_field_names(met_obj.dataset_ids);
+  const field_names    = new metadata_controller.FieldNames(req, met_obj.dataset_ids);
+// as many values per field as there are datasets
+  var all_field_names4 = field_names.make_all_field_names(met_obj.dataset_ids);
 
   // console.log("DDD2 all_field_names");
   // console.log(JSON.stringify(all_field_names));
