@@ -17,105 +17,107 @@ class CreateDataObj {
     this.res             = res || {};
     this.pid             = project_id || '';
     this.dataset_ids     = DATASET_IDS_BY_PID[this.pid] || dataset_ids || [];
-    this.all_field_names = this.collect_field_names();
-    let field_names_by_env = this.filter_field_names_by_env(req);
-    this.required_field_names_for_env = this.env_req_filters(field_names_by_env);
+    this.field_names    = new module.exports.FieldNames(req, this.dataset_ids);
+
+    this.all_field_names = this.field_names.collect_field_names();
+    // let field_names_by_env = this.filter_field_names_by_env(req);
+    // this.required_field_names_for_env = this.env_req_filters(field_names_by_env);
 
     this.all_metadata    = {};
-    this.metadata_new_form_fields = CONSTS.METADATA_NEW_FORM_FIELDS;
+    // this.metadata_new_form_fields = CONSTS.METADATA_NEW_FORM_FIELDS;
 
     this.prepare_empty_metadata_object();
 
   }
 
-  collect_field_names() {
-    var all_field_names = this.get_field_names_by_dataset_ids(this.dataset_ids);
-    all_field_names     = all_field_names.concat(CONSTS.METADATA_FORM_REQUIRED_FIELDS);
-    all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-    all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
-    all_field_names     = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
-
-    all_field_names = helpers.unique_array(all_field_names);
-    return all_field_names;
-  }
-
-  unify_env_name(env_package) {
-    let re1               = / /gi;
-    let re2               = /-/gi;
-    let re3               = /\//gi;
-    let env_package_unified_name = env_package.toLowerCase().replace(re1, '_').replace(re2, '_').replace(re3, '_');
-    return env_package_unified_name;
-  }
-
-  get_all_fields(env_package) {
-    let env_package_unified_name = this.unify_env_name(env_package);
-    return CONSTS.FIELDS_BY_ENV[env_package_unified_name];
-  }
-
-  get_env_proper_name(env_package) {
-    let name = "";
-    let obj_name = CONSTS.PACKAGES_AND_PORTALS_ALIASES;
-    let unified_name = this.unify_env_name(env_package);
-    for (var key in obj_name) {
-      let value_arr = obj_name[key];
-      if (value_arr.includes(unified_name)) {
-        name = key;
-        break;
-      }
-    }
-    return name;
-  }
-
-  filter_field_names_by_env(req) {
-    // console.log(req.body);
-
-    let req_body_exists = ((typeof req.body !== 'undefined') && (typeof req.body.package !== 'undefined')) ;
-    let req_form_exists = ((typeof req.form !== 'undefined') && (typeof req.form.package !== 'undefined'));
-    let env_package = "unknown";
-    let proper_env_name = env_package;
-    let field_names = [];
-    if (req_body_exists || req_form_exists) {
-      env_package = req.body.package || req.form.package;
-      proper_env_name = this.get_env_proper_name(env_package);
-      field_names = this.get_all_fields(env_package);
-    }
-    return field_names;
-  }
-
-  env_req_filters(field_names_by_env) {
-    console.log("In env_req_filters");
-    let required_names = [];
-    for (var i in field_names_by_env) {
-      let current_field_name = field_names_by_env[i];
-      if (current_field_name.includes("*")) {
-        let cleaned_f_name = current_field_name.replace("*", "");
-        required_names.push(cleaned_f_name); // TODO: check if name exists in CONSTS
-      }
-    }
-    return required_names;
-  }
-
-  get_field_names_by_dataset_ids() {
-
-    var field_names_arr = [];
-
-    field_names_arr = field_names_arr.concat(Object.keys(MD_CUSTOM_FIELDS_UNITS));
-    for (var i = 0; i < this.dataset_ids.length; i++) {
-      var dataset_id = this.dataset_ids[i];
-      if (typeof AllMetadata[dataset_id] !== 'undefined') {
-        field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
-      }
-    }
-    field_names_arr = helpers.unique_array(field_names_arr); // one level
-    field_names_arr.sort();
-
-    return field_names_arr;
-//  [
-//   'access_point_type',
-//   'adapter_sequence',
-//   'adapter_sequence_id',
-// ...
-  }
+//   collect_field_names() {
+//     var all_field_names = this.get_field_names_by_dataset_ids(this.dataset_ids);
+//     all_field_names     = all_field_names.concat(CONSTS.METADATA_FORM_REQUIRED_FIELDS);
+//     all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+//     all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
+//     all_field_names     = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
+//
+//     all_field_names = helpers.unique_array(all_field_names);
+//     return all_field_names;
+//   }
+//
+//   unify_env_name(env_package) {
+//     let re1               = / /gi;
+//     let re2               = /-/gi;
+//     let re3               = /\//gi;
+//     let env_package_unified_name = env_package.toLowerCase().replace(re1, '_').replace(re2, '_').replace(re3, '_');
+//     return env_package_unified_name;
+//   }
+//
+//   get_all_fields(env_package) {
+//     let env_package_unified_name = this.unify_env_name(env_package);
+//     return CONSTS.FIELDS_BY_ENV[env_package_unified_name];
+//   }
+//
+//   get_env_proper_name(env_package) {
+//     let name = "";
+//     let obj_name = CONSTS.PACKAGES_AND_PORTALS_ALIASES;
+//     let unified_name = this.unify_env_name(env_package);
+//     for (var key in obj_name) {
+//       let value_arr = obj_name[key];
+//       if (value_arr.includes(unified_name)) {
+//         name = key;
+//         break;
+//       }
+//     }
+//     return name;
+//   }
+//
+//   filter_field_names_by_env(req) {
+//     // console.log(req.body);
+//
+//     let req_body_exists = ((typeof req.body !== 'undefined') && (typeof req.body.package !== 'undefined')) ;
+//     let req_form_exists = ((typeof req.form !== 'undefined') && (typeof req.form.package !== 'undefined'));
+//     let env_package = "unknown";
+//     let proper_env_name = env_package;
+//     let field_names = [];
+//     if (req_body_exists || req_form_exists) {
+//       env_package = req.body.package || req.form.package;
+//       proper_env_name = this.get_env_proper_name(env_package);
+//       field_names = this.get_all_fields(env_package);
+//     }
+//     return field_names;
+//   }
+//
+//   env_req_filters(field_names_by_env) {
+//     console.log("In env_req_filters");
+//     let required_names = [];
+//     for (var i in field_names_by_env) {
+//       let current_field_name = field_names_by_env[i];
+//       if (current_field_name.includes("*")) {
+//         let cleaned_f_name = current_field_name.replace("*", "");
+//         required_names.push(cleaned_f_name); // TODO: check if name exists in CONSTS
+//       }
+//     }
+//     return required_names;
+//   }
+//
+//   get_field_names_by_dataset_ids() {
+//
+//     var field_names_arr = [];
+//
+//     field_names_arr = field_names_arr.concat(Object.keys(MD_CUSTOM_FIELDS_UNITS));
+//     for (var i = 0; i < this.dataset_ids.length; i++) {
+//       var dataset_id = this.dataset_ids[i];
+//       if (typeof AllMetadata[dataset_id] !== 'undefined') {
+//         field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
+//       }
+//     }
+//     field_names_arr = helpers.unique_array(field_names_arr); // one level
+//     field_names_arr.sort();
+//
+//     return field_names_arr;
+// //  [
+// //   'access_point_type',
+// //   'adapter_sequence',
+// //   'adapter_sequence_id',
+// // ...
+//   }
 
   prepare_empty_metadata_object() {
     console.time('TIME: prepare_empty_metadata_object');
@@ -285,17 +287,17 @@ class CreateDataObj {
       }
     }
     var all_metadata         = this.make_metadata_object(req, res, pid, data); // if use this.all_metadata = wrong
-    var all_field_names_orig = this.make_all_field_names(data['dataset_id']);
+    var all_field_names_orig = this.make_all_field_names(data['dataset_id']); // to names!!!
 
 
     //add_new
-    var all_field_names_with_new = this.collect_new_rows(req, all_field_names_orig);
+    var all_field_names_with_new = this.collect_new_rows(req, all_field_names_orig); // to names!!!
 
     // console.log("YYY3 all_field_names_with_new");
     // console.log(JSON.stringify(all_field_names_with_new));
 
-    var all_field_names_first_column = this.get_first_column(all_field_names_with_new, 0);
-    var all_new_names                = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
+    var all_field_names_first_column = this.get_first_column(all_field_names_with_new, 0); // to names!!!
+    var all_new_names                = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1); // to names!!!
     all_metadata[pid]                = this.get_new_val(req, all_metadata[pid], all_new_names);
 
     // req = helpers.collect_errors(req);
@@ -399,55 +401,55 @@ class CreateDataObj {
   //
   // }
 
-  get_names_from_ordered_const() {
-    console.time('time: ordered_metadata_names_only');
-
-    const arraycolumn = (arr, n) =>
-      arr.map(x => x[n]
-      )
-    ;
-
-    console.timeEnd('time: ordered_metadata_names_only');
-    return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
-  }
-
-  make_array4(field_names_arr) {
-// make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [field_names_arr[i2], field_names_arr[i2], '', '']
-    var new_arr = [];
-    for (var i2 = 0; i2 < field_names_arr.length; i2++) {
-      var temp_arr = [field_names_arr[i2], field_names_arr[i2], '', ''];
-      new_arr.push(temp_arr);
-    }
-    return new_arr;
-  }
-
-  make_all_field_names(dataset_ids) {
-    var ordered_metadata_names_only = this.get_names_from_ordered_const();
-
-    // why get_field_names_by_dataset_ids again? 1) substract METADATA_NAMES_SUBSTRACT, 2) substract '_id', 3) substract ordered_metadata_names_only
-    var structured_field_names0 = this.get_field_names_by_dataset_ids(dataset_ids);
-    var diff_names              = structured_field_names0.filter(function (x) {
-      return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0;
-    });
-    diff_names                  = diff_names.filter(function (item) {
-      return /^((?!_id).)*$/.test(item);
-    });
-    diff_names                  = diff_names.filter(function (x) {
-      return ordered_metadata_names_only.indexOf(x) < 0;
-    });
-
-    // // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [diff_names[i2], diff_names[i2], '', '']
-    // // TODO: add units from db
-    // var big_arr_diff_names = [];
-    // for (var i2 = 0; i2 < diff_names.length; i2++) {
-    //   var temp_arr = [diff_names[i2], diff_names[i2], '', ''];
-    //   big_arr_diff_names.push(temp_arr);
-    // }
-
-    var big_arr_diff_names = this.make_array4(diff_names);
-    return helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
-
-  }
+//   get_names_from_ordered_const() {
+//     console.time('time: ordered_metadata_names_only');
+//
+//     const arraycolumn = (arr, n) =>
+//       arr.map(x => x[n]
+//       )
+//     ;
+//
+//     console.timeEnd('time: ordered_metadata_names_only');
+//     return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
+//   }
+//
+//   make_array4(field_names_arr) {
+// // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [field_names_arr[i2], field_names_arr[i2], '', '']
+//     var new_arr = [];
+//     for (var i2 = 0; i2 < field_names_arr.length; i2++) {
+//       var temp_arr = [field_names_arr[i2], field_names_arr[i2], '', ''];
+//       new_arr.push(temp_arr);
+//     }
+//     return new_arr;
+//   }
+//
+//   make_all_field_names(dataset_ids) {
+//     var ordered_metadata_names_only = this.get_names_from_ordered_const();
+//
+//     // why get_field_names_by_dataset_ids again? 1) substract METADATA_NAMES_SUBSTRACT, 2) substract '_id', 3) substract ordered_metadata_names_only
+//     var structured_field_names0 = this.get_field_names_by_dataset_ids(dataset_ids);
+//     var diff_names              = structured_field_names0.filter(function (x) {
+//       return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0;
+//     });
+//     diff_names                  = diff_names.filter(function (item) {
+//       return /^((?!_id).)*$/.test(item);
+//     });
+//     diff_names                  = diff_names.filter(function (x) {
+//       return ordered_metadata_names_only.indexOf(x) < 0;
+//     });
+//
+//     // // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [diff_names[i2], diff_names[i2], '', '']
+//     // // TODO: add units from db
+//     // var big_arr_diff_names = [];
+//     // for (var i2 = 0; i2 < diff_names.length; i2++) {
+//     //   var temp_arr = [diff_names[i2], diff_names[i2], '', ''];
+//     //   big_arr_diff_names.push(temp_arr);
+//     // }
+//
+//     var big_arr_diff_names = this.make_array4(diff_names);
+//     return helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
+//
+//   }
 
   // new rows
   new_row_field_validation(req, field_name) {
@@ -545,7 +547,6 @@ class CreateDataObj {
 
     return all_field_names;
   }
-
 
   fill_out_arr_doubles(value, repeat_times) {
     var arr_temp = Array(repeat_times);
@@ -654,6 +655,7 @@ class CreateDataObj {
     }
     helpers.local_log('DDD3, all_field_names', JSON.stringify(all_field_names));
 
+    // move to Names
     var more_fields = ['adapter_sequence_id', // TODO: clarify, why here and what for
       'dataset_description',
       'dataset_id',
@@ -672,6 +674,7 @@ class CreateDataObj {
       'tube_label',
       'sample_num'];
 
+    // move to Names
     all_field_names = helpers.unique_array(all_field_names.concat(more_fields));
 
     helpers.local_log('DDD3_1, all_field_names', JSON.stringify(all_field_names));
@@ -766,7 +769,7 @@ class CreateDataObj {
     return {'data': data, 'fail_msg': fail_msg};
   }
 
-  // This function cyclomatic complexity is too high (68)
+  // This function cyclomatic complexity is too high (9)
   get_primers_info(dataset_id) {
     console.time('TIME: get_primers_info');
     var primer_info = {
@@ -828,32 +831,32 @@ class CreateDataObj {
     helpers.local_log('OOO1 JSON.stringify(dataset_obj) = ', JSON.stringify(dataset_obj));
   }
 
-  reorder_field_names_for_new_project_dataset_form() {
-    var all_field_names4     = [];
-
-    // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
-
-    let next_f_name = "";
-    for (var n in CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM) {
-      next_f_name = CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM[n];
-      all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
-    }
-
-    let non_biological_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "Non-biological");
-    let second_part = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, (non_biological_ind + 1));
-    all_field_names4 = all_field_names4.concat(second_part);
-
-    // console.log('RRRRR all_field_names4 from make_new_project_for_form');
-    // console.log(JSON.stringify(all_field_names4));
-
-    return all_field_names4;
-  }
+  // reorder_field_names_for_new_project_dataset_form() {
+  //   var all_field_names4     = [];
+  //
+  //   // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
+  //
+  //   let next_f_name = "";
+  //   for (var n in CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM) {
+  //     next_f_name = CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM[n];
+  //     all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
+  //   }
+  //
+  //   let non_biological_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "Non-biological");
+  //   let second_part = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, (non_biological_ind + 1));
+  //   all_field_names4 = all_field_names4.concat(second_part);
+  //
+  //   // console.log('RRRRR all_field_names4 from make_new_project_for_form');
+  //   // console.log(JSON.stringify(all_field_names4));
+  //
+  //   return all_field_names4;
+  // }
 
   make_new_project_for_form(project_obj) {
 
     var all_field_names = this.all_field_names;
 
-    var all_field_names4 = this.reorder_field_names_for_new_project_dataset_form();
+    var all_field_names4 = this.field_names.reorder_field_names_for_new_project_dataset_form();
 
     var all_metadata = this.create_all_metadata_form_new(all_field_names, project_obj);
     // all_metadata = { '485':
@@ -914,17 +917,17 @@ class CreateDataObj {
     );
   }
 
-  unify_us_names(curr_country_in) {
-    let curr_country_out = curr_country_in.slice();
-    for (var n in curr_country_in) {
-      let diff_spelling = "";
-      diff_spelling = helpers.geo_loc_name_continental_filter(curr_country_in[n]);
-      if (typeof diff_spelling !== 'undefined') {
-        curr_country_out[n] = diff_spelling;
-      }
-    }
-    return curr_country_out;
-  }
+  // unify_us_names(curr_country_in) {
+  //   let curr_country_out = curr_country_in.slice();
+  //   for (var n in curr_country_in) {
+  //     let diff_spelling = "";
+  //     diff_spelling = helpers.geo_loc_name_continental_filter(curr_country_in[n]);
+  //     if (typeof diff_spelling !== 'undefined') {
+  //       curr_country_out[n] = diff_spelling;
+  //     }
+  //   }
+  //   return curr_country_out;
+  // }
 
   clean_up_metadata_new_form() {
     let metadata_new_form_vals = {};
@@ -993,7 +996,8 @@ class ShowObj {
     this.all_metadata            = all_metadata;
     this.all_field_names_arr     = all_field_names_arr || [];
     this.all_field_units         = all_field_units || [];
-    this.ordered_field_names_obj = this.make_ordered_field_names_obj();
+    const field_names            = new module.exports.FieldNames(req);
+    this.ordered_field_names_obj = field_names.make_ordered_field_names_obj();
     this.hostname                = req.CONFIG.hostname;
     this.user                    = req.user;
     this.required_fields         = required_fields || [];
@@ -1008,19 +1012,19 @@ class ShowObj {
     return project_name1;
   }
 
-  make_ordered_field_names_obj() {
-    console.time('TIME: make_ordered_field_names_obj');
-    var ordered_field_names_obj = {};
-
-    for (var i in CONSTS.ORDERED_METADATA_NAMES) {
-      // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
-      var temp_arr = [i];
-      temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
-      ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
-    }
-    console.timeEnd('TIME: make_ordered_field_names_obj');
-    return ordered_field_names_obj;
-  }
+  // make_ordered_field_names_obj() {
+  //   console.time('TIME: make_ordered_field_names_obj');
+  //   var ordered_field_names_obj = {};
+  //
+  //   for (var i in CONSTS.ORDERED_METADATA_NAMES) {
+  //     // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
+  //     var temp_arr = [i];
+  //     temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
+  //     ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
+  //   }
+  //   console.timeEnd('TIME: make_ordered_field_names_obj');
+  //   return ordered_field_names_obj;
+  // }
 
   get_mbl_edit() {
     let mbl_edit = "no_edit";
@@ -1068,7 +1072,7 @@ class ShowObj {
 
     console.log('JJJ2 all_field_names from render_edit_form');
     console.log(JSON.stringify(this.all_field_names_arr));
-    //Double!
+    //Doubled!
 
     console.log('JJJMMM all_metadata from render_edit_form');
     console.log(JSON.stringify(this.all_metadata));
@@ -1182,8 +1186,219 @@ class ShowObj {
 
 }
 
+class FieldNames {
+  // collect all known
+  // add new
+  // filter by env
+  // order for existing and new datasets
+  // get required
+
+  constructor(req, dataset_ids) {
+    this.dataset_ids = dataset_ids || [];
+    this.all_field_names = this.collect_field_names();
+    let field_names_by_env = this.filter_field_names_by_env(req);
+    this.required_field_names_for_env = this.env_req_filters(field_names_by_env);
+    this.metadata_new_form_fields = CONSTS.METADATA_NEW_FORM_FIELDS;
+
+  }
+
+  // collect all known
+  collect_field_names() {
+    var all_field_names = this.get_field_names_by_dataset_ids(this.dataset_ids);
+    all_field_names     = all_field_names.concat(CONSTS.METADATA_FORM_REQUIRED_FIELDS);
+    all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+    all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
+    all_field_names     = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
+
+    all_field_names = helpers.unique_array(all_field_names);
+    return all_field_names;
+  }
+
+  make_all_field_names(dataset_ids) {
+    var ordered_metadata_names_only = this.get_names_from_ordered_const();
+
+    // why get_field_names_by_dataset_ids again? 1) substract METADATA_NAMES_SUBSTRACT, 2) substract '_id', 3) substract ordered_metadata_names_only
+    var structured_field_names0 = this.get_field_names_by_dataset_ids(dataset_ids);
+    var diff_names              = structured_field_names0.filter(function (x) {
+      return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0;
+    });
+    diff_names                  = diff_names.filter(function (item) {
+      return /^((?!_id).)*$/.test(item);
+    });
+    diff_names                  = diff_names.filter(function (x) {
+      return ordered_metadata_names_only.indexOf(x) < 0;
+    });
+
+    // // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [diff_names[i2], diff_names[i2], '', '']
+    // // TODO: add units from db
+    // var big_arr_diff_names = [];
+    // for (var i2 = 0; i2 < diff_names.length; i2++) {
+    //   var temp_arr = [diff_names[i2], diff_names[i2], '', ''];
+    //   big_arr_diff_names.push(temp_arr);
+    // }
+
+    var big_arr_diff_names = this.make_array4(diff_names);
+    return helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
+
+  }
+
+  // filter by env
+  unify_env_name(env_package) {
+    let re1               = / /gi;
+    let re2               = /-/gi;
+    let re3               = /\//gi;
+    let env_package_unified_name = env_package.toLowerCase().replace(re1, '_').replace(re2, '_').replace(re3, '_');
+    return env_package_unified_name;
+  }
+
+  get_fields_by_env(env_package) {
+    let env_package_unified_name = this.unify_env_name(env_package);
+    return CONSTS.FIELDS_BY_ENV[env_package_unified_name];
+  }
+
+  get_env_proper_name(env_package) {
+    let name = "";
+    let obj_name = CONSTS.PACKAGES_AND_PORTALS_ALIASES;
+    let unified_name = this.unify_env_name(env_package);
+    for (var key in obj_name) {
+      let value_arr = obj_name[key];
+      if (value_arr.includes(unified_name)) {
+        name = key;
+        break;
+      }
+    }
+    return name;
+  }
+
+  filter_field_names_by_env(req) {
+    // console.log(req.body);
+
+    let req_body_exists = ((typeof req.body !== 'undefined') && (typeof req.body.package !== 'undefined')) ;
+    let req_form_exists = ((typeof req.form !== 'undefined') && (typeof req.form.package !== 'undefined'));
+    let env_package = "unknown";
+    let proper_env_name = env_package;
+    let field_names = [];
+    if (req_body_exists || req_form_exists) {
+      env_package = req.body.package || req.form.package;
+      proper_env_name = this.get_env_proper_name(env_package);
+      field_names = this.get_fields_by_env(env_package);
+    }
+    return field_names;
+  }
+
+  env_req_filters(field_names_by_env) {
+    console.log("In env_req_filters");
+    let required_names = [];
+    for (var i in field_names_by_env) {
+      let current_field_name = field_names_by_env[i];
+      if (current_field_name.includes("*")) {
+        let cleaned_f_name = current_field_name.replace("*", "");
+        required_names.push(cleaned_f_name); // TODO: check if name exists in CONSTS
+      }
+    }
+    return required_names;
+  }
+
+  // filter by dataset_id
+  get_field_names_by_dataset_ids() {
+
+    var field_names_arr = [];
+
+    field_names_arr = field_names_arr.concat(Object.keys(MD_CUSTOM_FIELDS_UNITS));
+    for (var i = 0; i < this.dataset_ids.length; i++) {
+      var dataset_id = this.dataset_ids[i];
+      if (typeof AllMetadata[dataset_id] !== 'undefined') {
+        field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
+      }
+    }
+    field_names_arr = helpers.unique_array(field_names_arr); // one level
+    field_names_arr.sort();
+
+    return field_names_arr;
+//  [
+//   'access_point_type',
+//   'adapter_sequence',
+//   'adapter_sequence_id',
+// ...
+  }
+
+  // order for existing and new datasets
+  get_names_from_ordered_const() {
+    console.time('time: ordered_metadata_names_only');
+
+    const arraycolumn = (arr, n) =>
+      arr.map(x => x[n]
+      )
+    ;
+
+    console.timeEnd('time: ordered_metadata_names_only');
+    return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
+  }
+
+  reorder_field_names_for_new_project_dataset_form() {
+    var all_field_names4     = [];
+
+    // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
+
+    let next_f_name = "";
+    for (var n in CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM) {
+      next_f_name = CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM[n];
+      all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
+    }
+
+    let non_biological_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "Non-biological");
+    let second_part = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, (non_biological_ind + 1));
+    all_field_names4 = all_field_names4.concat(second_part);
+
+    // console.log('RRRRR all_field_names4 from make_new_project_for_form');
+    // console.log(JSON.stringify(all_field_names4));
+
+    return all_field_names4;
+  }
+
+  //  from Show!
+  make_ordered_field_names_obj() {
+    console.time('TIME: make_ordered_field_names_obj');
+    var ordered_field_names_obj = {};
+
+    for (var i in CONSTS.ORDERED_METADATA_NAMES) {
+      // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
+      var temp_arr = [i];
+      temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
+      ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
+    }
+    console.timeEnd('TIME: make_ordered_field_names_obj');
+    return ordered_field_names_obj;
+  }
+
+  // misc
+  unify_us_names(curr_country_in) {
+    let curr_country_out = curr_country_in.slice();
+    for (var n in curr_country_in) {
+      let diff_spelling = "";
+      diff_spelling = helpers.geo_loc_name_continental_filter(curr_country_in[n]);
+      if (typeof diff_spelling !== 'undefined') {
+        curr_country_out[n] = diff_spelling;
+      }
+    }
+    return curr_country_out;
+  }
+
+  make_array4(field_names_arr) {
+// make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [field_names_arr[i2], field_names_arr[i2], '', '']
+    var new_arr = [];
+    for (var i2 = 0; i2 < field_names_arr.length; i2++) {
+      var temp_arr = [field_names_arr[i2], field_names_arr[i2], '', ''];
+      new_arr.push(temp_arr);
+    }
+    return new_arr;
+  }
+
+}
+
 // export the class
 module.exports = {
   CreateDataObj: CreateDataObj,
-  ShowObj: ShowObj
+  ShowObj: ShowObj,
+  FieldNames: FieldNames
 };
