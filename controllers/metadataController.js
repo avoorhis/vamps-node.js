@@ -20,104 +20,14 @@ class CreateDataObj {
     this.field_names    = new module.exports.FieldNames(req, this.dataset_ids);
 
     this.all_field_names = this.field_names.collect_field_names();
-    // let field_names_by_env = this.filter_field_names_by_env(req);
-    // this.required_field_names_for_env = this.env_req_filters(field_names_by_env);
+    this.required_field_names_for_env = this.field_names.required_field_names_for_env;
 
     this.all_metadata    = {};
-    // this.metadata_new_form_fields = CONSTS.METADATA_NEW_FORM_FIELDS;
+    this.metadata_new_form_fields = this.field_names.metadata_new_form_fields;
 
     this.prepare_empty_metadata_object();
 
   }
-
-//   collect_field_names() {
-//     var all_field_names = this.get_field_names_by_dataset_ids(this.dataset_ids);
-//     all_field_names     = all_field_names.concat(CONSTS.METADATA_FORM_REQUIRED_FIELDS);
-//     all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-//     all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
-//     all_field_names     = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
-//
-//     all_field_names = helpers.unique_array(all_field_names);
-//     return all_field_names;
-//   }
-//
-//   unify_env_name(env_package) {
-//     let re1               = / /gi;
-//     let re2               = /-/gi;
-//     let re3               = /\//gi;
-//     let env_package_unified_name = env_package.toLowerCase().replace(re1, '_').replace(re2, '_').replace(re3, '_');
-//     return env_package_unified_name;
-//   }
-//
-//   get_all_fields(env_package) {
-//     let env_package_unified_name = this.unify_env_name(env_package);
-//     return CONSTS.FIELDS_BY_ENV[env_package_unified_name];
-//   }
-//
-//   get_env_proper_name(env_package) {
-//     let name = "";
-//     let obj_name = CONSTS.PACKAGES_AND_PORTALS_ALIASES;
-//     let unified_name = this.unify_env_name(env_package);
-//     for (var key in obj_name) {
-//       let value_arr = obj_name[key];
-//       if (value_arr.includes(unified_name)) {
-//         name = key;
-//         break;
-//       }
-//     }
-//     return name;
-//   }
-//
-//   filter_field_names_by_env(req) {
-//     // console.log(req.body);
-//
-//     let req_body_exists = ((typeof req.body !== 'undefined') && (typeof req.body.package !== 'undefined')) ;
-//     let req_form_exists = ((typeof req.form !== 'undefined') && (typeof req.form.package !== 'undefined'));
-//     let env_package = "unknown";
-//     let proper_env_name = env_package;
-//     let field_names = [];
-//     if (req_body_exists || req_form_exists) {
-//       env_package = req.body.package || req.form.package;
-//       proper_env_name = this.get_env_proper_name(env_package);
-//       field_names = this.get_all_fields(env_package);
-//     }
-//     return field_names;
-//   }
-//
-//   env_req_filters(field_names_by_env) {
-//     console.log("In env_req_filters");
-//     let required_names = [];
-//     for (var i in field_names_by_env) {
-//       let current_field_name = field_names_by_env[i];
-//       if (current_field_name.includes("*")) {
-//         let cleaned_f_name = current_field_name.replace("*", "");
-//         required_names.push(cleaned_f_name); // TODO: check if name exists in CONSTS
-//       }
-//     }
-//     return required_names;
-//   }
-//
-//   get_field_names_by_dataset_ids() {
-//
-//     var field_names_arr = [];
-//
-//     field_names_arr = field_names_arr.concat(Object.keys(MD_CUSTOM_FIELDS_UNITS));
-//     for (var i = 0; i < this.dataset_ids.length; i++) {
-//       var dataset_id = this.dataset_ids[i];
-//       if (typeof AllMetadata[dataset_id] !== 'undefined') {
-//         field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
-//       }
-//     }
-//     field_names_arr = helpers.unique_array(field_names_arr); // one level
-//     field_names_arr.sort();
-//
-//     return field_names_arr;
-// //  [
-// //   'access_point_type',
-// //   'adapter_sequence',
-// //   'adapter_sequence_id',
-// // ...
-//   }
 
   prepare_empty_metadata_object() {
     console.time('TIME: prepare_empty_metadata_object');
