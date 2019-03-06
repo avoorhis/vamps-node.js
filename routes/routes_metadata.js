@@ -209,8 +209,6 @@ function get_metadata_hash(md_selected) {
 // <% if (samples_number > 0){ %>
 // <% for (var i = 0; i < Number(samples_number); i++) { %>
 
-// ?? render_edit_form(req, res, {}, {}, all_field_names)
-
 // metadata_new_csv
 router.get('/metadata_new_csv_upload', helpers.isLoggedIn, function (req, res) {
   res.render('metadata/metadata_new_csv_upload', {
@@ -293,7 +291,7 @@ router.post('/metadata_new',
     console.time("TIME: in post /metadata_new");
     helpers.local_log("MMM1, req.body", req.body);
     helpers.local_log("MMM2, req.form", req.form);
-    const show_new = new metadata_controller.ShowObj(req, res);
+    const show_new = new metadata_controller.ShowObj(req, res, {}, {}, {}, {});
 
     if (!req.form.isValid) {
       console.log('!req.form.isValid');
@@ -567,7 +565,7 @@ function make_metadata_object_from_csv(req, res) {// move to met_obj?
     console.log("AAALLL4 all_field_names4");
     console.log(all_field_names4.filter(function(item){return item === "conductivity"}));
 
-    const show_new      = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
+    const show_new      = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units, {});
     const csv_file_write = new csv_files_controller.CsvFilesWrite(req, res);
 
     show_new.render_edit_form();
@@ -720,7 +718,7 @@ function get_db_data (req, res, met_obj) { // move to met_obj?
   console.log("AAALLL5 all_field_names4");
   console.log(all_field_names4.filter(function(item){return item === "conductivity"}));
 
-  const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4);
+  const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, {}, {});
   show_new.render_edit_form();
   console.timeEnd("TIME: make_metadata_object_from_db");
 }
