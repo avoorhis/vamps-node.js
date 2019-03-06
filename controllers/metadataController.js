@@ -45,26 +45,16 @@ class CreateDataObj {
 
   prepare_empty_metadata_object() {
     console.time('TIME: prepare_empty_metadata_object');
-    var pid             = this.pid;
-    var field_names_arr = this.all_field_names;
-    var all_metadata    = this.all_metadata;
-
-    const pid_in_all_metadata = all_metadata.hasOwnProperty(this.pid);
-    if (!(pid_in_all_metadata)) {
-      all_metadata[pid] = {};
-    }
-
-    var empty_field_names_obj = this.create_an_empty_fixed_length_obj(field_names_arr);
-    all_metadata[pid] = empty_field_names_obj;
+    var empty_field_names_obj = this.create_an_empty_fixed_length_obj(this.all_field_names);
+    this.all_metadata[this.pid] = empty_field_names_obj;
 
     const dataset_ids_exist = this.dataset_ids.length > 0;
     if (dataset_ids_exist)
     {
-      all_metadata[pid]['dataset_id'] = this.dataset_ids;
+      this.all_metadata[this.pid]['dataset_id'] = this.dataset_ids;
     }
 
     console.timeEnd('TIME: prepare_empty_metadata_object');
-    this.all_metadata = all_metadata;
   }
 
   get_project_info(req, res, project_name_or_pid) {
