@@ -1007,51 +1007,53 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function 
       html_json.sorted_cust_header_names = Object.keys(headers_cust).sort()
 
 
-      for (did in newmd) {
+      for (var did in newmd) {
         // only show datasets that are known:
-        ds = DATASET_NAME_BY_DID[did]
+        ds = DATASET_NAME_BY_DID[did];
 
-        html_json.data[ds]              = {}
-        html_json.data[ds]['req_data']  = []
-        html_json.data[ds]['cust_data'] = []
+        html_json.data[ds]              = {};
+        html_json.data[ds]['req_data']  = [];
+        html_json.data[ds]['cust_data'] = [];
         // this should show all metadata not just the required stuff
         for (i in html_json.sorted_cust_header_names) {
-          mdname = html_json.sorted_cust_header_names[i]
+          mdname = html_json.sorted_cust_header_names[i];
           if (newmd[did].hasOwnProperty(mdname)) {
-            html_json.data[ds]['cust_data'].push(newmd[did][mdname])
+            html_json.data[ds]['cust_data'].push(newmd[did][mdname]);
           } else {
-            html_json.data[ds]['cust_data'].push('')
+            html_json.data[ds]['cust_data'].push('');
           }
         }
         for (i in html_json.sorted_req_header_names) {
-          mdname = html_json.sorted_req_header_names[i]
+          mdname = html_json.sorted_req_header_names[i];
           if (newmd[did].hasOwnProperty(mdname)) {
-            html_json.data[ds]['req_data'].push(newmd[did][mdname])
+            html_json.data[ds]['req_data'].push(newmd[did][mdname]);
           } else {
-            html_json.data[ds]['req_data'].push('')
+            html_json.data[ds]['req_data'].push('');
           }
         }
 
 
       }
-      if (Object.keys(html_json.data).length === 0) {
-        html_json.validation.error = true
+      // if (Object.keys(html_json.data).length === 0) {
+      const html_json_data_is_empty = helpers.is_empty(html_json.data);
+      if (html_json_data_is_empty) {
+        html_json.validation.error = true;
         // remove all other messages:
-        html_json.validation.msg   = ['Dataset names in the first column failed to match those in the database for this project: ' + project_name]
-        html_json.validation.msg.push("Is the first column 'Dataset', 'sample_name', '#SampleID' or 'dataset' ?")
+        html_json.validation.msg   = ['Dataset names in the first column failed to match those in the database for this project: ' + project_name];
+        html_json.validation.msg.push("Is the first column 'Dataset', 'sample_name', '#SampleID' or 'dataset' ?");
       }
 
       if (html_json.validation.error) {
-        console.log('ERROR--MD UPLOAD--NO VALIDATION')
+        console.log('ERROR--MD UPLOAD--NO VALIDATION');
       } else {
-        console.log('OK--VALIDATES')
+        console.log('OK--VALIDATES');
       }
-      html_json.filename = username + '_' + project_name + '--' + timestamp + '.json'
-      file_path          = path.join(req.CONFIG.PROCESS_DIR, 'tmp', html_json.filename)
+      html_json.filename = username + '_' + project_name + '--' + timestamp + '.json';
+      file_path          = path.join(req.CONFIG.PROCESS_DIR, 'tmp', html_json.filename);
 
-      mdata = convert_names_to_ids_for_storage(newmd)
+      mdata = convert_names_to_ids_for_storage(newmd);
 
-      helpers.write_to_file(file_path, JSON.stringify(mdata))
+      helpers.write_to_file(file_path, JSON.stringify(mdata));
 
 
       res.json(JSON.stringify(html_json));
