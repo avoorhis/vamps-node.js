@@ -312,6 +312,7 @@ constants_metadata.CORRECT_ORDER_FOR_NEW_DATASETS_FORM = ["structured comment na
   "env_package",
   "geo_loc_name_continental",
   "geo_loc_name_marine",
+  "MBL generated laboratory metadata",
   "dataset",
   "domain",
   "target_gene",
@@ -319,9 +320,11 @@ constants_metadata.CORRECT_ORDER_FOR_NEW_DATASETS_FORM = ["structured comment na
   "sequencing_platform",
   "forward_primer",
   "reverse_primer",
+  "adapt_3letter",
   "illumina_index",
   "adapter_sequence",
   "run",
+  "User supplied metadata",
   "investigation_type",
   "sample_type",
   "collection_date",
@@ -333,18 +336,22 @@ constants_metadata.CORRECT_ORDER_FOR_NEW_DATASETS_FORM = ["structured comment na
   "feature_secondary",
   "env_material",
   "material_secondary",
+  "Enter depth values in one or more categories",
   "depth_subseafloor",
   "depth_subterrestrial",
   "tot_depth_water_col",
   "elevation",
   "dna_extraction_meth",
+  "Enter either volume or mass",
   "sample_size_vol",
   "sample_size_mass",
   "sample_collection_device",
   "formation_name",
+  "Sample handling",
   "samp_store_dur",
   "samp_store_temp",
   "isol_growth_cond",
+  "Non-biological",
   "ph",
   "temperature",
   "conductivity",
@@ -393,6 +400,7 @@ constants_metadata.CORRECT_ORDER_FOR_NEW_DATASETS_FORM = ["structured comment na
   "porosity",
   "rock_age",
   "water_age",
+  "Biological",
   "microbial_biomass_microscopic",
   "n_acid_for_cell_cnt",
   "microbial_biomass_fish",
@@ -406,9 +414,9 @@ constants_metadata.CORRECT_ORDER_FOR_NEW_DATASETS_FORM = ["structured comment na
   "functional_gene_assays",
   "clone_library_results",
   "enzyme_activities",
-  "host_name"
-]; // and the rest as in ORDERED_METADATA_NAMES_OBJ
-
+  "host_name",
+  "User-added"
+];
 
 constants_metadata.ORDERED_METADATA_NAMES_OBJ = {
   "Please fill in": ["", "Please fill in", "", ""],

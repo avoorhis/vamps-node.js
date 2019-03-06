@@ -121,24 +121,24 @@ class CreateDataObj {
     const new_dataset = new Dataset(this.req, this.res, this.pid, data);
     var DatasetInfo   = new_dataset.DatasetInfo;
     var that          = this;
-    helpers.local_log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
+    console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
     new_dataset.addDataset(function (err, rows) {
       console.time("TIME: in post /metadata_new, add dataset");
       if (err) {
-        helpers.local_log('WWW000 err', err);
+        console.log('WWW000 err', err);
         this.req.flash('fail', err);
       }
       else {
         console.log('New datasets SAVED');
-        helpers.local_log('WWW rows', rows);
+        console.log('WWW rows', rows);
         new_dataset.get_new_dataset_by_name(
           function (err, rows) {
             if (err) {
-              helpers.local_log('WWW00 err', err);
+              console.log('WWW00 err', err);
               this.req.flash('fail', err);
             }
             else {
-              helpers.local_log('WWW22 rows', rows);
+              console.log('WWW22 rows', rows);
               new_dataset.update_dataset_obj(rows, pid);
               new_dataset.add_info_to_dataset_globals();
               data['dataset']    = new_dataset.DatasetInfo.dataset;
@@ -156,24 +156,24 @@ class CreateDataObj {
     const new_dataset = new Dataset(req, res, pid, data);
     var DatasetInfo   = new_dataset.DatasetInfo;
     var that          = this;
-    helpers.local_log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
+    console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
     new_dataset.addDataset(function (err, rows) {
       console.time("TIME: in post /metadata_new, add dataset");
       if (err) {
-        helpers.local_log('WWW0 err', err);
+        console.log('WWW0 err', err);
         req.flash('fail', err);
       }
       else {
         console.log('New datasets SAVED');
-        helpers.local_log('WWW rows', rows);
+        console.log('WWW rows', rows);
         new_dataset.get_new_dataset_by_name(
           function (err, rows) {
             if (err) {
-              helpers.local_log('WWW00 err', err);
+              console.log('WWW00 err', err);
               req.flash('fail', err);
             }
             else {
-              helpers.local_log('WWW22 rows', rows);
+              console.log('WWW22 rows', rows);
               new_dataset.update_dataset_obj(rows, pid);
               // new_dataset.dataset_objects_arr;
               new_dataset.add_info_to_dataset_globals();
@@ -285,8 +285,8 @@ class CreateDataObj {
     //   1 = "DCO_BOM_Bomberg_CoDL_16_09.pdf"
     //  ...
 
-    helpers.local_log('PPP project_obj.abstract_data');
-    helpers.local_log(JSON.stringify(new_project.project_obj.abstract_data));
+    console.log('PPP project_obj.abstract_data');
+    console.log(JSON.stringify(new_project.project_obj.abstract_data));
 
     // from submission datasets: new_project.project_obj.abstract_data = Object
     //  pdfs = Array[0]
@@ -503,12 +503,12 @@ class CreateDataObj {
 
     var req = this.req;
     var pid = project_obj.pid;
-    helpers.local_log('DDD pid', pid);
+    console.log('DDD pid', pid);
     var d_region_arr = [];
     if ((typeof req.form !== "undefined") && (typeof req.form.d_region !== "undefined")) {
       d_region_arr = req.form.d_region.split('#');
     }
-    helpers.local_log('DDD3, all_field_names', JSON.stringify(all_field_names));
+    console.log('DDD3, all_field_names', JSON.stringify(all_field_names));
 
     // move to Names
     var more_fields = ['adapter_sequence_id', // TODO: clarify, why here and what for
@@ -532,11 +532,11 @@ class CreateDataObj {
     // move to Names
     all_field_names = helpers.unique_array(all_field_names.concat(more_fields));
 
-    helpers.local_log('DDD3_1, all_field_names', JSON.stringify(all_field_names));
+    console.log('DDD3_1, all_field_names', JSON.stringify(all_field_names)); // cond1
 
     this.prepare_empty_metadata_object(pid, all_field_names, {});
     var all_metadata = this.all_metadata;
-    helpers.local_log('PPP01 all_metadata from create_all_metadata_form_new', all_metadata);
+    console.log('PPP01 all_metadata from create_all_metadata_form_new', all_metadata);
     var repeat_times = parseInt(req.form.samples_number, 10) || parseInt(req.form.dataset.length, 10);
     var current_info = Object.assign(project_obj);
 
@@ -569,18 +569,18 @@ class CreateDataObj {
 
     all_metadata[pid].sample_num = Array.from(new Array(repeat_times), (val, index) => index + 1);
 
-    helpers.local_log('FFF1 all_metadata[pid] before');
-    helpers.local_log(JSON.stringify(all_metadata[pid]));
+    console.log('FFF1 all_metadata[pid] before');
+    console.log(JSON.stringify(all_metadata[pid]));
 
     all_metadata[pid]['project_abstract'] = this.add_project_abstract_info(project_obj, repeat_times);
 
-    helpers.local_log('PPP project_obj.abstract_data'); // arr0
-    helpers.local_log(JSON.stringify(project_obj.abstract_data));
+    console.log('PPP project_obj.abstract_data'); // arr0
+    console.log(JSON.stringify(project_obj.abstract_data));
 
-    helpers.local_log('FFF2 all_metadata[pid] before');
-    helpers.local_log(JSON.stringify(all_metadata[pid]));
+    console.log('FFF2 all_metadata[pid] before');
+    console.log(JSON.stringify(all_metadata[pid]));
 
-    helpers.local_log('PPP02 all_metadata from create_all_metadata_form_new', all_metadata);
+    console.log('PPP02 all_metadata from create_all_metadata_form_new', all_metadata);
     console.timeEnd('TIME: create_all_metadata_form_new');
 
     return all_metadata;
@@ -672,7 +672,7 @@ class CreateDataObj {
   }
 
   saveDataset(req, project_id) {
-    helpers.local_log('TTT1 req.form from saveDataset = ', req.form);
+    console.log('TTT1 req.form from saveDataset = ', req.form);
     //dataset_id, dataset, dataset_description, project_id, created_at, updated_at,
 
     var dataset_obj                 = {};
@@ -683,14 +683,15 @@ class CreateDataObj {
     dataset_obj.created_at          = new Date();
     dataset_obj.updated_at          = new Date();
 
-    helpers.local_log('OOO1 JSON.stringify(dataset_obj) = ', JSON.stringify(dataset_obj));
+    console.log('OOO1 JSON.stringify(dataset_obj) = ', JSON.stringify(dataset_obj));
   }
 
   make_new_project_for_form(project_obj) {
 
     var all_field_names = this.all_field_names;
-
+    console.log("FFFFF1 all_field_names4 from make_new_project_for_form", all_field_names4);
     var all_field_names4 = this.field_names.reorder_field_names_for_new_project_dataset_form();
+    console.log("FFFFF2 all_field_names4 from make_new_project_for_form after reoder", all_field_names4);
 
     var all_metadata = this.create_all_metadata_form_new(all_field_names, project_obj);
     // all_metadata = { '485':
@@ -725,11 +726,11 @@ class CreateDataObj {
   req_form_isValid_and_new_project(req, res, new_project) {
     const project_obj = new_project.project_obj;
 
-    helpers.local_log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
+    console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
     new_project.addProject(project_obj, function (err, rows) {
         console.time("TIME: in post /metadata_new, add project");
         if (err) {
-          helpers.local_log('WWW0 err', err);
+          console.log('WWW0 err', err);
           req.flash('fail', err);
           const met_obj  = new module.exports.CreateDataObj(req, res, 0, []);
           console.log("AAALLL3 met_obj.all_field_names4");
@@ -740,7 +741,7 @@ class CreateDataObj {
         }
         else {
           console.log('New project SAVED');
-          helpers.local_log('WWW rows', rows);
+          console.log('WWW rows', rows);
           const pid = rows.insertId;
           new_project.add_info_to_project_globals(project_obj, pid);
           const met_obj = new module.exports.CreateDataObj(req, res, pid, []);
@@ -874,8 +875,8 @@ class ShowObj {
     this.req = helpers.collect_errors(this.req);
     let mbl_edit = this.get_mbl_edit();
 
-    helpers.local_log('JJJ1 all_metadata from render_edit_form');
-    helpers.local_log(JSON.stringify(this.all_metadata));
+    console.log('JJJ1 all_metadata from render_edit_form');
+    console.log(JSON.stringify(this.all_metadata));
 
     const target_gene_options = this.get_target_gene_options();
     const adapt_3letter_options = this.get_options_from_global_obj(MD_3LETTER_ADAPTER);
@@ -1167,13 +1168,37 @@ class FieldNames {
       next_f_name = CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM[n];
       all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
     }
+    console.log('RRRRR1 all_field_names4 from make_new_project_for_form');
+    console.log(JSON.stringify(all_field_names4));
 
-    let non_biological_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "Non-biological");
-    let second_part = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, (non_biological_ind + 1));
-    all_field_names4 = all_field_names4.concat(second_part);
+    // let non_biological_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "Non-biological");
+    // let second_part = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, (non_biological_ind + 1));
 
-    // console.log('RRRRR all_field_names4 from make_new_project_for_form');
+    // let arr_1 = CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM;
+    // let arr_2 = Object.keys(CONSTS.ORDERED_METADATA_NAMES_OBJ);
+    //
+    // for (var i = 0; i < arr_2.length; i++) {
+    //   if (arr_1.indexOf(arr_2[i]) < 0) {
+    //     all_field_names4 = all_field_names4.concat(CONSTS.ORDERED_METADATA_NAMES_OBJ[arr_2[i]]);
+    //   }
+    // }
+    // console.log('RRRRR000 all_field_names4 from make_new_project_for_form');
     // console.log(JSON.stringify(all_field_names4));
+    // for (var i in second_part) {
+      // a = second_part[i];
+
+      // Array.prototype.diff = function(a) {
+      //   return this.filter(function(i) {return a.indexOf(i) < 0;});
+      // };
+
+    // }
+
+    // console.log('RRRRR2 second_part from make_new_project_for_form');
+    // console.log(JSON.stringify(second_part)); // double
+    // all_field_names4 = all_field_names4.concat(second_part);
+
+    // console.log('RRRRR3 all_field_names4 from make_new_project_for_form');
+    // console.log(JSON.stringify(all_field_names4)); // double
 
     return all_field_names4;
   }
