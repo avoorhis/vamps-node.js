@@ -654,8 +654,9 @@ function make_metadata_object_from_db(req, res) {
 function create_AllMetadata_picked(dataset_ids) {
   var AllMetadata_picked;
   AllMetadata_picked            = helpers.slice_object_by_keys(AllMetadata, dataset_ids);
-  const all_metadata_picked_len = Object.keys(AllMetadata_picked).length;
-  if (all_metadata_picked_len === 0) // there is no metadata
+  const all_metadata_picked_is_empty = helpers.is_empty(AllMetadata_picked);
+
+  if (all_metadata_picked_is_empty) // there is no metadata
   {
     for (var d_id in dataset_ids) {
       AllMetadata_picked[dataset_ids[d_id]] = [];
