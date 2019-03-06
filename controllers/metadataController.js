@@ -1038,23 +1038,21 @@ class FieldNames {
   }
 
   make_all_field_names(dataset_ids) {
-    var ordered_metadata_names_only = this.get_names_from_ordered_const();
-    var ordered_metadata_names_only_new = CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM;
+    var ordered_metadata_names_only = CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM;
 
     // why get_field_names_by_dataset_ids again? 1) substract METADATA_NAMES_SUBSTRACT, 2) substract '_id', 3) substract ordered_metadata_names_only
     var structured_field_names0 = this.get_field_names_by_dataset_ids(dataset_ids);
-    var diff_names              = structured_field_names0.filter(function (x) {
+
+    var diff_names = structured_field_names0.filter(function (x) {
       return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0;
     });
-    diff_names                  = diff_names.filter(function (item) {
+
+    diff_names = diff_names.filter(function (item) {
       return /^((?!_id).)*$/.test(item);
     });
-    diff_names                  = diff_names.filter(function (x) {
-      return ordered_metadata_names_only.indexOf(x) < 0;
-    });
 
-    let diff_names2             = diff_names.filter(function (x) {
-      return ordered_metadata_names_only_new.indexOf(x) < 0;
+    diff_names = diff_names.filter(function (x) {
+      return ordered_metadata_names_only.indexOf(x) < 0;
     });
 
     // // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [diff_names[i2], diff_names[i2], '', '']
@@ -1066,15 +1064,10 @@ class FieldNames {
     // }
 
 
-
     var big_arr_diff_names = this.make_array4(diff_names);
-    var arr4_old = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
+    var big_arr4 = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
 
-    var big_arr_diff_names2 = this.make_array4(diff_names2);
-    var arr4_new = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names2));
-
-
-    return arr4_old;
+    return big_arr4;
   }
 
   // filter by env
