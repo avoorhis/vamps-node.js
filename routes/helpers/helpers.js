@@ -2404,6 +2404,13 @@ exports.retrieve_needed_constants = function(cnsts, view)
     return obj;
 };
 
+
+exports.is_empty = function(obj_or_arr) {
+  return Object.keys(obj_or_arr).length === 0;
+};
+
+
+
 // module.exports.validate_name = function (name) {
 //     console.log('helpers.validate_name: '+name)
 //     pattern=/([^a-zA-Z0-9\.]+)/gi

@@ -840,7 +840,7 @@ class ShowObj {
 
   get_required_fields(required_fields_from_args){
     let required_fields_out = required_fields_from_args;
-    let obj_is_empty = Object.keys(required_fields_from_args).length === 0;
+    let obj_is_empty = helpers.is_empty(required_fields_from_args);
     if (obj_is_empty)
     {
       required_fields_out = CONSTS.METADATA_FORM_REQUIRED_FIELDS;
