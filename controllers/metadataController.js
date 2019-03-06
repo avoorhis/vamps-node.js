@@ -199,7 +199,7 @@ class CreateDataObj {
       }
     }
     var all_metadata         = this.make_metadata_object(req, res, pid, data); // if use this.all_metadata = wrong
-    var all_field_names_orig = this.make_all_field_names(data['dataset_id']); // to names!!!
+    var all_field_names_orig = this.field_names.make_all_field_names(data['dataset_id']); // to names!!!
 
 
     //add_new
@@ -1170,35 +1170,6 @@ class FieldNames {
     }
     console.log('RRRRR1 all_field_names4 from make_new_project_for_form');
     console.log(JSON.stringify(all_field_names4));
-
-    // let non_biological_ind = helpers.get_key_index(CONSTS.ORDERED_METADATA_NAMES_OBJ, "Non-biological");
-    // let second_part = helpers.slice_object_by_positions(CONSTS.ORDERED_METADATA_NAMES_OBJ, (non_biological_ind + 1));
-
-    // let arr_1 = CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM;
-    // let arr_2 = Object.keys(CONSTS.ORDERED_METADATA_NAMES_OBJ);
-    //
-    // for (var i = 0; i < arr_2.length; i++) {
-    //   if (arr_1.indexOf(arr_2[i]) < 0) {
-    //     all_field_names4 = all_field_names4.concat(CONSTS.ORDERED_METADATA_NAMES_OBJ[arr_2[i]]);
-    //   }
-    // }
-    // console.log('RRRRR000 all_field_names4 from make_new_project_for_form');
-    // console.log(JSON.stringify(all_field_names4));
-    // for (var i in second_part) {
-      // a = second_part[i];
-
-      // Array.prototype.diff = function(a) {
-      //   return this.filter(function(i) {return a.indexOf(i) < 0;});
-      // };
-
-    // }
-
-    // console.log('RRRRR2 second_part from make_new_project_for_form');
-    // console.log(JSON.stringify(second_part)); // double
-    // all_field_names4 = all_field_names4.concat(second_part);
-
-    // console.log('RRRRR3 all_field_names4 from make_new_project_for_form');
-    // console.log(JSON.stringify(all_field_names4)); // double
 
     return all_field_names4;
   }
