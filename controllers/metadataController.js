@@ -29,24 +29,36 @@ class CreateDataObj {
 
   }
 
+  create_an_empty_fixed_length_obj(field_names_arr) {
+    let data_obj = {};
+    for (var i = 0; i < field_names_arr.length; i++) {
+      const field_name = field_names_arr[i];
+      const name_is_already_in = data_obj.hasOwnProperty(field_name);
+
+      if (!name_is_already_in) {
+        data_obj[field_name] = [];
+      }
+    }
+
+    return data_obj;
+  }
+
   prepare_empty_metadata_object() {
     console.time('TIME: prepare_empty_metadata_object');
     var pid             = this.pid;
     var field_names_arr = this.all_field_names;
-    var all_metadata    = this.all_metadata || {};
+    var all_metadata    = this.all_metadata;
 
-    if (!(all_metadata.hasOwnProperty(this.pid))) {
+    const pid_in_all_metadata = all_metadata.hasOwnProperty(this.pid);
+    if (!(pid_in_all_metadata)) {
       all_metadata[pid] = {};
     }
 
-    for (var i = 0; i < field_names_arr.length; i++) {// combine with create_an_empty...
-      var field_name = field_names_arr[i];
-      if (!(all_metadata[pid].hasOwnProperty(field_name))) {
-        all_metadata[pid][field_name] = [];
-      }
-    }
+    var empty_field_names_obj = this.create_an_empty_fixed_length_obj(field_names_arr);
+    all_metadata[pid] = empty_field_names_obj;
 
-    if (this.dataset_ids.length > 0)
+    const dataset_ids_exist = this.dataset_ids.length > 0;
+    if (dataset_ids_exist)
     {
       all_metadata[pid]['dataset_id'] = this.dataset_ids;
     }
@@ -538,7 +550,7 @@ class CreateDataObj {
     var repeat_times = parseInt(req.form.samples_number, 10) || parseInt(req.form.dataset.length, 10);
     var current_info = Object.assign(project_obj);
 
-    let brand_new_project_not_in_db = (d_region_arr.length > 0);
+    const brand_new_project_not_in_db = (d_region_arr.length > 0);
     if (brand_new_project_not_in_db) {
       current_info.domain      = this.get_domain(d_region_arr);
       current_info.dna_region  = this.get_dna_region(d_region_arr);
@@ -826,7 +838,7 @@ class ShowObj {
     this.req                     = req;
     this.res                     = res;
     this.all_metadata            = all_metadata;
-    this.all_field_names_arr     = all_field_names_arr || [];
+    this.all_field_names_arr     = all_field_names_arr;
     this.all_field_units         = all_field_units || [];
     const field_names            = new module.exports.FieldNames(req);
     this.ordered_field_names_obj = field_names.make_ordered_field_names_obj();
@@ -888,17 +900,19 @@ class ShowObj {
     var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
     var env_package_options = Object.keys(CONSTS.PACKAGES_AND_PORTALS);
 
-    console.log('JJJ2 all_field_names from render_edit_form');
+    console.log('JJJ2 all_field_names_arr from render_edit_form');
     console.log(JSON.stringify(this.all_field_names_arr));
     //Doubled!
 
     console.log('JJJMMM all_metadata from render_edit_form');
     console.log(JSON.stringify(this.all_metadata));
 
-    console.log('JJJLLL all_metadata from render_edit_form');
+    console.log('JJJLLL required_fields from render_edit_form');
     console.log(JSON.stringify(this.required_fields));
+    // [2019/03/05 18:41:11.393] [LOG]    ["sample_name","organism","collection_date","abs_air_humidity","temperature","build_occup_type","building_setting","carb_dioxide","latitude","longitude","env_biome","env_feature","env_material","filter_type","geo_loc_name_continental","geo_loc_name_marine","heat_cool_type","indoor_space","light_type","occup_samp","occupant_dens_samp","organism_count","rel_air_humidity","space_typ_state","typ_occupant_dens","ventilation_type"]
 
-    console.log('JJJRRR all_metadata from render_edit_form');
+
+    console.log('JJJRRR ordered_field_names_obj from render_edit_form');
     console.log(JSON.stringify(this.ordered_field_names_obj));
 
 
