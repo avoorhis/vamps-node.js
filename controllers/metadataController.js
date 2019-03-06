@@ -835,7 +835,17 @@ class ShowObj {
     this.ordered_field_names_obj = field_names.make_ordered_field_names_obj();
     this.hostname                = req.CONFIG.hostname;
     this.user                    = req.user;
-    this.required_fields         = required_fields || [];
+    this.required_fields         = this.get_required_fields(required_fields);
+  }
+
+  get_required_fields(required_fields_from_args){
+    let required_fields_out = required_fields_from_args;
+    let obj_is_empty = Object.keys(required_fields_from_args).length === 0;
+    if (obj_is_empty)
+    {
+      required_fields_out = CONSTS.METADATA_FORM_REQUIRED_FIELDS;
+    }
+    return required_fields_out;
   }
 
   get_inits(arr) {
