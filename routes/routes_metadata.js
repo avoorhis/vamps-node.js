@@ -864,7 +864,6 @@ router.get('/metadata_file_list', function (req, res) {
     return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
   });
 
-
   res.render('metadata/metadata_file_list', {
     title: 'VAMPS:Metadata',
     user: req.user,

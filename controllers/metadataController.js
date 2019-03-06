@@ -640,18 +640,26 @@ class CreateDataObj {
       return primer_info;
     }
 
+    // when it's here?
     if (typeof primer_suite_id === 'undefined' ||
       typeof MD_PRIMER_SUITE[primer_suite_id] === 'undefined' ||
       typeof MD_PRIMER_SUITE[primer_suite_id].primer === 'undefined') {
+      console.log("In get_primers_info primer_suite_id second if");
+
       return primer_info;
     }
     else {
+
+      console.log("In get_primers_info primer_suite_id second if/else");
+
       try {
         for (var i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
 
           var curr_direction = MD_PRIMER_SUITE[primer_suite_id].primer[i].direction;
 
-          if (typeof primer_info[curr_direction] === 'undefined' || primer_info[curr_direction].length === 0) {
+          const primer_info_curr_direction_is_empty = helpers.is_empty(primer_info[curr_direction]);
+
+          if (typeof primer_info[curr_direction] === 'undefined' || primer_info_curr_direction_is_empty) {
             primer_info[curr_direction] = [];
           }
 
