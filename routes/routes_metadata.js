@@ -710,13 +710,10 @@ function get_db_data (req, res, met_obj) { // move to met_obj?
 // as many values per field as there are datasets
   var all_field_names4 = field_names.make_all_field_names(met_obj.dataset_ids);
 
-  // console.log("DDD2 all_field_names");
-  // console.log(JSON.stringify(all_field_names));
-  // console.log("DDD2 all_metadata");
+  console.log("DDD2 all_field_names4");
+  console.log(JSON.stringify(all_field_names4));
+  // console.log("DDD20 all_metadata");
   // console.log(JSON.stringify(all_metadata));
-
-  console.log("AAALLL5 all_field_names4");
-  console.log(all_field_names4.filter(function(item){return item === "conductivity"}));
 
   const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, {}, {});
   show_new.render_edit_form();
