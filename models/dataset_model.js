@@ -1,3 +1,5 @@
+var helpers = require(app_root + '/routes/helpers/helpers');
+
 class Dataset {
 
   constructor(req, res, pid, data) {
@@ -128,6 +130,13 @@ class Dataset {
 
     for (let i = 0; i < this.datasets_length; i++) {
       var curr_dat_arr = this.slice_object_of_arrays(this.DatasetInfo, i);
+      var a = helpers.slice_object_by_positions(this.DatasetInfo, i);
+      if (a === curr_dat_arr) {
+        console.log("YES");
+      }
+      else {
+        console.log("NO");
+      }
       vals_arr.push(curr_dat_arr.join("', '"));
     }
 
