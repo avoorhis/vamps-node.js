@@ -1186,26 +1186,15 @@ class FieldNames {
   }
 
   reorder_field_names_for_new_project_dataset_form() {
-    var all_field_names4     = [];
-
+    //rm this, put all_field_names4 up
     // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
 
     // make a helpers function - slice and order
-    let next_f_name = "";
-    for (var n in CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM) {
-      next_f_name = CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM[n];
-      all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
-    }
-    console.log('RRRRR1 all_field_names4 from make_new_project_for_form');
+
+    let all_field_names4 = helpers.slice_object_by_keys_to_arr(CONSTS.ORDERED_METADATA_NAMES_OBJ, CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM);
+
+    console.log('RRRRR12 all_field_names4 from make_new_project_for_form');
     console.log(JSON.stringify(all_field_names4));
-
-    let all_field_names4_2 = helpers.slice_object_by_keys_to_arr(CONSTS.ORDERED_METADATA_NAMES_OBJ, CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM);
-
-    console.log('RRRRR12 all_field_names4_2 from make_new_project_for_form');
-    console.log(JSON.stringify(all_field_names4_2));
-
-    console.log('RRRRR13 all_field_names4_2 vs. all_field_names4');
-    console.log(JSON.stringify(all_field_names4_2) === JSON.stringify(all_field_names4));
 
     return all_field_names4;
   }
