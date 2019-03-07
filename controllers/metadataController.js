@@ -1081,28 +1081,36 @@ class FieldNames {
     //   big_arr_diff_names.push(temp_arr);
     // }
 
-    console.time('TIME: 2 slice_object_by_keys');
-    let arr_4_from_ordered_met_obj_const = helpers.slice_object_by_keys(CONSTS.ORDERED_METADATA_NAMES_OBJ, ordered_metadata_names_only);
-    console.timeEnd('TIME: 2 slice_object_by_keys');
-
-    console.time('TIME: 2 slice_object_by_keys_2');
-    let arr_4_from_ordered_met_obj_const2 = helpers.slice_object_by_keys(CONSTS.ORDERED_METADATA_NAMES_OBJ, ordered_metadata_names_only);
-    console.timeEnd('TIME: 2 slice_object_by_keys_2');
-
-    console.log("MMM11", JSON.stringify(arr_4_from_ordered_met_obj_const));
-    console.log("MMM12", JSON.stringify(arr_4_from_ordered_met_obj_const2));
-    console.log("MMM13", JSON.stringify(arr_4_from_ordered_met_obj_const) === JSON.stringify(arr_4_from_ordered_met_obj_const2));
-
-
     var big_arr_diff_names = this.make_array4(diff_names);
+
+
+    console.time('TIME: ordered_existing1');
+    let next_f_name = "";
+    let ordered_existing = [];
+    for (var n in CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM) {
+      next_f_name = CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM[n];
+      ordered_existing = ordered_existing.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
+    }
+    var big_arr4_new = helpers.unique_array(ordered_existing.concat(big_arr_diff_names));
+
+    console.timeEnd('TIME: ordered_existing1');
+
+    console.log('MMM11 big_arr4_new');
+    console.log(JSON.stringify(big_arr4_new));
+
+    console.time('TIME: ordered_existing2');
     var big_arr4 = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
-    // console.log('SSS1 big_arr4_old');
-    // console.log(JSON.stringify(big_arr4_old));
-
-    // var big_arr4 = helpers.unique_array(arr_4_from_ordered_met_obj_const.concat(big_arr_diff_names));
-
-    console.log('SSS2 big_arr4');
+    console.timeEnd('TIME: ordered_existing2');
+    console.log('MMM12 big_arr4');
     console.log(JSON.stringify(big_arr4));
+    // [2019/03/07 15:00:14.219] [LOG]    TIME: ordered_existing1: 19.342ms
+    //   [2019/03/07 15:00:14.229] [LOG]    TIME: ordered_existing2: 8.775ms
+    //[2019/03/07 15:03:01.641] [LOG]    TIME: ordered_existing1: 13.000ms
+    // [2019/03/07 15:03:01.667] [LOG]    TIME: ordered_existing2: 23.284ms
+
+
+    console.log('SSS2 big_arr4 vs. big_arr4_new');
+    console.log(JSON.stringify(big_arr4) === JSON.stringify(big_arr4_new));
 
     return big_arr4;
   }
@@ -1205,13 +1213,14 @@ class FieldNames {
 
     // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
 
+    // make a helpers function - slice and order
     let next_f_name = "";
     for (var n in CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM) {
       next_f_name = CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM[n];
       all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
     }
-    console.log('RRRRR1 all_field_names4 from make_new_project_for_form');
-    console.log(JSON.stringify(all_field_names4));
+    // console.log('RRRRR1 all_field_names4 from make_new_project_for_form');
+    // console.log(JSON.stringify(all_field_names4));
 
     return all_field_names4;
   }
