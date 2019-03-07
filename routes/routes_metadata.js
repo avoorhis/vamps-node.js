@@ -289,13 +289,13 @@ router.post('/metadata_new',
 ),
   function (req, res) {
     console.time("TIME: in post /metadata_new");
-    console.log("MMM1, req.body", req.body);
-    console.log("MMM2, req.form", req.form);
+    // console.log("MMM1, req.body", req.body);
+    // console.log("MMM2, req.form", req.form);
     const show_new = new metadata_controller.ShowObj(req, res, {}, {}, {}, {});
 
     if (!req.form.isValid) {
       console.log('!req.form.isValid');
-      console.log("EEE req.form.errors", req.form.errors);
+      // console.log("EEE req.form.errors", req.form.errors);
       show_new.show_metadata_new_again(req, res);
     }
     else {
@@ -653,7 +653,21 @@ function make_metadata_object_from_db(req, res) {
 
 function create_AllMetadata_picked(dataset_ids) {
   var AllMetadata_picked;
+  console.time('TIME: 1 slice_object_by_keys');
   AllMetadata_picked            = helpers.slice_object_by_keys(AllMetadata, dataset_ids);
+  console.timeEnd('TIME: 1 slice_object_by_keys');
+  // console.log("MMM11", JSON.stringify(AllMetadata_picked));
+
+  console.time('TIME: 1 slice_object_by_keys_2');
+  let AllMetadata_picked1            = helpers.slice_object_by_keys_2(AllMetadata, dataset_ids);
+  console.timeEnd('TIME: 1 slice_object_by_keys_2');
+  // console.log("MMM12", JSON.stringify(AllMetadata_picked1));
+  // [2019/03/07 14:13:07.921] [LOG]    TIME: 1 slice_object_by_keys: 38.593ms
+  // [2019/03/07 14:13:14.568] [LOG]    TIME: 1 slice_object_by_keys_2: 6635.813ms
+
+  console.log("MMM13", JSON.stringify(AllMetadata_picked) === JSON.stringify(AllMetadata_picked1));
+
+
   const all_metadata_picked_is_empty = helpers.is_empty(AllMetadata_picked);
 
   if (all_metadata_picked_is_empty) // there is no metadata

@@ -1081,9 +1081,28 @@ class FieldNames {
     //   big_arr_diff_names.push(temp_arr);
     // }
 
+    console.time('TIME: 2 slice_object_by_keys');
+    let arr_4_from_ordered_met_obj_const = helpers.slice_object_by_keys(CONSTS.ORDERED_METADATA_NAMES_OBJ, ordered_metadata_names_only);
+    console.timeEnd('TIME: 2 slice_object_by_keys');
+
+    console.time('TIME: 2 slice_object_by_keys_2');
+    let arr_4_from_ordered_met_obj_const2 = helpers.slice_object_by_keys(CONSTS.ORDERED_METADATA_NAMES_OBJ, ordered_metadata_names_only);
+    console.timeEnd('TIME: 2 slice_object_by_keys_2');
+
+    console.log("MMM11", JSON.stringify(arr_4_from_ordered_met_obj_const));
+    console.log("MMM12", JSON.stringify(arr_4_from_ordered_met_obj_const2));
+    console.log("MMM13", JSON.stringify(arr_4_from_ordered_met_obj_const) === JSON.stringify(arr_4_from_ordered_met_obj_const2));
+
 
     var big_arr_diff_names = this.make_array4(diff_names);
     var big_arr4 = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
+    // console.log('SSS1 big_arr4_old');
+    // console.log(JSON.stringify(big_arr4_old));
+
+    // var big_arr4 = helpers.unique_array(arr_4_from_ordered_met_obj_const.concat(big_arr_diff_names));
+
+    console.log('SSS2 big_arr4');
+    console.log(JSON.stringify(big_arr4));
 
     return big_arr4;
   }
