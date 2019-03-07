@@ -37,8 +37,24 @@ router.post('/get_dids_from_project', function(req, res){
         return
     }
     console.log(req.body)
-    var project = req.body.project
     var return_type;
+    var dids;
+    if(req.body.hasOwnProperty("ds_order") ){  // takes precedence
+        var dids = req.body.ds_order
+    }else if(req.body.hasOwnProperty("project")){
+        var project = req.body.project
+        if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
+            var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
+            var dids = DATASET_IDS_BY_PID[pid]
+        }else{
+            res.send(JSON.stringify('Project Not Found'))
+            return
+        }
+    }else{
+        res.send(JSON.stringify('Project Not Found'))
+        return
+    }
+    
     if(req.body.hasOwnProperty("return_type") ){
         if(["json_list","did_list",'text_list'].indexOf(req.body.return_type) == -1){
             return_type = "did_list"
@@ -48,42 +64,44 @@ router.post('/get_dids_from_project', function(req, res){
     }else{
         return_type = "did_list"
     }
-    console.log('ret_type')
-    console.log(return_type)
-    if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
-      var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
-      var dids = DATASET_IDS_BY_PID[pid]
-      var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
-      if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
+    
+    var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
+    
+    if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
         console.log('No Datasets Found')
         res.send(JSON.stringify('No Datasets Found - (do you have the correct access permissions?)'))
-      }else{
+        return
+    }else{
           //console.log(new_dataset_ids)
           if(return_type == 'text_list'){
             var txt = ''
             for(n in new_dataset_ids){
-                txt += project+','+DATASET_NAME_BY_DID[new_dataset_ids[n]] +','+ALL_DCOUNTS_BY_DID[new_dataset_ids[n]].toString()+"\n"              
+                did = new_dataset_ids[n]
+                dataset_name = DATASET_NAME_BY_DID[did]
+                project = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project
+                
+                txt += project +','+ dataset_name +','+ALL_DCOUNTS_BY_DID[did].toString()+"\n"              
             }
             res.send(JSON.stringify(txt))
           }else if(return_type == 'json_list'){
             var json_list = []
             for(n in new_dataset_ids){
                 var obj = {}
-                obj.project = project
-                obj.project_id = pid
-                obj.dataset_name = DATASET_NAME_BY_DID[new_dataset_ids[n]]
-                obj.dataset_id   = new_dataset_ids[n]
-                obj.seq_count    = ALL_DCOUNTS_BY_DID[new_dataset_ids[n]]
+                obj.dataset_id = new_dataset_ids[n]
+                obj.dataset_name = DATASET_NAME_BY_DID[obj.dataset_id]
+                obj.project = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[obj.dataset_id]].project               
+                obj.project_id = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[obj.dataset_id]].pid
+                obj.seq_count    = ALL_DCOUNTS_BY_DID[obj.dataset_id]
                 json_list.push(obj)
             }
             res.send(JSON.stringify(json_list))
-          }else{
+          }else{  // this is default: returns the did_list
             res.send(JSON.stringify(new_dataset_ids))
           }
-      }
-    }else{
-      res.send(JSON.stringify('Project Not Found'))
     }
+   //  }else{
+//       res.send(JSON.stringify('Project Not Found'))
+//     }
 });
 //
 // API: GET DATASETS and COUNTS from PROJECT NAME

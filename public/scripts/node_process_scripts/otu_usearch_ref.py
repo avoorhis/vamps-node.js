@@ -651,7 +651,7 @@ if __name__ == '__main__':
     if args.site == 'vamps':
         args.main_dir = os.path.join('/groups','vampsweb','vamps_node_data','user_data',args.user)
     elif args.site == 'vampsdev':
-        args.main_dir =  os.path.join('/groups','vampsweb','vampsdev_node_data','user_data',args.user)
+        args.main_dir =  os.path.join('/groups','vampsweb','vampsdev','nodejs','user_data',args.user)
     else:
         args.main_dir = os.path.join(args.process_dir,'public','user_projects')
 
