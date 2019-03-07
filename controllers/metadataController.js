@@ -840,7 +840,7 @@ class ShowObj {
     return required_fields_out;
   }
 
-  get_inits(arr) {
+  get_initials(arr) {
     var inits_len     = arr.length;
     var project_name1 = '';
     for (var i = 0; i < inits_len; i++) {
@@ -875,7 +875,7 @@ class ShowObj {
   render_edit_form() {
     console.trace("Show me, I'm in render_edit_form");
     this.req = helpers.collect_errors(this.req);
-    let mbl_edit = this.get_mbl_edit();
+    const mbl_edit = this.get_mbl_edit();
 
     // console.log('JJJ1 all_metadata from render_edit_form');
     // console.log(JSON.stringify(this.all_metadata));
@@ -886,12 +886,39 @@ class ShowObj {
     const country_options = this.get_options_from_global_obj(MD_ENV_CNTRY);
     const marine_zone_options = this.get_options_from_global_obj(MD_ENV_LZC);
 
-    let pid = Object.keys(this.all_metadata)[0] || this.req.body.project_id;
+    const pid = Object.keys(this.all_metadata)[0] || this.req.body.project_id;
 
     this.write_csv(pid);
 
-    var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
-    var env_package_options = Object.keys(CONSTS.PACKAGES_AND_PORTALS);
+    const all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
+    const env_package_options = Object.keys(CONSTS.PACKAGES_AND_PORTALS);
+
+    console.log("WWW00 all_field_names_arr", JSON.stringify(this.all_field_names_arr));
+    // all_field_names_arr [["structured comment name","Parameter","",""],["","General","",""],[
+
+    let temp_all_field_names_ordered = [];
+    // const all_field_names_arr_first_column = [];
+    for (var ind in this.all_field_names_arr) {
+      let field_name = "";
+      if (this.all_field_names_arr[ind][0] === ""){
+        field_name = this.all_field_names_arr[ind][1];
+      }
+      else {
+        field_name = this.all_field_names_arr[ind][0];
+      }
+      temp_all_field_names_ordered.push(field_name);
+    }
+            // this.all_field_names_arr.reduce(function (result_arr, val) {
+      // return (val[0] === "") ? result_arr.push(val[1]) : result_arr.push(val[0]);
+  // }, {});
+            // this.all_field_names_arr.reduce((result_arr, val) => result_arr.concat(val[0]), []);
+
+    const ordered_field_names_obj = helpers.slice_object_by_keys(CONSTS.ORDERED_METADATA_NAMES_OBJ, temp_all_field_names_ordered);
+    console.log("WWW10 ordered_field_names_obj", JSON.stringify(ordered_field_names_obj));
+    //WWW10 ordered_field_names_obj {}
+
+    console.log("WWW11 this.ordered_field_names_obj", JSON.stringify(this.ordered_field_names_obj));
+    // this.ordered_field_names_obj {"structured comment name":["0",["structured comment name","Parameter","",""]],"":["109",["","User-added","",""]],
 
     this.res.render('metadata/metadata_edit_form', {
       title: 'VAMPS: Metadata_upload',
@@ -903,7 +930,7 @@ class ShowObj {
       dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
       mbl_edit: mbl_edit,
       metadata_form_required_fields: this.required_fields,
-      ordered_field_names_obj: this.ordered_field_names_obj,
+      ordered_field_names_obj: ordered_field_names_obj,
       //options:
       adapt_3letter_options: adapt_3letter_options,
       biome_primary_options: CONSTS.BIOME_PRIMARY,
@@ -961,7 +988,7 @@ class ShowObj {
 
       let full_name_arr = metadata_new_form_values.full_name.split(' ');
       if (metadata_new_form_values.project_name1 === '') {
-        metadata_new_form_values.project_name1  = this.get_inits(full_name_arr);
+        metadata_new_form_values.project_name1  = this.get_initials(full_name_arr);
       }
 
       metadata_new_form_values.project_name2 = req.form.project_name2;
@@ -1047,7 +1074,7 @@ class FieldNames {
 
     var big_arr4 = helpers.unique_array(ordered_existing.concat(big_arr_diff_names));
 
-    console.timeEnd('TIME: ordered_existing1');
+    console.timeEnd('TIME: ordered_existing');
     // console.log('MMM11 big_arr4');
     // console.log(JSON.stringify(big_arr4));
 
@@ -1134,18 +1161,18 @@ class FieldNames {
 // ...
   }
 
-  // order for existing and new datasets
-  get_names_from_ordered_const() {
-    console.time('time: ordered_metadata_names_only');
-
-    const arraycolumn = (arr, n) =>
-      arr.map(x => x[n]
-      )
-    ;
-
-    console.timeEnd('time: ordered_metadata_names_only');
-    return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
-  }
+  // // order for existing and new datasets
+  // get_names_from_ordered_const() {
+  //   console.time('time: ordered_metadata_names_only');
+  //
+  //   const arraycolumn = (arr, n) =>
+  //     arr.map(x => x[n]
+  //     )
+  //   ;
+  //
+  //   console.timeEnd('time: ordered_metadata_names_only');
+  //   return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
+  // }
 
   //  from Show!
   make_ordered_field_names_obj() {
