@@ -824,7 +824,6 @@ class ShowObj {
     this.all_field_names_arr     = all_field_names_arr;
     this.all_field_units         = all_field_units || [];
     const field_names            = new module.exports.FieldNames(req);
-    this.ordered_field_names_obj = field_names.make_ordered_field_names_obj();
     this.hostname                = req.CONFIG.hostname;
     this.user                    = req.user;
     this.required_fields         = this.get_required_fields(required_fields);
@@ -893,11 +892,7 @@ class ShowObj {
     const all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
     const env_package_options = Object.keys(CONSTS.PACKAGES_AND_PORTALS);
 
-    console.log("WWW00 all_field_names_arr", JSON.stringify(this.all_field_names_arr));
-    // all_field_names_arr [["structured comment name","Parameter","",""],["","General","",""],[
-
     let temp_all_field_names_ordered = [];
-    // const all_field_names_arr_first_column = [];
     for (var ind in this.all_field_names_arr) {
       let field_name = "";
       if (this.all_field_names_arr[ind][0] === ""){
@@ -908,17 +903,21 @@ class ShowObj {
       }
       temp_all_field_names_ordered.push(field_name);
     }
-            // this.all_field_names_arr.reduce(function (result_arr, val) {
+    console.log("WWW00 temp_all_field_names_ordered", JSON.stringify(temp_all_field_names_ordered));
+
+    // let temp_all_field_names_ordered2 = [];
+    let temp_all_field_names_ordered2 = this.all_field_names_arr.map(function (field_name_arr){
+      return field_name_arr[0] === "" ? field_name_arr[1] : field_name_arr[0];
+    });
+    console.log("WWW10 temp_all_field_names_ordered2", JSON.stringify(temp_all_field_names_ordered2));
+
+    // this.all_field_names_arr.reduce(function (result_arr, val) {
       // return (val[0] === "") ? result_arr.push(val[1]) : result_arr.push(val[0]);
   // }, {});
             // this.all_field_names_arr.reduce((result_arr, val) => result_arr.concat(val[0]), []);
 
     const ordered_field_names_obj = helpers.slice_object_by_keys(CONSTS.ORDERED_METADATA_NAMES_OBJ, temp_all_field_names_ordered);
-    console.log("WWW10 ordered_field_names_obj", JSON.stringify(ordered_field_names_obj));
-    //WWW10 ordered_field_names_obj {}
 
-    console.log("WWW11 this.ordered_field_names_obj", JSON.stringify(this.ordered_field_names_obj));
-    // this.ordered_field_names_obj {"structured comment name":["0",["structured comment name","Parameter","",""]],"":["109",["","User-added","",""]],
 
     this.res.render('metadata/metadata_edit_form', {
       title: 'VAMPS: Metadata_upload',
