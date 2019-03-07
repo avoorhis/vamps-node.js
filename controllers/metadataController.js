@@ -823,7 +823,6 @@ class ShowObj {
     this.all_metadata            = all_metadata;
     this.all_field_names_arr     = all_field_names_arr;
     this.all_field_units         = all_field_units || [];
-    const field_names            = new module.exports.FieldNames(req);
     this.hostname                = req.CONFIG.hostname;
     this.user                    = req.user;
     this.required_fields         = this.get_required_fields(required_fields);
@@ -892,11 +891,14 @@ class ShowObj {
     const all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
     const env_package_options = Object.keys(CONSTS.PACKAGES_AND_PORTALS);
 
-    let temp_all_field_names_ordered = this.all_field_names_arr.map(function (field_name_arr){
-      return field_name_arr[0] === "" ? field_name_arr[1] : field_name_arr[0];
-    });
+    // let temp_all_field_names_ordered = this.all_field_names_arr.map(function (field_name_arr){
+    //   return field_name_arr[0] === "" ? field_name_arr[1] : field_name_arr[0];
+    // });
+    //
+    // const ordered_field_names_obj = helpers.slice_object_by_keys(CONSTS.ORDERED_METADATA_NAMES_OBJ, temp_all_field_names_ordered);
 
-    const ordered_field_names_obj = helpers.slice_object_by_keys(CONSTS.ORDERED_METADATA_NAMES_OBJ, temp_all_field_names_ordered);
+    const field_names             = new module.exports.FieldNames(this.req);
+    const ordered_field_names_obj = field_names.make_ordered_field_names_obj(this.all_field_names_arr);
 
 
     this.res.render('metadata/metadata_edit_form', {
@@ -1154,16 +1156,23 @@ class FieldNames {
   // }
 
   //  from Show!
-  make_ordered_field_names_obj() {
+  make_ordered_field_names_obj(all_field_names_arr4) {
+    //[ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
     console.time('TIME: make_ordered_field_names_obj');
-    var ordered_field_names_obj = {};
+    let temp_all_field_names_ordered = all_field_names_arr4.map(function (field_name_arr){
+      return field_name_arr[0] === "" ? field_name_arr[1] : field_name_arr[0];
+    });
 
-    for (var i in CONSTS.ORDERED_METADATA_NAMES) {
-      // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
-      var temp_arr = [i];
-      temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
-      ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
-    }
+    const ordered_field_names_obj = helpers.slice_object_by_keys(CONSTS.ORDERED_METADATA_NAMES_OBJ, temp_all_field_names_ordered);
+
+    // var ordered_field_names_obj = {};
+    //
+    // for (var i in CONSTS.ORDERED_METADATA_NAMES) {
+    //   // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
+    //   var temp_arr = [i];
+    //   temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
+    //   ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
+    // }
     console.timeEnd('TIME: make_ordered_field_names_obj');
     return ordered_field_names_obj;
   }
