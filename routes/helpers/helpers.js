@@ -2240,20 +2240,29 @@ exports.geo_loc_name_continental_validation = function (value) {
 };
 
 // slower
-// exports.slice_object_by_keys_2 = function(obj, keys) {
-//   console.time('TIME: slice_object_by_keys_2');
-//
-//   let res_obj = {};
-//   for (const [key, value] of Object.entries(obj)) {
-//     console.log(`${key} ${value}`); // "a 5", "b 7", "c 9"
-//     if (keys.includes(key)) {
-//       res_obj[key] = value;
-//     }
-//   }
-//   console.timeEnd('TIME: slice_object_by_keys_2');
-//   return res_obj;
-//
-// };
+exports.slice_object_by_keys_2 = function(obj, keys) {
+  console.time('TIME: slice_object_by_keys_2');
+
+  let res_obj = {};
+  for (const [key, value] of Object.entries(obj)) {
+    // console.log(`${key} ${value}`); // "a 5", "b 7", "c 9"
+    if (keys.includes(key)) {
+      res_obj[key] = value;
+    }
+  }
+  console.timeEnd('TIME: slice_object_by_keys_2');
+  return res_obj;
+
+};
+
+exports.slice_object_by_keys_to_arr = function (obj, slice_keys) {
+  let res_arr = [];
+  for (var n in slice_keys) {
+    let next_f_name = slice_keys[n];
+    res_arr = res_arr.concat([obj[next_f_name]]);
+  }
+  return res_arr;
+};
 
 exports.slice_object_by_keys = function (object, slice_keys) {
   console.time('TIME: convert to string');
@@ -2262,11 +2271,11 @@ exports.slice_object_by_keys = function (object, slice_keys) {
   }
   console.timeEnd('TIME: convert to string');
 
-  return Object.keys(object)
-    .filter(function (key) {
+  return Object.keys(object) // 1) for each obj's key
+    .filter(function (key) { // 2) if it is in slice_keys
       return slice_keys.indexOf(key) >= 0;
     })
-    .reduce(function (accum, key) {
+    .reduce(function (accum, key) { // 3) add the key/value pair to a new obj
       accum[key] = object[key];
       return accum;
     }, {});
