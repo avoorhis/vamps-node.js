@@ -1074,12 +1074,15 @@ class FieldNames {
     var big_arr_diff_names = this.make_array4(diff_names);
 
     console.time('TIME: ordered_existing1');
-    let next_f_name = "";
-    let ordered_existing = [];
-    for (var n in CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM) {
-      next_f_name = CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM[n];
-      ordered_existing = ordered_existing.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
-    }
+    // let next_f_name = "";
+    // let ordered_existing = [];
+    // for (var n in CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM) {
+    //   next_f_name = CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM[n];
+    //   ordered_existing = ordered_existing.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
+    // }
+
+    let ordered_existing = helpers.slice_object_by_keys_to_arr(CONSTS.ORDERED_METADATA_NAMES_OBJ, CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM);
+
     var big_arr4 = helpers.unique_array(ordered_existing.concat(big_arr_diff_names));
 
     console.timeEnd('TIME: ordered_existing1');
