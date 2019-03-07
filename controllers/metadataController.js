@@ -508,7 +508,7 @@ class CreateDataObj {
     if ((typeof req.form !== "undefined") && (typeof req.form.d_region !== "undefined")) {
       d_region_arr = req.form.d_region.split('#');
     }
-    console.log('DDD3, all_field_names', JSON.stringify(all_field_names));
+    // console.log('DDD3, all_field_names', JSON.stringify(all_field_names));
 
     // move to Names
     var more_fields = ['adapter_sequence_id', // TODO: clarify, why here and what for
@@ -532,7 +532,7 @@ class CreateDataObj {
     // move to Names
     all_field_names = helpers.unique_array(all_field_names.concat(more_fields));
 
-    console.log('DDD3_1, all_field_names', JSON.stringify(all_field_names)); // cond1
+    // console.log('DDD3_1, all_field_names', JSON.stringify(all_field_names)); // cond1
 
     this.prepare_empty_metadata_object(pid, all_field_names, {});
     var all_metadata = this.all_metadata;
@@ -697,9 +697,9 @@ class CreateDataObj {
   make_new_project_for_form(project_obj) {
 
     var all_field_names = this.all_field_names;
-    console.log("FFFFF1 all_field_names4 from make_new_project_for_form", all_field_names4);
-    var all_field_names4 = this.field_names.reorder_field_names_for_new_project_dataset_form();
-    console.log("FFFFF2 all_field_names4 from make_new_project_for_form after reoder", all_field_names4);
+
+    // TODO: move to field_names?
+    let all_field_names4 = helpers.slice_object_by_keys_to_arr(CONSTS.ORDERED_METADATA_NAMES_OBJ, CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM);
 
     var all_metadata = this.create_all_metadata_form_new(all_field_names, project_obj);
     // all_metadata = { '485':
@@ -711,11 +711,7 @@ class CreateDataObj {
     //       first_name: [ 'Mohammadkarim', 'Mohammadkarim', 'Mohammadkarim' ],
     // module.exports.render_edit_form(req, res, all_metadata, all_field_names4);
 
-
     var all_field_units = MD_CUSTOM_UNITS[project_obj.pid];
-
-    console.log("AAALLL2 all_field_names4");
-    console.log(all_field_names4.filter(function(item){return item === "conductivity"}));
 
     var show_new = new module.exports.ShowObj(this.req, this.res, all_metadata, all_field_names4, all_field_units, this.required_field_names_for_env);
     show_new.render_edit_form();
@@ -1183,20 +1179,6 @@ class FieldNames {
 
     console.timeEnd('time: ordered_metadata_names_only');
     return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
-  }
-
-  reorder_field_names_for_new_project_dataset_form() {
-    //rm this, put all_field_names4 up
-    // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
-
-    // make a helpers function - slice and order
-
-    let all_field_names4 = helpers.slice_object_by_keys_to_arr(CONSTS.ORDERED_METADATA_NAMES_OBJ, CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM);
-
-    console.log('RRRRR12 all_field_names4 from make_new_project_for_form');
-    console.log(JSON.stringify(all_field_names4));
-
-    return all_field_names4;
   }
 
   //  from Show!
