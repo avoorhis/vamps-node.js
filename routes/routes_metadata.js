@@ -209,8 +209,6 @@ function get_metadata_hash(md_selected) {
 // <% if (samples_number > 0){ %>
 // <% for (var i = 0; i < Number(samples_number); i++) { %>
 
-// ?? render_edit_form(req, res, {}, {}, all_field_names)
-
 // metadata_new_csv
 router.get('/metadata_new_csv_upload', helpers.isLoggedIn, function (req, res) {
   res.render('metadata/metadata_new_csv_upload', {
@@ -235,10 +233,10 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
 
     const cur_project = new Project(req, res, 0, owner_id);
     const project_name  = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0];
-    helpers.local_log("PPP0: project_name", project_name);
+    console.log("PPP0: project_name", project_name);
 
     const pid = cur_project.get_pid(project_name);
-    helpers.local_log("PPP1: pid", pid);
+    console.log("PPP1: pid", pid);
 
     met_obj.get_curr_country_from_new_type_csv(transposed);
 
@@ -278,6 +276,7 @@ router.post('/metadata_new',
     form.field("dataset_name", "Dataset name").trim().is(/^[a-zA-Z0-9_]+$/).entityEncode().array(),
     form.field("funding_code", "Funding code").trim().required().is(/^[0-9]+$/).entityEncode(),
     form.field("pi_id_name", "PI name").trim().required("", "%s is required").entityEncode(),
+    form.field("package", "Environmental package / portal").trim().required().entityEncode(),
     form.field("project_description", "Project description").trim().required().entityEncode(),
     form.field("project_name1").trim().entityEncode(),
     form.field("project_name2", "Project name").trim().required("", "%s is required").entityEncode(),
@@ -290,13 +289,13 @@ router.post('/metadata_new',
 ),
   function (req, res) {
     console.time("TIME: in post /metadata_new");
-    helpers.local_log("MMM1, req.body", req.body);
-    helpers.local_log("MMM2, req.form", req.form);
-    const show_new = new metadata_controller.ShowObj(req, res);
+    console.log("MMM1, req.body", req.body);
+    console.log("MMM2, req.form", req.form);
+    const show_new = new metadata_controller.ShowObj(req, res, {}, {}, {}, {});
 
     if (!req.form.isValid) {
       console.log('!req.form.isValid');
-      helpers.local_log("EEE req.form.errors", req.form.errors);
+      console.log("EEE req.form.errors", req.form.errors);
       show_new.show_metadata_new_again(req, res);
     }
     else {
@@ -307,7 +306,7 @@ router.post('/metadata_new',
       var project_obj = new_project.project_obj;
 
       new_project.getProjectByName(project_obj.project, function(err, rows){
-        helpers.local_log("RRR1 rows from getProjectByName", rows);
+        console.log("RRR1 rows from getProjectByName", rows);
         if ((typeof rows[0] !== "undefined") && (typeof rows[0].project_id !== "undefined") && (rows[0].project_id > 0)) {
           const met_obj = new metadata_controller.CreateDataObj(req, res, rows[0].project_id, user_id);
           met_obj.project_already_in_db(req, res, rows, new_project);
@@ -519,10 +518,11 @@ function make_metadata_object_from_form(req, res) {
   console.timeEnd("TIME: make_metadata_object_from_form");
 }
 
-function make_metadata_object_from_csv(req, res) {
+// JSHint: This function's cyclomatic complexity is too high. (6) (W074)
+function make_metadata_object_from_csv(req, res) {// move to met_obj?
   console.time("TIME: make_metadata_object_from_csv");
 
-  helpers.local_log("MMM req.body from make_metadata_object_from_csv");
+  console.log("MMM req.body from make_metadata_object_from_csv");
 
   var file_name       = req.body.edit_metadata_file;
   var full_file_name  = path.join(config.USER_FILES_BASE, req.user.username, file_name);
@@ -547,20 +547,25 @@ function make_metadata_object_from_csv(req, res) {
       dataset_ids.push(dataset_id);
     }
 
-    helpers.local_log("MMM0 dataset_ids");
-    helpers.local_log(dataset_ids);
+    console.log("MMM0 dataset_ids");
+    console.log(dataset_ids);
 
     const met_obj          = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
     var data_in_obj_of_arr = met_obj.from_obj_to_obj_of_arr(data, pid, dataset_ids);
 
 // all_metadata
     var all_metadata     = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
-    var all_field_names4 = met_obj.make_all_field_names(dataset_ids);
+
+    const field_names    = new metadata_controller.FieldNames(req, dataset_ids);
+    var all_field_names4 = field_names.make_all_field_names(dataset_ids);
 
     req.body.project_id = pid;
 
     var all_field_units = MD_CUSTOM_UNITS[pid];
-    const show_new      = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units);
+    console.log("AAALLL4 all_field_names4");
+    console.log(all_field_names4.filter(function(item){return item === "conductivity"}));
+
+    const show_new      = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units, {});
     const csv_file_write = new csv_files_controller.CsvFilesWrite(req, res);
 
     show_new.render_edit_form();
@@ -586,8 +591,8 @@ function new_csv(req, res, cur_project, project_name, transposed) {
 // if (pid === 0) { // new csv
   cur_project.make_project_obj_from_new_csv(project_name, transposed);
   var project_obj = cur_project.project_obj;
-  helpers.local_log('PPP00 project_obj', project_obj);
-  helpers.local_log('PPP01 JSON.stringify(project_obj)', JSON.stringify(project_obj));
+  console.log('PPP00 project_obj', project_obj);
+  console.log('PPP01 JSON.stringify(project_obj)', JSON.stringify(project_obj));
 
   if (project_obj.oid === 0) {
     req.flash('fail', 'There is no such user: first_name: ' + project_obj.first_name +
@@ -598,7 +603,7 @@ function new_csv(req, res, cur_project, project_name, transposed) {
   } else {
     cur_project.addProject(project_obj, function (err, rows) {
       console.log('New project SAVED');
-      helpers.local_log('WWW rows', rows);
+      console.log('WWW rows', rows);
       let pid           = 0;
       let affected_rows = 0;
       if (typeof rows !== "undefined") {
@@ -609,13 +614,13 @@ function new_csv(req, res, cur_project, project_name, transposed) {
         console.log("Problems with Project.addProject, rows == undefined!");
       }
       cur_project.project_obj.pid = pid;
-      helpers.local_log('RRR0 project_name', project_name);
+      console.log('RRR0 project_name', project_name);
 
       // if ((pid === 0) && (rows.affectedRows === 1)) {
       if (pid === 0) {
         // TODO: existing_project: as show_with_new_datasets
         cur_project.getProjectByName(project_name, function (err, rows) {
-          helpers.local_log("RRR1, rows from getProjectByName", rows);
+          console.log("RRR1, rows from getProjectByName", rows);
           if (typeof rows !== "undefined") {
             cur_project.project_obj.pid = rows["0"].project_id;
           }
@@ -648,7 +653,7 @@ function make_metadata_object_from_db(req, res) {
 
 function create_AllMetadata_picked(dataset_ids) {
   var AllMetadata_picked;
-  AllMetadata_picked            = helpers.slice_object(AllMetadata, dataset_ids);
+  AllMetadata_picked            = helpers.slice_object_by_keys(AllMetadata, dataset_ids);
   const all_metadata_picked_len = Object.keys(AllMetadata_picked).length;
   if (all_metadata_picked_len === 0) // there is no metadata
   {
@@ -678,9 +683,9 @@ function get_dataset_info(met_obj)
 }
 
 function get_db_data (req, res, met_obj) { // move to met_obj?
-  console.time("TIME: helpers.slice_object");
+  console.time("TIME: helpers.slice_object_by_keys");
   var AllMetadata_picked = create_AllMetadata_picked(met_obj.dataset_ids);
-  console.timeEnd("TIME: helpers.slice_object");
+  console.timeEnd("TIME: helpers.slice_object_by_keys");
 
   console.time("TIME: dataset_info");
   const dataset_info        = get_dataset_info(met_obj);
@@ -701,15 +706,19 @@ function get_db_data (req, res, met_obj) { // move to met_obj?
 
   var all_metadata = met_obj.make_metadata_object(req, res, met_obj.pid, data_in_obj_of_arr);
 
-  // as many values per field as there are datasets
-  var all_field_names4 = met_obj.make_all_field_names(met_obj.dataset_ids);
+  const field_names    = new metadata_controller.FieldNames(req, met_obj.dataset_ids);
+// as many values per field as there are datasets
+  var all_field_names4 = field_names.make_all_field_names(met_obj.dataset_ids);
 
   // console.log("DDD2 all_field_names");
   // console.log(JSON.stringify(all_field_names));
   // console.log("DDD2 all_metadata");
   // console.log(JSON.stringify(all_metadata));
 
-  const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4);
+  console.log("AAALLL5 all_field_names4");
+  console.log(all_field_names4.filter(function(item){return item === "conductivity"}));
+
+  const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, {}, {});
   show_new.render_edit_form();
   console.timeEnd("TIME: make_metadata_object_from_db");
 }
@@ -829,7 +838,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 
 function saveMetadata(req, res) {
   console.time("TIME: saveMetadata");
-  helpers.local_log("SSS in saveMetadata");
+  console.log("SSS in saveMetadata");
 
   const csv_file_write = new csv_files_controller.CsvFilesWrite(req, res);
   const base_name = csv_file_write.make_out_file_base_name(req, "metadata");

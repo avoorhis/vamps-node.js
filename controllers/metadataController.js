@@ -4,8 +4,8 @@ var csv_files_controller = require(app_root + '/controllers/csvFilesController')
 // var User                 = require(app_root + '/models/user_model');
 const helpers            = require(app_root + '/routes/helpers/helpers');
 const constants_metadata = require(app_root + '/public/constants_metadata');
-const constants = require(app_root + '/public/constants');
-const CONSTS = Object.assign(constants, constants_metadata);
+const constants          = require(app_root + '/public/constants');
+const CONSTS             = Object.assign(constants, constants_metadata);
 var validator            = require('validator');
 
 // var csv_files_controller = require(app_root + '/controllers/csvFilesController');
@@ -17,86 +17,44 @@ class CreateDataObj {
     this.res             = res || {};
     this.pid             = project_id || '';
     this.dataset_ids     = DATASET_IDS_BY_PID[this.pid] || dataset_ids || [];
-    this.all_field_names = this.collect_field_names();
+    this.field_names    = new module.exports.FieldNames(req, this.dataset_ids);
+
+    this.all_field_names = this.field_names.collect_field_names();
+    this.required_field_names_for_env = this.field_names.required_field_names_for_env;
+
     this.all_metadata    = {};
-    this.metadata_new_form_fields = [
-      "d_region",
-      "full_name",
-      "funding_code",
-      "pi_email",
-      "pi_id_name",
-      "pi_name",
-      "pi_name_reversed",
-      "project_description",
-      "project_name",
-      "project_name1",
-      "project_name2",
-      "project_name3",
-      "project_title",
-      "reference",
-      "samples_number",
-    ];
+    this.metadata_new_form_fields = this.field_names.metadata_new_form_fields;
+
     this.prepare_empty_metadata_object();
 
   }
 
-  collect_field_names() {
-    var all_field_names = this.get_field_names_by_dataset_ids(this.dataset_ids);
-    all_field_names     = all_field_names.concat(CONSTS.METADATA_FORM_REQUIRED_FIELDS);
-    all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
-    all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
-    all_field_names     = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
+  create_an_empty_fixed_length_obj(field_names_arr) {
+    let data_obj = {};
+    for (var i = 0; i < field_names_arr.length; i++) {
+      const field_name = field_names_arr[i];
+      const name_is_already_in = data_obj.hasOwnProperty(field_name);
 
-    all_field_names = helpers.unique_array(all_field_names);
-    return all_field_names;
-  }
-
-  get_field_names_by_dataset_ids() {
-
-    var field_names_arr = [];
-
-    field_names_arr = field_names_arr.concat(Object.keys(MD_CUSTOM_FIELDS_UNITS));
-    for (var i = 0; i < this.dataset_ids.length; i++) {
-      var dataset_id = this.dataset_ids[i];
-      if (typeof AllMetadata[dataset_id] !== 'undefined') {
-        field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
+      if (!name_is_already_in) {
+        data_obj[field_name] = [];
       }
     }
-    field_names_arr = helpers.unique_array(field_names_arr); // one level
-    field_names_arr.sort();
 
-    return field_names_arr;
-//  [
-//   'access_point_type',
-//   'adapter_sequence',
-//   'adapter_sequence_id',
-// ...
+    return data_obj;
   }
 
   prepare_empty_metadata_object() {
     console.time('TIME: prepare_empty_metadata_object');
-    var pid             = this.pid;
-    var field_names_arr = this.all_field_names;
-    var all_metadata    = this.all_metadata || {};
+    var empty_field_names_obj = this.create_an_empty_fixed_length_obj(this.all_field_names);
+    this.all_metadata[this.pid] = empty_field_names_obj;
 
-    if (!(all_metadata.hasOwnProperty(this.pid))) {
-      all_metadata[pid] = {};
-    }
-
-    for (var i = 0; i < field_names_arr.length; i++) {// combine with create_an_empty...
-      var field_name = field_names_arr[i];
-      if (!(all_metadata[pid].hasOwnProperty(field_name))) {
-        all_metadata[pid][field_name] = [];
-      }
-    }
-
-    if (this.dataset_ids.length > 0)
+    const dataset_ids_exist = this.dataset_ids.length > 0;
+    if (dataset_ids_exist)
     {
-      all_metadata[pid]['dataset_id'] = this.dataset_ids;
+      this.all_metadata[this.pid]['dataset_id'] = this.dataset_ids;
     }
 
     console.timeEnd('TIME: prepare_empty_metadata_object');
-    this.all_metadata = all_metadata;
   }
 
   get_project_info(req, res, project_name_or_pid) {
@@ -163,24 +121,24 @@ class CreateDataObj {
     const new_dataset = new Dataset(this.req, this.res, this.pid, data);
     var DatasetInfo   = new_dataset.DatasetInfo;
     var that          = this;
-    helpers.local_log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
+    console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
     new_dataset.addDataset(function (err, rows) {
       console.time("TIME: in post /metadata_new, add dataset");
       if (err) {
-        helpers.local_log('WWW000 err', err);
+        console.log('WWW000 err', err);
         this.req.flash('fail', err);
       }
       else {
         console.log('New datasets SAVED');
-        helpers.local_log('WWW rows', rows);
+        console.log('WWW rows', rows);
         new_dataset.get_new_dataset_by_name(
           function (err, rows) {
             if (err) {
-              helpers.local_log('WWW00 err', err);
+              console.log('WWW00 err', err);
               this.req.flash('fail', err);
             }
             else {
-              helpers.local_log('WWW22 rows', rows);
+              console.log('WWW22 rows', rows);
               new_dataset.update_dataset_obj(rows, pid);
               new_dataset.add_info_to_dataset_globals();
               data['dataset']    = new_dataset.DatasetInfo.dataset;
@@ -198,24 +156,24 @@ class CreateDataObj {
     const new_dataset = new Dataset(req, res, pid, data);
     var DatasetInfo   = new_dataset.DatasetInfo;
     var that          = this;
-    helpers.local_log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
+    console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
     new_dataset.addDataset(function (err, rows) {
       console.time("TIME: in post /metadata_new, add dataset");
       if (err) {
-        helpers.local_log('WWW0 err', err);
+        console.log('WWW0 err', err);
         req.flash('fail', err);
       }
       else {
         console.log('New datasets SAVED');
-        helpers.local_log('WWW rows', rows);
+        console.log('WWW rows', rows);
         new_dataset.get_new_dataset_by_name(
           function (err, rows) {
             if (err) {
-              helpers.local_log('WWW00 err', err);
+              console.log('WWW00 err', err);
               req.flash('fail', err);
             }
             else {
-              helpers.local_log('WWW22 rows', rows);
+              console.log('WWW22 rows', rows);
               new_dataset.update_dataset_obj(rows, pid);
               // new_dataset.dataset_objects_arr;
               new_dataset.add_info_to_dataset_globals();
@@ -241,17 +199,17 @@ class CreateDataObj {
       }
     }
     var all_metadata         = this.make_metadata_object(req, res, pid, data); // if use this.all_metadata = wrong
-    var all_field_names_orig = this.make_all_field_names(data['dataset_id']);
+    var all_field_names_orig = this.field_names.make_all_field_names(data['dataset_id']); // to names!!!
 
 
     //add_new
-    var all_field_names_with_new = this.collect_new_rows(req, all_field_names_orig);
+    var all_field_names_with_new = this.collect_new_rows(req, all_field_names_orig); // to names!!!
 
     // console.log("YYY3 all_field_names_with_new");
     // console.log(JSON.stringify(all_field_names_with_new));
 
-    var all_field_names_first_column = this.get_first_column(all_field_names_with_new, 0);
-    var all_new_names                = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1);
+    var all_field_names_first_column = this.get_first_column(all_field_names_with_new, 0); // to names!!!
+    var all_new_names                = all_field_names_first_column.slice(all_field_names_first_column.indexOf("enzyme_activities") + 1); // to names!!!
     all_metadata[pid]                = this.get_new_val(req, all_metadata[pid], all_new_names);
 
     // req = helpers.collect_errors(req);
@@ -265,7 +223,10 @@ class CreateDataObj {
     // TODO: if from csv there is no req.body!
     var all_field_units = MD_CUSTOM_UNITS[req.body.project_id];
 
-    const show_new = new module.exports.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units);
+    console.log("AAALLL1 all_field_names_with_new");
+    console.log(all_field_names_with_new.filter(function(item){return item === "conductivity"}));
+
+    const show_new = new module.exports.ShowObj(req, res, all_metadata, all_field_names_with_new, all_field_units, this.required_field_names_for_env);
     show_new.render_edit_form();
   }
 
@@ -324,8 +285,8 @@ class CreateDataObj {
     //   1 = "DCO_BOM_Bomberg_CoDL_16_09.pdf"
     //  ...
 
-    helpers.local_log('PPP project_obj.abstract_data');
-    helpers.local_log(JSON.stringify(new_project.project_obj.abstract_data));
+    console.log('PPP project_obj.abstract_data');
+    console.log(JSON.stringify(new_project.project_obj.abstract_data));
 
     // from submission datasets: new_project.project_obj.abstract_data = Object
     //  pdfs = Array[0]
@@ -343,63 +304,6 @@ class CreateDataObj {
 
     console.timeEnd('TIME: make_metadata_object');
     return all_metadata;
-  }
-
-  // check_pi_name(all_metadata_pid) {
-  //   for (var val in all_metadata_pid.pi_name) {
-  //     new_project.user_obj.first_name
-  //   }
-  //
-  // }
-
-  get_names_from_ordered_const() {
-    console.time('time: ordered_metadata_names_only');
-
-    const arraycolumn = (arr, n) =>
-      arr.map(x => x[n]
-      )
-    ;
-
-    console.timeEnd('time: ordered_metadata_names_only');
-    return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
-  }
-
-  make_array4(field_names_arr) {
-// make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [field_names_arr[i2], field_names_arr[i2], '', '']
-    var new_arr = [];
-    for (var i2 = 0; i2 < field_names_arr.length; i2++) {
-      var temp_arr = [field_names_arr[i2], field_names_arr[i2], '', ''];
-      new_arr.push(temp_arr);
-    }
-    return new_arr;
-  }
-
-  make_all_field_names(dataset_ids) {
-    var ordered_metadata_names_only = this.get_names_from_ordered_const();
-
-    // why get_field_names_by_dataset_ids again? 1) substract METADATA_NAMES_SUBSTRACT, 2) substract '_id', 3) substract ordered_metadata_names_only
-    var structured_field_names0 = this.get_field_names_by_dataset_ids(dataset_ids);
-    var diff_names              = structured_field_names0.filter(function (x) {
-      return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0;
-    });
-    diff_names                  = diff_names.filter(function (item) {
-      return /^((?!_id).)*$/.test(item);
-    });
-    diff_names                  = diff_names.filter(function (x) {
-      return ordered_metadata_names_only.indexOf(x) < 0;
-    });
-
-    // // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [diff_names[i2], diff_names[i2], '', '']
-    // // TODO: add units from db
-    // var big_arr_diff_names = [];
-    // for (var i2 = 0; i2 < diff_names.length; i2++) {
-    //   var temp_arr = [diff_names[i2], diff_names[i2], '', ''];
-    //   big_arr_diff_names.push(temp_arr);
-    // }
-
-    var big_arr_diff_names = this.make_array4(diff_names);
-    return helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
-
   }
 
   // new rows
@@ -498,7 +402,6 @@ class CreateDataObj {
 
     return all_field_names;
   }
-
 
   fill_out_arr_doubles(value, repeat_times) {
     var arr_temp = Array(repeat_times);
@@ -600,14 +503,15 @@ class CreateDataObj {
 
     var req = this.req;
     var pid = project_obj.pid;
-    helpers.local_log('DDD pid', pid);
+    console.log('DDD pid', pid);
     var d_region_arr = [];
     if ((typeof req.form !== "undefined") && (typeof req.form.d_region !== "undefined")) {
       d_region_arr = req.form.d_region.split('#');
     }
-    helpers.local_log('DDD3, all_field_names', all_field_names);
+    console.log('DDD3, all_field_names', JSON.stringify(all_field_names));
 
-    var more_fields = ['adapter_sequence_id',
+    // move to Names
+    var more_fields = ['adapter_sequence_id', // TODO: clarify, why here and what for
       'dataset_description',
       'dataset_id',
       'dna_region_id',
@@ -625,17 +529,19 @@ class CreateDataObj {
       'tube_label',
       'sample_num'];
 
+    // move to Names
     all_field_names = helpers.unique_array(all_field_names.concat(more_fields));
 
-    helpers.local_log('DDD3_1, all_field_names', all_field_names);
+    console.log('DDD3_1, all_field_names', JSON.stringify(all_field_names)); // cond1
 
     this.prepare_empty_metadata_object(pid, all_field_names, {});
     var all_metadata = this.all_metadata;
-    helpers.local_log('PPP01 all_metadata from create_all_metadata_form_new', all_metadata);
+    console.log('PPP01 all_metadata from create_all_metadata_form_new', all_metadata);
     var repeat_times = parseInt(req.form.samples_number, 10) || parseInt(req.form.dataset.length, 10);
     var current_info = Object.assign(project_obj);
 
-    if (d_region_arr.length > 0) { // brand new project not in db
+    const brand_new_project_not_in_db = (d_region_arr.length > 0);
+    if (brand_new_project_not_in_db) {
       current_info.domain      = this.get_domain(d_region_arr);
       current_info.dna_region  = this.get_dna_region(d_region_arr);
       current_info.target_gene = this.get_target_gene(current_info.domain);
@@ -652,7 +558,8 @@ class CreateDataObj {
         all_metadata[pid] = {};
       }
       //todo: split if, if length == dataset_ids.length - just use as is
-      if ((typeof all_metadata[pid] !== 'undefined') && (typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1) {
+      let field_has_value = ((typeof all_metadata[pid] !== 'undefined') && (typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1);
+      if (field_has_value) {
         all_metadata[pid][field_name] = this.fill_out_arr_doubles(all_metadata[pid][field_name], repeat_times);
       }
       else {
@@ -662,18 +569,18 @@ class CreateDataObj {
 
     all_metadata[pid].sample_num = Array.from(new Array(repeat_times), (val, index) => index + 1);
 
-    helpers.local_log('FFF1 all_metadata[pid] before');
-    helpers.local_log(JSON.stringify(all_metadata[pid]));
+    console.log('FFF1 all_metadata[pid] before');
+    console.log(JSON.stringify(all_metadata[pid]));
 
     all_metadata[pid]['project_abstract'] = this.add_project_abstract_info(project_obj, repeat_times);
 
-    helpers.local_log('PPP project_obj.abstract_data'); // arr0
-    helpers.local_log(JSON.stringify(project_obj.abstract_data));
+    console.log('PPP project_obj.abstract_data'); // arr0
+    console.log(JSON.stringify(project_obj.abstract_data));
 
-    helpers.local_log('FFF2 all_metadata[pid] before');
-    helpers.local_log(JSON.stringify(all_metadata[pid]));
+    console.log('FFF2 all_metadata[pid] before');
+    console.log(JSON.stringify(all_metadata[pid]));
 
-    helpers.local_log('PPP02 all_metadata from create_all_metadata_form_new', all_metadata);
+    console.log('PPP02 all_metadata from create_all_metadata_form_new', all_metadata);
     console.timeEnd('TIME: create_all_metadata_form_new');
 
     return all_metadata;
@@ -717,7 +624,7 @@ class CreateDataObj {
     return {'data': data, 'fail_msg': fail_msg};
   }
 
-  // This function cyclomatic complexity is too high (68)
+  // This function cyclomatic complexity is too high (9)
   get_primers_info(dataset_id) {
     console.time('TIME: get_primers_info');
     var primer_info = {
@@ -765,7 +672,7 @@ class CreateDataObj {
   }
 
   saveDataset(req, project_id) {
-    helpers.local_log('TTT1 req.form from saveDataset = ', req.form);
+    console.log('TTT1 req.form from saveDataset = ', req.form);
     //dataset_id, dataset, dataset_description, project_id, created_at, updated_at,
 
     var dataset_obj                 = {};
@@ -776,77 +683,15 @@ class CreateDataObj {
     dataset_obj.created_at          = new Date();
     dataset_obj.updated_at          = new Date();
 
-    helpers.local_log('OOO1 JSON.stringify(dataset_obj) = ', JSON.stringify(dataset_obj));
+    console.log('OOO1 JSON.stringify(dataset_obj) = ', JSON.stringify(dataset_obj));
   }
 
   make_new_project_for_form(project_obj) {
 
     var all_field_names = this.all_field_names;
-
-    // TODO: add
-    //   funding_code: [ '0' ],
-    //   sample_concentration: [],
-    //   submit_code: [],
-    //   tube_label:
-    // d_region: 'Bacterial#v4v5#Bv4v5',
-    //   dataset_description: [],
-    //   dataset_name: [],
-    //   funding_code: '0',
-    //   pi_id_name: '1453#Amrani Said#Amrani#Said#said_amrani@yahoo.com',
-    //   project_description: 'sdf sdgfdsg sfgdf',
-    //   project_name1: 'SA',
-    //   project_name2: 'AAA',
-    //   project_title: 'AAA54645674',
-    //   sample_concentration: [],
-    //   samples_number: '2',
-    //   submit_code: [],
-    //   tube_label: [] }
-
-    // 14	  ['run', 'Sequencing run date', 'MBL Supplied', 'YYYY-MM-DD'],
-
-    var all_field_names4     = [];
-    // var all_field_names4_temp = CONSTS.ORDERED_METADATA_NAMES;
-    var parameter            = CONSTS.ORDERED_METADATA_NAMES.slice(0, 1);
-    var new_user_submit      = [['', 'Please fill in', '', '']];
-    var sample_num           = [['sample_num', 'Sample Number', 'MBL Supplied', '']];
-    var user_sample_name     = CONSTS.ORDERED_METADATA_NAMES.slice(17, 18);
-    var dataset_description  = [['dataset_description', 'Dataset description', 'User Supplied', '']];
-    var tube_label           = [['tube_label', 'Tube label', 'User Supplied', '']];
-    var sample_concentration = [['sample_concentration', 'Sample concentration', 'User Supplied', 'ng/ul']];
-    var dna_quantitation     = CONSTS.ORDERED_METADATA_NAMES.slice(35, 36);
-    var env_package          = CONSTS.ORDERED_METADATA_NAMES.slice(16, 17);
-
-    var second_part_part_1 = CONSTS.ORDERED_METADATA_NAMES.slice(1, 16);
-    var second_part_part_2 = CONSTS.ORDERED_METADATA_NAMES.slice(18, 35);
-    var second_part_part_3 = CONSTS.ORDERED_METADATA_NAMES.slice(36);
-
-    // var general = CONSTS.ORDERED_METADATA_NAMES.slice(1,1);
-    // var funding_code = [['funding_code', 'Funding Code', 'User Supplied', 'numeric only']];
-    // var vamps_dataset_name = CONSTS.ORDERED_METADATA_NAMES.slice(2,2);
-    // var second_part_part = CONSTS.ORDERED_METADATA_NAMES.slice(3,5);
-    // var domain = CONSTS.ORDERED_METADATA_NAMES.slice(6,6);
-    // var target_gene = CONSTS.ORDERED_METADATA_NAMES.slice(7,7);
-    // var dna_region = CONSTS.ORDERED_METADATA_NAMES.slice(8,8);
-
-    //   submit_code: [],
-
-    // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
-
-    all_field_names4 = all_field_names4.concat(parameter);
-    all_field_names4 = all_field_names4.concat(new_user_submit);
-    all_field_names4 = all_field_names4.concat(sample_num);
-    all_field_names4 = all_field_names4.concat(user_sample_name);
-    all_field_names4 = all_field_names4.concat(dataset_description);
-    all_field_names4 = all_field_names4.concat(tube_label);
-    all_field_names4 = all_field_names4.concat(sample_concentration);
-    all_field_names4 = all_field_names4.concat(dna_quantitation);
-    all_field_names4 = all_field_names4.concat(env_package);
-    all_field_names4 = all_field_names4.concat(second_part_part_1);
-    all_field_names4 = all_field_names4.concat(second_part_part_2);
-    all_field_names4 = all_field_names4.concat(second_part_part_3);
-    // TODO: use all_field_names4 first column to order fields in csv
-    // console.log('RRRRR all_field_names4 from make_new_project_for_form');
-    // console.log(JSON.stringify(all_field_names4));
+    console.log("FFFFF1 all_field_names4 from make_new_project_for_form", all_field_names4);
+    var all_field_names4 = this.field_names.reorder_field_names_for_new_project_dataset_form();
+    console.log("FFFFF2 all_field_names4 from make_new_project_for_form after reoder", all_field_names4);
 
     var all_metadata = this.create_all_metadata_form_new(all_field_names, project_obj);
     // all_metadata = { '485':
@@ -861,7 +706,10 @@ class CreateDataObj {
 
     var all_field_units = MD_CUSTOM_UNITS[project_obj.pid];
 
-    var show_new = new module.exports.ShowObj(this.req, this.res, all_metadata, all_field_names4, all_field_units);
+    console.log("AAALLL2 all_field_names4");
+    console.log(all_field_names4.filter(function(item){return item === "conductivity"}));
+
+    var show_new = new module.exports.ShowObj(this.req, this.res, all_metadata, all_field_names4, all_field_units, this.required_field_names_for_env);
     show_new.render_edit_form();
   }
 
@@ -878,19 +726,22 @@ class CreateDataObj {
   req_form_isValid_and_new_project(req, res, new_project) {
     const project_obj = new_project.project_obj;
 
-    helpers.local_log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
+    console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
     new_project.addProject(project_obj, function (err, rows) {
         console.time("TIME: in post /metadata_new, add project");
         if (err) {
-          helpers.local_log('WWW0 err', err);
+          console.log('WWW0 err', err);
           req.flash('fail', err);
           const met_obj  = new module.exports.CreateDataObj(req, res, 0, []);
-          const show_new = new module.exports.ShowObj(req, res, met_obj.all_metadata, met_obj.all_field_names4, met_obj.all_field_units);
+          console.log("AAALLL3 met_obj.all_field_names4");
+          console.log(met_obj.all_field_names4.filter(function(item){return item === "conductivity"}));
+
+          const show_new = new module.exports.ShowObj(req, res, met_obj.all_metadata, met_obj.all_field_names4, met_obj.all_field_units, met_obj.required_field_names_for_env);
           show_new.show_metadata_new_again(req, res);
         }
         else {
           console.log('New project SAVED');
-          helpers.local_log('WWW rows', rows);
+          console.log('WWW rows', rows);
           const pid = rows.insertId;
           new_project.add_info_to_project_globals(project_obj, pid);
           const met_obj = new module.exports.CreateDataObj(req, res, pid, []);
@@ -969,23 +820,32 @@ class CreateDataObj {
     transposed["geo_loc_name_continental"] = curr_country;
     return transposed;
   }
-
-
 }
-
 
 
 class ShowObj {
 
-  constructor(req, res, all_metadata, all_field_names_arr, all_field_units) {
+  constructor(req, res, all_metadata, all_field_names_arr, all_field_units, required_fields) {
     this.req                     = req;
     this.res                     = res;
     this.all_metadata            = all_metadata;
     this.all_field_names_arr     = all_field_names_arr;
-    this.all_field_units         = all_field_units;
-    this.ordered_field_names_obj = this.make_ordered_field_names_obj();
+    this.all_field_units         = all_field_units || [];
+    const field_names            = new module.exports.FieldNames(req);
+    this.ordered_field_names_obj = field_names.make_ordered_field_names_obj();
     this.hostname                = req.CONFIG.hostname;
     this.user                    = req.user;
+    this.required_fields         = this.get_required_fields(required_fields);
+  }
+
+  get_required_fields(required_fields_from_args){
+    let required_fields_out = required_fields_from_args;
+    let obj_is_empty = Object.keys(required_fields_from_args).length === 0;
+    if (obj_is_empty)
+    {
+      required_fields_out = CONSTS.METADATA_FORM_REQUIRED_FIELDS;
+    }
+    return required_fields_out;
   }
 
   get_inits(arr) {
@@ -997,20 +857,6 @@ class ShowObj {
     return project_name1;
   }
 
-  make_ordered_field_names_obj() {
-    console.time('TIME: make_ordered_field_names_obj');
-    var ordered_field_names_obj = {};
-
-    for (var i in CONSTS.ORDERED_METADATA_NAMES) {
-      // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
-      var temp_arr = [i];
-      temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
-      ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
-    }
-    console.timeEnd('TIME: make_ordered_field_names_obj');
-    return ordered_field_names_obj;
-  }
-
   get_mbl_edit() {
     let mbl_edit = "no_edit";
     let is_outer_user = (this.req.user.security_level > 10);
@@ -1020,26 +866,10 @@ class ShowObj {
     return mbl_edit;
   }
 
-  render_edit_form() {
-    console.trace("Show me, I'm in render_edit_form");
-    this.req = helpers.collect_errors(this.req);
+  write_csv(pid) {
     let mbl_edit = this.get_mbl_edit();
-
-    helpers.local_log('JJJ1 all_metadata from render_edit_form');
-    helpers.local_log(JSON.stringify(this.all_metadata));
-
-    const target_gene_options = this.get_target_gene_options();
-    const adapt_3letter_options = this.get_options_from_global_obj(MD_3LETTER_ADAPTER);
-    // helpers.local_log('JJJ2 all_field_names from render_edit_form');
-    // helpers.local_log(JSON.stringify(this.all_field_names_arr));
-
-    const country_options = this.get_options_from_global_obj(MD_ENV_CNTRY);
-    const marine_zone_options = this.get_options_from_global_obj(MD_ENV_LZC);
-
-    let pid = Object.keys(this.all_metadata)[0] || this.req.body.project_id;
     let has_datasets = (typeof DATASET_IDS_BY_PID[pid] !== 'undefined') && (DATASET_IDS_BY_PID[pid].length > 0);
     let form_exists = (typeof this.req.form !== 'undefined');
-
     if (has_datasets && (this.req.url !== "/metadata_new_csv_upload") && form_exists) {
       const csv_files_obj = new csv_files_controller.CsvFilesWrite(this.req, this.res);
       csv_files_obj.create_metadata_project_csv(this.req);
@@ -1048,8 +878,43 @@ class ShowObj {
         csv_files_obj.make_csv_to_upload_to_pipeline(this.req);
       }
     }
+  }
+
+  render_edit_form() {
+    console.trace("Show me, I'm in render_edit_form");
+    this.req = helpers.collect_errors(this.req);
+    let mbl_edit = this.get_mbl_edit();
+
+    console.log('JJJ1 all_metadata from render_edit_form');
+    console.log(JSON.stringify(this.all_metadata));
+
+    const target_gene_options = this.get_target_gene_options();
+    const adapt_3letter_options = this.get_options_from_global_obj(MD_3LETTER_ADAPTER);
+
+    const country_options = this.get_options_from_global_obj(MD_ENV_CNTRY);
+    const marine_zone_options = this.get_options_from_global_obj(MD_ENV_LZC);
+
+    let pid = Object.keys(this.all_metadata)[0] || this.req.body.project_id;
+
+    this.write_csv(pid);
 
     var all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
+    var env_package_options = Object.keys(CONSTS.PACKAGES_AND_PORTALS);
+
+    console.log('JJJ2 all_field_names_arr from render_edit_form');
+    console.log(JSON.stringify(this.all_field_names_arr));
+    //Doubled!
+
+    console.log('JJJMMM all_metadata from render_edit_form');
+    console.log(JSON.stringify(this.all_metadata));
+
+    console.log('JJJLLL required_fields from render_edit_form');
+    console.log(JSON.stringify(this.required_fields));
+    // [2019/03/05 18:41:11.393] [LOG]    ["sample_name","organism","collection_date","abs_air_humidity","temperature","build_occup_type","building_setting","carb_dioxide","latitude","longitude","env_biome","env_feature","env_material","filter_type","geo_loc_name_continental","geo_loc_name_marine","heat_cool_type","indoor_space","light_type","occup_samp","occupant_dens_samp","organism_count","rel_air_humidity","space_typ_state","typ_occupant_dens","ventilation_type"]
+
+
+    console.log('JJJRRR ordered_field_names_obj from render_edit_form');
+    console.log(JSON.stringify(this.ordered_field_names_obj));
 
 
     this.res.render('metadata/metadata_edit_form', {
@@ -1061,7 +926,7 @@ class ShowObj {
       all_metadata: this.all_metadata,
       dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
       mbl_edit: mbl_edit,
-      metadata_form_required_fields: CONSTS.METADATA_FORM_REQUIRED_FIELDS,
+      metadata_form_required_fields: this.required_fields,
       ordered_field_names_obj: this.ordered_field_names_obj,
       //options:
       adapt_3letter_options: adapt_3letter_options,
@@ -1069,7 +934,7 @@ class ShowObj {
       country_options: country_options,
       dna_extraction_options: CONSTS.MY_DNA_EXTRACTION_METH_OPTIONS,
       dna_quantitation_options: CONSTS.DNA_QUANTITATION_OPTIONS,
-      env_package_options: CONSTS.DCO_ENVIRONMENTAL_PACKAGES,
+      env_package_options: env_package_options, //DCO_ENVIRONMENTAL_PACKAGES,
       feature_primary_options: CONSTS.FEATURE_PRIMARY,
       investigation_type_options: CONSTS.INVESTIGATION_TYPE,
       marine_zone_options: marine_zone_options,
@@ -1103,6 +968,7 @@ class ShowObj {
     metadata_new_form_values.d_region            = req.form.d_region;
     metadata_new_form_values.funding_code        = req.form.funding_code;
     metadata_new_form_values.pi_id_name          = req.form.pi_id_name;
+    metadata_new_form_values.package             = req.form.package;
     metadata_new_form_values.project_description = req.form.project_description;
     metadata_new_form_values.project_title       = req.form.project_title;
     metadata_new_form_values.reference           = req.form.reference;
@@ -1116,10 +982,12 @@ class ShowObj {
       metadata_new_form_values.pi_email         = pi_id_name_arr[4];
       metadata_new_form_values.pi_name_reversed = pi_id_name_arr[2] + ' ' + pi_id_name_arr[3];
       metadata_new_form_values.project_name1    = req.form.project_name1;
+
       let full_name_arr = metadata_new_form_values.full_name.split(' ');
       if (metadata_new_form_values.project_name1 === '') {
         metadata_new_form_values.project_name1  = this.get_inits(full_name_arr);
       }
+
       metadata_new_form_values.project_name2 = req.form.project_name2;
       metadata_new_form_values.project_name3 = d_region_arr[2];
       metadata_new_form_values.project_name  = metadata_new_form_values.project_name1 + '_' + req.form.project_name2 + '_' + metadata_new_form_values.project_name3;
@@ -1139,23 +1007,11 @@ class ShowObj {
       // TODO: object created separately in Imp.
       // TODO just use form
       button_name: 'Validate',
-      // d_region: req.form.d_region,
       domain_regions: CONSTS.DOMAIN_REGIONS,
-      // funding_code: req.form.funding_code,
       hostname: req.CONFIG.hostname,
       metadata_new_form_values: metadata_new_form_values,
       packages_and_portals: Object.keys(CONSTS.PACKAGES_AND_PORTALS),
-      // pi_email: pi_id_name_arr[4],
       pi_list: req.session.pi_list,
-      // pi_name: pi_name_reversed,
-      // project_description: req.form.project_description,
-      // project_name1: project_name1,
-      // project_name2: project_name2,
-      // project_name3: project_name3,
-      // project_name: project_name,
-      // project_title: req.form.project_title,
-      // reference: req.form.reference,
-      // samples_number: req.form.samples_number,
       title: 'VAMPS: New Metadata',
       user: req.user,
     });
@@ -1163,8 +1019,203 @@ class ShowObj {
 
 }
 
+class FieldNames {
+  // collect all known
+  // add new
+  // filter by env
+  // order for existing and new datasets
+  // get required
+
+  constructor(req, dataset_ids) {
+    this.dataset_ids = dataset_ids || [];
+    this.all_field_names = this.collect_field_names();
+    let field_names_by_env = this.filter_field_names_by_env(req);
+    this.required_field_names_for_env = this.env_req_filters(field_names_by_env);
+    this.metadata_new_form_fields = CONSTS.METADATA_NEW_FORM_FIELDS;
+
+  }
+
+  // collect all known
+  collect_field_names() {
+    var all_field_names = this.get_field_names_by_dataset_ids(this.dataset_ids);
+    all_field_names     = all_field_names.concat(CONSTS.METADATA_FORM_REQUIRED_FIELDS);
+    all_field_names     = all_field_names.concat(CONSTS.REQ_METADATA_FIELDS_wIDs);
+    all_field_names     = all_field_names.concat(CONSTS.PROJECT_INFO_FIELDS);
+    all_field_names     = all_field_names.concat(CONSTS.METADATA_NAMES_ADD);
+
+    all_field_names = helpers.unique_array(all_field_names);
+    return all_field_names;
+  }
+
+  make_all_field_names(dataset_ids) {
+    var ordered_metadata_names_only = this.get_names_from_ordered_const();
+
+    // why get_field_names_by_dataset_ids again? 1) substract METADATA_NAMES_SUBSTRACT, 2) substract '_id', 3) substract ordered_metadata_names_only
+    var structured_field_names0 = this.get_field_names_by_dataset_ids(dataset_ids);
+    var diff_names              = structured_field_names0.filter(function (x) {
+      return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0;
+    });
+    diff_names                  = diff_names.filter(function (item) {
+      return /^((?!_id).)*$/.test(item);
+    });
+    diff_names                  = diff_names.filter(function (x) {
+      return ordered_metadata_names_only.indexOf(x) < 0;
+    });
+
+    // // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [diff_names[i2], diff_names[i2], '', '']
+    // // TODO: add units from db
+    // var big_arr_diff_names = [];
+    // for (var i2 = 0; i2 < diff_names.length; i2++) {
+    //   var temp_arr = [diff_names[i2], diff_names[i2], '', ''];
+    //   big_arr_diff_names.push(temp_arr);
+    // }
+
+    var big_arr_diff_names = this.make_array4(diff_names);
+    return helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
+
+  }
+
+  // filter by env
+  unify_env_name(env_package) {
+    let re1               = / /gi;
+    let re2               = /-/gi;
+    let re3               = /\//gi;
+    let env_package_unified_name = env_package.toLowerCase().replace(re1, '_').replace(re2, '_').replace(re3, '_');
+    return env_package_unified_name;
+  }
+
+  get_fields_by_env(env_package) {
+    let env_package_unified_name = this.unify_env_name(env_package);
+    return CONSTS.FIELDS_BY_ENV[env_package_unified_name];
+  }
+
+  get_env_proper_name(env_package) {
+    let name = "";
+    let obj_name = CONSTS.PACKAGES_AND_PORTALS_ALIASES;
+    let unified_name = this.unify_env_name(env_package);
+    for (var key in obj_name) {
+      let value_arr = obj_name[key];
+      if (value_arr.includes(unified_name)) {
+        name = key;
+        break;
+      }
+    }
+    return name;
+  }
+
+  filter_field_names_by_env(req) {
+    // console.log(req.body);
+
+    let req_body_exists = ((typeof req.body !== 'undefined') && (typeof req.body.package !== 'undefined')) ;
+    let req_form_exists = ((typeof req.form !== 'undefined') && (typeof req.form.package !== 'undefined'));
+    let env_package = "unknown";
+    let proper_env_name = env_package;
+    let field_names = [];
+    if (req_body_exists || req_form_exists) {
+      env_package = req.body.package || req.form.package;
+      proper_env_name = this.get_env_proper_name(env_package);
+      field_names = this.get_fields_by_env(env_package);
+    }
+    return field_names;
+  }
+
+  env_req_filters(field_names_by_env) {
+    console.log("In env_req_filters");
+    let required_names = [];
+    for (var i in field_names_by_env) {
+      let current_field_name = field_names_by_env[i];
+      if (current_field_name.includes("*")) {
+        let cleaned_f_name = current_field_name.replace("*", "");
+        required_names.push(cleaned_f_name); // TODO: check if name exists in CONSTS
+      }
+    }
+    return required_names;
+  }
+
+  // filter by dataset_id
+  get_field_names_by_dataset_ids() {
+
+    var field_names_arr = [];
+
+    field_names_arr = field_names_arr.concat(Object.keys(MD_CUSTOM_FIELDS_UNITS));
+    for (var i = 0; i < this.dataset_ids.length; i++) {
+      var dataset_id = this.dataset_ids[i];
+      if (typeof AllMetadata[dataset_id] !== 'undefined') {
+        field_names_arr = field_names_arr.concat(Object.keys(AllMetadata[dataset_id]));
+      }
+    }
+    field_names_arr = helpers.unique_array(field_names_arr); // one level
+    field_names_arr.sort();
+
+    return field_names_arr;
+//  [
+//   'access_point_type',
+//   'adapter_sequence',
+//   'adapter_sequence_id',
+// ...
+  }
+
+  // order for existing and new datasets
+  get_names_from_ordered_const() {
+    console.time('time: ordered_metadata_names_only');
+
+    const arraycolumn = (arr, n) =>
+      arr.map(x => x[n]
+      )
+    ;
+
+    console.timeEnd('time: ordered_metadata_names_only');
+    return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
+  }
+
+  reorder_field_names_for_new_project_dataset_form() {
+    var all_field_names4     = [];
+
+    // [['structured comment name','Parameter','',''],['','General','',''],['dataset','VAMPS dataset name','MBL Supplied','']
+
+    let next_f_name = "";
+    for (var n in CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM) {
+      next_f_name = CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM[n];
+      all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
+    }
+    console.log('RRRRR1 all_field_names4 from make_new_project_for_form');
+    console.log(JSON.stringify(all_field_names4));
+
+    return all_field_names4;
+  }
+
+  //  from Show!
+  make_ordered_field_names_obj() {
+    console.time('TIME: make_ordered_field_names_obj');
+    var ordered_field_names_obj = {};
+
+    for (var i in CONSTS.ORDERED_METADATA_NAMES) {
+      // [ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ]
+      var temp_arr = [i];
+      temp_arr.push(CONSTS.ORDERED_METADATA_NAMES[i]);
+      ordered_field_names_obj[CONSTS.ORDERED_METADATA_NAMES[i][0]] = temp_arr;
+    }
+    console.timeEnd('TIME: make_ordered_field_names_obj');
+    return ordered_field_names_obj;
+  }
+
+  // misc
+
+  make_array4(field_names_arr) {
+// make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [field_names_arr[i2], field_names_arr[i2], '', '']
+    var new_arr = [];
+    for (var i2 = 0; i2 < field_names_arr.length; i2++) {
+      var temp_arr = [field_names_arr[i2], field_names_arr[i2], '', ''];
+      new_arr.push(temp_arr);
+    }
+    return new_arr;
+  }
+
+}
+
 // export the class
 module.exports = {
   CreateDataObj: CreateDataObj,
-  ShowObj: ShowObj
+  ShowObj: ShowObj,
+  FieldNames: FieldNames
 };
