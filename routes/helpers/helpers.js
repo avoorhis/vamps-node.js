@@ -2239,20 +2239,21 @@ exports.geo_loc_name_continental_validation = function (value) {
   }
 };
 
-exports.slice_object_by_keys_2 = function(obj, keys) {
-  console.time('TIME: slice_object_by_keys_2');
-
-  let res_obj = {};
-  for (const [key, value] of Object.entries(obj)) {
-    console.log(`${key} ${value}`); // "a 5", "b 7", "c 9"
-    if (keys.includes(key)) {
-      res_obj[key] = value;
-    }
-  }
-  console.timeEnd('TIME: slice_object_by_keys_2');
-  return res_obj;
-
-};
+// slower
+// exports.slice_object_by_keys_2 = function(obj, keys) {
+//   console.time('TIME: slice_object_by_keys_2');
+//
+//   let res_obj = {};
+//   for (const [key, value] of Object.entries(obj)) {
+//     console.log(`${key} ${value}`); // "a 5", "b 7", "c 9"
+//     if (keys.includes(key)) {
+//       res_obj[key] = value;
+//     }
+//   }
+//   console.timeEnd('TIME: slice_object_by_keys_2');
+//   return res_obj;
+//
+// };
 
 exports.slice_object_by_keys = function (object, slice_keys) {
   console.time('TIME: convert to string');
@@ -2265,9 +2266,9 @@ exports.slice_object_by_keys = function (object, slice_keys) {
     .filter(function (key) {
       return slice_keys.indexOf(key) >= 0;
     })
-    .reduce(function (acc, key) {
-      acc[key] = object[key];
-      return acc;
+    .reduce(function (accum, key) {
+      accum[key] = object[key];
+      return accum;
     }, {});
 };
 
