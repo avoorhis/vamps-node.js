@@ -913,16 +913,16 @@ class ShowObj {
     console.log(JSON.stringify(this.all_field_names_arr));
     //Doubled!
 
-    console.log('JJJMMM all_metadata from render_edit_form');
-    console.log(JSON.stringify(this.all_metadata));
+    // console.log('JJJMMM all_metadata from render_edit_form');
+    // console.log(JSON.stringify(this.all_metadata));
 
-    console.log('JJJLLL required_fields from render_edit_form');
-    console.log(JSON.stringify(this.required_fields));
+    // console.log('JJJLLL required_fields from render_edit_form');
+    // console.log(JSON.stringify(this.required_fields));
     // [2019/03/05 18:41:11.393] [LOG]    ["sample_name","organism","collection_date","abs_air_humidity","temperature","build_occup_type","building_setting","carb_dioxide","latitude","longitude","env_biome","env_feature","env_material","filter_type","geo_loc_name_continental","geo_loc_name_marine","heat_cool_type","indoor_space","light_type","occup_samp","occupant_dens_samp","organism_count","rel_air_humidity","space_typ_state","typ_occupant_dens","ventilation_type"]
 
 
-    console.log('JJJRRR ordered_field_names_obj from render_edit_form');
-    console.log(JSON.stringify(this.ordered_field_names_obj));
+    // console.log('JJJRRR ordered_field_names_obj from render_edit_form');
+    // console.log(JSON.stringify(this.ordered_field_names_obj));
 
 
     this.res.render('metadata/metadata_edit_form', {
@@ -1086,8 +1086,8 @@ class FieldNames {
     var big_arr4 = helpers.unique_array(ordered_existing.concat(big_arr_diff_names));
 
     console.timeEnd('TIME: ordered_existing1');
-    console.log('MMM11 big_arr4');
-    console.log(JSON.stringify(big_arr4));
+    // console.log('MMM11 big_arr4');
+    // console.log(JSON.stringify(big_arr4));
 
     return big_arr4;
   }
@@ -1196,8 +1196,16 @@ class FieldNames {
       next_f_name = CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM[n];
       all_field_names4 = all_field_names4.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
     }
-    // console.log('RRRRR1 all_field_names4 from make_new_project_for_form');
-    // console.log(JSON.stringify(all_field_names4));
+    console.log('RRRRR1 all_field_names4 from make_new_project_for_form');
+    console.log(JSON.stringify(all_field_names4));
+
+    let all_field_names4_2 = helpers.slice_object_by_keys_to_arr(CONSTS.ORDERED_METADATA_NAMES_OBJ, CONSTS.CORRECT_ORDER_FOR_NEW_DATASETS_FORM);
+
+    console.log('RRRRR12 all_field_names4_2 from make_new_project_for_form');
+    console.log(JSON.stringify(all_field_names4_2));
+
+    console.log('RRRRR13 all_field_names4_2 vs. all_field_names4');
+    console.log(JSON.stringify(all_field_names4_2) === JSON.stringify(all_field_names4));
 
     return all_field_names4;
   }
