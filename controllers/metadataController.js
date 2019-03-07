@@ -892,29 +892,9 @@ class ShowObj {
     const all_field_units = this.all_field_units || MD_CUSTOM_UNITS[pid] || {};
     const env_package_options = Object.keys(CONSTS.PACKAGES_AND_PORTALS);
 
-    let temp_all_field_names_ordered = [];
-    for (var ind in this.all_field_names_arr) {
-      let field_name = "";
-      if (this.all_field_names_arr[ind][0] === ""){
-        field_name = this.all_field_names_arr[ind][1];
-      }
-      else {
-        field_name = this.all_field_names_arr[ind][0];
-      }
-      temp_all_field_names_ordered.push(field_name);
-    }
-    console.log("WWW00 temp_all_field_names_ordered", JSON.stringify(temp_all_field_names_ordered));
-
-    // let temp_all_field_names_ordered2 = [];
-    let temp_all_field_names_ordered2 = this.all_field_names_arr.map(function (field_name_arr){
+    let temp_all_field_names_ordered = this.all_field_names_arr.map(function (field_name_arr){
       return field_name_arr[0] === "" ? field_name_arr[1] : field_name_arr[0];
     });
-    console.log("WWW10 temp_all_field_names_ordered2", JSON.stringify(temp_all_field_names_ordered2));
-
-    // this.all_field_names_arr.reduce(function (result_arr, val) {
-      // return (val[0] === "") ? result_arr.push(val[1]) : result_arr.push(val[0]);
-  // }, {});
-            // this.all_field_names_arr.reduce((result_arr, val) => result_arr.concat(val[0]), []);
 
     const ordered_field_names_obj = helpers.slice_object_by_keys(CONSTS.ORDERED_METADATA_NAMES_OBJ, temp_all_field_names_ordered);
 
