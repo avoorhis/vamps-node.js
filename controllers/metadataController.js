@@ -1056,9 +1056,7 @@ class FieldNames {
   }
 
   make_all_field_names(dataset_ids) {
-    var ordered_metadata_names_only = CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM;
-
-    // why get_field_names_by_dataset_ids again? 1) substract METADATA_NAMES_SUBSTRACT, 2) substract '_id', 3) substract ordered_metadata_names_only
+    // why get_field_names_by_dataset_ids again? 1) substract METADATA_NAMES_SUBSTRACT, 2) substract '_id', 3) substract CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM
     var structured_field_names0 = this.get_field_names_by_dataset_ids(dataset_ids);
 
     var diff_names = structured_field_names0.filter(function (x) {
@@ -1070,19 +1068,10 @@ class FieldNames {
     });
 
     diff_names = diff_names.filter(function (x) {
-      return ordered_metadata_names_only.indexOf(x) < 0;
+      return CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM.indexOf(x) < 0;
     });
 
-    // // make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [diff_names[i2], diff_names[i2], '', '']
-    // // TODO: add units from db
-    // var big_arr_diff_names = [];
-    // for (var i2 = 0; i2 < diff_names.length; i2++) {
-    //   var temp_arr = [diff_names[i2], diff_names[i2], '', ''];
-    //   big_arr_diff_names.push(temp_arr);
-    // }
-
     var big_arr_diff_names = this.make_array4(diff_names);
-
 
     console.time('TIME: ordered_existing1');
     let next_f_name = "";
@@ -1091,26 +1080,11 @@ class FieldNames {
       next_f_name = CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM[n];
       ordered_existing = ordered_existing.concat([CONSTS.ORDERED_METADATA_NAMES_OBJ[next_f_name]]);
     }
-    var big_arr4_new = helpers.unique_array(ordered_existing.concat(big_arr_diff_names));
+    var big_arr4 = helpers.unique_array(ordered_existing.concat(big_arr_diff_names));
 
     console.timeEnd('TIME: ordered_existing1');
-
-    console.log('MMM11 big_arr4_new');
-    console.log(JSON.stringify(big_arr4_new));
-
-    console.time('TIME: ordered_existing2');
-    var big_arr4 = helpers.unique_array(CONSTS.ORDERED_METADATA_NAMES.concat(big_arr_diff_names));
-    console.timeEnd('TIME: ordered_existing2');
-    console.log('MMM12 big_arr4');
+    console.log('MMM11 big_arr4');
     console.log(JSON.stringify(big_arr4));
-    // [2019/03/07 15:00:14.219] [LOG]    TIME: ordered_existing1: 19.342ms
-    //   [2019/03/07 15:00:14.229] [LOG]    TIME: ordered_existing2: 8.775ms
-    //[2019/03/07 15:03:01.641] [LOG]    TIME: ordered_existing1: 13.000ms
-    // [2019/03/07 15:03:01.667] [LOG]    TIME: ordered_existing2: 23.284ms
-
-
-    console.log('SSS2 big_arr4 vs. big_arr4_new');
-    console.log(JSON.stringify(big_arr4) === JSON.stringify(big_arr4_new));
 
     return big_arr4;
   }
