@@ -91,10 +91,10 @@ def start(args):
     
     
     print ("checking project")
-    res = check_project()  ## script dies if project is in db
+    res = check_project()  ## script dies if project or rev_project is in db
     
     if res[0]=='ERROR':
-        print ("1ERROR res[0] -- Exiting (project name is already in use)")
+        print ("1ERROR res[0] "+res[1])
         sys.exit(res[1])
     
     

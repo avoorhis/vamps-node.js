@@ -1545,8 +1545,52 @@ router.get('/users_index', helpers.isLoggedIn, function (req, res) {
   }
 
 });
-
-
+//
+//
+//
+router.get('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+    console.log('IN GET kill_cluster_jobs')
+    res.render('admin/kill_cluster_jobs', {
+      title: 'VAMPS:kill_cluster_jobs',
+      user: req.user,
+      hostname: req.CONFIG.hostname,
+    });
+});
+//
+//
+//
+router.post('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+    console.log('IN POST kill_cluster_jobs')
+    console.log(req.body)
+    var jid = req.body.jobid
+    var cmd = "qdel "+jid
+    if(! helpers.isInt(jid)){
+        req.flash('fail', 'FAIL: Job ID is not Integer');
+        res.redirect('/admin/kill_cluster_jobs');
+        return
+    }
+    console.log('Running Command: '+cmd)
+    const exec = require('child_process').exec;
+    exec(cmd, (e, stdout, stderr)=> {
+        if (e instanceof Error) {
+            console.error(e);
+            req.flash('fail', e.toString());
+            res.redirect('/admin/kill_cluster_jobs');
+            return
+        }
+        console.log('stdout ', stdout);
+        console.log('stderr ', stderr);
+        req.flash('success', 'Done: '+cmd);
+        res.redirect('/admin/kill_cluster_jobs');
+        return
+    });
+    
+   //  res.render('admin/kill_cluster_jobs', {
+//       title: 'VAMPS:kill_cluster_jobs',
+//       user: req.user,
+//       hostname: req.CONFIG.hostname,
+//     });
+});
 //
 //
 //
