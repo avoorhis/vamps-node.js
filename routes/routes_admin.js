@@ -1563,7 +1563,7 @@ router.post('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], functio
     console.log('IN POST kill_cluster_jobs')
     console.log(req.body)
     var jid = req.body.jobid
-    var cmd
+    var cmd = ''
     cmd += "export SGE_ROOT="+req.CONFIG.SGE_ROOT+'; '
     cmd += "/opt/sge/bin/lx-amd64/qdel "+jid
     if(! helpers.isInt(jid)){
