@@ -2002,7 +2002,7 @@ module.exports.screen_dids_for_permissions = function (req, dids) {
     if (PROJECT_ID_BY_DID.hasOwnProperty(dids[i]) && PROJECT_INFORMATION_BY_PID.hasOwnProperty(PROJECT_ID_BY_DID[dids[i]])) {
       pinfo = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[dids[i]]];
       if (user_has_project_permissions(req, pinfo)) {
-        new_did_list.push(dids[i]);
+        new_did_list.push(parseInt(dids[i]));
       }
     }
   }

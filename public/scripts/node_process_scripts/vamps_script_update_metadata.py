@@ -293,7 +293,7 @@ if __name__ == '__main__':
         args.NODE_DATABASE = 'vamps2'
         hostname = 'vampsdb'
     elif args.dbhost == 'vampsdev' or args.dbhost == 'bpcweb7':
-        args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
+        args.json_file_path = '/groups/vampsweb/vampsdev/nodejs/json'
         args.NODE_DATABASE = 'vamps2'
         hostname = 'bpcweb7'
     else:

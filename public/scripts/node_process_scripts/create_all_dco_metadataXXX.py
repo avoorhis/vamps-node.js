@@ -592,7 +592,6 @@ if __name__ == '__main__':
     parser.add_argument("-json_file_path", "--json_file_path",        
                 required=False,  action='store', dest = "json_file_path",  default='../../json', 
                 help="Not usually needed if -host is accurate")
-                # for vampsdev"  /groups/vampsweb/vampsdev_node_data/json
     parser.add_argument("-host", "--host",    
                 required=False,  action='store', dest = "dbhost",  default='localhost',
                 help="choices=['vampsdb','vampsdev','localhost']") 
@@ -610,7 +609,7 @@ if __name__ == '__main__':
         args.NODE_DATABASE = 'vamps2'
          
     elif args.dbhost == 'vampsdev':
-        args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
+        args.json_file_path = '/groups/vampsweb/vampsdev/nodejs/json'
         args.NODE_DATABASE = 'vamps2'
         dbhost = 'bpcweb7'
     elif args.dbhost == 'localhost' and (socket.gethostname() == 'Annas-MacBook.local' or socket.gethostname() == 'Annas-MacBook-new.local'):
