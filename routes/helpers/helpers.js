@@ -83,16 +83,8 @@ module.exports.get_second = function (element) {
   if (C.ORDERED_METADATA_NAMES_OBJ.hasOwnProperty(element)) {
     return C.ORDERED_METADATA_NAMES_OBJ[element][1];
   }
-  //
-  //
-  // for (var met_names_row in C.ORDERED_METADATA_NAMES) {
-  //   if (C.ORDERED_METADATA_NAMES[met_names_row].includes(element)) {
-  //     return C.ORDERED_METADATA_NAMES[met_names_row][1];
-  //   }
-  // }
   console.timeEnd('TIME: get_second');
 };
-// };
 
 /** Benchmarking
  * Usage:
