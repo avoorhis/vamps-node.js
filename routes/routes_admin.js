@@ -1563,8 +1563,9 @@ router.post('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], functio
     console.log('IN POST kill_cluster_jobs')
     console.log(req.body)
     var jid = req.body.jobid
-    var cmd = "export SGE_ROOT="+req.CONFIG.SGE_ROOT+'; '
-    cmd += "/opt/sge/bin/lx-amd64/qdel "+jid
+    var cmd
+    //cmd += "export SGE_ROOT="+req.CONFIG.SGE_ROOT+'; '
+    var cmd += "/opt/sge/bin/lx-amd64/qdel "+jid
     if(! helpers.isInt(jid)){
         req.flash('fail', 'FAIL: Job ID is not Integer');
         res.redirect('/admin/kill_cluster_jobs');
@@ -1572,7 +1573,7 @@ router.post('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], functio
     }
     console.log('Running Command: '+cmd)
     const exec = require('child_process').exec;
-    exec(cmd, (e, stdout, stderr)=> {
+    exec(cmd, {env: {'SGE_ROOT': req.CONFIG.SGE_ROOT}}, function(e, stdout, stderr) {
         if (e instanceof Error) {
             console.error(e);
             req.flash('fail', e.toString());
