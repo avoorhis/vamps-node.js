@@ -17,8 +17,8 @@ class CreateDataObj {
     this.res             = res || {};
     this.pid             = project_id || '';
     this.dataset_ids     = DATASET_IDS_BY_PID[this.pid] || dataset_ids || [];
-    this.field_names    = new module.exports.FieldNames(req, this.dataset_ids);
 
+    this.field_names    = new module.exports.FieldNames(req, this.dataset_ids);
     this.all_field_names = this.field_names.collect_field_names();
     this.required_field_names_for_env = this.field_names.required_field_names_for_env;
 

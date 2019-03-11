@@ -2274,6 +2274,7 @@ exports.slice_object_by_keys = function (object, slice_keys) {
     })
     .reduce(function (accum, key) { // 3) add the key/value pair to a new obj
       accum[key] = object[key];
+      console.log("AACC: accum", JSON.stringify(accum));
       return accum;
     }, {});
 };
