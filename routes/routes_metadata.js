@@ -669,6 +669,7 @@ function get_dataset_info(met_obj)
 
   const pid = met_obj.pid;
 
+  console.time("TIME: dataset_info");
   var dataset_info = [];
   // use helpers.findByValueOfObject(arr, key, value)
   for (var i in ALL_DATASETS.projects) {
@@ -679,6 +680,24 @@ function get_dataset_info(met_obj)
       break;
     }
   }
+  console.timeEnd("TIME: dataset_info");
+
+  console.time("TIME: dataset_info2");
+  let dataset_info2 = ALL_DATASETS.projects.filter(o => String(o.pid) === String(pid))[0]["datasets"];
+  console.timeEnd("TIME: dataset_info2");
+
+  console.time("TIME: dataset_info3");
+  let dataset_info3 = ALL_DATASETS.projects.find(function(o) {
+    return String(o.pid) === String(pid);
+  });
+  dataset_info3 = dataset_info3["datasets"];
+  console.timeEnd("TIME: dataset_info3");
+
+  console.log('JJJ12 and 2 dataset_info ===');
+  console.log(JSON.stringify(dataset_info) === JSON.stringify(dataset_info2));
+  console.log('JJJ13 and 3 dataset_info ===');
+  console.log(JSON.stringify(dataset_info) === JSON.stringify(dataset_info3));
+
   return dataset_info;
 }
 
@@ -686,6 +705,7 @@ function get_db_data (req, res, met_obj) { // move to met_obj?
   console.time("TIME: helpers.slice_object_by_keys");
   var AllMetadata_picked = create_AllMetadata_picked(met_obj.dataset_ids);
   console.timeEnd("TIME: helpers.slice_object_by_keys");
+  // met_obj.all_metadata["301"].sample_name 0
 
   console.time("TIME: dataset_info");
   const dataset_info        = get_dataset_info(met_obj);
