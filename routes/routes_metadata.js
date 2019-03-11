@@ -671,9 +671,7 @@ function get_dataset_info(met_obj)
 
   console.time("TIME: dataset_info"); // the fastest
   var dataset_info = [];
-  // use helpers.findByValueOfObject(arr, key, value)
   for (var i in ALL_DATASETS.projects) {
-    // doesn't work var project_info = helpers.findByValueOfObject(ALL_DATASETS.projects[i], 'pid', String(pid));
     var item = ALL_DATASETS.projects[i];
     if (String(item.pid) === String(pid)) {
       dataset_info = item.datasets;
@@ -681,20 +679,6 @@ function get_dataset_info(met_obj)
     }
   }
   console.timeEnd("TIME: dataset_info");
-
-  // console.time("TIME: dataset_info2");
-  // let dataset_info2 = ALL_DATASETS.projects.filter(o => String(o.pid) === String(pid))[0]["datasets"];
-  // console.timeEnd("TIME: dataset_info2");
-
-  console.time("TIME: dataset_info3");
-  let dataset_info3 = ALL_DATASETS.projects.some(function(o) {
-    return String(o.pid) === String(pid);
-  });
-  dataset_info3 = dataset_info3["datasets"];
-  console.timeEnd("TIME: dataset_info3");
-
-  console.log('JJJ13 and 3 dataset_info ===');
-  console.log(JSON.stringify(dataset_info) === JSON.stringify(dataset_info3));
 
   return dataset_info;
 }
