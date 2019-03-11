@@ -1,0 +1,18 @@
+<!-- Not used -->
+<% include ../add_ins/begin.ejs %>
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+<% } %>
+
+
+<br><br><br><br>
+<center>
+<form id='' method='POST' action='kill_cluster_jobs'>
+Enter jobID to kill: <input type='text' name='jobid' value=''>
+<input type='submit' name='' value='Enter'>
+</form>
+</center>
+<% include ../add_ins/end.ejs %>
+

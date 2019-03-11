@@ -91,10 +91,10 @@ def start(args):
     
     
     print ("checking project")
-    res = check_project()  ## script dies if project is in db
+    res = check_project()  ## script dies if project or rev_project is in db
     
     if res[0]=='ERROR':
-        print ("1ERROR res[0] -- Exiting (project name is already in use)")
+        print ("1ERROR res[0] "+res[1])
         sys.exit(res[1])
     
     
@@ -225,7 +225,7 @@ def push_project():
     pub = 0 if CONFIG_ITEMS['public'] else 1
     fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public','matrix','active','permanent','user_project']
     q = "INSERT into project ("+(',').join(fields)+")"
-    q += " VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"
+    q += " VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"
     q = q % (proj,title,desc,rev,fund,id,pub,'0','1','0','1')
     if args.verbose:
         print(q)
