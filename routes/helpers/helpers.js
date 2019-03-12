@@ -2233,25 +2233,6 @@ exports.geo_loc_name_continental_validation = function (value) {
   }
 };
 
-// slower
-// [2019/03/07 16:04:27.187] [LOG]    TIME: slice_object_by_keys: 20.565ms
-// [2019/03/07 16:04:27.313] [LOG]    TIME: slice_object_by_keys_2: 125.879ms
-// [2019/03/07 16:04:27.314] [LOG]    TIME: helpers.slice_object_by_keys: 147.591ms
-// exports.slice_object_by_keys_2 = function(obj, keys) {
-//   // console.time('TIME: slice_object_by_keys_2 inside');
-//
-//   let res_obj = {};
-//   for (const [key, value] of Object.entries(obj)) {
-//     // console.log(`${key} ${value}`); // "a 5", "b 7", "c 9"
-//     if (keys.includes(key)) {
-//       res_obj[key] = value;
-//     }
-//   }
-//   // console.timeEnd('TIME: slice_object_by_keys_2 inside');
-//   return res_obj;
-//
-// };
-
 exports.slice_object_by_keys_to_arr = function (obj, slice_keys) {
   let res_arr = [];
   for (var n in slice_keys) {
