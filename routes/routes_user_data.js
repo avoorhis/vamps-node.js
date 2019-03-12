@@ -3150,7 +3150,7 @@ function ResFilePathExists(req, data_repository, res)
 function MetadataFileProvided(req, res)
 {
   if (req.files[1].filename === undefined || req.files[1].size === 0) {
-    // console.log("DDD2 in MetadataFileProvided, filename === undefined");
+    // console.log("DDD21 in MetadataFileProvided, filename === undefined");
     req.flash('fail', 'A metadata csv file is required. Check if it exists.');
     res.redirect(path.join("/user_data", req.url));
     return false;

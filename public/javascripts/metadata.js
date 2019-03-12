@@ -956,7 +956,7 @@ showUnits = function () {
 
     var result = all_field_units_js[$field_name];
     if (!result) {
-      result = ordered_field_names_obj_js[$field_name][1][3];
+      result = ordered_field_names_obj_js[$field_name][3];
     }
 
     $(this).css('cursor', 'pointer').attr('title', result);

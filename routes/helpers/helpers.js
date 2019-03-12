@@ -80,17 +80,11 @@ module.exports.array_from_object = function (data) {
 
 module.exports.get_second = function (element) {
   console.time('TIME: get_second');
-
-  for (var met_names_row in C.ORDERED_METADATA_NAMES) {
-    if (C.ORDERED_METADATA_NAMES[met_names_row].includes(element)) {
-      // console.log('ETET met_names_row[1]');
-      // console.log(C.ORDERED_METADATA_NAMES[met_names_row][1]);
-      return C.ORDERED_METADATA_NAMES[met_names_row][1];
-    }
+  if (C.ORDERED_METADATA_NAMES_OBJ.hasOwnProperty(element)) {
+    return C.ORDERED_METADATA_NAMES_OBJ[element][1];
   }
   console.timeEnd('TIME: get_second');
 };
-// };
 
 /** Benchmarking
  * Usage:
@@ -2238,20 +2232,30 @@ exports.geo_loc_name_continental_validation = function (value) {
   }
 };
 
+exports.slice_object_by_keys_to_arr = function (obj, slice_keys) {
+  let res_arr = [];
+  for (var n in slice_keys) {
+    let next_f_name = slice_keys[n];
+    res_arr = res_arr.concat([obj[next_f_name]]);
+  }
+  return res_arr;
+};
+
 exports.slice_object_by_keys = function (object, slice_keys) {
-  console.time('TIME: convert to string');
+  // console.time('TIME: convert to string');
   for (var i = 0; i < slice_keys.length; i++) {
     slice_keys[i] = String(slice_keys[i]);
   }
-  console.timeEnd('TIME: convert to string');
+  // console.timeEnd('TIME: convert to string');
 
-  return Object.keys(object)
-    .filter(function (key) {
+  return Object.keys(object) // 1) for each obj's key
+    .filter(function (key) { // 2) if it is in slice_keys
       return slice_keys.indexOf(key) >= 0;
     })
-    .reduce(function (acc, key) {
-      acc[key] = object[key];
-      return acc;
+    .reduce(function (accum, key) { // 3) add the key/value pair to a new obj
+      accum[key] = object[key];
+      // console.log("AACC: accum", JSON.stringify(accum));
+      return accum;
     }, {});
 };
 
@@ -2402,6 +2406,13 @@ exports.retrieve_needed_constants = function(cnsts, view)
     }
     return obj;
 };
+
+
+exports.is_empty = function(obj_or_arr) {
+  return Object.keys(obj_or_arr).length === 0;
+};
+
+
 
 // module.exports.validate_name = function (name) {
 //     console.log('helpers.validate_name: '+name)
