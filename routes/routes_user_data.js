@@ -2411,8 +2411,6 @@ function gastTax(req, project_config, ref_db)
   // process.umask(oldmask);
 
 
-// /groups/vampsweb/vampsdev_node_data/user_data/AnnaSh/project-test_gast_project/test_gast_dataset.fa.unique.uc
-
 //from inside of gast_script.sh 
   // create filenames.list and get numbers
   // create clust_gast_ill_PROJECT_NAME.sh
@@ -3839,7 +3837,7 @@ function saveToDb(req, res){
              req.body.project_pid = rows.insertId;
              // console.log('RRR: req.body.project_pid ' + req.body.project_pid);
              // AAV -- Do we want this new empty project in PROJECT_INFORMATION_BY_PNAME???
-             // Currently this new project doesn't have a directory in /groups/vampsweb/vampsdev_node_data/user_data/andy
+             // Currently this new project doesn't have a directory in /groups/vampsweb/vampsdev/nodejs/user_data/andy
              // AND it is absent from the dropdown box when wanting to add datasets  
              //helpers.update_project_information_global_object(req.body.project_pid, req.form, req.user)
              

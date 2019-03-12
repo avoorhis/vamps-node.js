@@ -862,7 +862,13 @@ if __name__ == '__main__':
     print(my_args)
     
     import vamps_script_create_json_dataset_files as file_maker
-    my_args["jsonfile_dir"] = '/groups/vampsweb/vamps_node_data/json/'
+    if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':
+        my_args["jsonfile_dir"] = '/groups/vampsweb/vamps/nodejs/json/'
+    elif args.site == 'vampsdev' or args.site == 'bpcweb7':
+        my_args["jsonfile_dir"] = '/groups/vampsweb/vampsdev/nodejs/json/'
+    else:
+        my_args["jsonfile_dir"] = './'
+    
     my_args["units"] = 'silva119'
     file_maker.go_add(my_args)
     print("FINISHED -- LOAD -- METADATA -- FILES")

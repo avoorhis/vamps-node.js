@@ -1362,7 +1362,6 @@ module.exports.get_qsub_script_text = function (req, scriptlog, dir_path, cmd_na
   script_text += "export MODULEPATH=/usr/local/www/vamps/software/modulefiles\n";
   script_text += "module load clusters/vamps\n\n";
   script_text += "cd /groups/vampsweb/tmp\n\n";
-  //script_text += "cd /groups/vampsweb/vampsdev_node_data/\n\n";
   //script_text += "cd "+pwd+"\n\n";
   //script_text += "mkdir "+pwd+"/gast\n\n";
   //script_text += "mkdir gast\n\n";
@@ -1489,7 +1488,7 @@ module.exports.make_gast_script_txt = function (req, data_dir, project, cmd_list
     make_gast_script_txt += "PATH=$PATH:" + app_root + "/public/scripts/gast:" + req.CONFIG.GAST_SCRIPT_PATH + "\n"
     make_gast_script_txt += "touch " + data_dir + "/clust_gast_ill_" + project + ".sh.sge_script.sh.log\n"
   }
-  // /groups/vampsweb/vampsdev_node_data/user_data/avoorhis/project-avoorhis_435638/analysis/*/seqfile.unique.fa
+  
   make_gast_script_txt += "ls " + data_dir + "/analysis/*/seqfile.unique" + opts.file_suffix + " > " + data_dir + "/filenames.list\n"
   make_gast_script_txt += "# chmod 666 " + data_dir + "/filenames.list\n"
   make_gast_script_txt += "cd " + data_dir + "\n";
