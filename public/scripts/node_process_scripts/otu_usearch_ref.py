@@ -649,7 +649,7 @@ if __name__ == '__main__':
     print "Starting otu_vsearch_ref.py"
     args = parser.parse_args()
     if args.site == 'vamps':
-        args.main_dir = os.path.join('/groups','vampsweb','vamps_node_data','user_data',args.user)
+        args.main_dir = os.path.join('/groups','vampsweb','vamps','nodejs','user_data',args.user)
     elif args.site == 'vampsdev':
         args.main_dir =  os.path.join('/groups','vampsweb','vampsdev','nodejs','user_data',args.user)
     else:

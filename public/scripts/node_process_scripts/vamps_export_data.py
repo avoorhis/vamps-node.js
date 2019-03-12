@@ -956,7 +956,7 @@ if __name__ == '__main__':
         #db_host = 'bpcweb8'
         args.NODE_DATABASE = 'vamps2'
         db_home = '/groups/vampsweb/vamps/'
-        args.files_home ='/groups/vampsweb/vamps_node_data/json/vamps2--datasets_silva119/'
+        args.files_home ='/groups/vampsweb/vamps/nodejs/json/vamps2--datasets_silva119/'
     elif args.site == 'vampsdev':
         db_host = 'bpcweb7'
         #db_host = 'bpcweb7'
