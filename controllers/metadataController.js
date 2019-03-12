@@ -1136,19 +1136,6 @@ class FieldNames {
 // ...
   }
 
-  // // order for existing and new datasets
-  // get_names_from_ordered_const() {
-  //   console.time('time: ordered_metadata_names_only');
-  //
-  //   const arraycolumn = (arr, n) =>
-  //     arr.map(x => x[n]
-  //     )
-  //   ;
-  //
-  //   console.timeEnd('time: ordered_metadata_names_only');
-  //   return arraycolumn(CONSTS.ORDERED_METADATA_NAMES, 0);
-  // }
-
   //  from Show!
   make_ordered_field_names_obj(all_field_names_arr4) {
     //[ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ],
@@ -1166,7 +1153,7 @@ class FieldNames {
   // misc
 
   make_array4(field_names_arr) {
-// make a 2D array as in CONSTS.ORDERED_METADATA_NAMES: [field_names_arr[i2], field_names_arr[i2], '', '']
+// make a 2D array: [field_names_arr[i2], field_names_arr[i2], '', '']
     var new_arr = [];
     for (var i2 = 0; i2 < field_names_arr.length; i2++) {
       var temp_arr = [field_names_arr[i2], field_names_arr[i2], '', ''];
