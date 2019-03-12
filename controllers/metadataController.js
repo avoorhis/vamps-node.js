@@ -13,8 +13,8 @@ var validator            = require('validator');
 class CreateDataObj {
 
   constructor(req, res, project_id, dataset_ids) {
-    this.req             = req || {};
-    this.res             = res || {};
+    this.req             = req;
+    this.res             = res;
     this.pid             = project_id || '';
     this.dataset_ids     = DATASET_IDS_BY_PID[this.pid] || dataset_ids || [];
 
