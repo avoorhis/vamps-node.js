@@ -24,10 +24,10 @@ import csv
 from time import sleep
 
 import datetime
-import logging
 today = str(datetime.date.today())
 import subprocess
 import pymysql as MySQLdb
+import warnings
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -63,8 +63,7 @@ def start(args):
     RANK_COLLECTOR={}
     TAX_ID_BY_RANKID_N_TAX = {}
     SUMMED_TAX_COLLECTOR = {} 
-    logging.info('CMD> '+' '.join(sys.argv))
-    #print ('CMD> ',sys.argv)
+    
 
     NODE_DATABASE = args.NODE_DATABASE
 
@@ -87,50 +86,53 @@ def start(args):
     cur = mysql_conn.cursor()
     
     
-    #logging.info("running get_config_data")
-    #print ("running get_config_data")
-    #get_config_data(args.project_dir)
     
-    logging.info("checking user")
     print ("checking user")
     args.user_id = check_user()  ## script dies if user not in db
     
-    logging.info("checking project")
+   
     print ("checking project")
     check_project()  ## script dies if project is in db
         
-    logging.info("recreating ranks")
     print ("recreating ranks")
     recreate_ranks()  # this is only needed on 'new' databases.
 
-    logging.info("Parsing Matrix File")
+    
     print("Parsing Matrix File")
-    args.tax_data_by_ds = parse_matrix_file()
+    tax_data_by_ds = parse_matrix_file()
+    args.tax_data_by_ds = {}
+    for ds in tax_data_by_ds:
+        if not ds or ds == '':
+            print('REMOVING EMPTY Dataset and data')
+        else:
+            args.tax_data_by_ds[ds] = tax_data_by_ds[ds]
+    print('clean datasets',args.tax_data_by_ds.keys())        
+             
 
-    logging.info("classifier")
+    
     print ("classifier")
     args.classid = create_classifier()
 
     
-    logging.info("projects")
+    
     print ("projects")
     args.pid = push_project()
 
-    logging.info("datasets")
+    
     print ("datasets")
     push_dataset()
 
-    logging.info("starting taxonomy")
+    
     print ("starting taxonomy")
     push_taxonomy(args)
     
-    logging.info("starting taxonomy_info")
+    
     print ("starting taxonomy_info")
     push_taxonomy_info(args)
     
 
 
-    logging.info("Finished "+os.path.basename(__file__))
+    
     print ("Finished "+os.path.basename(__file__))
     print (args.pid)
     print ('Writing pid to pid.txt')
@@ -187,7 +189,7 @@ def parse_matrix_file():
         if len(row) == 1:
             print('File delimiter expected to be a <tab>')
             sys.exit('File delimiter expected to be a <tab>')
-        if n==0:
+        if n==0:  # dataset row
             # May or may not be text in row1;col1
             datasets = row[1:]
             print('datasets',datasets)
@@ -236,6 +238,7 @@ def parse_matrix_file():
     # for ds in tax_data_by_ds:
 #         print(len(tax_data_by_ds[ds]))
 #     sys.exit()
+    
     return tax_data_by_ds
     
         
@@ -255,19 +258,27 @@ def recreate_ranks():
     global mysql_conn, cur
     for i,rank in enumerate(ranks):
         
-        q = "INSERT IGNORE into rank (rank,rank_number) VALUES('%s','%s')" % (rank,str(i))
-        logging.info(q)
+        # q = "INSERT IGNORE into rank (rank,rank_number) VALUES('%s','%s')" % (rank,str(i))
+#         print(q)
+#         cur.execute(q)
+#         rank_id = cur.lastrowid
+        # if rank_id==0:
+        q = "SELECT rank_id from rank where rank='%s'" % (rank)
         cur.execute(q)
-        rank_id = cur.lastrowid
-        if rank_id==0:
-            q = "SELECT rank_id from rank where rank='%s'" % (rank)
-            logging.info(q)
-            cur.execute(q)
-            row = cur.fetchone()
-            RANK_COLLECTOR[rank] = row[0]
-        else:
-            RANK_COLLECTOR[rank] = rank_id
-    mysql_conn.commit()
+        row = cur.fetchone()
+        RANK_COLLECTOR[rank] = row[0]
+#         else:
+#             RANK_COLLECTOR[rank] = rank_id
+    #mysql_conn.commit()
+    # for vampsdev
+    # RANK_COLLECTOR['domain'] = '0'
+#     RANK_COLLECTOR['phylum'] = '1'
+#     RANK_COLLECTOR['klass'] = '2'
+#     RANK_COLLECTOR['order'] = '3'
+#     RANK_COLLECTOR['family'] = '4'
+#     RANK_COLLECTOR['genus'] = '5'
+#     RANK_COLLECTOR['species'] = '6'
+#     RANK_COLLECTOR['strain'] = '7'
 
 def push_project():
     
@@ -283,12 +294,12 @@ def push_project():
     q = q % (args.project,title,desc,rev,fund,args.user_id,pub,'1','1','0','1')
     if args.verbose:
         print(q)
-    logging.info(q)
+    
     
     try:
         cur.execute(q)
         args.pid = cur.lastrowid
-        logging.info("PID="+str(args.pid))
+        
         print("PID="+str(args.pid))
         mysql_conn.commit()
         #print cur.lastrowid
@@ -311,7 +322,7 @@ def push_dataset():
         desc = ds+'_description'
         
         q4 = q % (ds, desc, args.pid)
-        logging.info(q4)
+        
         if args.verbose:
             print (q4)
 
@@ -395,7 +406,7 @@ def finish_tax(ds,  seq_count, tax_string):
     #print seq, seq_count, tax_string
     
     
-   
+    
     sumtax = ''
     for i in range(0,8):
         
@@ -421,78 +432,82 @@ def finish_tax(ds,  seq_count, tax_string):
     #insert_nas()    
     
     #if tax_items[0].lower() in accepted_domains:
-    ids_by_rank = []
-    for i in range(0,8):
-        #print i,len(tax_items),tax_items[i]
-        rank_name = ranks[i]
-        rank_id = RANK_COLLECTOR[ranks[i]]
+    print('Suppressing MySQL Warnings here in matrix_loader')
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        cur = mysql_conn.cursor()
+        ids_by_rank = []
+        for i in range(0,8):
+            #print i,len(tax_items),tax_items[i]
+            rank_name = ranks[i]
+            rank_id = RANK_COLLECTOR[ranks[i]]
         
-        if len(tax_items) > i:
-            if ranks[i] == 'species':
-                t = tax_items[i].lower().replace('"','').replace("'",'')
+            if len(tax_items) > i:
+                if ranks[i] == 'species':
+                    t = tax_items[i].lower().replace('"','').replace("'",'')
+                else:
+                    t = tax_items[i].capitalize().replace('"','').replace("'",'')
+            
+                if tax_items[i].lower() != (rank_name+'_NA').lower():
+                    name_found = False
+                    # if rank_name in tax_collector:
+                    #     tax_collector[rank_name].append(t)
+                    # else:
+                    #     tax_collector[rank_name] = [t]
             else:
-                t = tax_items[i].capitalize().replace('"','').replace("'",'')
-            
-            if tax_items[i].lower() != (rank_name+'_NA').lower():
-                name_found = False
-                # if rank_name in tax_collector:
-                #     tax_collector[rank_name].append(t)
-                # else:
-                #     tax_collector[rank_name] = [t]
-        else:
-            t = rank_name+'_NA'
+                t = rank_name+'_NA'
         
         
             
-        q2 = "INSERT ignore into `"+rank_name+"` (`"+rank_name+"`) VALUES('"+t+"')"
-        logging.info(q2)
+            q2 = "INSERT ignore into `"+rank_name+"` (`"+rank_name+"`) VALUES('"+t+"')"
+        
+            if args.verbose:
+                print(q2)
+            cur.execute(q2)
+            mysql_conn.commit() 
+            tax_id = cur.lastrowid
+            if tax_id == 0:
+                q3 = "SELECT "+rank_name+"_id from `"+rank_name+"` where `"+rank_name+"` = '"+t+"'"
+        
+                if args.verbose:
+                    print(q3)
+                cur.execute(q3)
+                mysql_conn.commit() 
+                row = cur.fetchone()
+                tax_id=row[0]
+            ids_by_rank.append(str(tax_id))
+            #else:
+     
+            if rank_id in TAX_ID_BY_RANKID_N_TAX:
+                TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
+            else:
+                TAX_ID_BY_RANKID_N_TAX[rank_id]={}
+                TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
+            #ids_by_rank.append('1')
+     
+        q4 =  "INSERT ignore into generic_taxonomy ("+','.join(matrix_taxa_ids)+",created_at)"
+        q4 += " VALUES("+','.join(ids_by_rank)+",CURRENT_TIMESTAMP())"
+        #
+    
         if args.verbose:
-            print(q2)
-        cur.execute(q2)
+            print (q4)
+        cur.execute(q4)
         mysql_conn.commit() 
         tax_id = cur.lastrowid
         if tax_id == 0:
-            q3 = "SELECT "+rank_name+"_id from `"+rank_name+"` where `"+rank_name+"` = '"+t+"'"
-            logging.info(q3)
+            q5 = "SELECT generic_taxonomy_id from generic_taxonomy where ("
+            vals = ''
+            for i in range(0,len(matrix_taxa_ids)):
+                vals += ' '+matrix_taxa_ids[i]+"="+ids_by_rank[i]+' and'
+            q5 = q5 + vals[0:-3] + ')'
             if args.verbose:
-                print(q3)
-            cur.execute(q3)
+                print (q5)
+            cur.execute(q5)
             mysql_conn.commit() 
             row = cur.fetchone()
             tax_id=row[0]
-        ids_by_rank.append(str(tax_id))
-        #else:
-        #logging.info( 'rank_id,t,tax_id',rank_id,t,tax_id  )  
-        if rank_id in TAX_ID_BY_RANKID_N_TAX:
-            TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
-        else:
-            TAX_ID_BY_RANKID_N_TAX[rank_id]={}
-            TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
-        #ids_by_rank.append('1')
-    logging.info(  ids_by_rank )  
-    q4 =  "INSERT ignore into generic_taxonomy ("+','.join(matrix_taxa_ids)+",created_at)"
-    q4 += " VALUES("+','.join(ids_by_rank)+",CURRENT_TIMESTAMP())"
-    #
-    logging.info(q4)
-    if args.verbose:
-        print (q4)
-    cur.execute(q4)
-    mysql_conn.commit() 
-    tax_id = cur.lastrowid
-    if tax_id == 0:
-        q5 = "SELECT generic_taxonomy_id from generic_taxonomy where ("
-        vals = ''
-        for i in range(0,len(matrix_taxa_ids)):
-            vals += ' '+matrix_taxa_ids[i]+"="+ids_by_rank[i]+' and'
-        q5 = q5 + vals[0:-3] + ')'
-        if args.verbose:
-            print (q5)
-        cur.execute(q5)
-        mysql_conn.commit() 
-        row = cur.fetchone()
-        tax_id=row[0]
-        if args.verbose:
-            print ('generic_tax_id',tax_id)
+            if args.verbose:
+                print ('generic_tax_id',tax_id)
     
     GENERIC_IDS_BY_TAX[tax_string] = tax_id
         

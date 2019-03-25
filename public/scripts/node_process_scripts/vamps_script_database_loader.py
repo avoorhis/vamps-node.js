@@ -30,6 +30,7 @@ import datetime
 today = str(datetime.date.today())
 import subprocess
 import pymysql as MySQLdb
+import warnings
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -199,19 +200,18 @@ def recreate_ranks():
     global mysql_conn, cur
     for i,rank in enumerate(ranks):
         
-        q = "INSERT IGNORE into rank (rank,rank_number) VALUES('%s','%s')" % (rank,str(i))
-        
+        # q = "INSERT IGNORE into rank (rank,rank_number) VALUES('%s','%s')" % (rank,str(i))
+#         
+#         cur.execute(q)
+#         rank_id = cur.lastrowid
+#         if rank_id==0:
+        q = "SELECT rank_id from rank where rank='%s'" % (rank)        
         cur.execute(q)
-        rank_id = cur.lastrowid
-        if rank_id==0:
-            q = "SELECT rank_id from rank where rank='%s'" % (rank)
-            
-            cur.execute(q)
-            row = cur.fetchone()
-            RANK_COLLECTOR[rank] = row[0]
-        else:
-            RANK_COLLECTOR[rank] = rank_id
-    mysql_conn.commit()
+        row = cur.fetchone()
+        RANK_COLLECTOR[rank] = row[0]
+        #else:
+        #    RANK_COLLECTOR[rank] = rank_id
+    #mysql_conn.commit()
 
 def push_project():
     global CONFIG_ITEMS
@@ -662,77 +662,80 @@ def finish_tax(ds, refhvr_ids, rank, distance, seq, seq_count, tax_items):
         sumtax += taxitem+';'
         
        
-    
-    if tax_items[0].lower() in accepted_domains:
-        ids_by_rank = []
-        for i in range(0,8):
-            #print i,len(tax_items),tax_items[i]
-            rank_name = ranks[i]
-            rank_id = RANK_COLLECTOR[ranks[i]]
+    print('Suppressing MySQL Warnings here in matrix_loader')
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        cur = mysql_conn.cursor()
+        if tax_items[0].lower() in accepted_domains:
+            ids_by_rank = []
+            for i in range(0,8):
+                #print i,len(tax_items),tax_items[i]
+                rank_name = ranks[i]
+                rank_id = RANK_COLLECTOR[ranks[i]]
             
-            if len(tax_items) > i:
-                if ranks[i] == 'species':
-                    t = tax_items[i].lower()
+                if len(tax_items) > i:
+                    if ranks[i] == 'species':
+                        t = tax_items[i].lower()
+                    else:
+                        t = tax_items[i].capitalize()
+                
+                    if tax_items[i].lower() != (rank_name+'_NA').lower():
+                        name_found = False
+                        # if rank_name in tax_collector:
+                        #     tax_collector[rank_name].append(t)
+                        # else:
+                        #     tax_collector[rank_name] = [t]
                 else:
-                    t = tax_items[i].capitalize()
-                
-                if tax_items[i].lower() != (rank_name+'_NA').lower():
-                    name_found = False
-                    # if rank_name in tax_collector:
-                    #     tax_collector[rank_name].append(t)
-                    # else:
-                    #     tax_collector[rank_name] = [t]
-            else:
-                t = rank_name+'_NA'
+                    t = rank_name+'_NA'
             
             
                 
-            q2 = "INSERT ignore into `"+rank_name+"` (`"+rank_name+"`) VALUES('"+t+"')"
+                q2 = "INSERT ignore into `"+rank_name+"` (`"+rank_name+"`) VALUES('"+t+"')"
            
-            cur.execute(q2)
+                cur.execute(q2)
+                mysql_conn.commit() 
+                tax_id = cur.lastrowid
+                if tax_id == 0:
+                    q3 = "select "+rank_name+"_id from `"+rank_name+"` where `"+rank_name+"` = '"+t+"'"
+                
+                    cur.execute(q3)
+                    mysql_conn.commit() 
+                    row = cur.fetchone()
+                    tax_id=row[0]
+                ids_by_rank.append(str(tax_id))
+           
+        
+            if args.classifier.upper() == 'GAST':
+                q4 =  "INSERT ignore into silva_taxonomy ("+','.join(eight_cats)+",created_at)"
+                q5 = "SELECT silva_taxonomy_id from silva_taxonomy where ("
+            elif args.classifier.upper() == 'RDP':
+                q4 =  "INSERT ignore into rdp_taxonomy ("+','.join(eight_cats)+",created_at)"
+                q5 = "SELECT rdp_taxonomy_id from rdp_taxonomy where ("
+            elif args.classifier.upper() == 'SPINGO':
+                q4 =  "INSERT ignore into generic_taxonomy ("+','.join(eight_cats)+",created_at)"
+                q5 = "SELECT generic_taxonomy_id from generic_taxonomy where ("
+            q4 += " VALUES("+','.join(ids_by_rank)+",CURRENT_TIMESTAMP())"
+            #
+            if args.verbose:
+                print (q4)
+            cur.execute(q4)
             mysql_conn.commit() 
             tax_id = cur.lastrowid
             if tax_id == 0:
-                q3 = "select "+rank_name+"_id from `"+rank_name+"` where `"+rank_name+"` = '"+t+"'"
-                
-                cur.execute(q3)
+                vals = ''
+                for i in range(0,len(eight_cats)):
+                    vals += ' '+eight_cats[i]+"="+ids_by_rank[i]+' and'
+                q5 = q5 + vals[0:-3] + ')'
+                if args.verbose:
+                    print (q5)
+                cur.execute(q5)
                 mysql_conn.commit() 
                 row = cur.fetchone()
                 tax_id=row[0]
-            ids_by_rank.append(str(tax_id))
-           
-        
-        if args.classifier.upper() == 'GAST':
-            q4 =  "INSERT ignore into silva_taxonomy ("+','.join(eight_cats)+",created_at)"
-            q5 = "SELECT silva_taxonomy_id from silva_taxonomy where ("
-        elif args.classifier.upper() == 'RDP':
-            q4 =  "INSERT ignore into rdp_taxonomy ("+','.join(eight_cats)+",created_at)"
-            q5 = "SELECT rdp_taxonomy_id from rdp_taxonomy where ("
-        elif args.classifier.upper() == 'SPINGO':
-            q4 =  "INSERT ignore into generic_taxonomy ("+','.join(eight_cats)+",created_at)"
-            q5 = "SELECT generic_taxonomy_id from generic_taxonomy where ("
-        q4 += " VALUES("+','.join(ids_by_rank)+",CURRENT_TIMESTAMP())"
-        #
-        if args.verbose:
-            print (q4)
-        cur.execute(q4)
-        mysql_conn.commit() 
-        tax_id = cur.lastrowid
-        if tax_id == 0:
-            vals = ''
-            for i in range(0,len(eight_cats)):
-                vals += ' '+eight_cats[i]+"="+ids_by_rank[i]+' and'
-            q5 = q5 + vals[0:-3] + ')'
-            if args.verbose:
-                print (q5)
-            cur.execute(q5)
-            mysql_conn.commit() 
-            row = cur.fetchone()
-            tax_id=row[0]
             
         
-        #IDS_BY_TAX[tax_string] = tax_id
-        args.SEQ_COLLECTOR[ds][seq]['tax_id'] = tax_id
+            #IDS_BY_TAX[tax_string] = tax_id
+            args.SEQ_COLLECTOR[ds][seq]['tax_id'] = tax_id
         
                    
 

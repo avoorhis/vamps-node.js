@@ -87,7 +87,8 @@ def get_data(args):
 def parse_matrix(args):
     print('running matrix')
     n = 0
-    datasets={}
+    dirty_datasets = {}
+    clean_datasets = {}
     project_count = 0
     max_ds_count = 0
     with open(args.file, mode='r') as infile:
@@ -101,23 +102,39 @@ def parse_matrix(args):
                 ds_items = items[1:]   #line.strip('\n').split('\t')[1:] # stip original line on '\n' only to retain first '\t' ip present
                 #print('ds_items',ds_items)
                 for ds in ds_items:
-                    datasets[ds] = 0                
+                    dirty_datasets[ds] = 0                
             else:                
                 line_items = items   #line.strip().split('\t')
                 #print('line_items',line_items)
                 counts = line_items[1:]
                 for i,cnt in enumerate(counts):
-                    print(i,cnt)
+                    #print(i,cnt)
+                    
                     if cnt == '' or not cnt:
                         cnt = 0
+                        print('MISSING COUNT - Setting to zero (line:'+str(n+1)+';col:'+str(i+2)+')')
+                    try:
+                        cnt = int(cnt)
+                    except:
+                        cnt = 0
+                        print('NON-INTEGER COUNT - Setting to zero (line:'+str(n+1)+';col:'+str(i+2)+')')
                     project_count += int(cnt)
-                    datasets[ds_items[i]] += int(cnt)                    
+                    dirty_datasets[ds_items[i]] += int(cnt)                    
                 tax = line_items[0]
             n+=1
-    for ds in datasets:
-        if datasets[ds] > max_ds_count:
-            max_ds_count = datasets[ds]
-    return(datasets, project_count, max_ds_count)
+            
+    
+    for ds in dirty_datasets:
+        if not ds or ds == '':
+            print('REMOVING EMPTY Dataset and data')
+        else:
+            clean_datasets[ds] = dirty_datasets[ds]
+    print('clean datasets',clean_datasets.keys())     
+    
+    for ds in clean_datasets:
+        if clean_datasets[ds] > max_ds_count:
+            max_ds_count = clean_datasets[ds]
+    return(clean_datasets, project_count, max_ds_count)
 
 def find_dataset_name(id):  
     """

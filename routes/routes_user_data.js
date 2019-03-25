@@ -4287,7 +4287,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
       qSelect = qSelect + add_where.substring(0, add_where.length - 5);
 
   }
-  //qSelect += " limit 100 ";                     // <<<<-----  for testing
+  //qSelect += " limit 100 ";                     // <-----  for testing
 
   var gzip = zlib.createGzip();
   console.log(qSelect);
