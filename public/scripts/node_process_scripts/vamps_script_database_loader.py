@@ -410,6 +410,7 @@ def push_taxonomy(args):
     global mysql_conn, cur      
     args.SEQ_COLLECTOR = {}
     analysis_dir = os.path.join(args.project_dir,'analysis')
+    print('Suppressing MySQL Warnings here in database_loader')
     for ds in CONFIG_ITEMS['datasets']:
         args.SEQ_COLLECTOR[ds] = {}
     for dir in os.listdir(analysis_dir): 
@@ -476,9 +477,7 @@ def push_taxonomy(args):
 def run_tax_by_seq_file(args,ds,tax_file, seqs):
     #tax_collector = {}
     
-
     tax_items = []
-    print('Suppressing MySQL Warnings here in database_loader')
     with open(tax_file,'r') as fh:
         for line in fh:
             
@@ -503,7 +502,7 @@ def run_tax_by_seq_file(args,ds,tax_file, seqs):
 def run_gast_tax_file(args, ds, tax_file, seqs):
     #tax_collector = {}
     tax_items = []
-    print('Suppressing MySQL Warnings here in database_loader')
+    
     with open(tax_file,'r') as fh:
         n=0
         for line in fh:
@@ -550,7 +549,6 @@ def run_rdp_tax_file(args, ds, tax_file, seq_file, seqs):
     
     print('tax_file: '+tax_file)    
     tax_items = []
-    print('Suppressing MySQL Warnings here in database_loader')
     with open(tax_file,'r') as fh:
         for line in fh:
             tax_items = []
@@ -592,7 +590,6 @@ def run_spingo_tax_file(args, ds, tax_file, seq_file, seqs):
     if args.verbose:
         print(tax_file)
         print(seqs)
-    print('Suppressing MySQL Warnings here in database_loader')
     with open(tax_file,'r') as fh:
         for line in fh:            
             line = line.strip()
