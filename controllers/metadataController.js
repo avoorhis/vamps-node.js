@@ -13,8 +13,8 @@ var validator            = require('validator');
 class CreateDataObj {
 
   constructor(req, res, project_id, dataset_ids) {
-    this.req             = req || {};
-    this.res             = res || {};
+    this.req             = req;
+    this.res             = res;
     this.pid             = project_id || '';
     this.dataset_ids     = DATASET_IDS_BY_PID[this.pid] || dataset_ids || [];
 
@@ -533,8 +533,6 @@ class CreateDataObj {
     // console.log('DDD3_1, all_field_names', JSON.stringify(all_field_names)); // cond1
 
     this.prepare_empty_metadata_object(pid, all_field_names, {});
-    var all_metadata = this.all_metadata;
-    // console.log('PPP01 all_metadata from create_all_metadata_form_new', all_metadata);
     var repeat_times = parseInt(req.form.samples_number, 10) || parseInt(req.form.dataset.length, 10);
     var current_info = Object.assign(project_obj);
 
@@ -546,15 +544,18 @@ class CreateDataObj {
       current_info.domain_id   = this.get_domain_id(current_info.domain);
     }
 
+    var all_metadata = this.all_metadata;
+    if (typeof all_metadata[pid] === 'undefined') {
+      all_metadata[pid] = {};
+    }
+
     for (var i = 0; i < all_field_names.length; i++) {
       var field_name = all_field_names[i];
       var val        = current_info[field_name] || '';
       if (typeof current_info[field_name] !== 'undefined') {
         all_metadata[pid][field_name] = [current_info[field_name]];
       }
-      if (typeof all_metadata[pid] === 'undefined') {
-        all_metadata[pid] = {};
-      }
+
       //todo: split if, if length == dataset_ids.length - just use as is
       let field_has_value = ((typeof all_metadata[pid] !== 'undefined') && (typeof all_metadata[pid][field_name] !== 'undefined') && all_metadata[pid][field_name].length < 1);
       if (field_has_value) {
@@ -571,6 +572,7 @@ class CreateDataObj {
 
     console.timeEnd('TIME: create_all_metadata_form_new');
 
+    console.log("DDD11: ", JSON.stringify(all_metadata));
     return all_metadata;
 
   }
