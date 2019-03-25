@@ -337,6 +337,7 @@ def push_taxonomy(args):
     global SUMMED_TAX_COLLECTOR
     global mysql_conn, cur
     print('Starting finish_tax per dataset per tax')
+    print('Suppressing MySQL Warnings here in matrix_loader')
     for ds in args.tax_data_by_ds.keys():
         #print('ds:'+ds)
         for tax in args.tax_data_by_ds[ds]:
@@ -432,7 +433,7 @@ def finish_tax(ds,  seq_count, tax_string):
     #insert_nas()    
     
     #if tax_items[0].lower() in accepted_domains:
-    print('Suppressing MySQL Warnings here in matrix_loader')
+    
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         cur = mysql_conn.cursor()

@@ -478,6 +478,7 @@ def run_tax_by_seq_file(args,ds,tax_file, seqs):
     
 
     tax_items = []
+    print('Suppressing MySQL Warnings here in database_loader')
     with open(tax_file,'r') as fh:
         for line in fh:
             
@@ -502,6 +503,7 @@ def run_tax_by_seq_file(args,ds,tax_file, seqs):
 def run_gast_tax_file(args, ds, tax_file, seqs):
     #tax_collector = {}
     tax_items = []
+    print('Suppressing MySQL Warnings here in database_loader')
     with open(tax_file,'r') as fh:
         n=0
         for line in fh:
@@ -548,6 +550,7 @@ def run_rdp_tax_file(args, ds, tax_file, seq_file, seqs):
     
     print('tax_file: '+tax_file)    
     tax_items = []
+    print('Suppressing MySQL Warnings here in database_loader')
     with open(tax_file,'r') as fh:
         for line in fh:
             tax_items = []
@@ -589,7 +592,7 @@ def run_spingo_tax_file(args, ds, tax_file, seq_file, seqs):
     if args.verbose:
         print(tax_file)
         print(seqs)
-    
+    print('Suppressing MySQL Warnings here in database_loader')
     with open(tax_file,'r') as fh:
         for line in fh:            
             line = line.strip()
@@ -661,8 +664,6 @@ def finish_tax(ds, refhvr_ids, rank, distance, seq, seq_count, tax_items):
             taxitem = ranks[i]+'_NA'
         sumtax += taxitem+';'
         
-       
-    print('Suppressing MySQL Warnings here in matrix_loader')
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         cur = mysql_conn.cursor()
