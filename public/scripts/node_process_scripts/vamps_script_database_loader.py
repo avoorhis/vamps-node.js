@@ -861,11 +861,13 @@ if __name__ == '__main__':
     # convert args to a dict for passing to fxn
     my_args = vars(args)
     
+    #Script2
     import vamps_script_upload_metadata as md
     my_args["project"] = CONFIG_ITEMS['project_name']
     md.start_metadata_load_from_file(my_args)
     print(my_args)
     
+    #Script3
     import vamps_script_create_json_dataset_files as file_maker
     if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':
         my_args["jsonfile_dir"] = '/groups/vampsweb/vamps/nodejs/json/'

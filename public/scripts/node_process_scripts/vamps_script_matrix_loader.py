@@ -564,5 +564,33 @@ if __name__ == '__main__':
     # keep this as print('done pid',pid) for routes_user_data
     print('done pid',pid)
     
+    # delete the big unneeded key
+    del args.tax_data_by_ds 
+    
+    # convert args to a dict for passing to fxn
+    my_args = vars(args)
+    
+    my_args["config_file"] = os.path.join(args.project_dir,'INFO.config')
+    if args.host == 'vamps' or args.host == 'vampsdb' or args.host == 'bpcweb8':
+        my_args["site"] = 'vamps'
+        my_args["jsonfile_dir"] = '/groups/vampsweb/vamps/nodejs/json/'
+    elif args.host == 'vampsdev' or args.host == 'bpcweb7':
+        my_args["site"] = 'vampsdev'
+        my_args["jsonfile_dir"] = '/groups/vampsweb/vampsdev/nodejs/json/'
+    else:
+        my_args["site"] = 'localhost'
+        my_args["jsonfile_dir"] = './'
+    
+    #Script2
+    import vamps_script_upload_metadata as md    
+    md.start_metadata_load_from_file(my_args)
+    print(my_args)
+    
+    #Script3
+    import vamps_script_create_json_dataset_files as file_maker 
+    my_args["units"] = 'silva119'
+    file_maker.go_add(my_args)
+    print("FINISHED -- LOAD -- METADATA -- FILES")
+    
     
     
