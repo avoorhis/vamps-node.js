@@ -330,75 +330,79 @@ def push_sequences(args):
     print('in push_sequences')
     
     global mysql_conn, cur
-    for ds in args.SEQ_COLLECTOR:
-        for seq in args.SEQ_COLLECTOR[ds]:
-            q = "INSERT ignore into sequence (sequence_comp) VALUES (COMPRESS('%s'))" % (seq)
-            if args.verbose:
-                print(q)
-            cur.execute(q)
-            mysql_conn.commit()
-            seqid = cur.lastrowid
-            if seqid == 0:
-                q2 = "select sequence_id from sequence where sequence_comp = COMPRESS('%s')" % (seq)
-                
-                cur.execute(q2)
-                mysql_conn.commit() 
-                row = cur.fetchone()
-                seqid=row[0]
-            #print ('seqid',seqid)
-            args.SEQ_COLLECTOR[ds][seq]['sequence_id'] = seqid
-            tax_id = str(args.SEQ_COLLECTOR[ds][seq]['tax_id'])
-            
-            
-            rank_id = str(args.SEQ_COLLECTOR[ds][seq]['rank_id'])
-           
-            
-            if args.classifier.upper() == 'GAST':
-                distance = str(args.SEQ_COLLECTOR[ds][seq]['distance'])
-                q = "INSERT ignore into silva_taxonomy_info_per_seq"
-                q += " (sequence_id,silva_taxonomy_id,gast_distance,refssu_id,rank_id)"
-                q += " VALUES ('%s','%s','%s','0','%s')" % (str(seqid), tax_id, distance, rank_id)
-                q += " ON DUPLICATE KEY UPDATE silva_taxonomy_id='"+tax_id+"', gast_distance='"+distance+"',refssu_id='0', rank_id='"+rank_id+"'"
-                q3 = "SELECT silva_taxonomy_info_per_seq_id from silva_taxonomy_info_per_seq"
-            elif args.classifier.upper() == 'RDP':
-                q = "INSERT ignore into rdp_taxonomy_info_per_seq"
-                q += " (sequence_id,rdp_taxonomy_id,rank_id)"
-                q += " VALUES ('%s','%s','%s')" % (str(seqid), tax_id, rank_id)
-                q += " ON DUPLICATE KEY UPDATE rdp_taxonomy_id='"+tax_id+"', rank_id='"+rank_id+"'"
-                q3 = "SELECT rdp_taxonomy_info_per_seq_id from rdp_taxonomy_info_per_seq"
-            elif args.classifier.upper() == 'SPINGO':
-                seq_count = str(args.SEQ_COLLECTOR[ds][seq]['seq_count'])
-                q = "INSERT ignore into generic_taxonomy_info_per_seq"
-                q += " (sequence_id,generic_taxonomy_id,rank_id)"
-                q += " VALUES ('%s','%s','%s')" % (str(seqid), tax_id, rank_id)
-                q += " ON DUPLICATE KEY UPDATE generic_taxonomy_id='"+tax_id+"', rank_id='"+rank_id+"'"
-                q3 = "SELECT generic_taxonomy_info_per_seq_id from generic_taxonomy_info_per_seq"
-            else:
-                print('ERROR')
-                
-            if args.verbose:
-                print(q)
-            cur.execute(q)
-            mysql_conn.commit()
-            tax_seq_id = cur.lastrowid
-            if tax_seq_id == 0:
-                
-                q3 += " where sequence_id = '"+str(seqid)+"'"
+    print('Suppressing MySQL Warnings here in database_loader:sequences')
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        cur = mysql_conn.cursor()
+        for ds in args.SEQ_COLLECTOR:
+            for seq in args.SEQ_COLLECTOR[ds]:
+                q = "INSERT ignore into sequence (sequence_comp) VALUES (COMPRESS('%s'))" % (seq)
                 if args.verbose:
-                    print(q3)
-                #print 'DUP silva_tax_seq'
-                cur.execute(q3)
-                mysql_conn.commit() 
-                row = cur.fetchone()
-                tax_seq_id=row[0]
-        
-            q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
-            q4 += " VALUES('%s','%s')" % (str(seqid), str(tax_seq_id))
+                    print(q)
+                cur.execute(q)
+                mysql_conn.commit()
+                seqid = cur.lastrowid
+                if seqid == 0:
+                    q2 = "select sequence_id from sequence where sequence_comp = COMPRESS('%s')" % (seq)
+                
+                    cur.execute(q2)
+                    mysql_conn.commit() 
+                    row = cur.fetchone()
+                    seqid=row[0]
+                #print ('seqid',seqid)
+                args.SEQ_COLLECTOR[ds][seq]['sequence_id'] = seqid
+                tax_id = str(args.SEQ_COLLECTOR[ds][seq]['tax_id'])
+            
+            
+                rank_id = str(args.SEQ_COLLECTOR[ds][seq]['rank_id'])
            
-            cur.execute(q4)
-            mysql_conn.commit()
-        ## don't see that we need to save uniq_ids
-    mysql_conn.commit()
+            
+                if args.classifier.upper() == 'GAST':
+                    distance = str(args.SEQ_COLLECTOR[ds][seq]['distance'])
+                    q = "INSERT ignore into silva_taxonomy_info_per_seq"
+                    q += " (sequence_id,silva_taxonomy_id,gast_distance,refssu_id,rank_id)"
+                    q += " VALUES ('%s','%s','%s','0','%s')" % (str(seqid), tax_id, distance, rank_id)
+                    q += " ON DUPLICATE KEY UPDATE silva_taxonomy_id='"+tax_id+"', gast_distance='"+distance+"',refssu_id='0', rank_id='"+rank_id+"'"
+                    q3 = "SELECT silva_taxonomy_info_per_seq_id from silva_taxonomy_info_per_seq"
+                elif args.classifier.upper() == 'RDP':
+                    q = "INSERT ignore into rdp_taxonomy_info_per_seq"
+                    q += " (sequence_id,rdp_taxonomy_id,rank_id)"
+                    q += " VALUES ('%s','%s','%s')" % (str(seqid), tax_id, rank_id)
+                    q += " ON DUPLICATE KEY UPDATE rdp_taxonomy_id='"+tax_id+"', rank_id='"+rank_id+"'"
+                    q3 = "SELECT rdp_taxonomy_info_per_seq_id from rdp_taxonomy_info_per_seq"
+                elif args.classifier.upper() == 'SPINGO':
+                    seq_count = str(args.SEQ_COLLECTOR[ds][seq]['seq_count'])
+                    q = "INSERT ignore into generic_taxonomy_info_per_seq"
+                    q += " (sequence_id,generic_taxonomy_id,rank_id)"
+                    q += " VALUES ('%s','%s','%s')" % (str(seqid), tax_id, rank_id)
+                    q += " ON DUPLICATE KEY UPDATE generic_taxonomy_id='"+tax_id+"', rank_id='"+rank_id+"'"
+                    q3 = "SELECT generic_taxonomy_info_per_seq_id from generic_taxonomy_info_per_seq"
+                else:
+                    print('ERROR')
+                
+                if args.verbose:
+                    print(q)
+                cur.execute(q)
+                mysql_conn.commit()
+                tax_seq_id = cur.lastrowid
+                if tax_seq_id == 0:
+                
+                    q3 += " where sequence_id = '"+str(seqid)+"'"
+                    if args.verbose:
+                        print(q3)
+                    #print 'DUP silva_tax_seq'
+                    cur.execute(q3)
+                    mysql_conn.commit() 
+                    row = cur.fetchone()
+                    tax_seq_id=row[0]
+        
+                q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
+                q4 += " VALUES('%s','%s')" % (str(seqid), str(tax_seq_id))
+           
+                cur.execute(q4)
+                mysql_conn.commit()
+            ## don't see that we need to save uniq_ids
+        mysql_conn.commit()
     #print args.SEQ_COLLECTOR    
 
 #
@@ -410,7 +414,7 @@ def push_taxonomy(args):
     global mysql_conn, cur      
     args.SEQ_COLLECTOR = {}
     analysis_dir = os.path.join(args.project_dir,'analysis')
-    print('Suppressing MySQL Warnings here in database_loader')
+    print('Suppressing MySQL Warnings here in database_loader:taxonomy')
     for ds in CONFIG_ITEMS['datasets']:
         args.SEQ_COLLECTOR[ds] = {}
     for dir in os.listdir(analysis_dir): 

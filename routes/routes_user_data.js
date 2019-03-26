@@ -2305,16 +2305,16 @@ function rdpTax(req, project_config, ref_db)
     var classifier = 'RDP'
     var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-path_to_classifier',path2classifier,'-gene',gene,'--config',req.CONSTS.CONFIG_FILE]    
     var cmd2_opts = [ '-project_dir',data_dir,'-site',req.CONFIG.site,'--classifier',classifier,'--config',req.CONSTS.CONFIG_FILE ]
-    var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'--config',req.CONSTS.CONFIG_FILE ]
-    var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',req.CONSTS.CONFIG_FILE ]
+    //var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'--config',req.CONSTS.CONFIG_FILE ]
+    //var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',req.CONSTS.CONFIG_FILE ]
     
     var rdp_cmd1 = script_path + '/vamps_script_rdp_run.py'                         + ' '+cmd1_opts.join(' ')
     var rdp_cmd2 = script_path + '/vamps_script_database_loader.py'                 + ' '+cmd2_opts.join(' ')
-    var rdp_cmd3 = script_path + '/vamps_script_upload_metadata.py'                 + ' '+cmd3_opts.join(' ')
-    var rdp_cmd4 = script_path + '/vamps_script_create_json_dataset_files.py'       + ' '+cmd4_opts.join(' ')
+    //var rdp_cmd3 = script_path + '/vamps_script_upload_metadata.py'                 + ' '+cmd3_opts.join(' ')
+    //var rdp_cmd4 = script_path + '/vamps_script_create_json_dataset_files.py'       + ' '+cmd4_opts.join(' ')
     
-    var cmd_list = [ rdp_cmd1, rdp_cmd2, rdp_cmd3, rdp_cmd4 ];
-
+    //var cmd_list = [ rdp_cmd1, rdp_cmd2, rdp_cmd3, rdp_cmd4 ];
+    var cmd_list = [ rdp_cmd1, rdp_cmd2 ];
 
     return cmd_list
 }
@@ -2332,15 +2332,15 @@ function spingoTax(req, project_config, ref_db)
     
     var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-path_to_spingo',path2spingo,'--config',req.CONSTS.CONFIG_FILE,'-db',ref_db_path]    
     var cmd2_opts = [ '-project_dir',data_dir,'-site',req.CONFIG.site,'--classifier',classifier,'--config',req.CONSTS.CONFIG_FILE ]
-    var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'--config',req.CONSTS.CONFIG_FILE ]
-    var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',req.CONSTS.CONFIG_FILE ]
+    //var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'--config',req.CONSTS.CONFIG_FILE ]
+    //var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',req.CONSTS.CONFIG_FILE ]
     var spingo_cmd1 = script_path + '/vamps_script_spingo_run.py'                   + ' '+cmd1_opts.join(' ')
     var spingo_cmd2 = script_path + '/vamps_script_database_loader.py'              + ' '+cmd2_opts.join(' ')
-    var spingo_cmd3 = script_path + '/vamps_script_upload_metadata.py'              + ' '+cmd3_opts.join(' ')
-    var spingo_cmd4 = script_path + '/vamps_script_create_json_dataset_files.py'    + ' '+cmd4_opts.join(' ')
+    //var spingo_cmd3 = script_path + '/vamps_script_upload_metadata.py'              + ' '+cmd3_opts.join(' ')
+    //var spingo_cmd4 = script_path + '/vamps_script_create_json_dataset_files.py'    + ' '+cmd4_opts.join(' ')
     
-    var cmd_list = [ spingo_cmd1, spingo_cmd2, spingo_cmd3, spingo_cmd4 ];
-
+    //var cmd_list = [ spingo_cmd1, spingo_cmd2, spingo_cmd3, spingo_cmd4 ];
+    var cmd_list = [ spingo_cmd1, spingo_cmd2 ];
     return cmd_list
   
 }
@@ -2429,10 +2429,10 @@ function gastTax(req, project_config, ref_db)
   var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py' +' '+database_loader_args.join(' ') +' >> '+scriptlog
   
   //var gast_ill_path = data_dir+"/clust_gast_ill_"+project+".sh"
-  var metadata_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path]
-  var metadata_loader   = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_upload_metadata.py' +' '+metadata_args.join(' ') +' >> '+scriptlog
-  var create_json_files_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE]
-  var create_json_files = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_create_json_dataset_files.py' +' '+create_json_files_args.join(' ') +' >> '+scriptlog
+  //var metadata_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path]
+  //var metadata_loader   = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_upload_metadata.py' +' '+metadata_args.join(' ') +' >> '+scriptlog
+  //var create_json_files_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE]
+  //var create_json_files = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_create_json_dataset_files.py' +' '+create_json_files_args.join(' ') +' >> '+scriptlog
 
   var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
   status_params.statusOK      = 'OK-GAST';
