@@ -38,29 +38,22 @@
          
           <div id='projects_showing_div' class='pull-right' >
             <small>
-              Showing <span id='project_count_id'>0</span> projects<br>
+              Showing: <span id='project_count_id'>0</span> projects<br>
               Selected dataset count: <span id='selected_ds_count_id'>0</span>
             </small>
           </div>
           <div class='pull-left'><br><strong>Select Datasets Below:</strong></div>
         </td>
-
         <td>
-<!--
-            <button type="button" class="btn btn-sm btn-warning pull-right" name='Next' id="unit_selection_btn_visuals">
-      			  next: Unit Selection <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span>
-      			</button>
--->
             <h4>
-                <span class="label label-default">You can save your dataset selections on the next page.</span>
                 <% if(user.username == 'guest'){ %>
-                    <a disabled href='/visuals/saved_elements'  type="button" value='' class="btn btn-xs btn-primary pull-right"  role='button' >Go To Saved Datasets</a>
+                    <a disabled href='/visuals/saved_elements'  type="button" value='' class="btn btn-xs btn-primary pull-rightxx"  role='button' >Go To Saved Datasets</a>
                 <% }else{ %>
-                    <a  href='/visuals/saved_elements'  type="button" value='' class="btn btn-xs btn-primary pull-right"  role='button' >Go To Saved Datasets</a>
-                <% } %>          
+                    <a  href='/visuals/saved_elements'  type="button" value='' class="btn btn-xs btn-primary pull-rightxx"  role='button' >Go To Saved Datasets</a>
+                <% } %> 
+                <span class="label label-default">You can save your dataset selections on the next page.</span>         
             </h4>
         </td>
-
       </tr>
       <tr>
 
