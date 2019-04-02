@@ -1392,7 +1392,7 @@ module.exports.get_qsub_script_text = function (req, scriptlog, dir_path, cmd_na
 //
 //     //script_text += "chmod 666 "+log+"\n";
 //     //$script_text .= "sleep 120\n";   # for testing
-  script_text += "END\n";
+  script_text += "\nEND\n";
   script_text += "}\n";
 //     script_text += "status\n";  //#  status will show up in export.out
   script_text += "submit_job\n";
