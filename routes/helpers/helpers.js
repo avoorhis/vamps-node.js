@@ -1386,8 +1386,7 @@ module.exports.get_qsub_script_text = function (req, scriptlog, dir_path, cmd_na
 
   for (var i in cmd_list) {
     script_text += cmd_list[i] + "\n";
-    //script_text += "DONE-"+i.toString() + "\n";
-    script_text += "echo \"DONE-"+i.toString()+"\" >> " + scriptlog
+    script_text += "echo \"DONE-"+i.toString()+"\" >> " + scriptlog + "\n\n"
   }
 //
 //     //script_text += "chmod 666 "+log+"\n";
@@ -1579,7 +1578,7 @@ module.exports.make_gast_script_txt = function (req, data_dir, project, cmd_list
   make_gast_script_txt += "echo \"Running install scripts (see log)\" >> " + data_dir + "/cluster.log\n"
   for (var i in cmd_list) {
     make_gast_script_txt += cmd_list[i] + "\n";
-    make_gast_script_txt += "echo \"DONE-"+i.toString()+"\" >> " + data_dir + "/cluster.log\n"
+    make_gast_script_txt += "echo \"DONE-"+i.toString()+"\" >> " + data_dir + "/cluster.log\n\n"
   }
 
   make_gast_script_txt += "\n";
