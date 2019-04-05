@@ -330,9 +330,13 @@ def push_sequences(args):
     print('in push_sequences')
     
     global mysql_conn, cur
-    print('Suppressing MySQL Warnings here in database_loader:sequences')
+    
     with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
+        if args.warnings:
+            warnings.simplefilter("default")
+        else:
+            warnings.simplefilter("ignore")
+            print('Suppressing MySQL Warnings here in database_loader:sequences')
         cur = mysql_conn.cursor()
         for ds in args.SEQ_COLLECTOR:
             for seq in args.SEQ_COLLECTOR[ds]:
@@ -666,7 +670,11 @@ def finish_tax(ds, refhvr_ids, rank, distance, seq, seq_count, tax_items):
         sumtax += taxitem+';'
         
     with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
+        if args.warnings:
+            warnings.simplefilter("default")
+        else:
+            warnings.simplefilter("ignore")
+            
         cur = mysql_conn.cursor()
         if tax_items[0].lower() in accepted_domains:
             ids_by_rank = []
@@ -842,6 +850,9 @@ if __name__ == '__main__':
     parser.add_argument("-v", "--verbose",    
                 required=False,  action="store_true",   dest = "verbose", default=False,
                 help = 'chatty') 
+    parser.add_argument("-w", "--warnings",    
+                required=False,  action="store_true",   dest = "warnings",  default=False,
+                help = 'MySQL warnings off by default')
     args = parser.parse_args() 
     
     if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':

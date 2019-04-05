@@ -435,7 +435,10 @@ def finish_tax(ds,  seq_count, tax_string):
     #if tax_items[0].lower() in accepted_domains:
     
     with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
+        if args.warnings:
+            warnings.simplefilter("default")
+        else:
+            warnings.simplefilter("ignore")
         cur = mysql_conn.cursor()
         ids_by_rank = []
         for i in range(0,8):
@@ -556,8 +559,11 @@ if __name__ == '__main__':
                 required=True,  action="store",   dest = "user", 
                 help = 'vamps user name')
     parser.add_argument("-v", "--verbose",    
-                required=False,  action="store",   dest = "verbose",  default=False,
+                required=False,  action="store_true",   dest = "verbose",  default=False,
                 help = 'chatty')            
+    parser.add_argument("-w", "--warnings",    
+                required=False,  action="store_true",   dest = "warnings",  default=False,
+                help = 'MySQL warnings off by default')
     args = parser.parse_args() 
     
     pid = start(args)

@@ -52,12 +52,13 @@
       			</button>
 -->
             <h4>
-                <span class="label label-default">You can save your dataset selections on the next page.</span>
+                
                 <% if(user.username == 'guest'){ %>
-                    <a disabled href='/visuals/saved_elements'  type="button" value='' class="btn btn-xs btn-primary pull-right"  role='button' >Go To Saved Datasets</a>
+                    <a disabled href='/visuals/saved_elements'  type="button" value='' class="btn btn-xs btn-primary pull-rightX"  role='button' >Go To Saved Datasets</a>
                 <% }else{ %>
-                    <a  href='/visuals/saved_elements'  type="button" value='' class="btn btn-xs btn-primary pull-right"  role='button' >Go To Saved Datasets</a>
-                <% } %>          
+                    <a  href='/visuals/saved_elements'  type="button" value='' class="btn btn-xs btn-primary pull-rightX"  role='button' >Go To Saved Datasets</a>
+                <% } %>
+                <span class="label label-default">You can save your dataset selections on the next page.</span>          
             </h4>
         </td>
 
