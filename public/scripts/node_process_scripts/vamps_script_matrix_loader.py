@@ -594,7 +594,7 @@ if __name__ == '__main__':
     
     #Script3
     import vamps_script_create_json_dataset_files as file_maker 
-    my_args["units"] = 'silva119'
+    my_args["units"] = 'matrix'
     file_maker.go_add(my_args)
     print("FINISHED -- LOAD -- METADATA -- FILES")
     
