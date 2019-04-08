@@ -1360,8 +1360,8 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     }
     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 
-    console.log(options.scriptPath+script+' '+options.args.join(' '));
-    var phyloseq_process = spawn( options.scriptPath+script, options.args, {
+    console.log(path.join(options.scriptPath, script)+' '+options.args.join(' '));
+    var phyloseq_process = spawn( path.join(options.scriptPath, script), options.args, {
             env:{'PATH':req.CONFIG.PATH},
             detached: true,
             //stdio: [ 'ignore', null, log ]
