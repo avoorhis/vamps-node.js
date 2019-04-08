@@ -2394,6 +2394,7 @@ exports.retrieve_needed_constants = function(cnsts, view)
         obj.NORMALIZATIONCHOICES = cnsts.NORMALIZATIONCHOICES;
         obj.show_nas = cnsts.show_nas;
         obj.PCT_RANGE = cnsts.PCT_RANGE;
+        obj.RANKS = cnsts.RANKS;
     }
     else if (view === 'unit_selection') {  // unit_selection
     
