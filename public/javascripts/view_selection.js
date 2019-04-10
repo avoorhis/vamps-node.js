@@ -2047,7 +2047,22 @@ function get_split_view(split_distance_choice, numbers_or_colors){
     
 }
 
-
+function show_more_download_choices(){
+    
+    cb = document.getElementById('more_download_choices')
+    d = document.getElementById('more_download_choices_div')
+    if(cb.value == 'closed'){
+        cb.value = 'open'
+        cb.checked = true
+        d.style.display = 'inline'
+    }else{
+        cb.value = 'closed'
+        cb.checked = false
+        d.style.display = 'none'
+    }
+    
+    
+}
 
 
 

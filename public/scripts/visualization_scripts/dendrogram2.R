@@ -67,7 +67,7 @@ dend <- as.dendrogram(hc)
 print('dend');
 print(dend)
 # this file is the output from R
-# outfile = paste('tmp/',prefix,'_test_cluster.out',sep='');
+# outfile = paste(process_path,'/tmp/',prefix,'_test_cluster.out',sep='');
 
 edges<-paste(phc$edge,collapse=',');
 #xedges<-phpSerialize(edges);

@@ -149,38 +149,75 @@
                   </form>
 
           </td>
+          
+          <td> -- </td><td>
+            <input type='checkbox' id='more_download_choices' name='more_download_choices' value='closed' onclick='show_more_download_choices()'> 
+            <a id='more_download_choices_span' onclick='show_more_download_choices()'>More download choices</a> 
+            
+            
+
+          
+         
+          </td>
 
 
-<!--
-         <td>Phyloseq <a href='/help/faq#phyloseq' target='_blank'>(?)</a> Files:&nbsp;</td>
-          <td>
-                  <form id='download_plyloseq_biom_form_id'  method='POST' action=''>
-                    <button type='button' id='download_plyloseq_biom_btn' class="btn btn-xs btn-primary">Biom Matrix File</button>
-                    <input type='hidden' name='file_type' value='biom' />
-                    <input type='hidden' name='ts' value='<%= pi.ts %>' />
-                    <input type='hidden' name='referer' value='/visuals/view_selection' />
-                  </form>
-              </td><td>
-                  <form id='download_plyloseq_tax_form_id'  method='POST' action=''>
-                    <button type='button' id='download_plyloseq_tax_btn' class="btn btn-xs btn-primary">Tax File</button>
-                    <input type='hidden' name='file_type' value='tax' />
-                    <input type='hidden' name='ts' value='<%= pi.ts %>' />
-                    <input type='hidden' name='referer' value='/visuals/view_selection' />
-                  </form>
-              </td><td>
-                  <form id='download_plyloseq_meta_form_id'  method='POST' action=''>
-                    <button type='button' id='download_plyloseq_meta_btn' class="btn btn-xs btn-primary">Metadata File</button>
-                    <input type='hidden' name='file_type' value='meta' />
-                    <input type='hidden' name='ts' value='<%= pi.ts %>' />
-                    <input type='hidden' name='referer' value='/visuals/view_selection' />
-                  </form>
-        </td><td><div id='download_confirm_id'></div></td>
--->
+
+
         </tr>
 
     </table>
 
 </div>
+
+
+
+<div id='more_download_choices_div' style='display:none'>
+         
+         <table border='0' style='border:1px solid black;margin:3px;'>
+         <tr><td style='' colspan='3'> 
+              <center>Useful Direct Download Files:</center>
+             </td>
+             <td></td><td></td>
+         </tr>
+         <tr><td style='padding:2px 5px'> 
+                  <form id='download_phyloseq_mtx_form_id'  method='POST' action='/visuals/download_file'>
+                    <button type='submit' id='download_phyloseq_mtx_btn' class="btn btn-xs btn-primary">Matrix File</button>
+                    <input type='hidden' name='file_type' value='matrix' />
+                    <input type='hidden' name='ts' value='<%= pi.ts %>' />
+                    <input type='hidden' name='referer' value='/visuals/view_selection' />
+                  </form>
+             
+             
+             </td><td style='padding:2px 5px'> 
+                  <form id='download_phyloseq_biom_form_id'  method='POST' action='/visuals/download_file'>
+                    <button type='submit' id='download_phyloseq_biom_btn' class="btn btn-xs btn-primary">Biom Matrix File</button>
+                    <input type='hidden' name='file_type' value='biom' />
+                    <input type='hidden' name='ts' value='<%= pi.ts %>' />
+                    <input type='hidden' name='referer' value='/visuals/view_selection' />
+                  </form>
+             </td><td style='padding:2px 5px'>
+                  <form id='download_phyloseq_tax_form_id'  method='POST' action='/visuals/download_file'>
+                    <button type='submit' id='download_phyloseq_tax_btn' class="btn btn-xs btn-primary">Taxonomy File</button>
+                    <input type='hidden' name='file_type' value='tax' />
+                    <input type='hidden' name='ts' value='<%= pi.ts %>' />
+                    <input type='hidden' name='referer' value='/visuals/view_selection' />
+                  </form>
+              </td><td style='padding:2px 5px'>
+                  <form id='download_phyloseq_meta_form_id'  method='POST' action='/visuals/download_file'>
+                    <button type='submit' id='download_phyloseq_meta_btn' class="btn btn-xs btn-primary">Metadata File</button>
+                    <input type='hidden' name='file_type' value='meta' />
+                    <input type='hidden' name='ts' value='<%= pi.ts %>' />
+                    <input type='hidden' name='referer' value='/visuals/view_selection' />
+                  </form>
+              </td><td style='padding:2px 5px'>  For input to Python and R (<a href='/help/faq#phyloseq' target='_blank'>phyloseq</a> 
+                    and <a href='https://ggplot2.tidyverse.org/' target='_blank'>ggplot</a> libraries) scripts 
+              </td>      
+          </tr></table>
+        
+</div>
+
+
+
 <% } %>
 <% ds_count = mtx.shape[1]; %>
 <% tx_count = mtx.shape[0]; %>

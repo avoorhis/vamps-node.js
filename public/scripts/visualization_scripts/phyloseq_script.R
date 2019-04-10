@@ -70,12 +70,12 @@ h = 5
 theme_set(theme_bw())
 
 if(plot_type == 'bar'){
-	out_file = paste("tmp/",prefix,"_phyloseq_bar.svg",sep='')
+	out_file = paste(tmp_path,'/',prefix,"_phyloseq_bar.svg",sep='')
 	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
 	plot_bar(physeq, fill = "Phylum")
 
 }else if(plot_type == 'heatmap'){
-	out_file = paste("tmp/",prefix,"_phyloseq_heatmap.svg",sep='')
+	out_file = paste(tmp_path,'/',prefix,"_phyloseq_heatmap.svg",sep='')
 	#svg(out_file, width=w, height=h)
 	#png(out_file, width=w, height=h)
 	svg(out_file,width=w)
@@ -83,7 +83,7 @@ if(plot_type == 'bar'){
 	gpt <- subset_taxa(physeq, Domain=="Bacteria")
 	plot_heatmap(gpt)
 }else if(plot_type == 'network'){
-	out_file = paste("tmp/",prefix,"_phyloseq_network.svg",sep='')
+	out_file = paste(tmp_path,'/',prefix,"_phyloseq_network.svg",sep='')
 	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
 	plot_net(physeq, maxdist = 0.3, color = md2, shape = md1)
 
@@ -92,7 +92,7 @@ if(plot_type == 'bar'){
 	# 3- PCoA on 'bray' Distance
 	#ord_type = 'NMDS'
 	ord_type = 'PCoA'
-	out_file = paste("tmp/",prefix,"_phyloseq_ord1.svg",sep='')
+	out_file = paste(tmp_path,'/',prefix,"_phyloseq_ord1.svg",sep='')
 	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
 	ordu = ordinate(physeq, ord_type, dist)
 	p = plot_ordination(physeq, ordu, color = md2, shape = md1)
@@ -102,7 +102,7 @@ if(plot_type == 'bar'){
 	p + ggtitle(paste(ord_type, "on distance:", disp, sep=' '))
 
 }else if(plot_type == 'tree'){
-	out_file = paste("tmp/",prefix,"_phyloseq_tree.svg",sep='')
+	out_file = paste(tmp_path,'/',prefix,"_phyloseq_tree.svg",sep='')
 	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
 }else{
     cat("plot_type must be one of: 'bar', 'heatmap', 'network', 'ord1' or 'tree' -- Exiting\n")

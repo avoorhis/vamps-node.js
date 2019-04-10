@@ -108,7 +108,7 @@ w = 8
 #theme_set(theme_bw())
 
 
-out_file = paste("tmp/",out_file,sep='')
+out_file = paste(tmp_path,'/',out_file,sep='')
 svg(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
 plot_title=paste('Taxonomy Tree; distance: ',disp,sep='')
 #plot_tree(physeq,  color = md1, title = 'Tree Title', ladderize = "left")

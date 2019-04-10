@@ -45,7 +45,7 @@ print(w)
 theme_set(theme_bw())
 
 
-	out_file = paste("tmp/",out_file,sep='')
+	out_file = paste(tmp_path,'/',out_file,sep='')
 	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
 
 	gp.ch = subset_taxa(physeq, Phylum == phy)

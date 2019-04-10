@@ -85,7 +85,7 @@ cols = colorRampPalette(brewer.pal(9, "Set1"))(colourCount)
 	# 3- PCoA on 'bray' Distance
 	#ord_type = 'NMDS'
 	#ord_type = 'PCoA'
-	out_file = paste("tmp/",out_file,sep='')
+	out_file = paste(tmp_path,'/',out_file,sep='')
 	svg(out_file, width=w, height=h, pointsize=4, family = "sans", bg = "black")
 	ordu = ordinate(physeq, ord_type, dist)
 	#ordu = ordinate(physeq, "PCoA", "unifrac", weighted=TRUE)

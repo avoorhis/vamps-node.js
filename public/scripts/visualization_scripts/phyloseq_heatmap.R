@@ -83,7 +83,7 @@ md1_unique_count <- length(levels(MAP[[md1]]))
 w_png = 200 + (md1_unique_count*50)
 #w_png=300
 h_png = rows*5
-out_file = paste("tmp/",out_file,sep='')
+out_file = paste(tmp_path,'/',out_file,sep='')
 unlink(out_file)
 #print(physeq)
 #pdf(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")

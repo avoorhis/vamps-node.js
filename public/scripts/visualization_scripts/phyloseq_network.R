@@ -81,7 +81,7 @@ cols = colorRampPalette(brewer.pal(9, "Set1"))(colourCount)
 #theme_set(theme_bw())
 
 
-	out_file = paste("tmp/",out_file,sep='')
+	out_file = paste(tmp_path,'/',out_file,sep='')
 	svg(out_file, width=w, height=h, pointsize=4, family = "sans", bg = "black")
 	ig <- make_network(physeq, dist.fun=dist, max.dist=max_dist)
 	p = plot_network(ig, physeq, line_weight=0.4, color = md2, shape = md1)

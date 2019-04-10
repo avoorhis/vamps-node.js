@@ -2537,28 +2537,36 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
     var html = '';
     var ts = req.body.ts;
     var file_type = req.body.file_type;
-    if(file_type == 'biom'){
-      file_name = ts+'_count_matrix.biom';
-      file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', file_name);
+    file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
+    if(file_type == 'matrix'){
       res.setHeader('Content-Type', 'text');
+      out_file_name = ts+'_count_matrix.txt';
+      biom_file_name = ts+'_count_matrix.biom';      
+      helpers.create_matrix_from_biom(res, file_path, biom_file_name, out_file_name)
+    }else if(file_type == 'biom'){
+      file_name = ts+'_count_matrix.biom';
+      res.setHeader('Content-Type', 'text');
+      res.download(path.join(file_path, file_name)); // Set disposition and send it.
     }else if(file_type == 'tax'){
       file_name = ts+'_taxonomy.txt';
-      file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', file_name);
       res.setHeader('Content-Type', 'text');
+      res.download(path.join(file_path, file_name)); // Set disposition and send it.
     }else if(file_type == 'meta'){
       file_name = ts+'_metadata.txt';
-      file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', file_name);
       res.setHeader('Content-Type', 'text');
+      res.download(path.join(file_path, file_name)); // Set disposition and send it.
     }else if(file_type == 'configuration'){
       file_name = req.body.filename;
-      file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,  file_name);
+      config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
       res.setHeader('Content-Type', 'json');
+      res.download(path.join(config_file_path, file_name)); // Set disposition and send it.
     }else{
       // ERROR
+      console.log('ERROR In download_file')
     }
 
-    console.log(file_path)
-    res.download(file_path); // Set disposition and send it.
+    
+    
 });
 
 //
