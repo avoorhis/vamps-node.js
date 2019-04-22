@@ -49,6 +49,11 @@ router.post('/contact', function (req, res) {
     console.log(req.body)
     var msg = encodeURI(req.body.message)
     //console.log(msg)
+    if(req.body.name == '' || req.body.email == '' || req.body.message == ''){
+        req.flash('fail', 'All fields need to be entered.');
+        res.redirect('/help/contact')
+        return
+    }
     var mailOptions = {
         scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
         args :       [ '-to', req.CONFIG.CONTACT_EMAIL, '-from', req.body.email, '-name', '"'+req.body.name+'"', '-sub', '"'+req.body.subject+'"', '-msg', '"'+msg+'"' ],

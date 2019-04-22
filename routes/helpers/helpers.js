@@ -79,11 +79,11 @@ module.exports.array_from_object = function (data) {
 };
 
 module.exports.get_second = function (element) {
-  console.time('TIME: get_second');
+  console.time('TIME: get_second:'+element);
   if (C.ORDERED_METADATA_NAMES_OBJ.hasOwnProperty(element)) {
     return C.ORDERED_METADATA_NAMES_OBJ[element][1];
   }
-  console.timeEnd('TIME: get_second');
+  console.timeEnd('TIME: get_second:'+element);
 };
 
 /** Benchmarking
