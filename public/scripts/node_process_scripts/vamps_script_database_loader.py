@@ -311,7 +311,7 @@ def push_pdr_seqs(args):
             did = args.DATASET_ID_BY_NAME[ds]
             seqid = args.SEQ_COLLECTOR[ds][seq]['sequence_id']
             count = args.SEQ_COLLECTOR[ds][seq]['seq_count']
-            q = "INSERT into sequence_pdr_info (dataset_id, sequence_id, seq_count, classifier_id,run_info_ill_id)"
+            q = "INSERT ignore into sequence_pdr_info (dataset_id, sequence_id, seq_count, classifier_id,run_info_ill_id)"
             #if args.classifier.upper() == 'GAST':
             
             classid=9  # 'unknown'
@@ -340,19 +340,27 @@ def push_sequences(args):
         cur = mysql_conn.cursor()
         for ds in args.SEQ_COLLECTOR:
             for seq in args.SEQ_COLLECTOR[ds]:
-                q = "INSERT ignore into sequence (sequence_comp) VALUES (COMPRESS('%s'))" % (seq)
-                if args.verbose:
-                    print(q)
+                q = "INSERT into sequence (sequence_comp) VALUES (COMPRESS('%s')) ON DUPLICATE KEY UPDATE sequence_comp = VALUES(sequence_comp)" % (seq)
+                #INSERT into sequence (sequence_comp) 
+#VALUES (COMPRESS('...')) ON DUPLICATE KEY UPDATE sequence_comp = VALUES(sequence_comp)
                 cur.execute(q)
                 mysql_conn.commit()
                 seqid = cur.lastrowid
+                if args.verbose:
+                    print('seqid:'+str(seqid)+' q: '+q)
                 if seqid == 0:
                     q2 = "select sequence_id from sequence where sequence_comp = COMPRESS('%s')" % (seq)
                 
                     cur.execute(q2)
                     mysql_conn.commit() 
                     row = cur.fetchone()
-                    seqid=row[0]
+                    if args.verbose:
+                       print('Found seqid:')
+                       print(row)
+                    try:
+                    	seqid=row[0]
+                    except:
+                    	print('MISSING row[0]')
                 #print ('seqid',seqid)
                 args.SEQ_COLLECTOR[ds][seq]['sequence_id'] = seqid
                 tax_id = str(args.SEQ_COLLECTOR[ds][seq]['tax_id'])
@@ -363,24 +371,42 @@ def push_sequences(args):
             
                 if args.classifier.upper() == 'GAST':
                     distance = str(args.SEQ_COLLECTOR[ds][seq]['distance'])
-                    q = "INSERT ignore into silva_taxonomy_info_per_seq"
+                    q = "INSERT into silva_taxonomy_info_per_seq"
                     q += " (sequence_id,silva_taxonomy_id,gast_distance,refssu_id,rank_id)"
                     q += " VALUES ('%s','%s','%s','0','%s')" % (str(seqid), tax_id, distance, rank_id)
                     q += " ON DUPLICATE KEY UPDATE silva_taxonomy_id='"+tax_id+"', gast_distance='"+distance+"',refssu_id='0', rank_id='"+rank_id+"'"
+                    
                     q3 = "SELECT silva_taxonomy_info_per_seq_id from silva_taxonomy_info_per_seq"
+                    
+                    q4 = "INSERT into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
+                    q4 += " VALUES('%s','%s') ON DUPLICATE KEY UPDATE silva_taxonomy_info_per_seq_id = VALUES(silva_taxonomy_info_per_seq_id)"
+                    #q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
+                    #q4 += " VALUES('%s','%s') "
                 elif args.classifier.upper() == 'RDP':
-                    q = "INSERT ignore into rdp_taxonomy_info_per_seq"
+                    q = "INSERT into rdp_taxonomy_info_per_seq"
                     q += " (sequence_id,rdp_taxonomy_id,rank_id)"
                     q += " VALUES ('%s','%s','%s')" % (str(seqid), tax_id, rank_id)
                     q += " ON DUPLICATE KEY UPDATE rdp_taxonomy_id='"+tax_id+"', rank_id='"+rank_id+"'"
+                    
                     q3 = "SELECT rdp_taxonomy_info_per_seq_id from rdp_taxonomy_info_per_seq"
+                    
+                    q4 = "INSERT into sequence_uniq_info (sequence_id, rdp_taxonomy_info_per_seq_id)"
+                    q4 += " VALUES('%s','%s') ON DUPLICATE KEY UPDATE rdp_taxonomy_info_per_seq_id = VALUES(rdp_taxonomy_info_per_seq_id)"
+                    #q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
+                    #q4 += " VALUES('%s','%s') "
                 elif args.classifier.upper() == 'SPINGO':
                     seq_count = str(args.SEQ_COLLECTOR[ds][seq]['seq_count'])
                     q = "INSERT ignore into generic_taxonomy_info_per_seq"
                     q += " (sequence_id,generic_taxonomy_id,rank_id)"
                     q += " VALUES ('%s','%s','%s')" % (str(seqid), tax_id, rank_id)
                     q += " ON DUPLICATE KEY UPDATE generic_taxonomy_id='"+tax_id+"', rank_id='"+rank_id+"'"
+                    
                     q3 = "SELECT generic_taxonomy_info_per_seq_id from generic_taxonomy_info_per_seq"
+                    # not sure if this is correct:
+                    q4 = "INSERT into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
+                    q4 += " VALUES('%s','%s') ON DUPLICATE KEY UPDATE silva_taxonomy_info_per_seq_id = VALUES(silva_taxonomy_info_per_seq_id)"
+                    #q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
+                    #q4 += " VALUES('%s','%s') "
                 else:
                     print('ERROR')
                 
@@ -400,9 +426,11 @@ def push_sequences(args):
                     row = cur.fetchone()
                     tax_seq_id=row[0]
         
-                q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
-                q4 += " VALUES('%s','%s')" % (str(seqid), str(tax_seq_id))
-           
+                
+                
+                #print(q4)
+                q4 = q4 % (str(seqid), str(tax_seq_id))
+                #print(q4)
                 cur.execute(q4)
                 mysql_conn.commit()
             ## don't see that we need to save uniq_ids
@@ -421,7 +449,9 @@ def push_taxonomy(args):
     print('Suppressing MySQL Warnings here in database_loader:taxonomy')
     for ds in CONFIG_ITEMS['datasets']:
         args.SEQ_COLLECTOR[ds] = {}
-    for dir in os.listdir(analysis_dir): 
+    ds_count = len(CONFIG_ITEMS['datasets'])
+    for i,dir in enumerate(os.listdir(analysis_dir)): 
+        print('\nDS count:'+str(i+1)+'/'+str(ds_count))
         ds = dir
         data_dir = os.path.join(analysis_dir,ds) 
         unique_file = os.path.join(data_dir,'seqfile.unique.fa')
@@ -853,24 +883,41 @@ if __name__ == '__main__':
     parser.add_argument("-w", "--warnings",    
                 required=False,  action="store_true",   dest = "warnings",  default=False,
                 help = 'MySQL warnings off by default')
+    parser.add_argument("-json", "--json_file_path",    
+                required=False,  action="store",   dest = "jsonfile_dir",  default='undefined',
+                help = 'json_file_path for local')
     args = parser.parse_args() 
     
+    # convert args to a dict for passing to fxn
+    my_args = vars(args)
     if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':
         args.hostname = 'vampsdb'
+        my_args["jsonfile_dir"] = '/groups/vampsweb/vamps/nodejs/json/'
     elif args.site == 'vampsdev' or args.site == 'bpcweb7':
         args.hostname = 'bpcweb7'
+        my_args["jsonfile_dir"] = '/groups/vampsweb/vampsdev/nodejs/json/'
     else:
         args.hostname = 'localhost'
         args.NODE_DATABASE = 'vamps_development'
+        if args.jsonfile_dir == 'undefined':
+            sys.exit('localhost::You must add --json_file_path to command line!')
+        else:            
+            if os.path.exists(args.jsonfile_dir):
+                print ('Validated: json file path')
+                my_args["jsonfile_dir"] = args.jsonfile_dir
+            else:
+                print ("Could not find json directory (-json_file_path): '",args.jsonfile_dir,"'-Exiting")
+                sys.exit(-1)
+    
+    
     print ('db-host:',args.hostname,'db-name:',args.NODE_DATABASE)
     pid = start(args)
     print("Finished; PID=" + str(pid))
     
     # delete the big unneeded key
-    del args.SEQ_COLLECTOR 
+    #del my_args.SEQ_COLLECTOR 
     
-    # convert args to a dict for passing to fxn
-    my_args = vars(args)
+    
     
     #Script2
     import vamps_script_upload_metadata as md
@@ -880,14 +927,22 @@ if __name__ == '__main__':
     
     #Script3
     import vamps_script_create_json_dataset_files as file_maker
-    if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':
-        my_args["jsonfile_dir"] = '/groups/vampsweb/vamps/nodejs/json/'
-    elif args.site == 'vampsdev' or args.site == 'bpcweb7':
-        my_args["jsonfile_dir"] = '/groups/vampsweb/vampsdev/nodejs/json/'
+    # if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':
+#         my_args["jsonfile_dir"] = '/groups/vampsweb/vamps/nodejs/json/'
+#     elif args.site == 'vampsdev' or args.site == 'bpcweb7':
+#         my_args["jsonfile_dir"] = '/groups/vampsweb/vampsdev/nodejs/json/'
+#     else:
+#         if args.jsonfile_dir == 'undefined':
+#             sys.exit('You must add --json_file_path to command line!')
+#         else:
+#             my_args["jsonfile_dir"] = args.jsonfile_dir
+        
+    if args.classifier == 'RDP':
+    	my_args["units"] = 'rdp'
+    elif args.classifier == 'SPINGO':
+    	my_args["units"] = 'generic'
     else:
-        my_args["jsonfile_dir"] = './'
-    
-    my_args["units"] = 'silva119'
+    	my_args["units"] = 'silva119'
     file_maker.go_add(my_args)
     print("FINISHED -- LOAD -- METADATA -- FILES")
     
