@@ -204,21 +204,21 @@ function get_taxonomy_object(unit_choice) {
 }
 
 function test_for_not_organelle_n_chloroplast(domain, post_items, tax_long_name) {
-	let not_organelle_n_chloroplast = true;
+	let do_not_exclude_chloroplast = true;
 	const organelle_de_selected = (post_items.domains.indexOf('Organelle') === -1);
 	const is_chloroplast = tax_long_name.toLowerCase().includes('chloroplast');
 
 	if (domain === 'Bacteria' && organelle_de_selected && is_chloroplast) {
 		//&& (tax_long_name.substring(0,20) == 'Bacteria;Chloroplast' || tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast')){
 		console.log('Excluding', tax_long_name);
-		not_organelle_n_chloroplast = false;
+		do_not_exclude_chloroplast = false;
 	}
-	return not_organelle_n_chloroplast;
+	return do_not_exclude_chloroplast;
 }
 
 function screen_domains(domain, post_items, tax_long_name, unit_name_lookup) {
-	const not_organelle_n_chloroplast = test_for_not_organelle_n_chloroplast(domain, post_items, tax_long_name);
-	if (not_organelle_n_chloroplast) {
+	const do_not_exclude_chloroplast = test_for_not_organelle_n_chloroplast(domain, post_items, tax_long_name);
+	if (do_not_exclude_chloroplast) {
 		if (post_items.unit_choice.substring(0,9)  === 'tax_silva' || post_items.unit_choice.substring(0,7)  === 'tax_rdp')
 		{
 			// TODO: Andy, this if and the next else have the same res.
@@ -309,13 +309,15 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 					//console.log(post_items.domains)
 					// SCREEN INCLUDE_NAS
 					// if selected domains excludes organelles then also exclude 'Bacteria;Cyanobacteria;Chloroplast'
-					if(post_items.include_nas === 'no' ){
+					const exclude_nas = (post_items.include_nas === 'no');
+					if (exclude_nas){
 						//console.log('IN NO NAs1')
-						if(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length) !== '_NA'){
+						if (tax_long_name.substring(tax_long_name.length-3, tax_long_name.length) !== '_NA') {
 							//console.log('ADDING '+tax_long_name)
 							// SCREEN DOMAINS
-							const not_organelle_n_chloroplast = test_for_not_organelle_n_chloroplast(domain, post_items, tax_long_name);
-							if (not_organelle_n_chloroplast && (post_items.domains.indexOf(domain) !== -1)) {
+							const do_not_exclude_chloroplast = test_for_not_organelle_n_chloroplast(domain, post_items, tax_long_name);
+							const valid_domain_choosen = post_items.domains.indexOf(domain) !== -1;
+							if (do_not_exclude_chloroplast && valid_domain_choosen) {
 									unit_name_lookup[tax_long_name] = 1;
 									unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
 							}
