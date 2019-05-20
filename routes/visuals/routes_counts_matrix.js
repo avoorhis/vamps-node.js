@@ -312,15 +312,14 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 					const exclude_nas = (post_items.include_nas === 'no');
 					if (exclude_nas){
 						//console.log('IN NO NAs1')
-						if (tax_long_name.substring(tax_long_name.length-3, tax_long_name.length) !== '_NA') {
+						const do_not_exclude_chloroplast = test_for_not_organelle_n_chloroplast(domain, post_items, tax_long_name);
+						const valid_domain_choosen = post_items.domains.indexOf(domain) !== -1;
+						const not_na = tax_long_name.substring(tax_long_name.length-3, tax_long_name.length) !== '_NA';
+						if (not_na && do_not_exclude_chloroplast && valid_domain_choosen) {
 							//console.log('ADDING '+tax_long_name)
 							// SCREEN DOMAINS
-							const do_not_exclude_chloroplast = test_for_not_organelle_n_chloroplast(domain, post_items, tax_long_name);
-							const valid_domain_choosen = post_items.domains.indexOf(domain) !== -1;
-							if (do_not_exclude_chloroplast && valid_domain_choosen) {
-									unit_name_lookup[tax_long_name] = 1;
-									unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-							}
+							unit_name_lookup[tax_long_name] = 1;
+							unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
 						}
 
 					} else {
