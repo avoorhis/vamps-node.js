@@ -309,19 +309,16 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 					//console.log(post_items.domains)
 					// SCREEN INCLUDE_NAS
 					// if selected domains excludes organelles then also exclude 'Bacteria;Cyanobacteria;Chloroplast'
-					if(post_items.include_nas == 'no' ){
+					if(post_items.include_nas === 'no' ){
 						//console.log('IN NO NAs1')
-						if(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length) != '_NA'){
+						if(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length) !== '_NA'){
 							//console.log('ADDING '+tax_long_name)
 							// SCREEN DOMAINS
 							const not_organelle_n_chloroplast = test_for_not_organelle_n_chloroplast(domain, post_items, tax_long_name);
-							if (not_organelle_n_chloroplast) {
-								if(post_items.domains.indexOf(domain) !== -1){
+							if (not_organelle_n_chloroplast && (post_items.domains.indexOf(domain) !== -1)) {
 									unit_name_lookup[tax_long_name] = 1;
 									unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-								}
 							}
-
 						}
 
 					} else {
