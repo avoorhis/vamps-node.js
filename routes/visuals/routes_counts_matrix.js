@@ -203,14 +203,28 @@ function get_taxonomy_object(unit_choice) {
 	return taxonomy_object;
 }
 
-function screen_domains(domain, post_items, tax_long_name, unit_name_lookup) {
+function test_for_not_organelle_n_chloroplast(domain, post_items, tax_long_name) {
+	let not_organelle_n_chloroplast = true;
 	const organelle_de_selected = (post_items.domains.indexOf('Organelle') === -1);
 	const is_chloroplast = tax_long_name.toLowerCase().includes('chloroplast');
 	if (domain === 'Bacteria' && organelle_de_selected && is_chloroplast) {
 		//&& (tax_long_name.substring(0,20) == 'Bacteria;Chloroplast' || tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast')){
 		console.log('Excluding', tax_long_name);
+		not_organelle_n_chloroplast = false;
 	}
-	else {
+	return not_organelle_n_chloroplast;
+}
+
+function screen_domains(domain, post_items, tax_long_name, unit_name_lookup) {
+	// const organelle_de_selected = (post_items.domains.indexOf('Organelle') === -1);
+	// const is_chloroplast = tax_long_name.toLowerCase().includes('chloroplast');
+	// if (domain === 'Bacteria' && organelle_de_selected && is_chloroplast) {
+	// 	//&& (tax_long_name.substring(0,20) == 'Bacteria;Chloroplast' || tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast')){
+	// 	console.log('Excluding', tax_long_name);
+	// }
+	// else {
+	const not_organelle_n_chloroplast = test_for_not_organelle_n_chloroplast(domain, post_items, tax_long_name);
+	if (not_organelle_n_chloroplast) {
 		if (post_items.unit_choice.substring(0,9)  === 'tax_silva' || post_items.unit_choice.substring(0,7)  === 'tax_rdp')
 		{
 			// TODO: Andy, this if and the next else have the same res.
