@@ -211,7 +211,7 @@ function screen_domains(domain, post_items, tax_long_name, unit_name_lookup) {
 					console.log('Excluding', tax_long_name);
 	}
 	else {
-		if(post_items.unit_choice.substring(0,9)  === 'tax_silva' || post_items.unit_choice.substring(0,7)  === 'tax_rdp')
+		if (post_items.unit_choice.substring(0,9)  === 'tax_silva' || post_items.unit_choice.substring(0,7)  === 'tax_rdp')
 		{
 			// TODO: Andy, this if and the next else have the same res.
 			if (post_items.domains.indexOf(domain) !== -1 && post_items.unit_choice ) {
@@ -225,7 +225,7 @@ function screen_domains(domain, post_items, tax_long_name, unit_name_lookup) {
 		//console.log('unit_name_lookup')
 		//console.log(unit_name_lookup)
 	}
-	return [tax_long_name, unit_name_lookup];
+	return unit_name_lookup;
 }
 
 function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
@@ -306,7 +306,7 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 								if(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length) != '_NA'){
 									//console.log('ADDING '+tax_long_name)
 									// SCREEN DOMAINS
-									if( domain == 'Bacteria'
+									if( domain === 'Bacteria'
 											&& (post_items.domains.indexOf('Organelle') == -1) // Organelle has been de-selected
 											&& tax_long_name.toLowerCase().includes('chloroplast')) {
 											//&& (tax_long_name.substring(0,20) == 'Bacteria;Chloroplast' || tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast')){
@@ -322,35 +322,10 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 
 							} else {
 								// SCREEN DOMAINS
-								const screening_res = screen_domains(domain, post_items, tax_long_name, unit_name_lookup);
-								tax_long_name = screening_res[0];
-								unit_name_lookup = screening_res[1];
+								unit_name_lookup = screen_domains(domain, post_items, tax_long_name, unit_name_lookup);
 								unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
 							}
-
-							// 	if( domain == 'Bacteria'
-							// 				&& (post_items.domains.indexOf('Organelle') == -1) // Organelle has been de-selected
-							// 				&& tax_long_name.toLowerCase().includes('chloroplast')) {
-							// 				//&& (tax_long_name.substring(0,20) == 'Bacteria;Chloroplast' || tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast')){
-							// 					console.log('Excluding',tax_long_name)
-							// 				}else{
-							// 				if(post_items.unit_choice.substring(0,9)  == 'tax_silva' || post_items.unit_choice.substring(0,7)  == 'tax_rdp'){
-							// 																			if(post_items.domains.indexOf(domain) != -1 && post_items.unit_choice ){
-							// 																							unit_name_lookup[tax_long_name] = 1;
-							// 																							unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-							// 																			}
-							// 																	}else{
-							// 																			unit_name_lookup[tax_long_name] = 1;
-							// 																			unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-							// 																	}
-							// 				//console.log('XXXXXXXXXXXXX')
-							// 				//console.log('unit_name_lookup')
-							// 				//console.log(unit_name_lookup)
-							// 	}
-
-
 						}
-
 					}
 
 
