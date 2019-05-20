@@ -98,16 +98,26 @@ get_select_seq_count_query: function(){
   //
   //
   //
-  get_sequences_perDID: function( sql_dids ) {
+  get_sequences_perDID: function( sql_dids, classifier ) {
     //TODO: proper escape!!! See https://github.com/mysqljs/mysql
 
     //var sql_dids = dids.join(',')
-    var seqQuery = "SELECT dataset_id, UNCOMPRESS(sequence_comp) as seq, seq_count, gast_distance, classifier\n"
+    if(classifier.startsWith('tax_rdp')){
+        distance = 'boot_score'
+    }else{
+        distance = 'gast_distance'
+    }
+    var seqQuery = "SELECT dataset_id, UNCOMPRESS(sequence_comp) as seq, seq_count, "+distance+", classifier\n"
     seqQuery += ",domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id FROM `sequence`\n"
     seqQuery += " JOIN sequence_pdr_info as t1 USING(sequence_id)\n"
     seqQuery += " JOIN sequence_uniq_info as t2 USING(sequence_id)\n"
-    seqQuery += " JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n"
-    seqQuery += " JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n"
+    if(classifier.startsWith('tax_rdp')){
+        seqQuery += " JOIN rdp_taxonomy_info_per_seq as t3 USING (rdp_taxonomy_info_per_seq_id)\n"
+        seqQuery += " JOIN rdp_taxonomy as t4 USING(rdp_taxonomy_id)\n"        
+    }else{  // SILVA
+        seqQuery += " JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n"
+        seqQuery += " JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n"
+    }
     seqQuery += " JOIN classifier as t5 USING(classifier_id)\n"
     seqQuery += " WHERE dataset_id in ('"+sql_dids+"')";
     console.log(seqQuery)
@@ -116,15 +126,26 @@ get_select_seq_count_query: function(){
   //
   //
   //
-  get_sequences_perDID_and_taxa_query: function( did, taxa ) {
+  get_sequences_perDID_and_taxa_query: function( did, taxa, classifier ) {
     var tax_items  = taxa.split(';');
-
-    var seqQuery = "SELECT UNCOMPRESS(sequence_comp) as seq, seq_count, gast_distance, classifier\n"
+    if(classifier.startsWith('tax_rdp')){
+        distance = 'boot_score'
+    }else{
+        distance = 'gast_distance'
+    }
+    var seqQuery = "SELECT UNCOMPRESS(sequence_comp) as seq, seq_count, "+distance+", classifier\n"
     seqQuery += ", domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id FROM `sequence`\n"
     seqQuery += " JOIN sequence_pdr_info as t1 USING(sequence_id)\n"
     seqQuery += " JOIN sequence_uniq_info as t2 USING(sequence_id)\n"
-    seqQuery += " JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n"
-    seqQuery += " JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n"
+    
+    if(classifier.startsWith('tax_rdp')){
+        seqQuery += " JOIN rdp_taxonomy_info_per_seq as t3 USING (rdp_taxonomy_info_per_seq_id)\n"
+        seqQuery += " JOIN rdp_taxonomy as t4 USING(rdp_taxonomy_id)\n"        
+    }else{  // SILVA
+        seqQuery += " JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n"
+        seqQuery += " JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n"
+    }
+    
     seqQuery += " JOIN classifier as t5 USING(classifier_id)\n"
     seqQuery += " WHERE dataset_id = " + connection.escape(did);
 

@@ -1550,6 +1550,49 @@ router.get('/users_index', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
+router.get('/cleanup_tmp_dirs', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+    console.log('IN GET cleanup_tmp_dirs')
+    var temp_dir_path1 = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
+    var temp_dir_path2 = path.join(req.CONFIG.PROCESS_DIR, 'views', 'tmp');
+    var temp_dir_path3 = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp');
+    console.log("Deleting ALL files and directories in:");
+    console.log(temp_dir_path1);
+    console.log(temp_dir_path2);
+    console.log(temp_dir_path3);
+    fs.readdir(temp_dir_path1, function (err, files) {
+
+        for (var i = 0; i < files.length; i++) {
+            var curPath = temp_dir_path1 + "/" + files[i];
+            helpers.deleteFolderRecursive(curPath);
+        }
+        fs.readdir(temp_dir_path2, function (err, files) {
+          for (var i = 0; i < files.length; i++) {
+              var curPath = temp_dir_path2 + "/" + files[i];
+              helpers.deleteFolderRecursive(curPath);
+          }
+          fs.readdir(temp_dir_path3, function (err, files) {
+            for (var i = 0; i < files.length; i++) {
+                var curPath = temp_dir_path3 + "/" + files[i];
+                helpers.deleteFolderRecursive(curPath);
+            }
+          });
+        });
+  });
+  req.flash('success', 'Okay')
+  res.render('admin/admin_index', {
+    title: 'VAMPS Site Administration',
+    user: req.user,
+    hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+  });
+    // res.render('admin/kill_cluster_jobs', {
+//       title: 'VAMPS:kill_cluster_jobs',
+//       user: req.user,
+//       hostname: req.CONFIG.hostname,
+//     });
+});
+//
+//
+//
 router.get('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
     console.log('IN GET kill_cluster_jobs')
     res.render('admin/kill_cluster_jobs', {

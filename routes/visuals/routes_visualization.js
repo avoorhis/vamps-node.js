@@ -1682,7 +1682,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
     }else{
 
-        connection.query(QUERY.get_sequences_perDID([selected_did]), function mysqlSelectSeqsPerDID(err, rows, fields){
+        connection.query(QUERY.get_sequences_perDID([selected_did], pi.unit_choice), function mysqlSelectSeqsPerDID(err, rows, fields){
             if (err)  {
               console.log('Query error: ' + err);
               console.log(err.stack);
@@ -1839,7 +1839,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
         LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order, dist);
 
     }else{
-        connection.query(QUERY.get_sequences_perDID(did1+"','"+did2), function mysqlSelectSeqsPerDID(err, rows, fields){
+        connection.query(QUERY.get_sequences_perDID(did1+"','"+did2, pi.unit_choice), function mysqlSelectSeqsPerDID(err, rows, fields){
             if (err)  {
               console.log('Query error: ' + err);
               console.log(err.stack);
