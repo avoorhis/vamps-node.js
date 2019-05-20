@@ -179,39 +179,66 @@ module.exports = {
 
 //
 //
+function get_file_prefix(req, unit_choice) {
+	var files_prefix;
+	if (unit_choice === 'tax_rdp2.6_simple'){
+		files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_rdp2.6");
+	} else if (unit_choice === 'tax_generic_simple'){
+		files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_generic");
+	} else {
+		files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);  // default
+	}
+	return files_prefix;
+}
+
+function get_taxonomy_object(unit_choice) {
+	var taxonomy_object;
+	if (unit_choice === 'tax_rdp2.6_simple') {
+		taxonomy_object = new_rdp_taxonomy;
+	} else if (unit_choice === 'tax_generic_simple'){
+		taxonomy_object = new_generic_taxonomy;
+	}else{
+		taxonomy_object = new_taxonomy;
+	}
+	return taxonomy_object;
+}
+
 function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
-    	console.log('IN routes_counts_matrix::fill_out_taxonomy')
-    	db_tax_id_list = {};
-    	//console.log(post_items)
-    	if(post_items.unit_choice == 'tax_rdp2.6_simple'){
-            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
-            var taxonomy_object = new_rdp_taxonomy
-        }else if(post_items.unit_choice == 'tax_generic_simple'){
-            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
-            var taxonomy_object = new_generic_taxonomy
-        }else{
-            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);  // default
-            var taxonomy_object = new_taxonomy
-        }
+	console.log('IN routes_counts_matrix::fill_out_taxonomy');
+	var db_tax_id_list = {};
+	//console.log(post_items)
+	var files_prefix = get_file_prefix(req, post_items.unit_choice);
+	var taxonomy_object = get_taxonomy_object(req, post_items.unit_choice);
+
+	// if(post_items.unit_choice === 'tax_rdp2.6_simple'){
+      //       var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
+      //       var taxonomy_object = new_rdp_taxonomy
+      //   }else if(post_items.unit_choice == 'tax_generic_simple'){
+      //       var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
+      //       var taxonomy_object = new_generic_taxonomy
+      //   }else{
+      //       var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);  // default
+      //       var taxonomy_object = new_taxonomy
+      //   }
     	var unit_name_lookup = {};			
-		var unit_name_lookup_per_dataset = {};
-		for (var i in post_items.chosen_datasets) { // has correct order
-                var did = post_items.chosen_datasets[i].did
-                try{
-                    var path_to_file = path.join(files_prefix, did +'.json');
-                    var jsonfile = require(path_to_file);
-                    var taxcounts = jsonfile['taxcounts'];
-                    
-                }
-                catch(err){
-                  console.log('2-no file '+err.toString()+' Exiting');
-                  file_found_error = true;
-                  //res.redirect('visuals_index');
-                    //return;
-                }
-                
-                //console.log(did)
-                rank = post_items.tax_depth;
+			var unit_name_lookup_per_dataset = {};
+			for (var i in post_items.chosen_datasets) { // has correct order
+				var did = post_items.chosen_datasets[i].did;
+				try{
+						var path_to_file = path.join(files_prefix, did +'.json');
+						var jsonfile = require(path_to_file);
+						var taxcounts = jsonfile['taxcounts'];
+
+				}
+				catch(err){
+					console.log('2-no file '+err.toString()+' Exiting');
+					file_found_error = true;
+					//res.redirect('visuals_index');
+						//return;
+				}
+
+				//console.log(did)
+				rank = post_items.tax_depth;
                 //console.log('rank: '+rank)
 				  //if(post_items.unit_choice === 'tax_'+C.default_taxonomy.name+'_simple' || post_items.unit_choice === 'tax_rdp2.6_simple'|| post_items.unit_choice === 'tax_generic_simple') {
 				if(post_items.unit_choice.substr(post_items.unit_choice.length - 6) === 'simple' ) {
