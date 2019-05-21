@@ -305,114 +305,56 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 					tax_long_name = tax_long_name.slice(0,-1); // remove trailing ';'
 					unit_name_lookup[tax_long_name] = 1;
 					unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-					// Andy, all the ifs below result in the same 2 commands. Why do we need them?
-					//console.log('long tax_name '+tax_long_name+' - '+cnt.toString());
-
-					//console.log('domain '+domain)
-					//console.log(post_items.domains)
-					// SCREEN INCLUDE_NAS
-					// if selected domains excludes organelles then also exclude 'Bacteria;Cyanobacteria;Chloroplast'
-					// const exclude_nas = (post_items.include_nas === 'no');
-					// const do_not_exclude_chloroplast = test_for_not_organelle_n_chloroplast(domain, post_items, tax_long_name);
-					// const valid_domain_choosen = post_items.domains.indexOf(domain) !== -1;
-					// const not_na = tax_long_name.substring(tax_long_name.length-3, tax_long_name.length) !== '_NA';
-					// if (exclude_nas && not_na && do_not_exclude_chloroplast && valid_domain_choosen) {
-					// 	//console.log('ADDING '+tax_long_name)
-					// 	// SCREEN DOMAINS
-					// 	unit_name_lookup[tax_long_name] = 1;
-					// 	unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-					// }
-					// else {
-					// 	// SCREEN DOMAINS
-					// 	unit_name_lookup = screen_domains(domain, post_items, tax_long_name, unit_name_lookup);
-					// 	unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-					// }
 				}
 			}
 
-
-
-		}else if(post_items.unit_choice === 'tax_'+C.default_taxonomy.name+'_custom'){
+		}else if (post_items.unit_choice === 'tax_' + C.default_taxonomy.name + '_custom') {
 			// ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 			db_tax_id_list[did] = {};
 
-			for(var t in post_items.custom_taxa) {
+			for (var t in post_items.custom_taxa) {
 				//var name_n_rank = post_items.custom_taxa[t];
 				var selected_node_id = post_items.custom_taxa[t];
 				//console.log('selected_node_id ', selected_node_id)
-				if( taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id) ){
+				if (taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id)) {
 
-					var tax_node = taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
+					var tax_node  = taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
 					//console.log(tax_node)
 					var rank_name = tax_node.rank;
-					var rank_no = parseInt(C.RANKS.indexOf(rank_name));
+					var rank_no   = parseInt(C.RANKS.indexOf(rank_name));
 
 					db_tax_id_list[did][selected_node_id] = ''
-					tax_long_name = '';
-					//if(db_id_n_rank in new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank) {
-					//tax_node = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_n_rank];
-					//console.log('tax_node', name_n_rank, tax_node);
-					// // to get the counts we want to move up the parent tree to '0'
-					// console.log(rank_no)
-					// if(rank_no  === 0){
-					// 	db_tax_id_list.did.name_n_rank.unshift(tax_node.db_id)  // add to beginning
-					// }else if(rank_no  === 1) { // phylum
-					// 	db_tax_id_list.did.name_n_rank.unshift(tax_node.db_id)  // add to beginning
-					// 	parentnode = new_taxonomy.taxa_tree_dict_map_by_id[tax_node.parent_id]
-					// }
+					tax_long_name                         = '';
 
-
-					new_node_id = tax_node.parent_id
+					new_node_id                           = tax_node.parent_id;
 					db_tax_id_list[did][selected_node_id] = '_' + tax_node.db_id  // add to beginning
-					tax_long_name = tax_node.taxon;
-					while(new_node_id !== 0) {
-						new_node = taxonomy_object.taxa_tree_dict_map_by_id[new_node_id];
-						db_id = new_node.db_id;
-						db_tax_id_list[did][selected_node_id] =  '_' + db_id + db_tax_id_list[did][selected_node_id];
-						new_node_id = new_node.parent_id;
-						tax_long_name = new_node.taxon+';'+tax_long_name;
+					tax_long_name                         = tax_node.taxon;
+					while (new_node_id !== 0) {
+						new_node                              = taxonomy_object.taxa_tree_dict_map_by_id[new_node_id];
+						db_id                                 = new_node.db_id;
+						db_tax_id_list[did][selected_node_id] = '_' + db_id + db_tax_id_list[did][selected_node_id];
+						new_node_id                           = new_node.parent_id;
+						tax_long_name                         = new_node.taxon + ';' + tax_long_name;
 
 					}
-					cnt = 0
-					for(var id_chain in taxcounts){
+					cnt = 0;
+					for (var id_chain in taxcounts) {
 						//console.log('id_chain',id_chain)
 						//if(id_chain.indexOf(db_tax_id_list[did][name_n_rank]) === 0){
-						if(id_chain == db_tax_id_list[did][selected_node_id]){
+						if (id_chain == db_tax_id_list[did][selected_node_id]) {
 							//console.log('MATCH',db_tax_id_list[did][selected_node_id], id_chain);
 							cnt = taxcounts[id_chain];
 							break;
 						}
 					}
-					//console.log('COUNT',cnt, rank_name, tax_long_name)
-					if(post_items.include_nas == 'no' ){
-
-						if(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length) != '_NA'){
-							//console.log('ADDING '+tax_long_name)
-							// SCREEN DOMAINS
-							//if(post_items.domains.indexOf(rank_name) != -1){
-							//console.log('FOUND1',rank_name);
-							unit_name_lookup[tax_long_name] = 1;
-							unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-							//}
-						}
-
-					}else{
-						// SCREEN DOMAINS
-						//if(post_items.domains.indexOf(rank_name) != -1){
-						//console.log('FOUND2',rank_name);
-						unit_name_lookup[tax_long_name] = 1;
-						unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-						//}
-					}
-
-
-
+					unit_name_lookup[tax_long_name] = 1;
+					unit_name_lookup_per_dataset    = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
 				}
 
 			}
 
-		}else{
-			console.log('unit_choice error')
+		} else {
+			console.log('unit_choice error');
 		}
 
 	}
