@@ -87,7 +87,7 @@ def get_matrix_biom_taxbytax_sql(args, dids):
     sql += " WHERE D.dataset_id in ('"+dids+"') \n"
     if not args.include_metagenomic:
         sql += " AND metagenomic='0'"
-    sql += " GROUP BY taxonomy, dataset\n"
+    sql += " GROUP BY taxonomy, dataset, project\n"
     sql += " ORDER BY taxonomy\n"
     return sql
 
@@ -810,7 +810,7 @@ def get_dataset_counts(args):
         sys.exit('no pids or dids from command line -- exiting')
     if not args.include_metagenomic:
         sql += " AND metagenomic='0'"
-    sql += " group by dataset"
+    sql += " group by dataset_id, project"
     
     print(sql)
     cursor.execute(sql)
