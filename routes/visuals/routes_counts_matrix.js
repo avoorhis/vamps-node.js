@@ -366,24 +366,11 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 	if (post_items.update_data in true_meaning) {
 		biom_matrix = get_updated_biom_matrix( post_items, biom_matrix );
 	}
-	// else{
-	// 	// nothing here for the time being.....
-	// }
 
 	if(write_file === true || write_file === undefined){
 		write_matrix_file(post_items, biom_matrix);
-		// let tax_file = '../../tmp/'+post_items.ts+'_taxonomy.txt';
-		// COMMON.output_tax_file( tax_file, biom_matrix, C.RANKS.indexOf(post_items.tax_depth));
-		//
-		// let matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
-		// //COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
-		// COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
 	}
 	return biom_matrix;
-
-	function onlyUnique(value, index, self) {
-		return self.indexOf(value) === index;
-	}
 }
 //
 //
