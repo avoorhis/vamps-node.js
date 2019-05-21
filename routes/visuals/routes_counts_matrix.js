@@ -267,9 +267,6 @@ function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post
 
 			let tax_node  = taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
 			//console.log(tax_node)
-			// let rank_name = tax_node.rank;
-			// let rank_no   = parseInt(C.RANKS.indexOf(rank_name));
-
 			db_tax_id_list[did][selected_node_id] = '';
 			let tax_long_name                     = '';
 
@@ -303,6 +300,14 @@ function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post
 	return [unit_name_lookup, unit_name_lookup_per_dataset];
 }
 
+function write_matrix_file(post_items, biom_matrix) {
+	let tax_file = '../../tmp/'+post_items.ts+'_taxonomy.txt';
+	COMMON.output_tax_file( tax_file, biom_matrix, C.RANKS.indexOf(post_items.tax_depth));
+
+	let matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
+	COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
+}
+
 function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 	console.log('IN routes_counts_matrix::fill_out_taxonomy');
 	//console.log(post_items)
@@ -319,7 +324,7 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 			taxcounts = jsonfile['taxcounts'];
 		}
 		catch(err){
-			console.log('2-no file '+err.toString()+' Exiting');
+			console.log('2-no file ' + err.toString() + ' Exiting');
 			let file_found_error = true; // Never used!
 			//res.redirect('visuals_index');
 			//return;
@@ -327,8 +332,6 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 
 		//console.log(did)
 		let rank = post_items.tax_depth;
-		//console.log('rank: '+rank)
-		//if(post_items.unit_choice === 'tax_'+C.default_taxonomy.name+'_simple' || post_items.unit_choice === 'tax_rdp2.6_simple'|| post_items.unit_choice === 'tax_generic_simple') {
 		let unit_choice_simple = post_items.unit_choice.substr(post_items.unit_choice.length - 6) === 'simple';
 		let unit_choice_custom = post_items.unit_choice === 'tax_' + C.default_taxonomy.name + '_custom';
 		let res;
@@ -341,15 +344,14 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 			res = taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post_items);
 			unit_name_lookup = res[0];
 			unit_name_lookup_per_dataset = res[1];
-
 		} else {
 			console.log('unit_choice error');
 		}
 
 	}
 
-	unit_name_counts = create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_per_dataset);
-	ukeys = remove_empty_rows(unit_name_counts);
+	let unit_name_counts = create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_per_dataset);
+	let ukeys = remove_empty_rows(unit_name_counts);
 	ukeys = ukeys.filter(onlyUnique);
 	ukeys.sort();
 	// Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
@@ -357,22 +359,25 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 	//console.log('POSTx - from routes_counts_matrix.js');
 	//console.log(post_items);
 
-	biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, post_items );
-	if(post_items.update_data === true || post_items.update_data === 1 || post_items.update_data === '1'){
+	biom_matrix = create_biom_matrix( biom_matrix, unit_name_counts, ukeys, post_items );
+
+	let true_meaning = [true, 1, "1"];
+
+	if (post_items.update_data in true_meaning) {
 		biom_matrix = get_updated_biom_matrix( post_items, biom_matrix );
-
-	}else{
-		// nothing here for the time being.....
 	}
+	// else{
+	// 	// nothing here for the time being.....
+	// }
 
-
-	if(write_file == true || write_file == undefined){
-		let tax_file = '../../tmp/'+post_items.ts+'_taxonomy.txt';
-		COMMON.output_tax_file( tax_file, biom_matrix, C.RANKS.indexOf(post_items.tax_depth));
-
-		matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
-		//COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
-		COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
+	if(write_file === true || write_file === undefined){
+		write_matrix_file(post_items, biom_matrix);
+		// let tax_file = '../../tmp/'+post_items.ts+'_taxonomy.txt';
+		// COMMON.output_tax_file( tax_file, biom_matrix, C.RANKS.indexOf(post_items.tax_depth));
+		//
+		// let matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
+		// //COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
+		// COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
 	}
 	return biom_matrix;
 
