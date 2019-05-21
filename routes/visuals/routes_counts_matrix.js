@@ -204,17 +204,16 @@ function get_taxonomy_object(unit_choice) {
 }
 
 function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
-	let unit_name_lookup = {};
-	let unit_name_lookup_per_dataset = {};
+	let unit_name_lookup_1_dataset = {};
+	let unit_name_lookup_per_dataset_1_dataset = {};
 
 	let rank_no = parseInt(C.RANKS.indexOf(rank))	+ 1;
-	for(let current_tax_id_row in taxcounts){
+	for (let current_tax_id_row in taxcounts){
 		//console.log('new_taxonomy',taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank)
-
-		if((current_tax_id_row.match(/_/g) || []).length === rank_no){
+		let current_ids_amount = (current_tax_id_row.match(/_/g) || []).length;
+		if (current_ids_amount === rank_no){
 
 			let ids = current_tax_id_row.split('_');   // x === _5_55184_61061_62018_62239_63445
-
 			let cnt = taxcounts[current_tax_id_row];
 			let tax_long_name = '';
 			let domain = '';
@@ -245,13 +244,13 @@ function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
 				}
 				//console.log('tax_node3 '+JSON.stringify(tax_node))
 			}
-
+			// TODO: the following line  to "remove_trailing_semicolon func
 			tax_long_name = tax_long_name.slice(0,-1); // remove trailing ';'
-			unit_name_lookup[tax_long_name] = 1;
-			unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+			unit_name_lookup_1_dataset[tax_long_name] = 1;
+			unit_name_lookup_per_dataset_1_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, tax_long_name, cnt);
 		}
 	}
-	return [unit_name_lookup, unit_name_lookup_per_dataset];
+	return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
 }
 
 function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post_items) {
@@ -326,8 +325,8 @@ function get_taxcounts(files_prefix, did) {
 
 function get_unit_name_lookups(post_items, files_prefix, taxonomy_object) {
 	let taxcounts;
-	let unit_name_lookup;
-	let unit_name_lookup_per_dataset;
+	let unit_name_lookup = {};
+	let unit_name_lookup_per_dataset = {};
 
 	for (let item in post_items.chosen_datasets) { // has correct order
 		let did = post_items.chosen_datasets[item].did;
@@ -337,17 +336,18 @@ function get_unit_name_lookups(post_items, files_prefix, taxonomy_object) {
 		let rank = post_items.tax_depth;
 		let unit_choice_simple = post_items.unit_choice.substr(post_items.unit_choice.length - 6) === 'simple';
 		let unit_choice_custom = post_items.unit_choice === 'tax_' + C.default_taxonomy.name + '_custom';
-		let res;
+		let unit_name_lookup_res;
 		if (unit_choice_simple) {
-			res = taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did);
-			unit_name_lookup = res[0];
-			unit_name_lookup_per_dataset = res[1];
+			unit_name_lookup_res = taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did);
 		}
 		else if (unit_choice_custom) {
-			res = taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post_items);
-			unit_name_lookup = res[0];
-			unit_name_lookup_per_dataset = res[1];
-		} else {
+			unit_name_lookup_res = taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post_items);
+		}
+		if (unit_name_lookup_res) {
+			unit_name_lookup = Object.assign(unit_name_lookup, unit_name_lookup_res[0]);
+			unit_name_lookup_per_dataset[did] = unit_name_lookup_res[1][did];
+		}
+		else {
 			console.log('unit_choice error');
 		}
 	}
