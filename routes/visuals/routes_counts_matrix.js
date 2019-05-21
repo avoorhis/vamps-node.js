@@ -257,8 +257,8 @@ function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post
 	// ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 	let db_tax_id_list = {};
 	db_tax_id_list[did] = {};
-	let unit_name_lookup = {};
-	let unit_name_lookup_per_dataset = {};
+	let unit_name_lookup_1_dataset = {};
+	let unit_name_lookup_per_dataset_1_dataset = {};
 
 	for (let t in post_items.custom_taxa) {
 		//let name_n_rank = post_items.custom_taxa[t];
@@ -294,11 +294,11 @@ function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post
 					break;
 				}
 			}
-			unit_name_lookup[tax_long_name] = 1;
-			unit_name_lookup_per_dataset    = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+			unit_name_lookup_1_dataset[tax_long_name] = 1;
+			unit_name_lookup_per_dataset_1_dataset    = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, tax_long_name, cnt);
 		}
 	}
-	return [unit_name_lookup, unit_name_lookup_per_dataset];
+	return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
 }
 
 function write_matrix_file(post_items, biom_matrix) {
