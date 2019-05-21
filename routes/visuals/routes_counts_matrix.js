@@ -206,18 +206,19 @@ function get_taxonomy_object(unit_choice) {
 function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
 	let unit_name_lookup = {};
 	let unit_name_lookup_per_dataset = {};
+
 	let rank_no = parseInt(C.RANKS.indexOf(rank))	+ 1;
-	for(let x in taxcounts){
+	for(let current_tax_id_row in taxcounts){
 		//console.log('new_taxonomy',taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank)
 
-		if((x.match(/_/g) || []).length === rank_no){
+		if((current_tax_id_row.match(/_/g) || []).length === rank_no){
 
-			let ids = x.split('_');   // x === _5_55184_61061_62018_62239_63445
+			let ids = current_tax_id_row.split('_');   // x === _5_55184_61061_62018_62239_63445
 
-			let cnt = taxcounts[x];
+			let cnt = taxcounts[current_tax_id_row];
 			let tax_long_name = '';
 			let domain = '';
-			//TODO: this for to func
+			//TODO: move this "for" to func
 			for (let y=1; y<ids.length; y++){  // must start at 1 because leading '_':  _2_55184
 				let db_id = ids[y];
 				let this_rank = C.RANKS[y-1];
@@ -231,6 +232,7 @@ function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
 					domain = tax_node.taxon;
 				}
 
+				//TODO: move this "if" and the next line to func "get_tax_long_name""
 				if(tax_node.taxon === undefined){
 
 					if(this_rank === 'klass'){
@@ -322,29 +324,14 @@ function get_taxcounts(files_prefix, did) {
 	}
 }
 
-
-function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
-	console.log('IN routes_counts_matrix::fill_out_taxonomy');
-	//console.log(post_items)
-	let files_prefix = get_file_prefix(req, post_items.unit_choice);
-	let taxonomy_object = get_taxonomy_object(req, post_items.unit_choice);
-	let unit_name_lookup = {};
-	let unit_name_lookup_per_dataset = {};
+function get_unit_name_lookups(post_items, files_prefix, taxonomy_object) {
 	let taxcounts;
-	for (let i in post_items.chosen_datasets) { // has correct order
-		let did = post_items.chosen_datasets[i].did;
+	let unit_name_lookup;
+	let unit_name_lookup_per_dataset;
+
+	for (let item in post_items.chosen_datasets) { // has correct order
+		let did = post_items.chosen_datasets[item].did;
 		taxcounts = get_taxcounts(files_prefix, did);
-		// try{
-		// 	let path_to_file = path.join(files_prefix, did +'.json');
-		// 	let jsonfile = require(path_to_file);
-		// 	taxcounts = jsonfile['taxcounts'];
-		// }
-		// catch(err){
-		// 	console.log('2-no file ' + err.toString() + ' Exiting');
-		// 	let file_found_error = true; // Never used!
-		// 	//res.redirect('visuals_index');
-		// 	//return;
-		// }
 
 		//console.log(did)
 		let rank = post_items.tax_depth;
@@ -364,6 +351,20 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 			console.log('unit_choice error');
 		}
 	}
+	return [unit_name_lookup, unit_name_lookup_per_dataset]; //TODO send one object?
+}
+
+
+function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
+	console.log('IN routes_counts_matrix::fill_out_taxonomy');
+	//console.log(post_items)
+	let files_prefix = get_file_prefix(req, post_items.unit_choice);
+	let taxonomy_object = get_taxonomy_object(req, post_items.unit_choice);
+	let unit_name_lookup = {};
+	let unit_name_lookup_per_dataset = {};
+	let res = get_unit_name_lookups(post_items, files_prefix, taxonomy_object);
+	unit_name_lookup = res[0];
+	unit_name_lookup_per_dataset = res[1];
 
 	let unit_name_counts = create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_per_dataset);
 	let ukeys = remove_empty_rows(unit_name_counts);
