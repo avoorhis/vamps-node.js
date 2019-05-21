@@ -308,6 +308,21 @@ function write_matrix_file(post_items, biom_matrix) {
 	COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
 }
 
+function get_taxcounts(files_prefix, did) {
+	try {
+		let path_to_file = path.join(files_prefix, did +'.json');
+		let jsonfile = require(path_to_file);
+		return jsonfile['taxcounts'];
+	}
+	catch(err) {
+		console.log('2-no file ' + err.toString() + ' Exiting');
+		// let file_found_error = true; // Never used!
+		//res.redirect('visuals_index');
+		//return;
+	}
+}
+
+
 function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 	console.log('IN routes_counts_matrix::fill_out_taxonomy');
 	//console.log(post_items)
@@ -318,17 +333,18 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 	let taxcounts;
 	for (let i in post_items.chosen_datasets) { // has correct order
 		let did = post_items.chosen_datasets[i].did;
-		try{
-			let path_to_file = path.join(files_prefix, did +'.json');
-			let jsonfile = require(path_to_file);
-			taxcounts = jsonfile['taxcounts'];
-		}
-		catch(err){
-			console.log('2-no file ' + err.toString() + ' Exiting');
-			let file_found_error = true; // Never used!
-			//res.redirect('visuals_index');
-			//return;
-		}
+		taxcounts = get_taxcounts(files_prefix, did);
+		// try{
+		// 	let path_to_file = path.join(files_prefix, did +'.json');
+		// 	let jsonfile = require(path_to_file);
+		// 	taxcounts = jsonfile['taxcounts'];
+		// }
+		// catch(err){
+		// 	console.log('2-no file ' + err.toString() + ' Exiting');
+		// 	let file_found_error = true; // Never used!
+		// 	//res.redirect('visuals_index');
+		// 	//return;
+		// }
 
 		//console.log(did)
 		let rank = post_items.tax_depth;
@@ -347,7 +363,6 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 		} else {
 			console.log('unit_choice error');
 		}
-
 	}
 
 	let unit_name_counts = create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_per_dataset);
