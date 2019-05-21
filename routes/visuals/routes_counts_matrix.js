@@ -254,6 +254,7 @@ function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
 }
 
 function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post_items) {
+	console.time('TIME: taxonomy_unit_choice_custom');
 	// ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 	let db_tax_id_list = {};
 	db_tax_id_list[did] = {};
@@ -285,21 +286,48 @@ function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post
 
 			}
 			let cnt = 0;
-			for (let id_chain in taxcounts) {
+			console.time('TIME: for id_chain');
+			// for (let selected_id in db_tax_id_list[did]) {
+			// 	curr_tax_id_chain = db_tax_id_list[did][selected_id];
+			// 	Object.keys(taxcounts).filter(temp_filter);
+			// }
+			// for (let id_chain in taxcounts) {
 				//console.log('id_chain',id_chain)
 				//if(id_chain.indexOf(db_tax_id_list[did][name_n_rank]) === 0){
-				if (id_chain === db_tax_id_list[did][selected_node_id]) {
-					//console.log('MATCH',db_tax_id_list[did][selected_node_id], id_chain);
-					cnt = taxcounts[id_chain];
-					break;
+				let curr_tax_id_chain = db_tax_id_list[did][selected_node_id];
+				if (Object.keys(taxcounts).indexOf(curr_tax_id_chain) !== -1) {
+					cnt = taxcounts[curr_tax_id_chain];
 				}
-			}
+				// if (id_chain === db_tax_id_list[did][selected_node_id]) {
+				// 	//console.log('MATCH',db_tax_id_list[did][selected_node_id], id_chain);
+				// 	cnt = taxcounts[id_chain];
+				// 	break;
+				// }
+			// }
+			console.timeEnd('TIME: for id_chain');
+
 			unit_name_lookup_1_dataset[tax_long_name] = 1;
 			unit_name_lookup_per_dataset_1_dataset    = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, tax_long_name, cnt);
 		}
 	}
+	console.timeEnd('TIME: taxonomy_unit_choice_custom');
+
 	return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
 }
+
+function filterItems(arr, value) {
+	return arr.filter(function(el) {
+		return el.indexOf(value) !== -1;
+	});
+}
+
+function filter_id_chains(arr, value) {
+	for (let selected_id in db_tax_id_list[did]) {
+		curr_tax_id_chain = db_tax_id_list[did][selected_id];
+		Object.keys(taxcounts).indexOf(curr_tax_id_chain);
+	}
+}
+
 
 function write_matrix_file(post_items, biom_matrix) {
 	let tax_file = '../../tmp/'+post_items.ts+'_taxonomy.txt';
