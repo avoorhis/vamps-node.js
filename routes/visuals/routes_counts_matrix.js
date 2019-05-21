@@ -255,7 +255,7 @@ function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
 function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post_items) {
 	// ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 	let db_tax_id_list = {};
-	// let db_tax_id_list[did] = {};
+	db_tax_id_list[did] = {};
 	let unit_name_lookup = {};
 	let unit_name_lookup_per_dataset = {};
 
@@ -271,9 +271,9 @@ function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post
 			// let rank_no   = parseInt(C.RANKS.indexOf(rank_name));
 
 			db_tax_id_list[did][selected_node_id] = '';
-			let tax_long_name                         = '';
+			let tax_long_name                     = '';
 
-			let new_node_id                           = tax_node.parent_id;
+			let new_node_id                       = tax_node.parent_id;
 			db_tax_id_list[did][selected_node_id] = '_' + tax_node.db_id;  // add to beginning
 			tax_long_name                         = tax_node.taxon;
 			let new_node;
@@ -338,52 +338,9 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 			unit_name_lookup_per_dataset = res[1];
 		}
 		else if (unit_choice_custom) {
-			res = taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did);
+			res = taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post_items);
 			unit_name_lookup = res[0];
 			unit_name_lookup_per_dataset = res[1];
-			// // ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
-			// db_tax_id_list[did] = {};
-			//
-			// for (let t in post_items.custom_taxa) {
-			// 	//let name_n_rank = post_items.custom_taxa[t];
-			// 	let selected_node_id = post_items.custom_taxa[t];
-			// 	//console.log('selected_node_id ', selected_node_id)
-			// 	if (taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id)) {
-			//
-			// 		let tax_node  = taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
-			// 		//console.log(tax_node)
-			// 		let rank_name = tax_node.rank;
-			// 		let rank_no   = parseInt(C.RANKS.indexOf(rank_name));
-			//
-			// 		db_tax_id_list[did][selected_node_id] = ''
-			// 		tax_long_name                         = '';
-			//
-			// 		new_node_id                           = tax_node.parent_id;
-			// 		db_tax_id_list[did][selected_node_id] = '_' + tax_node.db_id  // add to beginning
-			// 		tax_long_name                         = tax_node.taxon;
-			// 		while (new_node_id !== 0) {
-			// 			new_node                              = taxonomy_object.taxa_tree_dict_map_by_id[new_node_id];
-			// 			db_id                                 = new_node.db_id;
-			// 			db_tax_id_list[did][selected_node_id] = '_' + db_id + db_tax_id_list[did][selected_node_id];
-			// 			new_node_id                           = new_node.parent_id;
-			// 			tax_long_name                         = new_node.taxon + ';' + tax_long_name;
-			//
-			// 		}
-			// 		cnt = 0;
-			// 		for (let id_chain in taxcounts) {
-			// 			//console.log('id_chain',id_chain)
-			// 			//if(id_chain.indexOf(db_tax_id_list[did][name_n_rank]) === 0){
-			// 			if (id_chain == db_tax_id_list[did][selected_node_id]) {
-			// 				//console.log('MATCH',db_tax_id_list[did][selected_node_id], id_chain);
-			// 				cnt = taxcounts[id_chain];
-			// 				break;
-			// 			}
-			// 		}
-			// 		unit_name_lookup[tax_long_name] = 1;
-			// 		unit_name_lookup_per_dataset    = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-			// 	}
-			//
-			// }
 
 		} else {
 			console.log('unit_choice error');
