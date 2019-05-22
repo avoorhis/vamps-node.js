@@ -285,26 +285,14 @@ function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post
 				tax_long_name                         = new_node.taxon + ';' + tax_long_name;
 
 			}
-			let cnt = 0;
-			console.time('TIME: for id_chain');
-			// for (let selected_id in db_tax_id_list[did]) {
-			// 	curr_tax_id_chain = db_tax_id_list[did][selected_id];
-			// 	Object.keys(taxcounts).filter(temp_filter);
-			// }
-			// for (let id_chain in taxcounts) {
-				//console.log('id_chain',id_chain)
-				//if(id_chain.indexOf(db_tax_id_list[did][name_n_rank]) === 0){
-				let curr_tax_id_chain = db_tax_id_list[did][selected_node_id];
-				if (Object.keys(taxcounts).indexOf(curr_tax_id_chain) !== -1) {
-					cnt = taxcounts[curr_tax_id_chain];
-				}
-				// if (id_chain === db_tax_id_list[did][selected_node_id]) {
-				// 	//console.log('MATCH',db_tax_id_list[did][selected_node_id], id_chain);
-				// 	cnt = taxcounts[id_chain];
-				// 	break;
-				// }
-			// }
-			console.timeEnd('TIME: for id_chain');
+			// let cnt = 0;
+			// console.time('TIME: for id_chain');
+			// 	let curr_tax_id_chain = db_tax_id_list[did][selected_node_id];
+			// 	if (Object.keys(taxcounts).indexOf(curr_tax_id_chain) !== -1) {
+			// 		cnt = taxcounts[curr_tax_id_chain];
+			// 	}
+			// console.timeEnd('TIME: for id_chain');
+			let cnt = get_tax_cnt(db_tax_id_list, did, selected_node_id, taxcounts);
 
 			unit_name_lookup_1_dataset[tax_long_name] = 1;
 			unit_name_lookup_per_dataset_1_dataset    = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, tax_long_name, cnt);
@@ -315,17 +303,13 @@ function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post
 	return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
 }
 
-function filterItems(arr, value) {
-	return arr.filter(function(el) {
-		return el.indexOf(value) !== -1;
-	});
-}
-
-function filter_id_chains(arr, value) {
-	for (let selected_id in db_tax_id_list[did]) {
-		curr_tax_id_chain = db_tax_id_list[did][selected_id];
-		Object.keys(taxcounts).indexOf(curr_tax_id_chain);
+function get_tax_cnt(db_tax_id_list, did, selected_node_id, taxcounts) {
+	console.time('TIME: for id_chain');
+	let curr_tax_id_chain = db_tax_id_list[did][selected_node_id];
+	if (Object.keys(taxcounts).indexOf(curr_tax_id_chain) !== -1) {
+		return taxcounts[curr_tax_id_chain];
 	}
+	console.timeEnd('TIME: for id_chain');
 }
 
 
