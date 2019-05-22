@@ -275,23 +275,23 @@ function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post
 			let new_node_id                       = tax_node.parent_id;
 			db_tax_id_list[did][selected_node_id] = '_' + tax_node.db_id;  // add to beginning
 			tax_long_name                         = tax_node.taxon;
-			let new_node;
-			let db_id;
-			while (new_node_id !== 0) {
-				new_node                              = taxonomy_object.taxa_tree_dict_map_by_id[new_node_id];
-				db_id                                 = new_node.db_id;
-				db_tax_id_list[did][selected_node_id] = '_' + db_id + db_tax_id_list[did][selected_node_id];
-				new_node_id                           = new_node.parent_id;
-				tax_long_name                         = new_node.taxon + ';' + tax_long_name;
+			// let new_node;
+			// let db_id;
+			// while (new_node_id !== 0) {
+			// 	new_node                              = taxonomy_object.taxa_tree_dict_map_by_id[new_node_id];
+			// 	db_id                                 = new_node.db_id;
+			// 	db_tax_id_list[did][selected_node_id] = '_' + db_id + db_tax_id_list[did][selected_node_id];
+			// 	new_node_id                           = new_node.parent_id;
+			// 	tax_long_name                         = new_node.taxon + ';' + tax_long_name;
+			//
+			// }
 
+			let combined_ids = combine_db_tax_id_list(new_node_id, taxonomy_object, tax_long_name, db_tax_id_list[did][selected_node_id]);
+			if (combined_ids) {
+				db_tax_id_list[did][selected_node_id] = combined_ids[0];
+				tax_long_name = combined_ids[1];
 			}
-			// let cnt = 0;
-			// console.time('TIME: for id_chain');
-			// 	let curr_tax_id_chain = db_tax_id_list[did][selected_node_id];
-			// 	if (Object.keys(taxcounts).indexOf(curr_tax_id_chain) !== -1) {
-			// 		cnt = taxcounts[curr_tax_id_chain];
-			// 	}
-			// console.timeEnd('TIME: for id_chain');
+
 			let cnt = get_tax_cnt(db_tax_id_list, did, selected_node_id, taxcounts);
 
 			unit_name_lookup_1_dataset[tax_long_name] = 1;
@@ -301,6 +301,19 @@ function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post
 	console.timeEnd('TIME: taxonomy_unit_choice_custom');
 
 	return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
+}
+
+function combine_db_tax_id_list(new_node_id, taxonomy_object, tax_long_name, temp_obj) {
+	let new_node;
+	let db_id;
+	while (new_node_id !== 0) {
+		new_node      = taxonomy_object.taxa_tree_dict_map_by_id[new_node_id];
+		db_id         = new_node.db_id;
+		temp_obj 			= '_' + db_id + temp_obj;
+		new_node_id   = new_node.parent_id;
+		tax_long_name = new_node.taxon + ';' + tax_long_name;
+	}
+	return [temp_obj, tax_long_name];
 }
 
 function get_tax_cnt(db_tax_id_list, did, selected_node_id, taxcounts) {
