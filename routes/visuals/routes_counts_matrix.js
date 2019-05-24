@@ -247,40 +247,10 @@ function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
 			let cnt = taxcounts[current_tax_id_row];
 			let tax_long_name = '';
 			//TODO: move this "for" to func
-			for (let ids_arr_ind = 1; ids_arr_ind < ids.length; ids_arr_ind++){  // must start at 1 because leading '_':  _2_55184
-				let this_rank = C.RANKS[ids_arr_ind-1];
+			for (let ids_arr_ind = 0; ids_arr_ind < ids.length; ids_arr_ind++){  // must start at 1 because leading '_':  _2_55184
+				let this_rank = C.RANKS[ids_arr_ind];
 				let tax_node = get_tax_node(taxonomy_object, ids, ids_arr_ind, this_rank);
-				// if(this_rank === 'domain'){
-				// 	// let domain = '';
-				// 	let domain = tax_node.taxon;
-				// }
-
 				tax_long_name = get_tax_long_name(tax_node, this_rank);
-
-				// 	let db_id = ids[y];
-			// 	let this_rank = C.RANKS[y-1];
-			// 	let db_id_n_rank = db_id+'_'+this_rank;
-			// 	//console.log('tax_node2 '+JSON.stringify(db_id_n_rank))
-			// 	let tax_node = {};
-			// 	if(db_id_n_rank in taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank) {
-			// 		tax_node = taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
-			// 	}
-			// 	if(this_rank === 'domain'){
-			// 		domain = tax_node.taxon;
-			// 	}
-			//
-			// 	//TODO: move this "if" and the next line to func "get_tax_long_name""
-			// 	if(tax_node.taxon === undefined){
-			//
-			// 		if(this_rank === 'klass'){
-			// 			tax_long_name += 'class_NA;';
-			// 		}else{
-			// 			tax_long_name += this_rank+'_NA;';
-			// 		}
-			// 	}else{
-			// 		tax_long_name += tax_node.taxon+';';
-			// 	}
-				//console.log('tax_node3 '+JSON.stringify(tax_node))
 			}
 			// TODO: the following line  to "remove_trailing_semicolon func
 			unit_name_lookup_1_dataset[tax_long_name] = 1;
