@@ -273,15 +273,14 @@ function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post
 
 			let tax_node  = taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
 			//console.log(tax_node)
+			db_tax_id_list[did][selected_node_id] = '';
+			let tax_long_name                     = '';
 
-			let id_chain_start = '';
-			let tax_long_name = '';
+			let new_node_id                       = tax_node.parent_id;
+			db_tax_id_list[did][selected_node_id] = '_' + tax_node.db_id;  // add to beginning
+			tax_long_name                         = tax_node.taxon;
 
-			let new_node_id = tax_node.parent_id;
-			id_chain_start = '_' + tax_node.db_id;  // add to beginning
-			tax_long_name = tax_node.taxon;
-
-			let combined_ids_res = combine_db_tax_id_list(new_node_id, taxonomy_object, tax_long_name, id_chain_start);
+			let combined_ids_res = combine_db_tax_id_list(new_node_id, taxonomy_object, tax_long_name, db_tax_id_list[did][selected_node_id]);
 			db_tax_id_list[did][selected_node_id] = combined_ids_res[0];
 			tax_long_name = combined_ids_res[1];
 
