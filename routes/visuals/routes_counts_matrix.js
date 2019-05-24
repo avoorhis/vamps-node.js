@@ -203,6 +203,22 @@ function get_taxonomy_object(unit_choice) {
 	return taxonomy_object;
 }
 
+function get_tax_long_name(tax_long_name, tax_node, this_rank) {
+
+	if(tax_node.taxon === undefined){
+
+		if(this_rank === 'klass'){
+			tax_long_name += 'class_NA;';
+		} else {
+			tax_long_name += this_rank+'_NA;';
+		}
+	} else {
+		tax_long_name += tax_node.taxon+';';
+	}
+	// tax_long_name = tax_long_name.slice(0,-1); // remove trailing ';'
+	return tax_long_name;
+}
+
 function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
 	let unit_name_lookup_1_dataset = {};
 	let unit_name_lookup_per_dataset_1_dataset = {};
@@ -231,17 +247,19 @@ function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
 					domain = tax_node.taxon;
 				}
 
-				//TODO: move this "if" and the next line to func "get_tax_long_name""
-				if(tax_node.taxon === undefined){
+				tax_long_name = get_tax_long_name(tax_long_name, tax_node, this_rank);
 
-					if(this_rank === 'klass'){
-						tax_long_name += 'class_NA;';
-					}else{
-						tax_long_name += this_rank+'_NA;';
-					}
-				}else{
-					tax_long_name += tax_node.taxon+';';
-				}
+				// TODO: move this "if" and the next line to func "get_tax_long_name""
+				// if(tax_node.taxon === undefined){
+				//
+				// 	if(this_rank === 'klass'){
+				// 		tax_long_name += 'class_NA;';
+				// 	}else{
+				// 		tax_long_name += this_rank+'_NA;';
+				// 	}
+				// }else{
+				// 	tax_long_name += tax_node.taxon+';';
+				// }
 				//console.log('tax_node3 '+JSON.stringify(tax_node))
 			}
 			// TODO: the following line  to "remove_trailing_semicolon func
