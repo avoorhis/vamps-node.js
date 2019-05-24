@@ -239,20 +239,17 @@ function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
 
 	let rank_no = parseInt(C.RANKS.indexOf(rank))	+ 1;
 	for (let current_tax_id_row in taxcounts){
-		//console.log('new_taxonomy',taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank)
 		let current_ids_amount = (current_tax_id_row.match(/_/g) || []).length;
 		if (current_ids_amount === rank_no){
 
 			let ids = current_tax_id_row.split('_');   // x === _5_55184_61061_62018_62239_63445
 			let cnt = taxcounts[current_tax_id_row];
 			let tax_long_name = '';
-			//TODO: move this "for" to func
-			for (let ids_arr_ind = 0; ids_arr_ind < ids.length; ids_arr_ind++){  // must start at 1 because leading '_':  _2_55184
+			for (let ids_arr_ind = 0, ids_length = ids.length; ids_arr_ind < ids_length; ids_arr_ind++){
 				let this_rank = C.RANKS[ids_arr_ind];
 				let tax_node = get_tax_node(taxonomy_object, ids, ids_arr_ind, this_rank);
 				tax_long_name = get_tax_long_name(tax_node, this_rank);
 			}
-			// TODO: the following line  to "remove_trailing_semicolon func
 			unit_name_lookup_1_dataset[tax_long_name] = 1;
 			unit_name_lookup_per_dataset_1_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, tax_long_name, cnt);
 		}
