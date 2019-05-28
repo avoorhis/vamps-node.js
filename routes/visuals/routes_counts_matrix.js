@@ -223,41 +223,92 @@ function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
 	let unit_name_lookup_1_dataset = {};
 	let unit_name_lookup_per_dataset_1_dataset = {};
 
+	console.time("TIME: current_tax_id_row_list");
+	let current_tax_id_row_list = collect_tax_id_rows(taxcounts, rank);
+	for (let current_tax_id_idx in current_tax_id_row_list){
+		// TODO: create an obj with chosen current_ids_amounts
+		let current_tax_id_row = current_tax_id_row_list[current_tax_id_idx];
+		let ids = current_tax_id_row.split('_');   // x === _5_55184_61061_62018_62239_63445
+		let cnt = taxcounts[current_tax_id_row];
+		let tax_long_name = '';
+		let domain = '';
+		//TODO: move this "for" to func
+		for (let id_idx = 1, ids_length = ids.length; id_idx < ids_length; id_idx++){  // must start at 1 because leading '_':  _2_55184
+			let db_id = ids[id_idx];
+			let this_rank = C.RANKS[id_idx - 1];
+			let db_id_n_rank = db_id + '_' + this_rank;
+			//console.log('tax_node2 '+JSON.stringify(db_id_n_rank))
+			let tax_node = {};
+			if (db_id_n_rank in taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank) {
+				tax_node = taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
+			}
+			if (this_rank === 'domain'){
+				domain = tax_node.taxon;
+			}
+
+			tax_long_name = get_tax_long_name(tax_long_name, tax_node, this_rank);
+
+			//console.log('tax_node3 '+JSON.stringify(tax_node))
+		}
+		// TODO: the following line  to "remove_trailing_semicolon func
+		tax_long_name = tax_long_name.slice(0,-1); // remove trailing ';'
+		unit_name_lookup_1_dataset[tax_long_name] = 1;
+		unit_name_lookup_per_dataset_1_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, tax_long_name, cnt);
+	}
+	console.timeEnd("TIME: current_tax_id_row_list");
+
+	// console.time("TIME: OLD current_tax_id_row_list");
+	// let rank_no = parseInt(C.RANKS.indexOf(rank))	+ 1;
+	// for (let current_tax_id_row in taxcounts){
+	// 	//console.log('new_taxonomy',taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank)
+	// 	let current_ids_amount = (current_tax_id_row.match(/_/g) || []).length;
+	// 	if (current_ids_amount === rank_no){
+	// 		// TODO: create an obj with chosen current_ids_amounts
+	// 		let ids = current_tax_id_row.split('_');   // x === _5_55184_61061_62018_62239_63445
+	// 		let cnt = taxcounts[current_tax_id_row];
+	// 		let tax_long_name = '';
+	// 		let domain = '';
+	// 		//TODO: move this "for" to func
+	// 		for (let id_idx = 1, ids_length = ids.length; id_idx < ids_length; id_idx++){  // must start at 1 because leading '_':  _2_55184
+	// 			let db_id = ids[id_idx];
+	// 			let this_rank = C.RANKS[id_idx - 1];
+	// 			let db_id_n_rank = db_id + '_' + this_rank;
+	// 			//console.log('tax_node2 '+JSON.stringify(db_id_n_rank))
+	// 			let tax_node = {};
+	// 			if (db_id_n_rank in taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank) {
+	// 				tax_node = taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
+	// 			}
+	// 			if (this_rank === 'domain'){
+	// 				domain = tax_node.taxon;
+	// 			}
+	//
+	// 			tax_long_name = get_tax_long_name(tax_long_name, tax_node, this_rank);
+	//
+	// 			//console.log('tax_node3 '+JSON.stringify(tax_node))
+	// 		}
+	// 		// TODO: the following line  to "remove_trailing_semicolon func
+	// 		tax_long_name = tax_long_name.slice(0,-1); // remove trailing ';'
+	// 		unit_name_lookup_1_dataset[tax_long_name] = 1;
+	// 		unit_name_lookup_per_dataset_1_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, tax_long_name, cnt);
+	// 	}
+	// }
+	// console.timeEnd("TIME: OLD current_tax_id_row_list");
+
+	return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
+}
+
+function collect_tax_id_rows(taxcounts, rank) {
+	let current_tax_id_rows = [];
 	let rank_no = parseInt(C.RANKS.indexOf(rank))	+ 1;
-	for (let current_tax_id_row in taxcounts){
+
+	for (let current_tax_id_row in taxcounts) {
 		//console.log('new_taxonomy',taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank)
 		let current_ids_amount = (current_tax_id_row.match(/_/g) || []).length;
-		if (current_ids_amount === rank_no){
-			// TODO: create an obj with chosen current_ids_amounts
-			let ids = current_tax_id_row.split('_');   // x === _5_55184_61061_62018_62239_63445
-			let cnt = taxcounts[current_tax_id_row];
-			let tax_long_name = '';
-			let domain = '';
-			//TODO: move this "for" to func
-			for (let id_idx = 1, ids_length = ids.length; id_idx < ids_length; id_idx++){  // must start at 1 because leading '_':  _2_55184
-				let db_id = ids[id_idx];
-				let this_rank = C.RANKS[id_idx - 1];
-				let db_id_n_rank = db_id + '_' + this_rank;
-				//console.log('tax_node2 '+JSON.stringify(db_id_n_rank))
-				let tax_node = {};
-				if (db_id_n_rank in taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank) {
-					tax_node = taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
-				}
-				if (this_rank === 'domain'){
-					domain = tax_node.taxon;
-				}
-
-				tax_long_name = get_tax_long_name(tax_long_name, tax_node, this_rank);
-
-				//console.log('tax_node3 '+JSON.stringify(tax_node))
-			}
-			// TODO: the following line  to "remove_trailing_semicolon func
-			tax_long_name = tax_long_name.slice(0,-1); // remove trailing ';'
-			unit_name_lookup_1_dataset[tax_long_name] = 1;
-			unit_name_lookup_per_dataset_1_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, tax_long_name, cnt);
+		if (current_ids_amount === rank_no) {
+			current_tax_id_rows.push(current_tax_id_row);
 		}
 	}
-	return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
+	return current_tax_id_rows;
 }
 
 function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post_items) {
