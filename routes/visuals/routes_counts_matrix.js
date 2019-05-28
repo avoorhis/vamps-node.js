@@ -226,27 +226,10 @@ function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
 	console.time("TIME: current_tax_id_row_list");
 	let current_tax_id_row_list = collect_tax_id_rows(taxcounts, rank);
 	for (let current_tax_id_idx in current_tax_id_row_list){
-		// TODO: create an obj with chosen current_ids_amounts
 		let current_tax_id_row = current_tax_id_row_list[current_tax_id_idx];
 		let cnt = taxcounts[current_tax_id_row];
 		let tax_long_name = get_tax_long_name(current_tax_id_row, taxonomy_object);
-		//TODO: move this "for" to func
-		// for (let id_idx = 1, ids_length = ids.length; id_idx < ids_length; id_idx++){  // must start at 1 because leading '_':  _2_55184
-		// 	let db_id = ids[id_idx];
-		// 	let this_rank = C.RANKS[id_idx - 1];
-		// 	let db_id_n_rank = db_id + '_' + this_rank;
-		// 	//console.log('tax_node2 '+JSON.stringify(db_id_n_rank))
-		// 	let tax_node = get_tax_node(db_id_n_rank, taxonomy_object);
-		// 	if (this_rank === 'domain'){
-		// 		domain = tax_node.taxon;
-		// 	}
-		//
-		// 	tax_long_name = add_next_tax_name(tax_long_name, tax_node, this_rank);
-		//
-		// 	//console.log('tax_node3 '+JSON.stringify(tax_node))
-		// }
-		// // TODO: the following line  to "remove_trailing_semicolon func
-		// tax_long_name = tax_long_name.slice(0,-1); // remove trailing ';'
+
 		unit_name_lookup_1_dataset[tax_long_name] = 1;
 		unit_name_lookup_per_dataset_1_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, tax_long_name, cnt);
 	}
@@ -319,20 +302,20 @@ function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post
 			//console.log(tax_node)
 
 			let id_chain_start = '';
-			let tax_long_name = '';
+			let custom_tax_long_name = '';
 
 			let new_node_id = tax_node.parent_id;
 			id_chain_start = '_' + tax_node.db_id;  // add to beginning
-			tax_long_name = tax_node.taxon;
+			custom_tax_long_name = tax_node.taxon;
 
-			let combined_ids_res = combine_db_tax_id_list(new_node_id, taxonomy_object, tax_long_name, id_chain_start);
+			let combined_ids_res = combine_db_tax_id_list(new_node_id, taxonomy_object, custom_tax_long_name, id_chain_start);
 			db_tax_id_list[did][selected_node_id] = combined_ids_res[0];
-			tax_long_name = combined_ids_res[1];
+			custom_tax_long_name = combined_ids_res[1];
 
 			let cnt = get_tax_cnt(db_tax_id_list, did, selected_node_id, taxcounts);
 
-			unit_name_lookup_1_dataset[tax_long_name] = 1;
-			unit_name_lookup_per_dataset_1_dataset    = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, tax_long_name, cnt);
+			unit_name_lookup_1_dataset[custom_tax_long_name] = 1;
+			unit_name_lookup_per_dataset_1_dataset    = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, custom_tax_long_name, cnt);
 		}
 	}
 	console.timeEnd('TIME: taxonomy_unit_choice_custom');
