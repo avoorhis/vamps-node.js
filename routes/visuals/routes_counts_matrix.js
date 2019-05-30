@@ -66,11 +66,11 @@ module.exports = {
 		//var ukeys = [];
 
 
-		var biom_matrix = fill_out_taxonomy(req, biom_matrix_start, post_items, write_file)
+		var biom_matrix = fill_out_taxonomy(req, biom_matrix_start, post_items, write_file);
 		//console.log('biom_matrix')
 		//console.log(biom_matrix)
 		//console.log('//////////////////////////////////////////////////////////////')
-		return biom_matrix
+		return biom_matrix;
 
 	},
 
@@ -176,9 +176,82 @@ function get_updated_biom_matrix(post_items, mtx) {
 }
 
 //
+//
+//
+function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
+	console.log('IN routes_counts_matrix::fill_out_taxonomy');
+	//console.log(post_items)
+	let files_prefix = get_file_prefix(req, post_items.unit_choice);
+	let taxonomy_object = get_taxonomy_object(req, post_items.unit_choice);
+	let unit_name_lookup = {};
+	let unit_name_lookup_per_dataset = {};
+	let res = get_unit_name_lookups(post_items, files_prefix, taxonomy_object);
+	unit_name_lookup = res[0];
+	unit_name_lookup_per_dataset = res[1];
 
-//
-//
+	let unit_name_counts = create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_per_dataset);
+	let ukeys = remove_empty_rows(unit_name_counts);
+	ukeys = ukeys.filter(onlyUnique);
+	ukeys.sort();
+	// Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
+	//console.log(unit_name_counts);
+	//console.log('POSTx - from routes_counts_matrix.js');
+	//console.log(post_items);
+
+	biom_matrix = create_biom_matrix( biom_matrix, unit_name_counts, ukeys, post_items );
+
+	let true_meaning = [true, 1, "1"];
+
+	if (post_items.update_data in true_meaning) {
+		biom_matrix = get_updated_biom_matrix( post_items, biom_matrix );
+	}
+
+	if(write_file === true || write_file === undefined){
+		write_matrix_file(post_items, biom_matrix);
+	}
+	return biom_matrix;
+}
+
+function get_unit_name_lookups(post_items, files_prefix, taxonomy_object) {
+	let taxcounts;
+	let unit_name_lookup = {};
+	let unit_name_lookup_per_dataset = {};
+
+	for (let item in post_items.chosen_datasets) { // has correct order
+		let did = post_items.chosen_datasets[item].did;
+		taxcounts = get_taxcounts_obj_from_file(files_prefix, did);
+
+		//console.log(did)
+		let rank = post_items.tax_depth;
+		let unit_choice_simple = post_items.unit_choice.substr(post_items.unit_choice.length - 6) === 'simple';
+		let unit_choice_custom = post_items.unit_choice === 'tax_' + C.default_taxonomy.name + '_custom';
+		let unit_name_lookup_res;
+		if (unit_choice_simple) {
+			unit_name_lookup_res = taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did);
+		}
+		else if (unit_choice_custom) {
+			unit_name_lookup_res = taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post_items);
+		}
+
+		if (unit_name_lookup_res) {
+			unit_name_lookup = Object.assign(unit_name_lookup, unit_name_lookup_res[0]);
+			unit_name_lookup_per_dataset[did] = unit_name_lookup_res[1][did];
+		}
+		else {
+			console.log('unit_choice error');
+		}
+	}
+	return [unit_name_lookup, unit_name_lookup_per_dataset]; //TODO send one object?
+}
+
+function write_matrix_file(post_items, biom_matrix) {
+	let tax_file = '../../tmp/'+post_items.ts+'_taxonomy.txt';
+	COMMON.output_tax_file( tax_file, biom_matrix, C.RANKS.indexOf(post_items.tax_depth));
+
+	let matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
+	COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
+}
+
 function get_file_prefix(req, unit_choice) {
 	var files_prefix;
 	if (unit_choice === 'tax_rdp2.6_simple'){
@@ -195,9 +268,9 @@ function get_taxonomy_object(unit_choice) {
 	var taxonomy_object;
 	if (unit_choice === 'tax_rdp2.6_simple') {
 		taxonomy_object = new_rdp_taxonomy;
-	} else if (unit_choice === 'tax_generic_simple'){
+	} else if (unit_choice === 'tax_generic_simple') {
 		taxonomy_object = new_generic_taxonomy;
-	}else{
+	} else {
 		taxonomy_object = new_taxonomy;
 	}
 	return taxonomy_object;
@@ -210,12 +283,11 @@ function add_next_tax_name(tax_long_name, tax_node, this_rank) {
 		if (this_rank === 'klass'){
 			tax_long_name += 'class_NA;';
 		} else {
-			tax_long_name += this_rank+'_NA;';
+			tax_long_name += this_rank + '_NA;';
 		}
 	} else {
-		tax_long_name += tax_node.taxon+';';
+		tax_long_name += tax_node.taxon + ';';
 	}
-	// tax_long_name = tax_long_name.slice(0,-1); // remove trailing ';'
 	return tax_long_name;
 }
 
@@ -345,16 +417,7 @@ function get_tax_cnt(db_tax_id_list, did, selected_node_id, taxcounts) {
 	console.timeEnd('TIME: for id_chain');
 }
 
-
-function write_matrix_file(post_items, biom_matrix) {
-	let tax_file = '../../tmp/'+post_items.ts+'_taxonomy.txt';
-	COMMON.output_tax_file( tax_file, biom_matrix, C.RANKS.indexOf(post_items.tax_depth));
-
-	let matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
-	COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
-}
-
-function get_taxcounts(files_prefix, did) {
+function get_taxcounts_obj_from_file(files_prefix, did) {
 	try {
 		let path_to_file = path.join(files_prefix, did +'.json');
 		let jsonfile = require(path_to_file);
@@ -368,71 +431,6 @@ function get_taxcounts(files_prefix, did) {
 	}
 }
 
-function get_unit_name_lookups(post_items, files_prefix, taxonomy_object) {
-	let taxcounts;
-	let unit_name_lookup = {};
-	let unit_name_lookup_per_dataset = {};
-
-	for (let item in post_items.chosen_datasets) { // has correct order
-		let did = post_items.chosen_datasets[item].did;
-		taxcounts = get_taxcounts(files_prefix, did);
-
-		//console.log(did)
-		let rank = post_items.tax_depth;
-		let unit_choice_simple = post_items.unit_choice.substr(post_items.unit_choice.length - 6) === 'simple';
-		let unit_choice_custom = post_items.unit_choice === 'tax_' + C.default_taxonomy.name + '_custom';
-		let unit_name_lookup_res;
-		if (unit_choice_simple) {
-			unit_name_lookup_res = taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did);
-		}
-		else if (unit_choice_custom) {
-			unit_name_lookup_res = taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post_items);
-		}
-		if (unit_name_lookup_res) {
-			unit_name_lookup = Object.assign(unit_name_lookup, unit_name_lookup_res[0]);
-			unit_name_lookup_per_dataset[did] = unit_name_lookup_res[1][did];
-		}
-		else {
-			console.log('unit_choice error');
-		}
-	}
-	return [unit_name_lookup, unit_name_lookup_per_dataset]; //TODO send one object?
-}
-
-
-function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
-	console.log('IN routes_counts_matrix::fill_out_taxonomy');
-	//console.log(post_items)
-	let files_prefix = get_file_prefix(req, post_items.unit_choice);
-	let taxonomy_object = get_taxonomy_object(req, post_items.unit_choice);
-	let unit_name_lookup = {};
-	let unit_name_lookup_per_dataset = {};
-	let res = get_unit_name_lookups(post_items, files_prefix, taxonomy_object);
-	unit_name_lookup = res[0];
-	unit_name_lookup_per_dataset = res[1];
-
-	let unit_name_counts = create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_per_dataset);
-	let ukeys = remove_empty_rows(unit_name_counts);
-	ukeys = ukeys.filter(onlyUnique);
-	ukeys.sort();
-	// Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
-	//console.log(unit_name_counts);
-	//console.log('POSTx - from routes_counts_matrix.js');
-	//console.log(post_items);
-
-	biom_matrix = create_biom_matrix( biom_matrix, unit_name_counts, ukeys, post_items );
-
-	let true_meaning = [true, 1, "1"];
-
-	if (post_items.update_data in true_meaning) {
-		biom_matrix = get_updated_biom_matrix( post_items, biom_matrix );
-	}
-
-	if(write_file === true || write_file === undefined){
-		write_matrix_file(post_items, biom_matrix);
-	}
-	return biom_matrix;
-}
 //
 //
 //
