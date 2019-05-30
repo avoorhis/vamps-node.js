@@ -223,16 +223,7 @@ function get_unit_name_lookups(post_items, files_prefix, taxonomy_object) {
 
 		//console.log(did)
 		let unit_name_lookup_res = simple_or_custom_unit_name_lookup_res(post_items, taxcounts, did, taxonomy_object);
-		// let unit_choice_simple = post_items.unit_choice.substr(post_items.unit_choice.length - 6) === 'simple';
-		// let unit_choice_custom = post_items.unit_choice === 'tax_' + C.default_taxonomy.name + '_custom';
-		// let unit_name_lookup_res;
-		// if (unit_choice_simple) {
-		// 	unit_name_lookup_res = taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did);
-		// }
-		// else if (unit_choice_custom) {
-		// 	unit_name_lookup_res = taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post_items);
-		// }
-
+		
 		if (unit_name_lookup_res) {
 			unit_name_lookup = Object.assign(unit_name_lookup, unit_name_lookup_res[0]);
 			unit_name_lookup_per_dataset[did] = unit_name_lookup_res[1][did];
