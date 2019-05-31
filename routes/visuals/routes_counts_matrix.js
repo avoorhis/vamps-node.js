@@ -556,12 +556,12 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, post_items ) {
 
 	var max_count = {};
 	var max;
-	if(ukeys === undefined) {
+	if (ukeys === undefined) {
 		max = 0;
 	} else { // TODO: move to func
 		for (var n in biom_matrix.columns) {
 			max_count[biom_matrix.columns[n].id] = 0;  //id is the NAME of the dataset in biom
-			for(var d in biom_matrix.data) {
+			for (var d in biom_matrix.data) {
 				max_count[biom_matrix.columns[n].id] += biom_matrix.data[d][n];
 			}
 		}
