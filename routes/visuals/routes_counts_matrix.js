@@ -320,32 +320,31 @@ function collect_tax_id_rows(taxcounts, rank) {
 
 	console.time("TIME: str_length_cnt1");
 	for (let current_tax_id_row in taxcounts) {
-		//console.log('new_taxonomy',taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank)
-		let current_ids_amount = (current_tax_id_row.match(/_/g) || []).length;
+		let current_ids_amount = current_tax_id_row.split("_").length - 1;
 		if (current_ids_amount === rank_no) {
 			current_tax_id_rows.push(current_tax_id_row);
 		}
 	}
 	console.timeEnd("TIME: str_length_cnt1");
-	let cnt1 = current_tax_id_rows;
+	let cnt1 = current_tax_id_rows.join(", ");
 
 	console.time("TIME: str_length_cnt2");
-	for (let current_tax_id_row in taxcounts) {
-		//console.log('new_taxonomy',taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank)
-		let current_ids_amount = current_tax_id_row.split("_").length + 1;
-		if (current_ids_amount === rank_no) {
-			current_tax_id_rows.push(current_tax_id_row);
-		}
+	try {
+		current_tax_id_rows = Object.keys(taxcounts).filter( function( element ) {
+			let current_ids_amount = element.split("_").length - 1;
+			return current_ids_amount === rank_no;
+		});
+	}
+	catch (e) {
+		current_tax_id_rows = [];
 	}
 	console.timeEnd("TIME: str_length_cnt2");
-	let cnt2 = current_tax_id_rows;
-	let cnt_diff = (cnt1 === cnt2)
+	let cnt2 = current_tax_id_rows.join(", ");
+	let cnt_diff = (cnt1 === cnt2);
 	console.log("cnt1 === cnt2: " + cnt_diff);
-
 
 	return current_tax_id_rows;
 }
-
 
 
 function get_taxcounts_obj_from_file(files_prefix, did) {

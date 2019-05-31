@@ -71,6 +71,7 @@ class BiomMatrix {
 class TaxaCounts {
 
   constructor(req, post_items, choosen_dids) {
+    this.req = req;
     this.post_items = post_items;
     this.choosen_dids = choosen_dids;
     this.units = this.post_items.unit_choice;
