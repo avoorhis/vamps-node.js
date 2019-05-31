@@ -1817,71 +1817,71 @@ module.exports.run_external_command             = function (script_path) {
 }
 module.exports.required_metadata_ids_from_names = function (selection_obj, mdname) {
   // TODO
-  var idname, value
-  if (mdname == 'env_package') {
-    idname = 'env_package_id'
-    value  = MD_ENV_PACKAGE[selection_obj[idname]]
-  } else if (mdname == 'env_biome') {
-    idname = 'env_biome_id'
-    value  = MD_ENV_ENVO[selection_obj[idname]]
-  } else if (mdname == 'env_feature') {
-    idname = 'env_feature_id'
-    value  = MD_ENV_ENVO[selection_obj[idname]]
-  } else if (mdname == 'env_material') {
-    idname = 'env_material_id'
-    value  = MD_ENV_ENVO[selection_obj[idname]]
-  } else if (mdname == 'geo_loc_name') {
-    idname = 'geo_loc_name_id'
+  var idname, value;
+  if (mdname === 'env_package') {
+    idname = 'env_package_id';
+    value  = MD_ENV_PACKAGE[selection_obj[idname]];
+  } else if (mdname === 'env_biome') {
+    idname = 'env_biome_id';
+    value  = MD_ENV_ENVO[selection_obj[idname]];
+  } else if (mdname === 'env_feature') {
+    idname = 'env_feature_id';
+    value  = MD_ENV_ENVO[selection_obj[idname]];
+  } else if (mdname === 'env_material') {
+    idname = 'env_material_id';
+    value  = MD_ENV_ENVO[selection_obj[idname]];
+  } else if (mdname === 'geo_loc_name') {
+    idname = 'geo_loc_name_id';
     if (MD_ENV_CNTRY.hasOwnProperty(selection_obj[idname])) {
-      value = MD_ENV_CNTRY[selection_obj[idname]]
+      value = MD_ENV_CNTRY[selection_obj[idname]];
     } else {
-      value = MD_ENV_LZC[selection_obj[idname]]
+      value = MD_ENV_LZC[selection_obj[idname]];
     }
-  } else if (mdname == 'sequencing_platform') {
-    idname = 'sequencing_platform_id'
+  } else if (mdname === 'sequencing_platform') {
+    idname = 'sequencing_platform_id';
     value  = MD_SEQUENCING_PLATFORM[selection_obj[idname]]
-  } else if (mdname == 'dna_region') {
-    idname = 'dna_region_id'
+  } else if (mdname === 'dna_region') {
+    idname = 'dna_region_id';
     value  = MD_DNA_REGION[selection_obj[idname]]
-  } else if (mdname == 'target_gene') {
-    idname = 'target_gene_id'
-    value  = MD_TARGET_GENE[selection_obj[idname]]
-  } else if (mdname == 'domain') {
-    idname = 'domain_id'
-    value  = MD_DOMAIN[selection_obj[idname]]
-  } else if (mdname == 'adapter_sequence') {
-    idname = 'adapter_sequence_id'
-    value  = MD_ADAPTER_SEQUENCE[selection_obj[idname]]
-  } else if (mdname == 'illumina_index') {
-    idname = 'illumina_index_id'
-    value  = MD_ILLUMINA_INDEX[selection_obj[idname]]
-  } else if (mdname == 'run') {
-    idname = 'run_id'
-    value  = MD_RUN[selection_obj[idname]]
-  } else if (mdname == 'primer_suite') {
-    idname = 'primer_suite_id'
+  } else if (mdname === 'target_gene') {
+    idname = 'target_gene_id';
+    value  = MD_TARGET_GENE[selection_obj[idname]];
+  } else if (mdname === 'domain') {
+    idname = 'domain_id';
+    value  = MD_DOMAIN[selection_obj[idname]];
+  } else if (mdname === 'adapter_sequence') {
+    idname = 'adapter_sequence_id';
+    value  = MD_ADAPTER_SEQUENCE[selection_obj[idname]];
+  } else if (mdname === 'illumina_index') {
+    idname = 'illumina_index_id';
+    value  = MD_ILLUMINA_INDEX[selection_obj[idname]];
+  } else if (mdname === 'run') {
+    idname = 'run_id';
+    value  = MD_RUN[selection_obj[idname]];
+  } else if (mdname === 'primer_suite') {
+    idname = 'primer_suite_id';
     if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj[idname]) && MD_PRIMER_SUITE[selection_obj[idname]].hasOwnProperty('name')) {
-      value = MD_PRIMER_SUITE[selection_obj[idname]].name
+      value = MD_PRIMER_SUITE[selection_obj[idname]].name;
     } else {
-      value = 'unknown'
+      value = 'unknown';
     }
-  } else if (mdname == 'primers') {
-    idname = 'primer_ids'
+  } else if (mdname === 'primers') {
+    idname = 'primer_ids';
     if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
-      val = []
-      for (n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
-        val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence)
+      val = [];
+      for (let pr_idx in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
+        val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[pr_idx].sequence);
       }
-      value = val.join(' ')
+      value = val.join(' ');
     } else {
-      value = 'unknown'
+      value = 'unknown';
     }
   } else {
-    idname = mdname
+    idname = mdname;
     value  = selection_obj[mdname];
   }
   // eg: { name: 'primer_suite_id', value: 'Bacterial V6 Suite' } or { name: 'domain_id', value: 'Bacteria' }
-  return {"name": idname, "value": value}
+  return {"name": idname, "value": value};
 };
 
 module.exports.required_metadata_names_from_ids = function (selection_obj, name_id) {
