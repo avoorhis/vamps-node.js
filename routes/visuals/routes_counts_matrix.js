@@ -206,7 +206,7 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 
 function get_unit_name_lookups(post_items, files_prefix, taxonomy_object) {
 	let unit_name_lookup = {};
-	let unit_name_lookup_per_dataset = {};
+	let unit_name_lookup_per_dataset = create_an_empty_unit_name_lookup_per_dataset(post_items);
 
 	for (let item in post_items.chosen_datasets) { // has correct order
 		let did = post_items.chosen_datasets[item].did;
@@ -222,6 +222,15 @@ function get_unit_name_lookups(post_items, files_prefix, taxonomy_object) {
 		}
 	}
 	return [unit_name_lookup, unit_name_lookup_per_dataset]; //TODO send one object?
+}
+
+function create_an_empty_unit_name_lookup_per_dataset(post_items) {
+	let empty_unit_name_lookup_per_dataset = {};
+	for (let item in post_items.chosen_datasets) {
+		let did = post_items.chosen_datasets[item].did;
+		empty_unit_name_lookup_per_dataset[did] = {};
+	}
+	return empty_unit_name_lookup_per_dataset;
 }
 
 function simple_or_custom_unit_name_lookup_res(files_prefix, did, post_items, taxonomy_object) {
@@ -462,7 +471,7 @@ function remove_empty_rows(taxa_counts) {
 //
 function create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_per_dataset) {
 
-	var taxa_counts={};
+	var taxa_counts = {};
 	for(var tax_name in unit_name_lookup){
 		taxa_counts[tax_name] = [];
 	}
@@ -470,12 +479,13 @@ function create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_
 	//console.log('unit_name_lookup')
 	//console.log(unit_name_lookup)
 	for (var i in post_items.chosen_datasets) { // correct order
-		var did = post_items.chosen_datasets[i].did
+		var did = post_items.chosen_datasets[i].did;
 		for (var tax_name1 in unit_name_lookup) {
-			if (did in unit_name_lookup_per_dataset && tax_name1 in unit_name_lookup_per_dataset[did]) {
-				let cnt = unit_name_lookup_per_dataset[did][tax_name1];
-				taxa_counts[tax_name1].push(cnt);
-			} else {
+			try {
+				let curr_cnt = unit_name_lookup_per_dataset[did][tax_name1];
+				taxa_counts[tax_name1].push(curr_cnt);
+			}
+			catch(err) {
 				taxa_counts[tax_name1].push(0);
 			}
 		}
@@ -488,20 +498,18 @@ function create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_
 //	F I L L I N  N A M E  L O O K U P  P E R  D S
 //
 function fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {
-
-
 	//console.log('lookup1')
 	//console.log(lookup)
-	if(did in lookup) {
-		if(tax_name in lookup[did]) {
+	if (did in lookup) {
+		if (tax_name in lookup[did]) {
 			lookup[did][tax_name] += parseInt(cnt);
-		}else{
+		} else {
 			lookup[did][tax_name] = parseInt(cnt);
 		}
 
-	}else{
+	} else {
 		lookup[did] = {};
-		if(tax_name in lookup[did]) {
+		if (tax_name in lookup[did]) {
 			lookup[did][tax_name] += parseInt(cnt);
 
 		}else{
