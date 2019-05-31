@@ -305,8 +305,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   //console.log('8')
   visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
   //console.log('9')
-  if(visual_post_items.metadata.indexOf('primer_suite') != -1){
-      visual_post_items.metadata.push('primers')
+  if (visual_post_items.metadata.indexOf('primer_suite') != -1){
+      visual_post_items.metadata.push('primers');
   }
   var metadata = META.write_mapping_file(visual_post_items);
 
