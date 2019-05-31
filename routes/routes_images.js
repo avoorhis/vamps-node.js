@@ -168,18 +168,20 @@ counts_matrix: function(req, res) {
                 var max   = 0;
                 var sd    = 0;
                 for (var da in biom_data.data[i]) {
-                      var cnt = biom_data.data[i][da];
-                      var ds_num = (parseInt(da)+1).toString()
-                      var pct =  (cnt * 100 / biom_data.column_totals[da]).toFixed(2);
-                      var id  = 'fq/'+biom_data.rows[i].id+'/'+ds_num+') '+biom_data.columns[da].id+'/'+cnt.toString()+'/'+pct.toString();
-                      html += "<td id='"+id+"' class='tooltip_viz right_justify tax_data'>"+cnt.toString()+'</td>';
-                      tot += cnt;
-                      if(cnt > max){
-                        max = cnt
-                      }
-                      if(cnt < min){
-                        min = cnt
-                      }
+                  var cnt = biom_data.data[i][da];
+                  var ds_num = (parseInt(da)+1).toString()
+                  var pct =  (cnt * 100 / biom_data.column_totals[da]).toFixed(2);
+                  var id = 'fq/' + biom_data.rows[i].id + '/' + ds_num + ') ' + biom_data.columns[da].id + '/' + cnt.toString() + '/' + pct.toString();
+
+
+                  html += "<td id='" + id + "' class='tooltip_viz right_justify tax_data'>" + cnt.toString() + '</td>';
+                  tot += cnt;
+                  if (cnt > max){
+                    max = cnt;
+                  }
+                  if(cnt < min){
+                    min = cnt;
+                  }
                 }
             
                 avg = (tot/(biom_data.columns).length).toFixed(2)
