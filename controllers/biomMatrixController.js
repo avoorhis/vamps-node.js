@@ -8,12 +8,12 @@ class BiomMatrix {
     this.req = req;
     this.visual_post_items = visual_post_items;
     this.units = this.visual_post_items.unit_choice;
-    this.taxa_counts = new module.exports.TaxaCounts(this.visual_post_items);
     this.choosen_datasets = this.visual_post_items.chosen_datasets; /* post_items.chosen_datasets["0"] = {
   "did": 475152,
   "name": "SLM_NIR2_Bv4--Aligator_Pool01"
 }*/
     this.choosen_dids = this.get_dids();
+    this.taxa_counts = new module.exports.TaxaCounts(this.visual_post_items, this.choosen_dids);
 
     this.rows = {}; /*[
     {
@@ -70,11 +70,32 @@ class BiomMatrix {
 
 class TaxaCounts {
 
-  constructor(post_items) {
+  constructor(post_items, choosen_dids) {
     this.post_items = post_items;
+    this.choosen_dids = choosen_dids;
     this.units = this.post_items.unit_choice;
     this.taxonomy_file_prefix = this.get_taxonomy_file_prefix();
+    this.rank = this.post_items.tax_depth;
+    this.tax_complexity = this.choose_simple_or_custom();
+
     this.taxonomy_object = this.get_taxonomy_object();
+    this.taxcounts_obj_from_file = this.get_taxcounts_obj_from_file(); /*{
+  "_3": 42700,
+  "_2": 30,
+  "_1": 1071,
+  "_4": 2,
+  "_3_8": 31939,*/
+    this.unit_name_lookup = {};
+    this.unit_name_lookup_per_dataset = this.create_an_empty_unit_name_lookup_per_dataset();
+    this.current_tax_id_row_list = this.collect_tax_id_rows();
+
+
+    //  --
+    /*	unit_name_lookup = res[0];
+	unit_name_lookup_per_dataset = res[1];
+
+	let unit_name_counts = create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_per_dataset);
+	let ukeys = remove_empty_rows(unit_name_counts);*/
   }
 
   get_taxonomy_file_prefix() {
@@ -103,12 +124,61 @@ class TaxaCounts {
 
   create_an_empty_unit_name_lookup_per_dataset() {
     let empty_unit_name_lookup_per_dataset = {};
-    for (let item in this.post_items.chosen_datasets) {
-      let did = this.post_items.chosen_datasets[item].did;
+    for (let idx in this.choosen_dids) {
+      let did = this.choosen_dids[idx];
       empty_unit_name_lookup_per_dataset[did] = {};
     }
     return empty_unit_name_lookup_per_dataset;
   }
+
+  get_taxcounts_obj_from_file(did) {
+    try {
+      let path_to_file = path.join(this.taxonomy_file_prefix, did +'.json');
+      let jsonfile = require(path_to_file);
+      return jsonfile['taxcounts'];
+    }
+    catch(err) {
+      console.log('2-no file ' + err.toString() + ' Exiting');
+      console.log('this.taxonomy_file_prefix = ' + this.taxonomy_file_prefix);
+      console.log('did = ' + did);
+      return {};
+    }
+  }
+
+  choose_simple_or_custom() {
+    let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
+    let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
+    if (unit_choice_simple) {
+      return "simple";
+    }
+    else if (unit_choice_custom) {
+      return "custom";
+    }
+    else {
+      console.log("ERROR: Can't choose simple or custom taxonomy");
+    }
+  }
+
+  taxonomy_unit_choice_simple(did) {
+
+  }
+
+  collect_tax_id_rows() {
+    console.time("TIME: collect_tax_id_rows");
+    let current_tax_id_rows = [];
+    let rank_no = parseInt(C.RANKS.indexOf(this.rank))	+ 1;
+
+    for (let current_tax_id_row in this.taxcounts_obj_from_file) {
+      let current_ids_amount = (current_tax_id_row.match(/_/g) || []).length;
+      let current_ids_amount1 = current_tax_id_row.split("_");
+      if (current_ids_amount === rank_no) {
+        current_tax_id_rows.push(current_tax_id_row);
+      }
+    }
+    console.timeEnd("TIME: collect_tax_id_rows");
+    return current_tax_id_rows;
+  }
+
 }
 
 class WriteMatrixFile {
