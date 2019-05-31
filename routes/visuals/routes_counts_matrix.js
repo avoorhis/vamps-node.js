@@ -327,16 +327,20 @@ function collect_tax_id_rows(taxcounts, rank) {
 		}
 	}
 	console.timeEnd("TIME: str_length_cnt1");
+	let cnt1 = current_tax_id_rows;
 
 	console.time("TIME: str_length_cnt2");
 	for (let current_tax_id_row in taxcounts) {
 		//console.log('new_taxonomy',taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank)
-		let current_ids_amount = current_tax_id_row.split("_").length;
+		let current_ids_amount = current_tax_id_row.split("_").length + 1;
 		if (current_ids_amount === rank_no) {
 			current_tax_id_rows.push(current_tax_id_row);
 		}
 	}
 	console.timeEnd("TIME: str_length_cnt2");
+	let cnt2 = current_tax_id_rows;
+	let cnt_diff = (cnt1 === cnt2)
+	console.log("cnt1 === cnt2: " + cnt_diff);
 
 
 	return current_tax_id_rows;

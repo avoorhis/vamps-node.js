@@ -13,7 +13,7 @@ class BiomMatrix {
   "name": "SLM_NIR2_Bv4--Aligator_Pool01"
 }*/
     this.choosen_dids = this.get_dids();
-    this.taxa_counts = new module.exports.TaxaCounts(this.visual_post_items, this.choosen_dids);
+    this.taxa_counts = new module.exports.TaxaCounts(this.req, this.visual_post_items, this.choosen_dids);
 
     this.rows = {}; /*[
     {
@@ -70,7 +70,7 @@ class BiomMatrix {
 
 class TaxaCounts {
 
-  constructor(post_items, choosen_dids) {
+  constructor(req, post_items, choosen_dids) {
     this.post_items = post_items;
     this.choosen_dids = choosen_dids;
     this.units = this.post_items.unit_choice;
