@@ -318,6 +318,7 @@ function collect_tax_id_rows(taxcounts, rank) {
 	let current_tax_id_rows = [];
 	let rank_no = parseInt(C.RANKS.indexOf(rank))	+ 1;
 
+	console.time("TIME: str_length_cnt1");
 	for (let current_tax_id_row in taxcounts) {
 		//console.log('new_taxonomy',taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank)
 		let current_ids_amount = (current_tax_id_row.match(/_/g) || []).length;
@@ -325,8 +326,23 @@ function collect_tax_id_rows(taxcounts, rank) {
 			current_tax_id_rows.push(current_tax_id_row);
 		}
 	}
+	console.timeEnd("TIME: str_length_cnt1");
+
+	console.time("TIME: str_length_cnt2");
+	for (let current_tax_id_row in taxcounts) {
+		//console.log('new_taxonomy',taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank)
+		let current_ids_amount = current_tax_id_row.split("_").length;
+		if (current_ids_amount === rank_no) {
+			current_tax_id_rows.push(current_tax_id_row);
+		}
+	}
+	console.timeEnd("TIME: str_length_cnt2");
+
+
 	return current_tax_id_rows;
 }
+
+
 
 function get_taxcounts_obj_from_file(files_prefix, did) {
 	try {
