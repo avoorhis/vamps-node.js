@@ -72,7 +72,7 @@ module.exports = {
 		//
 		//
 		write_mapping_file: function(post_items) {
-			console.log('in metadata: write_mapping_file')
+			console.log('in metadata: write_mapping_file');
 			var metadata_names = post_items.metadata;
 			
 			var metadata = [];
@@ -95,28 +95,27 @@ module.exports = {
 				
 				txt2 = pjds;
 				
-				for (var n in metadata_names) {				
-					var mdname = metadata_names[n];
-                    //console.log(METADATA[did])
-                    //console.log(mdname)
-                    var data = helpers.required_metadata_ids_from_names(AllMetadata[did], mdname)
-                    
+				for (var mdname_idx in metadata_names) {
+					var mdname = metadata_names[mdname_idx];
+					//console.log(METADATA[did])
+					//console.log(mdname)
+					if (did in AllMetadata) {
+						let data = helpers.required_metadata_ids_from_names(AllMetadata[did], mdname);
 
-					if(did in AllMetadata) {
 						ds_row[mdname] = data.value;
 						metadata2[pjds][mdname] = data.value;
-						if(metadata2[pjds][mdname] == ''){
+						if (metadata2[pjds][mdname] == ''){
 							txt2 += "\tundefined";
-						}else{
+						} else {
 							txt2 += "\t" + data.value;
 						}
-					}else{
+					} else {
 						txt2 += "\tno_value";
 					}
 				}
 				
 				//if(txt2.length > pjds.length+2){  // the +2 is to account for tabs in the txt2
-					txt += txt2 + "\t"+tmp[0]+ "\t"+pjds+"\n";
+				txt += txt2 + "\t"+tmp[0]+ "\t"+pjds+"\n";
 				//}
 				metadata2[pjds].project = tmp[0];
 				metadata2[pjds].dataset = tmp[1];
