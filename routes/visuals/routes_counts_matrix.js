@@ -287,7 +287,7 @@ function get_tax_long_name(current_tax_id_row, taxonomy_object) {
 		//console.log('tax_node3 '+JSON.stringify(tax_node))
 	}
 	// TODO: the following line  to "remove_trailing_semicolon func
-	tax_long_name = tax_long_name.slice(0,-1); // remove trailing ';'
+	tax_long_name = tax_long_name.replace(/;$/, ""); // remove trailing ';'
 	return tax_long_name;
 }
 

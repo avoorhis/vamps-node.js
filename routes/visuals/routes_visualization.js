@@ -295,8 +295,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   }else{
     console.log('visual_post_items:');
     console.log(visual_post_items);
-    console.log('req.session')
-    console.log(req.session)
+    console.log('req.session');
+    console.log(req.session);
       
   }
   console.log('<<VS--visual_post_items');
