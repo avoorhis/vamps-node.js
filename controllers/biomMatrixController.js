@@ -7,6 +7,14 @@ class BiomMatrix {
   constructor(req, visual_post_items) {
     this.req = req;
     this.visual_post_items = visual_post_items;
+    this.units = this.visual_post_items.unit_choice;
+    this.taxa_counts = new module.exports.TaxaCounts(this.visual_post_items);
+    this.choosen_datasets = this.visual_post_items.chosen_datasets; /* post_items.chosen_datasets["0"] = {
+  "did": 475152,
+  "name": "SLM_NIR2_Bv4--Aligator_Pool01"
+}*/
+    this.choosen_dids = this.get_dids();
+
     this.rows = {}; /*[
     {
       "id": "Bacteria;Bacteroidetes",
@@ -27,7 +35,7 @@ class BiomMatrix {
       format: "Biological Observation Matrix 0.9.1-dev",
       format_url:"http://biom-format.org/documentation/format_versions/biom-1.0.html",
       type: "OTU table",
-      units: this.visual_post_items.unit_choice,
+      units: this.units,
       generated_by:"VAMPS-NodeJS Version 2.0",
       date: date.toISOString(),
       rows: [this.rows],												// taxonomy (or OTUs, MED nodes) names
@@ -44,16 +52,63 @@ class BiomMatrix {
 
   get_columns() {
     console.time("get_columns");
-    let temp_obj = {};
-    let chosen_datasets = this.visual_post_items.chosen_datasets;
-    for (let idx in chosen_datasets) {
-      temp_obj.did = chosen_datasets[idx]["did"];
-      temp_obj.id  = chosen_datasets[idx]["name"];
-      temp_obj.metadata = null;
+    let temp_col_obj = {};
+    for (let idx in this.choosen_datasets) {
+      temp_col_obj.did = this.choosen_datasets[idx]["did"];
+      temp_col_obj.id  = this.choosen_datasets[idx]["name"];
+      temp_col_obj.metadata = null;
     }
     console.timeEnd("get_columns");
+    return temp_col_obj;
   }
 
+  get_dids() {
+    let dids = this.choosen_datasets.map(function (value) { return value.did; });
+    return dids;
+  }
+}
+
+class TaxaCounts {
+
+  constructor(post_items) {
+    this.post_items = post_items;
+    this.units = this.post_items.unit_choice;
+    this.taxonomy_file_prefix = this.get_taxonomy_file_prefix();
+    this.taxonomy_object = this.get_taxonomy_object();
+  }
+
+  get_taxonomy_file_prefix() {
+    let files_prefix;
+    if (this.units === 'tax_rdp2.6_simple'){
+      files_prefix = path.join(this.req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_rdp2.6");
+    } else if (this.units === 'tax_generic_simple'){
+      files_prefix = path.join(this.req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_generic");
+    } else {
+      files_prefix = path.join(this.req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);  // default
+    }
+    return files_prefix; // /Users/ashipunova/BPC/vamps-node.js/public/json/vamps2--datasets_silva119
+  }
+
+  get_taxonomy_object() {
+    let taxonomy_object;
+    if (this.units === 'tax_rdp2.6_simple') {
+      taxonomy_object = new_rdp_taxonomy;
+    } else if (this.units === 'tax_generic_simple') {
+      taxonomy_object = new_generic_taxonomy;
+    } else {
+      taxonomy_object = new_taxonomy;
+    }
+    return taxonomy_object;
+  }
+
+  create_an_empty_unit_name_lookup_per_dataset() {
+    let empty_unit_name_lookup_per_dataset = {};
+    for (let item in this.post_items.chosen_datasets) {
+      let did = this.post_items.chosen_datasets[item].did;
+      empty_unit_name_lookup_per_dataset[did] = {};
+    }
+    return empty_unit_name_lookup_per_dataset;
+  }
 }
 
 class WriteMatrixFile {
@@ -61,7 +116,7 @@ class WriteMatrixFile {
   constructor(post_items, biom_matrix) {
     this.post_items = post_items;
     this.biom_matrix = biom_matrix;
-    this.tmp_path = app_root +  '/tmp/';
+    this.tmp_path = app_root + '/tmp/';
   }
 
   write_matrix_files() {
@@ -73,20 +128,10 @@ class WriteMatrixFile {
     COMMON.write_file( matrix_file_name, JSON.stringify(this.biom_matrix,null,2) );
   }
 
-  get_file_prefix(req, unit_choice) {
-    var files_prefix;
-    if (unit_choice === 'tax_rdp2.6_simple'){
-      files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_rdp2.6");
-    } else if (unit_choice === 'tax_generic_simple'){
-      files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_generic");
-    } else {
-      files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);  // default
-    }
-    return files_prefix; // /Users/ashipunova/BPC/vamps-node.js/public/json/vamps2--datasets_silva119
-  }
 }
 
 module.exports = {
   BiomMatrix: BiomMatrix,
+  TaxaCounts: TaxaCounts,
   WriteMatrixFile: WriteMatrixFile
 };
