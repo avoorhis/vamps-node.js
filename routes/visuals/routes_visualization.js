@@ -24,6 +24,7 @@ var META    = require('./routes_visuals_metadata');
 var IMAGES = require('../routes_images');
 //var PCOA    = require('./routes_pcoa');
 var MTX     = require('./routes_counts_matrix');
+let biom_matrix_controller = require(app_root + '/controllers/biomMatrixController');
 //var HMAP    = require('./routes_distance_heatmap');
 //var DEND    = require('./routes_dendrogram');
 //var BCHARTS = require('./routes_bar_charts');
@@ -284,15 +285,15 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 //      }
  
   var timestamp = +new Date();  // millisecs since the epoch!
-  var timestamp = req.user.username + '_' + timestamp;
+  timestamp = req.user.username + '_' + timestamp;
   visual_post_items.ts = timestamp;
-  req.session.ts = timestamp
+  req.session.ts = timestamp;
   var distance_matrix = {};
   
   console.log('VS--visual_post_items and id-hash:>>');
-  if(req.CONFIG.site == 'vamps' ){
+  if(req.CONFIG.site === 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
-  }else{
+  } else {
     console.log('visual_post_items:');
     console.log(visual_post_items);
     console.log('req.session');
@@ -300,8 +301,9 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
       
   }
   console.log('<<VS--visual_post_items');
-  console.log('entering MTX.get_biom_matrix')
+  console.log('entering MTX.get_biom_matrix');
   var biom_matrix = MTX.get_biom_matrix(req, visual_post_items);
+  const biom_matrix_obj = new biom_matrix_controller(req, visual_post_items);
   //console.log('8')
   visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
   //console.log('9')

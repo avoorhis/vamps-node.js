@@ -44,7 +44,7 @@ module.exports = {
 
 	get_biom_matrix: function(req, post_items, write_file) {
 		var date = new Date();
-		var did, rank, db_tax_id, node_id, cnt, matrix_file;
+		// var did, rank, db_tax_id, node_id, cnt, matrix_file;
 		var biom_matrix_start = {
 			id: post_items.ts,
 			format: "Biological Observation Matrix 0.9.1-dev",

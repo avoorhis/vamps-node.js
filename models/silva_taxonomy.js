@@ -14,7 +14,7 @@ var taxa_query_pt1 = "SELECT DISTINCT domain, phylum, klass, `order`, family, ge
  JOIN genus AS gen USING(genus_id) \
  JOIN species AS spe USING(species_id) \
  JOIN strain AS str USING(strain_id)";
- var sqldomains = (C.UNITSELECT.silva119_custom.domains).join("','")
+ var sqldomains = (C.UNITSELECT.silva119_custom.domains).join("','");
  taxa_query_pt2 += " WHERE domain in ('"+sqldomains+"')";
  
  console.log('running custom tax query short-2');
@@ -28,7 +28,7 @@ function silvaTaxonomy() {
 
 silvaTaxonomy.prototype.get_all_taxa = function(callback) 
 {
-  var query = taxa_query_pt1+'silva_taxonomy'+taxa_query_pt2
+  var query = taxa_query_pt1 + 'silva_taxonomy' + taxa_query_pt2;
   //var query = taxa_query_pt1+'taxonomy'+taxa_query_pt2
   //console.log('SILVA Taxonomy: '+query)
   connection.query(query, function (err, rows, fields) {
