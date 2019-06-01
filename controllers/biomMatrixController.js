@@ -78,12 +78,13 @@ class TaxaCounts {
     this.taxonomy_file_prefix = this.get_taxonomy_file_prefix();
     this.rank                 = this.post_items.tax_depth;
 
-    this.taxonomy_object    = this.get_taxonomy_object();
-    this.curr_taxcounts_obj = this.get_taxcounts_obj_from_file();
-    // this.tax_name_cnt_obj_per_dataset = this.create_an_empty_tax_name_cnt_obj_per_dataset();
+    this.taxonomy_object            = this.get_taxonomy_object();
+    this.curr_taxcounts_obj_of_str  = this.get_taxcounts_obj_from_file();
+    this.curr_taxcounts_obj_of_arr  = this.split_taxcounts_to_arr(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
+
     this.current_tax_id_rows_by_did = this.filter_tax_id_rows_by_rank();
-    this.lookup_module = this.choose_simple_or_custom_lookup_module();
-    this.tax_name_cnt_obj = this.lookup_module.make_tax_name_cnt_obj_per_did(this.current_tax_id_row_list, this.curr_taxcounts_obj, this.rank);
+    this.lookup_module              = this.choose_simple_or_custom_lookup_module();
+    this.tax_name_cnt_obj           = this.lookup_module.make_tax_name_cnt_obj_per_did(this.current_tax_id_rows_by_did, this.curr_taxcounts_obj_of_str, this.rank);
     //  --
     /*	tax_name_cnt_obj = res[0];
 	tax_name_cnt_obj_per_dataset = res[1];
@@ -145,6 +146,19 @@ class TaxaCounts {
     return taxcounts_obj_for_all_datasets;
   }
 
+  split_taxcounts_to_arr() {
+    let current_tax_id_obj_of_arr = {};
+    for (let d_idx in this.chosen_dids) {
+      let did = this.chosen_dids[d_idx];
+      for (let current_tax_id_row in this.curr_taxcounts_obj_of_str[did]) {
+        let current_tax_id_arr = current_tax_id_row.split("_");
+        let current_tax_id_arr_clean =  current_tax_id_arr.filter(function (el) {   return (el)});
+        current_tax_id_obj_of_arr[did] = current_tax_id_arr_clean;
+      }
+    }
+    return current_tax_id_obj_of_arr;
+  }
+
   choose_simple_or_custom_lookup_module() {
     let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
     let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
@@ -169,7 +183,7 @@ class TaxaCounts {
       let did = this.chosen_dids[d_idx];
       let current_tax_id_rows = [];
 
-      for (let current_tax_id_row in this.curr_taxcounts_obj[did]) {
+      for (let current_tax_id_row in this.curr_taxcounts_obj_of_str[did]) {
         let current_ids_amount = current_tax_id_row.split("_").length - 1;
         if (current_ids_amount === rank_no) {
           current_tax_id_rows.push(current_tax_id_row);
@@ -189,7 +203,7 @@ class TaxonomySimple {
   }
 
   make_tax_name_cnt_obj_per_did(curr_taxcounts_obj_per_did, rank) {
-  //  this.current_tax_id_row_list, this.curr_taxcounts_obj, this.rank, this.chosen_dids
+  //  this.current_tax_id_row_list, this.curr_taxcounts_obj_of_str, this.rank, this.chosen_dids
     for (let did_idx in this.chosen_dids) {
       let did = this.chosen_dids[did_idx];
       this.make_tax_name_cnt_obj(curr_taxcounts_obj_per_did[did], rank, did);
