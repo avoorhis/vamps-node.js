@@ -77,7 +77,6 @@ class TaxaCounts {
     this.units = this.post_items.unit_choice;
     this.taxonomy_file_prefix = this.get_taxonomy_file_prefix();
     this.rank = this.post_items.tax_depth;
-    this.tax_complexity = this.choose_simple_or_custom();
 
     this.taxonomy_object = this.get_taxonomy_object();
     this.taxcounts_obj_from_file = this.get_taxcounts_obj_from_file(); /*{
@@ -86,10 +85,10 @@ class TaxaCounts {
   "_1": 1071,
   "_4": 2,
   "_3_8": 31939,*/
-    this.unit_name_lookup = {};
     this.unit_name_lookup_per_dataset = this.create_an_empty_unit_name_lookup_per_dataset();
     this.current_tax_id_row_list = this.collect_tax_id_rows();
-
+    this.lookup_module = this.choose_simple_or_custom_lookup_module();
+    this.unit_name_lookup = this.lookup_module.taxonomy_unit_choice_simple(this.current_tax_id_row_list, this.taxcounts_obj_from_file, this.rank, this.taxonomy_object, this.choosen_dids); // TODO: rename and refactor
 
     //  --
     /*	unit_name_lookup = res[0];
@@ -146,32 +145,27 @@ class TaxaCounts {
     }
   }
 
-  choose_simple_or_custom() {
+  choose_simple_or_custom_lookup_module() {
     let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
     let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
     if (unit_choice_simple) {
-      return "simple";
+      return new module.exports.TaxonomySimple();
     }
     else if (unit_choice_custom) {
-      return "custom";
+      return new module.exports.TaxonomyCustom();
     }
     else {
       console.log("ERROR: Can't choose simple or custom taxonomy");
     }
   }
 
-  taxonomy_unit_choice_simple(did) {
-
-  }
-
   collect_tax_id_rows() {
     console.time("TIME: collect_tax_id_rows");
     let current_tax_id_rows = [];
-    let rank_no = parseInt(C.RANKS.indexOf(this.rank))	+ 1;
+    let rank_no = parseInt(C.RANKS.indexOf(this.rank)) + 1;
 
     for (let current_tax_id_row in this.taxcounts_obj_from_file) {
-      let current_ids_amount = (current_tax_id_row.match(/_/g) || []).length;
-      let current_ids_amount1 = current_tax_id_row.split("_");
+      let current_ids_amount = current_tax_id_row.split("_").length - 1;
       if (current_ids_amount === rank_no) {
         current_tax_id_rows.push(current_tax_id_row);
       }
@@ -179,8 +173,58 @@ class TaxaCounts {
     console.timeEnd("TIME: collect_tax_id_rows");
     return current_tax_id_rows;
   }
-
 }
+
+class TaxonomySimple {
+  constructor() {}
+  taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
+    let unit_name_lookup_1_dataset = {};
+    let unit_name_lookup_per_dataset_1_dataset = {};
+
+    console.time("TIME: current_tax_id_row_list");
+    let current_tax_id_row_list = collect_tax_id_rows(taxcounts, rank);
+    for (let current_tax_id_idx in current_tax_id_row_list){
+      let current_tax_id_row = current_tax_id_row_list[current_tax_id_idx];
+      let cnt = taxcounts[current_tax_id_row];
+      let tax_long_name = get_tax_long_name(current_tax_id_row, taxonomy_object);
+
+      unit_name_lookup_1_dataset[tax_long_name] = 1;
+      unit_name_lookup_per_dataset_1_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, tax_long_name, cnt);
+    }
+    console.timeEnd("TIME: current_tax_id_row_list");
+
+    return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
+  }
+
+  get_tax_long_name(current_tax_id_row, taxonomy_object) {
+    let ids = current_tax_id_row.split('_');   // x === _5_55184_61061_62018_62239_63445
+    let tax_long_name = '';
+    let domain = '';
+
+    for (let id_idx = 1, ids_length = ids.length; id_idx < ids_length; id_idx++){  // must start at 1 because leading '_':  _2_55184
+      let db_id = ids[id_idx];
+      let this_rank = C.RANKS[id_idx - 1];
+      let db_id_n_rank = db_id + '_' + this_rank;
+      //console.log('tax_node2 '+JSON.stringify(db_id_n_rank))
+      let tax_node = get_tax_node(db_id_n_rank, taxonomy_object);
+      if (this_rank === 'domain'){//TODO: why it is needed?
+        domain = tax_node.taxon;
+      }
+      tax_long_name = add_next_tax_name(tax_long_name, tax_node, this_rank);
+    }
+    tax_long_name = this.remove_trailing_semicolon(tax_long_name);
+    return tax_long_name;
+  }
+
+  remove_trailing_semicolon(tax_str) {
+    return tax_str.replace(/;$/, "");
+  }
+}
+
+class TaxonomyCustom {
+  constructor() {}
+}
+
 
 class WriteMatrixFile {
 
@@ -204,5 +248,7 @@ class WriteMatrixFile {
 module.exports = {
   BiomMatrix: BiomMatrix,
   TaxaCounts: TaxaCounts,
+  TaxonomySimple: TaxonomySimple,
+  TaxonomyCustom: TaxonomyCustom,
   WriteMatrixFile: WriteMatrixFile
 };
