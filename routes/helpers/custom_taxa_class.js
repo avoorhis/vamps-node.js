@@ -185,9 +185,8 @@ function TaxonomyTree(rows) {
 
 TaxonomyTree.prototype.make_dict = function(tree_obj, key_name) 
 {
-  var i = null;
-  new_dict = {};
-  for (i = 0; tree_obj.length > i; i += 1) {
+  let new_dict = {};
+  for (let i = 0; tree_obj.length > i; i += 1) {
     new_dict[tree_obj[i][key_name]] = tree_obj[i];
   }
   return new_dict;
