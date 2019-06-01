@@ -70,16 +70,16 @@ class BiomMatrix {
 
 class TaxaCounts {
 
-  constructor(req, post_items, choosen_dids) {
-    this.req = req;
-    this.post_items = post_items;
-    this.choosen_dids = choosen_dids;
-    this.units = this.post_items.unit_choice;
+  constructor(req, post_items, chosen_dids) {
+    this.req                  = req;
+    this.post_items           = post_items;
+    this.chosen_dids          = chosen_dids;
+    this.units                = this.post_items.unit_choice;
     this.taxonomy_file_prefix = this.get_taxonomy_file_prefix();
-    this.rank = this.post_items.tax_depth;
+    this.rank                 = this.post_items.tax_depth;
 
-    this.taxonomy_object = this.get_taxonomy_object();
-    this.taxcounts_obj_from_file = this.get_taxcounts_obj_from_file(); /*{
+    this.taxonomy_object    = this.get_taxonomy_object();
+    this.curr_taxcounts_obj = this.get_taxcounts_obj_from_file(); /*{
   "_3": 42700,
   "_2": 30,
   "_1": 1071,
@@ -88,7 +88,7 @@ class TaxaCounts {
     this.tax_name_cnt_obj_per_dataset = this.create_an_empty_tax_name_cnt_obj_per_dataset();
     this.current_tax_id_row_list = this.collect_tax_id_rows();
     this.lookup_module = this.choose_simple_or_custom_lookup_module();
-    this.tax_name_cnt_obj = this.lookup_module.make_tax_name_cnt_obj(this.current_tax_id_row_list, this.taxcounts_obj_from_file, this.rank, this.taxonomy_object, this.choosen_dids); // TODO: rename and refactor
+    this.tax_name_cnt_obj = this.lookup_module.make_tax_name_cnt_obj(this.current_tax_id_row_list, this.curr_taxcounts_obj, this.rank, this.taxonomy_object, this.chosen_dids); // TODO: rename and refactor
 
     //  --
     /*	tax_name_cnt_obj = res[0];
@@ -99,14 +99,16 @@ class TaxaCounts {
   }
 
   get_taxonomy_file_prefix() {
-    let files_prefix;
+    let files_prefix = "";
+    let taxonomy_name = NODE_DATABASE;
     if (this.units === 'tax_rdp2.6_simple'){
-      files_prefix = path.join(this.req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_rdp2.6");
+      taxonomy_name += "--datasets_rdp2.6";
     } else if (this.units === 'tax_generic_simple'){
-      files_prefix = path.join(this.req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_generic");
+      taxonomy_name += "--datasets_generic";
     } else {
-      files_prefix = path.join(this.req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);  // default
+      taxonomy_name += "--datasets_" + C.default_taxonomy.name;  // default
     }
+    files_prefix = path.join(this.req.CONFIG.JSON_FILES_BASE, taxonomy_name);
     return files_prefix; // /Users/ashipunova/BPC/vamps-node.js/public/json/vamps2--datasets_silva119
   }
 
@@ -124,25 +126,29 @@ class TaxaCounts {
 
   create_an_empty_tax_name_cnt_obj_per_dataset() {
     let empty_tax_name_cnt_obj_per_dataset = {};
-    for (let idx in this.choosen_dids) {
-      let did = this.choosen_dids[idx];
+    for (let idx in this.chosen_dids) {
+      let did = this.chosen_dids[idx];
       empty_tax_name_cnt_obj_per_dataset[did] = {};
     }
     return empty_tax_name_cnt_obj_per_dataset;
   }
 
-  get_taxcounts_obj_from_file(did) {
-    try {
-      let path_to_file = path.join(this.taxonomy_file_prefix, did +'.json');
-      let jsonfile = require(path_to_file);
-      return jsonfile['taxcounts'];
+  get_taxcounts_obj_from_file() {
+    let taxcounts_obj_for_all_datasets = {};
+    for (let d_idx in this.chosen_dids) {
+      let did = this.chosen_dids[d_idx];
+      try {
+        let path_to_file               = path.join(this.taxonomy_file_prefix, did + '.json');
+        let jsonfile                   = require(path_to_file);
+        taxcounts_obj_for_all_datasets[did] = jsonfile['taxcounts'];
+      } catch (err) {
+        console.log('2-no file ' + err.toString() + ' Exiting');
+        console.log('this.taxonomy_file_prefix = ' + this.taxonomy_file_prefix);
+        console.log('did = ' + did);
+        taxcounts_obj_for_all_datasets[did] = [];
+      }
     }
-    catch(err) {
-      console.log('2-no file ' + err.toString() + ' Exiting');
-      console.log('this.taxonomy_file_prefix = ' + this.taxonomy_file_prefix);
-      console.log('did = ' + did);
-      return {};
-    }
+    return taxcounts_obj_for_all_datasets;
   }
 
   choose_simple_or_custom_lookup_module() {
@@ -164,7 +170,7 @@ class TaxaCounts {
     let current_tax_id_rows = [];
     let rank_no = parseInt(C.RANKS.indexOf(this.rank)) + 1;
 
-    for (let current_tax_id_row in this.taxcounts_obj_from_file) {
+    for (let current_tax_id_row in this.curr_taxcounts_obj) {
       let current_ids_amount = current_tax_id_row.split("_").length - 1;
       if (current_ids_amount === rank_no) {
         current_tax_id_rows.push(current_tax_id_row);
@@ -210,7 +216,7 @@ class TaxonomySimple {
       if (this_rank === 'domain'){//TODO: why it is needed?
         domain = tax_node.taxon;
       }
-      tax_long_name = add_next_tax_name(tax_long_name, tax_node, this_rank);
+      tax_long_name = this.add_next_tax_name(tax_long_name, tax_node, this_rank);
     }
     tax_long_name = this.remove_trailing_semicolon(tax_long_name);
     return tax_long_name;
@@ -243,7 +249,7 @@ class TaxonomySimple {
   check_rank_name(this_rank) {
     let rank_name = this_rank;
     if (this_rank === 'klass') {
-      rank_name = 'class;';
+      rank_name = 'class';
     }
     return rank_name;
   }
