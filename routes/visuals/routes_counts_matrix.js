@@ -270,7 +270,7 @@ function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
 function get_tax_long_name(current_tax_id_row, taxonomy_object) {
 	let ids = current_tax_id_row.split('_');   // x === _5_55184_61061_62018_62239_63445
 	let tax_long_name = '';
-	let domain = '';
+	// let domain = '';
 
 	for (let id_idx = 1, ids_length = ids.length; id_idx < ids_length; id_idx++){  // must start at 1 because leading '_':  _2_55184
 		let db_id = ids[id_idx];
@@ -278,9 +278,9 @@ function get_tax_long_name(current_tax_id_row, taxonomy_object) {
 		let db_id_n_rank = db_id + '_' + this_rank;
 		//console.log('tax_node2 '+JSON.stringify(db_id_n_rank))
 		let tax_node = get_tax_node(db_id_n_rank, taxonomy_object);
-		if (this_rank === 'domain'){
-			domain = tax_node.taxon;
-		}
+		// if (this_rank === 'domain'){
+		// 	domain = tax_node.taxon;
+		// }
 
 		tax_long_name = add_next_tax_name(tax_long_name, tax_node, this_rank);
 
@@ -291,18 +291,33 @@ function get_tax_long_name(current_tax_id_row, taxonomy_object) {
 	return tax_long_name;
 }
 
+function check_rank_name(this_rank) {
+	let rank_name = this_rank;
+	if (this_rank === 'klass') {
+		rank_name = 'class;';
+	}
+	return rank_name;
+}
+
 function add_next_tax_name(tax_long_name, tax_node, this_rank) {
-
-	if (tax_node.taxon === undefined){
-
-		if (this_rank === 'klass'){
-			tax_long_name += 'class_NA;';
-		} else {
-			tax_long_name += this_rank + '_NA;';
-		}
-	} else {
+	let rank_name = check_rank_name(this_rank);
+	if (tax_node.taxon) {
 		tax_long_name += tax_node.taxon + ';';
 	}
+	else {
+		tax_long_name += rank_name + '_NA;';
+	}
+
+	// 	if (tax_node.taxon === undefined){
+	//
+	// 	if (this_rank === 'klass'){
+	// 		tax_long_name += 'class_NA;';
+	// 	} else {
+	// 		tax_long_name += this_rank + '_NA;';
+	// 	}
+	// } else {
+	// 	tax_long_name += tax_node.taxon + ';';
+	// }
 	return tax_long_name;
 }
 
