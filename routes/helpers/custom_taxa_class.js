@@ -59,7 +59,7 @@ function add_children_to_parent(dictMap_by_id, current_dict)
   add_to_dict_by_key(dictMap_by_id, current_dict.node_id, current_dict);
   
 //  TODO: test if changed to var and removed from above
-  parent_node = dictMap_by_id[current_dict.parent_id];
+  let parent_node = dictMap_by_id[current_dict.parent_id];
   if (parent_node)
   {
     parent_node.children_ids.push(current_dict.node_id);
@@ -143,8 +143,8 @@ function make_taxa_tree_dict(taxonomy_obj)
               i_am_a_parent = current_dict.node_id;
 
               taxon_name_id += 1;
-            
-              add_children_to_parent(dictMap_by_id, current_dict);
+
+              parent_node = add_children_to_parent(dictMap_by_id, current_dict);
             }
             else
             {
