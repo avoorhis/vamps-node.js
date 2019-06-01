@@ -186,7 +186,7 @@ class TaxonomySimple {
     for (let current_tax_id_idx in current_tax_id_row_list){
       let current_tax_id_row = current_tax_id_row_list[current_tax_id_idx];
       let cnt = taxcounts[current_tax_id_row];
-      let tax_long_name = get_tax_long_name(current_tax_id_row, taxonomy_object);
+      let tax_long_name = this.get_tax_long_name(current_tax_id_row, taxonomy_object);
 
       unit_name_lookup_1_dataset[tax_long_name] = 1;
       unit_name_lookup_per_dataset_1_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, tax_long_name, cnt);
@@ -206,7 +206,7 @@ class TaxonomySimple {
       let this_rank = C.RANKS[id_idx - 1];
       let db_id_n_rank = db_id + '_' + this_rank;
       //console.log('tax_node2 '+JSON.stringify(db_id_n_rank))
-      let tax_node = get_tax_node(db_id_n_rank, taxonomy_object);
+      let tax_node = this.get_tax_node(db_id_n_rank, taxonomy_object);
       if (this_rank === 'domain'){//TODO: why it is needed?
         domain = tax_node.taxon;
       }
@@ -219,6 +219,53 @@ class TaxonomySimple {
   remove_trailing_semicolon(tax_str) {
     return tax_str.replace(/;$/, "");
   }
+
+  get_tax_node(db_id_n_rank, taxonomy_object) {
+    let tax_node = {};
+    if (db_id_n_rank in taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank) {
+      tax_node = taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
+    }
+    return tax_node;
+  }
+
+  add_next_tax_name(tax_long_name, tax_node, this_rank) {
+
+    if (tax_node.taxon === undefined){
+
+      if (this_rank === 'klass'){
+        tax_long_name += 'class_NA;';
+      } else {
+        tax_long_name += this_rank + '_NA;';
+      }
+    } else {
+      tax_long_name += tax_node.taxon + ';';
+    }
+    return tax_long_name;
+  }
+
+  fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {
+    if (did in lookup) {
+      if (tax_name in lookup[did]) {
+        lookup[did][tax_name] += parseInt(cnt);
+      } else {
+        lookup[did][tax_name] = parseInt(cnt);
+      }
+
+    } else {
+      lookup[did] = {};
+      if (tax_name in lookup[did]) {
+        lookup[did][tax_name] += parseInt(cnt);
+
+      }else{
+        lookup[did][tax_name] = parseInt(cnt);
+      }
+    }
+    //console.log('lookup2')
+    //console.log(lookup)
+    return lookup;
+  }
+
+
 }
 
 class TaxonomyCustom {
