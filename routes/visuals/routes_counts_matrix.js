@@ -294,7 +294,7 @@ function get_tax_long_name(current_tax_id_row, taxonomy_object) {
 function check_rank_name(this_rank) {
 	let rank_name = this_rank;
 	if (this_rank === 'klass') {
-		rank_name = 'class;';
+		rank_name = 'class';
 	}
 	return rank_name;
 }
