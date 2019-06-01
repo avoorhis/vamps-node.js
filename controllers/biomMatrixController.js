@@ -229,18 +229,23 @@ class TaxonomySimple {
   }
 
   add_next_tax_name(tax_long_name, tax_node, this_rank) {
-
-    if (tax_node.taxon === undefined){
-
-      if (this_rank === 'klass'){
-        tax_long_name += 'class_NA;';
-      } else {
-        tax_long_name += this_rank + '_NA;';
-      }
-    } else {
+    let rank_name = this.check_rank_name(this_rank);
+    if (tax_node.taxon) {
       tax_long_name += tax_node.taxon + ';';
     }
+    else {
+      tax_long_name += rank_name + '_NA;';
+    }
+
     return tax_long_name;
+  }
+
+  check_rank_name(this_rank) {
+    let rank_name = this_rank;
+    if (this_rank === 'klass') {
+      rank_name = 'class;';
+    }
+    return rank_name;
   }
 
   fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {
