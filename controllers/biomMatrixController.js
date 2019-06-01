@@ -79,17 +79,11 @@ class TaxaCounts {
     this.rank                 = this.post_items.tax_depth;
 
     this.taxonomy_object    = this.get_taxonomy_object();
-    this.curr_taxcounts_obj = this.get_taxcounts_obj_from_file(); /*{
-  "_3": 42700,
-  "_2": 30,
-  "_1": 1071,
-  "_4": 2,
-  "_3_8": 31939,*/
-    this.tax_name_cnt_obj_per_dataset = this.create_an_empty_tax_name_cnt_obj_per_dataset();
+    this.curr_taxcounts_obj = this.get_taxcounts_obj_from_file();
+    // this.tax_name_cnt_obj_per_dataset = this.create_an_empty_tax_name_cnt_obj_per_dataset();
     this.current_tax_id_row_list = this.collect_tax_id_rows();
     this.lookup_module = this.choose_simple_or_custom_lookup_module();
-    this.tax_name_cnt_obj = this.lookup_module.make_tax_name_cnt_obj(this.current_tax_id_row_list, this.curr_taxcounts_obj, this.rank, this.taxonomy_object, this.chosen_dids); // TODO: rename and refactor
-
+    this.tax_name_cnt_obj = this.lookup_module.make_tax_name_cnt_obj_per_did(this.current_tax_id_row_list, this.curr_taxcounts_obj, this.rank);
     //  --
     /*	tax_name_cnt_obj = res[0];
 	tax_name_cnt_obj_per_dataset = res[1];
@@ -154,11 +148,12 @@ class TaxaCounts {
   choose_simple_or_custom_lookup_module() {
     let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
     let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
+    //TODO: args object send to whatever modulw is chosen
     if (unit_choice_simple) {
-      return new module.exports.TaxonomySimple();
+      return new module.exports.TaxonomySimple(this.taxonomy_object, this.chosen_dids);
     }
     else if (unit_choice_custom) {
-      return new module.exports.TaxonomyCustom();
+      return new module.exports.TaxonomyCustom(this.taxonomy_object, this.chosen_dids);
     }
     else {
       console.log("ERROR: Can't choose simple or custom taxonomy");
@@ -182,8 +177,21 @@ class TaxaCounts {
 }
 
 class TaxonomySimple {
-  constructor() {}
-  make_tax_name_cnt_obj(taxcounts, rank, taxonomy_object, did) {
+  constructor(taxonomy_object, chosen_dids) {
+    this.taxonomy_object = taxonomy_object;
+    this.chosen_dids = chosen_dids;
+  }
+
+  make_tax_name_cnt_obj_per_did(curr_taxcounts_obj_per_did, rank) {
+  //  this.current_tax_id_row_list, this.curr_taxcounts_obj, this.rank, this.chosen_dids
+    for (let did_idx in this.chosen_dids) {
+      let did = this.chosen_dids[did_idx];
+      this.make_tax_name_cnt_obj(curr_taxcounts_obj_per_did[did], rank, did);
+    }
+
+  }
+
+  make_tax_name_cnt_obj(taxcounts, rank, did) {
     let tax_name_cnt_obj_1_dataset = {};
     let tax_name_cnt_obj_per_dataset_1_dataset = {};
 
@@ -329,7 +337,10 @@ class TaxonomySimple {
 }
 
 class TaxonomyCustom {
-  constructor() {}
+  constructor(taxonomy_object, chosen_dids) {
+    this.taxonomy_object = taxonomy_object;
+    this.chosen_dids = chosen_dids;
+  }
 }
 
 
