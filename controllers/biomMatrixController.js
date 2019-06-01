@@ -85,16 +85,16 @@ class TaxaCounts {
   "_1": 1071,
   "_4": 2,
   "_3_8": 31939,*/
-    this.unit_name_lookup_per_dataset = this.create_an_empty_unit_name_lookup_per_dataset();
+    this.tax_name_cnt_obj_per_dataset = this.create_an_empty_tax_name_cnt_obj_per_dataset();
     this.current_tax_id_row_list = this.collect_tax_id_rows();
     this.lookup_module = this.choose_simple_or_custom_lookup_module();
-    this.unit_name_lookup = this.lookup_module.taxonomy_unit_choice_simple(this.current_tax_id_row_list, this.taxcounts_obj_from_file, this.rank, this.taxonomy_object, this.choosen_dids); // TODO: rename and refactor
+    this.tax_name_cnt_obj = this.lookup_module.make_tax_name_cnt_obj(this.current_tax_id_row_list, this.taxcounts_obj_from_file, this.rank, this.taxonomy_object, this.choosen_dids); // TODO: rename and refactor
 
     //  --
-    /*	unit_name_lookup = res[0];
-	unit_name_lookup_per_dataset = res[1];
+    /*	tax_name_cnt_obj = res[0];
+	tax_name_cnt_obj_per_dataset = res[1];
 
-	let unit_name_counts = create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_per_dataset);
+	let unit_name_counts = create_unit_name_counts(tax_name_cnt_obj, post_items, tax_name_cnt_obj_per_dataset);
 	let ukeys = remove_empty_rows(unit_name_counts);*/
   }
 
@@ -122,13 +122,13 @@ class TaxaCounts {
     return taxonomy_object;
   }
 
-  create_an_empty_unit_name_lookup_per_dataset() {
-    let empty_unit_name_lookup_per_dataset = {};
+  create_an_empty_tax_name_cnt_obj_per_dataset() {
+    let empty_tax_name_cnt_obj_per_dataset = {};
     for (let idx in this.choosen_dids) {
       let did = this.choosen_dids[idx];
-      empty_unit_name_lookup_per_dataset[did] = {};
+      empty_tax_name_cnt_obj_per_dataset[did] = {};
     }
-    return empty_unit_name_lookup_per_dataset;
+    return empty_tax_name_cnt_obj_per_dataset;
   }
 
   get_taxcounts_obj_from_file(did) {
@@ -177,23 +177,23 @@ class TaxaCounts {
 
 class TaxonomySimple {
   constructor() {}
-  taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
-    let unit_name_lookup_1_dataset = {};
-    let unit_name_lookup_per_dataset_1_dataset = {};
+  make_tax_name_cnt_obj(taxcounts, rank, taxonomy_object, did) {
+    let tax_name_cnt_obj_1_dataset = {};
+    let tax_name_cnt_obj_per_dataset_1_dataset = {};
 
     console.time("TIME: current_tax_id_row_list");
-    let current_tax_id_row_list = collect_tax_id_rows(taxcounts, rank);
+    let current_tax_id_row_list = this.collect_tax_id_rows(taxcounts, rank);
     for (let current_tax_id_idx in current_tax_id_row_list){
       let current_tax_id_row = current_tax_id_row_list[current_tax_id_idx];
       let cnt = taxcounts[current_tax_id_row];
       let tax_long_name = this.get_tax_long_name(current_tax_id_row, taxonomy_object);
 
-      unit_name_lookup_1_dataset[tax_long_name] = 1;
-      unit_name_lookup_per_dataset_1_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, tax_long_name, cnt);
+      tax_name_cnt_obj_1_dataset[tax_long_name] = 1;
+      tax_name_cnt_obj_per_dataset_1_dataset = this.fillin_name_lookup_per_ds(tax_name_cnt_obj_per_dataset_1_dataset, did, tax_long_name, cnt);
     }
     console.timeEnd("TIME: current_tax_id_row_list");
 
-    return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
+    return [tax_name_cnt_obj_1_dataset, tax_name_cnt_obj_per_dataset_1_dataset];
   }
 
   get_tax_long_name(current_tax_id_row, taxonomy_object) {
@@ -248,7 +248,7 @@ class TaxonomySimple {
     return rank_name;
   }
 
-  fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {
+  fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {//TODO: refactor
     if (did in lookup) {
       if (tax_name in lookup[did]) {
         lookup[did][tax_name] += parseInt(cnt);
