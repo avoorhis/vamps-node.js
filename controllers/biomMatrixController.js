@@ -81,7 +81,7 @@ class TaxaCounts {
     this.taxonomy_object    = this.get_taxonomy_object();
     this.curr_taxcounts_obj = this.get_taxcounts_obj_from_file();
     // this.tax_name_cnt_obj_per_dataset = this.create_an_empty_tax_name_cnt_obj_per_dataset();
-    this.current_tax_id_row_list = this.collect_tax_id_rows();
+    this.current_tax_id_rows_by_did = this.filter_tax_id_rows_by_rank();
     this.lookup_module = this.choose_simple_or_custom_lookup_module();
     this.tax_name_cnt_obj = this.lookup_module.make_tax_name_cnt_obj_per_did(this.current_tax_id_row_list, this.curr_taxcounts_obj, this.rank);
     //  --
@@ -160,19 +160,25 @@ class TaxaCounts {
     }
   }
 
-  collect_tax_id_rows() {
-    console.time("TIME: collect_tax_id_rows");
-    let current_tax_id_rows = [];
+  filter_tax_id_rows_by_rank() { //check if it is faster to make arrays from all tax_id_rows first
+    console.time("TIME: filter_tax_id_rows_by_rank");
     let rank_no = parseInt(C.RANKS.indexOf(this.rank)) + 1;
+    let current_tax_id_rows_by_did = {};
 
-    for (let current_tax_id_row in this.curr_taxcounts_obj) {
-      let current_ids_amount = current_tax_id_row.split("_").length - 1;
-      if (current_ids_amount === rank_no) {
-        current_tax_id_rows.push(current_tax_id_row);
+    for (let d_idx in this.chosen_dids) {
+      let did = this.chosen_dids[d_idx];
+      let current_tax_id_rows = [];
+
+      for (let current_tax_id_row in this.curr_taxcounts_obj[did]) {
+        let current_ids_amount = current_tax_id_row.split("_").length - 1;
+        if (current_ids_amount === rank_no) {
+          current_tax_id_rows.push(current_tax_id_row);
+        }
       }
+      current_tax_id_rows_by_did[did] = current_tax_id_rows;
     }
-    console.timeEnd("TIME: collect_tax_id_rows");
-    return current_tax_id_rows;
+    console.timeEnd("TIME: filter_tax_id_rows_by_rank");
+    return current_tax_id_rows_by_did;
   }
 }
 
@@ -197,7 +203,7 @@ class TaxonomySimple {
 
     console.time("TIME: current_tax_id_row_list");
     let current_tax_id_row_list = this.collect_tax_id_rows(taxcounts, rank);
-    for (let current_tax_id_idx in current_tax_id_row_list){
+    for (let current_tax_id_idx in current_tax_id_row_list[did]){
       let current_tax_id_row = current_tax_id_row_list[current_tax_id_idx];
       let cnt = taxcounts[current_tax_id_row];
       let tax_long_name = this.get_tax_long_name(current_tax_id_row, taxonomy_object);
