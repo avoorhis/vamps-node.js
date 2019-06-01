@@ -270,6 +270,55 @@ class TaxonomySimple {
     return lookup;
   }
 
+  create_unit_name_counts(tax_name_cnt_obj, post_items, tax_name_cnt_obj_per_dataset) {
+
+    var taxa_counts = {};
+    for(var tax_name in tax_name_cnt_obj){
+      taxa_counts[tax_name] = [];
+    }
+    
+    for (var i in post_items.chosen_datasets) { // correct order
+      var did = post_items.chosen_datasets[i].did;
+      for (var tax_name1 in tax_name_cnt_obj) {
+        try {
+          let curr_cnt = tax_name_cnt_obj_per_dataset[did][tax_name1];
+          taxa_counts[tax_name1].push(curr_cnt);
+        }
+        catch(err) {
+          taxa_counts[tax_name1].push(0);
+        }
+      }
+    }
+    //console.log('taxa_counts')
+    //console.log(taxa_counts)
+    return taxa_counts;
+  }
+
+  remove_empty_rows(taxa_counts) {
+    // remove empty rows:
+
+    var tmparr = [];
+    for (var taxname in taxa_counts) {
+      let sum = 0;
+      for (let c in taxa_counts[taxname]){
+        let curr_cnts = taxa_counts[taxname][c];
+        let it_is_number = !Number.isNaN(curr_cnts);
+        if (it_is_number) {
+          sum += taxa_counts[taxname][c];
+        }
+        //console.log(k);
+      }
+      if (sum > 0) {
+        tmparr.push(taxname);
+      }
+    }
+    return tmparr;
+
+  }
+
+  onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+  }
 
 }
 
