@@ -1,7 +1,5 @@
 /* jshint multistr: true */
 
-
-
 var taxa_query_pt1 = "SELECT DISTINCT domain, phylum, klass, `order`, family, genus, species, strain, \
  domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id \
  FROM ";
@@ -25,7 +23,7 @@ function genericTaxonomy() {
 
 genericTaxonomy.prototype.get_all_taxa = function(callback) 
 {
-  var query = taxa_query_pt1+'generic_taxonomy'+taxa_query_pt2
+  var query = taxa_query_pt1 + 'generic_taxonomy' + taxa_query_pt2;
   connection.query(query, function (err, rows, fields) {
     callback(err, rows);
   });
