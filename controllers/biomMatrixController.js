@@ -1,6 +1,6 @@
 const COMMON = require(app_root + '/routes/visuals/routes_common');
 const C      = require(app_root + '/public/constants');
-var path     = require("path");
+let path     = require("path");
 
 class BiomMatrix {
 
