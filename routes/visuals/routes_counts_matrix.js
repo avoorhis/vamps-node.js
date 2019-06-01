@@ -307,17 +307,6 @@ function add_next_tax_name(tax_long_name, tax_node, this_rank) {
 	else {
 		tax_long_name += rank_name + '_NA;';
 	}
-
-	// 	if (tax_node.taxon === undefined){
-	//
-	// 	if (this_rank === 'klass'){
-	// 		tax_long_name += 'class_NA;';
-	// 	} else {
-	// 		tax_long_name += this_rank + '_NA;';
-	// 	}
-	// } else {
-	// 	tax_long_name += tax_node.taxon + ';';
-	// }
 	return tax_long_name;
 }
 
