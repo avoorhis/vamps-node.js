@@ -80,7 +80,7 @@ class TaxaCounts {
 
     this.taxonomy_object            = this.get_taxonomy_object();
     this.curr_taxcounts_obj_of_str  = this.get_taxcounts_obj_from_file();
-    this.curr_taxcounts_obj_of_arr  = this.split_taxcounts_to_arr(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
+    this.curr_taxcounts_obj_of_arr  = this.make_current_tax_id_obj_of_arr(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
 
     this.current_tax_id_rows_by_did = this.filter_tax_id_rows_by_rank();
     this.lookup_module              = this.choose_simple_or_custom_lookup_module();
@@ -146,17 +146,32 @@ class TaxaCounts {
     return taxcounts_obj_for_all_datasets;
   }
 
-  split_taxcounts_to_arr() {
+  make_current_tax_id_obj_of_arr() {
+    // for each did get keys
+    // keys "_1_2" to array [1,2]
+    // add previous info
     let current_tax_id_obj_of_arr = {};
+
     for (let d_idx in this.chosen_dids) {
       let did = this.chosen_dids[d_idx];
-      for (let current_tax_id_row in this.curr_taxcounts_obj_of_str[did]) {
-        let current_tax_id_arr = current_tax_id_row.split("_");
-        let current_tax_id_arr_clean =  current_tax_id_arr.filter(function (el) {   return (el)});
-        current_tax_id_obj_of_arr[did] = current_tax_id_arr_clean;
+      current_tax_id_obj_of_arr[did] = [];
+      let curr_obj = this.curr_taxcounts_obj_of_str[did];
+      for (const [current_tax_id_row, current_cnt] of Object.entries(curr_obj)) {
+        let temp_obj = {};
+        let current_tax_id_arr_clean = this.split_taxcounts_to_arr(current_tax_id_row);
+        temp_obj["tax_id_row"] = current_tax_id_row;
+        temp_obj["cnt"] = current_cnt;
+        temp_obj["tax_id_arr"] = current_tax_id_arr_clean;
+        current_tax_id_obj_of_arr[did].push(temp_obj);
       }
     }
     return current_tax_id_obj_of_arr;
+  }
+
+  split_taxcounts_to_arr(current_tax_id_row) {
+    let current_tax_id_arr = current_tax_id_row.split("_");
+    let current_tax_id_arr_clean =  current_tax_id_arr.filter(function (el) { return (el) });
+    return current_tax_id_arr_clean;
   }
 
   choose_simple_or_custom_lookup_module() {
@@ -178,11 +193,14 @@ class TaxaCounts {
     console.time("TIME: filter_tax_id_rows_by_rank");
     let rank_no = parseInt(C.RANKS.indexOf(this.rank)) + 1;
     let current_tax_id_rows_by_did = {};
+    let current_tax_id_rows_by_did1 = {};
 
     for (let d_idx in this.chosen_dids) {
       let did = this.chosen_dids[d_idx];
       let current_tax_id_rows = [];
+      let current_tax_id_rows1 = [];
 
+      console.time("TIME: filter_tax_id_rows_by_rank with for");
       for (let current_tax_id_row in this.curr_taxcounts_obj_of_str[did]) {
         let current_ids_amount = current_tax_id_row.split("_").length - 1;
         if (current_ids_amount === rank_no) {
@@ -190,6 +208,13 @@ class TaxaCounts {
         }
       }
       current_tax_id_rows_by_did[did] = current_tax_id_rows;
+      console.timeEnd("TIME: filter_tax_id_rows_by_rank with for");
+
+      console.time("TIME: filter_tax_id_rows_by_rank with filter");
+      current_tax_id_rows1 = this.curr_taxcounts_obj_of_arr[did].filter(function(el){ return el.tax_id_arr.length === rank_no });
+      current_tax_id_rows_by_did1[did] = current_tax_id_rows1;
+      console.timeEnd("TIME: filter_tax_id_rows_by_rank with filter");
+
     }
     console.timeEnd("TIME: filter_tax_id_rows_by_rank");
     return current_tax_id_rows_by_did;
