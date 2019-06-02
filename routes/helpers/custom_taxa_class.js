@@ -113,7 +113,7 @@ function make_taxa_tree_dict(taxonomy_obj)
           if (taxa_name)
           {
             //console.log("name_rank1 = " + taxa_name + " - " + taxa_rank);
-			node = get_by_key(dictMap_by_name_n_rank, taxa_name + "_" + taxa_rank);
+			let node = get_by_key(dictMap_by_name_n_rank, taxa_name + "_" + taxa_rank);
 			//console.log("old_node = " + JSON.stringify(node));
             
 			
