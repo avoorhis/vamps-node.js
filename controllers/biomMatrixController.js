@@ -82,7 +82,7 @@ class TaxaCounts {
     this.curr_taxcounts_obj_of_str  = this.get_taxcounts_obj_from_file();
     this.curr_taxcounts_obj_of_arr  = this.make_current_tax_id_obj_of_arr(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
 
-    this.current_tax_id_rows_by_did = this.filter_tax_id_rows_by_rank();
+    this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did();
     this.lookup_module              = this.choose_simple_or_custom_lookup_module();
     this.tax_name_cnt_obj           = this.lookup_module.make_tax_name_cnt_obj_per_did(this.current_tax_id_rows_by_did, this.curr_taxcounts_obj_of_str, this.rank);
     //  --
@@ -189,36 +189,25 @@ class TaxaCounts {
     }
   }
 
-  filter_tax_id_rows_by_rank() { //check if it is faster to make arrays from all tax_id_rows first
-    console.time("TIME: filter_tax_id_rows_by_rank");
-    let rank_no = parseInt(C.RANKS.indexOf(this.rank)) + 1;
-    let current_tax_id_rows_by_did = {};
-    let current_tax_id_rows_by_did1 = {};
+  make_current_tax_id_rows_by_did() { //check if it is faster to make arrays from all tax_id_rows first
+    console.time("TIME: make_current_tax_id_rows_by_did");
+    let current_tax_id_obj_by_did = {};
 
     for (let d_idx in this.chosen_dids) {
       let did = this.chosen_dids[d_idx];
-      let current_tax_id_rows = [];
-      let current_tax_id_rows1 = [];
-
-      console.time("TIME: filter_tax_id_rows_by_rank with for");
-      for (let current_tax_id_row in this.curr_taxcounts_obj_of_str[did]) {
-        let current_ids_amount = current_tax_id_row.split("_").length - 1;
-        if (current_ids_amount === rank_no) {
-          current_tax_id_rows.push(current_tax_id_row);
-        }
-      }
-      current_tax_id_rows_by_did[did] = current_tax_id_rows;
-      console.timeEnd("TIME: filter_tax_id_rows_by_rank with for");
-
-      console.time("TIME: filter_tax_id_rows_by_rank with filter");
-      current_tax_id_rows1 = this.curr_taxcounts_obj_of_arr[did].filter(function(el){ return el.tax_id_arr.length === rank_no });
-      current_tax_id_rows_by_did1[did] = current_tax_id_rows1;
-      console.timeEnd("TIME: filter_tax_id_rows_by_rank with filter");
-
+      let current_tax_id_rows = this.curr_taxcounts_obj_of_arr[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
+      current_tax_id_obj_by_did[did] = current_tax_id_rows;
     }
-    console.timeEnd("TIME: filter_tax_id_rows_by_rank");
-    return current_tax_id_rows_by_did;
+    console.timeEnd("TIME: make_current_tax_id_rows_by_did");
+    return current_tax_id_obj_by_did;
   }
+  // https://samwize.com/2013/09/01/how-you-can-pass-a-variable-into-callback-function-in-node-dot-js/
+
+  filter_tax_id_rows_by_rank(el) {
+    let rank_no = parseInt(C.RANKS.indexOf(this.rank)) + 1;
+    return el.tax_id_arr.length === rank_no;
+  }
+
 }
 
 class TaxonomySimple {
