@@ -4,20 +4,19 @@
 
 /*jshint multistr: true */
 
-var CONSTS = require(app_root + '/public/constants');
+const CONSTS = require(app_root + '/public/constants');
 
 // Private
-var taxon_name_id = 1;
-var ranks = CONSTS.RANKS;
+let taxon_name_id = 1;
+const ranks = CONSTS.RANKS;
 
 function make_dictMap_by_rank(tags) {
-  var dictMap_by_rank = {};
-  // var ranks = CONSTS.RANKS;
+  const dictMap_by_rank = {};
+  // let ranks = CONSTS.RANKS;
   ranks.forEach(function(rank) {
     dictMap_by_rank[rank] = [];
   });
-  var i = null;
-  for (i = 0; tags.length > i; i += 1) {
+  for (let i = 0; tags.length > i; i += 1) {
     dictMap_by_rank[tags[i].rank].push(tags[i]);
   }
   return dictMap_by_rank;
@@ -36,16 +35,16 @@ function get_by_key(dictMap, dictMap_key)
 
 function make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id)
 {
-  var current_dict =
-  {
-    parent_id: "",
-    children_ids : [],
-    taxon: "",
-    rank: "",
-    node_id: 1,
-    db_id: 1
-  };
-  
+  const current_dict =
+          {
+            parent_id: "",
+            children_ids: [],
+            taxon: "",
+            rank: "",
+            node_id: 1,
+            db_id: 1
+          };
+
   current_dict.taxon = taxa_name;
   current_dict.rank = taxa_rank;
   current_dict.parent_id = i_am_a_parent;
@@ -58,7 +57,7 @@ function add_children_to_parent(dictMap_by_id, current_dict)
 {
   add_to_dict_by_key(dictMap_by_id, current_dict.node_id, current_dict);
   
-//  TODO: test if changed to var and removed from above
+//  TODO: test if changed to let and removed from above
   let parent_node = dictMap_by_id[current_dict.parent_id];
   if (parent_node)
   {
@@ -77,39 +76,39 @@ function check_if_rank(field_name)
 // todo: refactoring! Too long and nested
 function make_taxa_tree_dict(taxonomy_obj)
 {
-  var taxa_tree_dict = [];
-  var dictMap_by_name_n_rank = {};
-  var dictMap_by_db_id_n_rank = {};
-  
-  var dictMap_by_id = {};
+  let taxa_tree_dict = [];
+  let dictMap_by_name_n_rank  = {};
+  let dictMap_by_db_id_n_rank = {};
+
+  let dictMap_by_id = {};
   //console.log("HHH0");
   //console.log("taxonomy_obj = " + JSON.stringify(taxonomy_obj));
   //console.log("HHH");
   
-  for (var i=0, len = taxonomy_obj.length; i < len; i++)
+  for (let i=0, len = taxonomy_obj.length; i < len; i++)
   {
     
 	  let in_obj = taxonomy_obj[i];
     //console.log("\ntaxon_objs[i] = " + JSON.stringify(in_obj));
     let i_am_a_parent = 0;
-    for (var field_name in in_obj)
+    for (let field_name in in_obj)
     {
        //console.log("field_name = " + JSON.stringify(field_name));
-      var is_rank = check_if_rank(field_name);
+      let is_rank = check_if_rank(field_name);
       if (is_rank)
       {
-        var db_id_field_name = field_name + "_id";
+        let db_id_field_name = field_name + "_id";
         // console.log("db_id_field_name = " + JSON.stringify(db_id_field_name));
-        var db_id = in_obj[db_id_field_name];
+        let db_id = in_obj[db_id_field_name];
         // console.log("db_id = " + JSON.stringify(db_id));
       
-        var parent_node = {}; 
-        var current_dict = {};
+        let parent_node = {}; 
+        let current_dict = {};
         let taxa_rank = field_name;
 		
         if (in_obj.hasOwnProperty(taxa_rank))
         {
-          var taxa_name = in_obj[taxa_rank];
+          let taxa_name = in_obj[taxa_rank];
           if (taxa_name)
           {
             //console.log("name_rank1 = " + taxa_name + " - " + taxa_rank);
@@ -150,7 +149,7 @@ function make_taxa_tree_dict(taxonomy_obj)
       }
       else
       {
-        continue;
+
       }
     }
   } 
@@ -166,7 +165,7 @@ function TaxonomyTree(rows) {
   this.taxa_tree_dict_map_by_rank = [];
   this.taxonomy_obj = rows;
   
-  temp_arr = make_taxa_tree_dict(this.taxonomy_obj);
+  let temp_arr = make_taxa_tree_dict(this.taxonomy_obj);
   this.taxa_tree_dict = temp_arr[0];
   this.taxa_tree_dict_map_by_id = temp_arr[1]; 
   this.taxa_tree_dict_map_by_db_id_n_rank = temp_arr[2]; 
