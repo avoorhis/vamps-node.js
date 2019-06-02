@@ -89,18 +89,12 @@ function make_taxa_tree_dict(taxonomy_obj)
   for (var i=0, len = taxonomy_obj.length; i < len; i++)
   {
     
-	in_obj = taxonomy_obj[i];
+	  let in_obj = taxonomy_obj[i];
     //console.log("\ntaxon_objs[i] = " + JSON.stringify(in_obj));
-    var i_am_a_parent = 0;
-	//var domain_id = in_obj.domain_id
+    let i_am_a_parent = 0;
     for (var field_name in in_obj)
     {
        //console.log("field_name = " + JSON.stringify(field_name));
-      // ranks.forEach(function(rank) {
-       //  dictMap_by_rank[rank] = [];
-       //});
-       
-      
       var is_rank = check_if_rank(field_name);
       if (is_rank)
       {
@@ -111,7 +105,7 @@ function make_taxa_tree_dict(taxonomy_obj)
       
         var parent_node = {}; 
         var current_dict = {};
-        taxa_rank = field_name;
+        let taxa_rank = field_name;
 		
         if (in_obj.hasOwnProperty(taxa_rank))
         {
