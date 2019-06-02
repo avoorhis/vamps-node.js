@@ -101,8 +101,8 @@ function make_taxa_tree_dict(taxonomy_obj)
         // console.log("db_id_field_name = " + JSON.stringify(db_id_field_name));
         let db_id = in_obj[db_id_field_name];
         // console.log("db_id = " + JSON.stringify(db_id));
-      
-        let parent_node = {}; 
+
+        let parent_node = {};
         let current_dict = {};
         let taxa_rank = field_name;
 		
@@ -114,17 +114,19 @@ function make_taxa_tree_dict(taxonomy_obj)
             //console.log("name_rank1 = " + taxa_name + " - " + taxa_rank);
 			      let node = get_by_key(dictMap_by_name_n_rank, taxa_name + "_" + taxa_rank);
 			      //console.log("old_node = " + JSON.stringify(node));
-            
-			
-			      if (!node)
+
+			      if (node) {
+              i_am_a_parent = node.node_id;
+            }
+            else //(!node)
             {
               current_dict = make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id);
 			        //console.log("current_dict = " + JSON.stringify(current_dict,null,4))
-              
+
 			        taxa_tree_dict.push(current_dict);
-             
+
               add_to_dict_by_key(dictMap_by_name_n_rank,  current_dict.taxon + "_" + current_dict.rank, current_dict);
-              
+
 			        add_to_dict_by_key(dictMap_by_db_id_n_rank, current_dict.db_id + "_" + current_dict.rank, current_dict);
 
               i_am_a_parent = current_dict.node_id;
@@ -133,11 +135,6 @@ function make_taxa_tree_dict(taxonomy_obj)
 
               parent_node = add_children_to_parent(dictMap_by_id, current_dict);
             }
-            else
-            {
-              i_am_a_parent = node.node_id;
-            }
-			
           }
         }
       }
