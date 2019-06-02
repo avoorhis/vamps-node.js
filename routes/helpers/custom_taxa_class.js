@@ -112,19 +112,13 @@ function make_taxa_tree_dict(taxonomy_obj)
           if (taxa_name)
           {
             //console.log("name_rank1 = " + taxa_name + " - " + taxa_rank);
-			let node = get_by_key(dictMap_by_name_n_rank, taxa_name + "_" + taxa_rank);
-			//console.log("old_node = " + JSON.stringify(node));
+			      let node = get_by_key(dictMap_by_name_n_rank, taxa_name + "_" + taxa_rank);
+			      //console.log("old_node = " + JSON.stringify(node));
             
 			
-			if (!node)
+			      if (!node)
             {
-              // console.log("taxa_name = " + JSON.stringify(taxa_name));
-              // console.log("taxa_rank = " + JSON.stringify(taxa_rank));
-              // console.log("i_am_a_parent = " + JSON.stringify(i_am_a_parent));
-              // console.log("taxon_name_id = " + JSON.stringify(taxon_name_id));
-              // console.log("name_rank2 = " + taxa_name+' - '+taxa_rank)
               current_dict = make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id);
-			        //console.log("new_node = " + JSON.stringify(current_dict));
 			        //console.log("current_dict = " + JSON.stringify(current_dict,null,4))
               
 			        taxa_tree_dict.push(current_dict);
@@ -146,10 +140,6 @@ function make_taxa_tree_dict(taxonomy_obj)
 			
           }
         }
-      }
-      else
-      {
-
       }
     }
   } 
