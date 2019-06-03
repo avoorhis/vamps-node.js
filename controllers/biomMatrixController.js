@@ -1,13 +1,16 @@
 const COMMON = require(app_root + '/routes/visuals/routes_common');
 const C      = require(app_root + '/public/constants');
 let path     = require("path");
-let helpers = require(app_root + '/routes/helpers/helpers');
+var extend = require('util')._extend;
+
+// let helpers = require(app_root + '/routes/helpers/helpers');
 
 class BiomMatrix {
 
-  constructor(req, visual_post_items) {
+  constructor(req, visual_post_items, write_file) {
     this.req = req;
     this.visual_post_items = visual_post_items;
+    this.write_file = write_file;
     this.units = this.visual_post_items.unit_choice;
     this.choosen_datasets = this.visual_post_items.chosen_datasets; /* post_items.chosen_datasets["0"] = {
   "did": 475152,
@@ -49,6 +52,19 @@ class BiomMatrix {
       data:  this.ordered_list_of_lists_of_tax_counts
     };
 
+    //--
+    this.biom_matrix = this.create_biom_matrix();
+    // ( this.biom_matrix, this.taxa_counts.unit_name_counts, this.taxa_counts.ukeys, this.visual_post_items );
+
+    let true_meaning = [true, 1, "1"];
+    if (this.visual_post_items.update_data in true_meaning) {
+      this.biom_matrix = this.get_updated_biom_matrix(); // this.visual_post_items, this.biom_matrix
+    }
+
+    let write_matrix_file_mod = new module.exports.WriteMatrixFile(this.visual_post_items, this.biom_matrix);
+    if (this.write_file === true || this.write_file === undefined){
+      write_matrix_file_mod.write_matrix_file();
+    }
   }
 
   get_columns() {
@@ -66,6 +82,140 @@ class BiomMatrix {
   get_dids() {
     let dids = this.choosen_datasets.map(function (value) { return value.did; });
     return dids;
+  }
+
+  get_updated_biom_matrix(post_items, mtx) {//TODO: refactor
+    console.log('in UPDATED biom_matrix');
+    var custom_count_matrix = extend({},mtx);  // this clones count_matrix which keeps original intact.
+
+    var max_cnt = mtx.max_dataset_count,
+        min     = post_items.min_range,
+        max     = post_items.max_range,
+        norm    = post_items.normalization;
+
+    //console.log('in custom biom '+max_cnt.toString());
+
+    // Adjust for percent limit change
+    var new_counts = [];
+    var new_units = [];
+    for(var c in custom_count_matrix.data) {
+
+      var got_one = false;
+      for(var k in custom_count_matrix.data[c]) {
+        var thispct = (custom_count_matrix.data[c][k]*100)/custom_count_matrix.column_totals[k];
+        if(thispct > min && thispct < max){
+          got_one = true;
+        }
+      }
+
+      if(got_one){
+        new_counts.push(custom_count_matrix.data[c]);
+        new_units.push(custom_count_matrix.rows[c]);
+      }else{
+        console.log('rejecting '+custom_count_matrix.rows[c].name);
+      }
+    }
+    custom_count_matrix.data = new_counts;
+    custom_count_matrix.rows = new_units;
+
+
+    // Adjust for normalization
+    var tmp1 = [];
+    if (norm === 'maximum'|| norm === 'max') {
+      console.log('calculating norm MAX');
+      for(var cc in custom_count_matrix.data) {
+        new_counts = [];
+        for (var kc in custom_count_matrix.data[cc]) {
+          new_counts.push(parseInt( ( custom_count_matrix.data[cc][kc] * max_cnt ) / custom_count_matrix.column_totals[kc], 10) );
+
+        }
+        tmp1.push(new_counts);
+      }
+      custom_count_matrix.data = tmp1;
+    }else if(norm === 'frequency' || norm === 'freq'){
+      console.log('calculating norm FREQ');
+      for (var cc1 in custom_count_matrix.data) {
+        new_counts = [];
+        for (var kc1 in custom_count_matrix.data[cc1]) {
+          new_counts.push(parseFloat( (custom_count_matrix.data[cc1][kc1] / custom_count_matrix.column_totals[kc1]).toFixed(6) ) );
+        }
+        tmp1.push(new_counts);
+      }
+      custom_count_matrix.data = tmp1;
+    }else{
+      // nothing here
+      console.log('no-calculating norm NORM');
+    }
+
+    // re-calculate totals
+    var tots = [];
+    // TODO: "'tmp' is already defined."
+    var tmp2 = {};
+    for(var cc2 in custom_count_matrix.data) {
+      for(var kc2 in custom_count_matrix.data[cc2]) {
+        if(kc2 in tmp2){
+          tmp2[kc2] += custom_count_matrix.data[cc2][kc2];
+        }else{
+          tmp2[kc2] = custom_count_matrix.data[cc2][kc2];
+        }
+      }
+    }
+    for (var kc3 in custom_count_matrix.columns){
+      tots.push(tmp2[kc3]);
+    }
+    custom_count_matrix.column_totals = tots;
+    custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
+
+    //console.log('returning custom_count_matrix');
+    return custom_count_matrix;
+  }
+
+
+  create_biom_matrix() {//TODO: refactor
+    // this.biom_matrix, unit_name_counts, this.ukeys, this.visual_post_items
+
+    console.log('in create_this.biom_matrix');  // uname:
+
+
+    for (var i in this.visual_post_items.chosen_datasets) {   // correct order
+      var did = this.visual_post_items.chosen_datasets[i].did;
+      var dname = this.visual_post_items.chosen_datasets[i].name;
+      this.biom_matrix.columns.push({ did: did, id: dname, metadata: null });
+    }
+    // this.ukeys is sorted by alpha
+    for(var uk in this.ukeys) {
+      let curr_tax_name = this.ukeys[uk];
+      this.biom_matrix.rows.push({ id: curr_tax_name, metadata: null });
+
+      this.biom_matrix.data.push(this.unit_name_counts[curr_tax_name]);
+    }
+
+    this.biom_matrix.shape = [this.biom_matrix.rows.length, this.biom_matrix.columns.length];
+
+    var max_count = {};
+    var max;
+    if (this.ukeys === undefined) {
+      max = 0;
+    } else { // TODO: move to func
+      for (var n in this.biom_matrix.columns) {
+        max_count[this.biom_matrix.columns[n].id] = 0;  //id is the NAME of the dataset in biom
+        for (var d in this.biom_matrix.data) {
+          max_count[this.biom_matrix.columns[n].id] += this.biom_matrix.data[d][n];
+        }
+      }
+      max = 0;
+      for (let idx in this.visual_post_items.chosen_datasets) { 		// correct order
+        let dname = this.visual_post_items.chosen_datasets[idx].name;
+        this.biom_matrix.column_totals.push(max_count[dname]);
+        if(max_count[dname] > max){
+          max = max_count[dname];
+        }
+      }
+    }
+    //console.log('in create_this.biom_matrix1');
+    this.biom_matrix.max_dataset_count = max;
+    // console.log('in create_this.biom_matrix2');
+    return(this.biom_matrix);
   }
 }
 
@@ -86,12 +236,15 @@ class TaxaCounts {
     this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did();
     this.lookup_module              = this.choose_simple_or_custom_lookup_module();
     this.tax_name_cnt_obj_res       = this.lookup_module.make_tax_name_cnt_obj_per_did(this.curr_taxcounts_obj_w_arr, this.current_tax_id_rows_by_did, this.curr_taxcounts_obj_of_str, this.rank); //TODO: too many parameters
-    //  --
+    //TODO: DO all inside lookup_module
     this.tax_name_cnt_obj = this.tax_name_cnt_obj_res[0];
 	  this.tax_name_cnt_obj_per_dataset = this.tax_name_cnt_obj_res[1];
 
-    this.unit_name_counts = this.create_unit_name_counts(); //this.tax_name_cnt_obj, this.post_items, this.tax_name_cnt_obj_per_dataset
-    this.ukeys = this.remove_empty_rows(this.unit_name_counts);
+    this.unit_name_counts = this.lookup_module.create_unit_name_counts(); //this.tax_name_cnt_obj, this.post_items, this.tax_name_cnt_obj_per_dataset
+    let ukeys = this.lookup_module.remove_empty_rows(this.unit_name_counts); //TODO: refactor
+  //  ==
+    this.ukeys = ukeys.filter(this.onlyUnique);
+    this.ukeys.sort();
   }
 
   get_taxonomy_file_prefix() {
@@ -119,15 +272,6 @@ class TaxaCounts {
     }
     return taxonomy_object;
   }
-
-  // create_an_empty_tax_name_cnt_obj_per_dataset() {
-  //   let empty_tax_name_cnt_obj_per_dataset = {};
-  //   for (let idx in this.chosen_dids) {
-  //     let did = this.chosen_dids[idx];
-  //     empty_tax_name_cnt_obj_per_dataset[did] = {};
-  //   }
-  //   return empty_tax_name_cnt_obj_per_dataset;
-  // }
 
   get_taxcounts_obj_from_file() {
     let taxcounts_obj_for_all_datasets = {};
@@ -206,6 +350,10 @@ class TaxaCounts {
   filter_tax_id_rows_by_rank(el) {
     let rank_no = parseInt(C.RANKS.indexOf(this.rank)) + 1;
     return el.tax_id_arr.length === rank_no;
+  }
+
+  onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
   }
 
 }
@@ -356,11 +504,6 @@ class TaxonomySimple {
     return tmparr;
 
   }
-
-  onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
-  }
-
 }
 
 class TaxonomyCustom {
