@@ -7,10 +7,9 @@ var extend = require('util')._extend;
 
 class BiomMatrix {
 
-  constructor(req, visual_post_items, write_file) {
+  constructor(req, visual_post_items) {
     this.req = req;
     this.visual_post_items = visual_post_items;
-    this.write_file = write_file;
     this.units = this.visual_post_items.unit_choice;
     this.choosen_datasets = this.visual_post_items.chosen_datasets; /* post_items.chosen_datasets["0"] = {
   "did": 475152,
@@ -62,9 +61,9 @@ class BiomMatrix {
     }
 
     let write_matrix_file_mod = new module.exports.WriteMatrixFile(this.visual_post_items, this.biom_matrix);
-    if (this.write_file === true || this.write_file === undefined){
-      write_matrix_file_mod.write_matrix_file();
-    }
+    // if (this.write_file === true || this.write_file === undefined){
+    write_matrix_file_mod.write_matrix_file();
+    // }
   }
 
   get_columns() {
