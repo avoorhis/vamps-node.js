@@ -17,6 +17,11 @@ class BiomMatrix {
 }*/
     this.choosen_dids = this.get_dids();
     this.taxa_counts = new module.exports.TaxaCounts(this.req, this.visual_post_items, this.choosen_dids);
+    this.unit_name_counts = this.taxa_counts.unit_name_counts;
+    let ukeys = this.remove_empty_rows(); //TODO: refactor
+    //  ==
+    this.ukeys = ukeys.filter(this.onlyUnique);
+    this.ukeys.sort();
 
     this.rows = {}; /*[
     {
@@ -68,19 +73,40 @@ class BiomMatrix {
 
   get_columns() {
     console.time("get_columns");
-    let temp_col_obj = {};
+    let columns = [];
     for (let idx in this.chosen_datasets) {
+      let temp_col_obj = {};
       temp_col_obj.did = this.chosen_datasets[idx]["did"];
       temp_col_obj.id  = this.chosen_datasets[idx]["name"];
       temp_col_obj.metadata = null;
+      columns.push(temp_col_obj);
     }
     console.timeEnd("get_columns");
-    return temp_col_obj;
+    return columns;
   }
 
   get_dids() {
     let dids = this.chosen_datasets.map(function (value) { return value.did; });
     return dids;
+  }
+
+  remove_empty_rows() {
+    var tmparr = [];
+    for (var taxname in this.unit_name_counts) {
+      let sum = 0;
+      for (let c in this.unit_name_counts[taxname]){
+        let curr_cnts = this.unit_name_counts[taxname][c];
+        let it_is_number = !Number.isNaN(curr_cnts);
+        if (it_is_number) {
+          sum += this.unit_name_counts[taxname][c];
+        }
+        //console.log(k);
+      }
+      if (sum > 0) {
+        tmparr.push(taxname);
+      }
+    }
+    return tmparr;
   }
 
   get_updated_biom_matrix(post_items, mtx) {//TODO: refactor
@@ -169,20 +195,17 @@ class BiomMatrix {
     return custom_count_matrix;
   }
 
-
   create_biom_matrix() {//TODO: refactor
-    // this.biom_matrix, unit_name_counts, this.ukeys, this.visual_post_items
-
     console.log('in create_this.biom_matrix');  // uname:
 
-
-    for (var i in this.visual_post_items.chosen_datasets) {   // correct order
-      var did = this.visual_post_items.chosen_datasets[i].did;
-      var dname = this.visual_post_items.chosen_datasets[i].name;
+    //WHat does it do?
+    for (var i in this.chosen_datasets) {   // correct order
+      var did = this.chosen_datasets[i].did;
+      var dname = this.chosen_datasets[i].name;
       this.biom_matrix.columns.push({ did: did, id: dname, metadata: null });
     }
     // this.ukeys is sorted by alpha
-    for(var uk in this.ukeys) {
+    for (var uk in this.ukeys) {
       let curr_tax_name = this.ukeys[uk];
       this.biom_matrix.rows.push({ id: curr_tax_name, metadata: null });
 
@@ -216,6 +239,11 @@ class BiomMatrix {
     // console.log('in create_this.biom_matrix2');
     return(this.biom_matrix);
   }
+
+  onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+  }
+
 }
 
 class TaxaCounts {
@@ -239,10 +267,6 @@ class TaxaCounts {
 	  this.tax_name_cnt_obj_per_dataset = this.lookup_module.tax_name_cnt_obj_per_dataset;
 
     this.unit_name_counts = this.create_unit_name_counts();
-    let ukeys = this.remove_empty_rows(); //TODO: refactor
-  //  ==
-    this.ukeys = ukeys.filter(this.onlyUnique);
-    this.ukeys.sort();
   }
 
   get_taxonomy_file_prefix() {
@@ -350,10 +374,6 @@ class TaxaCounts {
     return el.tax_id_arr.length === rank_no;
   }
 
-  onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
-  }
-
   create_unit_name_counts() {// TODO: why don't use this.tax_name_cnt_obj_per_dataset directly?
     var taxa_counts = {};
     for(var tax_name in this.tax_names){
@@ -375,25 +395,6 @@ class TaxaCounts {
     //console.log('taxa_counts')
     //console.log(taxa_counts)
     return taxa_counts;
-  }
-
-  remove_empty_rows() {
-    var tmparr = [];
-    for (var taxname in this.unit_name_counts) {
-      let sum = 0;
-      for (let c in this.unit_name_counts[taxname]){
-        let curr_cnts = this.unit_name_counts[taxname][c];
-        let it_is_number = !Number.isNaN(curr_cnts);
-        if (it_is_number) {
-          sum += this.unit_name_counts[taxname][c];
-        }
-        //console.log(k);
-      }
-      if (sum > 0) {
-        tmparr.push(taxname);
-      }
-    }
-    return tmparr;
   }
 }
 
