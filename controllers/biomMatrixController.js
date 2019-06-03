@@ -17,7 +17,7 @@ class BiomMatrix {
 }*/
     this.choosen_dids = this.get_dids();
     this.taxa_counts = new module.exports.TaxaCounts(this.req, this.visual_post_items, this.choosen_dids);
-    this.unit_name_counts = this.taxa_counts.unit_name_counts;
+    this.unit_name_counts = this.taxa_counts.unit_name_counts;//TODO: do only for relevant ones? after ukeys?
     let ukeys = this.remove_empty_rows(); //TODO: refactor
     //  ==
     this.ukeys = ukeys.filter(this.onlyUnique);
@@ -198,15 +198,9 @@ class BiomMatrix {
   create_biom_matrix() {//TODO: refactor
     console.log('in create_this.biom_matrix');  // uname:
 
-    // //WHat does it do?
-    // for (var i in this.chosen_datasets) {   // correct order
-    //   var did = this.chosen_datasets[i].did;
-    //   var dname = this.chosen_datasets[i].name;
-    //   this.biom_matrix.columns.push({ did: did, id: dname, metadata: null });
-    // }
     // this.ukeys is sorted by alpha
-    for (var uk in this.ukeys) {//WHat ukeys diff from all keys from obj with counts?
-      let curr_tax_name = this.ukeys[uk];
+    for (var uk_idx in this.ukeys) {//WHat ukeys diff from all keys from obj with counts?
+      let curr_tax_name = this.ukeys[uk_idx];
       this.biom_matrix.rows.push({ id: curr_tax_name, metadata: null });//TODO make rows func
 
       this.biom_matrix.data.push(this.unit_name_counts[curr_tax_name]);// adds counts
@@ -214,30 +208,34 @@ class BiomMatrix {
 
     this.biom_matrix.shape = [this.biom_matrix.rows.length, this.biom_matrix.columns.length];
 
-    var max_count = {};
-    var max;
-    if (this.ukeys === undefined) {
-      max = 0;
-    } else { // TODO: move to func
-      for (var n in this.biom_matrix.columns) {
-        max_count[this.biom_matrix.columns[n].id] = 0;  //id is the NAME of the dataset in biom
-        for (var d in this.biom_matrix.data) {
-          max_count[this.biom_matrix.columns[n].id] += this.biom_matrix.data[d][n];
-        }
-      }
-      max = 0;
-      for (let idx in this.visual_post_items.chosen_datasets) { 		// correct order
-        let dname = this.visual_post_items.chosen_datasets[idx].name;
-        this.biom_matrix.column_totals.push(max_count[dname]);
-        if(max_count[dname] > max){
-          max = max_count[dname];
-        }
-      }
+    let max = 0;
+
+    if (this.ukeys) {
+      max = this.get_max(max);
     }
     //console.log('in create_this.biom_matrix1');
     this.biom_matrix.max_dataset_count = max;
     // console.log('in create_this.biom_matrix2');
-    return(this.biom_matrix);
+    return this.biom_matrix;
+  }
+
+  get_max(max){
+    let max_count = {};
+
+    for (var n in this.biom_matrix.columns) {
+      max_count[this.biom_matrix.columns[n].id] = 0;  //id is the NAME of the dataset in biom
+      for (var d in this.biom_matrix.data) {
+        max_count[this.biom_matrix.columns[n].id] += this.biom_matrix.data[d][n];
+      }
+    }
+    for (let idx in this.visual_post_items.chosen_datasets) { 		// correct order
+      let dname = this.visual_post_items.chosen_datasets[idx].name;
+      this.biom_matrix.column_totals.push(max_count[dname]);
+      if(max_count[dname] > max){
+        max = max_count[dname];
+      }
+    }
+    return max;
   }
 
   onlyUnique(value, index, self) {
@@ -262,7 +260,7 @@ class TaxaCounts {
 
     this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did();
     this.lookup_module              = this.choose_simple_or_custom_lookup_module();
-    this.lookup_module.make_tax_name_cnt_obj_per_did(this.curr_taxcounts_obj_w_arr);
+    this.lookup_module.make_tax_name_cnt_obj_per_did(this.current_tax_id_rows_by_did);
     this.tax_names                    = this.lookup_module.tax_name_cnt_obj_1;
 	  this.tax_name_cnt_obj_per_dataset = this.lookup_module.tax_name_cnt_obj_per_dataset;
 
