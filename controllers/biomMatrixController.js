@@ -217,10 +217,13 @@ class TaxonomySimple {
   }
 
   make_tax_name_cnt_obj_per_did(curr_taxcounts_objs, current_tax_id_rows_by_did, curr_taxcounts_obj_of_str, rank) {
+    let this_arr = [];
     for (let did_idx in this.chosen_dids) {
       let did = this.chosen_dids[did_idx];
-      this.make_tax_name_cnt_obj(curr_taxcounts_objs[did], rank, did);
+      this_arr = this.make_tax_name_cnt_obj(curr_taxcounts_objs[did], rank, did);
     }
+    return this_arr;
+
   }
 
   make_tax_name_cnt_obj(curr_taxcounts_obj, rank, did) {
@@ -269,6 +272,21 @@ class TaxonomySimple {
 
     return tax_long_name;
   }
+
+  get_one_taxon_name(db_id, rank) {
+    let one_taxon_name = "";
+    let db_id_n_rank = db_id + '_' + rank;
+    let tax_node = this.get_tax_node(db_id_n_rank, this.taxonomy_object); //TODO: save db_id_n_rank and one_taxon_name to a dict and check if there first. Benchmark first!
+    let rank_name = this.check_rank_name(rank); //TODO: this and if below ot a func?
+    if (tax_node.taxon) {
+      one_taxon_name = tax_node.taxon;
+    }
+    else {
+      one_taxon_name = rank_name + '_NA';
+    }
+    return one_taxon_name;
+  }
+
 
   clean_long_name(tax_long_name_arr) {
     return tax_long_name_arr.join(";");
