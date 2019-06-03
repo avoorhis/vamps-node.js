@@ -71,7 +71,7 @@ class BiomMatrix {
 
 class TaxaCounts {
 
-  constructor(req, post_items, chosen_dids) {
+  constructor(req, post_items, chosen_dids) { //change this. to let if use only inside
     this.req                  = req;
     this.post_items           = post_items;
     this.chosen_dids          = chosen_dids;
@@ -85,13 +85,13 @@ class TaxaCounts {
 
     this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did();
     this.lookup_module              = this.choose_simple_or_custom_lookup_module();
-    this.tax_name_cnt_obj           = this.lookup_module.make_tax_name_cnt_obj_per_did(this.curr_taxcounts_obj_of_arr, this.current_tax_id_rows_by_did, this.curr_taxcounts_obj_of_str, this.rank);
+    this.tax_name_cnt_obj_res       = this.lookup_module.make_tax_name_cnt_obj_per_did(this.curr_taxcounts_obj_of_arr, this.current_tax_id_rows_by_did, this.curr_taxcounts_obj_of_str, this.rank); //TODO: too many parameters
     //  --
-    /*	tax_name_cnt_obj = res[0];
-	tax_name_cnt_obj_per_dataset = res[1];
+    this.tax_name_cnt_obj = this.tax_name_cnt_obj_res[0];
+	  this.tax_name_cnt_obj_per_dataset = this.tax_name_cnt_obj_res[1];
 
-	let unit_name_counts = create_unit_name_counts(tax_name_cnt_obj, post_items, tax_name_cnt_obj_per_dataset);
-	let ukeys = remove_empty_rows(unit_name_counts);*/
+    this.unit_name_counts = this.create_unit_name_counts(); //this.tax_name_cnt_obj, this.post_items, this.tax_name_cnt_obj_per_dataset
+    this.ukeys = this.remove_empty_rows(this.unit_name_counts);
   }
 
   get_taxonomy_file_prefix() {
@@ -221,7 +221,6 @@ class TaxonomySimple {
       let did = this.chosen_dids[did_idx];
       this.make_tax_name_cnt_obj(curr_taxcounts_objs[did], rank, did);
     }
-
   }
 
   make_tax_name_cnt_obj(curr_taxcounts_obj, rank, did) {
@@ -244,7 +243,7 @@ class TaxonomySimple {
       let curr_obj = curr_taxcounts_obj[obj_idx];
       // let current_tax_id_row = obj["tax_id_row"];
       let cnt = curr_obj.cnt;
-      let tax_long_name = this.get_tax_long_name1(curr_obj, this.taxonomy_object);
+      let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
 
       tax_name_cnt_obj_1_dataset[tax_long_name] = 1;
       tax_name_cnt_obj_per_dataset_1_dataset = this.fillin_name_lookup_per_ds(tax_name_cnt_obj_per_dataset_1_dataset, did, tax_long_name, cnt); //TODO: refactor
@@ -254,39 +253,7 @@ class TaxonomySimple {
     return [tax_name_cnt_obj_1_dataset, tax_name_cnt_obj_per_dataset_1_dataset];
   }
 
-  // get_tax_long_name1(curr_obj, taxonomy_object) {
-  //   let ids = curr_obj.tax_id_arr;
-  //   let tax_long_name = '';
-  //   let tax_long_name_arr = [];
-  //   // let domain = '';
-  //
-  //   for (let id_idx = 0, ids_length = ids.length; id_idx < ids_length; id_idx++){
-  //     let tax_long_name_arr_temp = [];
-  //     let db_id = ids[id_idx];
-  //     let this_rank = C.RANKS[id_idx];
-  //     let db_id_n_rank = db_id + '_' + this_rank;
-  //     let tax_node = this.get_tax_node(db_id_n_rank, taxonomy_object); // keep already known combinations, like 3_domain = Bacteria
-  //     tax_long_name_arr_temp.push(tax_node.taxon);
-  //     tax_long_name_arr = helpers.unique_array(tax_long_name_arr_temp);
-  //     // this.add_next_tax_name1(tax_long_name_arr, tax_node, this_rank);
-  //   }
-  //   // for (let id_idx = 1, ids_length = ids.length; id_idx < ids_length; id_idx++){  // must start at 1 because leading '_':  _2_55184
-  //   //   let db_id = ids[id_idx];
-  //   //   let this_rank = C.RANKS[id_idx - 1];
-  //   //   let db_id_n_rank = db_id + '_' + this_rank;
-  //   //   //console.log('tax_node2 '+JSON.stringify(db_id_n_rank))
-  //   //   let tax_node = this.get_tax_node(db_id_n_rank, taxonomy_object);
-  //   //   // if (this_rank === 'domain'){//TODO: why it is needed?
-  //   //   //   domain = tax_node.taxon;
-  //   //   // }
-  //   //   tax_long_name = this.add_next_tax_name(tax_long_name, tax_node, this_rank);
-  //   // }
-  //   // tax_long_name = this.remove_trailing_semicolon(tax_long_name);
-  //   tax_long_name = tax_long_name_arr.join(";")
-  //   return tax_long_name;
-  // }
-
-  get_tax_long_name1(curr_obj) {
+  get_tax_long_name(curr_obj) {
     let ids = curr_obj.tax_id_arr;
     let tax_long_name = '';
     let tax_long_name_arr = [];
@@ -298,74 +265,14 @@ class TaxonomySimple {
       tax_long_name_arr.push(one_taxon_name);
     }
 
-    // for (let id_idx = 0, ids_length = ids.length; id_idx < ids_length; id_idx++){
-    //   let db_id = ids[id_idx];
-    //   let this_rank = C.RANKS[id_idx];
-    //   let db_id_n_rank = db_id + '_' + this_rank;
-    //   let tax_node = this.get_tax_node(db_id_n_rank, taxonomy_object);
-    //   // if (this_rank === 'domain'){//TODO: why it is needed?
-    //   //   domain = tax_node.taxon;
-    //   // }
-    //   tax_long_name = this.add_next_tax_name(tax_long_name, tax_node, this_rank);
-    // }
-    // tax_long_name = this.remove_trailing_semicolon(tax_long_name); //TODO: join instead
     tax_long_name = this.clean_long_name(tax_long_name_arr); //TODO: join instead
 
     return tax_long_name;
   }
 
-  get_one_taxon_name(db_id, rank) {
-    let one_taxon_name = "";
-    let db_id_n_rank = db_id + '_' + rank;
-    let tax_node = this.get_tax_node(db_id_n_rank, this.taxonomy_object); //TODO: save db_id_n_rank and one_taxon_name to a dict and check if there first. Benchmark first!
-    let rank_name = this.check_rank_name(rank); //TODO: this and if below ot a func?
-    if (tax_node.taxon) {
-      one_taxon_name = tax_node.taxon;
-    }
-    else {
-      one_taxon_name = rank_name + '_NA';
-    }
-    return one_taxon_name;
-  }
-
   clean_long_name(tax_long_name_arr) {
     return tax_long_name_arr.join(";");
   }
-  // get_tax_long_name(current_tax_id_row, taxonomy_object) {
-  //   let ids = current_tax_id_row.split('_');   // x === _5_55184_61061_62018_62239_63445
-  //   let tax_long_name = '';
-  //   let domain = '';
-  //
-  //   for (let id_idx = 1, ids_length = ids.length; id_idx < ids_length; id_idx++){  // must start at 1 because leading '_':  _2_55184
-  //     let db_id = ids[id_idx];
-  //     let this_rank = C.RANKS[id_idx - 1];
-  //     let db_id_n_rank = db_id + '_' + this_rank;
-  //     //console.log('tax_node2 '+JSON.stringify(db_id_n_rank))
-  //     let tax_node = this.get_tax_node(db_id_n_rank, taxonomy_object);
-  //     if (this_rank === 'domain'){//TODO: why it is needed?
-  //       domain = tax_node.taxon;
-  //     }
-  //     tax_long_name = this.add_next_tax_name(tax_long_name, tax_node, this_rank);
-  //   }
-  //   tax_long_name = this.remove_trailing_semicolon(tax_long_name);
-  //   return tax_long_name;
-  // }
-
-  add_next_tax_name1(tax_long_name_arr, tax_node, this_rank) {
-    let rank_name = this.check_rank_name(this_rank);
-    if (tax_node.taxon) {
-      tax_long_name_arr.push(tax_node.taxon);
-    }
-    else {
-      tax_long_name_arr.push(rank_name + '_NA');
-    }
-    return tax_long_name_arr;
-  }
-
-
-  // remove_trailing_semicolon(tax_str) {
-  //   return tax_str.replace(/;$/, "");
-  // }
 
   get_tax_node(db_id_n_rank, taxonomy_object) {
     let tax_node = {};
@@ -373,18 +280,6 @@ class TaxonomySimple {
       tax_node = taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
     }
     return tax_node;
-  }
-
-  add_next_tax_name(tax_long_name, tax_node, this_rank) {
-    let rank_name = this.check_rank_name(this_rank);
-    if (tax_node.taxon) {
-      tax_long_name += tax_node.taxon + ';';
-    }
-    else {
-      tax_long_name += rank_name + '_NA;';
-    }
-
-    return tax_long_name;
   }
 
   check_rank_name(this_rank) {
@@ -412,23 +307,22 @@ class TaxonomySimple {
         lookup[did][tax_name] = parseInt(cnt);
       }
     }
-    //console.log('lookup2')
-    //console.log(lookup)
+
     return lookup;
   }
 
-  create_unit_name_counts(tax_name_cnt_obj, post_items, tax_name_cnt_obj_per_dataset) {
-
+  create_unit_name_counts() {
+    // tax_name_cnt_obj, post_items, tax_name_cnt_obj_per_dataset
     var taxa_counts = {};
-    for(var tax_name in tax_name_cnt_obj){
+    for(var tax_name in this.tax_name_cnt_obj){
       taxa_counts[tax_name] = [];
     }
 
-    for (var i in post_items.chosen_datasets) { // correct order
-      var did = post_items.chosen_datasets[i].did;
-      for (var tax_name1 in tax_name_cnt_obj) {
+    for (var i in this.chosen_datasets) { // correct order
+      var did = this.chosen_datasets[i].did;
+      for (var tax_name1 in this.tax_name_cnt_obj) {
         try {
-          let curr_cnt = tax_name_cnt_obj_per_dataset[did][tax_name1];
+          let curr_cnt = this.tax_name_cnt_obj_per_dataset[did][tax_name1];
           taxa_counts[tax_name1].push(curr_cnt);
         }
         catch(err) {
