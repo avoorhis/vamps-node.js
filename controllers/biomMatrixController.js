@@ -79,13 +79,9 @@ class TaxaCounts {
     this.taxonomy_file_prefix = this.get_taxonomy_file_prefix();
     this.rank                 = this.post_items.tax_depth;
 
-    this.taxonomy_object            = this.get_taxonomy_object();
-    this.curr_taxcounts_obj_of_str  = this.get_taxcounts_obj_from_file();
-    this.curr_taxcounts_obj_of_arr  = this.make_current_tax_id_obj_of_arr(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
-
-    this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did();
-    this.lookup_module              = this.choose_simple_or_custom_lookup_module();
-    this.tax_name_cnt_obj           = this.lookup_module.make_tax_name_cnt_obj_per_did(this.curr_taxcounts_obj_of_arr, this.current_tax_id_rows_by_did, this.curr_taxcounts_obj_of_str, this.rank);
+    this.taxonomy_lookup_module = new module.exports.TaxonomyLookup(this.units, this.taxonomy_file_prefix);
+    this.tax_name_cnt_obj = this.taxonomy_lookup_module.make_tax_name_cnt_obj_per_did();
+    //this.curr_taxcounts_obj_of_arr, this.current_tax_id_rows_by_did, this.curr_taxcounts_obj_of_str, this.rank
     //  --
     /*	tax_name_cnt_obj = res[0];
 	tax_name_cnt_obj_per_dataset = res[1];
@@ -108,6 +104,31 @@ class TaxaCounts {
     return files_prefix; // /Users/ashipunova/BPC/vamps-node.js/public/json/vamps2--datasets_silva119
   }
 
+  create_an_empty_tax_name_cnt_obj_per_dataset() {
+    let empty_tax_name_cnt_obj_per_dataset = {};
+    for (let idx in this.chosen_dids) {
+      let did = this.chosen_dids[idx];
+      empty_tax_name_cnt_obj_per_dataset[did] = {};
+    }
+    return empty_tax_name_cnt_obj_per_dataset;
+  }
+
+}
+
+class TaxonomyLookup {
+  constructor(chosen_dids, units, taxonomy_file_prefix) {
+    this.chosen_dids = chosen_dids;
+    this.units = units;
+    this.taxonomy_file_prefix = taxonomy_file_prefix;
+    this.taxonomy_object            = this.get_taxonomy_object();
+    this.curr_taxcounts_obj_of_str  = this.get_taxcounts_obj_from_file();
+    this.curr_taxcounts_obj_of_arr  = this.make_current_tax_id_obj_of_arr(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
+
+    this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did();
+
+    this.taxonomy_lookup_module = this.choose_simple_or_custom_lookup_module();
+  }
+
   get_taxonomy_object() {
     let taxonomy_object;
     if (this.units === 'tax_rdp2.6_simple') {
@@ -118,15 +139,6 @@ class TaxaCounts {
       taxonomy_object = new_taxonomy;
     }
     return taxonomy_object;
-  }
-
-  create_an_empty_tax_name_cnt_obj_per_dataset() {
-    let empty_tax_name_cnt_obj_per_dataset = {};
-    for (let idx in this.chosen_dids) {
-      let did = this.chosen_dids[idx];
-      empty_tax_name_cnt_obj_per_dataset[did] = {};
-    }
-    return empty_tax_name_cnt_obj_per_dataset;
   }
 
   get_taxcounts_obj_from_file() {
@@ -175,21 +187,6 @@ class TaxaCounts {
     return current_tax_id_arr_clean;
   }
 
-  choose_simple_or_custom_lookup_module() {
-    let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
-    let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
-    //TODO: args object send to whatever modulw is chosen
-    if (unit_choice_simple) {
-      return new module.exports.TaxonomySimple(this.taxonomy_object, this.chosen_dids);
-    }
-    else if (unit_choice_custom) {
-      return new module.exports.TaxonomyCustom(this.taxonomy_object, this.chosen_dids);
-    }
-    else {
-      console.log("ERROR: Can't choose simple or custom taxonomy");
-    }
-  }
-
   make_current_tax_id_rows_by_did() { //check if it is faster to make arrays from all tax_id_rows first
     console.time("TIME: make_current_tax_id_rows_by_did");
     let current_tax_id_obj_by_did = {};
@@ -208,24 +205,35 @@ class TaxaCounts {
     return el.tax_id_arr.length === rank_no;
   }
 
+  choose_simple_or_custom_lookup_module() {
+    let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
+    let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
+    //TODO: args object send to whatever modulw is chosen
+    if (unit_choice_simple) {
+      return new module.exports.TaxonomySimple(this.taxonomy_object, this.chosen_dids);
+    }
+    else if (unit_choice_custom) {
+      return new module.exports.TaxonomyCustom(this.taxonomy_object, this.chosen_dids);
+    }
+    else {
+      console.log("ERROR: Can't choose simple or custom taxonomy");
+    }
+  }
 }
 
-class TaxonomySimple {
-  constructor(taxonomy_object, chosen_dids) {
-    this.taxonomy_object = taxonomy_object;
-    this.chosen_dids = chosen_dids;
-  }
+class TaxonomySimple extends TaxonomyLookup {
 
-  make_tax_name_cnt_obj_per_did(curr_taxcounts_objs, current_tax_id_rows_by_did, curr_taxcounts_obj_of_str, rank) {
+  make_tax_name_cnt_obj_per_did() {
+    // curr_taxcounts_objs, current_tax_id_rows_by_did, curr_taxcounts_obj_of_str, rank
     for (let did_idx in this.chosen_dids) {
       let did = this.chosen_dids[did_idx];
-      this.make_tax_name_cnt_obj(curr_taxcounts_objs[did], rank, did);
+      this.make_tax_name_cnt_obj(this.curr_taxcounts_objs[did], this.rank, did);
     }
-
   }
 
-  make_tax_name_cnt_obj(curr_taxcounts_obj, rank, did) {
-    // make_long_tax_name
+  make_tax_name_cnt_obj(did) {
+    // curr_taxcounts_obj, rank,
+      // make_long_tax_name
     // add cnts
     let tax_name_cnt_obj_1_dataset = {};
     let tax_name_cnt_obj_per_dataset_1_dataset = {};
@@ -240,8 +248,8 @@ class TaxonomySimple {
   "_3_48",
   ...
 ]*/
-    for (let obj_idx in curr_taxcounts_obj){
-      let curr_obj = curr_taxcounts_obj[obj_idx];
+    for (let obj_idx in this.curr_taxcounts_obj){
+      let curr_obj = this.curr_taxcounts_obj[obj_idx];
       // let current_tax_id_row = obj["tax_id_row"];
       let cnt = curr_obj.cnt;
       let tax_long_name = this.get_tax_long_name1(curr_obj, this.taxonomy_object);
@@ -442,11 +450,8 @@ class TaxonomySimple {
 
 }
 
-class TaxonomyCustom {
-  constructor(taxonomy_object, chosen_dids) {
-    this.taxonomy_object = taxonomy_object;
-    this.chosen_dids = chosen_dids;
-  }
+class TaxonomyCustom extends TaxonomyLookup {
+
 }
 
 
@@ -472,6 +477,7 @@ class WriteMatrixFile {
 module.exports = {
   BiomMatrix: BiomMatrix,
   TaxaCounts: TaxaCounts,
+  TaxonomyLookup: TaxonomyLookup,
   TaxonomySimple: TaxonomySimple,
   TaxonomyCustom: TaxonomyCustom,
   WriteMatrixFile: WriteMatrixFile
