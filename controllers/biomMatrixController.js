@@ -198,18 +198,18 @@ class BiomMatrix {
   create_biom_matrix() {//TODO: refactor
     console.log('in create_this.biom_matrix');  // uname:
 
-    //WHat does it do?
-    for (var i in this.chosen_datasets) {   // correct order
-      var did = this.chosen_datasets[i].did;
-      var dname = this.chosen_datasets[i].name;
-      this.biom_matrix.columns.push({ did: did, id: dname, metadata: null });
-    }
+    // //WHat does it do?
+    // for (var i in this.chosen_datasets) {   // correct order
+    //   var did = this.chosen_datasets[i].did;
+    //   var dname = this.chosen_datasets[i].name;
+    //   this.biom_matrix.columns.push({ did: did, id: dname, metadata: null });
+    // }
     // this.ukeys is sorted by alpha
-    for (var uk in this.ukeys) {
+    for (var uk in this.ukeys) {//WHat ukeys diff from all keys from obj with counts?
       let curr_tax_name = this.ukeys[uk];
-      this.biom_matrix.rows.push({ id: curr_tax_name, metadata: null });
+      this.biom_matrix.rows.push({ id: curr_tax_name, metadata: null });//TODO make rows func
 
-      this.biom_matrix.data.push(this.unit_name_counts[curr_tax_name]);
+      this.biom_matrix.data.push(this.unit_name_counts[curr_tax_name]);// adds counts
     }
 
     this.biom_matrix.shape = [this.biom_matrix.rows.length, this.biom_matrix.columns.length];
