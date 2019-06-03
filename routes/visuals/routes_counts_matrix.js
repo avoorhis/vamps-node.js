@@ -42,7 +42,7 @@ var extend = require('util')._extend;
 module.exports = {
 
 
-	get_biom_matrix: function(req, post_items, write_file) {
+	get_biom_matrix: function(req, post_items, write_file) {//write_file is undefined in the caller function
 		var date = new Date();
 		// var did, rank, db_tax_id, node_id, cnt, matrix_file;
 		var biom_matrix_start = {
