@@ -234,13 +234,12 @@ class TaxaCounts {
 
     this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did();
     this.lookup_module              = this.choose_simple_or_custom_lookup_module();
-    this.tax_name_cnt_obj_res       = this.lookup_module.make_tax_name_cnt_obj_per_did(this.curr_taxcounts_obj_w_arr, this.current_tax_id_rows_by_did, this.curr_taxcounts_obj_of_str, this.rank); //TODO: too many parameters
-    //TODO: DO all inside lookup_module
-    this.tax_name_cnt_obj = this.tax_name_cnt_obj_res[0];
-	  this.tax_name_cnt_obj_per_dataset = this.tax_name_cnt_obj_res[1];
+    this.lookup_module.make_tax_name_cnt_obj_per_did(this.curr_taxcounts_obj_w_arr);
+    this.tax_name_cnt_obj = this.lookup_module.tax_name_cnt_obj_1;
+	  this.tax_name_cnt_obj_per_dataset = this.lookup_module.tax_name_cnt_obj_per_dataset;
 
-    this.unit_name_counts = this.lookup_module.create_unit_name_counts(); //this.tax_name_cnt_obj, this.post_items, this.tax_name_cnt_obj_per_dataset
-    let ukeys = this.lookup_module.remove_empty_rows(this.unit_name_counts); //TODO: refactor
+    this.unit_name_counts = this.create_unit_name_counts();
+    let ukeys = this.remove_empty_rows(); //TODO: refactor
   //  ==
     this.ukeys = ukeys.filter(this.onlyUnique);
     this.ukeys.sort();
@@ -355,17 +354,62 @@ class TaxaCounts {
     return self.indexOf(value) === index;
   }
 
+  create_unit_name_counts() {
+
+    var taxa_counts = {};
+    for(var tax_name in this.tax_name_cnt_obj){
+      taxa_counts[tax_name] = [];
+    }
+
+    for (var i in this.chosen_dids) { // correct order
+      var did = this.chosen_dids[i].did;
+      for (var tax_name1 in this.tax_name_cnt_obj) {
+        try {
+          let curr_cnt = this.tax_name_cnt_obj_per_dataset[did][tax_name1];
+          taxa_counts[tax_name1].push(curr_cnt);
+        }
+        catch(err) {
+          taxa_counts[tax_name1].push(0);
+        }
+      }
+    }
+    //console.log('taxa_counts')
+    //console.log(taxa_counts)
+    return taxa_counts;
+  }
+
+  remove_empty_rows(taxa_counts) {
+    // remove empty rows:
+
+    var tmparr = [];
+    for (var taxname in taxa_counts) {
+      let sum = 0;
+      for (let c in taxa_counts[taxname]){
+        let curr_cnts = taxa_counts[taxname][c];
+        let it_is_number = !Number.isNaN(curr_cnts);
+        if (it_is_number) {
+          sum += taxa_counts[taxname][c];
+        }
+        //console.log(k);
+      }
+      if (sum > 0) {
+        tmparr.push(taxname);
+      }
+    }
+    return tmparr;
+
+  }
 }
 
 class TaxonomySimple {
   constructor(taxonomy_object, chosen_dids) {
-    this.taxonomy_object = taxonomy_object;
-    this.chosen_dids = chosen_dids;
+    this.taxonomy_object              = taxonomy_object;
+    this.chosen_dids                  = chosen_dids;
+    this.tax_name_cnt_obj_1           = {};
+    this.tax_name_cnt_obj_per_dataset = {};
   }
 
   make_tax_name_cnt_obj_per_did(curr_taxcounts_objs) {
-    let tax_name_cnt_obj_1_dataset = {};
-    let tax_name_cnt_obj_per_dataset = {};
     for (let did_idx in this.chosen_dids) {
       let did = this.chosen_dids[did_idx];
       let curr_taxcounts_obj = curr_taxcounts_objs[did];
@@ -376,13 +420,12 @@ class TaxonomySimple {
         let cnt = curr_obj.cnt;
         let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
 
-        tax_name_cnt_obj_1_dataset[tax_long_name] = 1;
-        tax_name_cnt_obj_per_dataset = this.fillin_name_lookup_per_ds(tax_name_cnt_obj_per_dataset, did, tax_long_name, cnt); //TODO: refactor
+        this.tax_name_cnt_obj_1[tax_long_name] = 1;
+        this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(this.tax_name_cnt_obj_per_dataset, did, tax_long_name, cnt); //TODO: refactor
       }
       console.timeEnd("TIME: current_tax_id_row_list");
     }
-    return [tax_name_cnt_obj_1_dataset, tax_name_cnt_obj_per_dataset];
-
+    // return [tax_name_cnt_obj_1, tax_name_cnt_obj_per_dataset];
   }
 
   get_tax_long_name(curr_obj) {
@@ -458,51 +501,7 @@ class TaxonomySimple {
     return lookup;
   }
 
-  create_unit_name_counts() {
-    // tax_name_cnt_obj, post_items, tax_name_cnt_obj_per_dataset
-    var taxa_counts = {};
-    for(var tax_name in this.tax_name_cnt_obj){
-      taxa_counts[tax_name] = [];
-    }
 
-    for (var i in this.chosen_datasets) { // correct order
-      var did = this.chosen_datasets[i].did;
-      for (var tax_name1 in this.tax_name_cnt_obj) {
-        try {
-          let curr_cnt = this.tax_name_cnt_obj_per_dataset[did][tax_name1];
-          taxa_counts[tax_name1].push(curr_cnt);
-        }
-        catch(err) {
-          taxa_counts[tax_name1].push(0);
-        }
-      }
-    }
-    //console.log('taxa_counts')
-    //console.log(taxa_counts)
-    return taxa_counts;
-  }
-
-  remove_empty_rows(taxa_counts) {
-    // remove empty rows:
-
-    var tmparr = [];
-    for (var taxname in taxa_counts) {
-      let sum = 0;
-      for (let c in taxa_counts[taxname]){
-        let curr_cnts = taxa_counts[taxname][c];
-        let it_is_number = !Number.isNaN(curr_cnts);
-        if (it_is_number) {
-          sum += taxa_counts[taxname][c];
-        }
-        //console.log(k);
-      }
-      if (sum > 0) {
-        tmparr.push(taxname);
-      }
-    }
-    return tmparr;
-
-  }
 }
 
 class TaxonomyCustom {
