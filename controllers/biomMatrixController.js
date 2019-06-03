@@ -76,10 +76,10 @@ class TaxaCounts {
     this.post_items           = post_items;
     this.chosen_dids          = chosen_dids;
     this.units                = this.post_items.unit_choice;
-    this.taxonomy_file_prefix = this.get_taxonomy_file_prefix();
+    this.taxonomy_file_prefix = this.get_taxonomy_file_prefix(); //TODO: to TaxonomyLookup
     this.rank                 = this.post_items.tax_depth;
 
-    this.taxonomy_lookup_module = new module.exports.TaxonomyLookup(this.units, this.taxonomy_file_prefix);
+    this.taxonomy_lookup_module = new module.exports.TaxonomyLookup(this.chosen_dids, this.units, this.taxonomy_file_prefix);
     this.tax_name_cnt_obj = this.taxonomy_lookup_module.make_tax_name_cnt_obj_per_did();
     //this.curr_taxcounts_obj_of_arr, this.current_tax_id_rows_by_did, this.curr_taxcounts_obj_of_str, this.rank
     //  --
