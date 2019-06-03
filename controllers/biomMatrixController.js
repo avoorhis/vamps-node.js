@@ -8,10 +8,10 @@ var extend = require('util')._extend;
 class BiomMatrix {
 
   constructor(req, visual_post_items) {
-    this.req = req;
+    this.req               = req;
     this.visual_post_items = visual_post_items;
-    this.units = this.visual_post_items.unit_choice;
-    this.choosen_datasets = this.visual_post_items.chosen_datasets; /* post_items.chosen_datasets["0"] = {
+    this.units             = this.visual_post_items.unit_choice;
+    this.chosen_datasets   = this.visual_post_items.chosen_datasets; /* post_items.chosen_datasets["0"] = {
   "did": 475152,
   "name": "SLM_NIR2_Bv4--Aligator_Pool01"
 }*/
@@ -69,9 +69,9 @@ class BiomMatrix {
   get_columns() {
     console.time("get_columns");
     let temp_col_obj = {};
-    for (let idx in this.choosen_datasets) {
-      temp_col_obj.did = this.choosen_datasets[idx]["did"];
-      temp_col_obj.id  = this.choosen_datasets[idx]["name"];
+    for (let idx in this.chosen_datasets) {
+      temp_col_obj.did = this.chosen_datasets[idx]["did"];
+      temp_col_obj.id  = this.chosen_datasets[idx]["name"];
       temp_col_obj.metadata = null;
     }
     console.timeEnd("get_columns");
@@ -79,7 +79,7 @@ class BiomMatrix {
   }
 
   get_dids() {
-    let dids = this.choosen_datasets.map(function (value) { return value.did; });
+    let dids = this.chosen_datasets.map(function (value) { return value.did; });
     return dids;
   }
 
@@ -235,7 +235,7 @@ class TaxaCounts {
     this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did();
     this.lookup_module              = this.choose_simple_or_custom_lookup_module();
     this.lookup_module.make_tax_name_cnt_obj_per_did(this.curr_taxcounts_obj_w_arr);
-    this.tax_name_cnt_obj = this.lookup_module.tax_name_cnt_obj_1;
+    this.tax_names                    = this.lookup_module.tax_name_cnt_obj_1;
 	  this.tax_name_cnt_obj_per_dataset = this.lookup_module.tax_name_cnt_obj_per_dataset;
 
     this.unit_name_counts = this.create_unit_name_counts();
@@ -354,16 +354,15 @@ class TaxaCounts {
     return self.indexOf(value) === index;
   }
 
-  create_unit_name_counts() {
-
+  create_unit_name_counts() {// TODO: why don't use this.tax_name_cnt_obj_per_dataset directly?
     var taxa_counts = {};
-    for(var tax_name in this.tax_name_cnt_obj){
+    for(var tax_name in this.tax_names){
       taxa_counts[tax_name] = [];
     }
 
     for (var i in this.chosen_dids) { // correct order
-      var did = this.chosen_dids[i].did;
-      for (var tax_name1 in this.tax_name_cnt_obj) {
+      var did = this.chosen_dids[i];
+      for (var tax_name1 in this.tax_names) {
         try {
           let curr_cnt = this.tax_name_cnt_obj_per_dataset[did][tax_name1];
           taxa_counts[tax_name1].push(curr_cnt);
@@ -378,17 +377,15 @@ class TaxaCounts {
     return taxa_counts;
   }
 
-  remove_empty_rows(taxa_counts) {
-    // remove empty rows:
-
+  remove_empty_rows() {
     var tmparr = [];
-    for (var taxname in taxa_counts) {
+    for (var taxname in this.unit_name_counts) {
       let sum = 0;
-      for (let c in taxa_counts[taxname]){
-        let curr_cnts = taxa_counts[taxname][c];
+      for (let c in this.unit_name_counts[taxname]){
+        let curr_cnts = this.unit_name_counts[taxname][c];
         let it_is_number = !Number.isNaN(curr_cnts);
         if (it_is_number) {
-          sum += taxa_counts[taxname][c];
+          sum += this.unit_name_counts[taxname][c];
         }
         //console.log(k);
       }
@@ -397,7 +394,6 @@ class TaxaCounts {
       }
     }
     return tmparr;
-
   }
 }
 
