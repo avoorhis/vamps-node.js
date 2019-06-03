@@ -1,6 +1,7 @@
 const COMMON = require(app_root + '/routes/visuals/routes_common');
 const C      = require(app_root + '/public/constants');
 let path     = require("path");
+let helpers = require(app_root + '/routes/helpers/helpers');
 
 class BiomMatrix {
 
@@ -25,10 +26,10 @@ class BiomMatrix {
       "id": "SLM_NIR2_Bv4--Aligator_Pool01",
       "metadata": null
     },*/
-    
+
     this.ordered_list_of_lists_of_tax_counts = [];
 
-  //  ---
+    //  ---
     let date = new Date();
     this.biom_matrix = {
       id: this.visual_post_items.ts,
@@ -84,7 +85,7 @@ class TaxaCounts {
 
     this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did();
     this.lookup_module              = this.choose_simple_or_custom_lookup_module();
-    this.tax_name_cnt_obj           = this.lookup_module.make_tax_name_cnt_obj_per_did(this.current_tax_id_rows_by_did, this.curr_taxcounts_obj_of_str, this.rank);
+    this.tax_name_cnt_obj           = this.lookup_module.make_tax_name_cnt_obj_per_did(this.curr_taxcounts_obj_of_arr, this.current_tax_id_rows_by_did, this.curr_taxcounts_obj_of_str, this.rank);
     //  --
     /*	tax_name_cnt_obj = res[0];
 	tax_name_cnt_obj_per_dataset = res[1];
@@ -201,7 +202,6 @@ class TaxaCounts {
     console.timeEnd("TIME: make_current_tax_id_rows_by_did");
     return current_tax_id_obj_by_did;
   }
-  // https://samwize.com/2013/09/01/how-you-can-pass-a-variable-into-callback-function-in-node-dot-js/
 
   filter_tax_id_rows_by_rank(el) {
     let rank_no = parseInt(C.RANKS.indexOf(this.rank)) + 1;
@@ -216,25 +216,35 @@ class TaxonomySimple {
     this.chosen_dids = chosen_dids;
   }
 
-  make_tax_name_cnt_obj_per_did(curr_taxcounts_obj_per_did, rank) {
-  //  this.current_tax_id_row_list, this.curr_taxcounts_obj_of_str, this.rank, this.chosen_dids
+  make_tax_name_cnt_obj_per_did(curr_taxcounts_objs, current_tax_id_rows_by_did, curr_taxcounts_obj_of_str, rank) {
     for (let did_idx in this.chosen_dids) {
       let did = this.chosen_dids[did_idx];
-      this.make_tax_name_cnt_obj(curr_taxcounts_obj_per_did[did], rank, did);
+      this.make_tax_name_cnt_obj(curr_taxcounts_objs[did], rank, did);
     }
 
   }
 
-  make_tax_name_cnt_obj(taxcounts, rank, did) {
+  make_tax_name_cnt_obj(curr_taxcounts_obj, rank, did) {
+    // make_long_tax_name
+    // add cnts
     let tax_name_cnt_obj_1_dataset = {};
     let tax_name_cnt_obj_per_dataset_1_dataset = {};
 
     console.time("TIME: current_tax_id_row_list");
-    let current_tax_id_row_list = this.collect_tax_id_rows(taxcounts, rank);
-    for (let current_tax_id_idx in current_tax_id_row_list[did]){
-      let current_tax_id_row = current_tax_id_row_list[current_tax_id_idx];
-      let cnt = taxcounts[current_tax_id_row];
-      let tax_long_name = this.get_tax_long_name(current_tax_id_row, taxonomy_object);
+
+    // let current_tax_id_row_list = this.collect_tax_id_rows(taxcounts, rank);
+    /*
+    current_tax_id_row_list = [
+  "_3_8",
+  "_3_4",
+  "_3_48",
+  ...
+]*/
+    for (let obj_idx in curr_taxcounts_obj){
+      let curr_obj = curr_taxcounts_obj[obj_idx];
+      // let current_tax_id_row = obj["tax_id_row"];
+      let cnt = curr_obj.cnt;
+      let tax_long_name = this.get_tax_long_name1(curr_obj, this.taxonomy_object);
 
       tax_name_cnt_obj_1_dataset[tax_long_name] = 1;
       tax_name_cnt_obj_per_dataset_1_dataset = this.fillin_name_lookup_per_ds(tax_name_cnt_obj_per_dataset_1_dataset, did, tax_long_name, cnt);
@@ -242,6 +252,56 @@ class TaxonomySimple {
     console.timeEnd("TIME: current_tax_id_row_list");
 
     return [tax_name_cnt_obj_1_dataset, tax_name_cnt_obj_per_dataset_1_dataset];
+  }
+
+  // get_tax_long_name1(curr_obj, taxonomy_object) {
+  //   let ids = curr_obj.tax_id_arr;
+  //   let tax_long_name = '';
+  //   let tax_long_name_arr = [];
+  //   // let domain = '';
+  //
+  //   for (let id_idx = 0, ids_length = ids.length; id_idx < ids_length; id_idx++){
+  //     let tax_long_name_arr_temp = [];
+  //     let db_id = ids[id_idx];
+  //     let this_rank = C.RANKS[id_idx];
+  //     let db_id_n_rank = db_id + '_' + this_rank;
+  //     let tax_node = this.get_tax_node(db_id_n_rank, taxonomy_object); // keep already known combinations, like 3_domain = Bacteria
+  //     tax_long_name_arr_temp.push(tax_node.taxon);
+  //     tax_long_name_arr = helpers.unique_array(tax_long_name_arr_temp);
+  //     // this.add_next_tax_name1(tax_long_name_arr, tax_node, this_rank);
+  //   }
+  //   // for (let id_idx = 1, ids_length = ids.length; id_idx < ids_length; id_idx++){  // must start at 1 because leading '_':  _2_55184
+  //   //   let db_id = ids[id_idx];
+  //   //   let this_rank = C.RANKS[id_idx - 1];
+  //   //   let db_id_n_rank = db_id + '_' + this_rank;
+  //   //   //console.log('tax_node2 '+JSON.stringify(db_id_n_rank))
+  //   //   let tax_node = this.get_tax_node(db_id_n_rank, taxonomy_object);
+  //   //   // if (this_rank === 'domain'){//TODO: why it is needed?
+  //   //   //   domain = tax_node.taxon;
+  //   //   // }
+  //   //   tax_long_name = this.add_next_tax_name(tax_long_name, tax_node, this_rank);
+  //   // }
+  //   // tax_long_name = this.remove_trailing_semicolon(tax_long_name);
+  //   tax_long_name = tax_long_name_arr.join(";")
+  //   return tax_long_name;
+  // }
+
+  get_tax_long_name1(curr_obj, taxonomy_object) {
+    let ids = curr_obj.tax_id_arr;
+    let tax_long_name = '';
+
+    for (let id_idx = 0, ids_length = ids.length; id_idx < ids_length; id_idx++){
+      let db_id = ids[id_idx];
+      let this_rank = C.RANKS[id_idx];
+      let db_id_n_rank = db_id + '_' + this_rank;
+      let tax_node = this.get_tax_node(db_id_n_rank, taxonomy_object);
+      // if (this_rank === 'domain'){//TODO: why it is needed?
+      //   domain = tax_node.taxon;
+      // }
+      tax_long_name = this.add_next_tax_name(tax_long_name, tax_node, this_rank);
+    }
+    tax_long_name = this.remove_trailing_semicolon(tax_long_name);
+    return tax_long_name;
   }
 
   get_tax_long_name(current_tax_id_row, taxonomy_object) {
@@ -263,6 +323,18 @@ class TaxonomySimple {
     tax_long_name = this.remove_trailing_semicolon(tax_long_name);
     return tax_long_name;
   }
+
+  add_next_tax_name1(tax_long_name_arr, tax_node, this_rank) {
+    let rank_name = this.check_rank_name(this_rank);
+    if (tax_node.taxon) {
+      tax_long_name_arr.push(tax_node.taxon);
+    }
+    else {
+      tax_long_name_arr.push(rank_name + '_NA');
+    }
+    return tax_long_name_arr;
+  }
+
 
   remove_trailing_semicolon(tax_str) {
     return tax_str.replace(/;$/, "");
@@ -324,7 +396,7 @@ class TaxonomySimple {
     for(var tax_name in tax_name_cnt_obj){
       taxa_counts[tax_name] = [];
     }
-    
+
     for (var i in post_items.chosen_datasets) { // correct order
       var did = post_items.chosen_datasets[i].did;
       for (var tax_name1 in tax_name_cnt_obj) {
