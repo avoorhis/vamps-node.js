@@ -17,7 +17,7 @@ class BiomMatrix {
 }*/
     this.choosen_dids = this.get_dids();
     this.taxa_counts = new module.exports.TaxaCounts(this.req, this.visual_post_items, this.choosen_dids);
-    this.unit_name_counts = this.taxa_counts.unit_name_counts;//TODO: do only for relevant ones? after ukeys?
+    this.unit_name_counts = this.taxa_counts.unit_name_counts;
     let ukeys = this.remove_empty_rows(); //TODO: refactor
     //  ==
     this.ukeys = ukeys.filter(this.onlyUnique);
@@ -46,14 +46,14 @@ class BiomMatrix {
       units: this.units,
       generated_by:"VAMPS-NodeJS Version 2.0",
       date: date.toISOString(),
-      rows: [this.rows],												// taxonomy (or OTUs, MED nodes) names
-      columns: [this.columns],											// ORDERED dataset names
-      column_totals: [],								// ORDERED datasets count sums
+      rows: [],												// taxonomy (or OTUs, MED nodes) names
+      columns: this.columns,					// ORDERED dataset names
+      column_totals: [],							// ORDERED datasets count sums
       max_dataset_count: 0,						// maximum dataset count
       matrix_type: 'dense',
       matrix_element_type: 'int',
       shape: [],									// [row_count, col_count]
-      data:  this.ordered_list_of_lists_of_tax_counts
+      data: this.ordered_list_of_lists_of_tax_counts
     };
 
     //--
@@ -67,7 +67,7 @@ class BiomMatrix {
 
     let write_matrix_file_mod = new module.exports.WriteMatrixFile(this.visual_post_items, this.biom_matrix);
     // if (this.write_file === true || this.write_file === undefined){
-    write_matrix_file_mod.write_matrix_file();
+    write_matrix_file_mod.write_matrix_files();
     // }
   }
 
@@ -219,15 +219,13 @@ class BiomMatrix {
     return this.biom_matrix;
   }
 
-  get_max(max){
-    let max_count = {};
+  onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+  }
 
-    for (var n in this.biom_matrix.columns) {
-      max_count[this.biom_matrix.columns[n].id] = 0;  //id is the NAME of the dataset in biom
-      for (var d in this.biom_matrix.data) {
-        max_count[this.biom_matrix.columns[n].id] += this.biom_matrix.data[d][n];
-      }
-    }
+  get_max(max){
+    let max_count = this.get_max_count_per_did();
+
     for (let idx in this.visual_post_items.chosen_datasets) { 		// correct order
       let dname = this.visual_post_items.chosen_datasets[idx].name;
       this.biom_matrix.column_totals.push(max_count[dname]);
@@ -238,10 +236,19 @@ class BiomMatrix {
     return max;
   }
 
-  onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
-  }
+  get_max_count_per_did(){
+    let max_count = {};
+    let columns = this.biom_matrix.columns;
 
+    for (let c_idx in columns) {
+      let dname = columns[c_idx].id;
+      max_count[dname] = 0;
+      for (let d_idx in this.biom_matrix.data) {
+        max_count[dname] += this.biom_matrix.data[d_idx][c_idx];
+      }
+    }
+    return max_count;
+  }
 }
 
 class TaxaCounts {
@@ -518,12 +525,11 @@ class WriteMatrixFile {
   write_matrix_files() {
     let common_file_name_part = this.tmp_path + this.post_items.ts;
     let tax_file_name = common_file_name_part + '_taxonomy.txt';
-    COMMON.output_tax_file( tax_file_name, this.biom_matrix, C.RANKS.indexOf(this.post_items.tax_depth));
+    COMMON.output_tax_file(tax_file_name, this.biom_matrix, C.RANKS.indexOf(this.post_items.tax_depth));
 
     let matrix_file_name = common_file_name_part + '_count_matrix.biom';
-    COMMON.write_file( matrix_file_name, JSON.stringify(this.biom_matrix,null,2) );
+    COMMON.write_file(matrix_file_name, JSON.stringify(this.biom_matrix,null,2) );
   }
-
 }
 
 module.exports = {
