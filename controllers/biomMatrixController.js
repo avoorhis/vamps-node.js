@@ -389,7 +389,7 @@ class TaxaCounts {
       var did = this.chosen_dids[i];
       for (var tax_name1 in this.tax_names) {//TODO: change
         try {
-          let curr_cnt = this.tax_name_cnt_obj_per_dataset[did][tax_name1];
+          let curr_cnt = this.tax_name_cnt_obj_per_dataset[did][tax_name1] || 0;
           taxa_counts[tax_name1].push(curr_cnt);
         }
         catch(err) {
