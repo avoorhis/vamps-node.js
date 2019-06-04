@@ -244,9 +244,9 @@ module.exports = {
 
     fs.writeFile(path.resolve(__dirname, filename), txt, function(err) {
       if(err) {
-        console.log('Could not write file: '+filename+' Here is the error: '+err);
+        console.log('Could not write file: ' + filename + ' Here is the error: ' + err);
       } else {
-        console.log("The file ("+filename+") was saved!");
+        console.log("The file (" + filename + ") was saved!");
       }
     });
 
@@ -254,26 +254,26 @@ module.exports = {
   //
   //  tax file for phyloseq
   //
-  output_tax_file: function( tax_file, biom_matrix, rank_num) {
-    var tax;
-    txt = '';
+  output_tax_file: function(tax_file, biom_matrix, rank_num) {
+    let tax;
+    let txt = '';
     //console.log('rank '+rank)
 
-    var header = "\tDomain"
-    for(r = 1; r <= rank_num; r++){
-      rank = C.RANKS[r]
-      if(rank == 'klass'){ rank = 'Class'}
-      rank = rank[0].toUpperCase() + rank.slice(1)
+    var header = "\tDomain";
+    for(let r = 1; r <= rank_num; r++){
+      let rank = C.RANKS[r];
+      if (rank === 'klass'){ rank = 'Class'}
+      rank = rank[0].toUpperCase() + rank.slice(1);
       header += "\t"+rank;
     }
     header += "\n";
     txt += header;
-    for(i in biom_matrix.rows){
+    for (let i in biom_matrix.rows){
       tax = biom_matrix.rows[i].id;
       //console.log(tax)
-      items = tax.split(';');
+      let items = tax.split(';');
       txt += tax;
-      for(t in items){
+      for(let t in items){
         //if(t==1){
         //  txt += "\t"+items[0]+';'+items[t];
         //}else{
