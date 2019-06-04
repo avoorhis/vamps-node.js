@@ -74,7 +74,7 @@ class BiomMatrix {
   get_columns() {
     console.time("get_columns");
     let columns = [];
-    for (let idx in this.chosen_datasets) {
+    for (let idx in this.chosen_datasets) {//TODO: change
       let temp_col_obj = {};
       temp_col_obj.did = this.chosen_datasets[idx]["did"];
       temp_col_obj.id  = this.chosen_datasets[idx]["name"];
@@ -92,9 +92,9 @@ class BiomMatrix {
 
   remove_empty_rows() {
     var tmparr = [];
-    for (var taxname in this.unit_name_counts) {
+    for (var taxname in this.unit_name_counts) {//TODO: change
       let sum = 0;
-      for (let c in this.unit_name_counts[taxname]){
+      for (let c in this.unit_name_counts[taxname]){//TODO: change
         let curr_cnts = this.unit_name_counts[taxname][c];
         let it_is_number = !Number.isNaN(curr_cnts);
         if (it_is_number) {
@@ -123,10 +123,10 @@ class BiomMatrix {
     // Adjust for percent limit change
     var new_counts = [];
     var new_units = [];
-    for(var c in custom_count_matrix.data) {
+    for (var c in custom_count_matrix.data) {//TODO: change
 
       var got_one = false;
-      for(var k in custom_count_matrix.data[c]) {
+      for (var k in custom_count_matrix.data[c]) {//TODO: change
         var thispct = (custom_count_matrix.data[c][k]*100)/custom_count_matrix.column_totals[k];
         if(thispct > min && thispct < max){
           got_one = true;
@@ -148,9 +148,9 @@ class BiomMatrix {
     var tmp1 = [];
     if (norm === 'maximum'|| norm === 'max') {
       console.log('calculating norm MAX');
-      for(var cc in custom_count_matrix.data) {
+      for (var cc in custom_count_matrix.data) {//TODO: change
         new_counts = [];
-        for (var kc in custom_count_matrix.data[cc]) {
+        for (var kc in custom_count_matrix.data[cc]) {//TODO: change
           new_counts.push(parseInt( ( custom_count_matrix.data[cc][kc] * max_cnt ) / custom_count_matrix.column_totals[kc], 10) );
 
         }
@@ -159,9 +159,9 @@ class BiomMatrix {
       custom_count_matrix.data = tmp1;
     }else if(norm === 'frequency' || norm === 'freq'){
       console.log('calculating norm FREQ');
-      for (var cc1 in custom_count_matrix.data) {
+      for (var cc1 in custom_count_matrix.data) {//TODO: change
         new_counts = [];
-        for (var kc1 in custom_count_matrix.data[cc1]) {
+        for (var kc1 in custom_count_matrix.data[cc1]) {//TODO: change
           new_counts.push(parseFloat( (custom_count_matrix.data[cc1][kc1] / custom_count_matrix.column_totals[kc1]).toFixed(6) ) );
         }
         tmp1.push(new_counts);
@@ -176,8 +176,8 @@ class BiomMatrix {
     var tots = [];
     // TODO: "'tmp' is already defined."
     var tmp2 = {};
-    for(var cc2 in custom_count_matrix.data) {
-      for(var kc2 in custom_count_matrix.data[cc2]) {
+    for (var cc2 in custom_count_matrix.data) {//TODO: change
+      for (var kc2 in custom_count_matrix.data[cc2]) {//TODO: change
         if(kc2 in tmp2){
           tmp2[kc2] += custom_count_matrix.data[cc2][kc2];
         }else{
@@ -185,7 +185,7 @@ class BiomMatrix {
         }
       }
     }
-    for (var kc3 in custom_count_matrix.columns){
+    for (var kc3 in custom_count_matrix.columns){//TODO: change
       tots.push(tmp2[kc3]);
     }
     custom_count_matrix.column_totals = tots;
@@ -199,7 +199,7 @@ class BiomMatrix {
     console.log('in create_this.biom_matrix');  // uname:
 
     // this.ukeys is sorted by alpha
-    for (var uk_idx in this.ukeys) {//WHat ukeys diff from all keys from obj with counts?
+    for (var uk_idx in this.ukeys) {//WHat ukeys diff from all keys from obj with counts? //TODO: change for
       let curr_tax_name = this.ukeys[uk_idx];
       this.biom_matrix.rows.push({ id: curr_tax_name, metadata: null });//TODO make rows func
 
@@ -226,7 +226,7 @@ class BiomMatrix {
   get_max(max){
     let max_count = this.get_max_count_per_did();
 
-    for (let idx in this.visual_post_items.chosen_datasets) { 		// correct order
+    for (let idx in this.visual_post_items.chosen_datasets) {// correct order //TODO: change for
       let dname = this.visual_post_items.chosen_datasets[idx].name;
       this.biom_matrix.column_totals.push(max_count[dname]);
       if(max_count[dname] > max){
@@ -240,10 +240,10 @@ class BiomMatrix {
     let max_count = {};
     let columns = this.biom_matrix.columns;
 
-    for (let c_idx in columns) {
+    for (let c_idx in columns) {//TODO: change
       let dname = columns[c_idx].id;
       max_count[dname] = 0;
-      for (let d_idx in this.biom_matrix.data) {
+      for (let d_idx in this.biom_matrix.data) {//TODO: change
         max_count[dname] += this.biom_matrix.data[d_idx][c_idx];
       }
     }
@@ -302,7 +302,7 @@ class TaxaCounts {
 
   get_taxcounts_obj_from_file() {
     let taxcounts_obj_for_all_datasets = {};
-    for (let d_idx in this.chosen_dids) {
+    for (let d_idx in this.chosen_dids) {//TODO: change
       let did = this.chosen_dids[d_idx];
       try {
         let path_to_file               = path.join(this.taxonomy_file_prefix, did + '.json');
@@ -324,7 +324,7 @@ class TaxaCounts {
     // add previous info
     let current_tax_id_obj_of_arr = {};
 
-    for (let d_idx in this.chosen_dids) {
+    for (let d_idx in this.chosen_dids) {//TODO: change
       let did = this.chosen_dids[d_idx];
       current_tax_id_obj_of_arr[did] = [];
       let curr_obj = this.curr_taxcounts_obj_of_str[did];
@@ -365,7 +365,7 @@ class TaxaCounts {
     console.time("TIME: make_current_tax_id_rows_by_did");
     let current_tax_id_obj_by_did = {};
 
-    for (let d_idx in this.chosen_dids) {
+    for (let d_idx in this.chosen_dids) {//TODO: change
       let did = this.chosen_dids[d_idx];
       let current_tax_id_rows = this.curr_taxcounts_obj_w_arr[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
       current_tax_id_obj_by_did[did] = current_tax_id_rows;
@@ -381,13 +381,13 @@ class TaxaCounts {
 
   create_unit_name_counts() {// TODO: why don't use this.tax_name_cnt_obj_per_dataset directly?
     var taxa_counts = {};
-    for(var tax_name in this.tax_names){
+    for (var tax_name in this.tax_names){//TODO: change
       taxa_counts[tax_name] = [];
     }
 
-    for (var i in this.chosen_dids) { // correct order
+    for (var i in this.chosen_dids) {// correct order //TODO: change for
       var did = this.chosen_dids[i];
-      for (var tax_name1 in this.tax_names) {
+      for (var tax_name1 in this.tax_names) {//TODO: change
         try {
           let curr_cnt = this.tax_name_cnt_obj_per_dataset[did][tax_name1];
           taxa_counts[tax_name1].push(curr_cnt);
@@ -412,12 +412,12 @@ class TaxonomySimple {
   }
 
   make_tax_name_cnt_obj_per_did(curr_taxcounts_objs) {
-    for (let did_idx in this.chosen_dids) {
+    for (let did_idx in this.chosen_dids) {//TODO: change
       let did = this.chosen_dids[did_idx];
       let curr_taxcounts_obj = curr_taxcounts_objs[did];
 
       console.time("TIME: current_tax_id_row_list");
-      for (let obj_idx in curr_taxcounts_obj){
+      for (let obj_idx in curr_taxcounts_obj){//TODO: change
         let curr_obj = curr_taxcounts_obj[obj_idx];
         let cnt = curr_obj.cnt;
         let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
