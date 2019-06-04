@@ -389,9 +389,10 @@ class TaxaCounts {
 
   create_unit_name_counts() {//refactor
     var taxa_counts = {};
-    for (var tax_name in this.tax_names){//TODO: change
-      taxa_counts[tax_name] = [];
-    }
+    // for (let idx = 0, names_length = this.tax_names.length; idx < names_length; ++idx) {
+    //   let tax_name = this.tax_names[idx];
+    //   taxa_counts[tax_name] = [];
+    // }
 
     for (let d_idx = 0, dids_length = this.chosen_dids.length; d_idx < dids_length; ++d_idx) {
       let did = this.chosen_dids[d_idx];
@@ -400,13 +401,14 @@ class TaxaCounts {
       // var did = this.chosen_dids[i];
       let curr_cnt = 0;
       for (let name_idx = 0, names_length = this.tax_names.length; name_idx < names_length; ++name_idx) {
-        // for (var tax_name1 in this.tax_names) {//TODO: change
+        let tax_name = this.tax_names[name_idx];
         try {
-          curr_cnt = tax_name_cnt_obj[name_idx] || 0;
-          taxa_counts[name_idx].push(curr_cnt);
+          curr_cnt = tax_name_cnt_obj[tax_name] || 0;
+          taxa_counts[tax_name].push(curr_cnt);
         }
         catch(err) {
-          taxa_counts[name_idx].push(0);
+          taxa_counts[tax_name] = [];
+          taxa_counts[tax_name].push(0);
         }
       }
     }
