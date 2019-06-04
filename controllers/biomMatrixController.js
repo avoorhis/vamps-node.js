@@ -1,8 +1,9 @@
 const COMMON = require(app_root + '/routes/visuals/routes_common');
 const C      = require(app_root + '/public/constants');
 let path     = require("path");
-let extend = require('util')._extend;
-let helpers = require(app_root + '/routes/helpers/helpers');
+var extend = require('util')._extend;
+
+// let helpers = require(app_root + '/routes/helpers/helpers');
 
 class BiomMatrix {
 
@@ -267,16 +268,7 @@ class TaxaCounts {
     this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did();
     this.lookup_module              = this.choose_simple_or_custom_lookup_module();
     this.lookup_module.make_tax_name_cnt_obj_per_did(this.current_tax_id_rows_by_did);
-    this.tax_names                    = this.lookup_module.all_used_tax_names;
-    console.time("uniq only filter");
-    this.tax_names = this.tax_names.filter(helpers.onlyUnique);
-    console.timeEnd("uniq only filter");
-    console.time("uniq array");
-    this.tax_names = helpers.unique_array(this.tax_names);
-    console.timeEnd("uniq array");
-
-
-
+    this.tax_names                    = this.lookup_module.tax_name_cnt_obj_1;
     this.tax_name_cnt_obj_per_dataset = this.lookup_module.tax_name_cnt_obj_per_dataset;
 
     this.unit_name_counts = this.create_unit_name_counts();
@@ -387,28 +379,21 @@ class TaxaCounts {
     return el.tax_id_arr.length === rank_no;
   }
 
-  create_unit_name_counts() {//refactor
+  create_unit_name_counts() {// TODO: refactor
     var taxa_counts = {};
-    // for (let idx = 0, names_length = this.tax_names.length; idx < names_length; ++idx) {
-    //   let tax_name = this.tax_names[idx];
-    //   taxa_counts[tax_name] = [];
-    // }
+    for (var tax_name in this.tax_names){//TODO: change
+      taxa_counts[tax_name] = [];
+    }
 
-    for (let d_idx = 0, dids_length = this.chosen_dids.length; d_idx < dids_length; ++d_idx) {
-      let did = this.chosen_dids[d_idx];
-      let tax_name_cnt_obj = this.tax_name_cnt_obj_per_dataset[did];
-      // for (var i in this.chosen_dids) {// correct order //TODO: change for
-      // var did = this.chosen_dids[i];
-      let curr_cnt = 0;
-      for (let name_idx = 0, names_length = this.tax_names.length; name_idx < names_length; ++name_idx) {
-        let tax_name = this.tax_names[name_idx];
+    for (var i in this.chosen_dids) {// correct order //TODO: change for
+      var did = this.chosen_dids[i];
+      for (var tax_name1 in this.tax_names) {//TODO: change
         try {
-          curr_cnt = tax_name_cnt_obj[tax_name] || 0;
-          taxa_counts[tax_name].push(curr_cnt);
+          let curr_cnt = this.tax_name_cnt_obj_per_dataset[did][tax_name1] || 0;
+          taxa_counts[tax_name1].push(curr_cnt);
         }
         catch(err) {
-          taxa_counts[tax_name] = [];
-          taxa_counts[tax_name].push(0);
+          taxa_counts[tax_name1].push(0);
         }
       }
     }
@@ -422,7 +407,7 @@ class TaxonomySimple {
   constructor(taxonomy_object, chosen_dids) {
     this.taxonomy_object              = taxonomy_object;
     this.chosen_dids                  = chosen_dids;
-    this.all_used_tax_names           = [];
+    this.tax_name_cnt_obj_1           = {};
     this.tax_name_cnt_obj_per_dataset = {};
   }
 
@@ -437,12 +422,12 @@ class TaxonomySimple {
         let cnt = curr_obj.cnt;
         let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
 
-        this.all_used_tax_names.push(tax_long_name);
+        this.tax_name_cnt_obj_1[tax_long_name] = 1;
         this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(this.tax_name_cnt_obj_per_dataset, did, tax_long_name, cnt); //TODO: refactor
       }
       console.timeEnd("TIME: current_tax_id_row_list");
     }
-    // return [all_used_tax_names, tax_name_cnt_obj_per_dataset];
+    // return [tax_name_cnt_obj_1, tax_name_cnt_obj_per_dataset];
   }
 
   get_tax_long_name(curr_obj) {
