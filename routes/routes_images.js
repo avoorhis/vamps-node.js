@@ -401,6 +401,7 @@ piecharts: function(req, res) {
   d3 = require('d3');
   // see: https://bl.ocks.org/tomgp/c99a699587b5c5465228
   var jsdom = require('jsdom');
+  const { JSDOM } = jsdom;
   var ts = req.session.ts
 
   var imagetype = 'group'
@@ -480,14 +481,14 @@ piecharts: function(req, res) {
           .outerRadius(r);
 
 
-      jsdom.env({
-        html:'',
-        features:{ QuerySelector:true },
-        done:function(errors, window){
-          window.d3 = d3.select(window.document); //get d3 into the dom
-          //  <svg><g transform="translate(250,250)"><path></path><path></path></g></svg>
-          var svg = window.d3.select('body')
-            .append('div').attr('class','container')
+      //jsdom.env({
+      //  html:'',
+       // features:{ QuerySelector:true },
+      //  done:function(errors, window){
+          
+          const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+          let body = d3.select(fakeDom.window.document).select('body');
+          let svgContainer = body.append('div').attr('class', 'container')
             .append('svg')
                 .attr("xmlns", 'http://www.w3.org/2000/svg')
                 .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
@@ -499,7 +500,7 @@ piecharts: function(req, res) {
           //props.y.domain(mtxdata.map(function(d) { return d.pjds; }));
           //props.x.domain([0, 100]);
         if(req.body.source == 'website'){
-            var pies = svg.selectAll("svg")
+            var pies = svgContainer.selectAll("svg")
               .data(mtxdata.values)
               .enter().append("g")
               .attr("transform", function(d, i){
@@ -515,7 +516,7 @@ piecharts: function(req, res) {
             })
             .attr("target", '_blank' );
         }else{
-            var pies = svg.selectAll("svg")
+            var pies = svgContainer.selectAll("svg")
               .data(mtxdata.values)
               .enter().append("g")
               .attr("transform", function(d, i){
@@ -580,7 +581,7 @@ piecharts: function(req, res) {
         }
 
 
-              var html = window.d3.select('.container').html()
+              var html = body.select('.container').html()
               var outfile_name = ts + '-piecharts-api.svg'
               outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
               console.log('outfile_path:',outfile_path)
@@ -591,8 +592,8 @@ piecharts: function(req, res) {
               //res.send(outfile_name)
               res.json(data)
 
-        }
-      })
+       // }
+      //})
 
 
 
@@ -609,7 +610,9 @@ barcharts: function(req, res){
   // see: https://bl.ocks.org/tomgp/c99a699587b5c5465228
   //console.log('getting jsdom')
   var jsdom = require('jsdom');  // NEED version <10 for jsdom.env
- 
+  const { JSDOM } = jsdom;
+  
+  
   var ts = req.session.ts
 
   var imagetype = 'group'
@@ -667,17 +670,20 @@ barcharts: function(req, res){
         });
       });
 
-      jsdom.env({
-        html:'',
-        features:{ QuerySelector:true },
-        done:function(errors, window){
+      //jsdom.env({
+        //html:'',
+        //features:{ QuerySelector:true },
+        //done:function(errors, window){
           //console.log('inwin ')
 
 
-          window.d3 = d3.select(window.document); //get d3 into the dom
+          //window.d3 = d3.select(window.document); //get d3 into the dom
           //  <svg><g transform="translate(250,250)"><path></path><path></path></g></svg>
-          var svg = window.d3.select('body')
-            .append('div').attr('class','container')
+          //var svg = window.d3.select('body')
+          const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+          let body = d3.select(fakeDom.window.document).select('body');
+          let svgContainer = body.append('div').attr('class', 'container')
+            //.append('div').attr('class','container')
             .append('svg')
                 .attr("xmlns", 'http://www.w3.org/2000/svg')
                 .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
@@ -690,12 +696,12 @@ barcharts: function(req, res){
           props.x.domain([0, 100]);
 
           if(imagetype=='single'){
-            create_singlebar_svg_object(req, svg, props, mtxdata, ts);
+            create_singlebar_svg_object(req, svgContainer, props, mtxdata, ts);
           }else if(imagetype=='double'){
-            create_doublebar_svg_object(req, svg, props, mtxdata, ts);
+            create_doublebar_svg_object(req, svgContainer, props, mtxdata, ts);
           }else{  // group
             try{
-                create_bars_svg_object(req, svg, props, mtxdata, ts);
+                create_bars_svg_object(req, svgContainer, props, mtxdata, ts);
             }catch(err){
                 console.log('Error in create_bars_svg_object() '+err.toString())
             }
@@ -704,7 +710,9 @@ barcharts: function(req, res){
 
           //fs.writeFileSync('test.svg', window.d3.select('.container').html()) //using sync to keep the code simple
           //console.log('inwin2 ',window.d3.select('.container').html())
-          var html = window.d3.select('.container').html()
+          //var html = window.d3.select('.container').html()
+          var html = body.select('.container').html()
+          
           var outfile_name = ts + '-barcharts-api.svg'
           outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
           console.log('outfile_path:',outfile_path)
@@ -715,10 +723,10 @@ barcharts: function(req, res){
           data.filename = outfile_name
           //res.send(outfile_name)
           res.json(data)
-          window.close()
+          //window.close()
 
-        }
-      })
+       // }
+      //})
 
 } // end else
 }) // end fs.readFile
