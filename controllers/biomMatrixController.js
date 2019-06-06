@@ -265,9 +265,9 @@ class TaxaCounts {
     this.curr_taxcounts_obj_of_str = this.get_taxcounts_obj_from_file();
     this.curr_taxcounts_obj_w_arr  = this.make_current_tax_id_obj_of_arr(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
 
-    this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did(); //TODO: only for simple?
+    // this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did(); //TODO: only for simple?
     this.lookup_module              = this.choose_simple_or_custom_lookup_module();
-    this.lookup_module.make_tax_name_cnt_obj_per_did(this.current_tax_id_rows_by_did);
+    this.lookup_module.make_tax_name_cnt_obj_per_did();
     this.tax_names                    = this.lookup_module.tax_name_cnt_obj_1;
     this.tax_name_cnt_obj_per_dataset = this.lookup_module.tax_name_cnt_obj_per_dataset;
 
@@ -361,18 +361,18 @@ class TaxaCounts {
     }
   }
 
-  make_current_tax_id_rows_by_did() { //check if it is faster to make arrays from all tax_id_rows first
-    console.time("TIME: make_current_tax_id_rows_by_did");
-    let current_tax_id_obj_by_did = {};
-
-    for (let d_idx in this.chosen_dids) {//TODO: change
-      let did = this.chosen_dids[d_idx];
-      let current_tax_id_rows = this.curr_taxcounts_obj_w_arr[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
-      current_tax_id_obj_by_did[did] = current_tax_id_rows;
-    }
-    console.timeEnd("TIME: make_current_tax_id_rows_by_did");
-    return current_tax_id_obj_by_did;
-  }
+  // make_current_tax_id_rows_by_did() { //check if it is faster to make arrays from all tax_id_rows first
+  //   console.time("TIME: make_current_tax_id_rows_by_did");
+  //   let current_tax_id_obj_by_did = {};
+  //
+  //   for (let d_idx in this.chosen_dids) {//TODO: change
+  //     let did = this.chosen_dids[d_idx];
+  //     let current_tax_id_rows = this.curr_taxcounts_obj_w_arr[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
+  //     current_tax_id_obj_by_did[did] = current_tax_id_rows;
+  //   }
+  //   console.timeEnd("TIME: make_current_tax_id_rows_by_did");
+  //   return current_tax_id_obj_by_did;
+  // }
 
   filter_tax_id_rows_by_rank(el) {
     let rank_no = parseInt(C.RANKS.indexOf(this.rank)) + 1;
@@ -442,7 +442,21 @@ class TaxonomySimple extends Taxonomy {
   //   this.tax_name_cnt_obj_per_dataset = {};
   // }
 
-  make_tax_name_cnt_obj_per_did(curr_taxcounts_objs) {
+  make_current_tax_id_rows_by_did() { //check if it is faster to make arrays from all tax_id_rows first
+    console.time("TIME: make_current_tax_id_rows_by_did");
+    let current_tax_id_obj_by_did = {};
+
+    for (let d_idx in this.chosen_dids) {//TODO: change
+      let did = this.chosen_dids[d_idx];
+      let current_tax_id_rows = this.curr_taxcounts_obj_w_arr[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
+      current_tax_id_obj_by_did[did] = current_tax_id_rows;
+    }
+    console.timeEnd("TIME: make_current_tax_id_rows_by_did");
+    return current_tax_id_obj_by_did;
+  }
+
+  make_tax_name_cnt_obj_per_did() {
+    let curr_taxcounts_objs = this.make_current_tax_id_rows_by_did(); //TODO: only for simple?
     for (let did_idx in this.chosen_dids) {//TODO: change
       let did = this.chosen_dids[did_idx];
       let curr_taxcounts_obj = curr_taxcounts_objs[did];
