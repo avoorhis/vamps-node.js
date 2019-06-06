@@ -15,20 +15,9 @@ class BiomMatrix {
   "did": 475152,
   "name": "SLM_NIR2_Bv4--Aligator_Pool01"
 }*/
-    this.choosen_dids    = this.get_dids();
-    this.taxa_counts     = new module.exports.TaxaCounts(this.req, this.visual_post_items, this.choosen_dids);
-    this.taxonomy_lookup = this.choose_simple_or_custom_lookup_module();
-<<<<<<< HEAD
-    this.taxonomy_lookup.make_tax_name_cnt_obj_per_did(this.taxa_counts.current_tax_id_rows_by_did);
-    this.tax_name_cnt_obj_per_dataset = this.taxonomy_lookup.tax_name_cnt_obj_per_dataset;
-
-    this.unit_name_counts = this.taxa_counts.create_unit_name_counts();
-=======
-    this.taxonomy_lookup.make_tax_name_cnt_obj_per_did(this.current_tax_id_rows_by_did);
-    this.tax_name_cnt_obj_per_dataset = this.taxonomy_lookup.tax_name_cnt_obj_per_dataset;
-
+    this.choosen_dids = this.get_dids();
+    this.taxa_counts = new module.exports.TaxaCounts(this.req, this.visual_post_items, this.choosen_dids);
     this.unit_name_counts = this.taxa_counts.unit_name_counts;
->>>>>>> parent of 0170513a... back to simple works
     let ukeys = this.remove_empty_rows(); //TODO: refactor
     //  ==
     this.ukeys = ukeys.filter(this.onlyUnique);
@@ -260,22 +249,6 @@ class BiomMatrix {
     }
     return max_count;
   }
-
-  choose_simple_or_custom_lookup_module() {
-    let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
-    let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
-    //TODO: args object send to whatever modulw is chosen
-    if (unit_choice_simple) {
-      return new module.exports.TaxonomySimple(this.taxonomy_object, this.chosen_dids);
-    }
-    else if (unit_choice_custom) {
-      return new module.exports.TaxonomyCustom(this.taxonomy_object, this.chosen_dids);
-    }
-    else {
-      console.log("ERROR: Can't choose simple or custom taxonomy");
-    }
-  }
-
 }
 
 class TaxaCounts {
@@ -284,39 +257,21 @@ class TaxaCounts {
     this.req                  = req;
     this.post_items           = post_items;
     this.chosen_dids          = chosen_dids;
-    // this.units                = this.post_items.unit_choice;
-<<<<<<< HEAD
+    this.units                = this.post_items.unit_choice;
     this.taxonomy_file_prefix = this.get_taxonomy_file_prefix();
-=======
-    this.taxonomy_file_prefix = this.get_taxonomy_file_prefix();//TODO move from here
->>>>>>> parent of 0170513a... back to simple works
     this.rank                 = this.post_items.tax_depth;
 
     this.taxonomy_object           = this.get_taxonomy_object();
     this.curr_taxcounts_obj_of_str = this.get_taxcounts_obj_from_file();
     this.curr_taxcounts_obj_w_arr  = this.make_current_tax_id_obj_of_arr(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    // this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did(); //TODO: only for simple. move from here
-    // this.lookup_module              = this.choose_simple_or_custom_lookup_module();
-    // this.lookup_module.make_tax_name_cnt_obj_per_did(this.current_tax_id_rows_by_did);//TODO move from here
-    // this.tax_names                    = this.lookup_module.tax_name_cnt_obj_1;//TODO move from here
-    // this.tax_name_cnt_obj_per_dataset = this.lookup_module.tax_name_cnt_obj_per_dataset;
-<<<<<<< HEAD
-    // this.unit_name_counts = this.create_unit_name_counts();
-=======
->>>>>>> parent of 0170513a... back to simple works
-=======
-=======
->>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
-    this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did();
+    this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did(); //TODO: only for simple?
     this.lookup_module              = this.choose_simple_or_custom_lookup_module();
     this.lookup_module.make_tax_name_cnt_obj_per_did(this.current_tax_id_rows_by_did);
     this.tax_names                    = this.lookup_module.tax_name_cnt_obj_1;
     this.tax_name_cnt_obj_per_dataset = this.lookup_module.tax_name_cnt_obj_per_dataset;
->>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
 
+    this.unit_name_counts = this.create_unit_name_counts();
   }
 
   get_taxonomy_file_prefix() {
@@ -391,33 +346,33 @@ class TaxaCounts {
     return current_tax_id_arr_clean;
   }
 
-  // choose_simple_or_custom_lookup_module() {
-  //   let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
-  //   let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
-  //   //TODO: args object send to whatever modulw is chosen
-  //   if (unit_choice_simple) {
-  //     return new module.exports.TaxonomySimple(this.taxonomy_object, this.chosen_dids);
-  //   }
-  //   else if (unit_choice_custom) {
-  //     return new module.exports.TaxonomyCustom(this.taxonomy_object, this.chosen_dids);
-  //   }
-  //   else {
-  //     console.log("ERROR: Can't choose simple or custom taxonomy");
-  //   }
-  // }
-  //
-  // make_current_tax_id_rows_by_did() { //check if it is faster to make arrays from all tax_id_rows first
-  //   console.time("TIME: make_current_tax_id_rows_by_did");
-  //   let current_tax_id_obj_by_did = {};
-  //
-  //   for (let d_idx in this.chosen_dids) {//TODO: change
-  //     let did = this.chosen_dids[d_idx];
-  //     let current_tax_id_rows = this.curr_taxcounts_obj_w_arr[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
-  //     current_tax_id_obj_by_did[did] = current_tax_id_rows;
-  //   }
-  //   console.timeEnd("TIME: make_current_tax_id_rows_by_did");
-  //   return current_tax_id_obj_by_did;
-  // }
+  choose_simple_or_custom_lookup_module() {
+    let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
+    let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
+    //TODO: args object send to whatever modulw is chosen
+    if (unit_choice_simple) {
+      return new module.exports.TaxonomySimple(this.taxonomy_object, this.chosen_dids);
+    }
+    else if (unit_choice_custom) {
+      return new module.exports.TaxonomyCustom(this.taxonomy_object, this.chosen_dids);
+    }
+    else {
+      console.log("ERROR: Can't choose simple or custom taxonomy");
+    }
+  }
+
+  make_current_tax_id_rows_by_did() { //check if it is faster to make arrays from all tax_id_rows first
+    console.time("TIME: make_current_tax_id_rows_by_did");
+    let current_tax_id_obj_by_did = {};
+
+    for (let d_idx in this.chosen_dids) {//TODO: change
+      let did = this.chosen_dids[d_idx];
+      let current_tax_id_rows = this.curr_taxcounts_obj_w_arr[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
+      current_tax_id_obj_by_did[did] = current_tax_id_rows;
+    }
+    console.timeEnd("TIME: make_current_tax_id_rows_by_did");
+    return current_tax_id_obj_by_did;
+  }
 
   filter_tax_id_rows_by_rank(el) {
     let rank_no = parseInt(C.RANKS.indexOf(this.rank)) + 1;
@@ -425,16 +380,14 @@ class TaxaCounts {
   }
 
   create_unit_name_counts() {// TODO: refactor
-    let tax_names = this.tax_name_cnt_obj_1;//TODO move from here
-
     var taxa_counts = {};
-    for (var tax_name in tax_names){//TODO: change
+    for (var tax_name in this.tax_names){//TODO: change
       taxa_counts[tax_name] = [];
     }
 
     for (var i in this.chosen_dids) {// correct order //TODO: change for
       var did = this.chosen_dids[i];
-      for (var tax_name1 in tax_names) {//TODO: change
+      for (var tax_name1 in this.tax_names) {//TODO: change
         try {
           let curr_cnt = this.tax_name_cnt_obj_per_dataset[did][tax_name1] || 0;
           taxa_counts[tax_name1].push(curr_cnt);
@@ -450,7 +403,7 @@ class TaxaCounts {
   }
 }
 
-class TaxonomySimple {
+class Taxonomy {
   constructor(taxonomy_object, chosen_dids) {
     this.taxonomy_object              = taxonomy_object;
     this.chosen_dids                  = chosen_dids;
@@ -458,8 +411,6 @@ class TaxonomySimple {
     this.tax_name_cnt_obj_per_dataset = {};
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {//TODO: refactor
     if (did in lookup) {
       if (tax_name in lookup[did]) {
@@ -484,62 +435,31 @@ class TaxonomySimple {
 }
 
 class TaxonomySimple extends Taxonomy {
-<<<<<<< HEAD
-=======
+  // constructor(taxonomy_object, chosen_dids) {
+  //   this.taxonomy_object              = taxonomy_object;
+  //   this.chosen_dids                  = chosen_dids;
+  //   this.tax_name_cnt_obj_1           = {};
+  //   this.tax_name_cnt_obj_per_dataset = {};
+  // }
 
-  make_current_tax_id_rows_by_did() { //check if it is faster to make arrays from all tax_id_rows first
-    console.time("TIME: make_current_tax_id_rows_by_did");
-    let current_tax_id_obj_by_did = {};
-
-    for (let d_idx in this.chosen_dids) {//TODO: change
-      let did = this.chosen_dids[d_idx];
-      let current_tax_id_rows = this.curr_taxcounts_obj_w_arr[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
-      current_tax_id_obj_by_did[did] = current_tax_id_rows;
-    }
-    console.timeEnd("TIME: make_current_tax_id_rows_by_did");
-    return current_tax_id_obj_by_did;
-  }
->>>>>>> parent of 0170513a... back to simple works
-=======
-=======
->>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
   make_tax_name_cnt_obj_per_did(curr_taxcounts_objs) {
     for (let did_idx in this.chosen_dids) {//TODO: change
       let did = this.chosen_dids[did_idx];
       let curr_taxcounts_obj = curr_taxcounts_objs[did];
->>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
 
-  make_current_tax_id_rows_by_did() { //check if it is faster to make arrays from all tax_id_rows first
-    console.time("TIME: make_current_tax_id_rows_by_did");
-    let current_tax_id_obj_by_did = {};
+      console.time("TIME: current_tax_id_row_list");
+      for (let obj_idx in curr_taxcounts_obj){//TODO: change
+        let curr_obj = curr_taxcounts_obj[obj_idx];
+        let cnt = curr_obj.cnt;
+        let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
 
-    for (let d_idx in this.chosen_dids) {//TODO: change
-      let did = this.chosen_dids[d_idx];
-      let current_tax_id_rows = this.curr_taxcounts_obj_w_arr[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
-      current_tax_id_obj_by_did[did] = current_tax_id_rows;
+        this.tax_name_cnt_obj_1[tax_long_name] = 1;
+        this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(this.tax_name_cnt_obj_per_dataset, did, tax_long_name, cnt); //TODO: refactor
+      }
+      console.timeEnd("TIME: current_tax_id_row_list");
     }
-    console.timeEnd("TIME: make_current_tax_id_rows_by_did");
-    return current_tax_id_obj_by_did;
+    // return [tax_name_cnt_obj_1, tax_name_cnt_obj_per_dataset];
   }
-
-  // make_tax_name_cnt_obj_per_did(curr_taxcounts_objs) {
-  //   for (let did_idx in this.chosen_dids) {//TODO: change
-  //     let did = this.chosen_dids[did_idx];
-  //     let curr_taxcounts_obj = curr_taxcounts_objs[did];
-  //
-  //     console.time("TIME: current_tax_id_row_list");
-  //     for (let obj_idx in curr_taxcounts_obj){//TODO: change
-  //       let curr_obj = curr_taxcounts_obj[obj_idx];
-  //       let cnt = curr_obj.cnt;
-  //       let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
-  //
-  //       this.tax_name_cnt_obj_1[tax_long_name] = 1;
-  //       this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(this.tax_name_cnt_obj_per_dataset, did, tax_long_name, cnt); //TODO: refactor
-  //     }
-  //     console.timeEnd("TIME: current_tax_id_row_list");
-  //   }
-  //   // return [tax_name_cnt_obj_1, tax_name_cnt_obj_per_dataset];
-  // }
 
   get_tax_long_name(curr_obj) {
     let ids = curr_obj.tax_id_arr;
@@ -593,13 +513,11 @@ class TaxonomySimple extends Taxonomy {
     return rank_name;
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 }
 
 class TaxonomyCustom extends Taxonomy {
 
-  make_tax_name_cnt_obj_per_did() {
+  make_tax_name_cnt_obj_per_did(curr_taxcounts_objs) {
     //taxcounts, rank, taxonomy_object, did, post_items
     console.time('TIME: taxonomy_unit_choice_custom');
     // ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
@@ -622,52 +540,26 @@ class TaxonomyCustom extends Taxonomy {
 
           let id_chain_start       = '';
           let custom_tax_long_name = '';
-=======
-=======
->>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
-  fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {//TODO: refactor
-    if (did in lookup) {
-      if (tax_name in lookup[did]) {
-        lookup[did][tax_name] += parseInt(cnt);
-      } else {
-        lookup[did][tax_name] = parseInt(cnt);
-      }
-<<<<<<< HEAD
->>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
-=======
->>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
 
-    } else {
-      lookup[did] = {};
-      if (tax_name in lookup[did]) {
-        lookup[did][tax_name] += parseInt(cnt);
+          let new_node_id      = tax_node.parent_id;
+          id_chain_start       = '_' + tax_node.db_id;  // add to beginning
+          custom_tax_long_name = tax_node.taxon;
 
-      }else{
-        lookup[did][tax_name] = parseInt(cnt);
-      }
-    }
+          let combined_ids_res                  = this.combine_db_tax_id_list(new_node_id, this.taxonomy_object, custom_tax_long_name, id_chain_start);
+          db_tax_id_list[did][selected_node_id] = combined_ids_res[0];
+          custom_tax_long_name                  = combined_ids_res[1];
 
-    return lookup;
-  }
+          let cnt = this.get_tax_cnt(db_tax_id_list, did, selected_node_id, this.taxcounts);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
           unit_name_lookup_1_dataset[custom_tax_long_name] = 1;
-          unit_name_lookup_per_dataset_1_dataset           = this.fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, custom_tax_long_name, cnt);
+          unit_name_lookup_per_dataset_1_dataset           = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, custom_tax_long_name, cnt);
         }
       }
       console.timeEnd('TIME: taxonomy_unit_choice_custom');
-=======
->>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
-=======
->>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
 
-}
+      return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
+    });
 
-class TaxonomyCustom {
-  constructor(taxonomy_object, chosen_dids) {
-    this.taxonomy_object = taxonomy_object;
-    this.chosen_dids = chosen_dids;
   }
 }
 
@@ -693,6 +585,7 @@ class WriteMatrixFile {
 module.exports = {
   BiomMatrix: BiomMatrix,
   TaxaCounts: TaxaCounts,
+  Taxonomy: Taxonomy,
   TaxonomySimple: TaxonomySimple,
   TaxonomyCustom: TaxonomyCustom,
   WriteMatrixFile: WriteMatrixFile
