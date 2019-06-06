@@ -18,10 +18,17 @@ class BiomMatrix {
     this.choosen_dids    = this.get_dids();
     this.taxa_counts     = new module.exports.TaxaCounts(this.req, this.visual_post_items, this.choosen_dids);
     this.taxonomy_lookup = this.choose_simple_or_custom_lookup_module();
+<<<<<<< HEAD
     this.taxonomy_lookup.make_tax_name_cnt_obj_per_did(this.taxa_counts.current_tax_id_rows_by_did);
     this.tax_name_cnt_obj_per_dataset = this.taxonomy_lookup.tax_name_cnt_obj_per_dataset;
 
     this.unit_name_counts = this.taxa_counts.create_unit_name_counts();
+=======
+    this.taxonomy_lookup.make_tax_name_cnt_obj_per_did(this.current_tax_id_rows_by_did);
+    this.tax_name_cnt_obj_per_dataset = this.taxonomy_lookup.tax_name_cnt_obj_per_dataset;
+
+    this.unit_name_counts = this.taxa_counts.unit_name_counts;
+>>>>>>> parent of 0170513a... back to simple works
     let ukeys = this.remove_empty_rows(); //TODO: refactor
     //  ==
     this.ukeys = ukeys.filter(this.onlyUnique);
@@ -278,7 +285,11 @@ class TaxaCounts {
     this.post_items           = post_items;
     this.chosen_dids          = chosen_dids;
     // this.units                = this.post_items.unit_choice;
+<<<<<<< HEAD
     this.taxonomy_file_prefix = this.get_taxonomy_file_prefix();
+=======
+    this.taxonomy_file_prefix = this.get_taxonomy_file_prefix();//TODO move from here
+>>>>>>> parent of 0170513a... back to simple works
     this.rank                 = this.post_items.tax_depth;
 
     this.taxonomy_object           = this.get_taxonomy_object();
@@ -290,7 +301,10 @@ class TaxaCounts {
     // this.lookup_module.make_tax_name_cnt_obj_per_did(this.current_tax_id_rows_by_did);//TODO move from here
     // this.tax_names                    = this.lookup_module.tax_name_cnt_obj_1;//TODO move from here
     // this.tax_name_cnt_obj_per_dataset = this.lookup_module.tax_name_cnt_obj_per_dataset;
+<<<<<<< HEAD
     // this.unit_name_counts = this.create_unit_name_counts();
+=======
+>>>>>>> parent of 0170513a... back to simple works
 
   }
 
@@ -457,6 +471,22 @@ class Taxonomy {
 }
 
 class TaxonomySimple extends Taxonomy {
+<<<<<<< HEAD
+=======
+
+  make_current_tax_id_rows_by_did() { //check if it is faster to make arrays from all tax_id_rows first
+    console.time("TIME: make_current_tax_id_rows_by_did");
+    let current_tax_id_obj_by_did = {};
+
+    for (let d_idx in this.chosen_dids) {//TODO: change
+      let did = this.chosen_dids[d_idx];
+      let current_tax_id_rows = this.curr_taxcounts_obj_w_arr[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
+      current_tax_id_obj_by_did[did] = current_tax_id_rows;
+    }
+    console.timeEnd("TIME: make_current_tax_id_rows_by_did");
+    return current_tax_id_obj_by_did;
+  }
+>>>>>>> parent of 0170513a... back to simple works
 
   make_current_tax_id_rows_by_did() { //check if it is faster to make arrays from all tax_id_rows first
     console.time("TIME: make_current_tax_id_rows_by_did");
