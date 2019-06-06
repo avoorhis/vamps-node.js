@@ -297,6 +297,7 @@ class TaxaCounts {
     this.curr_taxcounts_obj_w_arr  = this.make_current_tax_id_obj_of_arr(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     // this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did(); //TODO: only for simple. move from here
     // this.lookup_module              = this.choose_simple_or_custom_lookup_module();
     // this.lookup_module.make_tax_name_cnt_obj_per_did(this.current_tax_id_rows_by_did);//TODO move from here
@@ -307,6 +308,8 @@ class TaxaCounts {
 =======
 >>>>>>> parent of 0170513a... back to simple works
 =======
+=======
+>>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
     this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did();
     this.lookup_module              = this.choose_simple_or_custom_lookup_module();
     this.lookup_module.make_tax_name_cnt_obj_per_did(this.current_tax_id_rows_by_did);
@@ -456,6 +459,7 @@ class TaxonomySimple {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {//TODO: refactor
     if (did in lookup) {
       if (tax_name in lookup[did]) {
@@ -497,6 +501,8 @@ class TaxonomySimple extends Taxonomy {
   }
 >>>>>>> parent of 0170513a... back to simple works
 =======
+=======
+>>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
   make_tax_name_cnt_obj_per_did(curr_taxcounts_objs) {
     for (let did_idx in this.chosen_dids) {//TODO: change
       let did = this.chosen_dids[did_idx];
@@ -588,6 +594,7 @@ class TaxonomySimple extends Taxonomy {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 
 class TaxonomyCustom extends Taxonomy {
@@ -616,6 +623,8 @@ class TaxonomyCustom extends Taxonomy {
           let id_chain_start       = '';
           let custom_tax_long_name = '';
 =======
+=======
+>>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
   fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {//TODO: refactor
     if (did in lookup) {
       if (tax_name in lookup[did]) {
@@ -623,6 +632,9 @@ class TaxonomyCustom extends Taxonomy {
       } else {
         lookup[did][tax_name] = parseInt(cnt);
       }
+<<<<<<< HEAD
+>>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
+=======
 >>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
 
     } else {
@@ -639,11 +651,14 @@ class TaxonomyCustom extends Taxonomy {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
           unit_name_lookup_1_dataset[custom_tax_long_name] = 1;
           unit_name_lookup_per_dataset_1_dataset           = this.fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, custom_tax_long_name, cnt);
         }
       }
       console.timeEnd('TIME: taxonomy_unit_choice_custom');
+=======
+>>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
 =======
 >>>>>>> parent of d064bc0f... add super class and taxonomy coustom start. simple works
 
