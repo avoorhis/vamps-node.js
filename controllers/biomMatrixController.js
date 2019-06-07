@@ -17,7 +17,7 @@ class BiomMatrix {
 }*/
     this.choosen_dids           = this.get_dids();
     this.taxa_counts            = new module.exports.TaxaCounts(this.req, this.visual_post_items, this.choosen_dids);
-    this.taxonomy_lookup_module = this.choose_simple_or_custom_lookup_module();
+    this.taxonomy_lookup_module = new module.exports.TaxonomyFactory(this.units, this.taxa_counts.taxonomy_object, this.choosen_dids);
     this.taxonomy_lookup_module.make_tax_name_cnt_obj_per_did(this.taxa_counts.current_tax_id_rows_by_did);
     this.tax_names                    = this.taxonomy_lookup_module.tax_name_cnt_obj_1;
     this.tax_name_cnt_obj_per_dataset = this.taxonomy_lookup_module.tax_name_cnt_obj_per_dataset;
@@ -78,20 +78,20 @@ class BiomMatrix {
     // }
   }
 
-  choose_simple_or_custom_lookup_module() {
-    let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
-    let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
-    //TODO: args object send to whatever module is chosen
-    if (unit_choice_simple) {
-      return new module.exports.TaxonomySimple(this.taxonomy_object, this.chosen_dids);
-    }
-    else if (unit_choice_custom) {
-      return new module.exports.TaxonomyCustom(this.taxonomy_object, this.chosen_dids);
-    }
-    else {
-      console.log("ERROR: Can't choose simple or custom taxonomy");
-    }
-  }
+  // choose_simple_or_custom_lookup_module() {
+  //   let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
+  //   let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
+  //   //TODO: args object send to whatever module is chosen
+  //   if (unit_choice_simple) {
+  //     return new module.exports.TaxonomySimple(this.taxonomy_object, this.chosen_dids);
+  //   }
+  //   else if (unit_choice_custom) {
+  //     return new module.exports.TaxonomyCustom(this.taxonomy_object, this.chosen_dids);
+  //   }
+  //   else {
+  //     console.log("ERROR: Can't choose simple or custom taxonomy");
+  //   }
+  // }
 
   get_columns() {
     console.time("get_columns");
@@ -404,6 +404,31 @@ class TaxaCounts {
   }
 }
 
+class TaxonomyFactory {
+  constructor(units, taxonomy_object, chosen_dids) {
+    this.units = units;
+    this.taxonomy_object              = taxonomy_object;
+    this.chosen_dids                  = chosen_dids;
+    const tax_factory = this.choose_simple_or_custom_lookup_module(taxonomy_object, chosen_dids);
+  }
+
+  choose_simple_or_custom_lookup_module(taxonomy_object, chosen_dids) {
+    let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
+    let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
+    //TODO: args object send to whatever module is chosen
+    if (unit_choice_simple) {
+      return new module.exports.TaxonomySimple(taxonomy_object, chosen_dids);
+    }
+    else if (unit_choice_custom) {
+      return new module.exports.TaxonomyCustom(taxonomy_object, chosen_dids);
+    }
+    else {
+      console.log("ERROR: Can't choose simple or custom taxonomy");
+    }
+  }
+
+}
+
 class Taxonomy {
   constructor(taxonomy_object, chosen_dids) {
     this.taxonomy_object              = taxonomy_object;
@@ -582,6 +607,7 @@ module.exports = {
   BiomMatrix: BiomMatrix,
   TaxaCounts: TaxaCounts,
   Taxonomy: Taxonomy,
+  TaxonomyFactory: TaxonomyFactory,
   TaxonomySimple: TaxonomySimple,
   TaxonomyCustom: TaxonomyCustom,
   WriteMatrixFile: WriteMatrixFile
