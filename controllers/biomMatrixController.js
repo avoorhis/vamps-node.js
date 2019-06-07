@@ -16,10 +16,13 @@ class BiomMatrix {
   "name": "SLM_NIR2_Bv4--Aligator_Pool01"
 }*/
     this.choosen_dids           = this.get_dids();
+
     this.taxa_counts            = new module.exports.TaxaCounts(this.req, this.visual_post_items, this.choosen_dids);
-    const taxonomy_factory = new module.exports.TaxonomyFactory(this.units, this.taxa_counts.taxonomy_object, this.choosen_dids);
+
+    const taxonomy_factory = new module.exports.TaxonomyFactory(this.visual_post_items, this.taxa_counts.taxonomy_object, this.choosen_dids, this.taxa_counts.current_tax_id_rows_by_did);
     this.taxonomy_lookup_module = taxonomy_factory.chosen_taxonomy;
-    this.taxonomy_lookup_module.make_tax_name_cnt_obj_per_did(this.taxa_counts.current_tax_id_rows_by_did);
+    //taxcounts, rank, taxonomy_object, did, post_items
+    this.taxonomy_lookup_module.make_tax_name_cnt_obj_per_did();
     const tax_names                    = this.taxonomy_lookup_module.tax_name_cnt_obj_1;
     const tax_name_cnt_obj_per_dataset = this.taxonomy_lookup_module.tax_name_cnt_obj_per_dataset;
 
@@ -286,7 +289,7 @@ class TaxaCounts {
 
     this.taxonomy_object           = this.get_taxonomy_object();
     this.curr_taxcounts_obj_of_str = this.get_taxcounts_obj_from_file();
-     this.curr_taxcounts_obj_w_arr  = this.make_current_tax_id_obj_of_arr(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
+    this.curr_taxcounts_obj_w_arr  = this.make_current_tax_id_obj_of_arr(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
 
     this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did(); //TODO: only for simple?
   }
@@ -406,22 +409,23 @@ class TaxaCounts {
 }
 
 class TaxonomyFactory {
-  constructor(units, taxonomy_object, chosen_dids) {
-    this.units = units;
-    this.taxonomy_object              = taxonomy_object;
-    this.chosen_dids                  = chosen_dids;
-    this.chosen_taxonomy = this.choose_simple_or_custom_lookup_module(taxonomy_object, chosen_dids);
+  // const taxonomy_factory = new module.exports.TaxonomyFactory(this.visual_post_items, this.taxa_counts.taxonomy_object, this.choosen_dids, this.taxa_counts.current_tax_id_rows_by_did);
+
+  constructor(visual_post_items, taxonomy_object, chosen_dids, current_tax_id_rows_by_did) {
+    this.units             = visual_post_items.unit_choice;
+    // const arg_obj =
+    this.chosen_taxonomy = this.choose_simple_or_custom_lookup_module(visual_post_items, taxonomy_object, chosen_dids, current_tax_id_rows_by_did);
   }
 
-  choose_simple_or_custom_lookup_module(taxonomy_object, chosen_dids) {
+  choose_simple_or_custom_lookup_module(visual_post_items, taxonomy_object, chosen_dids, current_tax_id_rows_by_did) {
     let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
     let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
     //TODO: args object send to whatever module is chosen
     if (unit_choice_simple) {
-      return new module.exports.TaxonomySimple(taxonomy_object, chosen_dids);
+      return new module.exports.TaxonomySimple(visual_post_items, taxonomy_object, chosen_dids, current_tax_id_rows_by_did);
     }
     else if (unit_choice_custom) {
-      return new module.exports.TaxonomyCustom(taxonomy_object, chosen_dids);
+      return new module.exports.TaxonomyCustom(visual_post_items, taxonomy_object, chosen_dids, current_tax_id_rows_by_did);
     }
     else {
       console.log("ERROR: Can't choose simple or custom taxonomy");
@@ -431,9 +435,11 @@ class TaxonomyFactory {
 }
 
 class Taxonomy {
-  constructor(taxonomy_object, chosen_dids) {
+  constructor(visual_post_items, taxonomy_object, chosen_dids, current_tax_id_rows_by_did) {
+    this.post_items = visual_post_items;
     this.taxonomy_object              = taxonomy_object;
     this.chosen_dids                  = chosen_dids;
+    this.current_tax_id_rows_by_did = current_tax_id_rows_by_did; //curr_taxcounts_objs
     this.tax_name_cnt_obj_1           = {};
     this.tax_name_cnt_obj_per_dataset = {};
   }
@@ -463,11 +469,11 @@ class Taxonomy {
 
 class TaxonomySimple extends Taxonomy {
 
-  make_tax_name_cnt_obj_per_did(curr_taxcounts_objs) {
+  make_tax_name_cnt_obj_per_did() {
     // let curr_taxcounts_objs = this.make_current_tax_id_rows_by_did(); //TODO: only for simple?
     for (let did_idx in this.chosen_dids) {//TODO: change
       let did = this.chosen_dids[did_idx];
-      let curr_taxcounts_obj = curr_taxcounts_objs[did];
+      let curr_taxcounts_obj = this.current_tax_id_rows_by_did[did];
 
       console.time("TIME: current_tax_id_row_list");
       for (let obj_idx in curr_taxcounts_obj){//TODO: change
@@ -539,7 +545,7 @@ class TaxonomySimple extends Taxonomy {
 
 class TaxonomyCustom extends Taxonomy {
 
-  make_tax_name_cnt_obj_per_did(curr_taxcounts_objs) {
+  make_tax_name_cnt_obj_per_did() {
     //taxcounts, rank, taxonomy_object, did, post_items
     console.time('TIME: taxonomy_unit_choice_custom');
     // ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
@@ -584,7 +590,6 @@ class TaxonomyCustom extends Taxonomy {
 
   }
 }
-
 
 class WriteMatrixFile {
 
