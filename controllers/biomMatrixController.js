@@ -17,9 +17,8 @@ class BiomMatrix {
 }*/
     this.choosen_dids           = this.get_dids();
     this.taxa_counts            = new module.exports.TaxaCounts(this.req, this.visual_post_items, this.choosen_dids);
-    this.taxonomy_lookup_module = new module.exports.TaxonomyFactory(this.units, this.taxa_counts.taxonomy_object, this.choosen_dids);
     const taxonomy_factory = new module.exports.TaxonomyFactory(this.units, this.taxa_counts.taxonomy_object, this.choosen_dids);
-    // this.taxonomy_lookup_module =
+    this.taxonomy_lookup_module = taxonomy_factory.chosen_taxonomy;
     this.taxonomy_lookup_module.make_tax_name_cnt_obj_per_did(this.taxa_counts.current_tax_id_rows_by_did);
     this.tax_names                    = this.taxonomy_lookup_module.tax_name_cnt_obj_1;
     this.tax_name_cnt_obj_per_dataset = this.taxonomy_lookup_module.tax_name_cnt_obj_per_dataset;
@@ -411,7 +410,7 @@ class TaxonomyFactory {
     this.units = units;
     this.taxonomy_object              = taxonomy_object;
     this.chosen_dids                  = chosen_dids;
-    this.tax_factory = this.choose_simple_or_custom_lookup_module(taxonomy_object, chosen_dids);
+    this.chosen_taxonomy = this.choose_simple_or_custom_lookup_module(taxonomy_object, chosen_dids);
   }
 
   choose_simple_or_custom_lookup_module(taxonomy_object, chosen_dids) {
