@@ -20,10 +20,10 @@ class BiomMatrix {
     const taxonomy_factory = new module.exports.TaxonomyFactory(this.units, this.taxa_counts.taxonomy_object, this.choosen_dids);
     this.taxonomy_lookup_module = taxonomy_factory.chosen_taxonomy;
     this.taxonomy_lookup_module.make_tax_name_cnt_obj_per_did(this.taxa_counts.current_tax_id_rows_by_did);
-    this.tax_names                    = this.taxonomy_lookup_module.tax_name_cnt_obj_1;
-    this.tax_name_cnt_obj_per_dataset = this.taxonomy_lookup_module.tax_name_cnt_obj_per_dataset;
+    const tax_names                    = this.taxonomy_lookup_module.tax_name_cnt_obj_1;
+    const tax_name_cnt_obj_per_dataset = this.taxonomy_lookup_module.tax_name_cnt_obj_per_dataset;
 
-    this.unit_name_counts = this.taxa_counts.create_unit_name_counts();
+    this.unit_name_counts = this.taxa_counts.create_unit_name_counts(tax_names, tax_name_cnt_obj_per_dataset);
     // this.unit_name_counts = this.taxa_counts.unit_name_counts;
 
     let ukeys = this.remove_empty_rows(); //TODO: refactor
@@ -381,17 +381,17 @@ class TaxaCounts {
     return el.tax_id_arr.length === rank_no;
   }
 
-  create_unit_name_counts() {// TODO: refactor
+  create_unit_name_counts(tax_names, tax_name_cnt_obj_per_dataset) {// TODO: refactor
     var taxa_counts = {};
-    for (var tax_name in this.tax_names){//TODO: change
+    for (var tax_name in tax_names){//TODO: change
       taxa_counts[tax_name] = [];
     }
 
     for (var i in this.chosen_dids) {// correct order //TODO: change for
       var did = this.chosen_dids[i];
-      for (var tax_name1 in this.tax_names) {//TODO: change
+      for (var tax_name1 in tax_names) {//TODO: change
         try {
-          let curr_cnt = this.tax_name_cnt_obj_per_dataset[did][tax_name1] || 0;
+          let curr_cnt = tax_name_cnt_obj_per_dataset[did][tax_name1] || 0;
           taxa_counts[tax_name1].push(curr_cnt);
         }
         catch(err) {
