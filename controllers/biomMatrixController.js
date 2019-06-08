@@ -20,16 +20,12 @@ class BiomMatrix {
 
     const taxonomy_factory = new module.exports.TaxonomyFactory(this.visual_post_items, this.taxa_counts, this.chosen_dids);
     this.taxonomy_lookup_module = taxonomy_factory.chosen_taxonomy;
-    //taxcounts, rank, taxonomy_object, did, post_items
     this.taxonomy_lookup_module.make_tax_name_cnt_obj_per_did();
     const tax_names                    = this.taxonomy_lookup_module.tax_name_cnt_obj_1;
     const tax_name_cnt_obj_per_dataset = this.taxonomy_lookup_module.tax_name_cnt_obj_per_dataset;
 
     this.unit_name_counts = this.taxa_counts.create_unit_name_counts(tax_names, tax_name_cnt_obj_per_dataset);
-    // this.unit_name_counts = this.taxa_counts.unit_name_counts;
-
     let ukeys = this.remove_empty_rows(); //TODO: refactor
-    //  ==
     this.ukeys = ukeys.filter(this.onlyUnique);
     this.ukeys.sort();
 
@@ -46,7 +42,6 @@ class BiomMatrix {
 
     this.ordered_list_of_lists_of_tax_counts = [];
 
-    //  ---
     let date = new Date();
     this.biom_matrix = {
       id: this.visual_post_items.ts,
@@ -66,7 +61,6 @@ class BiomMatrix {
       data: this.ordered_list_of_lists_of_tax_counts
     };
 
-    //--
     this.biom_matrix = this.create_biom_matrix();
 
     let true_meaning = [true, 1, "1"];
@@ -75,9 +69,7 @@ class BiomMatrix {
     }
 
     let write_matrix_file_mod = new module.exports.WriteMatrixFile(this.visual_post_items, this.biom_matrix);
-    // if (this.write_file === true || this.write_file === undefined){
     write_matrix_file_mod.write_matrix_files();
-    // }
   }
 
   get_columns() {
@@ -109,7 +101,6 @@ class BiomMatrix {
         if (it_is_number) {
           sum += this.unit_name_counts[taxname][c];
         }
-        //console.log(k);
       }
       if (sum > 0) {
         tmparr.push(taxname);
@@ -126,8 +117,6 @@ class BiomMatrix {
         min     = post_items.min_range,
         max     = post_items.max_range,
         norm    = post_items.normalization;
-
-    //console.log('in custom biom '+max_cnt.toString());
 
     // Adjust for percent limit change
     var new_counts = [];
@@ -208,7 +197,7 @@ class BiomMatrix {
     console.log('in create_this.biom_matrix');  // uname:
 
     // this.ukeys is sorted by alpha
-    for (var uk_idx in this.ukeys) {//WHat ukeys diff from all keys from obj with counts? //TODO: change for
+    for (var uk_idx in this.ukeys) {//TODO: change for
       let curr_tax_name = this.ukeys[uk_idx];
       this.biom_matrix.rows.push({ id: curr_tax_name, metadata: null });//TODO make rows func
 
@@ -533,10 +522,8 @@ class TaxonomyCustom extends Taxonomy {
     this.chosen_dids.forEach((did) => {
       let custom_taxa = this.post_items.custom_taxa;
 
-      let db_tax_id_list                         = {};
-      db_tax_id_list[did]                        = {};
-      // let unit_name_lookup_1_dataset             = {};
-      // let unit_name_lookup_per_dataset_1_dataset = {};
+      let db_tax_id_list  = {};
+      db_tax_id_list[did] = {};
 
       for (let t_idx = 0, taxa_length = custom_taxa.length; t_idx < taxa_length; t_idx++) {
         let selected_node_id = this.post_items.custom_taxa[t_idx];
@@ -557,15 +544,11 @@ class TaxonomyCustom extends Taxonomy {
 
           let cnt = this.get_tax_cnt(db_tax_id_list, did, selected_node_id, this.taxa_counts_module.tax_id_obj_by_did);
 
-          // unit_name_lookup_1_dataset[custom_tax_long_name] = 1;
-          // unit_name_lookup_per_dataset_1_dataset           = this.fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, custom_tax_long_name, cnt);
           this.tax_name_cnt_obj_1[custom_tax_long_name] = 1;
           this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(this.tax_name_cnt_obj_per_dataset, did, custom_tax_long_name, cnt); //TODO: refactor
         }
       }
       console.timeEnd('TIME: taxonomy_unit_choice_custom');
-
-      // return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
     });
   }
 
@@ -582,7 +565,6 @@ class TaxonomyCustom extends Taxonomy {
     return [id_chain, tax_long_name];
   }
 
-  //function(value){ return value.city=="Amsterdam";}
   get_tax_cnt(db_tax_id_list, did, selected_node_id) {//TODO: refactor
     console.time('TIME: for id_chain');
     const taxcounts = this.taxa_counts_module.curr_taxcounts_obj_of_str_by_did[did];
@@ -594,24 +576,6 @@ class TaxonomyCustom extends Taxonomy {
     console.timeEnd('TIME: for id_chain');
     return temp_cnt;
   }
-
-  // filter_tax_id_rows_by_tax_id_chain(el) {
-    // (el) => el.tax_id_row === "_3_4_10"
-    // if (el.tax_id_row === this.curr_tax_id_chain) {
-    //   return el.cnt;
-    // }
-
-  // }
-
-  /*
-  *   let current_tax_id_rows = this.curr_taxcounts_obj_w_arr_by_did[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
-  filter_tax_id_rows_by_rank(el) {
-    let rank_no = parseInt(C.RANKS.indexOf(this.rank)) + 1;
-    return el.tax_id_arr.length === rank_no;
-  }
-
-  * */
-
 }
 
 class WriteMatrixFile {
