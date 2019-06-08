@@ -436,10 +436,10 @@ class TaxonomyFactory {
 
 class Taxonomy {
   constructor(visual_post_items, taxonomy_object, chosen_dids, current_tax_id_rows_by_did) {
-    this.post_items = visual_post_items;
+    this.post_items                   = visual_post_items;
     this.taxonomy_object              = taxonomy_object;
     this.chosen_dids                  = chosen_dids;
-    this.current_tax_id_rows_by_did = current_tax_id_rows_by_did; //curr_taxcounts_objs
+    this.current_tax_id_rows_by_did   = current_tax_id_rows_by_did; //curr_taxcounts_objs
     this.tax_name_cnt_obj_1           = {};
     this.tax_name_cnt_obj_per_dataset = {};
   }
@@ -545,7 +545,7 @@ class TaxonomySimple extends Taxonomy {
 
 class TaxonomyCustom extends Taxonomy {
 
-  make_tax_name_cnt_obj_per_did() {
+  make_tax_name_cnt_obj_per_did() { //TODO: refactor
     //taxcounts, rank, taxonomy_object, did, post_items
     console.time('TIME: taxonomy_unit_choice_custom');
     // ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
@@ -573,22 +573,73 @@ class TaxonomyCustom extends Taxonomy {
           id_chain_start       = '_' + tax_node.db_id;  // add to beginning
           custom_tax_long_name = tax_node.taxon;
 
-          let combined_ids_res                  = this.combine_db_tax_id_list(new_node_id, this.taxonomy_object, custom_tax_long_name, id_chain_start);
+          let combined_ids_res                  = this.combine_db_tax_id_list(new_node_id, custom_tax_long_name, id_chain_start);
           db_tax_id_list[did][selected_node_id] = combined_ids_res[0];
           custom_tax_long_name                  = combined_ids_res[1];
 
-          let cnt = this.get_tax_cnt(db_tax_id_list, did, selected_node_id, this.taxcounts);
+          let cnt = this.get_tax_cnt(db_tax_id_list, did, selected_node_id, taxcounts);
 
           unit_name_lookup_1_dataset[custom_tax_long_name] = 1;
-          unit_name_lookup_per_dataset_1_dataset           = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, custom_tax_long_name, cnt);
+          unit_name_lookup_per_dataset_1_dataset           = this.fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, custom_tax_long_name, cnt);
         }
       }
       console.timeEnd('TIME: taxonomy_unit_choice_custom');
 
       return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
     });
-
   }
+
+  combine_db_tax_id_list(new_node_id, tax_long_name, id_chain) {// TODO: refactor
+    let new_node;
+    let db_id;
+    while (new_node_id !== 0) {
+      new_node      = this.taxonomy_object.taxa_tree_dict_map_by_id[new_node_id];
+      db_id         = new_node.db_id;
+      id_chain 			= '_' + db_id + id_chain;
+      new_node_id   = new_node.parent_id;
+      tax_long_name = new_node.taxon + ';' + tax_long_name;
+    }
+    return [id_chain, tax_long_name];
+  }
+
+  //function(value){ return value.city=="Amsterdam";}
+  get_tax_cnt(db_tax_id_list, did, selected_node_id, taxcounts) {//TODO: refactor
+    console.time('TIME: for id_chain');
+    // let temp_cnt = 0;
+    let curr_tax_id_chain = db_tax_id_list[did][selected_node_id];
+
+    // arr.find(o => o.city === 'Amsterdam')
+    // temp_cnt = taxcounts.find(el.cnt => el.tax_id_row === curr_tax_id_chain);
+    let temp_arr_obj = taxcounts.find((el) => el.tax_id_row === curr_tax_id_chain);
+    let temp_cnt = 0;
+    try { temp_cnt = temp_arr_obj[0]["cnt"] }
+    catch(err) {
+
+    }
+    // if (Object.keys(taxcounts).indexOf(curr_tax_id_chain) !== -1) {
+    //   temp_cnt = taxcounts[curr_tax_id_chain];
+    // }
+    console.timeEnd('TIME: for id_chain');
+    return temp_cnt;
+  }
+
+  // filter_tax_id_rows_by_tax_id_chain(el) {
+    // (el) => el.tax_id_row === "_3_4_10"
+    // if (el.tax_id_row === this.curr_tax_id_chain) {
+    //   return el.cnt;
+    // }
+
+  // }
+
+  /*
+  *   let current_tax_id_rows = this.curr_taxcounts_obj_w_arr[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
+  filter_tax_id_rows_by_rank(el) {
+    let rank_no = parseInt(C.RANKS.indexOf(this.rank)) + 1;
+    return el.tax_id_arr.length === rank_no;
+  }
+
+  * */
+
 }
 
 class WriteMatrixFile {
