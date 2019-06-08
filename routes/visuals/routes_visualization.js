@@ -302,13 +302,13 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   }
   console.log('<<VS--visual_post_items');
   console.log('entering MTX.get_biom_matrix');
-  console.time("TIME: biom_matrix new");
+  console.time("TIME: biom_matrix_new");
   const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, visual_post_items);
   var biom_matrix = biom_matrix_obj.biom_matrix;
-  console.timeEnd("TIME: biom_matrix new");
-  // console.time("TIME: biom_matrix old");
+  console.timeEnd("TIME: biom_matrix_new");
+  // console.time("TIME: biom_matrix old refactored");
   // var biom_matrix = MTX.get_biom_matrix(req, visual_post_items);
-  // console.timeEnd("TIME: biom_matrix old");
+  // console.timeEnd("TIME: biom_matrix old refactored");
   //console.log('8')
   visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
   //console.log('9')

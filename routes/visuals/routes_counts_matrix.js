@@ -43,6 +43,7 @@ module.exports = {
 
 
 	get_biom_matrix: function(req, post_items, write_file) {//write_file is undefined in the caller function
+		console.time("time: get_biom_matrix");
 		var date = new Date();
 		// var did, rank, db_tax_id, node_id, cnt, matrix_file;
 		var biom_matrix_start = {
@@ -69,12 +70,13 @@ module.exports = {
 		//console.log('biom_matrix')
 		//console.log(biom_matrix)
 		//console.log('//////////////////////////////////////////////////////////////')
+		console.timeEnd("time: get_biom_matrix");
 		return biom_matrix;
 
 	},
+
 	//
 };
-
 
 //
 //
@@ -83,6 +85,7 @@ module.exports = {
 //
 function get_updated_biom_matrix(post_items, mtx) {
 	console.log('in UPDATED biom_matrix');
+	console.time("time: get_updated_biom_matrix");
 	var custom_count_matrix = extend({},mtx);  // this clones count_matrix which keeps original intact.
 
 	var max_cnt = mtx.max_dataset_count,
@@ -164,6 +167,8 @@ function get_updated_biom_matrix(post_items, mtx) {
 	custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
 
 	//console.log('returning custom_count_matrix');
+	console.timeEnd("time: get_updated_biom_matrix");
+
 	return custom_count_matrix;
 }
 
@@ -172,6 +177,8 @@ function get_updated_biom_matrix(post_items, mtx) {
 //
 function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 	console.log('IN routes_counts_matrix::fill_out_taxonomy');
+	console.time("time: fill_out_taxonomy");
+
 	//console.log(post_items)
 	let files_prefix = get_file_prefix(req, post_items.unit_choice);
 	let taxonomy_object = get_taxonomy_object(req, post_items.unit_choice);
@@ -201,10 +208,12 @@ function fill_out_taxonomy(req, biom_matrix, post_items, write_file){
 	if(write_file === true || write_file === undefined){
 		write_matrix_file(post_items, biom_matrix);
 	}
+	console.timeEnd("time: fill_out_taxonomy");
 	return biom_matrix;
 }
 
 function get_unit_name_lookups(post_items, files_prefix, taxonomy_object) {
+	console.time("time: get_unit_name_lookups");
 	let unit_name_lookup = {};
 	let unit_name_lookup_per_dataset = create_an_empty_unit_name_lookup_per_dataset(post_items);
 
@@ -221,19 +230,26 @@ function get_unit_name_lookups(post_items, files_prefix, taxonomy_object) {
 			console.log('unit_choice error');
 		}
 	}
+	console.timeEnd("time: get_unit_name_lookups");
+
 	return [unit_name_lookup, unit_name_lookup_per_dataset]; //TODO send one object?
 }
 
 function create_an_empty_unit_name_lookup_per_dataset(post_items) {
+	console.time("time: create_an_empty_unit_name_lookup_per_dataset");
 	let empty_unit_name_lookup_per_dataset = {};
 	for (let item in post_items.chosen_datasets) {
 		let did = post_items.chosen_datasets[item].did;
 		empty_unit_name_lookup_per_dataset[did] = {};
 	}
+	console.timeEnd("time: create_an_empty_unit_name_lookup_per_dataset");
+
 	return empty_unit_name_lookup_per_dataset;
 }
 
 function simple_or_custom_unit_name_lookup_res(files_prefix, did, post_items, taxonomy_object) {
+	console.time("time: simple_or_custom_unit_name_lookup_res");
+
 	let taxcounts = get_taxcounts_obj_from_file(files_prefix, did);
 	let rank = post_items.tax_depth;
 	let unit_choice_simple = post_items.unit_choice.substr(post_items.unit_choice.length - 6) === 'simple';
@@ -245,14 +261,16 @@ function simple_or_custom_unit_name_lookup_res(files_prefix, did, post_items, ta
 	else if (unit_choice_custom) {
 		unit_name_lookup_res = taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post_items);
 	}
+	console.timeEnd("time: simple_or_custom_unit_name_lookup_res");
+
 	return unit_name_lookup_res;
 }
 
 function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
+	console.time("time: taxonomy_unit_choice_simple");
 	let unit_name_lookup_1_dataset = {};
 	let unit_name_lookup_per_dataset_1_dataset = {};
 
-	console.time("TIME: current_tax_id_row_list");
 	let current_tax_id_row_list = collect_tax_id_rows(taxcounts, rank);
 	for (let current_tax_id_idx in current_tax_id_row_list){
 		let current_tax_id_row = current_tax_id_row_list[current_tax_id_idx];
@@ -262,12 +280,13 @@ function taxonomy_unit_choice_simple(taxcounts, rank, taxonomy_object, did) {
 		unit_name_lookup_1_dataset[tax_long_name] = 1;
 		unit_name_lookup_per_dataset_1_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, tax_long_name, cnt);
 	}
-	console.timeEnd("TIME: current_tax_id_row_list");
+	console.timeEnd("time: taxonomy_unit_choice_simple");
 
 	return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
 }
 
 function get_tax_long_name(current_tax_id_row, taxonomy_object) {
+	console.time("time: get_tax_long_name");
 	let ids = current_tax_id_row.split('_');   // x === _5_55184_61061_62018_62239_63445
 	let tax_long_name = '';
 	// let domain = '';
@@ -288,18 +307,25 @@ function get_tax_long_name(current_tax_id_row, taxonomy_object) {
 	}
 	// TODO: the following line  to "remove_trailing_semicolon func
 	tax_long_name = tax_long_name.replace(/;$/, ""); // remove trailing ';'
+	console.timeEnd("time: get_tax_long_name");
+
 	return tax_long_name;
 }
 
 function check_rank_name(this_rank) {
+	console.time("time: check_rank_name");
+
 	let rank_name = this_rank;
 	if (this_rank === 'klass') {
 		rank_name = 'class';
 	}
+	console.timeEnd("time: check_rank_name");
+
 	return rank_name;
 }
 
 function add_next_tax_name(tax_long_name, tax_node, this_rank) {
+	console.time("time: add_next_tax_name");
 	let rank_name = check_rank_name(this_rank);
 	if (tax_node.taxon) {
 		tax_long_name += tax_node.taxon + ';';
@@ -307,18 +333,23 @@ function add_next_tax_name(tax_long_name, tax_node, this_rank) {
 	else {
 		tax_long_name += rank_name + '_NA;';
 	}
+	console.timeEnd("time: add_next_tax_name");
+
 	return tax_long_name;
 }
 
 function get_tax_node(db_id_n_rank, taxonomy_object) {
+	console.time("time: get_tax_node");
 	let tax_node = {};
 	if (db_id_n_rank in taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank) {
 		tax_node = taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
 	}
+	console.timeEnd("time: get_tax_node");
 	return tax_node;
 }
 
 function collect_tax_id_rows(taxcounts, rank) {
+	console.time("time: collect_tax_id_rows");
 	let current_tax_id_rows = [];
 	let rank_no = parseInt(C.RANKS.indexOf(rank))	+ 1;
 
@@ -328,12 +359,13 @@ function collect_tax_id_rows(taxcounts, rank) {
 			current_tax_id_rows.push(current_tax_id_row);
 		}
 	}
+	console.timeEnd("time: collect_tax_id_rows");
 
 	return current_tax_id_rows;
 }
 
-
 function get_taxcounts_obj_from_file(files_prefix, did) {
+	console.time("time: get_taxcounts_obj_from_file");
 	try {
 		let path_to_file = path.join(files_prefix, did +'.json');
 		let jsonfile = require(path_to_file);
@@ -347,6 +379,7 @@ function get_taxcounts_obj_from_file(files_prefix, did) {
 		//res.redirect('visuals_index');
 		//return;
 	}
+	console.timeEnd("time: get_taxcounts_obj_from_file");
 }
 
 function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post_items) {
@@ -389,6 +422,7 @@ function taxonomy_unit_choice_custom(taxcounts, rank, taxonomy_object, did, post
 }
 
 function combine_db_tax_id_list(new_node_id, taxonomy_object, tax_long_name, id_chain) {
+	console.time("time: combine_db_tax_id_list");
 	let new_node;
 	let db_id;
 	while (new_node_id !== 0) {
@@ -398,29 +432,36 @@ function combine_db_tax_id_list(new_node_id, taxonomy_object, tax_long_name, id_
 		new_node_id   = new_node.parent_id;
 		tax_long_name = new_node.taxon + ';' + tax_long_name;
 	}
+	console.timeEnd("time: combine_db_tax_id_list");
+
 	return [id_chain, tax_long_name];
 }
 
 function get_tax_cnt(db_tax_id_list, did, selected_node_id, taxcounts) {
-	console.time('TIME: for id_chain');
+	console.time('TIME: get_tax_cnt');
 	let temp_cnt = 0;
 	let curr_tax_id_chain = db_tax_id_list[did][selected_node_id];
 	if (Object.keys(taxcounts).indexOf(curr_tax_id_chain) !== -1) {
 		temp_cnt = taxcounts[curr_tax_id_chain];
 	}
-	console.timeEnd('TIME: for id_chain');
+	console.timeEnd('TIME: get_tax_cnt');
 	return temp_cnt;
 }
 
 function write_matrix_file(post_items, biom_matrix) {
+	console.time('TIME: write_matrix_file');
 	let tax_file = '../../tmp/'+post_items.ts+'_taxonomy.txt';
 	COMMON.output_tax_file( tax_file, biom_matrix, C.RANKS.indexOf(post_items.tax_depth));
 
 	let matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
 	COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
+	console.timeEnd('TIME: write_matrix_file');
+
 }
 
 function get_file_prefix(req, unit_choice) {
+	console.time('TIME: get_file_prefix');
+
 	var files_prefix;
 	if (unit_choice === 'tax_rdp2.6_simple'){
 		files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_rdp2.6");
@@ -429,10 +470,14 @@ function get_file_prefix(req, unit_choice) {
 	} else {
 		files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);  // default
 	}
+	console.timeEnd('TIME: get_file_prefix');
+
 	return files_prefix;
 }
 
 function get_taxonomy_object(unit_choice) {
+	console.time('TIME: get_taxonomy_object');
+
 	var taxonomy_object;
 	if (unit_choice === 'tax_rdp2.6_simple') {
 		taxonomy_object = new_rdp_taxonomy;
@@ -441,6 +486,8 @@ function get_taxonomy_object(unit_choice) {
 	} else {
 		taxonomy_object = new_taxonomy;
 	}
+	console.timeEnd('TIME: get_taxonomy_object');
+
 	return taxonomy_object;
 }
 
@@ -452,6 +499,7 @@ function get_taxonomy_object(unit_choice) {
 //
 function remove_empty_rows(taxa_counts) {
 	// remove empty rows:
+	console.time('TIME: remove_empty_rows');
 
 	var tmparr = [];
 	for (var taxname in taxa_counts) {
@@ -468,13 +516,17 @@ function remove_empty_rows(taxa_counts) {
 			tmparr.push(taxname);
 		}
 	}
+	console.timeEnd('TIME: remove_empty_rows');
+
 	return tmparr;
 
 }
+
 //
 //	C R E A T E  U N I T  N A M E  C O U N T S
 //
 function create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_per_dataset) {
+	console.time('TIME: create_unit_name_counts');
 
 	var taxa_counts = {};
 	for(var tax_name in unit_name_lookup){
@@ -497,12 +549,17 @@ function create_unit_name_counts(unit_name_lookup, post_items, unit_name_lookup_
 	}
 	//console.log('taxa_counts')
 	//console.log(taxa_counts)
+	console.timeEnd('TIME: create_unit_name_counts');
+
 	return taxa_counts;
 }
+
 //
 //	F I L L I N  N A M E  L O O K U P  P E R  D S
 //
 function fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {
+	console.time('TIME: fillin_name_lookup_per_ds');
+
 	//console.log('lookup1')
 	//console.log(lookup)
 	if (did in lookup) {
@@ -523,21 +580,25 @@ function fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {
 	}
 	//console.log('lookup2')
 	//console.log(lookup)
+	console.timeEnd('TIME: fillin_name_lookup_per_ds');
+
 	return lookup;
 }
+
 //
 //
 //
 function onlyUnique(value, index, self) {
 	return self.indexOf(value) === index;
 }
+
 //
 //	C R E A T E  B I O M  M A T R I X
 //
 function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, post_items ) {
+	console.time('TIME: create_biom_matrix');
 
 	console.log('in create_biom_matrix');  // uname:
-
 
 	for (var i in post_items.chosen_datasets) {   // correct order
 		var did = post_items.chosen_datasets[i].did;
@@ -584,5 +645,8 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, post_items ) {
 	// console.log('in create_biom_matrix2');
 // 	console.log(biom_matrix);
 // 	console.log(max_count);
+
+	console.timeEnd('TIME: create_biom_matrix');
+
 	return(biom_matrix);
 }
