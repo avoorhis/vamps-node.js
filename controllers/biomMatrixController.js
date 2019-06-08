@@ -15,11 +15,10 @@ class BiomMatrix {
   "did": 475152,
   "name": "SLM_NIR2_Bv4--Aligator_Pool01"
 }*/
-    this.choosen_dids           = this.get_dids();
+    this.chosen_dids           = this.get_dids();
+    this.taxa_counts            = new module.exports.TaxaCounts(this.req, this.visual_post_items, this.chosen_dids);
 
-    this.taxa_counts            = new module.exports.TaxaCounts(this.req, this.visual_post_items, this.choosen_dids);
-
-    const taxonomy_factory = new module.exports.TaxonomyFactory(this.visual_post_items, this.taxa_counts.taxonomy_object, this.choosen_dids, this.taxa_counts.current_tax_id_rows_by_did);
+    const taxonomy_factory = new module.exports.TaxonomyFactory(this.visual_post_items, this.taxa_counts, this.chosen_dids);
     this.taxonomy_lookup_module = taxonomy_factory.chosen_taxonomy;
     //taxcounts, rank, taxonomy_object, did, post_items
     this.taxonomy_lookup_module.make_tax_name_cnt_obj_per_did();
@@ -69,7 +68,6 @@ class BiomMatrix {
 
     //--
     this.biom_matrix = this.create_biom_matrix();
-    // ( this.biom_matrix, this.taxa_counts.unit_name_counts, this.taxa_counts.ukeys, this.visual_post_items );
 
     let true_meaning = [true, 1, "1"];
     if (this.visual_post_items.update_data in true_meaning) {
@@ -81,21 +79,6 @@ class BiomMatrix {
     write_matrix_file_mod.write_matrix_files();
     // }
   }
-
-  // choose_simple_or_custom_lookup_module() {
-  //   let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
-  //   let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
-  //   //TODO: args object send to whatever module is chosen
-  //   if (unit_choice_simple) {
-  //     return new module.exports.TaxonomySimple(this.taxonomy_object, this.chosen_dids);
-  //   }
-  //   else if (unit_choice_custom) {
-  //     return new module.exports.TaxonomyCustom(this.taxonomy_object, this.chosen_dids);
-  //   }
-  //   else {
-  //     console.log("ERROR: Can't choose simple or custom taxonomy");
-  //   }
-  // }
 
   get_columns() {
     console.time("get_columns");
@@ -288,10 +271,10 @@ class TaxaCounts {
     this.rank                 = this.post_items.tax_depth;
 
     this.taxonomy_object           = this.get_taxonomy_object();
-    this.curr_taxcounts_obj_of_str = this.get_taxcounts_obj_from_file();
-    this.curr_taxcounts_obj_w_arr  = this.make_current_tax_id_obj_of_arr(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
+    this.curr_taxcounts_obj_of_str_by_did = this.get_taxcounts_obj_from_file();
+    this.curr_taxcounts_obj_w_arr_by_did  = this.make_curr_taxcounts_obj_w_arr_by_did(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
 
-    this.current_tax_id_rows_by_did = this.make_current_tax_id_rows_by_did(); //TODO: only for simple?
+    this.tax_id_obj_by_did_filtered_by_rank = this.make_tax_id_obj_by_did_filtered_by_rank(); //TODO: only for simple?
   }
 
   get_taxonomy_file_prefix() {
@@ -338,26 +321,26 @@ class TaxaCounts {
     return taxcounts_obj_for_all_datasets;
   }
 
-  make_current_tax_id_obj_of_arr() {
+  make_curr_taxcounts_obj_w_arr_by_did() {
     // for each did get keys
     // keys "_1_2" to array [1,2]
     // add previous info
-    let current_tax_id_obj_of_arr = {};
+    let tax_id_obj_of_arr_by_did = {};
 
     for (let d_idx in this.chosen_dids) {//TODO: change
       let did = this.chosen_dids[d_idx];
-      current_tax_id_obj_of_arr[did] = [];
-      let curr_obj = this.curr_taxcounts_obj_of_str[did];
+      tax_id_obj_of_arr_by_did[did] = [];
+      let curr_obj = this.curr_taxcounts_obj_of_str_by_did[did];
       for (const [current_tax_id_row, current_cnt] of Object.entries(curr_obj)) {
         let temp_obj = {};
         let current_tax_id_arr_clean = this.split_taxcounts_to_arr(current_tax_id_row);
         temp_obj["tax_id_row"] = current_tax_id_row;
         temp_obj["cnt"] = current_cnt;
         temp_obj["tax_id_arr"] = current_tax_id_arr_clean;
-        current_tax_id_obj_of_arr[did].push(temp_obj);
+        tax_id_obj_of_arr_by_did[did].push(temp_obj);
       }
     }
-    return current_tax_id_obj_of_arr;
+    return tax_id_obj_of_arr_by_did;
   }
 
   split_taxcounts_to_arr(current_tax_id_row) {
@@ -366,17 +349,17 @@ class TaxaCounts {
     return current_tax_id_arr_clean;
   }
 
-  make_current_tax_id_rows_by_did() { //check if it is faster to make arrays from all tax_id_rows first
-    console.time("TIME: make_current_tax_id_rows_by_did");
-    let current_tax_id_obj_by_did = {};
+  make_tax_id_obj_by_did_filtered_by_rank() { //check if it is faster to make arrays from all tax_id_rows first
+    console.time("TIME: make_tax_id_obj_by_did_filtered_by_rank");
+    let tax_id_obj_by_did_filtered_by_rank = {};
 
     for (let d_idx in this.chosen_dids) {//TODO: change
       let did = this.chosen_dids[d_idx];
-      let current_tax_id_rows = this.curr_taxcounts_obj_w_arr[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
-      current_tax_id_obj_by_did[did] = current_tax_id_rows;
+      let current_tax_id_rows = this.curr_taxcounts_obj_w_arr_by_did[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
+      tax_id_obj_by_did_filtered_by_rank[did] = current_tax_id_rows;
     }
-    console.timeEnd("TIME: make_current_tax_id_rows_by_did");
-    return current_tax_id_obj_by_did;
+    console.timeEnd("TIME: make_tax_id_obj_by_did_filtered_by_rank");
+    return tax_id_obj_by_did_filtered_by_rank;
   }
 
   filter_tax_id_rows_by_rank(el) {
@@ -409,23 +392,22 @@ class TaxaCounts {
 }
 
 class TaxonomyFactory {
-  // const taxonomy_factory = new module.exports.TaxonomyFactory(this.visual_post_items, this.taxa_counts.taxonomy_object, this.choosen_dids, this.taxa_counts.current_tax_id_rows_by_did);
-
-  constructor(visual_post_items, taxonomy_object, chosen_dids, current_tax_id_rows_by_did) {
-    this.units             = visual_post_items.unit_choice;
-    // const arg_obj =
-    this.chosen_taxonomy = this.choose_simple_or_custom_lookup_module(visual_post_items, taxonomy_object, chosen_dids, current_tax_id_rows_by_did);
+  constructor(visual_post_items, taxa_counts, chosen_dids) {
+    this.units       = visual_post_items.unit_choice;
+    this.taxa_counts_module = taxa_counts;
+    this.chosen_dids = chosen_dids;
+    this.chosen_taxonomy = this.choose_simple_or_custom_lookup_module(visual_post_items, this.taxa_counts_module, this.chosen_dids);
   }
 
-  choose_simple_or_custom_lookup_module(visual_post_items, taxonomy_object, chosen_dids, current_tax_id_rows_by_did) {
+  choose_simple_or_custom_lookup_module(visual_post_items, taxa_counts_module, chosen_dids) {
     let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
     let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
     //TODO: args object send to whatever module is chosen
     if (unit_choice_simple) {
-      return new module.exports.TaxonomySimple(visual_post_items, taxonomy_object, chosen_dids, current_tax_id_rows_by_did);
+      return new module.exports.TaxonomySimple(visual_post_items, taxa_counts_module, chosen_dids);
     }
     else if (unit_choice_custom) {
-      return new module.exports.TaxonomyCustom(visual_post_items, taxonomy_object, chosen_dids, current_tax_id_rows_by_did);
+      return new module.exports.TaxonomyCustom(visual_post_items, taxa_counts_module, chosen_dids);
     }
     else {
       console.log("ERROR: Can't choose simple or custom taxonomy");
@@ -435,11 +417,12 @@ class TaxonomyFactory {
 }
 
 class Taxonomy {
-  constructor(visual_post_items, taxonomy_object, chosen_dids, current_tax_id_rows_by_did) {
+  constructor(visual_post_items, taxa_counts, chosen_dids) {
+    this.chosen_dids = chosen_dids;
     this.post_items                   = visual_post_items;
-    this.taxonomy_object              = taxonomy_object;
+    this.taxa_counts_module = taxa_counts;
+    this.taxonomy_object              = this.taxa_counts_module.taxonomy_object;
     this.chosen_dids                  = chosen_dids;
-    this.current_tax_id_rows_by_did   = current_tax_id_rows_by_did; //curr_taxcounts_objs
     this.tax_name_cnt_obj_1           = {};
     this.tax_name_cnt_obj_per_dataset = {};
   }
@@ -470,10 +453,9 @@ class Taxonomy {
 class TaxonomySimple extends Taxonomy {
 
   make_tax_name_cnt_obj_per_did() {
-    // let curr_taxcounts_objs = this.make_current_tax_id_rows_by_did(); //TODO: only for simple?
     for (let did_idx in this.chosen_dids) {//TODO: change
       let did = this.chosen_dids[did_idx];
-      let curr_taxcounts_obj = this.current_tax_id_rows_by_did[did];
+      let curr_taxcounts_obj = this.tax_id_obj_by_did_filtered_by_rank[did];
 
       console.time("TIME: current_tax_id_row_list");
       for (let obj_idx in curr_taxcounts_obj){//TODO: change
@@ -486,7 +468,6 @@ class TaxonomySimple extends Taxonomy {
       }
       console.timeEnd("TIME: current_tax_id_row_list");
     }
-    // return [tax_name_cnt_obj_1, tax_name_cnt_obj_per_dataset];
   }
 
   get_tax_long_name(curr_obj) {
@@ -546,7 +527,6 @@ class TaxonomySimple extends Taxonomy {
 class TaxonomyCustom extends Taxonomy {
 
   make_tax_name_cnt_obj_per_did() { //TODO: refactor
-    //taxcounts, rank, taxonomy_object, did, post_items
     console.time('TIME: taxonomy_unit_choice_custom');
     // ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 
@@ -555,16 +535,14 @@ class TaxonomyCustom extends Taxonomy {
 
       let db_tax_id_list                         = {};
       db_tax_id_list[did]                        = {};
-      let unit_name_lookup_1_dataset             = {};
-      let unit_name_lookup_per_dataset_1_dataset = {};
+      // let unit_name_lookup_1_dataset             = {};
+      // let unit_name_lookup_per_dataset_1_dataset = {};
 
       for (let t_idx = 0, taxa_length = custom_taxa.length; t_idx < taxa_length; t_idx++) {
         let selected_node_id = this.post_items.custom_taxa[t_idx];
-        //console.log('selected_node_id ', selected_node_id)
         if (this.taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id)) {
 
           let tax_node = this.taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
-          //console.log(tax_node)
 
           let id_chain_start       = '';
           let custom_tax_long_name = '';
@@ -577,15 +555,17 @@ class TaxonomyCustom extends Taxonomy {
           db_tax_id_list[did][selected_node_id] = combined_ids_res[0];
           custom_tax_long_name                  = combined_ids_res[1];
 
-          let cnt = this.get_tax_cnt(db_tax_id_list, did, selected_node_id, taxcounts);
+          let cnt = this.get_tax_cnt(db_tax_id_list, did, selected_node_id, this.taxa_counts_module.tax_id_obj_by_did);
 
-          unit_name_lookup_1_dataset[custom_tax_long_name] = 1;
-          unit_name_lookup_per_dataset_1_dataset           = this.fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, custom_tax_long_name, cnt);
+          // unit_name_lookup_1_dataset[custom_tax_long_name] = 1;
+          // unit_name_lookup_per_dataset_1_dataset           = this.fillin_name_lookup_per_ds(unit_name_lookup_per_dataset_1_dataset, did, custom_tax_long_name, cnt);
+          this.tax_name_cnt_obj_1[custom_tax_long_name] = 1;
+          this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(this.tax_name_cnt_obj_per_dataset, did, custom_tax_long_name, cnt); //TODO: refactor
         }
       }
       console.timeEnd('TIME: taxonomy_unit_choice_custom');
 
-      return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
+      // return [unit_name_lookup_1_dataset, unit_name_lookup_per_dataset_1_dataset];
     });
   }
 
@@ -603,22 +583,14 @@ class TaxonomyCustom extends Taxonomy {
   }
 
   //function(value){ return value.city=="Amsterdam";}
-  get_tax_cnt(db_tax_id_list, did, selected_node_id, taxcounts) {//TODO: refactor
+  get_tax_cnt(db_tax_id_list, did, selected_node_id) {//TODO: refactor
     console.time('TIME: for id_chain');
-    // let temp_cnt = 0;
+    const taxcounts = this.taxa_counts_module.curr_taxcounts_obj_of_str_by_did[did];
     let curr_tax_id_chain = db_tax_id_list[did][selected_node_id];
-
-    // arr.find(o => o.city === 'Amsterdam')
-    // temp_cnt = taxcounts.find(el.cnt => el.tax_id_row === curr_tax_id_chain);
-    let temp_arr_obj = taxcounts.find((el) => el.tax_id_row === curr_tax_id_chain);
     let temp_cnt = 0;
-    try { temp_cnt = temp_arr_obj[0]["cnt"] }
-    catch(err) {
-
+    if (Object.keys(taxcounts).indexOf(curr_tax_id_chain) !== -1) {
+      temp_cnt = taxcounts[curr_tax_id_chain];
     }
-    // if (Object.keys(taxcounts).indexOf(curr_tax_id_chain) !== -1) {
-    //   temp_cnt = taxcounts[curr_tax_id_chain];
-    // }
     console.timeEnd('TIME: for id_chain');
     return temp_cnt;
   }
@@ -632,7 +604,7 @@ class TaxonomyCustom extends Taxonomy {
   // }
 
   /*
-  *   let current_tax_id_rows = this.curr_taxcounts_obj_w_arr[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
+  *   let current_tax_id_rows = this.curr_taxcounts_obj_w_arr_by_did[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
   filter_tax_id_rows_by_rank(el) {
     let rank_no = parseInt(C.RANKS.indexOf(this.rank)) + 1;
     return el.tax_id_arr.length === rank_no;
