@@ -407,9 +407,9 @@ class TaxonomyFactory {
 
 class Taxonomy {
   constructor(visual_post_items, taxa_counts, chosen_dids) {
-    this.chosen_dids = chosen_dids;
+    this.chosen_dids                  = chosen_dids;
     this.post_items                   = visual_post_items;
-    this.taxa_counts_module = taxa_counts;
+    this.taxa_counts_module           = taxa_counts;
     this.taxonomy_object              = this.taxa_counts_module.taxonomy_object;
     this.chosen_dids                  = chosen_dids;
     this.tax_name_cnt_obj_1           = {};
@@ -444,7 +444,7 @@ class TaxonomySimple extends Taxonomy {
   make_tax_name_cnt_obj_per_did() {
     for (let did_idx in this.chosen_dids) {//TODO: change
       let did = this.chosen_dids[did_idx];
-      let curr_taxcounts_obj = this.tax_id_obj_by_did_filtered_by_rank[did];
+      let curr_taxcounts_obj = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did];
 
       console.time("TIME: current_tax_id_row_list");
       for (let obj_idx in curr_taxcounts_obj){//TODO: change
