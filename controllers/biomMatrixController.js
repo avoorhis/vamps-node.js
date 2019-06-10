@@ -127,7 +127,8 @@ class BiomMatrix {
 
   get_updated_biom_matrix() {//TODO: refactor
     console.log('in UPDATED biom_matrix');
-    var custom_count_matrix = extend({}, this.biom_matrix);  // this clones count_matrix which keeps original intact.
+    console.time("TIME: get_updated_biom_matrix");
+    let custom_count_matrix = extend({}, this.biom_matrix);  // this clones count_matrix which keeps original intact.
 
     var max_cnt = this.biom_matrix.max_dataset_count,
         min     = this.visual_post_items.min_range,
@@ -186,27 +187,47 @@ class BiomMatrix {
       console.log('no-calculating norm NORM');
     }
 
+
     // re-calculate totals
-    var tots = [];
-    // TODO: "'tmp' is already defined."
-    var tmp2 = {};
-    for (var cc2 in custom_count_matrix.data) {//TODO: change
-      for (var kc2 in custom_count_matrix.data[cc2]) {//TODO: change
-        if(kc2 in tmp2){
+    // var tots = [];
+    // // TODO: "'tmp' is already defined."
+    // var tmp2 = {};
+    // for (var cc2 in custom_count_matrix.data) {//TODO: change
+    //   for (var kc2 in custom_count_matrix.data[cc2]) {//TODO: change
+    //     if(kc2 in tmp2){
+    //       tmp2[kc2] += custom_count_matrix.data[cc2][kc2];
+    //     }else{
+    //       tmp2[kc2] = custom_count_matrix.data[cc2][kc2];
+    //     }
+    //   }
+    // }
+    // for (var kc3 in custom_count_matrix.columns){//TODO: change
+    //   tots.push(tmp2[kc3]);
+    // }
+    custom_count_matrix.column_totals = this.re_calculate_totals(custom_count_matrix);
+    custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
+
+    //console.log('returning custom_count_matrix');
+    console.timeEnd("TIME: get_updated_biom_matrix");
+    return custom_count_matrix;
+  }
+
+  re_calculate_totals(custom_count_matrix) {
+    let tots = [];
+    let tmp2 = {};
+    for (let cc2 in custom_count_matrix.data) {//TODO: change
+      for (let kc2 in custom_count_matrix.data[cc2]) {//TODO: change
+        if (kc2 in tmp2) {
           tmp2[kc2] += custom_count_matrix.data[cc2][kc2];
-        }else{
+        } else {
           tmp2[kc2] = custom_count_matrix.data[cc2][kc2];
         }
       }
     }
-    for (var kc3 in custom_count_matrix.columns){//TODO: change
+    for (let kc3 in custom_count_matrix.columns) {//TODO: change
       tots.push(tmp2[kc3]);
     }
-    custom_count_matrix.column_totals = tots;
-    custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
-
-    //console.log('returning custom_count_matrix');
-    return custom_count_matrix;
+    return tots;
   }
 
   create_biom_matrix() {//TODO: refactor
