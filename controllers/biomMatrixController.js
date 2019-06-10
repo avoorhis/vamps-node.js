@@ -215,12 +215,12 @@ class BiomMatrix {
   re_calculate_totals(custom_count_matrix) {//TODO: refactor
     let tots = [];
     let tmp_obj = {};
-    for (let col_idx in custom_count_matrix.data) {//96 columns = datasets
-      for (let row_idx in custom_count_matrix.data[col_idx]) {// custom_count_matrix.data = Array 192
-        if (row_idx in tmp_obj) {
-          tmp_obj[row_idx] += custom_count_matrix.data[col_idx][row_idx];
+    for (let row_idx in custom_count_matrix.data) {// custom_count_matrix.data = Array 192
+      for (let col_idx in custom_count_matrix.data[row_idx]) {//96 columns = datasets
+        if (col_idx in tmp_obj) {
+          tmp_obj[col_idx] += custom_count_matrix.data[row_idx][col_idx];
         } else {
-          tmp_obj[row_idx] = custom_count_matrix.data[col_idx][row_idx];
+          tmp_obj[col_idx] = custom_count_matrix.data[row_idx][col_idx];
         }
       }
     }
