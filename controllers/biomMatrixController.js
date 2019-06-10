@@ -130,29 +130,7 @@ class BiomMatrix {
     console.time("TIME: get_updated_biom_matrix");
     let custom_count_matrix = extend({}, this.biom_matrix);  // this clones count_matrix which keeps original intact.
 
-
     custom_count_matrix = this.adjust_for_percent_limit_change(custom_count_matrix);
-    // // Adjust for percent limit change
-    // var new_counts = [];
-    // var new_units = [];
-    // for (var c in custom_count_matrix.data) {//TODO: change
-    //
-    //   var got_one = false;
-    //   for (var k in custom_count_matrix.data[c]) {//TODO: change
-    //     var thispct = (custom_count_matrix.data[c][k]*100)/custom_count_matrix.column_totals[k];
-    //     if(thispct > min && thispct < max){
-    //       got_one = true;
-    //     }
-    //   }
-    //
-    //   if(got_one){
-    //     new_counts.push(custom_count_matrix.data[c]);
-    //     new_units.push(custom_count_matrix.rows[c]);
-    //   } else {
-    //     console.log('rejecting '+custom_count_matrix.rows[c].name);
-    //   }
-    // }
-
     custom_count_matrix = this.adjust_for_normalization(custom_count_matrix);
     custom_count_matrix.column_totals = this.re_calculate_totals(custom_count_matrix);
     custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
