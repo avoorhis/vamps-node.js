@@ -125,14 +125,14 @@ class BiomMatrix {
     return tmparr;
   }
 
-  get_updated_biom_matrix(post_items, mtx) {//TODO: refactor
+  get_updated_biom_matrix() {//TODO: refactor
     console.log('in UPDATED biom_matrix');
-    var custom_count_matrix = extend({},mtx);  // this clones count_matrix which keeps original intact.
+    var custom_count_matrix = extend({}, this.biom_matrix);  // this clones count_matrix which keeps original intact.
 
-    var max_cnt = mtx.max_dataset_count,
-        min     = post_items.min_range,
-        max     = post_items.max_range,
-        norm    = post_items.normalization;
+    var max_cnt = this.biom_matrix.max_dataset_count,
+        min     = this.visual_post_items.min_range,
+        max     = this.visual_post_items.max_range,
+        norm    = this.visual_post_items.normalization;
 
     // Adjust for percent limit change
     var new_counts = [];
