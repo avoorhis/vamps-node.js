@@ -168,12 +168,11 @@ class BiomMatrix {
 
   adjust_for_normalization(custom_count_matrix) {
     let norm    = this.visual_post_items.normalization;
-    let tmp1 = [];
     if (norm === 'maximum'|| norm === 'max') {
-      custom_count_matrix = this.calculating_norm_max(custom_count_matrix, tmp1);
+      custom_count_matrix.data = this.calculating_norm_max(custom_count_matrix);
     }
     else if (norm === 'frequency' || norm === 'freq') {
-      custom_count_matrix = this.calculating_norm_freq(custom_count_matrix, tmp1);
+      custom_count_matrix.data = this.calculating_norm_freq(custom_count_matrix);
     }
     else{
       // nothing here
@@ -182,8 +181,10 @@ class BiomMatrix {
     return custom_count_matrix;
   }
 
-  calculating_norm_freq(custom_count_matrix, tmp1) {//TODO: very similar to calculating_norm_freq
+  calculating_norm_freq(custom_count_matrix) {//TODO: very similar to calculating_norm_freq
     console.log('calculating norm FREQ');
+    let tmp1 = [];
+
     for (let cc1 in custom_count_matrix.data) {//TODO: change
       let new_counts = [];
       for (let kc1 in custom_count_matrix.data[cc1]) {//TODO: change
@@ -191,13 +192,12 @@ class BiomMatrix {
       }
       tmp1.push(new_counts);
     }
-    custom_count_matrix.data = tmp1;
-    return custom_count_matrix;
-
+    return tmp1;
   }
 
-  calculating_norm_max(custom_count_matrix, tmp1) {
+  calculating_norm_max(custom_count_matrix) {
     console.log('calculating norm MAX');
+    let tmp1 = [];
     let max_cnt = this.biom_matrix.max_dataset_count;
     for (var cc in custom_count_matrix.data) {//TODO: change
       let new_counts = [];
@@ -207,9 +207,7 @@ class BiomMatrix {
       }
       tmp1.push(new_counts);
     }
-
-    custom_count_matrix.data = tmp1;
-    return custom_count_matrix;
+    return tmp1;
   }
 
   re_calculate_totals(custom_count_matrix) {//TODO: refactor
