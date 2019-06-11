@@ -214,24 +214,12 @@ class BiomMatrix {
 
   re_calculate_totals(custom_count_matrix) {//TODO: refactor
     console.time("TIME: re_calculate_totals");
-    let tots = [];
-    let tmp2 = {};
-    let col = custom_count_matrix.data;
-    // for (let col_idx in custom_count_matrix.data) {//TODO: change // custom_count_matrix.data = Array 192
-    for (let col_idx = 0, col_length = col.length; col_idx < col_length; col_idx++) {
-      let row = custom_count_matrix.data[col_idx];
-      for (let row_idx = 0, row_length = row.length; row_idx < row_length; row_idx++) {//96 columns = datasets
-
-        if (row_idx in tmp2) {
-          tmp2[row_idx] += row[row_idx];
-        } else {
-          tmp2[row_idx] = row[row_idx];
-        }
-      }
-    }
-    for (let kc3 in custom_count_matrix.columns) {//TODO: change
-      tots.push(tmp2[kc3]);
-    }
+    let array = custom_count_matrix.data,
+        tots = array.reduce(function (r, a) {
+          a.forEach(function (b, i) {
+            r[i] = (r[i] || 0) + b;
+          });         return r;
+        }, []);
     console.timeEnd("TIME: re_calculate_totals");
     return tots;
   }
