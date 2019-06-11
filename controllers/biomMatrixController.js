@@ -213,11 +213,13 @@ class BiomMatrix {
   }
 
   re_calculate_totals(custom_count_matrix) {//TODO: refactor
+    console.time("TIME: re_calculate_totals");
     let tots = [];
     let tmp2 = {};
-    for (let col_idx in custom_count_matrix.data) {//TODO: change
+    for (let col_idx in custom_count_matrix.data) {//TODO: change // custom_count_matrix.data = Array 192
       let row = custom_count_matrix.data[col_idx];
-      for (let row_idx in row) {//TODO: change
+      for (let row_idx = 0, row_length = row.length; row_idx < row_length; row_idx++) {//96 columns = datasets
+
         if (row_idx in tmp2) {
           tmp2[row_idx] += row[row_idx];
         } else {
@@ -228,6 +230,7 @@ class BiomMatrix {
     for (let kc3 in custom_count_matrix.columns) {//TODO: change
       tots.push(tmp2[kc3]);
     }
+    console.timeEnd("TIME: re_calculate_totals");
     return tots;
   }
 
