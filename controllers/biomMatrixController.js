@@ -216,7 +216,9 @@ class BiomMatrix {
     console.time("TIME: re_calculate_totals");
     let tots = [];
     let tmp2 = {};
-    for (let col_idx in custom_count_matrix.data) {//TODO: change // custom_count_matrix.data = Array 192
+    let col = custom_count_matrix.data;
+    // for (let col_idx in custom_count_matrix.data) {//TODO: change // custom_count_matrix.data = Array 192
+    for (let col_idx = 0, col_length = col.length; col_idx < col_length; col_idx++) {
       let row = custom_count_matrix.data[col_idx];
       for (let row_idx = 0, row_length = row.length; row_idx < row_length; row_idx++) {//96 columns = datasets
 
