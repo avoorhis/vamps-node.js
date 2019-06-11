@@ -125,7 +125,7 @@ class BiomMatrix {
     return tmparr;
   }
 
-  get_updated_biom_matrix() {//TODO: refactor
+  get_updated_biom_matrix() {
     console.log('in UPDATED biom_matrix');
     console.time("TIME: get_updated_biom_matrix");
     let custom_count_matrix = extend({}, this.biom_matrix);  // this clones count_matrix which keeps original intact.
@@ -135,12 +135,13 @@ class BiomMatrix {
     custom_count_matrix.column_totals = this.re_calculate_totals(custom_count_matrix);
     custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
 
-    //console.log('returning custom_count_matrix');
     console.timeEnd("TIME: get_updated_biom_matrix");
     return custom_count_matrix;
   }
 
-  adjust_for_percent_limit_change(custom_count_matrix) {
+  adjust_for_percent_limit_change(custom_count_matrix) {//TODO: refactor
+    console.time("TIME: adjust_for_percent_limit_change");
+
     let min     = this.visual_post_items.min_range;
     let max     = this.visual_post_items.max_range;
     let new_counts = [];
@@ -164,19 +165,18 @@ class BiomMatrix {
     }
     custom_count_matrix.data = new_counts;
     custom_count_matrix.rows = new_units;
+    console.timeEnd("TIME: adjust_for_percent_limit_change");
 
     return custom_count_matrix;
   }
 
   adjust_for_normalization(custom_count_matrix) {
-    let norm    = this.visual_post_items.normalization;
+    let norm = this.visual_post_items.normalization;
     if (norm === 'maximum'|| norm === 'max') {
       custom_count_matrix.data = this.calculating_norm(custom_count_matrix, this.calculating_norm_max.bind(this));
-      // custom_count_matrix.data = this.calculating_norm_max(norm_counts);
     }
     else if (norm === 'frequency' || norm === 'freq') {
       custom_count_matrix.data = this.calculating_norm(custom_count_matrix, this.calculating_norm_freq);
-      // custom_count_matrix.data = this.calculating_norm_freq(norm_counts);
     }
     else{
       // nothing here
@@ -186,7 +186,6 @@ class BiomMatrix {
   }
 
   calculating_norm(custom_count_matrix, normalization_kind_func) {
-  // calculating_norm(custom_count_matrix) {
     console.log('calculating norm MAX');
     console.time("TIME: calculating_norm");
 
@@ -209,62 +208,14 @@ class BiomMatrix {
   }
 
   calculating_norm_freq(norm_cnt) {
-    console.log('calculating norm FREQ');
     return parseFloat( norm_cnt.toFixed(6) ) || 0;
   }
 
   calculating_norm_max(norm_cnt) {
-    console.log('calculating norm MAX');
     let max_cnt = this.biom_matrix.max_dataset_count;
     let normalized_cnt = norm_cnt * max_cnt;
     return parseInt(normalized_cnt, 10) || 0;
   }
-
-
-  // calculating_norm_freq(custom_count_matrix) {//TODO: very similar to calculating_norm_freq
-  //   console.log('calculating norm FREQ');
-  //   console.time("TIME: calculating_norm_freq");
-  //
-  //   let new_count = [];
-  //   let arr = custom_count_matrix.data;
-  //
-  //   for (let i = 0, arr_len = arr.length; i < arr_len; i++){
-  //     let interim_arr = [];
-  //     for (let j = 0, arr1_len = arr[i].length; j < arr1_len; j++) {
-  //       let cell = custom_count_matrix.data[i][j];
-  //       let col_total = custom_count_matrix.column_totals[j];
-  //       let freq_cnt = cell / col_total;
-  //       interim_arr.push(parseFloat( freq_cnt.toFixed(6) ) || 0);
-  //     }
-  //     new_count.push(interim_arr);
-  //   }
-  //   console.timeEnd("TIME: calculating_norm_freq");
-  //
-  //   return new_count;
-  // }
-
-  // calculating_norm_max(custom_count_matrix) {
-  //   console.log('calculating norm MAX');
-  //   console.time("TIME: calculating_norm_max");
-  //
-  //   let arr = custom_count_matrix.data;
-  //   let new_counts = [];
-  //   let max_cnt = this.biom_matrix.max_dataset_count;
-  //
-  //   for (let i = 0, arr_len = arr.length; i < arr_len; i++){
-  //     let interim_arr = [];
-  //     for (let j = 0, arr1_len = arr[i].length; j < arr1_len; j++) {
-  //       let cell = custom_count_matrix.data[i][j];
-  //       let col_total = custom_count_matrix.column_totals[j];
-  //       let normalized_cnt = cell * max_cnt / col_total;
-  //       interim_arr[j] = parseInt(normalized_cnt, 10) || 0;
-  //     }
-  //     new_counts.push(interim_arr);
-  //   }
-  //   console.timeEnd("TIME: calculating_norm_max");
-  //
-  //   return new_counts;
-  // }
 
   re_calculate_totals(custom_count_matrix) {//TODO: refactor
     console.time("TIME: re_calculate_totals");
@@ -543,7 +494,6 @@ class TaxonomySimple extends Taxonomy {
       let did = this.chosen_dids[did_idx];
       let curr_taxcounts_obj = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did];
 
-      console.time("TIME: current_tax_id_row_list");
       for (let obj_idx in curr_taxcounts_obj){//TODO: change
         let curr_obj = curr_taxcounts_obj[obj_idx];
         let cnt = curr_obj.cnt;
@@ -552,7 +502,6 @@ class TaxonomySimple extends Taxonomy {
         this.tax_name_cnt_obj_1[tax_long_name] = 1;
         this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(this.tax_name_cnt_obj_per_dataset, did, tax_long_name, cnt); //TODO: refactor
       }
-      console.timeEnd("TIME: current_tax_id_row_list");
     }
     console.timeEnd("TIME: make_tax_name_cnt_obj_per_did");
 
