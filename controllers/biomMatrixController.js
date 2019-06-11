@@ -188,11 +188,13 @@ class BiomMatrix {
     console.time("TIME: calculating_norm_freq");
 
     let tmp1 = [];
+    let arr = custom_count_matrix.data;
 
-    for (let cc1 in custom_count_matrix.data) {//TODO: change
+    for (let i = 0, arr_len = arr.length; i < arr_len; i++){
       let new_counts = [];
-      for (let kc1 in custom_count_matrix.data[cc1]) {//TODO: change
-        new_counts.push(parseFloat( (custom_count_matrix.data[cc1][kc1] / custom_count_matrix.column_totals[kc1]).toFixed(6) ) || 0);
+      // for (let kc1 in custom_count_matrix.data[cc1]) {//TODO: change
+      for (let j = 0, arr1_len = arr[i].length; j < arr1_len; j++) {
+        new_counts.push(parseFloat( (custom_count_matrix.data[i][j] / custom_count_matrix.column_totals[j]).toFixed(6) ) || 0);
       }
       tmp1.push(new_counts);
     }
