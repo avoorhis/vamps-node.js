@@ -214,36 +214,23 @@ class BiomMatrix {
 
   re_calculate_totals(custom_count_matrix) {//TODO: refactor
     console.time("TIME: re_calculate_totals");
-    let array = custom_count_matrix.data,
-        tots = array.reduce(function (r, a) {
-          a.forEach(function (b, i) {
-            r[i] = (r[i] || 0) + b;
-          });         return r;
-        }, []);
+    let arr = custom_count_matrix.data;
+    let tots = [];
+
+    for (let i = 0, arr_len = arr.length; i < arr_len; i++){
+      for (let j = 0, arr1_len = arr[i].length; j < arr1_len; j++){
+        tots[j] = (tots[j] || 0) + arr[i][j];
+      }
+    }
+    // let array = custom_count_matrix.data,
+    //     tots = array.reduce(function (r, a) {
+    //       a.forEach(function (b, i) {
+    //         r[i] = (r[i] || 0) + b;
+    //       });         return r;
+    //     }, []);
     console.timeEnd("TIME: re_calculate_totals");
     return tots;
   }
-
-  // re_calculate_totals(custom_count_matrix) {//TODO: refactor
-  //   let tots = []; // 211 cols x 96 columns (datasets)
-  //   let tmp_obj = {};
-  //   for (let col_idx in custom_count_matrix.data) {// custom_count_matrix.data = Array 192
-  //     let row = custom_count_matrix.data[col_idx];
-  //     for (let row_idx = 0, row_length = row.length; row_idx < row_length; row_idx++) {//96 columns = datasets
-  //       // let tmp_obj_keys = Object.keys(tmp_obj);
-  //       // if (tmp_obj_keys.includes(row_idx)) {
-  //       if (row_idx in tmp_obj) {
-  //         tmp_obj[row_idx] += custom_count_matrix.data[col_idx][row_idx];
-  //       } else {
-  //         tmp_obj[row_idx] = custom_count_matrix.data[col_idx][row_idx];
-  //       }
-  //     }
-  //   }
-  //   for (let kc3 in custom_count_matrix.rowumns) {//TODO: change
-  //     tots.push(tmp_obj[kc3]);
-  //   }
-  //   return tots;
-  // }
 
   create_biom_matrix() {//TODO: refactor
     console.log('in create_this.biom_matrix');  // uname:
