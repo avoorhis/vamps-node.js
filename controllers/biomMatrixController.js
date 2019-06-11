@@ -199,17 +199,53 @@ class BiomMatrix {
 
   calculating_norm_max(custom_count_matrix) {
     console.log('calculating norm MAX');
-    let tmp1 = [];
-    let max_cnt = this.biom_matrix.max_dataset_count;
-    for (var cc in custom_count_matrix.data) {//TODO: change
-      let new_counts = [];
-      for (var kc in custom_count_matrix.data[cc]) {//TODO: change
-        new_counts.push(parseInt( ( custom_count_matrix.data[cc][kc] * max_cnt ) / custom_count_matrix.column_totals[kc], 10) );
+    console.time("TIME: calculating_norm_max");
 
+    let arr = custom_count_matrix.data;
+    let new_counts = [];
+    let max_cnt = this.biom_matrix.max_dataset_count;
+
+    for (let i = 0, arr_len = arr.length; i < arr_len; i++){
+      let interim_arr = [];
+      for (let j = 0, arr1_len = arr[i].length; j < arr1_len; j++) {
+        // tots[j] = (tots[j] || 0) + arr[i][j];
+        // parseInt(( custom_count_matrix.data[i][j] * max_cnt ) / custom_count_matrix.column_totals[j], 10);
+        let cell = custom_count_matrix.data[i][j];
+        let col_total = custom_count_matrix.column_totals[j];
+        let normalized_cnt = (cell * max_cnt) / col_total;
+        interim_arr[j] = parseInt(normalized_cnt, 10) || 0;
       }
-      tmp1.push(new_counts);
+      new_counts.push(interim_arr);
     }
-    return tmp1;
+
+    // let tmp1 = [];
+    // let max_cnt = this.biom_matrix.max_dataset_count;
+    // for (var cc in custom_count_matrix.data) {//TODO: change
+    //   let new_counts = [];
+    //   for (var col_num in custom_count_matrix.data[cc]) {//TODO: change
+    //     new_counts.push(parseInt( ( custom_count_matrix.data[cc][col_num] * max_cnt ) / custom_count_matrix.column_totals[col_num], 10) );
+    //     let r1 = custom_count_matrix.data[cc][col_num] * max_cnt;
+    //     let r2 =  custom_count_matrix.column_totals[col_num];
+    //     let r3 = r1 / r2;
+    //     let r4 = parseInt(r3);
+    //
+    //   }
+      // tmp1.push(new_counts);
+    // }
+
+    // console.log('OOO1 from calculating_norm_max JSON.stringify(tmp1) = ', JSON.stringify(tmp1));
+
+    // let arr = custom_count_matrix.data;
+    // let tots = [];
+    //
+    // for (let i = 0, arr_len = arr.length; i < arr_len; i++){
+    //   for (let j = 0, arr1_len = arr[i].length; j < arr1_len; j++){
+    //     tots[j] = (tots[j] || 0) + arr[i][j];
+    //   }
+    // }
+    console.timeEnd("TIME: calculating_norm_max");
+
+    return new_counts;
   }
 
   re_calculate_totals(custom_count_matrix) {//TODO: refactor
