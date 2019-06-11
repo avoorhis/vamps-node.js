@@ -3,7 +3,7 @@ const C      = require(app_root + '/public/constants');
 let path     = require("path");
 var extend = require('util')._extend;
 
-// let helpers = require(app_root + '/routes/helpers/helpers');
+let helpers = require(app_root + '/routes/helpers/helpers');
 
 class BiomMatrix {
 
@@ -37,7 +37,7 @@ class BiomMatrix {
 
     console.time('TIME: ukeys');
     let ukeys = this.remove_empty_rows(); //TODO: refactor
-    this.ukeys = ukeys.filter(this.onlyUnique);
+    this.ukeys = ukeys.filter(helpers.onlyUnique);
     this.ukeys.sort();
     console.timeEnd('TIME: ukeys');
 
@@ -214,22 +214,43 @@ class BiomMatrix {
 
   re_calculate_totals(custom_count_matrix) {//TODO: refactor
     let tots = [];
-    let tmp_obj = {};
-    for (let row_idx in custom_count_matrix.data) {// custom_count_matrix.data = Array 192
-      let col = custom_count_matrix.data[row_idx];
-      for (let col_idx = 0, col_length = col.length; col_idx < col_length; col_idx++) {//96 columns = datasets
-        if (tmp_obj.includes(col_idx)) {
-          tmp_obj[col_idx] += custom_count_matrix.data[row_idx][col_idx];
+    let tmp2 = {};
+    for (let col_idx in custom_count_matrix.data) {//TODO: change
+      let row = custom_count_matrix.data[col_idx];
+      for (let row_idx in row) {//TODO: change
+        if (row_idx in tmp2) {
+          tmp2[row_idx] += row[row_idx];
         } else {
-          tmp_obj[col_idx] = custom_count_matrix.data[row_idx][col_idx];
+          tmp2[row_idx] = row[row_idx];
         }
       }
     }
     for (let kc3 in custom_count_matrix.columns) {//TODO: change
-      tots.push(tmp_obj[kc3]);
+      tots.push(tmp2[kc3]);
     }
     return tots;
   }
+
+  // re_calculate_totals(custom_count_matrix) {//TODO: refactor
+  //   let tots = []; // 211 cols x 96 columns (datasets)
+  //   let tmp_obj = {};
+  //   for (let col_idx in custom_count_matrix.data) {// custom_count_matrix.data = Array 192
+  //     let row = custom_count_matrix.data[col_idx];
+  //     for (let row_idx = 0, row_length = row.length; row_idx < row_length; row_idx++) {//96 columns = datasets
+  //       // let tmp_obj_keys = Object.keys(tmp_obj);
+  //       // if (tmp_obj_keys.includes(row_idx)) {
+  //       if (row_idx in tmp_obj) {
+  //         tmp_obj[row_idx] += custom_count_matrix.data[col_idx][row_idx];
+  //       } else {
+  //         tmp_obj[row_idx] = custom_count_matrix.data[col_idx][row_idx];
+  //       }
+  //     }
+  //   }
+  //   for (let kc3 in custom_count_matrix.rowumns) {//TODO: change
+  //     tots.push(tmp_obj[kc3]);
+  //   }
+  //   return tots;
+  // }
 
   create_biom_matrix() {//TODO: refactor
     console.log('in create_this.biom_matrix');  // uname:
@@ -257,9 +278,9 @@ class BiomMatrix {
     return this.biom_matrix;
   }
 
-  onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
-  }
+  // onlyUnique(value, index, self) {
+  //   return self.indexOf(value) === index;
+  // }
 
   get_max(max){
     let max_count = this.get_max_count_per_did();
