@@ -522,7 +522,8 @@ class TaxonomySimple extends Taxonomy {
       let one_taxon_name = this.get_one_taxon_name(db_id, current_rank);
       tax_long_name_arr.push(one_taxon_name);
     }
-    tax_long_name = this.clean_long_name(tax_long_name_arr); //TODO: join instead
+    tax_long_name_arr = this.screen_domains(tax_long_name_arr);
+    tax_long_name = this.combine_long_name(tax_long_name_arr);
 
     return tax_long_name;
   }
@@ -547,63 +548,24 @@ class TaxonomySimple extends Taxonomy {
     return one_taxon_name;
   }
 
-  screen_domains() {
-    /*
-    									var domain = '';
-									  if(this_rank == 'domain'){
-											domain = tax_node.taxon;
-									  }
+  screen_domains(tax_long_name_arr) {
+    console.time("TIME: screen_domains indexOf");
+    let organelle_has_been_de_selected = this.post_items.domains.indexOf('Organelle') === -1;
+    console.timeEnd("TIME: screen_domains indexOf");
 
-    * {
-										//console.log('IN NO NAs1')
-										if(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length) != '_NA'){
-											//console.log('ADDING '+tax_long_name)
-											// SCREEN DOMAINS
-											if( domain == 'Bacteria'
- 													&& (post_items.domains.indexOf('Organelle') == -1) // Organelle has been de-selected
- 													&& tax_long_name.toLowerCase().includes('chloroplast')) {
- 													//&& (tax_long_name.substring(0,20) == 'Bacteria;Chloroplast' || tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast')){
- 														console.log('Excluding',tax_long_name)
- 											}else{
-													if(post_items.domains.indexOf(domain) != -1){
-														unit_name_lookup[tax_long_name] = 1;
-														unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-													}
-											}
-
-										}
-
-									}else{
-										// SCREEN DOMAINS
-										if( domain == 'Bacteria'
- 													&& (post_items.domains.indexOf('Organelle') == -1) // Organelle has been de-selected
- 													&& tax_long_name.toLowerCase().includes('chloroplast')) {
- 													//&& (tax_long_name.substring(0,20) == 'Bacteria;Chloroplast' || tax_long_name.substring(0,34) == 'Bacteria;Cyanobacteria;Chloroplast')){
- 														console.log('Excluding',tax_long_name)
-            							}else{
-													if(post_items.unit_choice.substring(0,9)  == 'tax_silva' || post_items.unit_choice.substring(0,7)  == 'tax_rdp'){
-                                                        if(post_items.domains.indexOf(domain) != -1 && post_items.unit_choice ){
-                                                                unit_name_lookup[tax_long_name] = 1;
-                                                                unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-                                                        }
-                                                    }else{
-                                                        unit_name_lookup[tax_long_name] = 1;
-                                                        unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-                                                    }
-													//console.log('XXXXXXXXXXXXX')
-													//console.log('unit_name_lookup')
-													//console.log(unit_name_lookup)
-										}
-									}
-
-
-								}
-
-							}
-    * */
+    console.time("TIME: screen_domains includes");
+    let organelle_has_been_de_selected1 = !(this.post_items.domains.includes('Organelle'));
+    console.timeEnd("TIME: screen_domains includes");
+    
+    let has_chloroplast = tax_long_name_arr.includes('Chloroplast');
+    if ((tax_long_name_arr[0] === 'Bacteria') && organelle_has_been_de_selected && has_chloroplast) {
+      console.log('Excluding', tax_long_name_arr);
+      tax_long_name_arr = [];
+    }
+    return tax_long_name_arr;
   }
 
-  clean_long_name(tax_long_name_arr) {
+  combine_long_name(tax_long_name_arr) {
     return tax_long_name_arr.join(";");
   }
 
