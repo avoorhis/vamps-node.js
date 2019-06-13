@@ -219,7 +219,7 @@ class BiomMatrix {
     return parseInt(normalized_cnt, 10) || 0;
   }
 
-  re_calculate_totals(custom_count_matrix) {//TODO: refactor
+  re_calculate_totals(custom_count_matrix) {
     console.time("TIME: re_calculate_totals");
     let arr = custom_count_matrix.data;
     let tots = [];
@@ -544,7 +544,7 @@ class TaxonomySimple extends Taxonomy {
       let tax_node = this.get_tax_node(db_id_n_rank, this.taxonomy_object);
       if (tax_node.taxon) {
         one_taxon_name = tax_node.taxon;
-      } else {
+      } else { //TODO: check for empty_... and combine with _NA?
         let rank_name  = this.check_rank_name(rank); //TODO: this and if below to a func?
         one_taxon_name = rank_name + '_NA';
       }
