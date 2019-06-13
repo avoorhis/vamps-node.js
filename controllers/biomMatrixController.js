@@ -522,7 +522,10 @@ class TaxonomySimple extends Taxonomy {
       let one_taxon_name = this.get_one_taxon_name(db_id, current_rank);
       tax_long_name_arr.push(one_taxon_name);
     }
+    console.time("TIME: screen_domains");
     tax_long_name_arr = this.screen_domains(tax_long_name_arr);
+    console.timeEnd("TIME: screen_domains");
+
     tax_long_name = this.combine_long_name(tax_long_name_arr);
 
     return tax_long_name;
@@ -549,20 +552,18 @@ class TaxonomySimple extends Taxonomy {
   }
 
   screen_domains(tax_long_name_arr) {
-    console.time("TIME: screen_domains indexOf");
-    let organelle_has_been_de_selected = this.post_items.domains.indexOf('Organelle') === -1;
-    console.timeEnd("TIME: screen_domains indexOf");
 
-    console.time("TIME: screen_domains includes");
-    let organelle_has_been_de_selected1 = !(this.post_items.domains.includes('Organelle'));
-    console.timeEnd("TIME: screen_domains includes");
-    
-    let has_chloroplast = tax_long_name_arr.includes('Chloroplast');
-    if ((tax_long_name_arr[0] === 'Bacteria') && organelle_has_been_de_selected && has_chloroplast) {
-      console.log('Excluding', tax_long_name_arr);
-      tax_long_name_arr = [];
+    let organelle_has_been_de_selected = this.post_items.domains.indexOf('Organelle') === -1;
+    if (organelle_has_been_de_selected) {
+      let has_chloroplast = tax_long_name_arr.includes('Chloroplast');
+      let has_bacteria = tax_long_name_arr[0] === 'Bacteria';
+      if (has_bacteria && has_chloroplast) {
+        console.log('Excluding', tax_long_name_arr);
+      }
     }
-    return tax_long_name_arr;
+    else {
+      return tax_long_name_arr;
+    }
   }
 
   combine_long_name(tax_long_name_arr) {
