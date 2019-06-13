@@ -141,26 +141,28 @@ class BiomMatrix {
 
   adjust_for_percent_limit_change(custom_count_matrix) {//TODO: refactor
     console.time("TIME: adjust_for_percent_limit_change");
-
     let min     = this.visual_post_items.min_range;
     let max     = this.visual_post_items.max_range;
     let new_counts = [];
     let new_units = [];
-    for (let c in custom_count_matrix.data) {//TODO: change
-
+    let cnt_matrix = custom_count_matrix.data;
+    for (let idx1 in cnt_matrix) {//TODO: change
       let got_one = false;
-      for (let k in custom_count_matrix.data[c]) {//TODO: change
-        let thispct = (custom_count_matrix.data[c][k]*100)/custom_count_matrix.column_totals[k];
-        if(thispct > min && thispct < max){
+      let row = cnt_matrix[idx1];
+      for (let idx2 in row) {//TODO: change
+        let cell = row[idx2];
+        let curr_col_total = custom_count_matrix.column_totals[idx2];
+        let curr_cell_pct = cell * 100 / curr_col_total;
+        if (curr_cell_pct > min && curr_cell_pct < max){// >min, so 0 is not included!
           got_one = true;
         }
       }
 
       if(got_one){
-        new_counts.push(custom_count_matrix.data[c]);
-        new_units.push(custom_count_matrix.rows[c]);
+        new_counts.push(cnt_matrix[idx1]);
+        new_units.push(custom_count_matrix.rows[idx1]); //?
       } else {
-        console.log('rejecting ' + custom_count_matrix.rows[c].name);
+        console.log('rejecting ' + custom_count_matrix.rows[idx1].name);
       }
     }
     custom_count_matrix.data = new_counts;
@@ -458,6 +460,7 @@ class Taxonomy {
     this.taxa_counts_module           = taxa_counts;
     this.taxonomy_object              = this.taxa_counts_module.taxonomy_object;
     this.chosen_dids                  = chosen_dids;
+    this.id_rank_taxa_cash            = {};
     this.tax_name_cnt_obj_1           = {};
     this.tax_name_cnt_obj_per_dataset = {};
   }
@@ -514,11 +517,11 @@ class TaxonomySimple extends Taxonomy {
 
     for (let id_idx = 0, len = ids.length; id_idx < len; id_idx++) {
       let db_id = ids[id_idx];
+
       let current_rank = C.RANKS[id_idx];
       let one_taxon_name = this.get_one_taxon_name(db_id, current_rank);
       tax_long_name_arr.push(one_taxon_name);
     }
-
     tax_long_name = this.clean_long_name(tax_long_name_arr); //TODO: join instead
 
     return tax_long_name;
@@ -527,17 +530,22 @@ class TaxonomySimple extends Taxonomy {
   get_one_taxon_name(db_id, rank) {
     let one_taxon_name = "";
     let db_id_n_rank = db_id + '_' + rank;
-    let tax_node = this.get_tax_node(db_id_n_rank, this.taxonomy_object); //TODO: save db_id_n_rank and one_taxon_name to a dict and check if there first. Benchmark first!
-    let rank_name = this.check_rank_name(rank); //TODO: this and if below ot a func?
-    if (tax_node.taxon) {
-      one_taxon_name = tax_node.taxon;
+
+    if (this.id_rank_taxa_cash.hasOwnProperty(db_id_n_rank)) {
+      one_taxon_name = this.id_rank_taxa_cash[db_id_n_rank];
     }
     else {
-      one_taxon_name = rank_name + '_NA';
+      let tax_node = this.get_tax_node(db_id_n_rank, this.taxonomy_object);
+      if (tax_node.taxon) {
+        one_taxon_name = tax_node.taxon;
+      } else {
+        let rank_name  = this.check_rank_name(rank); //TODO: this and if below to a func?
+        one_taxon_name = rank_name + '_NA';
+      }
+      this.id_rank_taxa_cash[db_id_n_rank] = one_taxon_name;
     }
     return one_taxon_name;
   }
-
 
   clean_long_name(tax_long_name_arr) {
     return tax_long_name_arr.join(";");
@@ -553,7 +561,8 @@ class TaxonomySimple extends Taxonomy {
 
   check_rank_name(this_rank) {
     let rank_name = this_rank;
-    if (this_rank === 'klass') {
+    // const wrong_class_names = ["klass" ]; //TODO: add empty_
+    if (this_rank === "klass") {
       rank_name = 'class';
     }
     return rank_name;
