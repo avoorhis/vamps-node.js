@@ -502,8 +502,10 @@ class TaxonomySimple extends Taxonomy {
         let cnt = curr_obj.cnt;
         let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
 
-        this.tax_name_cnt_obj_1[tax_long_name] = 1;
-        this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(this.tax_name_cnt_obj_per_dataset, did, tax_long_name, cnt); //TODO: refactor
+        if (tax_long_name) {
+          this.tax_name_cnt_obj_1[tax_long_name] = 1;
+          this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(this.tax_name_cnt_obj_per_dataset, did, tax_long_name, cnt); //TODO: refactor
+        }
       }
     }
     console.timeEnd("TIME: make_tax_name_cnt_obj_per_did");
@@ -522,13 +524,13 @@ class TaxonomySimple extends Taxonomy {
       let one_taxon_name = this.get_one_taxon_name(db_id, current_rank);
       tax_long_name_arr.push(one_taxon_name);
     }
-    console.time("TIME: screen_domains");
     tax_long_name_arr = this.screen_domains(tax_long_name_arr);
-    console.timeEnd("TIME: screen_domains");
 
-    tax_long_name = this.combine_long_name(tax_long_name_arr);
+    if (tax_long_name_arr.length) {
+      tax_long_name = this.combine_long_name(tax_long_name_arr);
 
-    return tax_long_name;
+      return tax_long_name;
+    }
   }
 
   get_one_taxon_name(db_id, rank) {
@@ -552,18 +554,16 @@ class TaxonomySimple extends Taxonomy {
   }
 
   screen_domains(tax_long_name_arr) {
-
     let organelle_has_been_de_selected = this.post_items.domains.indexOf('Organelle') === -1;
     if (organelle_has_been_de_selected) {
       let has_chloroplast = tax_long_name_arr.includes('Chloroplast');
       let has_bacteria = tax_long_name_arr[0] === 'Bacteria';
       if (has_bacteria && has_chloroplast) {
         console.log('Excluding', tax_long_name_arr);
+        tax_long_name_arr = [];
       }
     }
-    else {
-      return tax_long_name_arr;
-    }
+    return tax_long_name_arr;
   }
 
   combine_long_name(tax_long_name_arr) {
