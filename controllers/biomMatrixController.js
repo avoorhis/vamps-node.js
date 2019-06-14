@@ -111,18 +111,20 @@ class BiomMatrix {
   remove_empty_rows() {
     console.time("time: remove_empty_rows");
     var tmparr = [];
-    // for (let idx = 0, arr_len = this.chosen_datasets.length; idx < arr_len; idx++){
-
-      for (var taxname in this.unit_name_counts) {//TODO: change
-      let sum = 0;
-      for (let c in this.unit_name_counts[taxname]){//TODO: change
-        let curr_cnts = this.unit_name_counts[taxname][c];
-        let it_is_number = !Number.isNaN(curr_cnts);
-        if (it_is_number) {
-          sum += this.unit_name_counts[taxname][c];
-        }
-      }
-      if (sum > 0) {
+    const cnts_obj = this.unit_name_counts;
+    // for (let taxname = 0, arr_len = Object.keys(cnts_obj).length; taxname < arr_len; taxname++){
+    for (var taxname in cnts_obj) {
+      // let sum = 0;
+      // for (let idx = 0, arr_len = cnts_obj[taxname].length; idx < arr_len; idx++){
+      //
+      // // for (let c in cnts_obj[taxname]){//TODO: change
+      //   let curr_cnts = cnts_obj[taxname][idx];
+      //   let it_is_number = !Number.isNaN(curr_cnts);
+      //   if (it_is_number) {
+      //     sum += cnts_obj[taxname][idx];
+      //   }
+      // }
+      if (cnts_obj[taxname].filter(Number).length > 0) {
         tmparr.push(taxname);
       }
     }
