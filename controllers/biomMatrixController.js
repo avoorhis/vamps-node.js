@@ -89,16 +89,17 @@ class BiomMatrix {
   }
 
   get_columns() {
-    console.time("get_columns");
+    console.time("TIME: get_columns");
     let columns = [];
-    for (let idx in this.chosen_datasets) {//TODO: change
+    for (let idx = 0, arr_len = this.chosen_datasets.length; idx < arr_len; idx++){
+
       let temp_col_obj = {};
       temp_col_obj.did = this.chosen_datasets[idx]["did"];
       temp_col_obj.id  = this.chosen_datasets[idx]["name"];
       temp_col_obj.metadata = null;
       columns.push(temp_col_obj);
     }
-    console.timeEnd("get_columns");
+    console.timeEnd("TIME: get_columns");
     return columns;
   }
 
