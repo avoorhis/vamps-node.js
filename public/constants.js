@@ -118,7 +118,13 @@ constants.UNITSELECT               = {
       // This list from:: "SELECT DISTINCT domain FROM rdp_taxonomy JOIN domain USING(domain_id)";
       domains: ["Archaea","Bacteria","Eukarya","Fungi","Organelle","Unknown"] // these should be the only selections available
     },
-  generic_simple    : {id: 'tax_generic_simple', file: 'unit_selectors/taxa_generic.html', name: "Generic", subtext: 'matrix'},
+  generic_simple    : {
+      id: 'tax_generic_simple', 
+      file: 'unit_selectors/taxa_generic.html', 
+      name: "Generic", 
+      subtext: 'matrix',
+      domains: ["Archaea","Bacteria","Eukarya","Fungi","Organelle","Unknown"] // these should be the only selections available
+      },
   gg_simple         : {
       id: 'tax_gg_simple',
       file: 'unit_selectors/taxa_gg_simple.html',

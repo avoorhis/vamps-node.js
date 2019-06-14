@@ -360,7 +360,7 @@ def push_taxonomy_info(args):  # was push_sequences
             tax_id = GENERIC_IDS_BY_TAX[tax]
             seq_count = args.tax_data_by_ds[ds][tax]
             (rank, rank_id) = get_rank_from_tax_string(tax)
-            q = "INSERT ignore into matrix_taxonomy_info"            
+            q = "INSERT ignore into generic_taxonomy_info"            
             q += " (dataset_id, generic_taxonomy_id, seq_count, rank_id)"
             q += " VALUES ('%s','%s','%s','%s')" % (str(did), str(tax_id), str(seq_count), str(rank_id))
             if args.verbose:
@@ -463,7 +463,7 @@ def finish_tax(ds,  seq_count, tax_string):
         
         
             
-            q2 = "INSERT ignore into `"+rank_name+"` (`"+rank_name+"`) VALUES('"+t+"')"
+            q2 = "INSERT ignore into `"+rank_name+"_generic` (`"+rank_name+"`) VALUES('"+t+"')"
         
             if args.verbose:
                 print(q2)
@@ -471,7 +471,7 @@ def finish_tax(ds,  seq_count, tax_string):
             mysql_conn.commit() 
             tax_id = cur.lastrowid
             if tax_id == 0:
-                q3 = "SELECT "+rank_name+"_id from `"+rank_name+"` where `"+rank_name+"` = '"+t+"'"
+                q3 = "SELECT "+rank_name+"_id from `"+rank_name+"_generic` where `"+rank_name+"` = '"+t+"'"
         
                 if args.verbose:
                     print(q3)

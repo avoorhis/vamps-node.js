@@ -285,7 +285,7 @@ def get_default_run_info_ill_id():
     q += " AND illumina_index='%s'"
     
     try:
-        q = q  % ('unknown','unknown','default_dataset','unknown','unknown','unknown')
+        q = q  % ('unknown','unknown','default_dataset','unknown','unknown','none')
         if args.verbose:
             print(q)
         cur.execute(q)

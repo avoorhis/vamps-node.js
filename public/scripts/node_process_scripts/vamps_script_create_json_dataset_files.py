@@ -44,14 +44,9 @@ query_core_join_silva119 += " JOIN silva_taxonomy USING(silva_taxonomy_id)"
 query_core_join_rdp = " JOIN rdp_taxonomy_info_per_seq USING(sequence_id)"
 query_core_join_rdp += " JOIN rdp_taxonomy USING(rdp_taxonomy_id)"
 
-query_coreA_generic = " FROM generic_taxonomy_info_per_seq"
-#query_core_join_generic = " JOIN generic_taxonomy_info USING(dataset_id)"
-#query_core_join_generic = " JOIN generic_taxonomy USING(generic_taxonomy_id)"
-query_core_join_generic = " JOIN generic_taxonomy_info_per_seq USING(sequence_id)"
-query_core_join_generic += " JOIN generic_taxonomy USING(generic_taxonomy_id)"
 
 #SELECT sum(seq_count), dataset_id, domain_id 
-query_coreA_matrix     = " FROM  matrix_taxonomy_info"
+query_coreA_matrix     = " FROM  generic_taxonomy_info"
 query_core_join_matrix = " JOIN generic_taxonomy USING(generic_taxonomy_id)"
 #JOIN generic_taxonomy USING(generic_taxonomy_id) WHERE dataset_id in ('4413','4414','4415','4416','4417') GROUP BY dataset_id, domain_id ORDER BY NULL
 
@@ -195,10 +190,7 @@ def go_add(args):
     for q in queries:
         if args.units == 'rdp':
             query = q["queryA"] + query_coreA + query_core_join_rdp + q["queryB"] % did_sql + end_group_query
-        elif args.units == 'generic':
-            #query = q["queryA"] + query_coreA_generic + query_core_join_generic + q["queryB"] % did_sql + end_group_query
-            query = q["queryA"] + query_coreA + query_core_join_generic + q["queryB"] % did_sql + end_group_query
-        elif args.units == 'matrix':
+        elif args.units == 'generic' or args.units == 'matrix':
             query = q["queryA"] + query_coreA_matrix + query_core_join_matrix + q["queryB"] % did_sql + end_group_query
         else:  # default 'silva119'
             query = q["queryA"] + query_coreA + query_core_join_silva119 + q["queryB"] % did_sql + end_group_query
