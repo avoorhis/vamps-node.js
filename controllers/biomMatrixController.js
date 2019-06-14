@@ -109,8 +109,11 @@ class BiomMatrix {
   }
 
   remove_empty_rows() {
+    console.time("time: remove_empty_rows");
     var tmparr = [];
-    for (var taxname in this.unit_name_counts) {//TODO: change
+    // for (let idx = 0, arr_len = this.chosen_datasets.length; idx < arr_len; idx++){
+
+      for (var taxname in this.unit_name_counts) {//TODO: change
       let sum = 0;
       for (let c in this.unit_name_counts[taxname]){//TODO: change
         let curr_cnts = this.unit_name_counts[taxname][c];
@@ -123,6 +126,7 @@ class BiomMatrix {
         tmparr.push(taxname);
       }
     }
+    console.timeEnd("time: remove_empty_rows");
     return tmparr;
   }
 
@@ -271,6 +275,7 @@ class BiomMatrix {
   // }
 
   get_max(max){
+    console.time("time: get_max");
     let max_count = this.get_max_count_per_did();
 
     for (let idx in this.visual_post_items.chosen_datasets) {// correct order //TODO: change for
@@ -280,10 +285,12 @@ class BiomMatrix {
         max = max_count[dname];
       }
     }
+    console.timeEnd("time: get_max");
     return max;
   }
 
   get_max_count_per_did(){
+    console.time("time: get_max_count_per_did");
     let max_count = {};
     let columns = this.biom_matrix.columns;
 
@@ -294,6 +301,7 @@ class BiomMatrix {
         max_count[dname] += this.biom_matrix.data[d_idx][c_idx];
       }
     }
+    console.timeEnd("time: get_max_count_per_did");
     return max_count;
   }
 }
@@ -342,6 +350,8 @@ class TaxaCounts {
   }
 
   get_taxcounts_obj_from_file() {
+    console.time("time: get_taxcounts_obj_from_file");
+
     let taxcounts_obj_for_all_datasets = {};
     for (let d_idx in this.chosen_dids) {//TODO: change
       let did = this.chosen_dids[d_idx];
@@ -356,6 +366,8 @@ class TaxaCounts {
         taxcounts_obj_for_all_datasets[did] = [];
       }
     }
+    console.timeEnd("time: get_taxcounts_obj_from_file");
+
     return taxcounts_obj_for_all_datasets;
   }
 
@@ -363,6 +375,8 @@ class TaxaCounts {
     // for each did get keys
     // keys "_1_2" to array [1,2]
     // add previous info
+    console.time("time: make_curr_taxcounts_obj_w_arr_by_did");
+
     let tax_id_obj_of_arr_by_did = {};
 
     for (let d_idx in this.chosen_dids) {//TODO: change
@@ -378,6 +392,8 @@ class TaxaCounts {
         tax_id_obj_of_arr_by_did[did].push(temp_obj);
       }
     }
+    console.timeEnd("time: make_curr_taxcounts_obj_w_arr_by_did");
+
     return tax_id_obj_of_arr_by_did;
   }
 
@@ -406,6 +422,8 @@ class TaxaCounts {
   }
 
   create_unit_name_counts(tax_names, tax_name_cnt_obj_per_dataset) {// TODO: refactor
+    console.time("time: create_unit_name_counts");
+
     var taxa_counts = {};
     for (var tax_name in tax_names){//TODO: change
       taxa_counts[tax_name] = [];
@@ -423,8 +441,7 @@ class TaxaCounts {
         }
       }
     }
-    //console.log('taxa_counts')
-    //console.log(taxa_counts)
+    console.timeEnd("time: create_unit_name_counts");
     return taxa_counts;
   }
 }
@@ -467,6 +484,8 @@ class Taxonomy {
   }
 
   fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {//TODO: refactor
+    console.time("time: fillin_name_lookup_per_ds");
+
     if (did in lookup) {
       if (tax_name in lookup[did]) {
         lookup[did][tax_name] += parseInt(cnt);
@@ -483,7 +502,7 @@ class Taxonomy {
         lookup[did][tax_name] = parseInt(cnt);
       }
     }
-
+    console.timeEnd("time: fillin_name_lookup_per_ds");
     return lookup;
   }
 
@@ -535,6 +554,8 @@ class TaxonomySimple extends Taxonomy {
   }
 
   get_one_taxon_name(db_id, rank) {
+    console.time("time: get_one_taxon_name");
+
     let one_taxon_name = "";
     let db_id_n_rank = db_id + '_' + rank;
 
@@ -551,6 +572,8 @@ class TaxonomySimple extends Taxonomy {
       }
       this.id_rank_taxa_cash[db_id_n_rank] = one_taxon_name;
     }
+    console.timeEnd("time: get_one_taxon_name");
+
     return one_taxon_name;
   }
 
@@ -580,11 +603,15 @@ class TaxonomySimple extends Taxonomy {
   }
 
   check_rank_name(this_rank) {
+    console.time("time: check_rank_name");
+
     let rank_name = this_rank;
     // const wrong_class_names = ["klass" ]; //TODO: add empty_
     if (this_rank === "klass") {
       rank_name = 'class';
     }
+    console.timeEnd("time: check_rank_name");
+
     return rank_name;
   }
 
