@@ -443,6 +443,23 @@ class TaxaCounts {
       });
     });
 
+    // taxa_counts1[tax_name][idx] =
+    let res = dids_array.map(function(did){
+      return tax_names_only.map(function(tax_name){
+        return {
+          tax_name: tax_name,
+          cnts: tax_name_cnt_obj_per_dataset[did][tax_name] || 0
+        };
+      });
+    });
+
+    // tax_names_only.map(function(tax_name, idx){
+    //   taxa_counts1[tax_name] = [];
+    //   return dids_array.map(function(did){
+    //     let curr_cnt = tax_name_cnt_obj_per_dataset[did][tax_name] || 0;
+    //     return taxa_counts1[tax_name][idx];
+    //   });
+    // });
 
     // var taxa_counts1 = tax_names_only.map(function(tax_name){
     //   taxa_counts1[tax_name] = [];
