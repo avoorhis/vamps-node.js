@@ -414,7 +414,46 @@ class TaxaCounts {
   }
 
   create_unit_name_counts(tax_names, tax_name_cnt_obj_per_dataset) {// TODO: refactor
-    console.time("time: create_unit_name_counts");
+    console.time("time: create_unit_name_counts2");
+
+    let dids_array = this.chosen_dids;
+    let tax_names_only = Object.keys(tax_names);
+
+    // var output = Object.entries(tax_name_cnt_obj_per_dataset).map(([key, value]) => ({key,value}));
+
+    //   tax_names_only.map(function(tax_name){
+    //     return dids_array.map(function(did){
+    //       return Object.keys(tax_name_cnt_obj_per_dataset[475002]).map(key => ({ key, value: tax_name_cnt_obj_per_dataset[475002][key] }));
+    //
+    //     });
+    // });
+
+    let taxa_counts1 = {};
+
+    // dids_array.map(function(did){
+    //   return Object.keys(tax_name_cnt_obj_per_dataset[did]).map(key => ({ key, value: tax_name_cnt_obj_per_dataset[did][key] }));
+    // });
+
+    tax_names_only.map(function(tax_name){
+      taxa_counts1[tax_name] = [];
+      return dids_array.map(function(did){
+        let curr_cnt = tax_name_cnt_obj_per_dataset[did][tax_name] || 0;
+        taxa_counts1[tax_name].push(curr_cnt);
+        return taxa_counts1;
+      });
+    });
+
+
+    // var taxa_counts1 = tax_names_only.map(function(tax_name){
+    //   taxa_counts1[tax_name] = [];
+    //   return dids_array.map(function(did){
+    //     taxa_counts1[tax_name] = tax_name_cnt_obj_per_dataset[did][tax_name] || 0;
+    //     // return tax_name_cnt_obj_per_dataset[did][tax_name] || 0;
+    //   });
+    // });
+    console.timeEnd("time: create_unit_name_counts2");
+
+    console.time("time: create_unit_name_counts1");
 
     var taxa_counts = {};
     for (var tax_name in tax_names){//TODO: change
@@ -422,7 +461,7 @@ class TaxaCounts {
     }
 
     for (var i in this.chosen_dids) {// correct order //TODO: change for
-      var did = this.chosen_dids[i];
+        var did = this.chosen_dids[i];
       for (var tax_name1 in tax_names) {//TODO: change
         try {
           let curr_cnt = tax_name_cnt_obj_per_dataset[did][tax_name1] || 0;
@@ -433,9 +472,17 @@ class TaxaCounts {
         }
       }
     }
-    console.timeEnd("time: create_unit_name_counts");
+    console.timeEnd("time: create_unit_name_counts1");
     return taxa_counts;
   }
+
+  // create_obj_of_empty_arrays(keys_array) {
+  //   let obj_of_empty_arrays = {};
+  //   for (let key in keys_array){
+  //     obj_of_empty_arrays[key] = [];
+  //   }
+  //   return obj_of_empty_arrays;
+  // }
 }
 
 class TaxonomyFactory {
