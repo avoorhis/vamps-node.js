@@ -36,7 +36,7 @@ class BiomMatrix {
     console.timeEnd('TIME: create_unit_name_counts');
 
     console.time('TIME: ukeys');
-    let ukeys = this.remove_empty_rows(); //TODO: refactor
+    let ukeys = this.remove_empty_rows();
     this.ukeys = ukeys.filter(helpers.onlyUnique);
     this.ukeys.sort();
     console.timeEnd('TIME: ukeys');
@@ -136,17 +136,17 @@ class BiomMatrix {
     return custom_count_matrix;
   }
 
-  adjust_for_percent_limit_change(custom_count_matrix) {//TODO: refactor
+  adjust_for_percent_limit_change(custom_count_matrix) {
     console.time("TIME: adjust_for_percent_limit_change");
     let min     = this.visual_post_items.min_range;
     let max     = this.visual_post_items.max_range;
     let new_counts = [];
     let new_units = [];
     let cnt_matrix = custom_count_matrix.data;
-    for (let idx1 in cnt_matrix) {//TODO: change
+    for (let idx1 in cnt_matrix) {
       let got_one = false;
       let row = cnt_matrix[idx1];
-      for (let idx2 in row) {//TODO: change
+      for (let idx2 in row) {
         let cell = row[idx2];
         let curr_col_total = custom_count_matrix.column_totals[idx2];
         let curr_cell_pct = cell * 100 / curr_col_total;
@@ -236,14 +236,14 @@ class BiomMatrix {
     return tots;
   }
 
-  create_biom_matrix() {//TODO: refactor
+  create_biom_matrix() {
     console.log('in create_this.biom_matrix');  // uname:
     console.time('Time: create_this.biom_matrix');  // uname:
 
     // this.ukeys is sorted by alpha
-    for (var uk_idx in this.ukeys) {//TODO: change for
+    for (var uk_idx in this.ukeys) {
       let curr_tax_name = this.ukeys[uk_idx];
-      this.biom_matrix.rows.push({ id: curr_tax_name, metadata: null });//TODO make rows func
+      this.biom_matrix.rows.push({ id: curr_tax_name, metadata: null });
 
       this.biom_matrix.data.push(this.unit_name_counts[curr_tax_name]);// adds counts
     }
@@ -270,7 +270,7 @@ class BiomMatrix {
     console.time("time: get_max");
     let max_count = this.get_max_count_per_did();
 
-    for (let idx in this.visual_post_items.chosen_datasets) {// correct order //TODO: change for
+    for (let idx in this.visual_post_items.chosen_datasets) {// correct order
       let dname = this.visual_post_items.chosen_datasets[idx].name;
       this.biom_matrix.column_totals.push(max_count[dname]);
       if(max_count[dname] > max){
@@ -286,10 +286,10 @@ class BiomMatrix {
     let max_count = {};
     let columns = this.biom_matrix.columns;
 
-    for (let c_idx in columns) {//TODO: change
+    for (let c_idx in columns) {
       let dname = columns[c_idx].id;
       max_count[dname] = 0;
-      for (let d_idx in this.biom_matrix.data) {//TODO: change
+      for (let d_idx in this.biom_matrix.data) {
         max_count[dname] += this.biom_matrix.data[d_idx][c_idx];
       }
     }
@@ -312,7 +312,7 @@ class TaxaCounts {
     this.curr_taxcounts_obj_of_str_by_did = this.get_taxcounts_obj_from_file();
     this.curr_taxcounts_obj_w_arr_by_did  = this.make_curr_taxcounts_obj_w_arr_by_did(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
 
-    this.tax_id_obj_by_did_filtered_by_rank = this.make_tax_id_obj_by_did_filtered_by_rank(); //TODO: only for simple?
+    this.tax_id_obj_by_did_filtered_by_rank = this.make_tax_id_obj_by_did_filtered_by_rank();
   }
 
   get_taxonomy_file_prefix() {
@@ -345,7 +345,7 @@ class TaxaCounts {
     console.time("time: get_taxcounts_obj_from_file");
 
     let taxcounts_obj_for_all_datasets = {};
-    for (let d_idx in this.chosen_dids) {//TODO: change
+    for (let d_idx in this.chosen_dids) {
       let did = this.chosen_dids[d_idx];
       try {
         let path_to_file               = path.join(this.taxonomy_file_prefix, did + '.json');
@@ -371,7 +371,7 @@ class TaxaCounts {
 
     let tax_id_obj_of_arr_by_did = {};
 
-    for (let d_idx in this.chosen_dids) {//TODO: change
+    for (let d_idx in this.chosen_dids) {
       let did = this.chosen_dids[d_idx];
       tax_id_obj_of_arr_by_did[did] = [];
       let curr_obj = this.curr_taxcounts_obj_of_str_by_did[did];
@@ -399,7 +399,7 @@ class TaxaCounts {
     console.time("TIME: make_tax_id_obj_by_did_filtered_by_rank");
     let tax_id_obj_by_did_filtered_by_rank = {};
 
-    for (let d_idx in this.chosen_dids) {//TODO: change
+    for (let d_idx in this.chosen_dids) {
       let did = this.chosen_dids[d_idx];
       let current_tax_id_rows = this.curr_taxcounts_obj_w_arr_by_did[did].filter(this.filter_tax_id_rows_by_rank.bind(this));
       tax_id_obj_by_did_filtered_by_rank[did] = current_tax_id_rows;
@@ -505,11 +505,11 @@ class TaxonomySimple extends Taxonomy {
   make_tax_name_cnt_obj_per_did() {
     console.time("TIME: make_tax_name_cnt_obj_per_did");
 
-    for (let did_idx in this.chosen_dids) {//TODO: change
+    for (let did_idx in this.chosen_dids) {
       let did = this.chosen_dids[did_idx];
       let curr_taxcounts_obj = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did];
 
-      for (let obj_idx in curr_taxcounts_obj){//TODO: change
+      for (let obj_idx in curr_taxcounts_obj){
         let curr_obj = curr_taxcounts_obj[obj_idx];
         let cnt = curr_obj.cnt;
         let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
