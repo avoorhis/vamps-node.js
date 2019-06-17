@@ -57,7 +57,7 @@ id_queries = [
     {"table":"sequencing_platform","query": "SELECT sequencing_platform_id FROM sequencing_platform WHERE sequencing_platform = 'unknown'"},
     {"table":"target_gene","query": "SELECT target_gene_id FROM target_gene WHERE target_gene = 'unknown'"},
     {"table":"domain","query": "SELECT domain_id FROM domain WHERE domain = 'unknown'"},
-    {"table":"illumina_index","query": "SELECT illumina_index_id FROM illumina_index WHERE illumina_index = 'unknown'"},
+    {"table":"illumina_index","query": "SELECT illumina_index_id FROM illumina_index WHERE illumina_index = 'none'"},
     {"table":"primer_suite","query": "SELECT primer_suite_id FROM primer_suite WHERE primer_suite = 'unknown'"},
     {"table":"run","query": "SELECT run_id FROM run WHERE run = 'unknown'"}
 ]
@@ -365,12 +365,11 @@ if __name__ == '__main__':
          
          where
             
-            -dir/--indir   
+            -project_dir/--project_dir   
+            -site/--site
                 
             -i/--infile     
-           
-            
-         These should all be in INFO-CONFIG.ini file which is REQUIRED to be in dir:
+           -config/--config
             -p/--project            
             
             

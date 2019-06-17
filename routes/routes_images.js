@@ -415,82 +415,66 @@ piecharts: function(req, res) {
         console.log(msg)
     }else{
 
-      // parse data remove data less than 1%
-
-      var biom_data = JSON.parse(data)
-      matrix = biom_data
-      // parse data remove data less than 1%
-      if(req.body.hasOwnProperty('type') && req.body.type == 'otus'){
-          
+        var biom_data = JSON.parse(data)
+        matrix = biom_data
+        // parse data remove data less than 1%
+        if(req.body.hasOwnProperty('type') && req.body.type == 'otus'){
             console.log('calling thin_out_data_for_display: length= '+biom_data.rows.length.toString())
             matrix = thin_out_data_for_display(biom_data)
-          //}
-      }
-
-    var unit_list = [];
-    for (var n in matrix.rows){
-        unit_list.push(matrix.rows[n].id);
-    }
-
-    //colorsX = {}
-    var total = 0
-    for(n in matrix.rows){
-      if(imagetype == 'single'){
-        //colorsX[mtx.rows[n].id] = get_random_color()
-        total +=  parseInt(matrix.data[n])
-      }else{
-        //colorsX[mtx.rows[n].id] = string_to_color_code(mtx.rows[n].id)
-      }
-    }
-    var ds_count = matrix.shape[1];
-    var tmp={};
-    var tmp_names={};
-      for (var d in matrix.columns){
-        tmp[matrix.columns[d].id]=[]; // data
-        //tmp_names[matrix.columns[d].id]=mtx_local.columns[d].id; // datasets
-      }
-      for (var x in matrix.data){
-        for (var y in matrix.columns){
-          tmp[matrix.columns[y].id].push(matrix.data[x][y]);
         }
-      }
-      var mtxdata={};
-      mtxdata.names=[];
-      mtxdata.values=[];
 
-      for (var z in tmp) {
-          mtxdata.names.push(z);
-          mtxdata.values.push(tmp[z]);
-          //myjson_obj.dids.push(z);
-      }
-    //alert(myjson_obj.names);
-      if(imagetype == 'single'){
-        var pies_per_row = 1;
-        var m = 20; // margin
-        var r = 120; // five pies per row
-      }else{
-        var pies_per_row = 4;
-        var m = 15; // margin
-        var r = 320/pies_per_row; // four pies per row
-      }
-      // image start in upper left corner
-      var image_w = 1200
-      var no_of_rows =  Math.ceil(ds_count/pies_per_row)
-      var image_h = no_of_rows * ((r * 2)+40)
-      console.log('image_h',image_h)
-      var arc = d3.arc()
+        var unit_list = [];
+        for (var n in matrix.rows){
+            unit_list.push(matrix.rows[n].id);
+        }
+        var total = 0
+        for(n in matrix.rows){
+          if(imagetype == 'single'){
+            total +=  parseInt(matrix.data[n])
+          }else{
+            //pass
+          }
+        }
+        var ds_count = matrix.shape[1];
+        var tmp={};
+        var tmp_names={};
+        for (var d in matrix.columns){
+            tmp[matrix.columns[d].id]=[]; // data
+        }
+        for (var x in matrix.data){
+            for (var y in matrix.columns){
+            tmp[matrix.columns[y].id].push(matrix.data[x][y]);
+            }
+        }
+        var mtxdata={};
+        mtxdata.names=[];
+        mtxdata.values=[];
+
+        for (var z in tmp) {
+            mtxdata.names.push(z);
+            mtxdata.values.push(tmp[z]);
+        }
+        if(imagetype == 'single'){
+            var pies_per_row = 1;
+            var m = 20; // margin
+            var r = 120; // five pies per row
+        }else{
+            var pies_per_row = 4;
+            var m = 15; // margin
+            var r = 320/pies_per_row; // four pies per row
+        }
+        // image start in upper left corner
+        var image_w = 1200
+        var no_of_rows =  Math.ceil(ds_count/pies_per_row)
+        var image_h = no_of_rows * ((r * 2)+40)
+        console.log('image_h',image_h)
+        var arc = d3.arc()
           .innerRadius(0)
           .outerRadius(r);
-
-
-      //jsdom.env({
-      //  html:'',
-       // features:{ QuerySelector:true },
-      //  done:function(errors, window){
           
-          const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
-          let body = d3.select(fakeDom.window.document).select('body');
-          let svgContainer = body.append('div').attr('class', 'container')
+        const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+        let body = d3.select(fakeDom.window.document).select('body');
+        let svgContainer = body.append('div').attr('class', 'container')
             .append('svg')
                 .attr("xmlns", 'http://www.w3.org/2000/svg')
                 .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
@@ -498,9 +482,7 @@ piecharts: function(req, res) {
                 .attr("height", image_h)
             .append('g')
               .attr("transform", "translate(" + 0 + "," + 0 + ")");
-          // axis legends -- would like to rotate dataset names
-          //props.y.domain(mtxdata.map(function(d) { return d.pjds; }));
-          //props.x.domain([0, 100]);
+        // axis legends -- would like to rotate dataset names
         if(req.body.source == 'website'){
             var pies = svgContainer.selectAll("svg")
               .data(mtxdata.values)
@@ -531,20 +513,20 @@ piecharts: function(req, res) {
 
 
 
-          pies.append("text")
-                    .attr("dx", -(r+m))
-                    .attr("dy", r+m)
-                    .attr("text-anchor", "center")
-                    .attr("font-size","10px")
-                    .text(function(d, i) {
-                        if(imagetype == 'single'){
-                          return 'SumCount: '+total.toString()
-                        }else{
-                          return matrix.columns[i].id;
-                        }
-                    });
+        pies.append("text")
+            .attr("dx", -(r+m))
+            .attr("dy", r+m)
+            .attr("text-anchor", "center")
+            .attr("font-size","10px")
+            .text(function(d, i) {
+                if(imagetype == 'single'){
+                  return 'SumCount: '+total.toString()
+                }else{
+                  return matrix.columns[i].id;
+                }
+            });
         if(req.body.source == 'website'){
-          pies.selectAll("path")
+            pies.selectAll("path")
               .data(d3.pie().sort(null))
               .enter()
               .append("path")
@@ -583,21 +565,15 @@ piecharts: function(req, res) {
         }
 
 
-              var html = body.select('.container').html()
-              var outfile_name = ts + '-piecharts-api.svg'
-              outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
-              console.log('outfile_path:',outfile_path)
-              result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
-              data = {}
-              data.html = html
-              data.filename = outfile_name
-              //res.send(outfile_name)
-              res.json(data)
-
-       // }
-      //})
-
-
+        var html = body.select('.container').html()
+        var outfile_name = ts + '-piecharts-api.svg'
+        outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+        console.log('outfile_path:',outfile_path)
+        result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
+        data = {}
+        data.html = html
+        data.filename = outfile_name
+        res.json(data)
 
       } // end else
     }); // end readFile matrix
@@ -610,7 +586,6 @@ barcharts: function(req, res){
   console.log('In routes_images/function: images/barcharts')
   d3 = require('d3');
   // see: https://bl.ocks.org/tomgp/c99a699587b5c5465228
-  //console.log('getting jsdom')
   var jsdom = require('jsdom');  // NEED version <10 for jsdom.env
   const { JSDOM } = jsdom;
   
@@ -642,10 +617,8 @@ barcharts: function(req, res){
         tmp={};
         tmp.pjds = matrix.columns[p].id;
         tmp.did = matrix.columns[p].did;
-        //did_by_names[tmp.pjds]=mtx_local.columns[p].did;
         for (var t in matrix.rows){
           tmp[matrix.rows[t].id] = matrix.data[t][p];
-          //tmp[mtx_local.rows[t].id] = mtx_local.data[p][t];
         }
         mtxdata.push(tmp);
       }
@@ -657,7 +630,6 @@ barcharts: function(req, res){
         d.unitObj = scaler.domain().map(function(name) {
           return { tax: name, x0: x0, x1: x0 += +d[name], did: d.did, pjds: d.pjds, cnt: d[name] };
         });
-        //console.log(d.unitObj);
         d.total = d.unitObj[d.unitObj.length - 1].x1;
         //console.log(d.total);
       });
@@ -672,63 +644,46 @@ barcharts: function(req, res){
         });
       });
 
-      //jsdom.env({
-        //html:'',
-        //features:{ QuerySelector:true },
-        //done:function(errors, window){
-          //console.log('inwin ')
+      
+      const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+      let body = d3.select(fakeDom.window.document).select('body');
+      let svgContainer = body.append('div').attr('class', 'container')
+        .append('svg')
+            .attr("xmlns", 'http://www.w3.org/2000/svg')
+            .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
+            .attr("width", props.width)
+            .attr("height", props.height)
+        .append('g')
+          .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
+      // axis legends -- would like to rotate dataset names
+      props.y.domain(mtxdata.map(function(d) { return d.pjds; }));
+      props.x.domain([0, 100]);
+
+      if(imagetype=='single'){
+        create_singlebar_svg_object(req, svgContainer, props, mtxdata, ts);
+      }else if(imagetype=='double'){
+        create_doublebar_svg_object(req, svgContainer, props, mtxdata, ts);
+      }else{  // group
+        try{
+            create_bars_svg_object(req, svgContainer, props, mtxdata, ts);
+        }catch(err){
+            console.log('Error in create_bars_svg_object() '+err.toString())
+        }
+      }
 
 
-          //window.d3 = d3.select(window.document); //get d3 into the dom
-          //  <svg><g transform="translate(250,250)"><path></path><path></path></g></svg>
-          //var svg = window.d3.select('body')
-          const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
-          let body = d3.select(fakeDom.window.document).select('body');
-          let svgContainer = body.append('div').attr('class', 'container')
-            //.append('div').attr('class','container')
-            .append('svg')
-                .attr("xmlns", 'http://www.w3.org/2000/svg')
-                .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
-                .attr("width", props.width)
-                .attr("height", props.height)
-            .append('g')
-              .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
-          // axis legends -- would like to rotate dataset names
-          props.y.domain(mtxdata.map(function(d) { return d.pjds; }));
-          props.x.domain([0, 100]);
-
-          if(imagetype=='single'){
-            create_singlebar_svg_object(req, svgContainer, props, mtxdata, ts);
-          }else if(imagetype=='double'){
-            create_doublebar_svg_object(req, svgContainer, props, mtxdata, ts);
-          }else{  // group
-            try{
-                create_bars_svg_object(req, svgContainer, props, mtxdata, ts);
-            }catch(err){
-                console.log('Error in create_bars_svg_object() '+err.toString())
-            }
-          }
-
-
-          //fs.writeFileSync('test.svg', window.d3.select('.container').html()) //using sync to keep the code simple
-          //console.log('inwin2 ',window.d3.select('.container').html())
-          //var html = window.d3.select('.container').html()
-          var html = body.select('.container').html()
+      var html = body.select('.container').html()
+      
+      var outfile_name = ts + '-barcharts-api.svg'
+      outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+      console.log('outfile_path:',outfile_path)
+      result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
+      //console.log(result)
+      data = {}
+      data.html = html
+      data.filename = outfile_name
+      res.json(data)
           
-          var outfile_name = ts + '-barcharts-api.svg'
-          outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
-          console.log('outfile_path:',outfile_path)
-          result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
-          //console.log(result)
-          data = {}
-          data.html = html
-          data.filename = outfile_name
-          //res.send(outfile_name)
-          res.json(data)
-          //window.close()
-
-       // }
-      //})
 
 } // end else
 }) // end fs.readFile
