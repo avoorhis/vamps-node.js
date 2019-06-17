@@ -453,6 +453,13 @@ class TaxaCounts {
       });
     });
 
+    dids_array.map(function(did){
+      taxa_counts1[tax_name] = [];
+      return tax_names_only.map(function(tax_name){
+        taxa_counts1[tax_name] = tax_name_cnt_obj_per_dataset[did][tax_name] || 0;
+        return;
+      });
+    });
     // tax_names_only.map(function(tax_name, idx){
     //   taxa_counts1[tax_name] = [];
     //   return dids_array.map(function(did){
