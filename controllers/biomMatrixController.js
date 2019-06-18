@@ -286,13 +286,15 @@ class BiomMatrix {
     console.log(JSON.stringify(max_count));
 
     console.time("TIME: max_count new");
-    for (let c_idx in columns) {
-      let dname = columns[c_idx].id;
-      max_count[dname] = 0;
-      max_count[dname] = this.biom_matrix.data
+    columns.map((col, c_idx) => {
+      let dname = col.id;
+      let temp = 0;
+      temp = this.biom_matrix.data
         .map(ar => ar[c_idx])
         .reduce((sum, current_val) => sum + parseInt(current_val));
-    }
+      max_count[dname] = temp;
+    });
+
     console.timeEnd("TIME: max_count new");
 
     console.log("max_count[dname] 2");
