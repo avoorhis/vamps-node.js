@@ -226,12 +226,6 @@ class BiomMatrix {
         tots[j] = (tots[j] || 0) + arr[i][j];
       }
     }
-    // let array = custom_count_matrix.data,
-    //     tots = array.reduce(function (r, a) {
-    //       a.forEach(function (b, i) {
-    //         r[i] = (r[i] || 0) + b;
-    //       });         return r;
-    //     }, []);
     console.timeEnd("TIME: re_calculate_totals");
     return tots;
   }
@@ -617,7 +611,8 @@ class TaxonomyCustom extends Taxonomy {
     console.time('TIME: make_tax_name_cnt_obj_per_did_custom');
     // ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 
-    this.chosen_dids.forEach((did) => {
+    // this.chosen_dids.forEach((did) => {
+    this.chosen_dids.map((did) => {
       let custom_taxa = this.post_items.custom_taxa;
 
       let db_tax_id_list  = {};
@@ -671,7 +666,6 @@ class TaxonomyCustom extends Taxonomy {
     const taxcounts = this.taxa_counts_module.curr_taxcounts_obj_of_str_by_did[did];
     let curr_tax_id_chain = db_tax_id_list[did][selected_node_id];
     let temp_cnt = 0;
-    // if (Object.keys(taxcounts).indexOf(curr_tax_id_chain) !== -1) {
     try {
       temp_cnt = taxcounts[curr_tax_id_chain];
     }
