@@ -413,18 +413,18 @@ class TaxaCounts {
     return el.tax_id_arr.length === rank_no;
   }
 
-  create_unit_name_counts(tax_names, tax_name_cnt_obj_per_dataset) {// TODO: refactor
+  create_unit_name_counts(tax_names, tax_name_cnt_obj_per_dataset) {
 
-    console.time("time: create_unit_name_counts1");
+    console.time("time: create_unit_name_counts");
+    let taxa_counts = {};
+    let tax_names_only = Object.keys(tax_names);
 
-    var taxa_counts = {};
-    for (var tax_name in tax_names){//TODO: change
+    tax_names_only.map(function(tax_name){
       taxa_counts[tax_name] = [];
-    }
-    console.timeEnd("time: create_unit_name_counts1");
+    });
 
     for (var i in this.chosen_dids) {// correct order
-      var did = this.chosen_dids[i];
+      let did = this.chosen_dids[i];
       for (var tax_name1 in tax_names) {
         try {
           let curr_cnt = tax_name_cnt_obj_per_dataset[did][tax_name1] || 0;
@@ -435,16 +435,7 @@ class TaxaCounts {
         }
       }
     }
-    console.time("time: create_unit_name_counts2");
-
-    let tax_names_only = Object.keys(tax_names);
-
-    let taxa_counts1 = {};
-    tax_names_only.map(function(tax_name){
-      taxa_counts1[tax_name] = [];
-    });
-
-    console.timeEnd("time: create_unit_name_counts2");
+    console.timeEnd("time: create_unit_name_counts");
     return taxa_counts;
   }
 }
