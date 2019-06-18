@@ -245,14 +245,11 @@ class BiomMatrix {
     this.biom_matrix.shape = [this.biom_matrix.rows.length, this.biom_matrix.columns.length];
 
     let max = 0;
-
     if (this.ukeys) {
       max = this.get_max(max);
     }
-    //console.log('in create_this.biom_matrix1');
     this.biom_matrix.max_dataset_count = max;
-    // console.log('in create_this.biom_matrix2');
-    console.timeEnd('Time: create_this.biom_matrix');
+    console.timeEnd('TIME: create_this.biom_matrix');
     return this.biom_matrix;
   }
 
@@ -283,6 +280,19 @@ class BiomMatrix {
         max_count[dname] += this.biom_matrix.data[d_idx][c_idx];
       }
     }
+    console.log("max_count[dname] 1");
+    console.log(JSON.stringify(max_count));
+
+    for (let c_idx in columns) {
+      let dname = columns[c_idx].id;
+      max_count[dname] = 0;
+      max_count[dname] = this.biom_matrix.data
+        .map(ar => ar[c_idx])
+        .reduce((sum, current_val) => sum + parseInt(current_val));
+    }
+    console.log("max_count[dname] 2");
+    console.log(JSON.stringify(max_count));
+
     console.timeEnd("time: get_max_count_per_did");
     return max_count;
   }
