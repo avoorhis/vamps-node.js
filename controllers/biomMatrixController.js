@@ -104,8 +104,7 @@ class BiomMatrix {
   }
 
   get_dids() {
-    let dids = this.chosen_datasets.map(function (value) { return value.did; });
-    return dids;
+    return this.chosen_datasets.map(value => value.did);
   }
 
   remove_empty_rows() {
@@ -612,7 +611,7 @@ class TaxonomyCustom extends Taxonomy {
     // ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 
     this.chosen_dids.map((did) => {
-      let custom_taxa = this.post_items.custom_taxa;
+      const custom_taxa = this.post_items.custom_taxa;
 
       let db_tax_id_list  = {};
       db_tax_id_list[did] = {};
