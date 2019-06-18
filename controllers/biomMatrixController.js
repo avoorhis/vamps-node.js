@@ -253,29 +253,15 @@ class BiomMatrix {
     return this.biom_matrix;
   }
 
-  get_values(obj) {
-    console.time('TIME: get_values old');
-    const keys = Object.keys(obj);
-    const values = [];
-    for (let i = 0; i < keys.length; i++) {
-      values.push(obj[keys[i]]);
-    }
-    console.timeEnd('TIME: get_values old');
-    console.log(values);
-
-    console.time('TIME: get_values new');
-    const values1 = Object.keys(obj).map(key => obj[key]);
-    console.timeEnd('TIME: get_values new');
-    console.log(values1);
-
-    return values;
+  get_all_values(obj) {
+    return Object.keys(obj).map(key => obj[key]);
   }
 
   get_max(){
     console.time("time: get_max");
     let total_count_per_d = this.get_total_count_per_d();
 
-    this.biom_matrix.column_totals = this.get_values(total_count_per_d);
+    this.biom_matrix.column_totals = this.get_all_values(total_count_per_d);
 
     let max = Math.max(...this.biom_matrix.column_totals);
     console.timeEnd("time: get_max");
