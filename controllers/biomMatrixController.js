@@ -138,6 +138,50 @@ class BiomMatrix {
     let new_counts = [];
     let new_units = [];
     let cnt_matrix = custom_count_matrix.data;
+
+    console.time("TIME: adjust_for_percent_limit_change2");
+
+    // for (let idx1 in cnt_matrix) {
+    cnt_matrix.map((row, idx1) => {
+      // let got_one = false;
+      // let row = cnt_matrix[idx1];
+      let got_one = row.find(function(cell, idx2) {
+        // let cell = row[idx2];
+        let curr_col_total = custom_count_matrix.column_totals[idx2];
+        let curr_cell_pct = cell * 100 / curr_col_total;
+        return curr_cell_pct > min && curr_cell_pct < max;
+      });
+
+      // for (let idx2 in row) {//TODO: refactor using find. Need to avoid checking     if (row.hasOwnProperty(idx2)) and  if (custom_count_matrix.column_totals.hasOwnProperty(idx2))
+      //   let cell = row[idx2];
+      //   let curr_col_total = custom_count_matrix.column_totals[idx2];
+      //   let curr_cell_pct = cell * 100 / curr_col_total;
+      //   if (curr_cell_pct > min && curr_cell_pct < max){// >min, so 0 is not included!
+      //     got_one = true;
+      //   }
+      // }
+
+      if (got_one){
+        new_counts.push(cnt_matrix[idx1]);
+        new_units.push(custom_count_matrix.rows[idx1]); //?
+      } else {
+        console.log('rejecting ' + custom_count_matrix.rows[idx1].name);
+      }
+    });
+    console.timeEnd("TIME: adjust_for_percent_limit_change2");
+    console.log("custom_count_matrix.data1 new: ");
+    console.log(JSON.stringify(new_counts));
+    console.log("custom_count_matrix.rows1 new: ");
+    console.log(JSON.stringify(new_units));
+
+    min     = this.visual_post_items.min_range;
+    max     = this.visual_post_items.max_range;
+    new_counts = [];
+    new_units = [];
+    cnt_matrix = custom_count_matrix.data;
+    
+    console.time("TIME: adjust_for_percent_limit_change1");
+
     for (let idx1 in cnt_matrix) {
       let got_one = false;
       let row = cnt_matrix[idx1];
@@ -157,6 +201,12 @@ class BiomMatrix {
         console.log('rejecting ' + custom_count_matrix.rows[idx1].name);
       }
     }
+    console.timeEnd("TIME: adjust_for_percent_limit_change1");
+    console.log("custom_count_matrix.data: ");
+    console.log(JSON.stringify(new_counts));
+    console.log("custom_count_matrix.rows: ");
+    console.log(JSON.stringify(new_units));
+    
     custom_count_matrix.data = new_counts;
     custom_count_matrix.rows = new_units;
     console.timeEnd("TIME: adjust_for_percent_limit_change");
