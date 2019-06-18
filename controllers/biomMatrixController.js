@@ -108,7 +108,7 @@ class BiomMatrix {
   }
 
   remove_empty_rows() {
-    console.time("time: remove_empty_rows");
+    console.time("time: remove_empty_rows1");
     var tmparr = [];
     const cnts_obj = this.unit_name_counts;
     for (var taxname in cnts_obj) {
@@ -117,7 +117,15 @@ class BiomMatrix {
         tmparr.push(taxname);
       }
     }
-    console.timeEnd("time: remove_empty_rows");
+    console.timeEnd("time: remove_empty_rows1");
+    // console.log(JSON.stringify(tmparr));
+
+    console.time("time: remove_empty_rows2");
+    var tmparr1 = [];
+    const cnts_obj1 = this.unit_name_counts;
+    tmparr1 = Object.keys(cnts_obj1).filter(taxname1 => (cnts_obj1[taxname1].filter(Number).length) > 0);
+    console.timeEnd("time: remove_empty_rows2");
+    // console.log(JSON.stringify(tmparr1));
     return tmparr;
   }
 
