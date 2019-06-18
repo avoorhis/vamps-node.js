@@ -232,7 +232,7 @@ class BiomMatrix {
 
   create_biom_matrix() {
     console.log('in create_this.biom_matrix');  // uname:
-    console.time('Time: create_this.biom_matrix');  // uname:
+    console.time('TIME: create_this.biom_matrix');
 
     // this.ukeys is sorted by alpha
     for (let uk_idx in this.ukeys) {
