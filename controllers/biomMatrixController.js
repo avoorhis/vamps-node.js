@@ -611,7 +611,6 @@ class TaxonomyCustom extends Taxonomy {
     console.time('TIME: make_tax_name_cnt_obj_per_did_custom');
     // ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 
-    // this.chosen_dids.forEach((did) => {
     this.chosen_dids.map((did) => {
       let custom_taxa = this.post_items.custom_taxa;
 
@@ -619,7 +618,7 @@ class TaxonomyCustom extends Taxonomy {
       db_tax_id_list[did] = {};
 
       for (let t_idx = 0, taxa_length = custom_taxa.length; t_idx < taxa_length; t_idx++) {
-        let selected_node_id = this.post_items.custom_taxa[t_idx];
+        let selected_node_id = custom_taxa[t_idx];
         if (this.taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id)) {
 
           let tax_node = this.taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
