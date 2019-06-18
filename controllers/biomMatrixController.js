@@ -36,7 +36,10 @@ class BiomMatrix {
     // console.timeEnd('TIME: create_unit_name_counts');
 
     console.time('TIME: ukeys');
+    console.time("time: remove_empty_rows");
     let ukeys = this.remove_empty_rows();
+    console.timeEnd("time: remove_empty_rows");
+
     this.ukeys = ukeys.filter(helpers.onlyUnique);
     this.ukeys.sort();
     console.timeEnd('TIME: ukeys');
@@ -108,25 +111,29 @@ class BiomMatrix {
   }
 
   remove_empty_rows() {
-    console.time("time: remove_empty_rows1");
-    var tmparr = [];
-    const cnts_obj = this.unit_name_counts;
-    for (var taxname in cnts_obj) {
-      let not_just_zeros = cnts_obj[taxname].filter(Number).length > 0;
-      if (not_just_zeros) {
-        tmparr.push(taxname);
-      }
-    }
-    console.timeEnd("time: remove_empty_rows1");
+    // console.time("time: remove_empty_rows1");
+    // var tmparr = [];
+    // const cnts_obj = this.unit_name_counts;
+    // for (var taxname in cnts_obj) {
+    //   let not_just_zeros = cnts_obj[taxname].filter(Number).length > 0;
+    //   if (not_just_zeros) {
+    //     tmparr.push(taxname);
+    //   }
+    // }
+    // console.timeEnd("time: remove_empty_rows1");
     // console.log(JSON.stringify(tmparr));
 
-    console.time("time: remove_empty_rows2");
-    var tmparr1 = [];
+    // console.time("time: remove_empty_rows");
+    // var tmparr1 = [];
     const cnts_obj1 = this.unit_name_counts;
-    tmparr1 = Object.keys(cnts_obj1).filter(taxname1 => (cnts_obj1[taxname1].filter(Number).length) > 0);
-    console.timeEnd("time: remove_empty_rows2");
+    return Object.keys(cnts_obj1)
+      .filter(taxname1 =>
+        (cnts_obj1[taxname1].filter(Number).length) > 0);
+/*
+    console.timeEnd("time: remove_empty_rows");
     // console.log(JSON.stringify(tmparr1));
     return tmparr;
+*/
   }
 
   get_updated_biom_matrix() {
