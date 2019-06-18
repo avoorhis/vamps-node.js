@@ -246,62 +246,56 @@ class BiomMatrix {
 
     let max = 0;
     if (this.ukeys) {
-      max = this.get_max(max);
+      max = this.get_max();
     }
     this.biom_matrix.max_dataset_count = max;
     console.timeEnd('TIME: create_this.biom_matrix');
     return this.biom_matrix;
   }
 
-  get_max(max){
-    console.time("time: get_max");
-    let max_count = this.get_max_count_per_did();
-
-    for (let idx in this.visual_post_items.chosen_datasets) {// correct order //TODO: refactor using map to avoid checking     if (this.visual_post_items.chosen_datasets.hasOwnProperty(idx)) {
-      let dname = this.visual_post_items.chosen_datasets[idx].name;
-      this.biom_matrix.column_totals.push(max_count[dname]);
-      if(max_count[dname] > max){
-        max = max_count[dname];
-      }
+  get_values(obj) {
+    console.time('TIME: get_values old');
+    const keys = Object.keys(obj);
+    const values = [];
+    for (let i = 0; i < keys.length; i++) {
+      values.push(obj[keys[i]]);
     }
+    console.timeEnd('TIME: get_values old');
+    console.log(values);
+
+    console.time('TIME: get_values new');
+    const values1 = Object.keys(obj).map(key => obj[key]);
+    console.timeEnd('TIME: get_values new');
+    console.log(values1);
+
+    return values;
+  }
+
+  get_max(){
+    console.time("time: get_max");
+    let total_count_per_d = this.get_total_count_per_d();
+
+    this.biom_matrix.column_totals = this.get_values(total_count_per_d);
+
+    let max = Math.max(...this.biom_matrix.column_totals);
     console.timeEnd("time: get_max");
     return max;
   }
 
-  get_max_count_per_did(){// TODO refactor to avoid if (this.biom_matrix.data.hasOwnProperty(d_idx))
-    console.time("time: get_max_count_per_did");
-    let max_count = {};
+  get_total_count_per_d(){
+    console.time("time: get_total_count_per_d");
+    let total_count = {};
     let columns = this.biom_matrix.columns;
 
-    console.time("TIME: max_count old");
     for (let c_idx in columns) {
       let dname = columns[c_idx].id;
-      max_count[dname] = 0;
+      total_count[dname] = 0;
       for (let d_idx in this.biom_matrix.data) {
-        max_count[dname] += this.biom_matrix.data[d_idx][c_idx];
+        total_count[dname] += this.biom_matrix.data[d_idx][c_idx];
       }
     }
-    console.timeEnd("TIME: max_count old");
-    console.log("max_count[dname] 1");
-    console.log(JSON.stringify(max_count));
-
-    console.time("TIME: max_count new");
-    columns.map((col, c_idx) => {
-      let dname = col.id;
-      let temp = 0;
-      temp = this.biom_matrix.data
-        .map(ar => ar[c_idx])
-        .reduce((sum, current_val) => sum + parseInt(current_val));
-      max_count[dname] = temp;
-    });
-
-    console.timeEnd("TIME: max_count new");
-
-    console.log("max_count[dname] 2");
-    console.log(JSON.stringify(max_count));
-
-    console.timeEnd("time: get_max_count_per_did");
-    return max_count;
+    console.timeEnd("time: get_total_count_per_d");
+    return total_count;
   }
 }
 
