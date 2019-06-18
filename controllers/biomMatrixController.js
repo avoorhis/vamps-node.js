@@ -253,7 +253,7 @@ class BiomMatrix {
     return this.biom_matrix;
   }
 
-  get_all_values(obj) {
+  get_values(obj) {
     return Object.keys(obj).map(key => obj[key]);
   }
 
@@ -261,7 +261,7 @@ class BiomMatrix {
     console.time("time: get_max");
     let total_count_per_d = this.get_total_count_per_d();
 
-    this.biom_matrix.column_totals = this.get_all_values(total_count_per_d);
+    this.biom_matrix.column_totals = this.get_values(total_count_per_d);
 
     let max = Math.max(...this.biom_matrix.column_totals);
     console.timeEnd("time: get_max");
