@@ -256,10 +256,6 @@ class BiomMatrix {
     return this.biom_matrix;
   }
 
-  // onlyUnique(value, index, self) {
-  //   return self.indexOf(value) === index;
-  // }
-
   get_max(max){
     console.time("time: get_max");
     let max_count = this.get_max_count_per_did();
