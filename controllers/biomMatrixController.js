@@ -154,10 +154,6 @@ class BiomMatrix {
 
     cnt_matrix.map((row, idx1) => {
       let got_one = this.check_if_in_interval(custom_count_matrix, row, min, max);
-      //       row.find((cell, idx2) => {
-      //   let curr_cell_pct = this.get_crt_pct(custom_count_matrix, cell, idx2);
-      //   return curr_cell_pct > min && curr_cell_pct < max;
-      // });
 
       if (got_one){
         new_counts.push(cnt_matrix[idx1]);
