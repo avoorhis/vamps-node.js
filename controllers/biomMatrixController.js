@@ -1,7 +1,7 @@
 const COMMON = require(app_root + '/routes/visuals/routes_common');
 const C      = require(app_root + '/public/constants');
-let path     = require("path");
-var extend = require('util')._extend;
+const path   = require("path");
+const extend = require('util')._extend;
 
 let helpers = require(app_root + '/routes/helpers/helpers');
 
@@ -141,7 +141,7 @@ class BiomMatrix {
     for (let idx1 in cnt_matrix) {
       let got_one = false;
       let row = cnt_matrix[idx1];
-      for (let idx2 in row) {
+      for (let idx2 in row) {//TODO: refactor using find. Need to avoid checking     if (row.hasOwnProperty(idx2)) and  if (custom_count_matrix.column_totals.hasOwnProperty(idx2))
         let cell = row[idx2];
         let curr_col_total = custom_count_matrix.column_totals[idx2];
         let curr_cell_pct = cell * 100 / curr_col_total;
@@ -230,7 +230,7 @@ class BiomMatrix {
     console.time('Time: create_this.biom_matrix');  // uname:
 
     // this.ukeys is sorted by alpha
-    for (var uk_idx in this.ukeys) {
+    for (let uk_idx in this.ukeys) {
       let curr_tax_name = this.ukeys[uk_idx];
       this.biom_matrix.rows.push({ id: curr_tax_name, metadata: null });
 
@@ -259,7 +259,7 @@ class BiomMatrix {
     console.time("time: get_max");
     let max_count = this.get_max_count_per_did();
 
-    for (let idx in this.visual_post_items.chosen_datasets) {// correct order
+    for (let idx in this.visual_post_items.chosen_datasets) {// correct order //TODO: refactor using map to avoid checking     if (this.visual_post_items.chosen_datasets.hasOwnProperty(idx)) {
       let dname = this.visual_post_items.chosen_datasets[idx].name;
       this.biom_matrix.column_totals.push(max_count[dname]);
       if(max_count[dname] > max){
@@ -270,7 +270,7 @@ class BiomMatrix {
     return max;
   }
 
-  get_max_count_per_did(){
+  get_max_count_per_did(){// TODO refactor to avoid if (this.biom_matrix.data.hasOwnProperty(d_idx))
     console.time("time: get_max_count_per_did");
     let max_count = {};
     let columns = this.biom_matrix.columns;
@@ -305,7 +305,6 @@ class TaxaCounts {
   }
 
   get_taxonomy_file_prefix() {
-    let files_prefix = "";
     let taxonomy_name = NODE_DATABASE;
     if (this.units === 'tax_rdp2.6_simple'){
       taxonomy_name += "--datasets_rdp2.6";
@@ -314,7 +313,7 @@ class TaxaCounts {
     } else {
       taxonomy_name += "--datasets_" + C.default_taxonomy.name;  // default
     }
-    files_prefix = path.join(this.req.CONFIG.JSON_FILES_BASE, taxonomy_name);
+    let files_prefix = path.join(this.req.CONFIG.JSON_FILES_BASE, taxonomy_name);
     return files_prefix; // /Users/ashipunova/BPC/vamps-node.js/public/json/vamps2--datasets_silva119
   }
 
@@ -330,7 +329,7 @@ class TaxaCounts {
     return taxonomy_object;
   }
 
-  get_taxcounts_obj_from_file() {
+  get_taxcounts_obj_from_file() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
     console.time("time: get_taxcounts_obj_from_file");
 
     let taxcounts_obj_for_all_datasets = {};
@@ -352,7 +351,7 @@ class TaxaCounts {
     return taxcounts_obj_for_all_datasets;
   }
 
-  make_curr_taxcounts_obj_w_arr_by_did() {
+  make_curr_taxcounts_obj_w_arr_by_did() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
     // for each did get keys
     // keys "_1_2" to array [1,2]
     // add previous info
@@ -384,7 +383,7 @@ class TaxaCounts {
     return current_tax_id_arr_numbers_only;
   }
 
-  make_tax_id_obj_by_did_filtered_by_rank() { //check if it is faster to make arrays from all tax_id_rows first
+  make_tax_id_obj_by_did_filtered_by_rank() { //check if it is faster to make arrays from all tax_id_rows first // TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
     console.time("TIME: make_tax_id_obj_by_did_filtered_by_rank");
     let tax_id_obj_by_did_filtered_by_rank = {};
 
@@ -412,10 +411,10 @@ class TaxaCounts {
       taxa_counts[tax_name] = [];
     });
 
-    for (var i in this.chosen_dids) {// correct order
-      let did = this.chosen_dids[i];
-      for (var tax_name1 in tax_names) {
-        try {
+    for (let d_idx in this.chosen_dids) {// correct order // TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
+      let did = this.chosen_dids[d_idx];
+      for (let tax_name1 in tax_names) {
+        try {// TODO add hasOwnProperty
           let curr_cnt = tax_name_cnt_obj_per_dataset[did][tax_name1] || 0;
           taxa_counts[tax_name1].push(curr_cnt);
         }
@@ -493,11 +492,11 @@ class Taxonomy {
 
 class TaxonomySimple extends Taxonomy {
 
-  make_tax_name_cnt_obj_per_did() {
+  make_tax_name_cnt_obj_per_did() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx)) etc.
     console.time("TIME: make_tax_name_cnt_obj_per_did");
 
-    for (let did_idx in this.chosen_dids) {
-      let did = this.chosen_dids[did_idx];
+    for (let d_idx in this.chosen_dids) {
+      let did = this.chosen_dids[d_idx];
       let curr_taxcounts_obj = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did];
 
       for (let obj_idx in curr_taxcounts_obj){
