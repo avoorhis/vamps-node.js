@@ -380,8 +380,8 @@ class TaxaCounts {
 
   split_taxcounts_to_arr(current_tax_id_row) {
     let current_tax_id_arr = current_tax_id_row.split("_");
-    let current_tax_id_arr_clean =  current_tax_id_arr.filter(function (el) { return (el) });
-    return current_tax_id_arr_clean;
+    let current_tax_id_arr_numbers_only = current_tax_id_arr.filter(Number);
+    return current_tax_id_arr_numbers_only;
   }
 
   make_tax_id_obj_by_did_filtered_by_rank() { //check if it is faster to make arrays from all tax_id_rows first
