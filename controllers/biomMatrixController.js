@@ -440,10 +440,15 @@ class TaxaCounts {
           console.log(err);
         }
 
-        if (!taxa_counts1[tax_name1]) {
-          taxa_counts1[tax_name1] = [];
+        try {
+          taxa_counts1[tax_name1][idx] = curr_cnt;
         }
-        taxa_counts1[tax_name1][idx] = curr_cnt;
+        catch(err) {//TypeError
+          // if (!taxa_counts1[tax_name1]) {
+          taxa_counts1[tax_name1] = [];
+          console.log(err);
+          // }
+        }
       });
     });
 
