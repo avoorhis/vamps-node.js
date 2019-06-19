@@ -467,28 +467,29 @@ class Taxonomy {
     this.chosen_dids                  = chosen_dids;
     this.id_rank_taxa_cash            = {};
     this.tax_name_cnt_obj_1           = {};
-    this.tax_name_cnt_obj_per_dataset = {};
+    this.tax_name_cnt_obj_per_dataset = this.set_lookup_per_ds();
   }
 
-  fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {//TODO: refactor
-    console.time("time: fillin_name_lookup_per_ds");
 
-    if (did in lookup) {
+  set_lookup_per_ds() {
+    let lookup_temp = {};
+    for (let d_idx in this.chosen_dids) {
+      if (this.chosen_dids.hasOwnProperty(d_idx)) {
+        let did = this.chosen_dids[d_idx];
+        lookup_temp[did] = {};
+      }
+    }
+    return lookup_temp;
+  }
+
+  fillin_name_lookup_per_ds(did, tax_name, cnt) {
+    console.time("time: fillin_name_lookup_per_ds");
+    const lookup = this.tax_name_cnt_obj_per_dataset;
       if (tax_name in lookup[did]) {
         lookup[did][tax_name] += parseInt(cnt);
       } else {
         lookup[did][tax_name] = parseInt(cnt);
       }
-
-    } else {
-      lookup[did] = {};
-      if (tax_name in lookup[did]) {
-        lookup[did][tax_name] += parseInt(cnt);
-
-      }else{
-        lookup[did][tax_name] = parseInt(cnt);
-      }
-    }
     console.timeEnd("time: fillin_name_lookup_per_ds");
     return lookup;
   }
@@ -496,6 +497,7 @@ class Taxonomy {
 }
 
 class TaxonomySimple extends Taxonomy {
+
 
   make_tax_name_cnt_obj_per_did() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx)) etc.
     console.time("TIME: make_tax_name_cnt_obj_per_did");
@@ -513,7 +515,7 @@ class TaxonomySimple extends Taxonomy {
 
             if (tax_long_name) {
               this.tax_name_cnt_obj_1[tax_long_name] = 1;
-              this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(this.tax_name_cnt_obj_per_dataset, did, tax_long_name, cnt); //TODO: refactor
+              this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(did, tax_long_name, cnt);
             }
           }
         }
@@ -640,7 +642,7 @@ class TaxonomyCustom extends Taxonomy {
           let cnt = this.get_tax_cnt(db_tax_id_list, did, selected_node_id, this.taxa_counts_module.tax_id_obj_by_did);
 
           this.tax_name_cnt_obj_1[custom_tax_long_name] = 1;
-          this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(this.tax_name_cnt_obj_per_dataset, did, custom_tax_long_name, cnt); //TODO: refactor
+          this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(did, custom_tax_long_name, cnt);
         }
       }
     });
