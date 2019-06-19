@@ -498,6 +498,33 @@ class Taxonomy {
 
 class TaxonomySimple extends Taxonomy {
 
+  make_tax_name_cnt_obj_per_dataset() {
+    console.time("TIME: make_tax_name_cnt_obj_per_dataset");
+    for (let d_idx in this.chosen_dids) {
+      if (this.chosen_dids.hasOwnProperty(d_idx)) {
+        const did = this.chosen_dids[d_idx];
+        const curr_lookup = this.tax_name_cnt_obj_per_dataset[did];
+        for (let tax_long_name in this.tax_name_cnt_obj_1) {
+          if (this.tax_name_cnt_obj_1.hasOwnProperty(tax_long_name)) {
+            curr_lookup[tax_long_name] = 0;
+          }
+        }
+        let curr_tax_counts_obj = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did];
+        // this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did].reduce(new_ob, cur_ob => {
+        //   new_ob[ob.tax_long_name] = cur_ob.cnt
+        // }, {});
+
+
+        this.tax_name_cnt_obj_per_dataset[did] = curr_tax_counts_obj.reduce(function(new_ob, cur_ob) { new_ob[cur_ob.tax_long_name] = cur_ob.cnt; return new_ob; }, {});
+        // let ob2 =
+
+      }
+      console.log("NEW this.tax_name_cnt_obj_per_dataset: ");
+      console.log(JSON.stringify(this.tax_name_cnt_obj_per_dataset));
+    }
+
+    console.timeEnd("TIME: make_tax_name_cnt_obj_per_dataset");
+  }
 
   make_tax_name_cnt_obj_per_did() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx)) etc.
     console.time("TIME: make_tax_name_cnt_obj_per_did");
@@ -510,17 +537,19 @@ class TaxonomySimple extends Taxonomy {
         for (let obj_idx in curr_taxcounts_obj) {
           if (curr_taxcounts_obj.hasOwnProperty(obj_idx)) {
             let curr_obj      = curr_taxcounts_obj[obj_idx];
-            let cnt           = curr_obj.cnt;
             let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
 
             if (tax_long_name) {
+              curr_obj["tax_long_name"] = tax_long_name;
               this.tax_name_cnt_obj_1[tax_long_name] = 1;
-              this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(did, tax_long_name, cnt);
+              // this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(did, tax_long_name, cnt);
             }
           }
         }
       }
     }
+    this.make_tax_name_cnt_obj_per_dataset();
+
     console.timeEnd("TIME: make_tax_name_cnt_obj_per_did");
 
   }
