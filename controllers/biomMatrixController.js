@@ -405,7 +405,7 @@ class TaxaCounts {
     return el.tax_id_arr.length === rank_no;
   }
 
-  create_unit_name_counts(tax_names, tax_name_cnt_obj_per_dataset) {
+  create_unit_name_counts(tax_names, tax_name_cnt_obj_per_dataset) {//check if it is not the same as this.tax_name_cnt_obj_per_dataset
 
     console.time("time: create_unit_name_counts");
     let taxa_counts = {};
@@ -515,8 +515,10 @@ class TaxonomySimple extends Taxonomy {
         // }, {});
 
 
-        this.tax_name_cnt_obj_per_dataset[did] = curr_tax_counts_obj.reduce(function(new_ob, cur_ob) { new_ob[cur_ob.tax_long_name] = cur_ob.cnt; return new_ob; }, {});
-        // let ob2 =
+        this.tax_name_cnt_obj_per_dataset[did] = curr_tax_counts_obj.reduce(function(new_ob, cur_ob) {
+          new_ob[cur_ob.tax_long_name] = cur_ob.cnt;
+          return new_ob;
+          }, {});
 
       }
       console.log("NEW this.tax_name_cnt_obj_per_dataset: ");
