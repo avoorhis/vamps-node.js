@@ -510,10 +510,6 @@ class TaxonomySimple extends Taxonomy {
           }
         }
         let curr_tax_counts_obj = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did];
-        // this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did].reduce(new_ob, cur_ob => {
-        //   new_ob[ob.tax_long_name] = cur_ob.cnt
-        // }, {});
-
 
         this.tax_name_cnt_obj_per_dataset[did] = curr_tax_counts_obj.reduce(function(new_ob, cur_ob) {
           new_ob[cur_ob.tax_long_name] = cur_ob.cnt;
@@ -531,9 +527,10 @@ class TaxonomySimple extends Taxonomy {
   make_tax_name_cnt_obj_per_did() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx)) etc.
     console.time("TIME: make_tax_name_cnt_obj_per_did");
 
-    for (let d_idx in this.chosen_dids) {
-      if (this.chosen_dids.hasOwnProperty(d_idx)) {
-        let did                = this.chosen_dids[d_idx];
+    // for (let d_idx in this.chosen_dids) {
+    //   if (this.chosen_dids.hasOwnProperty(d_idx)) {
+    //     let did                = this.chosen_dids[d_idx];
+    this.chosen_dids.map((did) => {
         let curr_taxcounts_obj = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did];
 
         for (let obj_idx in curr_taxcounts_obj) {
@@ -544,12 +541,11 @@ class TaxonomySimple extends Taxonomy {
             if (tax_long_name) {
               curr_obj["tax_long_name"] = tax_long_name;
               this.tax_name_cnt_obj_1[tax_long_name] = 1;
-              // this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(did, tax_long_name, cnt);
             }
           }
         }
-      }
-    }
+      });
+    // }
     this.make_tax_name_cnt_obj_per_dataset();
 
     console.timeEnd("TIME: make_tax_name_cnt_obj_per_did");
@@ -670,10 +666,10 @@ class TaxonomyCustom extends Taxonomy {
           db_tax_id_list[did][selected_node_id] = combined_ids_res[0];
           custom_tax_long_name                  = combined_ids_res[1];
 
-          let cnt = this.get_tax_cnt(db_tax_id_list, did, selected_node_id, this.taxa_counts_module.tax_id_obj_by_did);
+          let cnt = this.get_tax_cnt(db_tax_id_list, did, selected_node_id);
 
           this.tax_name_cnt_obj_1[custom_tax_long_name] = 1;
-          this.tax_name_cnt_obj_per_dataset      = this.fillin_name_lookup_per_ds(did, custom_tax_long_name, cnt);
+          this.tax_name_cnt_obj_per_dataset = this.fillin_name_lookup_per_ds(did, custom_tax_long_name, cnt);
         }
       }
     });
