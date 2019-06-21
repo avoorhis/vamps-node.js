@@ -527,25 +527,21 @@ class TaxonomySimple extends Taxonomy {
   make_tax_name_cnt_obj_per_did() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx)) etc.
     console.time("TIME: make_tax_name_cnt_obj_per_did");
 
-    // for (let d_idx in this.chosen_dids) {
-    //   if (this.chosen_dids.hasOwnProperty(d_idx)) {
-    //     let did                = this.chosen_dids[d_idx];
     this.chosen_dids.map((did) => {
-        let curr_taxcounts_obj = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did];
-
-        for (let obj_idx in curr_taxcounts_obj) {
-          if (curr_taxcounts_obj.hasOwnProperty(obj_idx)) {
-            let curr_obj      = curr_taxcounts_obj[obj_idx];
+      let curr_taxcounts_obj = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did];
+      curr_taxcounts_obj.map((curr_obj) => {
+        // for (let obj_idx in curr_taxcounts_obj) {
+        //   if (curr_taxcounts_obj.hasOwnProperty(obj_idx)) {
+        //     let curr_obj      = curr_taxcounts_obj[obj_idx];
             let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
 
             if (tax_long_name) {
               curr_obj["tax_long_name"] = tax_long_name;
               this.tax_name_cnt_obj_1[tax_long_name] = 1;
             }
-          }
-        }
+          });
+        // }
       });
-    // }
     this.make_tax_name_cnt_obj_per_dataset();
 
     console.timeEnd("TIME: make_tax_name_cnt_obj_per_did");
