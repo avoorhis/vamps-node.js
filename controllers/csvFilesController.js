@@ -121,7 +121,10 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     };
   }
 
-  sorted_files_by_time() {
+  sorted_files_by_time() {//TODO:
+    /*async.map(['file1','file2','file3'], fs.stat, function(err, results){
+    // results is now an array of stats for each file
+  });*/
     console.time("sorted_files_by_time");
     var f_info = JSON.parse(this.req.body.file_info);
     var dir    = path.join(config.USER_FILES_BASE, this.user.username);
