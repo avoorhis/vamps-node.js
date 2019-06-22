@@ -2,7 +2,6 @@ const COMMON = require(app_root + '/routes/visuals/routes_common');
 const C      = require(app_root + '/public/constants');
 const path   = require("path");
 const extend = require('util')._extend;
-const async = require('async');
 
 let helpers = require(app_root + '/routes/helpers/helpers');
 
@@ -159,8 +158,8 @@ class BiomMatrix {
       if (got_one){
         new_counts.push(cnt_matrix[idx1]);
         new_units.push(custom_count_matrix.rows[idx1]); //?
-      // } else {
-      //   console.log('rejecting ' + custom_count_matrix.rows[idx1].name);
+        // } else {
+        //   console.log('rejecting ' + custom_count_matrix.rows[idx1].name);
       }
     });
     custom_count_matrix.data = new_counts;
@@ -486,11 +485,11 @@ class Taxonomy {
   fillin_name_lookup_per_ds(did, tax_name, cnt) {
     console.time("time: fillin_name_lookup_per_ds");
     const lookup = this.tax_name_cnt_obj_per_dataset;
-      if (tax_name in lookup[did]) {
-        lookup[did][tax_name] += parseInt(cnt);
-      } else {
-        lookup[did][tax_name] = parseInt(cnt);
-      }
+    if (tax_name in lookup[did]) {
+      lookup[did][tax_name] += parseInt(cnt);
+    } else {
+      lookup[did][tax_name] = parseInt(cnt);
+    }
     console.timeEnd("time: fillin_name_lookup_per_ds");
     return lookup;
   }
@@ -515,7 +514,7 @@ class TaxonomySimple extends Taxonomy {
         this.tax_name_cnt_obj_per_dataset[did] = curr_tax_counts_obj.reduce(function(new_ob, cur_ob) {
           new_ob[cur_ob.tax_long_name] = cur_ob.cnt;
           return new_ob;
-          }, {});
+        }, {});
 
       }
       console.log("NEW this.tax_name_cnt_obj_per_dataset: ");
@@ -526,21 +525,6 @@ class TaxonomySimple extends Taxonomy {
   }
 
   make_tax_name_cnt_obj_per_did() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx)) etc.
-
-    console.time("TIME: make_tax_name_cnt_obj_per_did 2 ");
-
-    this.chosen_dids.map((did) => {
-      let curr_taxcounts_obj = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did];
-      async.forEach(curr_taxcounts_obj,
-        (curr_obj, callback) => {
-          this.func(curr_obj, callback)},
-        (err) => {
-          this.make_tax_name_cnt_obj_per_dataset();
-      });
-    });
-
-    console.timeEnd("TIME: make_tax_name_cnt_obj_per_did 2 ");
-
     console.time("TIME: make_tax_name_cnt_obj_per_did");
 
     this.chosen_dids.map((did) => {
@@ -549,57 +533,19 @@ class TaxonomySimple extends Taxonomy {
         // for (let obj_idx in curr_taxcounts_obj) {
         //   if (curr_taxcounts_obj.hasOwnProperty(obj_idx)) {
         //     let curr_obj      = curr_taxcounts_obj[obj_idx];
-            let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
-
-            if (tax_long_name) {
-              curr_obj["tax_long_name"] = tax_long_name;
-              this.tax_name_cnt_obj_1[tax_long_name] = 1;
-            }
-          });
-        // }
-      });
-    this.make_tax_name_cnt_obj_per_dataset();
-
-    console.timeEnd("TIME: make_tax_name_cnt_obj_per_did");
-
-    console.time("TIME: make_tax_name_cnt_obj_per_did for");
-
-    this.chosen_dids.map((did) => {
-      let curr_taxcounts_obj = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did];
-        for (let obj_idx in curr_taxcounts_obj) {
-          if (curr_taxcounts_obj.hasOwnProperty(obj_idx)) {
-            let curr_obj      = curr_taxcounts_obj[obj_idx];
-            let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
+        let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
 
         if (tax_long_name) {
           curr_obj["tax_long_name"] = tax_long_name;
           this.tax_name_cnt_obj_1[tax_long_name] = 1;
         }
-      }
-     }
+      });
+      // }
     });
-
     this.make_tax_name_cnt_obj_per_dataset();
 
-    console.timeEnd("TIME: make_tax_name_cnt_obj_per_did for");
+    console.timeEnd("TIME: make_tax_name_cnt_obj_per_did");
 
-
-
-  }
-
-  func(curr_obj, callback) {
-    let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
-
-    if (tax_long_name) {
-      curr_obj["tax_long_name"]              = tax_long_name;
-      this.tax_name_cnt_obj_1[tax_long_name] = 1;
-    }
-    callback();
-  }
-
-
-  done(error, result) {
-    console.log("map completed. Error: ", error, " result: ", result);
   }
 
   get_tax_long_name(curr_obj) {
