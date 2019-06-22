@@ -427,25 +427,25 @@ class TaxonomyFactory {
 
 class Taxonomy {
   constructor(visual_post_items, taxa_counts, chosen_dids) {
-    this.chosen_dids                  = chosen_dids;
-    this.post_items                   = visual_post_items;
-    this.taxa_counts_module           = taxa_counts;
-    this.taxonomy_object              = this.taxa_counts_module.taxonomy_object;
-    this.chosen_dids                  = chosen_dids;
-    this.id_rank_taxa_cash            = {};
-    this.tax_name_cnt_obj_1           = {};
-    this.tax_id_obj_by_did_filtered   = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank;
-    this.tax_cnt_obj_arrs             = this.connect_names_with_cnts();
+    this.chosen_dids                = chosen_dids;
+    this.post_items                 = visual_post_items;
+    this.taxa_counts_module         = taxa_counts;
+    this.taxonomy_object            = this.taxa_counts_module.taxonomy_object;
+    this.chosen_dids                = chosen_dids;
+    this.id_rank_taxa_cash          = {};
+    this.tax_name_used              = [];
+    this.tax_id_obj_by_did_filtered = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank;
+    this.tax_cnt_obj_arrs           = this.connect_names_with_cnts();
   }
 
   make_empty_tax_cnt_obj() {
 
     console.time("TIME: make_empty_tax_cnt_obj");
     let tax_cnt_obj_arrs_empty = {};
-    let used_names = Object.keys(this.tax_name_cnt_obj_1);
+    let used_names_unique = [...new Set(this.tax_name_used)];
     let dids_len = this.chosen_dids.length;
 
-    tax_cnt_obj_arrs_empty = used_names.reduce((new_ob, name) => {
+    tax_cnt_obj_arrs_empty = used_names_unique.reduce((new_ob, name) => {
       new_ob[name] = Array(dids_len).fill(0);
       return new_ob;
     }, {});
@@ -489,7 +489,7 @@ class TaxonomySimple extends Taxonomy {
 
         if (tax_long_name) {
           curr_obj["tax_long_name"] = tax_long_name;
-          this.tax_name_cnt_obj_1[tax_long_name] = 1;
+          this.tax_name_used.push(tax_long_name);
         }
       });
     });
@@ -636,7 +636,7 @@ class TaxonomyCustom extends Taxonomy {
           temp_obj["tax_id_row"] = combined_ids_res[0];
           temp_obj["cnt"] = this.get_tax_cnt(db_tax_id_list, did, selected_node_id) || 0;
 
-          this.tax_name_cnt_obj_1[custom_tax_long_name] = 1;
+          this.tax_name_used.push(custom_tax_long_name);
           this.tax_id_obj_by_did_filtered[did].push(temp_obj);
         }
       }
