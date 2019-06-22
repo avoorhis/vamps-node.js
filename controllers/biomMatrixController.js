@@ -275,6 +275,21 @@ class BiomMatrix {
       }
     }
     console.timeEnd("time: get_total_count_per_d");
+
+    console.time("time: get_total_count_per_d 2map");
+    total_count = {};
+    columns = this.biom_matrix.columns;
+
+    columns.map((c, c_idx) => {
+      let dname = c.id;
+      total_count[dname] = 0;
+      this.biom_matrix.data.map((d, d_idx) => {
+        total_count[dname] += this.biom_matrix.data[d_idx][c_idx];
+      });
+    });
+
+    console.timeEnd("time: get_total_count_per_d 2map");
+
     return total_count;
   }
 }
@@ -475,7 +490,7 @@ class TaxonomySimple extends Taxonomy {
 
   }
 
-  connect_names_with_cnts() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx)) etc.
+  connect_names_with_cnts() {
     console.time("TIME: connect_names_with_cnts");
 
     this.chosen_dids.map((did) => {
@@ -530,7 +545,7 @@ class TaxonomySimple extends Taxonomy {
       if (tax_node.taxon) {
         one_taxon_name = tax_node.taxon;
       } else { //TODO: check for empty_... and combine with _NA?
-        let rank_name  = this.check_rank_name(rank); //TODO: this and if below to a func?
+        let rank_name  = this.check_rank_name(rank);
         one_taxon_name = rank_name + '_NA';
       }
       this.id_rank_taxa_cash[db_id_n_rank] = one_taxon_name;
@@ -660,7 +675,7 @@ class TaxonomyCustom extends Taxonomy {
     return [id_chain, tax_long_name];
   }
 
-  get_tax_cnt(db_tax_id_list, did, selected_node_id) {//TODO: refactor
+  get_tax_cnt(db_tax_id_list, did, selected_node_id) {
     console.time('TIME: get_tax_cnt');
     const taxcounts = this.taxa_counts_module.curr_taxcounts_obj_of_str_by_did[did];
     let curr_tax_id_chain = db_tax_id_list[did][selected_node_id];
