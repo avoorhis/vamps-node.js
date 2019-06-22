@@ -432,30 +432,19 @@ class Taxonomy {
     this.taxa_counts_module         = taxa_counts;
     this.taxonomy_object            = this.taxa_counts_module.taxonomy_object;
     this.id_rank_taxa_cash          = {};
-    this.tax_name_used              = new Set();
+    this.tax_name_used_unique       = new Set();
     this.tax_id_obj_by_did_filtered = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank;
     this.tax_cnt_obj_arrs           = this.connect_names_with_cnts();
   }
 
   make_empty_tax_cnt_obj() {
-
     console.time("TIME: make_empty_tax_cnt_obj");
     let tax_cnt_obj_arrs_empty = {};
-    let used_names_unique = this.tax_name_used;
     let dids_len = this.chosen_dids.length;
 
-    console.time("TIME: make_empty_tax_cnt_obj for");
-    for (let name of used_names_unique) {
+    for (let name of this.tax_name_used_unique) {
       tax_cnt_obj_arrs_empty[name] = Array(dids_len).fill(0);
     }
-    console.timeEnd("TIME: make_empty_tax_cnt_obj for");
-
-    console.time("TIME: make_empty_tax_cnt_obj reduce");
-    let tax_cnt_obj_arrs_empty2 = Array.from(used_names_unique).reduce((new_ob, name) => {
-      new_ob[name] = Array(dids_len).fill(0);
-      return new_ob;
-    }, {});
-    console.timeEnd("TIME: make_empty_tax_cnt_obj reduce");
 
     console.timeEnd("TIME: make_empty_tax_cnt_obj");
     return tax_cnt_obj_arrs_empty;
@@ -496,7 +485,7 @@ class TaxonomySimple extends Taxonomy {
 
         if (tax_long_name) {
           curr_obj["tax_long_name"] = tax_long_name;
-          this.tax_name_used.add(tax_long_name);
+          this.tax_name_used_unique.add(tax_long_name);
         }
       });
     });
@@ -643,7 +632,7 @@ class TaxonomyCustom extends Taxonomy {
           temp_obj["tax_id_row"] = combined_ids_res[0];
           temp_obj["cnt"] = this.get_tax_cnt(db_tax_id_list, did, selected_node_id) || 0;
 
-          this.tax_name_used.add(custom_tax_long_name);
+          this.tax_name_used_unique.add(custom_tax_long_name);
           this.tax_id_obj_by_did_filtered[did].push(temp_obj);
         }
       }
