@@ -431,9 +431,8 @@ class Taxonomy {
     this.post_items                 = visual_post_items;
     this.taxa_counts_module         = taxa_counts;
     this.taxonomy_object            = this.taxa_counts_module.taxonomy_object;
-    this.chosen_dids                = chosen_dids;
     this.id_rank_taxa_cash          = {};
-    this.tax_name_used              = [];
+    this.tax_name_used              = new Set();
     this.tax_id_obj_by_did_filtered = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank;
     this.tax_cnt_obj_arrs           = this.connect_names_with_cnts();
   }
@@ -442,13 +441,21 @@ class Taxonomy {
 
     console.time("TIME: make_empty_tax_cnt_obj");
     let tax_cnt_obj_arrs_empty = {};
-    let used_names_unique = [...new Set(this.tax_name_used)];
+    let used_names_unique = this.tax_name_used;
     let dids_len = this.chosen_dids.length;
 
-    tax_cnt_obj_arrs_empty = used_names_unique.reduce((new_ob, name) => {
+    console.time("TIME: make_empty_tax_cnt_obj for");
+    for (let name of used_names_unique) {
+      tax_cnt_obj_arrs_empty[name] = Array(dids_len).fill(0);
+    }
+    console.timeEnd("TIME: make_empty_tax_cnt_obj for");
+
+    console.time("TIME: make_empty_tax_cnt_obj reduce");
+    let tax_cnt_obj_arrs_empty2 = Array.from(used_names_unique).reduce((new_ob, name) => {
       new_ob[name] = Array(dids_len).fill(0);
       return new_ob;
     }, {});
+    console.timeEnd("TIME: make_empty_tax_cnt_obj reduce");
 
     console.timeEnd("TIME: make_empty_tax_cnt_obj");
     return tax_cnt_obj_arrs_empty;
@@ -489,7 +496,7 @@ class TaxonomySimple extends Taxonomy {
 
         if (tax_long_name) {
           curr_obj["tax_long_name"] = tax_long_name;
-          this.tax_name_used.push(tax_long_name);
+          this.tax_name_used.add(tax_long_name);
         }
       });
     });
@@ -636,7 +643,7 @@ class TaxonomyCustom extends Taxonomy {
           temp_obj["tax_id_row"] = combined_ids_res[0];
           temp_obj["cnt"] = this.get_tax_cnt(db_tax_id_list, did, selected_node_id) || 0;
 
-          this.tax_name_used.push(custom_tax_long_name);
+          this.tax_name_used.add(custom_tax_long_name);
           this.tax_id_obj_by_did_filtered[did].push(temp_obj);
         }
       }
