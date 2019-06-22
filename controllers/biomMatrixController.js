@@ -467,11 +467,29 @@ class Taxonomy {
     this.chosen_dids                  = chosen_dids;
     this.id_rank_taxa_cash            = {};
     this.tax_name_cnt_obj_1           = {};
+    this.tax_id_obj_by_did_filtered   = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank;
     this.tax_cnt_obj_arrs             = this.connect_names_with_cnts();
+
     // this.tax_name_cnt_obj_per_dataset = this.set_lookup_per_ds();
     // this.tax_cnt_obj_arrs             = this.make_tax_name_cnt_obj_per_dataset();
   }
 
+  make_empty_tax_cnt_obj() {
+    let tax_cnt_obj_arrs_empty = {}; //TODO assign tax_name_cnt_obj_1 as keys
+    for (let d_idx in this.chosen_dids) {
+      if (this.chosen_dids.hasOwnProperty(d_idx)) {
+        for (let tax_long_name in this.tax_name_cnt_obj_1) {
+          if (this.tax_name_cnt_obj_1.hasOwnProperty(tax_long_name)) {
+            if (!(tax_cnt_obj_arrs_empty.hasOwnProperty(tax_long_name) )) {
+              tax_cnt_obj_arrs_empty[tax_long_name] = [];
+            }
+            tax_cnt_obj_arrs_empty[tax_long_name][d_idx] = 0;
+          }
+        }
+      }
+    }
+    return tax_cnt_obj_arrs_empty;
+  }
 
   set_lookup_per_ds() {
     let lookup_temp = {};
@@ -500,26 +518,10 @@ class Taxonomy {
 
 class TaxonomySimple extends Taxonomy {
 
-  make_empty_tax_cnt_obj() {
-    let tax_cnt_obj_arrs_empty = {}; //TODO assign tax_name_cnt_obj_1 as keys
-    for (let d_idx in this.chosen_dids) {
-      if (this.chosen_dids.hasOwnProperty(d_idx)) {
-        for (let tax_long_name in this.tax_name_cnt_obj_1) {
-          if (this.tax_name_cnt_obj_1.hasOwnProperty(tax_long_name)) {
-            if (!(tax_cnt_obj_arrs_empty.hasOwnProperty(tax_long_name) )) {
-              tax_cnt_obj_arrs_empty[tax_long_name] = [];
-            }
-            tax_cnt_obj_arrs_empty[tax_long_name][d_idx] = 0;
-          }
-        }
-      }
-    }
-    return tax_cnt_obj_arrs_empty;
-  }
-
   make_tax_name_cnt_obj_per_dataset() {
     console.time("TIME: make_tax_name_cnt_obj_per_dataset");
     let tax_cnt_obj_arrs = this.make_empty_tax_cnt_obj();
+
     for (let d_idx in this.chosen_dids) {
       if (this.chosen_dids.hasOwnProperty(d_idx)) {
         const did = this.chosen_dids[d_idx];
@@ -542,11 +544,8 @@ class TaxonomySimple extends Taxonomy {
     console.time("TIME: connect_names_with_cnts");
 
     this.chosen_dids.map((did) => {
-      let curr_taxcounts_obj = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did];
+      let curr_taxcounts_obj = this.tax_id_obj_by_did_filtered[did];
       curr_taxcounts_obj.map((curr_obj) => {
-        // for (let obj_idx in curr_taxcounts_obj) {
-        //   if (curr_taxcounts_obj.hasOwnProperty(obj_idx)) {
-        //     let curr_obj      = curr_taxcounts_obj[obj_idx];
         let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
 
         if (tax_long_name) {
@@ -649,12 +648,71 @@ class TaxonomySimple extends Taxonomy {
 
 class TaxonomyCustom extends Taxonomy {
 
-  make_tax_name_cnt_obj_per_did() { //TODO: refactor
+  make_tax_name_cnt_obj_per_dataset() {
+    console.time("TIME: make_tax_name_cnt_obj_per_dataset");
+    let tax_cnt_obj_arrs = this.make_empty_tax_cnt_obj();
+    for (let d_idx in this.chosen_dids) {
+      if (this.chosen_dids.hasOwnProperty(d_idx)) {
+        const did = this.chosen_dids[d_idx];
+        const curr_tax_info_obj = this.tax_id_obj_by_did_filtered[did];
+        for (let idx in curr_tax_info_obj) {
+          if (curr_tax_info_obj.hasOwnProperty(idx)) {
+            let ob = curr_tax_info_obj[idx];
+            tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
+          }
+        }
+      }
+    }
+    console.timeEnd("TIME: make_tax_name_cnt_obj_per_dataset");
+
+    return tax_cnt_obj_arrs;
+
+  }
+
+  // make_tax_name_cnt_obj_per_did() { //TODO: refactor
+  //   console.time('TIME: make_tax_name_cnt_obj_per_did_custom');
+  //   // ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
+  //
+  //   this.chosen_dids.map((did) => {
+  //     const custom_taxa = this.post_items.custom_taxa;
+  //
+  //     let db_tax_id_list  = {};
+  //     db_tax_id_list[did] = {};
+  //
+  //     for (let t_idx = 0, taxa_length = custom_taxa.length; t_idx < taxa_length; t_idx++) {
+  //       let selected_node_id = custom_taxa[t_idx];
+  //       if (this.taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id)) {
+  //
+  //         let tax_node = this.taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
+  //
+  //         let id_chain_start       = '';
+  //         let custom_tax_long_name = '';
+  //
+  //         let new_node_id      = tax_node.parent_id;
+  //         id_chain_start       = '_' + tax_node.db_id;  // add to beginning
+  //         custom_tax_long_name = tax_node.taxon;
+  //
+  //         let combined_ids_res                  = this.combine_db_tax_id_list(new_node_id, custom_tax_long_name, id_chain_start);
+  //         db_tax_id_list[did][selected_node_id] = combined_ids_res[0];
+  //         custom_tax_long_name                  = combined_ids_res[1];
+  //
+  //         let cnt = this.get_tax_cnt(db_tax_id_list, did, selected_node_id);
+  //
+  //         this.tax_name_cnt_obj_1[custom_tax_long_name] = 1;
+  //         this.tax_name_cnt_obj_per_dataset = this.fillin_name_lookup_per_ds(did, custom_tax_long_name, cnt);
+  //       }
+  //     }
+  //   });
+  //   console.timeEnd('TIME: make_tax_name_cnt_obj_per_did_custom');
+  // }
+
+  connect_names_with_cnts() {
     console.time('TIME: make_tax_name_cnt_obj_per_did_custom');
     // ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 
     this.chosen_dids.map((did) => {
       const custom_taxa = this.post_items.custom_taxa;
+      this.tax_id_obj_by_did_filtered[did] = [];
 
       let db_tax_id_list  = {};
       db_tax_id_list[did] = {};
@@ -662,6 +720,7 @@ class TaxonomyCustom extends Taxonomy {
       for (let t_idx = 0, taxa_length = custom_taxa.length; t_idx < taxa_length; t_idx++) {
         let selected_node_id = custom_taxa[t_idx];
         if (this.taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id)) {
+          let temp_obj = {};
 
           let tax_node = this.taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
 
@@ -675,15 +734,21 @@ class TaxonomyCustom extends Taxonomy {
           let combined_ids_res                  = this.combine_db_tax_id_list(new_node_id, custom_tax_long_name, id_chain_start);
           db_tax_id_list[did][selected_node_id] = combined_ids_res[0];
           custom_tax_long_name                  = combined_ids_res[1];
-
-          let cnt = this.get_tax_cnt(db_tax_id_list, did, selected_node_id);
+          temp_obj["tax_long_name"] = custom_tax_long_name;
+          temp_obj["tax_id_row"] = combined_ids_res[0];
+          temp_obj["cnt"] = this.get_tax_cnt(db_tax_id_list, did, selected_node_id) || 0;
 
           this.tax_name_cnt_obj_1[custom_tax_long_name] = 1;
-          this.tax_name_cnt_obj_per_dataset = this.fillin_name_lookup_per_ds(did, custom_tax_long_name, cnt);
+          // this.tax_name_cnt_obj_per_dataset = this.fillin_name_lookup_per_ds(did, custom_tax_long_name, cnt);
+          this.tax_id_obj_by_did_filtered[did].push(temp_obj);
         }
       }
     });
+    let tax_cnt_obj_arrs = this.make_tax_name_cnt_obj_per_dataset();
+
     console.timeEnd('TIME: make_tax_name_cnt_obj_per_did_custom');
+    return tax_cnt_obj_arrs;
+
   }
 
   combine_db_tax_id_list(new_node_id, tax_long_name, id_chain) {// TODO: refactor
