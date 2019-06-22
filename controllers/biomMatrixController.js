@@ -267,28 +267,33 @@ class BiomMatrix {
     let total_count = {};
     let columns = this.biom_matrix.columns;
 
-    for (let c_idx in columns) {//TODO refactor to avoid if (columns.hasOwnProperty(c_idx))
-      let dname = columns[c_idx].id;
-      total_count[dname] = 0;
-      for (let d_idx in this.biom_matrix.data) {//TODO refactor to avoid if (this.biom_matrix.data.hasOwnProperty(d_idx))
-        total_count[dname] += this.biom_matrix.data[d_idx][c_idx];
+    for (let c_idx in columns) {
+      if (columns.hasOwnProperty(c_idx)) {
+        let dname          = columns[c_idx].id;
+        total_count[dname] = 0;
+        for (let d_idx in this.biom_matrix.data) {
+          if (this.biom_matrix.data.hasOwnProperty(d_idx)) {
+            total_count[dname] += this.biom_matrix.data[d_idx][c_idx];
+          }
+        }
       }
     }
     console.timeEnd("time: get_total_count_per_d");
 
-    console.time("time: get_total_count_per_d 2map");
-    total_count = {};
-    columns = this.biom_matrix.columns;
-
-    columns.map((c, c_idx) => {
-      let dname = c.id;
-      total_count[dname] = 0;
-      this.biom_matrix.data.map((d, d_idx) => {
-        total_count[dname] += this.biom_matrix.data[d_idx][c_idx];
-      });
-    });
-
-    console.timeEnd("time: get_total_count_per_d 2map");
+    //TODO: SLower in Node 6, check again in Node 7
+    // console.time("time: get_total_count_per_d 2map");
+    // total_count = {};
+    // columns = this.biom_matrix.columns;
+    //
+    // columns.map((c, c_idx) => {
+    //   let dname = c.id;
+    //   total_count[dname] = 0;
+    //   this.biom_matrix.data.map((d, d_idx) => {
+    //     total_count[dname] += this.biom_matrix.data[d_idx][c_idx];
+    //   });
+    // });
+    //
+    // console.timeEnd("time: get_total_count_per_d 2map");
 
     return total_count;
   }
