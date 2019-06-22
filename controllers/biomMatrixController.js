@@ -438,43 +438,20 @@ class Taxonomy {
     this.tax_cnt_obj_arrs             = this.connect_names_with_cnts();
   }
 
-  // fill_out_arr(value, repeat_times) {
-  //   var arr_temp = Array(repeat_times);
-  //
-  //   arr_temp.fill(value, 0, repeat_times);
-  //
-  //   return arr_temp;
-  // }
-
   make_empty_tax_cnt_obj() {
-    console.time("TIME: make_empty_tax_cnt_obj");
-    let tax_cnt_obj_arrs_empty = {}; //TODO assign tax_name_cnt_obj_1 as keys
-    for (let d_idx in this.chosen_dids) {
-      if (this.chosen_dids.hasOwnProperty(d_idx)) {
-        for (let tax_long_name in this.tax_name_cnt_obj_1) {
-          if (this.tax_name_cnt_obj_1.hasOwnProperty(tax_long_name)) {
-            if (!(tax_cnt_obj_arrs_empty.hasOwnProperty(tax_long_name) )) {
-              tax_cnt_obj_arrs_empty[tax_long_name] = [];
-            }
-            tax_cnt_obj_arrs_empty[tax_long_name][d_idx] = 0;
-          }
-        }
-      }
-    }
-    console.timeEnd("TIME: make_empty_tax_cnt_obj");
 
-    console.time("TIME: make_empty_tax_cnt_obj2");
-    let tax_cnt_obj_arrs_empty2 = {}; //TODO assign tax_name_cnt_obj_1 as keys
+    console.time("TIME: make_empty_tax_cnt_obj");
+    let tax_cnt_obj_arrs_empty = {};
     let used_names = Object.keys(this.tax_name_cnt_obj_1);
     let dids_len = this.chosen_dids.length;
 
-    tax_cnt_obj_arrs_empty2 = used_names.reduce((new_ob, name) => {
+    tax_cnt_obj_arrs_empty = used_names.reduce((new_ob, name) => {
       new_ob[name] = Array(dids_len).fill(0);
       return new_ob;
     }, {});
 
-    console.timeEnd("TIME: make_empty_tax_cnt_obj2");
-    return tax_cnt_obj_arrs_empty2;
+    console.timeEnd("TIME: make_empty_tax_cnt_obj");
+    return tax_cnt_obj_arrs_empty;
   }
 }
 
