@@ -323,31 +323,10 @@ class TaxaCounts {
     return taxonomy_object;
   }
 
-  get_taxcounts_obj_from_file() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
+  get_taxcounts_obj_from_file() {
     console.time("time: get_taxcounts_obj_from_file");
 
     let taxcounts_obj_for_all_datasets = {};
-    for (let d_idx in this.chosen_dids) {
-      if (this.chosen_dids.hasOwnProperty(d_idx)) {
-        let did = this.chosen_dids[d_idx];
-        try {
-          let path_to_file                    = path.join(this.taxonomy_file_prefix, did + '.json');
-          let jsonfile                        = require(path_to_file);
-          taxcounts_obj_for_all_datasets[did] = jsonfile['taxcounts'];
-        } catch (err) {
-          console.log('2-no file ' + err.toString() + ' Exiting');
-          console.log('this.taxonomy_file_prefix = ' + this.taxonomy_file_prefix);
-          console.log('did = ' + did);
-          taxcounts_obj_for_all_datasets[did] = [];
-        }
-      }
-    }
-    console.timeEnd("time: get_taxcounts_obj_from_file");
-
-    console.time("time: get_taxcounts_obj_from_file_map");
-
-    // let
-    taxcounts_obj_for_all_datasets = {};
     this.chosen_dids.map((did) => {
       try {
         let path_to_file                    = path.join(this.taxonomy_file_prefix, did + '.json');
@@ -362,12 +341,12 @@ class TaxaCounts {
       return taxcounts_obj_for_all_datasets;
     });
 
-    console.timeEnd("time: get_taxcounts_obj_from_file_map");
+    console.timeEnd("time: get_taxcounts_obj_from_file");
 
     return taxcounts_obj_for_all_datasets;
   }
 
-  make_curr_taxcounts_obj_w_arr_by_did() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
+  make_curr_taxcounts_obj_w_arr_by_did() {
     // for each did get keys
     // keys "_1_2" to array [1,2]
     // add previous info
@@ -401,7 +380,7 @@ class TaxaCounts {
     return current_tax_id_arr_numbers_only;
   }
 
-  make_tax_id_obj_by_did_filtered_by_rank() { //check if it is faster to make arrays from all tax_id_rows first // TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
+  make_tax_id_obj_by_did_filtered_by_rank() {
     console.time("TIME: make_tax_id_obj_by_did_filtered_by_rank");
     let tax_id_obj_by_did_filtered_by_rank = {};
 
@@ -492,6 +471,19 @@ class TaxonomySimple extends Taxonomy {
       }
     }
     console.timeEnd("TIME: make_tax_name_cnt_obj_per_dataset");
+
+    console.time("TIME: make_tax_name_cnt_obj_per_dataset_map");
+    // let tax_cnt_obj_arrs = this.make_empty_tax_cnt_obj();
+    tax_cnt_obj_arrs = this.make_empty_tax_cnt_obj();
+
+    this.chosen_dids.map((did, d_idx) => {
+      const curr_tax_info_obj = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank[did];
+      curr_tax_info_obj.map((ob) => {
+        tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
+      });
+    });
+
+    console.timeEnd("TIME: make_tax_name_cnt_obj_per_dataset_map");
 
     return tax_cnt_obj_arrs;
 
@@ -634,7 +626,7 @@ class TaxonomyCustom extends Taxonomy {
 
       let db_tax_id_list  = {};
       db_tax_id_list[did] = {};
-
+      //TODO: to map?
       for (let t_idx = 0, taxa_length = custom_taxa.length; t_idx < taxa_length; t_idx++) {
         let selected_node_id = custom_taxa[t_idx];
         if (this.taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id)) {
