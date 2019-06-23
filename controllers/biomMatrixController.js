@@ -344,6 +344,26 @@ class TaxaCounts {
     }
     console.timeEnd("time: get_taxcounts_obj_from_file");
 
+    console.time("time: get_taxcounts_obj_from_file_map");
+
+    // let
+    taxcounts_obj_for_all_datasets = {};
+    this.chosen_dids.map((did) => {
+      try {
+        let path_to_file                    = path.join(this.taxonomy_file_prefix, did + '.json');
+        let jsonfile                        = require(path_to_file);
+        taxcounts_obj_for_all_datasets[did] = jsonfile['taxcounts'];
+      } catch (err) {
+        console.log('2-no file ' + err.toString() + ' Exiting');
+        console.log('this.taxonomy_file_prefix = ' + this.taxonomy_file_prefix);
+        console.log('did = ' + did);
+        taxcounts_obj_for_all_datasets[did] = [];
+      }
+      return taxcounts_obj_for_all_datasets;
+    });
+
+    console.timeEnd("time: get_taxcounts_obj_from_file_map");
+
     return taxcounts_obj_for_all_datasets;
   }
 
