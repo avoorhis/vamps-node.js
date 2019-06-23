@@ -613,6 +613,44 @@ class TaxonomyCustom extends Taxonomy {
     // TODO: Why is it called from here?
     let tax_cnt_obj_arrs = this.make_tax_name_cnt_obj_per_dataset(this.tax_id_obj_by_did_filtered);
     console.timeEnd('TIME: make_tax_name_cnt_obj_per_did_custom');
+
+    console.time('TIME: make_tax_name_cnt_obj_per_did_custom_map');
+    // ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
+
+    this.chosen_dids.map((did) => {
+      const custom_taxa = this.post_items.custom_taxa;
+      this.tax_id_obj_by_did_filtered[did] = [];
+
+      let db_tax_id_list  = {};
+      db_tax_id_list[did] = {};
+
+      custom_taxa.map((selected_node_id) => {
+        if (this.taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id)) {
+          let temp_obj = {};
+          let id_chain_start       = '';
+          let custom_tax_long_name = '';
+
+          let tax_node = this.taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
+          let new_node_id      = tax_node.parent_id;
+          id_chain_start       = '_' + tax_node.db_id;  // add _ to beginning
+          custom_tax_long_name = tax_node.taxon;
+
+          let combined_ids_res                  = this.combine_db_tax_id_list(new_node_id, custom_tax_long_name, id_chain_start);
+          db_tax_id_list[did][selected_node_id] = combined_ids_res[0];
+          custom_tax_long_name                  = combined_ids_res[1];
+          temp_obj["tax_long_name"] = custom_tax_long_name;
+          temp_obj["tax_id_row"] = combined_ids_res[0];
+          temp_obj["cnt"] = this.get_tax_cnt(db_tax_id_list, did, selected_node_id) || 0;
+
+          this.tax_name_used_unique.add(custom_tax_long_name);
+          this.tax_id_obj_by_did_filtered[did].push(temp_obj);
+        }
+      });
+    });
+    // TODO: Why is it called from here?
+    tax_cnt_obj_arrs = this.make_tax_name_cnt_obj_per_dataset(this.tax_id_obj_by_did_filtered);
+    console.timeEnd('TIME: make_tax_name_cnt_obj_per_did_custom_map');
+
     return tax_cnt_obj_arrs;
 
   }
