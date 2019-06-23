@@ -40,6 +40,7 @@
     <option maxcomplexity="5" />
     <option maxdepth="5" />
     <option maxerr="500" />
+    <option maxparams="3" />
     <option mocha="false" />
     <option module="true" />
     <option mootools="false" />
@@ -76,11 +77,11 @@
     <option supernew="false" />
     <option trailing="true" />
     <option typed="false" />
-    <option undef="false" />
+    <option undef="true" />
     <option unused="true" />
     <option validthis="true" />
-    <option varstmt="false" />
-    <option white="false" />
+    <option varstmt="true" />
+    <option white="true" />
     <option withstmt="false" />
     <option worker="false" />
     <option wsh="false" />

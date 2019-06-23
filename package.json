@@ -92,6 +92,7 @@
   "devDependencies": {
     "chai": "",
     "debug": "",
+    "jshint": "",
     "expect.js": "",
     "istanbul": "",
     "jshint": "^2.10.2",
