@@ -201,13 +201,15 @@ class BiomMatrix {
   }
 
   calculating_norm_freq(norm_cnt) {
-    return parseFloat( norm_cnt.toFixed(6) ) || 0;
+    const fractionDigits = 6;
+    return parseFloat( norm_cnt.toFixed(fractionDigits) ) || 0;
   }
 
   calculating_norm_max(norm_cnt) {
     let max_cnt = this.biom_matrix.max_dataset_count;
     let normalized_cnt = norm_cnt * max_cnt;
-    return parseInt(normalized_cnt, 10) || 0;
+    let radix = 10;
+    return parseInt(normalized_cnt, radix) || 0;
   }
 
   re_calculate_totals(custom_count_matrix) {
