@@ -2,7 +2,7 @@ const COMMON = require(app_root + '/routes/visuals/routes_common');
 const C      = require(app_root + '/public/constants');
 const path   = require("path");
 const extend = require('util')._extend;
-
+const async  = require('async');
 let helpers = require(app_root + '/routes/helpers/helpers');
 
 class BiomMatrix {
@@ -341,29 +341,93 @@ class TaxaCounts {
     return taxonomy_object;
   }
 
-  get_taxcounts_obj_from_file() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
+  // get_taxcounts_obj_from_file() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
+  //   console.time("time: get_taxcounts_obj_from_file");
+  //
+  //   let taxcounts_obj_for_all_datasets = {};
+  //   for (let d_idx in this.chosen_dids) {
+  //     if (this.chosen_dids.hasOwnProperty(d_idx)) {
+  //       let did = this.chosen_dids[d_idx];
+  //       try {
+  //         let path_to_file                    = path.join(this.taxonomy_file_prefix, did + '.json');
+  //         let jsonfile                        = require(path_to_file);
+  //         taxcounts_obj_for_all_datasets[did] = jsonfile['taxcounts'];
+  //       } catch (err) {
+  //         console.log('2-no file ' + err.toString() + ' Exiting');
+  //         console.log('this.taxonomy_file_prefix = ' + this.taxonomy_file_prefix);
+  //         console.log('did = ' + did);
+  //         taxcounts_obj_for_all_datasets[did] = [];
+  //       }
+  //     }
+  //   }
+  //   console.timeEnd("time: get_taxcounts_obj_from_file");
+  //
+  //   return taxcounts_obj_for_all_datasets;
+  // }
+
+  get_taxcounts_obj_from_file() {
     console.time("time: get_taxcounts_obj_from_file");
 
     let taxcounts_obj_for_all_datasets = {};
-    for (let d_idx in this.chosen_dids) {
-      if (this.chosen_dids.hasOwnProperty(d_idx)) {
-        let did = this.chosen_dids[d_idx];
-        try {
-          let path_to_file                    = path.join(this.taxonomy_file_prefix, did + '.json');
-          let jsonfile                        = require(path_to_file);
-          taxcounts_obj_for_all_datasets[did] = jsonfile['taxcounts'];
-        } catch (err) {
-          console.log('2-no file ' + err.toString() + ' Exiting');
-          console.log('this.taxonomy_file_prefix = ' + this.taxonomy_file_prefix);
-          console.log('did = ' + did);
-          taxcounts_obj_for_all_datasets[did] = [];
-        }
+    // let all_file_names = this.chosen_dids.map((did) => {return path.join(this.taxonomy_file_prefix, did + '.json')});
+
+    // const finalCallback = function (err, results) {
+    //   console.log(results); // [4, 3, 2, 1]
+    // };
+    //
+    // const cb = function(path_to_file, cb) {
+    //   let jsonfile = require(path_to_file);
+    // };
+
+    async.forEach(this.chosen_dids, (did, callback) => {
+      let path_to_file = path.join(this.taxonomy_file_prefix, did + '.json');
+      let jsonfile = require(path_to_file);
+      try {
+        taxcounts_obj_for_all_datasets[did] = jsonfile['taxcounts'];
+      } catch (e) {
+        return callback(e);
       }
-    }
+      callback();
+    }, err => {
+      if (err) console.error(err.message);
+      // configs is now a map of JSON data
+      // doSomethingWith(configs);
+      return taxcounts_obj_for_all_datasets;
+    });
+
+
+    // async.map(all_file_names, cb, finalCallback);
+
+    // async.map(all_file_names, function(name, callback) {
+    //   getFromStorage(id, function (err, res) {
+    //     if (err) return callback(err);
+    //     callback(null, res.name);
+    //   })
+    // }, function(err, results) {
+    //   // results is an array of names
+    // });
+
+
+    // for (let d_idx in this.chosen_dids) {
+    //   if (this.chosen_dids.hasOwnProperty(d_idx)) {
+    //     let did = this.chosen_dids[d_idx];
+    //     try {
+    //       let path_to_file                    = path.join(this.taxonomy_file_prefix, did + '.json');
+    //       let jsonfile                        = require(path_to_file);
+    //       taxcounts_obj_for_all_datasets[did] = jsonfile['taxcounts'];
+    //     } catch (err) {
+    //       console.log('2-no file ' + err.toString() + ' Exiting');
+    //       console.log('this.taxonomy_file_prefix = ' + this.taxonomy_file_prefix);
+    //       console.log('did = ' + did);
+    //       taxcounts_obj_for_all_datasets[did] = [];
+    //     }
+    //   }
+    // }
     console.timeEnd("time: get_taxcounts_obj_from_file");
 
     return taxcounts_obj_for_all_datasets;
   }
+
 
   make_curr_taxcounts_obj_w_arr_by_did() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
     // for each did get keys
