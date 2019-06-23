@@ -1,3 +1,5 @@
+'use strict';
+
 const COMMON = require(app_root + '/routes/visuals/routes_common');
 const C      = require(app_root + '/public/constants');
 const path   = require("path");
@@ -312,23 +314,41 @@ class TaxaCounts {
     this.rank                 = this.post_items.tax_depth;
 
     this.taxonomy_object           = this.get_taxonomy_object();
-    const fetchFile = () =>
-      fs.promises.readFile(path.join(this.taxonomy_file_prefix, this.chosen_dids[0] + '.json'), 'utf-8');
-    const make_curr_taxcounts_obj_w_arr_by_did = (text) =>
-    {
-      let res = JSON.parse(text);
-      this.curr_taxcounts_obj_of_str_by_did = res.taxcounts;
-      // text.replace(/a/g, 'b');
-    };
+    let files = this.get_file_paths();
 
-    (async () => {
-      const text = await fetchFile();
-      // const newText = make_curr_taxcounts_obj_w_arr_by_did(text);
-      this.curr_taxcounts_obj_w_arr_by_did  = this.make_curr_taxcounts_obj_w_arr_by_did(text);
-      // await writeFile(newText);
-      this.tax_id_obj_by_did_filtered_by_rank = this.make_tax_id_obj_by_did_filtered_by_rank();
+    async function printFiles (files) {
+      // const files = await getFilePaths();
 
-    })();
+      await Promise.all(files.map(async (file) => {
+        const contents = await fs.readFile(file, 'utf8');
+        console.log(contents);
+      }));
+    }
+
+
+
+    // (async () => {
+    //   const text = await this.get_taxcounts_obj_from_file(files);
+    //   this.curr_taxcounts_obj_w_arr_by_did  = this.make_curr_taxcounts_obj_w_arr_by_did(text);
+    //   this.tax_id_obj_by_did_filtered_by_rank = this.make_tax_id_obj_by_did_filtered_by_rank();
+    // })();
+    // const fetchFile = () =>
+    //   fs.promises.readFile(path.join(this.taxonomy_file_prefix, this.chosen_dids[0] + '.json'), 'utf-8');
+    // const make_curr_taxcounts_obj_w_arr_by_did = (text) =>
+    // {
+    //   let res = JSON.parse(text);
+    //   this.curr_taxcounts_obj_of_str_by_did = res.taxcounts;
+    //   // text.replace(/a/g, 'b');
+    // };
+    //
+    // (async () => {
+    //   const text = await fetchFile();
+    //   // const newText = make_curr_taxcounts_obj_w_arr_by_did(text);
+    //   this.curr_taxcounts_obj_w_arr_by_did  = this.make_curr_taxcounts_obj_w_arr_by_did(text);
+    //   // await writeFile(newText);
+    //   this.tax_id_obj_by_did_filtered_by_rank = this.make_tax_id_obj_by_did_filtered_by_rank();
+    //
+    // })();
 
     // this.curr_taxcounts_obj_of_str_by_did = this.get_taxcounts_obj_from_file();
     // this.curr_taxcounts_obj_w_arr_by_did  = this.make_curr_taxcounts_obj_w_arr_by_did(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
@@ -340,6 +360,28 @@ class TaxaCounts {
     //
     // this.tax_id_obj_by_did_filtered_by_rank;
     // = this.make_tax_id_obj_by_did_filtered_by_rank();
+  }
+
+  // get_file_paths
+  // const fetchFile = () =>
+  //   fs.promises.readFile(path.join(this.taxonomy_file_prefix, this.chosen_dids[0] + '.json'), 'utf-8');
+
+  get_taxcounts_obj_from_file(files) {
+    let promises = files.map(file => {
+      return new Promise((resolve, reject) => {
+        fs.readFile(file, 'utf8', (err, data) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve(data);
+        });
+      });
+    });
+
+    Promise.all(promises).then(function(values){
+      console.log("VVV values");
+      console.log(values);
+    });
   }
 
   get_taxonomy_file_prefix() {
@@ -425,7 +467,7 @@ class TaxaCounts {
   // }
 
   get_file_paths(){
-    this.chosen_dids.map((did) => {return path.join(this.taxonomy_file_prefix, did + '.json')});
+    return this.chosen_dids.map((did) => {return path.join(this.taxonomy_file_prefix, did + '.json')});
   }
 
   make_curr_taxcounts_obj_w_arr_by_did(text) {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
