@@ -327,7 +327,7 @@ class TaxaCounts {
     console.time("time: get_taxcounts_obj_from_file");
 
     let taxcounts_obj_for_all_datasets = {};
-    this.chosen_dids.map((did) => {
+    this.chosen_dids.map(did => {
       try {
         let path_to_file                    = path.join(this.taxonomy_file_prefix, did + '.json');
         let jsonfile                        = require(path_to_file);
@@ -457,7 +457,7 @@ class Taxonomy {
 
     this.chosen_dids.map((did, d_idx) => {
      const curr_tax_info_obj = tax_id_obj_by_did_filtered[did];
-     curr_tax_info_obj.map((ob) => {
+     curr_tax_info_obj.map(ob => {
        tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
      });
     });
@@ -472,9 +472,9 @@ class TaxonomySimple extends Taxonomy {
   connect_names_with_cnts() {
     console.time("TIME: connect_names_with_cnts");
 
-    this.chosen_dids.map((did) => {
+    this.chosen_dids.map(did => {
       let curr_taxcounts_obj = this.tax_id_obj_by_did_filtered[did];
-      curr_taxcounts_obj.map((curr_obj) => {
+      curr_taxcounts_obj.map(curr_obj => {
         let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
 
         if (tax_long_name) {
@@ -575,72 +575,22 @@ class TaxonomySimple extends Taxonomy {
 }
 
 class TaxonomyCustom extends Taxonomy {
-  connect_names_with_cnts() {//TODO: simplify
-    console.time('TIME: make_tax_name_cnt_obj_per_did_custom');
-    // ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
-
-    this.chosen_dids.map((did) => {
-      const custom_taxa = this.post_items.custom_taxa;
-      this.tax_id_obj_by_did_filtered[did] = [];
-
-      let db_tax_id_list  = {};
-      db_tax_id_list[did] = {};
-      //TODO: to map?
-      for (let t_idx = 0, taxa_length = custom_taxa.length; t_idx < taxa_length; t_idx++) {
-        let selected_node_id = custom_taxa[t_idx];
-        if (this.taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id)) {
-          let temp_obj = {};
-          let id_chain_start       = '';
-          let custom_tax_long_name = '';
-
-          let tax_node = this.taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
-          let new_node_id      = tax_node.parent_id;
-          id_chain_start       = '_' + tax_node.db_id;  // add _ to beginning
-          custom_tax_long_name = tax_node.taxon;
-
-          let combined_ids_res                  = this.combine_db_tax_id_list(new_node_id, custom_tax_long_name, id_chain_start);
-          db_tax_id_list[did][selected_node_id] = combined_ids_res[0];
-          custom_tax_long_name                  = combined_ids_res[1];
-          temp_obj["tax_long_name"] = custom_tax_long_name;
-          temp_obj["tax_id_row"] = combined_ids_res[0];
-          temp_obj["cnt"] = this.get_tax_cnt(db_tax_id_list, did, selected_node_id) || 0;
-
-          this.tax_name_used_unique.add(custom_tax_long_name);
-          this.tax_id_obj_by_did_filtered[did].push(temp_obj);
-        }
-      }
-    });
-    // TODO: Why is it called from here?
-    let tax_cnt_obj_arrs = this.make_tax_name_cnt_obj_per_dataset(this.tax_id_obj_by_did_filtered);
-    console.timeEnd('TIME: make_tax_name_cnt_obj_per_did_custom');
-
+  connect_names_with_cnts() {
     console.time('TIME: make_tax_name_cnt_obj_per_did_custom_map');
     // ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 
-    this.chosen_dids.map((did) => {
-      const custom_taxa = this.post_items.custom_taxa;
+    this.chosen_dids.map(did => {
       this.tax_id_obj_by_did_filtered[did] = [];
 
-      let db_tax_id_list  = {};
-      db_tax_id_list[did] = {};
-
-      custom_taxa.map((selected_node_id) => {
+      this.post_items["custom_taxa"].map(selected_node_id => {
         if (this.taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id)) {
           let temp_obj = {};
-          let id_chain_start       = '';
-          let custom_tax_long_name = '';
-
-          let tax_node = this.taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
-          let new_node_id      = tax_node.parent_id;
-          id_chain_start       = '_' + tax_node.db_id;  // add _ to beginning
-          custom_tax_long_name = tax_node.taxon;
-
-          let combined_ids_res                  = this.combine_db_tax_id_list(new_node_id, custom_tax_long_name, id_chain_start);
-          db_tax_id_list[did][selected_node_id] = combined_ids_res[0];
-          custom_tax_long_name                  = combined_ids_res[1];
+          let combined_ids_res = this.combine_db_tax_id_list(selected_node_id);
+          let id_chain = combined_ids_res[0];
+          let custom_tax_long_name = combined_ids_res[1];
           temp_obj["tax_long_name"] = custom_tax_long_name;
-          temp_obj["tax_id_row"] = combined_ids_res[0];
-          temp_obj["cnt"] = this.get_tax_cnt(db_tax_id_list, did, selected_node_id) || 0;
+          temp_obj["tax_id_row"] = id_chain;
+          temp_obj["cnt"] = this.get_tax_cnt(id_chain, did) || 0;
 
           this.tax_name_used_unique.add(custom_tax_long_name);
           this.tax_id_obj_by_did_filtered[did].push(temp_obj);
@@ -648,15 +598,29 @@ class TaxonomyCustom extends Taxonomy {
       });
     });
     // TODO: Why is it called from here?
-    tax_cnt_obj_arrs = this.make_tax_name_cnt_obj_per_dataset(this.tax_id_obj_by_did_filtered);
+    let tax_cnt_obj_arrs = this.make_tax_name_cnt_obj_per_dataset(this.tax_id_obj_by_did_filtered);
     console.timeEnd('TIME: make_tax_name_cnt_obj_per_did_custom_map');
 
     return tax_cnt_obj_arrs;
 
   }
 
-  combine_db_tax_id_list(new_node_id, tax_long_name, id_chain) {// TODO: refactor
+  initialize_custom_tax_node(selected_node_id) {
+    let tax_node = this.taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
+    let new_node_id = tax_node.parent_id;
+    let id_chain = '_' + tax_node.db_id;  // add _ to beginning
+    let tax_long_name = tax_node.taxon;
+    return [new_node_id, id_chain, tax_long_name];
+  }
+
+  combine_db_tax_id_list(selected_node_id) {// TODO: refactor
     console.time('TIME: combine_db_tax_id_list');
+    // let tax_node = this.taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
+    // let new_node_id = tax_node.parent_id;
+    // let id_chain = '_' + tax_node.db_id;  // add _ to beginning
+    // let tax_long_name = tax_node.taxon;
+    let [new_node_id, id_chain, tax_long_name] = this.initialize_custom_tax_node(selected_node_id);
+
     let new_node;
     let db_id;
     while (new_node_id !== 0) {
@@ -671,10 +635,10 @@ class TaxonomyCustom extends Taxonomy {
     return [id_chain, tax_long_name];
   }
 
-  get_tax_cnt(db_tax_id_list, did, selected_node_id) {
+  get_tax_cnt(id_chain, did) {
     console.time('TIME: get_tax_cnt');
     const taxcounts = this.taxa_counts_module.curr_taxcounts_obj_of_str_by_did[did];
-    let curr_tax_id_chain = db_tax_id_list[did][selected_node_id];
+    let curr_tax_id_chain = id_chain;
     let temp_cnt = 0;
     try {
       temp_cnt = taxcounts[curr_tax_id_chain];
