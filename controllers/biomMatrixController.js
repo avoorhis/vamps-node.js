@@ -381,10 +381,14 @@ class TaxaCounts {
 
     async.forEach(this.chosen_dids, (did, callback) => {
       let path_to_file = path.join(this.taxonomy_file_prefix, did + '.json');
-      let jsonfile = require(path_to_file);
       try {
+        let jsonfile = require(path_to_file);
         taxcounts_obj_for_all_datasets[did] = jsonfile['taxcounts'];
       } catch (e) {
+        console.log('2-no file ' + e.toString() + ' Exiting');
+        console.log('this.taxonomy_file_prefix = ' + this.taxonomy_file_prefix);
+        console.log('did = ' + did);
+        taxcounts_obj_for_all_datasets[did] = [];
         return callback(e);
       }
       callback();
