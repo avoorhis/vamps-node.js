@@ -1,13 +1,9 @@
-'use strict';
-
 const COMMON = require(app_root + '/routes/visuals/routes_common');
 const C      = require(app_root + '/public/constants');
 const path   = require("path");
 const extend = require('util')._extend;
-const async  = require('async');
+
 let helpers = require(app_root + '/routes/helpers/helpers');
-const fs = require('fs');
-const promises = require('fs').promises;
 
 class BiomMatrix {
 
@@ -314,74 +310,10 @@ class TaxaCounts {
     this.rank                 = this.post_items.tax_depth;
 
     this.taxonomy_object           = this.get_taxonomy_object();
-    let files = this.get_file_paths();
+    this.curr_taxcounts_obj_of_str_by_did = this.get_taxcounts_obj_from_file();
+    this.curr_taxcounts_obj_w_arr_by_did  = this.make_curr_taxcounts_obj_w_arr_by_did(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
 
-    async function printFiles (files) {
-      // const files = await getFilePaths();
-
-      await Promise.all(files.map(async (file) => {
-        const contents = await fs.readFile(file, 'utf8');
-        console.log(contents);
-      }));
-    }
-
-
-
-    // (async () => {
-    //   const text = await this.get_taxcounts_obj_from_file(files);
-    //   this.curr_taxcounts_obj_w_arr_by_did  = this.make_curr_taxcounts_obj_w_arr_by_did(text);
-    //   this.tax_id_obj_by_did_filtered_by_rank = this.make_tax_id_obj_by_did_filtered_by_rank();
-    // })();
-    // const fetchFile = () =>
-    //   fs.promises.readFile(path.join(this.taxonomy_file_prefix, this.chosen_dids[0] + '.json'), 'utf-8');
-    // const make_curr_taxcounts_obj_w_arr_by_did = (text) =>
-    // {
-    //   let res = JSON.parse(text);
-    //   this.curr_taxcounts_obj_of_str_by_did = res.taxcounts;
-    //   // text.replace(/a/g, 'b');
-    // };
-    //
-    // (async () => {
-    //   const text = await fetchFile();
-    //   // const newText = make_curr_taxcounts_obj_w_arr_by_did(text);
-    //   this.curr_taxcounts_obj_w_arr_by_did  = this.make_curr_taxcounts_obj_w_arr_by_did(text);
-    //   // await writeFile(newText);
-    //   this.tax_id_obj_by_did_filtered_by_rank = this.make_tax_id_obj_by_did_filtered_by_rank();
-    //
-    // })();
-
-    // this.curr_taxcounts_obj_of_str_by_did = this.get_taxcounts_obj_from_file();
-    // this.curr_taxcounts_obj_w_arr_by_did  = this.make_curr_taxcounts_obj_w_arr_by_did(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
-
-    // this.tax_id_obj_by_did_filtered_by_rank = this.make_tax_id_obj_by_did_filtered_by_rank();
-
-    // this.curr_taxcounts_obj_w_arr_by_did;
-    // // = this.make_curr_taxcounts_obj_w_arr_by_did(); /*{   "475002": {     "_3": 37486,     "_1": 6,*/
-    //
-    // this.tax_id_obj_by_did_filtered_by_rank;
-    // = this.make_tax_id_obj_by_did_filtered_by_rank();
-  }
-
-  // get_file_paths
-  // const fetchFile = () =>
-  //   fs.promises.readFile(path.join(this.taxonomy_file_prefix, this.chosen_dids[0] + '.json'), 'utf-8');
-
-  get_taxcounts_obj_from_file(files) {
-    let promises = files.map(file => {
-      return new Promise((resolve, reject) => {
-        fs.readFile(file, 'utf8', (err, data) => {
-          if (err) {
-            return reject(err);
-          }
-          resolve(data);
-        });
-      });
-    });
-
-    Promise.all(promises).then(function(values){
-      console.log("VVV values");
-      console.log(values);
-    });
+    this.tax_id_obj_by_did_filtered_by_rank = this.make_tax_id_obj_by_did_filtered_by_rank();
   }
 
   get_taxonomy_file_prefix() {
@@ -409,68 +341,31 @@ class TaxaCounts {
     return taxonomy_object;
   }
 
-  // get_taxcounts_obj_from_file() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
-  //   console.time("time: get_taxcounts_obj_from_file");
-  //
-  //   let taxcounts_obj_for_all_datasets = {};
-  //   for (let d_idx in this.chosen_dids) {
-  //     if (this.chosen_dids.hasOwnProperty(d_idx)) {
-  //       let did = this.chosen_dids[d_idx];
-  //       try {
-  //         let path_to_file                    = path.join(this.taxonomy_file_prefix, did + '.json');
-  //         let jsonfile                        = require(path_to_file);
-  //         taxcounts_obj_for_all_datasets[did] = jsonfile['taxcounts'];
-  //       } catch (err) {
-  //         console.log('2-no file ' + err.toString() + ' Exiting');
-  //         console.log('this.taxonomy_file_prefix = ' + this.taxonomy_file_prefix);
-  //         console.log('did = ' + did);
-  //         taxcounts_obj_for_all_datasets[did] = [];
-  //       }
-  //     }
-  //   }
-  //   console.timeEnd("time: get_taxcounts_obj_from_file");
-  //
-  //   return taxcounts_obj_for_all_datasets;
-  // }
+  get_taxcounts_obj_from_file() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
+    console.time("time: get_taxcounts_obj_from_file");
 
-  // get_taxcounts_obj_from_file() {
-  //   console.time("time: get_taxcounts_obj_from_file");
-  //
-  //   let taxcounts_obj_for_all_datasets = {};
-  //
-  //   async.forEach(this.chosen_dids,
-  //     (did, callback) => {
-  //     let path_to_file = path.join(this.taxonomy_file_prefix, did + '.json');
-  //     fs.readFile(path_to_file, "utf8", (err, data) => {
-  //       if (err) return callback(err);
-  //       try {
-  //         let curr_data = JSON.parse(data);
-  //         taxcounts_obj_for_all_datasets[did] = curr_data['taxcounts'];
-  //       } catch (e) {
-  //         return callback(e);
-  //       }
-  //       callback();
-  //     });
-  //   }, err => {
-  //     if (err) console.error(err.message);
-  //     // configs is now a map of JSON data
-  //     //   doSomethingOnceAllAreDone();
-  //     console.log("AAA");
-  //     console.log(JSON.stringify(taxcounts_obj_for_all_datasets));
-  //     // call everything else
-  //     return taxcounts_obj_for_all_datasets;
-  //
-  //     });
-  //
-  //   console.timeEnd("time: get_taxcounts_obj_from_file");
-  //
-  // }
+    let taxcounts_obj_for_all_datasets = {};
+    for (let d_idx in this.chosen_dids) {
+      if (this.chosen_dids.hasOwnProperty(d_idx)) {
+        let did = this.chosen_dids[d_idx];
+        try {
+          let path_to_file                    = path.join(this.taxonomy_file_prefix, did + '.json');
+          let jsonfile                        = require(path_to_file);
+          taxcounts_obj_for_all_datasets[did] = jsonfile['taxcounts'];
+        } catch (err) {
+          console.log('2-no file ' + err.toString() + ' Exiting');
+          console.log('this.taxonomy_file_prefix = ' + this.taxonomy_file_prefix);
+          console.log('did = ' + did);
+          taxcounts_obj_for_all_datasets[did] = [];
+        }
+      }
+    }
+    console.timeEnd("time: get_taxcounts_obj_from_file");
 
-  get_file_paths(){
-    return this.chosen_dids.map((did) => {return path.join(this.taxonomy_file_prefix, did + '.json')});
+    return taxcounts_obj_for_all_datasets;
   }
 
-  make_curr_taxcounts_obj_w_arr_by_did(text) {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
+  make_curr_taxcounts_obj_w_arr_by_did() {// TODO refactor to avoid if (this.chosen_dids.hasOwnProperty(d_idx))
     // for each did get keys
     // keys "_1_2" to array [1,2]
     // add previous info
@@ -482,8 +377,7 @@ class TaxaCounts {
       if (this.chosen_dids.hasOwnProperty(d_idx)) {
         let did                       = this.chosen_dids[d_idx];
         tax_id_obj_of_arr_by_did[did] = [];
-        // let curr_obj                  = this.curr_taxcounts_obj_of_str_by_did[did];
-        let curr_obj                  = text[did];
+        let curr_obj                  = this.curr_taxcounts_obj_of_str_by_did[did];
         for (const [current_tax_id_row, current_cnt] of Object.entries(curr_obj)) {
           let temp_obj                 = {};
           let current_tax_id_arr_clean = this.split_taxcounts_to_arr(current_tax_id_row);
