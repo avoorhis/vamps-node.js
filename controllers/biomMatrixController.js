@@ -216,32 +216,13 @@ class BiomMatrix {
     console.time("TIME: re_calculate_totals");
     let arr = custom_count_matrix.data;
     let tots = [];
-
-    for (let i = 0, arr_len = arr.length; i < arr_len; i++){
-      for (let j = 0, arr1_len = arr[i].length; j < arr1_len; j++){
-        tots[j] = (tots[j] || 0) + arr[i][j];
-      }
-    }
-    console.timeEnd("TIME: re_calculate_totals");
-
-    console.time("TIME: re_calculate_totals_map");
-    let arr_2 = custom_count_matrix.data;
-    tots = arr_2[0].map((col, i) => {// transpose
-      return arr_2.map(row => row[i]) //loop over rows
-        .reduce((tot, cell) => tot + cell, //sum
+    tots = arr[0].map((col, i) => {// transpose
+      return arr.map(row => row[i]) // loop over rows
+        .reduce((tot, cell) => tot + cell, // sum by col
           0);
     });
-    console.timeEnd("TIME: re_calculate_totals_map");
 
-    console.time("TIME: re_calculate_totals_map2");
-    let arr_3 = custom_count_matrix.data;
-    tots = arr_3
-      .reduce((acc, cur) => {
-        cur.map((e, i) => acc[i] = acc[i] ? acc[i] + e : e);
-        return acc;
-      }, []);
-
-    console.timeEnd("TIME: re_calculate_totals_map2");
+    console.timeEnd("TIME: re_calculate_totals");
     return tots;
   }
 
