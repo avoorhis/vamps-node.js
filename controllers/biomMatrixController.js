@@ -7,38 +7,39 @@ let helpers = require(app_root + '/routes/helpers/helpers');
 
 class BiomMatrix {
 
-  constructor(req, visual_post_items) {
+  constructor(req, visual_post_items, write_file) {
     this.req               = req;
     this.visual_post_items = visual_post_items;
+    this.write_file = write_file;
     this.units             = this.visual_post_items.unit_choice;
     this.chosen_datasets   = this.visual_post_items.chosen_datasets; /* post_items.chosen_datasets["0"] = {
   "did": 475152,
   "name": "SLM_NIR2_Bv4--Aligator_Pool01"
 }*/
-    console.time('TIME: chosen_dids');
+    // console.time('TIME: chosen_dids');
     this.chosen_dids           = this.get_dids();
-    console.timeEnd('TIME: chosen_dids');
+    // console.timeEnd('TIME: chosen_dids');
 
-    console.time('TIME: get_taxa_counts');
+    // console.time('TIME: get_taxa_counts');
     this.taxa_counts            = new module.exports.TaxaCounts(this.req, this.visual_post_items, this.chosen_dids);
-    console.timeEnd('TIME: get_taxa_counts');
+    // console.timeEnd('TIME: get_taxa_counts');
 
-    console.time('TIME: get_lookups');
+    // console.time('TIME: get_lookups');
     const taxonomy_factory = new module.exports.TaxonomyFactory(this.visual_post_items, this.taxa_counts, this.chosen_dids);
     this.taxonomy_lookup_module = taxonomy_factory.chosen_taxonomy;
     this.unit_name_counts = this.taxonomy_lookup_module.tax_cnt_obj_arrs;
-    console.timeEnd('TIME: get_lookups');
+    // console.timeEnd('TIME: get_lookups');
 
-    console.time('TIME: ukeys');
-    console.time("time: remove_empty_rows");
+    // console.time('TIME: ukeys');
+    // console.time("time: remove_empty_rows");
     let ukeys = this.remove_empty_rows();
-    console.timeEnd("time: remove_empty_rows");
+    // console.timeEnd("time: remove_empty_rows");
 
     this.ukeys = ukeys.filter(helpers.onlyUnique);
     this.ukeys.sort();
-    console.timeEnd('TIME: ukeys');
+    // console.timeEnd('TIME: ukeys');
 
-    console.time('TIME: create_biom_matrix');
+    // console.time('TIME: create_biom_matrix');
     this.rows = {}; /*[
     {
       "id": "Bacteria;Bacteroidetes",
@@ -71,22 +72,24 @@ class BiomMatrix {
     };
 
     this.biom_matrix = this.create_biom_matrix();
-    console.timeEnd('TIME: create_biom_matrix');
+    // console.timeEnd('TIME: create_biom_matrix');
 
     let true_meaning = [true, 1, "1"];
     if (this.visual_post_items.update_data in true_meaning) {
       this.biom_matrix = this.get_updated_biom_matrix(); // this.visual_post_items, this.biom_matrix
     }
 
-    console.time('TIME: write_matrix_files');
-    let write_matrix_file_mod = new module.exports.WriteMatrixFile(this.visual_post_items, this.biom_matrix);
-    write_matrix_file_mod.write_matrix_files();
-    console.timeEnd('TIME: write_matrix_files');
+    // console.time('TIME: write_matrix_files');
+    if(this.write_file === true || this.write_file === undefined) {//TODO: refactor
+      let write_matrix_file_mod = new module.exports.WriteMatrixFile(this.visual_post_items, this.biom_matrix);
+      write_matrix_file_mod.write_matrix_files();
+    }
+    // console.timeEnd('TIME: write_matrix_files');
 
   }
 
   get_columns() {
-    console.time("TIME: get_columns");
+    // console.time("TIME: get_columns");
     let columns = [];
     for (let idx = 0, arr_len = this.chosen_datasets.length; idx < arr_len; idx++){
 
@@ -96,7 +99,7 @@ class BiomMatrix {
       temp_col_obj.metadata = null;
       columns.push(temp_col_obj);
     }
-    console.timeEnd("TIME: get_columns");
+    // console.timeEnd("TIME: get_columns");
     return columns;
   }
 
@@ -113,7 +116,7 @@ class BiomMatrix {
 
   get_updated_biom_matrix() {
     console.log('in UPDATED biom_matrix');
-    console.time("TIME: get_updated_biom_matrix");
+    // console.time("TIME: get_updated_biom_matrix");
     let custom_count_matrix = extend({}, this.biom_matrix);  // this clones count_matrix which keeps original intact.
 
     custom_count_matrix = this.adjust_for_percent_limit_change(custom_count_matrix);
@@ -121,7 +124,7 @@ class BiomMatrix {
     custom_count_matrix.column_totals = this.re_calculate_totals(custom_count_matrix);
     custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
 
-    console.timeEnd("TIME: get_updated_biom_matrix");
+    // console.timeEnd("TIME: get_updated_biom_matrix");
     return custom_count_matrix;
   }
 
@@ -139,7 +142,7 @@ class BiomMatrix {
   }
 
   adjust_for_percent_limit_change(custom_count_matrix) {
-    console.time("TIME: adjust_for_percent_limit_change");
+    // console.time("TIME: adjust_for_percent_limit_change");
     let min     = this.visual_post_items.min_range;
     let max     = this.visual_post_items.max_range;
     let new_counts = [];
@@ -158,7 +161,7 @@ class BiomMatrix {
     });
     custom_count_matrix.data = new_counts;
     custom_count_matrix.rows = new_units;
-    console.timeEnd("TIME: adjust_for_percent_limit_change");
+    // console.timeEnd("TIME: adjust_for_percent_limit_change");
 
     return custom_count_matrix;
   }
@@ -180,7 +183,7 @@ class BiomMatrix {
 
   calculating_norm(custom_count_matrix, normalization_kind_func) {
     console.log('calculating norm MAX');
-    console.time("TIME: calculating_norm");
+    // console.time("TIME: calculating_norm");
 
     let arr = custom_count_matrix.data;
     let new_counts = [];
@@ -195,7 +198,7 @@ class BiomMatrix {
       }
       new_counts.push(interim_arr);
     }
-    console.timeEnd("TIME: calculating_norm");
+    // console.timeEnd("TIME: calculating_norm");
 
     return new_counts;
   }
@@ -213,7 +216,7 @@ class BiomMatrix {
   }
 
   re_calculate_totals(custom_count_matrix) {
-    console.time("TIME: re_calculate_totals");
+    // console.time("TIME: re_calculate_totals");
     let arr = custom_count_matrix.data;
     let tots = [];
     tots = arr[0].map((col, i) => {// transpose
@@ -222,13 +225,13 @@ class BiomMatrix {
           0);
     });
 
-    console.timeEnd("TIME: re_calculate_totals");
+    // console.timeEnd("TIME: re_calculate_totals");
     return tots;
   }
 
   create_biom_matrix() {
     console.log('in create_this.biom_matrix');  // uname:
-    console.time('TIME: create_this.biom_matrix');
+    // console.time('TIME: create_this.biom_matrix');
 
     // this.ukeys is sorted by alpha
     for (let uk_idx in this.ukeys) {
@@ -245,7 +248,7 @@ class BiomMatrix {
       max = this.get_max();
     }
     this.biom_matrix.max_dataset_count = max;
-    console.timeEnd('TIME: create_this.biom_matrix');
+    // console.timeEnd('TIME: create_this.biom_matrix');
     return this.biom_matrix;
   }
 
@@ -254,18 +257,18 @@ class BiomMatrix {
   }
 
   get_max(){
-    console.time("time: get_max");
+    // console.time("time: get_max");
     let total_count_per_d = this.get_total_count_per_d();
 
     this.biom_matrix.column_totals = this.get_values(total_count_per_d);
 
     let max = Math.max(...this.biom_matrix.column_totals);
-    console.timeEnd("time: get_max");
+    // console.timeEnd("time: get_max");
     return max;
   }
 
   get_total_count_per_d(){
-    console.time("time: get_total_count_per_d");
+    // console.time("time: get_total_count_per_d");
     let total_count = {};
     let columns = this.biom_matrix.columns;
 
@@ -277,7 +280,7 @@ class BiomMatrix {
       });
     });
 
-    console.timeEnd("time: get_total_count_per_d");
+    // console.timeEnd("time: get_total_count_per_d");
 
     return total_count;
   }
@@ -326,7 +329,7 @@ class TaxaCounts {
   }
 
   get_taxcounts_obj_from_file() {
-    console.time("time: get_taxcounts_obj_from_file");
+    // console.time("time: get_taxcounts_obj_from_file");
 
     let taxcounts_obj_for_all_datasets = {};
     this.chosen_dids.map(did => {
@@ -343,7 +346,7 @@ class TaxaCounts {
       return taxcounts_obj_for_all_datasets;
     });
 
-    console.timeEnd("time: get_taxcounts_obj_from_file");
+    // console.timeEnd("time: get_taxcounts_obj_from_file");
 
     return taxcounts_obj_for_all_datasets;
   }
@@ -352,7 +355,7 @@ class TaxaCounts {
     // for each did get keys
     // keys "_1_2" to array [1,2]
     // add previous info
-    console.time("time: make_curr_taxcounts_obj_w_arr_by_did");
+    // console.time("time: make_curr_taxcounts_obj_w_arr_by_did");
 
     let tax_id_obj_of_arr_by_did = {};
 
@@ -371,7 +374,7 @@ class TaxaCounts {
         }
       }
     }
-    console.timeEnd("time: make_curr_taxcounts_obj_w_arr_by_did");
+    // console.timeEnd("time: make_curr_taxcounts_obj_w_arr_by_did");
 
     return tax_id_obj_of_arr_by_did;
   }
@@ -383,7 +386,7 @@ class TaxaCounts {
   }
 
   make_tax_id_obj_by_did_filtered_by_rank() {
-    console.time("TIME: make_tax_id_obj_by_did_filtered_by_rank");
+    // console.time("TIME: make_tax_id_obj_by_did_filtered_by_rank");
     let tax_id_obj_by_did_filtered_by_rank = {};
 
     for (let d_idx in this.chosen_dids) {
@@ -393,7 +396,7 @@ class TaxaCounts {
         tax_id_obj_by_did_filtered_by_rank[did] = current_tax_id_rows;
       }
     }
-    console.timeEnd("TIME: make_tax_id_obj_by_did_filtered_by_rank");
+    // console.timeEnd("TIME: make_tax_id_obj_by_did_filtered_by_rank");
     return tax_id_obj_by_did_filtered_by_rank;
   }
 
@@ -441,7 +444,7 @@ class Taxonomy {
   }
 
   make_empty_tax_cnt_obj() {
-    console.time("TIME: make_empty_tax_cnt_obj");
+    // console.time("TIME: make_empty_tax_cnt_obj");
     let tax_cnt_obj_arrs_empty = {};
     let dids_len = this.chosen_dids.length;
 
@@ -449,12 +452,12 @@ class Taxonomy {
       tax_cnt_obj_arrs_empty[name] = Array(dids_len).fill(0);
     }
 
-    console.timeEnd("TIME: make_empty_tax_cnt_obj");
+    // console.timeEnd("TIME: make_empty_tax_cnt_obj");
     return tax_cnt_obj_arrs_empty;
   }
 
   make_tax_name_cnt_obj_per_dataset(tax_id_obj_by_did_filtered) {
-    console.time("TIME: make_tax_name_cnt_obj_per_dataset_map");
+    // console.time("TIME: make_tax_name_cnt_obj_per_dataset_map");
     let tax_cnt_obj_arrs = this.make_empty_tax_cnt_obj();
 
     this.chosen_dids.map((did, d_idx) => {
@@ -464,7 +467,7 @@ class Taxonomy {
      });
     });
 
-    console.timeEnd("TIME: make_tax_name_cnt_obj_per_dataset_map");
+    // console.timeEnd("TIME: make_tax_name_cnt_obj_per_dataset_map");
     return tax_cnt_obj_arrs;
   }
 }
@@ -472,7 +475,7 @@ class Taxonomy {
 class TaxonomySimple extends Taxonomy {
 
   connect_names_with_cnts() {
-    console.time("TIME: connect_names_with_cnts");
+    // console.time("TIME: connect_names_with_cnts");
 
     this.chosen_dids.map(did => {
       let curr_taxcounts_obj = this.tax_id_obj_by_did_filtered[did];
@@ -487,7 +490,7 @@ class TaxonomySimple extends Taxonomy {
     });
     let tax_cnt_obj_arrs = this.make_tax_name_cnt_obj_per_dataset(this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank);
 
-    console.timeEnd("TIME: connect_names_with_cnts");
+    // console.timeEnd("TIME: connect_names_with_cnts");
     return tax_cnt_obj_arrs;
   }
 
@@ -513,7 +516,7 @@ class TaxonomySimple extends Taxonomy {
   }
 
   get_one_taxon_name(db_id, rank) {
-    console.time("time: get_one_taxon_name");
+    // console.time("time: get_one_taxon_name");
 
     let one_taxon_name = "";
     let db_id_n_rank = db_id + '_' + rank;
@@ -531,7 +534,7 @@ class TaxonomySimple extends Taxonomy {
       }
       this.id_rank_taxa_cash[db_id_n_rank] = one_taxon_name;
     }
-    console.timeEnd("time: get_one_taxon_name");
+    // console.timeEnd("time: get_one_taxon_name");
 
     return one_taxon_name;
   }
@@ -562,14 +565,14 @@ class TaxonomySimple extends Taxonomy {
   }
 
   check_rank_name(this_rank) {
-    console.time("time: check_rank_name");
+    // console.time("time: check_rank_name");
 
     let rank_name = this_rank;
     // const wrong_class_names = ["klass" ]; //TODO: add empty_
     if (this_rank === "klass") {
       rank_name = 'class';
     }
-    console.timeEnd("time: check_rank_name");
+    // console.timeEnd("time: check_rank_name");
 
     return rank_name;
   }
@@ -578,7 +581,7 @@ class TaxonomySimple extends Taxonomy {
 
 class TaxonomyCustom extends Taxonomy {
   connect_names_with_cnts() {
-    console.time('TIME: make_tax_name_cnt_obj_per_did_custom_map');
+    // console.time('TIME: make_tax_name_cnt_obj_per_did_custom_map');
     // ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 
     this.chosen_dids.map(did => {
@@ -601,7 +604,7 @@ class TaxonomyCustom extends Taxonomy {
     });
     // TODO: Why is it called from here?
     let tax_cnt_obj_arrs = this.make_tax_name_cnt_obj_per_dataset(this.tax_id_obj_by_did_filtered);
-    console.timeEnd('TIME: make_tax_name_cnt_obj_per_did_custom_map');
+    // console.timeEnd('TIME: make_tax_name_cnt_obj_per_did_custom_map');
 
     return tax_cnt_obj_arrs;
 
@@ -616,7 +619,7 @@ class TaxonomyCustom extends Taxonomy {
   }
 
   combine_db_tax_id_list(selected_node_id) {// TODO: refactor
-    console.time('TIME: combine_db_tax_id_list');
+    // console.time('TIME: combine_db_tax_id_list');
     // let tax_node = this.taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
     // let new_node_id = tax_node.parent_id;
     // let id_chain = '_' + tax_node.db_id;  // add _ to beginning
@@ -632,13 +635,13 @@ class TaxonomyCustom extends Taxonomy {
       new_node_id   = new_node.parent_id;
       tax_long_name = new_node.taxon + ';' + tax_long_name;
     }
-    console.timeEnd('TIME: combine_db_tax_id_list');
+    // console.timeEnd('TIME: combine_db_tax_id_list');
 
     return [id_chain, tax_long_name];
   }
 
   get_tax_cnt(id_chain, did) {
-    console.time('TIME: get_tax_cnt');
+    // console.time('TIME: get_tax_cnt');
     const taxcounts = this.taxa_counts_module.curr_taxcounts_obj_of_str_by_did[did];
     let curr_tax_id_chain = id_chain;
     let temp_cnt = 0;
@@ -646,7 +649,7 @@ class TaxonomyCustom extends Taxonomy {
       temp_cnt = taxcounts[curr_tax_id_chain];
     }
     catch (err) {}
-    console.timeEnd('TIME: get_tax_cnt');
+    // console.timeEnd('TIME: get_tax_cnt');
     return temp_cnt;
   }
 }
