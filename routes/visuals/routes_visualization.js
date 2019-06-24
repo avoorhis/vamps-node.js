@@ -306,9 +306,9 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, visual_post_items);
   let biom_matrix = biom_matrix_obj.biom_matrix;
   console.timeEnd("TIME: biom_matrix_new");
-  // console.time("TIME: biom_matrix old refactored");
+  // // console.time("TIME: biom_matrix old refactored");
   // var biom_matrix = MTX.get_biom_matrix(req, visual_post_items);
-  // console.timeEnd("TIME: biom_matrix old refactored");
+  // // console.timeEnd("TIME: biom_matrix old refactored");
   //console.log('8')
   visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
   //console.log('9')
@@ -1624,8 +1624,11 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     pi.include_nas = req.session.include_nas
     pi.domains = req.session.domains
     var write_file = false;  // DO NOT OVERWRITE The Matrix File
-    var new_matrix = MTX.get_biom_matrix(req, pi, write_file);
-   
+    // var new_matrix = MTX.get_biom_matrix(req, pi, write_file);
+    console.time("TIME: biom_matrix_new_from_bar_single");
+    const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, pi, write_file);
+    let new_matrix = biom_matrix_obj.biom_matrix;
+    console.timeEnd("TIME: biom_matrix_new_from_bar_single");
 
     new_matrix.dataset = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did]
     new_matrix.did = selected_did
@@ -1785,7 +1788,11 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     pi.domains = req.session.domains
     pi.selected_distance = metric
     var write_file = false;  // DO NOT OVERWRITE The Matrix File
-    var new_matrix = MTX.get_biom_matrix(req, pi, write_file);
+    // var new_matrix = MTX.get_biom_matrix(req, pi, write_file);
+    console.time("TIME: biom_matrix_new_from_bar_double");
+    const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, pi, write_file);
+    let new_matrix = biom_matrix_obj.biom_matrix;
+    console.timeEnd("TIME: biom_matrix_new_from_bar_double");
     //console.log('new_matrix')
     //console.log(new_matrix)
 
