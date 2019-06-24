@@ -272,17 +272,17 @@ function make_mdata(mdname) {
 }
 
 function get_csv_files(req) {
-  console.time("TIME: get_csv_files");
+  // console.time("TIME: get_csv_files");
 
   var user_csv_dir = path.join(config.USER_FILES_BASE, req.user.username);
   var all_my_files = helpers.walk_sync(user_csv_dir);
 
-  console.timeEnd("TIME: get_csv_files");
+  // console.timeEnd("TIME: get_csv_files");
   return all_my_files;
 }
 
 function filter_csv_files_by_project(file_names, project_name, username) {
-  console.time("TIME: filter_csv_files_by_project");
+  // console.time("TIME: filter_csv_files_by_project");
 
   file_name_template = "metadata-project_" + project_name + "_" + username;
   var project_file_names = [];
@@ -292,7 +292,7 @@ function filter_csv_files_by_project(file_names, project_name, username) {
       project_file_names.push(file_names[i0]);
     }
   }
-  console.timeEnd("TIME: filter_csv_files_by_project");
+  // console.timeEnd("TIME: filter_csv_files_by_project");
 
   return project_file_names;
 }

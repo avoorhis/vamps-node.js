@@ -44,7 +44,7 @@ class CreateDataObj {
   }
 
   prepare_empty_metadata_object() {
-    console.time('TIME: prepare_empty_metadata_object');
+    // console.time('TIME: prepare_empty_metadata_object');
     var empty_field_names_obj = this.create_an_empty_fixed_length_obj(this.all_field_names);
     this.all_metadata[this.pid] = empty_field_names_obj;
 
@@ -54,7 +54,7 @@ class CreateDataObj {
       this.all_metadata[this.pid]['dataset_id'] = this.dataset_ids;
     }
 
-    console.timeEnd('TIME: prepare_empty_metadata_object');
+    // console.timeEnd('TIME: prepare_empty_metadata_object');
   }
 
   get_project_info(req, res, project_name_or_pid) {
@@ -100,7 +100,7 @@ class CreateDataObj {
   }
 
   make_metadata_object_from_form() {
-    console.time("TIME: make_metadata_object_from_form");
+    // console.time("TIME: make_metadata_object_from_form");
     console.trace("Show me, I'm in make_metadata_object_from_form");
     var data = this.req.form;
 
@@ -111,7 +111,7 @@ class CreateDataObj {
     else {
       this.existing_object_from_form(data);
     }
-    console.timeEnd("TIME: make_metadata_object_from_form");
+    // console.timeEnd("TIME: make_metadata_object_from_form");
   }
 
   show_with_new_datasets() {
@@ -123,7 +123,7 @@ class CreateDataObj {
     var that          = this;
     // console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
     new_dataset.addDataset(function (err, rows) {
-      console.time("TIME: in post /metadata_new, add dataset");
+      // console.time("TIME: in post /metadata_new, add dataset");
       if (err) {
         console.log('WWW000 err', err);
         this.req.flash('fail', err);
@@ -158,7 +158,7 @@ class CreateDataObj {
     let that          = this;
     // console.log('OOO1 JSON.stringify(DatasetInfo) = ', JSON.stringify(DatasetInfo));
     new_dataset.addDataset(function (err, rows) {
-      console.time("TIME: in post /metadata_new, add dataset");
+      // console.time("TIME: in post /metadata_new, add dataset");
       if (err) {
         // console.log('WWW0 err', err);
         req.flash('fail', err);
@@ -228,7 +228,7 @@ class CreateDataObj {
   }
 
   make_metadata_object(req, res, pid, data_obj) {
-    console.time('TIME: make_metadata_object');
+    // console.time('TIME: make_metadata_object');
 
     // var all_metadata = {};
     var dataset_ids  = DATASET_IDS_BY_PID[pid] || data_obj['dataset_id'];
@@ -299,13 +299,13 @@ class CreateDataObj {
 
     // check_pi_name(all_metadata[pid]);
 
-    console.timeEnd('TIME: make_metadata_object');
+    // console.timeEnd('TIME: make_metadata_object');
     return all_metadata;
   }
 
   // new rows
   new_row_field_validation(req, field_name) {
-    console.time('TIME: new_row_field_validation');
+    // console.time('TIME: new_row_field_validation');
     var err_msg = '';
 
     //todo: send a value instead of 'req.body[field_name]'?
@@ -319,19 +319,19 @@ class CreateDataObj {
       req.form.errors.push(err_msg);
     }
 
-    console.timeEnd('TIME: new_row_field_validation');
+    // console.timeEnd('TIME: new_row_field_validation');
     return field_val_trimmed;
   }
 
   get_column_name(row_idx, req) {
-    console.time('TIME: get_column_name');
+    // console.time('TIME: get_column_name');
 
     var units_field_name  = this.new_row_field_validation(req, 'Units' + row_idx);
     var users_column_name = this.new_row_field_validation(req, 'Column Name' + row_idx);
     if (units_field_name !== '' && users_column_name !== '') {
       return [users_column_name, units_field_name];
     }
-    console.timeEnd('TIME: get_column_name');
+    // console.timeEnd('TIME: get_column_name');
   }
 
   isUnique(all_clean_field_names_arr, column_name) {
@@ -339,7 +339,7 @@ class CreateDataObj {
   }
 
   get_cell_val_by_row(row_idx, req) {
-    console.time('TIME: get_cell_val_by_row');
+    // console.time('TIME: get_cell_val_by_row');
     var new_row_length = req.body.new_row_length;
     var new_row_val    = [];
 
@@ -350,24 +350,24 @@ class CreateDataObj {
 
       new_row_val.push(clean_val);
     }
-    console.timeEnd('TIME: get_cell_val_by_row');
+    // console.timeEnd('TIME: get_cell_val_by_row');
 
     return new_row_val;
   }
 
   get_first_column(matrix, col) {
-    console.time('TIME: get_first_column');
+    // console.time('TIME: get_first_column');
     var column = [];
     for (var i = 0; i < matrix.length; i++) {
       column.push(matrix[i][col]);
     }
-    console.timeEnd('TIME: get_first_column');
+    // console.timeEnd('TIME: get_first_column');
 
     return column;
   }
 
   collect_new_rows(req, all_field_names) {
-    console.time('TIME: collect_new_rows');
+    // console.time('TIME: collect_new_rows');
     var new_row_num               = req.body.new_row_num;
     var all_clean_field_names_arr = helpers.unique_array(this.get_first_column(all_field_names, 0));
 
@@ -395,7 +395,7 @@ class CreateDataObj {
         }
       }
     }
-    console.timeEnd('TIME: collect_new_rows');
+    // console.timeEnd('TIME: collect_new_rows');
 
     return all_field_names;
   }
@@ -430,7 +430,7 @@ class CreateDataObj {
   }
 
   from_obj_to_obj_of_arr(data, pid, dataset_ids_in) {
-    console.time('TIME: from_obj_to_obj_of_arr');
+    // console.time('TIME: from_obj_to_obj_of_arr');
     var obj_of_arr = {};
 
     var dataset_ids = DATASET_IDS_BY_PID[pid] || dataset_ids_in;
@@ -465,7 +465,7 @@ class CreateDataObj {
     //   'NNNNTCACA',
     //   'NNNNACTAT'
     // ]
-    console.timeEnd('TIME: from_obj_to_obj_of_arr');
+    // console.timeEnd('TIME: from_obj_to_obj_of_arr');
     return obj_of_arr;
   }
 
@@ -497,7 +497,7 @@ class CreateDataObj {
 
   // TODO: refactor: JSHint: This function's cyclomatic complexity is too high. (9) (W074)
   create_all_metadata_form_new(all_field_names, project_obj) {
-    console.time('TIME: create_all_metadata_form_new');
+    // console.time('TIME: create_all_metadata_form_new');
 
     var req = this.req;
     var pid = project_obj.pid;
@@ -570,7 +570,7 @@ class CreateDataObj {
 
     all_metadata[pid]['project_abstract'] = this.add_project_abstract_info(project_obj, repeat_times);
 
-    console.timeEnd('TIME: create_all_metadata_form_new');
+    // console.timeEnd('TIME: create_all_metadata_form_new');
 
     console.log("DDD11: ", JSON.stringify(all_metadata));
     return all_metadata;
@@ -592,7 +592,7 @@ class CreateDataObj {
   }
 
   get_all_req_metadata(dataset_id) {
-    console.time('TIME: 5) get_all_req_metadata');
+    // console.time('TIME: 5) get_all_req_metadata');
     var fail_msg = [];
     var data = {};
     for (var idx = 0; idx < CONSTS.REQ_METADATA_FIELDS_wIDs.length; idx++) {
@@ -609,14 +609,14 @@ class CreateDataObj {
         data[key] = val_hash.value;
       }
     }
-    console.time('TIME: 5) get_all_req_metadata');
+    // console.time('TIME: 5) get_all_req_metadata');
 
     return {'data': data, 'fail_msg': fail_msg};
   }
 
   // This function cyclomatic complexity is too high (9)
   get_primers_info(dataset_id) {
-    console.time('TIME: get_primers_info');
+    // console.time('TIME: get_primers_info');
     var primer_info = {
       'F': [],
       'R': [],
@@ -665,7 +665,7 @@ class CreateDataObj {
     // console.log(JSON.stringify(primer_info));
     // {'F':['CCTACGGGAGGCAGCAG','CCTACGGG.GGC[AT]GCAG','TCTACGGAAGGCTGCAG'],'R':['GGATTAG.TACCC']}
 
-    console.timeEnd('TIME: get_primers_info');
+    // console.timeEnd('TIME: get_primers_info');
     return primer_info;
   }
 
@@ -722,7 +722,7 @@ class CreateDataObj {
 
     // console.log('OOO1 JSON.stringify(project_obj) = ', JSON.stringify(project_obj));
     new_project.addProject(project_obj, function (err, rows) {
-        console.time("TIME: in post /metadata_new, add project");
+        // console.time("TIME: in post /metadata_new, add project");
         if (err) {
           // console.log('WWW0 err', err);
           req.flash('fail', err);
@@ -741,7 +741,7 @@ class CreateDataObj {
           const met_obj = new module.exports.CreateDataObj(req, res, pid, []);
           met_obj.make_new_project_for_form(project_obj);
         }
-        console.timeEnd("TIME: in post /metadata_new, add project");
+        // console.timeEnd("TIME: in post /metadata_new, add project");
       }
     );
   }
@@ -1045,13 +1045,13 @@ class FieldNames {
 
     var big_arr_diff_names = this.make_array4(diff_names);
 
-    console.time('TIME: ordered_existing');
+    // console.time('TIME: ordered_existing');
 
     let ordered_existing = helpers.slice_object_by_keys_to_arr(CONSTS.ORDERED_METADATA_NAMES_OBJ, CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM);
 
     var big_arr4 = helpers.unique_array(ordered_existing.concat(big_arr_diff_names));
 
-    console.timeEnd('TIME: ordered_existing');
+    // console.timeEnd('TIME: ordered_existing');
     // console.log('MMM11 big_arr4');
     // console.log(JSON.stringify(big_arr4));
 
@@ -1141,14 +1141,14 @@ class FieldNames {
   //  from Show!
   make_ordered_field_names_obj(all_field_names_arr4) {
     //[ 'biomass_wet_weight', 'Biomass - wet weight', '', 'gram' ],
-    console.time('TIME: make_ordered_field_names_obj');
+    // console.time('TIME: make_ordered_field_names_obj');
     let temp_all_field_names_ordered = all_field_names_arr4.map(function (field_name_arr){
       return field_name_arr[0] === "" ? field_name_arr[1] : field_name_arr[0];
     });
 
     const ordered_field_names_obj = helpers.slice_object_by_keys(CONSTS.ORDERED_METADATA_NAMES_OBJ, temp_all_field_names_ordered);
 
-    console.timeEnd('TIME: make_ordered_field_names_obj');
+    // console.timeEnd('TIME: make_ordered_field_names_obj');
     return ordered_field_names_obj;
   }
 

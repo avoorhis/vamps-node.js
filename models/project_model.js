@@ -236,7 +236,7 @@ class Project {
   }
 
   get_projects_abstract_data(project, path_to_static) {
-    console.time('TIME: get_projects_abstract_data');
+    // console.time('TIME: get_projects_abstract_data');
 
     var info_file     = '';
     var abstract_data = {};
@@ -245,19 +245,19 @@ class Project {
       abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
     }
 
-    console.timeEnd('TIME: get_projects_abstract_data');
+    // console.timeEnd('TIME: get_projects_abstract_data');
     return abstract_data;
   }
 
   get_project_prefix(project) {
-    console.time('TIME: get_project_prefix');
+    // console.time('TIME: get_project_prefix');
     var project_parts  = project.split('_');
     var project_prefix = project;
 
     if (project_parts.length >= 2) {
       project_prefix = project_parts[0] + '_' + project_parts[1];
     }
-    console.timeEnd('TIME: get_project_prefix');
+    // console.timeEnd('TIME: get_project_prefix');
     return project_prefix;
   }
 
@@ -322,7 +322,7 @@ class Project {
   }
 
   get_project_name_from_file_name(edit_metadata_file) {
-    console.time('TIME: get_project_name_from_file_name');
+    // console.time('TIME: get_project_name_from_file_name');
     console.log('IN: get_project_name_from_file_name');
     var edit_metadata_file_parts = [];
     var edit_metadata_project    = '';
@@ -344,7 +344,7 @@ class Project {
     // tmp file name, e.g. 38992e2fdc27e34fb1dd4231fc680504
     // }
 
-    console.timeEnd('TIME: get_project_name_from_file_name');
+    // console.timeEnd('TIME: get_project_name_from_file_name');
     return edit_metadata_project;
   }
 

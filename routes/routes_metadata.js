@@ -221,7 +221,7 @@ router.get('/metadata_new_csv_upload', helpers.isLoggedIn, function (req, res) {
 
 router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_csv')], function (req, res) {
 
-    console.time("TIME: in post /metadata_new_csv_upload");
+    // console.time("TIME: in post /metadata_new_csv_upload");
     const full_file_name = req.file.path;
     const csv_file_read  = new csv_files_controller.CsvFileRead(req, res, full_file_name);
     const data_arr_no_head = csv_file_read.data_arr_no_head;
@@ -243,7 +243,7 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     if (typeof req.body.project === 'undefined' || pid === 0) {
       new_csv(req, res, cur_project, project_name, transposed);
     }
-    console.timeEnd("TIME: in post /metadata_new_csv_upload");
+    // console.timeEnd("TIME: in post /metadata_new_csv_upload");
   }
 );
 
@@ -288,7 +288,7 @@ router.post('/metadata_new',
     form.field("tube_label", "Tube label").trim().required().is(/^[a-zA-Z0-9_ -]+$/).entityEncode().array()
 ),
   function (req, res) {
-    console.time("TIME: in post /metadata_new");
+    // console.time("TIME: in post /metadata_new");
     // console.log("MMM1, req.body", req.body);
     // console.log("MMM2, req.form", req.form);
     const show_new = new metadata_controller.ShowObj(req, res, {}, {}, {}, {});
@@ -319,7 +319,7 @@ router.post('/metadata_new',
       }.bind());
 
     }
-    console.timeEnd("TIME: in post /metadata_new");
+    // console.timeEnd("TIME: in post /metadata_new");
   });
 
 // render edit form
@@ -327,9 +327,9 @@ router.post('/metadata_edit_form',
   [helpers.isLoggedIn],
   function (req, res) {
 
-    console.time("TIME: 1) in post /metadata_edit_form");
+    // console.time("TIME: 1) in post /metadata_edit_form");
     make_metadata_object_from_db(req, res);
-    console.timeEnd("TIME: 1) in post /metadata_edit_form");
+    // console.timeEnd("TIME: 1) in post /metadata_edit_form");
   });
 
 // create form from req.form
@@ -454,7 +454,7 @@ router.post('/metadata_upload',
     form.field("water_age", helpers.get_second("water_age")).trim().custom(helpers.numbers_n_period).entityEncode().array()
   ),
   function (req, res) {
-    console.time("TIME: post metadata_upload");
+    // console.time("TIME: post metadata_upload");
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
 
@@ -479,11 +479,11 @@ router.post('/metadata_upload',
       saveMetadata(req, res);
       res.redirect("/user_data/your_projects");
     }
-    console.timeEnd("TIME: post metadata_upload");
+    // console.timeEnd("TIME: post metadata_upload");
   });
 
 function make_metadata_object_from_form(req, res) {
-  console.time("TIME: make_metadata_object_from_form");
+  // console.time("TIME: make_metadata_object_from_form");
   console.trace("Show me, I'm in make_metadata_object_from_form");
   var pid       = req.body.project_id;
   var data      = req.form;
@@ -515,12 +515,12 @@ function make_metadata_object_from_form(req, res) {
   else {
     met_obj.existing_object_from_form(req, res, pid, data);
   }
-  console.timeEnd("TIME: make_metadata_object_from_form");
+  // console.timeEnd("TIME: make_metadata_object_from_form");
 }
 
 // JSHint: This function's cyclomatic complexity is too high. (6) (W074)
 function make_metadata_object_from_csv(req, res) {// move to met_obj?
-  console.time("TIME: make_metadata_object_from_csv");
+  // console.time("TIME: make_metadata_object_from_csv");
 
   var file_name       = req.body.edit_metadata_file;
   var full_file_name  = path.join(config.USER_FILES_BASE, req.user.username, file_name);
@@ -566,7 +566,7 @@ function make_metadata_object_from_csv(req, res) {// move to met_obj?
 
     show_new.render_edit_form();
   }
-  console.timeEnd("TIME: make_metadata_object_from_csv");
+  // console.timeEnd("TIME: make_metadata_object_from_csv");
 }
 
 function callback_for_add_project_from_new_csv(req, res, cur_project, data_arr) {
@@ -581,7 +581,7 @@ function callback_for_add_project_from_new_csv(req, res, cur_project, data_arr) 
 }
 
 function new_csv(req, res, cur_project, project_name, transposed) {
-  console.time("TIME: in new_csv");
+  // console.time("TIME: in new_csv");
   console.log("IN: new_csv");
 
 // if (pid === 0) { // new csv
@@ -629,14 +629,14 @@ function new_csv(req, res, cur_project, project_name, transposed) {
       else {
         callback_for_add_project_from_new_csv(req, res, cur_project, transposed);
       }
-      console.timeEnd("TIME: in new_csv");
+      // console.timeEnd("TIME: in new_csv");
     });
   }
 }
 
 // create form from db
 function make_metadata_object_from_db(req, res) {
-  console.time("TIME: make_metadata_object_from_db");
+  // console.time("TIME: make_metadata_object_from_db");
   var pid         = req.body.project_id;
   //repeated!
   var dataset_ids = DATASET_IDS_BY_PID[pid];
@@ -649,9 +649,9 @@ function make_metadata_object_from_db(req, res) {
 
 function create_AllMetadata_picked(dataset_ids) {
 
-  // console.time("TIME: slice_object_by_keys");
+  // // console.time("TIME: slice_object_by_keys");
   let AllMetadata_picked = helpers.slice_object_by_keys(AllMetadata, dataset_ids);
-  // console.timeEnd("TIME: slice_object_by_keys");
+  // // console.timeEnd("TIME: slice_object_by_keys");
 
   const all_metadata_picked_is_empty = helpers.is_empty(AllMetadata_picked);
 
@@ -669,7 +669,7 @@ function get_dataset_info(met_obj)
 
   const pid = met_obj.pid;
 
-  console.time("TIME: dataset_info"); // the fastest
+  // console.time("TIME: dataset_info"); // the fastest
   var dataset_info = [];
   for (var i in ALL_DATASETS.projects) {
     var item = ALL_DATASETS.projects[i];
@@ -678,25 +678,25 @@ function get_dataset_info(met_obj)
       break;
     }
   }
-  console.timeEnd("TIME: dataset_info");
+  // console.timeEnd("TIME: dataset_info");
 
   return dataset_info;
 }
 
 function get_db_data (req, res, met_obj) { // move to met_obj?
-  console.time("TIME: helpers.slice_object_by_keys");
+  // console.time("TIME: helpers.slice_object_by_keys");
   var AllMetadata_picked = create_AllMetadata_picked(met_obj.dataset_ids);
-  console.timeEnd("TIME: helpers.slice_object_by_keys");
+  // console.timeEnd("TIME: helpers.slice_object_by_keys");
   // met_obj.all_metadata["301"].sample_name 0
 
-  console.time("TIME: dataset_info");
+  // console.time("TIME: dataset_info");
   const dataset_info        = get_dataset_info(met_obj);
   const dataset_info_by_did = make_dataset_info_by_did(dataset_info);
-  console.timeEnd("TIME: dataset_info");
+  // console.timeEnd("TIME: dataset_info");
 
-  console.time("TIME: add missing info to AllMetadata_picked");
+  // console.time("TIME: add missing info to AllMetadata_picked");
   const AllMetadata_picked_new = add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked, dataset_info_by_did);
-  console.timeEnd("TIME: add missing info to AllMetadata_picked");
+  // console.timeEnd("TIME: add missing info to AllMetadata_picked");
   const AllMetadata_picked_full = AllMetadata_picked_new.AllMetadata_picked_full;
   const fail_msg = AllMetadata_picked_new.fail_msg;
   req.flash('fail', fail_msg);
@@ -719,7 +719,7 @@ function get_db_data (req, res, met_obj) { // move to met_obj?
 
   const show_new = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, {}, {});
   show_new.render_edit_form();
-  console.timeEnd("TIME: make_metadata_object_from_db");
+  // console.timeEnd("TIME: make_metadata_object_from_db");
 }
 
 function add_abstract_data(req, res, met_obj) {
@@ -743,7 +743,7 @@ function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, 
   const dataset_ids = met_obj.dataset_ids;
   var AllMetadata_picked_out = AllMetadata_picked_in;
   var fail_msg = [];
-  console.time("TIME: add missing info to AllMetadata_picked");
+  // console.time("TIME: add missing info to AllMetadata_picked");
   for (var d_idx in dataset_ids) { //TODO: split here instead if no metadata
     const dataset_id = dataset_ids[d_idx];
     const all_req_metadata = met_obj.get_all_req_metadata(dataset_id);
@@ -779,7 +779,7 @@ function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, 
 // TODO: mv to helpers and refactor (see also in admin & user_data
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 
-  console.time('file_utils');
+  // console.time('file_utils');
   var user = req.query.user;
 
   console.log("file from file_utils: ");
@@ -829,14 +829,14 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
     }
 
   }
-  console.timeEnd('file_utils');
+  // console.timeEnd('file_utils');
 
 });
 
 // save from form to db ??
 
 function saveMetadata(req, res) {
-  console.time("TIME: saveMetadata");
+  // console.time("TIME: saveMetadata");
   console.log("SSS in saveMetadata");
 
   const csv_file_write = new csv_files_controller.CsvFilesWrite(req, res);
@@ -849,13 +849,13 @@ function saveMetadata(req, res) {
 
   res.redirect("/projects/" + req.body.project_id);
 
-  console.timeEnd("TIME: saveMetadata");
+  // console.timeEnd("TIME: saveMetadata");
 
 }
 
 // if csv files: show a list and compare
 router.get('/metadata_file_list', function (req, res) {
-  console.time("TIME: get metadata_file_list");
+  // console.time("TIME: get metadata_file_list");
   console.log('in metadata_file_list');
   const csv_files_obj         = new csv_files_controller.CsvFilesWrite(req, res);
   var user_metadata_csv_files = csv_files_obj.get_csv_files();
@@ -872,7 +872,7 @@ router.get('/metadata_file_list', function (req, res) {
     finfo: JSON.stringify(user_metadata_csv_files),
     edit: true
   });
-  console.timeEnd("TIME: get metadata_file_list");
+  // console.timeEnd("TIME: get metadata_file_list");
 
 });
 
@@ -880,7 +880,7 @@ router.post('/metadata_files',
   [helpers.isLoggedIn],
   function (req, res) {
 
-    console.time("TIME: in post /metadata_files");
+    // console.time("TIME: in post /metadata_files");
     var table_diff_html, sorted_files, files_to_compare;
     const csv_files_obj = new csv_files_controller.CsvFilesWrite(req, res);
     sorted_files        = csv_files_obj.sorted_files_by_time();
@@ -908,12 +908,12 @@ router.post('/metadata_files',
       res.redirect("/metadata/metadata_file_list");
     }
 
-    console.timeEnd("TIME: in post /metadata_files");
+    // console.timeEnd("TIME: in post /metadata_files");
   });
 
 // doesn't work from controller
 function send_mail_finished(req, res) {
-  console.time("TIME: send_mail_finished");
+  // console.time("TIME: send_mail_finished");
 
   let transporter = nodeMailer.createTransport(config.smtp_connection_obj);
 
@@ -941,7 +941,7 @@ function send_mail_finished(req, res) {
     // res.render('index');
   });
 
-  console.timeEnd("TIME: send_mail_finished");
+  // console.timeEnd("TIME: send_mail_finished");
 }
 
 // ---- metadata_upload end ----

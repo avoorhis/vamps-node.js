@@ -310,7 +310,7 @@ module.exports.get_datasets = function(callback){
   });
 
   connection.query(queries.get_select_custom_units_query(), function(err, rows, fields){
-    console.time("TIME: connection queries.get_select_custom_units_query");
+    // console.time("TIME: connection queries.get_select_custom_units_query");
     if (err)  {
       console.log('Query error: ' + err);
       console.log(err.stack);
@@ -319,7 +319,7 @@ module.exports.get_datasets = function(callback){
       helpers.get_select_custom_units_query(rows);
     }
     console.log(' INITIALIZING MD_CUSTOM_UNITS');
-    console.timeEnd("TIME: connection queries.get_select_custom_units_query");
+    // console.timeEnd("TIME: connection queries.get_select_custom_units_query");
   });
 
 

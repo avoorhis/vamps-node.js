@@ -43,7 +43,7 @@ class CsvFileRead {
   }
 
   make_obj_from_template_csv(parsed_csv_obj) {
-    console.time('TIME: make_obj_from_template_csv');
+    // console.time('TIME: make_obj_from_template_csv');
 
     var array_width = parsed_csv_obj.length || 0;
     var column_num  = parsed_csv_obj[0] instanceof Object ? Object.keys(parsed_csv_obj[0]) : [];
@@ -79,7 +79,7 @@ class CsvFileRead {
       }
     }
 
-    console.timeEnd('TIME: make_obj_from_template_csv');
+    // console.timeEnd('TIME: make_obj_from_template_csv');
     return transposed_object;
   }
 }
@@ -125,7 +125,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     /*async.map(['file1','file2','file3'], fs.stat, function(err, results){
     // results is now an array of stats for each file
   });*/
-    console.time("sorted_files_by_time");
+    // console.time("sorted_files_by_time");
     var f_info = JSON.parse(this.req.body.file_info);
     var dir    = path.join(config.USER_FILES_BASE, this.user.username);
     f_info.sort(function (a, b) {
@@ -133,12 +133,12 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
         fs.statSync(path.join(dir, b.filename)).mtime.getTime();
     });
 
-    console.timeEnd("sorted_files_by_time");
+    // console.timeEnd("sorted_files_by_time");
     return f_info;
   }
   
   sorted_files_to_compare(sorted_files) {
-    console.time("sorted_files_to_compare");
+    // console.time("sorted_files_to_compare");
 
     var file_names_array = this.req.body.compare;
     var files            = [];
@@ -151,7 +151,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
         files.push(el);
       }
     });
-    console.timeEnd("sorted_files_to_compare");
+    // console.timeEnd("sorted_files_to_compare");
     return files;
   }
 
@@ -203,17 +203,17 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
   }
 
   get_csv_files() {
-    console.time("TIME: get_csv_files");
+    // console.time("TIME: get_csv_files");
 
     var user_csv_dir = path.join(config.USER_FILES_BASE, this.user.username);
     var all_my_files = helpers.walk_sync(user_csv_dir);
 
-    console.timeEnd("TIME: get_csv_files");
+    // console.timeEnd("TIME: get_csv_files");
     return all_my_files;
   }
 
   convertArrayOfObjectsToCSV(args) {
-    console.time('TIME: convertArrayOfObjectsToCSV');
+    // console.time('TIME: convertArrayOfObjectsToCSV');
 
     var data_copy = Object.assign({}, args.data) || null;
     if (data_copy === null) {
@@ -252,7 +252,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
       result += lineDelimiter;
     });
 
-    console.timeEnd('TIME: convertArrayOfObjectsToCSV');
+    // console.timeEnd('TIME: convertArrayOfObjectsToCSV');
 
     return result;
   }
@@ -310,7 +310,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
   }
 
   make_csv_to_upload_to_pipeline(req) {
-    console.time("TIME: make_csv_to_upload_to_pipeline");
+    // console.time("TIME: make_csv_to_upload_to_pipeline");
 
     this.pipeline_csv_template_names_with_form_names = {"adaptor": ["adapt_3letter"],
       "amp_operator": ["amp_operator"],
@@ -369,12 +369,12 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
 
     // const base_name = "pipeline_metadata-"  + helpers.unique_array(this.req.form['project']) + "_" + helpers.unique_array(this.req.form['run']) + "_" + helpers.unique_array(this.req.form['platform']) + "_" + helpers.unique_array(this.req.form['lane']) + "_" + helpers.unique_array(this.req.form['domain']) + "_.csv";
 
-    console.timeEnd("TIME: make_csv_to_upload_to_pipeline");
+    // console.timeEnd("TIME: make_csv_to_upload_to_pipeline");
 
   }
 
   make_csv(base_name, data, msg) {
-    console.time("TIME: make_csv");
+    // console.time("TIME: make_csv");
     let req = this.req;
 
     let csv = this.convertArrayOfObjectsToCSV({
@@ -393,7 +393,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
 
     req.flash("success", msg);
 
-    console.timeEnd("TIME: make_csv");
+    // console.timeEnd("TIME: make_csv");
   }
 
   create_metadata_project_csv(req) {

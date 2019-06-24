@@ -79,11 +79,11 @@ module.exports.array_from_object = function (data) {
 };
 
 module.exports.get_second = function (element) {
-  console.time('TIME: get_second:'+element);
+  // console.time('TIME: get_second:'+element);
   if (C.ORDERED_METADATA_NAMES_OBJ.hasOwnProperty(element)) {
     return C.ORDERED_METADATA_NAMES_OBJ[element][1];
   }
-  console.timeEnd('TIME: get_second:'+element);
+  // console.timeEnd('TIME: get_second:'+element);
 };
 
 /** Benchmarking
@@ -323,7 +323,7 @@ module.exports.send_mail = function (mail_info) {
 //
 
 module.exports.get_select_custom_units_query = function (rows) {
-  console.time("TIME: get_select_custom_units_query");
+  // console.time("TIME: get_select_custom_units_query");
   for (var i = 0; i < rows.length; i++) {
     var project_id  = rows[i]["project_id"];
     var field_name  = rows[i]["field_name"];
@@ -339,7 +339,7 @@ module.exports.get_select_custom_units_query = function (rows) {
     }
     MD_CUSTOM_FIELDS_UNITS[field_name] = field_units;
   }
-  console.timeEnd("TIME: get_select_custom_units_query");
+  // console.timeEnd("TIME: get_select_custom_units_query");
 };
 
 function make_pid_by_did_dict(rows) {
@@ -354,11 +354,11 @@ function make_pid_by_did_dict(rows) {
 
 //add the same check to PROJECT_ID_BY_DID creation elsewhere
 module.exports.get_select_seq_counts_query = function (rows) {
-  console.time("TIME: get_select_seq_counts_query");
+  // console.time("TIME: get_select_seq_counts_query");
   // console.log(Object.values(PROJECT_ID_BY_DID));
   connection.query('SELECT dataset_id, project_id from dataset', function (err, rows2, fields) {
 
-    console.time("TIME: make_pid_by_did_dict");
+    // console.time("TIME: make_pid_by_did_dict");
     //instead it's better to use PROJECT_ID_BY_DID after it's initialized
     var pid_by_did_dict = [];
     if (Object.keys(PROJECT_ID_BY_DID).length > 0) {
@@ -367,7 +367,7 @@ module.exports.get_select_seq_counts_query = function (rows) {
     else {
       pid_by_did_dict = make_pid_by_did_dict(rows2);
     }
-    console.timeEnd("TIME: make_pid_by_did_dict");
+    // console.timeEnd("TIME: make_pid_by_did_dict");
 
     for (var i = 0; i < rows.length; i++) {
       var did = rows[i].dataset_id;
@@ -391,7 +391,7 @@ module.exports.get_select_seq_counts_query = function (rows) {
     // make_counts_globals(rows, pid_by_did_dict);
 
   });
-  console.timeEnd("TIME: get_select_seq_counts_query");
+  // console.timeEnd("TIME: get_select_seq_counts_query");
 
 };
 
@@ -2178,14 +2178,14 @@ remove_dummy_entries = function(arr){
 };
 
 exports.adapt_3letter_validation = function (value, source) {
-  console.time('adapt_3letter_filter');
+  // console.time('adapt_3letter_filter');
   let has_index_and_runkey = checkArray(source.illumina_index) && checkArray(source.adapter_sequence);
   let has_adapt_3letter = checkArray(remove_dummy_entries(source.adapt_3letter));
 
   if (!has_index_and_runkey && !has_adapt_3letter) {
     throw new Error("Either 'Index sequence (for Illumina) and Adapter sequence' or 'Adapter name 3 letters' are required"); // jshint ignore:line
     }
-  console.timeEnd('adapt_3letter_filter');
+  // console.timeEnd('adapt_3letter_filter');
 };
 
 const const_target_gene               = C.TARGET_GENE;
@@ -2209,7 +2209,7 @@ exports.geo_loc_name_validation = function (value, source) {
 };
 
 exports.geo_loc_name_continental_filter = function (value) {
-  console.time('geo_loc_name_continental_filter');
+  // console.time('geo_loc_name_continental_filter');
   for (const key in C.GAZ_SPELLING) {
     if (C.GAZ_SPELLING.hasOwnProperty(key)) {
       const curr = C.GAZ_SPELLING[key];
@@ -2218,7 +2218,7 @@ exports.geo_loc_name_continental_filter = function (value) {
       }
     }
   }
-  console.timeEnd('geo_loc_name_continental_filter');
+  // console.timeEnd('geo_loc_name_continental_filter');
 };
 
 exports.geo_loc_name_marine_validation = function (value) {
@@ -2243,11 +2243,11 @@ exports.slice_object_by_keys_to_arr = function (obj, slice_keys) {
 };
 
 exports.slice_object_by_keys = function (object, slice_keys) {
-  // console.time('TIME: convert to string');
+  // // console.time('TIME: convert to string');
   for (var i = 0; i < slice_keys.length; i++) {
     slice_keys[i] = String(slice_keys[i]);
   }
-  // console.timeEnd('TIME: convert to string');
+  // // console.timeEnd('TIME: convert to string');
 
   return Object.keys(object) // 1) for each obj's key
     .filter(function (key) { // 2) if it is in slice_keys
@@ -2300,7 +2300,7 @@ exports.check_for_undefined0 = function (req, to_check, err_msg) {
 };
 
 exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
-  console.time('TIME: transpose_2d_arr_and_fill');
+  // console.time('TIME: transpose_2d_arr_and_fill');
 
   //make an array with proper length, even if the first one is empty
   // var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
@@ -2314,7 +2314,7 @@ exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
       return row[i];
     });
   });
-  console.timeEnd('TIME: transpose_2d_arr_and_fill');
+  // console.timeEnd('TIME: transpose_2d_arr_and_fill');
   return newArray;
 };
 
@@ -2349,7 +2349,7 @@ function collect_errors(req) {
 exports.transpose_arr_of_obj = transpose_arr_of_obj;
 
 function transpose_arr_of_obj(a) {
-  console.time('TIME: transpose_arr_of_obj');
+  // console.time('TIME: transpose_arr_of_obj');
 
   var array_width = a.length || 0;
   var headers     = a[0] instanceof Object ? Object.keys(a[0]) : [];
@@ -2374,7 +2374,7 @@ function transpose_arr_of_obj(a) {
       }
     }
   }
-  console.timeEnd('TIME: transpose_arr_of_obj');
+  // console.timeEnd('TIME: transpose_arr_of_obj');
   return transposed_object;
 }
 
