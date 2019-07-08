@@ -930,11 +930,6 @@ constants_metadata.PACKAGES_AND_PORTALS = {
   'unknown': ['unknown'],
   'wastewater/sludge': ['wastewater/sludge'],
   'water': ['water', 'ICOMM', 'water-freshwater', 'water-marine'],
-  'CMP': ['CMP', 'host-associated', 'water'],
-  'CODL': ['CODL', 'DCO'],
-  'LTER': ['LTER'],
-  'PSPHERE': ['PSPHERE'],
-  'UNIEUK': ['UNIEUK'],
 };
 
 constants_metadata.PACKAGES_AND_PORTALS_ALIASES = {
@@ -955,11 +950,6 @@ constants_metadata.PACKAGES_AND_PORTALS_ALIASES = {
   "unknown": ["unknown"],
   "wastewater_sludge": ["wastewater_sludge"],
   "water": ["water", "icomm", "water_freshwater", "water_marine"],
-  "cmp": ["cmp", "host_associated", "water"],
-  "codl": ["codl", "dco"],
-  "lter": ["lter"],
-  "psphere": ["psphere"],
-  "unieuk": ["unieuk"],
 };
 
 module.exports = constants_metadata;
