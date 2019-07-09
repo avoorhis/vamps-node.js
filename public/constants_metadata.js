@@ -267,6 +267,7 @@ constants_metadata.METADATA_NEW_FORM_FIELDS = [
 
 // -- 2 form for datasets --
 constants_metadata.METADATA_FORM_REQUIRED_FIELDS = ["adapter_sequence",
+  "biome_secondary",
   "collection_date",
   "conductivity",
   "dataset",
@@ -280,6 +281,7 @@ constants_metadata.METADATA_FORM_REQUIRED_FIELDS = ["adapter_sequence",
   "env_feature",
   "env_material",
   "env_package",
+  "feature_secondary",
   "forward_primer",
   "geo_loc_name_continental",
   "geo_loc_name_marine",
@@ -287,6 +289,7 @@ constants_metadata.METADATA_FORM_REQUIRED_FIELDS = ["adapter_sequence",
   "investigation_type",
   "latitude",
   "longitude",
+  "material_secondary",
   "ph",
   "project",
   "reverse_primer",
@@ -569,9 +572,9 @@ constants_metadata.ORDERED_METADATA_NAMES_OBJ = {
   "env_material": ["env_material", "Environmental Material - Primary", "User supplied", ""],
   "material_secondary": ["material_secondary", "Environmental Material - Secondary", "User supplied", ""],
   "Enter depth values in one or more categories": ["", "Enter depth values in one or more categories", "", ""],
-  "depth_subseafloor": ["depth_subseafloor", "Depth below seafloor", "User supplied", "mbsf"],
-  "depth_subterrestrial": ["depth_subterrestrial", "Depth below terrestrial surface", "User supplied", "meter"],
-  "tot_depth_water_col": ["tot_depth_water_col", "Water column depth", "User supplied", "meter"],
+  "depth_subseafloor": ["depth_subseafloor", "Depth below seafloor (if marine)", "User supplied", "mbsf"],
+  "depth_subterrestrial": ["depth_subterrestrial", "Depth below surface (if terrestrial)", "User supplied", "meter"],
+  "tot_depth_water_col": ["tot_depth_water_col", "Water column depth (if above seafloor)", "User supplied", "meter"],
   "elevation": ["elevation", "Elevation (if terrestrial)", "User supplied", "meter"],
   "dna_extraction_meth": ["dna_extraction_meth", "DNA Extraction", "User supplied", ""],
   "dna_quantitation": ["dna_quantitation", "DNA Quantitation", "User supplied", ""],
@@ -930,11 +933,6 @@ constants_metadata.PACKAGES_AND_PORTALS = {
   'unknown': ['unknown'],
   'wastewater/sludge': ['wastewater/sludge'],
   'water': ['water', 'ICOMM', 'water-freshwater', 'water-marine'],
-  'CMP': ['CMP', 'host-associated', 'water'],
-  'CODL': ['CODL', 'DCO'],
-  'LTER': ['LTER'],
-  'PSPHERE': ['PSPHERE'],
-  'UNIEUK': ['UNIEUK'],
 };
 
 constants_metadata.PACKAGES_AND_PORTALS_ALIASES = {
@@ -955,11 +953,6 @@ constants_metadata.PACKAGES_AND_PORTALS_ALIASES = {
   "unknown": ["unknown"],
   "wastewater_sludge": ["wastewater_sludge"],
   "water": ["water", "icomm", "water_freshwater", "water_marine"],
-  "cmp": ["cmp", "host_associated", "water"],
-  "codl": ["codl", "dco"],
-  "lter": ["lter"],
-  "psphere": ["psphere"],
-  "unieuk": ["unieuk"],
 };
 
 module.exports = constants_metadata;
