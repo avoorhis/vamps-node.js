@@ -2208,6 +2208,12 @@ exports.geo_loc_name_validation = function (value, source) {
   }
 };
 
+exports.depth = function (value, source) {
+  if ((!checkArray(source.tot_depth_water_col)) && (!checkArray(source.depth_subseafloor)) && (!checkArray(source.depth_subterrestrial))) {
+      throw new Error("Either 'Depth below surface' or 'Depth below seafloor' or 'Water column depth' are required"); // jshint ignore:line
+  }
+};
+
 exports.geo_loc_name_continental_filter = function (value) {
   // console.time('geo_loc_name_continental_filter');
   for (const key in C.GAZ_SPELLING) {
@@ -2233,11 +2239,18 @@ exports.geo_loc_name_continental_validation = function (value) {
   }
 };
 
-exports.recommended = function (value) {
+exports.recommended_temperature = function (value) {
   if (value === '') {
     throw new Error("Temperature is recommended");
   }
 };
+
+exports.recommended_conduct = function (value) {
+  if (value === '') {
+    throw new Error("Conductivity is recommended");
+  }
+};
+
 
 exports.slice_object_by_keys_to_arr = function (obj, slice_keys) {
   let res_arr = [];
