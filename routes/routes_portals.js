@@ -15,7 +15,7 @@ router.get('/portals_index', function(req, res) {
 //
 //
 //
-router.get('/visuals_index/:portal', function(req, res) {
+router.get('/visuals_index/:portal', helpers.isLoggedIn, function(req, res) {
     console.log('in portals visuals_index')
     
     var portal = req.params.portal;
@@ -43,12 +43,21 @@ router.get('/visuals_index/:portal', function(req, res) {
 //
 // PROJECTS
 //
-router.get('/projects/:portal', function(req, res) {
+router.get('/projects/:portal', helpers.isLoggedIn, function(req, res) {
     
     var portal = req.params.portal;
     console.log('in projects/:portal:'+portal)
     var project_list = helpers.get_portal_projects(req, portal)
+    //console.log(project_list)
+    //console.log(req.query)
     
+    if(req.query.hasOwnProperty('dco_code')){        
+        var alter_dco_list = req.query['dco_code']        
+    }else{
+        var alter_dco_list = 'none'
+    }
+    //console.log('alter_dco_list')
+    //console.log(alter_dco_list)
     project_list.sort(function(a, b){
           return helpers.compareStrings_alpha(a.project, b.project);
     });
@@ -56,9 +65,67 @@ router.get('/projects/:portal', function(req, res) {
         res.render('portals/projects', { 
             title     : 'VAMPS:'+portal+'Portals',
             user      : req.user,hostname: req.CONFIG.hostname,
-            portal    : req.CONSTS.PORTALS[portal].pagetitle,
+            pagetitle : req.CONSTS.PORTALS[portal].pagetitle,
+            portal_code    : portal,
             projects  : JSON.stringify(project_list),
+            alter_dco_code: alter_dco_list
         });
+    
+});
+//
+//
+router.post('/dco_project_list', helpers.isLoggedIn, function(req, res) {
+    
+    console.log('dco_project_list')
+    console.log(req.body)
+    var list_type = req.body.value;
+    var projects        = [];
+    var project_list = helpers.get_portal_projects(req, 'CODL')
+    
+    project_list.forEach(function (prj) {
+        if(list_type=='amp'){ 
+            if(prj.metagenomic == 0){
+                projects.push(prj)
+            }
+        }else if(list_type== 'sgun'){
+            if(prj.metagenomic == 1){
+                projects.push(prj)
+            }
+        }else{  // all
+            projects.push(prj)
+        }
+    })
+    
+    
+    projects.sort(function(a, b){
+          return helpers.compareStrings_alpha(a.project, b.project);
+    });
+    //console.log(projects)
+    var html = ''
+    var cnt = 1;
+    html += "<table class='table table-condensed table-striped sortable' >"
+    html += "<tr><th></th><th>Name</th><th>Project Title</th><th>P.I. (username)</th><th>Email</th><th>Institute</th><th>Status</th><th>Metadata Status</th></tr>"
+    projects.forEach(function (prj) {
+        html += "<tr>"
+        html += "<td>"+cnt+"</td>"
+        html += "<td><a class='tooltip_pname' href='/projects/"+prj.pid+"'>"+prj.project+"</a></td>"
+        html += "<td>"+prj.title+"</td>"
+        html += "<td>"+prj.username+"</td>"
+        html += "<td>"+prj.email+"</td>"
+        html += "<td>"+prj.institution+"</td>"
+        if(prj.public == 1){
+            html += "<td>public</td>"
+        }else{
+            html += "<td>private</td>"
+        }
+        
+        html += "<td></td>"
+        html += "</tr>"
+        cnt += 1
+    })
+    html += "</table>"
+    
+    res.send(html);    
     
 });
 router.get('/abstracts/CMP', function(req, res) {

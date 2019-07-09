@@ -394,7 +394,7 @@ constants.PORTALS = {
   },
   'UC': {
     name: 'Ulcerative Colitis (NIH Demonstration Project)',
-    subtext: 'Ulcerative Colitis (NIH Demonstration Project)',
+    subtext: '',
     projects: [],
     prefixes: ['HMP'],
     suffixes: [],
@@ -417,7 +417,7 @@ constants.PORTALS = {
     zoom: 2  // worldwide
   },
   'LTER': {
-    name: 'Long Term Ecological Research (LTER)',
+    name: 'Long Term Ecological Research',
     subtext: 'LTER',
     projects: [],
     prefixes: ['LTR'],
@@ -442,7 +442,7 @@ constants.PORTALS = {
   },
   'PSPHERE': {
     name: 'The Plastisphere',
-    subtext: 'Plastisphere',
+    subtext: '',
     projects: ['LAZ_SEA_Bv6', 'LAZ_SEA_Ev9', 'LAZ_SEA_Bv6v4', 'LAZ_DET_Bv3v4'],
     prefixes: [],
     suffixes: [],
@@ -454,7 +454,7 @@ constants.PORTALS = {
   },
   'RARE': {
     name: 'The Rare Biosphere',
-    subtext: 'Rare Biosphere',
+    subtext: '',
     projects: [],
     prefixes: ['RARE'],
     suffixes: [],
@@ -466,7 +466,7 @@ constants.PORTALS = {
   },
   'UNIEUK': {
     name: 'UniEuk',
-    subtext: 'UniEuk',
+    subtext: '',
     projects: [],
     prefixes: [],
     suffixes: ['Ev2', 'Ev4', 'Ev9', 'Euk'],

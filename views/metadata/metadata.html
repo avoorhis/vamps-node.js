@@ -27,9 +27,9 @@
                 <!-- <a href='/user_data/required_metadata_options' target='_blank'>View Required Metadata (In Progress)</a> -->
             <!--</li>-->
             <!--<h5>Submission</h5>-->
-
+<h5>Metadata Submissions</h5>
             <li>
-                <a href='/metadata/metadata_new'>New Submission Form</a>
+                <a href='/metadata/metadata_new'>New Metadata Submission Form</a>
             </li>
             <!--<li><a href='metadata_list'>Add/Edit Submission Metadata</a></li>-->
             <!--                -Add submission metadata (MBL)-->
@@ -42,7 +42,7 @@
             <li><a href='/metadata/metadata_new_csv_upload'>Upload</a> Metadata Template CSV file</li>
             <% if (user && user.security_level <= 10) { %>
               <h5>Admin users</h5>
-              <li><a href='https://vampsdev.jbpc-np.mbl.edu/submissions/illumina/submission/' target='_blank'>Illumina Submissions</a> (currently on vampsdev)</li>
+              <li><a href='https://vampsdev.jbpc-np.mbl.edu/submissions/illumina/submission/' target='_blank'>Illumina Submissions</a> (currently on vampsdev and available only from inside MBL)</li>
     <!-- if user from 'power' group-->
               <li>Get <a href='/static/metadata_template_for_processing.csv'>Download CSV file</a> for the pipeline processing</li>
             <% } %>
