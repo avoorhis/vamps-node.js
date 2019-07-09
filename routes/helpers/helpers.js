@@ -2227,17 +2227,17 @@ exports.geo_loc_name_continental_filter = function (value) {
   // console.timeEnd('geo_loc_name_continental_filter');
 };
 
-exports.geo_loc_name_marine_validation = function (value) {
-  if (MD_ENV_LZC_vals.indexOf(value) < 0 && (value !== '')) {
-    throw new Error("There is no Longhurst Zone '" + value + "', please check the spelling");
-  }
-};
-
-exports.geo_loc_name_continental_validation = function (value) {
-  if (MD_ENV_CNTRY_vals.indexOf(value) < 0 && (value !== '')) {
-    throw new Error("There is no Country '" + value + "', please check the spelling");
-  }
-};
+// exports.geo_loc_name_marine_validation = function (value) {
+//   if (MD_ENV_LZC_vals.indexOf(value) < 0 && (value !== '')) {
+//     throw new Error("There is no Longhurst Zone '" + value + "', please check the spelling");
+//   }
+// };
+//
+// exports.geo_loc_name_continental_validation = function (value) {
+//   if (MD_ENV_CNTRY_vals.indexOf(value) < 0 && (value !== '')) {
+//     throw new Error("There is no Country '" + value + "', please check the spelling");
+//   }
+// };
 
 exports.recommended_temperature = function (value) {
   if (value === '') {
