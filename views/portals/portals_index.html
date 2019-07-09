@@ -19,17 +19,19 @@
 
   <ul class='portal_list'>
     <% for(p in ptls) { %>
-        <div class="row">
+        <a href='<%= p %>'>
+        <div class="row" style='border:1px solid black;padding-top:15px;margin:5px;'>            
+            
             <div class="col col-lg-3">
                 <% if(ptls[p].subtext == ''){ %>
-                    <br><h4><p class="h5xx"><a href='<%= p %>'><%= ptls[p].name %></a></p></h4>
+                    <br><h4><p class="h5xx"><%= ptls[p].name %></p></h4>
                 <% }else{ %>
-                    <br><h4><p class="h5xx"><a href='<%= p %>'><%= ptls[p].name %> (<%= ptls[p].subtext %>)</a></p></h4>
+                    <br><h4><p class="h5xx"><%= ptls[p].name %> (<%= ptls[p].subtext %>)</p></h4>
                 <% } %>
-            </div>
+            </div>            
+            
             <div class="col col-lg-9">
-                <div class='well'>
-                    <a href='<%= p %>'>
+                <div class='well'>                    
                         <table><tr>
                         <td>
                                 <img src="<%= ptls[p].thumb %>"  height='60'>
@@ -38,10 +40,13 @@
                                 <div style='font-style:italic;font-size:small;'><%= ptls[p].subtitle %></div>
                         </td>
                         </tr></table>
-                    </a>
+                    
                 </div>
             </div>
-        </div>
+            
+            
+        </div>        
+        </a>
         
     <% } %>
     

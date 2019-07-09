@@ -43,7 +43,7 @@ router.get('/visuals_index/:portal', helpers.isLoggedIn, function(req, res) {
 //
 // PROJECTS
 //
-router.get('/projects/:portal', helpers.isLoggedIn, function(req, res) {
+router.get('/projects/:portal',  function(req, res) {
     
     var portal = req.params.portal;
     console.log('in projects/:portal:'+portal)
@@ -74,7 +74,7 @@ router.get('/projects/:portal', helpers.isLoggedIn, function(req, res) {
 });
 //
 //
-router.post('/dco_project_list', helpers.isLoggedIn, function(req, res) {
+router.post('/dco_project_list',  function(req, res) {
     
     console.log('dco_project_list')
     console.log(req.body)
@@ -103,7 +103,7 @@ router.post('/dco_project_list', helpers.isLoggedIn, function(req, res) {
     //console.log(projects)
     var html = ''
     var cnt = 1;
-    html += "<table class='table table-condensed table-striped sortable' >"
+    html += "<table id='sorted' class='table table-condensed table-striped sortable' >"
     html += "<thead>"
     html += "<tr><th></th><th>Name</th><th>Project Title</th><th>P.I. (username)</th><th>Email</th><th>Institute</th><th>Status</th><th>Metadata Status</th></tr>"
     html += "</thead>"
@@ -128,6 +128,7 @@ router.post('/dco_project_list', helpers.isLoggedIn, function(req, res) {
     })
     html += "</tbody>"
     html += "</table>"
+    
     
     res.send(html);    
     
