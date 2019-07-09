@@ -2064,7 +2064,7 @@ module.exports.get_key_from_value = function (obj, value) {
   if (!found_key) {
     found_key = null;
   }
-  console.log('4 -key - ' + found_key)
+  console.log('4 -key - ' + found_key);
   return found_key;
 };
 
@@ -2208,6 +2208,12 @@ exports.geo_loc_name_validation = function (value, source) {
   }
 };
 
+exports.depth = function (value, source) {
+  if ((!checkArray(source.tot_depth_water_col)) && (!checkArray(source.depth_subseafloor)) && (!checkArray(source.depth_subterrestrial))) {
+      throw new Error("Either 'Depth below surface' or 'Depth below seafloor' or 'Water column depth' are required"); // jshint ignore:line
+  }
+};
+
 exports.geo_loc_name_continental_filter = function (value) {
   // console.time('geo_loc_name_continental_filter');
   for (const key in C.GAZ_SPELLING) {
@@ -2221,17 +2227,30 @@ exports.geo_loc_name_continental_filter = function (value) {
   // console.timeEnd('geo_loc_name_continental_filter');
 };
 
-exports.geo_loc_name_marine_validation = function (value) {
-  if (MD_ENV_LZC_vals.indexOf(value) < 0 && (value !== '')) {
-    throw new Error("There is no Longhurst Zone '" + value + "', please check the spelling");
+// exports.geo_loc_name_marine_validation = function (value) {
+//   if (MD_ENV_LZC_vals.indexOf(value) < 0 && (value !== '')) {
+//     throw new Error("There is no Longhurst Zone '" + value + "', please check the spelling");
+//   }
+// };
+//
+// exports.geo_loc_name_continental_validation = function (value) {
+//   if (MD_ENV_CNTRY_vals.indexOf(value) < 0 && (value !== '')) {
+//     throw new Error("There is no Country '" + value + "', please check the spelling");
+//   }
+// };
+
+exports.recommended_temperature = function (value) {
+  if (value === '') {
+    throw new Error("Temperature is recommended");
   }
 };
 
-exports.geo_loc_name_continental_validation = function (value) {
-  if (MD_ENV_CNTRY_vals.indexOf(value) < 0 && (value !== '')) {
-    throw new Error("There is no Country '" + value + "', please check the spelling");
+exports.recommended_conduct = function (value) {
+  if (value === '') {
+    throw new Error("Conductivity is recommended");
   }
 };
+
 
 exports.slice_object_by_keys_to_arr = function (obj, slice_keys) {
   let res_arr = [];

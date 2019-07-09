@@ -1,34 +1,69 @@
 <% include ../add_ins/begin.ejs %>
 <% proj = JSON.parse(projects) %>
+<script>
+  var dco_code  = '<%= alter_dco_code %>'
+  var portal = '<%= portal_code %>'
+</script>
+
 
   <% if (messages.success) { %>
   	<div class="alert_flash_message_success"><%= messages.success %></div>
   <% }else if(messages.fail){ %>
     <div class="alert_flash_message_fail"><%= messages.fail %></div>
   <% } %>
-	<a href='/portals/portals_index'>&lt;&lt;-portals</a>
-	
+	<a href='/portals/portals_index'>&lt;&lt;-portals</a>	
+
+
 <div class="container">
 		<div class="hero-unit">
-		       <h2><%= portal %></h2>
-					<h3>Project listing</h3>       
+		       <h2><%= pagetitle %></h2>
+				<h3>Project listing</h3>					
 		</div>
 		
 	  <div class="row">  
-	      <div class="col-lg-12">
-						<div id='project_list_div' class='left_justify table' ><% include ../projects/project_listing %></div>
-				</div>
-		</div>
+        <div class="col-lg-12">
+        <% if(portal_code == 'CODL'){ %>
+            
+                <h5>Filter List: 
+                <% if(alter_dco_code == 'amp'){ %>
+                    <input type='radio' name='list_filter' value='all'          onclick="alter_dco_list('all')" > All
+                    &nbsp;&nbsp;&nbsp;<input type='radio' checked name='list_filter' value='amp'  onclick="alter_dco_list('amp')"> Amplicon
+                    &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='sgun'         onclick="alter_dco_list('sgun')"> Shotgun
+                    &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='pend'   disabled      onclick="alter_dco_list('pend')"> Metadata Pending(todo)
+                <% }else if(alter_dco_code == 'sgun'){ %>
+                    <input type='radio' name='list_filter' value='all'          onclick="alter_dco_list('all')"> All
+                    &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='amp'          onclick="alter_dco_list('amp')"> Amplicon  
+                    &nbsp;&nbsp;&nbsp;<input type='radio' checked name='list_filter' value='sgun' onclick="alter_dco_list('sgun')"> Shotgun
+                    &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='pend'   disabled      onclick="alter_dco_list('pend')"> Metadata Pending(todo)
+                <% }else if(alter_dco_code == 'pend'){ %>
+                    <input type='radio' name='list_filter' value='all'                          onclick="alter_dco_list('all')"> All
+                    &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='amp'          onclick="alter_dco_list('amp')"> Amplicon  
+                    &nbsp;&nbsp;&nbsp;<input type='radio'  name='list_filter' value='sgun'      onclick="alter_dco_list('sgun')"> Shotgun
+                    &nbsp;&nbsp;&nbsp;<input type='radio' checked name='list_filter' value='pend' disabled onclick="alter_dco_list('pend')"> Metadata Pending(todo)
+                <% }else{ %>
+                    <input type='radio' checked name='list_filter' value='all'                      onclick="alter_dco_list('all')"> All
+                    &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='amp'          onclick="alter_dco_list('amp')"> Amplicon 
+                    &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='sgun'         onclick="alter_dco_list('sgun')"> Shotgun
+                    &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='pend'  disabled       onclick="alter_dco_list('pend')"> Metadata Pending(todo)
+                <% } %>
+               </h5>
+                <div id='list_id'></div>
+        <% }else{ %>      
+            
+                    <div id='project_list_div' class='left_justify table' ><% include ../projects/project_listing %></div>
+            
+        <% } %>
+        </div>
+	  </div>
 </div>
 
 <script>
-  $(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip(); 
-    
-  });
+  
 </script>
+
 	
 <% include ../add_ins/end.ejs %>
-   
+   <script type="text/javascript" src="/javascripts/portals.js"></script> 
+   <script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script> 
  </body>
  </html>

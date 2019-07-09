@@ -1,3 +1,10 @@
+/*
+* Call:
+*
+*   const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, visual_post_items, write_file);
+    let new_matrix = biom_matrix_obj.biom_matrix;
+* */
+
 const COMMON = require(app_root + '/routes/visuals/routes_common');
 const C      = require(app_root + '/public/constants');
 const path   = require("path");

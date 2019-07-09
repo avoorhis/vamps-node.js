@@ -194,7 +194,8 @@ var biome_seq_options = {
 var feature_seq_options = {
   "well": ["none",
     "oil well",
-    "water well"],
+    "water well",
+		"undefined"],
 
   "aquifer": ["none",
     "confined",
@@ -205,7 +206,8 @@ var feature_seq_options = {
     "sub-continental aquifer",
     "sub-seafloor aquifer",
     "unconfined",
-    "water well"],
+    "water well",
+		"undefined"],
 
   "borehole": ["none",
     "CORK",
@@ -213,7 +215,8 @@ var feature_seq_options = {
     "oil well",
     "research borehole",
     "water well",
-    "wellhead"],
+    "wellhead",
+		"undefined"],
 
   "cave": ["none",
     "cave wall",
@@ -222,7 +225,8 @@ var feature_seq_options = {
     "fissure cave",
     "glacier cave",
     "joint-plane cave",
-    "karst cave"],
+    "karst cave",
+		"undefined"],
 
   "seep": ["none",
     "brine pool",
@@ -234,7 +238,8 @@ var feature_seq_options = {
     "sea floor",
     "seamount",
     "vent-field associated seep",
-    "warm seep"],
+    "warm seep",
+		"undefined"],
 
   "enrichment": ["none",
     "animal carcass fall",
@@ -245,7 +250,8 @@ var feature_seq_options = {
     "mesocosm",
     "microcosm",
     "organic matter fall",
-    "whale fall"],
+    "whale fall",
+		"undefined"],
 
   "geological fracture": ["none",
     "active geological fault",
@@ -253,24 +259,28 @@ var feature_seq_options = {
     "geological joint",
     "intrusion",
     "microfracture",
-    "shear fracture"],
+    "shear fracture",
+		"undefined"],
 
   "ocean trench": ["none",
     "accretionary",
     "inner trench wall",
     "non-accretionary",
-    "outer trench wall"],
+    "outer trench wall",
+		"undefined"],
 
   "geyser": ["none",
     "hydrothermal",
-    "mineral deposit"],
+    "mineral deposit",
+		"undefined"],
 
   "spring": ["none",
     "acid hot spring",
     "alkaline hot spring",
     "hot spring",
     "mineral deposit",
-    "mineral spring"],
+    "mineral spring",
+		"undefined"],
 
   "hydrothermal vent": ["none",
     "black smoker",
@@ -279,13 +289,15 @@ var feature_seq_options = {
     "marine hydrothermal vent chimney",
     "mid-ocean ridge",
     "mineral deposit",
-    "white smoker"],
+    "white smoker",
+		"undefined"],
 
   "mine": ["none",
     "cave",
     "mine drainage",
     "mine tailing",
-    "mine wall"],
+    "mine wall",
+		"undefined"],
 
   "lake": ["none",
     "acidic hot",
@@ -296,7 +308,8 @@ var feature_seq_options = {
     "meromictic - non-mixing",
     "periglacial",
     "subglacial",
-    "underground"],
+    "underground",
+		"undefined"],
 
   "volcano": ["none",
     "caldera",
@@ -306,7 +319,8 @@ var feature_seq_options = {
     "ridge",
     "seamount",
     "volcanic crater",
-    "volcanic seep"],
+    "volcanic seep",
+		"undefined"],
 
   "reservoir": ["none",
     "aquifer",
@@ -314,7 +328,8 @@ var feature_seq_options = {
     "freshwater",
     "saline",
     "subsurface",
-    "unconfined"]
+    "unconfined",
+    "undefined"]
 };
 
 
@@ -340,7 +355,8 @@ var material_seq_options = {
     "saline lake sediment",
     "silt",
     "sulphate-reducing",
-    "terrigenous"],
+    "terrigenous",
+		"undefined"],
 
   "water": ["none",
     "acidic water",
@@ -368,7 +384,8 @@ var material_seq_options = {
     "pore fluid",
     "seep fluid",
     "vent fluid",
-    "waste material"],
+    "waste material",
+		"undefined"],
 
 // algae
 // archaea
@@ -386,7 +403,8 @@ var material_seq_options = {
     "fungi",
     "glacial",
     "protozoa",
-    "thermophilic"],
+    "thermophilic",
+		"undefined"],
 
   "microbial mat material": ["none",
     "archaea",
@@ -395,7 +413,8 @@ var material_seq_options = {
     "hypersaline",
     "submerged",
     "terrestrial",
-    "tidal"],
+    "tidal",
+		"undefined"],
 
 // andesite
 // basalt
@@ -428,7 +447,8 @@ var material_seq_options = {
     "sandstone",
     "sedimentary",
     "shale",
-    "volcanic"],
+    "volcanic",
+		"undefined"],
 
 // "anaerobic mud",
 // "colloidal sediment",
@@ -451,7 +471,8 @@ var material_seq_options = {
     "marine",
     "mesophilic",
     "mesothermophilic",
-    "soil"],
+    "soil",
+		"undefined"],
 
 // clay soil
 // colloidal soil
@@ -464,14 +485,16 @@ var material_seq_options = {
     "colloidal",
     "contaminated",
     "muddy",
-    "permafrost"],
+    "permafrost",
+		"undefined"],
 
   "oil": ["none",
     // "asphalt",
     // "petroleum contamination",
     // "seep",
     // "spill",
-    "tar"],
+    "tar",
+		"undefined"],
   // ,
   //     "well"],
 
@@ -489,8 +512,8 @@ var material_seq_options = {
     "calcium carbonate",
     "desert",
     "quartz",
-    "sea"]
-
+    "sea",
+    "undefined"]
 };
 
 function populate_secondary_select(args) {
