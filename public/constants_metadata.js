@@ -715,7 +715,7 @@ constants_metadata.METADATA_EMPTY_TEMPLATE_CSV = [["structured_comment_name","Me
   ["dna_quantitation","DNA Quantitation"],
   ["env_package","Environmental Package"],
   ["dataset","VAMPS dataset name"],
-  ["geo_loc_name_continental","Country (if not international waters)"],
+  ["geo_loc_name_continental","Country (if terrestrial or not international waters)"],
   ["geo_loc_name_marine","Longhurst Zone (if marine)"],
   ["domain","Domain"],
   ["target_gene","Target gene name"],
