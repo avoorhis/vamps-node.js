@@ -4,6 +4,7 @@
 <% active_class_ydata   = '' %>
 <% active_class_search  = '' %>
 <% active_class_contact = '' %>
+<% active_class_portals = '' %>
 <% active_class_admin   = '' %>
 <% active_class_dco     = '' %>
 <% active_class_more   = '' %>
@@ -19,6 +20,8 @@
 <%    active_class_ydata = 'active' %>
 <%  }else if(menu_section=='SEARCH') { %>
 <%    active_class_search = 'active' %>
+<%  }else if(menu_section=='PORTALS') { %>
+<%    active_class_portals = 'active' %>
 <%  }else if(menu_section=='CONTACT') { %>
 <%    active_class_contact = 'active' %>
 <%  }else if(menu_section=='ADMIN') { %>
@@ -87,6 +90,7 @@
 
             <li class='<%= active_class_ydata %>'><a href="/user_data/your_data">Your Data</a></li>
             <li class='<%= active_class_search %>'><a href="/search/search_index">Search</a></li>
+            <li class='<%= active_class_portals %>'><a href='/portals/portals_index'>Portals</a></li>
             <li class='<%= active_class_contact %>'><a href="/help/contact">Contact Us</a></li>
           <% if (typeof user !== 'undefined' && user.security_level === 1) { %>
               <li class='<%= active_class_admin %>'><a href="/admin/admin_index">Admin</a></li>
@@ -106,10 +110,10 @@
                 <li class="divider"></li>
 
                 <li><a href='/projects/projects_index'>All Projects List</a></li>
-                <li><a href='/geodistribution'>Distribution Map</a></li>
+                <li><a href='/geodistribution'>All Projects Distribution Map</a></li>
                 <li><a href='/metadata/metadata'>Metadata</a></li>
 
-                    <li><a href='/portals/portals_index'>Portals</a></li>
+                    
 
 
                     <li><a href='https://vamps.mbl.edu'>Original VAMPS</a></li>

@@ -9,7 +9,7 @@ Or should this page JUST show public projects?
 <thead>
 	<tr>
 		<th></th>
-		<th>ID</th>
+		
 		<th>Name</th>
 		<th>Project Title</th>
 		<th>P.I. (username)</th>
@@ -25,7 +25,7 @@ Or should this page JUST show public projects?
 	<% var public = proj[n].public; %>
 	    <tr>
 	    <td><%= cnt %></td>
-	    <td><%= proj[n].pid %></td>
+	    
 	    <td><a class='tooltip_pname' id='<%= proj[n].description %>' href='/projects/<%= proj[n].pid %>'><%= proj[n].project %></a></td>
 	    <td><%= proj[n].title %></td>
 
@@ -33,7 +33,7 @@ Or should this page JUST show public projects?
 	    	<td><%= proj[n].email %></td>
 	    	<td><%= proj[n].institution %></td>
 				<% if(public==1){ %>
-					<td></td>
+					<td>public</td>
 				<% }else{ %>
 					<td>private</td>
 				<% } %>

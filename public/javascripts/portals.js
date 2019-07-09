@@ -1,5 +1,12 @@
 
-
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip(); 
+    
+    if(portal == 'CODL'){
+        alter_dco_list(dco_code)
+    }
+    
+  });
 
 
 function create_geospatial() {
@@ -95,3 +102,21 @@ function setMarkers(map, loc_data, pid_collector) {
 
 }
 
+//
+//
+function alter_dco_list(val){
+    var args = {}
+    args.value =val
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", '/portals/dco_project_list', true);
+    xmlhttp.setRequestHeader("Content-type","application/json");
+   
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+          var response = xmlhttp.responseText;
+          //alert('Saving: '+response)
+          document.getElementById('list_id').innerHTML = response
+      }
+    }
+    xmlhttp.send(JSON.stringify(args));
+  }

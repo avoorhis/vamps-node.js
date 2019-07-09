@@ -1,11 +1,11 @@
-<% menu_section='MORE' %>
+<% menu_section='PORTALS' %>
 <% ptls  = JSON.parse(portals) %>
 
 <!-- Not used -->
 
 <% include ../add_ins/begin.ejs %>
 
-<div class="container"> 
+<div class="containexxr"> 
    <% if (messages.success) { %>
   	<div class="alert_flash_message_success"><%= messages.success %></div>
   <% }else if(messages.fail){ %>
@@ -20,10 +20,14 @@
   <ul class='portal_list'>
     <% for(p in ptls) { %>
         <div class="row">
-            <div class="col col-lg-2">
-                <br><p class="h5"><a href='<%= p %>'><%= ptls[p].name %></a></p>
+            <div class="col col-lg-3">
+                <% if(ptls[p].subtext == ''){ %>
+                    <br><h4><p class="h5xx"><a href='<%= p %>'><%= ptls[p].name %></a></p></h4>
+                <% }else{ %>
+                    <br><h4><p class="h5xx"><a href='<%= p %>'><%= ptls[p].name %> (<%= ptls[p].subtext %>)</a></p></h4>
+                <% } %>
             </div>
-            <div class="col col-lg-10">
+            <div class="col col-lg-9">
                 <div class='well'>
                     <a href='<%= p %>'>
                         <table><tr>
