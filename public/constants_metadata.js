@@ -545,7 +545,7 @@ constants_metadata.ORDERED_METADATA_NAMES_OBJ = {
   "General": ["", "General", "", ""],
   "sample_name": ["sample_name", "Sample ID (user sample name)", "User supplied", ""],
   "dataset": ["dataset", "VAMPS dataset name", "MBL Supplied", ""],
-  "geo_loc_name_continental": ["geo_loc_name_continental", "Country (if not international waters)", "User Supplied", ""],
+  "geo_loc_name_continental": ["geo_loc_name_continental", "Country (if terrestrial or not international waters)", "User Supplied", ""],
   "geo_loc_name_marine": ["geo_loc_name_marine", "Longhurst Zone (if marine)", "User Supplied", ""],
   "MBL generated laboratory metadata": ["", "MBL generated laboratory metadata", "", ""],
   "domain": ["domain", "Domain", "MBL Supplied", ""],
