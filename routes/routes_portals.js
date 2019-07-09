@@ -104,7 +104,10 @@ router.post('/dco_project_list', helpers.isLoggedIn, function(req, res) {
     var html = ''
     var cnt = 1;
     html += "<table class='table table-condensed table-striped sortable' >"
+    html += "<thead>"
     html += "<tr><th></th><th>Name</th><th>Project Title</th><th>P.I. (username)</th><th>Email</th><th>Institute</th><th>Status</th><th>Metadata Status</th></tr>"
+    html += "</thead>"
+    html += "<tbody>"
     projects.forEach(function (prj) {
         html += "<tr>"
         html += "<td>"+cnt+"</td>"
@@ -123,6 +126,7 @@ router.post('/dco_project_list', helpers.isLoggedIn, function(req, res) {
         html += "</tr>"
         cnt += 1
     })
+    html += "</tbody>"
     html += "</table>"
     
     res.send(html);    
