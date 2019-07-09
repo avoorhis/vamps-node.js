@@ -2064,7 +2064,7 @@ module.exports.get_key_from_value = function (obj, value) {
   if (!found_key) {
     found_key = null;
   }
-  console.log('4 -key - ' + found_key)
+  console.log('4 -key - ' + found_key);
   return found_key;
 };
 
@@ -2230,6 +2230,12 @@ exports.geo_loc_name_marine_validation = function (value) {
 exports.geo_loc_name_continental_validation = function (value) {
   if (MD_ENV_CNTRY_vals.indexOf(value) < 0 && (value !== '')) {
     throw new Error("There is no Country '" + value + "', please check the spelling");
+  }
+};
+
+exports.recommended = function (value) {
+  if (value === '') {
+    throw new Error("Temperature is recommended");
   }
 };
 
