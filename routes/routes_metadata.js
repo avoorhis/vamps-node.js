@@ -919,7 +919,8 @@ function send_mail_finished(req, res) {
   var d            = new Date();
   var timeReadable = d.toDateString();
 
-  var text_msg = req.user.first_name + " " + req.user.last_name + " (" + req.user.email + ")" + " finished submitting available metadata to " + req.body.project + " on " + timeReadable + ".";
+  let project_name = helpers.unique_array(req.body.project);
+  var text_msg = req.user.first_name + " " + req.user.last_name + " (" + req.user.email + ")" + " finished submitting available metadata to " + project_name + " on " + timeReadable + ".";
 
   let mailOptions = {
     from: '"VAMPS2" <' + config.vamps_email + '>', // sender address
