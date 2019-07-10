@@ -1032,7 +1032,7 @@ $('input:radio[name="d_region"]').change(
 // ---
 
 $(document).ready(function () {
-  showSaveMessage();
+  // showSaveMessage();
   changeSubmitButton();
   showUnits();
   showDatasets();
