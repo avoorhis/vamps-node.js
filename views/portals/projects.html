@@ -24,25 +24,25 @@
         <div class="col-lg-12">
         <% if(portal_code == 'CODL'){ %>
             
-                <h5>Filter List: 
-                <% if(alter_dco_code == 'amp'){ %>
+                <h5>Filter List: &nbsp;&nbsp;&nbsp;
+                <% if(alter_dco_code == 'ampl'){ %>
                     <input type='radio' name='list_filter' value='all'          onclick="alter_dco_list('all')" > All
-                    &nbsp;&nbsp;&nbsp;<input type='radio' checked name='list_filter' value='amp'  onclick="alter_dco_list('amp')"> Amplicon
+                    &nbsp;&nbsp;&nbsp;<input type='radio' checked name='list_filter' value='ampl'  onclick="alter_dco_list('ampl')"> Amplicon
                     &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='sgun'         onclick="alter_dco_list('sgun')"> Shotgun
                     &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='pend'   disabled      onclick="alter_dco_list('pend')"> Metadata Pending(todo)
                 <% }else if(alter_dco_code == 'sgun'){ %>
                     <input type='radio' name='list_filter' value='all'          onclick="alter_dco_list('all')"> All
-                    &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='amp'          onclick="alter_dco_list('amp')"> Amplicon  
+                    &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='ampl'          onclick="alter_dco_list('ampl')"> Amplicon  
                     &nbsp;&nbsp;&nbsp;<input type='radio' checked name='list_filter' value='sgun' onclick="alter_dco_list('sgun')"> Shotgun
                     &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='pend'   disabled      onclick="alter_dco_list('pend')"> Metadata Pending(todo)
                 <% }else if(alter_dco_code == 'pend'){ %>
                     <input type='radio' name='list_filter' value='all'                          onclick="alter_dco_list('all')"> All
-                    &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='amp'          onclick="alter_dco_list('amp')"> Amplicon  
+                    &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='ampl'          onclick="alter_dco_list('ampl')"> Amplicon  
                     &nbsp;&nbsp;&nbsp;<input type='radio'  name='list_filter' value='sgun'      onclick="alter_dco_list('sgun')"> Shotgun
                     &nbsp;&nbsp;&nbsp;<input type='radio' checked name='list_filter' value='pend' disabled onclick="alter_dco_list('pend')"> Metadata Pending(todo)
                 <% }else{ %>
                     <input type='radio' checked name='list_filter' value='all'                      onclick="alter_dco_list('all')"> All
-                    &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='amp'          onclick="alter_dco_list('amp')"> Amplicon 
+                    &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='ampl'          onclick="alter_dco_list('ampl')"> Amplicon 
                     &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='sgun'         onclick="alter_dco_list('sgun')"> Shotgun
                     &nbsp;&nbsp;&nbsp;<input type='radio' name='list_filter' value='pend'  disabled       onclick="alter_dco_list('pend')"> Metadata Pending(todo)
                 <% } %>

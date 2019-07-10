@@ -81,9 +81,19 @@ router.post('/dco_project_list',  function(req, res) {
     var list_type = req.body.value;
     var projects        = [];
     var project_list = helpers.get_portal_projects(req, 'CODL')
+    //console.log(DatasetsWithLatLong)
+    
+    pids_with_latlon = {}
+    for(did in DatasetsWithLatLong){
+        if(DatasetsWithLatLong[did].latitude != '' || DatasetsWithLatLong[did].longitude != ''){
+            pids_with_latlon[DatasetsWithLatLong[did].pid] = 1
+        }    
+    }
+    
+     //console.log(pids_with_latlon)
     
     project_list.forEach(function (prj) {
-        if(list_type=='amp'){ 
+        if(list_type=='ampl'){ 
             if(prj.metagenomic == 0){
                 projects.push(prj)
             }
@@ -105,10 +115,11 @@ router.post('/dco_project_list',  function(req, res) {
     var cnt = 1;
     html += "<table id='sorted' class='table table-condensed table-striped sortable' >"
     html += "<thead>"
-    html += "<tr><th></th><th>Name</th><th>Project Title</th><th>P.I. (username)</th><th>Email</th><th>Institute</th><th>Status</th><th>Metadata Status</th></tr>"
+    html += "<tr><th></th><th>Name</th><th>Project Title</th><th>P.I. (username)</th><th>Email</th><th>Institute</th><th>Status</th><th>Lat/Lon Status</th></tr>"
     html += "</thead>"
     html += "<tbody>"
     projects.forEach(function (prj) {
+        //console.log(prj.pid)
         html += "<tr>"
         html += "<td>"+cnt+"</td>"
         html += "<td><a class='tooltip_pname' href='/projects/"+prj.pid+"'>"+prj.project+"</a></td>"
@@ -121,8 +132,12 @@ router.post('/dco_project_list',  function(req, res) {
         }else{
             html += "<td>private</td>"
         }
+        if(pids_with_latlon.hasOwnProperty(prj.pid) == true){
+            html += "<td>Yes</td>"
+        }else{
+            html += "<td>No Lat/Lon Found</td>"
+        }
         
-        html += "<td></td>"
         html += "</tr>"
         cnt += 1
     })

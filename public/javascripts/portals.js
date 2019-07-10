@@ -106,7 +106,7 @@ function setMarkers(map, loc_data, pid_collector) {
 //
 function alter_dco_list(val){
     var args = {}
-    args.value =val
+    args.value = val
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", '/portals/dco_project_list', true);
     xmlhttp.setRequestHeader("Content-type","application/json");
