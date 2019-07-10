@@ -939,12 +939,22 @@ showDatasets = function () {
 // };
 
 //TODO: on text validate - nothing, on text Submit - show
-showSubmitMessage = function () {
+showSaveMessage = function () {
   $('#add_project_form_submit_btn').click(function () {
     alert('Your information was saved in a csv file, please notify the Site administration if you have finished editing.');
     $('#add_project_form').submit();
   });
 };
+
+changeSubmitButton = function () {
+  $('#done_editing').click(function () {
+    $('#add_project_form_submit_btn').html("Submit");
+  });
+  $('#not_done_editing').click(function () {
+    $('#add_project_form_submit_btn').html("Save");
+  });
+};
+
 //  console.log("RRR1 req");
 // console.log(req);
 // req.flash("success", 'file ' + out_csv_file_name + ' saved.');
@@ -1022,7 +1032,8 @@ $('input:radio[name="d_region"]').change(
 // ---
 
 $(document).ready(function () {
-  // showSubmitMessage();
+  showSaveMessage();
+  changeSubmitButton();
   showUnits();
   showDatasets();
   // addCopyBtns();
