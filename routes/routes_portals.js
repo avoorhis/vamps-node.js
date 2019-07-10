@@ -83,6 +83,11 @@ router.post('/dco_project_list',  function(req, res) {
     var project_list = helpers.get_portal_projects(req, 'CODL')
     //console.log(DatasetsWithLatLong)
     
+    // start with all DCO projects COMPLETE
+    // then, if find empty did, convert to PARTIAL
+    // Count datasets with
+    
+    
     pids_with_latlon = {}
     for(did in DatasetsWithLatLong){
         if(DatasetsWithLatLong[did].latitude != '' || DatasetsWithLatLong[did].longitude != ''){
@@ -91,7 +96,7 @@ router.post('/dco_project_list',  function(req, res) {
     }
     
      //console.log(pids_with_latlon)
-    
+    new_dco_list_latlon = {}
     project_list.forEach(function (prj) {
         if(list_type=='ampl'){ 
             if(prj.metagenomic == 0){
@@ -104,7 +109,36 @@ router.post('/dco_project_list',  function(req, res) {
         }else{  // all
             projects.push(prj)
         }
+        new_dco_list_latlon[prj.pid] = 'EMPTY'
     })
+    //for(pid in new_dco_list_latlon){
+    
+    //}
+    
+    for(did in DatasetsWithLatLong){
+        //console.log(DatasetsWithLatLong[did].pid)
+        //console.log(DatasetsWithLatLong[did])
+        if(new_dco_list_latlon.hasOwnProperty(DatasetsWithLatLong[did].pid) == true){
+            if(new_dco_list_latlon[DatasetsWithLatLong[did].pid] == 'EMPTY'){
+                new_dco_list_latlon[DatasetsWithLatLong[did].pid] = 1
+            }else{
+                new_dco_list_latlon[DatasetsWithLatLong[did].pid] += 1
+            }            
+        }     
+    }
+    for(pid in new_dco_list_latlon){
+        //console.log(DATASET_IDS_BY_PID[pid].length)
+        //console.log(new_dco_list_latlon[pid])
+        if(DATASET_IDS_BY_PID[pid].length == new_dco_list_latlon[pid]){
+            new_dco_list_latlon[pid] = 'COMPLETE'
+        }
+        if(new_dco_list_latlon[pid] != 'EMPTY' && new_dco_list_latlon[pid] != 'COMPLETE'){
+            new_dco_list_latlon[pid] = 'PARTIAL'
+        }
+        
+    }
+    
+    //console.log(new_dco_list_latlon)
     
     
     projects.sort(function(a, b){
@@ -132,11 +166,12 @@ router.post('/dco_project_list',  function(req, res) {
         }else{
             html += "<td>private</td>"
         }
-        if(pids_with_latlon.hasOwnProperty(prj.pid) == true){
-            html += "<td>Yes</td>"
-        }else{
-            html += "<td>No Lat/Lon Found</td>"
-        }
+        html += "<td>"+new_dco_list_latlon[prj.pid]+"</td>"
+        // if(pids_with_latlon.hasOwnProperty(prj.pid) == true){
+//             html += "<td>Yes</td>"
+//         }else{
+//             html += "<td>No Lat/Lon Found</td>"
+//         }
         
         html += "</tr>"
         cnt += 1
