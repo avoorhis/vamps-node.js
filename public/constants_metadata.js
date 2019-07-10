@@ -266,12 +266,15 @@ constants_metadata.METADATA_NEW_FORM_FIELDS = [
 ];
 
 // -- 2 form for datasets --
+// include a field here to make it yellow
 constants_metadata.METADATA_FORM_REQUIRED_FIELDS = ["adapter_sequence",
   "biome_secondary",
   "collection_date",
   "conductivity",
   "dataset",
   "dataset_description",
+  "depth_subseafloor",
+  "depth_subterrestrial",
   "dna_extraction_meth",
   "dna_quantitation",
   "dna_region",
@@ -300,6 +303,7 @@ constants_metadata.METADATA_FORM_REQUIRED_FIELDS = ["adapter_sequence",
   "sequencing_meth",
   "target_gene",
   "temperature",
+  "tot_depth_water_col",
   "tube_label",
   "user_sample_name"
 ];

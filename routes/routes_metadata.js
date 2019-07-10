@@ -357,8 +357,7 @@ router.post('/metadata_upload',
     form.field("dataset_id", "Dataset_id").trim().entityEncode().array(),
     // form.field("del180_water", helpers.get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
     form.field("del180_water", helpers.get_second("del180_water")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-
-    form.field("depth_in_core", helpers.get_second("depth_in_core")).trim().custom(helpers.numbers_n_period).custom(helpers.depth).entityEncode().array(),
+    form.field("depth_in_core", helpers.get_second("depth_in_core")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
     form.field("depth_subseafloor", helpers.get_second("depth_subseafloor")).trim().custom(helpers.numbers_n_period).custom(helpers.depth).entityEncode().array(),
     form.field("depth_subterrestrial", helpers.get_second("depth_subterrestrial")).trim().custom(helpers.numbers_n_period).custom(helpers.depth).entityEncode().array(),
     form.field("diss_hydrogen", helpers.get_second("diss_hydrogen")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
@@ -447,7 +446,7 @@ router.post('/metadata_upload',
     form.field("target_gene", helpers.get_second("target_gene")).trim().required().custom(helpers.dropdown_items_validation).custom(helpers.target_gene_validation).entityEncode().array(),
     form.field("temperature", helpers.get_second("temperature")).trim().is(/^$|^[0-9.-]+$/).custom(helpers.recommended_temperature).entityEncode().array(),
     form.field("tot_carb", helpers.get_second("tot_carb")).trim().custom(helpers.numbers_n_period).custom(helpers.percent_valid).entityEncode().array(),
-    form.field("tot_depth_water_col", helpers.get_second("tot_depth_water_col")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
+    form.field("tot_depth_water_col", helpers.get_second("tot_depth_water_col")).trim().custom(helpers.numbers_n_period).custom(helpers.depth).entityEncode().array(),
     form.field("tot_inorg_carb", helpers.get_second("tot_inorg_carb")).trim().custom(helpers.numbers_n_period).custom(helpers.percent_valid).entityEncode().array(),
     form.field("tot_org_carb", helpers.get_second("tot_org_carb")).trim().custom(helpers.numbers_n_period).custom(helpers.percent_valid).entityEncode().array(),
     form.field("trace_element_geochem", helpers.get_second("trace_element_geochem")).trim().entityEncode().array(),
@@ -841,7 +840,7 @@ function saveMetadata(req, res) {
 
   const csv_file_write = new csv_files_controller.CsvFilesWrite(req, res);
   const base_name = csv_file_write.make_out_file_base_name(req, "metadata");
-  const msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.\n<br/>';
+  const msg = 'File ' + base_name + ' was saved\n<br/>';
 
   csv_file_write.make_csv(base_name, req.form, msg);
   // var pid = req.body.project_id;
@@ -914,19 +913,20 @@ router.post('/metadata_files',
 // doesn't work from controller
 function send_mail_finished(req, res) {
   // console.time("TIME: send_mail_finished");
-
+  console.log("EMAIL from send_mail_finished");
   let transporter = nodeMailer.createTransport(config.smtp_connection_obj);
 
   var d            = new Date();
   var timeReadable = d.toDateString();
 
-  var text_msg = req.user.first_name + " " + req.user.last_name + " (" + req.user.email + ")" + " finished submitting available metadata to " + req.body.project + " on " + timeReadable + ".";
+  let project_name = helpers.unique_array(req.body.project);
+  var text_msg = req.user.first_name + " " + req.user.last_name + " (" + req.user.email + ")" + " finished submitting available metadata to " + project_name + " on " + timeReadable + ".";
 
   let mailOptions = {
     from: '"VAMPS2" <' + config.vamps_email + '>', // sender address
     // to: req.body.to, // list of receivers
     // subject: req.body.subject, // Subject line
-    to: ["hlizarralde@mbl.edu"],
+    to: ["ashipunova@mbl.edu"],
     subject: "Metadata edited",
     text: text_msg
     // text: req.body.body, // plain text body
@@ -934,6 +934,7 @@ function send_mail_finished(req, res) {
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
+    console.log("EMAIL");
     if (error) {
       return console.log(error);
     }

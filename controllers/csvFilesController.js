@@ -360,11 +360,11 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     const good_file_name = (base_name.length > min_name_length);
 
     if (good_file_name) {
-      const msg = 'File ' + base_name + ' was saved.';
+      const msg = 'File ' + base_name + ' was saved';
       this.make_csv(base_name, pipeline_template_file, msg);
     }
     else {
-      console.log("From make_csv_to_upload_to_pipeline: Somethinf is wrong with the file name. ", base_name);
+      console.log("From make_csv_to_upload_to_pipeline: Something is wrong with the file name. ", base_name);
     }
 
     // const base_name = "pipeline_metadata-"  + helpers.unique_array(this.req.form['project']) + "_" + helpers.unique_array(this.req.form['run']) + "_" + helpers.unique_array(this.req.form['platform']) + "_" + helpers.unique_array(this.req.form['lane']) + "_" + helpers.unique_array(this.req.form['domain']) + "_.csv";
@@ -402,7 +402,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     const good_project_name = (base_name.length > min_name_length);
 
     if (good_project_name) {
-      const msg = 'File ' + base_name + ' was saved, please notify the Site administration if you have finished editing.\n<br/>';
+      const msg = 'File ' + base_name + ' was saved\n<br/>';
 
       this.make_csv(base_name, req.form, msg);
     }

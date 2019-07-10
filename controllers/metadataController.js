@@ -904,6 +904,7 @@ class ShowObj {
       all_field_names: this.all_field_names_arr,
       all_field_units: all_field_units,
       all_metadata: this.all_metadata,
+      button_name: "Save",
       dividers: CONSTS.ORDERED_METADATA_DIVIDERS,
       mbl_edit: mbl_edit,
       metadata_form_required_fields: this.required_fields,
