@@ -155,13 +155,18 @@
             <table class="table table-striped">
                 <tr><td>Project Name: </td><td><%= data.project %></td></tr>
                 <tr><td>Project_id:</td><td> <%= pid %></td></tr>
+                
+                
                 <% if(project_prefix.substring(0,3) == 'DCO' ){ %>
-                    <% if(publish_data.hasOwnProperty('project_prefix') && publish_data[project_prefix].id != '') { %>
-                        <tr><td>DCO id (Link to DeepCarbon.net site)</td>
-                            <td><a href='<%= publish_data[project_prefix].url %>' target='_blank'> <%= publish_data[project_prefix].id %></td>
+                
+                    <% if(publish_data[project_prefix].dcoid != '') { %>
+                        <tr><td>DCO ID</td>
+                            <td><a href='<%= publish_data[project_prefix].url %><%= publish_data[project_prefix].dcoid %>' target='_blank'> <%= publish_data[project_prefix].dcoid %></td>
                         </tr>
                     <% } %>
                 <% } %>
+                
+                
                 <tr><td>Title:</td><td> <%= data.title %></td></tr>
                 <tr><td>Description:</td><td> <%= data.description %></td></tr>
 
@@ -181,7 +186,7 @@
                 <% } %>
                 
                 <!-- ABSTRACT -->
-                <% var key = false %>
+                <% var key = false %>   
                 <% if(publish_data.hasOwnProperty(project_prefix)){ %>   <!-- // DCO -->
                     <% key = project_prefix %>
                 <% }else if(publish_data.hasOwnProperty(data.project)){ %>  <!-- // CMP (others?) -->
@@ -196,10 +201,14 @@
                         <% } %>
                     </td></tr>
                 <% } %>
+                 <!-- DCO ID -->
+                 
+                  <!-- SRA Accessions -->
                 <% if(key && data.public){ %>
                     <tr><td>SRA Accession(s)</td><td>
                         <% for(n in publish_data[key].sra_accessions){ %>                            
-                            (Study: <%= publish_data[key].sra_accessions[n].study %>; Bioproject: <%= publish_data[key].sra_accessions[n].bioproject %>); Title: <%= publish_data[key].sra_accessions[n].title %>
+                            <% bp = publish_data[key].sra_accessions[n].bioproject %>
+                            <strong>Study</strong>: <%= publish_data[key].sra_accessions[n].study %>; <strong>BioProject</strong>: <a href='https://www.ncbi.nlm.nih.gov/bioproject?term=<%= bp %>'><%= bp %></a>; <strong>Title</strong>: <%= publish_data[key].sra_accessions[n].title %>
                         <br>
                         <% } %>
                     </td></tr>
