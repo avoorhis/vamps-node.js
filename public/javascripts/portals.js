@@ -107,6 +107,8 @@ function setMarkers(map, loc_data, pid_collector) {
 function alter_dco_list(val){
     var args = {}
     args.value = val
+    args.sortby = 'none'
+    args.dir = 'fwd'
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", '/portals/dco_project_list', true);
     xmlhttp.setRequestHeader("Content-type","application/json");
@@ -119,4 +121,30 @@ function alter_dco_list(val){
       }
     }
     xmlhttp.send(JSON.stringify(args));
-  }
+}
+//
+//
+//
+function sort_table(sort_col,val,dir){
+    if(dir == 'fwd'){
+        direction = 'rev'
+    }else{
+        direction = 'fwd'
+    }
+    var args = {}
+    args.value = val
+    args.sortby = sort_col
+    args.dir = direction
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", '/portals/dco_project_list', true);
+    xmlhttp.setRequestHeader("Content-type","application/json");
+   
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+          var response = xmlhttp.responseText;
+          //alert('Saving: '+response)
+          document.getElementById('list_id').innerHTML = response
+      }
+    }
+    xmlhttp.send(JSON.stringify(args));
+}

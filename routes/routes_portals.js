@@ -79,6 +79,8 @@ router.post('/dco_project_list',  function(req, res) {
     console.log('dco_project_list')
     console.log(req.body)
     var list_type = req.body.value;
+    var sort_col = req.body.sortby;
+    var direction = req.body.dir;
     var projects        = [];
     var project_list = helpers.get_portal_projects(req, 'CODL')
     //console.log(DatasetsWithLatLong)
@@ -137,19 +139,75 @@ router.post('/dco_project_list',  function(req, res) {
         }
         
     }
+    projects.forEach(function (prj) {
+        prj.latlon_status = new_dco_list_latlon[prj.pid]
     
+    })
     //console.log(new_dco_list_latlon)
-    
-    
+    // fwd rev
+    // if(fwd == true){
+//         fwd = false
+//     }else{
+//     
+//     }
     projects.sort(function(a, b){
-          return helpers.compareStrings_alpha(a.project, b.project);
+        if(sort_col == 'project'){
+            if(direction == 'fwd'){  
+                return helpers.compareStrings_alpha(a.project, b.project);
+            }else{
+                return helpers.compareStrings_alpha(b.project, a.project);
+            }
+        }else if(sort_col == 'title'){
+            if(direction == 'fwd'){  
+                return helpers.compareStrings_alpha(a.title, b.title);
+            }else{
+                return helpers.compareStrings_alpha(b.title, a.title);
+            }
+        }else if(sort_col == 'user'){
+            if(direction == 'fwd'){  
+                return helpers.compareStrings_alpha(a.username, b.username);
+            }else{
+                return helpers.compareStrings_alpha(b.username, a.username);
+            }
+        }else if(sort_col == 'email'){
+            if(direction == 'fwd'){  
+                return helpers.compareStrings_alpha(a.email, b.email);
+            }else{
+                return helpers.compareStrings_alpha(b.email, a.email);
+            }
+        }else if(sort_col == 'inst'){
+            if(direction == 'fwd'){  
+                return helpers.compareStrings_alpha(a.institution, b.institution);
+            }else{
+                return helpers.compareStrings_alpha(b.institution, a.institution);
+            }
+        }else if(sort_col == 'status'){
+            if(direction == 'fwd'){  
+                return helpers.compareStrings_int(a.public, b.public);
+            }else{
+                return helpers.compareStrings_int(b.public, a.public);
+            }
+        }else if(sort_col == 'md'){
+            if(direction == 'fwd'){  
+                return helpers.compareStrings_alpha(a.latlon_status, b.latlon_status);
+            }else{
+                return helpers.compareStrings_alpha(b.latlon_status, a.latlon_status);
+            }
+        }
     });
     //console.log(projects)
     var html = ''
     var cnt = 1;
-    html += "<table id='sorted' class='table table-condensed table-striped sortable' >"
+    html += "** Click table header to sort each column: **<br>"
+    html += "<table id='sorted' class='table table-condensed table-striped' >"
     html += "<thead>"
-    html += "<tr><th></th><th>Name</th><th>Project Title</th><th>P.I. (username)</th><th>Email</th><th>Institute</th><th>Status</th><th>Lat/Lon Status</th></tr>"
+    html += "<tr><th></th><th onclick=\"sort_table('project','"+list_type+"','"+direction+"')\">Name</th>"
+    html += "<th onclick=\"sort_table('title','"+list_type+"','"+direction+"')\">Project Title</th>"
+    html += "<th onclick=\"sort_table('user','"+list_type+"','"+direction+"')\">P.I. username</th>"
+    html += "<th onclick=\"sort_table('email','"+list_type+"','"+direction+"')\">Email</th>"
+    html += "<th onclick=\"sort_table('inst','"+list_type+"','"+direction+"')\">Institute</th>"
+    html += "<th onclick=\"sort_table('status','"+list_type+"','"+direction+"')\">Status</th>"
+    html += "<th onclick=\"sort_table('md','"+list_type+"','"+direction+"')\">Lat/Lon Metadata Status</th></tr>"
     html += "</thead>"
     html += "<tbody>"
     projects.forEach(function (prj) {
@@ -166,12 +224,8 @@ router.post('/dco_project_list',  function(req, res) {
         }else{
             html += "<td>private</td>"
         }
-        html += "<td>"+new_dco_list_latlon[prj.pid]+"</td>"
-        // if(pids_with_latlon.hasOwnProperty(prj.pid) == true){
-//             html += "<td>Yes</td>"
-//         }else{
-//             html += "<td>No Lat/Lon Found</td>"
-//         }
+        html += "<td>"+prj.latlon_status+"</td>"
+        
         
         html += "</tr>"
         cnt += 1

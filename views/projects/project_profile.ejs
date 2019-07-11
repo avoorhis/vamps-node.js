@@ -160,7 +160,7 @@
                 <% if(project_prefix.substring(0,3) == 'DCO' ){ %>
                 
                     <% if(publish_data[project_prefix].dcoid != '') { %>
-                        <tr><td>DCO ID</td>
+                        <tr><td>DCO ID:</td>
                             <td><a href='<%= publish_data[project_prefix].url %><%= publish_data[project_prefix].dcoid %>' target='_blank'> <%= publish_data[project_prefix].dcoid %></td>
                         </tr>
                     <% } %>
@@ -182,7 +182,7 @@
                 <% if(data.public || data.permissions.indexOf(user.user_id) != -1) { %>
                     <tr><td>Project Sequence Count:</td><td> <%= pcount %></td></tr>
                     <!-- <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr> -->
-                    <tr><td>Number of samples (datasets):</td><td> <%= dsinfo.length %></td></tr>
+                    <tr><td>Number of Datasets (samples):</td><td> <%= dsinfo.length %></td></tr>
                 <% } %>
                 
                 <!-- ABSTRACT -->
