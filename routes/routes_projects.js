@@ -72,11 +72,11 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //  MD_ENV_LZC     longhurst zone code
 
       var ProjectProfileFinishRequest = function (req, pnotes) {
-            // console.log('abstract_data')
-//             console.log(abstract_data)
+            // console.log('publish_data')
+//             console.log(publish_data)
 //             console.log('info')
 //             console.log(info)
-              res.render('projects/profile', {
+          res.render('projects/profile', {
               title  : 'VAMPS Project',
               info: JSON.stringify(info),
               //project_prefix : info.project,  // see lines 135
@@ -87,7 +87,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
               pcount: project_count,
               portal :    JSON.stringify(member_of_portal),
               //abstracts: JSON.stringify(abstracts[project_prefix]),
-              abstract_info : JSON.stringify(abstract_data),
+              publish_info : JSON.stringify(publish_data),
               //pnotes:JSON.stringify(pnotes),
               pnotes:pnotes,
               dco_file: best_file,
@@ -96,7 +96,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
               user   : req.user,
               hostname: req.CONFIG.hostname
-            });
+         });
       
       
         };
@@ -157,16 +157,16 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
 
         var info_file = ''
-        var abstract_data = {}
+        var publish_data = {}
         var best_file_path = ''
         var best_file = ''
         if(info.project.substring(0,3) == 'DCO'){
 
             try{
-                info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','DCO_info.json');
-                abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+                info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'DCO_INFO.json');
+                publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
             }catch(e){
-                abstract_data = {};
+                publish_data = {};
             }
             var dco_all_metadata_file =''
             best_date = Date.parse('2000-01-01')
@@ -191,10 +191,10 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         if(info.project.substring(0,3) == 'CMP'){
 
             try{
-                info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','CMP_info.json');
-                abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+                info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'CMP_INFO.json');
+                publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
             }catch(e){
-                abstract_data = {};
+                publish_data = {};
             }
 
         }

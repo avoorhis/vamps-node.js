@@ -1,8 +1,8 @@
 
 <% dscounts = JSON.parse(dscounts)  %>
 <% metadata  = JSON.parse(mdata)    %>
-<% //abstracts  = JSON.parse(abstracts) %>
-<% abstract_data  = JSON.parse(abstract_info) %>
+
+<% publish_data  = JSON.parse(publish_info) %>
 <% //pnotes  = JSON.parse(pnotes) %>
 <% var project_parts = data.project.split('_'); %>
 <% var project_prefix = data.project; %>
@@ -156,9 +156,9 @@
                 <tr><td>Project Name: </td><td><%= data.project %></td></tr>
                 <tr><td>Project_id:</td><td> <%= pid %></td></tr>
                 <% if(project_prefix.substring(0,3) == 'DCO' ){ %>
-                    <% if(abstract_data.hasOwnProperty('project_prefix') && abstract_data[project_prefix].id != '') { %>
+                    <% if(publish_data.hasOwnProperty('project_prefix') && publish_data[project_prefix].id != '') { %>
                         <tr><td>DCO id (Link to DeepCarbon.net site)</td>
-                            <td><a href='<%= abstract_data[project_prefix].url %>' target='_blank'> <%= abstract_data[project_prefix].id %></td>
+                            <td><a href='<%= publish_data[project_prefix].url %>' target='_blank'> <%= publish_data[project_prefix].id %></td>
                         </tr>
                     <% } %>
                 <% } %>
@@ -182,20 +182,30 @@
                 
                 <!-- ABSTRACT -->
                 <% var key = false %>
-                <% if(abstract_data.hasOwnProperty(project_prefix)){ %>   <!-- // DCO -->
+                <% if(publish_data.hasOwnProperty(project_prefix)){ %>   <!-- // DCO -->
                     <% key = project_prefix %>
-                <% }else if(abstract_data.hasOwnProperty(data.project)){ %>  <!-- // CMP (others?) -->
+                <% }else if(publish_data.hasOwnProperty(data.project)){ %>  <!-- // CMP (others?) -->
                     <% key = data.project %>
                 <% } %>
                 <% if(key){ %>
-                    <tr><td>Abstract</td><td>
-                        <% for(n in abstract_data[key].pdfs){ %>
-                        <a href='/static/abstracts/<%= abstract_data[key].pdfs[n] %>' target='_blank'>
-                            <%= abstract_data[key].pdfs[n] %></a>
+                    <tr><td>Abstract(s)</td><td>
+                        <% for(n in publish_data[key].pdfs){ %>
+                            <a href='/static/abstracts/<%= publish_data[key].pdfs[n] %>' target='_blank'>
+                            <%= publish_data[key].pdfs[n] %></a>
                         <br>
                         <% } %>
                     </td></tr>
                 <% } %>
+                <% if(key && data.public){ %>
+                    <tr><td>SRA Accession(s)</td><td>
+                        <% for(n in publish_data[key].sra_accessions){ %>                            
+                            (Study: <%= publish_data[key].sra_accessions[n].study %>; Bioproject: <%= publish_data[key].sra_accessions[n].bioproject %>); Title: <%= publish_data[key].sra_accessions[n].title %>
+                        <br>
+                        <% } %>
+                    </td></tr>
+                <% } %>
+                
+                
                 
                 <!-- NOTES -->
                 <% if(pnotes.length > 0){ %>

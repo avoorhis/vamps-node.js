@@ -189,8 +189,7 @@ router.get('/abstracts/CMP', function(req, res) {
     console.log('in abstracts/CMP')
     var info_data = {}
     if(portal == 'CMP'){
-        var cmp_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','CMP_info.json')
-        //info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','DCO_info.json');
+        var cmp_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'CMP_INFO.json')
         info_data = JSON.parse(fs.readFileSync(cmp_file, 'utf8'));
     }
     var project_list = helpers.get_portal_projects(req, portal)
@@ -264,8 +263,7 @@ router.get('/:portal', function(req, res) {
     var pagetitle, maintitle, subtitle;
     var info_data = {}
     if(portal == 'CMP'){
-        var cmp_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','CMP_info.json')
-        //info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'abstracts','DCO_info.json');
+        var cmp_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'CMP_INFO.json')
         info_data = JSON.parse(fs.readFileSync(cmp_file, 'utf8'));
     }
     
