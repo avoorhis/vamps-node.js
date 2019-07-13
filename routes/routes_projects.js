@@ -71,155 +71,154 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //  MD_ENV_CNTRY   country
 //  MD_ENV_LZC     longhurst zone code
 
-      var ProjectProfileFinishRequest = function (req, pnotes) {
-            // console.log('publish_data')
+    var ProjectProfileFinishRequest = function (req, pnotes) {
+          // console.log('publish_data')
 //             console.log(publish_data)
 //             console.log('info')
 //             console.log(info)
-          res.render('projects/profile', {
-              title  : 'VAMPS Project',
-              info: JSON.stringify(info),
-              //project_prefix : info.project,  // see lines 135
-              dsinfo: dsinfo,
-              dscounts: JSON.stringify(dscounts),
-              pid: req.params.id,
-              mdata: JSON.stringify(mdata),
-              pcount: project_count,
-              portal :    JSON.stringify(member_of_portal),
-              //abstracts: JSON.stringify(abstracts[project_prefix]),
-              publish_info : JSON.stringify(publish_data),
-              //pnotes:JSON.stringify(pnotes),
-              pnotes:pnotes,
-              dco_file: best_file,
+        res.render('projects/profile', {
+            title  : 'VAMPS Project',
+            info: JSON.stringify(info),
+            //project_prefix : info.project,  // see lines 135
+            dsinfo: dsinfo,
+            dscounts: JSON.stringify(dscounts),
+            pid: req.params.id,
+            mdata: JSON.stringify(mdata),
+            pcount: project_count,
+            portal :    JSON.stringify(member_of_portal),
+            //abstracts: JSON.stringify(abstracts[project_prefix]),
+            publish_info : JSON.stringify(publish_data),
+            //pnotes:JSON.stringify(pnotes),
+            pnotes:pnotes,
+            dco_file: best_file,
 
-              finfo: JSON.stringify(project_file_names),
-              // finfo_for_edit_metadata: JSON.stringify(project_metadata_file_names),
+            finfo: JSON.stringify(project_file_names),
 
-              user   : req.user,
-              hostname: req.CONFIG.hostname
-         });
+            user   : req.user,
+            hostname: req.CONFIG.hostname
+       });
 
 
-        };
-      if(req.params.id in PROJECT_INFORMATION_BY_PID){
-        var info = PROJECT_INFORMATION_BY_PID[req.params.id];
-        var project_count = ALL_PCOUNTS_BY_PID[req.params.id];
-        console.log(info)
-        // console.log("ALL_PCOUNTS_BY_PID 2: ");
-        // console.log(ALL_PCOUNTS_BY_PID);
+      };
+    if(req.params.id in PROJECT_INFORMATION_BY_PID){
+      var info = PROJECT_INFORMATION_BY_PID[req.params.id];
+      var project_count = ALL_PCOUNTS_BY_PID[req.params.id];
+      console.log(info)
+      // console.log("ALL_PCOUNTS_BY_PID 2: ");
+      // console.log(ALL_PCOUNTS_BY_PID);
 
-        var dataset_counts = {};
-        for(var n0 in ALL_DATASETS.projects){
-          if(ALL_DATASETS.projects[n0].pid == req.params.id){
-            dsinfo = ALL_DATASETS.projects[n0].datasets;
-          }
+      var dataset_counts = {};
+      for(var n0 in ALL_DATASETS.projects){
+        if(ALL_DATASETS.projects[n0].pid == req.params.id){
+          dsinfo = ALL_DATASETS.projects[n0].datasets;
         }
-        for(var n in dsinfo){
-          var did = dsinfo[n].did;
-          dscounts[did] = ALL_DCOUNTS_BY_DID[did];
-          mdata[dsinfo[n].dname] = {};
+      }
+      for(var n in dsinfo){
+        var did = dsinfo[n].did;
+        dscounts[did] = ALL_DCOUNTS_BY_DID[did];
+        mdata[dsinfo[n].dname] = {};
 
 
-            for (var name in AllMetadata[did]){
-              var data
-              if(name == 'primer_suite_id'){
-                data = helpers.required_metadata_names_from_ids(AllMetadata[did], 'primer_ids');
-                mdata[dsinfo[n].dname][data.name] = data.value;
-              }
-              data = helpers.required_metadata_names_from_ids(AllMetadata[did], name);
+          for (var name in AllMetadata[did]){
+            var data
+            if(name == 'primer_suite_id'){
+              data = helpers.required_metadata_names_from_ids(AllMetadata[did], 'primer_ids');
               mdata[dsinfo[n].dname][data.name] = data.value;
-
             }
+            data = helpers.required_metadata_names_from_ids(AllMetadata[did], name);
+            mdata[dsinfo[n].dname][data.name] = data.value;
 
-
-
-        }
-
-        var project_parts = info.project.split('_');
-        var project_prefix = info.project;
-
-        if(project_parts.length >= 2 ){
-          project_prefix = project_parts[0]+'_'+project_parts[1];
-        }
-        var member_of_portal = {};
-        for(var p in req.CONSTS.PORTALS){
-          //console.log(p +' -- '+project_parts[0])
-          if(req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) !== -1 ||
-            req.CONSTS.PORTALS[p].projects.indexOf(info.project) !== -1 ||
-            req.CONSTS.PORTALS[p].suffixes.indexOf(project_parts[project_parts.length - 1]) !== -1
-          ){
-            //console.log(req.CONSTS.PORTALS[p])
-            member_of_portal[p] = {};
-            member_of_portal[p].title = req.CONSTS.PORTALS[p].maintitle;
-            member_of_portal[p].portal = p;
           }
+
+
+
+      }
+
+      var project_parts = info.project.split('_');
+      var project_prefix = info.project;
+
+      if(project_parts.length >= 2 ){
+        project_prefix = project_parts[0]+'_'+project_parts[1];
+      }
+      var member_of_portal = {};
+      for(var p in req.CONSTS.PORTALS){
+        //console.log(p +' -- '+project_parts[0])
+        if(req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) !== -1 ||
+          req.CONSTS.PORTALS[p].projects.indexOf(info.project) !== -1 ||
+          req.CONSTS.PORTALS[p].suffixes.indexOf(project_parts[project_parts.length - 1]) !== -1
+        ){
+          //console.log(req.CONSTS.PORTALS[p])
+          member_of_portal[p] = {};
+          member_of_portal[p].title = req.CONSTS.PORTALS[p].maintitle;
+          member_of_portal[p].portal = p;
         }
+      }
 
 
 
-        var info_file = ''
-        var publish_data = {}
-        var best_file_path = ''
-        var best_file = ''
-        if(info.project.substring(0,3) == 'DCO'){
+      var info_file = ''
+      var publish_data = {}
+      var best_file_path = ''
+      var best_file = ''
+      if(info.project.substring(0,3) == 'DCO'){
 
-            try{
-                info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'DCO_INFO.json');
-                publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
-            }catch(e){
-                publish_data = {};
-            }
-            var dco_all_metadata_file =''
-            best_date = Date.parse('2000-01-01')
+          try{
+              info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'DCO_INFO.json');
+              publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+          }catch(e){
+              publish_data = {};
+          }
+          var dco_all_metadata_file =''
+          best_date = Date.parse('2000-01-01')
 
-            fs.readdirSync(req.CONFIG.PATH_TO_DCO_DOWNLOADS).forEach(file => {
-                if(file.substring(0,16) == 'dco_all_metadata'){
-                    //console.log('file '+file)
-                    file_date = file.substring(17,file.length - 7)
-                    //console.log('file_date: '+file_date)
-                    d = Date.parse(file_date)
-                    if(d > best_date){
-                        best_file = file
-                    }
-                }
-            })
-            //best_file =  'dco_all_metadata_'+yyyy+'-'+mm+'-'+dd+'.tsv.gz'
-            //console.log('best_file '+best_file)
-            best_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,best_file)
+          fs.readdirSync(req.CONFIG.PATH_TO_DCO_DOWNLOADS).forEach(file => {
+              if(file.substring(0,16) == 'dco_all_metadata'){
+                  //console.log('file '+file)
+                  file_date = file.substring(17,file.length - 7)
+                  //console.log('file_date: '+file_date)
+                  d = Date.parse(file_date)
+                  if(d > best_date){
+                      best_file = file
+                  }
+              }
+          })
+          //best_file =  'dco_all_metadata_'+yyyy+'-'+mm+'-'+dd+'.tsv.gz'
+          //console.log('best_file '+best_file)
+          best_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,best_file)
 
 
-        }
-        if(info.project.substring(0,3) == 'CMP'){
+      }
+      if(info.project.substring(0,3) == 'CMP'){
 
-            try{
-                info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'CMP_INFO.json');
-                publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
-            }catch(e){
-                publish_data = {};
-            }
+          try{
+              info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'CMP_INFO.json');
+              publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+          }catch(e){
+              publish_data = {};
+          }
 
-        }
-        var user_metadata_csv_files = get_csv_files(req);
-        var project_file_names = filter_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
-        // let project_metadata_file_names = filter_metadata_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
+      }
+      var user_metadata_csv_files = get_csv_files(req);
+      var project_file_names = filter_metadata_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
+      // let project_metadata_file_names = filter_metadata_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
 
-        project_file_names.sort(function sortByTime(a, b) {
-            //reverse sort: recent-->oldest
-            return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
-        });
-        var pnotes = []
-        connection.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows, fields){
-            if (err)  {
-                      console.log('Getting Project Notes Error: ' + err);
-            } else {
-                if(rows.length > 0){
-                    pnotes = rows[0].notes
-                }
-                ProjectProfileFinishRequest(req, pnotes)
-            }
+      project_file_names.sort(function sortByTime(a, b) {
+          //reverse sort: recent-->oldest
+          return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
+      });
+      var pnotes = []
+      connection.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows, fields){
+          if (err)  {
+                    console.log('Getting Project Notes Error: ' + err);
+          } else {
+              if(rows.length > 0){
+                  pnotes = rows[0].notes
+              }
+              ProjectProfileFinishRequest(req, pnotes)
+          }
 
-        });
-        // pnotes_file = path.join(req.CONFIG.PATH_TO_PROJECT_NOTES,'read_me.'+PROJECT_INFORMATION_BY_PID[req.params.id].project+'.txt');
+      });
+      // pnotes_file = path.join(req.CONFIG.PATH_TO_PROJECT_NOTES,'read_me.'+PROJECT_INFORMATION_BY_PID[req.params.id].project+'.txt');
 //         if(helpers.fileExists(pnotes_file)){
 //             fs.readFile(pnotes_file,'utf8', function(err, pnotes){
 //                 var lines = pnotes.split('\r')
@@ -227,11 +226,11 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //             })
 //         }else{
 
-        //}
+      //}
 
 
 
-  }else{
+}else{
     req.flash('fail','not found');
     res.redirect(req.get('referer'));
     //return
@@ -283,66 +282,17 @@ function get_csv_files(req) {
   return all_my_files;
 }
 
-function filter_csv_files_by_project(file_names, project_name, username) {
+function filter_metadata_csv_files_by_project(file_names, project_name, username) {
 
-  console.time("TIME: filter_csv_files_by_project 2");
-
-  let file_name_template2 = "metadata-project_" + project_name + "_" + username;
-  // let project_file_names2 = [];
-
-  let project_file_names2 = file_names.filter(function(obj) {return (obj.filename.startsWith(file_name_template2))});
-  // for (let i0 in file_names) {
-  //   if (file_names[i0].filename.indexOf(file_name_template) > -1) {
-  //     project_file_names.push(file_names[i0]);
-  //   }
-  // }
-  console.timeEnd("TIME: filter_csv_files_by_project 2");
-  console.time("TIME: filter_csv_files_by_project");
+  console.time("TIME: filter_metadata_csv_files_by_project");
 
   let file_name_template = "metadata-project_" + project_name + "_" + username;
-  let project_file_names = [];
 
-  for (let i0 in file_names) {
-    if (file_names[i0].filename.indexOf(file_name_template) > -1) {
-      project_file_names.push(file_names[i0]);
-    }
-  }
-  console.timeEnd("TIME: filter_csv_files_by_project");
+  let project_metadata_file_names = file_names.filter(function(obj) {return (obj.filename.startsWith(file_name_template))});
+  console.timeEnd("TIME: filter_metadata_csv_files_by_project");
 
-
-  return project_file_names2;
+  return project_metadata_file_names;
 }
-
-// function filter_metadata_csv_files_by_project(file_names, project_name, username) {
-//   console.time("TIME: filter_metadata_csv_files_by_project");
-//
-//   let metadata_file_name_template = "metadata-project_" + project_name + "_" + username;
-//   let pipeline_file_name_template = "pipeline_metadata-project_" + project_name + "_" + username;
-//
-//   let all_metadata_csv_files = {};
-//
-//   // {
-//   //   return db_ids.filter(function(obj) {
-//   //     return (obj.dataset === dataset);
-//   //   });
-//   // }
-//
-//   file_names.filter(function(obj) {
-//         return (obj.filename.startsWith(metadata_file_name_template));
-//       }
-//   );
-//
-//   for (let i0 in file_names) {
-//     if (file_names[i0].filename.indexOf(file_name_template) > -1) {
-//       project_file_names.push(file_names[i0]);
-//     }
-//   }
-//   console.timeEnd("TIME: filter_metadata_csv_files_by_project");
-//
-//   return metadata_csv_files;
-// }
-//
-
 
 // router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
