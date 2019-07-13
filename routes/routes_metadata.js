@@ -1,24 +1,24 @@
-var express = require("express");
-var router  = express.Router();
-var helpers = require("./helpers/helpers");
-var form    = require("express-form");
-// var queries = require(app_root + "/routes/queries");
+let express = require("express");
+let router  = express.Router();
+let helpers = require("./helpers/helpers");
+let form    = require("express-form");
+// let queries = require(app_root + "/routes/queries");
 const constants_metadata = require(app_root + '/public/constants_metadata');
 const constants = require(app_root + '/public/constants');
 const CONSTS = Object.assign(constants, constants_metadata);
-var fs      = require("fs");
-var path    = require("path");
-var config  = require(app_root + '/config/config');
-// var validator           = require('validator');
-// var expressValidator = require('express-validator');
-var nodeMailer           = require('nodemailer');
-var Project              = require(app_root + '/models/project_model');
-// var Dataset              = require(app_root + '/models/dataset_model');
-var User                 = require(app_root + '/models/user_model');
-var metadata_controller  = require(app_root + '/controllers/metadataController');
-var csv_files_controller = require(app_root + '/controllers/csvFilesController');
+let fs      = require("fs");
+let path    = require("path");
+let config  = require(app_root + '/config/config');
+// let validator           = require('validator');
+// let expressValidator = require('express-validator');
+let nodeMailer           = require('nodemailer');
+let Project              = require(app_root + '/models/project_model');
+// let Dataset              = require(app_root + '/models/dataset_model');
+let User                 = require(app_root + '/models/user_model');
+let metadata_controller  = require(app_root + '/controllers/metadataController');
+let csv_files_controller = require(app_root + '/controllers/csvFilesController');
 const multer             = require('multer');
-var upload               = multer({dest: config.TMP, limits: {fileSize: config.UPLOAD_FILE_SIZE.bytes}});
+let upload               = multer({dest: config.TMP, limits: {fileSize: config.UPLOAD_FILE_SIZE.bytes}});
 
 /* GET metadata page. */
 router.get('/metadata', function (req, res) {
@@ -32,20 +32,20 @@ router.get('/metadata', function (req, res) {
 
 router.get('/metadata_list', helpers.isLoggedIn, function (req, res) {
   console.log('in metadata');
-  var mdata_w_latlon = {};
+  let mdata_w_latlon = {};
   console.log(DatasetsWithLatLong);
   //console.log(DatasetsWithLatLong)  // json
   //console.log(AllMetadataNames)  // list (req w _ids)
-  for (var n in AllMetadataNames) {
+  for (let n in AllMetadataNames) {
     md_selected                 = AllMetadataNames[n];
     mdata_w_latlon[md_selected] = 0;
 
     //console.log(md_selected)
-    for (var did in DatasetsWithLatLong) {
+    for (let did in DatasetsWithLatLong) {
       //console.log(AllMetadata[did])
       //if(AllMetadata.hasOwnProperty(did)){
       //console.log('found1',did)
-      //var mdata = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected)
+      //let mdata = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected)
       mdata = AllMetadata[did];   // has ids
 
       pid   = PROJECT_ID_BY_DID[did];
@@ -72,13 +72,13 @@ router.get('/metadata_list', helpers.isLoggedIn, function (req, res) {
 
 router.get('/list_result/:mditem', helpers.isLoggedIn, function (req, res) {
   console.log('in metadatalist result');
-  var md_selected = req.params.mditem;
+  let md_selected = req.params.mditem;
   console.log(md_selected);
-  var mdvalues = {};
-  for (var did in DATASET_NAME_BY_DID) {
+  let mdvalues = {};
+  for (let did in DATASET_NAME_BY_DID) {
     if (did in AllMetadata) {
       if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_selected.slice(0, md_selected.length - 3)) !== -1) {
-        var data         = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected);  // send _id
+        let data         = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected);  // send _id
         mdvalues[did]    = data.value;
         md_selected_show = data.name;
       } else if (AllMetadata[did].hasOwnProperty(md_selected)) {
@@ -101,13 +101,13 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, function (req, res) {
 
 router.get('/geomap/:item', helpers.isLoggedIn, function (req, res) {
   console.log('in metadata - geomap');
-  var md_item = req.params.item;
+  let md_item = req.params.item;
   if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_item.slice(0, md_item.length - 3)) !== -1) {
     md_item_show = md_item.slice(0, md_item.length - 3);
   } else {
     md_item_show = md_item;
   }
-  var metadata_info = get_metadata_hash(md_item);  // fxn: see below
+  let metadata_info = get_metadata_hash(md_item);  // fxn: see below
   //console.log('metadata_info')
   res.render('metadata/geomap', {
     title: 'VAMPS:Metadata Distribution',
@@ -123,29 +123,29 @@ module.exports = router;
 
 //////////////////////////////
 function get_metadata_hash(md_selected) {
-  var md_info      = {};
+  let md_info      = {};
   //md_info[md_item] = {}
   md_info.metadata = {};
-  var got_lat, got_lon;
+  let got_lat, got_lon;
   //console.log('PROJECT_ID_BY_DID.length')
   //console.log(PROJECT_ID_BY_DID)
   //console.log(Object.keys(PROJECT_ID_BY_DID).length)
-  for (var did in PROJECT_ID_BY_DID) {
+  for (let did in PROJECT_ID_BY_DID) {
 
     if (AllMetadata.hasOwnProperty(did)) {
       //console.log('found1',did)
-      var mdata = AllMetadata[did];
-      var pid   = PROJECT_ID_BY_DID[did];
+      let mdata = AllMetadata[did];
+      let pid   = PROJECT_ID_BY_DID[did];
       //console.log('pid',pid)
       pname     = PROJECT_INFORMATION_BY_PID[pid].project;
       if (mdata.hasOwnProperty(md_selected) && mdata.hasOwnProperty('latitude') && mdata.hasOwnProperty('longitude')) {
         if (mdata['latitude'] !== 'None' && mdata['longitude'] !== 'None') {
           //console.log('found2',md_selected)
-          var pjds                         = pname + '--' + DATASET_NAME_BY_DID[did];
+          let pjds                         = pname + '--' + DATASET_NAME_BY_DID[did];
           md_info.metadata[pjds]           = {};
           md_info.metadata[pjds].pid       = pid;
           md_info.metadata[pjds].did       = did;
-          var data                         = helpers.required_metadata_names_from_ids(mdata, md_selected);
+          let data                         = helpers.required_metadata_names_from_ids(mdata, md_selected);
           md_info.metadata[pjds].value     = data.value;
           //md_info.metadata[pjds].value = mdata[md_selected]
           md_info.metadata[pjds].latitude  = mdata['latitude'];
@@ -207,7 +207,7 @@ function get_metadata_hash(md_selected) {
 // run the "normal" edit metadata with samples_number datasets
 // save datasets to vamps2?
 // <% if (samples_number > 0){ %>
-// <% for (var i = 0; i < Number(samples_number); i++) { %>
+// <% for (let i = 0; i < Number(samples_number); i++) { %>
 
 // metadata_new_csv
 router.get('/metadata_new_csv_upload', helpers.isLoggedIn, function (req, res) {
@@ -249,9 +249,9 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
 
 router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
   const met_obj       = new metadata_controller.CreateDataObj(req, res, "", "");
-  var pi_list         = met_obj.get_pi_list();
+  let pi_list         = met_obj.get_pi_list();
   req.session.pi_list = pi_list;
-  var clean_metadata_new_form = met_obj.clean_up_metadata_new_form();
+  let clean_metadata_new_form = met_obj.clean_up_metadata_new_form();
   res.render('metadata/metadata_new', {
     title: 'VAMPS: New Metadata',
     user: req.user,
@@ -300,10 +300,10 @@ router.post('/metadata_new',
     }
     else {
       console.log("metadata_upload_new is valid");
-      var user_id       = req.form.pi_id_name.split('#')[0];
+      let user_id       = req.form.pi_id_name.split('#')[0];
       const new_project = new Project(req, res, 0, user_id);
       new_project.make_project_obj_from_new_form_info(user_id);
-      var project_obj = new_project.project_obj;
+      let project_obj = new_project.project_obj;
 
       new_project.getProjectByName(project_obj.project, function(err, rows){
         // console.log("RRR1 rows from getProjectByName", rows);
@@ -484,12 +484,12 @@ router.post('/metadata_upload',
 function make_metadata_object_from_form(req, res) {
   // console.time("TIME: make_metadata_object_from_form");
   console.trace("Show me, I'm in make_metadata_object_from_form");
-  var pid       = req.body.project_id;
-  var data      = req.form;
+  let pid       = req.body.project_id;
+  let data      = req.form;
   const met_obj = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
 
   //collect errors
-  var myArray_fail = helpers.unique_array(req.form.errors);
+  let myArray_fail = helpers.unique_array(req.form.errors);
   myArray_fail.sort();
   console.log('myArray_fail = ', myArray_fail);
   req.flash('fail', myArray_fail);
@@ -499,11 +499,11 @@ function make_metadata_object_from_form(req, res) {
   let has_new_datasets = (data['dataset_id'].includes(""));
   if (has_new_project)
   {
-    var user_id           = PROJECT_INFORMATION_BY_PID[pid].oid;
+    let user_id           = PROJECT_INFORMATION_BY_PID[pid].oid;
     const new_cur_project = new Project(req, res, pid, user_id);
     new_cur_project.make_project_obj_with_existing_project_info_by_pid(pid);
 
-    var project_obj = new_cur_project.project_obj;
+    let project_obj = new_cur_project.project_obj;
     const met_obj   = new metadata_controller.CreateDataObj(req, res, pid, []);
     met_obj.make_new_project_for_form(project_obj);
   }
@@ -521,25 +521,25 @@ function make_metadata_object_from_form(req, res) {
 function make_metadata_object_from_csv(req, res) {// move to met_obj?
   // console.time("TIME: make_metadata_object_from_csv");
 
-  var file_name       = req.body.edit_metadata_file;
-  var full_file_name  = path.join(config.USER_FILES_BASE, req.user.username, file_name);
+  let file_name       = req.body.edit_metadata_file;
+  let full_file_name  = path.join(config.USER_FILES_BASE, req.user.username, file_name);
   const csv_file_read = new csv_files_controller.CsvFileRead(req, res, full_file_name);
-  var data_arr        = csv_file_read.data_arr;
+  let data_arr        = csv_file_read.data_arr;
   const transposed    = helpers.transpose_arr_of_obj(data_arr);
 
   const cur_project = new Project(req, res, 0, 0);
-  var project_name  = req.body.project || cur_project.get_project_name_from_file_name(file_name) || helpers.unique_array(transposed.project)[0];
-  var pid           = cur_project.get_pid(project_name);
+  let project_name  = req.body.project || cur_project.get_project_name_from_file_name(file_name) || helpers.unique_array(transposed.project)[0];
+  let pid           = cur_project.get_pid(project_name);
 
   if (typeof req.body.project === 'undefined' || pid === 0) {
     new_csv(req, res, cur_project, project_name, transposed);
   }
   else {
     cur_project.make_project_obj_with_existing_project_info_by_pid(pid);
-    var data        = {};
-    var dataset_ids = [];
-    for (var dict_idx in data_arr) {
-      var dataset_id   = data_arr[dict_idx]['dataset_id'];
+    let data        = {};
+    let dataset_ids = [];
+    for (let dict_idx in data_arr) {
+      let dataset_id   = data_arr[dict_idx]['dataset_id'];
       data[dataset_id] = data_arr[dict_idx];
       dataset_ids.push(dataset_id);
     }
@@ -548,17 +548,17 @@ function make_metadata_object_from_csv(req, res) {// move to met_obj?
     // console.log(dataset_ids);
 
     const met_obj          = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
-    var data_in_obj_of_arr = met_obj.from_obj_to_obj_of_arr(data, pid, dataset_ids);
+    let data_in_obj_of_arr = met_obj.from_obj_to_obj_of_arr(data, pid, dataset_ids);
 
 // all_metadata
-    var all_metadata     = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
+    let all_metadata     = met_obj.make_metadata_object(req, res, pid, data_in_obj_of_arr);
 
     const field_names    = new metadata_controller.FieldNames(req, dataset_ids);
-    var all_field_names4 = field_names.make_all_field_names(dataset_ids);
+    let all_field_names4 = field_names.make_all_field_names(dataset_ids);
 
     req.body.project_id = pid;
 
-    var all_field_units = MD_CUSTOM_UNITS[pid];
+    let all_field_units = MD_CUSTOM_UNITS[pid];
 
     const show_new      = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units, {});
     const csv_file_write = new csv_files_controller.CsvFilesWrite(req, res);
@@ -585,7 +585,7 @@ function new_csv(req, res, cur_project, project_name, transposed) {
 
 // if (pid === 0) { // new csv
   cur_project.make_project_obj_from_new_csv(project_name, transposed);
-  var project_obj = cur_project.project_obj;
+  let project_obj = cur_project.project_obj;
   // console.log('PPP00 project_obj', project_obj);
   // console.log('PPP01 JSON.stringify(project_obj)', JSON.stringify(project_obj));
 
@@ -636,10 +636,10 @@ function new_csv(req, res, cur_project, project_name, transposed) {
 // create form from db
 function make_metadata_object_from_db(req, res) {
   // console.time("TIME: make_metadata_object_from_db");
-  var pid         = req.body.project_id;
+  let pid         = req.body.project_id;
   //repeated!
-  var dataset_ids = DATASET_IDS_BY_PID[pid];
-  // var project     = PROJECT_INFORMATION_BY_PID[pid].project;
+  let dataset_ids = DATASET_IDS_BY_PID[pid];
+  // let project     = PROJECT_INFORMATION_BY_PID[pid].project;
   const met_obj = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
 
   // get_db_data
@@ -656,7 +656,7 @@ function create_AllMetadata_picked(dataset_ids) {
 
   if (all_metadata_picked_is_empty) // there is no metadata
   {
-    for (var d_id in dataset_ids) {
+    for (let d_id in dataset_ids) {
       AllMetadata_picked[dataset_ids[d_id]] = [];
     }
   }
@@ -669,9 +669,9 @@ function get_dataset_info(met_obj)
   const pid = met_obj.pid;
 
   // console.time("TIME: dataset_info"); // the fastest
-  var dataset_info = [];
-  for (var i in ALL_DATASETS.projects) {
-    var item = ALL_DATASETS.projects[i];
+  let dataset_info = [];
+  for (let i in ALL_DATASETS.projects) {
+    let item = ALL_DATASETS.projects[i];
     if (String(item.pid) === String(pid)) {
       dataset_info = item.datasets;
       break;
@@ -684,7 +684,7 @@ function get_dataset_info(met_obj)
 
 function get_db_data (req, res, met_obj) { // move to met_obj?
   // console.time("TIME: helpers.slice_object_by_keys");
-  var AllMetadata_picked = create_AllMetadata_picked(met_obj.dataset_ids);
+  let AllMetadata_picked = create_AllMetadata_picked(met_obj.dataset_ids);
   // console.timeEnd("TIME: helpers.slice_object_by_keys");
   // met_obj.all_metadata["301"].sample_name 0
 
@@ -700,16 +700,16 @@ function get_db_data (req, res, met_obj) { // move to met_obj?
   const fail_msg = AllMetadata_picked_new.fail_msg;
   req.flash('fail', fail_msg);
 
-  var abstract_data = add_abstract_data(req, res, met_obj);
+  let abstract_data = add_abstract_data(req, res, met_obj);
 
-  var data_in_obj_of_arr                 = met_obj.from_obj_to_obj_of_arr(AllMetadata_picked_full, met_obj.pid, met_obj.dataset_ids);
+  let data_in_obj_of_arr                 = met_obj.from_obj_to_obj_of_arr(AllMetadata_picked_full, met_obj.pid, met_obj.dataset_ids);
   data_in_obj_of_arr["project_abstract"] = met_obj.fill_out_arr_doubles(abstract_data.pdfs, met_obj.dataset_ids.length);
 
-  var all_metadata = met_obj.make_metadata_object(req, res, met_obj.pid, data_in_obj_of_arr);
+  let all_metadata = met_obj.make_metadata_object(req, res, met_obj.pid, data_in_obj_of_arr);
 
   const field_names    = new metadata_controller.FieldNames(req, met_obj.dataset_ids);
 // as many values per field as there are datasets
-  var all_field_names4 = field_names.make_all_field_names(met_obj.dataset_ids);
+  let all_field_names4 = field_names.make_all_field_names(met_obj.dataset_ids);
 
   // console.log("DDD2 all_field_names4");
   // console.log(JSON.stringify(all_field_names4));
@@ -731,8 +731,8 @@ function add_abstract_data(req, res, met_obj) {
 }
 
 function make_dataset_info_by_did(dataset_info) {
-  var dataset_info_by_did = {};
-  for (var idx in dataset_info) {
+  let dataset_info_by_did = {};
+  for (let idx in dataset_info) {
     dataset_info_by_did[dataset_info[idx]["did"]] = dataset_info[idx];
   }
   return dataset_info_by_did;
@@ -740,10 +740,10 @@ function make_dataset_info_by_did(dataset_info) {
 
 function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, dataset_info_by_did) {
   const dataset_ids = met_obj.dataset_ids;
-  var AllMetadata_picked_out = AllMetadata_picked_in;
-  var fail_msg = [];
+  let AllMetadata_picked_out = AllMetadata_picked_in;
+  let fail_msg = [];
   // console.time("TIME: add missing info to AllMetadata_picked");
-  for (var d_idx in dataset_ids) { //TODO: split here instead if no metadata
+  for (let d_idx in dataset_ids) { //TODO: split here instead if no metadata
     const dataset_id = dataset_ids[d_idx];
     const all_req_metadata = met_obj.get_all_req_metadata(dataset_id);
     const ids_data = all_req_metadata.data;
@@ -763,8 +763,8 @@ function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, 
 
     AllMetadata_picked_out[dataset_id]["dataset_id"] = dataset_id;
   }
-  var errs = helpers.flat_array(fail_msg);
-  var fail_msg_out = errs;
+  let errs = helpers.flat_array(fail_msg);
+  let fail_msg_out = errs;
   if (typeof errs !== 'undefined' && errs.length === 0) {
     fail_msg_out = "";
   }
@@ -779,12 +779,12 @@ function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, 
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 
   // console.time('file_utils');
-  var user = req.query.user;
+  let user = req.query.user;
 
   console.log("file from file_utils: ");
   console.log(file);
   //// DOWNLOAD //////
-  var file;
+  let file;
   if (req.query.fxn == 'download' && req.query.template == '1') {
     file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
     res.setHeader('Content-Type', 'text');
@@ -843,7 +843,7 @@ function saveMetadata(req, res) {
   const msg = 'File ' + base_name + ' was saved\n<br/>';
 
   csv_file_write.make_csv(base_name, req.form, msg);
-  // var pid = req.body.project_id;
+  // let pid = req.body.project_id;
   req.flash("success", "Success with the metadata submit!");
 
   res.redirect("/projects/" + req.body.project_id);
@@ -857,7 +857,7 @@ router.get('/metadata_file_list', function (req, res) {
   // console.time("TIME: get metadata_file_list");
   console.log('in metadata_file_list');
   const csv_files_obj         = new csv_files_controller.CsvFilesWrite(req, res);
-  var user_metadata_csv_files = csv_files_obj.get_csv_files();
+  let user_metadata_csv_files = csv_files_obj.get_csv_files();
 
   user_metadata_csv_files.sort(function sortByTime(a, b) {
     //reverse sort: recent-->oldest
@@ -880,7 +880,7 @@ router.post('/metadata_files',
   function (req, res) {
 
     // console.time("TIME: in post /metadata_files");
-    var table_diff_html, sorted_files, files_to_compare;
+    let table_diff_html, sorted_files, files_to_compare;
     const csv_files_obj = new csv_files_controller.CsvFilesWrite(req, res);
     sorted_files        = csv_files_obj.sorted_files_by_time();
     files_to_compare    = csv_files_obj.sorted_files_to_compare(sorted_files);
@@ -916,11 +916,11 @@ function send_mail_finished(req, res) {
   console.log("EMAIL from send_mail_finished");
   let transporter = nodeMailer.createTransport(config.smtp_connection_obj);
 
-  var d            = new Date();
-  var timeReadable = d.toDateString();
+  let d            = new Date();
+  let timeReadable = d.toDateString();
 
   let project_name = helpers.unique_array(req.body.project);
-  var text_msg = req.user.first_name + " " + req.user.last_name + " (" + req.user.email + ")" + " finished submitting available metadata to " + project_name + " on " + timeReadable + ".";
+  let text_msg = req.user.first_name + " " + req.user.last_name + " (" + req.user.email + ")" + " finished submitting available metadata to " + project_name + " on " + timeReadable + ".";
 
   let mailOptions = {
     from: '"VAMPS2" <' + config.vamps_email + '>', // sender address
