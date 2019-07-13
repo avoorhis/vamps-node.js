@@ -201,40 +201,26 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       }
       var user_metadata_csv_files = get_csv_files(req);
       var project_file_names = filter_metadata_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
-      // let project_metadata_file_names = filter_metadata_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
 
       project_file_names.sort(function sortByTime(a, b) {
           //reverse sort: recent-->oldest
           return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
       });
-      var pnotes = [];
-      connection.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows, fields){
+      let pnotes = [];
+      connection.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows){
           if (err)  {
                     console.log('Getting Project Notes Error: ' + err);
           } else {
               if(rows.length > 0){
-                  pnotes = rows[0].notes
+                  pnotes = rows[0].notes;
               }
-              ProjectProfileFinishRequest(req, pnotes)
+              ProjectProfileFinishRequest(req, pnotes);
           }
 
       });
-      // pnotes_file = path.join(req.CONFIG.PATH_TO_PROJECT_NOTES,'read_me.'+PROJECT_INFORMATION_BY_PID[req.params.id].project+'.txt');
-//         if(helpers.fileExists(pnotes_file)){
-//             fs.readFile(pnotes_file,'utf8', function(err, pnotes){
-//                 var lines = pnotes.split('\r')
-//                 ProjectProfileFinishRequest(req, lines)
-//             })
-//         }else{
-
-      //}
-
-
-
-}else{
+  } else {
     req.flash('fail','not found');
     res.redirect(req.get('referer'));
-    //return
   }
 });
 
@@ -254,24 +240,22 @@ router.post('/download_dco_metadata_file', helpers.isLoggedIn, function(req, res
       if (err) {
         // Handle error, but keep in mind the response may be partially-sent
         // so check res.headersSent
-        console.log(err)
+        console.log(err);
       } else {
         // decrement a download credit, etc.
-        console.log('okay')
+        console.log('okay');
       }
-    })
-  }else{
-    console.log('no file found')
+    });
+  } else {
+    console.log('no file found');
   }
 });
 
-
-
-function make_mdata(mdname) {
-  if(mdname !== 'id'){
-    mdata[dsinfo[n].dname][mdname] = mdgroup[mdname];
-  }
-}
+// function make_mdata(mdname) {
+//   if(mdname !== 'id'){
+//     mdata[dsinfo[n].dname][mdname] = mdgroup[mdname];
+//   }
+// }
 
 function get_csv_files(req) {
   // console.time("TIME: get_csv_files");
