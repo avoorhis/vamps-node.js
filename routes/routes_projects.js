@@ -122,7 +122,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
           for (let name in AllMetadata[did]){
             var data;
-            if(name == 'primer_suite_id'){
+            if(name === 'primer_suite_id'){
               data = helpers.required_metadata_names_from_ids(AllMetadata[did], 'primer_ids');
               mdata[dsinfo[n].dname][data.name] = data.value;
             }
@@ -157,11 +157,11 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
 
 
-      var info_file = ''
-      var publish_data = {}
-      var best_file_path = ''
-      var best_file = ''
-      if(info.project.substring(0,3) == 'DCO'){
+      var info_file = '';
+      var publish_data = {};
+      var best_file_path = '';
+      var best_file = '';
+      if(info.project.substring(0,3) === 'DCO'){
 
           try{
               info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'DCO_INFO.json');
@@ -169,20 +169,20 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
           }catch(e){
               publish_data = {};
           }
-          var dco_all_metadata_file =''
-          best_date = Date.parse('2000-01-01')
+          var dco_all_metadata_file = '';
+          let best_date = Date.parse('2000-01-01');
 
           fs.readdirSync(req.CONFIG.PATH_TO_DCO_DOWNLOADS).forEach(file => {
               if(file.substring(0,16) == 'dco_all_metadata'){
                   //console.log('file '+file)
-                  file_date = file.substring(17,file.length - 7)
+                  let file_date = file.substring(17,file.length - 7);
                   //console.log('file_date: '+file_date)
-                  d = Date.parse(file_date)
+                  let d = Date.parse(file_date);
                   if(d > best_date){
-                      best_file = file
+                      best_file = file;
                   }
               }
-          })
+          });
           //best_file =  'dco_all_metadata_'+yyyy+'-'+mm+'-'+dd+'.tsv.gz'
           //console.log('best_file '+best_file)
           best_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,best_file)
@@ -207,7 +207,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
           //reverse sort: recent-->oldest
           return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
       });
-      var pnotes = []
+      var pnotes = [];
       connection.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows, fields){
           if (err)  {
                     console.log('Getting Project Notes Error: ' + err);
@@ -239,16 +239,16 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 });
 
 router.post('/download_dco_metadata_file', helpers.isLoggedIn, function(req, res) {
-  console.log('in POST download_dco_metadata_file')
-  console.log(req.body)
-  var file_path = path.join(req.CONFIG.PATH_TO_DCO_DOWNLOADS, req.body.dco_file);
+  console.log('in POST download_dco_metadata_file');
+  console.log(req.body);
+  let file_path = path.join(req.CONFIG.PATH_TO_DCO_DOWNLOADS, req.body.dco_file);
   //var file_path = path.join('../vamps_data_downloads', req.body.file);
-  console.log('file_path '+file_path)
+  console.log('file_path ' + file_path);
   // res.setHeader('Content-Type', 'application/gzip');
 //     res.setHeader('Content-disposition', 'attachment; filename='+req.body.file);
 //      var filestream = fs.createReadStream(file_path);
 //   filestream.pipe(res);
-  if(fs.existsSync(file_path)){
+  if (fs.existsSync(file_path)){
     console.log('Found file: '+file_path);
     res.download(file_path, function(err){
       if (err) {
