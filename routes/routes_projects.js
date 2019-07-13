@@ -72,29 +72,24 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //  MD_ENV_CNTRY   country
 //  MD_ENV_LZC     longhurst zone code
 
-    var ProjectProfileFinishRequest = function (req, pnotes) {
-          // console.log('publish_data')
-//             console.log(publish_data)
+    let ProjectProfileFinishRequest = function (req, arg_obj) {
+          console.log('arg_obj.project_file_names = ');
+          console.log(arg_obj.project_file_names);
 //             console.log('info')
 //             console.log(info)
         res.render('projects/profile', {
             title  : 'VAMPS Project',
-            info: JSON.stringify(info),
-            //project_prefix : info.project,  // see lines 135
-            dsinfo: dsinfo,
-            dscounts: JSON.stringify(dscounts),
+            info: JSON.stringify(arg_obj.info),
+            dsinfo: arg_obj.dsinfo,
+            dscounts: JSON.stringify(arg_obj.dscounts),
             pid: req.params.id,
-            mdata: JSON.stringify(mdata),
-            pcount: project_count,
-            portal :    JSON.stringify(member_of_portal),
-            //abstracts: JSON.stringify(abstracts[project_prefix]),
-            publish_info : JSON.stringify(publish_data),
-            //pnotes:JSON.stringify(pnotes),
-            pnotes:pnotes,
-            dco_file: best_file,
-
-            finfo: JSON.stringify(project_file_names),
-
+            mdata: JSON.stringify(arg_obj.mdata),
+            pcount: arg_obj.project_count,
+            portal :    JSON.stringify(arg_obj.member_of_portal),
+            publish_info : JSON.stringify(arg_obj.publish_data),
+            pnotes: arg_obj.pnotes,
+            dco_file: arg_obj.best_file,
+            finfo: JSON.stringify(arg_obj.project_file_names),
             user   : req.user,
             hostname: req.CONFIG.hostname
        });
@@ -199,22 +194,37 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
           }
 
       }
-      var user_metadata_csv_files = get_csv_files(req);
-      var project_file_names = filter_metadata_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
+      let user_metadata_csv_files = get_csv_files(req);
+      let project_file_names = filter_metadata_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
 
       project_file_names.sort(function sortByTime(a, b) {
           //reverse sort: recent-->oldest
           return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
       });
       let pnotes = [];
+
+      let arg_obj = {
+        info: info,
+        dsinfo: dsinfo,
+        dscounts: dscounts,
+        mdata: mdata,
+        project_count: project_count,
+        member_of_portal: member_of_portal,
+        publish_data: publish_data,
+        pnotes: pnotes,
+        best_file: best_file,
+        project_file_names: project_file_names,
+      };
+
       connection.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows){
           if (err)  {
                     console.log('Getting Project Notes Error: ' + err);
           } else {
               if(rows.length > 0){
-                  pnotes = rows[0].notes;
+                pnotes = rows[0].notes;
+                arg_obj[pnotes] = pnotes;
               }
-              ProjectProfileFinishRequest(req, pnotes);
+              ProjectProfileFinishRequest(req, arg_obj);
           }
 
       });
