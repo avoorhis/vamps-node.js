@@ -1,37 +1,37 @@
-var express = require('express');
-var router = express.Router();
-var fs   = require('fs-extra');
-var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport({});
-var zlib = require('zlib');
-var Readable = require('stream').Readable;
-var helpers = require('./helpers/helpers');
-var queries = require(app_root + '/routes/queries');
-var path = require('path');
-var config  = require(app_root + '/config/config');
-//var crypto = require('crypto');
+let express = require('express');
+let router = express.Router();
+let fs   = require('fs-extra');
+let nodemailer = require('nodemailer');
+let transporter = nodemailer.createTransport({});
+let zlib = require('zlib');
+let Readable = require('stream').Readable;
+let helpers = require('./helpers/helpers');
+let queries = require(app_root + '/routes/queries');
+let path = require('path');
+let config  = require(app_root + '/config/config');
+//let crypto = require('crypto');
 // These are all under /projects
 /* GET New User page. */
 router.get('/projects_index', function(req, res) {
-  var db = req.db;
+  let db = req.db;
 
   //console.log(ALL_DATASETS);
   //console.log(PROJECT_INFORMATION_BY_PNAME)
 
-  // var info = PROJECT_INFORMATION_BY_PID
+  // let info = PROJECT_INFORMATION_BY_PID
   // console.log(info);
-  //var keys = Object.keys(PROJECT_INFORMATION_BY_PNAME);
+  //let keys = Object.keys(PROJECT_INFORMATION_BY_PNAME);
   //keys.sort();
-  //var project_list = helpers.get_public_projects(req)
-  var project_list = [];
+  //let project_list = helpers.get_public_projects(req)
+  let project_list = [];
   for (let pid in PROJECT_INFORMATION_BY_PID){
     if(DATASET_IDS_BY_PID[pid].length > 0){
       project_list.push(PROJECT_INFORMATION_BY_PID[pid]);
     }
   }
 
-  // var pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
-  //       //var public = pinfo.public
+  // let pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
+  //       //let public = pinfo.public
   //       //if(pinfo.public == 1){
   //           projects.push(pinfo);
   //       //}
@@ -53,10 +53,10 @@ router.get('/projects_index', function(req, res) {
 
 //TODO: JSHint: This function's cyclomatic complexity is too high. (16) (W074)
 router.get('/:id', helpers.isLoggedIn, function(req, res) {
-  var db = req.db;
-  var dsinfo = [];
-  var mdata = {};
-  var dscounts = {};
+  let db = req.db;
+  let dsinfo = [];
+  let mdata = {};
+  let dscounts = {};
   console.log('in PJ:id');
   console.log(req.params.id);
 //  MD_ENV_PACKAGE
@@ -97,26 +97,26 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
       };
     if(req.params.id in PROJECT_INFORMATION_BY_PID){
-      var info = PROJECT_INFORMATION_BY_PID[req.params.id];
-      var project_count = ALL_PCOUNTS_BY_PID[req.params.id];
+      let info = PROJECT_INFORMATION_BY_PID[req.params.id];
+      let project_count = ALL_PCOUNTS_BY_PID[req.params.id];
       console.log(info);
       // console.log("ALL_PCOUNTS_BY_PID 2: ");
       // console.log(ALL_PCOUNTS_BY_PID);
 
-      var dataset_counts = {};
+      let dataset_counts = {};
       for (let n0 in ALL_DATASETS.projects){
         if(ALL_DATASETS.projects[n0].pid == req.params.id){
           dsinfo = ALL_DATASETS.projects[n0].datasets;
         }
       }
       for (let n in dsinfo){
-        var did = dsinfo[n].did;
+        let did = dsinfo[n].did;
         dscounts[did] = ALL_DCOUNTS_BY_DID[did];
         mdata[dsinfo[n].dname] = {};
 
 
           for (let name in AllMetadata[did]){
-            var data;
+            let data;
             if(name === 'primer_suite_id'){
               data = helpers.required_metadata_names_from_ids(AllMetadata[did], 'primer_ids');
               mdata[dsinfo[n].dname][data.name] = data.value;
@@ -130,13 +130,13 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
       }
 
-      var project_parts = info.project.split('_');
-      var project_prefix = info.project;
+      let project_parts = info.project.split('_');
+      let project_prefix = info.project;
 
       if(project_parts.length >= 2 ){
         project_prefix = project_parts[0]+'_'+project_parts[1];
       }
-      var member_of_portal = {};
+      let member_of_portal = {};
       for (let p in req.CONSTS.PORTALS){
         //console.log(p +' -- '+project_parts[0])
         if(req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) !== -1 ||
@@ -152,10 +152,10 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
 
 
-      var info_file = '';
-      var publish_data = {};
-      var best_file_path = '';
-      var best_file = '';
+      let info_file = '';
+      let publish_data = {};
+      let best_file_path = '';
+      let best_file = '';
       if(info.project.substring(0,3) === 'DCO'){
 
           try{
@@ -164,7 +164,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
           }catch(e){
               publish_data = {};
           }
-          var dco_all_metadata_file = '';
+          let dco_all_metadata_file = '';
           let best_date = Date.parse('2000-01-01');
 
           fs.readdirSync(req.CONFIG.PATH_TO_DCO_DOWNLOADS).forEach(file => {
@@ -238,11 +238,11 @@ router.post('/download_dco_metadata_file', helpers.isLoggedIn, function(req, res
   console.log('in POST download_dco_metadata_file');
   console.log(req.body);
   let file_path = path.join(req.CONFIG.PATH_TO_DCO_DOWNLOADS, req.body.dco_file);
-  //var file_path = path.join('../vamps_data_downloads', req.body.file);
+  //let file_path = path.join('../vamps_data_downloads', req.body.file);
   console.log('file_path ' + file_path);
   // res.setHeader('Content-Type', 'application/gzip');
 //     res.setHeader('Content-disposition', 'attachment; filename='+req.body.file);
-//      var filestream = fs.createReadStream(file_path);
+//      let filestream = fs.createReadStream(file_path);
 //   filestream.pipe(res);
   if (fs.existsSync(file_path)){
     console.log('Found file: '+file_path);
@@ -270,8 +270,8 @@ router.post('/download_dco_metadata_file', helpers.isLoggedIn, function(req, res
 function get_csv_files(req) {
   // console.time("TIME: get_csv_files");
 
-  var user_csv_dir = path.join(config.USER_FILES_BASE, req.user.username);
-  var all_my_files = helpers.walk_sync(user_csv_dir);
+  let user_csv_dir = path.join(config.USER_FILES_BASE, req.user.username);
+  let all_my_files = helpers.walk_sync(user_csv_dir);
 
   // console.timeEnd("TIME: get_csv_files");
   return all_my_files;
