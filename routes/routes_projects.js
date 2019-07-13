@@ -24,7 +24,7 @@ router.get('/projects_index', function(req, res) {
   //keys.sort();
   //var project_list = helpers.get_public_projects(req)
   var project_list = [];
-  for(var pid in PROJECT_INFORMATION_BY_PID){
+  for (let pid in PROJECT_INFORMATION_BY_PID){
     if(DATASET_IDS_BY_PID[pid].length > 0){
       project_list.push(PROJECT_INFORMATION_BY_PID[pid]);
     }
@@ -51,6 +51,7 @@ router.get('/projects_index', function(req, res) {
 
 });
 
+//TODO: JSHint: This function's cyclomatic complexity is too high. (16) (W074)
 router.get('/:id', helpers.isLoggedIn, function(req, res) {
   var db = req.db;
   var dsinfo = [];
@@ -103,24 +104,24 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
     if(req.params.id in PROJECT_INFORMATION_BY_PID){
       var info = PROJECT_INFORMATION_BY_PID[req.params.id];
       var project_count = ALL_PCOUNTS_BY_PID[req.params.id];
-      console.log(info)
+      console.log(info);
       // console.log("ALL_PCOUNTS_BY_PID 2: ");
       // console.log(ALL_PCOUNTS_BY_PID);
 
       var dataset_counts = {};
-      for(var n0 in ALL_DATASETS.projects){
+      for (let n0 in ALL_DATASETS.projects){
         if(ALL_DATASETS.projects[n0].pid == req.params.id){
           dsinfo = ALL_DATASETS.projects[n0].datasets;
         }
       }
-      for(var n in dsinfo){
+      for (let n in dsinfo){
         var did = dsinfo[n].did;
         dscounts[did] = ALL_DCOUNTS_BY_DID[did];
         mdata[dsinfo[n].dname] = {};
 
 
-          for (var name in AllMetadata[did]){
-            var data
+          for (let name in AllMetadata[did]){
+            var data;
             if(name == 'primer_suite_id'){
               data = helpers.required_metadata_names_from_ids(AllMetadata[did], 'primer_ids');
               mdata[dsinfo[n].dname][data.name] = data.value;
@@ -141,7 +142,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         project_prefix = project_parts[0]+'_'+project_parts[1];
       }
       var member_of_portal = {};
-      for(var p in req.CONSTS.PORTALS){
+      for (let p in req.CONSTS.PORTALS){
         //console.log(p +' -- '+project_parts[0])
         if(req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) !== -1 ||
           req.CONSTS.PORTALS[p].projects.indexOf(info.project) !== -1 ||
