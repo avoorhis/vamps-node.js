@@ -118,7 +118,15 @@ function get_member_of_portal(req, info) {
   return member_of_portal;
 }
 
-function get_publish_data(req, info_file_name) {
+function get_publish_data(req, project_name) {
+  let info_file_name = "";
+  if (project_name.startsWith('DCO')) {
+    info_file_name = 'DCO_INFO.json';
+  }
+  else if (project_name.startsWith('CMP')) {
+    info_file_name = 'CMP_INFO.json';
+  }
+
   let publish_data = {};
   try {
     let info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, info_file_name);
@@ -177,12 +185,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       });
     }
 
-    if (info.project.startsWith('DCO')) {
-      publish_data = get_publish_data(req, 'DCO_INFO.json');
-    }
-    else if (info.project.startsWith('CMP')) {
-      publish_data = get_publish_data(req, 'CMP_INFO.json');
-    }
+    publish_data = get_publish_data(req, info.project);
 
     let user_metadata_csv_files = get_csv_files(req);
     let project_file_names = filter_metadata_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
