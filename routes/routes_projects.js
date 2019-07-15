@@ -110,8 +110,8 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         }
       }
 
-      console.log("dsinfo");
-      console.log(JSON.stringify(dsinfo));
+      console.warn("dsinfo");
+      console.warn(JSON.stringify(dsinfo));
 
       for (let n in dsinfo){
         let did = dsinfo[n].did;
