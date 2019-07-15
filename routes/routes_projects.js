@@ -34,8 +34,28 @@ router.get('/projects_index', function(req, res) {
   });
 });
 
+function ProjectProfileFinishRequest (req, res, arg_obj) {
+  res.render('projects/profile', {
+    title: 'VAMPS Project',
+    info: JSON.stringify(arg_obj.info),
+    dsinfo: arg_obj.dsinfo,
+    dscounts: JSON.stringify(arg_obj.dscounts),
+    pid: req.params.id,
+    mdata: JSON.stringify(arg_obj.mdata),
+    pcount: arg_obj.project_count,
+    portal: JSON.stringify(arg_obj.member_of_portal),
+    publish_info: JSON.stringify(arg_obj.publish_data),
+    pnotes: arg_obj.pnotes,
+    dco_file: arg_obj.best_file,
+    finfo: JSON.stringify(arg_obj.project_file_names),
+    user: req.user,
+    hostname: req.CONFIG.hostname
+  });
+}
+
 //TODO: JSHint: This function's cyclomatic complexity is too high. (16) (W074)
 router.get('/:id', helpers.isLoggedIn, function(req, res) {
+  console.time("'in PJ:id'");
   // let db = req.db;
   let dsinfo = [];
   let mdata = {};
@@ -54,25 +74,6 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //  MD_ENV_ENVO    environmental
 //  MD_ENV_CNTRY   country
 //  MD_ENV_LZC     longhurst zone code
-
-    let ProjectProfileFinishRequest = function (req, arg_obj) {
-        res.render('projects/profile', {
-            title: 'VAMPS Project',
-            info: JSON.stringify(arg_obj.info),
-            dsinfo: arg_obj.dsinfo,
-            dscounts: JSON.stringify(arg_obj.dscounts),
-            pid: req.params.id,
-            mdata: JSON.stringify(arg_obj.mdata),
-            pcount: arg_obj.project_count,
-            portal: JSON.stringify(arg_obj.member_of_portal),
-            publish_info: JSON.stringify(arg_obj.publish_data),
-            pnotes: arg_obj.pnotes,
-            dco_file: arg_obj.best_file,
-            finfo: JSON.stringify(arg_obj.project_file_names),
-            user: req.user,
-            hostname: req.CONFIG.hostname
-       });
-      };
     
     if(req.params.id in PROJECT_INFORMATION_BY_PID){
       let info = PROJECT_INFORMATION_BY_PID[req.params.id];
@@ -186,11 +187,11 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
           if (err)  {
                     console.log('Getting Project Notes Error: ' + err);
           } else {
-              if(rows.length > 0){
-                pnotes = rows[0].notes;
-                arg_obj[pnotes] = pnotes;
-              }
-              ProjectProfileFinishRequest(req, arg_obj);
+            if(rows.length > 0){
+              pnotes = rows[0].notes;
+              arg_obj[pnotes] = pnotes;
+            }
+            ProjectProfileFinishRequest(req, res, arg_obj);
           }
 
       });
@@ -198,6 +199,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
     req.flash('fail','not found');
     res.redirect(req.get('referer'));
   }
+  console.time("'in PJ:id'");
 });
 
 router.post('/download_dco_metadata_file', helpers.isLoggedIn, function(req, res) {
