@@ -2262,11 +2262,11 @@ exports.slice_object_by_keys_to_arr = function (obj, slice_keys) {
 };
 
 exports.slice_object_by_keys = function (object, slice_keys) {
-  // // console.time('TIME: convert to string');
-  for (var i = 0; i < slice_keys.length; i++) {
+  // console.time('TIME: convert to string');
+  for (let i = 0; i < slice_keys.length; i++) {
     slice_keys[i] = String(slice_keys[i]);
   }
-  // // console.timeEnd('TIME: convert to string');
+  // console.timeEnd('TIME: convert to string');
 
   return Object.keys(object) // 1) for each obj's key
     .filter(function (key) { // 2) if it is in slice_keys

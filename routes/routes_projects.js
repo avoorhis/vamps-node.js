@@ -53,13 +53,27 @@ function ProjectProfileFinishRequest (req, res, arg_obj) {
   });
 }
 
+function get_dscounts(dsinfo) {
+
+  // return dsinfo.filter(function(obj)
+  // {return (obj.did.startsWith(file_name_template))});
+  let dscounts = {};
+
+  for (let n in dsinfo) {
+    let did = dsinfo[n].did;
+
+    dscounts[did] = ALL_DCOUNTS_BY_DID[did];
+  }
+  return dscounts;
+}
+
+
 //TODO: JSHint: This function's cyclomatic complexity is too high. (16) (W074)
 router.get('/:id', helpers.isLoggedIn, function(req, res) {
-  console.time("'in PJ:id'");
+  console.time("in_PJ_id");
   // let db = req.db;
   let dsinfo = [];
   let mdata = {};
-  let dscounts = {};
   console.log('in PJ:id');
   console.log(req.params.id);
 //  MD_ENV_PACKAGE
@@ -79,12 +93,19 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       let info = PROJECT_INFORMATION_BY_PID[req.params.id];
       let project_count = ALL_PCOUNTS_BY_PID[req.params.id];
 
+      console.time("dsinfo 1");
       for (let n0 in ALL_DATASETS.projects){
-        if(ALL_DATASETS.projects[n0].pid === req.params.id){
+        if (ALL_DATASETS.projects[n0].pid.toString() === req.params.id.toString()){
           dsinfo = ALL_DATASETS.projects[n0].datasets;
         }
       }
+      console.timeEnd("dsinfo 1");
 
+      console.time("dsinfo 2");
+      let dsinfo2 = ALL_DATASETS.projects.filter(project => project.pid.toString() === req.params.id.toString());
+      console.timeEnd("dsinfo 2");
+
+      let dscounts = get_dscounts(dsinfo);
       for (let n in dsinfo){
         let did = dsinfo[n].did;
         dscounts[did] = ALL_DCOUNTS_BY_DID[did];
@@ -92,7 +113,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
         for (let name in AllMetadata[did]){
           let data;
-          if(name === 'primer_suite_id'){
+          if (name === 'primer_suite_id'){
             data = helpers.required_metadata_names_from_ids(AllMetadata[did], 'primer_ids');
             mdata[dsinfo[n].dname][data.name] = data.value;
           }
@@ -195,11 +216,12 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
           }
 
       });
-  } else {
+  }
+    else {
     req.flash('fail','not found');
     res.redirect(req.get('referer'));
   }
-  console.time("'in PJ:id'");
+  console.timeEnd("in_PJ_id");
 });
 
 router.post('/download_dco_metadata_file', helpers.isLoggedIn, function(req, res) {
