@@ -93,22 +93,18 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       let info = PROJECT_INFORMATION_BY_PID[req.params.id];
       let project_count = ALL_PCOUNTS_BY_PID[req.params.id];
 
-      console.time("dsinfo 1");
-      for (let n0 in ALL_DATASETS.projects){
-        if (ALL_DATASETS.projects[n0].pid.toString() === req.params.id.toString()){
-          dsinfo = ALL_DATASETS.projects[n0].datasets;
-        }
-      }
-      console.timeEnd("dsinfo 1");
+      let dsinfo = ALL_DATASETS.projects.filter(project => project.pid.toString() === req.params.id.toString());
 
-      console.time("dsinfo 2");
-      let dsinfo2 = ALL_DATASETS.projects.filter(project => project.pid.toString() === req.params.id.toString());
-      console.timeEnd("dsinfo 2");
-
+      console.time("dscounts 2");
       let dscounts = get_dscounts(dsinfo);
+      console.timeEnd("dscounts 2");
+      console.log("dscounts 2");
+      console.log(JSON.stringify(dscounts));
       for (let n in dsinfo){
         let did = dsinfo[n].did;
+        console.timeEnd("dscounts 1");
         dscounts[did] = ALL_DCOUNTS_BY_DID[did];
+        console.timeEnd("dscounts 1");
         mdata[dsinfo[n].dname] = {};
 
         for (let name in AllMetadata[did]){
@@ -121,7 +117,8 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
           mdata[dsinfo[n].dname][data.name] = data.value;
         }
       }
-
+      console.log("dscounts 1");
+      console.log(JSON.stringify(dscounts));
       let project_parts = info.project.split('_');
       // let project_prefix = info.project;
       //

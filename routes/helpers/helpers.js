@@ -369,7 +369,7 @@ module.exports.get_select_seq_counts_query = function (rows) {
     }
     // console.timeEnd("TIME: make_pid_by_did_dict");
 
-    for (var i = 0; i < rows.length; i++) {
+    for (let i = 0; i < rows.length; i++) {
       var did = rows[i].dataset_id;
       var pid = pid_by_did_dict[did];
       //console.log('rows[i].project_id in run_select_sequences_query');
@@ -735,6 +735,7 @@ module.exports.sort_json_matrix     = function (mtx, fxn_obj) {
   return mtx;
 
 };
+
 module.exports.get_portal_projects  = function (req, portal) {
   projects        = [];
   var cnsts_basis = C.PORTALS[portal];
