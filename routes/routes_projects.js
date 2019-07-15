@@ -97,28 +97,30 @@ function get_mdata(dsinfo){
 
 function get_member_of_portal(req, info) {
   let project_parts = info.project.split('_');
+  let project_prefix = project_parts[0]; // i.e. "DCO"
+  let region_part = project_parts[project_parts.length - 1]; // i.e. "Av6"
+  let portals_obj = req.CONSTS.PORTALS;
 
   let member_of_portal = {};
-  for (let p in req.CONSTS.PORTALS){
-    //console.log(p +' -- '+project_parts[0])
-    if (req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) !== -1 ||
-      req.CONSTS.PORTALS[p].projects.indexOf(info.project) !== -1 ||
-      req.CONSTS.PORTALS[p].suffixes.indexOf(project_parts[project_parts.length - 1]) !== -1
-    ){
-      //console.log(req.CONSTS.PORTALS[p])
-      member_of_portal[p] = {};
-      member_of_portal[p].title = req.CONSTS.PORTALS[p].maintitle;
-      member_of_portal[p].portal = p;
-    } // includes
-  }
+
+  member_of_portal = Object.keys(portals_obj).reduce((obj, portal) => {
+    if (portals_obj[portal].prefixes.includes(project_prefix) ||
+      portals_obj[portal].projects.includes(info.project) ||
+      portals_obj[portal].suffixes.includes(region_part)
+    ) {
+      obj[portal] = {};
+      obj[portal]["title"] = portals_obj[portal].maintitle;
+      obj[portal]["portal"] = portal;
+    }
+    return obj;
+    }, {});
+
   return member_of_portal;
 }
 
 //TODO: JSHint: This function's cyclomatic complexity is too high. (16) (W074)
 router.get('/:id', helpers.isLoggedIn, function(req, res) {
   console.time("in_PJ_id");
-  // let db = req.db;
-  // let dsinfo = [];
   console.log('in PJ:id');
   console.log(req.params.id);
 //  MD_ENV_PACKAGE
@@ -143,22 +145,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
       let info = PROJECT_INFORMATION_BY_PID[req.params.id];
       let member_of_portal = get_member_of_portal(req, info);
-      // let member_of_portal = {};
-      // for (let p in req.CONSTS.PORTALS){
-      //   //console.log(p +' -- '+project_parts[0])
-      //   if (req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) !== -1 ||
-      //     req.CONSTS.PORTALS[p].projects.indexOf(info.project) !== -1 ||
-      //     req.CONSTS.PORTALS[p].suffixes.indexOf(project_parts[project_parts.length - 1]) !== -1
-      //   ){
-      //     //console.log(req.CONSTS.PORTALS[p])
-      //     member_of_portal[p] = {};
-      //     member_of_portal[p].title = req.CONSTS.PORTALS[p].maintitle;
-      //     member_of_portal[p].portal = p;
-      //   }
-      // }
-
-
-
+      
       let info_file = '';
       let publish_data = {};
       // let best_file_path = '';
