@@ -101,7 +101,6 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
       console.time("get_dsinfo");
       let dsinfo = get_dsinfo(req);
-      console.log(JSON.stringify(dsinfo));
       console.timeEnd("get_dsinfo");
 
       console.time("dscounts 2");
@@ -111,7 +110,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       console.log(JSON.stringify(dscounts));
       for (let n in dsinfo){
         let did = dsinfo[n].did;
-        console.timeEnd("dscounts 1");
+        console.time("dscounts 1");
         dscounts[did] = ALL_DCOUNTS_BY_DID[did];
         console.timeEnd("dscounts 1");
         mdata[dsinfo[n].dname] = {};
