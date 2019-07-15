@@ -169,11 +169,31 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
     let member_of_portal = get_member_of_portal(req, info);
 
     let publish_data = {};
+
     let best_file = '';
-    if(info.project.substring(0,3) === 'DCO'){
 
+    console.time("best_file 2");
+    let dco_f_names = [];
+    if (info.project.startsWith('DCO')) {
       let best_date = Date.parse('2000-01-01');
+      dco_f_names = fs.readdirSync(req.CONFIG.PATH_TO_DCO_DOWNLOADS)
+        .filter(file => file.startsWith('dco_all_metadata'))
+        .filter(name => {
+          let file_date = name.substring(17, name.length - 7);
+          let d = Date.parse(file_date);
+          if (d > best_date){
+            best_file = name;
+          }
+          return best_file;
+        });
+    }
+    console.timeEnd("best_file 2");
 
+
+    best_file = '';
+    console.time("best_file");
+    if (info.project.substring(0,3) === 'DCO'){
+      let best_date = Date.parse('2000-01-01');
       fs.readdirSync(req.CONFIG.PATH_TO_DCO_DOWNLOADS).forEach(file => {
           if (file.substring(0,16) === 'dco_all_metadata'){
             let file_date = file.substring(17, file.length - 7);
@@ -184,7 +204,10 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
           }
       });
     }
+    console.timeEnd("best_file");
 
+
+    //module.exports.walk
     publish_data = get_publish_data(req, info.project);
 
     let user_metadata_csv_files = get_csv_files(req);
