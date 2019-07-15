@@ -463,7 +463,7 @@ module.exports.get_select_illumina_index_query      = function (rows) {
 
 ///////////////////////
 module.exports.get_select_primer_suite_query = function (rows) {
-  for (var i = 0; i < rows.length; i++) {
+  for (let i = 0; i < rows.length; i++) {
 
     if (!MD_PRIMER_SUITE.hasOwnProperty(rows[i].primer_suite_id)) {
       MD_PRIMER_SUITE[rows[i].primer_suite_id]        = {};
@@ -478,10 +478,7 @@ module.exports.get_select_primer_suite_query = function (rows) {
       "primer_id": rows[i].primer_id,
       "direction": rows[i].direction,
       "sequence": rows[i].sequence
-
     });
-
-
   }
 };
 
@@ -1887,49 +1884,49 @@ module.exports.required_metadata_ids_from_names = function (selection_obj, mdnam
 };
 
 module.exports.required_metadata_names_from_ids = function (selection_obj, name_id) {
-  var id = selection_obj[name_id];
-  var real_name, value;
-  if (name_id == 'env_package_id') {
+  let id = selection_obj[name_id];
+  let real_name, value;
+  if (name_id === 'env_package_id') {
     real_name = 'env_package';
     value     = MD_ENV_PACKAGE[id];
-  } else if (name_id == 'target_gene_id') {
+  } else if (name_id === 'target_gene_id') {
     real_name = 'target_gene';
     value     = MD_TARGET_GENE[id];
-  } else if (name_id == 'domain_id') {
+  } else if (name_id === 'domain_id') {
     real_name = 'domain';
     value     = MD_DOMAIN[id];
-  } else if (name_id == 'geo_loc_name_id') {
+  } else if (name_id === 'geo_loc_name_id') {
     real_name = 'geo_loc_name';
     if (MD_ENV_CNTRY.hasOwnProperty(id)) {
       value = MD_ENV_CNTRY[id];
     } else {
       value = MD_ENV_LZC[id];
     }
-  } else if (name_id == 'sequencing_platform_id') {
+  } else if (name_id === 'sequencing_platform_id') {
     real_name = 'sequencing_platform';
     value     = MD_SEQUENCING_PLATFORM[id];
-  } else if (name_id == 'dna_region_id') {
+  } else if (name_id === 'dna_region_id') {
     real_name = 'dna_region';
     value     = MD_DNA_REGION[id];
-  } else if (name_id == 'env_material_id') {
+  } else if (name_id === 'env_material_id') {
     real_name = 'env_material';
     value     = MD_ENV_ENVO[id];
-  } else if (name_id == 'env_biome_id') {
+  } else if (name_id === 'env_biome_id') {
     real_name = 'env_biome';
-    value     = MD_ENV_ENVO[id]
-  } else if (name_id == 'env_feature_id') {
+    value     = MD_ENV_ENVO[id];
+  } else if (name_id === 'env_feature_id') {
     real_name = 'env_feature';
     value     = MD_ENV_ENVO[id];
-  } else if (name_id == 'adapter_sequence_id') {
+  } else if (name_id === 'adapter_sequence_id') {
     real_name = 'adapter_sequence';
     value     = MD_ADAPTER_SEQUENCE[id];
-  } else if (name_id == 'illumina_index_id') {
+  } else if (name_id === 'illumina_index_id') {
     real_name = 'illumina_index';
     value     = MD_ILLUMINA_INDEX[id];
-  } else if (name_id == 'run_id') {
+  } else if (name_id === 'run_id') {
     real_name = 'run';
     value     = MD_RUN[id];
-  } else if (name_id == 'primer_suite_id') {
+  } else if (name_id === 'primer_suite_id') {
     real_name = 'primer_suite';
     //value = MD_PRIMER_SUITE[id]
     if (MD_PRIMER_SUITE.hasOwnProperty(id) && MD_PRIMER_SUITE[id].hasOwnProperty('name')) {
@@ -1937,41 +1934,41 @@ module.exports.required_metadata_names_from_ids = function (selection_obj, name_
     } else {
       value = 'unknown';
     }
-  } else if (name_id == 'primer_ids') {
-    real_name = 'primers'
+  } else if (name_id === 'primer_ids') {
+    real_name = 'primers';
     if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
-      val = []
-      for (n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
-        val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence)
+      val = [];
+      for (let n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
+        val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence);
       }
-      value = val.join(' ')
+      value = val.join(' ');
     } else {
-      value = 'unknown'
+      value = 'unknown';
     }
   } else {
     real_name = name_id;
     value     = id;
   }
   // eg: { name: 'primer_suite', value: 'Bacterial V6 Suite' } or { name: 'domain', value: 'Bacteria' }
-  return {"name": real_name, "value": value}
+  return {"name": real_name, "value": value};
 
 };
 //
 //
 //
 module.exports.get_metadata_obj_from_dids = function (dids) {
-  var metadata = {}
-  var mdobj;
-  for (n in dids) {
-    metadata[dids[n]] = {}
-    mdobj             = AllMetadata[dids[n].toString()]
-    for (key in mdobj) {
-      md                         = module.exports.required_metadata_names_from_ids(mdobj, key)
-      metadata[dids[n]][md.name] = md.value
+  let metadata = {};
+  let mdobj;
+  for (let n in dids) {
+    metadata[dids[n]] = {};
+    mdobj             = AllMetadata[dids[n].toString()];
+    for (let key in mdobj) {
+      md                         = module.exports.required_metadata_names_from_ids(mdobj, key);
+      metadata[dids[n]][md.name] = md.value;
     }
   }
   //console.log(metadata)
-  return metadata
+  return metadata;
 };
 //
 //

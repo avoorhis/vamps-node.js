@@ -74,6 +74,26 @@ function get_dsinfo(req) {
   return all_pinfo.datasets;
 }
 
+function get_mdata(dsinfo){
+  let mdata = {};
+
+  for (let n in dsinfo){
+    let did = dsinfo[n].did;
+    mdata[dsinfo[n].dname] = {};
+
+    for (let name in AllMetadata[did]){
+      let data;
+      if (name === 'primer_suite_id'){
+        data = helpers.required_metadata_names_from_ids(AllMetadata[did], 'primer_ids');
+        mdata[dsinfo[n].dname][data.name] = data.value;
+      }
+      data = helpers.required_metadata_names_from_ids(AllMetadata[did], name);
+      mdata[dsinfo[n].dname][data.name] = data.value;
+    }
+  }
+  return mdata;
+}
+
 //TODO: JSHint: This function's cyclomatic complexity is too high. (16) (W074)
 router.get('/:id', helpers.isLoggedIn, function(req, res) {
   console.time("in_PJ_id");
@@ -99,20 +119,12 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       let info = PROJECT_INFORMATION_BY_PID[req.params.id];
       let project_count = ALL_PCOUNTS_BY_PID[req.params.id];
 
-      console.time("get_dsinfo");
       let dsinfo = get_dsinfo(req);
-      console.timeEnd("get_dsinfo");
-
-      console.time("dscounts 2");
       let dscounts = get_dscounts(dsinfo);
-      console.timeEnd("dscounts 2");
-      console.log("dscounts 2");
-      console.log(JSON.stringify(dscounts));
+
+      console.time("get_mdata 1");
       for (let n in dsinfo){
         let did = dsinfo[n].did;
-        console.time("dscounts 1");
-        dscounts[did] = ALL_DCOUNTS_BY_DID[did];
-        console.timeEnd("dscounts 1");
         mdata[dsinfo[n].dname] = {};
 
         for (let name in AllMetadata[did]){
@@ -125,14 +137,13 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
           mdata[dsinfo[n].dname][data.name] = data.value;
         }
       }
-      console.log("dscounts 1");
-      console.log(JSON.stringify(dscounts));
+      console.timeEnd("get_mdata 1");
+      console.time("get_mdata 2");
+      let mdata2 = get_mdata(dsinfo);
+      console.timeEnd("get_mdata 2");
+
       let project_parts = info.project.split('_');
-      // let project_prefix = info.project;
-      //
-      // if(project_parts.length >= 2 ){
-      //   project_prefix = project_parts[0]+'_'+project_parts[1];
-      // }
+
       let member_of_portal = {};
       for (let p in req.CONSTS.PORTALS){
         //console.log(p +' -- '+project_parts[0])
