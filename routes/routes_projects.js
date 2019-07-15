@@ -118,6 +118,20 @@ function get_member_of_portal(req, info) {
   return member_of_portal;
 }
 
+function get_publish_data(req, info_file_name) {
+  let publish_data = {};
+  try {
+    let info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, info_file_name);
+    publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+  }
+  catch(e) {
+    publish_data = {};
+  }
+  return publish_data;
+}
+
+
+
 //TODO: JSHint: This function's cyclomatic complexity is too high. (16) (W074)
 router.get('/:id', helpers.isLoggedIn, function(req, res) {
   console.time("in_PJ_id");
@@ -145,19 +159,22 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 
       let info = PROJECT_INFORMATION_BY_PID[req.params.id];
       let member_of_portal = get_member_of_portal(req, info);
-      
-      let info_file = '';
+
+      // let info_file = '';
       let publish_data = {};
       // let best_file_path = '';
       let best_file = '';
       if(info.project.substring(0,3) === 'DCO'){
-          try {
-              info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'DCO_INFO.json');
-              publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
-          } catch(e){
-              publish_data = {};
-          }
-          // let dco_all_metadata_file = '';
+        // console.time("get_publish_data 1");
+        //   try {
+        //       info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'DCO_INFO.json');
+        //       publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+        //   } catch(e){
+        //       publish_data = {};
+        //   }
+        // console.timeEnd("get_publish_data 1");
+
+        // let dco_all_metadata_file = '';
           let best_date = Date.parse('2000-01-01');
 
           fs.readdirSync(req.CONFIG.PATH_TO_DCO_DOWNLOADS).forEach(file => {
@@ -176,14 +193,22 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
           // best_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, best_file);
       }
 
-      if(info.project.substring(0,3) === 'CMP'){
-        try {
-            info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'CMP_INFO.json');
-            publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
-        } catch(e) {
-            publish_data = {};
-        }
+      if (info.project.startsWith('DCO')) {
+        publish_data = get_publish_data(req, 'DCO_INFO.json');
       }
+      else if (info.project.startsWith('CMP')) {
+        publish_data = get_publish_data(req, 'CMP_INFO.json');
+      }
+
+
+      // if(info.project.substring(0,3) === 'CMP'){
+      //   try {
+      //       info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'CMP_INFO.json');
+      //       publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+      //   } catch(e) {
+      //       publish_data = {};
+      //   }
+      // }
       let user_metadata_csv_files = get_csv_files(req);
       let project_file_names = filter_metadata_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
 
