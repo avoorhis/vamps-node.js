@@ -137,114 +137,89 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
   console.time("in_PJ_id");
   console.log('in PJ:id');
   console.log(req.params.id);
-//  MD_ENV_PACKAGE
-//  MD_DOMAIN
-//  MD_DNA_REGION
-//  MD_TARGET_GENE
-//  MD_SEQUENCING_PLATFORM
-//  MD_ADAPTER_SEQUENCE
-//  MD_ILLUMINA_INDEX
-//  MD_PRIMER_SUITE
-//  MD_RUN
-//  MD_ENV_ENVO    environmental
-//  MD_ENV_CNTRY   country
-//  MD_ENV_LZC     longhurst zone code
+  //  MD_ENV_PACKAGE
+  //  MD_DOMAIN
+  //  MD_DNA_REGION
+  //  MD_TARGET_GENE
+  //  MD_SEQUENCING_PLATFORM
+  //  MD_ADAPTER_SEQUENCE
+  //  MD_ILLUMINA_INDEX
+  //  MD_PRIMER_SUITE
+  //  MD_RUN
+  //  MD_ENV_ENVO    environmental
+  //  MD_ENV_CNTRY   country
+  //  MD_ENV_LZC     longhurst zone code
     
-    if (req.params.id in PROJECT_INFORMATION_BY_PID) {
-      let project_count = ALL_PCOUNTS_BY_PID[req.params.id];
+  if (req.params.id in PROJECT_INFORMATION_BY_PID) {
+    let project_count = ALL_PCOUNTS_BY_PID[req.params.id];
 
-      let dsinfo = get_dsinfo(req);
-      let dscounts = get_dscounts(dsinfo);
-      let mdata = get_mdata(dsinfo);
+    let dsinfo = get_dsinfo(req);
+    let dscounts = get_dscounts(dsinfo);
+    let mdata = get_mdata(dsinfo);
 
-      let info = PROJECT_INFORMATION_BY_PID[req.params.id];
-      let member_of_portal = get_member_of_portal(req, info);
+    let info = PROJECT_INFORMATION_BY_PID[req.params.id];
+    let member_of_portal = get_member_of_portal(req, info);
 
-      // let info_file = '';
-      let publish_data = {};
-      // let best_file_path = '';
-      let best_file = '';
-      if(info.project.substring(0,3) === 'DCO'){
-        // console.time("get_publish_data 1");
-        //   try {
-        //       info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'DCO_INFO.json');
-        //       publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
-        //   } catch(e){
-        //       publish_data = {};
-        //   }
-        // console.timeEnd("get_publish_data 1");
+    let publish_data = {};
+    let best_file = '';
+    if(info.project.substring(0,3) === 'DCO'){
 
-        // let dco_all_metadata_file = '';
-          let best_date = Date.parse('2000-01-01');
+      let best_date = Date.parse('2000-01-01');
 
-          fs.readdirSync(req.CONFIG.PATH_TO_DCO_DOWNLOADS).forEach(file => {
-              if (file.substring(0,16) === 'dco_all_metadata'){
-                  //console.log('file '+file)
-                  let file_date = file.substring(17, file.length - 7);
-                  //console.log('file_date: '+file_date)
-                  let d = Date.parse(file_date);
-                  if (d > best_date){
-                    best_file = file;
-                  }
-              }
-          });
-          //best_file =  'dco_all_metadata_'+yyyy+'-'+mm+'-'+dd+'.tsv.gz'
-          //console.log('best_file '+best_file)
-          // best_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, best_file);
-      }
-
-      if (info.project.startsWith('DCO')) {
-        publish_data = get_publish_data(req, 'DCO_INFO.json');
-      }
-      else if (info.project.startsWith('CMP')) {
-        publish_data = get_publish_data(req, 'CMP_INFO.json');
-      }
-
-
-      // if(info.project.substring(0,3) === 'CMP'){
-      //   try {
-      //       info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'CMP_INFO.json');
-      //       publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
-      //   } catch(e) {
-      //       publish_data = {};
-      //   }
-      // }
-      let user_metadata_csv_files = get_csv_files(req);
-      let project_file_names = filter_metadata_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
-
-      project_file_names.sort(function sortByTime(a, b) {
-          //reverse sort: recent-->oldest
-          return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
-      });
-      let pnotes = [];
-
-      let arg_obj = {
-        info: info,
-        dsinfo: dsinfo,
-        dscounts: dscounts,
-        mdata: mdata,
-        project_count: project_count,
-        member_of_portal: member_of_portal,
-        publish_data: publish_data,
-        pnotes: pnotes,
-        best_file: best_file,
-        project_file_names: project_file_names,
-      };
-
-      connection.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows){
-          if (err)  {
-                    console.log('Getting Project Notes Error: ' + err);
-          } else {
-            if(rows.length > 0){
-              pnotes = rows[0].notes;
-              arg_obj[pnotes] = pnotes;
+      fs.readdirSync(req.CONFIG.PATH_TO_DCO_DOWNLOADS).forEach(file => {
+          if (file.substring(0,16) === 'dco_all_metadata'){
+            let file_date = file.substring(17, file.length - 7);
+            let d = Date.parse(file_date);
+            if (d > best_date){
+              best_file = file;
             }
-            ProjectProfileFinishRequest(req, res, arg_obj);
           }
-
       });
-  }
-    else {
+    }
+
+    if (info.project.startsWith('DCO')) {
+      publish_data = get_publish_data(req, 'DCO_INFO.json');
+    }
+    else if (info.project.startsWith('CMP')) {
+      publish_data = get_publish_data(req, 'CMP_INFO.json');
+    }
+
+    let user_metadata_csv_files = get_csv_files(req);
+    let project_file_names = filter_metadata_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
+
+    project_file_names.sort(function sortByTime(a, b) {
+        //reverse sort: recent-->oldest
+        return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
+    });
+
+    let pnotes = [];
+
+    let arg_obj = {
+      info: info,
+      dsinfo: dsinfo,
+      dscounts: dscounts,
+      mdata: mdata,
+      project_count: project_count,
+      member_of_portal: member_of_portal,
+      publish_data: publish_data,
+      pnotes: pnotes,
+      best_file: best_file,
+      project_file_names: project_file_names,
+    };
+
+    connection.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows){
+        if (err) {
+          console.log('Getting Project Notes Error: ' + err);
+        } else {
+          if(rows.length > 0){
+            pnotes = rows[0].notes;
+            arg_obj[pnotes] = pnotes;
+          }
+          ProjectProfileFinishRequest(req, res, arg_obj);
+        }
+    });
+}
+  else {
     req.flash('fail','not found');
     res.redirect(req.get('referer'));
   }
