@@ -109,6 +109,10 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
           dsinfo = ALL_DATASETS.projects[n0].datasets;
         }
       }
+
+      console.log("dsinfo");
+      console.log(JSON.stringify(dsinfo));
+
       for (let n in dsinfo){
         let did = dsinfo[n].did;
         dscounts[did] = ALL_DCOUNTS_BY_DID[did];
