@@ -970,17 +970,18 @@ module.exports.run_select_datasets_query = function (rows) {
   }
 
   // todo: console.log(datasetsByProject.length); datasetsByProject - not an array
-  for (var p in datasetsByProject) {
-    var tmp      = {};
+  for (let p in datasetsByProject) {
+    let tmp      = {};
     tmp.name     = p;
     tmp.pid      = pids[p];
     tmp.title    = titles[p];
     tmp.datasets = [];
-    for (var d in datasetsByProject[p]) {
-      var ds     = datasetsByProject[p][d].dname;
-      var dp_did = datasetsByProject[p][d].did;
-      var ddesc  = datasetsByProject[p][d].ddesc;
-      tmp.datasets.push({did: dp_did, dname: ds, ddesc: ddesc});
+    for (let d in datasetsByProject[p]) {
+      let ds     = datasetsByProject[p][d].dname;
+      let dp_did = datasetsByProject[p][d].did;
+      let ddesc  = datasetsByProject[p][d].ddesc;
+      let temp_datasets_obj = {did: dp_did, dname: ds, ddesc: ddesc};
+      tmp.datasets.push(temp_datasets_obj);
     }
     ALL_DATASETS.projects.push(tmp);
   }

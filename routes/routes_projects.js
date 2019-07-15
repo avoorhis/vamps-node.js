@@ -67,12 +67,18 @@ function get_dscounts(dsinfo) {
   return dscounts;
 }
 
+function get_dsinfo(req) {
+  let all_pinfo = ALL_DATASETS.projects.find(project_obj => {
+    return (project_obj.pid.toString() === req.params.id.toString());
+  });
+  return all_pinfo.datasets;
+}
 
 //TODO: JSHint: This function's cyclomatic complexity is too high. (16) (W074)
 router.get('/:id', helpers.isLoggedIn, function(req, res) {
   console.time("in_PJ_id");
   // let db = req.db;
-  let dsinfo = [];
+  // let dsinfo = [];
   let mdata = {};
   console.log('in PJ:id');
   console.log(req.params.id);
@@ -89,11 +95,14 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //  MD_ENV_CNTRY   country
 //  MD_ENV_LZC     longhurst zone code
     
-    if(req.params.id in PROJECT_INFORMATION_BY_PID){
+    if (req.params.id in PROJECT_INFORMATION_BY_PID) {
       let info = PROJECT_INFORMATION_BY_PID[req.params.id];
       let project_count = ALL_PCOUNTS_BY_PID[req.params.id];
 
-      let dsinfo = ALL_DATASETS.projects.filter(project => project.pid.toString() === req.params.id.toString());
+      console.time("get_dsinfo");
+      let dsinfo = get_dsinfo(req);
+      console.log(JSON.stringify(dsinfo));
+      console.timeEnd("get_dsinfo");
 
       console.time("dscounts 2");
       let dscounts = get_dscounts(dsinfo);

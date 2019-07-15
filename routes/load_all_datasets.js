@@ -69,7 +69,7 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING AllMetadataNames');
       console.log(' INITIALIZING DatasetsWithLatLong');
 
-      callback(ALL_DATASETS);
+      callback(ALL_DATASETS); // Filled in in helpers (ALL_DATASETS.projects.push(tmp);)
   });
 
   connection.query(queries.get_all_user_query(), function(err, rows, fields){
