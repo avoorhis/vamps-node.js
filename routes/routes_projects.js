@@ -79,19 +79,39 @@ function get_mdata(dsinfo){
 
   for (let n in dsinfo){
     let did = dsinfo[n].did;
-    mdata[dsinfo[n].dname] = {};
+    let metadata_name = dsinfo[n].dname;
+    mdata[metadata_name] = {};
 
     for (let name in AllMetadata[did]){
       let data;
       if (name === 'primer_suite_id'){
         data = helpers.required_metadata_names_from_ids(AllMetadata[did], 'primer_ids');
-        mdata[dsinfo[n].dname][data.name] = data.value;
+        mdata[metadata_name][data.name] = data.value;
       }
       data = helpers.required_metadata_names_from_ids(AllMetadata[did], name);
-      mdata[dsinfo[n].dname][data.name] = data.value;
+      mdata[metadata_name][data.name] = data.value;
     }
   }
   return mdata;
+}
+
+function get_member_of_portal(req, info) {
+  let project_parts = info.project.split('_');
+
+  let member_of_portal = {};
+  for (let p in req.CONSTS.PORTALS){
+    //console.log(p +' -- '+project_parts[0])
+    if (req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) !== -1 ||
+      req.CONSTS.PORTALS[p].projects.indexOf(info.project) !== -1 ||
+      req.CONSTS.PORTALS[p].suffixes.indexOf(project_parts[project_parts.length - 1]) !== -1
+    ){
+      //console.log(req.CONSTS.PORTALS[p])
+      member_of_portal[p] = {};
+      member_of_portal[p].title = req.CONSTS.PORTALS[p].maintitle;
+      member_of_portal[p].portal = p;
+    } // includes
+  }
+  return member_of_portal;
 }
 
 //TODO: JSHint: This function's cyclomatic complexity is too high. (16) (W074)
@@ -99,7 +119,6 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
   console.time("in_PJ_id");
   // let db = req.db;
   // let dsinfo = [];
-  let mdata = {};
   console.log('in PJ:id');
   console.log(req.params.id);
 //  MD_ENV_PACKAGE
@@ -116,47 +135,27 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
 //  MD_ENV_LZC     longhurst zone code
     
     if (req.params.id in PROJECT_INFORMATION_BY_PID) {
-      let info = PROJECT_INFORMATION_BY_PID[req.params.id];
       let project_count = ALL_PCOUNTS_BY_PID[req.params.id];
 
       let dsinfo = get_dsinfo(req);
       let dscounts = get_dscounts(dsinfo);
+      let mdata = get_mdata(dsinfo);
 
-      console.time("get_mdata 1");
-      for (let n in dsinfo){
-        let did = dsinfo[n].did;
-        mdata[dsinfo[n].dname] = {};
-
-        for (let name in AllMetadata[did]){
-          let data;
-          if (name === 'primer_suite_id'){
-            data = helpers.required_metadata_names_from_ids(AllMetadata[did], 'primer_ids');
-            mdata[dsinfo[n].dname][data.name] = data.value;
-          }
-          data = helpers.required_metadata_names_from_ids(AllMetadata[did], name);
-          mdata[dsinfo[n].dname][data.name] = data.value;
-        }
-      }
-      console.timeEnd("get_mdata 1");
-      console.time("get_mdata 2");
-      let mdata2 = get_mdata(dsinfo);
-      console.timeEnd("get_mdata 2");
-
-      let project_parts = info.project.split('_');
-
-      let member_of_portal = {};
-      for (let p in req.CONSTS.PORTALS){
-        //console.log(p +' -- '+project_parts[0])
-        if(req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) !== -1 ||
-          req.CONSTS.PORTALS[p].projects.indexOf(info.project) !== -1 ||
-          req.CONSTS.PORTALS[p].suffixes.indexOf(project_parts[project_parts.length - 1]) !== -1
-        ){
-          //console.log(req.CONSTS.PORTALS[p])
-          member_of_portal[p] = {};
-          member_of_portal[p].title = req.CONSTS.PORTALS[p].maintitle;
-          member_of_portal[p].portal = p;
-        }
-      }
+      let info = PROJECT_INFORMATION_BY_PID[req.params.id];
+      let member_of_portal = get_member_of_portal(req, info);
+      // let member_of_portal = {};
+      // for (let p in req.CONSTS.PORTALS){
+      //   //console.log(p +' -- '+project_parts[0])
+      //   if (req.CONSTS.PORTALS[p].prefixes.indexOf(project_parts[0]) !== -1 ||
+      //     req.CONSTS.PORTALS[p].projects.indexOf(info.project) !== -1 ||
+      //     req.CONSTS.PORTALS[p].suffixes.indexOf(project_parts[project_parts.length - 1]) !== -1
+      //   ){
+      //     //console.log(req.CONSTS.PORTALS[p])
+      //     member_of_portal[p] = {};
+      //     member_of_portal[p].title = req.CONSTS.PORTALS[p].maintitle;
+      //     member_of_portal[p].portal = p;
+      //   }
+      // }
 
 
 
