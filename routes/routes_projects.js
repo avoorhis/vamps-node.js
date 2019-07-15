@@ -182,28 +182,14 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
     let member_of_portal = get_member_of_portal(req, info);
 
     let best_file = '';
-    console.time("best_file 2");
     if (info.project.startsWith('DCO')) {
       best_file = get_best_file(req);
-      // let best_date = Date.parse('2000-01-01');
-      // dco_f_names = fs.readdirSync(req.CONFIG.PATH_TO_DCO_DOWNLOADS)
-      //   .filter(file => file.startsWith('dco_all_metadata'))
-      //   .filter(name => {
-      //   let file_date = name.substring(17, name.length - 7);
-      //   let d = Date.parse(file_date);
-      //   if (d > best_date){
-      //     best_file = name;
-      //   }
-      //   return best_file;
-      // });
     }
-    console.timeEnd("best_file 2");
 
     let publish_data = get_publish_data(req, info.project);
 
     let user_metadata_csv_files = get_csv_files(req);
     let project_file_names = filter_metadata_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
-
     project_file_names.sort(function sortByTime(a, b) {
         //reverse sort: recent-->oldest
         return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
@@ -225,17 +211,17 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
     };
 
     connection.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows){
-        if (err) {
-          console.log('Getting Project Notes Error: ' + err);
-        } else {
-          if(rows.length > 0){
-            pnotes = rows[0].notes;
-            arg_obj[pnotes] = pnotes;
-          }
-          ProjectProfileFinishRequest(req, res, arg_obj);
+      if (err) {
+        console.log('Getting Project Notes Error: ' + err);
+      } else {
+        if (rows.length > 0) {
+          pnotes = rows[0].notes;
+          arg_obj[pnotes] = pnotes;
         }
+        ProjectProfileFinishRequest(req, res, arg_obj);
+      }
     });
-}
+  }
   else {
     req.flash('fail','not found');
     res.redirect(req.get('referer'));
