@@ -276,14 +276,14 @@ get_select_seq_count_query: function(){
     return q;
   },
   get_select_run_query: function() {
-    var q = "SELECT run_id, run\n"
-    q += " FROM `run`\n"
+    let q = "SELECT run_id, run\n";
+    q += " FROM `run`\n";
     //console.log(q)
     return q;
   },
   get_select_primer_suite_query: function() {
 
-    var q = "SELECT primer, primer_id, primer_suite, primer_suite_id,  direction, sequence, region, domain";
+    let q = "SELECT primer, primer_id, primer_suite, primer_suite_id,  direction, sequence, region, domain";
     q += " FROM ref_primer_suite_primer";
     q += " JOIN primer_suite USING(primer_suite_id)";
     q += " JOIN primer USING(primer_id)";
