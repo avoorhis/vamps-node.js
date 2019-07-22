@@ -126,7 +126,7 @@ function get_metadata_hash(md_selected) {
   let md_info      = {};
   //md_info[md_item] = {}
   md_info.metadata = {};
-  let got_lat, got_lon;
+  // let got_lat, got_lon;
   //console.log('PROJECT_ID_BY_DID.length')
   //console.log(PROJECT_ID_BY_DID)
   //console.log(Object.keys(PROJECT_ID_BY_DID).length)
@@ -781,29 +781,29 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   // console.time('file_utils');
   let user = req.query.user;
 
-  console.log("file from file_utils: ");
+  console.log("file from file_utils in routes_metadata: ");
   console.log(file);
   //// DOWNLOAD //////
-  let file;
-  if (req.query.fxn == 'download' && req.query.template == '1') {
+  let file = '';
+  if (req.query.fxn === 'download' && req.query.template === '1') {
     file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
-  } else if (req.query.fxn == 'download' && req.query.type == 'pcoa') {
+  } else if (req.query.fxn === 'download' && req.query.type === 'pcoa') {
     file = path.join(req.CONFIG.PROCESS_DIR, 'tmp', req.query.filename);
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
-  } else if (req.query.fxn == 'download') {
+  } else if (req.query.fxn === 'download') {
     file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
 
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
     ///// DELETE /////
-  } else if (req.query.fxn == 'delete') {
+  } else if (req.query.fxn === 'delete') {
 
     file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
 
-    if (req.query.type == 'elements') {
+    if (req.query.type === 'elements') {
       fs.unlink(file, function deleteFile(err) {
         if (err) {
           console.log("err 8: ");
@@ -880,10 +880,12 @@ router.post('/metadata_files',
   function (req, res) {
 
     // console.time("TIME: in post /metadata_files");
-    let table_diff_html, sorted_files, files_to_compare;
+    let table_diff_html = "";
+    // let sorted_files = [];
+    // let files_to_compare = "";
     const csv_files_obj = new csv_files_controller.CsvFilesWrite(req, res);
-    sorted_files        = csv_files_obj.sorted_files_by_time();
-    files_to_compare    = csv_files_obj.sorted_files_to_compare(sorted_files);
+    let sorted_files        = csv_files_obj.sorted_files_by_time();
+    let files_to_compare    = csv_files_obj.sorted_files_to_compare(sorted_files);
 
     if (typeof req.body.compare !== 'undefined' && req.body.compare.length === 2) {
 
