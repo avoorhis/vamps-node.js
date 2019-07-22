@@ -784,7 +784,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   //// DOWNLOAD //////
   let file = '';
   console.log("file from file_utils in routes_metadata: ");
-  console.log(file);
+  console.log(req.query.filename);
   if (req.query.fxn === 'download' && req.query.template === '1') {
     file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
     res.setHeader('Content-Type', 'text');
