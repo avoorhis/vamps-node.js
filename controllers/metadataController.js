@@ -210,14 +210,10 @@ class CreateDataObj {
 
     let has_geo_loc_name_id = this.array_has_no_valid_val(all_geo_location_metadata['geo_loc_name_id']);
     let has_geo_loc_name = this.array_has_no_valid_val(all_geo_location_metadata['geo_loc_name']);
-    // MD_ENV_CNTRY
     let has_geo_loc_name_continental = this.array_has_no_valid_val(all_geo_location_metadata['geo_loc_name_continental']);
-    // MD_ENV_LZC
     let has_geo_loc_name_marine = this.array_has_no_valid_val(all_geo_location_metadata['geo_loc_name_marine']);
 
     if (has_geo_loc_name && !(has_geo_loc_name_continental || has_geo_loc_name_marine)) {
-      console.log("HHH");
-      // find_if_it_is_cont_or_marine, use has_geo_loc_name_id in MD_ENV_
       if (has_geo_loc_name_id) {
 
         let cont = helpers.slice_object_by_keys_to_arr(MD_ENV_CNTRY, all_geo_location_metadata['geo_loc_name_id']);
@@ -225,6 +221,10 @@ class CreateDataObj {
         all_metadata[pid]['geo_loc_name_continental'] = cont;
         all_metadata[pid]['geo_loc_name_marine'] = marine;
       }
+      else {// no id, but correct names: find if it is cont or marine and copy
+        console.log("TODO");
+      }
+    //  TODO: else if only name - copy
     }
     return all_metadata[pid];
   }
@@ -1000,7 +1000,6 @@ class ShowObj {
     metadata_new_form_values.project_title       = req.form.project_title;
     metadata_new_form_values.reference           = req.form.reference;
     metadata_new_form_values.samples_number      = req.form.samples_number;
-
 
     let d_region_arr   = req.form.d_region.split('#');
     let pi_id_name_arr = req.form.pi_id_name.split('#');

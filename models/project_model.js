@@ -224,10 +224,10 @@ class Project {
   }
 
   get_current_project_abstract_data(project) {
-    var static_addr = config.PATH_TO_STATIC_DOWNLOADS || this.req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
-    var all_abstract_data = this.get_projects_abstract_data(project, static_addr);
-    var project_prefix    = this.get_project_prefix(project);
-    var current_abstr     = all_abstract_data[project_prefix];
+    let static_addr = config.PATH_TO_STATIC_DOWNLOADS || this.req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
+    let all_abstract_data = this.get_projects_abstract_data(project, static_addr);
+    let project_prefix    = this.get_project_prefix(project);
+    let current_abstr     = all_abstract_data[project_prefix];
     if (typeof current_abstr === 'undefined') {
       current_abstr      = {};
       current_abstr.pdfs = [];
