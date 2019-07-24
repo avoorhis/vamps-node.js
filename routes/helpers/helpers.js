@@ -2049,7 +2049,7 @@ module.exports.get_key_from_value = function (obj, value) {
   console.log('3 -in get_key from val - ' + value);
   found_key   = null;
   unknown_key = null;
-  for (key in obj) {
+  for (let key in obj) {
     if (obj[key] == value) {
       found_key = key;
     }
@@ -2167,7 +2167,7 @@ exports.dropdown_items_validation = function (value) {
   }
 };
 
-function hasElement(array, value){
+function hasElement(array, value){// TODO: change to includes
   return array.indexOf( value ) !== -1;
 }
 
@@ -2253,7 +2253,7 @@ exports.recommended_conduct = function (value) {
 
 exports.slice_object_by_keys_to_arr = function (obj, slice_keys) {
   let res_arr = [];
-  for (var n in slice_keys) {
+  for (let n in slice_keys) {
     let next_f_name = slice_keys[n];
     res_arr = res_arr.concat([obj[next_f_name]]);
   }
@@ -2426,7 +2426,6 @@ exports.retrieve_needed_constants = function(cnsts, view)
     }
     return obj;
 };
-
 
 exports.is_empty = function(obj_or_arr) {
   return Object.keys(obj_or_arr).length === 0;

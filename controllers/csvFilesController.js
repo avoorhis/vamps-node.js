@@ -42,7 +42,7 @@ class CsvFileRead {
     return empty_transposed_object;
   }
 
-  make_obj_from_template_csv(parsed_csv_obj) {
+  make_obj_from_template_csv(parsed_csv_obj) {// TODO: more effective for loops?
     // console.time('TIME: make_obj_from_template_csv');
 
     let array_width = parsed_csv_obj.length || 0;
