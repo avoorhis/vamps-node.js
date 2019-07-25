@@ -959,4 +959,7 @@ constants_metadata.PACKAGES_AND_PORTALS_ALIASES = {
   "water": ["water", "icomm", "water_freshwater", "water_marine"],
 };
 
+constants_metadata.EMPTY_EQUIVALENTS = ['none', 'undefined', 'please choose one', 'unknown', 'null', 'unidentified', 'select...', ''];
+
+
 module.exports = constants_metadata;

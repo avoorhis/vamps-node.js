@@ -4174,7 +4174,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   console.log('in file_utils');
   var user = req.query.user;
 
-  console.log("file from file_utils: ");
+  console.log("file from file_utils in route_user_data: ");
   console.log(file);
   //// DOWNLOAD //////
   if (req.query.fxn == 'download' && req.query.template == '1') {

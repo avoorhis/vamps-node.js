@@ -5,15 +5,14 @@ get_selected_val = function (pid, did, field_name) {
         // console.log("FLLLL field_name");
         // console.log(field_name);
 
-
         // console.log("LLLL1 all_metadata[pid][field_name]");
         // console.log(all_metadata[pid][field_name]);
 
         for (var one_val in all_metadata[pid][field_name]) {
-               if (did == one_val) {
-                selected_val = all_metadata[pid][field_name][one_val];
-         }
-     }
+          if (did == one_val) {
+            selected_val = all_metadata[pid][field_name][one_val];
+        }
+      }
     }
     else {
         selected_val = "";
