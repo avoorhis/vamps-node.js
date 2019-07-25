@@ -156,15 +156,14 @@
                 <tr><td>Project Name: </td><td><%= data.project %></td></tr>
                 <tr><td>Project_id:</td><td> <%= pid %></td></tr>
                 
-                
                 <% if(project_prefix.substring(0,3) == 'DCO' ){ %>
                 
-                    <% if(publish_data[project_prefix].dcoid != '') { %>
+                    <% if(publish_data.hasOwnProperty('project_prefix') == true && publish_data[project_prefix].dcoid != '') { %>
                         <tr><td>DCO ID:</td>
                             <td><a href='<%= publish_data[project_prefix].url %><%= publish_data[project_prefix].dcoid %>' target='_blank'> <%= publish_data[project_prefix].dcoid %></td>
                         </tr>
                     <% } %>
-                <% } %>
+                <% } %>          
                 
                 
                 <tr><td>Title:</td><td> <%= data.title %></td></tr>
