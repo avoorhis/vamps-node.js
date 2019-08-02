@@ -70,6 +70,7 @@
     "node-json-minify": "^1.0.0",
     "node-json2html": "",
     "nodemailer": "^6.2.1",
+    "npm": "^6.10.2",
     "object-sizeof": "^1.4.0",
     "object.entries": "^1.1.0",
     "open": "^6.3.0",
