@@ -7,6 +7,7 @@
 
 const COMMON = require(app_root + '/routes/visuals/routes_common');
 const C      = require(app_root + '/public/constants');
+const CONFIG = require(app_root + '/config/config');
 const path   = require("path");
 const extend = require('util')._extend;
 
@@ -666,11 +667,11 @@ class WriteMatrixFile {
   constructor(post_items, biom_matrix) {
     this.post_items = post_items;
     this.biom_matrix = biom_matrix;
-    this.tmp_path = app_root + '/tmp/';
+    this.tmp_path = CONFIG.TMP_FILES    //app_root + '/tmp/';
   }
 
   write_matrix_files() {
-    let common_file_name_part = this.tmp_path + this.post_items.ts;
+    let common_file_name_part = this.tmp_path +'/'+ this.post_items.ts;
     let tax_file_name = common_file_name_part + '_taxonomy.txt';
     COMMON.output_tax_file(tax_file_name, this.biom_matrix, C.RANKS.indexOf(this.post_items.tax_depth));
 

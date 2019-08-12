@@ -25,9 +25,7 @@ var config  = require(app_root + '/config/config');
 var CONSTS  = require(app_root + '/public/constants');
 var COMMON  = require(app_root + '/routes/visuals/routes_common');
 var META    = require('./visuals/routes_visuals_metadata');
-// var MTX     = require('./visuals/routes_counts_matrix');
-//var progress = require('progress-stream');
-//var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
+
 var upload = multer({ dest: config.TMP, limits: { fileSize: '4gb' }  });
 GLOBAL_EDIT_METADATA = {}
 var infile_fa = "infile.fna";
@@ -4182,7 +4180,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
       res.setHeader('Content-Type', 'text');
       res.download(file); // Set disposition and send it.
   } else if (req.query.fxn == 'download' &&  req.query.type=='pcoa') {
-      var file = path.join(req.CONFIG.PROCESS_DIR, 'tmp', req.query.filename);
+      var file = path.join(req.CONFIG.TMP_FILES, req.query.filename);
       res.setHeader('Content-Type', 'text');
       res.download(file); // Set disposition and send it.
   } else if (req.query.fxn == 'download') {
@@ -4816,7 +4814,7 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
         outfile = path.join( user_dir, 'heatmap-image-'+ts+'.pdf' );
 
         var n = 1;
-        distance_matrix_file = path.join(req.CONFIG.PROCESS_DIR,'tmp',ts+'_distance.json')
+        distance_matrix_file = path.join(req.CONFIG.TMP_FILES,ts+'_distance.json')
         console.log(distance_matrix_file);
         fs.readFile(distance_matrix_file, 'utf-8', function(err, data){
             distance_matrix = JSON.parse(data)
@@ -4915,36 +4913,36 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
     var new_file_name = file_type+'-'+timestamp+'.txt';
     if (file_type == 'phyloseq-biom') {
       old_file_name = old_ts+'_count_matrix.biom';
-      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
       new_file_name = file_type+'-'+timestamp+'.biom';
     }else if (file_type == 'phyloseq-tax') {
       old_file_name = old_ts+'_taxonomy.txt';
-      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
     }else if (file_type == 'phyloseq-tree') {
       old_file_name = old_ts+'_outtree.tre';
-      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
       new_file_name = file_type+'-'+timestamp+'.tre';
     }else if (file_type == 'distance-R') {
       old_file_name = old_ts+'_distance.R';
-      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
     }else if (file_type == 'distance-py') {
       old_file_name = old_ts+'_distance.json';
-      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
       new_file_name = file_type+'-'+timestamp+'.json';
     }else if (file_type == 'emperor-pc') {
       old_file_name = old_ts+'.pc';
-      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
     }else if (file_type == 'pdf-fheatmap') {
       old_file_name = old_ts+'_fheatmap.svg';
-      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
       new_file_name = file_type+'-'+timestamp+'.pdf';
     }else if (file_type == 'pdf-pcoa') {
        old_file_name = old_ts+'_pcoa.pdf';
-       old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
+       old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
        new_file_name = file_type+'-'+timestamp+'.pdf';
     }else if (file_type == 'metadata') {
       old_file_name = old_ts+'_metadata.txt';
-      old_file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp', old_file_name);
+      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
       new_file_name = file_type+'-'+timestamp+'.tsv';
     }else if (file_type == 'slp_otus') {
        old_file_name = old_ts

@@ -672,7 +672,6 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
               var minaligned_file = path.join(data_repo_path,'minaligned.fa-ENTROPY')
               var pdf_file            = path.join(data_repo_path,'minaligned.fa-ENTROPY.pdf')
               var new_pdf_file        = path.join(data_repo_path,'minaligned.fa-ENTROPY.pdf')
-              //var new_pdf_file = path.join(pwd,'tmp',req.user.username+'_'+oligo_code+'_minaligned.fa-ENTROPY.pdf');
               var ENTROPY_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-ENTROPY')
               fs.stat(minaligned_file, function checkFilePresence(err,stats){
                 if(err){return console.log(err) }
@@ -880,7 +879,6 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
               //var pdf_file        = path.join(data_repository,'minaligned.fa-ENTROPY.pdf')
               var OLIGO_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-OLIGO')
               var html_dir = path.join(out_oligotype_path,'HTML-OUTPUT')
-              //var destination = path.join(req.CONFIG.PROCESS_DIR,'tmp',req.user.username+'_'+olig_dir)
               var rando = helpers.getRandomInt(10000,99999)
               var destination = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects',req.user.username+'_'+olig_dir+'_'+rando.toString())
               

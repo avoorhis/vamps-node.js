@@ -310,7 +310,7 @@ var delete_previous_tmp_files = function (req, username) {
 
   var fs             = require('fs-extra');
   // dirs to delete from on login::
-  var temp_dir_path1 = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
+  var temp_dir_path1 = path.join(req.CONFIG.TMP_FILES);
   var temp_dir_path2 = path.join(req.CONFIG.PROCESS_DIR, 'views', 'tmp');
   // for vamps and vampsdev qsub scripts:
   var temp_dir_path3 = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp');

@@ -37,14 +37,14 @@
             <li><a href='/metadata/metadata_file_list'>Manage Saved Metadata</a> (download, compare, edit, delete csv files) </li><!-- (link to your data/...)-->
             <% } %>
             <li>
-                Get <a href='/static/metadata_template.csv'>Empty Metadata Template</a> for uploading metadata to VAMPS.
+                Get <a href='/static_dnld/metadata_template.csv'>Empty Metadata Template</a> for uploading metadata to VAMPS.
             </li>
             <li><a href='/metadata/metadata_new_csv_upload'>Upload</a> Metadata Template CSV file</li>
             <% if (user && user.security_level <= 10) { %>
               <h5>Admin users</h5>
               <li><a href='https://vampsdev.jbpc-np.mbl.edu/submissions/illumina/submission/' target='_blank'>Illumina Submissions</a> (currently on vampsdev and available only from inside MBL)</li>
     <!-- if user from 'power' group-->
-              <li>Get <a href='/static/metadata_template_for_processing.csv'>Download CSV file</a> for the pipeline processing</li>
+              <li>Get <a href='/static_dnld/metadata_template_for_processing.csv'>Download CSV file</a> for the pipeline processing</li>
             <% } %>
         </div>
     </div>

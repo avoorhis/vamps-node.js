@@ -868,26 +868,26 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     var metric = req.body.metric;
     var script = req.body.script; // python, phylogram or phylonator
     var image_type = req.body.image_type;  // png(python script) or svg
-    var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
+    
     //console.log('image_type '+image_type);
     // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 
     var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(pwd,'tmp',biom_file_name);
+    var biom_file = path.join(req.CONFIG.TMP_FILES, biom_file_name);
 
     var html = '';
     var title = 'VAMPS';
 
     var distmtx_file_name = ts+'_distance.csv';
-    var distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
+    var distmtx_file = path.join(req.CONFIG.TMP_FILES, distmtx_file_name);
 
 
     var options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--basedir', pwd, '--prefix', ts ],
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--basedir', req.CONFIG.TMP_FILES, '--prefix', ts ],
     };
 
-    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
     console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
     var dendrogram_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
@@ -954,7 +954,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                     var image = '/'+ts+'_dendrogram.pdf';
                     //console.log(image)
                     html = "<div id='pdf'>";
-                    html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
+                    html += "<object data='/static_base/tmp/"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
                     html += " <p>ERROR in loading pdf file</p>";
                     html += "</object></div>";
                     res.send(html);
@@ -983,11 +983,11 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     var image_type = req.body.image_type;
     //var image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
     var image_file = ts+'_pcoa.pdf';
-    var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp', biom_file_name);
-    var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
-    var tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
-    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+    //var biom_file_name = ts+'_count_matrix.biom';
+    //var biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp', biom_file_name);
+    
+   
+    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
 
     md1 = req.body.md1 || "Project";
     md2 = req.body.md2 || "Description";
@@ -998,7 +998,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
       // };
       var options2 = {
         scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-        args :       [ tmp_path, ts, metric, md1, md2, image_file],
+        args :       [ req.CONFIG.PATH_TO_STATIC_BASE, ts, metric, md1, md2, image_file],
       };
       console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
 
@@ -1018,11 +1018,18 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 
             //html = "<img src='/"+image_file+"'>";
             //var image = path.join('/tmp/',image_file);
+            //var image_path = '/vol_b/vamps/tmp/'+image_file
             var html = "<div id='pdf'>";
-            html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='600' />";
+            html += "<embed src='/static_base/tmp/"+image_file+"' type='application/pdf' width='1000' height='600' />";
             html += " <p>ERROR in loading pdf file</p>";
             html += "</object></div>";
-            //console.log(html);
+            
+            
+            // var html = "<div id='pdf'>";
+//             html += "<object data='/vol_b/vamps/tmp/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='600' />";
+//             html += " <p>ERROR in loading pdf file</p>";
+//             html += "</object></div>";
+            console.log(html);
 
           }else{
               console.log('ERROR');
@@ -1043,9 +1050,9 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
         var ts = req.session.ts;
-        var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
+        
         var pc_file_name = ts+'_pc.txt';
-            //var pc_file = path.join(pwd,'tmp', pc_file_name);
+            
             ///////////////////////////////////////////////////
         console.log('POST in 3D');
         if(req.CONFIG.site == 'vamps' ){
@@ -1056,27 +1063,26 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
         var metric = req.session.selected_distance;
 
-        var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
+        
         var biom_file_name = ts+'_count_matrix.biom';
-        var biom_file = path.join(pwd,'tmp', biom_file_name);
+        var biom_file = path.join(req.CONFIG.TMP_FILES, biom_file_name);
 
-        var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+        var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
 
         var mapping_file_name = ts+'_metadata.txt';
-        var mapping_file = path.join(pwd,'tmp', mapping_file_name);
-        var pc_file = path.join(pwd,'tmp', pc_file_name);
-        //var tax_file_name = ts+'_taxonomy.txt';
-        //var tax_file = path.join(pwd,'tmp', tax_file_name);
+        var mapping_file = path.join(req.CONFIG.TMP_FILES, mapping_file_name);
+        var pc_file = path.join(req.CONFIG.TMP_FILES, pc_file_name);
+        
         var dist_file_name = ts+'_distance.csv';
-        var dist_file = path.join(pwd,'tmp', dist_file_name);
+        var dist_file = path.join(req.CONFIG.TMP_FILES, dist_file_name);
 
         var dir_name = ts+'_pcoa3d';
-        var dir_path = path.join(pwd,'views/tmp', dir_name);
+        var dir_path = path.join(req.CONFIG.PATH_TO_STATIC_BASE, dir_name);
         var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
         //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
         var options1 = {
             scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-            args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--basedir', pwd, '--prefix', ts,'-m', mapping_file],
+            args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--basedir', req.CONFIG.TMP_FILES, '--prefix', ts,'-m', mapping_file],
         };
         //  var options2 = {
         //       //scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
@@ -1110,11 +1116,11 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
                 if(code === 0){    // SUCCESS
                     
                   
-                            var html = "** <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a> **"
-                            html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
-                            html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
-                            html += "<br>Mapping (metadata) File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
-                            html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
+                            var html = "** <a href='/static_base/tmp/"+dir_name+"/index.html' target='_blank'>Open Emperor</a> **"
+                            html += "<br>Principal Components File: <a href='/static_base/tmp/"+pc_file_name+"' target='_blank'>"+pc_file_name+"</a>";
+                            html += "<br>Biom File: <a href='/static_base/tmp/"+biom_file_name+"' target='_blank'>"+biom_file_name+"</a>";
+                            html += "<br>Mapping (metadata) File: <a href='/static_base/tmp/"+mapping_file_name+"' target='_blank'>"+mapping_file_name+"</a>";
+                            html += "<br>Distance File: <a href='/static_base/tmp/"+dist_file_name+"' target='_blank'>"+dist_file_name+"</a>";
                             //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
 
                             res.send(html);
@@ -1142,7 +1148,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
     console.log('in dbrowser');
     console.log(req.session)
     var html='';
-    var matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+    var matrix_file_path = path.join(config.TMP_FILES,ts+'_count_matrix.biom')
     var biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'))
     var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
    
@@ -1323,12 +1329,12 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     var image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.svg';
     var phy,md1,md2,ordtype,maxdist,script
 
-    var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
+    
     var fill = req.session.tax_depth.charAt(0).toUpperCase() + req.session.tax_depth.slice(1);
     if(fill === 'Klass'){
         fill = 'Class';
     }
-    var tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
+    var tmp_path = path.join(req.CONFIG.TMP_FILES);
     var html = '';
     //console.log(biom_file)
     var options = {
@@ -1365,7 +1371,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     }else{
       //ERROR
     }
-    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
 
     console.log(path.join(options.scriptPath, script)+' '+options.args.join(' '));
     var phyloseq_process = spawn( path.join(options.scriptPath, script), options.args, {
@@ -1409,7 +1415,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
                  if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
                  //html = "<object  data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf'width='100%' height='700' >Your browser does not support SVG</object>";
                       html = "<div id='pdf'>";
-                      html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
+                      html += "<object data='/static_base/tmp/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
                       html += " <p>ERROR in loading pdf file</p>";
                       html += "</object></div>";
                  }else{
@@ -2311,7 +2317,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp',biom_file_name);
-    var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
+    
     var pjds_lookup = {}
     for(i in req.session.chosen_id_order){
         var did = req.session.chosen_id_order[i]
@@ -2320,11 +2326,11 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     }
     var options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'cluster_datasets', '--basedir', pwd, '--prefix', ts],
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'cluster_datasets', '--basedir', req.CONFIG.TMP_FILES, '--prefix', ts],
     };
     console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
 
-    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
 
 
     var cluster_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
@@ -2366,7 +2372,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 
             potential_chosen_id_name_hash  = COMMON.create_new_chosen_id_name_hash(dataset_list,pjds_lookup);
             ascii_file = ts+'_'+metric+'_tree.txt';
-            ascii_file_path = path.join(pwd,'tmp',ascii_file);
+            ascii_file_path = path.join(req.CONFIG.TMP_FILES,ascii_file);
             fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err,ascii_tree_data) {
               if (err) {
                 return console.log(err);
@@ -2458,9 +2464,8 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     var ts = req.session.ts
     var test_split_file_name = ts+'_distance_mh_bc.tsv';
     var test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
-    var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
     var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(pwd,'tmp',biom_file_name);
+    var biom_file = path.join(req.CONFIG.TMP_FILES,biom_file_name);
     
     
             
@@ -2470,7 +2475,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
         var suffix = req.body.split_distance_choice
         //var distmtx_file_name = ts+'_distance_'+suffix+'.json';
         var distmtx_file_name = ts+'_distance_'+suffix+'.tsv';
-        var distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
+        var distmtx_file = path.join(req.CONFIG.TMP_FILES,distmtx_file_name);
         //console.log(distmtx_file)
         fs.readFile(distmtx_file, 'utf8',function readFile(err,mtxdata) {
             if (err) {
@@ -2508,7 +2513,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     
     var options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-in', biom_file, '-splits', '--function', 'splits_only', '--basedir', pwd, '--prefix', ts ],
+      args :       [ '-in', biom_file, '-splits', '--function', 'splits_only', '--basedir', req.CONFIG.TMP_FILES, '--prefix', ts ],
     }; 
     console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
     var split_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
@@ -2551,7 +2556,7 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
     var html = '';
     var ts = req.body.ts;
     var file_type = req.body.file_type;
-    file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
+    file_path = path.join(req.CONFIG.TMP_FILES);
     if(file_type == 'matrix'){
       res.setHeader('Content-Type', 'text');
       out_file_name = ts+'_count_matrix.txt';

@@ -6,12 +6,12 @@ print(args)
 tmp_path 	<- args[1]
 prefix   	<- args[2]
 metric 		<- args[3]
-md1 			<- args[4]
-md2 			<- args[5]
+md1 		<- args[4]
+md2 		<- args[5]
 out_file	<- args[6]
 
-biom_file <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
-map_file <- paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
+biom_file <- paste(tmp_path,'/tmp/',prefix,'_count_matrix.biom',sep='')
+map_file <- paste(tmp_path,'/tmp/',prefix,'_metadata.txt',sep='')
 
 library(phyloseq)
 library(vegan)
@@ -76,9 +76,9 @@ if(metric=="horn" || metric=="morisita_horn")
     d<-vegdist(stand, method="horn",upper=FALSE,binary=FALSE);
     metric_text<-"Morisita-Horn"
 }
-distance_file = paste(tmp_path,'/',prefix,'_distance.R',sep='')
+distance_file = paste(tmp_path,'/tmp/',prefix,'_distance.R',sep='')
 write.table(as.matrix(d),file=distance_file)
-
+Sys.chmod(distance_file, "0664", use_umask = FALSE)
 #meta_table<-meta_table[is.na(meta_table)]<-0
 #print (meta_table)
 num_md_items = length(colnames(meta_table))
@@ -93,7 +93,7 @@ colors6<-colorRampPalette(c("blue", "green", "cyan", "orange", "red"))
 #print(colvec)
 pcoa <- pcoa(d)
 
-image_file = paste(tmp_path,'/',out_file,sep='')
+image_file = paste(tmp_path,'/tmp/',out_file,sep='')
 #pdf_file<-"pcoa.pdf"
 #ht = num_md_items*5
 # for 2 rows:
@@ -162,6 +162,7 @@ for(md_name in colnames(meta_table))
 	}
 }
 dev.off()
+Sys.chmod(image_file, "0664", use_umask = FALSE)
 q()
 
 
