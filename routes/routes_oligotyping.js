@@ -242,7 +242,9 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
                     fs.writeFile(config_file_path, config_text, { mode: 0666 }, function writeConfigFile(err) {
                         if(err) { return console.log(err); }
                         console.log("The Config file was saved!");
+                        fs.chmod(config_file_path, '0666', function chmodFile(err) {
                         
+                        })
                         fs.chmod(fasta_file_path, '0666', function chmodFile(err) {
                         
                         })
@@ -515,7 +517,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
       fs.chmod(script_file_path, '0775', function chmodFile(err) {
           if (err) { return console.log(err);}
             var entropy_process = spawn( script_file_path, {}, {
-                               env:{ 'PATH':req.CONFIG.PATH2_7, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
+                               env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
                                detached: true,
                                stdio:['pipe', 'pipe', 'pipe']
                                  //stdio: [ 'ignore', null, log ]
