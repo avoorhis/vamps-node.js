@@ -599,7 +599,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
 
   var cmd_options2 = {
       exec: 'pynast',
-      scriptPath : path.join(req.CONFIG.PATH_TO_PYNAST,'bin'),
+      scriptPath : req.CONFIG.PATH_TO_PYNAST,
       //scriptPath : '',
       args :       [ '-t', tmpl_file,
                       '-i', fasta_file,
