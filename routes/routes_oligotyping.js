@@ -180,7 +180,7 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
           console.log(config_file_path)
           fs.ensureDir(data_repo_path, function (err) {
             if(err){ return console.log(err) } // => null
-            fs.chmod(data_repo_path, '0775', function chmodFile(err) {
+            fs.chmod(data_repo_path, '0777', function chmodFile(err) {
                 if(err){ return console.log(err) } // => null
                 var wstream = fs.createWriteStream(fasta_file_path);
                 var rs = new Readable();
@@ -260,138 +260,7 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
     })
 
 });
-// router.post('/project_list', helpers.isLoggedIn, function (req, res) {
-//     console.log('in routes_oligotyping.js /project_list');
-//     console.log('req.body: 2-oligo status-->>');
-//     console.log(req.body);
-//     console.log('req.body: <<--oligo status');
-//     var tax_string = req.body.tax_string;
-//     var tax_obj = JSON.parse(req.body.tax_obj);
-//     var rank = tax_obj.rank
-//     console.log('tax_obj:')
-//     console.log(JSON.stringify(tax_obj, null, 4));
-// 
-//     var sql_dids = (chosen_id_name_hash.ids).join("','")
-//     q = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n"
-//     q += " join sequence using (sequence_id)\n"
-//     q += " join silva_taxonomy_info_per_seq using(sequence_id)\n"
-//     q += " join silva_taxonomy using(silva_taxonomy_id)\n"
-//     q += " join dataset using (dataset_id)\n"
-//     q += " join project using (project_id)\n"
-//     q += " join family using(family_id)\n"
-//     q += " where family_id='"+tax_obj.db_id+"'\n"
-//     q += " and dataset_id in('"+sql_dids+"') \n"
-//     console.log('query',q);
-//     var dataset_lookup = {}
-//     var html='';
-//     var timestamp = +new Date();  // millisecs since the epoch!
-// 
-//     var collection = connection.query(q, function (err, rows, fields) {
-//       if (err) {
-//           throw err;
-//       } else {
-//         //console.log('rows',rows)
-//         if(rows.length == 0){
-//           tax_obj.msg = 'ERROR'
-//           //res.json(tax_obj)
-//           var msg = "NO Data Found"
-//           req.flash('fail', msg)
-//           //console.log(msg)
-//           res.render('oligotyping/oligotyping_taxa_selection', {
-//               title: 'VAMPS:Oligotyping',
-//               referer: 'oligotyping',
-//               id_name_hash: JSON.stringify(req.session.chosen_id_order),
-//               
-//               user: req.user, hostname: req.CONFIG.hostname
-//           });
-// 
-//         }else{
-//           //var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-//           //var pwd = req.CONFIG.PROCESS_DIR;
-//           //var user_dir_path = path.join(pwd,'public','user_projects');
-//           var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-//           var olig_dir = 'oligotyping-'+timestamp
-//           var data_repo_path = path.join(user_dir_path, olig_dir);
-//           var fasta_file = 'fasta.fa'
-//           var fasta_file_path = path.join(data_repo_path, fasta_file);
-//           var config_file = 'config.ini'
-//           var config_file_path = path.join(data_repo_path, config_file);
-//           var FASTA_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-FASTA')
-//           fs.ensureDir(data_repo_path, function (err) {
-//             if(err){ return console.log(err) } // => null
-//             fs.chmod(data_repo_path, '0775', function chmodFile(err) {
-//                 if(err){ return console.log(err) } // => null
-//                 var wstream = fs.createWriteStream(fasta_file_path);
-//                 var rs = new Readable();
-//                 var seq_counter = 0
-//                 var sum_seq_length = 0
-//                 for (var i in rows) {
-//                   seq = rows[i].seq.toString();
-//                   seq_id = rows[i].sequence_id.toString();
-//                   seq_count = rows[i].seq_count
-//                   pjds = rows[i].project+'--'+rows[i].dataset;
-//                   dataset_lookup[pjds] = 1
-//                   for(i = 0; i<parseInt(seq_count); i++ ){
-//                     seq_counter += 1
-//                     var len = seq.length
-//                     //console.log('len',len)
-//                     sum_seq_length += len
-//                     var no = parseInt(i)+1
-//                     var sep = '__' // the oligotype script needs to know this
-//                     entry = '>'+pjds+sep+seq_id+'-'+no.toString()+"\n"+seq+"\n";
-//                     rs.push(entry);
-//                   }
-//                 }
-// 
-//                 rs.push(null);
-// 
-//                 rs
-//                   .pipe(wstream)
-//                   .on('finish', function readableStreamOnFinish() {  // finished fasta
-//                     console.log('done  writing fa-file now write config:');
-//                     var cutoff = ((sum_seq_length / seq_counter) * 0.8).toFixed(0)
-// 
-//                     //console.log('sum_seq_length',sum_seq_length)
-//                     //console.log('seq_counter',seq_counter)
-//                     //console.log('cutoff',cutoff)
-// 
-//                     var config_text = '\n[MAIN]\npath='+data_repo_path+"\n";
-//                     config_text += 'directory='+olig_dir+"\n";
-//                     config_text += 'taxonomy='+tax_obj.full_string+"\n";
-//                     config_text += 'pynast_cutoff_length='+cutoff.toString()+"\n";
-//                     config_text += 'pynast_cutoff_meaning=80 Percent of Average Sequence Length'+"\n";
-//                     if(rank == 'family'){
-//                       config_text += 'rank=family'+"\n";
-//                       config_text += 'family='+tax_obj.taxon+"\n";
-//                     }else if(rank == 'genus'){
-//                       // need to find family
-//                       items = tax_obj.full_string.split(';')
-//                       family = items[4]
-//                       config_text += 'rank=genus'+"\n";
-//                       config_text += 'family='+family+"\n";
-//                       config_text += 'genus='+tax_obj.taxon+"\n";
-//                     }else{
-//                       config_text += 'rank=unknown'+"\n";
-//                     }
-//                     config_text += '\n[DATASETS]'+"\n";
-//                     for(pjds in dataset_lookup){
-//                       config_text += pjds+"\n";
-//                     }
-//                     fs.closeSync(fs.openSync(FASTA_SUCCESS_FILE, 'w'));
-//                     fs.writeFile(config_file_path, config_text, function writeConfigFile(err) {
-//                         if(err) { return console.log(err); }
-//                         console.log("The Config file was saved!");
-//                     })
-//                   });  // on
-//               }) // chmod
-//           })
-//           res.redirect('project_list')
-// 
-//         }
-//       }
-//     });
-//     console.log('Done with fasta step')
-// });
+
 //
 //
 //
