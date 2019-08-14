@@ -239,15 +239,13 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
                       config_text += pjds+"\n";
                     }
                     fs.closeSync(fs.openSync(FASTA_SUCCESS_FILE, 'w'));
-                    fs.writeFile(config_file_path, config_text, { mode: 0777 }, function writeConfigFile(err) {
+                    fs.writeFile(config_file_path, config_text, { mode: 0666 }, function writeConfigFile(err) {
                         if(err) { return console.log(err); }
                         console.log("The Config file was saved!");
-                        // fs.chmod(config_file_path, '0777', function chmodFile(err) {
-//                         
-//                         })
-//                         fs.chmod(fasta_file_path, '0777', function chmodFile(err) {
-//                         
-//                         })
+                        
+                        fs.chmod(fasta_file_path, '0666', function chmodFile(err) {
+                        
+                        })
                         return
                         
                     })
