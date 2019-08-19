@@ -729,20 +729,20 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
                                  //stdio: [ 'ignore', null, log ]
             });  // stdin, stdout, stderr1
 
-            oligo_process.stdout.on('data', function entropyProcessStdout(data) {
+            oligo_process.stdout.on('data', function oligoProcessStdout(data) {
             //console.log('Processing data');
             // data = data.toString().replace(/^\s+|\s+$/g, '');
                   data = data.toString().trim();
 
             });
-            oligo_process.stderr.on('data', function entropyProcessStderr(data) {
+            oligo_process.stderr.on('data', function oligoProcessStderr(data) {
             //console.log('Processing data');
             // data = data.toString().replace(/^\s+|\s+$/g, '');
                   data = data.toString().trim();
-                  console.log(data)
+                  console.log('STDERR:',data)
 
             });
-            oligo_process.on('close', function entropyProcessOnClose(close_code) {
+            oligo_process.on('close', function oligoProcessOnClose(close_code) {
 
               console.log('Finished Oligotype Process Script')
               // check for files:
