@@ -367,6 +367,14 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   fasta_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-FASTA')) ? 'COMPLETED' : ''
   entropy_status = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-ENTROPY')) ? 'COMPLETED' : ''
   oligo_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-OLIGO')) ? 'COMPLETED' : ''
+  var status_file= path.join(data_repo_path, 'STATUS.txt');
+  var status = 'New'
+  try{
+    fs.closeSync(fs.openSync(status_file, 'wx')); // fails to create if path exists    
+  }catch{
+    var status = fs.readFileSync(status_file)
+  }
+  
   var html_link_path = path.join(data_repo_path, 'html_link.txt');
   var current_html_link = ''
   
@@ -398,6 +406,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
                 { title: 'Oligotype Project',
 
                   code : oligo_code,
+                  status : status,
                   fasta_status   : fasta_status,
                   entropy_status : entropy_status,
                   oligo_status   : oligo_status,
@@ -450,6 +459,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
   var fasta_file = path.join(data_repo_path, 'fasta.fa');
   var aligned_file = path.join(data_repo_path, 'pynast_aligned.fa');
   var min_align_fasta_file = path.join(data_repo_path, 'minaligned.fa');
+  var status_file = path.join(data_repo_path, 'STATUS.txt');
 
   var cutoff = req.body.cutoff
   if(genus == '' || genus == 'none'){
@@ -521,56 +531,59 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
   // 4- onClose: check presences of 'minaligned.fa-ENTROPY.pdf'
   // 5-
     function execEntopyScript(args) {
-        console.log('RUNNING1: '+"/usr/bin/bash "+args.join(' '))
-        return spawn("/usr/bin/bash", args, { stdio: ['pipe', 'pipe', 'pipe'], detached: true });
+        console.log('RUNNING1: '+"bash "+args.join(' '))
+        
+        return spawn("bash", args, { stdio: ['pipe', 'pipe', 'pipe'], detached: true });
     }
-
+    
     fs.writeFile(script_file_path, script_text, function writeEntropyScript(err){
         if(err){ return console.log(err) }
         //fs.chmod(script_file_path, '0775', function chmodFile(err) {
-            if (err) { return console.log(err);}
-            entropy_process = execEntopyScript([ script_file_path, '>', log_file_path, '2>&1', '&' ]);
-            entropy_process.stderr.on('data', function entropyProcessStderr(data) {
-                  data = data.toString().trim();
-                  console.log('STDERR:',data)
-            });
-            entropy_process.on('close', function entropyProcessOnClose(close_code) {
-                console.log('Finished Entropy Process Script')
-                var minaligned_file = path.join(data_repo_path,'minaligned.fa-ENTROPY')
-                var pdf_file            = path.join(data_repo_path,'minaligned.fa-ENTROPY.pdf')
-                var new_pdf_file        = path.join(data_repo_path,'minaligned.fa-ENTROPY.pdf')
-                var ENTROPY_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-ENTROPY')
-                fs.stat(minaligned_file, function checkFilePresence(err,stats){
-                    console.log('Finished Stat(minaligned_file)')
-                    if (stats.isFile()) {
-                      fs.stat(pdf_file, function checkFilePresence(err,stats){
-                        if(err){ return console.log(err) }
-                        //fs.copy(pdf_file, new_pdf_file, {}, function(err){
-                          //if(err){return console.log(err) }
-                          //console.log('COPIED')
-                          if (stats.isFile()) {
-                            status = 'entropy_status=COMPLETE\n'
-                          }else{
-                            status = 'entropy_status=FAIL\n'
-                          }
-                          fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
-                          fs.closeSync(fs.openSync(ENTROPY_SUCCESS_FILE, 'w'));
-                          //res.redirect('/oligotyping/project/'+oligo_code)
-                          //return
-                        //})
-                      })
-                    }else{
-                      status = 'entropy_status=FAIL\n'
-                      res.send('ERROR - unknown error');
-                      return;
-                      //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
-                    }
-                }) // fs.stat
+        writeStatusFile(status_file,'Entropy Script Running ...')
+        entropy_process = execEntopyScript([ script_file_path, '>', log_file_path, '2>&1', '&' ]);
+        
+        entropy_process.stderr.on('data', function entropyProcessStderr(data) {
+            data = data.toString().trim();
+            console.log('STDERR:',data)
+        });
+        entropy_process.on('close', function entropyProcessOnClose(close_code) {
+            console.log('Finished Entropy Process Script')
+            writeStatusFile(status_file,'Entropy Finished')
+            var minaligned_file = path.join(data_repo_path,'minaligned.fa-ENTROPY')
+            var pdf_file            = path.join(data_repo_path,'minaligned.fa-ENTROPY.pdf')
+            var new_pdf_file        = path.join(data_repo_path,'minaligned.fa-ENTROPY.pdf')
+            var ENTROPY_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-ENTROPY')
+            fs.stat(minaligned_file, function checkFilePresence(err,stats){
+                console.log('Finished Stat(minaligned_file)')
+                if (stats.isFile()) {
+                  fs.stat(pdf_file, function checkFilePresence(err,stats){
+                    if(err){ return console.log(err) }
+                    //fs.copy(pdf_file, new_pdf_file, {}, function(err){
+                      //if(err){return console.log(err) }
+                      //console.log('COPIED')
+                      if (stats.isFile()) {
+                        status = 'entropy_status=COMPLETE\n'
+                      }else{
+                        status = 'entropy_status=FAIL\n'
+                      }
+                      fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
+                      fs.closeSync(fs.openSync(ENTROPY_SUCCESS_FILE, 'w'));
+                      //res.redirect('/oligotyping/project/'+oligo_code)
+                      //return
+                    //})
+                  })
+                }else{
+                  status = 'entropy_status=FAIL\n'
+                  res.send('ERROR - unknown error');
+                  return;
+                  //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
+                }
+            }) // fs.stat
                 
-            })
-            
-            console.log('Redirecting')            
-            res.redirect('/oligotyping/project/'+oligo_code)
+        })
+    
+        console.log('Redirecting')            
+        res.redirect('/oligotyping/project/'+oligo_code)
             //var entropy_process = spawn( script_file_path,{ stdio: "ignore", detached: true } )
            //  {}, {
 //                                env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
@@ -725,6 +738,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
   var config_file = path.join(data_repo_path, 'config.ini');
   var scriptlog = path.join(data_repo_path, 'oligotype_shell_script.log');
   var oligolog = path.join(data_repo_path, 'oligo.log');
+  var status_file = path.join(data_repo_path, 'STATUS.txt');
   //var tmpl_file = path.join(data_repository, 'TEMPLATE.tmpl');
   //var fasta_file = path.join(data_repository, 'fasta.fa');
   //var aligned_file = path.join(data_repository, 'pynast_aligned.fa');
@@ -778,11 +792,12 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
     var log_file_path = path.join(data_repo_path, log_file);
     console.log(script_text)
     function execOligoScript(args) {
-        console.log('RUNNING2: '+"/usr/bin/bash "+args.join(' '))
-        return spawn("/usr/bin/bash", args, { stdio: ['pipe', 'pipe', 'pipe'], detached: true });
+        console.log('RUNNING2: '+"bash "+args.join(' '))
+        return spawn("bash", args, { stdio: ['pipe', 'pipe', 'pipe'], detached: true });
     }
     fs.writeFile(script_file_path, script_text, function writeOligoScript(err){
         if(err){ return console.log(err) }
+        writeStatusFile(status_file,'Oligotyping Script Running ...')
         oligo_process = execOligoScript([ script_file_path, '>', log_file_path, '2>&1', '&' ]);
         oligo_process.stderr.on('data', function oligoProcessStderr(data) {
             data = data.toString().trim();
@@ -790,6 +805,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
         });
         oligo_process.on('close', function oligoProcessOnClose(close_code) {
             console.log('Finished Oligotype Process Script')
+            writeStatusFile(status_file,'Oligotying Finished')
             var OLIGO_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-OLIGO')
             var html_dir = path.join(out_oligotype_path,'HTML-OUTPUT')
             var rando = helpers.getRandomInt(10000,99999)
@@ -1009,6 +1025,9 @@ router.get('/delete/:code', helpers.isLoggedIn, function (req, res) {
   
 });
 
+function writeStatusFile(file, status){        
+        fs.writeFileSync(file, status);
+}
 //
 //
 //

@@ -4964,6 +4964,12 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
        old_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'clusters/otumembership', old_file_name);
        console.log(old_file_path)
        new_file_name = 'otus-membership-'+old_ts;
+    }else if (file_type == 'oligotype_fasta') {
+        console.log("FOUND OLIGOTYPE FAST DOWNLOAD");
+        old_file_name = req.body.ts+'/fasta.fa'
+        old_file_path = path.join(config.USER_FILES_BASE, req.user.username, old_file_name);
+        console.log(old_file_path)
+        new_file_name = 'fasta-'+req.body.ts+'.fa';
     }
     else{
       console.log("In routes_user_data/copy_file_for_download and couldn't find file_type: ", file_type);

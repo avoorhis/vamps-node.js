@@ -20,10 +20,11 @@
 	       <h2>Oligotyping Project: <%= code %></h2>  
 	</div>
 	<a href='/oligotyping/project_list/'><<--back</a>&nbsp;&nbsp;<a href='/oligotyping/project/<%= code %>' class='btn btn-xs btn-primary ' >Refresh Page</a>
-	<button class='btn btn-xs btn-warning pull-right' onclick="delete_project('<%= code %>')" width='30'>&nbsp;&nbsp;Delete&nbsp;&nbsp;&nbsp;</button>
+	<button class='btn btn-xs btn-warning pull-right' onclick="delete_project('<%= code %>')" width='30'>&nbsp;&nbsp;Delete This Project&nbsp;&nbsp;&nbsp;</button>
 	<br>
 	<br>Family: <%= family %>
 	<br>Genus: <%= genus %>
+	<span class='pull-right'>STATUS: <%= status %></span>
 <table class='table'>
 	<tr><th>Process</th><th>Status</th><th>Variables</th><th>Controls</th><th></th></tr>
 <!-- -------- fasta row ------------------------------------------------------------------------------------ -->
@@ -40,7 +41,20 @@
 			<% } %>
 			
 		</td>
-		<td>Download File</td>
+		<td>
+		    <% if(fasta_status == 'COMPLETED'){ %>
+		        <form id='download_fasta_form_id' method='POST' action=''>
+        		    <button type='button' id='download_fasta_btn' class="btn btn-xs btn-success">Download Fasta File</button>
+        		    <input type='hidden' name='download_type' value='oligotype_fasta' />
+        		    <input type='hidden' name='dir' value='oligotyping-<%= code %>' />
+        		    <input type='hidden' name='code' value='<%= user.username %>/oligotyping-<%= code %>' />
+        			<!-- <input type='hidden' name='referer' value='/visuals/view_selection' /> -->
+      		  	</form>
+      		 <% }else{ %>
+					
+			 <% } %>
+		
+		</td>
 	</tr>
 <!-- -------- entropy row ------------------------------------------------------------------------------------ -->
 	<tr>

@@ -1,4 +1,44 @@
 
+// create fasta
+var download_fasta_btn = document.getElementById('download_fasta_btn') || null;
+if (download_fasta_btn !== null) {
+  download_fasta_btn.addEventListener('click', function () {
+      //alert(selected_distance_combo)
+      form = document.getElementById('download_fasta_form_id');
+      download_type = form.download_type.value;
+      dir = form.dir.value;
+      ts =  '';
+      download_data( download_type, dir);
+  });
+}
+function download_data(download_type, dir) {
+    var html = '';
+    var args = {}
+    
+    args.file_type = download_type;
+    args.ts = dir;
+    var xmlhttp = new XMLHttpRequest();
+
+    console.log(download_type)
+    target = '/user_data/copy_file_for_download'
+    args.download_type = download_type;
+    
+
+
+    xmlhttp.open("POST", target, true);
+    xmlhttp.setRequestHeader("Content-type","application/json");
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+         var filename = xmlhttp.responseText;
+         //html += "<div class='pull-right'>Your file is being compiled and can be downloaded from the"
+         //html += "<br><a href='/user_data/file_retrieval'>file retrieval page when ready.</a></div>"
+         //document.getElementById('download_confirm_id').innerHTML = html;
+         html = 'Saved!\n\n(File available from the "File Retrieval" button on the "Your Data" page)'
+         alert(html)
+      }
+    };
+    xmlhttp.send(JSON.stringify(args));
+}
 //
 //  SHOW  RESULTS for Taxonomy Search
 //
