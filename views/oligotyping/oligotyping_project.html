@@ -20,7 +20,11 @@
 	       <h2>Oligotyping Project: <%= code %></h2>  
 	</div>
 	<a href='/oligotyping/project_list/'><<--back</a>&nbsp;&nbsp;<a href='/oligotyping/project/<%= code %>' class='btn btn-xs btn-primary ' >Refresh Page</a>
+	<div class='pull-right'>
+	<br><a id='' href='http://merenlab.org/software/oligotyping/' target='_blank'>Find out more</a>
+    &nbsp;&nbsp;
 	<button class='btn btn-xs btn-warning pull-right' onclick="delete_project('<%= code %>')" width='30'>&nbsp;&nbsp;Delete This Project&nbsp;&nbsp;&nbsp;</button>
+	</div>
 	<br>
 	<br>Family: <%= family %>
 	<br>Genus: <%= genus %>
