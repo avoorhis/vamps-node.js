@@ -357,11 +357,15 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   //var pwd = req.CONFIG.PROCESS_DIR;
   //var user_dir_path = path.join(pwd,'public','user_projects');
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-  var real_html_path = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects') //,req.user.username+'_'+olig_dir+'_'+rando.toString())
+  // *********
+  var real_html_path = req.CONFIG.USER_FILES_BASE   //,req.user.username+'_'+olig_dir+'_'+rando.toString())
+  // **********
   var olig_dir = 'oligotyping-'+oligo_code
   var data_repo_path = path.join(user_dir_path, olig_dir);
   var config_file = path.join(data_repo_path, 'config.ini');
   var config = iniparser.parseSync(config_file);
+  console.log('looking in config')
+  //console.log(config)
   rank = config['MAIN']['rank'];
 
   fasta_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-FASTA')) ? 'COMPLETED' : ''
@@ -386,10 +390,11 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
     console.log('no current_html_link')
   }
   
-  console.log(config)
+  
   console.log(fasta_status,' - ',entropy_status,' - ',oligo_status)
   var link_path
   var processed_oligo_runs = []
+  console.log(real_html_path)
   fs.readdir(real_html_path, (err, files) => {
     files.forEach(file => {
         if(file.includes(olig_dir)){
@@ -468,7 +473,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
     g = '-g '+ genus
   }
 
-
+console.log('a')
   var cmd_options1 = {
       exec : 'create_GG_alignment_template_from_taxon.py',
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
@@ -480,7 +485,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
                       '>', alignmentlog
                     ],
   };
-
+console.log('a')
   var cmd_options2 = {
       exec: 'pynast',
       scriptPath : req.CONFIG.PATH_TO_PYNAST,
@@ -492,11 +497,13 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
                       '>', pynastlog
                     ],
   };
+  console.log('b')
   var cmd_options3 = {
       exec : 'minalign',
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ aligned_file, '>', min_align_fasta_file],
   };
+  console.log('c')
   var cmd_options4 = {
       //exec : 'entropy_analysis',
       //scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
@@ -515,7 +522,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
   for(n in lst){
     cmd_list.push(path.join(lst[n].scriptPath, lst[n].exec) + ' ' + lst[n].args.join(' '))
   }
-
+console.log('d')
 
   var script_text = helpers.get_local_script_text(cmd_list);
 
@@ -553,7 +560,8 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
             var pdf_file            = path.join(data_repo_path,'minaligned.fa-ENTROPY.pdf')
             var new_pdf_file        = path.join(data_repo_path,'minaligned.fa-ENTROPY.pdf')
             var ENTROPY_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-ENTROPY')
-            fs.stat(minaligned_file, function checkFilePresence(err,stats){
+            console.log(minaligned_file)
+            fs.stat(minaligned_file, function checkFilePresence(err, stats){
                 console.log('Finished Stat(minaligned_file)')
                 if (stats.isFile()) {
                   fs.stat(pdf_file, function checkFilePresence(err,stats){
