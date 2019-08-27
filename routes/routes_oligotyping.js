@@ -378,12 +378,15 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   }catch{
     var status = fs.readFileSync(status_file)
   }
-  
+  // req.CONFIG.PATH_TO_STATIC_BASE + /user_data/avoorhis/oligotyping-1566494148767/OLIGOTYPING/HTML-OUTPUT/html_link.txt
   var html_link_path = path.join(data_repo_path, 'html_link.txt');
+  
+  //req.CONFIG.PATH_TO_STATIC_BASE
   var current_html_link = ''
   
   if(fs.existsSync(html_link_path) && oligo_status == 'COMPLETED'){
-    current_html_link = String(fs.readFileSync(html_link_path))
+    //current_html_link = String(fs.readFileSync(html_link_path))
+    current_html_link = path.join('/static_base', 'user_data', req.user.username, olig_dir,'OLIGOTYPE', 'HTML-OUTPUT','index.html')
     console.log('current_html_link')
     console.log(current_html_link)
   }else{
@@ -398,7 +401,8 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   fs.readdir(real_html_path, (err, files) => {
     files.forEach(file => {
         if(file.includes(olig_dir)){
-            link_path = path.join('/user_projects',file,'index.html')
+            //link_path = path.join('/user_projects',file,'index.html')
+            link_path = path.join('/static_base','user_data',req.user.username,file,'index.html')
             console.log('FOUND '+link_path)
             processed_oligo_runs.push({"name":file,"link":link_path})
         }
@@ -415,7 +419,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
                   fasta_status   : fasta_status,
                   entropy_status : entropy_status,
                   oligo_status   : oligo_status,
-                  html_link      : current_html_link,
+                  html_link      : current_html_link,  // needs to be: static_base
                   runs           : JSON.stringify(processed_oligo_runs),
                   directory : config['MAIN']['directory'],
                   path :      config['MAIN']['path'],
@@ -540,7 +544,7 @@ console.log('d')
     function execEntopyScript(args) {
         console.log('RUNNING1: '+"bash "+args.join(' '))
         
-        return spawn("bash", args, { stdio: ['pipe', 'pipe', 'pipe'], detached: true });
+        return spawn("bash", args, { env:{ 'PATH':req.CONFIG.PATH }, stdio: ['pipe', 'pipe', 'pipe'], detached: true });
     }
     
     fs.writeFile(script_file_path, script_text, function writeEntropyScript(err){
@@ -801,7 +805,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
     console.log(script_text)
     function execOligoScript(args) {
         console.log('RUNNING2: '+"bash "+args.join(' '))
-        return spawn("bash", args, { stdio: ['pipe', 'pipe', 'pipe'], detached: true });
+        return spawn("bash", args, { env:{ 'PATH':req.CONFIG.PATH }, stdio: ['pipe', 'pipe', 'pipe'], detached: true });
     }
     fs.writeFile(script_file_path, script_text, function writeOligoScript(err){
         if(err){ return console.log(err) }
@@ -840,7 +844,8 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
                         }
                        });
                        //var link = "/oligotyping/projects/"+req.user.username+"_OLIGOTYPING_"+oligo_code+"/HTML-OUTPUT/index.html?rando="+rando.toString()
-                       var link = '/user_projects/'+req.user.username+'_oligotyping-'+oligo_code+'_'+rando.toString()+'/index.html'
+                       //var link = '/user_projects/'+req.user.username+'_oligotyping-'+oligo_code+'_'+rando.toString()+'/index.html'
+                       var link = 'XXXX'
                        var html_link_file = path.join(data_repo_path, 'html_link.txt');
                        fs.writeFileSync(html_link_file, link)
                        //var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **"
@@ -1018,14 +1023,14 @@ router.get('/delete/:code', helpers.isLoggedIn, function (req, res) {
   
   
   //var data_repo_path2 = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects',req.user.username+'_'+olig_dir)
-  var data_repo_path2 = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects')
-  fs.readdirSync(data_repo_path2).forEach(function(dir,index){
-        if(dir.includes(olig_dir)){
-            var curPath = data_repo_path2 + "/" + dir;
-            helpers.deleteFolderRecursive(curPath)
-        }
-        
-  });
+  // var data_repo_path2 = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects')
+//   fs.readdirSync(data_repo_path2).forEach(function(dir,index){
+//         if(dir.includes(olig_dir)){
+//             var curPath = data_repo_path2 + "/" + dir;
+//             helpers.deleteFolderRecursive(curPath)
+//         }
+//         
+//   });
   console.log('done')
   //res.send('OK')
   //res.send('done')

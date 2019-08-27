@@ -190,6 +190,7 @@
 			<div id='html_link_div'>
                 <% if(oligo_status == 'COMPLETED'){ %>
                     <% var current_rando = html_link.substring(html_link.lastIndexOf('_')+1,html_link.lastIndexOf('/')) %>
+                    <!-- /static_base == path.join('/','vol_b','vamps')-->
                     ** <a href='<%= html_link %>' target='_blank'>Open Current HTML: <%= current_rando %></a> **
                     
                     
