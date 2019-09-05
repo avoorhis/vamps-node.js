@@ -1583,8 +1583,19 @@ function average(data){
   return avg;
 }
 function save_file(data, file_path){
-    fs.writeFileSync(file_path, data)
-    return 'Success'
+    //fs.writeFileSync(file_path, data)
+    //fs.chmodSync(file_path, 0o664);
+    //return 'Success'
+    fs.writeFile(file_path, data, function(err){
+        if(err) {
+            return console.log(err);
+        }
+        else{
+            fs.chmodSync(file_path, 0o664);
+            return 'Success'
+        }
+    
+    })
 }
 function thin_out_data_for_display(mtx){
     console.log('in thin_out_data_for_display- OTUs only')
