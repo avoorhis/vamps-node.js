@@ -357,29 +357,32 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   //var pwd = req.CONFIG.PROCESS_DIR;
   //var user_dir_path = path.join(pwd,'public','user_projects');
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-  var real_html_path = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects') //,req.user.username+'_'+olig_dir+'_'+rando.toString())
+    
   var olig_dir = 'oligotyping-'+oligo_code
   var data_repo_path = path.join(user_dir_path, olig_dir);
   var config_file = path.join(data_repo_path, 'config.ini');
   var config = iniparser.parseSync(config_file);
   rank = config['MAIN']['rank'];
-
+  
+  
   fasta_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-FASTA')) ? 'COMPLETED' : ''
   entropy_status = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-ENTROPY')) ? 'COMPLETED' : ''
   oligo_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-OLIGO')) ? 'COMPLETED' : ''
   var status_file= path.join(data_repo_path, 'STATUS.txt');
   var status = 'New'
   try{
-    fs.closeSync(fs.openSync(status_file, 'wx')); // fails to create if path exists    
+        fs.closeSync(fs.openSync(status_file, 'wx')); // fails to create if path exists    
   }catch{
-    var status = fs.readFileSync(status_file)
+        var status = String(fs.readFileSync(status_file))
   }
   
-  var html_link_path = path.join(data_repo_path, 'html_link.txt');
+  //var html_link_path = path.join(data_repo_path, 'html_link.txt');
+  var html_path = path.join(data_repo_path, 'OLIGOTYPE','HTML-OUTPUT','index.html');
   var current_html_link = ''
   
-  if(fs.existsSync(html_link_path) && oligo_status == 'COMPLETED'){
-    current_html_link = String(fs.readFileSync(html_link_path))
+  if(fs.existsSync(html_path) && oligo_status == 'COMPLETED'){
+    //current_html_link = String(fs.readFileSync(html_link_path))
+    current_html_link = path.join('/', 'static_base', 'user_data', req.user.username, olig_dir, 'OLIGOTYPE','HTML-OUTPUT', 'index.html')
     console.log('current_html_link')
     console.log(current_html_link)
   }else{
@@ -389,40 +392,39 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   console.log(config)
   console.log(fasta_status,' - ',entropy_status,' - ',oligo_status)
   var link_path
+  var real_html_runs_path = path.join(data_repo_path, 'OLIGOTYPE-runs') 
   var processed_oligo_runs = []
-  fs.readdir(real_html_path, (err, files) => {
-    files.forEach(file => {
-        if(file.includes(olig_dir)){
-            link_path = path.join('/user_projects',file,'index.html')
-            console.log('FOUND '+link_path)
-            processed_oligo_runs.push({"name":file,"link":link_path})
-        }
-        
-        
-    });
-    
-  
-  res.render('oligotyping/oligotyping_project',
-                { title: 'Oligotype Project',
-
-                  code : oligo_code,
-                  status : status,
-                  fasta_status   : fasta_status,
-                  entropy_status : entropy_status,
-                  oligo_status   : oligo_status,
-                  html_link      : current_html_link,
-                  runs           : JSON.stringify(processed_oligo_runs),
-                  directory : config['MAIN']['directory'],
-                  path :      config['MAIN']['path'],
-                  rank :      config['MAIN']['rank'],
-                  family :    config['MAIN']['family'],
-                  genus :     config['MAIN']['genus'],
-                  cutoff :    config['MAIN']['pynast_cutoff_length'],
-                 
-                  user: req.user, hostname: req.CONFIG.hostname
-  });
-
+  helpers.ensure_dir_exists(real_html_runs_path)
+  fs.readdirSync(real_html_runs_path).forEach(function(dir_name) {
+    curPath = path.join(real_html_runs_path, dir_name)
+    stats = fs.statSync(curPath)
+    link_path = path.join('/', 'static_base', 'user_data', req.user.username, olig_dir, 'OLIGOTYPE-runs', dir_name, 'index.html')
+    console.log('FOUND RUNS'+link_path)
+    processed_oligo_runs.push({"name":dir_name,"link":link_path,"ts":stats['mtime']})
+ 
   })  // end readdir
+  
+    res.render('oligotyping/oligotyping_project',
+            { title: 'Oligotype Project',
+
+              code : oligo_code,
+              status : status,
+              fasta_status   : fasta_status,
+              entropy_status : entropy_status,
+              oligo_status   : oligo_status,
+              html_link      : current_html_link,
+              runs           : JSON.stringify(processed_oligo_runs),
+              directory     : config['MAIN']['directory'],
+              path          : config['MAIN']['path'],
+              rank          : config['MAIN']['rank'],
+              family        : config['MAIN']['family'],
+              genus         : config['MAIN']['genus'],
+              cutoff        : config['MAIN']['pynast_cutoff_length'],
+         
+              user: req.user, hostname: req.CONFIG.hostname
+    });
+
+  
 
 
 
@@ -539,7 +541,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
     fs.writeFile(script_file_path, script_text, function writeEntropyScript(err){
         if(err){ return console.log(err) }
         //fs.chmod(script_file_path, '0775', function chmodFile(err) {
-        writeStatusFile(status_file,'Entropy Script Running ...')
+        writeStatusFile(status_file,'Entropy Script Running')
         entropy_process = execEntopyScript([ script_file_path, '>', log_file_path, '2>&1', '&' ]);
         
         entropy_process.stderr.on('data', function entropyProcessStderr(data) {
@@ -584,66 +586,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
     
         console.log('Redirecting')            
         res.redirect('/oligotyping/project/'+oligo_code)
-            //var entropy_process = spawn( script_file_path,{ stdio: "ignore", detached: true } )
-           //  {}, {
-//                                env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
-//                                detached: true,
-//                                stdio:['pipe', 'pipe', 'pipe']
-                                 //stdio: [ 'ignore', null, log ]
-//            });  // stdin, stdout, stderr1
-
-//             entropy_process.stdout.on('data', function entropyProcessStdout(data) {
-//             //console.log('Processing data');
-//             // data = data.toString().replace(/^\s+|\s+$/g, '');
-//                   data = data.toString().trim();
-//                   console.log('STDOUT:',data)
-//             });
-//             entropy_process.stderr.on('data', function entropyProcessStderr(data) {
-//             //console.log('Processing data');
-//             // data = data.toString().replace(/^\s+|\s+$/g, '');
-//                   data = data.toString().trim();
-//                   console.log('STDERR:',data)
-// 
-//             });
-//             entropy_process.on('close', function entropyProcessOnClose(close_code) {
-// 
-//               console.log('Finished Entropy Process Script')
-//               // check for files:
-//               //minaligned.fa-ENTROPY and minaligned.fa-ENTROPY.pdf
-//               // if present then update config file
-// 
-//               var minaligned_file = path.join(data_repo_path,'minaligned.fa-ENTROPY')
-//               var pdf_file            = path.join(data_repo_path,'minaligned.fa-ENTROPY.pdf')
-//               var new_pdf_file        = path.join(data_repo_path,'minaligned.fa-ENTROPY.pdf')
-//               var ENTROPY_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-ENTROPY')
-//               fs.stat(minaligned_file, function checkFilePresence(err,stats){
-//                 if(err){return console.log(err) }
-//                 console.log('Finished Stat(minaligned_file)')
-//                 if (stats.isFile()) {
-//                   fs.stat(pdf_file, function checkFilePresence(err,stats){
-//                     if(err){ return console.log(err) }
-//                     //fs.copy(pdf_file, new_pdf_file, {}, function(err){
-//                       //if(err){return console.log(err) }
-//                       console.log('COPIED')
-//                       if (stats.isFile()) {
-//                         status = 'entropy_status=COMPLETE\n'
-//                       }else{
-//                         status = 'entropy_status=FAIL\n'
-//                       }
-//                       //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
-//                       //fs.closeSync(fs.openSync(ENTROPY_SUCCESS_FILE, 'w'));
-//                       res.redirect('/oligotyping/project/'+oligo_code)
-//                       return
-//                     //})
-//                   })
-//                 }else{
-//                   status = 'entropy_status=FAIL\n'
-//                   //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
-//                 }
-//               }) // fs.stat
-// 
-//             }); // on close
-//      });       // fs.chmod
+  
 
   });           // fs.writeFile()
 
@@ -712,6 +655,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
   console.log(req.params);
   console.log('<<--in oligo - oligo')
 
+
   var oligo_code = req.params.code
   var family = req.body.family
   var genus = req.body.genus // may be 'none'
@@ -719,10 +663,39 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
   var MIN_ACTUAL_ABUNDANCE = req.body.MIN_ACTUAL_ABUNDANCE
   var MIN_SUBSTANTIVE_ABUNDANCE = req.body.MIN_SUBSTANTIVE_ABUNDANCE
   var MIN_NUMBER_OF_SAMPLES = req.body.MIN_NUMBER_OF_SAMPLES
+  var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+  var olig_dir = 'oligotyping-'+oligo_code
+  var data_repo_path = path.join(user_dir_path, olig_dir);
+  var config_file = path.join(data_repo_path, 'config.ini');
+  var scriptlog = path.join(data_repo_path, 'oligotype_shell_script.log');
+  var oligolog = path.join(data_repo_path, 'oligo.log');
+  var status_file = path.join(data_repo_path, 'STATUS.txt');
+  var min_align_fasta_file = path.join(data_repo_path, 'minaligned.fa');
+  var entropy_file = path.join(data_repo_path, 'minaligned.fa-ENTROPY');
+  var out_oligotype_path  = path.join(data_repo_path, 'OLIGOTYPE');
+  var html_dir = path.join(out_oligotype_path,'HTML-OUTPUT')
   if(req.body.hasOwnProperty('SELECTED_COMPONENTS')){
+    // re-RUN (use uppercase '-C') -- 
     var SELECTED_COMPONENTS = req.body.SELECTED_COMPONENTS
     var appendC = ['-C',SELECTED_COMPONENTS]
+    var rando = helpers.getRandomInt(10000,99999)
+    var destination = path.join(data_repo_path,'OLIGOTYPE-runs',rando.toString())
+    var ncp = require('ncp').ncp;
+    var chmodr = require('chmodr');
+    ncp(html_dir, destination, function (err) {
+      if (err) {   return console.error(err);  }
+        
+        chmodr(destination, 0o777, (err) => {
+        if (err) {
+            console.log('Failed to execute chmodr', err);
+        } else {
+            console.log('Success');
+        }
+       });
+    });
+    
   }else if(req.body.hasOwnProperty('NUMBER_OF_AUTO_COMPONENTS')){
+    // First RUN (use lowercase '-c')
     var NUMBER_OF_AUTO_COMPONENTS = req.body.NUMBER_OF_AUTO_COMPONENTS
     var appendC = ['-c',NUMBER_OF_AUTO_COMPONENTS]
   }else{
@@ -732,25 +705,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
 
   //var pwd = req.CONFIG.PROCESS_DIR;
   //var user_dir_path = path.join(pwd,'public','user_projects');
-  var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-  var olig_dir = 'oligotyping-'+oligo_code
-  var data_repo_path = path.join(user_dir_path, olig_dir);
-  var config_file = path.join(data_repo_path, 'config.ini');
-  var scriptlog = path.join(data_repo_path, 'oligotype_shell_script.log');
-  var oligolog = path.join(data_repo_path, 'oligo.log');
-  var status_file = path.join(data_repo_path, 'STATUS.txt');
-  //var tmpl_file = path.join(data_repository, 'TEMPLATE.tmpl');
-  //var fasta_file = path.join(data_repository, 'fasta.fa');
-  //var aligned_file = path.join(data_repository, 'pynast_aligned.fa');
-  var min_align_fasta_file = path.join(data_repo_path, 'minaligned.fa');
-  var entropy_file = path.join(data_repo_path, 'minaligned.fa-ENTROPY');
-  //var entropy_log   = path.join(data_repository, 'entropy.log');
-
-  //var out_dir  = req.user.username+'_OLIGOTYPING_'+oligo_code
-  //var out_oligotype_path  = path.join(pwd,'public','oligotyping','projects', out_dir);
-
-  var out_dir  = 'OLIGOTYPE'
-  var out_oligotype_path  = path.join(data_repo_path, out_dir);
+  
 
   //var page_title = '"('+family+')-'+req.body.directory+'"'
   var page_title = '"'+req.user.username+' run code: '+oligo_code+'"'
@@ -797,7 +752,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
     }
     fs.writeFile(script_file_path, script_text, function writeOligoScript(err){
         if(err){ return console.log(err) }
-        writeStatusFile(status_file,'Oligotyping Script Running ...')
+        writeStatusFile(status_file,'Oligotyping Script Running')
         oligo_process = execOligoScript([ script_file_path, '>', log_file_path, '2>&1', '&' ]);
         oligo_process.stderr.on('data', function oligoProcessStderr(data) {
             data = data.toString().trim();
@@ -807,9 +762,9 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
             console.log('Finished Oligotype Process Script')
             writeStatusFile(status_file,'Oligotying Finished')
             var OLIGO_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-OLIGO')
-            var html_dir = path.join(out_oligotype_path,'HTML-OUTPUT')
-            var rando = helpers.getRandomInt(10000,99999)
-            var destination = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects',req.user.username+'_'+olig_dir+'_'+rando.toString())
+            
+            
+            
             fs.stat(html_dir, function checkDirPresence(err, stats){
                 if(err){
                     status = 'oligo_status=FAIL\n'
@@ -818,29 +773,9 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
                 }else if(stats.isDirectory()){
                     status = 'oligo_status=COMPLETE\n'
                     console.log('SUCCESS fs.stat html_dir found')
-                    fs.closeSync(fs.openSync(OLIGO_SUCCESS_FILE, 'w'));
-                    var ncp = require('ncp').ncp;
-                    var chmodr = require('chmodr');
-                    ncp(html_dir, destination, function (err) {
-                       if (err) {   return console.error(err);  }
-                       console.log('redirecting back to project page')
-                       chmodr(destination, 0o777, (err) => {
-                        if (err) {
-                            console.log('Failed to execute chmodr', err);
-                        } else {
-                            console.log('Success');
-                        }
-                       });
-                       //var link = "/oligotyping/projects/"+req.user.username+"_OLIGOTYPING_"+oligo_code+"/HTML-OUTPUT/index.html?rando="+rando.toString()
-                       var link = '/user_projects/'+req.user.username+'_oligotyping-'+oligo_code+'_'+rando.toString()+'/index.html'
-                       var html_link_file = path.join(data_repo_path, 'html_link.txt');
-                       fs.writeFileSync(html_link_file, link)
-                       //var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **"
-                       console.log({"link":link,"rando":rando.toString()})
-                      
-                       //res.json({"link":link,"rando":rando.toString()});
-                       //res.redirect('/oligotyping/project/'+oligo_code)
-                    });
+                    fs.closeSync(fs.openSync(OLIGO_SUCCESS_FILE, 'w'));  // write empty file
+                    //only copy on re-run
+                    
                 }else{
                     status = 'oligo_status=FAIL\n'
                     res.send('ERROR - unknown error');
@@ -1010,14 +945,14 @@ router.get('/delete/:code', helpers.isLoggedIn, function (req, res) {
   
   
   //var data_repo_path2 = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects',req.user.username+'_'+olig_dir)
-  var data_repo_path2 = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects')
-  fs.readdirSync(data_repo_path2).forEach(function(dir,index){
-        if(dir.includes(olig_dir)){
-            var curPath = data_repo_path2 + "/" + dir;
-            helpers.deleteFolderRecursive(curPath)
-        }
-        
-  });
+  // var data_repo_path2 = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects')
+//   fs.readdirSync(data_repo_path2).forEach(function(dir,index){
+//         if(dir.includes(olig_dir)){
+//             var curPath = data_repo_path2 + "/" + dir;
+//             helpers.deleteFolderRecursive(curPath)
+//         }
+//         
+//   });
   console.log('done')
   //res.send('OK')
   //res.send('done')

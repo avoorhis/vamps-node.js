@@ -90,18 +90,14 @@
 		<% }else{ %>
 			<td>
 					<% if(fasta_status == 'COMPLETED'){ %>
-								<form id='' class='' method='post' action='/oligotyping/entropy/<%= code %>'>
-									<input type='submit' id=''  class='btn btn-xs btn-primary' value='Run Entropy' />
-									<input type='hidden' name='directory' value='<%= directory %>' />
-									<input type='hidden' name='code' value='<%= code %>' />
-									<input type='hidden' name='rank' value='<%= rank %>' />
-									<input type='hidden' name='family' value='<%= family %>' />
-									<input type='hidden' name='genus' value='<%= genus %>' />
-									<input type='hidden' name='cutoff' value='<%= cutoff %>' />
-								</form>
+						<% if(status.substr(status.length - 14) == 'Script Running'){ %>
+							<input type='button' id='run_entropy_btn' value='Run Entropy' "><!-- non-active -->
+						<% }else{ %>
+						    <input type='button' id='run_entropy_btn' value='Run Entropy' onclick="start_entropy('<%= code %>','<%= directory %>','<%= rank %>','<%= family %>','<%= genus %>','<%= cutoff %>')">
+						<% } %>		
 					<% }else{ %>
-								<a href='/oligotyping/rewind/<%= code %>/entropy' class='btn btn-xs btn-link' >Re-wind to here</a>
-								<input type='button' id=''  class='btn btn-xs btn-primary' value='Run Entropy' />
+						<a href='/oligotyping/rewind/<%= code %>/entropy' class='btn btn-xs btn-link' >Re-wind to here</a>
+						<input type='button' id=''  class='btn btn-xs btn-primary' value='Run Entropy' /> <!-- non-active -->
 								
 					<% } %>
 					
@@ -159,26 +155,30 @@
 		<td>
 						<% if(fasta_status === 'COMPLETED' && entropy_status === 'COMPLETED'){ %>
 									
-									
-								
-                                    
-                                    <% if(oligo_status === 'COMPLETED'){ %>
+                            <% if(oligo_status === 'COMPLETED'){ %>
+                                <% if(status.substr(status.length - 14) == 'Script Running'){ %>
+							        <input type='button' id='' value='re-Run Oligo' "><!-- non-active -->
+						        <% }else{ %>
+						            To re-run:<br>Enter Selected Components
+                                    <br>(a comma separated list of base locations).
+                                    <br>For help choosing use either the<br>entropy graph or the Oligotyping HTML Page.
+                                    <br>
                                         
-                                        To re-run:<br>Enter Selected Components
-                                        <br>(a comma separated list of base locations).
-                                        <br>For help choosing use either the<br>entropy graph or the Oligotyping HTML Page.
-                                        <br>
+                                    <input type='button' id=''  class='btn btn-xs btn-primary' value='re-Run Oligo' onclick="run_oligotyping('rerun','<%= code %>')" />
                                         
-                                          <input type='button' id=''  class='btn btn-xs btn-primary' value='re-Run Oligo' onclick="run_oligotyping('rerun','<%= code %>')" />
+                                    ( <a href='/oligotyping/rewind/<%= code %>/oligo' class='btn btn-xs btn-link' >Re-wind to here</a> )
+						        <% } %>
                                         
-                                        ( <a href='/oligotyping/rewind/<%= code %>/oligo' class='btn btn-xs btn-link' >Re-wind to here</a> )
-                                    <% }else{ %>
-                                        
-                                        Enter values for the command line parameters shown to the left
-                                        <br>or leave the defaults. The '-c' value should be<br>changed to be less than or equal to the number<br> of tall peaks of interest from the entropy graph.
-                                        <br><input type='button' id=''  class='btn btn-xs btn-primary' value='Run Oligo' onclick="run_oligotyping('run','<%= code %>')" />
-                                    
-                                    <% } %>
+                            <% }else{ %>
+                                <% if(status.substr(status.length - 14) == 'Script Running'){ %>
+							        <input type='button' id='' value='Run Oligo' "><!-- non-active -->
+						        <% }else{ %>
+						            Enter values for the command line parameters shown to the left
+                                    <br>or leave the defaults. The '-c' value should be<br>changed to be less than or equal to the number<br> of tall peaks of interest from the entropy graph.
+                                    <br><input type='button' id=''  class='btn btn-xs btn-primary' value='Run Oligo' onclick="run_oligotyping('run','<%= code %>')" />
+						        <% } %>       
+                                                
+                            <% } %>
 							 
 						<% }else{ %>
 							<a id=''  disabled class='btn btn-xs btn-primary' >Run Oligo</a>
@@ -190,7 +190,7 @@
 			<div id='html_link_div'>
                 <% if(oligo_status == 'COMPLETED'){ %>
                     <% var current_rando = html_link.substring(html_link.lastIndexOf('_')+1,html_link.lastIndexOf('/')) %>
-                    ** <a href='<%= html_link %>' target='_blank'>Open Current HTML: <%= current_rando %></a> **
+                    ** <a href='<%= html_link %>' target='_blank'>Open Current HTML</a> **
                     
                     
                 <% }else{ %>            
@@ -202,7 +202,7 @@
                 Previous Runs:<br>
                 <div id='' style='height:100px;overflow:auto; border-style:solid;border-width: 1px;'>
                 <% for (n in runs){ %>
-                    <br><a href='<%= runs[n].link %>' target='_blank'><%= runs[n].name %></a>
+                    <br>DateTime:  <a href='<%= runs[n].link %>' target='_blank'><%= runs[n].ts %></a>
                 <% } %>
                 </div>
                 
