@@ -356,14 +356,8 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   console.log(oligo_code)
   //var pwd = req.CONFIG.PROCESS_DIR;
   //var user_dir_path = path.join(pwd,'public','user_projects');
-  var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-<<<<<<< HEAD
-    
-=======
-  // *********
-  var real_html_path = req.CONFIG.USER_FILES_BASE   //,req.user.username+'_'+olig_dir+'_'+rando.toString())
-  // **********
->>>>>>> 882bd75ec40f7aaf4098c7bb6124674602503e72
+  var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);    
+
   var olig_dir = 'oligotyping-'+oligo_code
   var data_repo_path = path.join(user_dir_path, olig_dir);
   var config_file = path.join(data_repo_path, 'config.ini');
@@ -383,7 +377,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   }catch{
         var status = String(fs.readFileSync(status_file))
   }
-<<<<<<< HEAD
+
   
   //var html_link_path = path.join(data_repo_path, 'html_link.txt');
   var html_path = path.join(data_repo_path, 'OLIGOTYPE','HTML-OUTPUT','index.html');
@@ -392,17 +386,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   if(fs.existsSync(html_path) && oligo_status == 'COMPLETED'){
     //current_html_link = String(fs.readFileSync(html_link_path))
     current_html_link = path.join('/', 'static_base', 'user_data', req.user.username, olig_dir, 'OLIGOTYPE','HTML-OUTPUT', 'index.html')
-=======
-  // req.CONFIG.PATH_TO_STATIC_BASE + /user_data/avoorhis/oligotyping-1566494148767/OLIGOTYPING/HTML-OUTPUT/html_link.txt
-  var html_link_path = path.join(data_repo_path, 'html_link.txt');
-  
-  //req.CONFIG.PATH_TO_STATIC_BASE
-  var current_html_link = ''
-  
-  if(fs.existsSync(html_link_path) && oligo_status == 'COMPLETED'){
-    //current_html_link = String(fs.readFileSync(html_link_path))
-    current_html_link = path.join('/static_base', 'user_data', req.user.username, olig_dir,'OLIGOTYPE', 'HTML-OUTPUT','index.html')
->>>>>>> 882bd75ec40f7aaf4098c7bb6124674602503e72
+
     console.log('current_html_link')
     console.log(current_html_link)
   }else{
@@ -414,7 +398,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   var link_path
   var real_html_runs_path = path.join(data_repo_path, 'OLIGOTYPE-runs') 
   var processed_oligo_runs = []
-<<<<<<< HEAD
+
   helpers.ensure_dir_exists(real_html_runs_path)
   fs.readdirSync(real_html_runs_path).forEach(function(dir_name) {
     curPath = path.join(real_html_runs_path, dir_name)
@@ -444,41 +428,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
          
               user: req.user, hostname: req.CONFIG.hostname
     });
-=======
-  console.log(real_html_path)
-  fs.readdir(real_html_path, (err, files) => {
-    files.forEach(file => {
-        if(file.includes(olig_dir)){
-            //link_path = path.join('/user_projects',file,'index.html')
-            link_path = path.join('/static_base','user_data',req.user.username,file,'index.html')
-            console.log('FOUND '+link_path)
-            processed_oligo_runs.push({"name":file,"link":link_path})
-        }
-        
-        
-    });
-    
-  
-  res.render('oligotyping/oligotyping_project',
-                { title: 'Oligotype Project',
 
-                  code : oligo_code,
-                  status : status,
-                  fasta_status   : fasta_status,
-                  entropy_status : entropy_status,
-                  oligo_status   : oligo_status,
-                  html_link      : current_html_link,  // needs to be: static_base
-                  runs           : JSON.stringify(processed_oligo_runs),
-                  directory : config['MAIN']['directory'],
-                  path :      config['MAIN']['path'],
-                  rank :      config['MAIN']['rank'],
-                  family :    config['MAIN']['family'],
-                  genus :     config['MAIN']['genus'],
-                  cutoff :    config['MAIN']['pynast_cutoff_length'],
-                 
-                  user: req.user, hostname: req.CONFIG.hostname
-  });
->>>>>>> 882bd75ec40f7aaf4098c7bb6124674602503e72
 
   
 
@@ -832,36 +782,11 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
                 }else if(stats.isDirectory()){
                     status = 'oligo_status=COMPLETE\n'
                     console.log('SUCCESS fs.stat html_dir found')
-<<<<<<< HEAD
+
                     fs.closeSync(fs.openSync(OLIGO_SUCCESS_FILE, 'w'));  // write empty file
                     //only copy on re-run
                     
-=======
-                    fs.closeSync(fs.openSync(OLIGO_SUCCESS_FILE, 'w'));
-                    var ncp = require('ncp').ncp;
-                    var chmodr = require('chmodr');
-                    ncp(html_dir, destination, function (err) {
-                       if (err) {   return console.error(err);  }
-                       console.log('redirecting back to project page')
-                       chmodr(destination, 0o777, (err) => {
-                        if (err) {
-                            console.log('Failed to execute chmodr', err);
-                        } else {
-                            console.log('Success');
-                        }
-                       });
-                       //var link = "/oligotyping/projects/"+req.user.username+"_OLIGOTYPING_"+oligo_code+"/HTML-OUTPUT/index.html?rando="+rando.toString()
-                       //var link = '/user_projects/'+req.user.username+'_oligotyping-'+oligo_code+'_'+rando.toString()+'/index.html'
-                       var link = 'XXXX'
-                       var html_link_file = path.join(data_repo_path, 'html_link.txt');
-                       fs.writeFileSync(html_link_file, link)
-                       //var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **"
-                       console.log({"link":link,"rando":rando.toString()})
-                      
-                       //res.json({"link":link,"rando":rando.toString()});
-                       //res.redirect('/oligotyping/project/'+oligo_code)
-                    });
->>>>>>> 882bd75ec40f7aaf4098c7bb6124674602503e72
+
                 }else{
                     status = 'oligo_status=FAIL\n'
                     res.send('ERROR - unknown error');
