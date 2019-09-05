@@ -184,6 +184,67 @@ function delete_project(code){
     }
 
 }
+//
+//
+//
+function start_entropy(code,directory,rank,family,genus,cutoff){
+   //  <form id='' class='' method='post' action='/oligotyping/entropy/<%= code %>'>
+//         <input type='submit' id=''  class='btn btn-xs btn-primary' value='Run Entropy' />
+//         <input type='hidden' name='directory' value='<%= directory %>' />
+//         <input type='hidden' name='code' value='<%= code %>' />
+//         <input type='hidden' name='rank' value='<%= rank %>' />
+//         <input type='hidden' name='family' value='<%= family %>' />
+//         <input type='hidden' name='genus' value='<%= genus %>' />
+//         <input type='hidden' name='cutoff' value='<%= cutoff %>' />
+//     </form>
+    document.getElementById("run_entropy_btn").disabled = true;
+    
+    var f = document.createElement("form");
+    f.setAttribute('method',"post");
+    f.setAttribute('action',"/oligotyping/entropy/"+code);
+
+  	var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'directory';
+    input.value = directory;
+    f.appendChild(input);
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'code';
+    input.value = code;
+    f.appendChild(input);
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'rank';
+    input.value = rank;
+    f.appendChild(input);
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'family';
+    input.value = family;
+    f.appendChild(input);
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'genus';
+    input.value = genus;
+    f.appendChild(input);
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'cutoff';
+    input.value = cutoff;
+    f.appendChild(input);
+
+    var submit = document.createElement('input');
+    submit.setAttribute('type', "submit");
+    f.appendChild(submit);
+    document.body.appendChild(f);
+
+    f.submit();
+    document.body.removeChild(f);
+}
+//
+//
+//
 function view_entropy(code){
     var args = {'code':code}
     //console.log(args)
