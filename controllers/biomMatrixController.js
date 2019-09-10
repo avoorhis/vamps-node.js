@@ -470,7 +470,13 @@ class Taxonomy {
     this.chosen_dids.map((did, d_idx) => {
      const curr_tax_info_obj = tax_id_obj_by_did_filtered[did];
      curr_tax_info_obj.map(ob => {
-       tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
+       // tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
+       if (ob.tax_long_name) {
+         tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
+       }
+       else {
+         console.log('Skipping Empty ob.tax_long_name index:' + d_idx + ' with count:' + String(ob.cnt));
+       }
      });
     });
 
