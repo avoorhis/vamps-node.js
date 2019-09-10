@@ -552,7 +552,16 @@ class TaxonomySimple extends Taxonomy {
     return one_taxon_name;
   }
 
-  screen_domains(tax_long_name_arr) {
+  check_domain_is_selected(tax_long_name_arr) {
+    let domain_is_selected = this.post_items.domains.includes(tax_long_name_arr[0]);
+    if (!domain_is_selected) {
+      console.log('Excluding', tax_long_name_arr);
+      tax_long_name_arr = [];
+    }
+    return tax_long_name_arr;
+  }
+
+  check_organel_and_chloropl(tax_long_name_arr) {
     let organelle_has_been_de_selected = this.post_items.domains.indexOf('Organelle') === -1;
     if (organelle_has_been_de_selected) {
       let has_chloroplast = tax_long_name_arr.includes('Chloroplast');
@@ -562,6 +571,12 @@ class TaxonomySimple extends Taxonomy {
         tax_long_name_arr = [];
       }
     }
+    return tax_long_name_arr;
+  }
+
+  screen_domains(tax_long_name_arr) {
+    tax_long_name_arr = this.check_organel_and_chloropl(tax_long_name_arr);
+    tax_long_name_arr = this.check_domain_is_selected(tax_long_name_arr);
     return tax_long_name_arr;
   }
 
@@ -589,7 +604,6 @@ class TaxonomySimple extends Taxonomy {
 
     return rank_name;
   }
-
 }
 
 class TaxonomyCustom extends Taxonomy {
