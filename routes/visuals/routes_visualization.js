@@ -435,118 +435,119 @@ function load_configuration_file(req, res, config_file_data )
 //TODO: JSHint: This function's cyclomatic complexity is too high. (30) (W074)
 function create_clean_config(req, upld_obj)
 {
-    //fs.readFile(upload_file, 'utf8',function(err, data){
+  //fs.readFile(upload_file, 'utf8',function(err, data){
         //if (err){ return err }
 
+  let timestamp = +new Date();
+  let ts = req.user.username  + '_'+timestamp;
+  let clean_obj = {};
+  clean_obj.ts = ts;
+  let new_filename = "";
 
-        let timestamp = +new Date();
-        let ts = req.user.username  + '_'+timestamp;
-        let clean_obj = {};
-        clean_obj.ts = ts;
-        let new_filename = "";
-        if (upld_obj.hasOwnProperty('image')) {
-          console.log('1) FILE is IMAGE');
-          clean_obj.image = upld_obj.image;
-          new_filename = 'image-' + clean_obj.image + '-' + clean_obj.ts + '.json';
-        } else {
-          console.log('2) FILE is CONFIG');
-          new_filename = 'configuration-' + timestamp + '.json';
+  if (upld_obj.hasOwnProperty('image')) {
+    console.log('1) FILE is IMAGE');
+    clean_obj.image = upld_obj.image;
+    new_filename = 'image-' + clean_obj.image + '-' + clean_obj.ts + '.json';
+  } else {
+    console.log('2) FILE is CONFIG');
+    new_filename = 'configuration-' + timestamp + '.json';
+  }
+
+  if (! upld_obj.hasOwnProperty('chosen_id_order')) {
+      req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
+      return {};
+  }
+
+  let ids = upld_obj.chosen_id_order;
+  let new_dataset_ids = helpers.screen_dids_for_permissions(req, ids);
+  if (! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) !== 'vamps'){
+    req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
+    return {};
+  }
+  if (new_dataset_ids.length === 0){
+    req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
+    return {};
+
+  } else {
+    // move the file ASIS to the CONFIG.USER_FILES_BASE location
+    clean_obj.chosen_id_order = new_dataset_ids;
+    clean_obj.no_of_datasets = new_dataset_ids.length;
+
+    // ADD DEFAULTS if needed
+    if (! upld_obj.hasOwnProperty('metadata') || upld_obj.metadata.length === 0){
+      clean_obj.metadata = ['latitude','longitude'];
+    } else {
+      clean_obj.metadata = upld_obj.metadata;
+    }
+    clean_obj.unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
+    clean_obj.custom_taxa = ["NA"];
+    const allowed_norms = ['none', 'maximum', 'frequency'];
+    if (! upld_obj.hasOwnProperty('normalization') || allowed_norms.indexOf(upld_obj.normalization) === -1){
+      clean_obj.normalization = 'none';
+    } else {
+      clean_obj.normalization = upld_obj.normalization;
+    }
+    const allowed_distance_metrics = ['jaccard','kulczynski','canberra','morisita_horn','bray_curtis'];
+    if (! upld_obj.hasOwnProperty('selected_distance') || allowed_distance_metrics.indexOf(upld_obj.selected_distance) === -1){
+      clean_obj.selected_distance = 'morisita_horn';
+    } else {
+      clean_obj.selected_distance = upld_obj.selected_distance;
+    }
+    const allowed_ranks = C.RANKS;
+    if (! upld_obj.hasOwnProperty('tax_depth') || allowed_ranks.indexOf(upld_obj.tax_depth) === -1){
+      clean_obj.tax_depth = 'phylum';
+    } else {
+      clean_obj.tax_depth = upld_obj.tax_depth;
+    }
+    const allowed_incnas = ['yes','no'];
+    if (! upld_obj.hasOwnProperty('include_nas') || allowed_incnas.indexOf(upld_obj.include_nas) === -1){
+      clean_obj.include_nas = 'yes';
+    } else {
+      clean_obj.include_nas = upld_obj.include_nas;
+    }
+    // DOMAINS
+    let allowed_domains = C.DOMAINS.domains;
+    if (! upld_obj.hasOwnProperty('domains') || upld_obj.domains.length === 0){
+      clean_obj.domains = ["Archaea", "Bacteria", "Eukarya", "Organelle", "Unknown"];
+    }
+    else {
+      let arr = [];
+      for (let n in allowed_domains){
+        if (upld_obj.domains.indexOf(allowed_domains[n].name) !== -1){
+            arr.push(allowed_domains[n].name);
         }
+      }
+      clean_obj.domains = arr;
+      if (upld_obj.domains.length === 0){
+        clean_obj.domains = ["Archaea", "Bacteria", "Eukarya", "Organelle", "Unknown"];
+      }
+    }
 
-        if (! upld_obj.hasOwnProperty('chosen_id_order')) {
-            req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
-            return {};
-        }
-        let ids = upld_obj.chosen_id_order;
-        let new_dataset_ids = helpers.screen_dids_for_permissions(req, ids);
-        if (! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) !== 'vamps'){
-          req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
-          return {};
-        }
-        if (new_dataset_ids.length === 0){
-          req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
-          return {};
+    if (typeof upld_obj.min_range === 'string'){
+      clean_obj.min_range = parseInt(upld_obj.min_range) || 0;
+    }
+    if (! upld_obj.hasOwnProperty('min_range') || upld_obj.min_range < 0  || upld_obj.min_range > 99) {
+      clean_obj.min_range = 0;
+    }
+    if (typeof upld_obj.max_range === 'string'){
+      clean_obj.max_range = parseInt(upld_obj.max_range) || 100;
+    }
+    if (! upld_obj.hasOwnProperty('max_range') || upld_obj.max_range < 1  || upld_obj.max_range > 100){
+      clean_obj.max_range = 100;
+    }
 
-        } else {
-          // move the file ASIS to the CONFIG.USER_FILES_BASE location
-          clean_obj.chosen_id_order = new_dataset_ids;
-          clean_obj.no_of_datasets = new_dataset_ids.length;
-
-          // ADD DEFAULTS if needed
-          if (! upld_obj.hasOwnProperty('metadata') || upld_obj.metadata.length === 0){
-            clean_obj.metadata = ['latitude','longitude'];
-          } else {
-            clean_obj.metadata = upld_obj.metadata;
-          }
-          clean_obj.unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
-          clean_obj.custom_taxa = ["NA"];
-          const allowed_norms = ['none', 'maximum', 'frequency'];
-          if (! upld_obj.hasOwnProperty('normalization') || allowed_norms.indexOf(upld_obj.normalization) === -1){
-            clean_obj.normalization = 'none';
-          } else {
-            clean_obj.normalization = upld_obj.normalization;
-          }
-          const allowed_distance_metrics = ['jaccard','kulczynski','canberra','morisita_horn','bray_curtis'];
-          if (! upld_obj.hasOwnProperty('selected_distance') || allowed_distance_metrics.indexOf(upld_obj.selected_distance) === -1){
-            clean_obj.selected_distance = 'morisita_horn';
-          } else {
-            clean_obj.selected_distance = upld_obj.selected_distance;
-          }
-          const allowed_ranks = C.RANKS;
-          if (! upld_obj.hasOwnProperty('tax_depth') || allowed_ranks.indexOf(upld_obj.tax_depth) === -1){
-            clean_obj.tax_depth = 'phylum';
-          } else {
-            clean_obj.tax_depth = upld_obj.tax_depth;
-          }
-          const allowed_incnas = ['yes','no'];
-          if (! upld_obj.hasOwnProperty('include_nas') || allowed_incnas.indexOf(upld_obj.include_nas) === -1){
-            clean_obj.include_nas = 'yes';
-          } else {
-            clean_obj.include_nas = upld_obj.include_nas;
-          }
-          // DOMAINS
-          let allowed_domains = C.DOMAINS.domains;
-          if (! upld_obj.hasOwnProperty('domains') || upld_obj.domains.length === 0){
-            clean_obj.domains = ["Archaea", "Bacteria", "Eukarya", "Organelle", "Unknown"];
-          }
-          else {
-            let arr = [];
-            for (let n in allowed_domains){
-              if (upld_obj.domains.indexOf(allowed_domains[n].name) !== -1){
-                  arr.push(allowed_domains[n].name);
-              }
-            }
-            clean_obj.domains = arr;
-            if (upld_obj.domains.length === 0){
-              clean_obj.domains = ["Archaea", "Bacteria", "Eukarya", "Organelle", "Unknown"];
-            }
-          }
-
-          if (typeof upld_obj.min_range == 'string'){
-            clean_obj.min_range = parseInt(upld_obj.min_range) || 0
-          }
-          if (! upld_obj.hasOwnProperty('min_range') || upld_obj.min_range <0  || upld_obj.min_range >99){
-            clean_obj.min_range = 0
-          }
-          if (typeof upld_obj.max_range == 'string'){
-            clean_obj.max_range = parseInt(upld_obj.max_range) || 100
-          }
-          if (! upld_obj.hasOwnProperty('max_range') || upld_obj.max_range <1  || upld_obj.max_range >100){
-            clean_obj.max_range = 100
-          }
-
-          new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename);
-          fs.writeFileSync(new_filename_path, JSON.stringify(clean_obj));
-          return clean_obj
-
-        }
-     //});
+    let new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename);
+    fs.writeFileSync(new_filename_path, JSON.stringify(clean_obj));
+    return clean_obj;
+  }
+  //});
 }
 //
 // U N I T  S E L E C T I O N
 //
 // use the isLoggedIn function to limit exposure of each page to
 // logged in users only
+// TODO: JSHint: This function's cyclomatic complexity is too high. (13) (W074)
 router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 //router.post('/unit_selection',  function(req, res) {
   let error_msg = '';
@@ -564,7 +565,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }
   //let this_session_metadata = {}
   let dataset_ids = [];
-  if (req.body.api == '1'){
+  if (req.body.api === '1'){
     console.log('API-API-API');
     dataset_ids = JSON.parse(req.body.ds_order);
   }else if (req.body.resorted === '1'){
@@ -578,18 +579,18 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   let LoadFailureRequest = function (req, res) {
         // return to
         res.render('visuals/visuals_index', {
-                                    title       : 'VAMPS: Select Datasets',
-                                    subtitle    : 'Dataset Selection Page',
-                                    proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-                                    constants   : JSON.stringify(needed_constants),
-                                    md_env_package : JSON.stringify(MD_ENV_PACKAGE),
-                                    md_names    : AllMetadataNames,
-                                    filtering   : 0,
-                                    portal_to_show : '',
-                                    data_to_open: JSON.stringify(DATA_TO_OPEN),
-                                    user        : req.user,
-                                    hostname    : req.CONFIG.hostname,
-                                });
+          title       : 'VAMPS: Select Datasets',
+          subtitle    : 'Dataset Selection Page',
+          proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+          constants   : JSON.stringify(needed_constants),
+          md_env_package : JSON.stringify(MD_ENV_PACKAGE),
+          md_names    : AllMetadataNames,
+          filtering   : 0,
+          portal_to_show : '',
+          data_to_open: JSON.stringify(DATA_TO_OPEN),
+          user        : req.user,
+          hostname    : req.CONFIG.hostname,
+      });
     };
   // I call this here and NOT in view_selection
   // A user can jump here directly from geo_search
@@ -597,7 +598,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   // saved datasets or configuration which they could conceivably manipulate
   dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
 
-  if (req.CONFIG.site == 'vamps' ){
+  if (req.CONFIG.site === 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
   } else {
     console.log('dataset_ids '+dataset_ids);
@@ -607,44 +608,43 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
    	  req.flash('fail', 'Select Some Datasets');
    	  LoadFailureRequest(req, res);
       return;
-  } else {
+  }
+  else {
+    // let available_units = C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
+    // GLOBAL Variable
 
-        let available_units = C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
+    req.session.chosen_id_order   = dataset_ids;
 
-	    // GLOBAL Variable
+    // Thes get only the names of the available metadata:
+    let custom_metadata_headers   = COMMON.get_metadata_selection(dataset_ids, 'custom');
+    let required_metadata_headers = COMMON.get_metadata_selection(dataset_ids, 'required');
 
-	    req.session.chosen_id_order   = dataset_ids;
+     // Gather just the tax data of selected datasets
+    let chosen_dataset_order = [];
 
-	    // Thes get only the names of the available metadata:
-	    let custom_metadata_headers   = COMMON.get_metadata_selection(dataset_ids, 'custom');
-	    let required_metadata_headers = COMMON.get_metadata_selection(dataset_ids, 'required');
+    for (let i in req.session.chosen_id_order){
+      let did = req.session.chosen_id_order[i];
+      let dname = DATASET_NAME_BY_DID[did];
+      let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
 
-       // Gather just the tax data of selected datasets
-      let chosen_dataset_order = [];
+      chosen_dataset_order.push( { did:did, name:pname+'--'+dname } );  // send this to client
 
-      for (let i in req.session.chosen_id_order){
-        let did = req.session.chosen_id_order[i];
-        let dname = DATASET_NAME_BY_DID[did];
-        let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-
-        chosen_dataset_order.push( { did:did, name:pname+'--'+dname } );  // send this to client
-
-        // !!!use default taxonomy here (may choose other on this page)
-        let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
-        let path_to_file = path.join(files_prefix, did +'.json');
-        try {
-            let jsonfile = require(path_to_file);
-            //this_session_metadata[did]  = jsonfile['metadata'];
-        }
-        catch(err){
-            console.log(err);
-            let pid = PROJECT_ID_BY_DID[dataset_ids[i]];
-            let pname = PROJECT_INFORMATION_BY_PID[pid].project;
-            let dname = DATASET_NAME_BY_DID[did];
-            //this_session_metadata[did]  = {}
-            error_msg = 'No Taxonomy found for this dataset ('+pname+'--'+dname+' (did:'+did+')) and possibly others. Try selecting other units.';
-        }
+      // !!!use default taxonomy here (may choose other on this page)
+      let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
+      let path_to_file = path.join(files_prefix, did +'.json');
+      try {
+          let jsonfile = require(path_to_file);
+          //this_session_metadata[did]  = jsonfile['metadata'];
+      }
+      catch(err){
+          console.log(err);
+          let pid = PROJECT_ID_BY_DID[dataset_ids[i]];
+          let pname = PROJECT_INFORMATION_BY_PID[pid].project;
+          let dname = DATASET_NAME_BY_DID[did];
+          //this_session_metadata[did]  = {}
+          error_msg = 'No Taxonomy found for this dataset ('+pname+'--'+dname+' (did:'+did+')) and possibly others. Try selecting other units.';
+      }
     }
 
 	 if (error_msg){
@@ -654,9 +654,8 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  helpers.start = process.hrtime();
 	  helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
 
-
 	  console.log('chosen_dataset_order-->');
-	  if (req.CONFIG.site == 'vamps' ){
+	  if (req.CONFIG.site === 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
       } else {
         console.log(chosen_dataset_order);
@@ -709,10 +708,10 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
     DATA_TO_OPEN = {};
     if (req.body.data_to_open){
       // open many projects
-      obj = JSON.parse(req.body.data_to_open);
-      for (pj in obj){
-        pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
-        DATA_TO_OPEN[pid] = obj[pj]
+      let obj = JSON.parse(req.body.data_to_open);
+      for (let pj in obj){
+        let pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
+        DATA_TO_OPEN[pid] = obj[pj];
       }
       //console.log('got data to open '+data_to_open)
     }else if (req.body.project){
@@ -724,19 +723,19 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
 
     let needed_constants = helpers.retrieve_needed_constants(C,'visuals_index');
     res.render('visuals/visuals_index', {
-                                  title       : 'VAMPS: Select Datasets',
-                                  subtitle    : 'Dataset Selection Page',
-                                  proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-                                  constants   : JSON.stringify(needed_constants),
-                                  md_env_package : JSON.stringify(MD_ENV_PACKAGE),
-                                  md_names    : AllMetadataNames,
-                                  filtering   : 0,
-                                  portal_to_show : '',
-                                  data_to_open: JSON.stringify(DATA_TO_OPEN),
-                                  user        : req.user,
-                                  hostname    : req.CONFIG.hostname,
+        title       : 'VAMPS: Select Datasets',
+        subtitle    : 'Dataset Selection Page',
+        proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+        constants   : JSON.stringify(needed_constants),
+        md_env_package : JSON.stringify(MD_ENV_PACKAGE),
+        md_names    : AllMetadataNames,
+        filtering   : 0,
+        portal_to_show : '',
+        data_to_open: JSON.stringify(DATA_TO_OPEN),
+        user        : req.user,
+        hostname    : req.CONFIG.hostname,
 
-                              });
+    });
   });
 
 router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
@@ -759,18 +758,19 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   SHOW_DATA = ALL_DATASETS;
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
-  unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
+  let unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
   // GLOBAL
   DATA_TO_OPEN = {};
-  if (req.body.data_to_open){
+  if (req.body.data_to_open) {// TODO: DRY, the similar peace above
     // open many projects
-    obj = JSON.parse(req.body.data_to_open);
-    for (pj in obj){
-      pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
-      DATA_TO_OPEN[pid] = obj[pj]
+    let obj = JSON.parse(req.body.data_to_open);
+    for (let pj in obj){
+      let pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
+      DATA_TO_OPEN[pid] = obj[pj];
     }
     //console.log('got data to open '+data_to_open)
-  }else if (req.body.project){
+  }
+  else if (req.body.project) {
     // open whole project
     DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
   }
@@ -779,19 +779,19 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
 
 
   res.render('visuals/visuals_index', {
-                                title       : 'VAMPS: Select Datasets',
-                                subtitle    : 'Dataset Selection Page',
-                                proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-                                constants   : JSON.stringify(C),
-                                md_env_package : JSON.stringify(MD_ENV_PACKAGE),
-                                md_names    : AllMetadataNames,
-                                filtering   : 0,
-                                portal_to_show : '',
-                                data_to_open: JSON.stringify(DATA_TO_OPEN),
-                                user        : req.user,
-                                hostname    : req.CONFIG.hostname,
+      title       : 'VAMPS: Select Datasets',
+      subtitle    : 'Dataset Selection Page',
+      proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+      constants   : JSON.stringify(C),
+      md_env_package : JSON.stringify(MD_ENV_PACKAGE),
+      md_names    : AllMetadataNames,
+      filtering   : 0,
+      portal_to_show : '',
+      data_to_open: JSON.stringify(DATA_TO_OPEN),
+      user        : req.user,
+      hostname    : req.CONFIG.hostname,
 
-                            });
+  });
 });
 
 //
@@ -803,11 +803,11 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
     let selected_dataset_order = {};
     selected_dataset_order.names = [];
     selected_dataset_order.ids = [];
-    for (n in req.session.chosen_id_order){
+    for (let n in req.session.chosen_id_order){
         let did = req.session.chosen_id_order[n];
         let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
         selected_dataset_order.names.push(pjds);
-        selected_dataset_order.ids.push(did)
+        selected_dataset_order.ids.push(did);
     }
 
 
@@ -828,11 +828,11 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
 router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
   // this fxn is required for viewing list of saved datasets
   // when 'toggle open button is activated'
-  fxn = req.body.fxn;
+  let fxn = req.body.fxn;
   //console.log('XX'+JSON.stringify(req.body));
   let file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
   console.log(file_path);
-  let dataset_ids = [];
+  // let dataset_ids = [];
   fs.readFile(file_path, 'utf8',function readFile(err,data) {
     if (err) {
         let msg = 'ERROR Message '+err;
@@ -850,10 +850,10 @@ router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
   //console.log('XX'+JSON.stringify(req.body));
   let file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
   console.log(file_path);
-  let dataset_ids = [];
-  fs.readFile(file_path, 'utf8',function readFile(err,data) {
+  // let dataset_ids = [];
+  fs.readFile(file_path, 'utf8',function readFile(err, data) {
     if (err) {
-        let msg = 'ERROR Message '+err;
+        let msg = 'ERROR Message ' + err;
         helpers.render_error_page(req,res,msg);
     } else {
       res.redirect('unit_selection');
@@ -869,7 +869,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     ///// It passes the newick string back to view_selection.js
     ///// and tries to construct the svg there before showing it.
     console.log('req.body dnd');
-    if (req.CONFIG.site == 'vamps' ){
+    if (req.CONFIG.site === 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
     } else {
       console.log(req.body);
@@ -877,7 +877,8 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     console.log('req.body dnd');
     let ts = req.body.ts;
     let metric = req.body.metric;
-    let script = req.body.script; // python, phylogram or phylonator
+    //JSHint: 'script' is defined but never used. (W098)
+    // let script = req.body.script; // python, phylogram or phylonator
     let image_type = req.body.image_type;  // png(python script) or svg
     let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
     //console.log('image_type '+image_type);
@@ -887,10 +888,12 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     let biom_file = path.join(pwd,'tmp',biom_file_name);
 
     let html = '';
-    let title = 'VAMPS';
+    //JSHint: 'title' is defined but never used. (W098)
+    // let title = 'VAMPS';
 
     let distmtx_file_name = ts+'_distance.csv';
-    let distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
+    // JSHint: 'distmtx_file' is defined but never used. (W098)
+    // let distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
 
 
     let options = {
@@ -898,6 +901,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
       args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--basedir', pwd, '--prefix', ts ],
     };
 
+    // JSHint: 'log' is defined but never used. (W098)
     let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
     console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
     let dendrogram_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
@@ -923,22 +927,23 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
         stderr += data;
     });
 
+    // TODO: JSHint: This function's cyclomatic complexity is too high. (8) (W074)
     dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
         console.log('dendrogram_process process exited with code ' + code);
 
         //let last_line = ary[ary.length - 1];
         if (code === 0){   // SUCCESS
-          if (image_type == 'd3'){
-                    if (req.CONFIG.site == 'vamps' ){
+          if (image_type === 'd3'){
+                    if (req.CONFIG.site === 'vamps' ){
                       console.log('VAMPS PRODUCTION -- no print to log');
                     } else {
                         console.log('stdout: ' + stdout);
                     }
-                    lines = stdout.split('\n');
-                    for (n in lines){
-                      if (lines[n].substring(0,6) == 'NEWICK' ){
-                        tmp = lines[n].split('=');
-                        console.log('FOUND NEWICK '+tmp[1]);
+                    let lines = stdout.split('\n');
+                    for (let n in lines){
+                      if (lines[n].substring(0,6) === 'NEWICK' ){
+                        let tmp = lines[n].split('=');
+                        console.log('FOUND NEWICK ' + tmp[1]);
 
                       }
                     }
@@ -2482,7 +2487,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
         let suffix = req.body.split_distance_choice;
         //let distmtx_file_name = ts+'_distance_'+suffix+'.json';
         let distmtx_file_name = ts+'_distance_'+suffix+'.tsv';
-        let distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
+        let distmtx_file = path.join(config.PROCESS_DIR,'tmp', distmtx_file_name);
         //console.log(distmtx_file)
         fs.readFile(distmtx_file, 'utf8',function readFile(err,mtxdata) {
             if (err) {
