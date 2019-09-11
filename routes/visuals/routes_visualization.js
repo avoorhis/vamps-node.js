@@ -1,51 +1,52 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var util = require('util');
-var url  = require('url');
-var http = require('http');
-var path = require('path');
-var fs   = require('fs-extra');
-var open = require('open');
-//var async = require('async');
-var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport({});
-var zlib = require('zlib');
-var Readable = require('readable-stream').Readable;
-var multer    = require('multer');
-var config  = require(app_root + '/config/config');
-var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
-var helpers = require('../helpers/helpers');
-var QUERY = require('../queries');
+const util = require('util');
+const url  = require('url');
+const http = require('http');
+const path = require('path');
+const fs   = require('fs-extra');
+// const open = require('open');
+//const async = require('async');
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({});
+const zlib = require('zlib');
+const Readable = require('readable-stream').Readable;
+const multer    = require('multer');
+const config  = require(app_root + '/config/config');
+const upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
+const helpers = require('../helpers/helpers');
+const QUERY = require('../queries');
 
-var COMMON  = require('./routes_common');
-var C = require('../../public/constants');
-var META    = require('./routes_visuals_metadata');
-var IMAGES = require('../routes_images');
-//var PCOA    = require('./routes_pcoa');
-// var MTX     = require('./routes_counts_matrix');
-let biom_matrix_controller = require(app_root + '/controllers/biomMatrixController');
-//var HMAP    = require('./routes_distance_heatmap');
-//var DEND    = require('./routes_dendrogram');
-//var BCHARTS = require('./routes_bar_charts');
-//var PCHARTS = require('./routes_pie_charts');
-//var CTABLE  = require('./routes_counts_table');
-//var PythonShell = require('python-shell');
-var spawn = require('child_process').spawn;
-var app = express();
+const COMMON  = require('./routes_common');
+const C = require('../../public/constants');
+const META    = require('./routes_visuals_metadata');
+const IMAGES = require('../routes_images');
+//const PCOA    = require('./routes_pcoa');
+// const MTX     = require('./routes_counts_matrix');
+const biom_matrix_controller = require(app_root + '/controllers/biomMatrixController');
+//const HMAP    = require('./routes_distance_heatmap');
+//const DEND    = require('./routes_dendrogram');
+//const BCHARTS = require('./routes_bar_charts');
+//const PCHARTS = require('./routes_pie_charts');
+//const CTABLE  = require('./routes_counts_table');
+//const PythonShell = require('python-shell');
+const spawn = require('child_process').spawn;
+const app = express();
 // GLOBALS
 // PROJECT_TREE_PIDS = []
 // PROJECT_TREE_OBJ = []
 // DATA_TO_OPEN = {};
-//var xmldom = require('xmldom');
+//const xmldom = require('xmldom');
 
-// // init_node var node_class =
-// var CustomTaxa  = require('./custom_taxa_class');
+// // init_node const node_class =
+// const CustomTaxa  = require('./custom_taxa_class');
 
 
 //
 //  V I E W  S E L E C T I O N
 //
+//TODO: fix JSHint: This function's cyclomatic complexity is too high. (31) (W074)
 router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files', 12)], function(req, res) {
    console.log('in POST view_selection');
 
@@ -74,7 +75,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   //
   //var body = JSON.parse(req.body);
   //if(typeof visual_post_items == undefined){
-    var visual_post_items = {};
+    let visual_post_items = {};
   //}
   // if(req.body.unit_choice == 'tax_rdp2.6_simple'){
 //     delete req.body[C.default_taxonomy.name+'_domains']
@@ -82,17 +83,18 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 //     delete req.body['rdp2.6_domains']
 //   }
   console.log(req.user.username+' req.body: view_selection body-->>');
-  if(req.CONFIG.site == 'vamps' ){
+  if (req.CONFIG.site === 'vamps') {
       console.log('VAMPS PRODUCTION -- no print to log');
-  }else{
+  } else {
     console.log('req.body');
     console.log(req.body);
   }
   console.log('<<--req.body: view_selection');
 
   helpers.start = process.hrtime();
-  var image_to_open = {};
-  if(req.body.api == '1'){
+  let image_to_open = {};
+  let dataset_ids = [];
+  if(req.body.api === '1'){
         console.log('From: API-API-API');
         visual_post_items = COMMON.default_post_items();
         // Change defaults:
@@ -104,16 +106,17 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         req.session.min_range   = visual_post_items.min_range = req.body.min_range                  || '0';
         req.session.max_range   = visual_post_items.max_range = req.body.max_range                  || '100';
         
-        if((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length != 0){
+        if((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length !== 0){
             console.log('Found api dids ',req.body.ds_order);
             try{
-                var dataset_ids = JSON.parse(req.body.ds_order)
-            }catch(e){
-                var dataset_ids = req.body.ds_order
+                dataset_ids = JSON.parse(req.body.ds_order);
+            }
+            catch(e){
+                dataset_ids = req.body.ds_order;
             }
             var new_dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
-            var dataset_ids = new_dataset_ids;
-            req.session.chosen_id_order = visual_post_items.ds_order = dataset_ids
+            dataset_ids = new_dataset_ids;
+            req.session.chosen_id_order = visual_post_items.ds_order = dataset_ids;
         }else if( (req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project) ){
             console.log('Found api project ',req.body.project);
             var pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid;
@@ -147,12 +150,12 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   }else if(req.body.cancel_resort === '1'){
         console.log('resorted canceled');
         req.flash('success','Canceled Resort.');
-        var dataset_ids = JSON.parse(req.body.ds_order);
+        dataset_ids = JSON.parse(req.body.ds_order);
         
   }else if(req.body.update_data === '1'){  // from 'Update' button on view_selection.html
         console.log('Update Data');
         // populate req.session and visual_post_items from req.body(post)
-        const dataset_ids = req.session.chosen_id_order;
+        dataset_ids = req.session.chosen_id_order;
         visual_post_items = COMMON.save_post_items(req);
         for (let item in visual_post_items){
             req.session[item] = visual_post_items[item];
@@ -164,7 +167,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         console.log('resorted == 1');
         // populate visual_post_items from req.session (except new ds_order)
         req.flash('success','The dataset order has been updated.');
-        const dataset_ids = req.body.ds_order;
+        dataset_ids = req.body.ds_order;
         req.session.chosen_id_order = dataset_ids;
         visual_post_items.unit_choice = req.session.unit_choice;
         visual_post_items.no_of_datasets = dataset_ids.length;
@@ -195,7 +198,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         for(item in config_file_data){
             req.session[item] = config_file_data[item]
         }
-        var dataset_ids = req.session.chosen_id_order;
+        dataset_ids = req.session.chosen_id_order;
         visual_post_items.unit_choice = req.session.unit_choice;
         visual_post_items.no_of_datasets = dataset_ids.length;
         visual_post_items.normalization = req.session.normalization;
@@ -226,7 +229,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         for(item in config_file_data){
             req.session[item] = config_file_data[item]
         }
-        var dataset_ids = req.session.chosen_id_order;
+        dataset_ids = req.session.chosen_id_order;
         visual_post_items.unit_choice = req.session.unit_choice;
         visual_post_items.no_of_datasets = dataset_ids.length;
         visual_post_items.normalization = req.session.normalization;
@@ -251,7 +254,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         visual_post_items = COMMON.save_post_items(req);
         //console.log('visual_post_items')
         //console.log(visual_post_items)
-        var dataset_ids = req.session.chosen_id_order;
+        dataset_ids = req.session.chosen_id_order;
         req.session.no_of_datasets = dataset_ids.length;
         req.session.metadata = visual_post_items.metadata;
         req.session.normalization = "none";
@@ -316,7 +319,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   var metadata = META.write_mapping_file(visual_post_items);
 
   
-  console.log('image to open',image_to_open);
+  console.log('image to open', image_to_open);
 //console.log('biom_matrix',biom_matrix);
   // function see below
   //render_view_selection(res, req, metadata, image_to_open)
@@ -2971,7 +2974,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
             }
 
             if(Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
-              json.item.push({id:'p'+pid_str, text:itemtext, checked:false, open:'1',child:1, item:[]});
+              json.item.push({id:'p'+pid_str, text:itemtext, checked:false, open:'1', child:1, item:[]});
             }else{
               json.item.push({id:'p'+pid_str, text:itemtext, checked:false,  child:1, item:[]});
             }
