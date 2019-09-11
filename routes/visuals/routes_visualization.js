@@ -138,9 +138,9 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 
         // for API select ALL metadata with these datasets
         let md = {}; // hash lookup unique
-        for(let n in dataset_ids){
+        for (let n in dataset_ids){
             let did = dataset_ids[n];
-            for(let item in AllMetadata[did]){
+            for (let item in AllMetadata[did]){
                 md[item] =1;
             }
         }
@@ -229,7 +229,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
             res.redirect('saved_elements');
             return;
         }
-        for(let item in config_file_data) {//TODO: already done above - DRY
+        for (let item in config_file_data) {//TODO: already done above - DRY
             req.session[item] = config_file_data[item];
         }
         dataset_ids = req.session.chosen_id_order;
@@ -275,7 +275,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   // chosen_id_order was set in unit_select and added to session variable
   visual_post_items.chosen_datasets = [];
   //visual_post_items.chosen_name_order = []
-  for(let n in dataset_ids){
+  for (let n in dataset_ids){
         let did = dataset_ids[n];
         let dname = DATASET_NAME_BY_DID[did];
         let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
@@ -283,7 +283,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   }
 
   // let file_found_error = false;
-  // for(let i in dataset_ids){
+  // for (let i in dataset_ids){
 //     let did = dataset_ids[i]
 //     console.log('looking through dataset_ids:'+did.toString())
 //      }
@@ -379,17 +379,17 @@ function load_configuration_file(req, res, config_file_data )
 
 
     visual_post_items.no_of_datasets = new_dataset_ids.length;
-    for(n in chosen_id_name_hash.ids){
-        did = chosen_id_name_hash.ids[n];
-        pid = PROJECT_ID_BY_DID[did];
-        pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
-        chosen_id_name_hash.names.push(pjds)
+    for (let n in chosen_id_name_hash.ids){
+        let did = chosen_id_name_hash.ids[n];
+        let pid = PROJECT_ID_BY_DID[did];
+        let pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
+        let chosen_id_name_hash.names.push(pjds);
     }
     if (! config_file_data.hasOwnProperty('metadata') || config_file_data['metadata'].length == 0){
         visual_post_items.metadata = ['latitude','longitude']
     }
 
-    for(let i in chosen_id_name_hash.ids){
+    for (let i in chosen_id_name_hash.ids){
       let did = chosen_id_name_hash.ids[i];
       try{
             if (visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
@@ -505,7 +505,7 @@ function create_clean_config(req, upld_obj)
             clean_obj.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
           } else {
               let arr = [];
-              for( n in allowed_domains){
+              for ( n in allowed_domains){
                 if (upld_obj.domains.indexOf(allowed_domains[n].name) != -1){
                     arr.push(allowed_domains[n].name)
                 }
@@ -617,7 +617,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
        // Gather just the tax data of selected datasets
       let chosen_dataset_order = [];
 
-      for(let i in req.session.chosen_id_order){
+      for (let i in req.session.chosen_id_order){
         let did = req.session.chosen_id_order[i];
         let dname = DATASET_NAME_BY_DID[did];
         let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
@@ -704,7 +704,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
     if (req.body.data_to_open){
       // open many projects
       obj = JSON.parse(req.body.data_to_open);
-      for(pj in obj){
+      for (pj in obj){
         pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
         DATA_TO_OPEN[pid] = obj[pj]
       }
@@ -759,7 +759,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   if (req.body.data_to_open){
     // open many projects
     obj = JSON.parse(req.body.data_to_open);
-    for(pj in obj){
+    for (pj in obj){
       pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
       DATA_TO_OPEN[pid] = obj[pj]
     }
@@ -797,7 +797,7 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
     let selected_dataset_order = {};
     selected_dataset_order.names = [];
     selected_dataset_order.ids = [];
-    for(n in req.session.chosen_id_order){
+    for (n in req.session.chosen_id_order){
         let did = req.session.chosen_id_order[n];
         let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
         selected_dataset_order.names.push(pjds);
@@ -929,7 +929,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                         console.log('stdout: ' + stdout);
                     }
                     lines = stdout.split('\n');
-                    for(n in lines){
+                    for (n in lines){
                       if (lines[n].substring(0,6) == 'NEWICK' ){
                         tmp = lines[n].split('=');
                         console.log('FOUND NEWICK '+tmp[1]);
@@ -1159,83 +1159,83 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
 
     //console.log(JSON.stringify(sumator))
 
-    for(let d in sumator['domain']){
+    for (let d in sumator['domain']){
 
       // #### DOMAIN ####
       //let dnode_name =  dname
       html += "<node name='"+d+"'>\n";
       html += " <seqcount>";
-      for(let c_domain in sumator['domain'][d]['knt']){
+      for (let c_domain in sumator['domain'][d]['knt']){
           html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
       }
         html += "</seqcount>\n";
         html += " <rank><val>domain</val></rank>\n";
 
         // #### PHYLUM ####
-        for(p in sumator['domain'][d]['phylum']){
+        for (p in sumator['domain'][d]['phylum']){
           html += " <node name='"+p+"'>\n";
           html += "  <seqcount>";
-          for(c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
+          for (c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
               html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString()+"</val>";
           }
             html += "</seqcount>\n";
             html += "  <rank><val>phylum</val></rank>\n";
 ///
             // #### KLASS ####
-            for(k in sumator['domain'][d]['phylum'][p]['klass']){
+            for (k in sumator['domain'][d]['phylum'][p]['klass']){
                 html += "  <node name='"+k+"'>\n";
                 html += "   <seqcount>";
-                for(c_klass in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
+                for (c_klass in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
                     html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][c_klass].toString()+"</val>";
                 }
                 html += "</seqcount>\n";
                 html += "   <rank><val>klass</val></rank>\n";
 
                 // #### ORDER ####
-                for(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
+                for (o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
                     html += "   <node name='"+o+"'>\n";
                     html += "    <seqcount>";
-                    for(c_order in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
+                    for (c_order in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
                         html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][c_order].toString()+"</val>";
                     }
                     html += "</seqcount>\n";
                     html += "    <rank><val>order</val></rank>\n";
 
                     // #### FAMILY ####
-                    for(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
+                    for (f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
                         html += "    <node name='"+f+"'>\n";
                         html += "     <seqcount>";
-                        for(c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
+                        for (c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
                             html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][c_family].toString()+"</val>";
                         }
                         html += "</seqcount>\n";
                         html += "     <rank><val>family</val></rank>\n";
 
                         // #### GENUS ####
-                        for(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
+                        for (g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
                             html += "     <node name='"+g+"'>\n";
                             html += "      <seqcount>";
-                            for(c_genus in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
+                            for (c_genus in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
                                 html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][c_genus].toString()+"</val>";
                             }
                             html += "</seqcount>\n";
                             html += "      <rank><val>genus</val></rank>\n";
 
                             // #### SPECIES ####
-                            for(s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
+                            for (s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
                                 html += "     <node name='"+s+"'>\n";
                                 html += "      <seqcount>";
-                                for(c_species in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
+                                for (c_species in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
                                     html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][c_species].toString()+"</val>";
                                 }
                                 html += "</seqcount>\n";
                                 html += "      <rank><val>species</val></rank>\n";
 
                                 // #### STRAIN ####
-                                for(st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
+                                for (st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
                                       html += "     <node name='"+st+"'>\n";
                                       html += "      <seqcount>";
-                                      for(c_strain in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
+                                      for (c_strain in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
                                           html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][c_strain].toString()+"</val>";
                                       }
                                       html += "</seqcount>\n";
@@ -1442,17 +1442,17 @@ function get_sumator(req, biom_matrix){
     let sumator = {};
     sumator['domain']={};
 
-    for(r in biom_matrix.rows){
+    for (r in biom_matrix.rows){
         tax_string = biom_matrix.rows[r].id;
         tax_items = tax_string.split(';');
         key = tax_items[0];
         //console.log(tax_items);
-        for(t in tax_items){
+        for (t in tax_items){
            let taxa = tax_items[t];
            let rank = C.RANKS[t];
            if (rank=='domain'){
                d = tax_items[t];
-               for(i in req.session.chosen_id_order){
+               for (i in req.session.chosen_id_order){
                    if (d in sumator['domain']){
                        if (i in sumator['domain'][d]['knt']){
                            sumator['domain'][d]['knt'][i] += parseInt(biom_matrix.data[r][i]);
@@ -1469,7 +1469,7 @@ function get_sumator(req, biom_matrix){
            }
            if (rank=='phylum'){
                p = tax_items[t];
-               for(i in req.session.chosen_id_order){
+               for (i in req.session.chosen_id_order){
                    if (p in sumator['domain'][d]['phylum']){
                        if (i in sumator['domain'][d]['phylum'][p]['knt']){
                            sumator['domain'][d]['phylum'][p]['knt'][i] += parseInt(biom_matrix.data[r][i]);
@@ -1486,7 +1486,7 @@ function get_sumator(req, biom_matrix){
            }
            if (rank=='klass'){
                k = tax_items[t];
-               for(i in req.session.chosen_id_order){
+               for (i in req.session.chosen_id_order){
                    if (k in sumator['domain'][d]['phylum'][p]['klass']){
                        if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] += parseInt(biom_matrix.data[r][i]);
@@ -1503,7 +1503,7 @@ function get_sumator(req, biom_matrix){
            }
            if (rank=='order'){
                o = tax_items[t];
-               for(i in req.session.chosen_id_order){
+               for (i in req.session.chosen_id_order){
                    if (o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
                        if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] += parseInt(biom_matrix.data[r][i]);
@@ -1520,7 +1520,7 @@ function get_sumator(req, biom_matrix){
            }
            if (rank=='family'){
                f = tax_items[t];
-               for(i in req.session.chosen_id_order){
+               for (i in req.session.chosen_id_order){
                    if (f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
                        if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] += parseInt(biom_matrix.data[r][i]);
@@ -1537,7 +1537,7 @@ function get_sumator(req, biom_matrix){
            }
            if (rank=='genus'){
                g = tax_items[t];
-               for(i in req.session.chosen_id_order){
+               for (i in req.session.chosen_id_order){
                    if (g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
                        if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] += parseInt(biom_matrix.data[r][i]);
@@ -1554,7 +1554,7 @@ function get_sumator(req, biom_matrix){
            }
            if (rank=='species'){
                s = tax_items[t];
-               for(i in req.session.chosen_id_order){
+               for (i in req.session.chosen_id_order){
                    if (s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
                        if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] += parseInt(biom_matrix.data[r][i]);
@@ -1572,7 +1572,7 @@ function get_sumator(req, biom_matrix){
            }
            if (rank=='strain'){
                st = tax_items[t];
-               for(i in req.session.chosen_id_order){
+               for (i in req.session.chosen_id_order){
                    if (st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
                        if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] += parseInt(biom_matrix.data[r][i]);
@@ -1705,7 +1705,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
               res.send(err)
             } else {
               //console.log(rows)
-              for(s in rows){
+              for (s in rows){
                   //rows[s].seq = rows[s].seq.toString('utf8')
                   did = rows[s].dataset_id;
 
@@ -1868,7 +1868,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
               //console.log(rows)
               // should write to a file? Or res.render here?
 
-              for(s in rows){
+              for (s in rows){
                   did = rows[s].dataset_id;
 
                   //console.log(did)
@@ -1960,7 +1960,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
         return
       }
 
-      for(i in clean_data){
+      for (i in clean_data){
 
           seq_tax = '';
           let data = clean_data[i];
@@ -2319,7 +2319,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     let biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp',biom_file_name);
     let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
     let pjds_lookup = {};
-    for(i in req.session.chosen_id_order){
+    for (i in req.session.chosen_id_order){
         let did = req.session.chosen_id_order[i];
         let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
         pjds_lookup[pjds] = did
@@ -2351,7 +2351,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
       console.log('ds cluster process exited with code ' + code);
       let lines = output.split(/\n/);
 
-      for(i in lines){
+      for (i in lines){
 
         if (lines[i].substring(0,7) == 'DS_LIST'){
           tmp = lines[i].split('=');
@@ -2613,7 +2613,7 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
 function filter_project_tree_for_permissions(req, obj){
   console.log('Filtering tree projects for permissions');
   let new_project_tree_pids = [];
-  for( i in obj ){
+  for ( i in obj ){
       //node = PROJECT_INFORMATION_BY_PID[pid];
       //console.log(obj[i])
       pid = obj[i].pid;
@@ -2778,11 +2778,11 @@ router.get('/livesearch_portal/:portal', function(req, res) {
   }
 
   PROJECT_FILTER.portal = select_box_portal;
-
+  let projects_to_filter = [];
   if (portal){
-    let projects_to_filter = helpers.get_portal_projects(req, portal);
+    projects_to_filter = helpers.get_portal_projects(req, portal);
   } else {
-    let projects_to_filter = SHOW_DATA.projects;
+    projects_to_filter = SHOW_DATA.projects;
   }
   //console.log(PROJECT_FILTER)
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, SHOW_DATA.projects, PROJECT_FILTER);
@@ -2876,7 +2876,7 @@ router.post('/check_units', function(req, res) {
   // console.log('dataset_ids')
 //   console.log(dataset_ids)
 
-  for(let i in dataset_ids){
+  for (let i in dataset_ids){
         //console.log(dataset_ids[i]+' <> '+DATASET_NAME_BY_DID[dataset_ids[i]])
         path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
         //console.log(path_to_file)
@@ -2912,7 +2912,7 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
 //         }
 
         //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
-        for( n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
+        for ( n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
             node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
             if (node.children_ids.length === 0){
                 json.item.push({id:node.node_id,text:node.taxon,tooltip:node.rank,checked:true,child:0})
@@ -2924,7 +2924,7 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
             return helpers.compareStrings_alpha(a.text, b.text);
         });
     } else {
-        for(n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
+        for (n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
             node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
             node = new_taxonomy.taxa_tree_dict_map_by_id[node_id];
             //console.log('node')
@@ -2959,7 +2959,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     let itemtext;
     if (id==0){
 
-        for( i=0;i<PROJECT_TREE_PIDS.length;i++ ){
+        for ( i=0;i<PROJECT_TREE_PIDS.length;i++ ){
 
             let pid = PROJECT_TREE_PIDS[i];
             let node = PROJECT_INFORMATION_BY_PID[pid];
@@ -3007,7 +3007,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
           } else {
             console.log(DATA_TO_OPEN);
           }
-          for(openpid in DATA_TO_OPEN){
+          for (openpid in DATA_TO_OPEN){
             Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid])
           }
         }
@@ -3018,7 +3018,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
           console.log(all_checked_dids)
         }
         let pname = this_project.name;
-        for(n in this_project.datasets){
+        for (n in this_project.datasets){
             let did   = this_project.datasets[n].did;
             //console.log('didXX',did)
             let dname = this_project.datasets[n].dname;
@@ -3058,7 +3058,7 @@ router.get('/taxa_piechart', function(req, res) {
             let data = [];
             let new_matrix = {};
 
-            for(i in biom_matrix.rows){
+            for (i in biom_matrix.rows){
               if (biom_matrix.rows[i].id == tax){
 
                 data = biom_matrix.data[i];
@@ -3066,7 +3066,7 @@ router.get('/taxa_piechart', function(req, res) {
                 // want [[1],[2],[3],[4]]
 
                 new_matrix.data = [];
-                for(n in data){
+                for (n in data){
                   new_matrix.data.push([data[n]])
                 }
                 new_matrix.columns = [biom_matrix.rows[i]]
