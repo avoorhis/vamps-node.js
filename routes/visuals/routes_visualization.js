@@ -109,7 +109,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 
         if ((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length !== 0){
             console.log('Found api dids ',req.body.ds_order);
-            try{
+            try {
                 dataset_ids = JSON.parse(req.body.ds_order);
             }
             catch(e){
@@ -383,37 +383,39 @@ function load_configuration_file(req, res, config_file_data )
         let did = chosen_id_name_hash.ids[n];
         let pid = PROJECT_ID_BY_DID[did];
         let pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
-        let chosen_id_name_hash.names.push(pjds);
+        chosen_id_name_hash.names.push(pjds);
     }
-    if (! config_file_data.hasOwnProperty('metadata') || config_file_data['metadata'].length == 0){
-        visual_post_items.metadata = ['latitude','longitude']
+    if (! config_file_data.hasOwnProperty('metadata') || config_file_data['metadata'].length === 0){
+        visual_post_items.metadata = ['latitude','longitude'];
     }
+
+    let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
 
     for (let i in chosen_id_name_hash.ids){
       let did = chosen_id_name_hash.ids[i];
-      try{
-            if (visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
-                let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
-            } else {
-                let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
+      try {
+            if (visual_post_items.unit_choice === 'tax_rdp2.6_simple'){
+                files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
             }
             let path_to_file = path.join(files_prefix, did.toString() +'.json');
 
-            try{
-                 let jsonfile = require(path_to_file);
-              }catch(e1){
-                try{
-                    let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
-                    let path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
-                    let jsonfile = require(path_to_file);
-                }catch(e2){
-                    console.log('2-no file '+e2.toString()+' Exiting');
-                    req.flash('fail', "ERROR \
-                    Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
+            try {
+              let jsonfile = require(path_to_file);
+            }
+            catch(e1){
+              try {
+                let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
+                let path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+                let jsonfile = require(path_to_file);
+              }
+              catch(e2) {
+                console.log('2-no file '+e2.toString()+' Exiting');
+                req.flash('fail', "ERROR \
+                Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
             //res.redirect('visuals_index');
             //return;
-                }
               }
+            }
             TAXCOUNTS[did] = jsonfile['taxcounts'];
             METADATA[did]  = jsonfile['metadata'];
       }
@@ -938,7 +940,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                     }
 
 
-                    try{
+                    try {
                       //newick = JSON.parse(tmp[1]);
                       newick = tmp[1];
                       if (req.CONFIG.site == 'vamps' ){
@@ -1944,7 +1946,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
         }
       }
       //console.log('parsing data')
-      try{
+      try {
         let clean_data = JSON.parse(data)
       }catch(e){
         console.log(e);
@@ -1967,38 +1969,38 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 
           d  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
 
-          try{
+          try {
                 p  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
           }catch(e){
                 p = 'phylum_NA'
           }
-          try{
+          try {
                 k  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;
           }catch(e){
                 k = 'class_NA'
           }
-          try{
+          try {
                 o  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.order_id+"_order"].taxon;
           }catch(e){
                 o = 'order_NA'
           }
-          try{
+          try {
                 f  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.family_id+"_family"].taxon;
           }catch(e){
                 f = 'family_NA'
           }
-          try{
+          try {
                 g  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.genus_id+"_genus"].taxon;
           }catch(e){
                 g = 'genus_NA'
           }
-          try{
+          try {
                 sp = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.species_id+"_species"].taxon;
           }
           catch(e){
                 sp = 'species_NA'
           }
-          try{
+          try {
                 st = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.strain_id+"_strain"].taxon;
           }
           catch(e){
@@ -2366,7 +2368,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
       }
       //let last_line = ary[ary.length - 1];
       if (code === 0){   // SUCCESS
-        try{
+        try {
 
             dataset_list = JSON.parse(ds_list);
 
@@ -2880,7 +2882,7 @@ router.post('/check_units', function(req, res) {
         //console.log(dataset_ids[i]+' <> '+DATASET_NAME_BY_DID[dataset_ids[i]])
         path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
         //console.log(path_to_file)
-        try{
+        try {
             jsonfile = require(path_to_file);
         }catch(e){
             file_err='FAIL';
