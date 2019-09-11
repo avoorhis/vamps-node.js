@@ -144,7 +144,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
                 md[item] =1;
             }
         }
-        req.session.metadata  = visual_post_items.metadata = Object.keys(md)
+        req.session.metadata  = visual_post_items.metadata = Object.keys(md);
 
   }
   else if(req.body.restore_image === '1'){
@@ -194,13 +194,13 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         let upld_obj = JSON.parse(fs.readFileSync(config_file_path, 'utf8'));
         //console.log(upld_obj)
         let config_file_data = create_clean_config(req, upld_obj); // put into req.session
-        if(Object.keys(config_file_data).length == 0){
+        if(Object.keys(config_file_data).length === 0){
             //error
             res.redirect('saved_elements');
-            return
+            return;
         }
-        for(item in config_file_data){
-            req.session[item] = config_file_data[item]
+        for (let item in config_file_data) {// TODO: copy the object faster
+            req.session[item] = config_file_data[item];
         }
         dataset_ids = req.session.chosen_id_order;
         visual_post_items.unit_choice = req.session.unit_choice;
@@ -224,13 +224,13 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         let upload_file = req.file.path;
         let upld_obj = JSON.parse(fs.readFileSync(upload_file, 'utf8'));//,function(err, data){
         let config_file_data = create_clean_config(req, upld_obj); // put into req.session
-        if(Object.keys(config_file_data).length == 0){
+        if(Object.keys(config_file_data).length === 0){
             //error
             res.redirect('saved_elements');
-            return
+            return;
         }
-        for(item in config_file_data){
-            req.session[item] = config_file_data[item]
+        for(let item in config_file_data) {//TODO: already done above - DRY
+            req.session[item] = config_file_data[item];
         }
         dataset_ids = req.session.chosen_id_order;
         visual_post_items.unit_choice = req.session.unit_choice;
@@ -244,7 +244,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         visual_post_items.metadata = req.session.metadata;
         visual_post_items.domains = req.session.domains;
         visual_post_items.custom_taxa = req.session.custom_taxa;
-        visual_post_items.update_data = 1 
+        visual_post_items.update_data = 1;
 
 
         //let image_to_open = load_configuration_file(req, res, config_file_data)
@@ -268,7 +268,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         req.session.min_range = '0';
         req.session.max_range = '100';
         req.session.unit_choice = req.body.unit_choice;
-        req.session.custom_taxa = visual_post_items.custom_taxa
+        req.session.custom_taxa = visual_post_items.custom_taxa;
   }
   
   // get dataset_ids the add names for biom file output:
@@ -279,10 +279,10 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         let did = dataset_ids[n];
         let dname = DATASET_NAME_BY_DID[did];
         let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-        visual_post_items.chosen_datasets.push( { did:did,name:pname+'--'+dname } )
+        visual_post_items.chosen_datasets.push( { did:did,name:pname+'--'+dname } );
   }
   
-  let file_found_error = false;
+  // let file_found_error = false;
   // for(let i in dataset_ids){
 //     let did = dataset_ids[i]
 //     console.log('looking through dataset_ids:'+did.toString())
@@ -292,7 +292,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   timestamp = req.user.username + '_' + timestamp;
   visual_post_items.ts = timestamp;
   req.session.ts = timestamp;
-  let distance_matrix = {};
+  // let distance_matrix = {};
   
   console.log('VS--visual_post_items and id-hash:>>');
   if(req.CONFIG.site === 'vamps' ){
@@ -316,7 +316,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   //console.log('8')
   visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
   //console.log('9')
-  if (visual_post_items.metadata.indexOf('primer_suite') != -1){
+  if (visual_post_items.metadata.indexOf('primer_suite') !== -1){
       visual_post_items.metadata.push('primers');
   }
   let metadata = META.write_mapping_file(visual_post_items);
@@ -344,7 +344,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 });
 //
 // Load Configuration File
-//
+// TODO: JSHint: This function's cyclomatic complexity is too high. (12) (W074)
 function load_configuration_file(req, res, config_file_data )
 {
     console.log('config_file_data');
@@ -355,19 +355,19 @@ function load_configuration_file(req, res, config_file_data )
     
     const allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix", "metadata_table", "fheatmap", "dendrogram01", "dendrogram03", "pcoa", "pcoa3d", "geospatial", "adiversity"];
 
-    if(allowed_images.indexOf(config_file_data.image) != -1){
-        console.log('FILE is IMAGE-2')
+    if(allowed_images.indexOf(config_file_data.image) !== -1){
+        console.log('FILE is IMAGE-2');
     }
     if(config_file_data.hasOwnProperty('image') ){
       console.log('FILE is IMAGE-1');
-      image_to_open.image = config_file_data.image
+      image_to_open.image = config_file_data.image;
     }
 
     if(config_file_data.hasOwnProperty('phylum')){
       console.log('FILE is IMAGE (phyloseq bars or heatmap)');
-      image_to_open.phylum = config_file_data.phylum
+      image_to_open.phylum = config_file_data.phylum;
     }else{
-      console.log('FILE is CONFIG or IMAGE w/o phyloseq bars or heatmap')
+      console.log('FILE is CONFIG or IMAGE w/o phyloseq bars or heatmap');
     }
     let visual_post_items = config_file_data;
     let ids = config_file_data.id_name_hash.ids;
@@ -2748,11 +2748,11 @@ router.get('/livesearch_target/:gene_target', function(req, res) {
   }
 
   PROJECT_FILTER.target = gene_target;
-
-  if(portal){
-    let projects_to_filter = helpers.get_portal_projects(req, portal)
-  }else{
-    let projects_to_filter = SHOW_DATA.projects
+  let projects_to_filter = [];
+  if (portal) {
+    projects_to_filter = helpers.get_portal_projects(req, portal);
+  } else{
+    projects_to_filter = SHOW_DATA.projects;
   }
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, SHOW_DATA.projects, PROJECT_FILTER);
 
