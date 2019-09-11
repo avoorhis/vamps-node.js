@@ -47,7 +47,7 @@ var app = express();
 //  V I E W  S E L E C T I O N
 //
 router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files', 12)], function(req, res) {
-   console.log('in POST view_selection')
+   console.log('in POST view_selection');
 
     // var url_parts = url.parse(req.url, true);
 //     var query = url_parts.query;
@@ -74,7 +74,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   //
   //var body = JSON.parse(req.body);
   //if(typeof visual_post_items == undefined){
-    var visual_post_items = {}
+    var visual_post_items = {};
   //}
   // if(req.body.unit_choice == 'tax_rdp2.6_simple'){
 //     delete req.body[C.default_taxonomy.name+'_domains']
@@ -91,51 +91,51 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   console.log('<<--req.body: view_selection');
 
   helpers.start = process.hrtime();
-  var image_to_open = {}
+  var image_to_open = {};
   if(req.body.api == '1'){
-        console.log('From: API-API-API')
+        console.log('From: API-API-API');
         visual_post_items = COMMON.default_post_items();
         // Change defaults:
-        req.session.normalization = visual_post_items.normalization = req.body.normalization          || "none"
-        req.session.selected_distance = visual_post_items.selected_distance = req.body.selected_distance  || "morisita_horn"
-        req.session.tax_depth   = visual_post_items.tax_depth = req.body.tax_depth                  || "phylum"
-        req.session.domains     = visual_post_items.domains = req.body.domains                      || ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
-        req.session.include_nas = visual_post_items.include_nas = req.body.include_nas              || "yes"
-        req.session.min_range   = visual_post_items.min_range = req.body.min_range                  || '0'
-        req.session.max_range   = visual_post_items.max_range = req.body.max_range                  || '100'
+        req.session.normalization = visual_post_items.normalization = req.body.normalization          || "none";
+        req.session.selected_distance = visual_post_items.selected_distance = req.body.selected_distance  || "morisita_horn";
+        req.session.tax_depth   = visual_post_items.tax_depth = req.body.tax_depth                  || "phylum";
+        req.session.domains     = visual_post_items.domains = req.body.domains                      || ["Archaea","Bacteria","Eukarya","Organelle","Unknown"];
+        req.session.include_nas = visual_post_items.include_nas = req.body.include_nas              || "yes";
+        req.session.min_range   = visual_post_items.min_range = req.body.min_range                  || '0';
+        req.session.max_range   = visual_post_items.max_range = req.body.max_range                  || '100';
         
         if((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length != 0){
-            console.log('Found api dids ',req.body.ds_order)
+            console.log('Found api dids ',req.body.ds_order);
             try{
                 var dataset_ids = JSON.parse(req.body.ds_order)
             }catch(e){
                 var dataset_ids = req.body.ds_order
             }
-            var new_dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids)
-            var dataset_ids = new_dataset_ids
+            var new_dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
+            var dataset_ids = new_dataset_ids;
             req.session.chosen_id_order = visual_post_items.ds_order = dataset_ids
         }else if( (req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project) ){
-            console.log('Found api project ',req.body.project)
-            var pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid
-            var new_dataset_ids = helpers.screen_dids_for_permissions(req, DATASET_IDS_BY_PID[pid.toString()])
-            visual_post_items.ds_order = new_dataset_ids
-            console.log(PROJECT_INFORMATION_BY_PNAME[req.body.project])
-            console.log(visual_post_items.ds_order)
+            console.log('Found api project ',req.body.project);
+            var pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid;
+            var new_dataset_ids = helpers.screen_dids_for_permissions(req, DATASET_IDS_BY_PID[pid.toString()]);
+            visual_post_items.ds_order = new_dataset_ids;
+            console.log(PROJECT_INFORMATION_BY_PNAME[req.body.project]);
+            console.log(visual_post_items.ds_order);
             req.session.chosen_id_order = dataset_ids = visual_post_items.ds_order;
             //console.log('dids',dataset_ids)
         }else{
-            console.log('API ALERT - no dids or project')
+            console.log('API ALERT - no dids or project');
             return;
         }
 
-        visual_post_items.update_data = req.body.update_data              || '1'   // fires changes
+        visual_post_items.update_data = req.body.update_data              || '1';   // fires changes
 
-        req.session.no_of_datasets  = visual_post_items.no_of_datasets = dataset_ids.length
+        req.session.no_of_datasets  = visual_post_items.no_of_datasets = dataset_ids.length;
         
         // for API select ALL metadata with these datasets
-        var md = {} // hash lookup unique
+        var md = {}; // hash lookup unique
         for(n in dataset_ids){
-            var did = dataset_ids[n]
+            var did = dataset_ids[n];
             for(item in AllMetadata[did]){
                 md[item] =1
             }
@@ -145,50 +145,48 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   }else if(req.body.restore_image === '1'){
         console.log('in view_selection RESTORE IMAGE')
   }else if(req.body.cancel_resort === '1'){
-        console.log('resorted canceled')
+        console.log('resorted canceled');
         req.flash('success','Canceled Resort.');
         var dataset_ids = JSON.parse(req.body.ds_order);
         
   }else if(req.body.update_data === '1'){  // from 'Update' button on view_selection.html
-        console.log('Update Data')
+        console.log('Update Data');
         // populate req.session and visual_post_items from req.body(post)
-        var dataset_ids = req.session.chosen_id_order;
+        const dataset_ids = req.session.chosen_id_order;
         visual_post_items = COMMON.save_post_items(req);
-        for(item in visual_post_items){
-            req.session[item] = visual_post_items[item]
+        for (let item in visual_post_items){
+            req.session[item] = visual_post_items[item];
         }
         //console.log('XXXXXXXXXXX-VPI')
         //console.log(visual_post_items)
         
-    
-        
   }else if(req.body.resorted === '1'){
-        console.log('resorted == 1')
+        console.log('resorted == 1');
         // populate visual_post_items from req.session (except new ds_order)
         req.flash('success','The dataset order has been updated.');
-        var dataset_ids = req.body.ds_order;
-        req.session.chosen_id_order = dataset_ids
-        visual_post_items.unit_choice = req.session.unit_choice
-        visual_post_items.no_of_datasets = dataset_ids.length
-        visual_post_items.normalization = req.session.normalization
-        visual_post_items.selected_distance = req.session.selected_distance
-        visual_post_items.tax_depth = req.session.tax_depth
-        visual_post_items.include_nas = req.session.include_nas
-        visual_post_items.min_range = req.session.min_range
-        visual_post_items.max_range = req.session.max_range
-        visual_post_items.metadata = req.session.metadata
-        visual_post_items.domains = req.session.domains  
-        visual_post_items.custom_taxa = req.session.custom_taxa  
+        const dataset_ids = req.body.ds_order;
+        req.session.chosen_id_order = dataset_ids;
+        visual_post_items.unit_choice = req.session.unit_choice;
+        visual_post_items.no_of_datasets = dataset_ids.length;
+        visual_post_items.normalization = req.session.normalization;
+        visual_post_items.selected_distance = req.session.selected_distance;
+        visual_post_items.tax_depth = req.session.tax_depth;
+        visual_post_items.include_nas = req.session.include_nas;
+        visual_post_items.min_range = req.session.min_range;
+        visual_post_items.max_range = req.session.max_range;
+        visual_post_items.metadata = req.session.metadata;
+        visual_post_items.domains = req.session.domains;
+        visual_post_items.custom_taxa = req.session.custom_taxa;
             
         
   }else if(req.body.from_directory_configuration_file === '1'){
         // ALL Config files now loaded through GET (see router.get('/view_selection/:filename/:from_configuration_file')
-        console.log('from_directory_configuration_file-POST')
+        console.log('from_directory_configuration_file-POST');
         // populate visual_post_items from ?????
         var config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
-        var upld_obj = JSON.parse(fs.readFileSync(config_file_path, 'utf8'))
+        var upld_obj = JSON.parse(fs.readFileSync(config_file_path, 'utf8'));
         //console.log(upld_obj)
-        var config_file_data = create_clean_config(req, upld_obj) // put into req.session
+        var config_file_data = create_clean_config(req, upld_obj); // put into req.session
         if(Object.keys(config_file_data).length == 0){
             //error
             res.redirect('saved_elements');
@@ -197,29 +195,29 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         for(item in config_file_data){
             req.session[item] = config_file_data[item]
         }
-        var dataset_ids = req.session.chosen_id_order
-        visual_post_items.unit_choice = req.session.unit_choice
-        visual_post_items.no_of_datasets = dataset_ids.length
-        visual_post_items.normalization = req.session.normalization
-        visual_post_items.selected_distance = req.session.selected_distance
-        visual_post_items.tax_depth = req.session.tax_depth
-        visual_post_items.include_nas = req.session.include_nas
-        visual_post_items.min_range = req.session.min_range
-        visual_post_items.max_range = req.session.max_range
-        visual_post_items.metadata = req.session.metadata
-        visual_post_items.domains = req.session.domains  
-        visual_post_items.custom_taxa = req.session.custom_taxa 
+        var dataset_ids = req.session.chosen_id_order;
+        visual_post_items.unit_choice = req.session.unit_choice;
+        visual_post_items.no_of_datasets = dataset_ids.length;
+        visual_post_items.normalization = req.session.normalization;
+        visual_post_items.selected_distance = req.session.selected_distance;
+        visual_post_items.tax_depth = req.session.tax_depth;
+        visual_post_items.include_nas = req.session.include_nas;
+        visual_post_items.min_range = req.session.min_range;
+        visual_post_items.max_range = req.session.max_range;
+        visual_post_items.metadata = req.session.metadata;
+        visual_post_items.domains = req.session.domains;
+        visual_post_items.custom_taxa = req.session.custom_taxa;
         visual_post_items.update_data = 1 
         
 
   }else if(req.body.from_upload_configuration_file === '1'){
         // UPLOAD Config file
-        console.log('from_upload_configuration_file-POST')
+        console.log('from_upload_configuration_file-POST');
         // populate visual_post_items from ????
         // For this we need the upload.single('upload_files', 12) in the post definition
-        var upload_file = req.file.path
-        var upld_obj = JSON.parse(fs.readFileSync(upload_file, 'utf8'))//,function(err, data){
-        var config_file_data = create_clean_config(req, upld_obj) // put into req.session
+        var upload_file = req.file.path;
+        var upld_obj = JSON.parse(fs.readFileSync(upload_file, 'utf8'));//,function(err, data){
+        var config_file_data = create_clean_config(req, upld_obj); // put into req.session
         if(Object.keys(config_file_data).length == 0){
             //error
             res.redirect('saved_elements');
@@ -228,18 +226,18 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         for(item in config_file_data){
             req.session[item] = config_file_data[item]
         }
-        var dataset_ids = req.session.chosen_id_order
-        visual_post_items.unit_choice = req.session.unit_choice
-        visual_post_items.no_of_datasets = dataset_ids.length
-        visual_post_items.normalization = req.session.normalization
-        visual_post_items.selected_distance = req.session.selected_distance
-        visual_post_items.tax_depth = req.session.tax_depth
-        visual_post_items.include_nas = req.session.include_nas
-        visual_post_items.min_range = req.session.min_range
-        visual_post_items.max_range = req.session.max_range
-        visual_post_items.metadata = req.session.metadata
-        visual_post_items.domains = req.session.domains  
-        visual_post_items.custom_taxa = req.session.custom_taxa 
+        var dataset_ids = req.session.chosen_id_order;
+        visual_post_items.unit_choice = req.session.unit_choice;
+        visual_post_items.no_of_datasets = dataset_ids.length;
+        visual_post_items.normalization = req.session.normalization;
+        visual_post_items.selected_distance = req.session.selected_distance;
+        visual_post_items.tax_depth = req.session.tax_depth;
+        visual_post_items.include_nas = req.session.include_nas;
+        visual_post_items.min_range = req.session.min_range;
+        visual_post_items.max_range = req.session.max_range;
+        visual_post_items.metadata = req.session.metadata;
+        visual_post_items.domains = req.session.domains;
+        visual_post_items.custom_taxa = req.session.custom_taxa;
         visual_post_items.update_data = 1 
 
 
@@ -249,32 +247,32 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 
   }else{
         // DONE Direct from unit_select
-        console.log('DEFAULT req.body')
+        console.log('DEFAULT req.body');
         visual_post_items = COMMON.save_post_items(req);
         //console.log('visual_post_items')
         //console.log(visual_post_items)
-        var dataset_ids = req.session.chosen_id_order
-        req.session.no_of_datasets = dataset_ids.length
-        req.session.metadata = visual_post_items.metadata
-        req.session.normalization = "none"
-        req.session.selected_distance = "morisita_horn"
-        req.session.tax_depth = req.body.tax_depth
-        req.session.domains = req.body.domains || [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown']
-        req.session.include_nas = "yes"
-        req.session.min_range = '0'
-        req.session.max_range = '100'
-        req.session.unit_choice = req.body.unit_choice
+        var dataset_ids = req.session.chosen_id_order;
+        req.session.no_of_datasets = dataset_ids.length;
+        req.session.metadata = visual_post_items.metadata;
+        req.session.normalization = "none";
+        req.session.selected_distance = "morisita_horn";
+        req.session.tax_depth = req.body.tax_depth;
+        req.session.domains = req.body.domains || [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown'];
+        req.session.include_nas = "yes";
+        req.session.min_range = '0';
+        req.session.max_range = '100';
+        req.session.unit_choice = req.body.unit_choice;
         req.session.custom_taxa = visual_post_items.custom_taxa
   }
   
   // get dataset_ids the add names for biom file output:
   // chosen_id_order was set in unit_select and added to session variable
-  visual_post_items.chosen_datasets = []
+  visual_post_items.chosen_datasets = [];
   //visual_post_items.chosen_name_order = []
   for(n in dataset_ids){
-        var did = dataset_ids[n]     
-        var dname = DATASET_NAME_BY_DID[did]
-        var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project
+        var did = dataset_ids[n];
+        var dname = DATASET_NAME_BY_DID[did];
+        var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
         visual_post_items.chosen_datasets.push( { did:did,name:pname+'--'+dname } )
   }
   
@@ -322,7 +320,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 //console.log('biom_matrix',biom_matrix);
   // function see below
   //render_view_selection(res, req, metadata, image_to_open)
-  var needed_constants = helpers.retrieve_needed_constants(C,'view_selection')
+  var needed_constants = helpers.retrieve_needed_constants(C,'view_selection');
   
   res.render('visuals/view_selection', {
                                 title           : 'VAMPS: Visuals Select',
@@ -343,41 +341,41 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 //
 function load_configuration_file(req, res, config_file_data )
 {
-    console.log('config_file_data')
-    console.log(config_file_data)
+    console.log('config_file_data');
+    console.log(config_file_data);
     //req.session = config_file_data
-     var image_to_open = {}
+     var image_to_open = {};
     
     
-    var allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix", "metadata_table", "fheatmap", "dendrogram01", "dendrogram03", "pcoa", "pcoa3d", "geospatial", "adiversity"]
+    var allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix", "metadata_table", "fheatmap", "dendrogram01", "dendrogram03", "pcoa", "pcoa3d", "geospatial", "adiversity"];
 
     if(allowed_images.indexOf(config_file_data.image) != -1){
         console.log('FILE is IMAGE-2')
     }
     if(config_file_data.hasOwnProperty('image') ){
-      console.log('FILE is IMAGE-1')
+      console.log('FILE is IMAGE-1');
       image_to_open.image = config_file_data.image
     }
 
     if(config_file_data.hasOwnProperty('phylum')){
-      console.log('FILE is IMAGE (phyloseq bars or heatmap)')
+      console.log('FILE is IMAGE (phyloseq bars or heatmap)');
       image_to_open.phylum = config_file_data.phylum
     }else{
       console.log('FILE is CONFIG or IMAGE w/o phyloseq bars or heatmap')
     }
     var visual_post_items = config_file_data;
-    var ids = config_file_data.id_name_hash.ids
-    var new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
+    var ids = config_file_data.id_name_hash.ids;
+    var new_dataset_ids = helpers.screen_dids_for_permissions(req, ids);
 
     req.flash('success', 'Using data from configuration file.');
-    console.log('in view_selection FROM CONFIG or IMAGE')
+    console.log('in view_selection FROM CONFIG or IMAGE');
     
 
-    visual_post_items.no_of_datasets = new_dataset_ids.length
+    visual_post_items.no_of_datasets = new_dataset_ids.length;
     for(n in chosen_id_name_hash.ids){
-        did = chosen_id_name_hash.ids[n]
-        pid = PROJECT_ID_BY_DID[did]
-        pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did]
+        did = chosen_id_name_hash.ids[n];
+        pid = PROJECT_ID_BY_DID[did];
+        pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
         chosen_id_name_hash.names.push(pjds)
     }
     if(! config_file_data.hasOwnProperty('metadata') || config_file_data['metadata'].length == 0){
@@ -385,7 +383,7 @@ function load_configuration_file(req, res, config_file_data )
     }
 
     for(var i in chosen_id_name_hash.ids){
-      var did = chosen_id_name_hash.ids[i]
+      var did = chosen_id_name_hash.ids[i];
       try{
             if(visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
@@ -431,15 +429,15 @@ function create_clean_config(req, upld_obj)
         
 
         var timestamp = +new Date();
-        var ts = req.user.username  + '_'+timestamp
-        var clean_obj = {}
-        clean_obj.ts = ts
+        var ts = req.user.username  + '_'+timestamp;
+        var clean_obj = {};
+        clean_obj.ts = ts;
         if(upld_obj.hasOwnProperty('image')){
-          console.log('1) FILE is IMAGE')
-          clean_obj.image = upld_obj.image
+          console.log('1) FILE is IMAGE');
+          clean_obj.image = upld_obj.image;
           new_filename = 'image-'+clean_obj.image+'-'+clean_obj.ts+'.json'
         }else{
-          console.log('2) FILE is CONFIG')
+          console.log('2) FILE is CONFIG');
           new_filename = 'configuration-'+timestamp+'.json'
         }
 
@@ -447,8 +445,8 @@ function create_clean_config(req, upld_obj)
             req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
             return {};
         }
-        var ids = upld_obj.chosen_id_order
-        var new_dataset_ids = helpers.screen_dids_for_permissions(req, ids)
+        var ids = upld_obj.chosen_id_order;
+        var new_dataset_ids = helpers.screen_dids_for_permissions(req, ids);
         if(! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) != 'vamps'){
           req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
           return {};
@@ -459,8 +457,8 @@ function create_clean_config(req, upld_obj)
 
         }else{
           // move the file ASIS to the CONFIG.USER_FILES_BASE location
-          clean_obj.chosen_id_order = new_dataset_ids
-          clean_obj.no_of_datasets = new_dataset_ids.length
+          clean_obj.chosen_id_order = new_dataset_ids;
+          clean_obj.no_of_datasets = new_dataset_ids.length;
         
           // ADD DEFAULTS if needed
           if(! upld_obj.hasOwnProperty('metadata') || upld_obj.metadata.length == 0){
@@ -468,44 +466,44 @@ function create_clean_config(req, upld_obj)
           }else{
             clean_obj.metadata = upld_obj.metadata
           }
-          clean_obj.unit_choice = 'tax_'+C.default_taxonomy.name+'_simple'
-          clean_obj.custom_taxa = ["NA"]
-          var allowed_norms = ['none','maximum','frequency']
+          clean_obj.unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
+          clean_obj.custom_taxa = ["NA"];
+          var allowed_norms = ['none','maximum','frequency'];
           if(! upld_obj.hasOwnProperty('normalization') || allowed_norms.indexOf(upld_obj.normalization) == -1){
             clean_obj.normalization = 'none'
           }else{
             clean_obj.normalization = upld_obj.normalization
           }
-          var allowed_distance_metrics = ['jaccard','kulczynski','canberra','morisita_horn','bray_curtis']
+          var allowed_distance_metrics = ['jaccard','kulczynski','canberra','morisita_horn','bray_curtis'];
           if(! upld_obj.hasOwnProperty('selected_distance') || allowed_distance_metrics.indexOf(upld_obj.selected_distance) == -1){
             clean_obj.selected_distance = 'morisita_horn'
           }else{
             clean_obj.selected_distance = upld_obj.selected_distance
           }
-          var allowed_ranks = C.RANKS
+          var allowed_ranks = C.RANKS;
           if(! upld_obj.hasOwnProperty('tax_depth') || allowed_ranks.indexOf(upld_obj.tax_depth) == -1){
             clean_obj.tax_depth = 'phylum'
           }else{
             clean_obj.tax_depth = upld_obj.tax_depth
           }
-          var allowed_incnas = ['yes','no']
+          var allowed_incnas = ['yes','no'];
           if(! upld_obj.hasOwnProperty('include_nas') || allowed_incnas.indexOf(upld_obj.include_nas) == -1){
             clean_obj.include_nas = 'yes'
           }else{
             clean_obj.include_nas = upld_obj.include_nas
           }
           // DOMAINS
-          var allowed_domains = C.DOMAINS.domains
+          var allowed_domains = C.DOMAINS.domains;
           if(! upld_obj.hasOwnProperty('domains') || upld_obj.domains.length == 0){
             clean_obj.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
           }else{
-              var arr = []
+              var arr = [];
               for( n in allowed_domains){
                 if(upld_obj.domains.indexOf(allowed_domains[n].name) != -1){
                     arr.push(allowed_domains[n].name)
                 }
               }
-              clean_obj.domains = arr
+              clean_obj.domains = arr;
               if(upld_obj.domains.length == 0){
                 clean_obj.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
               }
@@ -524,8 +522,8 @@ function create_clean_config(req, upld_obj)
             clean_obj.max_range = 100
           }
 
-          new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename)
-          fs.writeFileSync(new_filename_path, JSON.stringify(clean_obj))
+          new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename);
+          fs.writeFileSync(new_filename_path, JSON.stringify(clean_obj));
           return clean_obj
 
         }
@@ -553,7 +551,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   //var this_session_metadata = {}
   var dataset_ids = [];
   if(req.body.api == '1'){
-    console.log('API-API-API')
+    console.log('API-API-API');
     var dataset_ids = JSON.parse(req.body.ds_order);
   }else if(req.body.resorted === '1'){
   	var dataset_ids = req.body.ds_order;
@@ -562,7 +560,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }else{
     var dataset_ids = JSON.parse(req.body.dataset_ids);
   }
-  var needed_constants = helpers.retrieve_needed_constants(C,'unit_selection')
+  var needed_constants = helpers.retrieve_needed_constants(C,'unit_selection');
   var LoadFailureRequest = function (req, res) {
         // return to
         res.render('visuals/visuals_index', {
@@ -583,7 +581,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   // A user can jump here directly from geo_search
   // However a user can jump directly to view_select from
   // saved datasets or configuration which they could conceivably manipulate
-  var dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids)
+  var dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
 
   if(req.CONFIG.site == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
@@ -602,33 +600,33 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
 	    // GLOBAL Variable
 	    
-	    req.session.chosen_id_order   = dataset_ids
+	    req.session.chosen_id_order   = dataset_ids;
 	    
 	    // Thes get only the names of the available metadata:
 	    var custom_metadata_headers   = COMMON.get_metadata_selection(dataset_ids, 'custom');
 	    var required_metadata_headers = COMMON.get_metadata_selection(dataset_ids, 'required');
 
        // Gather just the tax data of selected datasets
-      var chosen_dataset_order = []
+      var chosen_dataset_order = [];
       for(var i in req.session.chosen_id_order){
-        var did = req.session.chosen_id_order[i]
-        var dname = DATASET_NAME_BY_DID[did]
-        var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project
+        var did = req.session.chosen_id_order[i];
+        var dname = DATASET_NAME_BY_DID[did];
+        var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
         
-        chosen_dataset_order.push( { did:did, name:pname+'--'+dname } )  // send this to client
+        chosen_dataset_order.push( { did:did, name:pname+'--'+dname } );  // send this to client
         
         // !!!use default taxonomy here (may choose other on this page)
         var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
         var path_to_file = path.join(files_prefix, did +'.json');
-        var error_msg = ''
+        var error_msg = '';
         try{
             var jsonfile = require(path_to_file);
             //this_session_metadata[did]  = jsonfile['metadata'];
         }catch(err){
-            console.log(err)
-            var pid = PROJECT_ID_BY_DID[dataset_ids[i]]
-            var pname = PROJECT_INFORMATION_BY_PID[pid].project
-            var dname = DATASET_NAME_BY_DID[did]
+            console.log(err);
+            var pid = PROJECT_ID_BY_DID[dataset_ids[i]];
+            var pname = PROJECT_INFORMATION_BY_PID[pid].project;
+            var dname = DATASET_NAME_BY_DID[did];
             //this_session_metadata[did]  = {}
             error_msg = 'No Taxonomy found for this dataset ('+pname+'--'+dname+' (did:'+did+')) and possibly others. Try selecting other units.'
             
@@ -673,7 +671,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
  * GET visualization page.
  */
 router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
-    console.log('in GET visuals_index')
+    console.log('in GET visuals_index');
     // This page is arrived at using GET from the Main Menu
     // It will be protected usind the helpers.isLoggedIn function
     // TESTING:
@@ -685,7 +683,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
     //      Clicking the submit button when no datasets have been selected should result in an alert box and a
     //      return to the page.
     //console.log(PROJECT_INFORMATION_BY_PID);
-    console.log(req.user.username+' in GET req.body visuals_index')
+    console.log(req.user.username+' in GET req.body visuals_index');
     //console.log(req.body)
 
     //console.log(ALL_DATASETS);
@@ -698,9 +696,9 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
     DATA_TO_OPEN = {};
     if(req.body.data_to_open){
       // open many projects
-      obj = JSON.parse(req.body.data_to_open)
+      obj = JSON.parse(req.body.data_to_open);
       for(pj in obj){
-        pid = PROJECT_INFORMATION_BY_PNAME[pj].pid
+        pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
         DATA_TO_OPEN[pid] = obj[pj]
       }
       //console.log('got data to open '+data_to_open)
@@ -711,7 +709,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
     console.log('DATA_TO_OPEN');
     console.log(DATA_TO_OPEN);
 
-    var needed_constants = helpers.retrieve_needed_constants(C,'visuals_index')
+    var needed_constants = helpers.retrieve_needed_constants(C,'visuals_index');
     res.render('visuals/visuals_index', {
                                   title       : 'VAMPS: Select Datasets',
                                   subtitle    : 'Dataset Selection Page',
@@ -729,7 +727,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   });
 
 router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
-  console.log('in POST visuals_index '+ req.user.username)
+  console.log('in POST visuals_index '+ req.user.username);
   // This page is arrived at using GET from the Main Menu
   // It will be protected usind the helpers.isLoggedIn function
   // TESTING:
@@ -753,9 +751,9 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   DATA_TO_OPEN = {};
   if(req.body.data_to_open){
     // open many projects
-    obj = JSON.parse(req.body.data_to_open)
+    obj = JSON.parse(req.body.data_to_open);
     for(pj in obj){
-      pid = PROJECT_INFORMATION_BY_PNAME[pj].pid
+      pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
       DATA_TO_OPEN[pid] = obj[pj]
     }
     //console.log('got data to open '+data_to_open)
@@ -788,19 +786,19 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
 //
 router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
 
-    var ts = req.session.ts
-    var selected_dataset_order = {}
-    selected_dataset_order.names = []
-    selected_dataset_order.ids = []
+    var ts = req.session.ts;
+    var selected_dataset_order = {};
+    selected_dataset_order.names = [];
+    selected_dataset_order.ids = [];
     for(n in req.session.chosen_id_order){
-        var did = req.session.chosen_id_order[n]
-        var pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did]
-        selected_dataset_order.names.push(pjds)
+        var did = req.session.chosen_id_order[n];
+        var pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
+        selected_dataset_order.names.push(pjds);
         selected_dataset_order.ids.push(did)
     }
      
      
-    console.log(req.session)
+    console.log(req.session);
     res.render('visuals/reorder_datasets', {
                                 title   : 'VAMPS: Reorder Datasets',
                                 selected_datasets: JSON.stringify(selected_dataset_order),
@@ -827,7 +825,7 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
         var msg = 'ERROR Message '+err;
         helpers.render_error_page(req,res,msg);
     }else{
-      console.log(data)
+      console.log(data);
       res.send(data);
     }
   });
@@ -835,7 +833,7 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
 router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
   // this fxn is required for viewing list of saved datasets
   // when 'toggle open button is activated'
-  console.log(req.body.filename)
+  console.log(req.body.filename);
   //console.log('XX'+JSON.stringify(req.body));
   var file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
   console.log(file_path);
@@ -923,12 +921,12 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                     }else{
                         console.log('stdout: ' + stdout);
                     }
-                    lines = stdout.split('\n')
+                    lines = stdout.split('\n');
                     for(n in lines){
                       if(lines[n].substring(0,6) == 'NEWICK' ){
-                        tmp = lines[n].split('=')
-                        console.log('FOUND NEWICK '+tmp[1])
-                        continue
+                        tmp = lines[n].split('=');
+                        console.log('FOUND NEWICK '+tmp[1]);
+
                       }
                     }
 
@@ -946,7 +944,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                       newick = {"ERROR":err};
                     }
                     res.send(newick);
-                    return;
+
 
           }else{  // 'pdf'
                     var viz_width = 1200;
@@ -958,7 +956,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                     html += " <p>ERROR in loading pdf file</p>";
                     html += "</object></div>";
                     res.send(html);
-                    return;
+
           }
         }else{
           console.log('stderr: '+stderr);
@@ -1110,7 +1108,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
                 if(code === 0){    // SUCCESS
                     
                   
-                            var html = "** <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a> **"
+                            var html = "** <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a> **";
                             html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
                             html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
                             html += "<br>Mapping (metadata) File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
@@ -1118,7 +1116,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
                             //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
 
                             res.send(html);
-                            return;
+
 
 
 
@@ -1140,10 +1138,10 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
     var ts = req.session.ts;
     console.log('in dbrowser');
-    console.log(req.session)
+    console.log(req.session);
     var html='';
-    var matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
-    var biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'))
+    var matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
+    var biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
     var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
    
     //console.log('max_total_count '+max_total_count.toString());
@@ -1259,7 +1257,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
 
     // write html to a file and open it
 
-    console.log("render visuals/dbrowser")
+    console.log("render visuals/dbrowser");
     //var file_name = ts+'_krona.html';
     //var html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
 
@@ -1282,8 +1280,8 @@ router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
     console.log('in POST oligotyping');
     
     var html='';
-    var matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
-    var biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'))
+    var matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
+    var biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
     var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
     
     //console.log('max_total_count '+max_total_count.toString());
@@ -1291,7 +1289,7 @@ router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
 
     // write html to a file and open it
 
-    console.log("render visuals/oligotyping")
+    console.log("render visuals/oligotyping");
     //var file_name = ts+'_krona.html';
     //var html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
 
@@ -1313,7 +1311,7 @@ router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
 //
 //
 router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
-    console.log('in phyloseq post')
+    console.log('in phyloseq post');
     //console.log(req.body)
 
     var ts = req.body.ts;
@@ -1321,7 +1319,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     var dist_metric = req.body.metric;
     var plot_type = req.body.plot_type;
     var image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.svg';
-    var phy,md1,md2,ordtype,maxdist,script
+    var phy,md1,md2,ordtype,maxdist,script;
 
     var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
     var fill = req.session.tax_depth.charAt(0).toUpperCase() + req.session.tax_depth.slice(1);
@@ -1445,7 +1443,7 @@ function get_sumator(req, biom_matrix){
            var taxa = tax_items[t];
            var rank = C.RANKS[t];
            if(rank=='domain'){
-               d = tax_items[t]
+               d = tax_items[t];
                for(i in req.session.chosen_id_order){
                    if(d in sumator['domain']){
                        if(i in sumator['domain'][d]['knt']){
@@ -1455,14 +1453,14 @@ function get_sumator(req, biom_matrix){
                        }
                    }else{
                        sumator['domain'][d]={};
-                       sumator['domain'][d]['phylum']={}
-                       sumator['domain'][d]['knt']=[]
+                       sumator['domain'][d]['phylum']={};
+                       sumator['domain'][d]['knt']=[];
                        sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
                    }
                }
            }
            if(rank=='phylum'){
-               p = tax_items[t]
+               p = tax_items[t];
                for(i in req.session.chosen_id_order){
                    if(p in sumator['domain'][d]['phylum']){
                        if(i in sumator['domain'][d]['phylum'][p]['knt']){
@@ -1479,7 +1477,7 @@ function get_sumator(req, biom_matrix){
                }
            }
            if(rank=='klass'){
-               k = tax_items[t]
+               k = tax_items[t];
                for(i in req.session.chosen_id_order){
                    if(k in sumator['domain'][d]['phylum'][p]['klass']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
@@ -1496,7 +1494,7 @@ function get_sumator(req, biom_matrix){
                }
            }
            if(rank=='order'){
-               o = tax_items[t]
+               o = tax_items[t];
                for(i in req.session.chosen_id_order){
                    if(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
@@ -1513,7 +1511,7 @@ function get_sumator(req, biom_matrix){
                }
            }
            if(rank=='family'){
-               f = tax_items[t]
+               f = tax_items[t];
                for(i in req.session.chosen_id_order){
                    if(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
@@ -1530,7 +1528,7 @@ function get_sumator(req, biom_matrix){
                }
            }
            if(rank=='genus'){
-               g = tax_items[t]
+               g = tax_items[t];
                for(i in req.session.chosen_id_order){
                    if(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
@@ -1547,7 +1545,7 @@ function get_sumator(req, biom_matrix){
                }
            }
            if(rank=='species'){
-               s = tax_items[t]
+               s = tax_items[t];
                for(i in req.session.chosen_id_order){
                    if(s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
@@ -1565,7 +1563,7 @@ function get_sumator(req, biom_matrix){
                }
            }
            if(rank=='strain'){
-               st = tax_items[t]
+               st = tax_items[t];
                for(i in req.session.chosen_id_order){
                    if(st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
@@ -1597,32 +1595,32 @@ function get_sumator(req, biom_matrix){
 // B A R - C H A R T  -- S I N G L E
 //
 router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
-    console.log('in routes_viz/bar_single')
+    console.log('in routes_viz/bar_single');
     var myurl = url.parse(req.url, true);
     //console.log('in piechart_single',myurl.query)
     //var ts = myurl.query.ts;
     var selected_did = myurl.query.did;
     var orderby = myurl.query.orderby || 'alphaDown'; // alpha, count
     var value = myurl.query.val || 'z'; // a,z, min, max
-    var order = {orderby:orderby, value:value} // orderby: alpha: a,z or count: min,max
+    var order = {orderby:orderby, value:value}; // orderby: alpha: a,z or count: min,max
     //var ds_items = pjds.split('--');
      //console.log('myurl.query')
      //console.log(myurl.query)
      //console.log('bar_single:session')
      //console.log(req.session)
     
-    var pi = {}
-    var selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did]
-    pi.chosen_datasets = [{did:selected_did, name:selected_pjds}]
-    pi.no_of_datasets=1
-    pi.ts = req.session.ts
-    pi.unit_choice = req.session.unit_choice
-    pi.min_range = req.session.min_range
-    pi.max_range = req.session.max_range
-    pi.normalization = req.session.normalization
-    pi.tax_depth = req.session.tax_depth
-    pi.include_nas = req.session.include_nas
-    pi.domains = req.session.domains
+    var pi = {};
+    var selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did];
+    pi.chosen_datasets = [{did:selected_did, name:selected_pjds}];
+    pi.no_of_datasets=1;
+    pi.ts = req.session.ts;
+    pi.unit_choice = req.session.unit_choice;
+    pi.min_range = req.session.min_range;
+    pi.max_range = req.session.max_range;
+    pi.normalization = req.session.normalization;
+    pi.tax_depth = req.session.tax_depth;
+    pi.include_nas = req.session.include_nas;
+    pi.domains = req.session.domains;
     var write_file = false;  // DO NOT OVERWRITE The Matrix File
     // var new_matrix = MTX.get_biom_matrix(req, pi, write_file);
     console.time("TIME: biom_matrix_new_from_bar_single");
@@ -1630,18 +1628,18 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     let new_matrix = biom_matrix_obj.biom_matrix;
     console.timeEnd("TIME: biom_matrix_new_from_bar_single");
 
-    new_matrix.dataset = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did]
-    new_matrix.did = selected_did
+    new_matrix.dataset = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did];
+    new_matrix.did = selected_did;
     
-    new_matrix.total = 0
+    new_matrix.total = 0;
 
     
     //var idx = -1;
 
    
 
-    new_matrix = helpers.sort_json_matrix(new_matrix, order)
-    var new_order = {}
+    new_matrix = helpers.sort_json_matrix(new_matrix, order);
+    var new_order = {};
     if(order.orderby =='alpha' ){
       if(order.value == 'a'){
         new_order.alpha_value = 'z'
@@ -1663,11 +1661,11 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     //console.log('new_order')
     //console.log(new_order)
     var timestamp = +new Date();  // millisecs since the epoch!
-    var filename = req.user.username+'_'+selected_did+'_'+timestamp+'_sequences.json'
+    var filename = req.user.username+'_'+selected_did+'_'+timestamp+'_sequences.json';
     var file_path = path.join('tmp',filename);
     //console.log(file_path)
-    new_rows = {}
-    new_rows[selected_did] = []
+    new_rows = {};
+    new_rows[selected_did] = [];
     var LoadDataFinishRequest = function (req, res, project, display) {
         console.log('LoadDataFinishRequest in bar_single');
         if(pi.unit_choice == 'OTUs'){
@@ -1701,18 +1699,18 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
               //console.log(rows)
               for(s in rows){
                   //rows[s].seq = rows[s].seq.toString('utf8')
-                  did = rows[s].dataset_id
+                  did = rows[s].dataset_id;
 
                   var seq = rows[s].seq.toString('utf8');
                   var seq_cnt = rows[s].seq_count;
-                  var gast = rows[s].gast_distance
-                  var classifier = rows[s].classifier
-                  var d_id = rows[s].domain_id
-                  var p_id = rows[s].phylum_id
-                  var k_id = rows[s].klass_id
-                  var o_id = rows[s].order_id
-                  var f_id = rows[s].family_id
-                  var g_id
+                  var gast = rows[s].gast_distance;
+                  var classifier = rows[s].classifier;
+                  var d_id = rows[s].domain_id;
+                  var p_id = rows[s].phylum_id;
+                  var k_id = rows[s].klass_id;
+                  var o_id = rows[s].order_id;
+                  var f_id = rows[s].family_id;
+                  var g_id;
                   if(rows[s].hasOwnProperty("genus_id")){
                     if(rows[s].genus_id == 'undefined'){
                         g_id = 'genus_NA'
@@ -1729,7 +1727,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
                   }else{
                     var sp_id = ''
                   }
-                  var st_id = rows[s].strain_id
+                  var st_id = rows[s].strain_id;
                   new_rows[did].push({seq:seq,seq_count:seq_cnt,gast_distance:gast,classifier:classifier,domain_id:d_id,phylum_id:p_id,klass_id:k_id,order_id:o_id,family_id:f_id,genus_id:g_id,species_id:sp_id,strain_id:st_id})
 
               }
@@ -1738,7 +1736,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
                 return b.seq_count - a.seq_count;
               });
 
-              fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]))
+              fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
 
               LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order);
 
@@ -1756,10 +1754,10 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
 router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 
-    console.log('in routes_viz/bar_double')
+    console.log('in routes_viz/bar_double');
     
     var myurl = url.parse(req.url, true);
-    console.log(myurl.query)
+    console.log(myurl.query);
     var did1 = myurl.query.did1;
     var did2 = myurl.query.did2;
     var dist = myurl.query.dist;
@@ -1767,26 +1765,26 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     //var ts   = myurl.query.ts;
     var orderby = myurl.query.orderby || 'alpha'; // alpha, count
     var value = myurl.query.val || 'z'; // a,z, min, max
-    var order = {orderby:orderby, value:value} // orderby: alpha: a,z or count: min,max
-    var ds1  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did1]].project+'--'+DATASET_NAME_BY_DID[did1]
-    var ds2  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did2]].project+'--'+DATASET_NAME_BY_DID[did2]
+    var order = {orderby:orderby, value:value}; // orderby: alpha: a,z or count: min,max
+    var ds1  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did1]].project+'--'+DATASET_NAME_BY_DID[did1];
+    var ds2  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did2]].project+'--'+DATASET_NAME_BY_DID[did2];
     
     //var ds_items = pjds.split('--');
 
     //console.log(ds1, ds2)
 
-    var pi = {}
-    pi.chosen_datasets = [{did:did1, name:ds1},{did:did2, name:ds2}]
-    pi.no_of_datasets=2
-    pi.ts = req.session.ts
-    pi.unit_choice = req.session.unit_choice
-    pi.min_range = req.session.min_range
-    pi.max_range = req.session.max_range
-    pi.normalization = req.session.normalization
-    pi.tax_depth = req.session.tax_depth
-    pi.include_nas = req.session.include_nas
-    pi.domains = req.session.domains
-    pi.selected_distance = metric
+    var pi = {};
+    pi.chosen_datasets = [{did:did1, name:ds1},{did:did2, name:ds2}];
+    pi.no_of_datasets=2;
+    pi.ts = req.session.ts;
+    pi.unit_choice = req.session.unit_choice;
+    pi.min_range = req.session.min_range;
+    pi.max_range = req.session.max_range;
+    pi.normalization = req.session.normalization;
+    pi.tax_depth = req.session.tax_depth;
+    pi.include_nas = req.session.include_nas;
+    pi.domains = req.session.domains;
+    pi.selected_distance = metric;
     var write_file = false;  // DO NOT OVERWRITE The Matrix File
     // var new_matrix = MTX.get_biom_matrix(req, pi, write_file);
     console.time("TIME: biom_matrix_new_from_bar_double");
@@ -1801,8 +1799,8 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 
     //DOUBLE
     //console.log(JSON.stringify(new_matrix))
-    new_matrix = helpers.sort_json_matrix(new_matrix,order)
-    var new_order = {}
+    new_matrix = helpers.sort_json_matrix(new_matrix,order);
+    var new_order = {};
     if(order.orderby =='alpha' ){
       if(order.value == 'a'){
         new_order.alpha_value = 'z'
@@ -1820,15 +1818,15 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     }
     
     var timestamp = +new Date();  // millisecs since the epoch!
-    console.log('TS HM File',timestamp)
-    var filename1 = req.user.username+'_'+did1+'_'+timestamp+'_sequences.json'
+    console.log('TS HM File',timestamp);
+    var filename1 = req.user.username+'_'+did1+'_'+timestamp+'_sequences.json';
     var file_path1 = path.join('tmp',filename1);
-    var filename2 = req.user.username+'_'+did2+'_'+timestamp+'_sequences.json'
+    var filename2 = req.user.username+'_'+did2+'_'+timestamp+'_sequences.json';
     var file_path2 = path.join('tmp',filename2);
     //console.log(file_path)
-    new_rows = {}
-    new_rows[did1] = []
-    new_rows[did2] = []
+    new_rows = {};
+    new_rows[did1] = [];
+    new_rows[did2] = [];
     //console.log(new_rows)
     var LoadDataFinishRequest = function (req, res, timestamp, new_matrix, new_order, dist) {
        console.log('LoadDataFinishRequest in bar_double');
@@ -1863,22 +1861,22 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
               // should write to a file? Or res.render here?
 
               for(s in rows){
-                  did = rows[s].dataset_id
+                  did = rows[s].dataset_id;
 
                   //console.log(did)
                   //rows[s].seq = rows[s].seq.toString('utf8')
                   var seq = rows[s].seq.toString('utf8');
                   var seq_cnt = rows[s].seq_count;
-                  var gast = rows[s].gast_distance
-                  var classifier = rows[s].classifier
-                  var d_id = rows[s].domain_id
-                  var p_id = rows[s].phylum_id
-                  var k_id = rows[s].klass_id
-                  var o_id = rows[s].order_id
-                  var f_id = rows[s].family_id
-                  var g_id = rows[s].genus_id
-                  var sp_id = rows[s].species_id
-                  var st_id = rows[s].strain_id
+                  var gast = rows[s].gast_distance;
+                  var classifier = rows[s].classifier;
+                  var d_id = rows[s].domain_id;
+                  var p_id = rows[s].phylum_id;
+                  var k_id = rows[s].klass_id;
+                  var o_id = rows[s].order_id;
+                  var f_id = rows[s].family_id;
+                  var g_id = rows[s].genus_id;
+                  var sp_id = rows[s].species_id;
+                  var st_id = rows[s].strain_id;
                   new_rows[did].push({seq:seq,seq_count:seq_cnt,gast_distance:gast,classifier:classifier,domain_id:d_id,phylum_id:p_id,klass_id:k_id,order_id:o_id,family_id:f_id,genus_id:g_id,species_id:sp_id,strain_id:st_id})
                   //new_rows[did].seq = rows[s].seq.toString('utf8')
               }
@@ -1914,9 +1912,9 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 //  S E Q U E N C E S
 //
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
-	console.log('in sequences')
+	console.log('in sequences');
 	var myurl = url.parse(req.url, true);
-	console.log(myurl.query)
+	console.log(myurl.query);
 	var search_tax = myurl.query.taxa;
     var seqs_filename = myurl.query.filename;
 
@@ -1924,7 +1922,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     var seq_list = [];
     var d,p,k,o,f,g,sp,st;
     var selected_did = myurl.query.did;
-    var pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project+'--'+DATASET_NAME_BY_DID[selected_did]
+    var pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project+'--'+DATASET_NAME_BY_DID[selected_did];
 	if(seqs_filename){
     //console.log('found filename',seqs_filename)
 
@@ -1956,8 +1954,8 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 
       for(i in clean_data){
 
-          seq_tax = ''
-          var data = clean_data[i]
+          seq_tax = '';
+          var data = clean_data[i];
 
           d  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
 
@@ -2022,7 +2020,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
                     seq_list : 'Error Retrieving Sequences',
                     user: req.user, hostname: req.CONFIG.hostname,
         });
-        return
+
   }
 
 	//   });
@@ -2036,7 +2034,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 *       on that page.  AAV
 */
 router.get('/partials/tax_'+C.default_taxonomy.name+'_simple', helpers.isLoggedIn,  function(req, res) {
-    console.log("in '/partials/tax_'+C.default_taxonomy.name+'_simple'")
+    console.log("in '/partials/tax_'+C.default_taxonomy.name+'_simple'");
     res.render('visuals/partials/tax_'+C.default_taxonomy.name+'_simple', {
         doms : C.UNITSELECT.silva119_simple.domains
     });
@@ -2103,20 +2101,20 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
   var timestamp = +new Date();  // millisecs since the epoch!
   var filename = 'configuration-' + timestamp + '.json';
 
-  var json_obj = Object.assign({},req.session)
+  var json_obj = Object.assign({},req.session);
   json_obj.source = 'vamps.mbl.edu';
   json_obj.ts = +new Date();
-  delete json_obj.cookie
-  delete json_obj.returnTo
-  delete json_obj.flash
-  delete json_obj.passport
-  delete json_obj.cookie
+  delete json_obj.cookie;
+  delete json_obj.returnTo;
+  delete json_obj.flash;
+  delete json_obj.passport;
+  delete json_obj.cookie;
   
   
   if(req.CONFIG.site == 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
   }else{
-        console.log('json_obj')
+        console.log('json_obj');
         console.log(json_obj)
   }
   var filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,filename);
@@ -2166,7 +2164,7 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
       //console.log('req.body: show_saved_datasets-->>');
       //console.log(req.body);
       //console.log('req.body: show_saved_datasets');
-      var acceptable_prefixes = ['datasets', 'configuration', 'image']
+      var acceptable_prefixes = ['datasets', 'configuration', 'image'];
       var saved_elements_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
 
       var file_info = {};
@@ -2185,7 +2183,7 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
       	        if(acceptable_prefixes.indexOf(pts[0]) != -1 ){
       	          //file_info.files.push(files[f]);
       	          stat = fs.statSync(path.join(saved_elements_dir,files[f]));
-      			       file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime.toString() }
+      			       file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime.toString() };
       			       modify_times.push(stat.mtime.getTime());
 
       	        }
@@ -2210,15 +2208,15 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
 //  R E S E T
 //
 router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
-        console.log('in reset_ds_order')
+        console.log('in reset_ds_order');
         var html = '';
-        html += "<table id='drag_table' class='table table-condensed' >"
+        html += "<table id='drag_table' class='table table-condensed' >";
         html += "<thead></thead>";
         html += "  <tbody>";
 
         for (var i in req.session.chosen_id_order){
-             var did = req.session.chosen_id_order[i]
-             var name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did]
+             var did = req.session.chosen_id_order[i];
+             var name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
              html += "<tr class='tooltip_row'>";
              html += "<td class='dragHandle' id='"+did+"--"+name+"'> ";
                  html += "<input type='hidden' name='ds_order[]' value='"+did+"'>";
@@ -2237,27 +2235,27 @@ router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
 // A L P H A - B E T I Z E
 //
 router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
-	console.log('in alphabetize_ds_order')
+	console.log('in alphabetize_ds_order');
 	var html = '';
-  html += "<table id='drag_table' class='table table-condensed' >"
+  html += "<table id='drag_table' class='table table-condensed' >";
   html += "<thead></thead>";
   html += "  <tbody>";
   //console.log(req.session)
-  var names = [] 
-  var ids = [] 
+  var names = [];
+  var ids = [];
   
   for (var i in req.session.chosen_id_order){
-    var did = req.session.chosen_id_order[i]
-    var name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did]
-    names.push(name)
+    var did = req.session.chosen_id_order[i];
+    var name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
+    names.push(name);
     ids.push(did)
   }
 
-  var names_copy = names.slice()  // slice make an independant copy of the array
-  names_copy.sort() // alpha sort
+  var names_copy = names.slice();  // slice make an independant copy of the array
+  names_copy.sort(); // alpha sort
   for (var i in names_copy){
-		     id = ids[names.indexOf(names_copy[i])]
-		     name = names_copy[i]
+		     id = ids[names.indexOf(names_copy[i])];
+		     name = names_copy[i];
 		     html += "<tr class='tooltip_row'>";
          html += "<td class='dragHandle' id='"+ id +"--"+name+"'> ";
 		     html += "<input type='hidden' name='ds_order[]' value='"+ id +"'>";
@@ -2276,17 +2274,17 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
 // R E V E R S E  O R D E R
 //
 router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
-  console.log('in reverse_ds_order')
+  console.log('in reverse_ds_order');
   var ids = JSON.parse(req.body.ids);
   var html = '';
   //console.log(req.session)
-  html += "<table id='drag_table' class='table table-condensed' >"
+  html += "<table id='drag_table' class='table table-condensed' >";
   html += "<thead></thead>";
   html += "  <tbody>";
-  ids.reverse()
+  ids.reverse();
   //console.log(ids)
   for (var i in ids){
-         name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[ids[i]]].project+'--'+DATASET_NAME_BY_DID[ids[i]]  
+         name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[ids[i]]].project+'--'+DATASET_NAME_BY_DID[ids[i]];
          html += "<tr class='tooltip_row'>";
          html += "<td class='dragHandle' id='"+ ids[i] +"--"+name+"'> ";
          html += "<input type='hidden' name='ds_order[]' value='"+ ids[i] +"'>";
@@ -2305,17 +2303,17 @@ router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
 //  C L U S T E R  D A T A S E T  O R D E R
 //
 router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
-    console.log('in cluster_ds_order')
+    console.log('in cluster_ds_order');
     var html = '';
     var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp',biom_file_name);
     var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
-    var pjds_lookup = {}
+    var pjds_lookup = {};
     for(i in req.session.chosen_id_order){
-        var did = req.session.chosen_id_order[i]
-        var pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did]
+        var did = req.session.chosen_id_order[i];
+        var pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
         pjds_lookup[pjds] = did
     }
     var options = {
@@ -2343,14 +2341,14 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 
     cluster_process.on('close', function clusterProcessOnClose(code) {
       console.log('ds cluster process exited with code ' + code);
-      var lines = output.split(/\n/)
+      var lines = output.split(/\n/);
 
       for(i in lines){
 
         if(lines[i].substring(0,7) == 'DS_LIST'){
-          tmp = lines[i].split('=')
-          var ds_list = tmp[1]
-          continue
+          tmp = lines[i].split('=');
+          var ds_list = tmp[1];
+
         }
       }
       if(req.CONFIG.site == 'vamps' ){
@@ -2375,7 +2373,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 
                 html = '';
 
-                html += "<table id='drag_table' class='table table-condensed' >"
+                html += "<table id='drag_table' class='table table-condensed' >";
                 html += "<thead></thead>";
                 html += "  <tbody>";
                 for (var i in potential_chosen_id_name_hash.names){
@@ -2417,45 +2415,45 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 //
 
 router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res) {
-    console.log('in dheatmap_number_to_color')
-    console.log(req.body)
+    console.log('in dheatmap_number_to_color');
+    console.log(req.body);
     
-    var ts = req.session.ts
+    var ts = req.session.ts;
     var distmtx_file_name = ts+'_distance.json';
     var distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
     //console.log(distmtx_file)
-    var distance_matrix = JSON.parse(fs.readFileSync(distmtx_file, 'utf8')) // function (err, distance_matrix) {
+    var distance_matrix = JSON.parse(fs.readFileSync(distmtx_file, 'utf8')); // function (err, distance_matrix) {
                             
     //distance_matrix = JSON.parse(data);
     //console.log(distance_matrix)
-    metadata = {}
-    metadata.numbers_or_colors = req.body.numbers_or_colors
-    metadata.split = false
-    metadata.metric = req.session.selected_distance  // revert back to selected
-    var html = IMAGES.create_hm_table(req, distance_matrix, metadata )
+    metadata = {};
+    metadata.numbers_or_colors = req.body.numbers_or_colors;
+    metadata.split = false;
+    metadata.metric = req.session.selected_distance;  // revert back to selected
+    var html = IMAGES.create_hm_table(req, distance_matrix, metadata );
     
     //console.log(html)
-    var outfile_name = ts + '-dheatmap-api.html'
+    var outfile_name = ts + '-dheatmap-api.html';
     outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
     //console.log('outfile_path:',outfile_path)
     //result = IMAGES.save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
     //console.log(result)
     //res.send(outfile_name)
-    var data = {}
-    data.html = html
-    data.numbers_or_colors = req.body.numbers_or_colors
-    data.filename = outfile_name
+    var data = {};
+    data.html = html;
+    data.numbers_or_colors = req.body.numbers_or_colors;
+    data.filename = outfile_name;
     //res.send(outfile_name)
     res.json(data)
 
    
 });
 router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) {
-    console.log('in dheatmap_split_distance')
-    console.log(req.body)
+    console.log('in dheatmap_split_distance');
+    console.log(req.body);
     
     
-    var ts = req.session.ts
+    var ts = req.session.ts;
     var test_split_file_name = ts+'_distance_mh_bc.tsv';
     var test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
     var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
@@ -2465,9 +2463,9 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     
             
     var FinishSplitFile = function(req, res){
-        var ts = req.session.ts
+        var ts = req.session.ts;
         //var suffix = split_file_suffixes[req.body.split_distance_choice]
-        var suffix = req.body.split_distance_choice
+        var suffix = req.body.split_distance_choice;
         //var distmtx_file_name = ts+'_distance_'+suffix+'.json';
         var distmtx_file_name = ts+'_distance_'+suffix+'.tsv';
         var distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
@@ -2477,32 +2475,32 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
                 res.json({'err':err})
             }else{
                 //console.log(mtxdata)
-                var split_distance_csv_matrix = mtxdata.split('\n')
+                var split_distance_csv_matrix = mtxdata.split('\n');
                 
                 var IMAGES = require('../routes_images');
-                metadata = {}
-                metadata.numbers_or_colors = req.body.numbers_or_colors
-                metadata.split = true
-                metadata.metric = suffix
+                metadata = {};
+                metadata.numbers_or_colors = req.body.numbers_or_colors;
+                metadata.split = true;
+                metadata.metric = suffix;
                 
-                var html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata )
+                var html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata );
 
-                var outfile_name = ts + '-dheatmap-api.html'
+                var outfile_name = ts + '-dheatmap-api.html';
                 outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
                 
-                var data = {}
-                data.html = html
-                data.numbers_or_colors = req.body.numbers_or_colors
-                data.filename = outfile_name
+                var data = {};
+                data.html = html;
+                data.numbers_or_colors = req.body.numbers_or_colors;
+                data.filename = outfile_name;
                 //res.send(outfile_name)
                 res.json(data)
             }
           
         });
-    }
+    };
     if(helpers.fileExists(test_distmtx_file)){
-        console.log('Using Old Files')
-        FinishSplitFile(req, res) 
+        console.log('Using Old Files');
+        FinishSplitFile(req, res);
         return   
     }
     
@@ -2534,8 +2532,8 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
         stderr += data;
     });
     split_process.on('close', function splitsProcessOnClose(code) {
-        console.log('finished code:'+code.toString())
-        console.log('Creating New Split Distance Files')
+        console.log('finished code:'+code.toString());
+        console.log('Creating New Split Distance Files');
         FinishSplitFile(req, res)        
         //var split_distance_csv_matrix = JSON.parse(fs.readFile(distmtx_file, 'utf8', function)) // function (err, distance_matrix) {
                 
@@ -2547,7 +2545,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
 //
 
 router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
-    console.log('in routes_visualization download_file')
+    console.log('in routes_visualization download_file');
     var html = '';
     var ts = req.body.ts;
     var file_type = req.body.file_type;
@@ -2588,16 +2586,16 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
 //
 router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     //SHOW_DATA = ALL_DATASETS;
-    console.log('in clear filters')
+    console.log('in clear filters');
     //console.log(req.query)
     //FILTER_ON = false
-    PROJECT_TREE_OBJ = []
+    PROJECT_TREE_OBJ = [];
     if(req.query.hasOwnProperty('btn') && req.query.btn == '1'){
         DATA_TO_OPEN = {}
     }
     //DATA_TO_OPEN = {}
     PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, SHOW_DATA.projects);
-    PROJECT_FILTER = {"substring":"","env":[],"target":"","portal":"","public":"-1","metadata1":"","metadata2":"","metadata3":"","pid_length":PROJECT_TREE_PIDS.length}
+    PROJECT_FILTER = {"substring":"","env":[],"target":"","portal":"","public":"-1","metadata1":"","metadata2":"","metadata3":"","pid_length":PROJECT_TREE_PIDS.length};
     res.json(PROJECT_FILTER);
 
 });
@@ -2605,8 +2603,8 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
 //
 //
 function filter_project_tree_for_permissions(req, obj){
-  console.log('Filtering tree projects for permissions')
-  var new_project_tree_pids = []
+  console.log('Filtering tree projects for permissions');
+  var new_project_tree_pids = [];
   for( i in obj ){
       //node = PROJECT_INFORMATION_BY_PID[pid];
       //console.log(obj[i])
@@ -2640,13 +2638,13 @@ function filter_project_tree_for_permissions(req, obj){
 router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
     var portal = req.params.portal;
 
-    console.log('in load_portal: '+portal)
+    console.log('in load_portal: '+portal);
     SHOW_DATA = ALL_DATASETS;
     PROJECT_TREE_OBJ = [];
 
-    PROJECT_TREE_OBJ = helpers.get_portal_projects(req, portal)
+    PROJECT_TREE_OBJ = helpers.get_portal_projects(req, portal);
     PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
-    PROJECT_FILTER = {"substring":"","env":[],"target":"","portal":"","public":"-1","metadata1":"","metadata2":"","metadata3":"","pid_length":PROJECT_TREE_PIDS.length}
+    PROJECT_FILTER = {"substring":"","env":[],"target":"","portal":"","public":"-1","metadata1":"","metadata2":"","metadata3":"","pid_length":PROJECT_TREE_PIDS.length};
     res.json(PROJECT_FILTER);
 });
 //
@@ -2657,7 +2655,7 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
 //  FILTER #1 LIVESEARCH PROJECTS (substring) FILTER
 //
 router.get('/livesearch_projects/:substring', function(req, res) {
-  console.log('viz:in livesearch_projects/:substring')
+  console.log('viz:in livesearch_projects/:substring');
   var substring = req.params.substring.toUpperCase();
   var myurl = url.parse(req.url, true);
   var portal = myurl.query.portal;
@@ -2665,25 +2663,25 @@ router.get('/livesearch_projects/:substring', function(req, res) {
     substring = ''
   }
 
-  PROJECT_FILTER.substring = substring
+  PROJECT_FILTER.substring = substring;
 
-  var projects_to_filter = []
+  var projects_to_filter = [];
   if(portal){
     projects_to_filter = helpers.get_portal_projects(req, portal)
   }else{
     projects_to_filter = SHOW_DATA.projects
   }
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER)
+  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
 
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length
+  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
   if(req.CONFIG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
     console.log('PROJECT_FILTER')
   }
 
-  console.log(PROJECT_FILTER)
+  console.log(PROJECT_FILTER);
 
   res.json(PROJECT_FILTER);
 
@@ -2694,16 +2692,16 @@ router.get('/livesearch_projects/:substring', function(req, res) {
 //
 router.get('/livesearch_env/:envid', function(req, res) {
   var envid = req.params.envid;
-  var items = envid.split('--')
-  var envid = items[0]
-  var env_name = items[1]
+  var items = envid.split('--');
+  var envid = items[0];
+  var env_name = items[1];
   var myurl = url.parse(req.url, true);
   var portal = myurl.query.portal;
   var info = PROJECT_INFORMATION_BY_PID;
 
-  var envid_lst = []
+  var envid_lst = [];
   if(env_name === 'human associated'){  // get id for 'human associated'
-    envid_lst = []
+    envid_lst = [];
     for(var key in MD_ENV_PACKAGE){
       if(MD_ENV_PACKAGE[key].substring(0,5) == 'human'){
         envid_lst.push(parseInt(key))
@@ -2715,18 +2713,18 @@ router.get('/livesearch_env/:envid', function(req, res) {
     envid_lst = [parseInt(envid)]
   }
 
-  PROJECT_FILTER.env = envid_lst
+  PROJECT_FILTER.env = envid_lst;
 
   if(portal){
     var projects_to_filter = helpers.get_portal_projects(req, portal)
   }else{
     var projects_to_filter = SHOW_DATA.projects
   }
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER)
+  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
 
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length
-  console.log(PROJECT_FILTER)
+  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
+  console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
 
 });
@@ -2741,18 +2739,18 @@ router.get('/livesearch_target/:gene_target', function(req, res) {
     gene_target = ''
   }
 
-  PROJECT_FILTER.target = gene_target
+  PROJECT_FILTER.target = gene_target;
 
   if(portal){
     var projects_to_filter = helpers.get_portal_projects(req, portal)
   }else{
     var projects_to_filter = SHOW_DATA.projects
   }
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, SHOW_DATA.projects, PROJECT_FILTER)
+  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, SHOW_DATA.projects, PROJECT_FILTER);
 
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length
-  console.log(PROJECT_FILTER)
+  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
+  console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
 
 });
@@ -2761,7 +2759,7 @@ router.get('/livesearch_target/:gene_target', function(req, res) {
 // FILTER #4
 //
 router.get('/livesearch_portal/:portal', function(req, res) {
-  console.log('viz:in livesearch portal')
+  console.log('viz:in livesearch portal');
   var select_box_portal = req.params.portal;
   var myurl = url.parse(req.url, true);
   var portal = myurl.query.portal;  // we have this turned off: portal selection on portal page
@@ -2770,7 +2768,7 @@ router.get('/livesearch_portal/:portal', function(req, res) {
     select_box_portal = ''
   }
 
-  PROJECT_FILTER.portal = select_box_portal
+  PROJECT_FILTER.portal = select_box_portal;
 
   if(portal){
     var projects_to_filter = helpers.get_portal_projects(req, portal)
@@ -2778,10 +2776,10 @@ router.get('/livesearch_portal/:portal', function(req, res) {
     var projects_to_filter = SHOW_DATA.projects
   }
   //console.log(PROJECT_FILTER)
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, SHOW_DATA.projects, PROJECT_FILTER)
+  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, SHOW_DATA.projects, PROJECT_FILTER);
   //console.log(NewPROJECT_TREE_OBJ)
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length
+  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
   //console.log(PROJECT_FILTER)
   res.json(PROJECT_FILTER);
 
@@ -2792,23 +2790,23 @@ router.get('/livesearch_portal/:portal', function(req, res) {
 //  FILTER # 5 LIVESEARCH PUBLIC/PRIVATE PROJECTS FILTER
 //
 router.get('/livesearch_status/:q', function(req, res) {
-  console.log('viz:in livesearch status')
+  console.log('viz:in livesearch status');
   var q = req.params.q;
   var myurl = url.parse(req.url, true);
   var portal = myurl.query.portal;
 
-  PROJECT_FILTER.public = q
+  PROJECT_FILTER.public = q;
 
   if(portal){
     var projects_to_filter = helpers.get_portal_projects(req, portal)
   }else{
     var projects_to_filter = SHOW_DATA.projects
   }
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER)
+  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
 
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length
-  console.log(PROJECT_FILTER)
+  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
+  console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
 
 });
@@ -2817,19 +2815,19 @@ router.get('/livesearch_status/:q', function(req, res) {
 //  FILTER #6  LIVESEARCH METADATA FILTER
 //
 router.get('/livesearch_metadata/:num/:q', function(req, res) {
-  console.log('viz:in livesearch metadata')
+  console.log('viz:in livesearch metadata');
 
   var num = req.params.num;
   var q = req.params.q;
-  console.log('num '+num)
-  console.log('query '+q)
+  console.log('num '+num);
+  console.log('query '+q);
   var myurl = url.parse(req.url, true);
   var portal = myurl.query.portal;
   if(q === '.....'){
     q = ''
   }
 
-  PROJECT_FILTER['metadata'+num] = q
+  PROJECT_FILTER['metadata'+num] = q;
   //PROJECT_FILTER.metadata_num = num
 
   if(portal){
@@ -2837,11 +2835,11 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
   }else{
     var projects_to_filter = SHOW_DATA.projects
   }
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER)
+  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
 
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length
-  console.log(PROJECT_FILTER)
+  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
+  console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
 
 });
@@ -2849,10 +2847,10 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
 //
 //
 router.post('/check_units', function(req, res) {
-  console.log('IN check_UNITS')
-  console.log(req.body)
-  var files_prefix 
-  var path_to_file
+  console.log('IN check_UNITS');
+  console.log(req.body);
+  var files_prefix;
+  var path_to_file;
   var jsonfile;
   
   if(req.body.units == 'tax_'+C.default_taxonomy.name+'_simple' || req.body.units == 'tax_'+C.default_taxonomy.name+'_custom'){
@@ -2864,7 +2862,7 @@ router.post('/check_units', function(req, res) {
   }else{
         console.log('ERROR:Units not found: '+req.body.units)  // ERROR
   }
-  var file_err = 'PASS'
+  var file_err = 'PASS';
   var dataset_ids = req.session.chosen_id_order;
   // console.log('dataset_ids')
 //   console.log(dataset_ids)
@@ -2889,11 +2887,11 @@ router.post('/check_units', function(req, res) {
 router.get('/tax_custom_dhtmlx', function(req, res) {
     //console.log('IN tax_custom_dhtmlx')
     var myurl = url.parse(req.url, true);
-    var id = myurl.query.id
+    var id = myurl.query.id;
     //console.log('id='+id)
-    var json = {}
+    var json = {};
     json.id = id;
-    json.item = []
+    json.item = [];
     if(id==0){
         // return json for collapsed tree: 'domain' only
 //         json = {"id":"0","item":[
@@ -2919,7 +2917,7 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
     }else{
         for(n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
             node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
-            node = new_taxonomy.taxa_tree_dict_map_by_id[node_id]
+            node = new_taxonomy.taxa_tree_dict_map_by_id[node_id];
             //console.log('node')
             //console.log(node)
             if(node.children_ids.length === 0){
@@ -2938,15 +2936,15 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
 //  project_custom_dhtmlx
 //
 router.get('/project_dataset_tree_dhtmlx', function(req, res) {
-    console.log('IN project_dataset_tree_dhtmlx - routes_visualizations')
+    console.log('IN project_dataset_tree_dhtmlx - routes_visualizations');
     var myurl = url.parse(req.url, true);
-    var id = myurl.query.id
-    console.log('id='+id)
-    var json = {}
+    var id = myurl.query.id;
+    console.log('id='+id);
+    var json = {};
     json.id = id;
-    json.item = []
-    console.log('DATA_TO_OPEN')
-    console.log(DATA_TO_OPEN)
+    json.item = [];
+    console.log('DATA_TO_OPEN');
+    console.log(DATA_TO_OPEN);
     //PROJECT_TREE_OBJ = []
     //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
     var itemtext;
@@ -2963,7 +2961,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
             }else{
               tt_pj_id += '/private';
             }
-            var pid_str = pid.toString()
+            var pid_str = pid.toString();
             itemtext = "<span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>"+node.project+"</span>";
             itemtext    += " <a href='/projects/"+pid_str+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
             if(node.public) {
@@ -2984,14 +2982,14 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
 
     }else{
         //console.log(JSON.stringify(ALL_DATASETS))
-        var this_project = {}
+        var this_project = {};
         id = id.substring(1);  // id = pxx
         ALL_DATASETS.projects.forEach(function(prj) {
           if(prj.pid == id){
             this_project = prj
           }
-        })
-        var all_checked_dids = []
+        });
+        var all_checked_dids = [];
         if(Object.keys(DATA_TO_OPEN).length > 0){
 
           console.log('dto');
@@ -3004,18 +3002,18 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
             Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid])
           }
         }
-        console.log('all_checked_dids:')
+        console.log('all_checked_dids:');
         if(req.CONFIG.site == 'vamps' ){
           console.log('VAMPS PRODUCTION -- no print to log');
         }else{
           console.log(all_checked_dids)
         }
-        var pname = this_project.name
+        var pname = this_project.name;
         for(n in this_project.datasets){
-            var did   = this_project.datasets[n].did
+            var did   = this_project.datasets[n].did;
             //console.log('didXX',did)
-            var dname = this_project.datasets[n].dname
-            var ddesc = this_project.datasets[n].ddesc
+            var dname = this_project.datasets[n].dname;
+            var ddesc = this_project.datasets[n].ddesc;
             var tt_ds_id  = 'dataset/'+pname+'/'+dname+'/'+ddesc;
             itemtext = "<span id='"+ tt_ds_id +"' class='tooltip_pjds_list'>"+dname+"</span>";
             if(all_checked_dids.indexOf(parseInt(did)) === -1){
@@ -3035,44 +3033,44 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
 //
 //
 router.get('/taxa_piechart', function(req, res) {
-    console.log('IN taxa_piechart - routes_visualizations')
+    console.log('IN taxa_piechart - routes_visualizations');
     var myurl = url.parse(req.url, true);
-    var tax = myurl.query.tax
+    var tax = myurl.query.tax;
     var timestamp = +new Date();  // millisecs since the epoch!
     var ts = req.session.ts;
-    var matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+    var matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
     
     fs.readFile(matrix_file_path, 'utf8', function(err,mtxdata){
         if (err) {
             var msg = 'ERROR Message '+err;
             helpers.render_error_page(req,res,msg);
         }else{
-            var biom_matrix = JSON.parse(mtxdata)
-            var data = []
-            var new_matrix = {}
+            var biom_matrix = JSON.parse(mtxdata);
+            var data = [];
+            var new_matrix = {};
 
             for(i in biom_matrix.rows){
               if(biom_matrix.rows[i].id == tax){
 
-                data = biom_matrix.data[i]
+                data = biom_matrix.data[i];
                 // data = [1,2,3,4]
                 // want [[1],[2],[3],[4]]
 
-                new_matrix.data = []
+                new_matrix.data = [];
                 for(n in data){
                   new_matrix.data.push([data[n]])
                 }
                 new_matrix.columns = [biom_matrix.rows[i]]
               }
             }
-            new_matrix.rows = biom_matrix.columns
+            new_matrix.rows = biom_matrix.columns;
             if(req.CONFIG.site == 'vamps' ){
               console.log('VAMPS PRODUCTION -- no print to log');
             }else{
-              console.log('new mtx:',new_matrix)
+              console.log('new mtx:',new_matrix);
               console.log('counts:',new_matrix.data)
             }
-            var cols =  biom_matrix.columns
+            var cols =  biom_matrix.columns;
 
             res.render('visuals/user_viz_data/pie_single_tax', {
                       title: 'Datasets PieChart',
