@@ -102,7 +102,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         req.session.normalization = visual_post_items.normalization = req.body.normalization          || "none";
         req.session.selected_distance = visual_post_items.selected_distance = req.body.selected_distance  || "morisita_horn";
         req.session.tax_depth   = visual_post_items.tax_depth = req.body.tax_depth                  || "phylum";
-        req.session.domains     = visual_post_items.domains = req.body.domains                      || ["Archaea","Bacteria","Eukarya","Organelle","Unknown"];
+        req.session.domains     = visual_post_items.domains = req.body.domains                      || ["Archaea", "Bacteria", "Eukarya", "Organelle", "Unknown"];
         req.session.include_nas = visual_post_items.include_nas = req.body.include_nas              || "yes";
         req.session.min_range   = visual_post_items.min_range = req.body.min_range                  || '0';
         req.session.max_range   = visual_post_items.max_range = req.body.max_range                  || '100';
@@ -382,14 +382,14 @@ function load_configuration_file(req, res, config_file_data )
     for (let n in chosen_id_name_hash.ids){
         let did = chosen_id_name_hash.ids[n];
         let pid = PROJECT_ID_BY_DID[did];
-        let pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
+        let pjds = PROJECT_INFORMATION_BY_PID[pid].project + '--' + DATASET_NAME_BY_DID[did];
         chosen_id_name_hash.names.push(pjds);
     }
     if (! config_file_data.hasOwnProperty('metadata') || config_file_data['metadata'].length === 0){
         visual_post_items.metadata = ['latitude','longitude'];
     }
 
-    let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
+    let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
 
     for (let i in chosen_id_name_hash.ids){
       let did = chosen_id_name_hash.ids[i];
@@ -405,13 +405,14 @@ function load_configuration_file(req, res, config_file_data )
             catch(e1){
               try {
                 let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
+                // TODO: dataset_ids is not deined?
                 let path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
                 let jsonfile = require(path_to_file);
               }
               catch(e2) {
                 console.log('2-no file '+e2.toString()+' Exiting');
-                req.flash('fail', "ERROR \
-                Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
+                req.flash('fail', `ERROR 
+                Dataset file not found '${dataset_ids[i]}.json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.`);
             //res.redirect('visuals_index');
             //return;
               }
@@ -421,16 +422,17 @@ function load_configuration_file(req, res, config_file_data )
       }
       catch(err){
         console.log('2-no file '+err.toString()+' Exiting');
-        req.flash('fail', "ERROR \
-          Dataset file not found '"+dataset_ids[i] +".json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.");
+        req.flash('fail', `ERROR 
+          Dataset file not found '${dataset_ids[i]}.json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.`);
       }
     }
-    return image_to_open
+    return image_to_open;
 }
 
 //
 //  Create Clean Configuration File (From file upload)
 //
+//TODO: JSHint: This function's cyclomatic complexity is too high. (30) (W074)
 function create_clean_config(req, upld_obj)
 {
     //fs.readFile(upload_file, 'utf8',function(err, data){
@@ -441,26 +443,27 @@ function create_clean_config(req, upld_obj)
         let ts = req.user.username  + '_'+timestamp;
         let clean_obj = {};
         clean_obj.ts = ts;
-        if (upld_obj.hasOwnProperty('image')){
+        let new_filename = "";
+        if (upld_obj.hasOwnProperty('image')) {
           console.log('1) FILE is IMAGE');
           clean_obj.image = upld_obj.image;
-          new_filename = 'image-'+clean_obj.image+'-'+clean_obj.ts+'.json'
+          new_filename = 'image-' + clean_obj.image + '-' + clean_obj.ts + '.json';
         } else {
           console.log('2) FILE is CONFIG');
-          new_filename = 'configuration-'+timestamp+'.json'
+          new_filename = 'configuration-' + timestamp + '.json';
         }
 
-        if (! upld_obj.hasOwnProperty('chosen_id_order') ){
+        if (! upld_obj.hasOwnProperty('chosen_id_order')) {
             req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
             return {};
         }
         let ids = upld_obj.chosen_id_order;
         let new_dataset_ids = helpers.screen_dids_for_permissions(req, ids);
-        if (! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) != 'vamps'){
+        if (! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) !== 'vamps'){
           req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
           return {};
         }
-        if (new_dataset_ids.length == 0){
+        if (new_dataset_ids.length === 0){
           req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
           return {};
 
@@ -470,18 +473,18 @@ function create_clean_config(req, upld_obj)
           clean_obj.no_of_datasets = new_dataset_ids.length;
 
           // ADD DEFAULTS if needed
-          if (! upld_obj.hasOwnProperty('metadata') || upld_obj.metadata.length == 0){
-            clean_obj.metadata = ['latitude','longitude']
+          if (! upld_obj.hasOwnProperty('metadata') || upld_obj.metadata.length === 0){
+            clean_obj.metadata = ['latitude','longitude'];
           } else {
-            clean_obj.metadata = upld_obj.metadata
+            clean_obj.metadata = upld_obj.metadata;
           }
           clean_obj.unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
           clean_obj.custom_taxa = ["NA"];
-          let allowed_norms = ['none','maximum','frequency'];
-          if (! upld_obj.hasOwnProperty('normalization') || allowed_norms.indexOf(upld_obj.normalization) == -1){
-            clean_obj.normalization = 'none'
+          const allowed_norms = ['none', 'maximum', 'frequency'];
+          if (! upld_obj.hasOwnProperty('normalization') || allowed_norms.indexOf(upld_obj.normalization) === -1){
+            clean_obj.normalization = 'none';
           } else {
-            clean_obj.normalization = upld_obj.normalization
+            clean_obj.normalization = upld_obj.normalization;
           }
           const allowed_distance_metrics = ['jaccard','kulczynski','canberra','morisita_horn','bray_curtis'];
           if (! upld_obj.hasOwnProperty('selected_distance') || allowed_distance_metrics.indexOf(upld_obj.selected_distance) === -1){
@@ -490,32 +493,33 @@ function create_clean_config(req, upld_obj)
             clean_obj.selected_distance = upld_obj.selected_distance;
           }
           const allowed_ranks = C.RANKS;
-          if (! upld_obj.hasOwnProperty('tax_depth') || allowed_ranks.indexOf(upld_obj.tax_depth) == -1){
+          if (! upld_obj.hasOwnProperty('tax_depth') || allowed_ranks.indexOf(upld_obj.tax_depth) === -1){
             clean_obj.tax_depth = 'phylum';
           } else {
             clean_obj.tax_depth = upld_obj.tax_depth;
           }
           const allowed_incnas = ['yes','no'];
-          if (! upld_obj.hasOwnProperty('include_nas') || allowed_incnas.indexOf(upld_obj.include_nas) == -1){
+          if (! upld_obj.hasOwnProperty('include_nas') || allowed_incnas.indexOf(upld_obj.include_nas) === -1){
             clean_obj.include_nas = 'yes';
           } else {
-            clean_obj.include_nas = upld_obj.include_nas
+            clean_obj.include_nas = upld_obj.include_nas;
           }
           // DOMAINS
           let allowed_domains = C.DOMAINS.domains;
-          if (! upld_obj.hasOwnProperty('domains') || upld_obj.domains.length == 0){
-            clean_obj.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
-          } else {
-              let arr = [];
-              for ( n in allowed_domains){
-                if (upld_obj.domains.indexOf(allowed_domains[n].name) != -1){
-                    arr.push(allowed_domains[n].name)
-                }
+          if (! upld_obj.hasOwnProperty('domains') || upld_obj.domains.length === 0){
+            clean_obj.domains = ["Archaea", "Bacteria", "Eukarya", "Organelle", "Unknown"];
+          }
+          else {
+            let arr = [];
+            for (let n in allowed_domains){
+              if (upld_obj.domains.indexOf(allowed_domains[n].name) !== -1){
+                  arr.push(allowed_domains[n].name);
               }
-              clean_obj.domains = arr;
-              if (upld_obj.domains.length == 0){
-                clean_obj.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
-              }
+            }
+            clean_obj.domains = arr;
+            if (upld_obj.domains.length === 0){
+              clean_obj.domains = ["Archaea", "Bacteria", "Eukarya", "Organelle", "Unknown"];
+            }
           }
 
           if (typeof upld_obj.min_range == 'string'){
@@ -2605,7 +2609,7 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     }
     //DATA_TO_OPEN = {}
     PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, SHOW_DATA.projects);
-    PROJECT_FILTER = {"substring":"","env":[],"target":"","portal":"","public":"-1","metadata1":"","metadata2":"","metadata3":"","pid_length":PROJECT_TREE_PIDS.length};
+    PROJECT_FILTER = {"substring":"", "env":[],"target":"", "portal":"", "public":"-1", "metadata1":"", "metadata2":"", "metadata3":"", "pid_length":PROJECT_TREE_PIDS.length};
     res.json(PROJECT_FILTER);
 
 });
@@ -2654,7 +2658,7 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
 
     PROJECT_TREE_OBJ = helpers.get_portal_projects(req, portal);
     PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
-    PROJECT_FILTER = {"substring":"","env":[],"target":"","portal":"","public":"-1","metadata1":"","metadata2":"","metadata3":"","pid_length":PROJECT_TREE_PIDS.length};
+    PROJECT_FILTER = {"substring":"", "env":[],"target":"", "portal":"", "public":"-1", "metadata1":"", "metadata2":"", "metadata3":"", "pid_length":PROJECT_TREE_PIDS.length};
     res.json(PROJECT_FILTER);
 });
 //
@@ -2905,11 +2909,11 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
     json.item = [];
     if (id==0){
         // return json for collapsed tree: 'domain' only
-//         json = {"id":"0","item":[
-//             {"id":"1","text":"Bacteria","tooltip":"domain","checked":true,"child":"1","item":[]},
-//             {"id":"214","text":"Archaea","tooltip":"domain","checked":true,"child":"1","item":[]},
-//             {"id":"338","text":"Unknown","tooltip":"domain","checked":true,"child":"1","item":[]},
-//             {"id":"353","text":"Organelle","tooltip":"domain","checked":true,"child":"1","item":[]}
+//         json = {"id":"0", "item":[
+//             {"id":"1", "text":"Bacteria", "tooltip":"domain", "checked":true,"child":"1", "item":[]},
+//             {"id":"214", "text":"Archaea", "tooltip":"domain", "checked":true,"child":"1", "item":[]},
+//             {"id":"338", "text":"Unknown", "tooltip":"domain", "checked":true,"child":"1", "item":[]},
+//             {"id":"353", "text":"Organelle", "tooltip":"domain", "checked":true,"child":"1", "item":[]}
 //             ]
 //         }
 
