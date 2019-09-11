@@ -74,12 +74,12 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   //    There should be one or more visual choices shown.
   //
   //let body = JSON.parse(req.body);
-  //if(typeof visual_post_items == undefined){
+  //if (typeof visual_post_items == undefined){
     let visual_post_items = {};
   //}
-  // if(req.body.unit_choice == 'tax_rdp2.6_simple'){
+  // if (req.body.unit_choice == 'tax_rdp2.6_simple'){
 //     delete req.body[C.default_taxonomy.name+'_domains']
-//   }else if(req.body.unit_choice == 'tax_'+C.default_taxonomy.name+'_simple'){
+//   }else if (req.body.unit_choice == 'tax_'+C.default_taxonomy.name+'_simple'){
 //     delete req.body['rdp2.6_domains']
 //   }
   console.log(req.user.username+' req.body: view_selection body-->>');
@@ -95,7 +95,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   let image_to_open = {};
   let dataset_ids = [];
   let new_dataset_ids = [];
-  if(req.body.api === '1'){
+  if (req.body.api === '1'){
         console.log('From: API-API-API');
         visual_post_items = COMMON.default_post_items();
         // Change defaults:
@@ -106,8 +106,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         req.session.include_nas = visual_post_items.include_nas = req.body.include_nas              || "yes";
         req.session.min_range   = visual_post_items.min_range = req.body.min_range                  || '0';
         req.session.max_range   = visual_post_items.max_range = req.body.max_range                  || '100';
-        
-        if((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length !== 0){
+
+        if ((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length !== 0){
             console.log('Found api dids ',req.body.ds_order);
             try{
                 dataset_ids = JSON.parse(req.body.ds_order);
@@ -118,7 +118,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
             new_dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
             dataset_ids = new_dataset_ids;
             req.session.chosen_id_order = visual_post_items.ds_order = dataset_ids;
-        }else if( (req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project) ){
+        }else if ( (req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project) ){
             console.log('Found api project ',req.body.project);
             let pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid;
             new_dataset_ids = helpers.screen_dids_for_permissions(req, DATASET_IDS_BY_PID[pid.toString()]);
@@ -127,7 +127,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
             console.log(visual_post_items.ds_order);
             req.session.chosen_id_order = dataset_ids = visual_post_items.ds_order;
             //console.log('dids',dataset_ids)
-        }else{
+        } else {
             console.log('API ALERT - no dids or project');
             return;
         }
@@ -135,7 +135,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         visual_post_items.update_data = req.body.update_data              || '1';   // fires changes
 
         req.session.no_of_datasets  = visual_post_items.no_of_datasets = dataset_ids.length;
-        
+
         // for API select ALL metadata with these datasets
         let md = {}; // hash lookup unique
         for(let n in dataset_ids){
@@ -147,16 +147,16 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         req.session.metadata  = visual_post_items.metadata = Object.keys(md);
 
   }
-  else if(req.body.restore_image === '1'){
+  else if (req.body.restore_image === '1'){
         console.log('in view_selection RESTORE IMAGE');
   }
-  else if(req.body.cancel_resort === '1'){
+  else if (req.body.cancel_resort === '1'){
         console.log('resorted canceled');
         req.flash('success','Canceled Resort.');
         dataset_ids = JSON.parse(req.body.ds_order);
-        
+
   }
-  else if(req.body.update_data === '1'){  // from 'Update' button on view_selection.html
+  else if (req.body.update_data === '1'){  // from 'Update' button on view_selection.html
         console.log('Update Data');
         // populate req.session and visual_post_items from req.body(post)
         dataset_ids = req.session.chosen_id_order;
@@ -166,8 +166,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         }
         //console.log('XXXXXXXXXXX-VPI')
         //console.log(visual_post_items)
-        
-  }else if(req.body.resorted === '1'){
+
+  }else if (req.body.resorted === '1'){
         console.log('resorted == 1');
         // populate visual_post_items from req.session (except new ds_order)
         req.flash('success','The dataset order has been updated.');
@@ -184,9 +184,9 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         visual_post_items.metadata = req.session.metadata;
         visual_post_items.domains = req.session.domains;
         visual_post_items.custom_taxa = req.session.custom_taxa;
-            
-        
-  }else if(req.body.from_directory_configuration_file === '1'){
+
+
+  }else if (req.body.from_directory_configuration_file === '1'){
         // ALL Config files now loaded through GET (see router.get('/view_selection/:filename/:from_configuration_file')
         console.log('from_directory_configuration_file-POST');
         // populate visual_post_items from ?????
@@ -194,7 +194,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         let upld_obj = JSON.parse(fs.readFileSync(config_file_path, 'utf8'));
         //console.log(upld_obj)
         let config_file_data = create_clean_config(req, upld_obj); // put into req.session
-        if(Object.keys(config_file_data).length === 0){
+        if (Object.keys(config_file_data).length === 0){
             //error
             res.redirect('saved_elements');
             return;
@@ -216,7 +216,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         visual_post_items.custom_taxa = req.session.custom_taxa;
         visual_post_items.update_data = 1;
   }
-  else if(req.body.from_upload_configuration_file === '1') {
+  else if (req.body.from_upload_configuration_file === '1') {
         // UPLOAD Config file
         console.log('from_upload_configuration_file-POST');
         // populate visual_post_items from ????
@@ -224,7 +224,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         let upload_file = req.file.path;
         let upld_obj = JSON.parse(fs.readFileSync(upload_file, 'utf8'));//,function(err, data){
         let config_file_data = create_clean_config(req, upld_obj); // put into req.session
-        if(Object.keys(config_file_data).length === 0){
+        if (Object.keys(config_file_data).length === 0){
             //error
             res.redirect('saved_elements');
             return;
@@ -249,9 +249,9 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 
         //let image_to_open = load_configuration_file(req, res, config_file_data)
         // FIXME need datasets from config file
-        
 
-  }else{
+
+  } else {
         // DONE Direct from unit_select
         console.log('DEFAULT req.body');
         visual_post_items = COMMON.save_post_items(req);
@@ -270,7 +270,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         req.session.unit_choice = req.body.unit_choice;
         req.session.custom_taxa = visual_post_items.custom_taxa;
   }
-  
+
   // get dataset_ids the add names for biom file output:
   // chosen_id_order was set in unit_select and added to session variable
   visual_post_items.chosen_datasets = [];
@@ -281,28 +281,28 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
         visual_post_items.chosen_datasets.push( { did:did,name:pname+'--'+dname } );
   }
-  
+
   // let file_found_error = false;
   // for(let i in dataset_ids){
 //     let did = dataset_ids[i]
 //     console.log('looking through dataset_ids:'+did.toString())
 //      }
- 
+
   let timestamp = +new Date();  // millisecs since the epoch!
   timestamp = req.user.username + '_' + timestamp;
   visual_post_items.ts = timestamp;
   req.session.ts = timestamp;
   // let distance_matrix = {};
-  
+
   console.log('VS--visual_post_items and id-hash:>>');
-  if(req.CONFIG.site === 'vamps' ){
+  if (req.CONFIG.site === 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   } else {
     console.log('visual_post_items:');
     console.log(visual_post_items);
     console.log('req.session');
     console.log(req.session);
-      
+
   }
   console.log('<<VS--visual_post_items');
   console.log('entering MTX.get_biom_matrix');
@@ -321,13 +321,13 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   }
   let metadata = META.write_mapping_file(visual_post_items);
 
-  
+
   console.log('image to open', image_to_open);
 //console.log('biom_matrix',biom_matrix);
   // function see below
   //render_view_selection(res, req, metadata, image_to_open)
   let needed_constants = helpers.retrieve_needed_constants(C,'view_selection');
-  
+
   res.render('visuals/view_selection', {
                                 title           : 'VAMPS: Visuals Select',
                                 referer         : 'unit_selection',
@@ -351,22 +351,23 @@ function load_configuration_file(req, res, config_file_data )
     console.log(config_file_data);
     //req.session = config_file_data
      let image_to_open = {};
-    
-    
+
+
     const allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix", "metadata_table", "fheatmap", "dendrogram01", "dendrogram03", "pcoa", "pcoa3d", "geospatial", "adiversity"];
 
-    if(allowed_images.indexOf(config_file_data.image) !== -1){
+    if (allowed_images.indexOf(config_file_data.image) !== -1){
         console.log('FILE is IMAGE-2');
     }
-    if(config_file_data.hasOwnProperty('image') ){
+    if (config_file_data.hasOwnProperty('image') ){
       console.log('FILE is IMAGE-1');
       image_to_open.image = config_file_data.image;
     }
 
-    if(config_file_data.hasOwnProperty('phylum')){
+    if (config_file_data.hasOwnProperty('phylum')){
       console.log('FILE is IMAGE (phyloseq bars or heatmap)');
       image_to_open.phylum = config_file_data.phylum;
-    }else{
+    }
+    else {
       console.log('FILE is CONFIG or IMAGE w/o phyloseq bars or heatmap');
     }
     let visual_post_items = config_file_data;
@@ -375,7 +376,7 @@ function load_configuration_file(req, res, config_file_data )
 
     req.flash('success', 'Using data from configuration file.');
     console.log('in view_selection FROM CONFIG or IMAGE');
-    
+
 
     visual_post_items.no_of_datasets = new_dataset_ids.length;
     for(n in chosen_id_name_hash.ids){
@@ -384,21 +385,21 @@ function load_configuration_file(req, res, config_file_data )
         pjds = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
         chosen_id_name_hash.names.push(pjds)
     }
-    if(! config_file_data.hasOwnProperty('metadata') || config_file_data['metadata'].length == 0){
+    if (! config_file_data.hasOwnProperty('metadata') || config_file_data['metadata'].length == 0){
         visual_post_items.metadata = ['latitude','longitude']
     }
 
     for(let i in chosen_id_name_hash.ids){
       let did = chosen_id_name_hash.ids[i];
       try{
-            if(visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
+            if (visual_post_items.unit_choice == 'tax_rdp2.6_simple'){
                 let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
-            }else{
+            } else {
                 let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
             }
             let path_to_file = path.join(files_prefix, did.toString() +'.json');
-            
-            try{             
+
+            try{
                  let jsonfile = require(path_to_file);
               }catch(e1){
                 try{
@@ -431,100 +432,100 @@ function load_configuration_file(req, res, config_file_data )
 function create_clean_config(req, upld_obj)
 {
     //fs.readFile(upload_file, 'utf8',function(err, data){
-        //if(err){ return err }
-        
+        //if (err){ return err }
+
 
         let timestamp = +new Date();
         let ts = req.user.username  + '_'+timestamp;
         let clean_obj = {};
         clean_obj.ts = ts;
-        if(upld_obj.hasOwnProperty('image')){
+        if (upld_obj.hasOwnProperty('image')){
           console.log('1) FILE is IMAGE');
           clean_obj.image = upld_obj.image;
           new_filename = 'image-'+clean_obj.image+'-'+clean_obj.ts+'.json'
-        }else{
+        } else {
           console.log('2) FILE is CONFIG');
           new_filename = 'configuration-'+timestamp+'.json'
         }
 
-        if(! upld_obj.hasOwnProperty('chosen_id_order') ){
+        if (! upld_obj.hasOwnProperty('chosen_id_order') ){
             req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
             return {};
         }
         let ids = upld_obj.chosen_id_order;
         let new_dataset_ids = helpers.screen_dids_for_permissions(req, ids);
-        if(! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) != 'vamps'){
+        if (! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) != 'vamps'){
           req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
           return {};
         }
-        if(new_dataset_ids.length == 0){
+        if (new_dataset_ids.length == 0){
           req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
           return {};
 
-        }else{
+        } else {
           // move the file ASIS to the CONFIG.USER_FILES_BASE location
           clean_obj.chosen_id_order = new_dataset_ids;
           clean_obj.no_of_datasets = new_dataset_ids.length;
-        
+
           // ADD DEFAULTS if needed
-          if(! upld_obj.hasOwnProperty('metadata') || upld_obj.metadata.length == 0){
+          if (! upld_obj.hasOwnProperty('metadata') || upld_obj.metadata.length == 0){
             clean_obj.metadata = ['latitude','longitude']
-          }else{
+          } else {
             clean_obj.metadata = upld_obj.metadata
           }
           clean_obj.unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
           clean_obj.custom_taxa = ["NA"];
           let allowed_norms = ['none','maximum','frequency'];
-          if(! upld_obj.hasOwnProperty('normalization') || allowed_norms.indexOf(upld_obj.normalization) == -1){
+          if (! upld_obj.hasOwnProperty('normalization') || allowed_norms.indexOf(upld_obj.normalization) == -1){
             clean_obj.normalization = 'none'
-          }else{
+          } else {
             clean_obj.normalization = upld_obj.normalization
           }
           const allowed_distance_metrics = ['jaccard','kulczynski','canberra','morisita_horn','bray_curtis'];
-          if(! upld_obj.hasOwnProperty('selected_distance') || allowed_distance_metrics.indexOf(upld_obj.selected_distance) === -1){
+          if (! upld_obj.hasOwnProperty('selected_distance') || allowed_distance_metrics.indexOf(upld_obj.selected_distance) === -1){
             clean_obj.selected_distance = 'morisita_horn';
-          }else{
+          } else {
             clean_obj.selected_distance = upld_obj.selected_distance;
           }
           const allowed_ranks = C.RANKS;
-          if(! upld_obj.hasOwnProperty('tax_depth') || allowed_ranks.indexOf(upld_obj.tax_depth) == -1){
+          if (! upld_obj.hasOwnProperty('tax_depth') || allowed_ranks.indexOf(upld_obj.tax_depth) == -1){
             clean_obj.tax_depth = 'phylum';
-          }else{
+          } else {
             clean_obj.tax_depth = upld_obj.tax_depth;
           }
           const allowed_incnas = ['yes','no'];
-          if(! upld_obj.hasOwnProperty('include_nas') || allowed_incnas.indexOf(upld_obj.include_nas) == -1){
+          if (! upld_obj.hasOwnProperty('include_nas') || allowed_incnas.indexOf(upld_obj.include_nas) == -1){
             clean_obj.include_nas = 'yes';
-          }else{
+          } else {
             clean_obj.include_nas = upld_obj.include_nas
           }
           // DOMAINS
           let allowed_domains = C.DOMAINS.domains;
-          if(! upld_obj.hasOwnProperty('domains') || upld_obj.domains.length == 0){
+          if (! upld_obj.hasOwnProperty('domains') || upld_obj.domains.length == 0){
             clean_obj.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
-          }else{
+          } else {
               let arr = [];
               for( n in allowed_domains){
-                if(upld_obj.domains.indexOf(allowed_domains[n].name) != -1){
+                if (upld_obj.domains.indexOf(allowed_domains[n].name) != -1){
                     arr.push(allowed_domains[n].name)
                 }
               }
               clean_obj.domains = arr;
-              if(upld_obj.domains.length == 0){
+              if (upld_obj.domains.length == 0){
                 clean_obj.domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
               }
           }
 
-          if(typeof upld_obj.min_range == 'string'){
+          if (typeof upld_obj.min_range == 'string'){
             clean_obj.min_range = parseInt(upld_obj.min_range) || 0
           }
-          if(! upld_obj.hasOwnProperty('min_range') || upld_obj.min_range <0  || upld_obj.min_range >99){
+          if (! upld_obj.hasOwnProperty('min_range') || upld_obj.min_range <0  || upld_obj.min_range >99){
             clean_obj.min_range = 0
           }
-          if(typeof upld_obj.max_range == 'string'){
+          if (typeof upld_obj.max_range == 'string'){
             clean_obj.max_range = parseInt(upld_obj.max_range) || 100
           }
-          if(! upld_obj.hasOwnProperty('max_range') || upld_obj.max_range <1  || upld_obj.max_range >100){
+          if (! upld_obj.hasOwnProperty('max_range') || upld_obj.max_range <1  || upld_obj.max_range >100){
             clean_obj.max_range = 100
           }
 
@@ -545,26 +546,26 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   let error_msg = '';
 
   console.log(req.user.username+' req.body: unit_selection-->>');
-  if(req.CONFIG.site === 'vamps' ){
+  if (req.CONFIG.site === 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
-  }else{
+  } else {
     console.log(req.body);
   }
   console.log('req.body: unit_selection');
-  if(typeof  unit_choice === 'undefined'){
+  if (typeof  unit_choice === 'undefined'){
     let unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
     console.log(unit_choice);
   }
   //let this_session_metadata = {}
   let dataset_ids = [];
-  if(req.body.api == '1'){
+  if (req.body.api == '1'){
     console.log('API-API-API');
     dataset_ids = JSON.parse(req.body.ds_order);
-  }else if(req.body.resorted === '1'){
+  }else if (req.body.resorted === '1'){
   	dataset_ids = req.body.ds_order;
-  }else if(req.body.from_geo_search === '1'){
+  }else if (req.body.from_geo_search === '1'){
     dataset_ids = req.body.dids;
-  }else{
+  } else {
     dataset_ids = JSON.parse(req.body.dataset_ids);
   }
   let needed_constants = helpers.retrieve_needed_constants(C,'unit_selection');
@@ -590,9 +591,9 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   // saved datasets or configuration which they could conceivably manipulate
   dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
 
-  if(req.CONFIG.site == 'vamps' ){
+  if (req.CONFIG.site == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
-  }else{
+  } else {
     console.log('dataset_ids '+dataset_ids);
   }
   if (dataset_ids === undefined || dataset_ids.length === 0){
@@ -600,15 +601,15 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
    	  req.flash('fail', 'Select Some Datasets');
    	  LoadFailureRequest(req, res);
       return;
-  }else{
-	    
-	   
+  } else {
+
+
         let available_units = C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
 	    // GLOBAL Variable
-	    
+
 	    req.session.chosen_id_order   = dataset_ids;
-	    
+
 	    // Thes get only the names of the available metadata:
 	    let custom_metadata_headers   = COMMON.get_metadata_selection(dataset_ids, 'custom');
 	    let required_metadata_headers = COMMON.get_metadata_selection(dataset_ids, 'required');
@@ -620,9 +621,9 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
         let did = req.session.chosen_id_order[i];
         let dname = DATASET_NAME_BY_DID[did];
         let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-        
+
         chosen_dataset_order.push( { did:did, name:pname+'--'+dname } );  // send this to client
-        
+
         // !!!use default taxonomy here (may choose other on this page)
         let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
         let path_to_file = path.join(files_prefix, did +'.json');
@@ -649,10 +650,10 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
 
 	  console.log('chosen_dataset_order-->');
-	  if(req.CONFIG.site == 'vamps' ){
+	  if (req.CONFIG.site == 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
-      }else{
-        console.log(chosen_dataset_order);	  
+      } else {
+        console.log(chosen_dataset_order);
       }
 	  console.log('<--chosen_dataset_order');
 
@@ -700,7 +701,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
     unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
     // GLOBAL
     DATA_TO_OPEN = {};
-    if(req.body.data_to_open){
+    if (req.body.data_to_open){
       // open many projects
       obj = JSON.parse(req.body.data_to_open);
       for(pj in obj){
@@ -708,7 +709,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
         DATA_TO_OPEN[pid] = obj[pj]
       }
       //console.log('got data to open '+data_to_open)
-    }else if(req.body.project){
+    }else if (req.body.project){
       // open whole project
       DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
     }
@@ -755,7 +756,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
   // GLOBAL
   DATA_TO_OPEN = {};
-  if(req.body.data_to_open){
+  if (req.body.data_to_open){
     // open many projects
     obj = JSON.parse(req.body.data_to_open);
     for(pj in obj){
@@ -763,7 +764,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
       DATA_TO_OPEN[pid] = obj[pj]
     }
     //console.log('got data to open '+data_to_open)
-  }else if(req.body.project){
+  }else if (req.body.project){
     // open whole project
     DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
   }
@@ -802,8 +803,8 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
         selected_dataset_order.names.push(pjds);
         selected_dataset_order.ids.push(did)
     }
-     
-     
+
+
     console.log(req.session);
     res.render('visuals/reorder_datasets', {
                                 title   : 'VAMPS: Reorder Datasets',
@@ -813,7 +814,7 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
                                 ts : ts,
                                 user: req.user, hostname: req.CONFIG.hostname,
                             });
-  
+
 });
 //
 //
@@ -830,7 +831,7 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
     if (err) {
         let msg = 'ERROR Message '+err;
         helpers.render_error_page(req,res,msg);
-    }else{
+    } else {
       console.log(data);
       res.send(data);
     }
@@ -848,7 +849,7 @@ router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
     if (err) {
         let msg = 'ERROR Message '+err;
         helpers.render_error_page(req,res,msg);
-    }else{
+    } else {
       res.redirect('unit_selection');
     }
   });
@@ -862,9 +863,9 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     ///// It passes the newick string back to view_selection.js
     ///// and tries to construct the svg there before showing it.
     console.log('req.body dnd');
-    if(req.CONFIG.site == 'vamps' ){
+    if (req.CONFIG.site == 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
-    }else{
+    } else {
       console.log(req.body);
     }
     console.log('req.body dnd');
@@ -920,16 +921,16 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
         console.log('dendrogram_process process exited with code ' + code);
 
         //let last_line = ary[ary.length - 1];
-        if(code === 0){   // SUCCESS
-          if(image_type == 'd3'){
-                    if(req.CONFIG.site == 'vamps' ){
+        if (code === 0){   // SUCCESS
+          if (image_type == 'd3'){
+                    if (req.CONFIG.site == 'vamps' ){
                       console.log('VAMPS PRODUCTION -- no print to log');
-                    }else{
+                    } else {
                         console.log('stdout: ' + stdout);
                     }
                     lines = stdout.split('\n');
                     for(n in lines){
-                      if(lines[n].substring(0,6) == 'NEWICK' ){
+                      if (lines[n].substring(0,6) == 'NEWICK' ){
                         tmp = lines[n].split('=');
                         console.log('FOUND NEWICK '+tmp[1]);
 
@@ -940,9 +941,9 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                     try{
                       //newick = JSON.parse(tmp[1]);
                       newick = tmp[1];
-                      if(req.CONFIG.site == 'vamps' ){
+                      if (req.CONFIG.site == 'vamps' ){
                         console.log('VAMPS PRODUCTION -- no print to log');
-                      }else{
+                      } else {
                         console.log('NWK->'+newick)
                       }
                     }
@@ -952,7 +953,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                     res.send(newick);
 
 
-          }else{  // 'pdf'
+          } else {  // 'pdf'
                     let viz_width = 1200;
                     let viz_height = (visual_post_items.no_of_datasets*12)+100;
                     let image = '/'+ts+'_dendrogram.pdf';
@@ -964,7 +965,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                     res.send(html);
 
           }
-        }else{
+        } else {
           console.log('stderr: '+stderr);
           res.send('Script Error');
         }
@@ -1018,7 +1019,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
           //console.log('pcoa_process process exited with code ' + code+' -- '+output);
           //distance_matrix = JSON.parse(output);
           //let last_line = ary[ary.length - 1];
-          if(code === 0){   // SUCCESS
+          if (code === 0){   // SUCCESS
 
             //html = "<img src='/"+image_file+"'>";
             //let image = path.join('/tmp/',image_file);
@@ -1028,7 +1029,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
             html += "</object></div>";
             //console.log(html);
 
-          }else{
+          } else {
               console.log('ERROR');
               html='PCoA Script Failure -- Try a deeper rank, or more metadata or datasets';
           }
@@ -1052,7 +1053,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
             //let pc_file = path.join(pwd,'tmp', pc_file_name);
             ///////////////////////////////////////////////////
         console.log('POST in 3D');
-        if(req.CONFIG.site === 'vamps' ){
+        if (req.CONFIG.site === 'vamps' ){
             console.log('VAMPS PRODUCTION -- no print to log');
         }
         // else {
@@ -1099,8 +1100,8 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       //stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr
 
-        pcoa_process.stdout.on('data', function pcoaProcessStdout(data) { 
-            //console.log('1stdout: ' + data);  
+        pcoa_process.stdout.on('data', function pcoaProcessStdout(data) {
+            //console.log('1stdout: ' + data);
         });
         stderr1='';
         pcoa_process.stderr.on('data', function pcoaProcessStderr(data) {
@@ -1112,9 +1113,9 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
         pcoa_process.on('close', function pcoaProcessOnClose(code) {
                 console.log('pcoa_process1 process exited with code ' + code);
 
-                if(code === 0){    // SUCCESS
-                    
-                  
+                if (code === 0){    // SUCCESS
+
+
                             let html = "** <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a> **";
                             html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
                             html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
@@ -1127,7 +1128,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
 
 
-                }else{
+                } else {
                     //console.log('ERROR');
                     res.send('Python Script Error: '+stderr1);
                 }
@@ -1150,7 +1151,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
     let matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
     let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
     let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
-   
+
     //console.log('max_total_count '+max_total_count.toString());
 
     // sum counts
@@ -1285,12 +1286,12 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
 router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
     let ts = req.session.ts;
     console.log('in POST oligotyping');
-    
+
     let html='';
     let matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
     let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
     let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
-    
+
     //console.log('max_total_count '+max_total_count.toString());
 
 
@@ -1330,7 +1331,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 
     let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
     let fill = req.session.tax_depth.charAt(0).toUpperCase() + req.session.tax_depth.slice(1);
-    if(fill === 'Klass'){
+    if (fill === 'Klass'){
         fill = 'Class';
     }
     let tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
@@ -1340,34 +1341,34 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ tmp_path, ts ],
     };
-    if(plot_type == 'bar'){
+    if (plot_type == 'bar'){
       script = 'phyloseq_bar.R';
       phy = req.body.phy;
       options.args = options.args.concat([image_file, phy, fill]);
-    }else if(plot_type == 'heatmap'){
+    }else if (plot_type == 'heatmap'){
       script = 'phyloseq_heatmap.R';
       //image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
       phy = req.body.phy;
       md1 = req.body.md1;
       ordtype = req.body.ordtype;
       options.args = options.args.concat([image_file, dist_metric, phy, md1, ordtype, fill]);
-    }else if(plot_type == 'network'){
+    }else if (plot_type == 'network'){
       script = 'phyloseq_network.R';
       md1 = req.body.md1 || "Project";
       md2 = req.body.md2 || "Description";
       maxdist = req.body.maxdist || "0.3";
       options.args = options.args.concat([image_file, dist_metric, md1, md2, maxdist]);
-    }else if(plot_type == 'ord'){
+    }else if (plot_type == 'ord'){
       script = 'phyloseq_ord.R';
       md1 = req.body.md1 || "Project";
       md2 = req.body.md2 || "Description";
       ordtype = req.body.ordtype || "PCoA";
       options.args = options.args.concat([image_file, dist_metric, md1, md2, ordtype]);
-    }else if(plot_type == 'tree'){
+    }else if (plot_type == 'tree'){
       script = 'phyloseq_tree.R';
       md1 = req.body.md1 || "Description";
       options.args = options.args.concat([image_file, dist_metric, md1]);
-    }else{
+    } else {
       //ERROR
     }
     let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
@@ -1393,12 +1394,12 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
           console.log('phyloseq_process process exited with code ' + code);
           //distance_matrix = JSON.parse(output);
           //let last_line = ary[ary.length - 1];
-          if(code === 0){   // SUCCESS
+          if (code === 0){   // SUCCESS
             console.log('last: '+lastline);
-            if(lastline.toString().substring(0,5) == 'ERROR'){
+            if (lastline.toString().substring(0,5) == 'ERROR'){
                     console.log('ERROR-1');
                     html = lastline;
-            }else{
+            } else {
 
               //   let image = '/'+ts+'_heatmap.pdf';
               // //console.log(image)
@@ -1411,18 +1412,18 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
               // return;
 
 
-                 if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+                 if (plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
                  //html = "<object  data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf'width='100%' height='700' >Your browser does not support SVG</object>";
                       html = "<div id='pdf'>";
                       html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
                       html += " <p>ERROR in loading pdf file</p>";
                       html += "</object></div>";
-                 }else{
+                 } else {
                       html = "<img src='/"+image_file+"'  >";
                 }
             }
 
-          }else{
+          } else {
             console.log('ERROR-2');
             html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's"
           }
@@ -1449,16 +1450,16 @@ function get_sumator(req, biom_matrix){
         for(t in tax_items){
            let taxa = tax_items[t];
            let rank = C.RANKS[t];
-           if(rank=='domain'){
+           if (rank=='domain'){
                d = tax_items[t];
                for(i in req.session.chosen_id_order){
-                   if(d in sumator['domain']){
-                       if(i in sumator['domain'][d]['knt']){
+                   if (d in sumator['domain']){
+                       if (i in sumator['domain'][d]['knt']){
                            sumator['domain'][d]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       }else{
+                       } else {
                            sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
                        }
-                   }else{
+                   } else {
                        sumator['domain'][d]={};
                        sumator['domain'][d]['phylum']={};
                        sumator['domain'][d]['knt']=[];
@@ -1466,16 +1467,16 @@ function get_sumator(req, biom_matrix){
                    }
                }
            }
-           if(rank=='phylum'){
+           if (rank=='phylum'){
                p = tax_items[t];
                for(i in req.session.chosen_id_order){
-                   if(p in sumator['domain'][d]['phylum']){
-                       if(i in sumator['domain'][d]['phylum'][p]['knt']){
+                   if (p in sumator['domain'][d]['phylum']){
+                       if (i in sumator['domain'][d]['phylum'][p]['knt']){
                            sumator['domain'][d]['phylum'][p]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       }else{
+                       } else {
                            sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
                        }
-                   }else{
+                   } else {
                        sumator['domain'][d]['phylum'][p]={};
                        sumator['domain'][d]['phylum'][p]['klass']={};
                        sumator['domain'][d]['phylum'][p]['knt']=[];
@@ -1483,16 +1484,16 @@ function get_sumator(req, biom_matrix){
                    }
                }
            }
-           if(rank=='klass'){
+           if (rank=='klass'){
                k = tax_items[t];
                for(i in req.session.chosen_id_order){
-                   if(k in sumator['domain'][d]['phylum'][p]['klass']){
-                       if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
+                   if (k in sumator['domain'][d]['phylum'][p]['klass']){
+                       if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       }else{
+                       } else {
                            sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
                        }
-                   }else{
+                   } else {
                        sumator['domain'][d]['phylum'][p]['klass'][k]={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order']={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['knt']=[];
@@ -1500,16 +1501,16 @@ function get_sumator(req, biom_matrix){
                    }
                }
            }
-           if(rank=='order'){
+           if (rank=='order'){
                o = tax_items[t];
                for(i in req.session.chosen_id_order){
-                   if(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
-                       if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
+                   if (o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
+                       if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       }else{
+                       } else {
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
                        }
-                   }else{
+                   } else {
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']=[];
@@ -1517,16 +1518,16 @@ function get_sumator(req, biom_matrix){
                    }
                }
            }
-           if(rank=='family'){
+           if (rank=='family'){
                f = tax_items[t];
                for(i in req.session.chosen_id_order){
-                   if(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
-                       if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
+                   if (f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
+                       if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       }else{
+                       } else {
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
                        }
-                   }else{
+                   } else {
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']=[];
@@ -1534,16 +1535,16 @@ function get_sumator(req, biom_matrix){
                    }
                }
            }
-           if(rank=='genus'){
+           if (rank=='genus'){
                g = tax_items[t];
                for(i in req.session.chosen_id_order){
-                   if(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
-                       if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
+                   if (g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
+                       if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       }else{
+                       } else {
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
                        }
-                   }else{
+                   } else {
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']=[];
@@ -1551,16 +1552,16 @@ function get_sumator(req, biom_matrix){
                    }
                }
            }
-           if(rank=='species'){
+           if (rank=='species'){
                s = tax_items[t];
                for(i in req.session.chosen_id_order){
-                   if(s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
-                       if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
+                   if (s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
+                       if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       }else{
+                       } else {
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
                        }
-                   }else{
+                   } else {
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]={};
 
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
@@ -1569,16 +1570,16 @@ function get_sumator(req, biom_matrix){
                    }
                }
            }
-           if(rank=='strain'){
+           if (rank=='strain'){
                st = tax_items[t];
                for(i in req.session.chosen_id_order){
-                   if(st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
-                       if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
+                   if (st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
+                       if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       }else{
+                       } else {
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
                        }
-                   }else{
+                   } else {
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]={};
                        //sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']=[];
@@ -1615,7 +1616,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
      //console.log(myurl.query)
      //console.log('bar_single:session')
      //console.log(req.session)
-    
+
     let pi = {};
     let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did];
     pi.chosen_datasets = [{did:selected_did, name:selected_pjds}];
@@ -1637,27 +1638,27 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
     new_matrix.dataset = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did];
     new_matrix.did = selected_did;
-    
+
     new_matrix.total = 0;
 
-    
+
     //let idx = -1;
 
-   
+
 
     new_matrix = helpers.sort_json_matrix(new_matrix, order);
     let new_order = {};
-    if(order.orderby =='alpha' ){
-      if(order.value == 'a'){
+    if (order.orderby =='alpha' ){
+      if (order.value == 'a'){
         new_order.alpha_value = 'z'
-      }else{
+      } else {
         new_order.alpha_value = 'a'
       }
       new_order.count_value = ''
-    }else{
-      if(order.value == 'min'){
+    } else {
+      if (order.value == 'min'){
         new_order.count_value = 'max'
-      }else{
+      } else {
         new_order.count_value = 'min'
       }
       new_order.alpha_value = ''
@@ -1675,9 +1676,9 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     new_rows[selected_did] = [];
     let LoadDataFinishRequest = function (req, res, project, display) {
         console.log('LoadDataFinishRequest in bar_single');
-        if(pi.unit_choice == 'OTUs'){
+        if (pi.unit_choice == 'OTUs'){
             let title = 'OTU Count Data'
-        }else{
+        } else {
             let title = 'Taxonomic Data'
         }
         res.render('visuals/user_viz_data/bar_single', {
@@ -1691,11 +1692,11 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
               user: req.user, hostname: req.CONFIG.hostname,
           });
     };
-    if( pi.unit_choice == 'OTUs'){
+    if ( pi.unit_choice == 'OTUs'){
 
         LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order);
 
-    }else{
+    } else {
 
         connection.query(QUERY.get_sequences_perDID([selected_did], pi.unit_choice), function mysqlSelectSeqsPerDID(err, rows, fields){
             if (err)  {
@@ -1718,20 +1719,20 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
                   let o_id = rows[s].order_id;
                   let f_id = rows[s].family_id;
                   let g_id;
-                  if(rows[s].hasOwnProperty("genus_id")){
-                    if(rows[s].genus_id == 'undefined'){
+                  if (rows[s].hasOwnProperty("genus_id")){
+                    if (rows[s].genus_id == 'undefined'){
                         g_id = 'genus_NA'
-                    }else{
+                    } else {
                         g_id = rows[s].genus_id
                     }
 
-                  }else{
+                  } else {
                     g_id = ''
                   }
 
-                  if(rows[s].hasOwnProperty("species_id")){
+                  if (rows[s].hasOwnProperty("species_id")){
                     let sp_id = rows[s].species_id
-                  }else{
+                  } else {
                     let sp_id = ''
                   }
                   let st_id = rows[s].strain_id;
@@ -1762,7 +1763,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 
     console.log('in routes_viz/bar_double');
-    
+
     let myurl = url.parse(req.url, true);
     console.log(myurl.query);
     let did1 = myurl.query.did1;
@@ -1775,7 +1776,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     let order = {orderby:orderby, value:value}; // orderby: alpha: a,z or count: min,max
     let ds1  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did1]].project+'--'+DATASET_NAME_BY_DID[did1];
     let ds2  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did2]].project+'--'+DATASET_NAME_BY_DID[did2];
-    
+
     //let ds_items = pjds.split('--');
 
     //console.log(ds1, ds2)
@@ -1808,22 +1809,22 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     //console.log(JSON.stringify(new_matrix))
     new_matrix = helpers.sort_json_matrix(new_matrix,order);
     let new_order = {};
-    if(order.orderby =='alpha' ){
-      if(order.value == 'a'){
+    if (order.orderby =='alpha' ){
+      if (order.value == 'a'){
         new_order.alpha_value = 'z'
-      }else{
+      } else {
         new_order.alpha_value = 'a'
       }
       new_order.count_value = ''
-    }else{
-      if(order.value == 'min'){
+    } else {
+      if (order.value == 'min'){
         new_order.count_value = 'max'
-      }else{
+      } else {
         new_order.count_value = 'min'
       }
       new_order.alpha_value = ''
     }
-    
+
     let timestamp = +new Date();  // millisecs since the epoch!
     console.log('TS HM File',timestamp);
     let filename1 = req.user.username+'_'+did1+'_'+timestamp+'_sequences.json';
@@ -1837,9 +1838,9 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     //console.log(new_rows)
     let LoadDataFinishRequest = function (req, res, timestamp, new_matrix, new_order, dist) {
        console.log('LoadDataFinishRequest in bar_double');
-       if(pi.unit_choice == 'OTUs'){
+       if (pi.unit_choice == 'OTUs'){
             let title = 'OTU Count Data'
-       }else{
+       } else {
             let title = 'Taxonomic Data'
        }
        res.render('visuals/user_viz_data/bar_double', {
@@ -1853,11 +1854,11 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
                   user: req.user, hostname: req.CONFIG.hostname,
               });
     };
-    if( pi.unit_choice == 'OTUs'){
+    if ( pi.unit_choice == 'OTUs'){
 
         LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order, dist);
 
-    }else{
+    } else {
         connection.query(QUERY.get_sequences_perDID(did1+"','"+did2, pi.unit_choice), function mysqlSelectSeqsPerDID(err, rows, fields){
             if (err)  {
               console.log('Query error: ' + err);
@@ -1925,20 +1926,20 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	let search_tax = myurl.query.taxa;
     let seqs_filename = myurl.query.filename;
 
-	
+
     let seq_list = [];
     let d,p,k,o,f,g,sp,st;
     let selected_did = myurl.query.did;
     let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project+'--'+DATASET_NAME_BY_DID[selected_did];
-	if(seqs_filename){
+	if (seqs_filename){
     //console.log('found filename',seqs_filename)
 
     fs.readFile(path.join('tmp',seqs_filename), 'utf8', function readFile(err,data) {
       if (err) {
         console.log(err);
-        if(req.session.unit_choice == 'OTUs'){
+        if (req.session.unit_choice == 'OTUs'){
             res.send('<br><h3>No sequences are associated with this OTU project.</h3>')
-        }else{
+        } else {
             res.send('<br><h3>No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again</h3>")
         }
       }
@@ -2004,7 +2005,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
                 st = 'strain_NA'
           }
           seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
-          if(seq_tax.substring(0, search_tax.length) === search_tax){
+          if (seq_tax.substring(0, search_tax.length) === search_tax){
             seq_list.push({prettyseq:helpers.make_color_seq(data.seq), seq:data.seq, seq_count:data.seq_count, gast_distance:data.gast_distance, classifier:data.classifier, tax:seq_tax});
           }
       }
@@ -2018,7 +2019,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
                     user: req.user, hostname: req.CONFIG.hostname,
       });
     });
-  }else{
+  } else {
       res.render('visuals/user_viz_data/sequences', {
                     title: 'Sequences',
                     ds : pjds,
@@ -2071,9 +2072,9 @@ router.get('/partials/tax_'+C.default_taxonomy.name+'_custom', helpers.isLoggedI
 });
 router.get('/partials/tax_rdp2.6_simple', helpers.isLoggedIn,  function(req, res) {
     res.render("visuals/partials/tax_rdp26_simple", {
-        
+
         doms : C.UNITSELECT.rdp2_6_simple.domains,
-        
+
     });
 });
 router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, res) {
@@ -2099,9 +2100,9 @@ router.get('/partials/med_nodes', helpers.isLoggedIn,  function(req, res) {
 router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_config-->>');
-  if(req.CONFIG.site == 'vamps' ){
+  if (req.CONFIG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
-  }else{
+  } else {
       console.log(req.body);
   }
   console.log('<--req.body: save_config');
@@ -2116,11 +2117,11 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
   delete json_obj.flash;
   delete json_obj.passport;
   delete json_obj.cookie;
-  
-  
-  if(req.CONFIG.site == 'vamps' ){
+
+
+  if (req.CONFIG.site == 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
-  }else{
+  } else {
         console.log('json_obj');
         console.log(json_obj)
   }
@@ -2142,9 +2143,9 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
 router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_datasets-->>');
-  if(req.CONFIG.site == 'vamps' ){
+  if (req.CONFIG.site == 'vamps' ){
     console.log('VAMPS PRODUCTION -- no print to log');
-  }else{
+  } else {
     console.log(req.body);
   }
   console.log('req.body: save_datasets');
@@ -2164,10 +2165,10 @@ router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 //
 router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
     console.log('in show_saved_datasets');
-    if(req.user.username == 'guest'){
+    if (req.user.username == 'guest'){
       req.flash('fail', "The 'guest' user cannot save datasets");
       res.redirect('/user_data/your_data');
-    }else{
+    } else {
       //console.log('req.body: show_saved_datasets-->>');
       //console.log(req.body);
       //console.log('req.body: show_saved_datasets');
@@ -2178,16 +2179,16 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
       let modify_times = [];
       helpers.mkdirSync(saved_elements_dir);
       fs.readdir(saved_elements_dir, function(err, files){
-          if(err){
+          if (err){
 
     				let msg = 'ERROR Message '+err;
     				helpers.render_error_page(req,res,msg);
 
 
-    		  }else{
+    		  } else {
       		  for (let f in files){
       	        let pts = files[f].split('-');
-      	        if(acceptable_prefixes.indexOf(pts[0]) != -1 ){
+      	        if (acceptable_prefixes.indexOf(pts[0]) != -1 ){
       	          //file_info.files.push(files[f]);
       	          stat = fs.statSync(path.join(saved_elements_dir,files[f]));
       			       file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime.toString() };
@@ -2250,7 +2251,7 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
   //console.log(req.session)
   let names = [];
   let ids = [];
-  
+
   for (let i in req.session.chosen_id_order){
     let did = req.session.chosen_id_order[i];
     let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
@@ -2352,19 +2353,19 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 
       for(i in lines){
 
-        if(lines[i].substring(0,7) == 'DS_LIST'){
+        if (lines[i].substring(0,7) == 'DS_LIST'){
           tmp = lines[i].split('=');
           let ds_list = tmp[1];
 
         }
       }
-      if(req.CONFIG.site == 'vamps' ){
+      if (req.CONFIG.site == 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
-      }else{
+      } else {
         console.log('dsl',ds_list)
       }
       //let last_line = ary[ary.length - 1];
-      if(code === 0){   // SUCCESS
+      if (code === 0){   // SUCCESS
         try{
 
             dataset_list = JSON.parse(ds_list);
@@ -2375,7 +2376,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
             fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err,ascii_tree_data) {
               if (err) {
                 return console.log(err);
-              }else{
+              } else {
                 //console.log(data);
 
                 html = '';
@@ -2407,7 +2408,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         }
 
 
-      }else{
+      } else {
         //console.log('output')
         //console.log(output);
         //res.send(err);
@@ -2424,13 +2425,13 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res) {
     console.log('in dheatmap_number_to_color');
     console.log(req.body);
-    
+
     let ts = req.session.ts;
     let distmtx_file_name = ts+'_distance.json';
     let distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
     //console.log(distmtx_file)
     let distance_matrix = JSON.parse(fs.readFileSync(distmtx_file, 'utf8')); // function (err, distance_matrix) {
-                            
+
     //distance_matrix = JSON.parse(data);
     //console.log(distance_matrix)
     metadata = {};
@@ -2438,7 +2439,7 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
     metadata.split = false;
     metadata.metric = req.session.selected_distance;  // revert back to selected
     let html = IMAGES.create_hm_table(req, distance_matrix, metadata );
-    
+
     //console.log(html)
     let outfile_name = ts + '-dheatmap-api.html';
     outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
@@ -2453,22 +2454,22 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
     //res.send(outfile_name)
     res.json(data)
 
-   
+
 });
 router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) {
     console.log('in dheatmap_split_distance');
     console.log(req.body);
-    
-    
+
+
     let ts = req.session.ts;
     let test_split_file_name = ts+'_distance_mh_bc.tsv';
     let test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
     let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
     let biom_file_name = ts+'_count_matrix.biom';
     let biom_file = path.join(pwd,'tmp',biom_file_name);
-    
-    
-            
+
+
+
     let FinishSplitFile = function(req, res){
         let ts = req.session.ts;
         //let suffix = split_file_suffixes[req.body.split_distance_choice]
@@ -2480,21 +2481,21 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
         fs.readFile(distmtx_file, 'utf8',function readFile(err,mtxdata) {
             if (err) {
                 res.json({'err':err})
-            }else{
+            } else {
                 //console.log(mtxdata)
                 let split_distance_csv_matrix = mtxdata.split('\n');
-                
+
                 let IMAGES = require('../routes_images');
                 metadata = {};
                 metadata.numbers_or_colors = req.body.numbers_or_colors;
                 metadata.split = true;
                 metadata.metric = suffix;
-                
+
                 let html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata );
 
                 let outfile_name = ts + '-dheatmap-api.html';
                 outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
-                
+
                 let data = {};
                 data.html = html;
                 data.numbers_or_colors = req.body.numbers_or_colors;
@@ -2502,19 +2503,19 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
                 //res.send(outfile_name)
                 res.json(data)
             }
-          
+
         });
     };
-    if(helpers.fileExists(test_distmtx_file)){
+    if (helpers.fileExists(test_distmtx_file)){
         console.log('Using Old Files');
         FinishSplitFile(req, res);
-        return   
+        return
     }
-    
+
     let options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-in', biom_file, '-splits', '--function', 'splits_only', '--basedir', pwd, '--prefix', ts ],
-    }; 
+    };
     console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
     let split_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
@@ -2541,9 +2542,9 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     split_process.on('close', function splitsProcessOnClose(code) {
         console.log('finished code:'+code.toString());
         console.log('Creating New Split Distance Files');
-        FinishSplitFile(req, res)        
+        FinishSplitFile(req, res)
         //let split_distance_csv_matrix = JSON.parse(fs.readFile(distmtx_file, 'utf8', function)) // function (err, distance_matrix) {
-                
+
 
     })
 });
@@ -2557,35 +2558,35 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
     let ts = req.body.ts;
     let file_type = req.body.file_type;
     file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
-    if(file_type == 'matrix'){
+    if (file_type == 'matrix'){
       res.setHeader('Content-Type', 'text');
       out_file_name = ts+'_count_matrix.txt';
-      biom_file_name = ts+'_count_matrix.biom';      
+      biom_file_name = ts+'_count_matrix.biom';
       helpers.create_matrix_from_biom(res, file_path, biom_file_name, out_file_name)
-    }else if(file_type == 'biom'){
+    }else if (file_type == 'biom'){
       file_name = ts+'_count_matrix.biom';
       res.setHeader('Content-Type', 'text');
       res.download(path.join(file_path, file_name)); // Set disposition and send it.
-    }else if(file_type == 'tax'){
+    }else if (file_type == 'tax'){
       file_name = ts+'_taxonomy.txt';
       res.setHeader('Content-Type', 'text');
       res.download(path.join(file_path, file_name)); // Set disposition and send it.
-    }else if(file_type == 'meta'){
+    }else if (file_type == 'meta'){
       file_name = ts+'_metadata.txt';
       res.setHeader('Content-Type', 'text');
       res.download(path.join(file_path, file_name)); // Set disposition and send it.
-    }else if(file_type == 'configuration'){
+    }else if (file_type == 'configuration'){
       file_name = req.body.filename;
       config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
       res.setHeader('Content-Type', 'json');
       res.download(path.join(config_file_path, file_name)); // Set disposition and send it.
-    }else{
+    } else {
       // ERROR
       console.log('ERROR In download_file')
     }
 
-    
-    
+
+
 });
 
 //
@@ -2597,7 +2598,7 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     //console.log(req.query)
     //FILTER_ON = false
     PROJECT_TREE_OBJ = [];
-    if(req.query.hasOwnProperty('btn') && req.query.btn == '1'){
+    if (req.query.hasOwnProperty('btn') && req.query.btn == '1'){
         DATA_TO_OPEN = {}
     }
     //DATA_TO_OPEN = {}
@@ -2618,7 +2619,7 @@ function filter_project_tree_for_permissions(req, obj){
       pid = obj[i].pid;
       node = PROJECT_INFORMATION_BY_PID[pid];
       //console.log(node)
-      if(
+      if (
             node.public
             || req.user.security_level <= 10                    // admin user ==1
             || node.permissions.length === 0                    // ??
@@ -2626,7 +2627,7 @@ function filter_project_tree_for_permissions(req, obj){
             || (req.user.security_level == 45 && (node.project).substring(0,3) == 'DCO') // DCO Editor all DCO* projects
             ) {
 
-                if(PROJECT_INFORMATION_BY_PID[pid].metagenomic == 0){
+                if (PROJECT_INFORMATION_BY_PID[pid].metagenomic == 0){
                     new_project_tree_pids.push(pid)
                 }
 
@@ -2666,25 +2667,25 @@ router.get('/livesearch_projects/:substring', function(req, res) {
   let substring = req.params.substring.toUpperCase();
   let myurl = url.parse(req.url, true);
   let portal = myurl.query.portal;
-  if(substring === '.....'){
+  if (substring === '.....'){
     substring = ''
   }
 
   PROJECT_FILTER.substring = substring;
 
   let projects_to_filter = [];
-  if(portal){
+  if (portal){
     projects_to_filter = helpers.get_portal_projects(req, portal)
-  }else{
+  } else {
     projects_to_filter = SHOW_DATA.projects
   }
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
 
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
-  if(req.CONFIG.site == 'vamps' ){
+  if (req.CONFIG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
-  }else{
+  } else {
     console.log('PROJECT_FILTER')
   }
 
@@ -2707,25 +2708,25 @@ router.get('/livesearch_env/:envid', function(req, res) {
   let info = PROJECT_INFORMATION_BY_PID;
 
   let envid_lst = [];
-  if(env_name === 'human associated'){  // get id for 'human associated'
+  if (env_name === 'human associated'){  // get id for 'human associated'
     envid_lst = [];
     for (let key in MD_ENV_PACKAGE){
-      if(MD_ENV_PACKAGE[key].substring(0,5) === 'human'){
+      if (MD_ENV_PACKAGE[key].substring(0,5) === 'human'){
         envid_lst.push(parseInt(key));
       }
     }
-  }else if(envid === '.....'){
+  }else if (envid === '.....'){
     envid_lst = [];
-  }else{
+  } else {
     envid_lst = [parseInt(envid)];
   }
 
   PROJECT_FILTER.env = envid_lst;
 
   let projects_to_filter = [];
-  if(portal){
+  if (portal){
     projects_to_filter = helpers.get_portal_projects(req, portal);
-  }else{
+  } else {
     projects_to_filter = SHOW_DATA.projects;
   }
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
@@ -2772,16 +2773,16 @@ router.get('/livesearch_portal/:portal', function(req, res) {
   let myurl = url.parse(req.url, true);
   let portal = myurl.query.portal;  // we have this turned off: portal selection on portal page
 
-  if(select_box_portal === '.....'){
-    select_box_portal = ''
+  if (select_box_portal === '.....') {
+    select_box_portal = '';
   }
 
   PROJECT_FILTER.portal = select_box_portal;
 
-  if(portal){
-    let projects_to_filter = helpers.get_portal_projects(req, portal)
-  }else{
-    let projects_to_filter = SHOW_DATA.projects
+  if (portal){
+    let projects_to_filter = helpers.get_portal_projects(req, portal);
+  } else {
+    let projects_to_filter = SHOW_DATA.projects;
   }
   //console.log(PROJECT_FILTER)
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, SHOW_DATA.projects, PROJECT_FILTER);
@@ -2805,9 +2806,9 @@ router.get('/livesearch_status/:q', function(req, res) {
 
   PROJECT_FILTER.public = q;
 
-  if(portal){
+  if (portal){
     let projects_to_filter = helpers.get_portal_projects(req, portal)
-  }else{
+  } else {
     let projects_to_filter = SHOW_DATA.projects
   }
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
@@ -2831,16 +2832,16 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
   console.log('query '+q);
   let myurl = url.parse(req.url, true);
   let portal = myurl.query.portal;
-  if(q === '.....'){
+  if (q === '.....'){
     q = ''
   }
 
   PROJECT_FILTER['metadata'+num] = q;
   //PROJECT_FILTER.metadata_num = num
 
-  if(portal){
+  if (portal){
     let projects_to_filter = helpers.get_portal_projects(req, portal)
-  }else{
+  } else {
     let projects_to_filter = SHOW_DATA.projects
   }
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
@@ -2860,21 +2861,21 @@ router.post('/check_units', function(req, res) {
   let files_prefix;
   let path_to_file;
   let jsonfile;
-  
-  if(req.body.units == 'tax_'+C.default_taxonomy.name+'_simple' || req.body.units == 'tax_'+C.default_taxonomy.name+'_custom'){
+
+  if (req.body.units == 'tax_'+C.default_taxonomy.name+'_simple' || req.body.units == 'tax_'+C.default_taxonomy.name+'_custom'){
         files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
-  }else if(req.body.units == 'tax_rdp2.6_simple'){
+  }else if (req.body.units == 'tax_rdp2.6_simple'){
         files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
-  }else if(req.body.units == 'tax_generic_simple'){
+  }else if (req.body.units == 'tax_generic_simple'){
         files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
-  }else{
+  } else {
         console.log('ERROR:Units not found: '+req.body.units)  // ERROR
   }
   let file_err = 'PASS';
   let dataset_ids = req.session.chosen_id_order;
   // console.log('dataset_ids')
 //   console.log(dataset_ids)
-  
+
   for(let i in dataset_ids){
         //console.log(dataset_ids[i]+' <> '+DATASET_NAME_BY_DID[dataset_ids[i]])
         path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
@@ -2887,7 +2888,7 @@ router.post('/check_units', function(req, res) {
         }
   }
   res.send(file_err);
-   
+
 });
 //
 //
@@ -2900,7 +2901,7 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
     let json = {};
     json.id = id;
     json.item = [];
-    if(id==0){
+    if (id==0){
         // return json for collapsed tree: 'domain' only
 //         json = {"id":"0","item":[
 //             {"id":"1","text":"Bacteria","tooltip":"domain","checked":true,"child":"1","item":[]},
@@ -2913,24 +2914,24 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
         //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
         for( n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
             node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
-            if(node.children_ids.length === 0){
+            if (node.children_ids.length === 0){
                 json.item.push({id:node.node_id,text:node.taxon,tooltip:node.rank,checked:true,child:0})
-            }else{
+            } else {
                 json.item.push({id:node.node_id,text:node.taxon,tooltip:node.rank,checked:true,child:1,item:[]})
             }
         }
         json.item.sort(function(a, b) {
             return helpers.compareStrings_alpha(a.text, b.text);
-        });        
-    }else{
+        });
+    } else {
         for(n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
             node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
             node = new_taxonomy.taxa_tree_dict_map_by_id[node_id];
             //console.log('node')
             //console.log(node)
-            if(node.children_ids.length === 0){
+            if (node.children_ids.length === 0){
                 json.item.push({id:node.node_id,text:node.taxon,tooltip:node.rank,child:0})
-            }else{
+            } else {
                 json.item.push({id:node.node_id,text:node.taxon,tooltip:node.rank,child:1,item:[]})
             }
         }
@@ -2956,7 +2957,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     //PROJECT_TREE_OBJ = []
     //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
     let itemtext;
-    if(id==0){
+    if (id==0){
 
         for( i=0;i<PROJECT_TREE_PIDS.length;i++ ){
 
@@ -2964,23 +2965,23 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
             let node = PROJECT_INFORMATION_BY_PID[pid];
             //console.log('node',node)
             let tt_pj_id = 'project/'+node.project+'/'+node.title;
-            if(node.public) {
+            if (node.public) {
               tt_pj_id += '/public';
-            }else{
+            } else {
               tt_pj_id += '/private';
             }
             let pid_str = pid.toString();
             itemtext = "<span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>"+node.project+"</span>";
             itemtext    += " <a href='/projects/"+pid_str+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
-            if(node.public) {
+            if (node.public) {
                 itemtext += "<small> <i>(public)</i></small>"
-            }else{
+            } else {
                 itemtext += "<a href='/users/"+ node.oid+"'><small> <i>(PI: "+node.username +")</i></small></a>"
             }
 
-            if(Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
+            if (Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
               json.item.push({id:'p'+pid_str, text:itemtext, checked:false, open:'1', child:1, item:[]});
-            }else{
+            } else {
               json.item.push({id:'p'+pid_str, text:itemtext, checked:false,  child:1, item:[]});
             }
 
@@ -2988,22 +2989,22 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
         }
         //console.log(JSON.stringify(json, null, 4))
 
-    }else{
+    } else {
         //console.log(JSON.stringify(ALL_DATASETS))
         let this_project = {};
         id = id.substring(1);  // id = pxx
         ALL_DATASETS.projects.forEach(function(prj) {
-          if(prj.pid == id){
+          if (prj.pid == id){
             this_project = prj
           }
         });
         let all_checked_dids = [];
-        if(Object.keys(DATA_TO_OPEN).length > 0){
+        if (Object.keys(DATA_TO_OPEN).length > 0){
 
           console.log('dto');
-          if(req.CONFIG.site == 'vamps' ){
+          if (req.CONFIG.site == 'vamps' ){
             console.log('VAMPS PRODUCTION -- no print to log');
-          }else{
+          } else {
             console.log(DATA_TO_OPEN);
           }
           for(openpid in DATA_TO_OPEN){
@@ -3011,9 +3012,9 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
           }
         }
         console.log('all_checked_dids:');
-        if(req.CONFIG.site == 'vamps' ){
+        if (req.CONFIG.site == 'vamps' ){
           console.log('VAMPS PRODUCTION -- no print to log');
-        }else{
+        } else {
           console.log(all_checked_dids)
         }
         let pname = this_project.name;
@@ -3024,9 +3025,9 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
             let ddesc = this_project.datasets[n].ddesc;
             let tt_ds_id  = 'dataset/'+pname+'/'+dname+'/'+ddesc;
             itemtext = "<span id='"+ tt_ds_id +"' class='tooltip_pjds_list'>"+dname+"</span>";
-            if(all_checked_dids.indexOf(parseInt(did)) === -1){
+            if (all_checked_dids.indexOf(parseInt(did)) === -1){
               json.item.push({id:did, text:itemtext, child:0})
-            }else{
+            } else {
               json.item.push({id:did, text:itemtext, checked:'1', child:0})
             }
         }
@@ -3047,18 +3048,18 @@ router.get('/taxa_piechart', function(req, res) {
     let timestamp = +new Date();  // millisecs since the epoch!
     let ts = req.session.ts;
     let matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
-    
+
     fs.readFile(matrix_file_path, 'utf8', function(err,mtxdata){
         if (err) {
             let msg = 'ERROR Message '+err;
             helpers.render_error_page(req,res,msg);
-        }else{
+        } else {
             let biom_matrix = JSON.parse(mtxdata);
             let data = [];
             let new_matrix = {};
 
             for(i in biom_matrix.rows){
-              if(biom_matrix.rows[i].id == tax){
+              if (biom_matrix.rows[i].id == tax){
 
                 data = biom_matrix.data[i];
                 // data = [1,2,3,4]
@@ -3072,9 +3073,9 @@ router.get('/taxa_piechart', function(req, res) {
               }
             }
             new_matrix.rows = biom_matrix.columns;
-            if(req.CONFIG.site == 'vamps' ){
+            if (req.CONFIG.site == 'vamps' ){
               console.log('VAMPS PRODUCTION -- no print to log');
-            }else{
+            } else {
               console.log('new mtx:',new_matrix);
               console.log('counts:',new_matrix.data)
             }
