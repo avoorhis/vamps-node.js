@@ -877,8 +877,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     console.log('req.body dnd');
     let ts = req.body.ts;
     let metric = req.body.metric;
-    //JSHint: 'script' is defined but never used. (W098)
-    // let script = req.body.script; // python, phylogram or phylonator
+    let script = req.body.script; // python, phylogram or phylonator
     let image_type = req.body.image_type;  // png(python script) or svg
     let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
     //console.log('image_type '+image_type);
@@ -888,12 +887,10 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     let biom_file = path.join(pwd,'tmp',biom_file_name);
 
     let html = '';
-    //JSHint: 'title' is defined but never used. (W098)
-    // let title = 'VAMPS';
+    let title = 'VAMPS';
 
     let distmtx_file_name = ts+'_distance.csv';
-    // JSHint: 'distmtx_file' is defined but never used. (W098)
-    // let distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
+    let distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
 
 
     let options = {
@@ -901,7 +898,6 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
       args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--basedir', pwd, '--prefix', ts ],
     };
 
-    // JSHint: 'log' is defined but never used. (W098)
     let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
     console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
     let dendrogram_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
@@ -931,55 +927,54 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
         console.log('dendrogram_process process exited with code ' + code);
 
+      let newick = "";
         //let last_line = ary[ary.length - 1];
-        if (code === 0){   // SUCCESS
-          if (image_type === 'd3'){
-                    if (req.CONFIG.site === 'vamps' ){
-                      console.log('VAMPS PRODUCTION -- no print to log');
-                    } else {
-                        console.log('stdout: ' + stdout);
-                    }
-                    let lines = stdout.split('\n');
-                    for (let n in lines){
-                      if (lines[n].substring(0,6) === 'NEWICK' ){
-                        let tmp = lines[n].split('=');
-                        console.log('FOUND NEWICK ' + tmp[1]);
-
-                      }
-                    }
-
-
-                    try {
-                      //newick = JSON.parse(tmp[1]);
-                      newick = tmp[1];
-                      if (req.CONFIG.site == 'vamps' ){
-                        console.log('VAMPS PRODUCTION -- no print to log');
-                      } else {
-                        console.log('NWK->'+newick)
-                      }
-                    }
-                    catch(err){
-                      newick = {"ERROR":err};
-                    }
-                    res.send(newick);
-
-
-          } else {  // 'pdf'
-                    let viz_width = 1200;
-                    let viz_height = (visual_post_items.no_of_datasets*12)+100;
-                    let image = '/'+ts+'_dendrogram.pdf';
-                    //console.log(image)
-                    html = "<div id='pdf'>";
-                    html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
-                    html += " <p>ERROR in loading pdf file</p>";
-                    html += "</object></div>";
-                    res.send(html);
-
+      if (code === 0){   // SUCCESS
+        if (image_type === 'd3'){
+          if (req.CONFIG.site === 'vamps' ){
+            console.log('VAMPS PRODUCTION -- no print to log');
           }
-        } else {
-          console.log('stderr: '+stderr);
-          res.send('Script Error');
+          else {
+            console.log('stdout: ' + stdout);
+          }
+          let lines = stdout.split('\n');
+          for (let n in lines){
+            if (lines[n].substring(0,6) === 'NEWICK' ){
+              let tmp = lines[n].split('=');
+              console.log('FOUND NEWICK ' + tmp[1]);
+
+            }
+          }
+
+          try {
+            //newick = JSON.parse(tmp[1]);
+            newick = tmp[1]; //TODO: JSHint: 'tmp' is not defined. (W117) ???
+            if (req.CONFIG.site === 'vamps' ){
+              console.log('VAMPS PRODUCTION -- no print to log');
+            } else {
+              console.log('NWK->' + newick);
+            }
+          }
+          catch(err){
+            newick = {"ERROR":err};
+          }
+          res.send(newick);
+        } else {  // 'pdf'
+          let viz_width = 1200;
+          let viz_height = (visual_post_items.no_of_datasets*12)+100;
+          let image = '/'+ts+'_dendrogram.pdf';
+          //console.log(image)
+          html = "<div id='pdf'>";
+          html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
+          html += " <p>ERROR in loading pdf file</p>";
+          html += "</object></div>";
+          res.send(html);
         }
+      }
+      else {
+        console.log('stderr: ' + stderr);
+        res.send('Script Error');
+      }
     });
 
 
@@ -991,61 +986,60 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 // P C O A
 //
 router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
-    console.log('in PCoA');
-    //console.log(metadata);
-    let ts = req.body.ts;
-    let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
-    let metric = req.body.metric;
-    let image_type = req.body.image_type;
-    //let image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
-    let image_file = ts+'_pcoa.pdf';
-    let biom_file_name = ts+'_count_matrix.biom';
-    let biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp', biom_file_name);
-    let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
-    let tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
-    let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+  console.log('in PCoA');
+  //console.log(metadata);
+  let ts = req.body.ts;
+  let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
+  let metric = req.body.metric;
+  let image_type = req.body.image_type;
+  //let image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
+  let image_file = ts+'_pcoa.pdf';
+  let biom_file_name = ts+'_count_matrix.biom';
+  let biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp', biom_file_name);
+  let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
+  let tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
+  let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 
-    md1 = req.body.md1 || "Project";
-    md2 = req.body.md2 || "Description";
+  let md1 = req.body.md1 || "Project";
+  let md2 = req.body.md2 || "Description";
 
-      // let options = {
-      //   scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', req.CONFIG.PROCESS_DIR, '--prefix', ts],
-      // };
-      let options2 = {
-        scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-        args :       [ tmp_path, ts, metric, md1, md2, image_file],
-      };
-      console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
+    // let options = {
+    //   scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', req.CONFIG.PROCESS_DIR, '--prefix', ts],
+    // };
+    let options2 = {
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      args :       [ tmp_path, ts, metric, md1, md2, image_file],
+    };
+    console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
 
-      let pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
-          env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
-          detached: true,
-          stdio: [ 'ignore', null, log ]
-          //stdio: 'pipe' // stdin, stdout, stderr
-      });
+    let pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
+        env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
+        detached: true,
+        stdio: [ 'ignore', null, log ]
+        //stdio: 'pipe' // stdin, stdout, stderr
+    });
 
+    pcoa_process.on('close', function pcoaProcessOnClose(code) {
+        //console.log('pcoa_process process exited with code ' + code+' -- '+output);
+        //distance_matrix = JSON.parse(output);
+        //let last_line = ary[ary.length - 1];
+        if (code === 0){   // SUCCESS
 
-      pcoa_process.on('close', function pcoaProcessOnClose(code) {
-          //console.log('pcoa_process process exited with code ' + code+' -- '+output);
-          //distance_matrix = JSON.parse(output);
-          //let last_line = ary[ary.length - 1];
-          if (code === 0){   // SUCCESS
+          //html = "<img src='/"+image_file+"'>";
+          //let image = path.join('/tmp/',image_file);
+          let html = "<div id='pdf'>";
+          html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='600' />";
+          html += " <p>ERROR in loading pdf file</p>";
+          html += "</object></div>";
+          //console.log(html);
 
-            //html = "<img src='/"+image_file+"'>";
-            //let image = path.join('/tmp/',image_file);
-            let html = "<div id='pdf'>";
-            html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='600' />";
-            html += " <p>ERROR in loading pdf file</p>";
-            html += "</object></div>";
-            //console.log(html);
+        } else {
+            console.log('ERROR');
+            let html='PCoA Script Failure -- Try a deeper rank, or more metadata or datasets';
+        }
 
-          } else {
-              console.log('ERROR');
-              html='PCoA Script Failure -- Try a deeper rank, or more metadata or datasets';
-          }
-
-          res.send(html);
+        res.send(html);
 
       });
 
@@ -1114,7 +1108,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
         pcoa_process.stdout.on('data', function pcoaProcessStdout(data) {
             //console.log('1stdout: ' + data);
         });
-        stderr1='';
+        let stderr1 = '';
         pcoa_process.stderr.on('data', function pcoaProcessStderr(data) {
                 console.log('1stderr-POST: ' + data);
                 stderr1 += data;
@@ -1155,141 +1149,138 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 // DATA BROWSER
 //
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
-    let ts = req.session.ts;
-    console.log('in dbrowser');
-    console.log(req.session);
-    let html='';
-    let matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
-    let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
-    let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
+  let ts = req.session.ts;
+  console.log('in dbrowser');
+  console.log(req.session);
+  let html='';
+  let matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts + '_count_matrix.biom');
+  let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
+  let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
 
-    //console.log('max_total_count '+max_total_count.toString());
+  //console.log('max_total_count '+max_total_count.toString());
 
-    // sum counts
-    let sumator = get_sumator(req, biom_matrix);
+  // sum counts
+  let sumator = get_sumator(req, biom_matrix);
 
-    //console.log(JSON.stringify(sumator))
+  //console.log(JSON.stringify(sumator))
 
-    for (let d in sumator['domain']){
+  for (let d in sumator['domain']) {
 
-      // #### DOMAIN ####
-      //let dnode_name =  dname
-      html += "<node name='"+d+"'>\n";
-      html += " <seqcount>";
-      for (let c_domain in sumator['domain'][d]['knt']){
-          html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
-      }
+    // #### DOMAIN ####
+    //let dnode_name =  dname
+    html += "<node name='"+d+"'>\n";
+    html += " <seqcount>";
+    for (let c_domain in sumator['domain'][d]['knt']) {
+        html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
+    }
+      html += "</seqcount>\n";
+      html += " <rank><val>domain</val></rank>\n";
+
+      // #### PHYLUM ####
+      for (let p in sumator['domain'][d]['phylum']){
+        html += " <node name='" + p + "'>\n";
+        html += "  <seqcount>";
+        for (let c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
+            html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString() + "</val>";
+        }
         html += "</seqcount>\n";
-        html += " <rank><val>domain</val></rank>\n";
-
-        // #### PHYLUM ####
-        for (p in sumator['domain'][d]['phylum']){
-          html += " <node name='"+p+"'>\n";
-          html += "  <seqcount>";
-          for (c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
-              html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString()+"</val>";
+        html += "  <rank><val>phylum</val></rank>\n";
+        ///
+        // #### KLASS ####
+        for (let k in sumator['domain'][d]['phylum'][p]['klass'])
+        {
+          html += "  <node name='" + k + "'>\n";
+          html += "   <seqcount>";
+          for (let c_klass in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
+              html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][c_klass].toString()+"</val>";
           }
+          html += "</seqcount>\n";
+          html += "   <rank><val>klass</val></rank>\n";
+
+            // #### ORDER ####
+          for (let o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']) {
+            html += "   <node name='" + o + "'>\n";
+            html += "    <seqcount>";
+            for (let c_order in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']) {
+              html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][c_order].toString()+"</val>";
+            }
             html += "</seqcount>\n";
-            html += "  <rank><val>phylum</val></rank>\n";
-///
-            // #### KLASS ####
-            for (k in sumator['domain'][d]['phylum'][p]['klass']){
-                html += "  <node name='"+k+"'>\n";
-                html += "   <seqcount>";
-                for (c_klass in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
-                    html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][c_klass].toString()+"</val>";
+            html += "    <rank><val>order</val></rank>\n";
+
+            // #### FAMILY ####
+            for (let f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
+              html += "    <node name='"+f+"'>\n";
+              html += "     <seqcount>";
+              // TODO: JSHint: Blocks are nested too deeply. (6) (W073)
+              for (let c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']) {
+                  html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][c_family].toString()+"</val>";
+              }
+              html += "</seqcount>\n";
+              html += "     <rank><val>family</val></rank>\n";
+
+              // #### GENUS ####
+              for (let g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']) {
+                html += "     <node name='"+g+"'>\n";
+                html += "      <seqcount>";
+                for (let c_genus in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
+                    html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][c_genus].toString()+"</val>";
                 }
                 html += "</seqcount>\n";
-                html += "   <rank><val>klass</val></rank>\n";
+                html += "      <rank><val>genus</val></rank>\n";
 
-                // #### ORDER ####
-                for (o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
-                    html += "   <node name='"+o+"'>\n";
-                    html += "    <seqcount>";
-                    for (c_order in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
-                        html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][c_order].toString()+"</val>";
-                    }
-                    html += "</seqcount>\n";
-                    html += "    <rank><val>order</val></rank>\n";
+                // #### SPECIES ####
+                for (let s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']) {
+                  html += "     <node name='" + s + "'>\n";
+                  html += "      <seqcount>";
+                  for (let c_species in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
+                      html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][c_species].toString()+"</val>";
+                  }
+                  html += "</seqcount>\n";
+                  html += "      <rank><val>species</val></rank>\n";
 
-                    // #### FAMILY ####
-                    for (f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
-                        html += "    <node name='"+f+"'>\n";
-                        html += "     <seqcount>";
-                        for (c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
-                            html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][c_family].toString()+"</val>";
-                        }
-                        html += "</seqcount>\n";
-                        html += "     <rank><val>family</val></rank>\n";
-
-                        // #### GENUS ####
-                        for (g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
-                            html += "     <node name='"+g+"'>\n";
-                            html += "      <seqcount>";
-                            for (c_genus in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
-                                html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][c_genus].toString()+"</val>";
-                            }
-                            html += "</seqcount>\n";
-                            html += "      <rank><val>genus</val></rank>\n";
-
-                            // #### SPECIES ####
-                            for (s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
-                                html += "     <node name='"+s+"'>\n";
-                                html += "      <seqcount>";
-                                for (c_species in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
-                                    html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][c_species].toString()+"</val>";
-                                }
-                                html += "</seqcount>\n";
-                                html += "      <rank><val>species</val></rank>\n";
-
-                                // #### STRAIN ####
-                                for (st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
-                                      html += "     <node name='"+st+"'>\n";
-                                      html += "      <seqcount>";
-                                      for (c_strain in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
-                                          html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][c_strain].toString()+"</val>";
-                                      }
-                                      html += "</seqcount>\n";
-                                      html += "      <rank><val>strain</val></rank>\n";
- ///// DONE //////
-                                      html += "     </node>\n";
-                                }  // end strain
-
-                                html += "     </node>\n";
-                            }  // end species
+                  // #### STRAIN ####
+                  for (let st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
+                        html += "     <node name='"+st+"'>\n";
+                        html += "      <seqcount>";
+                        for (let c_strain in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
+                            html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][c_strain].toString()+"</val>";
+                }
+                html += "</seqcount>\n";
+                html += "      <rank><val>strain</val></rank>\n";
+///// DONE //////
+                html += "     </node>\n";
+                  }  // end strain
+                  html += "     </node>\n";
+                }  // end species
+                html += "     </node>\n";
+              }  // end genus
+              html += "    </node>\n";
+            }  // end family
+            html += "   </node>\n";
+          }  // end order
+          html += "  </node>\n";
+        }  // end klass
+        html += " </node>\n";
+      }  // end phylum
+      html += "</node>\n";
+  }    // end domain
+  html += "  </node>\n";
 
 
-                            html += "     </node>\n";
-                        }  // end genus
-                        html += "    </node>\n";
-                    }  // end family
-                    html += "   </node>\n";
-                }  // end order
-                html += "  </node>\n";
-            }  // end klass
-            html += " </node>\n";
-        }  // end phylum
-        html += "</node>\n";
-    }    // end domain
-    html += "  </node>\n";
+  // write html to a file and open it
 
+  console.log("render visuals/dbrowser");
+  //let file_name = ts+'_krona.html';
+  //let html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
 
-    // write html to a file and open it
+  res.render('visuals/dbrowser', {
+    title: 'VAMPS:Taxonomy Browser (Krona)',
+    user:                req.user,
+    html:                html,
+    max_total_count:     max_total_count,
+    matrix:              JSON.stringify(biom_matrix)
 
-    console.log("render visuals/dbrowser");
-    //let file_name = ts+'_krona.html';
-    //let html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
-
-    res.render('visuals/dbrowser', {
-      title: 'VAMPS:Taxonomy Browser (Krona)',
-      user:                req.user,
-      html:                html,
-      max_total_count:     max_total_count,
-      matrix:              JSON.stringify(biom_matrix)
-
-    });
-
-
+  });
 });
 //
 // OLIGOTYPING
