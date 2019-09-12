@@ -1694,7 +1694,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
               user: req.user, hostname: req.CONFIG.hostname,
           });
     };
-    if ( pi.unit_choice == 'OTUs'){
+    if ( pi.unit_choice === 'OTUs'){
 
         LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order);
 
@@ -1704,42 +1704,39 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
             if (err)  {
               console.log('Query error: ' + err);
               console.log(err.stack);
-              res.send(err)
+              res.send(err);
             } else {
               //console.log(rows)
-              for (s in rows){
-                  //rows[s].seq = rows[s].seq.toString('utf8')
-                  did = rows[s].dataset_id;
+              for (let s in rows){
+                //rows[s].seq = rows[s].seq.toString('utf8')
+                did = rows[s].dataset_id;
 
-                  let seq = rows[s].seq.toString('utf8');
-                  let seq_cnt = rows[s].seq_count;
-                  let gast = rows[s].gast_distance;
-                  let classifier = rows[s].classifier;
-                  let d_id = rows[s].domain_id;
-                  let p_id = rows[s].phylum_id;
-                  let k_id = rows[s].klass_id;
-                  let o_id = rows[s].order_id;
-                  let f_id = rows[s].family_id;
-                  let g_id;
-                  if (rows[s].hasOwnProperty("genus_id")){
-                    if (rows[s].genus_id == 'undefined'){
-                        g_id = 'genus_NA'
-                    } else {
-                        g_id = rows[s].genus_id
-                    }
-
+                let seq = rows[s].seq.toString('utf8');
+                let seq_cnt = rows[s].seq_count;
+                let gast = rows[s].gast_distance;
+                let classifier = rows[s].classifier;
+                let d_id = rows[s].domain_id;
+                let p_id = rows[s].phylum_id;
+                let k_id = rows[s].klass_id;
+                let o_id = rows[s].order_id;
+                let f_id = rows[s].family_id;
+                let g_id;
+                if (rows[s].hasOwnProperty("genus_id")){
+                  if (rows[s].genus_id === 'undefined'){
+                      g_id = 'genus_NA';
                   } else {
-                    g_id = ''
+                      g_id = rows[s].genus_id;
                   }
+                } else {
+                  g_id = '';
+                }
+                let sp_id = '';
 
-                  if (rows[s].hasOwnProperty("species_id")){
-                    let sp_id = rows[s].species_id
-                  } else {
-                    let sp_id = ''
-                  }
-                  let st_id = rows[s].strain_id;
-                  new_rows[did].push({seq:seq,seq_count:seq_cnt,gast_distance:gast,classifier:classifier,domain_id:d_id,phylum_id:p_id,klass_id:k_id,order_id:o_id,family_id:f_id,genus_id:g_id,species_id:sp_id,strain_id:st_id})
-
+                if (rows[s].hasOwnProperty("species_id")){
+                  sp_id = rows[s].species_id;
+                }
+                let st_id = rows[s].strain_id;
+                new_rows[did].push({seq:seq, seq_count:seq_cnt, gast_distance:gast, classifier:classifier, domain_id:d_id, phylum_id:p_id, klass_id:k_id, order_id:o_id, family_id:f_id, genus_id:g_id, species_id:sp_id, strain_id:st_id});
               }
               // order by seq_count DESC
               new_rows[selected_did].sort(function sortByCount(a, b) {
