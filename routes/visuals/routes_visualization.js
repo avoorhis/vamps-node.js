@@ -689,7 +689,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   console.log('in GET visuals_index');
   // This page is arrived at using GET from the Main Menu
-  // It will be protected usind the helpers.isLoggedIn function
+  // It will be protected using the helpers.isLoggedIn function
   // TESTING:
   //      Should show the closed project list on initialize
   //      The javascript functions (load_project_select, set_check_project, open_datasets, toggle_selected_datasets)
@@ -801,7 +801,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
 
 //
 //
-//
+// test: reorder_datasets
 router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
   let ts = req.session.ts;
   let selected_dataset_order = {};
@@ -866,7 +866,7 @@ router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
 });
 //
 //
-//
+// test: dendrogram
 router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
   console.log('found routes_dendrogram-x');
   ///// this vesion of dendrogram is or running d3 on CLIENT: Currently:WORKING
@@ -989,6 +989,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 //
 // P C O A
 //
+//test: "PCoA 2D Analyses (R/pdf)"
 router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   console.log('in PCoA');
   //console.log(metadata);
@@ -1050,6 +1051,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 //
 //  EMPEROR....
 // POST is for PC file link
+// test: "PCoA 3D Analyses (Emperor)"
 router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   let ts = req.session.ts;
   let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
@@ -1147,6 +1149,8 @@ stdio:['pipe', 'pipe', 'pipe']
 //
 // DATA BROWSER
 //
+//test: "data browser Krona" viz.
+// err: Message: Cannot read property 'phylum' of undefined
 // TODO: JSHint: This function's cyclomatic complexity is too high. (17) (W074)
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   let ts = req.session.ts;
@@ -1319,7 +1323,7 @@ router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
 
 //
 //
-//
+// test: choose phylum, "Phyloseq Bars (R/svg)"
 router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   console.log('in phyloseq post');
   //console.log(req.body)
@@ -1620,7 +1624,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     let selected_did = myurl.query.did;
     let orderby = myurl.query.orderby || 'alphaDown'; // alpha, count
     let value = myurl.query.val || 'z'; // a,z, min, max
-    let order = {orderby:orderby, value:value}; // orderby: alpha: a,z or count: min,max
+    let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
     //let ds_items = pjds.split('--');
      //console.log('myurl.query')
      //console.log(myurl.query)
@@ -2099,7 +2103,7 @@ router.get('/partials/med_nodes', helpers.isLoggedIn,  function(req, res) {
 });
 //
 // SAVE CONFIG
-//
+// test "safe configuration" on top; Saved as: configuration-1568329081647.json
 router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_config-->>');
@@ -2249,7 +2253,7 @@ router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
 });
 //
 // A L P H A - B E T I Z E
-//
+// test: from re-order datasets, "Alphabetize"
 router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
 	console.log('in alphabetize_ds_order');
 	let html = '';
@@ -2289,6 +2293,7 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
 //
 // R E V E R S E  O R D E R
 //
+// test: from re-order datasets, "Reverse"
 router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
   console.log('in reverse_ds_order');
   let ids = JSON.parse(req.body.ids);
@@ -2300,24 +2305,24 @@ router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
   ids.reverse();
   //console.log(ids)
   for (let i in ids){
-         name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[ids[i]]].project+'--'+DATASET_NAME_BY_DID[ids[i]];
-         html += "<tr class='tooltip_row'>";
-         html += "<td class='dragHandle' id='"+ ids[i] +"--"+name+"'> ";
-         html += "<input type='hidden' name='ds_order[]' value='"+ ids[i] +"'>";
-         html += (parseInt(i)+1).toString()+" (id:"+ ids[i] +") - "+name;
-         html += "</td>";
-         html += "   <td>";
-         html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+ids[i] +"--"+name+"\")'>^</a>";
-         html += "   </td>";
-         html += "</tr>";
+    let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[ids[i]]].project+'--'+DATASET_NAME_BY_DID[ids[i]];
+    html += "<tr class='tooltip_row'>";
+    html += "<td class='dragHandle' id='"+ ids[i] +"--"+name+"'> ";
+    html += "<input type='hidden' name='ds_order[]' value='"+ ids[i] +"'>";
+    html += (parseInt(i)+1).toString()+" (id:"+ ids[i] +") - "+name;
+    html += "</td>";
+    html += "   <td>";
+    html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+ids[i] +"--"+name+"\")'>^</a>";
+    html += "   </td>";
+    html += "</tr>";
   }
   html += "</tbody>";
   html += "</table>";
-  res.send(html)
+  res.send(html);
 });
 //
 //  C L U S T E R  D A T A S E T  O R D E R
-//
+// test: from re-order datasets, "--Select distance metric to cluster by:". Should not be "undefined"
 router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     console.log('in cluster_ds_order');
     let html = '';
@@ -2340,13 +2345,11 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 
     let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 
-
     let cluster_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true,
             stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr
-
 
     //let heatmap_process = spawn( 'which' , ['python'], {env:{'PATH':envpath}});
     let output = '';
@@ -2358,11 +2361,11 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     cluster_process.on('close', function clusterProcessOnClose(code) {
       console.log('ds cluster process exited with code ' + code);
       let lines = output.split(/\n/);
-
-      for (i in lines){
+      let ds_list = "";
+      for (let i in lines){
         if (lines[i].substring(0,7) === 'DS_LIST'){
-          tmp = lines[i].split('=');
-          let ds_list = tmp[1];
+          let tmp = lines[i].split('=');
+          ds_list = tmp[1];
         }
       }
       if (req.CONFIG.site === 'vamps') {
@@ -2373,52 +2376,50 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
       //let last_line = ary[ary.length - 1];
       if (code === 0){   // SUCCESS
         try {
+          let dataset_list = JSON.parse(ds_list);
 
-            dataset_list = JSON.parse(ds_list);
+          let potential_chosen_id_name_hash = COMMON.create_new_chosen_id_name_hash(dataset_list,pjds_lookup);
+          let ascii_file = ts + '_' + metric + '_tree.txt';
+          let ascii_file_path = path.join(pwd,'tmp',ascii_file);
+          fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err,ascii_tree_data) {
+            if (err) {
+              return console.log(err);
+            } else {
+              //console.log(data);
 
-            potential_chosen_id_name_hash  = COMMON.create_new_chosen_id_name_hash(dataset_list,pjds_lookup);
-            ascii_file = ts+'_'+metric+'_tree.txt';
-            ascii_file_path = path.join(pwd,'tmp',ascii_file);
-            fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err,ascii_tree_data) {
-              if (err) {
-                return console.log(err);
-              } else {
-                //console.log(data);
+              html = '';
 
-                html = '';
-
-                html += "<table id='drag_table' class='table table-condensed' >";
-                html += "<thead></thead>";
-                html += "  <tbody>";
-                for (let i in potential_chosen_id_name_hash.names){
-                    html += "<tr class='tooltip_row'>";
-                    html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
-                    html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
-                    html += (parseInt(i)+1).toString()+" (id:"+ potential_chosen_id_name_hash.ids[i]+") - "+potential_chosen_id_name_hash.names[i];
-                    html += "</td>";
-                    html += "   <td>";
-                    html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";
-                    html += "   </td>";
-                    html += "</tr>";
-                }
-                html += "</tbody>";
-                html += "</table>";
-                html += '/////<pre style="font-size:10px">'+metric+'<br><small>'+ascii_tree_data+'</small></pre>';
-
-                res.send(html)
+              html += "<table id='drag_table' class='table table-condensed' >";
+              html += "<thead></thead>";
+              html += "  <tbody>";
+              for (let i in potential_chosen_id_name_hash.names){
+                  html += "<tr class='tooltip_row'>";
+                  html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
+                  html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
+                  html += (parseInt(i)+1).toString()+" (id:"+ potential_chosen_id_name_hash.ids[i]+") - "+potential_chosen_id_name_hash.names[i];
+                  html += "</td>";
+                  html += "   <td>";
+                  html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";
+                  html += "   </td>";
+                  html += "</tr>";
               }
-            });
-        }
-        catch(err){
-          res.send('Calculation Error: '+err.toString())
-        }
+              html += "</tbody>";
+              html += "</table>";
+              html += '/////<pre style="font-size:10px">'+metric+'<br><small>'+ascii_tree_data+'</small></pre>';
 
-
-      } else {
-        //console.log('output')
-        //console.log(output);
-        //res.send(err);
+              res.send(html);
+            }
+          });
       }
+        catch(err) {
+          res.send('Calculation Error: ' + err.toString());
+        }
+      }
+      // else {
+      //   //console.log('output')
+      //   //console.log(output);
+      //   //res.send(err);
+      // }
     });
 
 
@@ -2556,6 +2557,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
 //
 //
 //
+//test: "More download choices" "Matrix file" or "Biom Matrix File" etc.
 
 router.post('/download_file', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_visualization download_file');
@@ -2861,7 +2863,7 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
 });
 //
 //
-//
+// test: page after custom taxonomy been chosen, shows tree
 router.post('/check_units', function(req, res) {
   console.log('IN check_UNITS');
   console.log(req.body);

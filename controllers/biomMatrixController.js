@@ -593,21 +593,26 @@ class TaxonomyCustom extends Taxonomy {
 
     this.chosen_dids.map(did => {
       this.tax_id_obj_by_did_filtered[did] = [];
+      try {
+        this.post_items["custom_taxa"].map(selected_node_id => {
+          if (this.taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id)) {
+            let temp_obj = {};
+            let combined_ids_res = this.combine_db_tax_id_list(selected_node_id);
+            let id_chain = combined_ids_res[0];
+            let custom_tax_long_name = combined_ids_res[1];
+            temp_obj["tax_long_name"] = custom_tax_long_name;
+            temp_obj["tax_id_row"] = id_chain;
+            temp_obj["cnt"] = this.get_tax_cnt(id_chain, did) || 0;
 
-      this.post_items["custom_taxa"].map(selected_node_id => {
-        if (this.taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id)) {
-          let temp_obj = {};
-          let combined_ids_res = this.combine_db_tax_id_list(selected_node_id);
-          let id_chain = combined_ids_res[0];
-          let custom_tax_long_name = combined_ids_res[1];
-          temp_obj["tax_long_name"] = custom_tax_long_name;
-          temp_obj["tax_id_row"] = id_chain;
-          temp_obj["cnt"] = this.get_tax_cnt(id_chain, did) || 0;
-
-          this.tax_name_used_unique.add(custom_tax_long_name);
-          this.tax_id_obj_by_did_filtered[did].push(temp_obj);
-        }
-      });
+            this.tax_name_used_unique.add(custom_tax_long_name);
+            this.tax_id_obj_by_did_filtered[did].push(temp_obj);
+          }
+        });
+      }
+      catch (err) {
+        console.log('this.post_items["custom_taxa"] are undefined for did = ' + did);
+        console.log(err.toString());
+      }
     });
     // TODO: Why is it called from here?
     let tax_cnt_obj_arrs = this.make_tax_name_cnt_obj_per_dataset(this.tax_id_obj_by_did_filtered);
