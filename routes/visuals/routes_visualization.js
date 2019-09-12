@@ -2553,19 +2553,19 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
       out_file_name = ts+'_count_matrix.txt';
       biom_file_name = ts+'_count_matrix.biom';
       helpers.create_matrix_from_biom(res, file_path, biom_file_name, out_file_name)
-    }else if (file_type == 'biom'){
+    }else if (file_type === 'biom'){
       file_name = ts+'_count_matrix.biom';
       res.setHeader('Content-Type', 'text');
       res.download(path.join(file_path, file_name)); // Set disposition and send it.
-    }else if (file_type == 'tax'){
+    }else if (file_type === 'tax'){
       file_name = ts+'_taxonomy.txt';
       res.setHeader('Content-Type', 'text');
       res.download(path.join(file_path, file_name)); // Set disposition and send it.
-    }else if (file_type == 'meta'){
+    }else if (file_type === 'meta'){
       file_name = ts+'_metadata.txt';
       res.setHeader('Content-Type', 'text');
       res.download(path.join(file_path, file_name)); // Set disposition and send it.
-    }else if (file_type == 'configuration'){
+    }else if (file_type === 'configuration'){
       file_name = req.body.filename;
       config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
       res.setHeader('Content-Type', 'json');
@@ -2589,7 +2589,7 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     //FILTER_ON = false
     PROJECT_TREE_OBJ = [];
     if (req.query.hasOwnProperty('btn') && req.query.btn == '1'){
-        DATA_TO_OPEN = {}
+        DATA_TO_OPEN = {};
     }
     //DATA_TO_OPEN = {}
     PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, SHOW_DATA.projects);
@@ -2614,7 +2614,7 @@ function filter_project_tree_for_permissions(req, obj){
             || req.user.security_level <= 10                    // admin user ==1
             || node.permissions.length === 0                    // ??
             || node.permissions.indexOf(req.user.user_id) !== -1 // owner is user
-            || (req.user.security_level == 45 && (node.project).substring(0,3) == 'DCO') // DCO Editor all DCO* projects
+            || (req.user.security_level == 45 && (node.project).substring(0,3) === 'DCO') // DCO Editor all DCO* projects
             ) {
 
                 if (PROJECT_INFORMATION_BY_PID[pid].metagenomic == 0){
@@ -2673,7 +2673,7 @@ router.get('/livesearch_projects/:substring', function(req, res) {
 
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
-  if (req.CONFIG.site == 'vamps' ){
+  if (req.CONFIG.site === 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   } else {
     console.log('PROJECT_FILTER')
@@ -2852,11 +2852,11 @@ router.post('/check_units', function(req, res) {
   let path_to_file;
   let jsonfile;
 
-  if (req.body.units == 'tax_'+C.default_taxonomy.name+'_simple' || req.body.units == 'tax_'+C.default_taxonomy.name+'_custom'){
+  if (req.body.units === 'tax_'+C.default_taxonomy.name+'_simple' || req.body.units === 'tax_'+C.default_taxonomy.name+'_custom'){
         files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
-  }else if (req.body.units == 'tax_rdp2.6_simple'){
+  }else if (req.body.units === 'tax_rdp2.6_simple'){
         files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
-  }else if (req.body.units == 'tax_generic_simple'){
+  }else if (req.body.units === 'tax_generic_simple'){
         files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
   } else {
         console.log('ERROR:Units not found: '+req.body.units)  // ERROR
@@ -2992,7 +2992,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
         if (Object.keys(DATA_TO_OPEN).length > 0){
 
           console.log('dto');
-          if (req.CONFIG.site == 'vamps' ){
+          if (req.CONFIG.site === 'vamps' ){
             console.log('VAMPS PRODUCTION -- no print to log');
           } else {
             console.log(DATA_TO_OPEN);
@@ -3002,7 +3002,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
           }
         }
         console.log('all_checked_dids:');
-        if (req.CONFIG.site == 'vamps' ){
+        if (req.CONFIG.site === 'vamps' ){
           console.log('VAMPS PRODUCTION -- no print to log');
         } else {
           console.log(all_checked_dids)
@@ -3048,7 +3048,7 @@ router.get('/taxa_piechart', function(req, res) {
       let data = [];
       let new_matrix = {};
 
-      for (i in biom_matrix.rows){
+      for (let i in biom_matrix.rows){
         if (biom_matrix.rows[i].id == tax){
 
           data = biom_matrix.data[i];
