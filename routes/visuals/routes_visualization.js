@@ -1540,7 +1540,7 @@ function get_sumator(req, biom_matrix){
              }
          }
       if (rank === 'genus'){
-         g = tax_items[t];
+         let g = tax_items[t];
          for (i in req.session.chosen_id_order){
              if (g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
                  if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
@@ -2181,10 +2181,14 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
     		  } else {
       		  for (let f in files){
       	        let pts = files[f].split('-');
-      	        if (acceptable_prefixes.indexOf(pts[0]) != -1 ){
+      	        if (parseInt(acceptable_prefixes.indexOf(pts[0])) !== -1 ){
       	          //file_info.files.push(files[f]);
-      	          stat = fs.statSync(path.join(saved_elements_dir,files[f]));
-      			       file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime.toString() };
+      	          let stat = fs.statSync(path.join(saved_elements_dir, files[f]));
+      			       file_info[stat.mtime.getTime()] = {
+      			         'filename': files[f],
+                     'size': stat.size,
+                     'mtime': stat.mtime.toString()
+      			       };
       			       modify_times.push(stat.mtime.getTime());
 
       	        }
