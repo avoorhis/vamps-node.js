@@ -3032,62 +3032,57 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
 //
 //
 router.get('/taxa_piechart', function(req, res) {
-    console.log('IN taxa_piechart - routes_visualizations');
-    let myurl = url.parse(req.url, true);
-    let tax = myurl.query.tax;
-    let timestamp = +new Date();  // millisecs since the epoch!
-    let ts = req.session.ts;
-    let matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
+  console.log('IN taxa_piechart - routes_visualizations');
+  let myurl = url.parse(req.url, true);
+  let tax = myurl.query.tax;
+  let timestamp = +new Date();  // millisecs since the epoch!
+  let ts = req.session.ts;
+  let matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
 
-    fs.readFile(matrix_file_path, 'utf8', function(err,mtxdata){
-        if (err) {
-            let msg = 'ERROR Message '+err;
-            helpers.render_error_page(req,res,msg);
-        } else {
-            let biom_matrix = JSON.parse(mtxdata);
-            let data = [];
-            let new_matrix = {};
+  fs.readFile(matrix_file_path, 'utf8', function(err,mtxdata){
+    if (err) {
+      let msg = 'ERROR Message '+err;
+      helpers.render_error_page(req,res,msg);
+    } else {
+      let biom_matrix = JSON.parse(mtxdata);
+      let data = [];
+      let new_matrix = {};
 
-            for (i in biom_matrix.rows){
-              if (biom_matrix.rows[i].id == tax){
+      for (i in biom_matrix.rows){
+        if (biom_matrix.rows[i].id == tax){
 
-                data = biom_matrix.data[i];
-                // data = [1,2,3,4]
-                // want [[1],[2],[3],[4]]
+          data = biom_matrix.data[i];
+          // data = [1,2,3,4]
+          // want [[1],[2],[3],[4]]
 
-                new_matrix.data = [];
-                for (n in data){
-                  new_matrix.data.push([data[n]])
-                }
-                new_matrix.columns = [biom_matrix.rows[i]]
-              }
-            }
-            new_matrix.rows = biom_matrix.columns;
-            if (req.CONFIG.site == 'vamps' ){
-              console.log('VAMPS PRODUCTION -- no print to log');
-            } else {
-              console.log('new mtx:',new_matrix);
-              console.log('counts:',new_matrix.data)
-            }
-            let cols =  biom_matrix.columns;
-
-            res.render('visuals/user_viz_data/pie_single_tax', {
-                      title: 'Datasets PieChart',
-                      matrix    :           JSON.stringify(new_matrix),
-                      //post_items:           JSON.stringify(visual_post_items),
-                      tax : tax,
-                      datasets : JSON.stringify(cols),
-                      counts : data,
-                      ts : timestamp,
-                      user: req.user, hostname: req.CONFIG.hostname,
-            });
-
-            
-            
+          new_matrix.data = [];
+          for (n in data){
+            new_matrix.data.push([data[n]])
+          }
+          new_matrix.columns = [biom_matrix.rows[i]]
         }
-    });
-    
-    
+      }
+      new_matrix.rows = biom_matrix.columns;
+      if (req.CONFIG.site == 'vamps' ){
+        console.log('VAMPS PRODUCTION -- no print to log');
+      } else {
+        console.log('new mtx:',new_matrix);
+        console.log('counts:',new_matrix.data)
+      }
+      let cols =  biom_matrix.columns;
+
+      res.render('visuals/user_viz_data/pie_single_tax', {
+        title: 'Datasets PieChart',
+        matrix    :           JSON.stringify(new_matrix),
+        //post_items:           JSON.stringify(visual_post_items),
+        tax : tax,
+        datasets : JSON.stringify(cols),
+        counts : data,
+        ts : timestamp,
+        user: req.user, hostname: req.CONFIG.hostname,
+      });
+    }
+  });
 });
 
 module.exports = router;
