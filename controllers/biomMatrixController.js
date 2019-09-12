@@ -124,31 +124,38 @@ class BiomMatrix {
 
   check_what_to_update() {
     // normalization, percent, domains, Taxonomic Depth, include NAs
-    let adjust_for_normalization = false;
-    // let adjust_for_percent_limit_change = false;
+    let adjust = {
+    adjust_for_normalization: false,
+    adjust_for_percent_limit_change: true
+  };
 
-     if (typeof this.visual_post_items.normalization !== "undefined"  &&  this.visual_post_items.normalization !== "none") { adjust_for_normalization = true; }
-  //
-    // if (typeof this.visual_post_items.normalization !== "undefined" &&  this.visual_post_items.normalization !== "none") { adjust_for_percent_limit_change = true; }
+     if (typeof this.visual_post_items.normalization !== "undefined" && this.visual_post_items.normalization !== "none") {
+       adjust.adjust_for_normalization = true;
+     }
 
-  return adjust_for_normalization;
+    let min_percent = parseInt(this.visual_post_items.min_range) === 0;
+    let max_percent = parseInt(this.visual_post_items.max_range) === 100;
+    if (min_percent && max_percent) {
+      adjust.adjust_for_percent_limit_change = false;
+    }
+
+  return adjust;
   }
 
   get_updated_biom_matrix() {
     console.log('in UPDATED biom_matrix');
     console.log("GGG1 this.visual_post_items");
     console.log(this.visual_post_items);
-    this.check_what_to_update();
     // console.time("TIME: get_updated_biom_matrix");
     let custom_count_matrix = extend({}, this.biom_matrix);  // this clones count_matrix which keeps original intact.
-    let adjust_for_normalization = false;
 
-    adjust_for_normalization = this.check_what_to_update();
-    if (adjust_for_normalization) {
+    let adjust = this.check_what_to_update();
+    if (adjust.adjust_for_normalization) {
       custom_count_matrix = this.adjust_for_normalization(custom_count_matrix);
     }
-    custom_count_matrix = this.adjust_for_percent_limit_change(custom_count_matrix);
-
+    if (adjust.adjust_for_percent_limit_change) {
+      custom_count_matrix = this.adjust_for_percent_limit_change(custom_count_matrix);
+    }
     custom_count_matrix.column_totals = this.re_calculate_totals(custom_count_matrix);
     custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
 
