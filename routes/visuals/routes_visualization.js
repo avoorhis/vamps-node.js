@@ -167,8 +167,9 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         //console.log('XXXXXXXXXXX-VPI')
         //console.log(visual_post_items)
 
-  }else if (req.body.resorted === '1'){
-        console.log('resorted == 1');
+  }
+  else if (req.body.resorted === '1'){
+        console.log('resorted === 1');
         // populate visual_post_items from req.session (except new ds_order)
         req.flash('success','The dataset order has been updated.');
         dataset_ids = req.body.ds_order;
@@ -2548,7 +2549,7 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
     let ts = req.body.ts;
     let file_type = req.body.file_type;
     file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
-    if (file_type == 'matrix'){
+    if (file_type === 'matrix'){
       res.setHeader('Content-Type', 'text');
       out_file_name = ts+'_count_matrix.txt';
       biom_file_name = ts+'_count_matrix.biom';
@@ -2588,7 +2589,7 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     //console.log(req.query)
     //FILTER_ON = false
     PROJECT_TREE_OBJ = [];
-    if (req.query.hasOwnProperty('btn') && req.query.btn == '1'){
+    if (req.query.hasOwnProperty('btn') && req.query.btn === '1'){
         DATA_TO_OPEN = {};
     }
     //DATA_TO_OPEN = {}
@@ -2614,11 +2615,11 @@ function filter_project_tree_for_permissions(req, obj){
             || req.user.security_level <= 10                    // admin user ==1
             || node.permissions.length === 0                    // ??
             || node.permissions.indexOf(req.user.user_id) !== -1 // owner is user
-            || (req.user.security_level == 45 && (node.project).substring(0,3) === 'DCO') // DCO Editor all DCO* projects
+            || (parseInt(req.user.security_level) === 45 && (node.project).substring(0,3) === 'DCO') // DCO Editor all DCO* projects
             ) {
 
-                if (PROJECT_INFORMATION_BY_PID[pid].metagenomic == 0){
-                    new_project_tree_pids.push(pid)
+                if (parseInt(PROJECT_INFORMATION_BY_PID[pid].metagenomic) === 0){
+                    new_project_tree_pids.push(pid);
                 }
 
       }
@@ -2979,48 +2980,49 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
         }
         //console.log(JSON.stringify(json, null, 4))
 
-    } else {
-        //console.log(JSON.stringify(ALL_DATASETS))
-        let this_project = {};
-        id = id.substring(1);  // id = pxx
-        ALL_DATASETS.projects.forEach(function(prj) {
-          if (prj.pid == id){
-            this_project = prj
-          }
-        });
-        let all_checked_dids = [];
-        if (Object.keys(DATA_TO_OPEN).length > 0){
-
-          console.log('dto');
-          if (req.CONFIG.site === 'vamps' ){
-            console.log('VAMPS PRODUCTION -- no print to log');
-          } else {
-            console.log(DATA_TO_OPEN);
-          }
-          for (openpid in DATA_TO_OPEN){
-            Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid])
-          }
+    }
+    else {
+      //console.log(JSON.stringify(ALL_DATASETS))
+      let this_project = {};
+      id = id.substring(1);  // id = pxx
+      ALL_DATASETS.projects.forEach(function(prj) {
+        if (parseInt(prj.pid) === parseInt(id)){
+          this_project = prj;
         }
-        console.log('all_checked_dids:');
+      });
+      let all_checked_dids = [];
+      if (Object.keys(DATA_TO_OPEN).length > 0){
+
+        console.log('dto');
         if (req.CONFIG.site === 'vamps' ){
           console.log('VAMPS PRODUCTION -- no print to log');
         } else {
-          console.log(all_checked_dids)
+          console.log(DATA_TO_OPEN);
         }
-        let pname = this_project.name;
-        for (n in this_project.datasets){
-            let did   = this_project.datasets[n].did;
-            //console.log('didXX',did)
-            let dname = this_project.datasets[n].dname;
-            let ddesc = this_project.datasets[n].ddesc;
-            let tt_ds_id  = 'dataset/'+pname+'/'+dname+'/'+ddesc;
-            itemtext = "<span id='"+ tt_ds_id +"' class='tooltip_pjds_list'>"+dname+"</span>";
-            if (all_checked_dids.indexOf(parseInt(did)) === -1){
-              json.item.push({id:did, text:itemtext, child:0})
-            } else {
-              json.item.push({id:did, text:itemtext, checked:'1', child:0})
-            }
+        for (openpid in DATA_TO_OPEN){
+          Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid])
         }
+      }
+      console.log('all_checked_dids:');
+      if (req.CONFIG.site === 'vamps' ){
+        console.log('VAMPS PRODUCTION -- no print to log');
+      } else {
+        console.log(all_checked_dids)
+      }
+      let pname = this_project.name;
+      for (n in this_project.datasets){
+          let did   = this_project.datasets[n].did;
+          //console.log('didXX',did)
+          let dname = this_project.datasets[n].dname;
+          let ddesc = this_project.datasets[n].ddesc;
+          let tt_ds_id  = 'dataset/'+pname+'/'+dname+'/'+ddesc;
+          itemtext = "<span id='"+ tt_ds_id +"' class='tooltip_pjds_list'>"+dname+"</span>";
+          if (all_checked_dids.indexOf(parseInt(did)) === -1){
+            json.item.push({id:did, text:itemtext, child:0})
+          } else {
+            json.item.push({id:did, text:itemtext, checked:'1', child:0})
+          }
+      }
     }
     json.item.sort(function sortByAlpha(a, b){
           return helpers.compareStrings_alpha(a.text, b.text);
@@ -3049,7 +3051,7 @@ router.get('/taxa_piechart', function(req, res) {
       let new_matrix = {};
 
       for (let i in biom_matrix.rows){
-        if (biom_matrix.rows[i].id == tax){
+        if (biom_matrix.rows[i].id === tax){
 
           data = biom_matrix.data[i];
           // data = [1,2,3,4]
@@ -3063,7 +3065,7 @@ router.get('/taxa_piechart', function(req, res) {
         }
       }
       new_matrix.rows = biom_matrix.columns;
-      if (req.CONFIG.site == 'vamps' ){
+      if (req.CONFIG.site === 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
       } else {
         console.log('new mtx:',new_matrix);
