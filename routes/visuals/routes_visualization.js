@@ -1444,7 +1444,7 @@ function get_sumator(req, biom_matrix){
     let sumator = {};
     sumator['domain']={};
 
-    for (r in biom_matrix.rows){
+    for (let r in biom_matrix.rows){
         tax_string = biom_matrix.rows[r].id;
         tax_items = tax_string.split(';');
         key = tax_items[0];

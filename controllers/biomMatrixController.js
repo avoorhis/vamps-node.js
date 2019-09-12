@@ -94,7 +94,6 @@ class BiomMatrix {
       write_matrix_file_mod.write_matrix_files();
     }
     // console.timeEnd('TIME: write_matrix_files');
-
   }
 
   get_columns() {
@@ -128,8 +127,8 @@ class BiomMatrix {
     let adjust_for_normalization = false;
     // let adjust_for_percent_limit_change = false;
 
-     if (typeof this.visual_post_items.normalization !== "undefined") { adjust_for_normalization = true; }
-  // &&  this.visual_post_items.normalization !== "none"
+     if (typeof this.visual_post_items.normalization !== "undefined"  &&  this.visual_post_items.normalization !== "none") { adjust_for_normalization = true; }
+  //
     // if (typeof this.visual_post_items.normalization !== "undefined" &&  this.visual_post_items.normalization !== "none") { adjust_for_percent_limit_change = true; }
 
   return adjust_for_normalization;
